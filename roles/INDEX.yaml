@@ -1,0 +1,38 @@
+version: 1
+roles:
+  product-manager:
+    summary: Product intent, scope, requirements and user/business decisions.
+    path: product-manager/ROLE.md
+  product-designer:
+    summary: UX, information architecture, visual direction and interface design.
+    path: product-designer/ROLE.md
+  software-architect:
+    summary: System boundaries, contracts, architecture tradeoffs and evolution.
+    path: software-architect/ROLE.md
+  backend-engineer:
+    summary: Server-side application/API implementation inside approved boundaries.
+    path: backend-engineer/ROLE.md
+  frontend-engineer:
+    summary: Client-side implementation, interaction and integration with approved design/contracts.
+    path: frontend-engineer/ROLE.md
+  database-engineer:
+    summary: Data model, SQL, indexing, migration and database performance.
+    path: database-engineer/ROLE.md
+  performance-engineer:
+    summary: Evidence-based latency, throughput and resource optimization.
+    path: performance-engineer/ROLE.md
+  security-engineer:
+    summary: Threat/risk review, authentication/authorization and secure design.
+    path: security-engineer/ROLE.md
+  quality-reviewer:
+    summary: Independent correctness, test, maintainability and contract review.
+    path: quality-reviewer/ROLE.md
+  delivery-planner:
+    summary: Requirement decomposition, dependencies, milestones and execution order.
+    path: delivery-planner/ROLE.md
+  cloud-architect:
+    summary: Capacity, hosting architecture, availability and infrastructure cost tradeoffs.
+    path: cloud-architect/ROLE.md
+  sre:
+    summary: Reliability, production operations, observability and incident response.
+    path: sre/ROLE.md

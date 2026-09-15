@@ -1,0 +1,16 @@
+version: 1
+project: null
+phase: null
+active_work_mode: null
+active_task:
+  id: null
+  status: null
+completed: []
+blocked: []
+waiting_for: []
+pending_decisions: []
+temporary_overrides: []
+artifacts: []
+last_checkpoint:
+  run_id: null
+  updated_at: null

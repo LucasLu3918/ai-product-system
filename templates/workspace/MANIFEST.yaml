@@ -1,0 +1,61 @@
+version: 1
+
+task:
+  id: null
+  intent: null
+  work_mode: null
+  project_state: unknown
+  risk: normal
+
+boundary:
+  intent: []
+  change: []
+  excluded: []
+
+instructions:
+  user: []
+  scoped_agents_files: []
+  project_decisions: []
+  project_standards: []
+  temporary_overrides: []
+
+roles:
+  primary: null
+  supporting: []
+
+skills:
+  project_local: []
+  global: []
+
+project_context:
+  required: []
+  optional: []
+
+external_knowledge:
+  runtime_verification_required: []
+
+architecture:
+  profile: null
+  ddd: null
+
+model_requirement:
+  reasoning: medium
+  coding: normal
+  vision: false
+  context: small
+  data: internal
+  tools: []
+
+review:
+  independent: false
+  roles: []
+
+artifacts:
+  required: []
+  workspace_paths: []
+
+human_gate:
+  required: false
+  reason: null
+
+provenance: []

@@ -1,0 +1,10 @@
+outputs:
+  - id: null
+    path: null
+    required: true
+review:
+  required: false
+  reviewer_role: null
+human_review:
+  required: false
+completion_requires_persistence: true

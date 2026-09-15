@@ -1,0 +1,16 @@
+version: 1
+capabilities:
+  product: Product discovery and requirement definition.
+  design: UX, information architecture and visual direction.
+  software-architecture: Architecture boundaries, Clean Architecture and DDD.
+  engineering: API/application implementation knowledge.
+  database: Data modeling and database/query performance.
+  testing: TDD, characterization and validation strategies.
+  quality: Independent review and acceptance quality.
+  performance: Measurement, profiling and optimization.
+  security: Secure design and trust-boundary analysis.
+  delivery-planning: Work breakdown, dependency and milestone planning.
+  infrastructure: Capacity, hosting and cost analysis.
+  operations: Reliability and incident response.
+
+# Capabilities are routing groups, not large knowledge blobs. Load leaf skills for execution.

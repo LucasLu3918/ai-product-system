@@ -1,0 +1,17 @@
+# Reference shape; omit fields that are not relevant.
+business_impact: low | medium | high | critical
+technical_complexity: low | medium | high | critical
+risk: normal | elevated | high | critical
+reasoning: low | medium | high | very_high
+coding: none | normal | strong
+reliability: normal | high | critical
+context: small | medium | large
+data: public | internal | confidential | restricted
+minimum_tier: 1 | 2 | 3 | 4
+preferred_tier: 1 | 2 | 3 | 4
+budget:
+  context: small | medium | large
+  reasoning: low | medium | high
+  max_parallel_subagents: 1
+  prefer_cost_efficient: true
+subagents: []

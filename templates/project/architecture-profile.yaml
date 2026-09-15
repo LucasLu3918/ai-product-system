@@ -1,0 +1,12 @@
+architecture:
+  style: clean-architecture-principles
+  ddd: none # none | tactical | strategic+tactical
+  testing: tdd # tdd | appropriate-strategy
+  principles:
+    - dependency-inversion
+    - minimum-sufficient-architecture
+    - secure-by-design
+    - observability-by-design
+
+# This is a project/task preference, not a mandate to rewrite existing code.
+# Change architecture only when justified by current requirements and approved when material.

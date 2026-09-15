@@ -1,0 +1,11 @@
+requested:
+  -
+allowed:
+  -
+excluded:
+  -
+requires_approval:
+  - public_contract_change
+  - unrelated_refactor
+  - architecture_boundary_change
+  - destructive_data_change

@@ -1,0 +1,216 @@
+version: 1
+skills:
+  product-discovery:
+    capability: product
+    path: product/product-discovery/SKILL.md
+    triggers:
+    - new_product
+    - unclear_product_goal
+    cost: low
+    model_requirements:
+      reasoning: medium
+      coding: none
+      reliability: high
+      minimum_tier: 1
+      preferred_tier: 2
+  requirements-definition:
+    capability: product
+    path: product/requirements-definition/SKILL.md
+    triggers:
+    - acceptance_criteria
+    - product_scope
+    cost: low
+    model_requirements:
+      reasoning: medium
+      coding: none
+      reliability: high
+      minimum_tier: 1
+      preferred_tier: 2
+  ux-web-design:
+    capability: design
+    path: design/ux-web-design/SKILL.md
+    triggers:
+    - ux_flow
+    - web_ui
+    - interaction_design
+    cost: low
+    model_requirements:
+      reasoning: medium
+      coding: none
+      reliability: normal
+      minimum_tier: 1
+      preferred_tier: 2
+  visual-direction:
+    capability: design
+    path: design/visual-direction/SKILL.md
+    triggers:
+    - visual_concepts
+    - brand_direction
+    - design_system
+    cost: low
+    model_requirements:
+      reasoning: medium
+      coding: none
+      reliability: normal
+      minimum_tier: 1
+      preferred_tier: 2
+  rest-api:
+    capability: engineering
+    path: engineering/rest-api/SKILL.md
+    triggers:
+    - rest_api_change
+    - endpoint_design
+    cost: low
+    model_requirements:
+      reasoning: medium
+      coding: strong
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 2
+  tdd:
+    capability: testing
+    path: testing/tdd/SKILL.md
+    triggers:
+    - testable_behavior_change
+    cost: low
+    model_requirements:
+      reasoning: medium
+      coding: strong
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 2
+  characterization-testing:
+    capability: testing
+    path: testing/characterization-testing/SKILL.md
+    triggers:
+    - legacy_change_without_coverage
+    cost: low
+    model_requirements:
+      reasoning: medium
+      coding: strong
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 2
+  clean-architecture:
+    capability: software-architecture
+    path: software-architecture/clean-architecture/SKILL.md
+    triggers:
+    - dependency_boundary
+    - architecture_review
+    cost: low
+    model_requirements:
+      reasoning: high
+      coding: normal
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 3
+  domain-driven-design:
+    capability: software-architecture
+    path: software-architecture/domain-driven-design/SKILL.md
+    triggers:
+    - complex_domain
+    - bounded_context
+    - business_invariants
+    cost: medium
+    model_requirements:
+      reasoning: high
+      coding: normal
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 3
+  performance-profiling:
+    capability: performance
+    path: performance/performance-profiling/SKILL.md
+    triggers:
+    - latency_target
+    - throughput_target
+    - resource_optimization
+    cost: low
+    model_requirements:
+      reasoning: high
+      coding: normal
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 3
+  sql-performance:
+    capability: database
+    path: database/sql-performance/SKILL.md
+    triggers:
+    - sql_bottleneck_evidence
+    cost: low
+    model_requirements:
+      reasoning: high
+      coding: normal
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 3
+  secure-design:
+    capability: security
+    path: security/secure-design/SKILL.md
+    triggers:
+    - auth
+    - authorization
+    - sensitive_data
+    - security_boundary
+    cost: low
+    model_requirements:
+      reasoning: high
+      coding: normal
+      reliability: critical
+      minimum_tier: 3
+      preferred_tier: 3
+  code-review:
+    capability: quality
+    path: quality/code-review/SKILL.md
+    triggers:
+    - material_code_review
+    cost: low
+    model_requirements:
+      reasoning: high
+      coding: normal
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 3
+  delivery-planning:
+    capability: delivery-planning
+    path: planning/delivery-planning/SKILL.md
+    triggers:
+    - execution_plan
+    - milestones
+    - dependencies
+    cost: low
+    model_requirements:
+      reasoning: medium
+      coding: none
+      reliability: high
+      minimum_tier: 1
+      preferred_tier: 2
+  capacity-cost:
+    capability: infrastructure
+    path: infrastructure/capacity-cost/SKILL.md
+    triggers:
+    - infrastructure_sizing
+    - hosting_cost
+    cost: medium
+    model_requirements:
+      reasoning: high
+      coding: none
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 3
+  incident-response:
+    capability: operations
+    path: operations/incident-response/SKILL.md
+    triggers:
+    - production_incident
+    - outage
+    cost: low
+    model_requirements:
+      reasoning: high
+      coding: normal
+      reliability: critical
+      minimum_tier: 3
+      preferred_tier: 3
+
+# model_requirements are routing hints, not hard model assignments.
+# Routers should read this index first. Open a SKILL.md body only after selection.
