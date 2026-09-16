@@ -22,3 +22,9 @@ Persist only useful state: phase, active task, blockers, accepted decisions, art
 STATE may point to one active machine-verifiable Approval Record and cache its status/fingerprints. The Approval Record remains the evidence artifact; STATE is only a compact resume pointer.
 
 Missing governance fields in older workspaces are valid and mean no machine-bound approval is active.
+
+## Durable run artifacts
+
+Substantial workflows use `CHECKPOINT.yaml` + append-only `EVENTS.jsonl` under the per-run store.
+
+`STATE.yaml` keeps only a compact pointer/current workflow summary. The event stream is evidence, not a transcript. Resume must compare the recorded project revision and return STALE when the workspace changed.
