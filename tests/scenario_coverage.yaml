@@ -310,10 +310,10 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "051"
     path: tests/scenarios/051-project-knowledge-pointer.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/051-project-knowledge-pointer.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/project_intelligence_lifecycle.py
+      - tests/validate_repository.py
   - id: "052"
     path: tests/scenarios/052-project-knowledge-discovery.md
     coverage: manual
@@ -322,10 +322,10 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "053"
     path: tests/scenarios/053-project-knowledge-targeted-refresh.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/053-project-knowledge-targeted-refresh.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/project_intelligence_lifecycle.py
+      - tests/validate_repository.py
   - id: "054"
     path: tests/scenarios/054-project-knowledge-promotion.md
     coverage: manual
@@ -352,22 +352,22 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "058"
     path: tests/scenarios/058-existing-user-agent-file-preserved.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/058-existing-user-agent-file-preserved.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/adapter_composition.py
+      - tests/validate_repository.py
   - id: "059"
     path: tests/scenarios/059-owned-adapter-safe-uninstall.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/059-owned-adapter-safe-uninstall.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/adapter_composition.py
+      - tests/validate_repository.py
   - id: "060"
     path: tests/scenarios/060-modified-owned-file-preserved.md
-    coverage: manual
+    coverage: deterministic
     evidence:
-      - tests/scenarios/060-modified-owned-file-preserved.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/adapter_composition.py
+      - tests/validate_repository.py
   - id: "061"
     path: tests/scenarios/061-ephemeral-project-no-auto-attach.md
     coverage: manual
@@ -376,10 +376,10 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "062"
     path: tests/scenarios/062-attached-project-persistence.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/062-attached-project-persistence.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/project_intelligence_lifecycle.py
+      - tests/validate_repository.py
   - id: "063"
     path: tests/scenarios/063-normal-conversation-bypasses-heavy-orchestration.md
     coverage: manual
@@ -424,16 +424,16 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "070"
     path: tests/scenarios/070-codex-managed-composition.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/070-codex-managed-composition.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/adapter_composition.py
+      - tests/validate_repository.py
   - id: "071"
     path: tests/scenarios/071-claude-turn-hook-composition.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/071-claude-turn-hook-composition.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/adapter_composition.py
+      - tests/validate_repository.py
   - id: "072"
     path: tests/scenarios/072-gemini-before-agent-turn-context.md
     coverage: manual
@@ -448,16 +448,16 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "074"
     path: tests/scenarios/074-ephemeral-external-intelligence.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/074-ephemeral-external-intelligence.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/project_intelligence_lifecycle.py
+      - tests/validate_repository.py
   - id: "075"
     path: tests/scenarios/075-semantic-bootstrap-readiness.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/075-semantic-bootstrap-readiness.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/project_intelligence_lifecycle.py
+      - tests/validate_repository.py
   - id: "076"
     path: tests/scenarios/076-source-registry-runtime-dedup.md
     coverage: manual
@@ -466,34 +466,34 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "077"
     path: tests/scenarios/077-unrelated-commit-keeps-intelligence-current.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/077-unrelated-commit-keeps-intelligence-current.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/project_intelligence_lifecycle.py
+      - tests/validate_repository.py
   - id: "078"
     path: tests/scenarios/078-watched-change-targeted-stale.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/078-watched-change-targeted-stale.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/project_intelligence_lifecycle.py
+      - tests/validate_repository.py
   - id: "079"
     path: tests/scenarios/079-dirty-worktree-freshness.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/079-dirty-worktree-freshness.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/project_intelligence_lifecycle.py
+      - tests/validate_repository.py
   - id: "080"
     path: tests/scenarios/080-attach-detach-intelligence-migration.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/080-attach-detach-intelligence-migration.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/project_intelligence_lifecycle.py
+      - tests/validate_repository.py
   - id: "081"
     path: tests/scenarios/081-review-html-self-contained-redacted.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/081-review-html-self-contained-redacted.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/project_intelligence_lifecycle.py
+      - tests/validate_repository.py
   - id: "082"
     path: tests/scenarios/082-project-overrides-survive-refresh.md
     coverage: manual
@@ -502,10 +502,10 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "083"
     path: tests/scenarios/083-intelligence-single-writer.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/083-intelligence-single-writer.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/project_intelligence_lifecycle.py
+      - tests/validate_repository.py
   - id: "084"
     path: tests/scenarios/084-change-impact-before-mutation.md
     coverage: manual
@@ -514,10 +514,10 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "085"
     path: tests/scenarios/085-uninstall-preserves-intelligence-cache.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/085-uninstall-preserves-intelligence-cache.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/project_intelligence_lifecycle.py
+      - tests/validate_repository.py
   - id: "086"
     path: tests/scenarios/086-normal-chat-no-intelligence-bootstrap.md
     coverage: manual
@@ -544,10 +544,10 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "090"
     path: tests/scenarios/090-secret-scanner-redacted-evidence.md
-    coverage: manual
+    coverage: deterministic
     evidence:
-      - tests/scenarios/090-secret-scanner-redacted-evidence.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/secret_safety.py
+      - tests/validate_repository.py
   - id: "091"
     path: tests/scenarios/091-secret-exposure-release-block.md
     coverage: manual
