@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
-import hashlib
 import json
 import os
 from pathlib import Path
@@ -14,6 +13,12 @@ import tempfile
 from typing import Any
 
 import yaml
+
+from aips_identity import (
+    config_home,
+    project_root as canonical_project_root,
+    repository_identity,
+)
 
 ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 
@@ -32,27 +37,19 @@ def run_git(root: Path, *args: str, check: bool = False) -> subprocess.Completed
 
 
 def project_root(path: Path) -> Path:
-    path = path.resolve()
-    result = run_git(path, "rev-parse", "--show-toplevel")
+    root = canonical_project_root(path)
+    result = run_git(root, "rev-parse", "--show-toplevel")
     if result.returncode != 0 or not result.stdout.strip():
         raise RuntimeError("project is not a Git repository")
     return Path(result.stdout.strip()).resolve()
 
 
-def project_id(root: Path) -> str:
-    return hashlib.sha256(str(root).encode()).hexdigest()[:20]
-
-
-def config_home() -> Path:
-    return Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config"))).resolve() / "aips"
-
-
 def state_dir(root: Path) -> Path:
-    return config_home() / "isolation" / project_id(root)
+    return config_home() / "isolation" / repository_identity(root)["repository_id"]
 
 
 def worktree_dir(root: Path) -> Path:
-    return config_home() / "worktrees" / project_id(root)
+    return config_home() / "worktrees" / repository_identity(root)["repository_id"]
 
 
 def atomic_yaml(path: Path, data: dict[str, Any]) -> None:
@@ -84,52 +81,90 @@ def worktree_supported(root: Path) -> bool:
     return result.returncode == 0
 
 
+def _record_repository_id(record: dict[str, Any]) -> str | None:
+    explicit = record.get("repository_id")
+    if explicit:
+        return str(explicit)
+    raw_root = record.get("project_root")
+    if not raw_root:
+        return None
+    candidate = Path(str(raw_root))
+    if not candidate.exists():
+        return None
+    try:
+        return repository_identity(project_root(candidate))["repository_id"]
+    except Exception:
+        return None
+
+
+def _record_paths(root: Path) -> list[Path]:
+    repo_id = repository_identity(root)["repository_id"]
+    base = config_home() / "isolation"
+    if not base.exists():
+        return []
+    result: list[Path] = []
+    for path in sorted(base.glob("*/*.yaml")):
+        doc = load_yaml(path)
+        if doc.get("ownership") != "aips":
+            continue
+        if _record_repository_id(doc) == repo_id:
+            result.append(path)
+    return result
+
+
+def records(root: Path) -> list[dict[str, Any]]:
+    result: list[dict[str, Any]] = []
+    for path in _record_paths(root):
+        doc = load_yaml(path)
+        doc["_record_path"] = str(path)
+        result.append(doc)
+    return result
+
+
+def active_records(root: Path) -> list[dict[str, Any]]:
+    return [doc for doc in records(root) if doc.get("status") == "ACTIVE"]
+
+
 def resolve_mode(args: argparse.Namespace) -> dict[str, Any]:
     root = project_root(Path(args.project))
+    ident = repository_identity(root)
+    base = {
+        "project_root": str(root),
+        "repository_id": ident["repository_id"],
+        "workspace_id": ident["workspace_id"],
+    }
     if args.mode == "shared":
         return {
+            **base,
             "mode": "shared",
             "status": "AVAILABLE",
             "isolated": False,
-            "project_root": str(root),
             "reason": "shared uses the existing project workspace and does not provide an isolation boundary",
         }
     if args.mode == "worktree":
         available = worktree_supported(root)
         return {
+            **base,
             "mode": "worktree",
             "status": "AVAILABLE" if available else "UNSUPPORTED",
             "isolated": available,
-            "project_root": str(root),
             "reason": "git worktree is available" if available else "git worktree is unavailable for this repository/runtime",
         }
     return {
+        **base,
         "mode": "sandbox",
         "status": "UNSUPPORTED",
         "isolated": False,
-        "project_root": str(root),
         "reason": "no verified sandbox provider is registered; AIPS core does not emulate sandbox isolation with a temporary directory",
         "requires_provider": True,
     }
-
-
-def active_records(root: Path) -> list[dict[str, Any]]:
-    directory = state_dir(root)
-    if not directory.exists():
-        return []
-    records: list[dict[str, Any]] = []
-    for path in sorted(directory.glob("*.yaml")):
-        doc = load_yaml(path)
-        if doc.get("status") == "ACTIVE" and doc.get("ownership") == "aips":
-            doc["_record_path"] = str(path)
-            records.append(doc)
-    return records
 
 
 def create_worktree(args: argparse.Namespace) -> dict[str, Any]:
     root = project_root(Path(args.project))
     isolation_id = validate_id(args.id, "id")
     boundary = validate_id(args.boundary, "boundary")
+    ident = repository_identity(root)
     if not worktree_supported(root):
         raise RuntimeError("git worktree is unavailable")
 
@@ -138,11 +173,10 @@ def create_worktree(args: argparse.Namespace) -> dict[str, Any]:
             raise RuntimeError(
                 f"single-writer boundary is already owned by active isolation {record.get('id')}"
             )
-
-    record_path = state_dir(root) / f"{isolation_id}.yaml"
-    if record_path.exists():
+    if any(record.get("id") == isolation_id for record in records(root)):
         raise RuntimeError(f"isolation record already exists: {isolation_id}")
 
+    record_path = state_dir(root) / f"{isolation_id}.yaml"
     target = worktree_dir(root) / isolation_id
     if target.exists():
         raise RuntimeError(f"managed worktree path already exists: {target}")
@@ -158,15 +192,19 @@ def create_worktree(args: argparse.Namespace) -> dict[str, Any]:
     if created.returncode != 0:
         raise RuntimeError((created.stderr or created.stdout).strip() or "git worktree add failed")
 
+    target_ident = repository_identity(target)
     base_revision = run_git(target, "rev-parse", "HEAD")
     record = {
-        "version": 1,
+        "version": 2,
         "id": isolation_id,
         "mode": "worktree",
         "status": "ACTIVE",
         "ownership": "aips",
         "project_root": str(root),
-        "project_id": project_id(root),
+        "repository_id": ident["repository_id"],
+        "base_workspace_id": ident["workspace_id"],
+        "workspace_id": target_ident["workspace_id"],
+        "project_id": target_ident["workspace_id"],
         "boundary_id": boundary,
         "path": str(target),
         "branch": branch,
@@ -180,6 +218,8 @@ def create_worktree(args: argparse.Namespace) -> dict[str, Any]:
         "status": "ACTIVE",
         "mode": "worktree",
         "id": isolation_id,
+        "repository_id": ident["repository_id"],
+        "workspace_id": target_ident["workspace_id"],
         "boundary_id": boundary,
         "path": str(target),
         "branch": branch,
@@ -190,10 +230,13 @@ def create_worktree(args: argparse.Namespace) -> dict[str, Any]:
 def create_isolation(args: argparse.Namespace) -> dict[str, Any]:
     if args.mode == "sandbox":
         root = project_root(Path(args.project))
+        ident = repository_identity(root)
         return {
             "status": "BLOCKED",
             "mode": "sandbox",
             "project_root": str(root),
+            "repository_id": ident["repository_id"],
+            "workspace_id": ident["workspace_id"],
             "reason": "no verified sandbox provider is registered",
             "requires_provider": True,
         }
@@ -202,10 +245,16 @@ def create_isolation(args: argparse.Namespace) -> dict[str, Any]:
 
 def record_for(root: Path, isolation_id: str) -> tuple[Path, dict[str, Any]]:
     isolation_id = validate_id(isolation_id, "id")
-    path = state_dir(root) / f"{isolation_id}.yaml"
-    if not path.exists():
+    matches: list[tuple[Path, dict[str, Any]]] = []
+    for path in _record_paths(root):
+        doc = load_yaml(path)
+        if doc.get("id") == isolation_id:
+            matches.append((path, doc))
+    if not matches:
         raise RuntimeError(f"isolation record not found: {isolation_id}")
-    return path, load_yaml(path)
+    if len(matches) > 1:
+        raise RuntimeError(f"multiple AIPS isolation records found for id: {isolation_id}")
+    return matches[0]
 
 
 def status_isolation(args: argparse.Namespace) -> dict[str, Any]:
@@ -217,15 +266,22 @@ def status_isolation(args: argparse.Namespace) -> dict[str, Any]:
     exists = target.is_dir()
     clean: bool | None = None
     revision: str | None = None
+    current_workspace_id: str | None = None
     if exists:
         stat = run_git(target, "status", "--porcelain")
         clean = stat.returncode == 0 and not stat.stdout.strip()
         rev = run_git(target, "rev-parse", "HEAD")
         revision = rev.stdout.strip() if rev.returncode == 0 else None
+        try:
+            current_workspace_id = repository_identity(target)["workspace_id"]
+        except Exception:
+            current_workspace_id = None
     return {
         "status": record.get("status"),
         "mode": record.get("mode"),
         "id": record.get("id"),
+        "repository_id": repository_identity(root)["repository_id"],
+        "workspace_id": record.get("workspace_id") or current_workspace_id,
         "boundary_id": record.get("boundary_id"),
         "path": str(target),
         "branch": record.get("branch"),
@@ -236,20 +292,35 @@ def status_isolation(args: argparse.Namespace) -> dict[str, Any]:
     }
 
 
+def _registered_worktrees(root: Path) -> set[Path]:
+    result = run_git(root, "worktree", "list", "--porcelain")
+    if result.returncode != 0:
+        return set()
+    paths: set[Path] = set()
+    for line in result.stdout.splitlines():
+        if line.startswith("worktree "):
+            paths.add(Path(line.split(" ", 1)[1]).resolve())
+    return paths
+
+
 def remove_isolation(args: argparse.Namespace) -> tuple[dict[str, Any], int]:
     root = project_root(Path(args.project))
     path, record = record_for(root, args.id)
     if record.get("ownership") != "aips" or record.get("mode") != "worktree":
         raise RuntimeError("only AIPS-owned worktree isolation may be removed")
+    if _record_repository_id(record) != repository_identity(root)["repository_id"]:
+        raise RuntimeError("isolation record does not belong to this repository")
 
     target = Path(str(record.get("path", ""))).resolve()
-    managed_root = worktree_dir(root).resolve()
+    global_managed_root = (config_home() / "worktrees").resolve()
     try:
-        target.relative_to(managed_root)
+        target.relative_to(global_managed_root)
     except ValueError as exc:
-        raise RuntimeError("refusing to remove worktree outside AIPS-managed root") from exc
+        raise RuntimeError("refusing to remove worktree outside AIPS-managed roots") from exc
 
     if target.exists():
+        if target not in _registered_worktrees(root):
+            raise RuntimeError("managed path is not a registered Git worktree")
         stat = run_git(target, "status", "--porcelain")
         if stat.returncode != 0:
             raise RuntimeError("cannot verify worktree cleanliness")
@@ -265,6 +336,8 @@ def remove_isolation(args: argparse.Namespace) -> tuple[dict[str, Any], int]:
         if removed.returncode != 0:
             raise RuntimeError((removed.stderr or removed.stdout).strip() or "git worktree remove failed")
 
+    record["version"] = max(int(record.get("version") or 1), 2)
+    record["repository_id"] = repository_identity(root)["repository_id"]
     record["status"] = "REMOVED"
     record["removed_at"] = now()
     record["updated_at"] = now()
