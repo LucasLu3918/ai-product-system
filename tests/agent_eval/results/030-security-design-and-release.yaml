@@ -1,0 +1,25 @@
+version: 1
+case_id: 030-security-design-and-release
+scenario_id: "030"
+case_fingerprint: sha256:0ad80d197dd0a2b8b88c03e43c7d2dac02e26bc9c61c3005f25d25cda4510a43
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: SECURITY_ASSURANCE_REQUIRED
+  risk_profile_during_planning: true
+  scanner_success_sufficient_alone: false
+  independent_security_evidence_required: true
+  release_blocked_by_applicable_unresolved_findings: true
+  design_security:
+    - trust_boundaries
+    - authorization
+    - business_invariants
+  actions:
+    - classify_risk_profile_and_sal
+    - run_applicable_deterministic_security_checks
+    - obtain_independent_security_review
+    - feed_security_evidence_into_release_readiness
+  summary: Security is part of planning and implementation for a member/payment product; deterministic scanners support but do not replace independent review, and blocking findings flow into Release Readiness.
