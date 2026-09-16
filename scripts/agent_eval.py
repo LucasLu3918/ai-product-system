@@ -237,6 +237,13 @@ def result_files(directory: Path) -> dict[str, Path]:
     return result
 
 
+def display_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
+
 def analyze(cases_dir: Path, results_dir: Path) -> dict[str, Any]:
     cases = case_files(cases_dir)
     results = result_files(results_dir)
@@ -251,8 +258,8 @@ def analyze(cases_dir: Path, results_dir: Path) -> dict[str, Any]:
         case = load_yaml(case_path)
         result = load_yaml(result_path)
         scored = score(case, result)
-        scored["case_path"] = str(case_path.relative_to(ROOT))
-        scored["result_path"] = str(result_path.relative_to(ROOT))
+        scored["case_path"] = display_path(case_path)
+        scored["result_path"] = display_path(result_path)
         items.append(scored)
         if scored["status"] != "PASS":
             errors.append(f"Agent Eval case failed: {case_id}")
