@@ -20,9 +20,9 @@ aips harness status
 aips harness doctor
 ~~~
 
-AIPS 不會覆寫你原本的 AGENTS.md、CLAUDE.md、GEMINI.md、Agent Config 或自訂 Skills。若某個 Runtime 已有使用者自訂的全域 instruction file，AIPS 會保留原檔並把該 Runtime 標示為 MANUAL，而不是強行修改。
+AIPS 不會取代你原本的 AGENTS.md、CLAUDE.md、GEMINI.md 或自訂 Skills。v0.9 對需要共用 instruction file 的 Runtime 使用可逆的 AIPS Managed Block，只管理自己的 BEGIN/END 區段；Claude/Gemini 在 Runtime 支援且可驗證時使用 native per-turn hook。
 
-專案可以直接用 Ephemeral Mode 工作；只有要保存 AIPS Project State / Knowledge 時才需 Attach：
+專案可以直接用 Ephemeral Mode 工作。即使不 Attach，AIPS 也能把可重用的 Project Intelligence 存在自己的 External Cache，而不在專案裡建立 `.ai/`。只有要把 State/Intelligence 放進專案本身時才需 Attach：
 
 ~~~bash
 aips attach /path/to/project
@@ -36,7 +36,7 @@ aips attach /path/to/project
 aips preflight /path/to/project
 ~~~
 
-若目前 Agent 已顯示為 AUTOMATIC，日常使用不需要再手動貼「使用 ai-product-system」提示詞。直接和原本 Agent 對談即可。
+安裝完成後，日常使用不需要再手動貼「使用 ai-product-system」或先執行 AIPS 指令。直接開 Codex / Claude Code / Gemini CLI 對談即可；Adapter 會依能力以 TURN_NATIVE 或 CONTEXT_ALWAYS 讓每次工程任務取得目前 AIPS / Runtime / Project Context。
 
 需要確認某次 Session / Project 解析結果時：
 
@@ -55,7 +55,7 @@ aips harness resolve --cwd "$PWD"
 - 品牌基礎與品牌導引（Brand System）
 - 效能、成本、交付與 Incident 等工作模式（Work Modes）
 - Q1/Q2/Q3 風險比例式品質規劃（Quality Planning）
-- 專案知識快取（Project Knowledge），避免不同 Agent 重複掃描整體專案
+- 專案智慧（Project Intelligence）：第一次理解既有專案後保存 Architecture / Data Flow / Modules / Conventions / Impact Graph，供不同 Agent 重用
 - V1/V2 視覺一致性修復（Visual Consistency Repair）
 - 依風險與複雜度選擇最低足夠模型（Minimum Sufficient Intelligence）
 - 能用固定規則處理的資料，優先交給確定性自動化（Deterministic Automation）
@@ -68,7 +68,8 @@ aips harness resolve --cwd "$PWD"
 2. [完整使用指南](docs/USER_GUIDE.md)
 3. [安裝與解除](docs/INSTALLATION.md)
 4. [Global Harness 與 Agent Adapter](docs/HARNESS.md)
-5. [系統架構總覽](docs/ARCHITECTURE_OVERVIEW.md)
+5. [Project Intelligence](docs/PROJECT_INTELLIGENCE.md)
+6. [系統架構總覽](docs/ARCHITECTURE_OVERVIEW.md)
 
 ### AI Agent
 
@@ -102,4 +103,4 @@ aips uninstall
 ./scripts/uninstall.sh
 ~~~
 
-解除會移除 AIPS-owned Harness Adapter、CLI 與 AIPS config；不會刪除或改寫使用者既有 Agent instructions、custom Skills、專案原始碼或 Project .ai/ Workspace。完整說明請看 docs/INSTALLATION.md。
+解除會移除 AIPS-owned Harness Adapter 與 CLI；不會刪除使用者既有 Agent instructions、custom Skills、專案原始碼或 Project `.ai/` Workspace。External Project Intelligence 預設也會保留；只有明確加 `--remove-cache` 才刪除。完整說明請看 docs/INSTALLATION.md。

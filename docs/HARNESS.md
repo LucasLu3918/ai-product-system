@@ -1,90 +1,47 @@
-# Global Harness 與 Agent Adapter
+# Global Harness 與 Turn-Aware Adapter
 
-AIPS v0.8 的 Global Harness 讓支援的 AI Agent Runtime 在 Session 啟動時先取得極小的 AIPS Bootstrap，而不是要求使用者每次手動貼 AIPS 提示詞。
+AIPS v0.9 的目標是：安裝一次後照原本方式使用 Codex / Claude Code / Gemini CLI；工程相關詢問自動取得 AIPS、使用者原本規則、Project 規則與 Project Intelligence。
 
 ![AIPS Global Harness](assets/harness-overview.svg)
 
-## 核心概念
+## Same Harness Contract, runtime-native implementation
 
 ~~~text
-Codex / Claude Code / Gemini CLI / supported runtime
-                    ↓
-            Runtime Adapter
-                    ↓
-          Minimal AIPS Bootstrap
-                    ↓
-          Harness Resolve
-                    ↓
-     Runtime + Project Instructions
-                    ↓
-        AIPS Orchestration
-          （需要時才啟用）
+User Prompt
+→ Runtime-native mechanism
+→ Compact Turn Context
+→ Runtime/User + Project + Intelligence + AIPS
+→ Agent Planning
 ~~~
 
-AIPS 不把整個 Repository 塞進每個 Agent 的 Context。
+### Codex
 
-## Harness Always Available，Orchestration Only When Applicable
+採 CONTEXT_ALWAYS。AIPS 在既有 `~/.codex/AGENTS.md` 內加入可逆 Managed Block，不取代原內容。
 
-一般知識聊天可正常回答；軟體 / 產品 / 專案工作才進入 Project Resolution、Instructions、Knowledge、Planning、Execution、Review。
+### Claude Code
 
-## Runtime Adapter 是什麼？
+優先使用 UserPromptSubmit Hook 提供 TURN_NATIVE，同時保留 Managed CLAUDE block 作 fallback；Hook 無法安全安裝時可降為 CONTEXT_ALWAYS。
 
-不同 Agent 的啟動機制不同，因此 AIPS 不用一個 Global AGENTS.md 強行覆蓋所有 Runtime。
+### Gemini CLI
 
-Adapter 只負責 Detect Runtime、安全 Bootstrap、Runtime-native instruction pointer、Verification 與 Uninstall。真正的 Planning / Security / Quality / Delivery 仍由 AIPS Core 負責。
+使用 namespaced AIPS Extension + BeforeAgent Hook，驗證成功時為 TURN_NATIVE。
 
-## 為什麼有 MANUAL？
+## Status 與 Capability 分開
 
-安全原則優先於表面的 100% 自動化。若 ~/.claude/CLAUDE.md 等使用者檔案已存在，AIPS 不會 append/import 自己，而是保留原檔並標示 MANUAL。
+`AUTOMATIC` 表示 integration 已安裝；TURN_NATIVE / CONTEXT_ALWAYS 才描述每 Turn 能力。
 
-## Instruction Composition
+## 每 Turn 不等於每 Turn重掃 Repository
 
-~~~text
-Platform / Safety
-+ AIPS Governance
-+ Current User Request
-+ Runtime-native Instructions
-+ Project AGENTS / ADR / Contracts / Docs
-+ Project Knowledge
-+ Project Skills
-+ AIPS Skills
-~~~
+同步路徑只做 identity、freshness quick check、Index / Source Registry 與 relevant pointers；重型 Bootstrap / HTML regeneration 不放在 Hook 裡。
 
-Native Runtime 若有自己的強制 precedence，AIPS 會遵守該 Runtime，而不是宣稱能突破平台規則。
+## Runtime-aware Context Dedup
 
-## EPHEMERAL Project
+SOURCE_REGISTRY 記錄哪個 Runtime 已 native-load 哪些 Source。Storage 去重與 Runtime Context 去重分開處理。
 
-只安裝 AIPS 不代表 AIPS 可以到處建立 .ai/。未 Attach 時是 EPHEMERAL；需要持久 Project State 才執行 aips attach /project 變成 ATTACHED。
+## Fail Policy
 
-## 其他 Agent Runtime
-
-如果目前 Runtime 沒有專用 Adapter，使用 `harness/adapters/generic/BOOTSTRAP.md` 作為 Generic Manual Adapter。這提供一致的 AIPS 入口，但不會為了自動化去修改未知 Runtime 的設定。
-
-因此 AIPS 的 Coverage 原則是：安全可逆時 AUTOMATIC；否則 MANUAL，而不是宣稱所有 Runtime 都能被同一種方式攔截。
+一般對談 fail-soft；Existing Project mutation 缺必要 Instructions / Intelligence / Impact 時，對該 edit fail-closed。
 
 ## Ownership
 
-AIPS 安裝的資源都必須 namespaced、記錄 ownership、可驗證、可逆，且不碰使用者既有內容。
-
-Ownership Manifest：~/.config/aips/harness/installation.yaml
-
-## 查看目前狀態
-
-~~~bash
-aips harness status
-aips harness doctor
-~~~
-
-## Debug 某個 Session / Project
-
-~~~bash
-aips harness resolve --runtime codex --cwd "$PWD"
-~~~
-
-輸出會提供 Harness、Runtime、Adapter、Project Root、EPHEMERAL / ATTACHED、Project Instructions、Runtime-native Instructions、Project Knowledge、AIPS root/version。
-
-## 安裝與解除
-
-一般使用者使用 aips install / aips uninstall 即可；Harness 子命令主要給 Debug / 進階管理使用。
-
-完整流程請看 docs/INSTALLATION.md。
+AIPS 只管理自己的 Managed Block、Claude Hook、Gemini Extension。External Project Intelligence 預設保留。
