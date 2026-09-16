@@ -6,41 +6,30 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ~~~mermaid
 flowchart TD
-    S[Agent Session / User Request] --> H{Global Harness installed?}
-    H -->|yes| HR[Harness Resolve: runtime / project / mode]
-    H -->|no| AIPS[AIPS direct entry]
-    HR --> AP{AIPS engineering task?}
-    AP -->|no| CHAT[Normal Agent Conversation]
-    AP -->|yes| UP[System Update Preflight for mutation]
-    AIPS --> UP
-    UP --> PM{Project mode}
-    PM -->|EPHEMERAL| E[No .ai persistence]
-    PM -->|ATTACHED| PSTATE[Load .ai state / knowledge]
-    E --> INS[Compose runtime-native + project instructions]
-    PSTATE --> INS
-    INS --> TP[Task Preflight / Requirement Readiness]
-    TP --> PLAN{Primary planning task?}
-    PLAN -->|yes| PP[Planning Package + Quality Profile]
-    PLAN -->|no| WM[Work Mode / Change Boundary]
-    PP --> G1[Gate 1 Planning Approval]
-    G1 --> G2[Gate 2 Implementation Approval]
-    G2 --> WM
-    WM --> R[Role / Skill / Model / Tool Routing]
-    R --> X[Execute]
-    X --> REV[Independent / Multi-Perspective Review]
-    REV --> Q[Artifact / Quality / Security Evidence]
-    Q --> LC{Complete product?}
-    LC -->|no| DONE[Persist only if mode permits]
-    LC -->|yes| LOCAL[LOCAL_COMPLETE]
-    LOCAL --> PROD{Production requested?}
-    PROD -->|no| DONE
-    PROD -->|yes| PE[Production Enablement]
-    PE --> RR[Release Readiness]
-    RR --> PV[PRODUCTION_VERIFIED]
-    PV --> DONE
+    S[User Prompt] --> RA[Runtime Adapter]
+    RA --> TC[Compact Turn Context]
+    TC --> ENG{Engineering / Project task?}
+    ENG -->|no| CHAT[Normal conversation]
+    ENG -->|yes| P[Resolve Project + Mode + Intelligence Store]
+    P --> I{Intelligence state}
+    I -->|MISSING| B[Read-only Bootstrap]
+    I -->|STALE| R[Targeted Refresh]
+    I -->|CURRENT| L[Load relevant Intelligence]
+    B --> E[Semantic Enrichment]
+    E --> F[Finalize READY]
+    F --> L
+    R --> L
+    L --> M{Existing-project mutation?}
+    M -->|yes| CI[Change Impact Guard]
+    M -->|no| ROUTE[AIPS Routing]
+    CI --> ROUTE
+    ROUTE --> X[Plan / Execute]
+    X --> V[Test / Review / Actual Impact Reconciliation]
+    V --> IR[Targeted Intelligence Refresh]
+    IR --> DONE[Persist / Complete]
 ~~~
 
-The Harness is always available after installation, but full AIPS orchestration is only activated for applicable engineering/product work. EPHEMERAL mode never creates persistent project state automatically.
+The synchronous Turn Hook resolves identity, freshness and pointers only. Whole-project bootstrap, semantic enrichment, impact-graph rebuilding and HTML generation are outside the hook latency path.
 
 ## Primary planning package
 
@@ -95,19 +84,19 @@ Security Assurance Level is distinct from Reliability Impact and Model Tier. A c
 
 ~~~mermaid
 flowchart TD
-    EXT[Platform / Safety Constraints] --> GOV[AIPS Constitution / Governance]
-    GOV --> U[Current Explicit User Decision]
+    EXT[Platform / Safety] --> GOV[AIPS Constitution / Governance]
+    GOV --> U[Current User Decision]
     U --> RN[Runtime-native Instructions]
-    RN --> N[Nearest Project Instructions / AGENTS]
-    N --> ADR[Accepted ADR / Contract]
-    ADR --> DOC[Official Project Docs]
-    DOC --> PK[Project Knowledge Cache]
-    PK --> PS[Project-local Skills]
+    RN --> N[Nearest Project Instructions]
+    N --> ADR[ADR / Authoritative Contract / Official Docs]
+    ADR --> OV[PROJECT_OVERRIDES]
+    OV --> PI[Project Intelligence]
+    PI --> PS[Project-local Skills]
     PS --> GS[AIPS Skills]
-    GS --> INF[Agent Inference]
+    GS --> INF[Inference]
 ~~~
 
-Runtime-native mandatory precedence is respected. AIPS composes instructions; it does not overwrite user-owned runtime/project instructions.
+SOURCE_REGISTRY records authoritative source scope/hash and runtime auto-load visibility. Storage deduplication and runtime-context deduplication are separate.
 
 ## Update preflight
 
@@ -408,29 +397,32 @@ Multi-review is selected by semantic impact/risk, not LOC alone. Reviewers do no
 
 ~~~mermaid
 flowchart TD
-    CLONE[Clone AIPS] --> INSTALL[aips install]
-    INSTALL --> CORE[CLI / venv / config]
-    INSTALL --> HAR[Global Harness Ownership]
-    HAR --> DET[Detect Agent Runtimes]
-    DET --> AD{Safe automatic Adapter?}
-    AD -->|yes| AUTO[AIPS-owned AUTOMATIC Adapter]
-    AD -->|no| MAN[MANUAL / preserve user config]
-    AUTO --> USE[Normal Agent Session]
-    MAN --> USE
+    INSTALL[aips install] --> DET[Detect Runtimes]
+    DET --> C[Codex Managed Block / CONTEXT_ALWAYS]
+    DET --> CL[Claude Hook + Managed Block]
+    DET --> G[Gemini Extension + BeforeAgent]
+    C --> USE[Normal Agent Use]
+    CL --> USE
+    G --> USE
     USE --> PM{Project .ai exists?}
     PM -->|no| E[EPHEMERAL]
     PM -->|yes| A[ATTACHED]
-    E --> AT[aips attach only when persistence desired]
-    AT --> A
-    A --> DT[aips detach preserves .ai archive]
-    DT --> E
+    E --> EC[External Intelligence Cache]
+    EC --> AT[aips attach]
+    AT --> MIG[Validated migrate to .ai/intelligence]
+    MIG --> A
+    A --> DT[aips detach]
+    DT --> SYNC[Sync Intelligence to External Cache]
+    SYNC --> ARC[Archive .ai]
+    ARC --> E
     USE --> UN[aips uninstall]
-    UN --> OWN[Remove only AIPS-owned integrations]
-    OWN --> KEEP[Preserve user/project instructions, Skills, source, .ai]
-    KEEP --> RM[Optional explicit repo removal by user]
+    UN --> KEEP[Remove AIPS integrations; preserve user data + Intelligence]
+    KEEP --> RC{--remove-cache?}
+    RC -->|no| PRES[Keep External Intelligence]
+    RC -->|yes| DEL[Remove AIPS External Intelligence Cache]
 ~~~
 
-Install/Uninstall lifecycle is non-invasive: existing user Agent files and Skills are never overwritten for automatic coverage.
+Project persistence and reusable Intelligence are separate concerns. EPHEMERAL does not write AIPS state into the project, but may reuse AIPS-owned external cache.
 
 ## Quality-aware product delivery
 
@@ -456,29 +448,35 @@ flowchart TD
 
 Quality classes are adjustable baselines. Quality targets feed architecture, implementation and verification.
 
-## Project Knowledge
+## Project Intelligence
 
 ~~~mermaid
 flowchart TD
-    T[Existing Project Task] --> A[Scoped AGENTS / ADR / Contract / Official Docs]
-    A --> K{Knowledge Index exists?}
-    K -->|yes| L[Load only relevant topics]
-    K -->|no| G[Identify reusable knowledge gaps]
-    L --> S{Knowledge sufficient/current?}
-    S -->|yes| E[Execute task]
-    S -->|no| G
-    G --> D[Targeted Project Knowledge Discovery]
-    D --> X{Authoritative source already exists?}
-    X -->|yes| PTR[Store pointer only]
-    X -->|no| PERSIST[Persist concise stable derived knowledge]
-    PTR --> E
-    PERSIST --> E
-    E --> C{Watched paths/signals changed?}
-    C -->|yes| REFRESH[Targeted topic refresh]
-    C -->|no| END[Keep knowledge current]
+    T[Existing Project Task] --> S{Intelligence exists?}
+    S -->|no| D[Read-only Breadth-first Discovery]
+    S -->|yes| F{Freshness}
+    F -->|CURRENT| C[Load relevant topics]
+    F -->|STALE| TR[Targeted Refresh]
+    D --> SRC[SOURCE_REGISTRY: pointers / runtime visibility]
+    SRC --> INV[Repo topology / manifests / entry points]
+    INV --> SEM[Semantic Architecture / Data Flow / Modules / Conventions]
+    SEM --> IG[Enrich IMPACT_GRAPH]
+    IG --> FIN[Finalize coverage]
+    FIN --> READY{READY?}
+    READY -->|no| GAP[Target only missing evidence]
+    GAP --> SEM
+    READY -->|yes| HTML[Generate Review HTML]
+    HTML --> C
+    TR --> C
+    C --> M{Mutation?}
+    M -->|yes| IMP[CHANGE_IMPACT]
+    IMP --> X[Project-native implementation]
+    X --> DIFF[Actual Diff vs Declared Impact]
+    DIFF --> REF[Refresh affected Intelligence only]
+    M -->|no| END[Use context]
 ~~~
 
-Project Knowledge is a discovery cache, not governance authority.
+Canonical reusable state is PROJECT_INTELLIGENCE + SOURCE_REGISTRY + IMPACT_GRAPH + PROJECT_OVERRIDES. Generated HTML is a deterministic Human Review View, not another source of truth. Legacy .ai/knowledge/ is migration input only.
 
 ## Visual consistency repair
 

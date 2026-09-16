@@ -47,6 +47,7 @@ Required review set:
 - docs/assets/system-overview.svg;
 - docs/assets/harness-overview.svg when Harness is affected;
 - docs/assets/product-delivery-overview.svg when delivery is affected;
+- docs/assets/project-intelligence-overview.svg when Turn Context / Project Intelligence / Change Impact is affected;
 - docs/assets/system-lifecycle.svg when install/project lifecycle is affected.
 
 For every relevant diagram: Affected → update diagram + explanation; Not affected → record N/A + concrete reason.
@@ -148,3 +149,19 @@ Project Knowledge must not become a duplicate documentation tree. Prefer authori
 When Harness behavior changes, review together: harness/BOOTSTRAP + HARNESS_PROTOCOL + ADAPTER_CONTRACT; Runtime Adapter registry/files; HARNESS_RESOLUTION + INSTRUCTION_RESOLUTION; bin/aips install/uninstall/preflight/resolve/status/doctor; README / GETTING_STARTED / INSTALLATION / HARNESS; system-overview / harness-overview / system-lifecycle SVG; Ephemeral/Attached scenarios and ownership regression tests.
 
 Never trade away user-owned instruction/Skill preservation merely to improve automatic coverage.
+
+
+## v0.9 consistency
+
+When Turn Harness / Project Intelligence behavior changes, review together:
+
+- harness/HARNESS_PROTOCOL + ADAPTER_CONTRACT + Runtime adapters;
+- TURN_HARNESS / HARNESS_RESOLUTION / INSTRUCTION_RESOLUTION;
+- PROJECT_INTELLIGENCE / CHANGE_IMPACT / Project Knowledge compatibility;
+- Project Intelligence templates and workspace MANIFEST/STATE;
+- project_intelligence.py / turn_context_hook.py / manage_runtime_adapter.py / bin/aips;
+- README / GETTING_STARTED / HARNESS / INSTALLATION / PROJECT_INTELLIGENCE / USER_GUIDE;
+- system-overview / harness-overview / system-lifecycle / project-intelligence-overview;
+- Runtime capability, external-cache, freshness, HTML, managed-composition and Change Impact regression scenarios.
+
+For v0.9 itself, product-delivery-overview is N/A because the LOCAL_COMPLETE → Production Enablement → PRODUCTION_VERIFIED lifecycle does not change.
