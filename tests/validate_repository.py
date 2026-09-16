@@ -146,7 +146,7 @@ required_files = [
     "templates/delivery/RUNBOOK.md",
     "scripts/check_release_readiness.py", "scripts/harness_resolve.py",
     "scripts/project_intelligence.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py",
-    "scripts/execution_isolation.py",
+    "scripts/aips_identity.py", "scripts/execution_isolation.py",
     "scripts/check_secret_leakage.py",
     "tests/evidence/governance_command_guard.py",
     "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml",
@@ -216,8 +216,8 @@ for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"
         errors.append(f"PLANNING_PACKAGE.md missing: {phrase}")
 
 scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
-if len(scenarios) < 115:
-    errors.append(f"Expected at least 115 acceptance scenarios, found {len(scenarios)}")
+if len(scenarios) < 120:
+    errors.append(f"Expected at least 120 acceptance scenarios, found {len(scenarios)}")
 
 security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
 for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):
@@ -1069,8 +1069,8 @@ if conformance_helper.exists():
             errors.append("Scenario conformance total/registered count must match scenario inventory")
         if cov.get("uncovered") != 0:
             errors.append("Released scenario conformance registry must have no uncovered entries")
-        if cov.get("manual") != 77 or cov.get("automated") != 38:
-            errors.append("v0.14.1 reconciled baseline must report manual=77 and automated=38")
+        if cov.get("manual") != 77 or cov.get("automated") != 43:
+            errors.append("v0.15 baseline must report manual=77 and automated=43")
 
     with tempfile.TemporaryDirectory() as tmp:
         temp = Path(tmp)
@@ -1096,6 +1096,32 @@ for n in range(106, 111):
     matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
     if len(matches) != 1:
         errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")
+
+# v0.15 canonical identity / resume integrity
+identity_helper = ROOT / "scripts/aips_identity.py"
+identity_evidence = ROOT / "tests/evidence/identity_resume_isolation.py"
+for required in (identity_helper, identity_evidence):
+    if not required.exists():
+        errors.append(f"Missing v0.15 identity artifact: {required.relative_to(ROOT)}")
+    else:
+        compiled = subprocess.run([sys.executable, "-m", "py_compile", str(required)], capture_output=True, text=True)
+        if compiled.returncode != 0:
+            errors.append(f"v0.15 identity artifact syntax failed: {required.relative_to(ROOT)}: {compiled.stderr.strip()}")
+if identity_evidence.exists():
+    result = subprocess.run([sys.executable, str(identity_evidence)], capture_output=True, text=True)
+    if result.returncode != 0:
+        errors.append(f"Identity/resume/isolation evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
+
+for n in range(116, 121):
+    matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
+    if len(matches) != 1:
+        errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")
+
+run_checkpoint_template = load_yaml(ROOT / "templates/workspace/RUN_CHECKPOINT.yaml") or {}
+workspace_contract = run_checkpoint_template.get("workspace") or {}
+for key in ("repository_id", "workspace_id", "revision", "dirty_fingerprint", "fingerprint"):
+    if key not in workspace_contract:
+        errors.append(f"RUN_CHECKPOINT.yaml workspace missing v0.15 key: {key}")
 
 # v0.14 execution isolation contract
 isolation_protocol = ROOT / "orchestration/EXECUTION_ISOLATION.md"
