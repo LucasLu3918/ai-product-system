@@ -8,6 +8,8 @@ Do not use it for a small bugfix, isolated API change, narrow research task, or 
 
 Before producing the authoritative planning package, resolve where it will be persisted.
 
+For a complete product delivery, initialize the Product Workspace and a draft root `PRODUCT.yaml` using `templates/product/PRODUCT.yaml`.
+
 - If the user explicitly provided a workspace/repository/path, use it.
 - If no workspace was specified, **ask for the target workspace before creating the authoritative package**.
 - Do not treat the chat transcript as the System of Record.
@@ -89,7 +91,10 @@ If visual direction is material, persist the Creative Brief, references and appr
 - security/trust boundaries;
 - observability;
 - performance/scalability assumptions;
-- deployment/runtime topology;
+- deployment/runtime topology and Deployment Units;
+- repository strategy (monorepo by default; multi-repo only with rationale);
+- local/staging/production environment strategy;
+- observability;
 - failure/rollback considerations;
 - Mermaid diagrams when useful.
 
@@ -131,7 +136,11 @@ This file initially describes **implementation readiness**, not permission to st
 - risks;
 - testing strategy;
 - milestones;
+- local environment/start commands;
+- CI/test layers and release candidate flow;
+- staging/production deployment plan;
 - migration/rollout/rollback;
+- observability/runbook expectations;
 - Definition of Done;
 - expected implementation artifacts.
 
@@ -183,7 +192,7 @@ The package is sufficient only when another competent agent/team can answer, wit
 - What are the contracts/APIs/data rules?
 - What architecture/security/performance constraints and Security Assurance Level apply?
 - What decisions/assumptions remain?
-- How should it be built, tested, security-reviewed, reviewed and released?
+- How should it be built, run locally, tested, security-reviewed, staged, released, observed and recovered?
 - Which artifacts are authoritative?
 
 If those answers require hidden chat context, the planning package is incomplete.

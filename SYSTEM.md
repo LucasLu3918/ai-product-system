@@ -7,7 +7,7 @@ User Request
 → System Update Preflight
 → Workspace Bootstrap
 → Task Preflight
-→ Primary Planning Detection
+→ Primary Planning / Full Product Delivery Detection
 → Human decision only when materially required
 → Intent + Work Mode
 → Project State
@@ -22,6 +22,7 @@ User Request
 → Execute
 → Independent Review
 → Artifact / Quality Gate
+→ Release Readiness / Deployment when production delivery is in scope
 → Persist State + System Provenance
 ```
 
@@ -131,6 +132,21 @@ For these tasks:
 8. only then begin implementation.
 
 Simple bugfixes, isolated API changes, narrow research and local refactors do not require a full product Planning Package.
+
+## End-to-end product delivery
+
+When the user requests a complete product through production, load `orchestration/PRODUCT_DELIVERY.md`.
+
+Key rules:
+- create one discoverable Product Workspace and root `PRODUCT.yaml`;
+- treat frontend/backend/worker/etc. as Deployment Units; do not force separate Git repositories;
+- default to a monorepo unless ownership, permission, release cadence, scale or service boundaries justify multi-repo;
+- provide a reproducible local start/test path;
+- run applicable static/unit/integration/contract/E2E/security/build checks;
+- use staging by default for material production systems;
+- consolidate production conditions in `orchestration/RELEASE_READINESS.md`;
+- production automation never bypasses risk-proportional approval, secret protection, migration/recovery or security rules;
+- production Done includes post-deploy health/smoke/observability verification.
 
 ## Project state
 
@@ -256,3 +272,5 @@ A task is complete only when its acceptance criteria, required review, required 
 For a primary planning task, completion of the Planning Package means the persisted plan is ready for Gate 1 review; it does **not** imply implementation approval.
 
 For SAL 3–4 affected work, completion also requires the applicable Security Review evidence and Security Release Gate.
+
+When production delivery is part of the approved scope, completion additionally requires Release Readiness, applicable staging verification, production promotion, post-deploy verification and persisted delivery evidence. Code generation alone is not completion.

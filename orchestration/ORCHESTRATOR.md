@@ -9,7 +9,7 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 3. If the target is the AI Product System itself, run System Self-Improvement Review and Constitution Impact Check; wait for direction approval.
 4. Detect whether the request is a large/core change; if so, create the Core Change Proposal and obtain explicit approval before implementation.
 5. Run task preflight: material recommendation, unknown, risk, conflict and capability-gap checks.
-6. Detect whether the task creates/revises the primary product/project plan.
+6. Detect whether the task creates/revises the primary product/project plan and whether complete production delivery is in scope.
 7. For a primary planning task, resolve the persistence workspace before authoring the authoritative plan; if absent, ask the user.
 8. If the request targets an existing project, discover applicable instructions before generic skills.
 9. If a material decision is needed, present the smallest useful option set and stop affected work.
@@ -30,7 +30,7 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 24. Expand context, security review depth or model tier only when documented evidence shows a gap.
 25. Run independent review with an independently resolved reviewer tier where required.
 26. For SAL 3–4 affected work, persist Security Review evidence and run the Security Release Gate.
-27. Validate acceptance criteria and artifacts.
+27. Validate acceptance criteria and artifacts; when production delivery is in scope, evaluate exact-candidate Release Readiness, deploy through the approved environment flow, and verify production health after promotion.
 28. Persist state, temporary overrides, provenance, assurance profile, exact system version/commit and next actions.
 
 ## System Update Preflight
@@ -176,3 +176,26 @@ Before creating or materially expanding a Role, Capability or Skill, use `orches
 Use `orchestration/DETERMINISTIC_AUTOMATION.md`.
 
 Prefer deterministic code for repeatable parsing, filtering, counting, validation and transformation. Keep helpers scoped to run-local/project/system based on demonstrated reuse. Structured output should be read before raw evidence.
+
+
+## End-to-end product delivery
+
+Use `orchestration/PRODUCT_DELIVERY.md` when the user requests a complete product rather than an isolated change.
+
+The Product Workspace remains the System of Record. Create/update `PRODUCT.yaml` so another Agent can discover Deployment Units, contracts, commands, environments, delivery state and observability without replaying chat context.
+
+Frontend/backend separation means independent Deployment Units. Do not split repositories unless project evidence justifies multi-repo.
+
+For production delivery:
+1. verify the local environment;
+2. run applicable automated tests and deterministic security checks;
+3. run independent security/quality review required by risk;
+4. build an exact Release Candidate;
+5. deploy to staging when applicable;
+6. run staging smoke/E2E/security verification;
+7. evaluate `orchestration/RELEASE_READINESS.md`;
+8. obtain any required production approval;
+9. promote the exact candidate;
+10. run post-deploy health/smoke/log/metric checks and rollback/roll-forward when verification fails.
+
+Release Readiness is one consolidated readiness decision, not a replacement for constitutional/governance/security approvals.

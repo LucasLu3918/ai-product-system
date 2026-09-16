@@ -11,6 +11,12 @@ waiting_for: []
 pending_decisions: []
 temporary_overrides: []
 artifacts: []
+delivery:
+  product_manifest: null
+  release_candidate: null
+  release_readiness: null
+  environment: null
+  production_status: null
 last_checkpoint:
   run_id: null
   updated_at: null

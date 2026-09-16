@@ -2,31 +2,44 @@
 
 Use for a new product or major greenfield initiative.
 
+For a complete product request, use `orchestration/PRODUCT_DELIVERY.md` as the lifecycle coordinator.
+
 Flow:
 
-```text
-Discovery
-→ Resolve Planning Workspace
+~~~text
+Discovery / User Assets
+→ Resolve Product Workspace
+→ Draft PRODUCT.yaml
 → Product Definition
-→ UX / Visual / Key Visual
-→ Risk Profile / Security Assurance Classification
-→ API / Data / Architecture / Security / Test / Delivery Planning
+→ UX / Visual / Brand
+→ Risk Profile / Security Assurance
+→ API / Data / Architecture / Deployment Units / Delivery Planning
 → Persist Reproducible Planning Package
 → Cross-role Consistency Review
 → Gate 1: Human Planning Package Approval
-→ Derive Initial Implementation Items + Recommended Implementation Flow
+→ Initial Implementation Items + Recommended Flow
 → Gate 2: Human Implementation Readiness Approval
 → Implementation
-```
+→ Local Environment + Automated Verification
+→ Security / Independent Review
+→ Release Candidate
+→ Staging (when applicable)
+→ Release Readiness
+→ Production Promotion
+→ Post-deploy Verification
+~~~
 
-If the user has not specified where the authoritative planning package should be stored, ask for the target workspace before producing it. Chat is not the System of Record.
+Ask only blocking questions. Translate non-expert user intent into professional product/architecture/delivery decisions and offer safe defaults.
 
-Ask only blocking questions at each stage. Propose professional defaults instead of asking users to supply expert architecture decisions they may not know.
+A complete product uses one discoverable Product Workspace. Frontend/backend/worker components are independent Deployment Units; separate repositories are optional, not mandatory.
 
-Use `orchestration/PLANNING_PACKAGE.md` and `templates/planning-package/`.
+Use:
+- `orchestration/PLANNING_PACKAGE.md`
+- `orchestration/PRODUCT_DELIVERY.md`
+- `orchestration/RELEASE_READINESS.md`
+- `templates/product/`
+- `templates/delivery/`
 
-Security assurance is risk-proportional. SAL 3–4 planning must include the applicable security artifacts/review defined in `docs/SECURITY_ASSURANCE.md`; lower-risk products must not be burdened with unnecessary heavy security ceremony.
+Security remains risk-proportional. Security is considered during planning and verified again during implementation/release.
 
-The planning package must be complete enough that another competent AI agent or human team can build substantially the same intended product without relying on hidden chat context. API documentation, product plan, experience design, visual system/key visual, technical architecture, implementation planning and explicit decisions/assumptions are required when applicable; non-applicable artifacts must be marked N/A with reason.
-
-Implementation begins only after both approval gates.
+Production delivery is complete only after the exact candidate is deployed, post-deploy verification succeeds, observability/recovery information is available, and workspace state is persisted.
