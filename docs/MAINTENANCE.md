@@ -123,52 +123,53 @@ When end-to-end delivery behavior changes, verify together:
 - production scenarios and validator coverage.
 
 
-## v0.6 interaction consistency
+## Subsystem consistency map
 
-When these behaviors change, review the linked artifacts together:
+### Interaction / requirement / external context
+
+When these behaviors change, review together:
 
 - Requirement clarification → SYSTEM / ORCHESTRATOR / IMPLEMENTATION_GOAL / Human Guide / scenarios.
 - External context resolution → connector-first protocol / provenance template / Human Guide / scenarios.
 - Visual polish → Product Designer / Frontend Engineer / visual-quality-review / Design Work Mode / screenshots/state scenarios.
 - Multi-perspective review → Quality Reviewer / code-review / Model Routing / Review templates / lesson persistence.
-- Installation lifecycle → bin/aips / bootstrap.sh / uninstall.sh / INSTALLATION / lifecycle SVG / CLI scenarios.
 
-Do not add new Role/Skill/Gate if these existing mechanisms can be extended cleanly.
+### Product delivery / quality / visual state
 
+When product-delivery behavior changes, review together:
 
-## v0.7 consistency
+- QUALITY_PLANNING / QUALITY_PROFILE / Planning Package / Product Delivery / Product Manifest / Release Readiness;
+- LOCAL_COMPLETE / Production Enablement / PRODUCTION_VERIFIED lifecycle;
+- Project Visual Profile / Visual Audit / Product Designer / Frontend Engineer / visual-quality-review;
+- Human Guide, product-delivery architecture diagram and applicable scenarios.
 
-When v0.7 behavior changes, review these sets together:
+### Harness / Runtime adapters
 
-- Quality Planning → QUALITY_PLANNING / QUALITY_PROFILE / Planning Package / Product Delivery / Product Manifest / Release Readiness / Human Guide / scenarios.
-- Local vs Production milestones → PRODUCT_DELIVERY / PRODUCT.yaml / STATE / Release Readiness / docs/scenarios.
-- Project Knowledge → PROJECT_KNOWLEDGE / KNOWLEDGE_INDEX / workspace MANIFEST+STATE / instruction precedence / scenarios.
-- Visual V1/V2 → VISUAL_POLISH / Project Visual Profile / Visual Audit / Product Designer / Frontend Engineer / visual-quality-review / scenarios.
+When Harness behavior changes, review together:
 
-Project Knowledge must not become a duplicate documentation tree. Prefer authoritative pointers and targeted refresh.
-
-
-## v0.8 consistency
-
-When Harness behavior changes, review together: harness/BOOTSTRAP + HARNESS_PROTOCOL + ADAPTER_CONTRACT; Runtime Adapter registry/files; HARNESS_RESOLUTION + INSTRUCTION_RESOLUTION; bin/aips install/uninstall/preflight/resolve/status/doctor; README / GETTING_STARTED / INSTALLATION / HARNESS; system-overview / harness-overview / system-lifecycle SVG; Ephemeral/Attached scenarios and ownership regression tests.
+- harness/BOOTSTRAP + HARNESS_PROTOCOL + ADAPTER_CONTRACT;
+- Runtime Adapter registry/files;
+- HARNESS_RESOLUTION + INSTRUCTION_RESOLUTION;
+- bin/aips install/uninstall/preflight/resolve/status/doctor;
+- README / GETTING_STARTED / INSTALLATION / HARNESS;
+- system-overview / harness-overview / system-lifecycle SVG;
+- Ephemeral/Attached scenarios and ownership regression evidence.
 
 Never trade away user-owned instruction/Skill preservation merely to improve automatic coverage.
 
+### Project Intelligence / Change Impact
 
-## v0.9 consistency
+When Project Intelligence behavior changes, review together:
 
-When Turn Harness / Project Intelligence behavior changes, review together:
-
-- harness/HARNESS_PROTOCOL + ADAPTER_CONTRACT + Runtime adapters;
+- PROJECT_IDENTITY / PROJECT_INTELLIGENCE / CHANGE_IMPACT / Project Knowledge compatibility;
 - TURN_HARNESS / HARNESS_RESOLUTION / INSTRUCTION_RESOLUTION;
-- PROJECT_INTELLIGENCE / CHANGE_IMPACT / Project Knowledge compatibility;
-- Project Intelligence templates and workspace MANIFEST/STATE;
-- project_intelligence.py / turn_context_hook.py / manage_runtime_adapter.py / bin/aips;
-- README / GETTING_STARTED / HARNESS / INSTALLATION / PROJECT_INTELLIGENCE / USER_GUIDE;
-- system-overview / harness-overview / system-lifecycle / project-intelligence-overview;
-- Runtime capability, external-cache, freshness, HTML, managed-composition and Change Impact regression scenarios.
+- Project Intelligence templates + workspace MANIFEST/STATE;
+- project_intelligence.py / turn_context_hook.py / bin/aips;
+- README / GETTING_STARTED / PROJECT_INTELLIGENCE / USER_GUIDE;
+- project-intelligence / system / lifecycle diagrams;
+- freshness, source-registry, HTML, migration, single-writer and Change Impact evidence.
 
-For v0.9 itself, product-delivery-overview is N/A because the LOCAL_COMPLETE → Production Enablement → PRODUCTION_VERIFIED lifecycle does not change.
+Legacy Project Knowledge remains compatibility input only. New reusable understanding belongs in Project Intelligence.
 
 ## Impact-derived regression testing
 
@@ -194,7 +195,7 @@ Rules:
 
 Prefer the strongest practical deterministic evidence for affected behavior while avoiding unrelated full-suite cost that adds no confidence.
 
-## v0.11 consistency
+## Governance enforcement consistency
 
 When Approval Binding / Governance Enforcement changes, review together:
 
@@ -203,78 +204,74 @@ When Approval Binding / Governance Enforcement changes, review together:
 - Runtime adapter state/ownership and Claude/Gemini pre-tool hooks;
 - TURN_CONTEXT_MANIFEST explanation metadata;
 - Harness/System architecture diagrams;
-- scenarios 096-100 and deterministic guard tests.
+- scenarios 096-100 and focused governance evidence.
 
 Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverifiable.
 
-## v0.12 consistency
+## Durable Run State consistency
 
 When durable run state changes, review together:
 
-- orchestration/RUN_RESUME.md;
-- templates/workspace/STATE.yaml + RUN_CHECKPOINT.yaml;
-- scripts/run_state.py + bin/aips run routing;
-- ATTACHED and EPHEMERAL storage semantics;
-- revision freshness behavior;
+- PROJECT_IDENTITY + RUN_RESUME;
+- RUN_CHECKPOINT + workspace STATE;
+- aips_identity.py + run_state.py + bin/aips run/identity routing;
+- ATTACHED / EPHEMERAL storage and legacy migration;
+- revision / branch / dirty workspace fingerprint behavior;
 - EVENTS.jsonl redaction / no-transcript contract;
-- scenarios 101-105 and executable lifecycle tests;
-- system/lifecycle architecture diagrams.
+- resume/identity scenarios and executable lifecycle evidence;
+- system/lifecycle diagrams.
 
 Resume must never bypass current governance, security, impact or verification gates.
 
-## v0.13 consistency
+## Scenario Conformance consistency
 
 When Scenario behavior/coverage changes, review together:
 
 - tests/scenarios/*;
 - tests/scenario_coverage.yaml;
 - scripts/scenario_conformance.py;
-- tests/validate_repository.py;
+- tests/evidence/*;
+- tests/validation/* + tests/validate_repository.py;
 - orchestration/CONFORMANCE.md;
 - docs/CONFORMANCE.md / USER_GUIDE;
 - coverage claims in CHANGELOG/release evidence.
 
-Never infer automated coverage from Scenario count alone. New Scenarios must enter the registry in the same change.
+Before promoting legacy manual coverage: reconcile the Scenario to current canonical behavior, add direct evidence, then reclassify. Never infer automated coverage from Scenario count alone.
 
-## v0.14 consistency
+## Execution Isolation consistency
 
 When Execution Isolation behavior changes, review together:
 
-- orchestration/EXECUTION_ISOLATION.md;
-- orchestration/schemas/execution-profile.yaml + templates/workspace/MANIFEST.yaml;
-- scripts/execution_isolation.py + bin/aips isolation routing;
-- worktree ownership / single-writer / dirty-cleanup semantics;
+- PROJECT_IDENTITY + EXECUTION_ISOLATION;
+- execution-profile schema + workspace MANIFEST;
+- execution_isolation.py + bin/aips isolation routing;
+- repository-level writer ownership / workspace identity / dirty cleanup;
 - truthful sandbox capability reporting;
-- docs/ARCHITECTURE.md + ARCHITECTURE_OVERVIEW.md + USER_GUIDE;
-- system-overview + system-lifecycle diagrams;
-- scenarios 111-115 + scenario_coverage registry + executable lifecycle validation.
+- architecture docs/diagrams;
+- scenarios 111-120 and identity/isolation lifecycle evidence.
 
-Harness-specific, Project Intelligence-specific and Product Delivery-specific diagrams are N/A unless their own behavior changes.
+## Public repository / CI consistency
 
-## v0.14.1 consistency
+When public repository hardening changes, review together:
 
-When legacy Scenario reconciliation changes:
+- .github/workflows/validate.yml;
+- .github/dependabot.yml;
+- SECURITY.md;
+- requirements.txt;
+- immutable full-SHA action pinning;
+- explicit least-privilege workflow permissions;
+- validator contracts that check policy properties rather than freezing one dependency version.
 
-- audit Scenario wording against current canonical System / Orchestration / Runtime contracts before reclassification;
-- keep Scenario IDs/paths stable unless a migration is explicitly required;
-- update `tests/scenario_coverage.yaml` only when direct evidence materially covers the Scenario;
-- run every promoted `tests/evidence/*` artifact from repository validation;
-- update `docs/CONFORMANCE.md`, `orchestration/CONFORMANCE.md`, VERSION and CHANGELOG;
-- Architecture diagrams are N/A when no runtime/architecture behavior changes.
+## Validation architecture consistency
 
-Do not relabel stale historical behavior as automated evidence.
+`tests/validate_repository.py` is the stable CI/user entrypoint. Internal validation is modular:
 
-## v0.15 consistency
+- `tests/validation/static_contracts.py` — schemas, indexes, documentation and static repository contracts;
+- `tests/validation/runtime_contracts.py` — Harness / Runtime / Intelligence lifecycle checks;
+- `tests/validation/governance_resume.py` — approval binding and durable-run behavior;
+- `tests/validation/conformance_isolation.py` — Scenario Conformance, identity and isolation checks;
+- `tests/validation/syntax_contracts.py` — shell syntax checks;
+- `tests/evidence/*` — focused one-to-one executable evidence.
 
-When Project / Workspace Identity changes, review together:
+Keep the top-level validator as an aggregator. New substantial validation belongs in the narrowest existing module or a focused evidence runner rather than expanding the entrypoint back into a monolith.
 
-- orchestration/PROJECT_IDENTITY.md;
-- scripts/aips_identity.py;
-- Project Intelligence external namespace / migration;
-- Run State checkpoint schema + workspace fingerprint / legacy migration;
-- Execution Isolation repository-level ownership and cross-worktree Single Writer behavior;
-- bin/aips identity;
-- system / lifecycle / Project Intelligence architecture diagrams;
-- scenarios 116-120 and direct identity lifecycle evidence.
-
-Identity changes must preserve user state or migrate it safely; never silently overwrite a canonical destination.
