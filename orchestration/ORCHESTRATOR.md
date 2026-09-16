@@ -17,8 +17,8 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 11. Detect project state (`greenfield`, `brownfield`, `unknown`).
 12. Classify Product Baseline SAL / Change Security Impact / Reliability Impact when relevant.
 13. Build a minimal Context Manifest.
-14. Resolve the primary role, then only necessary supporting roles, including Security Engineer when required by Effective SAL.
-15. Resolve capabilities and leaf skills from task evidence and assurance requirements.
+14. Resolve the primary role, then only necessary supporting roles, including Security Engineer when required by Effective SAL. Before proposing a new Role/Capability/Skill, run Capability Reuse Check.
+15. Resolve capabilities and leaf skills from task evidence and assurance requirements. For creative work, load approved Brand Profile and user-provided assets/references before generic style knowledge.
 16. Build an Execution Profile from business impact, complexity, risk, assurance and selected skill requirements.
 17. Decide whether bounded subagents are useful; resolve each subagent model/context independently.
 18. For primary planning, create/persist the Reproducible Planning Package and run cross-role consistency review, including planning-stage security review for SAL 3–4.
@@ -158,3 +158,14 @@ Large/core changes are proposal-first. Use `templates/core-change-proposal.md`. 
 ## Git Publish Approval
 
 Before updating a remote branch/ref or publishing for PR/release, use `templates/git-publish-proposal.md`. Present changed files, feature summary, validation evidence, atomic commit plan and target. Wait for explicit approval. A material difference from the approved publish plan requires another approval.
+
+
+## Creative / Brand work
+
+Use `orchestration/CREATIVE_DIRECTION.md` for reference-grounded visual work and `orchestration/BRAND_SYSTEM.md` for reusable brand creation/reuse.
+
+Do not create artifact-specific roles or style-specific skills by default. Styles are reference data. Reuse Product Designer/Product Manager and load only the leaf skills needed.
+
+## Capability incubation
+
+Before creating or materially expanding a Role, Capability or Skill, use `orchestration/CAPABILITY_INCUBATION.md`. Search indexes first, compare overlap, prefer reuse/extension, and promote to a new Role only after repeated evidence of distinct responsibility, authority and review obligation.
