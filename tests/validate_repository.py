@@ -148,6 +148,7 @@ required_files = [
     "scripts/project_intelligence.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py",
     "scripts/execution_isolation.py",
     "scripts/check_secret_leakage.py",
+    "tests/evidence/governance_command_guard.py",
     "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml",
 ]
 security_templates = [
@@ -1212,6 +1213,15 @@ for n in range(111, 116):
     matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
     if len(matches) != 1:
         errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")
+
+# v0.14.2 governance publication command normalization
+guard_evidence = ROOT / "tests/evidence/governance_command_guard.py"
+if guard_evidence.exists():
+    result = subprocess.run([sys.executable, str(guard_evidence)], capture_output=True, text=True)
+    if result.returncode != 0:
+        errors.append(f"Governance command guard evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
+else:
+    errors.append("Missing governance command guard evidence")
 
 # v0.14.1 legacy Scenario reconciliation and direct evidence
 legacy_evidence = (
