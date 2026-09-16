@@ -565,7 +565,17 @@ def adapter_capability(runtime: str) -> str:
     }.get(runtime, "MANUAL")
 
 
-def context_manifest(root: Path, runtime: str, prompt: str) -> dict[str, Any]:
+def adapter_enforcement(runtime: str) -> str:
+    state = Path.home() / ".config" / "aips" / "harness" / "adapters" / f"{runtime}.yaml"
+    if state.exists():
+        doc = load_yaml(state, {})
+        value = doc.get("governance_enforcement")
+        if value:
+            return str(value)
+    return {"codex": "ADVISORY", "claude-code": "ADVISORY", "gemini-cli": "ADVISORY"}.get(runtime, "UNSUPPORTED")
+
+
+def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = False) -> dict[str, Any]:
     store, mode, pid = intelligence_store(root)
     category, mutation, desired_topics = classify_prompt(prompt)
     fr = freshness(root)
@@ -606,7 +616,11 @@ def context_manifest(root: Path, runtime: str, prompt: str) -> dict[str, Any]:
 
     return {
         "version": 1,
-        "runtime": {"id": runtime, "capability": adapter_capability(runtime)},
+        "runtime": {
+            "id": runtime,
+            "capability": adapter_capability(runtime),
+            "governance_enforcement": adapter_enforcement(runtime),
+        },
         "project": {
             "id": pid, "root": str(root), "mode": mode,
             "intelligence_store": str(store),
@@ -642,6 +656,15 @@ def context_manifest(root: Path, runtime: str, prompt: str) -> dict[str, Any]:
             "semantic_enrichment_required": readiness != "READY",
             "targeted_refresh": refresh,
             "change_impact_required": mutation,
+        },
+        "resolution": {
+            "explained": explain,
+            "decisions": ([
+                {"subject": "task.category", "selected": category, "reasons": ["prompt_classification"]},
+                {"subject": "change_impact", "selected": mutation, "reasons": ["existing_project_mutation"] if mutation else ["read_only_or_non_mutating"]},
+                {"subject": "intelligence_topics", "selected": selected, "reasons": ["task_relevant_topics_only"]},
+                {"subject": "governance_enforcement", "selected": adapter_enforcement(runtime), "reasons": ["installed_adapter_state_or_safe_fallback"]},
+            ] if explain else []),
         },
         "fail_policy": {
             "mode": "closed" if fail_closed_reasons else "soft",
@@ -902,6 +925,7 @@ def main() -> int:
     p.add_argument("--runtime", default="unknown")
     p.add_argument("--prompt", default="")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
+    p.add_argument("--explain", action="store_true")
 
     p = sub.add_parser("impact-init")
     p.add_argument("--project", default=os.getcwd())
@@ -921,7 +945,7 @@ def main() -> int:
         elif args.command == "finalize":
             result = finalize(root)
         elif args.command == "context":
-            result = context_manifest(root, args.runtime, args.prompt)
+            result = context_manifest(root, args.runtime, args.prompt, args.explain)
         elif args.command == "impact-init":
             result = impact_init(root, args.prompt, args.change_id)
         elif args.command == "migrate-attached":
