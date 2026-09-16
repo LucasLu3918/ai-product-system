@@ -1,0 +1,57 @@
+version: 1
+status: draft
+
+brand:
+  name: null
+  tagline: null
+
+foundation:
+  purpose: null
+  mission: null
+  vision: null
+  values: []
+  positioning: null
+
+audience:
+  primary: []
+  secondary: []
+
+personality:
+  traits: []
+  axes:
+    premium: 0.5
+    friendly: 0.5
+    playful: 0.5
+    technical: 0.5
+    bold: 0.5
+
+visual:
+  logo:
+    primary: null
+    secondary: null
+    mark: null
+  colors:
+    primary: []
+    secondary: []
+    accent: []
+  typography:
+    display: null
+    body: null
+  imagery:
+    traits: []
+
+voice:
+  tone: []
+  writing_principles: []
+  avoid: []
+
+must_use: []
+must_avoid: []
+
+source_documents:
+  foundation: BRAND_FOUNDATION.md
+  identity: BRAND_IDENTITY.md
+  logo: LOGO_SYSTEM.md
+  verbal: VERBAL_IDENTITY.md
+  application: BRAND_APPLICATION.md
+  governance: BRAND_GOVERNANCE.md
