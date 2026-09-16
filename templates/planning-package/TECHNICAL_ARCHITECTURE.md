@@ -34,7 +34,40 @@ flowchart LR
 
 ## Performance / Scale Assumptions
 
+## Deployment Units
+
+| Unit | Type | Path / Repository | Runtime | Build / Test / Deploy independently? |
+|---|---|---|---|---|
+
+## Repository Strategy
+
+- Strategy: monorepo / multi-repo
+- Rationale:
+- Cross-unit contract strategy:
+
+## Environments
+
+- Local:
+- CI:
+- Staging:
+- Production:
+
 ## Runtime / Deployment
+
+## Data Migration
+
+- Required:
+- Compatibility:
+- Migration order:
+- Verification:
+- Recovery / rollback:
+
+## Observability
+
+- Health:
+- Logs:
+- Metrics:
+- Alerts:
 
 ## Failure / Recovery / Rollback
 

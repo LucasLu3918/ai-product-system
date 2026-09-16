@@ -22,6 +22,10 @@ Every system change must assess downstream documentation and behavior before com
 | `orchestration/BRAND_SYSTEM.md` | brand workflow/precedence changes |
 | `orchestration/CAPABILITY_INCUBATION.md` | Role/Skill creation/reuse behavior changes |
 | `orchestration/DETERMINISTIC_AUTOMATION.md` | tool-vs-reasoning routing changes |
+| `orchestration/PRODUCT_DELIVERY.md` | complete-product lifecycle changes |
+| `orchestration/RELEASE_READINESS.md` | release/deployment readiness changes |
+| `templates/product/*` | Product Manifest / workspace contract changes |
+| `templates/delivery/*` | Local/deployment/release/runbook contract changes |
 | `VERSION` | release version changes |
 | `CHANGELOG.md` | every released behavioral change |
 
@@ -42,7 +46,7 @@ Before remote publication, present the Git Publish Proposal. A material differen
 3. Review the Documentation Impact Gate.
 4. Confirm Mermaid diagrams match actual runtime/planning flow.
 5. Confirm changed routing/gate behavior has scenario coverage.
-6. Confirm planning/creative/brand/automation templates match their protocols when affected.
+6. Confirm planning/creative/brand/automation/product-delivery templates match their protocols when affected.
 7. Confirm Human and Agent documentation audiences are synchronized when behavior affects them.
 8. Update `VERSION` using SemVer.
 9. Update `CHANGELOG.md`.
@@ -76,3 +80,16 @@ Before release, check:
 - repeated rules live in one authoritative protocol and are referenced elsewhere;
 - bootloader/README remain short entry documents;
 - deterministic data processing uses helpers when this materially reduces repeated model work.
+
+
+## Product delivery consistency
+
+When end-to-end delivery behavior changes, verify together:
+- PRODUCT.yaml contract;
+- Product Creation Work Mode;
+- Planning Package;
+- Local Environment / Deployment Plan / Runbook;
+- Release Readiness;
+- Security Assurance interaction;
+- Human architecture overview;
+- production scenarios and validator coverage.

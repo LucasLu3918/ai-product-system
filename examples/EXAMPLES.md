@@ -353,3 +353,66 @@ Routing 行為改變且一般使用者操作方式也改變。
 **預期行為**
 
 Agent Protocol 與繁體中文 Human Guide 都更新；若只影響其中一方則只更新該 Audience。Documentation Impact Gate 檢查 DOCUMENTATION_MAP 與相關入口沒有失效。
+
+
+## 範例 28：從需求做到 Production
+
+**使用者**
+
+> 我要做一個會員預約平台，請幫我從需求開始做到可以正式上線。
+
+**預期行為**
+
+- 使用 Product Creation + End-to-End Product Delivery。
+- 先建立 Product Workspace 與 draft PRODUCT.yaml。
+- 引導需求並持久化 Planning Package。
+- Gate 1 核准規劃、Gate 2 核准實作後才開始 Coding。
+- 前端/後端作為獨立 Deployment Units，但預設可放同一 Monorepo。
+- 建立可重現 Local Environment。
+- 執行適用的 Static / Unit / Integration / Contract / E2E / Security / Build。
+- 建立 exact Release Candidate。
+- 部署 Staging 並驗證。
+- Release Readiness=READY 且取得必要 Approval 後才 Promote Production。
+- Production 後完成 Health / Smoke / Logs / Metrics 驗證才算 Done。
+
+## 範例 29：前後端不強制拆 Repository
+
+**使用者**
+
+> 這個產品有 Vue 前端與 Go API，請幫我拆成兩個專案。
+
+**預期行為**
+
+系統先區分「Deployment Unit」與「Repository」。Frontend / Backend 可以獨立 Build/Test/Deploy，但若沒有不同團隊、權限、Release Cycle 或共享服務等理由，推薦同一 Product Workspace / Monorepo 下的 `apps/frontend` 與 `apps/backend`。如果有充分理由，再建立 Multi-Repo 並在 PRODUCT.yaml 記錄。
+
+## 範例 30：Security 在 Planning 與 Release 都驗證
+
+產品處理會員資料與付款。
+
+**預期行為**
+
+Planning 時先完成 Risk Profile / Threat Model / Authorization / Business Invariants。Implementation/Release 時再執行 deterministic scanner/test evidence 與 Security Engineer independent review。Scanner PASS 不等於 Security Review PASS。
+
+## 範例 31：Release Readiness 阻擋 Production
+
+Release Candidate 的 Unit/E2E 都通過，但資料庫 migration 尚未驗證 rollback，或存在 SAL 規則禁止的 High/Critical finding。
+
+**預期行為**
+
+Release Readiness = BLOCKED / NOT_READY。不得因 CI 其他項目成功就自動 Production Deploy。
+
+## 範例 32：Production 部署後失敗
+
+Production promotion 完成，但 Health Check 或 critical smoke path 失敗。
+
+**預期行為**
+
+不能宣稱完成。依 Deployment Plan / Runbook 執行 Rollback 或 Roll-forward，重新驗證 Health / Smoke / Logs / Metrics，並保存結果。
+
+## 範例 33：低風險靜態產品不需要 Staging
+
+純靜態單頁產品，不登入、不儲存資料，也沒有後端。
+
+**預期行為**
+
+Staging 可以 N/A，但必須在 Product/Release 記錄理由。仍需適用的 Build / Smoke / Production Verification，不為了流程形式強迫建立不必要環境。

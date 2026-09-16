@@ -227,3 +227,78 @@ flowchart LR
 ~~~
 
 Human and Agent docs are separate entry surfaces but share one behavior source.
+
+
+## End-to-end product delivery
+
+~~~mermaid
+flowchart TD
+    U[User Request / Assets] --> D[Guided Discovery]
+    D --> PW[Product Workspace + PRODUCT.yaml]
+    PW --> PP[Planning Package]
+    PP --> G1[Gate 1: Planning Approval]
+    G1 --> IR[Implementation Readiness]
+    IR --> G2[Gate 2: Implementation Approval]
+    G2 --> DU[Deployment Units]
+    DU --> L[Local Environment]
+    L --> T[Automated Test Pipeline]
+    T --> S[Security + Independent Review]
+    S --> RC[Exact Release Candidate]
+    RC --> ST{Staging applicable?}
+    ST -->|yes| SD[Deploy Staging]
+    SD --> SV[Smoke / E2E / Security / Migration Verification]
+    SV --> RR[Release Readiness]
+    ST -->|no with reason| RR
+    RR --> READY{READY?}
+    READY -->|no| FIX[Fix / re-verify]
+    FIX --> T
+    READY -->|yes| AP{Production approval required?}
+    AP -->|yes| HA[Human Approval]
+    HA --> PROD[Production Promotion]
+    AP -->|no| PROD
+    PROD --> PV[Health / Smoke / Logs / Metrics]
+    PV --> OK{Healthy?}
+    OK -->|yes| DONE[Persist Production State + Evidence]
+    OK -->|no| REC[Rollback / Roll-forward]
+    REC --> PV
+~~~
+
+A complete product is not complete when code is generated. Production completion requires applicable post-deploy verification and a known recovery path.
+
+## Product workspace and deployment units
+
+~~~mermaid
+flowchart LR
+    P[Product Workspace] --> M[PRODUCT.yaml]
+    P --> DOC[Docs / Brand / Decisions]
+    P --> F[Frontend Deployment Unit]
+    P --> B[Backend Deployment Unit]
+    P --> W[Worker / Job Deployment Unit]
+    P --> DB[Database / Migrations]
+    P --> I[Infra / Deployment]
+    F --> R{Repository strategy}
+    B --> R
+    W --> R
+    R -->|default| MONO[Monorepo]
+    R -->|evidence-driven| MULTI[Multi-Repo]
+~~~
+
+Independent deployability does not imply independent repositories.
+
+## Release readiness
+
+Release Readiness consolidates evidence for one exact candidate:
+
+~~~text
+Build
++ Static / Unit / Integration / Contract / E2E / Smoke
++ Security Assurance
++ Migration / Recovery
++ Infrastructure
++ Staging
++ Observability
++ Deployment / Runbook / Rollback
+= READY / NOT_READY / BLOCKED
+~~~
+
+READY is technical readiness. It never bypasses required human/security approval.
