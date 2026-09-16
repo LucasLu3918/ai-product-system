@@ -180,6 +180,7 @@ def main() -> int:
             "detected": runtime != "unknown",
             "adapter_status": adapter.get("status"),
             "capability": adapter.get("capability"),
+            "governance_enforcement": adapter.get("governance_enforcement"),
             "native_instructions": runtime_native_files(runtime, project_root, cwd),
         },
         "project": {
