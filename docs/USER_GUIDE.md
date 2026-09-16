@@ -775,3 +775,17 @@ New Skill Admission 至少要有：positive triggers、non-triggers、inputs、o
 Approval Record 會記錄 proposal/scope fingerprint、branch、candidate commit、changed files 與允許的 protected operation。若 scope 漂移，狀態視為 `APPROVAL_STALE`。
 
 可用 `aips intelligence context ... --explain` 查看結構化 routing 結果與 reasons；這不是 Chain-of-Thought。
+
+## v0.12 Checkpoint / Resume
+
+較長的工作可以使用 durable run state：
+
+~~~bash
+aips run checkpoint --project /path/to/project --run-id change-123 --protocol core-change --step implementation
+aips run event --project /path/to/project --run-id change-123 --event tests_completed --status PASS
+aips run resume --project /path/to/project --run-id change-123
+~~~
+
+ATTACHED 專案寫入 `.ai/runs/<run-id>/`；EPHEMERAL 只寫 External Cache，不會因此建立 `.ai/`。
+
+如果 Git revision 已改變，resume 會回報 `STALE`，Agent 必須先重新檢查 freshness / impact / tests / approval，再繼續。
