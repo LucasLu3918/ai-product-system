@@ -32,4 +32,9 @@ This file is the compact record of accepted design decisions. Use a new ADR only
 | Permissions | Least privilege and isolated change |
 | Concurrency | Parallel read/review allowed; one writer per change boundary by default |
 | Architecture | Clean Architecture principles where useful; DDD activated by domain complexity; avoid pattern-driven overengineering |
+| Security assurance | Risk Profile → Product Baseline SAL + Change Security Impact → Effective SAL; critical dimensions impose hard floors |
+| High-value business logic | Payments, refunds, stored value, balances, redeemable points/credits/vouchers/coupons and similar value flows are security boundaries |
+| Security review scope | Review depth follows affected Change Boundary; high-risk product baseline alone does not force high-cost review for unrelated cosmetic changes |
+| Security release gate | SAL 3–4 require applicable evidence; SAL 4 unresolved High/Critical findings block release |
+| Assurance separation | Security Assurance, Reliability Impact and Model Tier remain distinct inputs |
 | System maintenance | Every system change passes a Documentation Impact Gate; affected docs/flows/Mermaid diagrams/examples/scenarios/templates/version/changelog update together |

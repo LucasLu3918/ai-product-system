@@ -17,3 +17,5 @@
 15. **Dynamic Knowledge Verification** — current prices, versions, limits and similar facts are verified at runtime.
 16. **Protected Human Authority** — humans control project decisions; high-risk actions require impact, recovery and explicit confirmation.
 17. **Scoped Instruction Resolution** — current user decisions lead project execution; scoped project instructions are discovered and applied by scope; skills never silently override governance.
+18. **Risk-Proportional Security Assurance** — security depth follows protected assets and the affected Change Boundary; critical financial/stored-value risks impose hard assurance floors.
+19. **Security Evidence Over Assurance Claims** — high-assurance security conclusions require traceable threat/abuse/test evidence, not “looks safe” review comments.

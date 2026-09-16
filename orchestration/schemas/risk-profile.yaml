@@ -1,0 +1,22 @@
+version: 1
+
+risk_profile:
+  financial_value: none
+  authorization_criticality: none
+  data_sensitivity: none
+  fraud_abuse_potential: none
+  external_exposure: low
+  blast_radius: low
+  irreversibility: low
+  concurrency_integrity: low
+  auditability: low
+  availability_impact: low
+
+assurance:
+  product_baseline_sal: 0
+  reliability_impact: 0
+  change_security_impact: 0
+  impacted_security_boundaries: []
+  critical_floors: []
+  effective_sal: 0
+  rationale: []

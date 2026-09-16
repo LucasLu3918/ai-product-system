@@ -1,0 +1,196 @@
+# Security Assurance
+
+Security review depth is proportional to the actual product/feature risk. The system does not apply the same heavy security process to every change.
+
+## Core model
+
+~~~text
+Product / Feature
+→ Risk Profile
+→ Product Baseline SAL + Change Security Impact
+→ Effective Security Assurance Level
+→ Required Security Skills / Reviewer
+→ Appropriate Model Tier
+→ Security Evidence
+→ Release Gate
+~~~
+
+SAL means **Security Assurance Level**. It is not a model tier and it is not a simple average score.
+
+## Risk profile dimensions
+
+Evaluate only dimensions relevant to the current product/change:
+
+- financial / stored-value impact;
+- authorization criticality;
+- sensitive/personal data;
+- fraud / business-logic abuse potential;
+- external exposure (public API, webhook, upload, third-party integration);
+- blast radius;
+- irreversibility / recoverability;
+- concurrency / integrity risk;
+- auditability requirements;
+- availability / reliability impact.
+
+Record security assurance and reliability impact separately.
+
+## Assurance levels
+
+### SAL 0 — Minimal
+
+Examples: static public content, no login, no sensitive data, no shared side effects.
+
+Required: normal secure defaults only. No independent Security Engineer by default.
+
+### SAL 1 — Low
+
+Examples: low-impact personal tools, harmless frontend utilities.
+
+Required: basic input/dependency/secret hygiene. Independent security review normally unnecessary.
+
+### SAL 2 — Standard
+
+Examples: authenticated CRUD, ordinary SaaS user data.
+
+Required: authentication/authorization/data-handling review as applicable. Security Reviewer is conditional on the affected boundary.
+
+### SAL 3 — High
+
+Examples: privileged admin operations, sensitive data, public upload/webhook, high-impact API, broad cross-user effects.
+
+Required when affected:
+- threat model;
+- independent Security Engineer review;
+- authorization review;
+- abuse-case analysis;
+- audit logging strategy;
+- security test plan;
+- release security evidence.
+
+### SAL 4 — Critical
+
+Examples:
+- payments, refunds, settlement;
+- stored value / wallets;
+- points, credits, vouchers or coupons convertible to economic value;
+- redemption / transfer / withdrawal;
+- financial state transitions;
+- high-impact security boundaries where compromise could cause material loss.
+
+Required:
+- planning-stage security review;
+- implementation-stage security review;
+- financial/business-logic integrity analysis;
+- concurrency/idempotency/replay/double-spend review where applicable;
+- independent Security Engineer;
+- strong security test evidence;
+- unresolved High/Critical findings block release.
+
+## Critical risk floors
+
+Do not allow averaging to reduce a critical dimension.
+
+Examples:
+
+- financial/stored-value integrity = Critical → minimum SAL 4;
+- high-impact privileged control plane = Critical → minimum SAL 3 (or 4 when economic/material harm is possible);
+- broad exposure of highly sensitive data = Critical → minimum SAL 3/4 based on impact.
+
+The Security Engineer records the floor and rationale.
+
+## Product baseline vs change impact
+
+A high-risk product does not automatically require a deep SAL 4 review for every cosmetic change.
+
+Maintain:
+
+~~~yaml
+assurance:
+  product_baseline_sal: 4
+  reliability_impact: 4
+  change_security_impact: 1
+  impacted_security_boundaries: []
+  effective_sal: 1
+~~~
+
+For each change:
+
+1. start from the product baseline and known protected assets;
+2. identify which assets/boundaries are actually touched by the Change Boundary;
+3. classify the change-local risk;
+4. apply any critical risk floor from the impacted boundary;
+5. derive Effective SAL.
+
+If a footer text change in a payment platform does not touch any sensitive boundary, review can stay light. A change to payment state, balance, points, coupons, authorization or settlement inherits the appropriate high-risk floor.
+
+## High-value business logic is a security boundary
+
+For economic-value features, security review includes more than classic vulnerabilities.
+
+Review cases such as:
+
+- duplicate redemption / double spend;
+- replayed requests or events;
+- missing idempotency;
+- race conditions;
+- negative balance / overflow / precision / rounding;
+- unauthorized cross-account access;
+- coupon/referral/promotion abuse;
+- refund/reversal inconsistencies;
+- payment cancelled but value already granted;
+- transaction/event partial failure;
+- duplicate message consumption;
+- audit gaps and repudiation.
+
+## Review phases
+
+### Planning security review
+
+SAL 3–4 planning reviews evaluate:
+
+- assets and trust boundaries;
+- threat/abuse model;
+- authorization model;
+- data sensitivity;
+- financial/business invariants;
+- API/data architecture;
+- audit and observability requirements;
+- recovery/rollback expectations.
+
+### Implementation security review
+
+Review actual:
+
+- code;
+- data transactions;
+- concurrency/idempotency;
+- authorization/validation;
+- sensitive logs;
+- secrets/config;
+- tests and failure paths.
+
+## Release Security Gate
+
+For SAL 3–4 affected changes, persist SECURITY_REVIEW.md.
+
+Allowed decisions:
+
+- PASS
+- PASS WITH RISK
+- REQUEST CHANGES
+- BLOCK
+
+At SAL 4, unresolved High/Critical findings are **BLOCK**. They may not be downgraded to comments without an explicit accepted risk decision and applicable governance.
+
+## Model routing
+
+SAL informs, but does not equal, Model Tier.
+
+Typical guidance:
+
+- SAL 0–1: no dedicated high-tier security agent by default;
+- SAL 2: Tier 2–3 where review is needed;
+- SAL 3: Security Reviewer normally minimum Tier 3;
+- SAL 4: Security Reviewer Tier 3–4; critical decisions may impose Tier 4.
+
+Privacy, complexity, tools, context and total task cost remain part of model routing.
