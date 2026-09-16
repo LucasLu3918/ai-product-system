@@ -216,3 +216,81 @@ Tier 4  關鍵推理：高風險安全、金融正確性、不可逆 migration�
 Subagent 只在確實能帶來專業分工、平行唯讀分析或獨立檢核時建立，而且必須有清楚的目標、範圍、Skill、輸出與權限。它只收到自己的最小 Context，不會複製整個主 Agent Context。
 
 若任務途中發現比原先評估更困難或風險更高，Agent 應提出 escalation；困難決策完成後，後續例行工作可以 de-escalate 回較節省成本的模型。
+
+
+## 14. 新電腦快速安裝與初始化
+
+Clone 私人 Repository 後：
+
+```bash
+cd ~/Developer/ai-product-system
+./scripts/bootstrap.sh
+aips doctor
+```
+
+初始化任何專案：
+
+```bash
+aips init /path/to/project
+```
+
+詳細流程請看 `docs/INSTALLATION.md`。
+
+## 15. 每次實作前自動確認最新版
+
+任何會修改目標專案程式或檔案的 AI 工作，在開始實作前執行：
+
+```bash
+aips preflight /path/to/project
+```
+
+它會確認系統 Git 狀態、只用 fast-forward 更新、驗證最新版，並把實際 system version + commit 記錄到專案 `.ai/SYSTEM.yaml`。它不會擅自 pull 目標產品專案。
+
+MAJOR 更新會先停止，要求查看 CHANGELOG 並明確允許。
+
+## 16. 解除安裝
+
+```bash
+aips uninstall
+aips uninstall --remove-venv
+```
+
+第一個只移除 CLI/設定；第二個連系統驗證用 venv 一起移除。Git Repository 與產品專案都不會自動刪除。
+
+## 17. 系統本身異動時保持文件一致
+
+所有 AI Product System 變更都必須通過 Documentation Impact Gate，檢查核心文件、Orchestrator、使用手冊、Mermaid 架構圖、Examples、Scenario Tests、Templates/Schemas、VERSION 與 CHANGELOG 是否同步。
+
+## 18. 有「主體規劃」的任務
+
+如果你的需求會形成產品/專案未來實作依據，例如完整新產品規劃、重大改版、平台藍圖或主要架構/產品方案，系統不會只把規劃留在聊天。
+
+流程：
+
+```text
+確認是主體規劃
+→ 確認實體工作區
+→ 若沒有指定工作區，先詢問你
+→ 產出並保存完整 Planning Package
+→ 跨文件/角色一致性檢查
+→ Gate 1：請你審核主體規劃
+→ 規劃核准後整理「初步實作項目 + 建議實作流程」
+→ Gate 2：詢問是否正式實作
+→ 你確認後才實作
+```
+
+Planning Package 會依產品需要包含：
+
+- Product Plan / 企劃書
+- Persona、Scope、需求與 Acceptance Criteria
+- Information Architecture、UX Flow、頁面/Screen inventory
+- Visual System、Design Token、主視覺/Key Visual 與素材規劃
+- Technical Architecture、Data Model、Security、Observability、Deployment
+- API 文件與 machine-readable contract（若適用）
+- Test / Delivery / Rollout / Rollback
+- Decisions、Assumptions、Unknowns
+- Implementation Readiness
+
+不適用的項目必須明確標記 N/A 與理由，不能默默省略。
+
+目標是：未來即使換另一個 AI Agent 或人類團隊，不看原始聊天，也能依保存的規劃產出高度一致的產品。

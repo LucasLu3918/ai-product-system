@@ -185,3 +185,24 @@
 - 每個 Subagent 依自己的技術複雜度與風險獨立決定 Tier，不繼承 Primary Agent 的模型。
 - 一般程式修改可使用 Tier 2；SQL 深度分析或安全檢核可能使用 Tier 3；只有真正 critical 的決策才升 Tier 4。
 - Subagent 不得同時修改同一 Change Boundary；最終由單一 Writer 實作，Reviewer 獨立檢核。
+
+
+## 範例 12：每次實作前安全更新系統
+
+**使用者**
+
+> 使用 ai-product-system 幫我修改這個專案的 API。
+
+**預期行為**
+
+先執行 `aips preflight /path/to/project`。只更新 AI Product System；若有本機修改、分歧或 MAJOR 版本改變則停止，不自動 merge/rebase。成功後把 version + commit 記錄到 `.ai/SYSTEM.yaml`。
+
+## 範例 13：完整主體規劃後再詢問是否實作
+
+**使用者**
+
+> 幫我完整規劃一個新購物平台，之後可能交給其他 AI 或工程團隊實作。
+
+如果沒有指定工作區，系統先詢問保存位置。取得工作區後建立完整 Planning Package：企劃、UX、Visual/Key Visual、Architecture、Data、API、Security/Test/Delivery、Decisions/Assumptions 等適用內容。
+
+規劃實體保存並完成一致性 Review 後，先走 Gate 1 請使用者審核主體規劃。只有 Gate 1 核准後，才整理「初步實作項目 + 建議實作順序」，再走 Gate 2 詢問是否開始實作。未得到 Gate 2 明確確認不得寫正式產品程式碼。

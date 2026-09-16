@@ -9,6 +9,12 @@ This file is the compact record of accepted design decisions. Use a new ADR only
 | Context loading | Hierarchical progressive context resolution |
 | Autonomy | Governed Autonomy |
 | Preflight | Material recommendation/unknown/risk/capability-gap check before implementation |
+| System update | Before mutating implementation, run safe Update Preflight: clean `main`, fetch, `git pull --ff-only`, no auto merge/rebase |
+| Major upgrades | Explicit review/approval required before applying a new MAJOR system version |
+| System provenance | Record exact system version + commit in target project `.ai/SYSTEM.yaml` |
+| Primary planning | Authoritative product/project planning must be physically persisted; ask for workspace when none is specified |
+| Planning completeness | Reproducible Planning Package contains product, experience, visual/key visual, architecture, API/contract when applicable, implementation readiness, and decisions/assumptions |
+| Planning approval | Gate 1 approves the persisted Planning Package; Gate 2 separately approves Initial Implementation Items + Recommended Implementation Flow before implementation |
 | Existing projects | Inspect first; discover scoped instructions; establish change boundary; avoid unrelated refactors |
 | Project precedence | Current explicit user decision > scoped project instructions/decisions > project skills > global skills, under system safety guardrails |
 | Scoped instructions | Nearest applicable `AGENTS.md` wins over broader project scope |
@@ -26,3 +32,4 @@ This file is the compact record of accepted design decisions. Use a new ADR only
 | Permissions | Least privilege and isolated change |
 | Concurrency | Parallel read/review allowed; one writer per change boundary by default |
 | Architecture | Clean Architecture principles where useful; DDD activated by domain complexity; avoid pattern-driven overengineering |
+| System maintenance | Every system change passes a Documentation Impact Gate; affected docs/flows/Mermaid diagrams/examples/scenarios/templates/version/changelog update together |

@@ -11,6 +11,10 @@
 
 Stop affected work when:
 
+- System Update Preflight cannot safely update/validate the local AI Product System before a mutating implementation session;
+- a primary planning task has no specified persistence workspace;
+- a Planning Package is awaiting Gate 1 approval;
+- Initial Implementation Items / Recommended Implementation Flow are awaiting Gate 2 approval;
 - a blocking unknown prevents a reliable decision;
 - a materially better approach/prerequisite changes the result;
 - requirements or applicable instructions materially conflict;
@@ -20,6 +24,17 @@ Stop affected work when:
 - required role/capability/skill expertise does not exist.
 
 Do not stop for cosmetic, equivalent or easily reversible local choices. Queue non-blocking questions and ask them together.
+
+## Planning gates
+
+For tasks that create or materially revise the authoritative product/project plan:
+
+- persist the complete Reproducible Planning Package in the resolved workspace;
+- Gate 1 is required before the plan is considered accepted;
+- after Gate 1, derive Initial Implementation Items + Recommended Implementation Flow;
+- Gate 2 is required before implementation begins.
+
+Chat alone is not the System of Record for authoritative planning.
 
 ## Safety challenge
 
@@ -41,3 +56,7 @@ For material code, architecture, security, data or release changes, final review
 ## Project overrides
 
 A current explicit user decision may override project-local instructions inside its approved scope. Material conflicts must be surfaced before implementation. Temporary overrides are recorded with the run and do not become permanent policy unless explicitly approved.
+
+## System repository maintenance
+
+Changes to the AI Product System itself must pass the Documentation Impact Gate before release. A behavioral change must not be published while affected documentation, architecture diagrams, examples, tests/scenarios, templates/schemas, VERSION or CHANGELOG remain stale.

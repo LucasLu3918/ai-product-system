@@ -1,0 +1,313 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+REPO_SLUG="LucasLu3918/ai-product-system"
+DEFAULT_BRANCH="main"
+CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}/aips"
+BIN_HOME="${AIPS_BIN_HOME:-$HOME/.local/bin}"
+
+resolve_source() {
+  local source="${BASH_SOURCE[0]}"
+  while [ -h "$source" ]; do
+    local dir
+    dir="$(cd -P "$(dirname "$source")" >/dev/null 2>&1 && pwd)"
+    source="$(readlink "$source")"
+    [[ "$source" != /* ]] && source="$dir/$source"
+  done
+  cd -P "$(dirname "$source")" >/dev/null 2>&1 && pwd
+}
+
+SCRIPT_DIR="$(resolve_source)"
+SYSTEM_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
+say() { printf '%s\n' "$*"; }
+warn() { printf 'WARNING: %s\n' "$*" >&2; }
+die() { printf 'ERROR: %s\n' "$*" >&2; exit 1; }
+
+usage() {
+  cat <<'EOF'
+AI Product System CLI
+
+Usage:
+  aips install
+  aips uninstall [--remove-venv]
+  aips init <project-path>
+  aips update [--allow-major]
+  aips preflight <project-path> [--allow-major]
+  aips doctor
+  aips validate
+  aips version
+  aips help
+
+Recommended first install:
+  ./scripts/bootstrap.sh
+
+Before every mutating AI implementation session:
+  aips preflight <project-path>
+EOF
+}
+
+require_cmd() {
+  command -v "$1" >/dev/null 2>&1 || die "Required command not found: $1"
+}
+
+git_in_system() { git -C "$SYSTEM_DIR" "$@"; }
+current_version() { tr -d '[:space:]' < "$SYSTEM_DIR/VERSION"; }
+current_commit() { git_in_system rev-parse HEAD; }
+major_of() { printf '%s' "$1" | awk -F. '{print $1}'; }
+
+python_bin() {
+  if [ -x "$SYSTEM_DIR/.venv/bin/python" ]; then
+    printf '%s\n' "$SYSTEM_DIR/.venv/bin/python"
+  else
+    command -v python3 || true
+  fi
+}
+
+write_system_snapshot() {
+  local project="$1"
+  local ai_dir="$project/.ai"
+  local version commit timestamp
+  version="$(current_version)"
+  commit="$(current_commit)"
+  timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+  mkdir -p "$ai_dir"
+  cat > "$ai_dir/SYSTEM.yaml" <<EOF
+system:
+  name: ai-product-system
+  repository: $REPO_SLUG
+  version: "$version"
+  commit: "$commit"
+  updated_at: "$timestamp"
+  local_path: "$SYSTEM_DIR"
+EOF
+}
+
+init_project() {
+  local project="$1"
+  [ -d "$project" ] || die "Project path does not exist: $project"
+
+  local ai_dir="$project/.ai"
+  mkdir -p "$ai_dir/runs" "$ai_dir/decisions"
+
+  for name in PROJECT.md STATE.yaml MANIFEST.yaml; do
+    if [ ! -e "$ai_dir/$name" ]; then
+      cp "$SYSTEM_DIR/templates/workspace/$name" "$ai_dir/$name"
+      say "Created .ai/$name"
+    else
+      say "Kept existing .ai/$name"
+    fi
+  done
+
+  write_system_snapshot "$project"
+  say "Workspace initialized: $ai_dir"
+}
+
+validate_repo() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  if ! "$py" -c 'import yaml' >/dev/null 2>&1; then
+    die "PyYAML is missing. Run: $SYSTEM_DIR/bin/aips install"
+  fi
+  "$py" "$SYSTEM_DIR/tests/validate_repository.py"
+}
+
+install_cli() {
+  require_cmd git
+  require_cmd python3
+  [ -d "$SYSTEM_DIR/.git" ] || die "Run install from a cloned ai-product-system repository."
+
+  if [ ! -d "$SYSTEM_DIR/.venv" ]; then
+    say "Creating Python virtual environment..."
+    python3 -m venv "$SYSTEM_DIR/.venv"
+  fi
+
+  say "Installing validator dependencies..."
+  "$SYSTEM_DIR/.venv/bin/python" -m pip install --disable-pip-version-check -q -r "$SYSTEM_DIR/requirements.txt"
+
+  mkdir -p "$BIN_HOME" "$CONFIG_HOME"
+  ln -sfn "$SYSTEM_DIR/bin/aips" "$BIN_HOME/aips"
+  printf '%s\n' "$SYSTEM_DIR" > "$CONFIG_HOME/system-dir"
+
+  validate_repo
+
+  say
+  say "Installed: $BIN_HOME/aips"
+  if [[ ":$PATH:" != *":$BIN_HOME:"* ]]; then
+    warn "$BIN_HOME is not currently in PATH."
+    say "Add this to your shell profile:"
+    say '  export PATH="$HOME/.local/bin:$PATH"'
+  fi
+  say "Run: aips doctor"
+}
+
+uninstall_cli() {
+  local remove_venv="false"
+  [ "${1:-}" = "--remove-venv" ] && remove_venv="true"
+
+  if [ -L "$BIN_HOME/aips" ]; then
+    rm -f "$BIN_HOME/aips"
+    say "Removed CLI symlink: $BIN_HOME/aips"
+  elif [ -e "$BIN_HOME/aips" ]; then
+    warn "$BIN_HOME/aips is not a symlink; leaving it untouched."
+  fi
+
+  rm -rf "$CONFIG_HOME"
+  say "Removed config: $CONFIG_HOME"
+
+  if [ "$remove_venv" = "true" ] && [ -d "$SYSTEM_DIR/.venv" ]; then
+    rm -rf "$SYSTEM_DIR/.venv"
+    say "Removed virtual environment: $SYSTEM_DIR/.venv"
+  fi
+
+  say "Repository was preserved: $SYSTEM_DIR"
+}
+
+update_system() {
+  local allow_major="${1:-false}"
+  require_cmd git
+  [ -d "$SYSTEM_DIR/.git" ] || die "System directory is not a Git repository: $SYSTEM_DIR"
+
+  local branch
+  branch="$(git_in_system branch --show-current)"
+  [ "$branch" = "$DEFAULT_BRANCH" ] || die "System repo must be on '$DEFAULT_BRANCH' before automatic update (current: $branch)."
+
+  if [ -n "$(git_in_system status --porcelain)" ]; then
+    die "System repo has local changes. Commit/stash/revert them before Update Preflight."
+  fi
+
+  say "Checking latest AI Product System..."
+  git_in_system fetch --quiet origin "$DEFAULT_BRANCH"
+
+  local local_version remote_version local_major remote_major
+  local_version="$(current_version)"
+  remote_version="$(git_in_system show "origin/$DEFAULT_BRANCH:VERSION" 2>/dev/null | tr -d '[:space:]')" || die "Remote VERSION could not be read."
+  local_major="$(major_of "$local_version")"
+  remote_major="$(major_of "$remote_version")"
+
+  if [ "$local_major" != "$remote_major" ] && [ "$allow_major" != "true" ]; then
+    die "Major version change detected ($local_version -> $remote_version). Review CHANGELOG.md, then rerun with --allow-major."
+  fi
+
+  if ! git_in_system merge-base --is-ancestor HEAD "origin/$DEFAULT_BRANCH"; then
+    die "Local system history diverged from origin/$DEFAULT_BRANCH. Automatic merge/rebase is disabled."
+  fi
+
+  local before after
+  before="$(current_commit)"
+  git_in_system pull --ff-only --quiet origin "$DEFAULT_BRANCH"
+  after="$(current_commit)"
+
+  if [ "$before" = "$after" ]; then
+    say "System already up to date: $(current_version) ($after)"
+  else
+    say "System updated: $local_version -> $(current_version)"
+    say "Commit: $after"
+  fi
+}
+
+preflight_after_update() {
+  local project="$1"
+  [ -d "$project" ] || die "Project path does not exist: $project"
+
+  if [ ! -d "$project/.ai" ]; then
+    say "Project workspace is not initialized; initializing now."
+    init_project "$project"
+  else
+    write_system_snapshot "$project"
+  fi
+
+  validate_repo
+  say "Update Preflight passed."
+  say "System: $(current_version) ($(current_commit))"
+  say "Project: $project"
+}
+
+preflight() {
+  local project="${1:-}"
+  local allow_major="false"
+  [ -n "$project" ] || die "Usage: aips preflight <project-path> [--allow-major]"
+  shift || true
+
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --allow-major) allow_major="true" ;;
+      *) die "Unknown preflight option: $1" ;;
+    esac
+    shift
+  done
+
+  update_system "$allow_major"
+
+  # Re-exec from the freshly updated repository so new CLI behavior applies immediately.
+  exec "$SYSTEM_DIR/bin/aips" _preflight-after-update "$project"
+}
+
+doctor() {
+  say "AI Product System doctor"
+  say "System dir: $SYSTEM_DIR"
+  say "Version: $(current_version 2>/dev/null || echo unknown)"
+  say "Commit: $(current_commit 2>/dev/null || echo unknown)"
+  say "Branch: $(git_in_system branch --show-current 2>/dev/null || echo unknown)"
+
+  command -v git >/dev/null 2>&1 && say "git: OK" || warn "git: missing"
+  command -v python3 >/dev/null 2>&1 && say "python3: OK" || warn "python3: missing"
+  [ -x "$SYSTEM_DIR/.venv/bin/python" ] && say "venv: OK" || warn "venv: not installed (run aips install)"
+
+  if [ -n "$(git_in_system status --porcelain 2>/dev/null || true)" ]; then
+    warn "System repo has local changes; automatic preflight update will stop."
+  else
+    say "system worktree: clean"
+  fi
+
+  if [ -L "$BIN_HOME/aips" ]; then
+    say "CLI link: OK ($BIN_HOME/aips)"
+  else
+    warn "CLI link not installed at $BIN_HOME/aips"
+  fi
+}
+
+case "${1:-help}" in
+  install)
+    shift
+    install_cli "$@"
+    ;;
+  uninstall)
+    shift
+    uninstall_cli "$@"
+    ;;
+  init)
+    [ "$#" -ge 2 ] || die "Usage: aips init <project-path>"
+    init_project "$2"
+    ;;
+  update)
+    shift
+    allow="false"
+    [ "${1:-}" = "--allow-major" ] && allow="true"
+    update_system "$allow"
+    ;;
+  preflight)
+    shift
+    preflight "$@"
+    ;;
+  _preflight-after-update)
+    shift
+    preflight_after_update "$1"
+    ;;
+  doctor)
+    doctor
+    ;;
+  validate)
+    validate_repo
+    ;;
+  version)
+    say "$(current_version) ($(current_commit))"
+    ;;
+  help|-h|--help)
+    usage
+    ;;
+  *)
+    die "Unknown command: $1. Run 'aips help'."
+    ;;
+esac

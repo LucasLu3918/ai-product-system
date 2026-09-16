@@ -4,23 +4,54 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 ## Minimal algorithm
 
-1. Bootstrap project `.ai/` state when present.
-2. Run preflight: material recommendation, unknown, risk, conflict and capability-gap checks.
-3. If the request targets an existing project, discover applicable instructions before generic skills.
-4. If a material decision is needed, present the smallest useful option set and stop affected work.
-5. Classify intent; choose one primary work mode.
-6. Detect project state (`greenfield`, `brownfield`, `unknown`).
-7. Build a minimal Context Manifest.
-8. Resolve the primary role, then only necessary supporting roles.
-9. Resolve capabilities and leaf skills from task evidence.
-10. Build an Execution Profile from business impact, complexity, risk and selected skill requirements.
-11. Decide whether bounded subagents are useful; resolve each subagent model/context independently.
-12. Select eligible model/tools using minimum sufficient intelligence.
-13. Execute inside the approved intent/change boundary.
-14. Expand context or model tier only when documented evidence shows a gap.
-15. Run independent review with an independently resolved reviewer tier where required.
-16. Validate acceptance criteria and artifacts.
-17. Persist state, temporary overrides, provenance and next actions.
+1. Before mutating a target project, run System Update Preflight (`aips preflight <project>`).
+2. Bootstrap/read project `.ai/` state.
+3. Run task preflight: material recommendation, unknown, risk, conflict and capability-gap checks.
+4. Detect whether the task creates/revises the primary product/project plan.
+5. For a primary planning task, resolve the persistence workspace before authoring the authoritative plan; if absent, ask the user.
+6. If the request targets an existing project, discover applicable instructions before generic skills.
+7. If a material decision is needed, present the smallest useful option set and stop affected work.
+8. Classify intent; choose one primary work mode.
+9. Detect project state (`greenfield`, `brownfield`, `unknown`).
+10. Build a minimal Context Manifest.
+11. Resolve the primary role, then only necessary supporting roles.
+12. Resolve capabilities and leaf skills from task evidence.
+13. Build an Execution Profile from business impact, complexity, risk and selected skill requirements.
+14. Decide whether bounded subagents are useful; resolve each subagent model/context independently.
+15. For primary planning, create/persist the Reproducible Planning Package and run cross-role consistency review.
+16. Gate 1: wait for human Planning Package approval.
+17. After Gate 1, derive Initial Implementation Items + Recommended Implementation Flow.
+18. Gate 2: wait for explicit human implementation approval.
+19. Select eligible model/tools using minimum sufficient intelligence.
+20. Execute inside the approved intent/change boundary.
+21. Expand context or model tier only when documented evidence shows a gap.
+22. Run independent review with an independently resolved reviewer tier where required.
+23. Validate acceptance criteria and artifacts.
+24. Persist state, temporary overrides, provenance, exact system version/commit and next actions.
+
+## System Update Preflight
+
+The orchestrator must not implement project mutations using an unverified stale local system.
+
+Use `aips preflight <project>`, which:
+
+- requires the system repo to be clean/on `main`;
+- fetches `origin/main` and uses only fast-forward pulls;
+- blocks divergent history instead of auto merging/rebasing;
+- requires explicit review for a MAJOR version change;
+- re-executes the updated CLI, validates the system and records `.ai/SYSTEM.yaml`.
+
+It updates the AI Product System only. Target-project source updates remain a separate user/project decision.
+
+## Reproducible Planning Package
+
+Load `orchestration/PLANNING_PACKAGE.md` when the request defines the authoritative product/project blueprint.
+
+The planning package must be persisted outside the chat and sufficiently complete that another competent AI agent or human team can reproduce substantially the same intended product without hidden conversation context.
+
+Do not claim planning completion if applicable product, UX, visual/key-visual, API/contract, architecture, testing/delivery or decision records are missing.
+
+Implementation requires both Planning Package approval (Gate 1) and Implementation Readiness approval (Gate 2).
 
 ## Existing-project instruction discovery
 
@@ -34,7 +65,7 @@ For each target path:
 
 Nearest scoped instructions beat broader instructions. Current explicit user decisions beat project-local instructions inside the approved scope, but material conflicts must be surfaced before implementation.
 
-## Preflight
+## Task Preflight
 
 Interrupt only for choices that materially change product behavior, contract, architecture, security, data, cost, scope or recoverability. Batch non-blocking questions.
 
@@ -90,3 +121,7 @@ Analysis/review may run in parallel. One writer owns a change boundary by defaul
 6. CQRS, event sourcing, microservices, saga or broad architecture rewrites require evidence and a material decision before adoption.
 
 Never refactor unrelated code merely to make the repository resemble a reference architecture.
+
+## System self-change
+
+When this repository itself changes, the final review must include the Documentation Impact Gate in `docs/MAINTENANCE.md`. A system change is incomplete if affected docs, flows, diagrams, examples, scenarios, templates/schemas, VERSION or CHANGELOG are stale.

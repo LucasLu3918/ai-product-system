@@ -4,8 +4,10 @@
 
 ```text
 User Request
+→ System Update Preflight
 → Workspace Bootstrap
-→ Preflight
+→ Task Preflight
+→ Primary Planning Detection
 → Human decision only when materially required
 → Intent + Work Mode
 → Project State
@@ -17,10 +19,35 @@ User Request
 → Execute
 → Independent Review
 → Artifact / Quality Gate
-→ Persist State
+→ Persist State + System Provenance
 ```
 
-## Preflight
+## System Update Preflight
+
+Before any **mutating implementation session**, run:
+
+```bash
+aips preflight <target-project-path>
+```
+
+The preflight updates the **AI Product System repository**, not the target project's Git repository.
+
+Rules:
+
+- system repo must be clean and on `main`;
+- fetch `origin/main`;
+- update only with `git pull --ff-only`;
+- never auto merge/rebase divergent system history;
+- a MAJOR version change requires explicit review and `--allow-major`;
+- after update, re-exec the updated CLI and validate the repository;
+- initialize the project's minimum `.ai/` workspace when missing;
+- record exact system version + commit in `.ai/SYSTEM.yaml`.
+
+If update cannot be completed safely, stop implementation and surface the reason.
+
+Read-only explanation/research that does not mutate a project does not need to modify local state solely to satisfy this rule.
+
+## Task Preflight
 
 Before implementation, check only what can materially change the outcome:
 
@@ -33,6 +60,25 @@ Before implementation, check only what can materially change the outcome:
 If a material choice exists, present a concise option set, recommend one, and stop affected work until the user decides. Batch non-blocking questions instead of interrupting repeatedly.
 
 Never invent project facts. When expertise can reduce user burden, propose a professional solution rather than asking the user to design it for the agent.
+
+## Primary Planning Detection
+
+If the request creates or materially revises the **primary product/project definition** that future implementers will rely on, use the Reproducible Planning Package protocol in `orchestration/PLANNING_PACKAGE.md`.
+
+Examples include a new product, major redesign, platform plan, broad architecture/product plan, or other authoritative blueprint.
+
+For these tasks:
+
+1. resolve the target workspace before creating the authoritative plan;
+2. if the user did not specify a workspace, ask where to persist it;
+3. persist a complete Planning Package;
+4. run cross-document/cross-role consistency review;
+5. **Gate 1:** wait for user approval/revision of the persisted plan;
+6. after Gate 1 approval, derive Initial Implementation Items + Recommended Implementation Flow;
+7. **Gate 2:** ask whether to proceed and wait for explicit implementation approval;
+8. only then begin implementation.
+
+Simple bugfixes, isolated API changes, narrow research and local refactors do not require a full product Planning Package.
 
 ## Project state
 
@@ -105,6 +151,12 @@ Selected skills describe reasoning/coding/reliability needs; they never hard-cod
 
 Subagents receive only the context required for their objective. Do not delegate vague work or duplicate the full primary context. Escalate tier/context when evidence shows the assignment is insufficient; de-escalate after the difficult portion is complete. See `orchestration/MODEL_ROUTING.md`.
 
+## System-change maintenance
+
+When modifying this AI Product System itself, pass the Documentation Impact Gate in `docs/MAINTENANCE.md`. Assess related documentation, flows, Mermaid architecture diagrams, examples, scenarios, schemas/templates, VERSION and CHANGELOG. Update affected artifacts; explicitly treat unaffected artifacts as N/A rather than editing them unnecessarily.
+
 ## Completion
 
 A task is complete only when its acceptance criteria, required review, required artifacts and persisted workspace state are satisfied. Producing code or prose alone is not completion.
+
+For a primary planning task, completion of the Planning Package means the persisted plan is ready for Gate 1 review; it does **not** imply implementation approval.
