@@ -9,6 +9,15 @@ completed: []
 blocked: []
 waiting_for: []
 pending_decisions: []
+requirement_status: null
+external_context: []
+review:
+  report: null
+  unresolved_findings: []
+lessons:
+  run: []
+  project: []
+  system_capability_candidates: []
 temporary_overrides: []
 artifacts: []
 delivery:

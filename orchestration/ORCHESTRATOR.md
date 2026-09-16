@@ -8,30 +8,33 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 2. Bootstrap/read project `.ai/` state.
 3. If the target is the AI Product System itself, run System Self-Improvement Review and Constitution Impact Check; wait for direction approval.
 4. Detect whether the request is a large/core change; if so, create the Core Change Proposal and obtain explicit approval before implementation.
-5. Run task preflight: material recommendation, unknown, risk, conflict and capability-gap checks.
-6. Detect whether the task creates/revises the primary product/project plan and whether complete production delivery is in scope.
-7. For a primary planning task, resolve the persistence workspace before authoring the authoritative plan; if absent, ask the user.
-8. If the request targets an existing project, discover applicable instructions before generic skills.
-9. If a material decision is needed, present the smallest useful option set and stop affected work.
-10. Classify intent; choose one primary work mode.
-11. Detect project state (`greenfield`, `brownfield`, `unknown`).
-12. Classify Product Baseline SAL / Change Security Impact / Reliability Impact when relevant.
-13. Build a minimal Context Manifest.
-14. Resolve the primary role, then only necessary supporting roles, including Security Engineer when required by Effective SAL. Before proposing a new Role/Capability/Skill, run Capability Reuse Check.
-15. Resolve capabilities and leaf skills from task evidence and assurance requirements. For creative work, load approved Brand Profile and user-provided assets/references before generic style knowledge.
-16. Build an Execution Profile from business impact, complexity, risk, assurance and selected skill requirements.
-17. Decide whether bounded subagents are useful; resolve each subagent model/context independently.
-18. For primary planning, create/persist the Reproducible Planning Package and run cross-role consistency review, including planning-stage security review for SAL 3–4.
-19. Gate 1: wait for human Planning Package approval.
-20. After Gate 1, derive Initial Implementation Items + Recommended Implementation Flow.
-21. Gate 2: wait for explicit human implementation approval.
-22. Select eligible model/tools using minimum sufficient intelligence; route deterministic data-processing steps to existing tools or small helpers before model reasoning.
-23. Execute deterministic helpers first where suitable, pass only structured results/evidence references back to the agent, then execute reasoning-heavy work inside the approved boundary.
-24. Expand context, security review depth or model tier only when documented evidence shows a gap.
-25. Run independent review with an independently resolved reviewer tier where required.
-26. For SAL 3–4 affected work, persist Security Review evidence and run the Security Release Gate.
-27. Validate acceptance criteria and artifacts; when production delivery is in scope, evaluate exact-candidate Release Readiness, deploy through the approved environment flow, and verify production health after promotion.
-28. Persist state, temporary overrides, provenance, assurance profile, exact system version/commit and next actions.
+5. Run task preflight and resolve requirement status (READY / NEEDS_CLARIFICATION / BLOCKED). If material ambiguity remains, use Progressive Requirement Clarification and stop implementation until READY.
+6. Resolve required user-provided external sources using connector-first External Context Resolution before asking for manual content.
+7. Detect whether the task creates/revises the primary product/project plan and whether complete production delivery is in scope.
+8. For a primary planning task, resolve the persistence workspace before authoring the authoritative plan; if absent, ask the user.
+9. If the request targets an existing project, discover applicable instructions before generic skills.
+10. If a material decision is needed, present the smallest useful option set and stop affected work.
+11. Classify intent; choose one primary work mode.
+12. Detect project state (`greenfield`, `brownfield`, `unknown`).
+13. Classify Product Baseline SAL / Change Security Impact / Reliability Impact when relevant.
+14. Build a minimal Context Manifest.
+15. Resolve the primary role, then only necessary supporting roles, including Security Engineer when required by Effective SAL. Before proposing a new Role/Capability/Skill, run Capability Reuse Check.
+16. Resolve capabilities and leaf skills from task evidence and assurance requirements. For creative work, load approved Brand Profile and user-provided assets/references before generic style knowledge.
+17. Build an Execution Profile from business impact, complexity, risk, assurance and selected skill requirements.
+18. Decide whether bounded subagents are useful; resolve each subagent model/context independently.
+19. For primary planning, create/persist the Reproducible Planning Package and run cross-role consistency review, including planning-stage security review for SAL 3–4.
+20. Gate 1: wait for human Planning Package approval.
+21. After Gate 1, derive Initial Implementation Items + Recommended Implementation Flow.
+22. Gate 2: wait for explicit human implementation approval.
+23. Select eligible model/tools using minimum sufficient intelligence; route deterministic data-processing steps to existing tools or small helpers before model reasoning.
+24. Execute deterministic helpers first where suitable, pass only structured results/evidence references back to the agent, then execute reasoning-heavy work inside the approved boundary.
+25. For existing UI polish, run the rendered Visual Polish loop when applicable.
+26. Resolve independent review depth: ordinary material work uses an independent reviewer; large/core/high-risk work uses only the needed Multi-Perspective Review Panel.
+27. Consolidate findings, return them to the original Author for fixes, then run targeted re-review unless the Change Boundary materially expanded.
+28. For SAL 3–4 affected work, persist Security Review evidence and run the Security Release Gate.
+29. Validate acceptance criteria and artifacts; when production delivery is in scope, evaluate exact-candidate Release Readiness, deploy through the approved environment flow, and verify production health after promotion.
+30. Extract review lessons (run/project/system capability) and surface any generalizable capability-improvement recommendation to the user without silently changing permanent system behavior.
+31. Persist state, temporary overrides, provenance, assurance profile, lessons, exact system version/commit and next actions.
 
 ## System Update Preflight
 
@@ -83,7 +86,9 @@ Nearest scoped instructions beat broader instructions. Current explicit user dec
 
 ## Task Preflight
 
-Interrupt only for choices that materially change product behavior, contract, architecture, security, data, cost, scope or recoverability. Batch non-blocking questions.
+Use `orchestration/REQUIREMENT_CLARIFICATION.md`.
+
+Interrupt only for choices that materially change product behavior, contract, architecture, security, data, cost, scope or recoverability. Use safe professional defaults for non-material ambiguity and ask the smallest useful question when a user decision is truly needed. Do not begin broad implementation while status is NEEDS_CLARIFICATION or BLOCKED.
 
 If expertise is missing, prefer:
 
@@ -199,3 +204,18 @@ For production delivery:
 10. run post-deploy health/smoke/log/metric checks and rollback/roll-forward when verification fails.
 
 Release Readiness is one consolidated readiness decision, not a replacement for constitutional/governance/security approvals.
+
+
+## External context resolution
+
+Use `orchestration/EXTERNAL_CONTEXT_RESOLUTION.md` for user-provided Jira/Confluence/Drive/GitHub/other external references. Prefer exact connectors/MCP/apps, guide authorization when needed, preserve the pending task, and resume after authorization. Ask for manual content only after supported retrieval paths fail.
+
+## Visual implementation polish
+
+Use `orchestration/VISUAL_POLISH.md` when an existing UI looks awkward/inconsistent but the approved direction should be preserved. Prefer token/shared-component fixes and verify rendered screenshots/responsive/states before PASS.
+
+## Multi-perspective review and learning
+
+Use `orchestration/MULTI_REVIEW.md` for large/core/high-risk changes. Resolve reviewer perspectives from the actual Change Boundary, run bounded read-only review in parallel where useful, normalize/deduplicate findings, and keep the original Author as the writer.
+
+After fixes, re-review only affected findings/diffs/tests unless scope expanded. Persist lessons at run/project level when useful; recommend System Capability improvement to the user only when evidence is repeated/generalizable.

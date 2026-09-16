@@ -6,7 +6,8 @@
 User Request
 → System Update Preflight
 → Workspace Bootstrap
-→ Task Preflight
+→ Task Preflight / Requirement Readiness
+→ External Context Resolution when needed
 → Primary Planning / Full Product Delivery Detection
 → Human decision only when materially required
 → Intent + Work Mode
@@ -20,7 +21,8 @@ User Request
 → Model + Tool Routing
 → Deterministic Automation when suitable
 → Execute
-→ Independent Review
+→ Independent or Multi-Perspective Review
+→ Author Fix / Targeted Re-review when needed
 → Artifact / Quality Gate
 → Release Readiness / Deployment when production delivery is in scope
 → Persist State + System Provenance
@@ -110,6 +112,8 @@ Before implementation, check only what can materially change the outcome:
 - instructions that materially conflict;
 - security assurance or reliability impact that materially changes review/gating.
 
+If the request is not implementation-ready, load `orchestration/REQUIREMENT_CLARIFICATION.md`. Use READY / NEEDS_CLARIFICATION / BLOCKED, ask only materially blocking questions, offer concrete options/defaults, and do not begin broad implementation until the goal is READY.
+
 If a material choice exists, present a concise option set, recommend one, and stop affected work until the user decides. Batch non-blocking questions instead of interrupting repeatedly.
 
 Never invent project facts. When expertise can reduce user burden, propose a professional solution rather than asking the user to design it for the agent.
@@ -190,6 +194,30 @@ For visual or brand work:
 - run `visual-quality-review` for material visual deliverables.
 
 Styles under `references/creative/styles/` are reference data, not separate skills.
+
+## External context
+
+When a task depends on a user-provided external URL/reference, load `orchestration/EXTERNAL_CONTEXT_RESOLUTION.md`.
+
+Prefer the exact connected source. If a connector/MCP/app exists but needs authorization, guide authorization and preserve the pending task so work resumes afterward. Only ask the user to paste/upload content after supported connection/public-access fallbacks are exhausted.
+
+## Visual implementation polish
+
+When an existing UI is directionally correct but visually awkward/inconsistent, use `orchestration/VISUAL_POLISH.md` instead of restarting Creative Direction.
+
+Defaults:
+- Preserve Before Redesign;
+- Consistency First;
+- shared token/component fixes before page-specific patches;
+- rendered screenshot/responsive/state verification before PASS when the UI can be run.
+
+## Multi-perspective review
+
+For large/core/high-risk changes where one reviewer is insufficient, load `orchestration/MULTI_REVIEW.md`.
+
+Resolve only relevant existing reviewer roles. Reviews are bounded/read-only by default, findings are normalized/deduplicated, the original Author performs fixes, and re-review is targeted unless the Change Boundary expanded.
+
+After material review, extract run/project/system-capability lessons. Permanent system capability changes require user-approved System Self-Improvement; never silently train/modify Roles or Skills from one review.
 
 ## Progressive context
 

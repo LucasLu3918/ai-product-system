@@ -129,6 +129,8 @@ The Router still considers privacy, task complexity, tools, context and total co
 
 Reviewer tier is resolved independently from author tier. A simple implementation may still require a stronger reviewer when hidden failure modes are costly; documentation or cosmetic review may use a lower tier.
 
+For Multi-Perspective Review, route each reviewer independently by its bounded perspective. Do not copy the full author context to every reviewer. Prefer parallel read-only analysis and cap reviewer count to the smallest set covering the material risks. Targeted re-review should normally use smaller context/tier than the original broad review when the remaining question is narrow.
+
 ## Budget guidance
 
 Use qualitative budgets rather than provider-specific token numbers:

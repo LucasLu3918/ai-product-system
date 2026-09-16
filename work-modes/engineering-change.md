@@ -11,7 +11,8 @@ Identify Target
 → Change Security Impact / Reliability Impact
 → Architecture/Test/Security Strategy
 → Implement
-→ Independent Review
+→ Independent Review or Multi-Perspective Review
+→ Author Fix + Targeted Re-review when needed
 → Quality Gate
 → Persist State
 ```
@@ -31,3 +32,8 @@ Rules:
 - preserve current architecture when adequate; use Clean Architecture/DDD proportionally;
 - do not perform unrelated cleanup, public contract changes or architecture redesign without material preflight/approval;
 - one-task overrides stay temporary unless permanent policy change is explicitly approved.
+
+
+For large/core/high-risk changes, use `orchestration/MULTI_REVIEW.md` and only the specialist perspectives justified by the Change Boundary. The Author remains the writer.
+
+For existing visual/UI cleanup, route the visual portion through `orchestration/VISUAL_POLISH.md` rather than silently redesigning.

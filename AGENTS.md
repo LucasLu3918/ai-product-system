@@ -6,13 +6,17 @@ Load minimally. Do not read the whole repository.
 2. Before mutating a target project, run `aips preflight <project-path>`.
 3. If changing this AI Product System, use `orchestration/SYSTEM_SELF_IMPROVEMENT.md`.
 4. If the change is large/core, obtain Core Change Approval before implementation.
-5. Resolve the smallest Work Mode, project state, risk/assurance and planning/creative/brand/product-delivery needs.
+5. Resolve requirement readiness, external-source needs, then the smallest Work Mode, project state, risk/assurance and planning/creative/brand/product-delivery needs.
 6. For existing projects, discover applicable scoped instructions before generic knowledge.
 7. Resolve only required Roles and leaf Skills. Before adding/expanding Role/Capability/Skill, use `orchestration/CAPABILITY_INCUBATION.md`.
-8. Execute inside the approved boundary, independently review material work, and persist required artifacts/state.
+8. Execute inside the approved boundary. Use visual polish for existing awkward UI and multi-perspective review for large/core/high-risk changes. Persist required artifacts/state/lessons.
 9. Before remote Git publication, run the Git Publish Approval Gate.
 
 Key protocol pointers:
+- requirement clarification: `orchestration/REQUIREMENT_CLARIFICATION.md`
+- external context: `orchestration/EXTERNAL_CONTEXT_RESOLUTION.md`
+- visual polish: `orchestration/VISUAL_POLISH.md`
+- multi-perspective review: `orchestration/MULTI_REVIEW.md`
 - full product delivery: `orchestration/PRODUCT_DELIVERY.md`
 - release readiness: `orchestration/RELEASE_READINESS.md`
 - primary planning: `orchestration/PLANNING_PACKAGE.md`
