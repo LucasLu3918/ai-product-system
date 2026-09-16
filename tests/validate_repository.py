@@ -173,13 +173,12 @@ for rel in required_files + planning_templates + security_templates:
         errors.append(f"Missing required file: {rel}")
 
 workflow_text = (ROOT / ".github/workflows/validate.yml").read_text(encoding="utf-8") if (ROOT / ".github/workflows/validate.yml").exists() else ""
-for phrase in (
-    "permissions:\n  contents: read",
-    "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
-    "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
-):
-    if phrase not in workflow_text:
-        errors.append(f"validate workflow missing public-repo hardening contract: {phrase}")
+if "permissions:\n  contents: read" not in workflow_text:
+    errors.append("validate workflow missing explicit read-only contents permission")
+for action in ("actions/checkout", "actions/setup-python"):
+    match = re.search(r"uses:\\s*" + re.escape(action) + r"@([0-9a-f]{40})(?:\\s|$)", workflow_text)
+    if not match:
+        errors.append(f"validate workflow must pin {action} to an immutable full commit SHA")
 
 dependabot_text = (ROOT / ".github/dependabot.yml").read_text(encoding="utf-8") if (ROOT / ".github/dependabot.yml").exists() else ""
 for ecosystem in ('package-ecosystem: "pip"', 'package-ecosystem: "github-actions"'):
