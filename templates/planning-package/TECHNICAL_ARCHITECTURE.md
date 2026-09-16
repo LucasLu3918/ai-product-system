@@ -2,12 +2,23 @@
 
 ## Context & Constraints
 
+## Quality Profile
+
+- Quality class:
+- Performance targets:
+- Security assurance:
+- Usability/accessibility:
+- Reliability / recovery:
+- Maintainability / complexity budget:
+- Resource / TCO envelope:
+- Delivery constraints:
+
 ## System Context
 
-```mermaid
+~~~mermaid
 flowchart LR
     U[User] --> A[Application]
-```
+~~~
 
 ## Components / Boundaries
 
@@ -30,9 +41,20 @@ flowchart LR
 
 ## Security / Trust Boundaries
 
-## Observability
-
 ## Performance / Scale Assumptions
+
+## Observability Instrumentation
+
+Plan requirements before provider selection.
+
+- Structured logs:
+- Health / readiness:
+- Request / trace correlation:
+- Metrics hooks:
+- Trace hooks:
+- Audit log:
+- Sensitive data / redaction:
+- Retention requirements:
 
 ## Deployment Units
 
@@ -54,6 +76,8 @@ flowchart LR
 
 ## Runtime / Deployment
 
+Concrete hosting/observability providers are selected during Production Enablement unless already known.
+
 ## Data Migration
 
 - Required:
@@ -62,13 +86,18 @@ flowchart LR
 - Verification:
 - Recovery / rollback:
 
-## Observability
-
-- Health:
-- Logs:
-- Metrics:
-- Alerts:
-
 ## Failure / Recovery / Rollback
+
+## Resource / Cost / Time Estimate
+
+### Initial
+- Range:
+- Confidence:
+- Assumptions:
+
+### Refined
+- Range:
+- Confidence:
+- Architecture/dependency changes:
 
 ## Key Architecture Decisions
