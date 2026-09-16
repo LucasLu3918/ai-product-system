@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.15.1
+
+### Validation Architecture Cleanup
+
+- Refactor the stable `tests/validate_repository.py` entrypoint into a small aggregator over subsystem validation modules.
+- Preserve existing validation semantics while separating static contracts, runtime lifecycle, governance/resume, conformance/isolation and shell syntax checks.
+- Keep focused one-to-one Scenario evidence under `tests/evidence/`.
+- Reorganize maintenance consistency guidance by subsystem instead of accumulating version-number sections.
+- Upgrade checkout to v7.0.1 and setup-python to v7.0.0 using immutable full commit SHAs, resolving the runner Node 20 deprecation warning.
+- Raise the PyYAML dependency floor to 6.0.3.
+- Keep validator policy focused on immutable SHA pinning rather than freezing a specific action version.
+
 ## 0.15.0
 
 ### Canonical Project Identity and Resume Integrity
