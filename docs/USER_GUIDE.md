@@ -800,3 +800,33 @@ aips conformance report
 ~~~
 
 Report 會分開顯示 deterministic / lifecycle / agent_eval / manual / uncovered。只有前三者計入 automated coverage；manual 不會被包裝成自動化測試。
+
+## v0.14 Execution Isolation
+
+AIPS 現在可在 Execution Profile 中明確選擇執行隔離模式：
+
+~~~text
+shared
+→ 使用目前 Project workspace
+→ 可用，但不宣稱有隔離邊界
+
+worktree
+→ 建立真正的 Git worktree
+→ AIPS 記錄 ownership / Change Boundary
+→ 同一 Boundary 預設只允許一個 ACTIVE writer
+
+sandbox
+→ 只接受可驗證的外部 sandbox provider
+→ 沒有 provider 時回報 UNSUPPORTED / BLOCKED
+~~~
+
+常用指令：
+
+~~~bash
+aips isolation resolve --project /path/to/project --mode worktree
+aips isolation create --project /path/to/project --id change-123 --boundary orders
+aips isolation status --project /path/to/project --id change-123
+aips isolation remove --project /path/to/project --id change-123
+~~~
+
+Worktree 預設放在 AIPS 的 external config 目錄，不會在 Project source tree 裡建立額外資料夾。移除時如果發現未提交修改，AIPS 會停止清理並保留 workspace；clean worktree 移除後 branch 仍會保留，避免隱性刪除已提交成果。
