@@ -73,24 +73,34 @@ def save_json(path: Path, data: dict):
 def claude_hook_entry(command: str) -> dict:
     return {"hooks": [{"type": "command", "command": command, "timeout": 10}]}
 
+def claude_guard_entry(command: str) -> dict:
+    return {"matcher": "Bash", "hooks": [{"type": "command", "command": command, "timeout": 10}]}
+
 def is_aips_hook(group: dict) -> bool:
     return any(HOOK_MARKER in str(h.get("command", "")) for h in (group.get("hooks") or []) if isinstance(h, dict))
 
-def install_claude_hook(settings: Path, command: str):
+def _install_aips_group(groups: list, entry: dict):
+    for i, group in enumerate(groups):
+        if isinstance(group, dict) and is_aips_hook(group):
+            groups[i] = entry
+            return
+    groups.append(entry)
+
+def install_claude_hook(settings: Path, command: str, guard_command: str | None = None):
     try:
         data = load_json(settings)
     except Exception as exc:
         return "ERROR", f"cannot safely parse Claude settings: {exc}"
     hooks = data.setdefault("hooks", {})
-    groups = hooks.setdefault("UserPromptSubmit", [])
-    if not isinstance(groups, list):
+    prompt_groups = hooks.setdefault("UserPromptSubmit", [])
+    if not isinstance(prompt_groups, list):
         return "ERROR", "Claude hooks.UserPromptSubmit is not a list"
-    for i, group in enumerate(groups):
-        if isinstance(group, dict) and is_aips_hook(group):
-            groups[i] = claude_hook_entry(command)
-            break
-    else:
-        groups.append(claude_hook_entry(command))
+    _install_aips_group(prompt_groups, claude_hook_entry(command))
+    if guard_command:
+        guard_groups = hooks.setdefault("PreToolUse", [])
+        if not isinstance(guard_groups, list):
+            return "ERROR", "Claude hooks.PreToolUse is not a list"
+        _install_aips_group(guard_groups, claude_guard_entry(guard_command))
     save_json(settings, data)
     return "OK", str(settings)
 
@@ -104,11 +114,12 @@ def uninstall_claude_hook(settings: Path):
     hooks = data.get("hooks")
     if not isinstance(hooks, dict):
         return "OK", "no hooks"
-    groups = hooks.get("UserPromptSubmit")
-    if isinstance(groups, list):
-        hooks["UserPromptSubmit"] = [g for g in groups if not (isinstance(g, dict) and is_aips_hook(g))]
-        if not hooks["UserPromptSubmit"]:
-            hooks.pop("UserPromptSubmit", None)
+    for event in ("UserPromptSubmit", "PreToolUse"):
+        groups = hooks.get(event)
+        if isinstance(groups, list):
+            hooks[event] = [g for g in groups if not (isinstance(g, dict) and is_aips_hook(g))]
+            if not hooks[event]:
+                hooks.pop(event, None)
     if not hooks:
         data.pop("hooks", None)
     save_json(settings, data)
@@ -118,14 +129,14 @@ def main():
     p = argparse.ArgumentParser()
     p.add_argument("action", choices=["install-block","uninstall-block","install-claude-hook","uninstall-claude-hook"])
     p.add_argument("--target"); p.add_argument("--source"); p.add_argument("--snapshot")
-    p.add_argument("--settings"); p.add_argument("--command")
+    p.add_argument("--settings"); p.add_argument("--command"); p.add_argument("--guard-command")
     a = p.parse_args()
     if a.action == "install-block":
         status, message = install_block(Path(a.target), Path(a.source), Path(a.snapshot))
     elif a.action == "uninstall-block":
         status, message = uninstall_block(Path(a.target), Path(a.snapshot))
     elif a.action == "install-claude-hook":
-        status, message = install_claude_hook(Path(a.settings), str(a.command))
+        status, message = install_claude_hook(Path(a.settings), str(a.command), str(a.guard_command) if a.guard_command else None)
     else:
         status, message = uninstall_claude_hook(Path(a.settings))
     print(json.dumps({"status": status, "message": message}, ensure_ascii=False))

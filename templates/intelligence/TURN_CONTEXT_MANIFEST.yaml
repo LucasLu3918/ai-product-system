@@ -3,6 +3,7 @@ version: 1
 runtime:
   id: unknown
   capability: MANUAL
+  governance_enforcement: ADVISORY
 
 project:
   id: null
@@ -30,6 +31,10 @@ requirements:
   initialize_intelligence: false
   targeted_refresh: []
   change_impact_required: false
+
+resolution:
+  explained: false
+  decisions: []
 
 fail_policy:
   mode: soft

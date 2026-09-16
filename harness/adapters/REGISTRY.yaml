@@ -6,6 +6,7 @@ adapters:
     detect_command: codex
     strategy: managed_global_instruction_block
     capability: CONTEXT_ALWAYS
+    governance_enforcement: ADVISORY
     source: harness/adapters/codex/AGENTS.md
 
   claude-code:
@@ -15,6 +16,9 @@ adapters:
     capability:
       preferred: TURN_NATIVE
       fallback: CONTEXT_ALWAYS
+    governance_enforcement:
+      preferred: TOOL_GUARDED
+      fallback: ADVISORY
     source: harness/adapters/claude-code/CLAUDE.md
 
   gemini-cli:
@@ -22,6 +26,7 @@ adapters:
     detect_command: gemini
     strategy: official_extension_before_agent
     capability: TURN_NATIVE
+    governance_enforcement: TOOL_GUARDED
     source: harness/adapters/gemini-cli
 
   generic-manual:
@@ -29,4 +34,5 @@ adapters:
     detect_command: null
     strategy: manual_bootstrap
     capability: MANUAL
+    governance_enforcement: UNSUPPORTED
     source: harness/adapters/generic/BOOTSTRAP.md

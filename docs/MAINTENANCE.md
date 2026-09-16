@@ -193,3 +193,16 @@ Rules:
 - never remove a relevant test merely to obtain a green result.
 
 Prefer the strongest practical deterministic evidence for affected behavior while avoiding unrelated full-suite cost that adds no confidence.
+
+## v0.11 consistency
+
+When Approval Binding / Governance Enforcement changes, review together:
+
+- Approval Record template + governance_guard.py;
+- Git Publish/Core Change/System Improvement approval fields;
+- Runtime adapter state/ownership and Claude/Gemini pre-tool hooks;
+- TURN_CONTEXT_MANIFEST explanation metadata;
+- Harness/System architecture diagrams;
+- scenarios 096-100 and deterministic guard tests.
+
+Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverifiable.

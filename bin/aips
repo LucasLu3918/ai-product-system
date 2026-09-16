@@ -109,7 +109,10 @@ adapter_strategy_value() {
 }
 
 write_adapter_state() {
-  local id="$1" status="$2" strategy="$3" resource="${4:-}" capability="${5:-MANUAL}"
+  local id="$1" status="$2" strategy="$3" resource="${4:-}" capability="${5:-MANUAL}" enforcement="${6:-}"
+  if [ -z "$enforcement" ]; then
+    [ "$capability" = "UNSUPPORTED" ] && enforcement="UNSUPPORTED" || enforcement="ADVISORY"
+  fi
   mkdir -p "$ADAPTER_STATE_HOME"
   cat > "$(adapter_state_file "$id")" <<EOF
 id: "$id"
@@ -117,6 +120,7 @@ status: "$status"
 strategy: "$strategy"
 resource: "$resource"
 capability: "$capability"
+governance_enforcement: "$enforcement"
 updated_at: "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 EOF
 }
@@ -127,6 +131,7 @@ write_ownership_manifest() {
   local codex_strategy claude_strategy gemini_strategy
   local codex_resource claude_resource gemini_resource
   local codex_capability claude_capability gemini_capability
+  local codex_enforcement claude_enforcement gemini_enforcement
 
   codex_status="$(adapter_status_value codex 2>/dev/null || echo NOT_DETECTED)"
   claude_status="$(adapter_status_value claude-code 2>/dev/null || echo NOT_DETECTED)"
@@ -140,6 +145,9 @@ write_ownership_manifest() {
   codex_capability="$(adapter_state_value codex capability 2>/dev/null || echo MANUAL)"
   claude_capability="$(adapter_state_value claude-code capability 2>/dev/null || echo MANUAL)"
   gemini_capability="$(adapter_state_value gemini-cli capability 2>/dev/null || echo MANUAL)"
+  codex_enforcement="$(adapter_state_value codex governance_enforcement 2>/dev/null || echo ADVISORY)"
+  claude_enforcement="$(adapter_state_value claude-code governance_enforcement 2>/dev/null || echo ADVISORY)"
+  gemini_enforcement="$(adapter_state_value gemini-cli governance_enforcement 2>/dev/null || echo ADVISORY)"
 
   {
     cat <<EOF
@@ -197,16 +205,19 @@ adapters:
   codex:
     status: "$codex_status"
     capability: "$codex_capability"
+    governance_enforcement: "$codex_enforcement"
     strategy: "$codex_strategy"
     resource: "$codex_resource"
   claude-code:
     status: "$claude_status"
     capability: "$claude_capability"
+    governance_enforcement: "$claude_enforcement"
     strategy: "$claude_strategy"
     resource: "$claude_resource"
   gemini-cli:
     status: "$gemini_status"
     capability: "$gemini_capability"
+    governance_enforcement: "$gemini_enforcement"
     strategy: "$gemini_strategy"
     resource: "$gemini_resource"
 
@@ -241,7 +252,7 @@ install_codex_adapter() {
 install_claude_adapter() {
   local target="$HOME/.claude/CLAUDE.md"
   local settings="$HOME/.claude/settings.json"
-  local py hook_cmd memory_ok="false" hook_ok="false"
+  local py hook_cmd guard_cmd memory_ok="false" hook_ok="false"
   py="$(python_bin)"
   if ! command -v claude >/dev/null 2>&1; then
     write_adapter_state "claude-code" "NOT_DETECTED" "managed_memory_plus_prompt_hook" "" "UNSUPPORTED"
@@ -253,12 +264,13 @@ install_claude_adapter() {
   fi
 
   hook_cmd="AIPS_MANAGED_HOOK=1 AIPS_BIN='$SYSTEM_DIR/bin/aips' '$py' '$SYSTEM_DIR/scripts/turn_context_hook.py' --runtime claude-code"
-  if "$py" "$SYSTEM_DIR/scripts/manage_runtime_adapter.py" install-claude-hook       --settings "$settings" --command "$hook_cmd" >/dev/null; then
+  guard_cmd="AIPS_MANAGED_HOOK=1 AIPS_BIN='$SYSTEM_DIR/bin/aips' '$py' '$SYSTEM_DIR/scripts/governance_guard.py' hook --runtime claude-code"
+  if "$py" "$SYSTEM_DIR/scripts/manage_runtime_adapter.py" install-claude-hook       --settings "$settings" --command "$hook_cmd" --guard-command "$guard_cmd" >/dev/null; then
     hook_ok="true"
   fi
 
   if [ "$hook_ok" = "true" ]; then
-    write_adapter_state "claude-code" "AUTOMATIC" "managed_memory_plus_prompt_hook" "$target|$settings" "TURN_NATIVE"
+    write_adapter_state "claude-code" "AUTOMATIC" "managed_memory_plus_prompt_hook" "$target|$settings" "TURN_NATIVE" "TOOL_GUARDED"
     say "Harness adapter composed: claude-code capability=TURN_NATIVE"
   elif [ "$memory_ok" = "true" ]; then
     write_adapter_state "claude-code" "AUTOMATIC" "managed_memory_block" "$target" "CONTEXT_ALWAYS"
@@ -281,7 +293,7 @@ install_gemini_adapter() {
   current="$(adapter_status_value "$id" 2>/dev/null || true)"
   if gemini extensions list 2>/dev/null | grep -q "aips-global-harness"; then
     if [ "$current" = "AUTOMATIC" ]; then
-      write_adapter_state "$id" "AUTOMATIC" "official_extension_before_agent" "aips-global-harness" "TURN_NATIVE"
+      write_adapter_state "$id" "AUTOMATIC" "official_extension_before_agent" "aips-global-harness" "TURN_NATIVE" "TOOL_GUARDED"
       return 0
     fi
     write_adapter_state "$id" "CONFLICT" "official_extension_before_agent" "aips-global-harness" "MANUAL"
@@ -290,7 +302,7 @@ install_gemini_adapter() {
   fi
 
   if gemini extensions link "$source" >/dev/null 2>&1; then
-    write_adapter_state "$id" "AUTOMATIC" "official_extension_before_agent" "aips-global-harness" "TURN_NATIVE"
+    write_adapter_state "$id" "AUTOMATIC" "official_extension_before_agent" "aips-global-harness" "TURN_NATIVE" "TOOL_GUARDED"
     say "Harness adapter installed: gemini-cli capability=TURN_NATIVE"
   else
     write_adapter_state "$id" "ERROR" "official_extension_before_agent" "" "MANUAL"
@@ -387,16 +399,17 @@ harness_status() {
   say "Bootstrap: $SYSTEM_DIR/harness/BOOTSTRAP.md"
   local id
   for id in codex claude-code gemini-cli; do
-    local state status strategy resource capability
+    local state status strategy resource capability enforcement
     state="$(adapter_state_file "$id")"
     if [ -f "$state" ]; then
       status="$(adapter_state_value "$id" status 2>/dev/null || echo UNKNOWN)"
       strategy="$(adapter_state_value "$id" strategy 2>/dev/null || true)"
       resource="$(adapter_state_value "$id" resource 2>/dev/null || true)"
       capability="$(adapter_state_value "$id" capability 2>/dev/null || echo MANUAL)"
-      say "$id: $status capability=$capability ($strategy)${resource:+ -> $resource}"
+      enforcement="$(adapter_state_value "$id" governance_enforcement 2>/dev/null || echo ADVISORY)"
+      say "$id: $status capability=$capability enforcement=$enforcement ($strategy)${resource:+ -> $resource}"
     else
-      say "$id: NOT_DETECTED capability=UNSUPPORTED"
+      say "$id: NOT_DETECTED capability=UNSUPPORTED enforcement=UNSUPPORTED"
     fi
   done
 }

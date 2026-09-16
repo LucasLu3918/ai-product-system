@@ -1,0 +1,23 @@
+version: 1
+approval:
+  id: null
+  type: null
+  status: PENDING
+  approved_by: null
+  approved_at: null
+proposal:
+  fingerprint: null
+scope:
+  fingerprint: null
+  branch: null
+  remote: null
+  candidate_commit: null
+  files: []
+  boundaries: []
+  operations: []
+evidence:
+  validation: []
+  unresolved: []
+metadata:
+  created_at: null
+  updated_at: null

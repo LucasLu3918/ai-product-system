@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.11.0
+
+### Enforceable Governance
+
+- Add machine-readable Approval Records with canonical SHA-256 proposal/scope fingerprints and stale-approval detection.
+- Separate Runtime context capability from Governance Enforcement capability: ADVISORY / TOOL_GUARDED / ENFORCED / UNSUPPORTED.
+- Add deterministic Git-publication guard primitives for native pre-tool integrations while keeping unsupported runtimes advisory.
+- Add structured Turn Context explanation metadata without persisting chain-of-thought.
+- Add backward-compatible workspace governance state and scenarios 096-100.
+- Constitution, Roles, Skills, Capabilities and Approval Gate count remain unchanged.
+
+
 ## 0.10.0
 
 ### Self-Improvement Decision Quality

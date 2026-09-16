@@ -107,3 +107,6 @@ Approved additional optimizations:
 Deferred optimizations:
 Approved by:
 Approved at:
+Approval record:
+Proposal fingerprint:
+Scope fingerprint:

@@ -404,3 +404,16 @@ For SAL 3–4 affected work, completion also requires the applicable Security Re
 For a complete product, local completion is explicitly `LOCAL_COMPLETE`. If production was not requested, this can be the completed delivery state after the user declines/defer Production Enablement.
 
 When production delivery is part of the approved scope, completion requires Release Readiness, applicable staging verification, production promotion, post-deploy verification and persisted evidence before `PRODUCTION_VERIFIED`. Code generation alone is not completion.
+
+## Enforceable Governance
+
+Approval semantics remain Human-governed, but approval validity may be machine-verifiable.
+
+Rules:
+
+- bind approved proposal/scope to canonical SHA-256 fingerprints;
+- material scope drift becomes APPROVAL_STALE and stops the affected protected action;
+- report runtime context capability separately from governance enforcement capability;
+- native tool guards enforce only deterministic policy and never create approval authority;
+- structured routing explanations record outcomes/reasons only, never private chain-of-thought;
+- v0.11 protects Git publication first; broader destructive-operation interception remains deferred.

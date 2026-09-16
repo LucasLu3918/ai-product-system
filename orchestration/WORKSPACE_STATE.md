@@ -16,3 +16,9 @@ Recommended minimum:
 `STATE.yaml` is a compact resume point. Historical conversation is not required for continuation.
 
 Persist only useful state: phase, active task, blockers, accepted decisions, artifact locations and last checkpoint. Do not turn state into an exhaustive transcript.
+
+## Governance resume state
+
+STATE may point to one active machine-verifiable Approval Record and cache its status/fingerprints. The Approval Record remains the evidence artifact; STATE is only a compact resume pointer.
+
+Missing governance fields in older workspaces are valid and mean no machine-bound approval is active.

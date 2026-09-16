@@ -114,3 +114,17 @@ A current explicit user decision may override project-local instructions inside 
 ## System repository maintenance
 
 Changes to the AI Product System itself must pass the Documentation Impact Gate before release. A behavioral change must not be published while affected documentation, architecture diagrams, examples, tests/scenarios, templates/schemas, VERSION or CHANGELOG remain stale.
+
+## Approval Binding and Enforcement
+
+Existing approval gates are not duplicated by enforcement tooling.
+
+When machine-verifiable approval is used:
+
+- persist an Approval Record using `templates/governance/APPROVAL_RECORD.yaml`;
+- canonicalize proposal/scope fields before hashing;
+- bind approval to intended branch/files/boundaries/operations and candidate commit when applicable;
+- invalid fingerprint, missing approval or material actual-scope drift is `APPROVAL_STALE`;
+- runtime enforcement may tighten an operation but never grants Human approval.
+
+Governance enforcement capability is independent from context injection capability.

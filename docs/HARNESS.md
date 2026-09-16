@@ -45,3 +45,13 @@ SOURCE_REGISTRY 記錄哪個 Runtime 已 native-load 哪些 Source。Storage 去
 ## Ownership
 
 AIPS 只管理自己的 Managed Block、Claude Hook、Gemini Extension。External Project Intelligence 預設保留。
+
+## Governance Enforcement
+
+v0.11 將「Context 是否能在每個 Turn 載入」與「是否能在 Tool 執行前阻擋」拆成兩個能力。
+
+- Codex：目前以 `ADVISORY` 為安全預設。
+- Claude Code：AIPS 同時組合 UserPromptSubmit 與 PreToolUse；兩者安裝成功時可回報 `TOOL_GUARDED`。
+- Gemini CLI：Extension 使用 BeforeAgent + BeforeTool；驗證成功時可回報 `TOOL_GUARDED`。
+
+第一階段只攔截 Git publication 類操作。Guard 只驗證 Approval Record，不取代 Human 決策。
