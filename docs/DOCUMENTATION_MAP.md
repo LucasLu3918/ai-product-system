@@ -15,6 +15,7 @@
 | `harness/HARNESS_PROTOCOL.md` | Agent / Maintainer | Global/Turn Harness contract |
 | `harness/ADAPTER_CONTRACT.md` | Maintainer | Runtime capability / managed integration |
 | `orchestration/TURN_HARNESS.md` | Agent | 每 Turn context contract |
+| `orchestration/PROJECT_IDENTITY.md` | Agent / Maintainer | Canonical repository/workspace identity, fingerprints, storage namespace |
 | `orchestration/PROJECT_INTELLIGENCE.md` | Agent | Project Intelligence canonical protocol |
 | `orchestration/CHANGE_IMPACT.md` | Agent | Existing-project mutation impact guard |
 | `orchestration/EXECUTION_ISOLATION.md` | Agent / Maintainer | shared / worktree / sandbox 執行隔離與 ownership contract |
