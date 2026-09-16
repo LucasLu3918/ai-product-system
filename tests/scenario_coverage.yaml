@@ -106,10 +106,11 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "017"
     path: tests/scenarios/017-core-change-approval.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/017-core-change-approval.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/017-core-change-approval.yaml
+      - tests/agent_eval/results/017-core-change-approval.yaml
+      - scripts/agent_eval.py
   - id: "018"
     path: tests/scenarios/018-git-publish-approval.md
     coverage: manual
@@ -118,16 +119,18 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "019"
     path: tests/scenarios/019-system-self-improvement.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/019-system-self-improvement.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/019-system-self-improvement.yaml
+      - tests/agent_eval/results/019-system-self-improvement.yaml
+      - scripts/agent_eval.py
   - id: "020"
     path: tests/scenarios/020-constitutional-change.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/020-constitutional-change.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/020-constitutional-change.yaml
+      - tests/agent_eval/results/020-constitutional-change.yaml
+      - scripts/agent_eval.py
   - id: "021"
     path: tests/scenarios/021-vague-visual-request.md
     coverage: manual
@@ -154,10 +157,11 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "025"
     path: tests/scenarios/025-avoid-duplicate-role.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/025-avoid-duplicate-role.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/025-avoid-duplicate-role.yaml
+      - tests/agent_eval/results/025-avoid-duplicate-role.yaml
+      - scripts/agent_eval.py
   - id: "026"
     path: tests/scenarios/026-deterministic-automation.md
     coverage: manual
@@ -214,10 +218,11 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "035"
     path: tests/scenarios/035-progressive-requirement-clarification.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/035-progressive-requirement-clarification.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/035-progressive-requirement-clarification.yaml
+      - tests/agent_eval/results/035-progressive-requirement-clarification.yaml
+      - scripts/agent_eval.py
   - id: "036"
     path: tests/scenarios/036-safe-default-no-unnecessary-question.md
     coverage: manual
@@ -250,16 +255,18 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "041"
     path: tests/scenarios/041-multi-perspective-review-panel.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/041-multi-perspective-review-panel.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/041-multi-perspective-review-panel.yaml
+      - tests/agent_eval/results/041-multi-perspective-review-panel.yaml
+      - scripts/agent_eval.py
   - id: "042"
     path: tests/scenarios/042-author-fix-targeted-rereview.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/042-author-fix-targeted-rereview.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/042-author-fix-targeted-rereview.yaml
+      - tests/agent_eval/results/042-author-fix-targeted-rereview.yaml
+      - scripts/agent_eval.py
   - id: "043"
     path: tests/scenarios/043-review-learning-feedback.md
     coverage: manual
@@ -568,10 +575,11 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "094"
     path: tests/scenarios/094-new-skill-admission-reuse-first.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/094-new-skill-admission-reuse-first.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/094-new-skill-admission-reuse-first.yaml
+      - tests/agent_eval/results/094-new-skill-admission-reuse-first.yaml
+      - scripts/agent_eval.py
   - id: "095"
     path: tests/scenarios/095-new-skill-no-private-config.md
     coverage: manual
@@ -733,4 +741,40 @@ scenarios:
     evidence:
       - tests/evidence/identity_resume_isolation.py
       - scripts/project_intelligence.py
+      - tests/validate_repository.py
+
+  - id: "121"
+    path: tests/scenarios/121-agent-eval-case-fingerprint.md
+    coverage: deterministic
+    evidence:
+      - tests/evidence/agent_eval_framework.py
+      - scripts/agent_eval.py
+      - tests/validate_repository.py
+  - id: "122"
+    path: tests/scenarios/122-agent-eval-recorded-result-binding.md
+    coverage: deterministic
+    evidence:
+      - tests/evidence/agent_eval_framework.py
+      - scripts/agent_eval.py
+      - tests/validate_repository.py
+  - id: "123"
+    path: tests/scenarios/123-agent-eval-deterministic-rubric.md
+    coverage: deterministic
+    evidence:
+      - tests/evidence/agent_eval_framework.py
+      - scripts/agent_eval.py
+      - tests/validate_repository.py
+  - id: "124"
+    path: tests/scenarios/124-agent-eval-privacy-provider-neutral.md
+    coverage: deterministic
+    evidence:
+      - tests/evidence/agent_eval_framework.py
+      - scripts/agent_eval.py
+      - tests/validate_repository.py
+  - id: "125"
+    path: tests/scenarios/125-agent-eval-conformance-lifecycle.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/agent_eval_framework.py
+      - scripts/agent_eval.py
       - tests/validate_repository.py
