@@ -1,0 +1,1 @@
+# Scenario 085 — Uninstall Preserves Intelligence Cache\n\nNormal uninstall preserves External Project Intelligence; only explicit --remove-cache removes AIPS external project cache.\n

@@ -1,0 +1,1 @@
+# Scenario 088 — Legacy Project Knowledge Migration\n\nExisting .ai/knowledge remains preserved as migration evidence; new reusable conclusions write to Project Intelligence and canonical artifacts stay pointers.\n

@@ -1,0 +1,1 @@
+# Scenario 082 — Project Overrides Survive Refresh\n\nUser-approved additions/exceptions/exclusions are not silently overwritten by later discovery; contradictory evidence becomes a conflict.\n

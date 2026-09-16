@@ -1,0 +1,1 @@
+# Scenario 073 — Runtime Capability Truth\n\nInstallation status and TURN_NATIVE / CONTEXT_ALWAYS / MANUAL capability are reported separately and reflect installed adapter state.\n

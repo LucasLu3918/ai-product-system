@@ -1,0 +1,1 @@
+# Scenario 083 — Project Intelligence Single Writer\n\nConcurrent writers are blocked by the Intelligence writer lock; readers keep the last valid generation.\n

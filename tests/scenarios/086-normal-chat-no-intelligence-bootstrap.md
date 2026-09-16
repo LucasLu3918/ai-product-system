@@ -1,0 +1,1 @@
+# Scenario 086 — Normal Chat Does Not Bootstrap Project\n\nA general knowledge prompt may receive compact Harness context but does not trigger repository bootstrap or create Intelligence.\n

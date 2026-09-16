@@ -1,0 +1,1 @@
+# Scenario 074 — EPHEMERAL External Intelligence\n\nFirst existing-project bootstrap creates reusable Intelligence in AIPS external cache without creating project .ai/.\n

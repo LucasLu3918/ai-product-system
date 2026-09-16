@@ -1,0 +1,1 @@
+# Scenario 084 — Change Impact Before Mutation\n\nExisting-project mutation resolves Input/Output/Data/Event/Consumer/Security/Invariant impact before editing and reconciles actual diff afterward.\n

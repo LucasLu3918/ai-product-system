@@ -1,0 +1,1 @@
+# Scenario 087 — Monorepo Lazy Intelligence\n\nA component task loads system summary + target component + shared relationships, not every unrelated application.\n

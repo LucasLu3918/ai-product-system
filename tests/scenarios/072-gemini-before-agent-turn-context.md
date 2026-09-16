@@ -1,0 +1,1 @@
+# Scenario 072 — Gemini BeforeAgent Turn Context\n\nAIPS extension uses BeforeAgent to inject compact current Turn Context before planning without replacing GEMINI.md.\n

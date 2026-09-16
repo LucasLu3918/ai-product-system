@@ -1,0 +1,1 @@
+# Scenario 079 — Dirty Worktree Freshness\n\nUncommitted changes in watched paths are included in freshness and can block affected mutations until refreshed.\n

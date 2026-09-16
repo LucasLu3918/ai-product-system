@@ -1,0 +1,1 @@
+# Scenario 071 — Claude Turn Hook Composition\n\nExisting CLAUDE.md and unrelated settings/hooks remain intact while AIPS adds a managed block and UserPromptSubmit hook. Verified hook capability is TURN_NATIVE; fallback is CONTEXT_ALWAYS.\n

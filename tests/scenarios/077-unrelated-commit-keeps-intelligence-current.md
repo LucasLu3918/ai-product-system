@@ -1,0 +1,1 @@
+# Scenario 077 — Unrelated Commit Does Not Stale Intelligence\n\nA commit outside watched sources/topics does not make all Intelligence STALE.\n

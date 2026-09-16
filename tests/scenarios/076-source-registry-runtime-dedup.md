@@ -1,0 +1,1 @@
+# Scenario 076 — Source Registry Runtime-aware Dedup\n\nAGENTS/CLAUDE/GEMINI/ADR/docs are pointers, not copied content; runtime visibility controls whether a pointer must be loaded for a turn.\n

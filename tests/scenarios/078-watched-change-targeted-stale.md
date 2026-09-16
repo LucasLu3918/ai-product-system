@@ -1,0 +1,1 @@
+# Scenario 078 — Watched Change Targeted Stale\n\nA committed change matching architecture watch scope marks architecture affected without invalidating unrelated topics.\n

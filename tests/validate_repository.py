@@ -47,6 +47,12 @@ yaml_files = [
     "templates/harness/HARNESS_RESOLUTION.yaml",
     "templates/harness/ADAPTER_MANIFEST.yaml",
     "templates/harness/INSTALLATION_OWNERSHIP.yaml",
+    "templates/intelligence/PROJECT_INTELLIGENCE.yaml",
+    "templates/intelligence/SOURCE_REGISTRY.yaml",
+    "templates/intelligence/IMPACT_GRAPH.yaml",
+    "templates/intelligence/PROJECT_OVERRIDES.yaml",
+    "templates/intelligence/CHANGE_IMPACT.yaml",
+    "templates/intelligence/TURN_CONTEXT_MANIFEST.yaml",
     "templates/quality/QUALITY_PROFILE.yaml",
     "templates/knowledge/KNOWLEDGE_INDEX.yaml",
     "templates/design/PROJECT_VISUAL_PROFILE.yaml",
@@ -112,15 +118,16 @@ required_files = [
     "orchestration/REQUIREMENT_CLARIFICATION.md", "orchestration/EXTERNAL_CONTEXT_RESOLUTION.md",
     "orchestration/VISUAL_POLISH.md", "orchestration/MULTI_REVIEW.md",
     "orchestration/QUALITY_PLANNING.md", "orchestration/PROJECT_KNOWLEDGE.md",
-    "orchestration/HARNESS_RESOLUTION.md",
+    "orchestration/PROJECT_INTELLIGENCE.md", "orchestration/CHANGE_IMPACT.md",
+    "orchestration/TURN_HARNESS.md", "orchestration/HARNESS_RESOLUTION.md",
     "harness/BOOTSTRAP.md", "harness/HARNESS_PROTOCOL.md", "harness/ADAPTER_CONTRACT.md",
     "harness/adapters/codex/AGENTS.md", "harness/adapters/claude-code/CLAUDE.md",
     "harness/adapters/gemini-cli/gemini-extension.json", "harness/adapters/gemini-cli/GEMINI.md",
     "harness/adapters/generic/BOOTSTRAP.md",
     "docs/ARCHITECTURE.md", "docs/MAINTENANCE.md", "docs/INSTALLATION.md", "docs/SECURITY_ASSURANCE.md",
     "docs/GETTING_STARTED.md", "docs/USER_GUIDE.md", "docs/DOCUMENTATION_MAP.md", "docs/HARNESS.md",
-    "docs/ARCHITECTURE_OVERVIEW.md", "docs/assets/system-overview.svg",
-    "docs/assets/harness-overview.svg", "docs/assets/product-delivery-overview.svg", "docs/assets/system-lifecycle.svg",
+    "docs/PROJECT_INTELLIGENCE.md", "docs/ARCHITECTURE_OVERVIEW.md", "docs/assets/system-overview.svg",
+    "docs/assets/harness-overview.svg", "docs/assets/project-intelligence-overview.svg", "docs/assets/product-delivery-overview.svg", "docs/assets/system-lifecycle.svg",
     "examples/EXAMPLES.md", "work-modes/README.md",
     "templates/system-improvement-review.md", "templates/constitutional-change-proposal.md",
     "templates/core-change-proposal.md", "templates/git-publish-proposal.md",
@@ -137,6 +144,7 @@ required_files = [
     "templates/delivery/LOCAL_ENVIRONMENT.md", "templates/delivery/DEPLOYMENT_PLAN.md",
     "templates/delivery/RUNBOOK.md",
     "scripts/check_release_readiness.py", "scripts/harness_resolve.py",
+    "scripts/project_intelligence.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py",
     "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml",
 ]
 security_templates = [
@@ -170,12 +178,12 @@ if version and f"## {version}" not in changelog:
 architecture = (ROOT / "docs/ARCHITECTURE.md").read_text(encoding="utf-8") if (ROOT / "docs/ARCHITECTURE.md").exists() else ""
 if "mermaid" not in architecture or "flowchart" not in architecture:
     errors.append("docs/ARCHITECTURE.md must contain source-controlled Mermaid diagrams")
-for phrase in ("Runtime flow", "Update preflight", "Primary planning package", "Risk-proportional security assurance", "Installation and project lifecycle"):
+for phrase in ("Runtime flow", "Update preflight", "Primary planning package", "Risk-proportional security assurance", "Installation and project lifecycle", "Project Intelligence"):
     if phrase not in architecture:
         errors.append(f"docs/ARCHITECTURE.md missing section: {phrase}")
 
 system = (ROOT / "SYSTEM.md").read_text(encoding="utf-8") if (ROOT / "SYSTEM.md").exists() else ""
-for phrase in ("Global Agent Harness", "System Update Preflight", "System Self-Improvement", "Core Change Approval Gate", "Git Publish Approval Gate", "Primary Planning Detection", "Security / Reliability Assurance", "Project knowledge", "Quality planning", "Creative and Brand routing", "External context", "Visual implementation polish", "Multi-perspective review", "Deterministic automation", "End-to-end product delivery", "Documentation Impact Gate"):
+for phrase in ("Global Agent Harness", "System Update Preflight", "System Self-Improvement", "Core Change Approval Gate", "Git Publish Approval Gate", "Primary Planning Detection", "Security / Reliability Assurance", "Project Intelligence", "Quality planning", "Creative and Brand routing", "External context", "Visual implementation polish", "Multi-perspective review", "Deterministic automation", "End-to-end product delivery", "Documentation Impact Gate"):
     if phrase not in system:
         errors.append(f"SYSTEM.md missing required behavior: {phrase}")
 
@@ -185,8 +193,8 @@ for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"
         errors.append(f"PLANNING_PACKAGE.md missing: {phrase}")
 
 scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
-if len(scenarios) < 69:
-    errors.append(f"Expected at least 69 acceptance scenarios, found {len(scenarios)}")
+if len(scenarios) < 88:
+    errors.append(f"Expected at least 88 acceptance scenarios, found {len(scenarios)}")
 
 security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
 for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):
@@ -228,7 +236,10 @@ for rel, phrases in {
     "orchestration/PROJECT_KNOWLEDGE.md": ("Golden rule", "Knowledge types", "Staleness / invalidation", "Targeted refresh", "Promotion"),
     "orchestration/HARNESS_RESOLUTION.md": ("Applicability", "Project modes", "Instruction composition", "Runtime coverage"),
     "harness/HARNESS_PROTOCOL.md": ("Non-invasive invariant", "Adapter preference", "Ownership", "Uninstall"),
-    "harness/ADAPTER_CONTRACT.md": ("Adapter responsibilities", "Runtime-native precedence"),
+    "harness/ADAPTER_CONTRACT.md": ("Capability states", "Managed composition", "Runtime targets"),
+    "orchestration/PROJECT_INTELLIGENCE.md": ("Initial Intelligence Bootstrap", "Source registry and deduplication", "Semantic enrichment and READY", "Sensitive data", "Human review"),
+    "orchestration/CHANGE_IMPACT.md": ("Required dimensions", "Project-native style", "Diff reconciliation"),
+    "orchestration/TURN_HARNESS.md": ("Turn path latency budget", "Capability states", "Failure policy"),
 }.items():
     text = (ROOT / rel).read_text(encoding="utf-8") if (ROOT / rel).exists() else ""
     for phrase in phrases:
@@ -247,6 +258,7 @@ human_docs = (
     "docs/USER_GUIDE.md",
     "docs/INSTALLATION.md",
     "docs/HARNESS.md",
+    "docs/PROJECT_INTELLIGENCE.md",
     "docs/ARCHITECTURE_OVERVIEW.md",
     "docs/DOCUMENTATION_MAP.md",
 )
@@ -266,8 +278,12 @@ if "EPHEMERAL" not in svg or "Global Harness" not in svg:
     errors.append("System overview SVG must reflect Global Harness and EPHEMERAL/ATTACHED architecture")
 
 harness_svg = (ROOT / "docs/assets/harness-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/harness-overview.svg").exists() else ""
-if "<svg" not in harness_svg or "AIPS Global Harness" not in harness_svg:
+if "<svg" not in harness_svg or "Turn-Aware" not in harness_svg:
     errors.append("Harness architecture SVG is missing or invalid")
+
+intelligence_svg = (ROOT / "docs/assets/project-intelligence-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/project-intelligence-overview.svg").exists() else ""
+if "<svg" not in intelligence_svg or "Project Intelligence" not in intelligence_svg or "Change Impact" not in intelligence_svg:
+    errors.append("Project Intelligence architecture SVG is missing or invalid")
 
 for mode_file in (ROOT / "work-modes").glob("*.md"):
     text = mode_file.read_text(encoding="utf-8")
@@ -342,7 +358,7 @@ if "EPHEMERAL" not in lifecycle_svg or "ATTACHED" not in lifecycle_svg or "Runti
     errors.append("System lifecycle SVG must reflect Harness adapters and EPHEMERAL/ATTACHED modes")
 
 cli_text = (ROOT / "bin/aips").read_text(encoding="utf-8") if (ROOT / "bin/aips").exists() else ""
-for phrase in ("aips attach <project-path>", "aips detach <project-path>", "aips status <project-path>", "aips harness install", "aips harness uninstall", "aips harness status", "aips harness doctor", "aips harness resolve"):
+for phrase in ("aips attach <project-path>", "aips detach <project-path>", "aips status <project-path>", "aips harness install", "aips harness uninstall", "aips harness status", "aips harness doctor", "aips harness resolve", "aips intelligence bootstrap", "aips intelligence status", "aips intelligence context", "aips intelligence render"):
     if phrase not in cli_text:
         errors.append(f"bin/aips missing lifecycle command: {phrase}")
 
@@ -403,14 +419,14 @@ if product_manifest:
         errors.append("PRODUCT.yaml delivery must track local/production milestone state")
 
 workspace_state = load_yaml(ROOT / "templates/workspace/STATE.yaml") or {}
-for key in ("quality", "knowledge", "visual", "delivery"):
+for key in ("quality", "intelligence", "knowledge_compat", "visual", "delivery"):
     if key not in workspace_state:
-        errors.append(f"STATE.yaml missing v0.7 top-level key: {key}")
+        errors.append(f"STATE.yaml missing required top-level key: {key}")
 
 workspace_manifest = load_yaml(ROOT / "templates/workspace/MANIFEST.yaml") or {}
-for key in ("project_knowledge", "quality", "visual"):
+for key in ("project_intelligence", "project_knowledge_compat", "quality", "visual"):
     if key not in workspace_manifest:
-        errors.append(f"MANIFEST.yaml missing v0.7 top-level key: {key}")
+        errors.append(f"MANIFEST.yaml missing required top-level key: {key}")
 
 
 if "Project mode: EPHEMERAL (no .ai workspace created)." not in cli_text:
@@ -430,8 +446,22 @@ core_change_text = (ROOT / "templates/core-change-proposal.md").read_text(encodi
 if "Architecture Diagram Impact" not in core_change_text:
     errors.append("Core Change Proposal missing Architecture Diagram Impact")
 
+
 for rel, keys in {
-    "templates/harness/HARNESS_RESOLUTION.yaml": ("harness", "runtime", "project", "instructions", "knowledge", "state", "system"),
+    "templates/intelligence/PROJECT_INTELLIGENCE.yaml": ("schema", "generated_by", "project", "state", "topics", "canonical_artifacts"),
+    "templates/intelligence/SOURCE_REGISTRY.yaml": ("sources", "runtime_visibility", "deduplication"),
+    "templates/intelligence/IMPACT_GRAPH.yaml": ("nodes", "edges", "coverage", "unknowns"),
+    "templates/intelligence/PROJECT_OVERRIDES.yaml": ("approved_inferences", "additional_rules", "exceptions", "excluded_inferences", "conflicts"),
+    "templates/intelligence/CHANGE_IMPACT.yaml": ("change", "inputs", "outputs", "data", "events", "consumers", "compatibility", "status"),
+    "templates/intelligence/TURN_CONTEXT_MANIFEST.yaml": ("runtime", "project", "task", "context", "freshness", "requirements", "fail_policy"),
+}.items():
+    doc = load_yaml(ROOT / rel) or {}
+    for key in keys:
+        if key not in doc:
+            errors.append(f"{rel} missing top-level key: {key}")
+
+for rel, keys in {
+    "templates/harness/HARNESS_RESOLUTION.yaml": ("harness", "runtime", "project", "instructions", "intelligence", "state", "system"),
     "templates/harness/ADAPTER_MANIFEST.yaml": ("id", "runtime", "detection", "integration", "ownership", "bootstrap", "verification", "uninstall"),
     "templates/harness/INSTALLATION_OWNERSHIP.yaml": ("system", "harness", "owned_resources", "adapters", "preservation_policy"),
     "harness/adapters/REGISTRY.yaml": ("adapters",),
@@ -441,11 +471,12 @@ for rel, keys in {
         if key not in doc:
             errors.append(f"{rel} missing top-level key: {key}")
 
-resolver = ROOT / "scripts/harness_resolve.py"
-if resolver.exists():
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(resolver)], capture_output=True, text=True)
-    if compiled.returncode != 0:
-        errors.append(f"harness_resolve.py syntax failed: {compiled.stderr.strip()}")
+for helper in ("scripts/harness_resolve.py", "scripts/project_intelligence.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py"):
+    helper_path = ROOT / helper
+    if helper_path.exists():
+        compiled = subprocess.run([sys.executable, "-m", "py_compile", str(helper_path)], capture_output=True, text=True)
+        if compiled.returncode != 0:
+            errors.append(f"{helper} syntax failed: {compiled.stderr.strip()}")
 
 with tempfile.TemporaryDirectory() as tmp:
     tmp_path = Path(tmp)
@@ -497,18 +528,20 @@ with tempfile.TemporaryDirectory() as tmp:
         codex_bootstrap = home / ".codex" / "AGENTS.md"
         if not codex_bootstrap.exists():
             errors.append("Harness install did not create AIPS-owned Codex bootstrap")
-        if custom_claude.read_text(encoding="utf-8") != "# user-owned claude instructions\n":
-            errors.append("Harness install modified existing user-owned CLAUDE.md")
+        claude_after_install = custom_claude.read_text(encoding="utf-8")
+        if "# user-owned claude instructions" not in claude_after_install or "AIPS-MANAGED-BEGIN" not in claude_after_install:
+            errors.append("Harness install must preserve Claude user content while composing AIPS managed block")
         claude_state = config / "aips" / "harness" / "adapters" / "claude-code.yaml"
-        if not claude_state.exists() or 'status: "MANUAL"' not in claude_state.read_text(encoding="utf-8"):
-            errors.append("Existing user CLAUDE.md should force MANUAL adapter status")
+        claude_state_text = claude_state.read_text(encoding="utf-8") if claude_state.exists() else ""
+        if 'status: "AUTOMATIC"' not in claude_state_text or 'capability: "TURN_NATIVE"' not in claude_state_text:
+            errors.append("Claude test adapter should install TURN_NATIVE hook plus managed memory block")
         ownership_file = config / "aips" / "harness" / "installation.yaml"
         if not ownership_file.exists():
             errors.append("Harness install did not create ownership manifest")
         else:
             ownership_text = ownership_file.read_text(encoding="utf-8")
-            if "runtime_bootstrap" not in ownership_text or str(codex_bootstrap) not in ownership_text:
-                errors.append("Ownership manifest does not record AIPS-owned Codex bootstrap resource")
+            if "runtime_managed_block" not in ownership_text or str(codex_bootstrap) not in ownership_text:
+                errors.append("Ownership manifest does not record AIPS Codex managed block resource")
             if "runtime_registration" not in ownership_text or "aips-global-harness" not in ownership_text:
                 errors.append("Ownership manifest does not record AIPS-owned Gemini registration")
         if not (home / ".fake-gemini-extension").exists():
@@ -602,7 +635,166 @@ with tempfile.TemporaryDirectory() as tmp:
         if retry.returncode != 0 or harness_home.exists():
             errors.append("Harness uninstall retry should succeed after Gemini unregister recovers")
 
-for shell in ("bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh"):
+
+# v0.9 deterministic Project Intelligence lifecycle.
+with tempfile.TemporaryDirectory() as tmp:
+    base = Path(tmp)
+    project = base / "project"
+    config = base / "config"
+    project.mkdir()
+    (project / "internal" / "domain").mkdir(parents=True)
+    (project / "AGENTS.md").write_text("# Project Rules\nUse existing architecture.\n", encoding="utf-8")
+    (project / "main.go").write_text("package main\nfunc main() {}\n", encoding="utf-8")
+    (project / "internal" / "domain" / "order.go").write_text("package domain\ntype Order struct{}\n", encoding="utf-8")
+    (project / ".env").write_text("PASSWORD=super-secret\n", encoding="utf-8")
+    subprocess.run(["git", "init", "-q"], cwd=project, check=True)
+    subprocess.run(["git", "config", "user.email", "aips@example.invalid"], cwd=project, check=True)
+    subprocess.run(["git", "config", "user.name", "AIPS Test"], cwd=project, check=True)
+    subprocess.run(["git", "add", "AGENTS.md", "main.go", "internal/domain/order.go"], cwd=project, check=True)
+    subprocess.run(["git", "commit", "-qm", "initial"], cwd=project, check=True)
+
+    env = dict(os.environ)
+    env["XDG_CONFIG_HOME"] = str(config)
+    pi = ROOT / "scripts/project_intelligence.py"
+
+    boot = subprocess.run([sys.executable, str(pi), "bootstrap", "--project", str(project), "--format", "json"], env=env, capture_output=True, text=True)
+    if boot.returncode != 0:
+        errors.append(f"Project Intelligence bootstrap failed: {boot.stdout.strip()} {boot.stderr.strip()}")
+    else:
+        boot_data = json.loads(boot.stdout)
+        store = Path(boot_data["store"])
+        if (project / ".ai").exists():
+            errors.append("EPHEMERAL Intelligence bootstrap must not create project .ai")
+        if not (store / "PROJECT_INTELLIGENCE.yaml").exists():
+            errors.append("External Project Intelligence was not created")
+        registry = load_yaml(store / "SOURCE_REGISTRY.yaml") or {}
+        agents_source = [s for s in (registry.get("sources") or []) if s.get("path") == "AGENTS.md"]
+        if not agents_source or agents_source[0].get("content_duplicated") is not False:
+            errors.append("SOURCE_REGISTRY must point to AGENTS.md without duplicating content")
+        if "codex" not in (agents_source[0].get("auto_loaded_by") or []):
+            errors.append("SOURCE_REGISTRY must record Codex native AGENTS visibility")
+
+        intel_path = store / "PROJECT_INTELLIGENCE.yaml"
+        intel = load_yaml(intel_path) or {}
+        intel.setdefault("architecture", {}).update({
+            "summary": "Layered test architecture",
+            "confidence": "high",
+            "source": "topics/architecture.md",
+        })
+        intel["unknowns"] = []
+        topics = intel.setdefault("topics", {})
+        for name in ("architecture", "data-flow", "modules", "conventions", "testing", "security"):
+            topic_file = store / "topics" / f"{name}.md"
+            topic_file.parent.mkdir(parents=True, exist_ok=True)
+            topic_file.write_text(
+                f"# {name}\n\nEvidence-grounded test topic with enough content for deterministic readiness validation.\n",
+                encoding="utf-8",
+            )
+            topics[name] = {
+                "path": f"topics/{name}.md",
+                "type": "INTERPRETATION",
+                "confidence": "high",
+                "evidence": ["AGENTS.md", "main.go"],
+                "watch": ["internal/domain/**"] if name == "architecture" else [],
+            }
+        intel_path.write_text(yaml.safe_dump(intel, sort_keys=False), encoding="utf-8")
+
+        final = subprocess.run([sys.executable, str(pi), "finalize", "--project", str(project), "--format", "json"], env=env, capture_output=True, text=True)
+        if final.returncode != 0 or json.loads(final.stdout).get("readiness") != "READY":
+            errors.append(f"Project Intelligence finalize did not reach READY: {final.stdout.strip()} {final.stderr.strip()}")
+
+        review = store / "reviews" / "PROJECT_INTELLIGENCE_REVIEW.html"
+        review_text = review.read_text(encoding="utf-8") if review.exists() else ""
+        if not review.exists() or "Project Intelligence Review" not in review_text:
+            errors.append("Deterministic Project Intelligence Review HTML missing")
+        if "super-secret" in review_text or "cdn." in review_text.lower() or "<script src=" in review_text.lower():
+            errors.append("Review HTML must be self-contained and must not expose secret values")
+
+        # Unrelated commit must not stale Intelligence.
+        (project / "NOTES.txt").write_text("unrelated\n", encoding="utf-8")
+        subprocess.run(["git", "add", "NOTES.txt"], cwd=project, check=True)
+        subprocess.run(["git", "commit", "-qm", "unrelated"], cwd=project, check=True)
+        stat1 = subprocess.run([sys.executable, str(pi), "status", "--project", str(project), "--format", "json"], env=env, capture_output=True, text=True)
+        stat1_data = json.loads(stat1.stdout)
+        if (stat1_data.get("freshness") or {}).get("status") != "CURRENT":
+            errors.append("Unrelated commit should not stale Project Intelligence")
+
+        # Watched committed path must stale affected topic.
+        (project / "internal" / "domain" / "order.go").write_text("package domain\ntype Order struct{ ID string }\n", encoding="utf-8")
+        subprocess.run(["git", "add", "internal/domain/order.go"], cwd=project, check=True)
+        subprocess.run(["git", "commit", "-qm", "domain change"], cwd=project, check=True)
+        stat2 = subprocess.run([sys.executable, str(pi), "status", "--project", str(project), "--format", "json"], env=env, capture_output=True, text=True)
+        stat2_data = json.loads(stat2.stdout)
+        if (stat2_data.get("freshness") or {}).get("status") != "STALE" or "architecture" not in ((stat2_data.get("freshness") or {}).get("affected_topics") or []):
+            errors.append("Watched architecture change must stale architecture Intelligence")
+
+        # Dirty watched path is also relevant.
+        with (project / "internal" / "domain" / "order.go").open("a", encoding="utf-8") as fh:
+            fh.write("// dirty\n")
+        stat3 = subprocess.run([sys.executable, str(pi), "status", "--project", str(project), "--format", "json"], env=env, capture_output=True, text=True)
+        dirty_reasons = (json.loads(stat3.stdout).get("freshness") or {}).get("reasons") or []
+        if not any(str(x).startswith("dirty_watched_path:") for x in dirty_reasons):
+            errors.append("Dirty watched path must be reported by Intelligence freshness")
+
+        # Change impact draft must live outside the repo in EPHEMERAL mode.
+        impact = subprocess.run([sys.executable, str(pi), "impact-init", "--project", str(project), "--prompt", "modify order api", "--format", "json"], env=env, capture_output=True, text=True)
+        impact_data = json.loads(impact.stdout)
+        impact_path = Path(impact_data["path"])
+        if impact_data.get("status") != "DRAFT" or str(impact_path).startswith(str(project / ".ai")):
+            errors.append("EPHEMERAL Change Impact must persist in external AIPS cache")
+
+        # Writer lock prevents concurrent Intelligence writers.
+        lock = store / ".writer.lock"
+        lock.write_text("test", encoding="utf-8")
+        locked = subprocess.run([sys.executable, str(pi), "bootstrap", "--project", str(project), "--format", "json"], env=env, capture_output=True, text=True)
+        if locked.returncode == 0:
+            errors.append("Project Intelligence writer lock must block a second writer")
+        lock.unlink()
+
+        # Attach migrates External -> local, Detach syncs local -> External.
+        cli = ROOT / "bin/aips"
+        attach = subprocess.run(["bash", str(cli), "attach", str(project)], env=env, capture_output=True, text=True)
+        if attach.returncode != 0 or not (project / ".ai" / "intelligence" / "PROJECT_INTELLIGENCE.yaml").exists():
+            errors.append(f"Attach did not migrate External Intelligence: {attach.stdout.strip()} {attach.stderr.strip()}")
+        else:
+            detach = subprocess.run(["bash", str(cli), "detach", str(project)], env=env, capture_output=True, text=True)
+            status_after_detach = subprocess.run([sys.executable, str(pi), "status", "--project", str(project), "--format", "json"], env=env, capture_output=True, text=True)
+            detached_data = json.loads(status_after_detach.stdout)
+            if detach.returncode != 0 or detached_data.get("mode") != "EPHEMERAL" or not detached_data.get("exists"):
+                errors.append("Detach must sync local Intelligence back to External Cache")
+
+# Managed composition must preserve user-owned content and unrelated Claude settings.
+with tempfile.TemporaryDirectory() as tmp:
+    root = Path(tmp)
+    manager = ROOT / "scripts/manage_runtime_adapter.py"
+    target = root / "AGENTS.md"
+    source = root / "aips.md"
+    snapshot = root / "snapshot"
+    target.write_text("# user rule\n", encoding="utf-8")
+    source.write_text("# aips rule\n", encoding="utf-8")
+
+    added = subprocess.run([sys.executable, str(manager), "install-block", "--target", str(target), "--source", str(source), "--snapshot", str(snapshot)], capture_output=True, text=True)
+    managed_text = target.read_text(encoding="utf-8")
+    if added.returncode != 0 or "# user rule" not in managed_text or "AIPS-MANAGED-BEGIN" not in managed_text:
+        errors.append("Managed block install must preserve existing user instruction content")
+
+    removed = subprocess.run([sys.executable, str(manager), "uninstall-block", "--target", str(target), "--snapshot", str(snapshot)], capture_output=True, text=True)
+    if removed.returncode != 0 or target.read_text(encoding="utf-8") != "# user rule\n":
+        errors.append("Managed block uninstall must remove only AIPS content")
+
+    settings = root / "settings.json"
+    settings.write_text(json.dumps({"permissions": {"allow": ["Read"]}, "hooks": {"PreToolUse": [{"hooks": [{"type": "command", "command": "user-hook"}]}]}}), encoding="utf-8")
+    install_hook = subprocess.run([sys.executable, str(manager), "install-claude-hook", "--settings", str(settings), "--command", "AIPS_MANAGED_HOOK=1 echo aips"], capture_output=True, text=True)
+    settings_doc = json.loads(settings.read_text(encoding="utf-8"))
+    if install_hook.returncode != 0 or "PreToolUse" not in settings_doc.get("hooks", {}) or "UserPromptSubmit" not in settings_doc.get("hooks", {}):
+        errors.append("Claude hook composition must preserve unrelated settings/hooks")
+    remove_hook = subprocess.run([sys.executable, str(manager), "uninstall-claude-hook", "--settings", str(settings)], capture_output=True, text=True)
+    settings_doc = json.loads(settings.read_text(encoding="utf-8"))
+    if remove_hook.returncode != 0 or "PreToolUse" not in settings_doc.get("hooks", {}) or "UserPromptSubmit" in settings_doc.get("hooks", {}):
+        errors.append("Claude hook uninstall must remove only AIPS UserPromptSubmit hook")
+
+
+for shell in ("bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "harness/adapters/gemini-cli/hooks/aips-turn-context.sh"):
     p = ROOT / shell
     if p.exists():
         result = subprocess.run(["bash", "-n", str(p)], capture_output=True, text=True)

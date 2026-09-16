@@ -1,0 +1,1 @@
+# Scenario 080 — Attach / Detach Intelligence Migration\n\nAttach validates and migrates External Intelligence to .ai/intelligence; Detach syncs it back before archiving .ai/.\n

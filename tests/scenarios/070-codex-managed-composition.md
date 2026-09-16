@@ -1,0 +1,1 @@
+# Scenario 070 — Codex Managed Composition\n\nExisting ~/.codex/AGENTS.md is preserved; AIPS adds/removes only its managed block. Capability is CONTEXT_ALWAYS.\n

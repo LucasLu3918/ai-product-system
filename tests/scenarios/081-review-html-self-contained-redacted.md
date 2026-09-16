@@ -1,0 +1,1 @@
+# Scenario 081 — Review HTML Self-contained and Redacted\n\nGenerated Project Intelligence Review has no CDN/network dependency and does not copy secret values.\n
