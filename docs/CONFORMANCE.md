@@ -157,3 +157,49 @@ Automated     49.6%
 ~~~
 
 011 / 044 / 069 等仍維持 manual，直到有足夠隔離、完整的一對一 install/preflight evidence；不因鄰近 validator 而直接升級。
+
+## v0.16.2 Install / Preflight Evidence Maturity
+
+以完整隔離 fixture 實際執行 AIPS CLI，而不是只檢查 shell 文字：
+
+~~~text
+temporary AIPS Git repo
++ local bare origin
++ temporary product repo + bare origin
++ temporary HOME / XDG_CONFIG_HOME / AIPS_BIN_HOME
+→ real aips preflight / attach / detach / uninstall / install
+~~~
+
+新增 direct evidence：`tests/evidence/install_preflight_lifecycle.py`。
+
+它驗證：
+
+- System repo 必須 clean 且在 main 才可自動 Update Preflight；
+- 更新只允許 `git pull --ff-only`，diverged history 會停止；
+- MAJOR version upgrade 必須顯式 `--allow-major`；
+- 更新後會重新進入 updated CLI；
+- EPHEMERAL project 不會被 preflight 自動 Attach；
+- target product repository 不會被自動 pull；
+- ATTACHED project 的 exact system version / commit provenance 會刷新；
+- attach / status / detach / restore / uninstall lifecycle；
+- default uninstall 保留 Project `.ai/`、External Intelligence、system repo 與 venv；
+- explicit `--remove-cache --remove-venv` 才移除對應 AIPS-owned state；
+- regular file / foreign symlink CLI collision 不會被覆寫；
+- exact AIPS-owned CLI symlink 可安全重用。
+
+Evidence 過程另外發現 Python import 產生的 `__pycache__/*.pyc` 會讓 System repo 被誤判 dirty，已透過標準 Python cache ignore 修正。
+
+v0.16.2 baseline：
+
+~~~text
+Total         125
+Manual         60
+Deterministic  19
+Lifecycle      38
+Agent Eval      8
+Automated      65
+Uncovered       0
+Automated     52.0%
+~~~
+
+Scenario 011 / 044 / 069 現在有直接 lifecycle evidence，才從 manual 升級；其餘 Scenario 仍依 evidence truthfulness 維持原分類。
