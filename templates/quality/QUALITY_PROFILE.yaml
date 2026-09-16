@@ -1,0 +1,94 @@
+version: 1
+status: draft # draft | approved | stale
+
+quality_class: Q2 # Q1 | Q2 | Q3
+
+context:
+  primary_users: null
+  expected_scale:
+    active_users: null
+    concurrent_users: null
+  failure_impact: null # low | medium | high | critical
+  delivery_preference: mvp_balanced
+  operations_preference: balanced
+  data_categories: []
+
+priorities:
+  performance: medium
+  security: medium
+  usability: medium
+  reliability: medium
+  maintainability: medium
+  resource_cost: medium
+  delivery_time: medium
+
+performance:
+  targets: []
+  budgets: []
+  verification: []
+
+security:
+  assurance_level: null
+  targets: []
+  verification: []
+
+usability:
+  targets: []
+  accessibility: null
+  supported_devices: []
+  verification: []
+
+reliability:
+  availability_target: null
+  rto: null
+  rpo: null
+  backup_required: null
+  recovery_requirements: []
+  verification: []
+  observability:
+    structured_logs: required
+    health_check: required
+    metrics: conditional
+    tracing: conditional
+    dashboards: conditional
+    alerts: conditional
+    audit_log: conditional
+    retention: null
+    sensitive_data_policy: redact
+
+maintainability:
+  architecture_complexity: controlled
+  automated_tests: required
+  documentation: required
+  upgrade_strategy: null
+  verification: []
+
+resource_cost:
+  strategy: balanced_tco
+  monthly_target: null
+  engineering_resources: []
+  infrastructure_resources: []
+  external_services: []
+  operational_resources: []
+  assumptions: []
+
+delivery:
+  optimistic: null
+  expected: null
+  risk_adjusted: null
+  confidence: null
+  deadline: null
+  dependencies: []
+  milestones: []
+
+tradeoffs: []
+assumptions: []
+unknowns: []
+
+estimates:
+  initial:
+    status: pending
+    evidence: []
+  refined:
+    status: pending
+    evidence: []
