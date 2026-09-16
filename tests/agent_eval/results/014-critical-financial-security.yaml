@@ -1,0 +1,38 @@
+version: 1
+case_id: 014-critical-financial-security
+scenario_id: "014"
+case_fingerprint: sha256:1d97c883156808663d0409f347eef68bf2f78740e13ec96bc6815d7771f39b41
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: SAL4_SECURITY_REQUIRED
+  effective_sal_floor: 4
+  independent_security_engineer_required: true
+  unresolved_high_or_critical_blocks_release: true
+  required_security_areas:
+    - financial_integrity
+    - business_logic_abuse
+    - threat_modeling
+    - security_testing
+  planning_review:
+    - value_invariants
+    - state_transitions
+    - authorization
+    - audit_and_reconciliation
+    - recovery
+  implementation_review:
+    - atomicity
+    - idempotency
+    - replay
+    - duplicate_processing
+    - concurrency
+    - precision_and_rounding
+    - reversal_or_refund
+    - authorization
+  actions:
+    - update_risk_profile
+    - persist_security_evidence
+  summary: Treat paid, transferable or redeemable value as a critical financial boundary with a SAL4 floor, independent security review, integrity-focused implementation review and release blocking for unresolved High/Critical findings.
