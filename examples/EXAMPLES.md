@@ -576,3 +576,39 @@ architecture/backend/data knowledge 都不因 commit 改變而 STALE。
 **預期行為**
 
 下一個 Agent 先讀 Profile/Golden Components/Representative Routes。若 watch scope 未受影響，不重新掃整個網站；只檢查本次 affected UI。
+
+## 範例 51：安裝後直接使用原本 Agent
+
+AIPS 已安裝，Codex Adapter 顯示 AUTOMATIC。使用者直接要求修改目前 Go 專案登入 API。
+
+**預期行為**：不需要再次貼「使用 AIPS」。Agent 先 Harness Resolve，載入本次需要的 Project instructions / Knowledge / AIPS protocol，再進入既有 Requirement / Risk / Implementation 流程。
+
+## 範例 52：已有 CLAUDE.md 不覆寫
+
+使用者已經有 ~/.claude/CLAUDE.md。
+
+**預期行為**：AIPS 安裝保留原檔，Claude Code Coverage = MANUAL；不得 append AIPS import，也不得在 Uninstall 刪除使用者 CLAUDE.md。
+
+## 範例 53：未 Attach 的 Project
+
+使用者在沒有 .ai/ 的 Repository 啟動 Agent。
+
+**預期行為**：Harness Resolve 回報 EPHEMERAL。可依 Project AGENTS/ADR/Docs 執行本次任務，但不建立永久 Project Knowledge / State；只有 aips attach 才變 ATTACHED。
+
+## 範例 54：AIPS-owned bootstrap 被使用者修改
+
+AIPS 建立 ~/.codex/AGENTS.md 後使用者手動加入自己的內容。
+
+**預期行為**：Uninstall 比對 ownership snapshot 後發現不同，保留檔案並警告，不直接刪除。
+
+## 範例 55：一般聊天不跑產品規劃
+
+AIPS 已安裝，使用者問 Python tuple 和 list 差異。
+
+**預期行為**：Agent 正常回答，不建立 Planning Package、不掃描 Project、不建立 .ai/。
+
+## 範例 56：大型架構異動必須同步圖
+
+Core Change 改變 Global Harness、Project Persistence 或 Delivery Lifecycle。
+
+**預期行為**：Documentation Impact 必須檢查 docs/ARCHITECTURE.md Mermaid、Architecture Overview 與相關 SVG；受影響的圖必須更新，未受影響需 N/A + reason。

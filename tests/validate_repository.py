@@ -1,4 +1,6 @@
 from pathlib import Path
+import json
+import os
 import re
 import subprocess
 import sys
@@ -41,6 +43,10 @@ yaml_files = [
     "orchestration/schemas/risk-profile.yaml",
     "orchestration/schemas/brand-profile.yaml",
     "templates/product/PRODUCT.yaml",
+    "harness/adapters/REGISTRY.yaml",
+    "templates/harness/HARNESS_RESOLUTION.yaml",
+    "templates/harness/ADAPTER_MANIFEST.yaml",
+    "templates/harness/INSTALLATION_OWNERSHIP.yaml",
     "templates/quality/QUALITY_PROFILE.yaml",
     "templates/knowledge/KNOWLEDGE_INDEX.yaml",
     "templates/design/PROJECT_VISUAL_PROFILE.yaml",
@@ -106,10 +112,14 @@ required_files = [
     "orchestration/REQUIREMENT_CLARIFICATION.md", "orchestration/EXTERNAL_CONTEXT_RESOLUTION.md",
     "orchestration/VISUAL_POLISH.md", "orchestration/MULTI_REVIEW.md",
     "orchestration/QUALITY_PLANNING.md", "orchestration/PROJECT_KNOWLEDGE.md",
+    "orchestration/HARNESS_RESOLUTION.md",
+    "harness/BOOTSTRAP.md", "harness/HARNESS_PROTOCOL.md", "harness/ADAPTER_CONTRACT.md",
+    "harness/adapters/codex/AGENTS.md", "harness/adapters/claude-code/CLAUDE.md",
+    "harness/adapters/gemini-cli/gemini-extension.json", "harness/adapters/gemini-cli/GEMINI.md",
     "docs/ARCHITECTURE.md", "docs/MAINTENANCE.md", "docs/INSTALLATION.md", "docs/SECURITY_ASSURANCE.md",
-    "docs/GETTING_STARTED.md", "docs/USER_GUIDE.md", "docs/DOCUMENTATION_MAP.md",
+    "docs/GETTING_STARTED.md", "docs/USER_GUIDE.md", "docs/DOCUMENTATION_MAP.md", "docs/HARNESS.md",
     "docs/ARCHITECTURE_OVERVIEW.md", "docs/assets/system-overview.svg",
-    "docs/assets/product-delivery-overview.svg", "docs/assets/system-lifecycle.svg",
+    "docs/assets/harness-overview.svg", "docs/assets/product-delivery-overview.svg", "docs/assets/system-lifecycle.svg",
     "examples/EXAMPLES.md", "work-modes/README.md",
     "templates/system-improvement-review.md", "templates/constitutional-change-proposal.md",
     "templates/core-change-proposal.md", "templates/git-publish-proposal.md",
@@ -125,7 +135,7 @@ required_files = [
     "templates/product/PRODUCT_WORKSPACE.md",
     "templates/delivery/LOCAL_ENVIRONMENT.md", "templates/delivery/DEPLOYMENT_PLAN.md",
     "templates/delivery/RUNBOOK.md",
-    "scripts/check_release_readiness.py",
+    "scripts/check_release_readiness.py", "scripts/harness_resolve.py",
     "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml",
 ]
 security_templates = [
@@ -159,12 +169,12 @@ if version and f"## {version}" not in changelog:
 architecture = (ROOT / "docs/ARCHITECTURE.md").read_text(encoding="utf-8") if (ROOT / "docs/ARCHITECTURE.md").exists() else ""
 if "mermaid" not in architecture or "flowchart" not in architecture:
     errors.append("docs/ARCHITECTURE.md must contain source-controlled Mermaid diagrams")
-for phrase in ("Update preflight", "Primary planning package", "Risk-proportional security assurance"):
+for phrase in ("Runtime flow", "Update preflight", "Primary planning package", "Risk-proportional security assurance", "Installation and project lifecycle"):
     if phrase not in architecture:
         errors.append(f"docs/ARCHITECTURE.md missing section: {phrase}")
 
 system = (ROOT / "SYSTEM.md").read_text(encoding="utf-8") if (ROOT / "SYSTEM.md").exists() else ""
-for phrase in ("System Update Preflight", "System Self-Improvement", "Core Change Approval Gate", "Git Publish Approval Gate", "Primary Planning Detection", "Security / Reliability Assurance", "Project knowledge", "Quality planning", "Creative and Brand routing", "External context", "Visual implementation polish", "Multi-perspective review", "Deterministic automation", "End-to-end product delivery", "Documentation Impact Gate"):
+for phrase in ("Global Agent Harness", "System Update Preflight", "System Self-Improvement", "Core Change Approval Gate", "Git Publish Approval Gate", "Primary Planning Detection", "Security / Reliability Assurance", "Project knowledge", "Quality planning", "Creative and Brand routing", "External context", "Visual implementation polish", "Multi-perspective review", "Deterministic automation", "End-to-end product delivery", "Documentation Impact Gate"):
     if phrase not in system:
         errors.append(f"SYSTEM.md missing required behavior: {phrase}")
 
@@ -174,8 +184,8 @@ for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"
         errors.append(f"PLANNING_PACKAGE.md missing: {phrase}")
 
 scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
-if len(scenarios) < 56:
-    errors.append(f"Expected at least 56 acceptance scenarios, found {len(scenarios)}")
+if len(scenarios) < 66:
+    errors.append(f"Expected at least 66 acceptance scenarios, found {len(scenarios)}")
 
 security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
 for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):
@@ -215,6 +225,9 @@ for rel, phrases in {
     "orchestration/MULTI_REVIEW.md": ("Reviewer resolution", "Bounded parallel review", "Consolidation", "Author fix loop", "Learning extraction"),
     "orchestration/QUALITY_PLANNING.md": ("Quality classes", "Seven dimensions", "Targets and evidence", "Observability planning"),
     "orchestration/PROJECT_KNOWLEDGE.md": ("Golden rule", "Knowledge types", "Staleness / invalidation", "Targeted refresh", "Promotion"),
+    "orchestration/HARNESS_RESOLUTION.md": ("Applicability", "Project modes", "Instruction composition", "Runtime coverage"),
+    "harness/HARNESS_PROTOCOL.md": ("Non-invasive invariant", "Adapter preference", "Ownership", "Uninstall"),
+    "harness/ADAPTER_CONTRACT.md": ("Adapter responsibilities", "Runtime-native precedence"),
 }.items():
     text = (ROOT / rel).read_text(encoding="utf-8") if (ROOT / rel).exists() else ""
     for phrase in phrases:
@@ -232,6 +245,7 @@ human_docs = (
     "docs/GETTING_STARTED.md",
     "docs/USER_GUIDE.md",
     "docs/INSTALLATION.md",
+    "docs/HARNESS.md",
     "docs/ARCHITECTURE_OVERVIEW.md",
     "docs/DOCUMENTATION_MAP.md",
 )
@@ -247,6 +261,12 @@ if len(root_user_guide) > 1200 or "docs/USER_GUIDE.md" not in root_user_guide:
 svg = (ROOT / "docs/assets/system-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/system-overview.svg").exists() else ""
 if "<svg" not in svg or "AI Product System" not in svg:
     errors.append("Human architecture SVG is missing or invalid")
+if "EPHEMERAL" not in svg or "Global Harness" not in svg:
+    errors.append("System overview SVG must reflect Global Harness and EPHEMERAL/ATTACHED architecture")
+
+harness_svg = (ROOT / "docs/assets/harness-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/harness-overview.svg").exists() else ""
+if "<svg" not in harness_svg or "AIPS Global Harness" not in harness_svg:
+    errors.append("Harness architecture SVG is missing or invalid")
 
 for mode_file in (ROOT / "work-modes").glob("*.md"):
     text = mode_file.read_text(encoding="utf-8")
@@ -268,6 +288,8 @@ for key in ("status", "release", "build", "tests", "security", "staging", "appro
 delivery_svg = (ROOT / "docs/assets/product-delivery-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/product-delivery-overview.svg").exists() else ""
 if "<svg" not in delivery_svg or "End-to-End Product Delivery" not in delivery_svg:
     errors.append("Product delivery architecture SVG is missing or invalid")
+if "LOCAL_COMPLETE" not in delivery_svg or "PRODUCTION_VERIFIED" not in delivery_svg:
+    errors.append("Product delivery SVG must reflect LOCAL_COMPLETE and PRODUCTION_VERIFIED")
 
 release_checker = ROOT / "scripts/check_release_readiness.py"
 if release_checker.exists():
@@ -315,9 +337,11 @@ if "lessons" not in lessons:
 lifecycle_svg = (ROOT / "docs/assets/system-lifecycle.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/system-lifecycle.svg").exists() else ""
 if "<svg" not in lifecycle_svg or "Installation &amp; Project Lifecycle" not in lifecycle_svg:
     errors.append("System lifecycle SVG is missing or invalid")
+if "EPHEMERAL" not in lifecycle_svg or "ATTACHED" not in lifecycle_svg or "Runtime Adapters" not in lifecycle_svg:
+    errors.append("System lifecycle SVG must reflect Harness adapters and EPHEMERAL/ATTACHED modes")
 
 cli_text = (ROOT / "bin/aips").read_text(encoding="utf-8") if (ROOT / "bin/aips").exists() else ""
-for phrase in ("aips attach <project-path>", "aips detach <project-path>", "aips status <project-path>"):
+for phrase in ("aips attach <project-path>", "aips detach <project-path>", "aips status <project-path>", "aips harness install", "aips harness uninstall", "aips harness status", "aips harness doctor", "aips harness resolve"):
     if phrase not in cli_text:
         errors.append(f"bin/aips missing lifecycle command: {phrase}")
 
@@ -386,6 +410,135 @@ workspace_manifest = load_yaml(ROOT / "templates/workspace/MANIFEST.yaml") or {}
 for key in ("project_knowledge", "quality", "visual"):
     if key not in workspace_manifest:
         errors.append(f"MANIFEST.yaml missing v0.7 top-level key: {key}")
+
+
+if "Project mode: EPHEMERAL (no .ai workspace created)." not in cli_text:
+    errors.append("bin/aips preflight must support EPHEMERAL mode without implicit attach")
+if "Project workspace is not attached; applying attach safety checks." in cli_text:
+    errors.append("bin/aips still contains the old implicit preflight attach behavior")
+
+maintenance_text = (ROOT / "docs/MAINTENANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/MAINTENANCE.md").exists() else ""
+if "Architecture Diagram Impact Check" not in maintenance_text:
+    errors.append("docs/MAINTENANCE.md missing Architecture Diagram Impact Check")
+
+core_change_text = (ROOT / "templates/core-change-proposal.md").read_text(encoding="utf-8") if (ROOT / "templates/core-change-proposal.md").exists() else ""
+if "Architecture Diagram Impact" not in core_change_text:
+    errors.append("Core Change Proposal missing Architecture Diagram Impact")
+
+for rel, keys in {
+    "templates/harness/HARNESS_RESOLUTION.yaml": ("harness", "runtime", "project", "instructions", "knowledge", "state", "system"),
+    "templates/harness/ADAPTER_MANIFEST.yaml": ("id", "runtime", "detection", "integration", "ownership", "bootstrap", "verification", "uninstall"),
+    "templates/harness/INSTALLATION_OWNERSHIP.yaml": ("system", "harness", "owned_resources", "adapters", "preservation_policy"),
+    "harness/adapters/REGISTRY.yaml": ("adapters",),
+}.items():
+    doc = load_yaml(ROOT / rel) or {}
+    for key in keys:
+        if key not in doc:
+            errors.append(f"{rel} missing top-level key: {key}")
+
+resolver = ROOT / "scripts/harness_resolve.py"
+if resolver.exists():
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(resolver)], capture_output=True, text=True)
+    if compiled.returncode != 0:
+        errors.append(f"harness_resolve.py syntax failed: {compiled.stderr.strip()}")
+
+with tempfile.TemporaryDirectory() as tmp:
+    tmp_path = Path(tmp)
+    home = tmp_path / "home"
+    fake_bin = tmp_path / "fake-bin"
+    config = tmp_path / "config"
+    bin_home = tmp_path / "bin-home"
+    home.mkdir()
+    fake_bin.mkdir()
+    (home / ".claude").mkdir()
+    custom_claude = home / ".claude" / "CLAUDE.md"
+    custom_claude.write_text("# user-owned claude instructions\n", encoding="utf-8")
+
+    for name in ("codex", "claude"):
+        p = fake_bin / name
+        p.write_text("#!/usr/bin/env bash\nexit 0\n", encoding="utf-8")
+        p.chmod(0o755)
+
+    gemini = fake_bin / "gemini"
+    gemini_script = "\n".join([
+        "#!/usr/bin/env bash",
+        "state=\"$HOME/.fake-gemini-extension\"",
+        "if [ \"${1:-}\" = extensions ]; then",
+        "  case \"${2:-}\" in",
+        "    list) [ -f \"$state\" ] && echo aips-global-harness; exit 0 ;;",
+        "    link) touch \"$state\"; exit 0 ;;",
+        "    uninstall) rm -f \"$state\"; exit 0 ;;",
+        "  esac",
+        "fi",
+        "exit 0",
+        ""
+    ])
+    gemini.write_text(gemini_script, encoding="utf-8")
+    gemini.chmod(0o755)
+
+    env = dict(os.environ)
+    env.update({
+        "HOME": str(home),
+        "XDG_CONFIG_HOME": str(config),
+        "AIPS_BIN_HOME": str(bin_home),
+        "PATH": f"{fake_bin}:{env.get('PATH', '')}",
+    })
+    cli = ROOT / "bin/aips"
+
+    install_harness = subprocess.run(["bash", str(cli), "harness", "install"], env=env, capture_output=True, text=True)
+    if install_harness.returncode != 0:
+        errors.append(f"harness install test failed: {install_harness.stdout.strip()} {install_harness.stderr.strip()}")
+    else:
+        codex_bootstrap = home / ".codex" / "AGENTS.md"
+        if not codex_bootstrap.exists():
+            errors.append("Harness install did not create AIPS-owned Codex bootstrap")
+        if custom_claude.read_text(encoding="utf-8") != "# user-owned claude instructions\n":
+            errors.append("Harness install modified existing user-owned CLAUDE.md")
+        claude_state = config / "aips" / "harness" / "adapters" / "claude-code.yaml"
+        if not claude_state.exists() or 'status: "MANUAL"' not in claude_state.read_text(encoding="utf-8"):
+            errors.append("Existing user CLAUDE.md should force MANUAL adapter status")
+        if not (config / "aips" / "harness" / "installation.yaml").exists():
+            errors.append("Harness install did not create ownership manifest")
+        if not (home / ".fake-gemini-extension").exists():
+            errors.append("Harness install did not register fake Gemini extension")
+
+        project = tmp_path / "project"
+        project.mkdir()
+        resolved = subprocess.run(
+            ["bash", str(cli), "harness", "resolve", "--runtime", "codex", "--project", str(project), "--format", "json"],
+            env=env, capture_output=True, text=True,
+        )
+        if resolved.returncode != 0:
+            errors.append(f"harness resolve test failed: {resolved.stdout.strip()} {resolved.stderr.strip()}")
+        else:
+            try:
+                data = json.loads(resolved.stdout)
+                if data.get("project", {}).get("mode") != "EPHEMERAL":
+                    errors.append("Harness resolver should report EPHEMERAL without .ai")
+                if data.get("runtime", {}).get("id") != "codex":
+                    errors.append("Harness resolver runtime mismatch")
+            except Exception as exc:
+                errors.append(f"Harness resolver JSON invalid: {exc}")
+
+        uninstall_harness = subprocess.run(["bash", str(cli), "harness", "uninstall"], env=env, capture_output=True, text=True)
+        if uninstall_harness.returncode != 0:
+            errors.append(f"harness uninstall test failed: {uninstall_harness.stdout.strip()} {uninstall_harness.stderr.strip()}")
+        if codex_bootstrap.exists():
+            errors.append("Uninstall should remove unchanged AIPS-owned Codex bootstrap")
+        if custom_claude.read_text(encoding="utf-8") != "# user-owned claude instructions\n":
+            errors.append("Harness uninstall modified user-owned CLAUDE.md")
+        if (home / ".fake-gemini-extension").exists():
+            errors.append("Harness uninstall did not unregister fake Gemini extension")
+
+        reinstall = subprocess.run(["bash", str(cli), "harness", "install"], env=env, capture_output=True, text=True)
+        if reinstall.returncode == 0 and codex_bootstrap.exists():
+            with codex_bootstrap.open("a", encoding="utf-8") as fh:
+                fh.write("\n# user edit\n")
+            preserve = subprocess.run(["bash", str(cli), "harness", "uninstall"], env=env, capture_output=True, text=True)
+            if preserve.returncode != 0:
+                errors.append("Second harness uninstall failed")
+            if not codex_bootstrap.exists() or "# user edit" not in codex_bootstrap.read_text(encoding="utf-8"):
+                errors.append("Modified AIPS-owned bootstrap should be preserved on uninstall")
 
 for shell in ("bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh"):
     p = ROOT / shell
