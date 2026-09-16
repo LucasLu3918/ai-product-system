@@ -308,7 +308,7 @@ Use:
 aips intelligence impact-init --project /path/to/project --prompt "<task>"
 ~~~
 
-The generated draft must be semantically completed before mutation when impact is material.
+The generated draft captures the clean workspace baseline and must be semantically completed before mutation when impact is material. After implementation use `aips intelligence impact-reconcile` to compare actual committed/dirty product paths against declared `change.target`; EXPANDED/BLOCKED results stop continuation and surface retest/reapproval signals.
 
 ## Attach / detach migration
 
