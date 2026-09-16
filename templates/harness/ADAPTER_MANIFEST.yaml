@@ -1,4 +1,4 @@
-version: 1
+version: 2
 
 id: null
 runtime: null
@@ -8,19 +8,25 @@ detection:
 
 integration:
   strategy: null
-  automatic: false
+  status: null # AUTOMATIC | MANUAL | NOT_DETECTED | CONFLICT | ERROR
+  capability: null # TURN_NATIVE | CONTEXT_ALWAYS | SESSION_ONLY | MANUAL | UNSUPPORTED
 
 ownership:
   resources: []
+  managed_blocks: []
+  managed_hooks: []
+  managed_registrations: []
 
 bootstrap:
   source: harness/BOOTSTRAP.md
 
 verification:
   status: null
+  turn_context_verified: null
 
 uninstall:
   reversible: true
   preserves_user_content: true
+  preserves_project_intelligence: true
 
 limitations: []

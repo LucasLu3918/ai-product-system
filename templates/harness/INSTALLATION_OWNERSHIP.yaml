@@ -1,4 +1,4 @@
-version: 1
+version: 2
 
 installed_at: null
 
@@ -16,13 +16,15 @@ owned_resources: []
 adapters: {}
 # runtime-id:
 #   status: AUTOMATIC
+#   capability: TURN_NATIVE
 #   strategy: ...
-#   resources: []
+#   resource: ...
 
 preservation_policy:
-  user_agent_instructions: untouched
+  user_agent_instructions: untouched_outside_aips_managed_regions
   user_skills: untouched
   project_agent_instructions: untouched
   project_skills: untouched
   project_source: untouched
   project_ai_workspace: preserved
+  external_project_intelligence: preserved_by_default

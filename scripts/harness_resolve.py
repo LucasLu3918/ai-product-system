@@ -46,15 +46,19 @@ def detect_runtime(explicit: str | None) -> str:
     return "unknown"
 
 
-def load_adapter_status(config_home: Path, runtime: str) -> str | None:
-    path = config_home / "harness" / "adapters" / f"{runtime}.yaml"
-    if not path.exists():
-        return None
-    text = path.read_text(encoding="utf-8", errors="replace")
-    for line in text.splitlines():
-        if line.startswith("status:"):
-            return line.split(":", 1)[1].strip().strip('"')
-    return None
+def config_home() -> Path:
+    return Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "aips"
+
+
+def adapter_state(runtime: str) -> dict:
+    path = config_home() / "harness" / "adapters" / f"{runtime}.yaml"
+    if not path.exists() or yaml is None:
+        return {}
+    try:
+        with path.open("r", encoding="utf-8") as f:
+            return yaml.safe_load(f) or {}
+    except Exception:
+        return {}
 
 
 def hierarchy(root: Path, cwd: Path) -> list[Path]:
@@ -75,7 +79,6 @@ def hierarchy(root: Path, cwd: Path) -> list[Path]:
 def project_agent_files(root: Path, cwd: Path) -> list[str]:
     found: list[str] = []
     for directory in hierarchy(root, cwd):
-        # Override is runtime-specific in Codex, but exposing it here is useful evidence.
         for name in ("AGENTS.md", "AGENTS.override.md"):
             path = directory / name
             if path.is_file():
@@ -97,7 +100,6 @@ def runtime_native_files(runtime: str, project_root: Path, cwd: Path) -> list[st
         candidates.append(home / ".gemini" / "GEMINI.md")
         for directory in hierarchy(project_root, cwd):
             candidates.append(directory / "GEMINI.md")
-
     seen: set[str] = set()
     result: list[str] = []
     for path in candidates:
@@ -108,15 +110,28 @@ def runtime_native_files(runtime: str, project_root: Path, cwd: Path) -> list[st
     return result
 
 
+def run_intelligence(system_dir: Path, project: Path) -> dict:
+    py = system_dir / ".venv" / "bin" / "python"
+    if not py.exists():
+        py = Path(sys.executable)
+    script = system_dir / "scripts" / "project_intelligence.py"
+    try:
+        r = subprocess.run(
+            [str(py), str(script), "status", "--project", str(project), "--format", "json"],
+            capture_output=True, text=True, check=True, timeout=5,
+        )
+        return json.loads(r.stdout)
+    except Exception:
+        return {}
+
+
 def output(data: dict, fmt: str) -> None:
     if fmt == "json":
         print(json.dumps(data, ensure_ascii=False, indent=2))
-        return
-    if yaml is not None:
+    elif yaml is not None:
         print(yaml.safe_dump(data, sort_keys=False, allow_unicode=True).rstrip())
-        return
-    # JSON is valid YAML 1.2 and is a safe fallback.
-    print(json.dumps(data, ensure_ascii=False, indent=2))
+    else:
+        print(json.dumps(data, ensure_ascii=False, indent=2))
 
 
 def main() -> int:
@@ -129,7 +144,6 @@ def main() -> int:
 
     script = Path(__file__).resolve()
     system_dir = script.parents[1]
-    config_home = Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "aips"
     cwd = Path(args.cwd).expanduser().resolve()
     if not cwd.exists():
         print(f"ERROR: cwd does not exist: {cwd}", file=sys.stderr)
@@ -146,17 +160,16 @@ def main() -> int:
 
     runtime = detect_runtime(args.runtime)
     attached = (project_root / ".ai").is_dir()
-    knowledge_index = project_root / ".ai" / "knowledge" / "KNOWLEDGE_INDEX.yaml"
     state_path = project_root / ".ai" / "STATE.yaml"
+    intel = run_intelligence(system_dir, project_root)
 
-    version = "unknown"
     version_path = system_dir / "VERSION"
-    if version_path.exists():
-        version = version_path.read_text(encoding="utf-8").strip()
+    version = version_path.read_text(encoding="utf-8").strip() if version_path.exists() else "unknown"
     commit = git_output(["-C", str(system_dir), "rev-parse", "HEAD"]) or "unknown"
+    adapter = adapter_state(runtime) if runtime != "unknown" else {}
 
     data = {
-        "version": 1,
+        "version": 2,
         "harness": {
             "active": True,
             "version": version,
@@ -165,11 +178,13 @@ def main() -> int:
         "runtime": {
             "id": runtime,
             "detected": runtime != "unknown",
-            "adapter_status": load_adapter_status(config_home, runtime) if runtime != "unknown" else None,
+            "adapter_status": adapter.get("status"),
+            "capability": adapter.get("capability"),
             "native_instructions": runtime_native_files(runtime, project_root, cwd),
         },
         "project": {
             "detected": True,
+            "id": intel.get("project_id"),
             "root": str(project_root),
             "mode": "ATTACHED" if attached else "EPHEMERAL",
             "explicit": explicit,
@@ -178,12 +193,16 @@ def main() -> int:
             "project": project_agent_files(project_root, cwd),
             "authoritative_docs": [],
         },
-        "knowledge": {
-            "available": attached and knowledge_index.is_file(),
-            "index": str(knowledge_index) if attached and knowledge_index.is_file() else None,
+        "intelligence": {
+            "available": bool(intel.get("exists")),
+            "store": intel.get("store"),
+            "readiness": (intel.get("state") or {}).get("readiness"),
+            "review": (intel.get("state") or {}).get("review"),
+            "freshness": (intel.get("freshness") or {}).get("status"),
+            "review_html": intel.get("review_html"),
         },
         "state": {
-            "persistent": attached,
+            "persistent_project_workspace": attached,
             "path": str(state_path) if attached and state_path.is_file() else None,
         },
         "system": {

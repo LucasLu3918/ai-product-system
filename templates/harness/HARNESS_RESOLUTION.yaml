@@ -1,4 +1,4 @@
-version: 1
+version: 2
 
 harness:
   active: true
@@ -8,11 +8,13 @@ harness:
 runtime:
   id: unknown
   detected: null
-  adapter_status: null # AUTOMATIC | MANUAL | NOT_DETECTED | CONFLICT | ERROR
+  adapter_status: null
+  capability: null # TURN_NATIVE | CONTEXT_ALWAYS | SESSION_ONLY | MANUAL | UNSUPPORTED
   native_instructions: []
 
 project:
   detected: false
+  id: null
   root: null
   mode: EPHEMERAL # EPHEMERAL | ATTACHED
   explicit: false
@@ -21,12 +23,16 @@ instructions:
   project: []
   authoritative_docs: []
 
-knowledge:
+intelligence:
   available: false
-  index: null
+  store: null
+  readiness: null
+  review: null
+  freshness: null
+  review_html: null
 
 state:
-  persistent: false
+  persistent_project_workspace: false
   path: null
 
 system:
