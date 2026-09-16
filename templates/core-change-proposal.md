@@ -30,6 +30,25 @@
 
 ### Tests / Validation
 
+Impact-derived Test Matrix:
+
+| Affected boundary | Static/Lint | Unit | Integration | Contract | E2E | Security | Migration/Recovery | CLI/Harness | Docs/Schema | N/A reason |
+|---|---|---|---|---|---|---|---|---|---|---|
+
+Recompute trigger if scope expands:
+
+Required release/CI evidence:
+
+### Secret / Credential Impact
+
+Secrets required: YES / NO
+
+Approved acquisition mechanism:
+
+Leakage/redaction review:
+
+Rotation/revocation plan if exposure is found:
+
 ### Documentation / Diagrams
 
 Architecture Diagram Impact:

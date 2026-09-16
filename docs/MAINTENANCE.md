@@ -69,14 +69,16 @@ Before remote publication, present the Git Publish Proposal. A material differen
 3. Review the Documentation Impact Gate.
 4. For Large/Core changes, complete Architecture Diagram Impact Check.
 5. Confirm Mermaid and affected Human SVG diagrams match actual behavior.
-6. Confirm changed routing/gate behavior has scenario coverage.
-7. Confirm planning/creative/brand/automation/product-delivery templates match their protocols when affected.
-8. Confirm Human and Agent documentation audiences are synchronized when behavior affects them.
-9. Update `VERSION` using SemVer.
-10. Update `CHANGELOG.md`.
-11. Ensure the system working tree is clean before publishing.
-12. Prepare the Git Publish Proposal and obtain explicit approval.
-13. Prefer independent review/PR for material system changes.
+6. Build the Impact-derived Test Matrix for the final Change Boundary and execute every applicable check.
+7. Confirm changed routing/gate behavior has scenario coverage.
+8. Confirm planning/creative/brand/automation/product-delivery templates match their protocols when affected.
+9. Confirm Human and Agent documentation audiences are synchronized when behavior affects them.
+10. Confirm applicable secret/credential leakage and handling review is complete.
+11. Update `VERSION` using SemVer.
+12. Update `CHANGELOG.md`.
+13. Ensure the system working tree is clean before publishing.
+14. Prepare the Git Publish Proposal and obtain explicit approval.
+15. Prefer independent review/PR for material system changes.
 
 ## Versioning
 
@@ -165,3 +167,27 @@ When Turn Harness / Project Intelligence behavior changes, review together:
 - Runtime capability, external-cache, freshness, HTML, managed-composition and Change Impact regression scenarios.
 
 For v0.9 itself, product-delivery-overview is N/A because the LOCAL_COMPLETE → Production Enablement → PRODUCTION_VERIFIED lifecycle does not change.
+
+## Impact-derived regression testing
+
+For every Large/Core Change, testing is derived from the final Change Boundary, not from a fixed minimum smoke suite.
+
+Build and persist a matrix:
+
+| Affected boundary | Static/Lint | Unit | Integration | Contract | E2E | Security | Migration/Recovery | CLI/Harness | Docs/Schema | N/A reason |
+|---|---|---|---|---|---|---|---|---|---|---|
+
+Rules:
+
+- every materially affected boundary has applicable evidence;
+- N/A requires a concrete reason;
+- public contract changes require contract/consumer coverage;
+- persistence/schema changes require migration/rollback/recovery evidence when applicable;
+- Runtime/Harness/CLI changes require executable lifecycle/regression tests;
+- security-boundary or credential-handling changes require security/secret-leakage evidence;
+- documentation/schema/template contract changes require structural validation;
+- if implementation expands the Change Boundary, recompute the matrix;
+- failing required tests block completion/release;
+- never remove a relevant test merely to obtain a green result.
+
+Prefer the strongest practical deterministic evidence for affected behavior while avoiding unrelated full-suite cost that adds no confidence.

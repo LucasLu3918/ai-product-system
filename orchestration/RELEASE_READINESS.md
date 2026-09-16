@@ -29,7 +29,7 @@ Assess only applicable items:
 - all Deployment Units build;
 - static/unit/integration/contract/E2E checks;
 - Quality Profile production targets that must be verified before promotion;
-- required Security Assurance evidence;
+- required Security Assurance evidence, including secret/credential leakage/handling evidence when applicable;
 - migrations/recovery validated;
 - infrastructure/configuration validated;
 - staging verified when applicable;
