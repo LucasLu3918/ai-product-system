@@ -1,0 +1,34 @@
+version: 1
+id: 030-security-design-and-release
+scenario_id: "030"
+description: Security assurance begins during planning and unresolved blocking findings prevent production release.
+input:
+  prompt: Plan and build a production member platform that stores personal data and processes payments.
+  context:
+    member_data: true
+    payments: true
+    production_target: true
+rubric:
+  equals:
+    response.status: SECURITY_ASSURANCE_REQUIRED
+    response.risk_profile_during_planning: true
+    response.scanner_success_sufficient_alone: false
+    response.independent_security_evidence_required: true
+    response.release_blocked_by_applicable_unresolved_findings: true
+  contains:
+    response.design_security:
+      - trust_boundaries
+      - authorization
+      - business_invariants
+    response.actions:
+      - classify_risk_profile_and_sal
+      - run_applicable_deterministic_security_checks
+      - obtain_independent_security_review
+      - feed_security_evidence_into_release_readiness
+  excludes:
+    response.actions:
+      - defer_security_until_release
+      - treat_scanner_as_complete_security_review
+  set_equals: {}
+  nonempty:
+    - response.summary
