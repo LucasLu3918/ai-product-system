@@ -10,6 +10,7 @@ integration:
   strategy: null
   status: null # AUTOMATIC | MANUAL | NOT_DETECTED | CONFLICT | ERROR
   capability: null # TURN_NATIVE | CONTEXT_ALWAYS | SESSION_ONLY | MANUAL | UNSUPPORTED
+  governance_enforcement: null # ADVISORY | TOOL_GUARDED | ENFORCED | UNSUPPORTED
 
 ownership:
   resources: []
@@ -23,6 +24,7 @@ bootstrap:
 verification:
   status: null
   turn_context_verified: null
+  governance_guard_verified: null
 
 uninstall:
   reversible: true
