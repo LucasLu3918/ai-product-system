@@ -238,3 +238,118 @@ If `.ai/knowledge/KNOWLEDGE_INDEX.yaml` exists and no Intelligence exists:
 5. do not duplicate existing canonical Visual/Quality/Brand/Product artifacts;
 6. mark migration provenance;
 7. stop using `.ai/knowledge/` as the primary write target.
+
+
+## Semantic enrichment and READY
+
+Deterministic bootstrap intentionally stops at `PARTIAL`.
+
+The Agent uses `DISCOVERY.yaml`, authoritative sources and targeted repository evidence to enrich applicable semantic topics.
+
+Required baseline topics for a non-trivial existing project:
+
+- architecture;
+- data-flow;
+- modules;
+- conventions;
+- testing;
+- security.
+
+Operations is evaluated when applicable; N/A requires a reason.
+
+A topic is not complete merely because a Markdown file exists. Derived topics require type, evidence, and confidence where applicable.
+
+After enrichment:
+
+~~~bash
+aips intelligence finalize --project /path/to/project
+~~~
+
+`finalize` validates semantic coverage and moves readiness to `READY` only when required topics are sufficiently represented.
+
+Do not claim the project has been initialized merely from directory/file-name inventory.
+
+## Existing-project automatic behavior
+
+The user should not need to run initialization commands during normal Agent use.
+
+For a material existing-project mutation:
+
+~~~text
+Turn Context says Intelligence MISSING/PARTIAL
+→ Agent performs bootstrap
+→ targeted semantic enrichment
+→ finalize
+→ Change Impact
+→ mutation
+~~~
+
+The CLI commands are deterministic building blocks used by the Agent/Harness and remain available for debugging.
+
+## Change-impact artifacts
+
+Project Intelligence provides the reusable graph. Per-change impact remains a run artifact rather than permanent project policy.
+
+Attached:
+
+~~~text
+.ai/runs/<change-id>/CHANGE_IMPACT.yaml
+~~~
+
+Ephemeral:
+
+~~~text
+~/.config/aips/projects/<project-id>/changes/<change-id>.yaml
+~~~
+
+Use:
+
+~~~bash
+aips intelligence impact-init --project /path/to/project --prompt "<task>"
+~~~
+
+The generated draft must be semantically completed before mutation when impact is material.
+
+## Attach / detach migration
+
+A project can switch storage modes without losing Intelligence.
+
+~~~text
+EPHEMERAL External Cache
+→ aips attach
+→ validated migrate into .ai/intelligence/
+→ External copy removed after successful migration
+
+ATTACHED .ai/intelligence/
+→ aips detach
+→ validated sync to External Cache
+→ then archive .ai/
+~~~
+
+Never maintain two silently diverging canonical copies.
+
+## Monorepo
+
+For a monorepo, prefer:
+
+~~~text
+system-level Intelligence
++
+component/topic Intelligence
++
+shared contract/data/event relationships
+~~~
+
+A task against one component loads the system summary, that component's relevant topics, and shared dependencies from the Impact Graph. It does not preload unrelated applications.
+
+## Review changes
+
+Regenerate Human Review HTML when:
+
+- initial bootstrap/enrichment completes;
+- architecture/data-flow/module relationships materially change;
+- Impact Graph changes materially;
+- PROJECT_OVERRIDES changes;
+- an Intelligence schema migration changes represented information.
+
+Ordinary narrow fixes with no Intelligence change do not require HTML regeneration.

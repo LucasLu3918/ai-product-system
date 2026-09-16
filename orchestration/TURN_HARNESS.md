@@ -70,3 +70,56 @@ Prefer pointers/summaries over duplicating large authoritative documents.
 
 - general conversation: fail soft;
 - existing-project mutation: missing required Harness/Project Intelligence context fails closed for the mutation, not for the entire conversation.
+
+
+## Runtime capability truth
+
+Capability is read from the installed Adapter state when available.
+
+A static expected capability is only a fallback for an uninstalled/debug environment.
+
+Examples:
+
+~~~text
+Codex installed managed instruction block
+→ CONTEXT_ALWAYS
+
+Claude UserPromptSubmit hook verified
+→ TURN_NATIVE
+
+Claude hook unavailable but managed memory block active
+→ CONTEXT_ALWAYS
+
+Gemini extension + BeforeAgent verified
+→ TURN_NATIVE
+~~~
+
+Do not display TURN_NATIVE merely because a runtime theoretically supports hooks.
+
+## Synchronous vs heavy work
+
+Native hooks must stay fast.
+
+The synchronous turn hook may resolve freshness/status/pointers. It must not perform whole-project bootstrap, dependency installation, HTML regeneration or broad source analysis.
+
+If heavy work is required, injected context tells the Agent what must be completed before a mutation proceeds.
+
+## General conversation
+
+AIPS presence does not turn every prompt into an engineering workflow.
+
+General knowledge/conversation:
+
+~~~text
+compact Turn Context
+→ no project initialization
+→ normal answer
+~~~
+
+Existing-project mutation:
+
+~~~text
+compact Turn Context
+→ required Intelligence/Impact work
+→ implementation
+~~~

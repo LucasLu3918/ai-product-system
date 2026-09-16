@@ -59,3 +59,42 @@ Do not perpetuate unsafe/broken patterns. When deviating for correctness/securit
 
 - read-only/explanation task + Intelligence unavailable → fail soft; continue with disclosed limitation when safe.
 - mutation + required project/instruction/impact context unavailable → fail closed for the affected edit until resolved.
+
+
+## Persistence
+
+Create a per-change artifact using `templates/intelligence/CHANGE_IMPACT.yaml`.
+
+Preferred locations:
+
+~~~text
+ATTACHED:
+.ai/runs/<change-id>/CHANGE_IMPACT.yaml
+
+EPHEMERAL:
+~/.config/aips/projects/<project-id>/changes/<change-id>.yaml
+~~~
+
+`aips intelligence impact-init` may create the DRAFT deterministically. The Agent must fill semantic impact and set READY before implementation when the affected change requires it.
+
+## Diff reconciliation
+
+After implementation compare:
+
+~~~text
+Declared Change Impact
+↔ Actual changed files/contracts/schema/events/tests
+~~~
+
+If actual material impact falls outside the declared Change Boundary:
+
+1. stop affected continuation;
+2. update impact analysis;
+3. re-run required review/testing;
+4. obtain scope reapproval when the approved boundary materially expanded.
+
+## Impact Graph maintenance
+
+Update reusable `IMPACT_GRAPH.yaml` only when the change reveals/stably changes cross-component relationships.
+
+A one-off run artifact does not automatically become permanent Intelligence.
