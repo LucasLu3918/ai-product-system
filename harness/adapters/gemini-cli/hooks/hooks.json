@@ -20,7 +20,7 @@
           {
             "name": "aips-governance-guard",
             "type": "command",
-            "command": "\"${extensionPath}${/}hooks${/}aips-governance-guard.sh\"",
+            "command": "bash \"${extensionPath}${/}hooks${/}aips-governance-guard.sh\"",
             "timeout": 5000,
             "description": "Block protected Git publication operations without a current AIPS approval binding"
           }
