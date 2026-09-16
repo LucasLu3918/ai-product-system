@@ -9,6 +9,11 @@ completed: []
 blocked: []
 waiting_for: []
 pending_decisions: []
+governance:
+  active_approval: null
+  approval_status: null
+  proposal_fingerprint: null
+  scope_fingerprint: null
 requirement_status: null
 external_context: []
 review:
