@@ -125,3 +125,35 @@ Automated     44.8%
 ~~~
 
 Agent Eval Result 禁止保存 Chain-of-Thought、private reasoning、scratchpad 與 Secret-like value。Case 修改後舊 Result fingerprint 失效，必須重新執行 Agent，不可只改 fingerprint。
+
+## v0.16.1 Focused Harness Evidence Maturity
+
+不改 Harness 行為，只把已能以隔離 runtime fixture 真正重現的 legacy manual Scenario 升級為 lifecycle evidence：
+
+~~~text
+057 Global Harness Automatic Bootstrap
+061 EPHEMERAL Project Does Not Auto-Attach
+066 Gemini Namespaced Extension
+067 Failed Adapter Uninstall Preserves Ownership
+072 Gemini BeforeAgent Turn Context
+073 Runtime Capability Truth
+~~~
+
+直接 evidence：`tests/evidence/harness_runtime_lifecycle.py`。
+
+它驗證 managed composition、Gemini official extension link/uninstall、BeforeAgent、user GEMINI/settings preservation、EPHEMERAL resolve、Context Capability / Governance Enforcement truth，以及 uninstall failure → ownership preserved → safe retry。
+
+v0.16.1 baseline：
+
+~~~text
+Total         125
+Manual         63
+Deterministic  19
+Lifecycle      35
+Agent Eval      8
+Automated      62
+Uncovered       0
+Automated     49.6%
+~~~
+
+011 / 044 / 069 等仍維持 manual，直到有足夠隔離、完整的一對一 install/preflight evidence；不因鄰近 validator 而直接升級。

@@ -10,6 +10,7 @@ runtime:
   detected: null
   adapter_status: null
   capability: null # TURN_NATIVE | CONTEXT_ALWAYS | SESSION_ONLY | MANUAL | UNSUPPORTED
+  governance_enforcement: null # ADVISORY | TOOL_GUARDED | ENFORCED | UNSUPPORTED
   native_instructions: []
 
 project:
