@@ -390,3 +390,143 @@ Production Deploy
 ~~~
 
 失敗時依已定義策略 Rollback 或 Roll-forward。
+
+
+## 15. 需求不明確時：循序釐清（Progressive Requirement Clarification）
+
+如果你的需求還不足以安全實作，系統不應直接猜完整產品方向。
+
+狀態只有：
+
+~~~text
+READY
+NEEDS_CLARIFICATION
+BLOCKED
+~~~
+
+原則：
+- 可以用安全專業預設解決的細節，AI 自己處理；
+- 只有會實質影響產品行為、Scope、Contract、Architecture、Security、Data、Cost 或 Recovery 的問題才詢問；
+- 不使用長問卷；
+- 優先提供 2–4 個具體選項與推薦方向；
+- Blocking Unknown 沒解決前不開始大範圍實作。
+
+例如：
+
+> 幫我做一個預約網站。
+
+系統應先引導「預約什麼、主要使用者、核心流程」等會改變產品方向的資訊，而不是要求你先決定 Database Schema 或 API Framework。
+
+## 16. 外部連結與 Connector / MCP（External Context Resolution）
+
+如果你提供 Jira、Confluence、Drive、GitHub 或其他外部系統連結，系統應先嘗試取得原始來源。
+
+~~~text
+User URL
+→ Connected Connector / MCP
+→ 需要授權？引導連線
+→ 授權後從原任務 Resume
+→ Public Web fallback
+→ Other supported provider/API
+→ 最後才請使用者貼內容 / 上傳檔案
+~~~
+
+例如：
+
+~~~text
+https://vgjira.atlassian.net/browse/PI-17834
+~~~
+
+如果 Atlassian Connector 存在但尚未授權，系統應先引導連線並保留目前任務，不應一開始就要求你複製 Jira 全文。
+
+只有 Connector、公開頁面與其他支援方式都無法取得時，才請你提供必要的 Ticket 文字、Screenshot 或 Export。
+
+## 17. 畫面怪異時：Visual Polish
+
+如果你沒有要求換風格，只說：
+
+> 幫我把這個專案看起來怪異、不整齊的地方調整好。
+
+系統預設採：
+
+> 保留後再重設（Preserve Before Redesign）  
+> 一致性優先（Consistency First）
+
+流程：
+
+~~~text
+讀取現有 Brand / Creative Direction
+→ 啟動目前 UI
+→ Screenshot / Rendered State
+→ Visual Implementation Audit
+→ 優先修 Token / Shared Component
+→ 再處理真正的 Page-specific Exception
+→ Screenshot / Responsive / State Verification
+→ Visual Quality Review
+~~~
+
+預設檢查：
+- Alignment / optical centering
+- Typography / line-height
+- Vertical rhythm / whitespace
+- Button / Input / Tag 高度與 Padding
+- Icon baseline / size
+- Border / Radius / Shadow
+- Active / Hover / Focus / Disabled
+- Container edge breathing room
+- Mobile / Tablet / Desktop
+- 相同元件是否一致
+
+不應用大量局部 top:-2px、transform 等 Patch 隱藏共用元件問題。
+
+## 18. 核心異動：多專業審查（Multi-Perspective Review）
+
+一般 Material Change 仍使用 Independent Review。
+
+當異動涉及 Core Change、Auth/Authz、金流、Schema/Migration、Public API、Concurrency、大型 Refactor、Production Topology、SAL 3–4 等高影響範圍時，系統會依實際風險動態組成 Review Panel。
+
+可能包含：
+- Quality Reviewer
+- Software Architect
+- Security Engineer
+- Database Engineer
+- Performance Engineer
+- Product Designer / Frontend Reviewer
+- SRE / Cloud Architect
+
+不是所有 Reviewer 每次都加入。
+
+每個 Reviewer 只看自己的 bounded perspective，避免重複消耗 Token。
+
+流程：
+
+~~~text
+Implementation Author
+→ Multi-Perspective Review
+→ Normalize + Deduplicate Findings
+→ Consolidated Review Report
+→ Original Author Fix
+→ Tests
+→ Targeted Re-review
+→ PASS
+~~~
+
+Reviewer 預設不直接改程式，原 Author 負責修正。
+
+## 19. Review 後的學習回饋
+
+完成大型 Review 後，系統會整理 Lessons：
+
+~~~text
+Run Lesson
+Project Lesson
+System Capability Lesson
+~~~
+
+一次性的問題留在 Run。
+
+專案特有的重要規則可建議提升成 Project ADR / Instruction / Invariant。
+
+只有跨專案、重複發生、可一般化的問題，才建議改善 AI Product System 的 Skill / Role / Protocol。
+
+系統不會因一次 Review 自動修改永久 Agent 能力，而會先把經驗與建議回饋給你，詢問是否啟動 System Improvement。

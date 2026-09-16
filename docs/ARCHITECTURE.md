@@ -302,3 +302,95 @@ Build
 ~~~
 
 READY is technical readiness. It never bypasses required human/security approval.
+
+
+## Progressive requirement clarification
+
+~~~mermaid
+flowchart TD
+    U[User Request] --> R{Implementation-ready?}
+    R -->|yes| READY[READY]
+    R -->|no| D{Safe professional default?}
+    D -->|yes| DEF[Apply / record default]
+    DEF --> READY
+    D -->|no| C[NEEDS_CLARIFICATION]
+    C --> Q[Ask smallest material question + options]
+    Q --> R
+    C --> B{Required dependency unavailable?}
+    B -->|yes| BLOCK[BLOCKED]
+~~~
+
+Ambiguity alone does not justify interrupting the user. Ask only when a material decision cannot be safely derived.
+
+## External context resolution
+
+~~~mermaid
+flowchart TD
+    S[User-provided source] --> P[Identify Provider]
+    P --> C{Connector / MCP available?}
+    C -->|yes| A{Authorized?}
+    A -->|yes| R[Retrieve exact source]
+    A -->|no| AUTH[Guide authorization + preserve task]
+    AUTH --> R
+    C -->|no| W{Public URL accessible?}
+    W -->|yes| R
+    W -->|no| O{Other supported provider/API?}
+    O -->|yes| R
+    O -->|no| U[Request minimal user-provided export/text/screenshot]
+    R --> RESUME[Resume original task]
+~~~
+
+Exact user-provided source evidence has priority over generic search/inference.
+
+## Visual implementation polish
+
+~~~mermaid
+flowchart TD
+    U[Existing UI looks awkward] --> P[Preserve approved direction]
+    P --> RUN[Run / Render UI]
+    RUN --> AUDIT[Visual Implementation Audit]
+    AUDIT --> ROOT{Shared root cause?}
+    ROOT -->|yes| SHARED[Fix Token / Shared Component]
+    ROOT -->|no| PAGE[Fix justified local exception]
+    SHARED --> VERIFY[Re-render / Screenshot]
+    PAGE --> VERIFY
+    VERIFY --> STATES[Responsive + Hover / Focus / Active]
+    STATES --> QA[Visual Quality Review]
+    QA -->|material issue remains| AUDIT
+    QA -->|pass| DONE[Complete]
+~~~
+
+## Multi-perspective review and learning
+
+~~~mermaid
+flowchart TD
+    C[Large / Core / High-risk Change] --> RP[Resolve smallest Review Panel]
+    RP --> PAR[Parallel bounded read-only reviews]
+    PAR --> FIND[Normalize + Deduplicate Findings]
+    FIND --> CONFLICT{Reviewer conflict?}
+    CONFLICT -->|yes| DEC[Architect / Security governance / Human decision]
+    CONFLICT -->|no| AUTHOR[Original Author Fix]
+    DEC --> AUTHOR
+    AUTHOR --> TEST[Tests / Evidence]
+    TEST --> RE[Targeted Re-review]
+    RE --> PASS{Material findings resolved?}
+    PASS -->|no| AUTHOR
+    PASS -->|yes| LESSON[Extract Run / Project / System Capability Lessons]
+    LESSON --> USER{Generalizable system improvement?}
+    USER -->|yes| SIR[Recommend System Improvement to user]
+    USER -->|no| DONE[Done]
+~~~
+
+Multi-review is selected by semantic impact/risk, not LOC alone. Reviewers do not silently expand scope or modify permanent Agent capability.
+
+## Installation and project lifecycle
+
+~~~mermaid
+flowchart LR
+    CLONE[Clone] --> INSTALL[Install]
+    INSTALL --> ATTACH[Attach Project]
+    ATTACH --> USE[Status / Preflight / Use]
+    USE --> DETACH[Detach: preserve .ai archive]
+    DETACH --> UNINSTALL[Uninstall CLI/config]
+    UNINSTALL --> REMOVE[Optional explicit repo removal]
+~~~

@@ -93,3 +93,16 @@ When end-to-end delivery behavior changes, verify together:
 - Security Assurance interaction;
 - Human architecture overview;
 - production scenarios and validator coverage.
+
+
+## v0.6 interaction consistency
+
+When these behaviors change, review the linked artifacts together:
+
+- Requirement clarification → SYSTEM / ORCHESTRATOR / IMPLEMENTATION_GOAL / Human Guide / scenarios.
+- External context resolution → connector-first protocol / provenance template / Human Guide / scenarios.
+- Visual polish → Product Designer / Frontend Engineer / visual-quality-review / Design Work Mode / screenshots/state scenarios.
+- Multi-perspective review → Quality Reviewer / code-review / Model Routing / Review templates / lesson persistence.
+- Installation lifecycle → bin/aips / bootstrap.sh / uninstall.sh / INSTALLATION / lifecycle SVG / CLI scenarios.
+
+Do not add new Role/Skill/Gate if these existing mechanisms can be extended cleanly.

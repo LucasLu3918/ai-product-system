@@ -416,3 +416,78 @@ Production promotion 完成，但 Health Check 或 critical smoke path 失敗。
 **預期行為**
 
 Staging 可以 N/A，但必須在 Product/Release 記錄理由。仍需適用的 Build / Smoke / Production Verification，不為了流程形式強迫建立不必要環境。
+
+
+## 範例 34：需求不足時先引導
+
+**使用者**
+
+> 幫我做一個預約系統。
+
+**預期行為**
+
+若無法判斷主要預約對象、核心使用者或必要流程，狀態為 NEEDS_CLARIFICATION。系統用少量選項逐步收斂需求；Font、Spacing、Framework minor choice 等可由專業預設處理，不要求使用者回答。足以形成可測試目標後才進 READY 與實作。
+
+## 範例 35：Jira Connector 尚未授權
+
+**使用者**
+
+> 請依 https://vgjira.atlassian.net/browse/PI-17834 實作。
+
+**預期行為**
+
+辨識 Atlassian source，先嘗試適用 Connector/MCP。若只缺授權，提示使用者完成 Connection，保留 PI-17834 與目前 Task，授權後直接 Resume。只有所有直接取得方式都失敗時才請使用者貼 Ticket 內容。
+
+## 範例 36：現有 UI 看起來怪異
+
+**使用者**
+
+> 不要換風格，幫我把這頁不整齊、怪怪的地方整理好。
+
+**預期行為**
+
+使用 Visual Polish。Preserve Before Redesign；執行 UI、檢查 Screenshot、Alignment、Typography、Control Geometry、Spacing、States、Responsive。優先修 Shared Token / Component，不堆疊局部 CSS Patch。修後重新 Render 並 Visual Quality Review。
+
+## 範例 37：大型 Backend Refactor 多角度 Review
+
+大型 Go Backend refactor 同時影響 API contract、transaction 與 authorization。
+
+**預期行為**
+
+依 Change Boundary 選擇 Quality Reviewer + Software Architect + Security Engineer + Database Engineer。各自只看 bounded perspective。Orchestrator 合併重複 Finding 後交回原 Backend Author 修正，再做 targeted re-review。
+
+## 範例 38：Reviewer 意見衝突
+
+Architect 建議把 transaction 拆開，Security/Database evidence 顯示拆開會破壞金融原子性。
+
+**預期行為**
+
+不讓 Agent 無限互改。把衝突、Evidence、Impact 整理後交由適當 Authority / Human 決定，再由原 Author 實作核准方案。
+
+## 範例 39：Review 經驗提升為 Skill 建議
+
+三個不同專案的付款 Callback Review 都發現 Idempotency / Replay 遺漏。
+
+**預期行為**
+
+將本次 Finding 先記 Run Lesson；因跨專案重複且可一般化，提出改善 financial-integrity / secure-design Skill 的建議。未經使用者 System Improvement Approval 不修改永久 Skill。
+
+## 範例 40：Attach / Detach
+
+**使用者**
+
+> 暫時不要讓這個專案使用 AIPS，但保留之前 AI 的狀態。
+
+**預期行為**
+
+執行 aips detach。把 .ai/ 安全封存為 .ai.detached-timestamp，不刪產品程式碼。aips status 顯示最近 detached workspace 與恢復方式。
+
+## 範例 41：完整解除安裝
+
+**使用者**
+
+> 我要把 AIPS 從這台 Mac 移除，但不要刪產品。
+
+**預期行為**
+
+使用 ./scripts/uninstall.sh 或 aips uninstall；需要時加 --remove-venv。保留 Product repo / .ai workspace / System repo。若使用者要完整刪 System repo，完成 uninstall 後再由使用者明確刪 Repository。
