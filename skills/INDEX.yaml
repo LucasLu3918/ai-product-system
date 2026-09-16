@@ -212,5 +212,78 @@ skills:
       minimum_tier: 3
       preferred_tier: 3
 
+  threat-modeling:
+    capability: security
+    path: security/threat-modeling/SKILL.md
+    triggers:
+    - sal_3_or_4
+    - new_trust_boundary
+    - sensitive_exposure
+    cost: medium
+    model_requirements:
+      reasoning: high
+      coding: normal
+      reliability: critical
+      minimum_tier: 3
+      preferred_tier: 3
+  authorization-security:
+    capability: security
+    path: security/authorization-security/SKILL.md
+    triggers:
+    - authz_change
+    - privileged_operation
+    - cross_account_access
+    cost: low
+    model_requirements:
+      reasoning: high
+      coding: normal
+      reliability: critical
+      minimum_tier: 3
+      preferred_tier: 3
+  business-logic-abuse:
+    capability: security
+    path: security/business-logic-abuse/SKILL.md
+    triggers:
+    - fraud_abuse
+    - promotion_coupon_points
+    - high_value_business_rule
+    cost: medium
+    model_requirements:
+      reasoning: high
+      coding: normal
+      reliability: critical
+      minimum_tier: 3
+      preferred_tier: 3
+  financial-integrity:
+    capability: security
+    path: security/financial-integrity/SKILL.md
+    triggers:
+    - payment
+    - refund
+    - settlement
+    - stored_value
+    - points_credit_coupon_redemption
+    cost: medium
+    model_requirements:
+      reasoning: very_high
+      coding: strong
+      reliability: critical
+      minimum_tier: 3
+      preferred_tier: 4
+  security-testing:
+    capability: security
+    path: security/security-testing/SKILL.md
+    triggers:
+    - sal_3_or_4
+    - security_review
+    - high_value_change
+    cost: medium
+    model_requirements:
+      reasoning: high
+      coding: strong
+      reliability: critical
+      minimum_tier: 3
+      preferred_tier: 3
+
 # model_requirements are routing hints, not hard model assignments.
 # Routers should read this index first. Open a SKILL.md body only after selection.
