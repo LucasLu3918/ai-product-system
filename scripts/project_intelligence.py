@@ -424,14 +424,17 @@ def bootstrap(root: Path) -> dict[str, Any]:
 
 
 def git_dirty_paths(root: Path) -> list[str]:
-    raw = (run_git(root, ["status", "--porcelain"]) or "").splitlines()
-    result: list[str] = []
-    for line in raw:
-        path = line[3:] if len(line) > 3 else line
-        if " -> " in path:
-            path = path.split(" -> ", 1)[1]
-        result.append(path)
-    return result[:1000]
+    """Return staged, unstaged and untracked paths without parsing porcelain columns."""
+    result: set[str] = set()
+    for args in (
+        ["diff", "--name-only"],
+        ["diff", "--cached", "--name-only"],
+        ["ls-files", "--others", "--exclude-standard"],
+    ):
+        raw = run_git(root, args)
+        if raw:
+            result.update(p for p in raw.splitlines() if p)
+    return sorted(result)[:1000]
 
 
 def changed_paths_between(root: Path, old_head: str, new_head: str) -> list[str] | None:

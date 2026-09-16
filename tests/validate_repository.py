@@ -271,9 +271,9 @@ for rel, phrases in {
     "orchestration/VISUAL_POLISH.md": ("Preserve Before Redesign", "Consistency First", "Shared root cause first", "Rendered evidence"),
     "orchestration/MULTI_REVIEW.md": ("Reviewer resolution", "Bounded parallel review", "Consolidation", "Author fix loop", "Learning extraction"),
     "orchestration/QUALITY_PLANNING.md": ("Quality classes", "Seven dimensions", "Targets and evidence", "Observability planning"),
-    "orchestration/PROJECT_KNOWLEDGE.md": ("Golden rule", "Knowledge types", "Staleness / invalidation", "Targeted refresh", "Promotion"),
-    "orchestration/HARNESS_RESOLUTION.md": ("Applicability", "Project modes", "Instruction composition", "Runtime coverage"),
-    "harness/HARNESS_PROTOCOL.md": ("Non-invasive invariant", "Adapter preference", "Ownership", "Uninstall"),
+    "orchestration/PROJECT_KNOWLEDGE.md": ("Compatibility rule", "No duplication", "Migration safety"),
+    "orchestration/HARNESS_RESOLUTION.md": ("Two levels", "Project modes", "Runtime capability", "Instruction composition", "Failure policy"),
+    "harness/HARNESS_PROTOCOL.md": ("Turn-aware flow", "Non-invasive invariant", "Capability", "Project persistence", "Uninstall"),
     "harness/ADAPTER_CONTRACT.md": ("Capability states", "Managed composition", "Runtime targets"),
     "orchestration/PROJECT_INTELLIGENCE.md": ("Initial Intelligence Bootstrap", "Source registry and deduplication", "Semantic enrichment and READY", "Sensitive data", "Human review"),
     "orchestration/CHANGE_IMPACT.md": ("Required dimensions", "Project-native style", "Diff reconciliation"),
@@ -312,8 +312,8 @@ if len(root_user_guide) > 1200 or "docs/USER_GUIDE.md" not in root_user_guide:
 svg = (ROOT / "docs/assets/system-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/system-overview.svg").exists() else ""
 if "<svg" not in svg or "AI Product System" not in svg:
     errors.append("Human architecture SVG is missing or invalid")
-if "EPHEMERAL" not in svg or "Global Harness" not in svg:
-    errors.append("System overview SVG must reflect Global Harness and EPHEMERAL/ATTACHED architecture")
+if "EPHEMERAL" not in svg or "ATTACHED" not in svg or "Turn-Aware Harness" not in svg:
+    errors.append("System overview SVG must reflect Turn-Aware Harness and EPHEMERAL/ATTACHED architecture")
 
 harness_svg = (ROOT / "docs/assets/harness-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/harness-overview.svg").exists() else ""
 if "<svg" not in harness_svg or "Turn-Aware" not in harness_svg:
@@ -390,10 +390,10 @@ if "lessons" not in lessons:
     errors.append("LESSONS.yaml missing lessons list")
 
 lifecycle_svg = (ROOT / "docs/assets/system-lifecycle.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/system-lifecycle.svg").exists() else ""
-if "<svg" not in lifecycle_svg or "Installation &amp; Project Lifecycle" not in lifecycle_svg:
+if "<svg" not in lifecycle_svg or "Installation, Harness &amp; Intelligence Lifecycle" not in lifecycle_svg:
     errors.append("System lifecycle SVG is missing or invalid")
-if "EPHEMERAL" not in lifecycle_svg or "ATTACHED" not in lifecycle_svg or "Runtime Adapters" not in lifecycle_svg:
-    errors.append("System lifecycle SVG must reflect Harness adapters and EPHEMERAL/ATTACHED modes")
+if "EPHEMERAL" not in lifecycle_svg or "ATTACHED" not in lifecycle_svg or "managed adapters" not in lifecycle_svg:
+    errors.append("System lifecycle SVG must reflect Harness adapters and EPHEMERAL/ATTACHED Intelligence modes")
 
 cli_text = (ROOT / "bin/aips").read_text(encoding="utf-8") if (ROOT / "bin/aips").exists() else ""
 for phrase in ("aips attach <project-path>", "aips detach <project-path>", "aips status <project-path>", "aips harness install", "aips harness uninstall", "aips harness status", "aips harness doctor", "aips harness resolve", "aips intelligence bootstrap", "aips intelligence status", "aips intelligence context", "aips intelligence render"):
