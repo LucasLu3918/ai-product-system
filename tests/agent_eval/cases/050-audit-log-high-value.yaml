@@ -1,0 +1,38 @@
+version: 1
+id: 050-audit-log-high-value
+scenario_id: "050"
+description: High-value actions require a distinct protected audit-log contract rather than ordinary application logging alone.
+input:
+  prompt: Add logging for balance changes, points adjustments, refunds and role changes.
+  context:
+    high_value_actions: true
+    security_sensitive: true
+rubric:
+  equals:
+    response.status: AUDIT_LOG_REQUIRED
+    response.separate_from_application_logs: true
+    response.log_secrets_or_prohibited_payloads: false
+    response.security_review_remains_required: true
+  contains:
+    response.audit_fields:
+      - actor
+      - action
+      - target
+      - result
+      - correlation
+    response.audit_controls:
+      - access_protection
+      - integrity
+      - retention
+      - sensitive_data_redaction
+    response.actions:
+      - define_audit_event_contract
+      - separate_audit_and_application_logging
+      - preserve_security_review
+  excludes:
+    response.actions:
+      - log_credentials
+      - log_sensitive_payloads_without_policy
+  set_equals: {}
+  nonempty:
+    - response.summary
