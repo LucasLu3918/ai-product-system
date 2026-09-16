@@ -294,3 +294,118 @@ Planning Package 會依產品需要包含：
 不適用的項目必須明確標記 N/A 與理由，不能默默省略。
 
 目標是：未來即使換另一個 AI Agent 或人類團隊，不看原始聊天，也能依保存的規劃產出高度一致的產品。
+
+
+## 19. 風險比例式資安審核
+
+系統使用 Security Assurance Level（SAL）0–4 決定資安審核強度，而不是所有產品都跑同一套重型流程。
+
+~~~text
+SAL 0  幾乎沒有安全邊界：靜態內容、無登入、無敏感資料
+SAL 1  低風險工具：基本 validation / dependency / secret hygiene
+SAL 2  一般 authenticated CRUD / SaaS：按需檢查 Auth/Authz/Data
+SAL 3  高風險：管理權限、敏感資料、Upload/Webhook、高影響 API
+SAL 4  Critical：金流、退款、點數/儲值/可兌換優惠、餘額、轉移/提領等
+~~~
+
+SAL 不等於 Model Tier。Security Reviewer 的模型仍由複雜度、風險、隱私與成本共同決定。
+
+系統同時保存：
+
+- Product Baseline SAL
+- Change Security Impact
+- Effective SAL
+- Reliability Impact
+
+因此一個 SAL 4 金流產品只改 Footer/CSS 時，不會自動跑完整 SAL 4 審核；但只要 Change Boundary 觸及付款、點數、優惠、權限、敏感資料等 protected boundary，就會自動提升審核深度。
+
+### 金流 / 點數 / 優惠
+
+系統會把高價值 Business Logic 視為 Security Boundary，不只檢查 SQL Injection/XSS，還會檢查：
+
+- Double Spend / 重複兌換
+- Replay / Idempotency
+- Race Condition
+- 重複事件或訊息消費
+- Balance / Precision / Rounding
+- Refund / Reversal 一致性
+- Cross-account Authorization
+- Coupon / Referral / Promotion Abuse
+- Audit / Reconciliation
+
+SAL 3–4 會依情況啟用獨立 Security Engineer；SAL 4 未解決的 High/Critical finding 會 BLOCK release。
+
+詳細規則：`docs/SECURITY_ASSURANCE.md`。
+
+
+## 20. 大量／核心異動先確認範圍
+
+系統不以「修改幾個檔案」單獨判定大型修改，而是以語意影響為主。若涉及核心 Orchestrator/Governance、公開 API、資料模型、Auth/Security Boundary、金流/點數、跨 Domain、大型 Refactor、Runtime/Database Migration、Breaking Change 或 Production Topology，實作前會先輸出 Core Change Proposal。
+
+內容至少包含：修改目的、In/Out Scope、預計檔案/模組、架構/API/Data/Security/Migration 影響、測試/文件、風險、推薦方案、建議實作順序。
+
+你沒有確認前不開始實作；若執行途中範圍實質擴大，會再次停止確認。
+
+## 21. Git 推送前確認
+
+任何 Remote Git publication 前，系統會先列出：
+
+- 完整 Changed Files
+- 本次功能修改摘要
+- Tests / Validation / Review / Security / Documentation evidence
+- 未解決事項
+- Atomic Commit Plan
+- Remote / Branch / PR / Release 目標
+
+Commit 依「邏輯功能」拆分，必須容易 Review 與 Revert，不會單純依檔案拆 Commit。
+
+你確認後才會更新 Remote branch/ref 或進行對應發布。若確認後檔案清單、Commit Plan、Target 或實質 Scope 改變，必須再次確認。
+
+## 22. 優化 AI Product System 本身
+
+當你提出「幫我優化這套系統」、「新增系統規則」、「調整 Orchestrator / Role / Skill / Model Routing」等建議時，系統不會直接照單實作。
+
+會先做 System Improvement Review：
+
+- 這個建議是否真的解決問題？
+- 是否已被現有規則涵蓋？
+- 有沒有更簡單、較少 Token / 維護成本的方法？
+- 是否會造成 Role / Skill / Gate 膨脹？
+- 是否向下相容？
+- 還有哪些值得一起優化？
+- 會影響哪些 Scenario / 文件 / 架構圖？
+- 是否碰到 Constitution？
+
+系統先回饋推薦方向、修改範圍與風險，你確認方向後才實作。
+
+### Constitution Change Gate
+
+`core/CONSTITUTION.md` 只保存極少數最根本規則，例如：
+
+- Protected Human Authority
+- Truth / No Silent Assumptions
+- Protected Safety Boundary
+- Stop-the-Line
+- Scope Integrity
+- High-Risk Explicit Approval
+
+如果建議會實質改變這些規則，即使沒有直接點名 `CONSTITUTION.md`，系統也必須停止並再次向你說明：
+
+1. 受影響條款
+2. 現行規則與建議新規則
+3. 為何不能只改 Governance / System
+4. 可避免動憲法的替代方案
+5. Safety / Authority / Compatibility / Future Agent 等風險
+6. 影響文件、流程、Scenario
+
+之後需要你第二次**明確同意修改 Constitution**才可以實作。
+
+預設優先順序是：
+
+~~~text
+Skill / Template
+→ Workflow / Work Mode
+→ System / Orchestration
+→ Governance
+→ Constitution（最後手段）
+~~~

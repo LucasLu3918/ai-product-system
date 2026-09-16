@@ -39,6 +39,7 @@ Request
 → Task Preflight
 → Primary Planning Detection
 → Reproducible Planning Package + Gate 1/2 when applicable
+→ Risk / Security Assurance Classification
 → decision only when material
 → Work Mode
 → project/scoped instruction discovery when needed
@@ -58,6 +59,8 @@ Key rules:
 - primary product/project planning must be physically persisted in a user-specified workspace; if no workspace is given, ask;
 - authoritative planning must be complete enough for another capable AI/human team to reproduce substantially the same intended product;
 - planning approval and implementation approval are separate gates;
+- security review depth is risk-proportional using SAL 0–4 and the actual affected Change Boundary;
+- payments, stored value, economically redeemable points/credits/vouchers/coupons and similar high-value business rules are security boundaries;
 - current explicit user decisions lead project execution, while system safety guardrails remain mandatory;
 - in existing projects, nearest scoped `AGENTS.md` beats broader scope and project-local knowledge beats generic skills;
 - use Clean Architecture principles and DDD proportionally, not ceremonially;
@@ -66,6 +69,10 @@ Key rules:
 - one writer owns a change boundary by default;
 - Primary Agent, Subagent and Reviewer models are resolved independently from task risk/complexity and Skill hints;
 - system updates never auto merge/rebase and major-version changes require explicit review;
+- every suggestion to improve this AI Product System is evaluated for fit, overlap, simplification and better alternatives before implementation;
+- constitutional semantics are protected by a separate Constitutional Change Gate and second explicit approval;
+- large/core changes require a scope/impact proposal before implementation;
+- remote Git publication requires a complete changed-file list, validation evidence and atomic commit plan before approval;
 - system changes must pass the Documentation Impact Gate so docs, flows, diagrams and tests stay synchronized.
 
 ## Start here
@@ -75,6 +82,9 @@ Key rules:
 - User guide: `USER_GUIDE.md`
 - Installation/lifecycle: `docs/INSTALLATION.md`
 - Architecture diagrams: `docs/ARCHITECTURE.md`
+- Security assurance: `docs/SECURITY_ASSURANCE.md`
+- Constitution: `core/CONSTITUTION.md`
+- System self-improvement: `orchestration/SYSTEM_SELF_IMPROVEMENT.md`
 - Planning protocol: `orchestration/PLANNING_PACKAGE.md`
 - Maintenance: `docs/MAINTENANCE.md`
 - Examples: `examples/EXAMPLES.md`

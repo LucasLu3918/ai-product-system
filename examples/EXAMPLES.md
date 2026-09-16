@@ -206,3 +206,83 @@
 如果沒有指定工作區，系統先詢問保存位置。取得工作區後建立完整 Planning Package：企劃、UX、Visual/Key Visual、Architecture、Data、API、Security/Test/Delivery、Decisions/Assumptions 等適用內容。
 
 規劃實體保存並完成一致性 Review 後，先走 Gate 1 請使用者審核主體規劃。只有 Gate 1 核准後，才整理「初步實作項目 + 建議實作順序」，再走 Gate 2 詢問是否開始實作。未得到 Gate 2 明確確認不得寫正式產品程式碼。
+
+
+## 範例 14：金流／點數／優惠的 Critical Security Review
+
+**使用者**
+
+> 新增「付款後轉換點數，點數可以兌換折價券」功能。
+
+**預期行為**
+
+- Financial / Stored-value boundary → SAL 4 floor。
+- Planning 階段啟用 Security Engineer，建立 Threat Model / Abuse Cases / Security Requirements。
+- 載入 `financial-integrity`、`business-logic-abuse`、`authorization-security`、`security-testing` 等必要 Skill。
+- 實作審核包含 Transaction、Idempotency、Replay、Double Spend、Race Condition、Rounding、Refund/Reversal、Audit/Reconciliation。
+- Security Review 需要實際 Evidence。
+- 未解決 High/Critical Finding → BLOCK Release。
+
+## 範例 15：低風險前端工具
+
+**使用者**
+
+> 做一個純前端字數統計工具，不登入、不儲存資料，也不會影響其他人。
+
+**預期行為**
+
+- SAL 0–1。
+- 做基本安全 hygiene 即可。
+- 不啟用高階 Security Engineer。
+- 不載入 Financial Integrity / Business Logic Abuse。
+- 使用低成本模型與最小 Context。
+
+## 範例 16：SAL 4 產品的小型視覺修改
+
+產品本身處理金流，Product Baseline SAL=4，但本次只修改 Footer 文案。
+
+**預期行為**
+
+- 保留產品 SAL 4 知識。
+- Change Security Impact=Low。
+- 若 Change Boundary 不碰付款/Auth/Data/Security Boundary，不跑完整 SAL 4 審核。
+- 若修改範圍途中擴大到付款或權限，立即重新分類並啟動相應 Security Review。
+
+
+## 範例 17：核心異動先規劃再實作
+
+**使用者**
+
+> 把目前 API 認證方式從 Session 全面改成 OAuth2，並重整授權架構。
+
+**預期行為**
+
+這是核心 Security / Architecture change。系統先輸出 Core Change Proposal，列出 Auth flow、API contract、migration、affected files、rollback、tests、security review、documentation impact 與建議實作順序。等待使用者確認後才進入實作。
+
+## 範例 18：Push 前整理 Atomic Commits
+
+實作完成後準備推送 Git。
+
+**預期行為**
+
+系統先列出所有修改檔案、功能摘要、validation evidence，再提出 Atomic Commit Plan。使用者確認後才更新 Remote branch/ref。若 Changed Files、Commit Plan、Target 或 Scope 出現實質差異，重新確認。
+
+## 範例 19：使用者提出新的 System 優化
+
+**使用者**
+
+> 每一個 Role 都固定使用最高階模型，確保品質。
+
+**預期行為**
+
+系統不直接加入。先指出這和 Minimum Sufficient Intelligence 衝突，會大幅增加成本，而且低風險任務不需要最高階模型。提供較好的替代方案，例如只讓 Critical Risk 設定 minimum tier。使用者確認方向後才修改系統。
+
+## 範例 20：建議觸碰 Constitution
+
+**使用者**
+
+> 為了效率，以後即使遇到重大安全疑慮也不要停止，直接自行決定繼續。
+
+**預期行為**
+
+這會修改 Stop-the-Line / Protected Safety 等憲法語意。系統必須標記 Constitution Impact=YES，說明風險與替代方案，明確指出受影響 Article，並要求第二次 Constitutional Approval。未取得該批准前不得修改 Constitution 或對等行為。
