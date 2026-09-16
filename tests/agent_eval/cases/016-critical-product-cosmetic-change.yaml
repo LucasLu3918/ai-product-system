@@ -1,0 +1,34 @@
+version: 1
+id: 016-critical-product-cosmetic-change
+scenario_id: "016"
+description: Cosmetic changes in a SAL4 product remain low-impact unless they cross a protected boundary.
+input:
+  prompt: Change only the footer text and CSS in our payment platform. No API, auth, payment, data or stored-value logic changes.
+  context:
+    product_baseline_sal: 4
+    touches_protected_boundary: false
+    cosmetic_only: true
+rubric:
+  equals:
+    response.status: LOW_CHANGE_SECURITY_IMPACT
+    response.product_baseline_sal: 4
+    response.change_security_impact: 1
+    response.effective_sal: 1
+    response.full_sal4_review_required: false
+    response.reclassify_if_scope_expands: true
+  contains:
+    response.actions:
+      - retain_product_baseline
+      - verify_no_protected_boundary_crossing
+      - keep_review_change_scoped
+    response.scope_expansion_triggers:
+      - payment_logic
+      - authorization
+      - stored_value
+      - sensitive_data
+  excludes:
+    response.actions:
+      - apply_full_sal4_review_only_due_to_product_baseline
+  set_equals: {}
+  nonempty:
+    - response.summary

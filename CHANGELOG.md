@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.16.6
+
+### Security & Production Readiness Semantic Evidence Maturity
+
+- Add Agent Eval evidence for proportional security assurance across critical financial boundaries, low-impact frontend work and cosmetic changes inside critical products.
+- Add semantic evidence for security planning/review, Release Readiness blockers, production verification/recovery, staging N/A for low-risk static products and deployment automation with missing platform access.
+- Promote Scenarios 014-016 and 030-034 from manual to agent_eval.
+- Raise conformance baseline to 125 total / 39 manual / 19 deterministic / 40 lifecycle / 27 agent_eval / 86 automated / 0 uncovered (68.8% automated).
+- No runtime behavior, Role, Skill, Capability, Approval Gate or architecture-topology change.
+
 ## 0.16.5
 
 ### Quality & Release Semantic Evidence Maturity

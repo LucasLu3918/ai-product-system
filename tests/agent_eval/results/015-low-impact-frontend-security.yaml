@@ -1,0 +1,23 @@
+version: 1
+case_id: 015-low-impact-frontend-security
+scenario_id: "015"
+case_fingerprint: sha256:e6c4c421707c3c1ecebc2ee0a99fae42f822709a93845784c1f8f5ea2750cbaf
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: LOW_SECURITY_IMPACT
+  effective_sal_max: 1
+  dedicated_high_tier_security_engineer_default: false
+  financial_integrity_skill_required: false
+  business_logic_abuse_skill_required: false
+  security_baseline:
+    - input_hygiene
+    - dependency_hygiene
+    - secret_hygiene
+  actions:
+    - keep_security_process_proportionate
+    - keep_context_cost_proportionate
+  summary: Use normal low-impact secure defaults without loading a financial-security stack or dedicated high-tier reviewer for a harmless local frontend utility.

@@ -1,0 +1,33 @@
+version: 1
+id: 015-low-impact-frontend-security
+scenario_id: "015"
+description: A harmless local frontend utility uses low proportional security assurance without unnecessary high-tier security overhead.
+input:
+  prompt: Build a local frontend helper that formats pasted text. No login, sensitive data, shared state or economic value.
+  context:
+    login: false
+    sensitive_data: false
+    shared_mutable_state: false
+    economic_value: false
+rubric:
+  equals:
+    response.status: LOW_SECURITY_IMPACT
+    response.effective_sal_max: 1
+    response.dedicated_high_tier_security_engineer_default: false
+    response.financial_integrity_skill_required: false
+    response.business_logic_abuse_skill_required: false
+  contains:
+    response.security_baseline:
+      - input_hygiene
+      - dependency_hygiene
+      - secret_hygiene
+    response.actions:
+      - keep_security_process_proportionate
+      - keep_context_cost_proportionate
+  excludes:
+    response.actions:
+      - load_financial_security_stack
+      - require_sal4_review
+  set_equals: {}
+  nonempty:
+    - response.summary

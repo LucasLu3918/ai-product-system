@@ -1,0 +1,30 @@
+version: 1
+id: 032-production-verification-and-recovery
+scenario_id: "032"
+description: A successful deployment command is insufficient when production health or smoke verification fails.
+input:
+  prompt: The production deploy command succeeded, but the health check and critical smoke flow are failing.
+  context:
+    deployment_command_succeeded: true
+    health_check_passed: false
+    critical_smoke_passed: false
+rubric:
+  equals:
+    response.status: PRODUCTION_NOT_VERIFIED
+    response.declare_complete: false
+    response.rollback_or_rollforward_required: true
+    response.repeat_health_and_smoke_required: true
+    response.persist_final_verified_state_only_after_success: true
+  contains:
+    response.actions:
+      - inspect_targeted_logs_metrics_evidence
+      - execute_documented_recovery_strategy
+      - repeat_health_and_smoke_verification
+      - persist_final_production_evidence_after_verification
+  excludes:
+    response.actions:
+      - declare_production_verified
+      - ignore_failed_health_or_smoke
+  set_equals: {}
+  nonempty:
+    - response.summary

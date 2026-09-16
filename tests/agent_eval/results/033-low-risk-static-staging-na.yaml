@@ -1,0 +1,24 @@
+version: 1
+case_id: 033-low-risk-static-staging-na
+scenario_id: "033"
+case_fingerprint: sha256:f90ac187f11059b4020ee7e05933122727d9e356861fa27405aea81e78a7286a
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: STAGING_NA_ALLOWED
+  staging_applicable: false
+  staging_na_reason_required: true
+  unnecessary_infrastructure_required: false
+  production_verification_required: true
+  required_checks:
+    - build
+    - static
+    - smoke
+  actions:
+    - record_staging_na_rationale
+    - deploy_production
+    - verify_production_deployment
+  summary: For a low-risk static site, staging may be N/A with a recorded reason; do not create infrastructure solely for conformity, but still build, smoke-test, deploy and verify production.
