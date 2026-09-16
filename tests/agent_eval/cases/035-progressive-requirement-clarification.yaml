@@ -1,0 +1,31 @@
+version: 1
+id: 035-progressive-requirement-clarification
+scenario_id: "035"
+description: A vague booking-system request must clarify material product direction before broad implementation.
+input:
+  prompt: Build me a booking system.
+  context:
+    objective_detail: insufficient
+    blocking_product_decisions: true
+rubric:
+  equals:
+    response.status: NEEDS_CLARIFICATION
+    response.broad_implementation_allowed: false
+    response.uses_professional_defaults_for_non_material_details: true
+  contains:
+    response.actions:
+      - identify_blocking_unknowns
+      - ask_smallest_useful_question_batch
+      - offer_concrete_options_when_helpful
+    response.clarification_dimensions:
+      - booking_subject
+      - target_user_or_actor
+      - core_booking_flow
+  excludes:
+    response.actions:
+      - invent_product_scope
+      - begin_broad_implementation
+  set_equals: {}
+  nonempty:
+    - response.question_batch
+    - response.summary
