@@ -23,7 +23,13 @@ flowchart TD
     M -->|yes| CI[Change Impact Guard]
     M -->|no| ROUTE[AIPS Routing]
     CI --> ROUTE
-    ROUTE --> X[Plan / Execute]
+    ROUTE --> ISO{Execution isolation}
+    ISO -->|shared| X[Plan / Execute in current workspace]
+    ISO -->|worktree| WT[Real AIPS-owned Git worktree]
+    ISO -->|verified sandbox| SB[External sandbox provider]
+    ISO -->|sandbox unavailable| BLOCK[UNSUPPORTED / BLOCKED]
+    WT --> X
+    SB --> X
     X --> V[Test / Review / Actual Impact Reconciliation]
     V --> IR[Targeted Intelligence Refresh]
     IR --> DONE[Persist / Complete]
@@ -531,6 +537,27 @@ flowchart TD
 ~~~
 
 Run events are structured evidence only. Chat transcripts, private chain-of-thought and secrets are not run-state inputs.
+
+## Execution isolation
+
+~~~mermaid
+flowchart TD
+    P[Approved Change Boundary] --> R{Resolve mode}
+    R -->|shared| SH[Current workspace · isolated=false]
+    R -->|worktree| WT[git worktree + AIPS ownership record]
+    R -->|sandbox| SP{Verified provider?}
+    SP -->|yes| SB[Provider sandbox]
+    SP -->|no| B[UNSUPPORTED / BLOCKED]
+    WT --> SW[Single writer per Change Boundary]
+    SB --> SW
+    SH --> SW
+    SW --> E[Execute under existing governance / impact / test rules]
+    E --> C{Cleanup requested?}
+    C -->|dirty worktree| K[BLOCKED · preserve workspace]
+    C -->|clean AIPS worktree| RM[Remove worktree · preserve branch]
+~~~
+
+Worktree state is stored outside the project source tree. Isolation strength is reported truthfully; a temporary directory is never labeled as a sandbox.
 
 ## Scenario conformance evidence
 
