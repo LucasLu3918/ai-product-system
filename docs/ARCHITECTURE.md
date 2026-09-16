@@ -572,10 +572,13 @@ flowchart LR
     T --> U[uncovered]
     D --> E[Executable evidence]
     L --> E
-    A --> E
+    A --> C[Eval Case]
+    C --> AR[Actual Agent observable Result]
+    AR --> FP[Fingerprint binding + deterministic rubric]
+    FP --> E
     M --> REP[Coverage report]
     U --> BLOCK[Release-blocking by policy]
     E --> REP
 ~~~
 
-Scenario file count remains the specification inventory. Conformance is established only through the explicit registry/evidence mapping.
+Scenario file count remains the specification inventory. Agent Eval generation is provider-neutral and separate from deterministic scoring; private chain-of-thought is never evidence. Conformance is established only through the explicit registry/evidence mapping.
