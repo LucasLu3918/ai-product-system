@@ -767,3 +767,11 @@ AIPS 依 final Change Boundary 判斷 Static、Unit、Integration、Contract、E
 只有真正存在跨專案、可重用而且責任清楚的能力缺口才新增。Framework 名稱、一次性工具、Project Convention、Style variant 不應因名稱不同就建立新 Skill。
 
 New Skill Admission 至少要有：positive triggers、non-triggers、inputs、outputs、boundary、context cost、model requirements、reuse rationale、scenario evidence、unique ID/path，以及 secret/private-config check。
+
+## v0.11 Approval Binding
+
+大型／核心變更與 Git Publish 仍由 Human 決定。v0.11 新增的是「批准後可否機器驗證仍是同一個範圍」。
+
+Approval Record 會記錄 proposal/scope fingerprint、branch、candidate commit、changed files 與允許的 protected operation。若 scope 漂移，狀態視為 `APPROVAL_STALE`。
+
+可用 `aips intelligence context ... --explain` 查看結構化 routing 結果與 reasons；這不是 Chain-of-Thought。
