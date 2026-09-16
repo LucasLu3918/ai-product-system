@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.16.5
+
+### Quality & Release Semantic Evidence Maturity
+
+- Add Agent Eval evidence for Q2 quality baseline selection and independent quality-dimension adjustment.
+- Add semantic evidence for deriving draft quality targets from product scale, failure impact, sensitivity, delivery and operations context without forcing users to invent p95/RTO/RPO.
+- Add evidence for LOCAL_COMPLETE before optional Production Enablement when production was not requested.
+- Add evidence for explicit production requests: plan production concerns from the start, still verify LOCAL_COMPLETE, then continue without a redundant deploy question and require Release Readiness.
+- Add provider-neutral observability evidence before vendor selection.
+- Add high-value audit logging evidence for balance/points/refund/role actions with stronger access/integrity/retention/redaction requirements.
+- Promote Scenarios 045-050 from manual to agent_eval.
+- Raise conformance baseline to 125 total / 47 manual / 19 deterministic / 40 lifecycle / 19 agent_eval / 78 automated / 0 uncovered (62.4% automated).
+- No runtime behavior, Role, Skill, Capability, Approval Gate or architecture-topology change.
+
 ## 0.16.4
 
 ### Governance & Security Semantic Evidence Maturity
