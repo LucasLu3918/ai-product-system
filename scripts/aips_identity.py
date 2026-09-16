@@ -120,7 +120,8 @@ def _hash_file(path: Path, hasher: Any) -> None:
 
 def dirty_fingerprint(root: Path) -> tuple[str | None, bool | None]:
     root = project_root(root)
-    status = git_bytes(root, "status", "--porcelain=v1", "-z", "--untracked-files=all")
+    pathspec = (".", ":(exclude).ai/**", ":(exclude).ai.detached-*")
+    status = git_bytes(root, "status", "--porcelain=v1", "-z", "--untracked-files=all", "--", *pathspec)
     if status is None:
         return None, None
 
@@ -128,12 +129,12 @@ def dirty_fingerprint(root: Path) -> tuple[str | None, bool | None]:
     hasher.update(b"status\0")
     hasher.update(status)
 
-    diff = git_bytes(root, "diff", "--binary", "--no-ext-diff", "HEAD")
+    diff = git_bytes(root, "diff", "--binary", "--no-ext-diff", "HEAD", "--", *pathspec)
     if diff is not None:
         hasher.update(b"diff\0")
         hasher.update(diff)
 
-    untracked = git_bytes(root, "ls-files", "--others", "--exclude-standard", "-z") or b""
+    untracked = git_bytes(root, "ls-files", "--others", "--exclude-standard", "-z", "--", *pathspec) or b""
     paths = [p for p in untracked.decode("utf-8", errors="surrogateescape").split("\0") if p]
     hasher.update(f"untracked-count:{len(paths)}".encode())
     for rel in sorted(paths):
