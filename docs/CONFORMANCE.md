@@ -203,3 +203,37 @@ Automated     52.0%
 ~~~
 
 Scenario 011 / 044 / 069 現在有直接 lifecycle evidence，才從 manual 升級；其餘 Scenario 仍依 evidence truthfulness 維持原分類。
+
+## v0.16.3 Intelligence Context Evidence Maturity
+
+新增 `tests/evidence/intelligence_context_lifecycle.py`，以隔離 Git project + XDG config 實際驗證：
+
+- `SOURCE_REGISTRY.yaml` 保留 AGENTS / CLAUDE / GEMINI / official docs 為 pointer；
+- `content_duplicated: false`，不把 authoritative source 複製成 derived Intelligence；
+- Runtime native visibility 只標記真正由該 Runtime 自動載入的 instruction source；
+- Turn Context 不重複注入 current Runtime 已 native-loaded 的 source；
+- 非 native authoritative source 仍保留 targeted-load pointer；
+- general knowledge / normal chat 可取得 compact Harness Context，但不會建立 `.ai/`、External Intelligence 或 Change Impact。
+
+因此 Scenario 076 / 086 從 manual 升級為 lifecycle。
+
+這次 audit 同時保留以下 Scenario 為 manual，因為目前 contract 尚未完整 deterministic enforce：
+
+- 064：material instruction conflict surfacing；
+- 082：new evidence 與 Project Override 的 contradiction conflict；
+- 084：implementation 後 actual diff ↔ declared Change Impact reconciliation；
+- 087：component-level monorepo lazy Intelligence selection；
+- 088：legacy Project Knowledge migration 的 canonical artifact pointer mapping。
+
+v0.16.3 baseline：
+
+~~~text
+Total         125
+Manual         58
+Deterministic  19
+Lifecycle      40
+Agent Eval      8
+Automated      67
+Uncovered       0
+Automated     53.6%
+~~~
