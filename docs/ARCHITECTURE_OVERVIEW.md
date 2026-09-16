@@ -73,3 +73,16 @@ Human Approval
 ~~~
 
 Context capability 與 Governance Enforcement 分開呈現。這不增加新的 Approval Gate，也不把批准權交給 Agent。
+
+## 9. Durable Run State
+
+~~~text
+material step
+→ CHECKPOINT.yaml + EVENTS.jsonl
+→ interrupted / new Agent session
+→ compare recorded revision with current HEAD
+→ CURRENT: resume from checkpoint
+→ STALE: refresh/revalidate before continuation
+~~~
+
+這個機制沿用既有 Workspace State；不導入新的 workflow framework，也不把對話逐字稿當成持久狀態。
