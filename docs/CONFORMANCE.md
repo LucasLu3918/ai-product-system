@@ -307,3 +307,23 @@ Automated      78
 Uncovered       0
 Automated     62.4%
 ~~~
+
+
+## v0.16.6 Security & Production Readiness Semantic Evidence Maturity
+
+新增 8 組 Agent Eval，涵蓋高風險金融邊界、低風險前端、critical product 的 cosmetic change、Security at Design/Release、Release Readiness、Production Verification、staging N/A 與 deployment access。
+
+v0.16.6 baseline：
+
+~~~text
+Total         125
+Manual         39
+Deterministic  19
+Lifecycle      40
+Agent Eval     27
+Automated      86
+Uncovered       0
+Automated     68.8%
+~~~
+
+核心原則維持 risk-proportional assurance：critical financial/stored-value boundary 使用 SAL4 floor；低風險 change 不因 product baseline 過度升級；production promotion 對 recovery、staging、security、health/smoke evidence fail-closed；缺少平台 access 時保留 runnable automation 但不得宣稱已部署成功。
