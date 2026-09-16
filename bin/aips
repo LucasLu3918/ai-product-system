@@ -5,6 +5,10 @@ REPO_SLUG="LucasLu3918/ai-product-system"
 DEFAULT_BRANCH="main"
 CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}/aips"
 BIN_HOME="${AIPS_BIN_HOME:-$HOME/.local/bin}"
+HARNESS_HOME="$CONFIG_HOME/harness"
+OWNED_HOME="$HARNESS_HOME/owned"
+ADAPTER_STATE_HOME="$HARNESS_HOME/adapters"
+OWNERSHIP_MANIFEST="$HARNESS_HOME/installation.yaml"
 
 resolve_source() {
   local source="${BASH_SOURCE[0]}"
@@ -31,10 +35,18 @@ AI Product System CLI
 Usage:
   aips install
   aips uninstall [--remove-venv]
+
+  aips harness install
+  aips harness uninstall
+  aips harness status
+  aips harness doctor
+  aips harness resolve [--runtime <id>] [--cwd <path>] [--project <path>] [--format yaml|json]
+
   aips attach <project-path>
   aips detach <project-path>
   aips status <project-path>
   aips init <project-path>        # backward-compatible alias for attach
+
   aips update [--allow-major]
   aips preflight <project-path> [--allow-major]
   aips doctor
@@ -42,11 +54,12 @@ Usage:
   aips version
   aips help
 
-Recommended first install:
-  ./scripts/bootstrap.sh
+Install enables the Global Harness for safely supported runtimes.
+Uninstall removes only AIPS-owned runtime integrations and preserves user/project instructions and skills.
 
-Before every mutating AI implementation session:
-  aips preflight <project-path>
+Project modes:
+  EPHEMERAL  AIPS may guide work, but no .ai/ workspace is created automatically.
+  ATTACHED   created explicitly with 'aips attach'; persistent AIPS project state is enabled.
 EOF
 }
 
@@ -65,6 +78,261 @@ python_bin() {
   else
     command -v python3 || true
   fi
+}
+
+adapter_state_file() {
+  printf '%s/%s.yaml\n' "$ADAPTER_STATE_HOME" "$1"
+}
+
+adapter_status_value() {
+  local file
+  file="$(adapter_state_file "$1")"
+  [ -f "$file" ] || return 1
+  awk -F': ' '/^status:/ {gsub(/"/,"",$2); print $2; exit}' "$file"
+}
+
+write_adapter_state() {
+  local id="$1" status="$2" strategy="$3" resource="${4:-}"
+  mkdir -p "$ADAPTER_STATE_HOME"
+  cat > "$(adapter_state_file "$id")" <<EOF
+id: "$id"
+status: "$status"
+strategy: "$strategy"
+resource: "$resource"
+updated_at: "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+EOF
+}
+
+write_ownership_manifest() {
+  mkdir -p "$HARNESS_HOME"
+  local codex_status claude_status gemini_status
+  codex_status="$(adapter_status_value codex 2>/dev/null || echo NOT_DETECTED)"
+  claude_status="$(adapter_status_value claude-code 2>/dev/null || echo NOT_DETECTED)"
+  gemini_status="$(adapter_status_value gemini-cli 2>/dev/null || echo NOT_DETECTED)"
+  cat > "$OWNERSHIP_MANIFEST" <<EOF
+version: 1
+installed_at: "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+
+system:
+  root: "$SYSTEM_DIR"
+  version: "$(current_version)"
+  commit: "$(current_commit)"
+
+harness:
+  enabled: true
+  bootstrap: "$SYSTEM_DIR/harness/BOOTSTRAP.md"
+
+owned_resources:
+  - type: cli_symlink
+    path: "$BIN_HOME/aips"
+
+adapters:
+  codex:
+    status: "$codex_status"
+  claude-code:
+    status: "$claude_status"
+  gemini-cli:
+    status: "$gemini_status"
+
+preservation_policy:
+  user_agent_instructions: untouched
+  user_skills: untouched
+  project_agent_instructions: untouched
+  project_skills: untouched
+  project_source: untouched
+  project_ai_workspace: preserved
+EOF
+}
+
+install_owned_instruction_file() {
+  local id="$1" command_name="$2" source="$3" target="$4" strategy="$5"
+  local snapshot="$OWNED_HOME/$id.bootstrap"
+
+  if ! command -v "$command_name" >/dev/null 2>&1; then
+    write_adapter_state "$id" "NOT_DETECTED" "$strategy" ""
+    return 0
+  fi
+
+  mkdir -p "$OWNED_HOME"
+
+  if [ -e "$target" ]; then
+    if [ -f "$snapshot" ] && cmp -s "$target" "$snapshot"; then
+      cp "$source" "$target"
+      cp "$source" "$snapshot"
+      write_adapter_state "$id" "AUTOMATIC" "$strategy" "$target"
+      return 0
+    fi
+    write_adapter_state "$id" "MANUAL" "$strategy" "$target"
+    warn "$id detected, but existing user-owned instruction file was preserved: $target"
+    return 0
+  fi
+
+  mkdir -p "$(dirname "$target")"
+  cp "$source" "$target"
+  cp "$source" "$snapshot"
+  write_adapter_state "$id" "AUTOMATIC" "$strategy" "$target"
+  say "Harness adapter installed: $id -> $target"
+}
+
+install_codex_adapter() {
+  local codex_home="${CODEX_HOME:-$HOME/.codex}"
+  install_owned_instruction_file     "codex" "codex"     "$SYSTEM_DIR/harness/adapters/codex/AGENTS.md"     "$codex_home/AGENTS.md"     "global_instruction_file_if_absent"
+}
+
+install_claude_adapter() {
+  install_owned_instruction_file     "claude-code" "claude"     "$SYSTEM_DIR/harness/adapters/claude-code/CLAUDE.md"     "$HOME/.claude/CLAUDE.md"     "user_memory_file_if_absent"
+}
+
+install_gemini_adapter() {
+  local id="gemini-cli"
+  local source="$SYSTEM_DIR/harness/adapters/gemini-cli"
+  if ! command -v gemini >/dev/null 2>&1; then
+    write_adapter_state "$id" "NOT_DETECTED" "official_extension_link" ""
+    return 0
+  fi
+
+  local current
+  current="$(adapter_status_value "$id" 2>/dev/null || true)"
+
+  if gemini extensions list 2>/dev/null | grep -q "aips-global-harness"; then
+    if [ "$current" = "AUTOMATIC" ]; then
+      write_adapter_state "$id" "AUTOMATIC" "official_extension_link" "aips-global-harness"
+      return 0
+    fi
+    write_adapter_state "$id" "CONFLICT" "official_extension_link" "aips-global-harness"
+    warn "Gemini extension name already exists and is not recorded as AIPS-owned; leaving it untouched."
+    return 0
+  fi
+
+  if gemini extensions link "$source" >/dev/null 2>&1; then
+    write_adapter_state "$id" "AUTOMATIC" "official_extension_link" "aips-global-harness"
+    say "Harness adapter installed: gemini-cli extension aips-global-harness"
+  else
+    write_adapter_state "$id" "ERROR" "official_extension_link" ""
+    warn "Gemini CLI detected but AIPS extension linking failed; adapter remains unavailable."
+  fi
+}
+
+harness_install() {
+  mkdir -p "$HARNESS_HOME" "$OWNED_HOME" "$ADAPTER_STATE_HOME"
+  install_codex_adapter
+  install_claude_adapter
+  install_gemini_adapter
+  write_ownership_manifest
+  say "AIPS Global Harness installed."
+  say "Run: aips harness status"
+}
+
+remove_owned_instruction_file() {
+  local id="$1" target="$2"
+  local snapshot="$OWNED_HOME/$id.bootstrap"
+  [ -f "$snapshot" ] || return 0
+
+  if [ -e "$target" ]; then
+    if cmp -s "$target" "$snapshot"; then
+      rm -f "$target"
+      say "Removed AIPS-owned adapter file: $target"
+    else
+      warn "Preserved modified adapter file (no longer identical to AIPS-owned copy): $target"
+    fi
+  fi
+  rm -f "$snapshot"
+}
+
+uninstall_gemini_adapter() {
+  local status
+  status="$(adapter_status_value gemini-cli 2>/dev/null || true)"
+  [ "$status" = "AUTOMATIC" ] || return 0
+
+  if command -v gemini >/dev/null 2>&1; then
+    if gemini extensions uninstall aips-global-harness >/dev/null 2>&1; then
+      say "Removed AIPS Gemini extension."
+      return 0
+    fi
+    warn "Could not unregister AIPS Gemini extension automatically."
+    return 0
+  fi
+
+  local default_link="$HOME/.gemini/extensions/aips-global-harness"
+  if [ -L "$default_link" ]; then
+    local target
+    target="$(readlink "$default_link" || true)"
+    if [[ "$target" == "$SYSTEM_DIR/harness/adapters/gemini-cli"* ]]; then
+      rm -f "$default_link"
+      say "Removed AIPS-owned Gemini extension link: $default_link"
+      return 0
+    fi
+  fi
+  warn "Gemini CLI is unavailable; any AIPS-owned Gemini registration could not be verified for removal."
+}
+
+harness_uninstall() {
+  local codex_home="${CODEX_HOME:-$HOME/.codex}"
+  remove_owned_instruction_file "codex" "$codex_home/AGENTS.md"
+  remove_owned_instruction_file "claude-code" "$HOME/.claude/CLAUDE.md"
+  uninstall_gemini_adapter
+  rm -rf "$HARNESS_HOME"
+  say "AIPS Global Harness removed."
+  say "User/project Agent instructions, Skills, source and project .ai workspaces were preserved."
+}
+
+harness_status() {
+  say "AIPS Global Harness status"
+  say "Harness: $([ -f "$OWNERSHIP_MANIFEST" ] && echo active || echo not-installed)"
+  say "Bootstrap: $SYSTEM_DIR/harness/BOOTSTRAP.md"
+  local id
+  for id in codex claude-code gemini-cli; do
+    local state status strategy resource
+    state="$(adapter_state_file "$id")"
+    if [ -f "$state" ]; then
+      status="$(awk -F': ' '/^status:/ {gsub(/"/,"",$2); print $2; exit}' "$state")"
+      strategy="$(awk -F': ' '/^strategy:/ {gsub(/"/,"",$2); print $2; exit}' "$state")"
+      resource="$(awk -F': ' '/^resource:/ {$1=""; sub(/^:?[[:space:]]*/,""); gsub(/"/,""); print; exit}' "$state")"
+      say "$id: $status ($strategy)${resource:+ -> $resource}"
+    else
+      say "$id: NOT_DETECTED"
+    fi
+  done
+}
+
+harness_doctor() {
+  local failed="false"
+  say "AIPS Global Harness doctor"
+  [ -f "$SYSTEM_DIR/harness/BOOTSTRAP.md" ] && say "bootstrap: OK" || { warn "bootstrap missing"; failed="true"; }
+  [ -f "$OWNERSHIP_MANIFEST" ] && say "ownership manifest: OK" || { warn "ownership manifest missing (run aips harness install)"; failed="true"; }
+
+  local codex_home="${CODEX_HOME:-$HOME/.codex}"
+  local codex_status claude_status gemini_status
+  codex_status="$(adapter_status_value codex 2>/dev/null || echo NOT_DETECTED)"
+  claude_status="$(adapter_status_value claude-code 2>/dev/null || echo NOT_DETECTED)"
+  gemini_status="$(adapter_status_value gemini-cli 2>/dev/null || echo NOT_DETECTED)"
+
+  if [ "$codex_status" = "AUTOMATIC" ]; then
+    [ -f "$codex_home/AGENTS.md" ] && [ -f "$OWNED_HOME/codex.bootstrap" ] && say "codex adapter: OK" || { warn "codex adapter ownership mismatch"; failed="true"; }
+  else
+    say "codex adapter: $codex_status"
+  fi
+
+  if [ "$claude_status" = "AUTOMATIC" ]; then
+    [ -f "$HOME/.claude/CLAUDE.md" ] && [ -f "$OWNED_HOME/claude-code.bootstrap" ] && say "claude-code adapter: OK" || { warn "claude-code adapter ownership mismatch"; failed="true"; }
+  else
+    say "claude-code adapter: $claude_status"
+  fi
+
+  if [ "$gemini_status" = "AUTOMATIC" ]; then
+    command -v gemini >/dev/null 2>&1 && gemini extensions list 2>/dev/null | grep -q "aips-global-harness"       && say "gemini-cli adapter: OK"       || { warn "gemini-cli adapter not verifiable"; failed="true"; }
+  else
+    say "gemini-cli adapter: $gemini_status"
+  fi
+
+  [ "$failed" = "false" ]
+}
+
+harness_resolve() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/harness_resolve.py" "$@"
 }
 
 write_system_snapshot() {
@@ -105,7 +373,6 @@ init_project() {
   write_system_snapshot "$project"
   say "Workspace initialized: $ai_dir"
 }
-
 
 attach_project() {
   local project="$1"
@@ -168,6 +435,7 @@ status_project() {
   say "Project: $project"
   if [ -d "$project/.ai" ]; then
     say "Project attached: yes"
+    say "Project mode: ATTACHED"
     say "Workspace: $project/.ai"
     if [ -f "$project/.ai/SYSTEM.yaml" ]; then
       local recorded_version recorded_commit
@@ -178,6 +446,7 @@ status_project() {
     fi
   else
     say "Project attached: no"
+    say "Project mode: EPHEMERAL"
     local detached
     detached="$(find "$project" -maxdepth 1 -type d -name '.ai.detached-*' -print 2>/dev/null | sort | tail -n 1 || true)"
     [ -n "$detached" ] && say "Latest detached workspace: $detached"
@@ -212,6 +481,7 @@ install_cli() {
   printf '%s\n' "$SYSTEM_DIR" > "$CONFIG_HOME/system-dir"
 
   validate_repo
+  harness_install
 
   say
   say "Installed: $BIN_HOME/aips"
@@ -226,6 +496,8 @@ install_cli() {
 uninstall_cli() {
   local remove_venv="false"
   [ "${1:-}" = "--remove-venv" ] && remove_venv="true"
+
+  harness_uninstall
 
   if [ -L "$BIN_HOME/aips" ]; then
     rm -f "$BIN_HOME/aips"
@@ -243,6 +515,7 @@ uninstall_cli() {
   fi
 
   say "Repository was preserved: $SYSTEM_DIR"
+  say "Project .ai workspaces and all user-owned Agent instructions/Skills were preserved."
 }
 
 update_system() {
@@ -292,11 +565,12 @@ preflight_after_update() {
   local project="$1"
   [ -d "$project" ] || die "Project path does not exist: $project"
 
-  if [ ! -d "$project/.ai" ]; then
-    say "Project workspace is not attached; applying attach safety checks."
-    attach_project "$project"
-  else
+  if [ -d "$project/.ai" ]; then
     write_system_snapshot "$project"
+    say "Project mode: ATTACHED"
+  else
+    say "Project mode: EPHEMERAL (no .ai workspace created)."
+    say "Use 'aips attach \"$project\"' only when persistent AIPS state is desired."
   fi
 
   validate_repo
@@ -320,8 +594,6 @@ preflight() {
   done
 
   update_system "$allow_major"
-
-  # Re-exec from the freshly updated repository so new CLI behavior applies immediately.
   exec "$SYSTEM_DIR/bin/aips" _preflight-after-update "$project"
 }
 
@@ -347,6 +619,10 @@ doctor() {
   else
     warn "CLI link not installed at $BIN_HOME/aips"
   fi
+
+  if ! harness_doctor; then
+    warn "Harness doctor reported issues."
+  fi
 }
 
 case "${1:-help}" in
@@ -357,6 +633,30 @@ case "${1:-help}" in
   uninstall)
     shift
     uninstall_cli "$@"
+    ;;
+  harness)
+    sub="${2:-status}"
+    case "$sub" in
+      install)
+        harness_install
+        ;;
+      uninstall)
+        harness_uninstall
+        ;;
+      status)
+        harness_status
+        ;;
+      doctor)
+        harness_doctor
+        ;;
+      resolve)
+        shift 2
+        harness_resolve "$@"
+        ;;
+      *)
+        die "Unknown harness command: $sub"
+        ;;
+    esac
     ;;
   attach)
     [ "$#" -ge 2 ] || die "Usage: aips attach <project-path>"
