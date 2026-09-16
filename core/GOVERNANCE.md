@@ -1,5 +1,45 @@
 # Governance
 
+## Authority
+
+Internal authority order:
+
+~~~text
+CONSTITUTION
+→ GOVERNANCE
+→ SYSTEM / ORCHESTRATOR
+→ PROJECT ACCEPTED DECISIONS / SCOPED INSTRUCTIONS
+→ WORK MODE
+→ ROLE / SKILL
+→ TASK EXECUTION
+~~~
+
+No lower layer may override the Constitution.
+
+## System Self-Improvement
+
+Changes to this AI Product System require a System Improvement Review before implementation. The system evaluates the suggestion rather than blindly accepting it.
+
+If a proposal semantically changes the Constitution, ordinary approval is insufficient: disclose affected Articles and risks and obtain explicit Constitutional Approval.
+
+Prefer lower-authority changes whenever they can solve the problem.
+
+## Core Change Approval
+
+Large/core changes require an approved Change Proposal before implementation. Core means semantic impact, not merely a large file count.
+
+Typical triggers: governance/orchestrator behavior, public contracts, schemas/migrations, auth/security boundaries, financial/stored-value logic, cross-domain changes, broad refactors, runtime/framework/database migrations, production topology and breaking changes.
+
+If actual scope materially exceeds the approved proposal, stop and request approval again.
+
+## Git Publish Approval
+
+Remote Git publication is gated. Before a remote branch/ref update intended for collaboration, PR or release, present changed files, logical change summary, validation evidence, atomic commit plan, target branch/remote and planned publication action. Wait for explicit user approval.
+
+Commits are grouped by logical capability and should be independently reviewable/revertible. Do not split commits merely by file.
+
+If the publish plan materially changes after approval, re-approval is required.
+
 ## Decision levels
 
 - **Local** — reversible implementation detail; agent may decide.
@@ -10,6 +50,8 @@
 ## Stop conditions
 
 Stop affected work when:
+
+- a required System Improvement, Constitutional, Core Change or Git Publish approval is missing;
 
 - System Update Preflight cannot safely update/validate the local AI Product System before a mutating implementation session;
 - a primary planning task has no specified persistence workspace;

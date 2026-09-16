@@ -48,6 +48,54 @@ If update cannot be completed safely, stop implementation and surface the reason
 
 Read-only explanation/research that does not mutate a project does not need to modify local state solely to satisfy this rule.
 
+## System Self-Improvement
+
+When the request changes this AI Product System itself, load `orchestration/SYSTEM_SELF_IMPROVEMENT.md`.
+
+Before implementation:
+
+1. evaluate whether the suggestion is appropriate;
+2. identify overlap/redundancy and simpler alternatives;
+3. propose additional optimizations when they materially improve the design;
+4. assess backward compatibility, context/token cost, role/gate proliferation and affected scenarios;
+5. check semantic Constitution impact;
+6. present the System Improvement Review and wait for user direction confirmation.
+
+If the proposal touches the Constitution semantically, stop and run the Constitutional Change Gate. Constitutional modification requires a second explicit approval after affected Articles and risks are explained.
+
+Prefer Skill/Template → Workflow/Work Mode → System/Orchestration → Governance → Constitution.
+
+## Core Change Approval Gate
+
+Before implementing a large or core change, first present a Change Proposal and stop for explicit user approval.
+
+Trigger by semantic impact, not file count alone. Typical triggers include:
+
+- core governance/orchestrator/runtime behavior;
+- public API/contract or data model changes;
+- authentication/authorization/security boundaries;
+- financial/stored-value/high-value business logic;
+- cross-domain/component changes;
+- broad refactors, framework/runtime/database migrations;
+- breaking changes, production topology or other hard-to-reverse changes.
+
+The proposal must state purpose, in-scope/out-of-scope areas, expected files/modules, architecture/API/data/security/migration impact, test/documentation impact, risks, recommendation and proposed implementation order.
+
+If approved scope materially expands during execution, stop and obtain approval again.
+
+## Git Publish Approval Gate
+
+Before any remote Git publication that changes a branch/ref or is intended for PR/release:
+
+1. show the complete changed-file list;
+2. summarize the change by logical feature;
+3. show validation/review evidence and unresolved items;
+4. propose atomic commits grouped by logical capability, not by file;
+5. show target remote/branch and planned PR/release action;
+6. stop for explicit user approval.
+
+Local preparation/commit objects may be created before this gate. Do not update remote refs or publish a PR/release until approval. If the file list, commit plan, target or material scope changes after approval, re-run this gate.
+
 ## Task Preflight
 
 Before implementation, check only what can materially change the outcome:
@@ -174,7 +222,7 @@ Subagents receive only the context required for their objective. Do not delegate
 
 ## System-change maintenance
 
-When modifying this AI Product System itself, pass the Documentation Impact Gate in `docs/MAINTENANCE.md`. Assess related documentation, flows, Mermaid architecture diagrams, examples, scenarios, schemas/templates, VERSION and CHANGELOG. Update affected artifacts; explicitly treat unaffected artifacts as N/A rather than editing them unnecessarily.
+When modifying this AI Product System itself, first use the System Self-Improvement Protocol; Core Change Approval normally applies before implementation, and the Git Publish Approval Gate applies before remote publication. Also pass the Documentation Impact Gate in `docs/MAINTENANCE.md`. Assess related documentation, flows, Mermaid architecture diagrams, examples, scenarios, schemas/templates, VERSION and CHANGELOG. Update affected artifacts; explicitly treat unaffected artifacts as N/A rather than editing them unnecessarily.
 
 ## Completion
 

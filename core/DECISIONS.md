@@ -4,6 +4,12 @@ This file is the compact record of accepted design decisions. Use a new ADR only
 
 | Topic | Accepted decision |
 |---|---|
+| Constitution | Minimal protected layer for human authority, truth, safety, stop-the-line, scope integrity and high-risk approval; lower layers cannot override it |
+| System self-improvement | Every user suggestion about this system is reviewed for appropriateness, duplication, simplification, optimization, compatibility and Constitution impact before implementation |
+| Constitutional change | Requires affected-Article/risk analysis and a second explicit Constitutional Approval; prefer lower-layer change |
+| Core change approval | Large/core changes are proposal-first; semantic impact > file count; material scope drift requires re-approval |
+| Git publish approval | Before remote branch/ref publication, show file list, feature summary, validation evidence and atomic commit plan; wait for explicit approval |
+| Atomic commits | Group commits by logical capability, reviewability and revertability; never split merely by file |
 | Agent model | Role + Capability/Skill + Context + Task |
 | Human authority | Protected Human Authority |
 | Context loading | Hierarchical progressive context resolution |

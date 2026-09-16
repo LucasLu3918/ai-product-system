@@ -6,30 +6,32 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 1. Before mutating a target project, run System Update Preflight (`aips preflight <project>`).
 2. Bootstrap/read project `.ai/` state.
-3. Run task preflight: material recommendation, unknown, risk, conflict and capability-gap checks.
-4. Detect whether the task creates/revises the primary product/project plan.
-5. For a primary planning task, resolve the persistence workspace before authoring the authoritative plan; if absent, ask the user.
-6. If the request targets an existing project, discover applicable instructions before generic skills.
-7. If a material decision is needed, present the smallest useful option set and stop affected work.
-8. Classify intent; choose one primary work mode.
-9. Detect project state (`greenfield`, `brownfield`, `unknown`).
-10. Classify Product Baseline SAL / Change Security Impact / Reliability Impact when relevant.
-11. Build a minimal Context Manifest.
-12. Resolve the primary role, then only necessary supporting roles, including Security Engineer when required by Effective SAL.
-13. Resolve capabilities and leaf skills from task evidence and assurance requirements.
-14. Build an Execution Profile from business impact, complexity, risk, assurance and selected skill requirements.
-15. Decide whether bounded subagents are useful; resolve each subagent model/context independently.
-16. For primary planning, create/persist the Reproducible Planning Package and run cross-role consistency review, including planning-stage security review for SAL 3–4.
-17. Gate 1: wait for human Planning Package approval.
-18. After Gate 1, derive Initial Implementation Items + Recommended Implementation Flow.
-19. Gate 2: wait for explicit human implementation approval.
-20. Select eligible model/tools using minimum sufficient intelligence.
-21. Execute inside the approved intent/change boundary.
-22. Expand context, security review depth or model tier only when documented evidence shows a gap.
-23. Run independent review with an independently resolved reviewer tier where required.
-24. For SAL 3–4 affected work, persist Security Review evidence and run the Security Release Gate.
-25. Validate acceptance criteria and artifacts.
-26. Persist state, temporary overrides, provenance, assurance profile, exact system version/commit and next actions.
+3. If the target is the AI Product System itself, run System Self-Improvement Review and Constitution Impact Check; wait for direction approval.
+4. Detect whether the request is a large/core change; if so, create the Core Change Proposal and obtain explicit approval before implementation.
+5. Run task preflight: material recommendation, unknown, risk, conflict and capability-gap checks.
+6. Detect whether the task creates/revises the primary product/project plan.
+7. For a primary planning task, resolve the persistence workspace before authoring the authoritative plan; if absent, ask the user.
+8. If the request targets an existing project, discover applicable instructions before generic skills.
+9. If a material decision is needed, present the smallest useful option set and stop affected work.
+10. Classify intent; choose one primary work mode.
+11. Detect project state (`greenfield`, `brownfield`, `unknown`).
+12. Classify Product Baseline SAL / Change Security Impact / Reliability Impact when relevant.
+13. Build a minimal Context Manifest.
+14. Resolve the primary role, then only necessary supporting roles, including Security Engineer when required by Effective SAL.
+15. Resolve capabilities and leaf skills from task evidence and assurance requirements.
+16. Build an Execution Profile from business impact, complexity, risk, assurance and selected skill requirements.
+17. Decide whether bounded subagents are useful; resolve each subagent model/context independently.
+18. For primary planning, create/persist the Reproducible Planning Package and run cross-role consistency review, including planning-stage security review for SAL 3–4.
+19. Gate 1: wait for human Planning Package approval.
+20. After Gate 1, derive Initial Implementation Items + Recommended Implementation Flow.
+21. Gate 2: wait for explicit human implementation approval.
+22. Select eligible model/tools using minimum sufficient intelligence.
+23. Execute inside the approved intent/change boundary.
+24. Expand context, security review depth or model tier only when documented evidence shows a gap.
+25. Run independent review with an independently resolved reviewer tier where required.
+26. For SAL 3–4 affected work, persist Security Review evidence and run the Security Release Gate.
+27. Validate acceptance criteria and artifacts.
+28. Persist state, temporary overrides, provenance, assurance profile, exact system version/commit and next actions.
 
 ## System Update Preflight
 
@@ -139,3 +141,20 @@ Never refactor unrelated code merely to make the repository resemble a reference
 ## System self-change
 
 When this repository itself changes, the final review must include the Documentation Impact Gate in `docs/MAINTENANCE.md`. A system change is incomplete if affected docs, flows, diagrams, examples, scenarios, templates/schemas, VERSION or CHANGELOG are stale.
+
+
+## System Self-Improvement
+
+When this repository/system is the change target, load `orchestration/SYSTEM_SELF_IMPROVEMENT.md`.
+
+Do not blindly implement a user suggestion. First evaluate appropriateness, duplication, simpler alternatives, context/maintenance cost, backward compatibility, security/reliability impact and Constitution semantics.
+
+If Constitution impact exists, run the Constitutional Change Gate and require a second explicit approval after risks are disclosed.
+
+## Core Change Approval
+
+Large/core changes are proposal-first. Use `templates/core-change-proposal.md`. Semantic impact matters more than the number of changed files. No implementation begins until the user approves the proposed boundary. Material scope drift requires re-approval.
+
+## Git Publish Approval
+
+Before updating a remote branch/ref or publishing for PR/release, use `templates/git-publish-proposal.md`. Present changed files, feature summary, validation evidence, atomic commit plan and target. Wait for explicit approval. A material difference from the approved publish plan requires another approval.

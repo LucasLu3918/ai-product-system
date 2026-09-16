@@ -19,3 +19,8 @@
 17. **Scoped Instruction Resolution** — current user decisions lead project execution; scoped project instructions are discovered and applied by scope; skills never silently override governance.
 18. **Risk-Proportional Security Assurance** — security depth follows protected assets and the affected Change Boundary; critical financial/stored-value risks impose hard assurance floors.
 19. **Security Evidence Over Assurance Claims** — high-assurance security conclusions require traceable threat/abuse/test evidence, not “looks safe” review comments.
+20. **Evaluate Before Self-Modification** — system-improvement suggestions are reviewed for fit, overlap, simplification and better alternatives before implementation.
+21. **Constitutional Stability** — prefer lower-layer change; constitutional semantics require explicit affected-Article/risk review and separate approval.
+22. **Plan Before Core Change** — large/core changes require an explicit scope/impact proposal and user approval before implementation.
+23. **Publish Transparently** — remote Git publication requires a changed-file list, logical change summary, validation evidence, atomic commit plan and explicit user approval.
+24. **Re-approve Material Drift** — if approved implementation or publication scope materially changes, stop and obtain a new approval.
