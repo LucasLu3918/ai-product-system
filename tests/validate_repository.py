@@ -176,7 +176,7 @@ workflow_text = (ROOT / ".github/workflows/validate.yml").read_text(encoding="ut
 if "permissions:\n  contents: read" not in workflow_text:
     errors.append("validate workflow missing explicit read-only contents permission")
 for action in ("actions/checkout", "actions/setup-python"):
-    match = re.search(r"uses:\\s*" + re.escape(action) + r"@([0-9a-f]{40})(?:\\s|$)", workflow_text)
+    match = re.search(r"uses:\s*" + re.escape(action) + r"@([0-9a-f]{40})(?:\s|$)", workflow_text)
     if not match:
         errors.append(f"validate workflow must pin {action} to an immutable full commit SHA")
 
