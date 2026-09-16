@@ -80,3 +80,9 @@ aips uninstall --remove-cache --remove-venv
 ## Project Intelligence
 
 External Intelligence 被視為使用者累積的工作資料，因此預設 Uninstall 保留。Project-local `.ai/intelligence/` 也不會因 AIPS Uninstall 被刪除。
+
+## v0.11 Governance Guard
+
+安裝／刷新 Harness 時，Claude Code 在可安全修改 settings.json 的情況下會加入 AIPS-owned `PreToolUse` Bash guard；Gemini Extension 會註冊 `BeforeTool` guard。Uninstall 只移除 AIPS 自己的 hook。
+
+`aips harness status` 會分開顯示 context capability 與 governance enforcement，避免把「能看到規範」誤認成「能技術阻擋」。
