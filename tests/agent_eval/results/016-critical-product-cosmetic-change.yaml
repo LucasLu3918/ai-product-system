@@ -1,0 +1,26 @@
+version: 1
+case_id: 016-critical-product-cosmetic-change
+scenario_id: "016"
+case_fingerprint: sha256:715d920c4624f8c280b17b8ea1be90cfd4c50d6e6fac954a1c6b29aa11ee627c
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: LOW_CHANGE_SECURITY_IMPACT
+  product_baseline_sal: 4
+  change_security_impact: 1
+  effective_sal: 1
+  full_sal4_review_required: false
+  reclassify_if_scope_expands: true
+  actions:
+    - retain_product_baseline
+    - verify_no_protected_boundary_crossing
+    - keep_review_change_scoped
+  scope_expansion_triggers:
+    - payment_logic
+    - authorization
+    - stored_value
+    - sensitive_data
+  summary: Keep the product baseline SAL4 in persistent risk state, but review this footer-only change at low effective SAL unless it expands into a protected payment/auth/value/data boundary.
