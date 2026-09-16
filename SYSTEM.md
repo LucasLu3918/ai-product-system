@@ -485,8 +485,20 @@ Coverage types:
 
 - `deterministic` — rule/schema/helper behavior executable without model judgment;
 - `lifecycle` — executable multi-step system/runtime lifecycle evidence;
-- `agent_eval` — model/agent evaluation evidence;
+- `agent_eval` — provider-neutral recorded Agent behavior scored against an observable deterministic rubric;
 - `manual` — reviewed specification with no claimed automated evidence;
 - `uncovered` — no acceptable evidence yet.
 
 Never upgrade a Scenario to automated coverage merely because a related validator exists. Evidence must materially test that Scenario's contract.
+
+For semantic behavior that depends on Agent judgment, use `orchestration/AGENT_EVAL.md`:
+
+~~~text
+provider-neutral Eval Case
+→ actual Agent observable response
+→ fingerprint-bound recorded Result
+→ deterministic rubric scoring
+→ agent_eval evidence
+~~~
+
+Do not persist or score private chain-of-thought. A Case without a recorded passing Result is not agent_eval coverage.
