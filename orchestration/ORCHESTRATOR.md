@@ -4,40 +4,42 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 ## Minimal algorithm
 
-1. Before mutating a target project, run System Update Preflight (`aips preflight <project>`).
-2. Bootstrap/read project `.ai/` state.
-3. If the target is the AI Product System itself, run System Self-Improvement Review and Constitution Impact Check; wait for direction approval.
-4. Detect whether the request is a large/core change; if so, create the Core Change Proposal and obtain explicit approval before implementation.
-5. Run task preflight and resolve requirement status (READY / NEEDS_CLARIFICATION / BLOCKED). If material ambiguity remains, use Progressive Requirement Clarification and stop implementation until READY.
-6. Resolve required user-provided external sources using connector-first External Context Resolution before asking for manual content.
-7. Detect whether the task creates/revises the primary product/project plan and whether complete product delivery is in scope.
-8. For a primary planning task, resolve the persistence workspace before authoring the authoritative plan; if absent, ask the user.
-9. For existing projects, discover scoped instructions/authoritative docs, read the Project Knowledge Index, then perform targeted knowledge discovery only for relevant gaps.
-10. For complete products/material product plans, resolve Q1/Q2/Q3 Quality Planning and persist applicable Quality Profile targets before architecture is locked.
-11. If a material decision is needed, present the smallest useful option set and stop affected work.
-12. Classify intent; choose one primary work mode.
-13. Detect project state (`greenfield`, `brownfield`, `unknown`).
-14. Classify Product Baseline SAL / Change Security Impact / Reliability Impact when relevant.
-15. Build a minimal Context Manifest, including only relevant Project Knowledge topics.
-16. Resolve the primary role, then only necessary supporting roles, including Security Engineer when required by Effective SAL. Before proposing a new Role/Capability/Skill, run Capability Reuse Check.
-17. Resolve capabilities and leaf skills from task evidence and assurance requirements.
-18. Build an Execution Profile from business impact, complexity, risk, assurance and selected skill requirements.
-19. Decide whether bounded subagents are useful; resolve each subagent model/context independently.
-20. For primary planning, create/persist the Reproducible Planning Package and run cross-role consistency review.
-21. Gate 1: wait for human Planning Package approval.
-22. After Gate 1, derive Initial Implementation Items + Recommended Implementation Flow.
-23. Gate 2: wait for explicit human implementation approval.
-24. Select eligible model/tools using minimum sufficient intelligence; route deterministic data-processing steps to existing tools/helpers where suitable.
-25. Execute inside the approved boundary, including provider-neutral observability instrumentation required by the Quality Profile.
-26. For existing UI polish, run V1/V2 Visual Consistency Repair as applicable.
-27. Resolve independent review depth; large/core/high-risk work uses the needed Multi-Perspective Review Panel.
-28. Consolidate findings, return them to the original Author for fixes, then run targeted re-review unless the Change Boundary materially expanded.
-29. For SAL 3–4 affected work, persist Security Review evidence and run the Security Release Gate.
-30. Validate LOCAL_COMPLETE criteria for complete products.
-31. If production was explicitly requested, continue Production Enablement; otherwise ask whether to continue only after LOCAL_COMPLETE.
-32. When production is in scope, evaluate exact-candidate Release Readiness, deploy through the approved environment flow, and verify production health/observability before PRODUCTION_VERIFIED.
-33. Extract review lessons and refresh only affected Project Knowledge / Visual Profile topics.
-34. Persist state, temporary overrides, provenance, assurance/quality profile, lessons, exact system version/commit and next actions.
+1. When entered through the Global Harness, resolve runtime/project context and applicability with `aips harness resolve`.
+2. If the request is unrelated to product/project/software work, continue normal conversation without loading full AIPS.
+3. Before mutating a target project, run System Update Preflight (`aips preflight <project>`).
+4. Resolve Project Mode: load/persist `.ai/` only in ATTACHED mode; remain non-persistent in EPHEMERAL mode.
+5. If the target is the AI Product System itself, run System Self-Improvement Review and Constitution Impact Check; wait for direction approval.
+6. Detect whether the request is a large/core change; if so, create the Core Change Proposal and obtain explicit approval before implementation.
+7. Run task preflight and resolve requirement status (READY / NEEDS_CLARIFICATION / BLOCKED).
+8. Resolve required user-provided external sources using connector-first External Context Resolution.
+9. Detect whether the task creates/revises the primary product/project plan and whether complete product delivery is in scope.
+10. For a primary planning task, resolve the persistence workspace before authoring the authoritative plan; if absent, ask the user.
+11. For existing projects, compose runtime-native + scoped project instructions/authoritative docs, then load only relevant Project Knowledge; targeted-discover only remaining gaps.
+12. For complete products/material product plans, resolve Q1/Q2/Q3 Quality Planning before architecture is locked.
+13. If a material decision is needed, present the smallest useful option set and stop affected work.
+14. Classify intent; choose one primary work mode.
+15. Detect project state (`greenfield`, `brownfield`, `unknown`).
+16. Classify Product Baseline SAL / Change Security Impact / Reliability Impact when relevant.
+17. Build a minimal Context Manifest including only relevant runtime/project/knowledge context.
+18. Resolve the primary role and only necessary supporting roles.
+19. Resolve capabilities and leaf skills from task evidence and assurance requirements.
+20. Build an Execution Profile from business impact, complexity, risk, assurance and selected skill requirements.
+21. Decide whether bounded subagents are useful; resolve each subagent model/context independently.
+22. For primary planning, create/persist the Reproducible Planning Package and run cross-role consistency review.
+23. Gate 1: wait for human Planning Package approval.
+24. After Gate 1, derive Initial Implementation Items + Recommended Implementation Flow.
+25. Gate 2: wait for explicit human implementation approval.
+26. Select eligible model/tools using minimum sufficient intelligence; route deterministic processing to tools/helpers where suitable.
+27. Execute inside the approved boundary, including provider-neutral observability instrumentation required by the Quality Profile.
+28. For existing UI polish, run V1/V2 Visual Consistency Repair as applicable.
+29. Resolve independent review depth; large/core/high-risk work uses the needed Multi-Perspective Review Panel.
+30. Consolidate findings, return them to the original Author for fixes, then run targeted re-review unless the Change Boundary materially expanded.
+31. For SAL 3–4 affected work, persist Security Review evidence and run the Security Release Gate.
+32. Validate LOCAL_COMPLETE criteria for complete products.
+33. If production was explicitly requested, continue Production Enablement; otherwise ask whether to continue only after LOCAL_COMPLETE.
+34. When production is in scope, evaluate exact-candidate Release Readiness and verify production before PRODUCTION_VERIFIED.
+35. Extract lessons and refresh only affected Project Knowledge / Visual Profile topics when persistence is enabled.
+36. Persist state/provenance only where the current Project Mode permits it.
 
 ## System Update Preflight
 
@@ -52,6 +54,8 @@ Use `aips preflight <project>`, which:
 - re-executes the updated CLI, validates the system and records `.ai/SYSTEM.yaml`.
 
 It updates the AI Product System only. Target-project source updates remain a separate user/project decision.
+
+Preflight does not attach an EPHEMERAL project. Only `aips attach` enables persistent `.ai/` state.
 
 ## Reproducible Planning Package
 

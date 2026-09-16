@@ -3,15 +3,17 @@
 ## Main pipeline
 
 ```text
-User Request
-→ System Update Preflight
-→ Workspace Bootstrap
+Agent Session / User Request
+→ Global Harness Resolution when installed
+→ System Update Preflight for mutation
+→ Project Mode Resolution (EPHEMERAL / ATTACHED)
 → Task Preflight / Requirement Readiness
 → External Context Resolution when needed
 → Primary Planning / Full Product Delivery Detection
 → Human decision only when materially required
 → Intent + Work Mode
 → Project State
+→ Runtime-native + Project Instruction Resolution
 → Existing Project Knowledge Index / targeted discovery when relevant
 → Risk / Assurance + Quality Classification
 → Creative / Brand / Capability Routing when relevant
@@ -49,12 +51,36 @@ Rules:
 - never auto merge/rebase divergent system history;
 - a MAJOR version change requires explicit review and `--allow-major`;
 - after update, re-exec the updated CLI and validate the repository;
-- initialize the project's minimum `.ai/` workspace when missing;
-- record exact system version + commit in `.ai/SYSTEM.yaml`.
+- if the project is ATTACHED, record exact system version + commit in `.ai/SYSTEM.yaml`;
+- if the project is not attached, remain EPHEMERAL and do **not** create `.ai/` automatically.
 
 If update cannot be completed safely, stop implementation and surface the reason.
 
 Read-only explanation/research that does not mutate a project does not need to modify local state solely to satisfy this rule.
+
+## Global Agent Harness
+
+When AIPS is installed, supported Agent runtimes may load `harness/BOOTSTRAP.md` automatically through a runtime-specific AIPS-owned Adapter.
+
+Use `orchestration/HARNESS_RESOLUTION.md`.
+
+Rules:
+
+- the Harness is always available, but full AIPS orchestration is only activated for applicable project/product/software work;
+- do not preload the whole AIPS repository at session start;
+- preserve runtime-native instructions and project instructions;
+- never overwrite user-owned AGENTS/CLAUDE/GEMINI files, Skills or runtime config to gain automatic coverage;
+- if safe automatic integration is blocked, report MANUAL rather than patching user content;
+- no attached workspace is implied by installation.
+
+Project modes:
+
+~~~text
+No .ai/ → EPHEMERAL
+Explicit aips attach → ATTACHED
+~~~
+
+Only ATTACHED mode enables persistent AIPS project state/knowledge by default.
 
 ## System Self-Improvement
 
@@ -263,16 +289,21 @@ Do not preload unrelated roles, skills, references or repository files.
 
 ## Existing-project instruction precedence
 
-System guardrails are never overridden by project files. Inside the project execution layer, resolve applicable instructions in this order:
+External platform/safety constraints and AIPS constitutional/governance rules remain mandatory. Preserve runtime-native instructions rather than overwriting them.
+
+Inside the project execution layer, resolve applicable instructions approximately as:
 
 1. current explicit user instruction / accepted current user decision;
-2. nearest applicable scoped `AGENTS.md` (nearest scope wins over broader scope);
-3. accepted project decisions / ADRs and authoritative contracts;
-4. broader official project standards/documentation and root `AGENTS.md`;
-5. current Project Knowledge cache/index (derived knowledge only, never governance);
-6. project-local skills and references;
-7. global AI Product System skills;
-8. agent inference.
+2. runtime-native instructions according to their native scope/precedence;
+3. nearest applicable scoped project instructions such as `AGENTS.md`;
+4. accepted project decisions / ADRs and authoritative contracts;
+5. broader official project standards/documentation and root instructions;
+6. current Project Knowledge cache/index (derived knowledge only, never governance);
+7. project-local skills and references;
+8. global AI Product System skills;
+9. agent inference.
+
+When the Agent runtime mandates a different precedence, follow the runtime/platform rule and surface material conflicts rather than pretending AIPS can override it.
 
 Skills provide expertise, not governance authority.
 
