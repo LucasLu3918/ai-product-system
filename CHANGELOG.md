@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.16.2
+
+### Install / Preflight Evidence Maturity
+
+- Add isolated full CLI lifecycle evidence using temporary AIPS Git repositories, local bare remotes, temporary product repositories and isolated HOME/config/bin paths.
+- Verify Update Preflight requires clean `main`, uses fast-forward-only updates, blocks divergent history and requires explicit `--allow-major` for major upgrades.
+- Verify updated CLI re-entry after a successful system fast-forward.
+- Verify EPHEMERAL projects are not auto-attached and target product repositories are never automatically pulled.
+- Verify ATTACHED project `.ai/SYSTEM.yaml` refreshes exact AIPS version/commit provenance after update.
+- Verify attach/status/detach/restore/uninstall lifecycle and preservation of product source, project workspace, External Intelligence, system repository and venv by default.
+- Verify explicit cache/venv removal remains opt-in.
+- Verify regular-file and foreign-symlink CLI collisions are non-destructive while the exact AIPS-owned symlink can be safely reused.
+- Ignore Python `__pycache__/` and `*.py[cod]` runtime artifacts so normal AIPS Python execution cannot make the System repository fail its own clean-worktree preflight gate.
+- Promote Scenarios 011, 044 and 069 from manual to lifecycle coverage.
+- Raise conformance baseline to 125 total / 60 manual / 19 deterministic / 38 lifecycle / 8 agent_eval / 65 automated / 0 uncovered (52.0% automated).
+- No Role, Skill, Capability, Approval Gate or architecture-topology change; architecture diagrams are N/A.
+
 ## 0.16.1
 
 ### Focused Harness Evidence Maturity
