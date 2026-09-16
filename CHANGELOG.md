@@ -1,5 +1,34 @@
 # Changelog
 
+## 0.3.0
+
+### Security assurance
+
+- Add Risk-Proportional Security Assurance with Security Assurance Levels (SAL) 0–4.
+- Separate Product Baseline SAL from Change Security Impact so low-risk changes in critical products remain lightweight.
+- Add critical risk floors so financial/stored-value integrity cannot be averaged down.
+- Add independent Security Engineer review and release gating for high/critical affected boundaries.
+- Add threat-modeling, authorization-security, business-logic-abuse, financial-integrity and security-testing skills.
+- Add security planning/review templates and Risk Profile schema.
+- Treat payments, refunds, stored value, balances, redeemable points/credits/vouchers/coupons and similar value flows as security boundaries.
+- Keep Security Assurance separate from Reliability Impact and Model Tier.
+
+### System self-improvement governance
+
+- Add a protected Constitution containing only fundamental human-authority, truth, safety, stop-the-line, scope-integrity and high-risk approval principles.
+- Add System Self-Improvement Review for every proposed optimization to this AI Product System.
+- Require analysis of appropriateness, overlap, simpler alternatives, additional optimization, compatibility, scenario/doc impact and Constitution semantics before implementation.
+- Add Constitutional Change Gate with affected-Article/risk analysis and a second explicit approval.
+- Prefer Skill/Template → Workflow/Work Mode → System/Orchestration → Governance → Constitution.
+
+### Change and Git governance
+
+- Add Core Change Approval Gate for semantically large/core changes before implementation.
+- Add Git Publish Approval Gate with complete changed-file list, feature summary, validation evidence, atomic commit plan and target before remote publication.
+- Group commits by logical capability/reviewability/revertability rather than by file.
+- Require re-approval when approved implementation scope or publication plan materially drifts.
+- Add security, core-change, Git-publish, self-improvement and constitutional regression scenarios.
+
 ## 0.2.0
 
 - Add `aips` CLI with install, uninstall, init, update, preflight, doctor, validate and version commands.
