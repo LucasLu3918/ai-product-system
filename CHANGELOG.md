@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.16.4
+
+### Governance & Security Semantic Evidence Maturity
+
+- Add provider-neutral Agent Eval evidence for Git Publish Approval, Change Impact before mutation, secure runtime credential acquisition, active secret-exposure release blocking and private-config rejection during Skill admission.
+- Reconcile Scenario 084 from malformed legacy Markdown into the current pre-mutation impact + post-diff reconciliation contract.
+- Bind all five new observable GPT-5.6 Sol results to exact Case SHA-256 fingerprints and deterministic rubrics.
+- Keep Git publication command guards and secret scanner evidence as lower-layer deterministic controls while using Agent Eval for the higher-level semantic decisions.
+- Promote Scenarios 018, 084, 089, 091 and 095 from manual to agent_eval.
+- Raise conformance baseline to 125 total / 53 manual / 19 deterministic / 40 lifecycle / 13 agent_eval / 72 automated / 0 uncovered (57.6% automated).
+- No runtime behavior, Role, Skill, Capability, Approval Gate or architecture-topology change.
+
 ## 0.16.3
 
 ### Intelligence Context Evidence Maturity

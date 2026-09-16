@@ -237,3 +237,38 @@ Automated      67
 Uncovered       0
 Automated     53.6%
 ~~~
+
+## v0.16.4 Governance & Security Semantic Evidence Maturity
+
+新增 5 組 provider-neutral Agent Eval，將目前仍需要 Agent semantic judgment 的高價值治理/安全 Scenario 從 manual 升級：
+
+~~~text
+018 Git Publish Approval
+084 Change Impact Before Mutation
+089 Secret Runtime Acquisition
+091 Active Secret Exposure Blocks Release
+095 New Skill Cannot Embed Private Configuration
+~~~
+
+這些 Scenario 不適合被簡化成「某個 helper 有跑」：
+
+- 018 同時要求 publication plan、evidence、target 與 explicit approval/reapproval 行為；
+- 084 要求 mutation 前 semantic impact + mutation 後 actual diff reconciliation；
+- 089 要求安全 credential acquisition priority 與 missing credential fail-closed；
+- 091 要求 active production/SAL3-4 exposure 阻擋 Release 並完成 rotation/revocation + exposure assessment；
+- 095 要求 Skill admission 時把 private credential/config 移出 reusable Skill。
+
+每組 evidence 都包含 exact Case fingerprint + 本次實際 GPT-5.6 Sol observable Result，CI 使用 deterministic rubric 驗證，不保存 Chain-of-Thought。
+
+v0.16.4 baseline：
+
+~~~text
+Total         125
+Manual         53
+Deterministic  19
+Lifecycle      40
+Agent Eval     13
+Automated      72
+Uncovered       0
+Automated     57.6%
+~~~

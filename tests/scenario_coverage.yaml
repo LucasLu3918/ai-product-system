@@ -113,10 +113,11 @@ scenarios:
       - scripts/agent_eval.py
   - id: "018"
     path: tests/scenarios/018-git-publish-approval.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/018-git-publish-approval.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/018-git-publish-approval.yaml
+      - tests/agent_eval/results/018-git-publish-approval.yaml
+      - scripts/agent_eval.py
   - id: "019"
     path: tests/scenarios/019-system-self-improvement.md
     coverage: agent_eval
@@ -515,10 +516,11 @@ scenarios:
       - tests/validate_repository.py
   - id: "084"
     path: tests/scenarios/084-change-impact-before-mutation.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/084-change-impact-before-mutation.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/084-change-impact-before-mutation.yaml
+      - tests/agent_eval/results/084-change-impact-before-mutation.yaml
+      - scripts/agent_eval.py
   - id: "085"
     path: tests/scenarios/085-uninstall-preserves-intelligence-cache.md
     coverage: lifecycle
@@ -545,10 +547,11 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "089"
     path: tests/scenarios/089-secret-runtime-acquisition.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/089-secret-runtime-acquisition.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/089-secret-runtime-acquisition.yaml
+      - tests/agent_eval/results/089-secret-runtime-acquisition.yaml
+      - scripts/agent_eval.py
   - id: "090"
     path: tests/scenarios/090-secret-scanner-redacted-evidence.md
     coverage: deterministic
@@ -557,10 +560,11 @@ scenarios:
       - tests/validate_repository.py
   - id: "091"
     path: tests/scenarios/091-secret-exposure-release-block.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/091-secret-exposure-release-block.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/091-secret-exposure-release-block.yaml
+      - tests/agent_eval/results/091-secret-exposure-release-block.yaml
+      - scripts/agent_eval.py
   - id: "092"
     path: tests/scenarios/092-core-change-impact-test-matrix.md
     coverage: manual
@@ -582,10 +586,11 @@ scenarios:
       - scripts/agent_eval.py
   - id: "095"
     path: tests/scenarios/095-new-skill-no-private-config.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/095-new-skill-no-private-config.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/095-new-skill-no-private-config.yaml
+      - tests/agent_eval/results/095-new-skill-no-private-config.yaml
+      - scripts/agent_eval.py
   - id: "096"
     path: tests/scenarios/096-approval-fingerprint-determinism.md
     coverage: deterministic

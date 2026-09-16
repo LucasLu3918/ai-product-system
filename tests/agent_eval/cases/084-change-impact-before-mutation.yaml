@@ -1,0 +1,42 @@
+version: 1
+id: 084-change-impact-before-mutation
+scenario_id: "084"
+description: Existing-project mutation must resolve semantic impact before editing and reconcile declared impact against the actual diff afterward.
+input:
+  prompt: Change the order API so it persists a new customer reference and emits an updated order event.
+  context:
+    existing_project: true
+    mutation_requested: true
+rubric:
+  equals:
+    response.status: IMPACT_ANALYSIS_REQUIRED
+    response.implementation_allowed_before_ready_impact: false
+    response.diff_reconciliation_required: true
+    response.scope_reapproval_if_materially_expanded: true
+  contains:
+    response.actions:
+      - load_relevant_project_intelligence
+      - define_change_boundary
+      - assess_change_impact_before_mutation
+      - persist_change_impact_artifact
+      - implement_within_declared_boundary
+      - compare_actual_diff_to_declared_impact
+      - refresh_affected_intelligence
+    response.impact_dimensions:
+      - inbound
+      - outbound
+      - data_storage
+      - downstream_consumer
+      - security_authorization
+      - business_invariant
+      - migration_compatibility
+      - tests
+      - observability
+      - documentation_contracts
+  excludes:
+    response.actions:
+      - mutate_before_impact_ready
+      - ignore_unexpected_material_impact
+  set_equals: {}
+  nonempty:
+    - response.summary
