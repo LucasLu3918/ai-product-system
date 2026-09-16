@@ -755,24 +755,181 @@ def impact_path(root: Path, change_id: str) -> Path:
     return store.parent / "changes" / f"{change_id}.yaml"
 
 
+def _product_paths(paths: list[str]) -> list[str]:
+    result: list[str] = []
+    for value in paths:
+        path = str(value).replace("\\", "/").lstrip("./")
+        if not path or path == ".ai" or path.startswith(".ai/") or path.startswith(".ai.detached-"):
+            continue
+        result.append(path)
+    return sorted(set(result))
+
+
+def _impact_target_valid(value: str) -> bool:
+    raw = str(value).strip().replace("\\", "/")
+    if not raw or raw.startswith("/") or raw.startswith("../") or "/../" in f"/{raw}/":
+        return False
+    return raw not in {".", ".."}
+
+
+def _impact_target_matches(path: str, target: str) -> bool:
+    target = target.strip().replace("\\", "/").lstrip("./")
+    path = path.replace("\\", "/").lstrip("./")
+    if path == target:
+        return True
+    prefix = target.rstrip("/") + "/"
+    if path.startswith(prefix):
+        return True
+    return path_matches(path, target)
+
+
+def _impact_actual_paths(root: Path, baseline_head: str) -> tuple[list[str] | None, list[str]]:
+    current_head = run_git(root, ["rev-parse", "HEAD"])
+    if not current_head:
+        return None, ["current_revision_unavailable"]
+
+    reasons: list[str] = []
+    committed: list[str] = []
+    if baseline_head != current_head:
+        ancestor = run_git(root, ["merge-base", "--is-ancestor", baseline_head, current_head])
+        # run_git returns an empty string for a successful --is-ancestor; distinguish failure
+        probe = subprocess.run(
+            ["git", "-C", str(root), "merge-base", "--is-ancestor", baseline_head, current_head],
+            capture_output=True, text=True,
+        )
+        if probe.returncode != 0:
+            return None, ["baseline_revision_not_ancestor"]
+        diff = changed_paths_between(root, baseline_head, current_head)
+        if diff is None:
+            return None, ["revision_diff_unavailable"]
+        committed = diff
+
+    dirty = git_dirty_paths(root)
+    return _product_paths(committed + dirty), reasons
+
+
 def impact_init(root: Path, prompt: str, change_id: str | None) -> dict[str, Any]:
     store, mode, pid = intelligence_store(root, create=True)
     graph_path = store / "IMPACT_GRAPH.yaml"
     change_id = change_id or f"change-{sha(prompt)[:12]}"
     path = impact_path(root, change_id)
+    ident = repository_identity(root)
+    dirty = _product_paths(git_dirty_paths(root))
+    baseline = {
+        "repository_id": ident["repository_id"],
+        "workspace_id": ident["workspace_id"],
+        "git_head": run_git(root, ["rev-parse", "HEAD"]),
+        "branch": run_git(root, ["branch", "--show-current"]),
+        "clean": not dirty,
+        "dirty_paths": dirty,
+        "captured_at": utc_now(),
+    }
     doc = {
         "version": 1,
         "change": {"id": change_id, "target": [], "summary": prompt or None},
+        "baseline": baseline,
         "inputs": [], "outputs": [], "data": [], "events": [], "consumers": [],
         "security_boundaries": [], "invariants": [],
         "compatibility": {"api_breaking": None, "migration_required": None, "reasons": []},
         "tests": [], "observability": [], "documentation": [],
         "impact_graph": str(graph_path),
         "unknowns": ["Agent must resolve semantic impact before mutation."],
+        "reconciliation": {
+            "status": "NOT_RUN",
+            "declared_targets": [],
+            "actual_files": [],
+            "unexpected_files": [],
+            "retests_required": False,
+            "scope_reapproval_required": False,
+            "reasons": [],
+            "reconciled_at": None,
+        },
         "status": "DRAFT",
     }
     atomic_yaml(path, doc)
-    return {"change_id": change_id, "path": str(path), "mode": mode, "status": "DRAFT"}
+    return {
+        "change_id": change_id,
+        "path": str(path),
+        "mode": mode,
+        "status": "DRAFT",
+        "baseline_clean": baseline["clean"],
+        "baseline_revision": baseline["git_head"],
+    }
+
+
+def impact_reconcile(root: Path, change_id: str) -> dict[str, Any]:
+    path = impact_path(root, change_id)
+    if not path.is_file():
+        raise RuntimeError(f"Change Impact artifact not found: {path}")
+
+    doc = load_yaml(path, {})
+    baseline = doc.get("baseline") or {}
+    targets = [str(x) for x in ((doc.get("change") or {}).get("target") or [])]
+    reasons: list[str] = []
+
+    if doc.get("status") != "READY":
+        reasons.append("impact_not_ready")
+    if not targets:
+        reasons.append("declared_targets_missing")
+    invalid_targets = [target for target in targets if not _impact_target_valid(target)]
+    if invalid_targets:
+        reasons.append("invalid_declared_target")
+    if baseline.get("clean") is not True:
+        reasons.append("baseline_dirty")
+
+    ident = repository_identity(root)
+    if baseline.get("repository_id") and baseline.get("repository_id") != ident["repository_id"]:
+        reasons.append("repository_identity_changed")
+    if baseline.get("workspace_id") and baseline.get("workspace_id") != ident["workspace_id"]:
+        reasons.append("workspace_identity_changed")
+
+    current_branch = run_git(root, ["branch", "--show-current"])
+    if baseline.get("branch") != current_branch:
+        reasons.append("branch_changed")
+
+    baseline_head = str(baseline.get("git_head") or "")
+    if not baseline_head:
+        reasons.append("baseline_revision_missing")
+
+    actual: list[str] = []
+    if not reasons:
+        resolved, diff_reasons = _impact_actual_paths(root, baseline_head)
+        if resolved is None:
+            reasons.extend(diff_reasons)
+        else:
+            actual = resolved
+
+    unexpected = [
+        changed for changed in actual
+        if not any(_impact_target_matches(changed, target) for target in targets)
+    ]
+
+    if reasons:
+        status = "BLOCKED"
+    elif unexpected:
+        status = "EXPANDED"
+    else:
+        status = "MATCHED"
+
+    reconciliation = {
+        "status": status,
+        "declared_targets": targets,
+        "actual_files": actual,
+        "unexpected_files": unexpected,
+        "retests_required": bool(unexpected),
+        "scope_reapproval_required": bool(unexpected),
+        "reasons": sorted(set(reasons)),
+        "reconciled_at": utc_now(),
+    }
+    doc["reconciliation"] = reconciliation
+    atomic_yaml(path, doc)
+
+    return {
+        "change_id": change_id,
+        "path": str(path),
+        "status": status,
+        **reconciliation,
+    }
 
 
 def validated_copytree(src: Path, dst: Path) -> None:
@@ -938,6 +1095,11 @@ def main() -> int:
     p.add_argument("--change-id")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
+    p = sub.add_parser("impact-reconcile")
+    p.add_argument("--project", default=os.getcwd())
+    p.add_argument("--change-id", required=True)
+    p.add_argument("--format", choices=["yaml", "json"], default="yaml")
+
     args = parser.parse_args()
     root = project_root(Path(args.project))
     try:
@@ -953,6 +1115,8 @@ def main() -> int:
             result = context_manifest(root, args.runtime, args.prompt, args.explain)
         elif args.command == "impact-init":
             result = impact_init(root, args.prompt, args.change_id)
+        elif args.command == "impact-reconcile":
+            result = impact_reconcile(root, args.change_id)
         elif args.command == "migrate-attached":
             result = migrate_attached(root)
         elif args.command == "sync-external":
@@ -963,6 +1127,8 @@ def main() -> int:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
     output(result, args.format)
+    if args.command == "impact-reconcile" and result.get("status") != "MATCHED":
+        return 2
     return 0
 
 
