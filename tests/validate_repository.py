@@ -957,6 +957,75 @@ gemini_hooks = json.loads((ROOT / "harness/adapters/gemini-cli/hooks/hooks.json"
 if "BeforeTool" not in (gemini_hooks.get("hooks") or {}):
     errors.append("Gemini adapter missing BeforeTool governance guard")
 
+# v0.12 durable run-state contract
+run_protocol = ROOT / "orchestration/RUN_RESUME.md"
+run_template = ROOT / "templates/workspace/RUN_CHECKPOINT.yaml"
+run_helper = ROOT / "scripts/run_state.py"
+for required in (run_protocol, run_template, run_helper):
+    if not required.exists():
+        errors.append(f"Missing v0.12 run-state artifact: {required.relative_to(ROOT)}")
+
+if run_template.exists():
+    doc = load_yaml(run_template) or {}
+    for key in ("run_id", "protocol", "status", "current_step", "completed_steps", "waiting_for", "project", "updated_at"):
+        if key not in doc:
+            errors.append(f"RUN_CHECKPOINT.yaml missing key: {key}")
+
+if run_helper.exists():
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(run_helper)], capture_output=True, text=True)
+    if compiled.returncode != 0:
+        errors.append(f"run_state.py syntax failed: {compiled.stderr.strip()}")
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        project = base / "project"
+        config = base / "config"
+        project.mkdir()
+        (project / "README.md").write_text("test\n", encoding="utf-8")
+        subprocess.run(["git", "init", "-q"], cwd=project, check=True)
+        subprocess.run(["git", "config", "user.email", "aips@example.invalid"], cwd=project, check=True)
+        subprocess.run(["git", "config", "user.name", "AIPS Test"], cwd=project, check=True)
+        subprocess.run(["git", "add", "README.md"], cwd=project, check=True)
+        subprocess.run(["git", "commit", "-qm", "initial"], cwd=project, check=True)
+        env = dict(os.environ)
+        env["XDG_CONFIG_HOME"] = str(config)
+
+        cp = subprocess.run([sys.executable, str(run_helper), "checkpoint", "--project", str(project), "--run-id", "r1", "--protocol", "test", "--step", "implementation", "--completed-step", "planning", "--format", "json"], env=env, capture_output=True, text=True)
+        if cp.returncode != 0:
+            errors.append(f"Run checkpoint failed: {cp.stdout.strip()} {cp.stderr.strip()}")
+        else:
+            cp_doc = json.loads(cp.stdout)
+            if cp_doc.get("mode") != "EPHEMERAL" or (project / ".ai").exists():
+                errors.append("EPHEMERAL run checkpoint must not create project .ai")
+
+        ev = subprocess.run([sys.executable, str(run_helper), "event", "--project", str(project), "--run-id", "r1", "--event", "validation_completed", "--status", "PASS", "--evidence", "TOKEN=supersecret", "--format", "json"], env=env, capture_output=True, text=True)
+        if ev.returncode != 0:
+            errors.append(f"Run event failed: {ev.stdout.strip()} {ev.stderr.strip()}")
+        else:
+            ev_doc = json.loads(ev.stdout)
+            event_text = Path(ev_doc["events"]).read_text(encoding="utf-8")
+            if "supersecret" in event_text or "[REDACTED]" not in event_text:
+                errors.append("Run EVENTS.jsonl must redact obvious secret-like evidence")
+
+        current = subprocess.run([sys.executable, str(run_helper), "resume", "--project", str(project), "--run-id", "r1", "--format", "json"], env=env, capture_output=True, text=True)
+        if current.returncode != 0 or json.loads(current.stdout).get("status") != "CURRENT":
+            errors.append(f"Run resume should be CURRENT before revision drift: {current.stdout.strip()} {current.stderr.strip()}")
+
+        (project / "README.md").write_text("changed\n", encoding="utf-8")
+        subprocess.run(["git", "add", "README.md"], cwd=project, check=True)
+        subprocess.run(["git", "commit", "-qm", "change"], cwd=project, check=True)
+        stale = subprocess.run([sys.executable, str(run_helper), "resume", "--project", str(project), "--run-id", "r1", "--format", "json"], env=env, capture_output=True, text=True)
+        if stale.returncode != 0:
+            errors.append(f"Run resume after drift failed: {stale.stdout.strip()} {stale.stderr.strip()}")
+        else:
+            stale_doc = json.loads(stale.stdout)
+            if stale_doc.get("status") != "STALE" or stale_doc.get("requires_freshness_check") is not True:
+                errors.append("Run resume must report STALE and require freshness check after revision drift")
+
+for n in range(101, 106):
+    matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
+    if len(matches) != 1:
+        errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")
+
 repo_scan = subprocess.run([sys.executable, str(ROOT / "scripts/check_secret_leakage.py"), "--root", str(ROOT), "--json"], capture_output=True, text=True)
 if repo_scan.returncode != 0:
     errors.append("Repository secret leakage scan found high-confidence findings: " + repo_scan.stdout[:1200])
