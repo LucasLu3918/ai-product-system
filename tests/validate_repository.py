@@ -898,11 +898,70 @@ with tempfile.TemporaryDirectory() as tmp:
     except Exception:
         errors.append("Secret checker did not emit valid JSON evidence")
 
+# v0.11 enforceable governance contract
+approval_template = ROOT / "templates/governance/APPROVAL_RECORD.yaml"
+if not approval_template.exists():
+    errors.append("Missing v0.11 Approval Record template")
+else:
+    approval_doc = load_yaml(approval_template) or {}
+    for key in ("approval", "proposal", "scope", "evidence"):
+        if key not in approval_doc:
+            errors.append(f"APPROVAL_RECORD.yaml missing top-level key: {key}")
+
+adapter_contract = (ROOT / "harness/ADAPTER_CONTRACT.md").read_text(encoding="utf-8")
+for phrase in ("Governance enforcement capability", "ADVISORY", "TOOL_GUARDED", "ENFORCED"):
+    if phrase not in adapter_contract:
+        errors.append(f"ADAPTER_CONTRACT.md missing governance enforcement contract: {phrase}")
+
+turn_template = load_yaml(ROOT / "templates/intelligence/TURN_CONTEXT_MANIFEST.yaml") or {}
+if "governance_enforcement" not in (turn_template.get("runtime") or {}):
+    errors.append("TURN_CONTEXT_MANIFEST runtime missing governance_enforcement")
+if "resolution" not in turn_template:
+    errors.append("TURN_CONTEXT_MANIFEST missing resolution metadata")
+
+guard = ROOT / "scripts/governance_guard.py"
+if not guard.exists():
+    errors.append("Missing scripts/governance_guard.py")
+else:
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(guard)], capture_output=True, text=True)
+    if compiled.returncode != 0:
+        errors.append(f"governance_guard.py syntax failed: {compiled.stderr.strip()}")
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("aips_governance_guard", guard)
+    gg = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(gg)
+    scope_a = {"branch":"release/test","remote":"origin","candidate_commit":"abc123","files":["b.txt","a.txt"],"boundaries":["governance"],"operations":["git_push"]}
+    scope_b = {"operations":["git_push"],"boundaries":["governance"],"files":["a.txt","b.txt"],"candidate_commit":"abc123","remote":"origin","branch":"release/test"}
+    if gg.fingerprint(scope_a) != gg.fingerprint(scope_b):
+        errors.append("Approval fingerprint must be deterministic for set-like ordering")
+    with tempfile.TemporaryDirectory() as tmp:
+        ap = Path(tmp) / "approval.yaml"
+        record = {"version":1,"approval":{"id":"test","type":"git_publish","status":"APPROVED","approved_by":"human","approved_at":"test"},"proposal":{"fingerprint":"sha256:test"},"scope":dict(scope_a),"evidence":{"validation":[],"unresolved":[]}}
+        record["scope"]["fingerprint"] = gg.fingerprint(scope_a)
+        ap.write_text(yaml.safe_dump(record, sort_keys=False), encoding="utf-8")
+        ok, reason, _ = gg.verify_record(ap, "git_push", Path(tmp), check_actual=False)
+        if not ok:
+            errors.append(f"Approval fingerprint should validate: {reason}")
+        record["scope"]["files"].append("drift.txt")
+        ap.write_text(yaml.safe_dump(record, sort_keys=False), encoding="utf-8")
+        ok, _, _ = gg.verify_record(ap, "git_push", Path(tmp), check_actual=False)
+        if ok:
+            errors.append("Approval fingerprint did not detect scope drift")
+
+for n in range(96, 101):
+    matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
+    if len(matches) != 1:
+        errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")
+
+gemini_hooks = json.loads((ROOT / "harness/adapters/gemini-cli/hooks/hooks.json").read_text(encoding="utf-8"))
+if "BeforeTool" not in (gemini_hooks.get("hooks") or {}):
+    errors.append("Gemini adapter missing BeforeTool governance guard")
+
 repo_scan = subprocess.run([sys.executable, str(ROOT / "scripts/check_secret_leakage.py"), "--root", str(ROOT), "--json"], capture_output=True, text=True)
 if repo_scan.returncode != 0:
     errors.append("Repository secret leakage scan found high-confidence findings: " + repo_scan.stdout[:1200])
 
-for shell in ("bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "harness/adapters/gemini-cli/hooks/aips-turn-context.sh"):
+for shell in ("bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "harness/adapters/gemini-cli/hooks/aips-turn-context.sh", "harness/adapters/gemini-cli/hooks/aips-governance-guard.sh"):
     p = ROOT / shell
     if p.exists():
         result = subprocess.run(["bash", "-n", str(p)], capture_output=True, text=True)
