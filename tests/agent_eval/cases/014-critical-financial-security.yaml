@@ -1,0 +1,47 @@
+version: 1
+id: 014-critical-financial-security
+scenario_id: "014"
+description: Economic-value features receive a SAL 4 floor with independent security review and financial-integrity evidence.
+input:
+  prompt: Add paid credits that can be redeemed for refunds and transferred between users.
+  context:
+    economic_value: true
+    stored_value: true
+    transferable_or_redeemable: true
+rubric:
+  equals:
+    response.status: SAL4_SECURITY_REQUIRED
+    response.effective_sal_floor: 4
+    response.independent_security_engineer_required: true
+    response.unresolved_high_or_critical_blocks_release: true
+  contains:
+    response.required_security_areas:
+      - financial_integrity
+      - business_logic_abuse
+      - threat_modeling
+      - security_testing
+    response.planning_review:
+      - value_invariants
+      - state_transitions
+      - authorization
+      - audit_and_reconciliation
+      - recovery
+    response.implementation_review:
+      - atomicity
+      - idempotency
+      - replay
+      - duplicate_processing
+      - concurrency
+      - precision_and_rounding
+      - reversal_or_refund
+      - authorization
+    response.actions:
+      - update_risk_profile
+      - persist_security_evidence
+  excludes:
+    response.actions:
+      - downgrade_critical_financial_floor
+      - release_with_unresolved_high_or_critical
+  set_equals: {}
+  nonempty:
+    - response.summary
