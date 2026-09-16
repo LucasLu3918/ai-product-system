@@ -1,0 +1,26 @@
+version: 1
+
+change:
+  id: null
+  target: []
+  summary: null
+
+inputs: []
+outputs: []
+data: []
+events: []
+consumers: []
+security_boundaries: []
+invariants: []
+
+compatibility:
+  api_breaking: null
+  migration_required: null
+  reasons: []
+
+tests: []
+observability: []
+documentation: []
+
+unknowns: []
+status: DRAFT # DRAFT | READY | BLOCKED

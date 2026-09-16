@@ -1,0 +1,35 @@
+version: 1
+
+runtime:
+  id: unknown
+  capability: MANUAL
+
+project:
+  id: null
+  root: null
+  mode: EPHEMERAL
+  intelligence_store: null
+
+task:
+  prompt_hash: null
+  category: unknown
+  mutation_likely: false
+
+context:
+  always: []
+  runtime_native: []
+  project_native: []
+  intelligence_topics: []
+  optional_evidence: []
+
+freshness:
+  status: UNKNOWN
+  reasons: []
+
+requirements:
+  initialize_intelligence: false
+  targeted_refresh: []
+  change_impact_required: false
+
+fail_policy:
+  mode: soft

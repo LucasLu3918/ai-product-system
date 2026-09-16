@@ -1,0 +1,19 @@
+version: 1
+
+approved_inferences: []
+
+additional_rules: []
+# - id: RULE-001
+#   scope: project
+#   rule: null
+#   reason: null
+
+exceptions: []
+# - id: EX-001
+#   scope: legacy/payment
+#   rule: clean_architecture_dependency
+#   reason: legacy migration
+
+excluded_inferences: []
+
+conflicts: []

@@ -1,0 +1,48 @@
+schema:
+  version: 1
+
+generated_by:
+  aips_version: null
+  aips_commit: null
+
+project:
+  id: null
+  root: null
+  repository_identity: null
+  worktree_identity: null
+  branch: null
+
+state:
+  readiness: PARTIAL
+  review: UNREVIEWED
+  freshness: STALE
+
+verified:
+  git_head: null
+  dirty_paths: []
+  verified_at: null
+
+architecture:
+  summary: null
+  confidence: null
+  source: null
+
+topics: {}
+# architecture:
+#   path: topics/architecture.md
+#   type: INTERPRETATION
+#   confidence: high
+#   watch:
+#     - internal/domain/**
+#     - internal/application/**
+
+canonical_artifacts: {}
+# visual:
+#   path: docs/design/PROJECT_VISUAL_PROFILE.yaml
+
+migration:
+  from_project_knowledge: false
+  sources: []
+
+unknowns: []
+conflicts: []

@@ -1,0 +1,19 @@
+version: 1
+
+nodes: {}
+# order_api:
+#   type: api
+#   source: api/openapi.yaml
+
+edges: []
+# - from: order_api
+#   to: order_service
+#   relation: calls
+
+coverage:
+  api: null
+  data: null
+  events: null
+  consumers: null
+
+unknowns: []

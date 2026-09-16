@@ -1,0 +1,20 @@
+version: 1
+
+sources: []
+# - id: project-agents-root
+#   path: AGENTS.md
+#   authority: project_instruction
+#   scope: project
+#   hash: null
+#   auto_loaded_by:
+#     - codex
+#   content_duplicated: false
+
+runtime_visibility:
+  codex: []
+  claude-code: []
+  gemini-cli: []
+
+deduplication:
+  storage: pointer_over_copy
+  runtime_context: runtime_aware
