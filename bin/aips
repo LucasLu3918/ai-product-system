@@ -31,7 +31,10 @@ AI Product System CLI
 Usage:
   aips install
   aips uninstall [--remove-venv]
-  aips init <project-path>
+  aips attach <project-path>
+  aips detach <project-path>
+  aips status <project-path>
+  aips init <project-path>        # backward-compatible alias for attach
   aips update [--allow-major]
   aips preflight <project-path> [--allow-major]
   aips doctor
@@ -101,6 +104,84 @@ init_project() {
 
   write_system_snapshot "$project"
   say "Workspace initialized: $ai_dir"
+}
+
+
+attach_project() {
+  local project="$1"
+  [ -d "$project" ] || die "Project path does not exist: $project"
+
+  if [ ! -d "$project/.ai" ]; then
+    local detached
+    detached="$(find "$project" -maxdepth 1 -type d -name '.ai.detached-*' -print 2>/dev/null | sort | tail -n 1 || true)"
+    if [ -n "$detached" ]; then
+      warn "A detached AI workspace already exists: $detached"
+      say "Restore it first if you want to continue that workspace:"
+      say "  mv \"$detached\" \"$project/.ai\""
+      say "Then rerun:"
+      say "  aips attach \"$project\""
+      return 2
+    fi
+  fi
+
+  init_project "$project"
+  say "Project attached to AI Product System: $project"
+}
+
+detach_project() {
+  local project="$1"
+  [ -d "$project" ] || die "Project path does not exist: $project"
+
+  if [ ! -d "$project/.ai" ]; then
+    say "Project is already detached (no .ai workspace): $project"
+    return 0
+  fi
+
+  local stamp archive
+  stamp="$(date -u +"%Y%m%d-%H%M%S")"
+  archive="$project/.ai.detached-$stamp"
+  [ ! -e "$archive" ] || die "Detach archive already exists: $archive"
+
+  mv "$project/.ai" "$archive"
+  say "Project detached: $project"
+  say "Workspace preserved: $archive"
+  say "Product source code was not modified."
+  say "To restore:"
+  say "  mv \"$archive\" \"$project/.ai\""
+  say "  aips attach \"$project\""
+}
+
+status_project() {
+  local project="$1"
+  [ -d "$project" ] || die "Project path does not exist: $project"
+
+  say "AI Product System status"
+  say "System dir: $SYSTEM_DIR"
+  say "System version: $(current_version 2>/dev/null || echo unknown)"
+  say "System commit: $(current_commit 2>/dev/null || echo unknown)"
+  if [ -L "$BIN_HOME/aips" ]; then
+    say "CLI installed: yes ($BIN_HOME/aips)"
+  else
+    say "CLI installed: no"
+  fi
+
+  say "Project: $project"
+  if [ -d "$project/.ai" ]; then
+    say "Project attached: yes"
+    say "Workspace: $project/.ai"
+    if [ -f "$project/.ai/SYSTEM.yaml" ]; then
+      local recorded_version recorded_commit
+      recorded_version="$(awk -F': ' '/^[[:space:]]*version:/ {gsub(/"/,"",$2); print $2; exit}' "$project/.ai/SYSTEM.yaml" || true)"
+      recorded_commit="$(awk -F': ' '/^[[:space:]]*commit:/ {gsub(/"/,"",$2); print $2; exit}' "$project/.ai/SYSTEM.yaml" || true)"
+      [ -n "$recorded_version" ] && say "Recorded system version: $recorded_version"
+      [ -n "$recorded_commit" ] && say "Recorded system commit: $recorded_commit"
+    fi
+  else
+    say "Project attached: no"
+    local detached
+    detached="$(find "$project" -maxdepth 1 -type d -name '.ai.detached-*' -print 2>/dev/null | sort | tail -n 1 || true)"
+    [ -n "$detached" ] && say "Latest detached workspace: $detached"
+  fi
 }
 
 validate_repo() {
@@ -277,9 +358,21 @@ case "${1:-help}" in
     shift
     uninstall_cli "$@"
     ;;
+  attach)
+    [ "$#" -ge 2 ] || die "Usage: aips attach <project-path>"
+    attach_project "$2"
+    ;;
+  detach)
+    [ "$#" -ge 2 ] || die "Usage: aips detach <project-path>"
+    detach_project "$2"
+    ;;
+  status)
+    [ "$#" -ge 2 ] || die "Usage: aips status <project-path>"
+    status_project "$2"
+    ;;
   init)
     [ "$#" -ge 2 ] || die "Usage: aips init <project-path>"
-    init_project "$2"
+    attach_project "$2"
     ;;
   update)
     shift
