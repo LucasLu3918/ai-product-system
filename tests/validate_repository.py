@@ -116,6 +116,7 @@ required_files = [
     "harness/BOOTSTRAP.md", "harness/HARNESS_PROTOCOL.md", "harness/ADAPTER_CONTRACT.md",
     "harness/adapters/codex/AGENTS.md", "harness/adapters/claude-code/CLAUDE.md",
     "harness/adapters/gemini-cli/gemini-extension.json", "harness/adapters/gemini-cli/GEMINI.md",
+    "harness/adapters/generic/BOOTSTRAP.md",
     "docs/ARCHITECTURE.md", "docs/MAINTENANCE.md", "docs/INSTALLATION.md", "docs/SECURITY_ASSURANCE.md",
     "docs/GETTING_STARTED.md", "docs/USER_GUIDE.md", "docs/DOCUMENTATION_MAP.md", "docs/HARNESS.md",
     "docs/ARCHITECTURE_OVERVIEW.md", "docs/assets/system-overview.svg",
@@ -184,8 +185,8 @@ for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"
         errors.append(f"PLANNING_PACKAGE.md missing: {phrase}")
 
 scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
-if len(scenarios) < 66:
-    errors.append(f"Expected at least 66 acceptance scenarios, found {len(scenarios)}")
+if len(scenarios) < 67:
+    errors.append(f"Expected at least 67 acceptance scenarios, found {len(scenarios)}")
 
 security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
 for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):
@@ -497,8 +498,15 @@ with tempfile.TemporaryDirectory() as tmp:
         claude_state = config / "aips" / "harness" / "adapters" / "claude-code.yaml"
         if not claude_state.exists() or 'status: "MANUAL"' not in claude_state.read_text(encoding="utf-8"):
             errors.append("Existing user CLAUDE.md should force MANUAL adapter status")
-        if not (config / "aips" / "harness" / "installation.yaml").exists():
+        ownership_file = config / "aips" / "harness" / "installation.yaml"
+        if not ownership_file.exists():
             errors.append("Harness install did not create ownership manifest")
+        else:
+            ownership_text = ownership_file.read_text(encoding="utf-8")
+            if "runtime_bootstrap" not in ownership_text or str(codex_bootstrap) not in ownership_text:
+                errors.append("Ownership manifest does not record AIPS-owned Codex bootstrap resource")
+            if "runtime_registration" not in ownership_text or "aips-global-harness" not in ownership_text:
+                errors.append("Ownership manifest does not record AIPS-owned Gemini registration")
         if not (home / ".fake-gemini-extension").exists():
             errors.append("Harness install did not register fake Gemini extension")
 
@@ -539,6 +547,56 @@ with tempfile.TemporaryDirectory() as tmp:
                 errors.append("Second harness uninstall failed")
             if not codex_bootstrap.exists() or "# user edit" not in codex_bootstrap.read_text(encoding="utf-8"):
                 errors.append("Modified AIPS-owned bootstrap should be preserved on uninstall")
+
+
+with tempfile.TemporaryDirectory() as tmp:
+    tmp_path = Path(tmp)
+    home = tmp_path / "home"
+    fake_bin = tmp_path / "fake-bin"
+    config = tmp_path / "config"
+    bin_home = tmp_path / "bin-home"
+    home.mkdir()
+    fake_bin.mkdir()
+    gemini = fake_bin / "gemini"
+    gemini_script = "\n".join([
+        "#!/usr/bin/env bash",
+        "state=\"$HOME/.fake-gemini-extension\"",
+        "fail=\"$HOME/.fake-gemini-fail-uninstall\"",
+        "if [ \"${1:-}\" = extensions ]; then",
+        "  case \"${2:-}\" in",
+        "    list) [ -f \"$state\" ] && echo aips-global-harness; exit 0 ;;",
+        "    link) touch \"$state\"; exit 0 ;;",
+        "    uninstall) [ -f \"$fail\" ] && exit 9; rm -f \"$state\"; exit 0 ;;",
+        "  esac",
+        "fi",
+        "exit 0",
+        ""
+    ])
+    gemini.write_text(gemini_script, encoding="utf-8")
+    gemini.chmod(0o755)
+    env = dict(os.environ)
+    env.update({
+        "HOME": str(home),
+        "XDG_CONFIG_HOME": str(config),
+        "AIPS_BIN_HOME": str(bin_home),
+        "PATH": f"{fake_bin}:{env.get('PATH', '')}",
+    })
+    cli = ROOT / "bin/aips"
+    first = subprocess.run(["bash", str(cli), "harness", "install"], env=env, capture_output=True, text=True)
+    if first.returncode != 0:
+        errors.append("Gemini recovery setup install failed")
+    else:
+        (home / ".fake-gemini-fail-uninstall").touch()
+        failed_uninstall = subprocess.run(["bash", str(cli), "harness", "uninstall"], env=env, capture_output=True, text=True)
+        harness_home = config / "aips" / "harness"
+        if failed_uninstall.returncode == 0:
+            errors.append("Harness uninstall should fail when an AIPS-owned Gemini registration cannot be removed")
+        if not harness_home.exists():
+            errors.append("Failed harness uninstall must preserve ownership state for retry")
+        (home / ".fake-gemini-fail-uninstall").unlink()
+        retry = subprocess.run(["bash", str(cli), "harness", "uninstall"], env=env, capture_output=True, text=True)
+        if retry.returncode != 0 or harness_home.exists():
+            errors.append("Harness uninstall retry should succeed after Gemini unregister recovers")
 
 for shell in ("bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh"):
     p = ROOT / shell

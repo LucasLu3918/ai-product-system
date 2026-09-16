@@ -56,6 +56,12 @@ Native Runtime 若有自己的強制 precedence，AIPS 會遵守該 Runtime，�
 
 只安裝 AIPS 不代表 AIPS 可以到處建立 .ai/。未 Attach 時是 EPHEMERAL；需要持久 Project State 才執行 aips attach /project 變成 ATTACHED。
 
+## 其他 Agent Runtime
+
+如果目前 Runtime 沒有專用 Adapter，使用 `harness/adapters/generic/BOOTSTRAP.md` 作為 Generic Manual Adapter。這提供一致的 AIPS 入口，但不會為了自動化去修改未知 Runtime 的設定。
+
+因此 AIPS 的 Coverage 原則是：安全可逆時 AUTOMATIC；否則 MANUAL，而不是宣稱所有 Runtime 都能被同一種方式攔截。
+
 ## Ownership
 
 AIPS 安裝的資源都必須 namespaced、記錄 ownership、可驗證、可逆，且不碰使用者既有內容。

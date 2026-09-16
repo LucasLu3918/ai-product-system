@@ -71,7 +71,7 @@ aips harness status
 
 狀態：AUTOMATIC（安全自動載入）、MANUAL（偵測到但不改使用者檔）、NOT_DETECTED、CONFLICT、ERROR。
 
-Coverage 是這台機器的實際狀態，以 aips harness status 為準。
+Coverage 是這台機器的實際狀態，以 aips harness status 為準。其他尚無專用 Adapter 的 Runtime 可使用 `harness/adapters/generic/BOOTSTRAP.md` 手動接入；AIPS 不會修改未知 Runtime 的底層設定來追求表面上的全自動。
 
 ### Codex CLI
 

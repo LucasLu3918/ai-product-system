@@ -27,3 +27,11 @@ adapters:
       - "Gemini CLI extension management is available"
     collision_policy: conflict
     source: harness/adapters/gemini-cli
+
+  generic-manual:
+    runtime: Other / Unsupported Runtime
+    detect_command: null
+    strategy: manual_bootstrap
+    automatic_when: []
+    collision_policy: manual
+    source: harness/adapters/generic/BOOTSTRAP.md
