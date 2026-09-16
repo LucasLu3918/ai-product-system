@@ -1,0 +1,29 @@
+version: 1
+
+status: active
+
+last_project_discovery:
+  commit: null
+  at: null
+
+topics: {}
+# Example:
+# architecture:
+#   summary: "DDD tactical patterns + Clean Architecture dependency direction"
+#   status: DISCOVERED # AUTHORITATIVE | DISCOVERED | APPROVED | STALE
+#   knowledge_type: INTERPRETATION # FACT | INTERPRETATION | OBSERVED_CONVENTION
+#   confidence: high
+#   source:
+#     path: .ai/knowledge/architecture.md
+#   verified_commit: null
+#   evidence_refs: []
+#   watch:
+#     paths: []
+#     signals: []
+
+authoritative_pointers: {}
+# Example:
+# coding_rules:
+#   source:
+#     path: AGENTS.md
+#   status: AUTHORITATIVE
