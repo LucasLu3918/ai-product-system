@@ -1,0 +1,33 @@
+version: 1
+id: 033-low-risk-static-staging-na
+scenario_id: "033"
+description: Low-risk static products may mark staging N/A with rationale while still verifying production deployment.
+input:
+  prompt: Deploy a static single-page site with no login, backend, persistence or sensitive data.
+  context:
+    static_only: true
+    login: false
+    persistence: false
+    sensitive_data: false
+rubric:
+  equals:
+    response.status: STAGING_NA_ALLOWED
+    response.staging_applicable: false
+    response.staging_na_reason_required: true
+    response.unnecessary_infrastructure_required: false
+    response.production_verification_required: true
+  contains:
+    response.required_checks:
+      - build
+      - static
+      - smoke
+    response.actions:
+      - record_staging_na_rationale
+      - deploy_production
+      - verify_production_deployment
+  excludes:
+    response.actions:
+      - create_staging_only_for_process_conformity
+  set_equals: {}
+  nonempty:
+    - response.summary
