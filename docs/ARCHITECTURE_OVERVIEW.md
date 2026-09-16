@@ -86,3 +86,15 @@ material step
 ~~~
 
 這個機制沿用既有 Workspace State；不導入新的 workflow framework，也不把對話逐字稿當成持久狀態。
+
+## 10. Scenario Conformance
+
+~~~text
+Scenario specification
+→ coverage registry
+→ evidence type
+→ deterministic conformance check
+→ coverage report
+~~~
+
+AIPS 不再用「Scenario 檔案存在」推論 automated coverage。Legacy Scenario 沒有明確一對一 evidence 時會誠實維持 manual。
