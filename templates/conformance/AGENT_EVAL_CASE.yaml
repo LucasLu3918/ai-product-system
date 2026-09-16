@@ -1,0 +1,13 @@
+version: 1
+id: null
+scenario_id: "000"
+description: null
+input:
+  prompt: null
+  context: {}
+rubric:
+  equals: {}
+  contains: {}
+  excludes: {}
+  set_equals: {}
+  nonempty: []
