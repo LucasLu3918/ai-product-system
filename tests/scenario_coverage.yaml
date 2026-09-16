@@ -70,10 +70,10 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "011"
     path: tests/scenarios/011-update-preflight.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/011-update-preflight.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/install_preflight_lifecycle.py
+      - tests/validate_repository.py
   - id: "012"
     path: tests/scenarios/012-documentation-impact-gate.md
     coverage: manual
@@ -275,10 +275,10 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "044"
     path: tests/scenarios/044-install-project-lifecycle.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/044-install-project-lifecycle.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/install_preflight_lifecycle.py
+      - tests/validate_repository.py
   - id: "045"
     path: tests/scenarios/045-quality-class-baseline.md
     coverage: manual
@@ -425,10 +425,10 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "069"
     path: tests/scenarios/069-cli-name-collision-nondestructive.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/069-cli-name-collision-nondestructive.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/install_preflight_lifecycle.py
+      - tests/validate_repository.py
   - id: "070"
     path: tests/scenarios/070-codex-managed-composition.md
     coverage: lifecycle
