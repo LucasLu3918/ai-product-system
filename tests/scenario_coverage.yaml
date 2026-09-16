@@ -34,10 +34,11 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "005"
     path: tests/scenarios/005-delivery-plan.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/005-delivery-plan.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/005-delivery-plan.yaml
+      - tests/agent_eval/results/005-delivery-plan.yaml
+      - scripts/agent_eval.py
   - id: "006"
     path: tests/scenarios/006-cost-analysis.md
     coverage: manual
@@ -46,10 +47,11 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "007"
     path: tests/scenarios/007-adaptive-ddd-clean-architecture.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/007-adaptive-ddd-clean-architecture.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/007-adaptive-ddd-clean-architecture.yaml
+      - tests/agent_eval/results/007-adaptive-ddd-clean-architecture.yaml
+      - scripts/agent_eval.py
   - id: "008"
     path: tests/scenarios/008-scoped-instruction-precedence.md
     coverage: manual
@@ -58,10 +60,11 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "009"
     path: tests/scenarios/009-capability-gap.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/009-capability-gap.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/009-capability-gap.yaml
+      - tests/agent_eval/results/009-capability-gap.yaml
+      - scripts/agent_eval.py
   - id: "010"
     path: tests/scenarios/010-adaptive-subagent-model-routing.md
     coverage: manual
@@ -76,16 +79,18 @@ scenarios:
       - tests/validate_repository.py
   - id: "012"
     path: tests/scenarios/012-documentation-impact-gate.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/012-documentation-impact-gate.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/012-documentation-impact-gate.yaml
+      - tests/agent_eval/results/012-documentation-impact-gate.yaml
+      - scripts/agent_eval.py
   - id: "013"
     path: tests/scenarios/013-reproducible-planning-package.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/013-reproducible-planning-package.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/013-reproducible-planning-package.yaml
+      - tests/agent_eval/results/013-reproducible-planning-package.yaml
+      - scripts/agent_eval.py
   - id: "014"
     path: tests/scenarios/014-critical-financial-security.md
     coverage: agent_eval
@@ -168,16 +173,18 @@ scenarios:
       - scripts/agent_eval.py
   - id: "026"
     path: tests/scenarios/026-deterministic-automation.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/026-deterministic-automation.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/026-deterministic-automation.yaml
+      - tests/agent_eval/results/026-deterministic-automation.yaml
+      - scripts/agent_eval.py
   - id: "027"
     path: tests/scenarios/027-documentation-audience-separation.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/027-documentation-audience-separation.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/027-documentation-audience-separation.yaml
+      - tests/agent_eval/results/027-documentation-audience-separation.yaml
+      - scripts/agent_eval.py
   - id: "028"
     path: tests/scenarios/028-complete-product-to-production.md
     coverage: manual
@@ -581,16 +588,18 @@ scenarios:
       - scripts/agent_eval.py
   - id: "092"
     path: tests/scenarios/092-core-change-impact-test-matrix.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/092-core-change-impact-test-matrix.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/092-core-change-impact-test-matrix.yaml
+      - tests/agent_eval/results/092-core-change-impact-test-matrix.yaml
+      - scripts/agent_eval.py
   - id: "093"
     path: tests/scenarios/093-core-change-scope-expansion-retests.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/093-core-change-scope-expansion-retests.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/093-core-change-scope-expansion-retests.yaml
+      - tests/agent_eval/results/093-core-change-scope-expansion-retests.yaml
+      - scripts/agent_eval.py
   - id: "094"
     path: tests/scenarios/094-new-skill-admission-reuse-first.md
     coverage: agent_eval
