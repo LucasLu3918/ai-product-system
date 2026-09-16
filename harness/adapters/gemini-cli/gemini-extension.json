@@ -1,0 +1,6 @@
+{
+  "name": "aips-global-harness",
+  "version": "0.8.0",
+  "description": "Minimal AI Product System global harness bootstrap",
+  "contextFileName": "GEMINI.md"
+}

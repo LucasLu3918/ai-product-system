@@ -1,0 +1,26 @@
+version: 1
+
+id: null
+runtime: null
+
+detection:
+  command: null
+
+integration:
+  strategy: null
+  automatic: false
+
+ownership:
+  resources: []
+
+bootstrap:
+  source: harness/BOOTSTRAP.md
+
+verification:
+  status: null
+
+uninstall:
+  reversible: true
+  preserves_user_content: true
+
+limitations: []

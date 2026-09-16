@@ -1,0 +1,35 @@
+version: 1
+
+harness:
+  active: true
+  version: null
+  bootstrap: null
+
+runtime:
+  id: unknown
+  detected: null
+  adapter_status: null # AUTOMATIC | MANUAL | NOT_DETECTED | CONFLICT | ERROR
+  native_instructions: []
+
+project:
+  detected: false
+  root: null
+  mode: EPHEMERAL # EPHEMERAL | ATTACHED
+  explicit: false
+
+instructions:
+  project: []
+  authoritative_docs: []
+
+knowledge:
+  available: false
+  index: null
+
+state:
+  persistent: false
+  path: null
+
+system:
+  root: null
+  version: null
+  commit: null

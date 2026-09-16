@@ -1,0 +1,28 @@
+version: 1
+
+installed_at: null
+
+system:
+  root: null
+  version: null
+  commit: null
+
+harness:
+  enabled: true
+  bootstrap: null
+
+owned_resources: []
+
+adapters: {}
+# runtime-id:
+#   status: AUTOMATIC
+#   strategy: ...
+#   resources: []
+
+preservation_policy:
+  user_agent_instructions: untouched
+  user_skills: untouched
+  project_agent_instructions: untouched
+  project_skills: untouched
+  project_source: untouched
+  project_ai_workspace: preserved
