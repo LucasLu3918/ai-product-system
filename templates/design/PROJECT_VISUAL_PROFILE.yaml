@@ -1,0 +1,71 @@
+version: 1
+status: DISCOVERED # DISCOVERED | APPROVED | STALE
+last_verified_commit: null
+
+direction:
+  archetype: null
+  status: inferred # inferred | approved
+  confidence: null # low | medium | high
+  principles: []
+
+sources:
+  brand_profile: null
+  visual_system: null
+  design_tokens: []
+  inferred_from_existing_ui: false
+
+typography:
+  families: []
+  scale: []
+  rules: []
+
+spacing:
+  scale: []
+  rules: []
+
+controls: {}
+# Example:
+# button:
+#   golden_component: src/components/Button.tsx
+#   variants:
+#     default:
+#       height: 40
+#       horizontal_padding: 16
+#       radius: 8
+
+icons:
+  rules: []
+
+state_rules:
+  geometry_must_remain_stable: true
+  rules: []
+
+representative_routes: []
+
+golden_components: {}
+# button:
+#   source: src/components/Button.tsx
+#   reason: canonical shared implementation
+
+exceptions: []
+# - target: hero-primary-cta
+#   rule: "larger than default button"
+#   reason: "primary marketing action"
+
+must_avoid:
+  - arbitrary_pixel_nudges_for_shared_layout
+  - unexplained_state_layout_shift
+  - duplicate_visual_rules_without_variant
+
+watch:
+  paths: []
+  signals:
+    - design_token_change
+    - shared_component_change
+    - global_typography_change
+    - brand_or_visual_direction_change
+
+evidence:
+  routes: []
+  screenshots: []
+  implementation_refs: []

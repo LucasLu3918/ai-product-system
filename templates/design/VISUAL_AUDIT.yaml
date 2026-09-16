@@ -1,0 +1,42 @@
+version: 1
+mode: V2 # V1 | V2
+status: in_progress # in_progress | pass | pass_with_comments | request_changes | blocked
+
+target:
+  routes: []
+  components: []
+
+baseline_source: null
+component_inventory: []
+
+findings: []
+# - id: VIS-001
+#   component: Button
+#   route: /tools
+#   symptom: "selected tag is taller than default state"
+#   classification: outlier
+#   valid_variant: false
+#   approved_exception: false
+#   root_cause:
+#     source: src/components/Tag.tsx
+#     style: null
+#     token: null
+#   fix: null
+#   status: open
+
+verification:
+  before: []
+  after: []
+  desktop: pending
+  tablet: not_applicable
+  mobile: pending
+  states:
+    default: pending
+    hover: pending
+    focus: pending
+    active: pending
+    selected: pending
+    disabled: pending
+
+profile_updated: false
+remaining_material_findings: []

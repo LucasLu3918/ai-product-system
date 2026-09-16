@@ -4,75 +4,238 @@ Use when an existing UI looks awkward, inconsistent, misaligned or visually unfi
 
 ## Defaults
 
-**Preserve Before Redesign** — keep the approved brand/creative direction unless the evidence shows the direction itself is the problem.
+**Preserve Before Redesign** — keep the approved brand/creative direction unless evidence shows the direction itself is the problem.
 
-**Consistency First** — when no special instruction exists, prefer consistent spacing, typography, geometry, component behavior and state treatment across the product.
+**Consistency First** — prefer consistent typography, spacing, geometry, component behavior and state treatment.
 
-## Trigger examples
+## Modes
 
-- “This page looks weird.”
-- “Please clean up inconsistent styling.”
-- buttons/tags/nav items look visually off;
-- text/icon baselines do not align;
-- controls touch container edges;
-- hover/active/focus states shift layout;
-- desktop/mobile implementations drift from the approved design.
+### V1 — Focused Repair
 
-## Polish loop
+Use when the user identifies a specific component/page/problem.
 
 ~~~text
-Load Brand / Visual / Creative Direction
-→ Run the current UI
-→ Capture/inspect rendered states
-→ Visual Implementation Audit
-→ Find shared root cause
-→ Fix Token / Shared Component first
-→ Fix page-specific exception only when justified
-→ Re-render
-→ Screenshot / Responsive / State verification
-→ Visual Quality Review
-→ repeat only for remaining material findings
+Target
+→ load visual baseline
+→ render/inspect
+→ map symptom to implementation
+→ root cause
+→ shared/local fix
+→ re-render
+→ verify
 ~~~
 
-## Audit checklist
+### V2 — Product Consistency Sweep
 
-Check applicable items:
+Use by default for requests such as:
 
-- alignment and optical centering;
-- typography size/weight/line-height;
-- vertical rhythm and whitespace;
-- control height and internal padding;
-- icon size/baseline/stroke consistency;
-- border/radius/shadow consistency;
-- container/edge breathing room;
-- active/hover/focus/disabled states;
-- responsive wrapping/overflow;
-- repeated-component consistency;
-- contrast/accessibility;
-- visual hierarchy.
+- “fix the weird parts of this project”;
+- “make the UI consistent”;
+- “clean up awkward buttons/tags/navigation”.
+
+~~~text
+Load existing Visual Knowledge/Profile
+→ check staleness
+→ discover representative routes/layout families
+→ run application
+→ capture rendered evidence
+→ build Component Inventory
+→ inspect DOM / computed style / tokens where available
+→ build or refresh UI Consistency Baseline
+→ detect visual outliers
+→ validate variant / semantic exception
+→ map material outlier to component/style/token
+→ classify root cause
+→ shared token/component fix first
+→ re-render
+→ before/after review
+→ responsive/state matrix
+→ remaining material findings?
+   ├─ yes → next bounded repair round
+   └─ no  → PASS
+→ update Project Visual Knowledge
+~~~
+
+Do not downgrade a whole-project consistency request into a few arbitrary CSS edits.
+
+## Input precedence
+
+~~~text
+Explicit user requirement
+→ Approved Brand System
+→ PROJECT_VISUAL_PROFILE / approved Visual System
+→ Existing design tokens
+→ Shared/Golden components
+→ Majority pattern in current UI
+→ professional default
+~~~
+
+Do not use generic taste when project evidence exists.
+
+## Component Inventory
+
+For V2, identify applicable repeated UI primitives and their variants, for example:
+
+- Button;
+- Tag / Chip / Badge;
+- Input / Select / Textarea;
+- Navigation item / Tab;
+- Icon button;
+- Card;
+- Heading/body text;
+- Modal/Popover;
+- form controls.
+
+Capture implementation references and, where practical, rendered/computed characteristics:
+
+- height/min-height;
+- padding;
+- font size/weight/line-height;
+- radius/border/shadow;
+- icon size/alignment;
+- layout alignment;
+- state geometry.
+
+Use deterministic inventory for repeatable CSS/token/value extraction when useful, then let design reasoning classify meaning.
+
+## UI Consistency Baseline
+
+If a canonical visual/design artifact exists, use it.
+
+Otherwise infer a draft baseline from:
+
+1. existing tokens;
+2. shared components;
+3. repeated majority patterns;
+4. professional defaults only for unresolved gaps.
+
+Do not ask the user for pixel values that can be safely inferred.
+
+Persist the reusable result in the project visual profile.
+
+## Visual Outlier Detection
+
+An outlier is a review candidate, not automatically a bug.
+
+~~~text
+Observed difference
+→ documented/semantic variant?
+   ├─ yes → valid
+   └─ no
+      → approved exception?
+         ├─ yes → valid
+         └─ no → potential finding
+~~~
+
+Examples of suspicious outliers:
+
+- isolated control height/radius/padding;
+- selected state changing overall geometry;
+- one tag family using a different baseline;
+- one navigation item touching a divider;
+- arbitrary offsets/transforms compensating for shared layout.
+
+## Root Cause Mapping
+
+A material visual finding should be traced, when tooling permits, to:
+
+- rendered symptom;
+- DOM/element;
+- component/source;
+- CSS rule/class;
+- computed style;
+- design token/variable;
+- inheritance/layout mechanism;
+- pseudo-element/state rule.
+
+Avoid solving a shared layout issue with a page-specific nudge.
 
 ## Shared root cause first
 
 Prefer:
+
 1. design token / CSS variable;
 2. shared component;
-3. component variant;
-4. page-specific adjustment only when the page is genuinely exceptional.
+3. defined component variant;
+4. page-specific adjustment only for a real exception.
 
-Avoid accumulating one-off pixel nudges, transforms or selector-specific overrides that merely hide a shared inconsistency.
+Avoid accumulating arbitrary pixel nudges, transforms or selector-specific patches.
+
+## State Geometry Stability
+
+Review applicable:
+
+- default;
+- hover;
+- focus;
+- active;
+- selected;
+- disabled.
+
+State changes should not unexpectedly shift width, height, padding, baseline or position.
+
+Intentional state geometry changes must be a defined variant/interaction behavior.
 
 ## Rendered evidence
 
-Do not declare visual polish complete from source inspection alone when the environment can be rendered.
+When the application can render, source-only review cannot PASS.
 
-Verify representative:
-- desktop;
+Use:
+
+- before evidence;
+- after evidence;
+- representative desktop;
 - mobile;
 - tablet when materially different;
-- default / hover / focus / active / disabled states when relevant.
+- relevant interaction states.
 
-Use screenshots or browser-rendered evidence. Compare against the approved visual system and user-provided references, not generic personal taste.
+If rendering is unavailable and visual correctness cannot be verified, use BLOCKED or REQUEST CHANGES rather than claiming success. Ask for the smallest missing runtime/screenshot evidence.
 
-## Escalate to redesign only when needed
+## Representative routes
 
-If fixing consistency cannot satisfy the user because the underlying visual direction is wrong, stop and return to Creative Direction / Calibration rather than silently redesigning.
+Do not blindly screenshot every route.
+
+For V2:
+
+1. discover routes/layout families;
+2. select representative pages for dashboard/list/detail/form/auth/settings/etc. as applicable;
+3. add directly affected pages;
+4. after shared fixes, smoke-check additional routes when useful.
+
+Persist representative routes for reuse.
+
+## Project Visual Knowledge
+
+Use `docs/design/PROJECT_VISUAL_PROFILE.yaml` as the canonical quick-load artifact when visual consistency knowledge is worth persisting.
+
+It may contain:
+
+- direction/archetype and confidence;
+- tokens/typography/spacing;
+- component variants;
+- Golden Components;
+- representative routes;
+- state rules;
+- valid exceptions;
+- must-avoid patterns;
+- verified commit/watch scope.
+
+Subjective style labels remain `inferred` until approved. Objective facts can be persisted directly.
+
+If an existing authoritative Visual System already contains equivalent information, prefer a pointer rather than duplication through `orchestration/PROJECT_KNOWLEDGE.md`.
+
+## Completion
+
+V2 cannot PASS until applicable:
+
+- representative routes inspected;
+- component inventory established;
+- material outliers classified;
+- variants/exceptions respected;
+- shared root causes fixed first;
+- rendered before/after evidence reviewed;
+- responsive/state stability verified;
+- no unexplained material visual finding remains;
+- visual knowledge/profile refreshed if affected.
+
+If consistency repair reveals the underlying direction itself is wrong, stop and return to Creative Direction / Calibration rather than silently redesigning.
