@@ -240,3 +240,18 @@ Use `orchestration/QUALITY_PLANNING.md` for complete products and material produ
 ## Local and production milestones
 
 A complete product normally reaches `LOCAL_COMPLETE` first. If production was not requested initially, ask whether to continue. If production was requested initially, continue into Production Enablement without a redundant confirmation. `PRODUCTION_VERIFIED` requires post-deploy verification.
+
+## Approval binding and protected operations
+
+Before a protected publication operation, resolve the active Approval Record and verify its canonical scope fingerprint against the current candidate.
+
+~~~text
+approved proposal/scope
+→ canonical fingerprint
+→ current candidate / operation
+→ deterministic verification
+   ├─ match → runtime may allow
+   └─ mismatch / missing → APPROVAL_STALE → stop
+~~~
+
+Do not infer machine-bound approval from vague context. Runtime guards are enforcement transport; architectural/security reasoning remains in orchestration/review.
