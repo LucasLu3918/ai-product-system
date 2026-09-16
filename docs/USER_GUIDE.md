@@ -830,3 +830,29 @@ aips isolation remove --project /path/to/project --id change-123
 ~~~
 
 Worktree 預設放在 AIPS 的 external config 目錄，不會在 Project source tree 裡建立額外資料夾。移除時如果發現未提交修改，AIPS 會停止清理並保留 workspace；clean worktree 移除後 branch 仍會保留，避免隱性刪除已提交成果。
+
+## v0.15 Canonical Project Identity 與 Resume Integrity
+
+AIPS 現在把「同一個 Repository」與「某一個 Worktree Workspace」分開識別：
+
+~~~text
+repository_id
+→ 同一 Git repository lineage 共用
+
+workspace_id
+→ 每個 active worktree 各自不同
+~~~
+
+查看目前解析：
+
+~~~bash
+aips identity --project /path/to/project
+~~~
+
+用途：
+
+- Project Intelligence / Run State 使用 workspace_id，避免不同 worktree 的狀態互相覆蓋；
+- Isolation writer ownership 使用 repository_id + Change Boundary，避免從另一個 worktree 建立第二個 writer；
+- Run checkpoint 會保存 workspace fingerprint，除了 HEAD 也包含 branch 與未提交產品修改；
+- AIPS 自己寫入的 `.ai/` checkpoint/state 不會被算成產品 dirty drift；
+- 舊版 EPHEMERAL run cache 會在安全且沒有 destination conflict 時 lazy migrate。
