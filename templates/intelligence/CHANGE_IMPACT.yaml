@@ -2,8 +2,18 @@ version: 1
 
 change:
   id: null
+  # Repository-relative file / directory / glob boundaries used by deterministic reconciliation.
   target: []
   summary: null
+
+baseline:
+  repository_id: null
+  workspace_id: null
+  git_head: null
+  branch: null
+  clean: null
+  dirty_paths: []
+  captured_at: null
 
 inputs: []
 outputs: []
@@ -24,3 +34,13 @@ documentation: []
 
 unknowns: []
 status: DRAFT # DRAFT | READY | BLOCKED
+
+reconciliation:
+  status: NOT_RUN # NOT_RUN | MATCHED | EXPANDED | BLOCKED
+  declared_targets: []
+  actual_files: []
+  unexpected_files: []
+  retests_required: false
+  scope_reapproval_required: false
+  reasons: []
+  reconciled_at: null
