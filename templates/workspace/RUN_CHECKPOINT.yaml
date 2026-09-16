@@ -1,0 +1,14 @@
+version: 1
+run_id: null
+protocol: null
+status: ACTIVE # ACTIVE | WAITING | BLOCKED | COMPLETE
+current_step: null
+completed_steps: []
+waiting_for: []
+resume_from: null
+evidence: []
+project:
+  root: null
+  mode: EPHEMERAL # EPHEMERAL | ATTACHED
+  revision: null
+updated_at: null
