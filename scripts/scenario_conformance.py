@@ -93,6 +93,14 @@ def analyze(registry_path: Path, scenario_dir: Path) -> dict[str, Any]:
                     non_scenario_evidence += 1
         if coverage in AUTOMATED and existing_evidence and non_scenario_evidence == 0:
             errors.append(f"scenario {sid} automated coverage cannot rely only on its scenario Markdown")
+        if coverage == "agent_eval":
+            refs = [str(item) for item in evidence]
+            case_refs = [ref for ref in refs if ref.startswith("tests/agent_eval/cases/")]
+            result_refs = [ref for ref in refs if ref.startswith("tests/agent_eval/results/")]
+            if not case_refs:
+                errors.append(f"scenario {sid} agent_eval coverage requires a recorded eval case")
+            if not result_refs:
+                errors.append(f"scenario {sid} agent_eval coverage requires a recorded eval result")
 
     missing = sorted(set(inventory) - set(registered))
     for sid in missing:
