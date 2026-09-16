@@ -160,8 +160,8 @@ for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"
         errors.append(f"PLANNING_PACKAGE.md missing: {phrase}")
 
 scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
-if len(scenarios) < 33:
-    errors.append(f"Expected at least 33 acceptance scenarios, found {len(scenarios)}")
+if len(scenarios) < 34:
+    errors.append(f"Expected at least 34 acceptance scenarios, found {len(scenarios)}")
 
 security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
 for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):
@@ -193,7 +193,7 @@ for rel, phrases in {
     "orchestration/BRAND_SYSTEM.md": ("Brand creation flow", "Brand package", "Future artifact routing", "Campaign override"),
     "orchestration/CAPABILITY_INCUBATION.md": ("Reuse Check", "Creation preference", "Progressive incubation", "Role promotion test"),
     "orchestration/DETERMINISTIC_AUTOMATION.md": ("Good candidates", "Tool lifetime", "Output contract", "Shell vs Python"),
-    "orchestration/PRODUCT_DELIVERY.md": ("Lifecycle", "Product Workspace", "Deployment Units, not forced repositories", "Production completion"),
+    "orchestration/PRODUCT_DELIVERY.md": ("Lifecycle", "Product Workspace", "Deployment Units, not forced repositories", "Deployment automation", "Production completion"),
     "orchestration/RELEASE_READINESS.md": ("Required evidence", "Status", "Candidate integrity", "Post-deploy"),
 }.items():
     text = (ROOT / rel).read_text(encoding="utf-8") if (ROOT / rel).exists() else ""
