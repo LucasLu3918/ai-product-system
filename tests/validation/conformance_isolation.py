@@ -32,8 +32,8 @@ if conformance_helper.exists():
             errors.append("Scenario conformance total/registered count must match scenario inventory")
         if cov.get("uncovered") != 0:
             errors.append("Released scenario conformance registry must have no uncovered entries")
-        if cov.get("manual") != 77 or cov.get("automated") != 43:
-            errors.append("v0.15 baseline must report manual=77 and automated=43")
+        if cov.get("manual") != 69 or cov.get("agent_eval") != 8 or cov.get("automated") != 56:
+            errors.append("v0.16 baseline must report manual=69, agent_eval=8 and automated=56")
 
     with tempfile.TemporaryDirectory() as tmp:
         temp = Path(tmp)
@@ -56,6 +56,45 @@ if conformance_helper.exists():
             errors.append("Conformance checker must fail when a Scenario has no registry entry")
 
 for n in range(106, 111):
+    matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
+    if len(matches) != 1:
+        errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")
+
+# v0.16 provider-neutral Agent Eval conformance
+agent_eval_helper = ROOT / "scripts/agent_eval.py"
+agent_eval_evidence = ROOT / "tests/evidence/agent_eval_framework.py"
+for required in (agent_eval_helper, agent_eval_evidence):
+    if not required.exists():
+        errors.append(f"Missing v0.16 Agent Eval artifact: {required.relative_to(ROOT)}")
+    else:
+        compiled = subprocess.run([sys.executable, "-m", "py_compile", str(required)], capture_output=True, text=True)
+        if compiled.returncode != 0:
+            errors.append(f"Agent Eval artifact syntax failed: {required.relative_to(ROOT)}: {compiled.stderr.strip()}")
+
+if agent_eval_evidence.exists():
+    framework = subprocess.run([sys.executable, str(agent_eval_evidence)], capture_output=True, text=True)
+    if framework.returncode != 0:
+        errors.append(f"Agent Eval framework evidence failed: {framework.stdout.strip()} {framework.stderr.strip()}")
+
+if agent_eval_helper.exists():
+    eval_check = subprocess.run([sys.executable, str(agent_eval_helper), "check", "--format", "json"], capture_output=True, text=True)
+    if eval_check.returncode != 0:
+        errors.append(f"Committed Agent Eval evidence failed: {eval_check.stdout.strip()} {eval_check.stderr.strip()}")
+    else:
+        eval_doc = json.loads(eval_check.stdout)
+        summary = eval_doc.get("summary") or {}
+        if summary.get("cases") != 8 or summary.get("results") != 8 or summary.get("passed") != 8 or summary.get("failed") != 0:
+            errors.append("v0.16 committed Agent Eval baseline must contain 8 passing case/result pairs")
+
+    cli_eval = subprocess.run(
+        ["bash", str(ROOT / "bin/aips"), "conformance", "agent-eval", "check", "--format", "json"],
+        capture_output=True,
+        text=True,
+    )
+    if cli_eval.returncode != 0:
+        errors.append(f"aips conformance agent-eval CLI failed: {cli_eval.stdout.strip()} {cli_eval.stderr.strip()}")
+
+for n in range(121, 126):
     matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
     if len(matches) != 1:
         errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")
