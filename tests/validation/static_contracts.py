@@ -122,7 +122,7 @@ required_files = [
     "orchestration/QUALITY_PLANNING.md", "orchestration/PROJECT_KNOWLEDGE.md",
     "orchestration/SECRET_HANDLING.md", "orchestration/CORE_CHANGE_TESTING.md",
     "orchestration/PROJECT_IDENTITY.md", "orchestration/PROJECT_INTELLIGENCE.md", "orchestration/CHANGE_IMPACT.md",
-    "orchestration/TURN_HARNESS.md", "orchestration/HARNESS_RESOLUTION.md",
+    "orchestration/TURN_HARNESS.md", "orchestration/HARNESS_RESOLUTION.md", "orchestration/CONFORMANCE.md", "orchestration/AGENT_EVAL.md",
     "harness/BOOTSTRAP.md", "harness/HARNESS_PROTOCOL.md", "harness/ADAPTER_CONTRACT.md",
     "harness/adapters/codex/AGENTS.md", "harness/adapters/claude-code/CLAUDE.md",
     "harness/adapters/gemini-cli/gemini-extension.json", "harness/adapters/gemini-cli/GEMINI.md",
