@@ -600,6 +600,7 @@ scenarios:
     path: tests/scenarios/099-git-publication-tool-guard.md
     coverage: deterministic
     evidence:
+      - tests/evidence/governance_command_guard.py
       - scripts/governance_guard.py
       - tests/validate_repository.py
   - id: "100"
