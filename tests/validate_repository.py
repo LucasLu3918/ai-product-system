@@ -41,6 +41,10 @@ yaml_files = [
     "orchestration/schemas/risk-profile.yaml",
     "orchestration/schemas/brand-profile.yaml",
     "templates/product/PRODUCT.yaml",
+    "templates/quality/QUALITY_PROFILE.yaml",
+    "templates/knowledge/KNOWLEDGE_INDEX.yaml",
+    "templates/design/PROJECT_VISUAL_PROFILE.yaml",
+    "templates/design/VISUAL_AUDIT.yaml",
     "templates/delivery/RELEASE_READINESS.yaml",
     "templates/delivery/DEPLOYMENT_UNIT.yaml",
     "templates/requirements/IMPLEMENTATION_GOAL.yaml",
@@ -101,6 +105,7 @@ required_files = [
     "orchestration/PRODUCT_DELIVERY.md", "orchestration/RELEASE_READINESS.md",
     "orchestration/REQUIREMENT_CLARIFICATION.md", "orchestration/EXTERNAL_CONTEXT_RESOLUTION.md",
     "orchestration/VISUAL_POLISH.md", "orchestration/MULTI_REVIEW.md",
+    "orchestration/QUALITY_PLANNING.md", "orchestration/PROJECT_KNOWLEDGE.md",
     "docs/ARCHITECTURE.md", "docs/MAINTENANCE.md", "docs/INSTALLATION.md", "docs/SECURITY_ASSURANCE.md",
     "docs/GETTING_STARTED.md", "docs/USER_GUIDE.md", "docs/DOCUMENTATION_MAP.md",
     "docs/ARCHITECTURE_OVERVIEW.md", "docs/assets/system-overview.svg",
@@ -110,6 +115,7 @@ required_files = [
     "templates/core-change-proposal.md", "templates/git-publish-proposal.md",
     "templates/capability-reuse-review.md",
     "templates/review/REVIEW_REPORT.md",
+    "templates/knowledge/KNOWLEDGE_TOPIC.md",
     "templates/creative/CREATIVE_BRIEF.md", "templates/creative/REFERENCE_BOARD.md",
     "templates/creative/VISUAL_REVIEW.md",
     "templates/brand/BRAND_INDEX.md", "templates/brand/BRAND_FOUNDATION.md",
@@ -158,7 +164,7 @@ for phrase in ("Update preflight", "Primary planning package", "Risk-proportiona
         errors.append(f"docs/ARCHITECTURE.md missing section: {phrase}")
 
 system = (ROOT / "SYSTEM.md").read_text(encoding="utf-8") if (ROOT / "SYSTEM.md").exists() else ""
-for phrase in ("System Update Preflight", "System Self-Improvement", "Core Change Approval Gate", "Git Publish Approval Gate", "Primary Planning Detection", "Security / Reliability Assurance", "Creative and Brand routing", "External context", "Visual implementation polish", "Multi-perspective review", "Deterministic automation", "End-to-end product delivery", "Documentation Impact Gate"):
+for phrase in ("System Update Preflight", "System Self-Improvement", "Core Change Approval Gate", "Git Publish Approval Gate", "Primary Planning Detection", "Security / Reliability Assurance", "Project knowledge", "Quality planning", "Creative and Brand routing", "External context", "Visual implementation polish", "Multi-perspective review", "Deterministic automation", "End-to-end product delivery", "Documentation Impact Gate"):
     if phrase not in system:
         errors.append(f"SYSTEM.md missing required behavior: {phrase}")
 
@@ -168,8 +174,8 @@ for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"
         errors.append(f"PLANNING_PACKAGE.md missing: {phrase}")
 
 scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
-if len(scenarios) < 44:
-    errors.append(f"Expected at least 44 acceptance scenarios, found {len(scenarios)}")
+if len(scenarios) < 56:
+    errors.append(f"Expected at least 56 acceptance scenarios, found {len(scenarios)}")
 
 security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
 for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):
@@ -207,6 +213,8 @@ for rel, phrases in {
     "orchestration/EXTERNAL_CONTEXT_RESOLUTION.md": ("Resolution order", "Authorization", "Fallback", "Source provenance"),
     "orchestration/VISUAL_POLISH.md": ("Preserve Before Redesign", "Consistency First", "Shared root cause first", "Rendered evidence"),
     "orchestration/MULTI_REVIEW.md": ("Reviewer resolution", "Bounded parallel review", "Consolidation", "Author fix loop", "Learning extraction"),
+    "orchestration/QUALITY_PLANNING.md": ("Quality classes", "Seven dimensions", "Targets and evidence", "Observability planning"),
+    "orchestration/PROJECT_KNOWLEDGE.md": ("Golden rule", "Knowledge types", "Staleness / invalidation", "Targeted refresh", "Promotion"),
 }.items():
     text = (ROOT / rel).read_text(encoding="utf-8") if (ROOT / rel).exists() else ""
     for phrase in phrases:
@@ -339,6 +347,45 @@ with tempfile.TemporaryDirectory() as tmp:
             reattach = subprocess.run(["bash", str(cli), "attach", str(project)], capture_output=True, text=True)
             if reattach.returncode != 0 or not (project / ".ai").is_dir():
                 errors.append(f"aips reattach lifecycle test failed: {reattach.stdout.strip()} {reattach.stderr.strip()}")
+
+
+quality_profile = load_yaml(ROOT / "templates/quality/QUALITY_PROFILE.yaml") or {}
+for key in ("quality_class", "priorities", "performance", "security", "usability", "reliability", "maintainability", "resource_cost", "delivery"):
+    if key not in quality_profile:
+        errors.append(f"QUALITY_PROFILE.yaml missing top-level key: {key}")
+
+knowledge_index = load_yaml(ROOT / "templates/knowledge/KNOWLEDGE_INDEX.yaml") or {}
+for key in ("status", "last_project_discovery", "topics", "authoritative_pointers"):
+    if key not in knowledge_index:
+        errors.append(f"KNOWLEDGE_INDEX.yaml missing top-level key: {key}")
+
+visual_profile = load_yaml(ROOT / "templates/design/PROJECT_VISUAL_PROFILE.yaml") or {}
+for key in ("status", "direction", "controls", "state_rules", "representative_routes", "golden_components", "exceptions", "watch"):
+    if key not in visual_profile:
+        errors.append(f"PROJECT_VISUAL_PROFILE.yaml missing top-level key: {key}")
+
+visual_audit = load_yaml(ROOT / "templates/design/VISUAL_AUDIT.yaml") or {}
+for key in ("mode", "status", "component_inventory", "findings", "verification", "remaining_material_findings"):
+    if key not in visual_audit:
+        errors.append(f"VISUAL_AUDIT.yaml missing top-level key: {key}")
+
+if product_manifest:
+    quality = product_manifest.get("quality") or {}
+    delivery = product_manifest.get("delivery") or {}
+    if "profile" not in quality or "class" not in quality:
+        errors.append("PRODUCT.yaml quality must reference profile and class")
+    if "status" not in delivery or "production_enablement_requested" not in delivery:
+        errors.append("PRODUCT.yaml delivery must track local/production milestone state")
+
+workspace_state = load_yaml(ROOT / "templates/workspace/STATE.yaml") or {}
+for key in ("quality", "knowledge", "visual", "delivery"):
+    if key not in workspace_state:
+        errors.append(f"STATE.yaml missing v0.7 top-level key: {key}")
+
+workspace_manifest = load_yaml(ROOT / "templates/workspace/MANIFEST.yaml") or {}
+for key in ("project_knowledge", "quality", "visual"):
+    if key not in workspace_manifest:
+        errors.append(f"MANIFEST.yaml missing v0.7 top-level key: {key}")
 
 for shell in ("bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh"):
     p = ROOT / shell
