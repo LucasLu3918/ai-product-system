@@ -1,0 +1,23 @@
+version: 1
+case_id: 026-deterministic-automation
+scenario_id: "026"
+case_fingerprint: sha256:f1b988e9a1f48e04717c4ab132042782f604a18c0529fdc8975be785b14a4578
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: DETERMINISTIC_PREPROCESSING
+  send_all_raw_output_to_model_first: false
+  helper_default_read_only: true
+  helper_default_least_privilege: true
+  summary_first: true
+  helper_lifetime_default: RUN_LOCAL
+  actions:
+    - use_existing_tool_or_small_helper
+    - produce_structured_summary
+    - retain_raw_evidence_location
+    - inspect_targeted_raw_evidence_only_when_needed
+  summary_format: JSON or YAML counts/findings plus a path to the retained raw test output.
+  summary: Use a small deterministic parser for counting and failure extraction, let the model read the compact structured result first, and keep the helper run-local unless repeated reuse justifies promotion.
