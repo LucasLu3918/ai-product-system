@@ -24,3 +24,4 @@
 22. **Plan Before Core Change** — large/core changes require an explicit scope/impact proposal and user approval before implementation.
 23. **Publish Transparently** — remote Git publication requires a changed-file list, logical change summary, validation evidence, atomic commit plan and explicit user approval.
 24. **Re-approve Material Drift** — if approved implementation or publication scope materially changes, stop and obtain a new approval.
+25. **Minimum Sufficient Reasoning** — deterministic, verifiable data-processing work should use existing tools or small code helpers before consuming model reasoning/context.

@@ -30,6 +30,8 @@ This file is the compact record of accepted design decisions. Use a new ADR only
 | Work routing | Intent-based Work Modes; greenfield/brownfield is project state |
 | Skills | Small, reusable, independently loadable leaf knowledge; skills have expertise but no governance authority |
 | Capability gaps | Reuse skill → new skill → new capability → new role; stop before guessing |
+| Deterministic automation | Prefer existing deterministic tools or simple Shell/Python helpers for repeatable rule-based processing; feed structured summaries to AI and expand raw evidence only when needed |
+| Automation lifetime | Promote helpers run-local → project → system only after reusable value is demonstrated |
 | Model selection | Privacy-aware adaptive routing using minimum sufficient intelligence |
 | Multi-agent model routing | Primary/subagents resolve models independently from business impact, complexity, risk and skill hints; use bounded context, escalation/de-escalation and minimum sufficient intelligence |
 | Dynamic facts | Verify changing prices, versions and limits at runtime |

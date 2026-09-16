@@ -18,6 +18,7 @@ User Request
 → Role + Skill Resolution
 → Execution Profile / bounded Subagents when useful
 → Model + Tool Routing
+→ Deterministic Automation when suitable
 → Execute
 → Independent Review
 → Artifact / Quality Gate
@@ -229,6 +230,14 @@ Reuse existing
 ```
 
 Search the current indexes first and record overlap. Permanent or high-authority additions require human approval.
+
+## Deterministic automation
+
+Before spending model reasoning on repeatable data processing, check `orchestration/DETERMINISTIC_AUTOMATION.md`.
+
+Prefer an existing tool or a small Shell/Python helper when the step is rule-based and verifiable. Return structured JSON/YAML summaries and keep large raw evidence outside model context until needed.
+
+Do not automate subjective/complex reasoning solely to reduce tokens.
 
 ## Agent/model routing
 

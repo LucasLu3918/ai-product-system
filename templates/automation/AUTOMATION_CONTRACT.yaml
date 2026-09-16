@@ -1,0 +1,25 @@
+id: null
+scope: run-local # run-local | project | system
+
+purpose: null
+
+input:
+  paths: []
+  format: null
+
+output:
+  format: json
+  path: null
+  raw_evidence: null
+
+properties:
+  deterministic: true
+  read_only: true
+  contains_secrets: false
+
+validation:
+  command: null
+
+promotion:
+  reusable: false
+  evidence: []

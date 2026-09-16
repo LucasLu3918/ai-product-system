@@ -25,8 +25,8 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 19. Gate 1: wait for human Planning Package approval.
 20. After Gate 1, derive Initial Implementation Items + Recommended Implementation Flow.
 21. Gate 2: wait for explicit human implementation approval.
-22. Select eligible model/tools using minimum sufficient intelligence.
-23. Execute inside the approved intent/change boundary.
+22. Select eligible model/tools using minimum sufficient intelligence; route deterministic data-processing steps to existing tools or small helpers before model reasoning.
+23. Execute deterministic helpers first where suitable, pass only structured results/evidence references back to the agent, then execute reasoning-heavy work inside the approved boundary.
 24. Expand context, security review depth or model tier only when documented evidence shows a gap.
 25. Run independent review with an independently resolved reviewer tier where required.
 26. For SAL 3–4 affected work, persist Security Review evidence and run the Security Release Gate.
@@ -169,3 +169,10 @@ Do not create artifact-specific roles or style-specific skills by default. Style
 ## Capability incubation
 
 Before creating or materially expanding a Role, Capability or Skill, use `orchestration/CAPABILITY_INCUBATION.md`. Search indexes first, compare overlap, prefer reuse/extension, and promote to a new Role only after repeated evidence of distinct responsibility, authority and review obligation.
+
+
+## Deterministic automation
+
+Use `orchestration/DETERMINISTIC_AUTOMATION.md`.
+
+Prefer deterministic code for repeatable parsing, filtering, counting, validation and transformation. Keep helpers scoped to run-local/project/system based on demonstrated reuse. Structured output should be read before raw evidence.
