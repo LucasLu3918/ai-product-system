@@ -1,0 +1,76 @@
+# Core Change Testing
+
+Use for every Large/Core Change and whenever scope/risk suggests a fixed smoke suite is insufficient.
+
+## Principle
+
+Required testing is derived from the final Change Boundary and actual affected interfaces, not from a generic minimum list.
+
+A green subset does not prove a core change is safe when an affected boundary has no evidence.
+
+## Impact-derived Test Matrix
+
+Before implementation, create or update templates/review/CORE_CHANGE_TEST_MATRIX.yaml.
+
+Assess each materially affected boundary against applicable evidence:
+
+- static / lint / type checks;
+- unit tests;
+- integration tests;
+- public/internal contract tests;
+- end-to-end / smoke tests;
+- security tests and secret-leakage checks;
+- migration / rollback / recovery tests;
+- concurrency / idempotency / replay tests;
+- CLI / Harness lifecycle tests;
+- documentation / schema / generated-artifact validation.
+
+N/A requires a concrete reason.
+
+## Recompute rule
+
+If implementation expands the Change Boundary or reveals new consumers/contracts:
+
+~~~text
+scope expands
+→ recompute test matrix
+→ execute newly applicable tests
+→ re-review affected evidence
+~~~
+
+Do not keep the original smaller matrix merely because it is already green.
+
+## Strict completion rule
+
+A Large/Core Change is not complete when:
+
+- an applicable required test is failing;
+- an affected boundary has no evidence and no justified N/A;
+- tests were disabled/removed merely to obtain green CI;
+- actual diff materially exceeds the tested Change Boundary;
+- required security/secret handling evidence is missing.
+
+## Evidence
+
+Prefer deterministic evidence and exact commands/results.
+
+For system/Harness/CLI changes, include executable lifecycle tests rather than documentation-only validation.
+
+For API/contract/data changes, include producer/consumer compatibility where applicable.
+
+For schema/persistence changes, include migration and recovery/rollback evidence where applicable.
+
+For security/credential changes, include secret leakage/redaction and relevant negative-path tests.
+
+## Review
+
+Multi-Perspective Review compares:
+
+~~~text
+Final Change Boundary
+↔ Test Matrix
+↔ Actual Diff
+↔ Test / Security Evidence
+~~~
+
+Material mismatch requires additional testing or explicit scope correction before PASS.

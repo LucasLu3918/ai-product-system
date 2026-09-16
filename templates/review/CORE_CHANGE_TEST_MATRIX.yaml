@@ -1,0 +1,44 @@
+version: 1
+
+change:
+  id: null
+  summary: null
+  boundary: []
+
+matrix: []
+# - boundary: api/orders
+#   reason: public response contract changed
+#   checks:
+#     static_lint:
+#       applicable: true
+#       evidence: null
+#     unit:
+#       applicable: true
+#       evidence: null
+#     integration:
+#       applicable: true
+#       evidence: null
+#     contract:
+#       applicable: true
+#       evidence: null
+#     e2e:
+#       applicable: false
+#       na_reason: isolated contract verified through integration + consumer tests
+#     security:
+#       applicable: false
+#       na_reason: no security boundary affected
+#     migration_recovery:
+#       applicable: false
+#       na_reason: no persistence/schema change
+#     cli_harness:
+#       applicable: false
+#       na_reason: no CLI/Harness change
+#     docs_schema:
+#       applicable: true
+#       evidence: null
+
+scope_recomputed_after_expansion: false
+actual_diff_reconciled: false
+
+blockers: []
+status: DRAFT
