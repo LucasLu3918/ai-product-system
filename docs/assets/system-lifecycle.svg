@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="520" viewBox="0 0 1500 520">
+<rect width="1500" height="520" fill="#f7f7f5"/>
+<style>
+.title{font:700 32px system-ui,-apple-system,sans-serif;fill:#171717}
+.sub{font:400 15px system-ui,-apple-system,sans-serif;fill:#666}
+.h{font:700 17px system-ui,-apple-system,sans-serif;fill:#171717}
+.t{font:400 13px system-ui,-apple-system,sans-serif;fill:#444}
+.box{fill:#fff;stroke:#d8d8d3;stroke-width:2}
+.line{stroke:#a7a7a0;stroke-width:2;fill:none;marker-end:url(#a)}
+</style>
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#a7a7a0"/></marker></defs>
+<text x="60" y="60" class="title">安裝與專案生命週期（Installation &amp; Project Lifecycle）</text>
+<text x="60" y="90" class="sub">System lifecycle 與 Project lifecycle 分離；Detach / Uninstall 預設保留可恢復資料</text>
+
+<rect x="60" y="145" width="180" height="105" rx="16" class="box"/>
+<text x="88" y="184" class="h">① Clone</text><text x="88" y="213" class="t">Git Repository</text>
+<rect x="285" y="145" width="180" height="105" rx="16" class="box"/>
+<text x="313" y="184" class="h">② Install</text><text x="313" y="213" class="t">bootstrap.sh / aips install</text>
+<rect x="510" y="145" width="180" height="105" rx="16" class="box"/>
+<text x="538" y="184" class="h">③ Attach</text><text x="538" y="213" class="t">aips attach project</text>
+<rect x="735" y="145" width="180" height="105" rx="16" class="box"/>
+<text x="763" y="184" class="h">④ Use / Preflight</text><text x="763" y="213" class="t">status · preflight · work</text>
+<rect x="960" y="145" width="180" height="105" rx="16" class="box"/>
+<text x="988" y="184" class="h">⑤ Detach</text><text x="988" y="213" class="t">preserve .ai archive</text>
+<rect x="1185" y="145" width="220" height="105" rx="16" class="box"/>
+<text x="1213" y="184" class="h">⑥ Uninstall</text><text x="1213" y="213" class="t">CLI/config · optional venv</text>
+<path d="M240 198 L280 198" class="line"/><path d="M465 198 L505 198" class="line"/>
+<path d="M690 198 L730 198" class="line"/><path d="M915 198 L955 198" class="line"/>
+<path d="M1140 198 L1180 198" class="line"/>
+
+<rect x="510" y="325" width="405" height="105" rx="16" class="box"/>
+<text x="540" y="364" class="h">Project Workspace 保護</text>
+<text x="540" y="393" class="t">Detach: .ai → .ai.detached-timestamp / 可手動恢復</text>
+<rect x="960" y="325" width="445" height="105" rx="16" class="box"/>
+<text x="990" y="364" class="h">Complete Local Removal</text>
+<text x="990" y="393" class="t">Uninstall → 確認資料 → 使用者明確刪除 System Repo</text>
+</svg>

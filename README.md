@@ -13,11 +13,13 @@ cd ai-product-system
 aips doctor
 ~~~
 
-初始化專案：
+連接專案（Attach Project）：
 
 ~~~bash
-aips init /path/to/project
+aips attach /path/to/project
 ~~~
+
+舊的 aips init <project> 仍保留相容性。
 
 每次要修改專案前，先執行系統更新預檢（System Update Preflight）：
 
@@ -51,7 +53,7 @@ aips preflight /path/to/project
 
 1. [快速上手](docs/GETTING_STARTED.md)
 2. [完整使用指南](docs/USER_GUIDE.md)
-3. [安裝、更新與解除安裝](docs/INSTALLATION.md)
+3. [安裝與生命週期](docs/INSTALLATION.md)
 4. [系統架構總覽](docs/ARCHITECTURE_OVERVIEW.md)
 
 ### AI Agent

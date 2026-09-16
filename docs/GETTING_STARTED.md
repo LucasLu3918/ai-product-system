@@ -2,9 +2,9 @@
 
 這份文件給第一次使用 AI Product System 的人。
 
-## 1. 安裝
+## 1. 安裝系統（Install）
 
-完成 Git、Python 3 與 GitHub CLI（`gh`）設定後：
+完成 Git、Python 3 與 GitHub CLI（gh）設定後：
 
 ~~~bash
 mkdir -p ~/Developer
@@ -21,13 +21,15 @@ aips doctor
 aips version
 ~~~
 
-## 2. 初始化你的專案
+## 2. 連接專案（Attach Project）
 
 ~~~bash
-aips init ~/Developer/projects/my-project
+aips attach ~/Developer/projects/my-project
 ~~~
 
-系統會建立專案狀態資料夾：
+舊指令 aips init <project> 仍可使用。
+
+系統會建立：
 
 ~~~text
 .ai/
@@ -45,11 +47,17 @@ aips init ~/Developer/projects/my-project
 aips preflight ~/Developer/projects/my-project
 ~~~
 
-它只會安全更新 AI Product System，不會擅自 `git pull` 你的產品專案。
+它只會安全更新 AI Product System，不會擅自 git pull 你的產品專案。
 
-## 4. 開始交給 AI
+## 4. 查看狀態
 
-範例：
+~~~bash
+aips status ~/Developer/projects/my-project
+~~~
+
+可確認 System version、CLI、專案是否已 Attach，以及 Workspace 位置。
+
+## 5. 開始交給 AI
 
 ~~~text
 使用 ai-product-system 處理目前專案。
@@ -61,38 +69,46 @@ Target Project:
 ~/Developer/projects/my-project
 
 先閱讀 AGENTS.md，再依 SYSTEM.md 路由。
+如果需求還不夠明確，請先逐步引導我整理成可實作目標。
 如果有更適合的做法、重大風險或 Blocking Unknown，
 請先提出建議，不要直接實作。
 ~~~
 
-## 5. 常見使用方式
+## 6. 解除專案連接（Detach）
 
-### 小型程式修改
+~~~bash
+aips detach ~/Developer/projects/my-project
+~~~
 
-直接說需求。系統會使用工程修改（Engineering Change）流程。
+它不會刪除產品程式碼，也不會永久刪除 AI Workspace。
 
-### 新產品
+原本 .ai/ 會安全封存成：
 
-系統會先建立可重現規劃包（Reproducible Planning Package），先讓你審核規劃，再詢問是否進入實作。
+~~~text
+.ai.detached-YYYYMMDD-HHMMSS/
+~~~
 
-### 視覺設計
+CLI 會顯示如何恢復。
 
-你可以提供 Logo、商品照片、參考圖片、喜歡的網站、品牌規範或文字想法。系統會先做創意校準（Creative Calibration），再進入正式設計。
+## 7. 解除安裝系統（Uninstall）
 
-### 建立品牌
+~~~bash
+cd ~/Developer/ai-product-system
+./scripts/uninstall.sh
+~~~
 
-系統會從品牌目的、受眾、定位、價值、視覺與語調開始，不會只先做 Logo。完成後會保存成品牌系統（Brand System），未來其他作品可直接沿用。
+或：
 
-### 大量固定資料處理
+~~~bash
+aips uninstall
+~~~
 
-若只是固定規則的掃描、統計、轉換或驗證，系統會優先用 Shell 或簡單程式產生結構化結果，再由 AI 接續判斷，避免浪費 Token 解析原始資料。
+若連 System 的 Python Virtual Environment 一起移除：
 
-## 6. 不知道怎麼描述也沒關係
+~~~bash
+./scripts/uninstall.sh --remove-venv
+~~~
 
-你可以只說：
+Repository 與產品專案都會保留。
 
-> 我想讓網站看起來比較高級、簡約，但現在 AI 做出來不像我想要的。
-
-系統應先提供不同方向、參考與差異，引導你逐步校準，而不是要求你一次提供完整專業規格。
-
-下一步：[完整使用指南](USER_GUIDE.md)
+詳細生命週期請看：[安裝與生命週期](INSTALLATION.md)

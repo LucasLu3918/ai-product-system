@@ -7,7 +7,7 @@ AI Product System 將人類使用文件與 Agent 執行文件分開，避免單�
 | `README.md` | Human | 第一入口 |
 | `docs/GETTING_STARTED.md` | Human | 5 分鐘快速上手 |
 | `docs/USER_GUIDE.md` | Human | 完整使用方式 |
-| `docs/INSTALLATION.md` | Human | 安裝、更新、解除安裝 |
+| `docs/INSTALLATION.md` | Human | Install / Attach / Detach / Uninstall 完整生命週期 |
 | `docs/ARCHITECTURE_OVERVIEW.md` | Human | 系統架構圖、完整產品交付流程與簡介 |
 | `AGENTS.md` | Agent | 最小 Bootloader |
 | `SYSTEM.md` | Agent | Routing |

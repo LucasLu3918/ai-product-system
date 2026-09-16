@@ -33,3 +33,10 @@
 - Staging 是正式產品的預設中繼環境。
 - Release Readiness 集中判斷 Production 技術條件。
 - Production Done 必須包含部署後驗證與 Recovery 能力。
+
+
+## 安裝與專案生命週期
+
+![安裝與專案生命週期](assets/system-lifecycle.svg)
+
+System Install 與 Project Attach 是不同層級。解除安裝 System 不會刪除產品；Detach Project 會保存可恢復的 AI Workspace。
