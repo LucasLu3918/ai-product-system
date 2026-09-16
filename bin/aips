@@ -34,13 +34,18 @@ AI Product System CLI
 
 Usage:
   aips install
-  aips uninstall [--remove-venv]
+  aips uninstall [--remove-venv] [--remove-cache]
 
   aips harness install
   aips harness uninstall
   aips harness status
   aips harness doctor
   aips harness resolve [--runtime <id>] [--cwd <path>] [--project <path>] [--format yaml|json]
+
+  aips intelligence bootstrap [--project <path>]
+  aips intelligence status [--project <path>]
+  aips intelligence context --runtime <id> [--project <path>] [--prompt <text>]
+  aips intelligence render [--project <path>]
 
   aips attach <project-path>
   aips detach <project-path>
@@ -58,8 +63,8 @@ Install enables the Global Harness for safely supported runtimes.
 Uninstall removes only AIPS-owned runtime integrations and preserves user/project instructions and skills.
 
 Project modes:
-  EPHEMERAL  AIPS may guide work, but no .ai/ workspace is created automatically.
-  ATTACHED   created explicitly with 'aips attach'; persistent AIPS project state is enabled.
+  EPHEMERAL  no project-local .ai/ is created; reusable Intelligence may live in AIPS external cache.
+  ATTACHED   created explicitly with 'aips attach'; project-local persistent AIPS state is enabled.
 EOF
 }
 
@@ -104,13 +109,14 @@ adapter_strategy_value() {
 }
 
 write_adapter_state() {
-  local id="$1" status="$2" strategy="$3" resource="${4:-}"
+  local id="$1" status="$2" strategy="$3" resource="${4:-}" capability="${5:-MANUAL}"
   mkdir -p "$ADAPTER_STATE_HOME"
   cat > "$(adapter_state_file "$id")" <<EOF
 id: "$id"
 status: "$status"
 strategy: "$strategy"
 resource: "$resource"
+capability: "$capability"
 updated_at: "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 EOF
 }
@@ -120,6 +126,7 @@ write_ownership_manifest() {
   local codex_status claude_status gemini_status
   local codex_strategy claude_strategy gemini_strategy
   local codex_resource claude_resource gemini_resource
+  local codex_capability claude_capability gemini_capability
 
   codex_status="$(adapter_status_value codex 2>/dev/null || echo NOT_DETECTED)"
   claude_status="$(adapter_status_value claude-code 2>/dev/null || echo NOT_DETECTED)"
@@ -130,6 +137,9 @@ write_ownership_manifest() {
   codex_resource="$(adapter_resource_value codex 2>/dev/null || true)"
   claude_resource="$(adapter_resource_value claude-code 2>/dev/null || true)"
   gemini_resource="$(adapter_resource_value gemini-cli 2>/dev/null || true)"
+  codex_capability="$(adapter_state_value codex capability 2>/dev/null || echo MANUAL)"
+  claude_capability="$(adapter_state_value claude-code capability 2>/dev/null || echo MANUAL)"
+  gemini_capability="$(adapter_state_value gemini-cli capability 2>/dev/null || echo MANUAL)"
 
   {
     cat <<EOF
@@ -157,19 +167,19 @@ EOF
 
     if [ "$codex_status" = "AUTOMATIC" ] && [ -n "$codex_resource" ]; then
       cat <<EOF
-  - type: runtime_bootstrap
+  - type: runtime_managed_block
     runtime: codex
     path: "$codex_resource"
-    snapshot: "$OWNED_HOME/codex.bootstrap"
+    snapshot: "$OWNED_HOME/codex.block"
 EOF
     fi
 
     if [ "$claude_status" = "AUTOMATIC" ] && [ -n "$claude_resource" ]; then
       cat <<EOF
-  - type: runtime_bootstrap
+  - type: runtime_composed_resources
     runtime: claude-code
-    path: "$claude_resource"
-    snapshot: "$OWNED_HOME/claude-code.bootstrap"
+    resource: "$claude_resource"
+    snapshot: "$OWNED_HOME/claude-code.block"
 EOF
     fi
 
@@ -186,14 +196,17 @@ EOF
 adapters:
   codex:
     status: "$codex_status"
+    capability: "$codex_capability"
     strategy: "$codex_strategy"
     resource: "$codex_resource"
   claude-code:
     status: "$claude_status"
+    capability: "$claude_capability"
     strategy: "$claude_strategy"
     resource: "$claude_resource"
   gemini-cli:
     status: "$gemini_status"
+    capability: "$gemini_capability"
     strategy: "$gemini_strategy"
     resource: "$gemini_resource"
 
@@ -208,72 +221,80 @@ EOF
   } > "$OWNERSHIP_MANIFEST"
 }
 
-install_owned_instruction_file() {
-  local id="$1" command_name="$2" source="$3" target="$4" strategy="$5"
-  local snapshot="$OWNED_HOME/$id.bootstrap"
-
-  if ! command -v "$command_name" >/dev/null 2>&1; then
-    write_adapter_state "$id" "NOT_DETECTED" "$strategy" ""
-    return 0
-  fi
-
-  mkdir -p "$OWNED_HOME"
-
-  if [ -e "$target" ]; then
-    if [ -f "$snapshot" ] && cmp -s "$target" "$snapshot"; then
-      cp "$source" "$target"
-      cp "$source" "$snapshot"
-      write_adapter_state "$id" "AUTOMATIC" "$strategy" "$target"
-      return 0
-    fi
-    write_adapter_state "$id" "MANUAL" "$strategy" "$target"
-    warn "$id detected, but existing user-owned instruction file was preserved: $target"
-    return 0
-  fi
-
-  mkdir -p "$(dirname "$target")"
-  cp "$source" "$target"
-  cp "$source" "$snapshot"
-  write_adapter_state "$id" "AUTOMATIC" "$strategy" "$target"
-  say "Harness adapter installed: $id -> $target"
-}
-
 install_codex_adapter() {
   local codex_home="${CODEX_HOME:-$HOME/.codex}"
-  install_owned_instruction_file     "codex" "codex"     "$SYSTEM_DIR/harness/adapters/codex/AGENTS.md"     "$codex_home/AGENTS.md"     "global_instruction_file_if_absent"
+  local target="$codex_home/AGENTS.md" py
+  py="$(python_bin)"
+  if ! command -v codex >/dev/null 2>&1; then
+    write_adapter_state "codex" "NOT_DETECTED" "managed_global_instruction_block" "" "UNSUPPORTED"
+    return 0
+  fi
+  if "$py" "$SYSTEM_DIR/scripts/manage_runtime_adapter.py" install-block       --target "$target"       --source "$SYSTEM_DIR/harness/adapters/codex/AGENTS.md"       --snapshot "$OWNED_HOME/codex.block" >/dev/null; then
+    write_adapter_state "codex" "AUTOMATIC" "managed_global_instruction_block" "$target" "CONTEXT_ALWAYS"
+    say "Harness adapter composed: codex capability=CONTEXT_ALWAYS -> $target"
+  else
+    write_adapter_state "codex" "CONFLICT" "managed_global_instruction_block" "$target" "MANUAL"
+    warn "Codex AIPS managed block could not be updated safely; existing content was preserved."
+  fi
 }
 
 install_claude_adapter() {
-  install_owned_instruction_file     "claude-code" "claude"     "$SYSTEM_DIR/harness/adapters/claude-code/CLAUDE.md"     "$HOME/.claude/CLAUDE.md"     "user_memory_file_if_absent"
+  local target="$HOME/.claude/CLAUDE.md"
+  local settings="$HOME/.claude/settings.json"
+  local py hook_cmd memory_ok="false" hook_ok="false"
+  py="$(python_bin)"
+  if ! command -v claude >/dev/null 2>&1; then
+    write_adapter_state "claude-code" "NOT_DETECTED" "managed_memory_plus_prompt_hook" "" "UNSUPPORTED"
+    return 0
+  fi
+
+  if "$py" "$SYSTEM_DIR/scripts/manage_runtime_adapter.py" install-block       --target "$target"       --source "$SYSTEM_DIR/harness/adapters/claude-code/CLAUDE.md"       --snapshot "$OWNED_HOME/claude-code.block" >/dev/null; then
+    memory_ok="true"
+  fi
+
+  hook_cmd="AIPS_MANAGED_HOOK=1 AIPS_BIN='$SYSTEM_DIR/bin/aips' '$py' '$SYSTEM_DIR/scripts/turn_context_hook.py' --runtime claude-code"
+  if "$py" "$SYSTEM_DIR/scripts/manage_runtime_adapter.py" install-claude-hook       --settings "$settings" --command "$hook_cmd" >/dev/null; then
+    hook_ok="true"
+  fi
+
+  if [ "$hook_ok" = "true" ]; then
+    write_adapter_state "claude-code" "AUTOMATIC" "managed_memory_plus_prompt_hook" "$target|$settings" "TURN_NATIVE"
+    say "Harness adapter composed: claude-code capability=TURN_NATIVE"
+  elif [ "$memory_ok" = "true" ]; then
+    write_adapter_state "claude-code" "AUTOMATIC" "managed_memory_block" "$target" "CONTEXT_ALWAYS"
+    warn "Claude per-turn hook could not be installed safely; using CONTEXT_ALWAYS fallback."
+  else
+    write_adapter_state "claude-code" "CONFLICT" "managed_memory_plus_prompt_hook" "$target|$settings" "MANUAL"
+    warn "Claude AIPS integration could not be installed safely."
+  fi
 }
 
 install_gemini_adapter() {
   local id="gemini-cli"
   local source="$SYSTEM_DIR/harness/adapters/gemini-cli"
   if ! command -v gemini >/dev/null 2>&1; then
-    write_adapter_state "$id" "NOT_DETECTED" "official_extension_link" ""
+    write_adapter_state "$id" "NOT_DETECTED" "official_extension_before_agent" "" "UNSUPPORTED"
     return 0
   fi
 
   local current
   current="$(adapter_status_value "$id" 2>/dev/null || true)"
-
   if gemini extensions list 2>/dev/null | grep -q "aips-global-harness"; then
     if [ "$current" = "AUTOMATIC" ]; then
-      write_adapter_state "$id" "AUTOMATIC" "official_extension_link" "aips-global-harness"
+      write_adapter_state "$id" "AUTOMATIC" "official_extension_before_agent" "aips-global-harness" "TURN_NATIVE"
       return 0
     fi
-    write_adapter_state "$id" "CONFLICT" "official_extension_link" "aips-global-harness"
+    write_adapter_state "$id" "CONFLICT" "official_extension_before_agent" "aips-global-harness" "MANUAL"
     warn "Gemini extension name already exists and is not recorded as AIPS-owned; leaving it untouched."
     return 0
   fi
 
   if gemini extensions link "$source" >/dev/null 2>&1; then
-    write_adapter_state "$id" "AUTOMATIC" "official_extension_link" "aips-global-harness"
-    say "Harness adapter installed: gemini-cli extension aips-global-harness"
+    write_adapter_state "$id" "AUTOMATIC" "official_extension_before_agent" "aips-global-harness" "TURN_NATIVE"
+    say "Harness adapter installed: gemini-cli capability=TURN_NATIVE"
   else
-    write_adapter_state "$id" "ERROR" "official_extension_link" ""
-    warn "Gemini CLI detected but AIPS extension linking failed; adapter remains unavailable."
+    write_adapter_state "$id" "ERROR" "official_extension_before_agent" "" "MANUAL"
+    warn "Gemini CLI detected but AIPS extension linking failed."
   fi
 }
 
@@ -332,25 +353,48 @@ uninstall_gemini_adapter() {
 }
 
 harness_uninstall() {
-  local codex_target claude_target failed="false"
+  local failed="false" py
+  py="$(python_bin)"
+
+  local codex_target
   codex_target="$(adapter_resource_value codex 2>/dev/null || true)"
-  claude_target="$(adapter_resource_value claude-code 2>/dev/null || true)"
-
-  [ -n "$codex_target" ] && remove_owned_instruction_file "codex" "$codex_target"
-  [ -n "$claude_target" ] && remove_owned_instruction_file "claude-code" "$claude_target"
-
-  if ! uninstall_gemini_adapter; then
-    failed="true"
+  if [ -n "$codex_target" ]; then
+    if ! "$py" "$SYSTEM_DIR/scripts/manage_runtime_adapter.py" uninstall-block         --target "$codex_target" --snapshot "$OWNED_HOME/codex.block" >/dev/null; then
+      warn "Codex managed block changed; preserved."
+      failed="true"
+    fi
   fi
 
+  local claude_resource claude_target claude_settings
+  claude_resource="$(adapter_resource_value claude-code 2>/dev/null || true)"
+  claude_target="${claude_resource%%|*}"
+  claude_settings="${claude_resource#*|}"
+  [ "$claude_settings" = "$claude_resource" ] && claude_settings="$HOME/.claude/settings.json"
+
+  if [ -n "$claude_target" ]; then
+    if ! "$py" "$SYSTEM_DIR/scripts/manage_runtime_adapter.py" uninstall-block         --target "$claude_target" --snapshot "$OWNED_HOME/claude-code.block" >/dev/null; then
+      warn "Claude managed memory block changed; preserved."
+      failed="true"
+    fi
+  fi
+
+  if [ -e "$claude_settings" ]; then
+    if ! "$py" "$SYSTEM_DIR/scripts/manage_runtime_adapter.py" uninstall-claude-hook         --settings "$claude_settings" >/dev/null; then
+      warn "Claude AIPS hook could not be removed safely."
+      failed="true"
+    fi
+  fi
+
+  if ! uninstall_gemini_adapter; then failed="true"; fi
+
   if [ "$failed" = "true" ]; then
-    warn "Harness uninstall is incomplete. AIPS ownership state was preserved at: $HARNESS_HOME"
+    warn "Harness uninstall is incomplete. Ownership state was preserved at: $HARNESS_HOME"
     return 1
   fi
 
   rm -rf "$HARNESS_HOME"
   say "AIPS Global Harness removed."
-  say "User/project Agent instructions, Skills, source and project .ai workspaces were preserved."
+  say "User/project Agent instructions, Skills, source and Project Intelligence were preserved."
 }
 
 harness_status() {
@@ -359,15 +403,16 @@ harness_status() {
   say "Bootstrap: $SYSTEM_DIR/harness/BOOTSTRAP.md"
   local id
   for id in codex claude-code gemini-cli; do
-    local state status strategy resource
+    local state status strategy resource capability
     state="$(adapter_state_file "$id")"
     if [ -f "$state" ]; then
-      status="$(awk -F': ' '/^status:/ {gsub(/"/,"",$2); print $2; exit}' "$state")"
-      strategy="$(awk -F': ' '/^strategy:/ {gsub(/"/,"",$2); print $2; exit}' "$state")"
-      resource="$(awk -F': ' '/^resource:/ {$1=""; sub(/^:?[[:space:]]*/,""); gsub(/"/,""); print; exit}' "$state")"
-      say "$id: $status ($strategy)${resource:+ -> $resource}"
+      status="$(adapter_state_value "$id" status 2>/dev/null || echo UNKNOWN)"
+      strategy="$(adapter_state_value "$id" strategy 2>/dev/null || true)"
+      resource="$(adapter_state_value "$id" resource 2>/dev/null || true)"
+      capability="$(adapter_state_value "$id" capability 2>/dev/null || echo MANUAL)"
+      say "$id: $status capability=$capability ($strategy)${resource:+ -> $resource}"
     else
-      say "$id: NOT_DETECTED"
+      say "$id: NOT_DETECTED capability=UNSUPPORTED"
     fi
   done
 }
@@ -378,31 +423,22 @@ harness_doctor() {
   [ -f "$SYSTEM_DIR/harness/BOOTSTRAP.md" ] && say "bootstrap: OK" || { warn "bootstrap missing"; failed="true"; }
   [ -f "$OWNERSHIP_MANIFEST" ] && say "ownership manifest: OK" || { warn "ownership manifest missing (run aips harness install)"; failed="true"; }
 
-  local codex_status claude_status gemini_status codex_target claude_target
-  codex_status="$(adapter_status_value codex 2>/dev/null || echo NOT_DETECTED)"
-  claude_status="$(adapter_status_value claude-code 2>/dev/null || echo NOT_DETECTED)"
-  gemini_status="$(adapter_status_value gemini-cli 2>/dev/null || echo NOT_DETECTED)"
-  codex_target="$(adapter_resource_value codex 2>/dev/null || true)"
-  claude_target="$(adapter_resource_value claude-code 2>/dev/null || true)"
+  local id status capability
+  for id in codex claude-code gemini-cli; do
+    status="$(adapter_status_value "$id" 2>/dev/null || echo NOT_DETECTED)"
+    capability="$(adapter_state_value "$id" capability 2>/dev/null || echo UNSUPPORTED)"
+    say "$id: $status capability=$capability"
+  done
 
-  if [ "$codex_status" = "AUTOMATIC" ]; then
-    [ -n "$codex_target" ] && [ -f "$codex_target" ] && [ -f "$OWNED_HOME/codex.bootstrap" ] && say "codex adapter: OK" || { warn "codex adapter ownership mismatch"; failed="true"; }
-  else
-    say "codex adapter: $codex_status"
+  if [ "$(adapter_status_value codex 2>/dev/null || true)" = "AUTOMATIC" ] && [ ! -f "$OWNED_HOME/codex.block" ]; then
+    warn "codex managed block ownership snapshot missing"; failed="true"
   fi
-
-  if [ "$claude_status" = "AUTOMATIC" ]; then
-    [ -n "$claude_target" ] && [ -f "$claude_target" ] && [ -f "$OWNED_HOME/claude-code.bootstrap" ] && say "claude-code adapter: OK" || { warn "claude-code adapter ownership mismatch"; failed="true"; }
-  else
-    say "claude-code adapter: $claude_status"
+  if [ "$(adapter_status_value claude-code 2>/dev/null || true)" = "AUTOMATIC" ] && [ ! -f "$OWNED_HOME/claude-code.block" ]; then
+    warn "claude managed block ownership snapshot missing"; failed="true"
   fi
-
-  if [ "$gemini_status" = "AUTOMATIC" ]; then
-    command -v gemini >/dev/null 2>&1 && gemini extensions list 2>/dev/null | grep -q "aips-global-harness"       && say "gemini-cli adapter: OK"       || { warn "gemini-cli adapter not verifiable"; failed="true"; }
-  else
-    say "gemini-cli adapter: $gemini_status"
+  if [ "$(adapter_state_value gemini-cli capability 2>/dev/null || true)" = "TURN_NATIVE" ]; then
+    command -v gemini >/dev/null 2>&1 && gemini extensions list 2>/dev/null | grep -q "aips-global-harness" || { warn "gemini TURN_NATIVE adapter not verifiable"; failed="true"; }
   fi
-
   [ "$failed" = "false" ]
 }
 
@@ -411,6 +447,13 @@ harness_resolve() {
   py="$(python_bin)"
   [ -n "$py" ] || die "python3 is required."
   "$py" "$SYSTEM_DIR/scripts/harness_resolve.py" "$@"
+}
+
+intelligence_cmd() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/project_intelligence.py" "$@"
 }
 
 refresh_harness_if_installed() {
@@ -534,6 +577,9 @@ status_project() {
   else
     say "Project attached: no"
     say "Project mode: EPHEMERAL"
+    if intelligence_cmd status --project "$project" --format json >/dev/null 2>&1; then
+      say "External Project Intelligence: resolvable"
+    fi
     local detached
     detached="$(find "$project" -maxdepth 1 -type d -name '.ai.detached-*' -print 2>/dev/null | sort | tail -n 1 || true)"
     [ -n "$detached" ] && say "Latest detached workspace: $detached"
@@ -594,8 +640,15 @@ install_cli() {
 }
 
 uninstall_cli() {
-  local remove_venv="false"
-  [ "${1:-}" = "--remove-venv" ] && remove_venv="true"
+  local remove_venv="false" remove_cache="false"
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --remove-venv) remove_venv="true" ;;
+      --remove-cache) remove_cache="true" ;;
+      *) die "Unknown uninstall option: $1" ;;
+    esac
+    shift
+  done
 
   harness_uninstall
 
@@ -606,8 +659,15 @@ uninstall_cli() {
     warn "$BIN_HOME/aips is not a symlink; leaving it untouched."
   fi
 
-  rm -rf "$CONFIG_HOME"
-  say "Removed config: $CONFIG_HOME"
+  rm -f "$CONFIG_HOME/system-dir"
+  rm -rf "$CONFIG_HOME/harness"
+  if [ "$remove_cache" = "true" ]; then
+    rm -rf "$CONFIG_HOME/projects"
+    say "Removed External Project Intelligence cache."
+  else
+    [ -d "$CONFIG_HOME/projects" ] && say "Preserved External Project Intelligence: $CONFIG_HOME/projects"
+  fi
+  rmdir "$CONFIG_HOME" 2>/dev/null || true
 
   if [ "$remove_venv" = "true" ] && [ -d "$SYSTEM_DIR/.venv" ]; then
     rm -rf "$SYSTEM_DIR/.venv"
@@ -759,6 +819,11 @@ case "${1:-help}" in
         die "Unknown harness command: $sub"
         ;;
     esac
+    ;;
+  intelligence)
+    sub="${2:-status}"
+    shift 2 || true
+    intelligence_cmd "$sub" "$@"
     ;;
   attach)
     [ "$#" -ge 2 ] || die "Usage: aips attach <project-path>"
