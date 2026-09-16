@@ -6,7 +6,6 @@ Every system change must assess downstream documentation and behavior before com
 
 | Area | Update when affected |
 |---|---|
-| `AGENTS.md` | bootloader behavior or mandatory entry steps change |
 | `SYSTEM.md` | routing, planning gates, precedence, context or completion behavior changes |
 | `orchestration/*` | detailed execution/model/instruction/planning behavior changes |
 | `docs/ARCHITECTURE.md` | runtime flow, planning flow, boundaries or update lifecycle changes |
@@ -43,11 +42,13 @@ Before remote publication, present the Git Publish Proposal. A material differen
 3. Review the Documentation Impact Gate.
 4. Confirm Mermaid diagrams match actual runtime/planning flow.
 5. Confirm changed routing/gate behavior has scenario coverage.
-6. Confirm planning templates match the Planning Package protocol if planning behavior changed.
-6. Update `VERSION` using SemVer.
-7. Update `CHANGELOG.md`.
-8. Ensure the system working tree is clean before publishing.
-9. Prefer independent review/PR for material system changes.
+6. Confirm planning/creative/brand/automation templates match their protocols when affected.
+7. Confirm Human and Agent documentation audiences are synchronized when behavior affects them.
+8. Update `VERSION` using SemVer.
+9. Update `CHANGELOG.md`.
+10. Ensure the system working tree is clean before publishing.
+11. Prepare the Git Publish Proposal and obtain explicit approval.
+12. Prefer independent review/PR for material system changes.
 
 ## Versioning
 

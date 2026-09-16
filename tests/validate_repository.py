@@ -9,7 +9,23 @@ errors = []
 
 def load_yaml(path: Path):
     try:
-        return yaml.safe_load(path.read_text(encoding="utf-8"))
+        class UniqueKeyLoader(yaml.SafeLoader):
+            pass
+
+        def construct_mapping(loader, node, deep=False):
+            mapping = {}
+            for key_node, value_node in node.value:
+                key = loader.construct_object(key_node, deep=deep)
+                if key in mapping:
+                    raise ValueError(f"duplicate key: {key!r}")
+                mapping[key] = loader.construct_object(value_node, deep=deep)
+            return mapping
+
+        UniqueKeyLoader.add_constructor(
+            yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
+            construct_mapping,
+        )
+        return yaml.load(path.read_text(encoding="utf-8"), Loader=UniqueKeyLoader)
     except Exception as exc:
         errors.append(f"YAML parse failed: {path.relative_to(ROOT)}: {exc}")
         return None
@@ -22,6 +38,17 @@ yaml_files = [
     "orchestration/schemas/workspace-state.yaml",
     "orchestration/schemas/execution-profile.yaml",
     "orchestration/schemas/risk-profile.yaml",
+    "orchestration/schemas/brand-profile.yaml",
+    "templates/creative/CREATIVE_DIRECTION.yaml",
+    "templates/brand/BRAND_PROFILE.yaml",
+    "templates/automation/AUTOMATION_CONTRACT.yaml",
+    "references/creative/styles/INDEX.yaml",
+    "references/creative/styles/quiet-premium.yaml",
+    "references/creative/styles/editorial-minimal.yaml",
+    "references/creative/styles/modern-bento.yaml",
+    "references/creative/styles/japanese-minimal.yaml",
+    "references/creative/styles/cinematic-dark.yaml",
+    "references/creative/styles/soft-dimensional.yaml",
     "templates/artifact-contract.yaml",
     "templates/change-boundary.yaml",
     "templates/project/architecture-profile.yaml",
@@ -61,10 +88,21 @@ required_files = [
     "orchestration/ORCHESTRATOR.md", "orchestration/MODEL_ROUTING.md",
     "orchestration/INSTRUCTION_RESOLUTION.md", "orchestration/WORKSPACE_STATE.md",
     "orchestration/PLANNING_PACKAGE.md", "orchestration/SYSTEM_SELF_IMPROVEMENT.md",
+    "orchestration/CREATIVE_DIRECTION.md", "orchestration/BRAND_SYSTEM.md",
+    "orchestration/CAPABILITY_INCUBATION.md", "orchestration/DETERMINISTIC_AUTOMATION.md",
     "docs/ARCHITECTURE.md", "docs/MAINTENANCE.md", "docs/INSTALLATION.md", "docs/SECURITY_ASSURANCE.md",
+    "docs/GETTING_STARTED.md", "docs/USER_GUIDE.md", "docs/DOCUMENTATION_MAP.md",
+    "docs/ARCHITECTURE_OVERVIEW.md", "docs/assets/system-overview.svg",
     "examples/EXAMPLES.md", "work-modes/README.md",
     "templates/system-improvement-review.md", "templates/constitutional-change-proposal.md",
     "templates/core-change-proposal.md", "templates/git-publish-proposal.md",
+    "templates/capability-reuse-review.md",
+    "templates/creative/CREATIVE_BRIEF.md", "templates/creative/REFERENCE_BOARD.md",
+    "templates/creative/VISUAL_REVIEW.md",
+    "templates/brand/BRAND_INDEX.md", "templates/brand/BRAND_FOUNDATION.md",
+    "templates/brand/BRAND_IDENTITY.md", "templates/brand/LOGO_SYSTEM.md",
+    "templates/brand/VERBAL_IDENTITY.md", "templates/brand/BRAND_APPLICATION.md",
+    "templates/brand/BRAND_GOVERNANCE.md",
     "bin/aips", "scripts/bootstrap.sh", "requirements.txt", ".github/workflows/validate.yml",
 ]
 security_templates = [
@@ -103,7 +141,7 @@ for phrase in ("Update preflight", "Primary planning package", "Risk-proportiona
         errors.append(f"docs/ARCHITECTURE.md missing section: {phrase}")
 
 system = (ROOT / "SYSTEM.md").read_text(encoding="utf-8") if (ROOT / "SYSTEM.md").exists() else ""
-for phrase in ("System Update Preflight", "System Self-Improvement", "Core Change Approval Gate", "Git Publish Approval Gate", "Primary Planning Detection", "Security / Reliability Assurance", "Documentation Impact Gate"):
+for phrase in ("System Update Preflight", "System Self-Improvement", "Core Change Approval Gate", "Git Publish Approval Gate", "Primary Planning Detection", "Security / Reliability Assurance", "Creative and Brand routing", "Deterministic automation", "Documentation Impact Gate"):
     if phrase not in system:
         errors.append(f"SYSTEM.md missing required behavior: {phrase}")
 
@@ -113,8 +151,8 @@ for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"
         errors.append(f"PLANNING_PACKAGE.md missing: {phrase}")
 
 scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
-if len(scenarios) < 20:
-    errors.append(f"Expected at least 20 acceptance scenarios, found {len(scenarios)}")
+if len(scenarios) < 27:
+    errors.append(f"Expected at least 27 acceptance scenarios, found {len(scenarios)}")
 
 security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
 for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):
@@ -135,6 +173,55 @@ self_improvement = (ROOT / "orchestration/SYSTEM_SELF_IMPROVEMENT.md").read_text
 for phrase in ("Self-Improvement Review", "Constitution Impact Check", "Lower-layer preference"):
     if phrase not in self_improvement:
         errors.append(f"SYSTEM_SELF_IMPROVEMENT.md missing: {phrase}")
+
+
+for creative_skill in ("creative-reference-research", "creative-calibration", "brand-foundation", "visual-quality-review"):
+    if creative_skill not in (skills.get("skills") or {}):
+        errors.append(f"Missing creative skill in index: {creative_skill}")
+
+for rel, phrases in {
+    "orchestration/CREATIVE_DIRECTION.md": ("Input priority", "Reference research", "Calibration", "Review"),
+    "orchestration/BRAND_SYSTEM.md": ("Brand creation flow", "Brand package", "Future artifact routing", "Campaign override"),
+    "orchestration/CAPABILITY_INCUBATION.md": ("Reuse Check", "Creation preference", "Progressive incubation", "Role promotion test"),
+    "orchestration/DETERMINISTIC_AUTOMATION.md": ("Good candidates", "Tool lifetime", "Output contract", "Shell vs Python"),
+}.items():
+    text = (ROOT / rel).read_text(encoding="utf-8") if (ROOT / rel).exists() else ""
+    for phrase in phrases:
+        if phrase not in text:
+            errors.append(f"{rel} missing: {phrase}")
+
+style_index = load_yaml(ROOT / "references/creative/styles/INDEX.yaml") or {}
+for style_id, meta in (style_index.get("styles") or {}).items():
+    path = ROOT / "references/creative/styles" / meta["path"]
+    if not path.exists():
+        errors.append(f"Style path missing for {style_id}: {path.relative_to(ROOT)}")
+
+human_docs = (
+    "README.md",
+    "docs/GETTING_STARTED.md",
+    "docs/USER_GUIDE.md",
+    "docs/INSTALLATION.md",
+    "docs/ARCHITECTURE_OVERVIEW.md",
+    "docs/DOCUMENTATION_MAP.md",
+)
+for rel in human_docs:
+    text = (ROOT / rel).read_text(encoding="utf-8") if (ROOT / rel).exists() else ""
+    if not re.search(r"[\u4e00-\u9fff]", text):
+        errors.append(f"Human doc is expected to contain Traditional Chinese content: {rel}")
+
+root_user_guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8") if (ROOT / "USER_GUIDE.md").exists() else ""
+if len(root_user_guide) > 1200 or "docs/USER_GUIDE.md" not in root_user_guide:
+    errors.append("Root USER_GUIDE.md should remain a short redirect to docs/USER_GUIDE.md")
+
+svg = (ROOT / "docs/assets/system-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/system-overview.svg").exists() else ""
+if "<svg" not in svg or "AI Product System" not in svg:
+    errors.append("Human architecture SVG is missing or invalid")
+
+for mode_file in (ROOT / "work-modes").glob("*.md"):
+    text = mode_file.read_text(encoding="utf-8")
+    for role_id in re.findall(r"Default role:\s*`([a-z0-9-]+)`", text):
+        if role_id not in (roles.get("roles") or {}):
+            errors.append(f"{mode_file.relative_to(ROOT)} references unknown default role: {role_id}")
 
 for shell in ("bin/aips", "scripts/bootstrap.sh"):
     p = ROOT / shell
