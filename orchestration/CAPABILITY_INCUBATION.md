@@ -64,3 +64,33 @@ Otherwise keep it as Skill/Capability knowledge.
 ## Maintenance
 
 When extending an existing item, update its index metadata and body rather than duplicating similar text elsewhere.
+
+
+## New Skill admission contract
+
+A new system Skill is justified only after the Reuse Check demonstrates a real reusable capability gap.
+
+Before adding a Skill:
+
+1. search Skill/Capability indexes and the most relevant existing Skill bodies;
+2. document closest candidates and why reuse/extension is insufficient;
+3. define one narrow responsibility;
+4. define positive triggers and important non-triggers;
+5. define inputs, outputs and boundaries;
+6. state expected context/token cost and model requirements;
+7. keep provider/framework/version-specific details as reference data unless they form a stable reusable method;
+8. add scenario evidence for routing and expected behavior;
+9. register the Skill exactly once and validate unique ID/path;
+10. update Human/Agent docs only when user-visible behavior changes.
+
+Reject a new Skill when it is merely:
+
+- a synonym/variant of an existing Skill;
+- one product/style/framework name with no distinct reusable method;
+- a temporary project convention that belongs in Project Intelligence;
+- a one-off helper that belongs in run/project automation;
+- a policy that belongs in governance/orchestration.
+
+A Skill must not embed secrets, credentials or environment-specific private configuration.
+
+If later evidence shows substantial overlap, prefer merge/deprecation over permanent Skill proliferation.
