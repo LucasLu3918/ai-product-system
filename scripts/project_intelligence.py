@@ -19,6 +19,12 @@ from typing import Any, Iterator
 
 import yaml
 
+from aips_identity import (
+    config_home as canonical_config_home,
+    project_root as canonical_project_root,
+    repository_identity as canonical_repository_identity,
+)
+
 SCHEMA_VERSION = 1
 
 SECRET_NAMES = {
@@ -74,9 +80,7 @@ def run_git(project: Path, args: list[str]) -> str | None:
 
 
 def project_root(path: Path) -> Path:
-    path = path.expanduser().resolve()
-    root = run_git(path, ["rev-parse", "--show-toplevel"])
-    return Path(root).resolve() if root else path
+    return canonical_project_root(path)
 
 
 def sha(text: str) -> str:
@@ -92,7 +96,7 @@ def file_hash(path: Path) -> str:
 
 
 def config_home() -> Path:
-    return Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "aips"
+    return canonical_config_home()
 
 
 def system_root() -> Path:
@@ -109,24 +113,23 @@ def system_commit() -> str:
 
 
 def repository_identity(root: Path) -> dict[str, str]:
-    remote = run_git(root, ["config", "--get", "remote.origin.url"]) or ""
-    common = run_git(root, ["rev-parse", "--git-common-dir"]) or ""
-    git_dir = run_git(root, ["rev-parse", "--git-dir"]) or ""
-    repo_raw = remote or f"{root}|{common}"
-    worktree_raw = f"{root}|{git_dir}"
-    repo_id = sha(repo_raw)[:20]
-    worktree_id = sha(worktree_raw)[:16]
-    return {
-        "repository_id": repo_id,
-        "repository_source_hash": sha(repo_raw),
-        "worktree_id": worktree_id,
-        "project_id": f"{repo_id}-{worktree_id}",
-    }
+    return canonical_repository_identity(root)
 
 
 def external_store(root: Path) -> Path:
     ident = repository_identity(root)
-    return config_home() / "projects" / ident["project_id"] / "intelligence"
+    canonical = config_home() / "projects" / ident["workspace_id"] / "intelligence"
+    legacy_id = ident.get("legacy_project_intelligence_id")
+    if legacy_id and legacy_id != ident["workspace_id"] and not canonical.exists():
+        legacy = config_home() / "projects" / legacy_id / "intelligence"
+        if legacy.exists():
+            canonical.parent.mkdir(parents=True, exist_ok=True)
+            os.replace(legacy, canonical)
+            try:
+                legacy.parent.rmdir()
+            except OSError:
+                pass
+    return canonical
 
 
 def local_store(root: Path) -> Path:
@@ -144,7 +147,7 @@ def intelligence_store(root: Path, create: bool = False) -> tuple[Path, str, str
     if create:
         (store / "topics").mkdir(parents=True, exist_ok=True)
         (store / "reviews").mkdir(parents=True, exist_ok=True)
-    return store, mode, ident["project_id"]
+    return store, mode, ident["workspace_id"]
 
 
 def load_yaml(path: Path, default: Any) -> Any:
@@ -343,6 +346,8 @@ def initial_intelligence(root: Path, pid: str, ident: dict[str, str], old_knowle
         "project": {
             "id": pid,
             "root": str(root),
+            "repository_id": ident["repository_id"],
+            "workspace_id": ident["workspace_id"],
             "repository_identity": ident["repository_id"],
             "worktree_identity": ident["worktree_id"],
             "branch": branch,
