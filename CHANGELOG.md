@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.16.3
+
+### Intelligence Context Evidence Maturity
+
+- Add focused executable evidence for Project Intelligence source-pointer and normal-chat context behavior.
+- Verify AGENTS, CLAUDE, GEMINI and official project docs remain authoritative pointers with `content_duplicated: false`.
+- Verify runtime-aware deduplication: sources already native to the current Runtime are not reinjected as project context, while non-native authoritative sources remain targeted-load pointers.
+- Verify deterministic bootstrap does not copy authoritative instruction/doc content into derived Intelligence topics.
+- Verify normal general-knowledge turns may receive compact Harness context without creating project `.ai/`, External Project Intelligence or Change Impact state.
+- Reconcile Scenarios 076 and 086 into explicit current contracts and promote them from manual to lifecycle coverage.
+- Keep Scenarios 064, 082, 084, 087 and 088 manual because their full semantic/behavioral contracts are not yet deterministically enforced; no partial-coverage promotion is claimed.
+- Raise conformance baseline to 125 total / 58 manual / 19 deterministic / 40 lifecycle / 8 agent_eval / 67 automated / 0 uncovered (53.6% automated).
+- No runtime behavior, Role, Skill, Capability, Approval Gate or architecture-topology change.
+
 ## 0.16.2
 
 ### Install / Preflight Evidence Maturity
