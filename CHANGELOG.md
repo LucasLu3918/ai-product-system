@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.12.0
+
+### Observable + Resumable Harness
+
+- Extend existing workspace state with a durable workflow checkpoint contract instead of introducing a new workflow framework.
+- Add deterministic run checkpoint/event/resume helpers for ATTACHED and EPHEMERAL project modes.
+- Add append-only structured `EVENTS.jsonl` evidence that excludes prompts, chain-of-thought and secret values by contract.
+- Bind checkpoints to project revision and return STALE on revision drift so resume cannot silently reuse obsolete evidence.
+- Add `aips run checkpoint|event|resume|status` routing and scenarios 101-105 with lifecycle validation.
+- Constitution, Roles, Skills, Capabilities and Approval Gates remain unchanged.
+
+
 ## 0.11.0
 
 ### Enforceable Governance
