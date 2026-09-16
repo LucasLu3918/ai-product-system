@@ -1,5 +1,52 @@
 # Changelog
 
+## 0.4.0
+
+### Creative Intelligence
+
+- Add reference-grounded Creative Direction for websites, UI, banners, hero visuals, social assets, presentations, product pages and campaigns.
+- Add progressive Creative Calibration for vague visual language and aspect-level reference mixing.
+- Add reusable Style Profiles as reference data rather than style-specific Skills/Roles.
+- Add Visual Quality Review that adapts checks to the artifact type.
+- Prioritize user-owned assets, accepted Brand/Visual Systems and explicit user intent before generic design inference.
+
+### Brand System
+
+- Add reusable Brand Foundation & Brand System protocol.
+- Add compact BRAND_PROFILE.yaml for agent quick-load plus deeper human-readable brand guidance.
+- Add Brand Foundation, Identity, Logo, Verbal, Application and Governance templates.
+- Support temporary campaign overrides without silently mutating permanent brand policy.
+- Reuse Product Manager/Product Designer instead of creating new Brand roles by default.
+
+### Capability simplicity
+
+- Add reuse-first Capability Incubation before creating or expanding Roles, Capabilities or Skills.
+- Require comparison of existing responsibility, triggers, input/output, authority and review obligations.
+- Prefer Reuse → Extend → New Skill → New Capability → New Role.
+- Add regression checks against unknown Work Mode default roles and duplicate YAML keys.
+
+### Deterministic Automation
+
+- Add Deterministic Automation First for repeatable rule-based parsing, filtering, counting, validation and transformation.
+- Prefer existing tools or small Shell/Python helpers before spending model reasoning/context on raw data.
+- Standardize structured JSON/YAML summaries with raw evidence referenced separately.
+- Define helper lifecycle: run-local → project reusable → system reusable only after demonstrated reuse.
+- Add Minimum Sufficient Reasoning as a core principle.
+
+### Human and Agent documentation
+
+- Split Human and Agent documentation entry surfaces.
+- Human-facing docs are now Traditional Chinese with English annotations for specialized terms.
+- Add 5-minute Getting Started and Documentation Map.
+- Keep Agent bootloader concise and protocol-driven.
+- Add a source-controlled SVG architecture overview for new users.
+- Extend Documentation Impact Gate to check both Human and Agent audiences.
+
+### Regression coverage
+
+- Add scenarios for vague visual requests, user-owned creative assets, mixed references, reusable Brand Systems, duplicate-role prevention, deterministic automation and documentation audience separation.
+- Expand repository validation for creative/brand/style/automation artifacts and documentation integrity.
+
 ## 0.3.0
 
 ### Security assurance
