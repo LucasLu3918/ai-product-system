@@ -1,5 +1,51 @@
 # Changelog
 
+## 0.6.0
+
+### Progressive Requirement Clarification
+
+- Add READY / NEEDS_CLARIFICATION / BLOCKED requirement readiness.
+- Stop broad implementation when material ambiguity remains.
+- Prefer safe professional defaults for non-material details.
+- Ask only the smallest useful blocking questions with concrete options/recommendations.
+
+### External Context Resolution
+
+- Add connector/MCP-first resolution for user-provided external URLs and references.
+- Preserve pending task/source across authorization and resume afterward.
+- Fall back to public web or other supported provider paths before asking users to paste/upload content.
+- Persist source/retrieval provenance.
+
+### Visual Implementation Polish
+
+- Add Preserve Before Redesign and Consistency First defaults.
+- Add rendered Visual Implementation Audit for alignment, typography, spacing, control geometry, icon baseline, states and responsive behavior.
+- Prefer shared token/component fixes over page-specific pixel patches.
+- Require screenshot/rendered verification when the UI environment can be run.
+
+### Multi-Perspective Review & Learning
+
+- Add risk-based review panels for large/core/high-risk changes using existing specialist roles.
+- Use bounded read-only reviewer scopes and independent reviewer model routing.
+- Normalize/deduplicate findings before returning them to the original Author.
+- Keep the original Author as the writer; use targeted re-review after fixes.
+- Extract run/project/system-capability lessons and require user-approved System Improvement before permanent capability changes.
+
+### Installation & Project Lifecycle
+
+- Add aips attach, detach and status.
+- Keep aips init as a backward-compatible attach alias.
+- Add reversible detach that archives .ai rather than deleting project AI state.
+- Ensure preflight respects detached-workspace safety.
+- Add scripts/uninstall.sh as the symmetric uninstall wrapper.
+- Expand Traditional Chinese lifecycle documentation with install/attach/preflight/detach/uninstall/reinstall guidance and an SVG lifecycle diagram.
+
+### Regression Coverage
+
+- Add scenarios through Scenario 044 for clarification, connector authorization/fallback, visual polish, multi-review, learning feedback and lifecycle behavior.
+- Extend repository validation to new protocols/templates and run attach/status/detach/reattach lifecycle checks.
+
+
 ## 0.5.0
 
 ### End-to-End Product Delivery
