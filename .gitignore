@@ -3,3 +3,7 @@ Thumbs.db
 *.tmp
 *.swp
 .venv/
+
+# Python runtime/cache artifacts
+__pycache__/
+*.py[cod]
