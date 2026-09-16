@@ -88,22 +88,25 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "014"
     path: tests/scenarios/014-critical-financial-security.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/014-critical-financial-security.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/014-critical-financial-security.yaml
+      - tests/agent_eval/results/014-critical-financial-security.yaml
+      - scripts/agent_eval.py
   - id: "015"
     path: tests/scenarios/015-low-impact-frontend-security.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/015-low-impact-frontend-security.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/015-low-impact-frontend-security.yaml
+      - tests/agent_eval/results/015-low-impact-frontend-security.yaml
+      - scripts/agent_eval.py
   - id: "016"
     path: tests/scenarios/016-critical-product-cosmetic-change.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/016-critical-product-cosmetic-change.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/016-critical-product-cosmetic-change.yaml
+      - tests/agent_eval/results/016-critical-product-cosmetic-change.yaml
+      - scripts/agent_eval.py
   - id: "017"
     path: tests/scenarios/017-core-change-approval.md
     coverage: agent_eval
@@ -189,34 +192,39 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "030"
     path: tests/scenarios/030-security-design-and-release.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/030-security-design-and-release.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/030-security-design-and-release.yaml
+      - tests/agent_eval/results/030-security-design-and-release.yaml
+      - scripts/agent_eval.py
   - id: "031"
     path: tests/scenarios/031-release-readiness-blocks-production.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/031-release-readiness-blocks-production.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/031-release-readiness-blocks-production.yaml
+      - tests/agent_eval/results/031-release-readiness-blocks-production.yaml
+      - scripts/agent_eval.py
   - id: "032"
     path: tests/scenarios/032-production-verification-and-recovery.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/032-production-verification-and-recovery.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/032-production-verification-and-recovery.yaml
+      - tests/agent_eval/results/032-production-verification-and-recovery.yaml
+      - scripts/agent_eval.py
   - id: "033"
     path: tests/scenarios/033-low-risk-static-staging-na.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/033-low-risk-static-staging-na.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/033-low-risk-static-staging-na.yaml
+      - tests/agent_eval/results/033-low-risk-static-staging-na.yaml
+      - scripts/agent_eval.py
   - id: "034"
     path: tests/scenarios/034-deployment-automation-access.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/034-deployment-automation-access.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/034-deployment-automation-access.yaml
+      - tests/agent_eval/results/034-deployment-automation-access.yaml
+      - scripts/agent_eval.py
   - id: "035"
     path: tests/scenarios/035-progressive-requirement-clarification.md
     coverage: agent_eval
