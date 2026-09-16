@@ -272,3 +272,38 @@ Automated      72
 Uncovered       0
 Automated     57.6%
 ~~~
+
+## v0.16.5 Quality & Release Semantic Evidence Maturity
+
+新增 6 組 Agent Eval：
+
+~~~text
+045 Quality Class Baseline
+046 Quality Target Derivation
+047 Local Complete Before Production
+048 Explicit Production Request
+049 Observability Before Vendor Selection
+050 Audit Log for High-value Actions
+~~~
+
+它們驗證的是 Quality / Delivery decision，不把語意判斷假裝成 static schema test：
+
+- Q2 是 typical production SaaS 的 baseline，但七個 quality dimensions 可獨立調整；
+- 使用者不知道 p95 / RTO / RPO 時由 Agent 從 scale / failure impact / sensitivity / delivery / operations 推導 draft targets；
+- 未明確要求 Production 時先完成 LOCAL_COMPLETE，再詢問是否繼續；
+- 已明確要求 Production 時從一開始納入 infra / deployment / secret / recovery / observability，但仍必須先驗證 LOCAL_COMPLETE；
+- Observability provider 未選定前保持 instrumentation provider-neutral；
+- balance / points / refunds / role changes 使用獨立 Audit Log contract，不與一般 application logs 混為一談。
+
+v0.16.5 baseline：
+
+~~~text
+Total         125
+Manual         47
+Deterministic  19
+Lifecycle      40
+Agent Eval     19
+Automated      78
+Uncovered       0
+Automated     62.4%
+~~~
