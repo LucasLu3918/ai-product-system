@@ -2,15 +2,15 @@
 <rect width="1500" height="720" fill="#f7f7f5"/>
 <style>.title{font:700 32px system-ui,sans-serif;fill:#171717}.sub{font:400 15px system-ui,sans-serif;fill:#666}.h{font:700 17px system-ui,sans-serif;fill:#171717}.t{font:400 13px system-ui,sans-serif;fill:#444}.box{fill:#fff;stroke:#d8d8d3;stroke-width:2}.line{stroke:#aaa;stroke-width:2;fill:none;marker-end:url(#a)}</style>
 <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#aaa"/></marker></defs>
-<text x="60" y="58" class="title">AIPS Installation, Harness &amp; Intelligence Lifecycle</text><text x="60" y="88" class="sub">Install once · normal Agent use · reusable Intelligence · reversible ownership</text>
+<text x="60" y="58" class="title">AIPS Installation, Harness &amp; Intelligence Lifecycle + Execution Isolation</text><text x="60" y="88" class="sub">Install once · normal Agent use · reusable Intelligence · reversible ownership · safe worktrees</text>
 <rect x="55" y="135" width="205" height="105" rx="16" class="box"/><text x="85" y="175" class="h">① Install</text><text x="85" y="205" class="t">CLI + managed adapters + guards</text>
 <rect x="305" y="135" width="250" height="105" rx="16" class="box"/><text x="335" y="175" class="h">② Agent Use</text><text x="335" y="205" class="t">Turn Context + guard + resume state</text>
 <rect x="600" y="135" width="250" height="105" rx="16" class="box"/><text x="630" y="175" class="h">③ EPHEMERAL</text><text x="630" y="205" class="t">No project .ai/</text>
 <rect x="895" y="135" width="250" height="105" rx="16" class="box"/><text x="925" y="175" class="h">④ ATTACHED</text><text x="925" y="205" class="t">.ai/intelligence/</text>
 <rect x="1190" y="135" width="250" height="105" rx="16" class="box"/><text x="1220" y="175" class="h">⑤ Uninstall</text><text x="1220" y="205" class="t">Remove AIPS integration only</text>
 <path d="M260 188 L300 188" class="line"/><path d="M555 188 L595 188" class="line"/><path d="M850 188 L890 188" class="line"/><path d="M1145 188 L1185 188" class="line"/>
-<rect x="190" y="350" width="470" height="175" rx="18" class="box"/><text x="220" y="390" class="h">External Intelligence + Run Cache</text><text x="220" y="420" class="t">~/.config/aips/projects/&lt;project-id&gt;/</text><text x="220" y="448" class="t">Intelligence + run checkpoints reused</text><text x="220" y="476" class="t">aips attach → validated migrate</text>
+<rect x="190" y="350" width="470" height="175" rx="18" class="box"/><text x="220" y="390" class="h">External Cache + Isolation State</text><text x="220" y="420" class="t">~/.config/aips/projects/ + isolation/ + worktrees/</text><text x="220" y="448" class="t">Intelligence · run checkpoints · AIPS-owned worktrees</text><text x="220" y="476" class="t">Attach migrates Intelligence · dirty worktrees are preserved</text>
 <rect x="840" y="350" width="470" height="175" rx="18" class="box"/><text x="870" y="390" class="h">Project-local Intelligence + Runs</text><text x="870" y="420" class="t">.ai/intelligence/ + .ai/runs/ while attached</text><text x="870" y="448" class="t">aips detach → sync external then archive .ai/</text><text x="870" y="476" class="t">Uninstall preserves by default</text>
 <path d="M725 240 L725 300 L425 300 L425 345" class="line"/><path d="M1020 240 L1020 345" class="line"/><path d="M660 438 L835 438" class="line"/>
-<text x="60" y="640" class="t">External cache is removed only by explicit --remove-cache. User instructions, Skills, Project source and non-AIPS hooks are preserved.</text>
+<text x="60" y="640" class="t">External cache is removed only by explicit --remove-cache. Clean managed worktrees remove safely; branches and dirty worktrees are preserved.</text>
 </svg>

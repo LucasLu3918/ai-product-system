@@ -24,6 +24,7 @@ Agent Session / User Request
 → Minimal Context Manifest
 → Role + Skill Resolution
 → Execution Profile / bounded Subagents when useful
+→ Execution Isolation Resolution (shared / worktree / verified sandbox)
 → Model + Tool Routing
 → Deterministic Automation when suitable
 → Execute
@@ -417,6 +418,18 @@ Rules:
 - native tool guards enforce only deterministic policy and never create approval authority;
 - structured routing explanations record outcomes/reasons only, never private chain-of-thought;
 - v0.11 protects Git publication first; broader destructive-operation interception remains deferred.
+
+## Execution Isolation
+
+Execution isolation is an Execution Profile capability, not a new Role, Skill or approval gate.
+
+- `shared` uses the current project workspace and must not be described as isolated;
+- `worktree` creates a real AIPS-owned Git worktree outside the project source tree;
+- `sandbox` requires a verified provider; without one the mode is UNSUPPORTED/BLOCKED rather than emulated with a temporary directory;
+- one ACTIVE writer owns a Change Boundary by default, including across AIPS-managed worktrees;
+- cleanup removes only AIPS-owned, clean managed worktrees and preserves dirty worktrees plus the managed branch.
+
+Use `orchestration/EXECUTION_ISOLATION.md` and `scripts/execution_isolation.py`. Isolation never bypasses governance, Change Impact, test or approval requirements.
 
 ## Durable Run State
 

@@ -668,3 +668,33 @@ scenarios:
     evidence:
       - scripts/scenario_conformance.py
       - tests/validate_repository.py
+  - id: "111"
+    path: tests/scenarios/111-isolation-resolution.md
+    coverage: deterministic
+    evidence:
+      - scripts/execution_isolation.py
+      - tests/validate_repository.py
+  - id: "112"
+    path: tests/scenarios/112-worktree-lifecycle.md
+    coverage: lifecycle
+    evidence:
+      - scripts/execution_isolation.py
+      - tests/validate_repository.py
+  - id: "113"
+    path: tests/scenarios/113-dirty-worktree-preservation.md
+    coverage: lifecycle
+    evidence:
+      - scripts/execution_isolation.py
+      - tests/validate_repository.py
+  - id: "114"
+    path: tests/scenarios/114-sandbox-truthfulness.md
+    coverage: deterministic
+    evidence:
+      - scripts/execution_isolation.py
+      - tests/validate_repository.py
+  - id: "115"
+    path: tests/scenarios/115-single-writer-boundary.md
+    coverage: lifecycle
+    evidence:
+      - scripts/execution_isolation.py
+      - tests/validate_repository.py

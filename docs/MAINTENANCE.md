@@ -235,3 +235,18 @@ When Scenario behavior/coverage changes, review together:
 - coverage claims in CHANGELOG/release evidence.
 
 Never infer automated coverage from Scenario count alone. New Scenarios must enter the registry in the same change.
+
+## v0.14 consistency
+
+When Execution Isolation behavior changes, review together:
+
+- orchestration/EXECUTION_ISOLATION.md;
+- orchestration/schemas/execution-profile.yaml + templates/workspace/MANIFEST.yaml;
+- scripts/execution_isolation.py + bin/aips isolation routing;
+- worktree ownership / single-writer / dirty-cleanup semantics;
+- truthful sandbox capability reporting;
+- docs/ARCHITECTURE.md + ARCHITECTURE_OVERVIEW.md + USER_GUIDE;
+- system-overview + system-lifecycle diagrams;
+- scenarios 111-115 + scenario_coverage registry + executable lifecycle validation.
+
+Harness-specific, Project Intelligence-specific and Product Delivery-specific diagrams are N/A unless their own behavior changes.

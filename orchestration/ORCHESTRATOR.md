@@ -24,7 +24,7 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 14. Classify intent/work mode/project state/risk.
 15. Build a minimal Turn Context Manifest and load only relevant Intelligence topics/evidence.
 16. Resolve the primary role and only necessary supporting roles/skills.
-17. Build the Execution Profile and bounded subagent contexts.
+17. Build the Execution Profile and bounded subagent contexts; resolve `shared | worktree | sandbox` through `orchestration/EXECUTION_ISOLATION.md` before creating a writer workspace.
 18. For primary planning, persist the Reproducible Planning Package and complete Gate 1 / Gate 2.
 19. Select model/tools; route deterministic processing to helpers.
 20. Implement inside the approved Change Boundary using valid project-native conventions.

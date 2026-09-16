@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.14.0
+
+### Execution Isolation
+
+- Add explicit `shared | worktree | sandbox` isolation to the existing Execution Profile without introducing a new Role, Skill or approval gate.
+- Add real AIPS-owned Git worktree lifecycle with external ownership records and one ACTIVE writer per Change Boundary.
+- Block cleanup of dirty worktrees, remove only AIPS-owned managed paths and preserve managed branches after cleanup.
+- Report sandbox capability truthfully: without a verified provider, sandbox is UNSUPPORTED/BLOCKED and a temporary directory is never presented as a sandbox.
+- Add `aips isolation resolve|create|status|remove`, Workspace Manifest isolation state and scenarios 111-115.
+- Raise conservative Scenario Conformance baseline to 115 total / 95 manual / 20 automated / 0 uncovered.
+- Update Agent/Human architecture contracts and affected system/lifecycle diagrams.
+
 ## 0.13.0
 
 ### Harness Conformance

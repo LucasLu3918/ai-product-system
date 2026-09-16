@@ -98,3 +98,25 @@ Scenario specification
 ~~~
 
 AIPS 不再用「Scenario 檔案存在」推論 automated coverage。Legacy Scenario 沒有明確一對一 evidence 時會誠實維持 manual。
+
+## 11. Execution Isolation
+
+~~~text
+Execution Profile
+→ shared
+   → 使用既有 workspace
+   → isolated=false
+
+→ worktree
+   → 真正的 Git worktree
+   → AIPS external ownership record
+   → 同一 Change Boundary 單一 ACTIVE writer
+
+→ sandbox
+   → 需要可驗證 provider
+   → 沒有 provider 時 UNSUPPORTED / BLOCKED
+~~~
+
+AIPS 不會用 temp directory 假裝成 sandbox。Worktree cleanup 只處理 AIPS-owned managed path；若存在未提交修改會停止並保留 workspace。Clean worktree 可移除，但其 branch 預設保留，避免隱性刪除已提交成果。
+
+v0.14 的 Architecture Diagram Impact：system-overview 與 system-lifecycle 受影響並更新；Harness、Project Intelligence、Product Delivery 本身的流程沒有改變，因此其專用圖為 N/A。

@@ -16,4 +16,12 @@ budget:
   reasoning: low | medium | high
   max_parallel_subagents: 1
   prefer_cost_efficient: true
+isolation:
+  mode: shared | worktree | sandbox
+  required: false
+  status: AVAILABLE | UNSUPPORTED | BLOCKED
+  id: null
+  boundary_id: null
+  provider: null
+  resource: null
 subagents: []
