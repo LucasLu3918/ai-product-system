@@ -1,5 +1,49 @@
 # Changelog
 
+## 0.5.0
+
+### End-to-End Product Delivery
+
+- Add a complete-product lifecycle from user intent/materials through guided planning, implementation, local verification, staging, Release Readiness, production promotion and post-deploy verification.
+- Add root `PRODUCT.yaml` as the compact Product Manifest for Deployment Units, contracts, environments, commands, delivery and observability.
+- Define Product Workspace as the discoverable System of Record for specifications, brand, code, tests, infrastructure, deployment and operational artifacts.
+- Treat frontend/backend/worker components as independent Deployment Units without forcing separate Git repositories.
+- Default to monorepo for coordinated product work; require evidence for multi-repo boundaries.
+
+### Local, Staging and Production
+
+- Add Local Environment, Deployment Plan and Operations Runbook templates.
+- Make Local → CI → Staging → Production the default material production flow.
+- Allow staging to be N/A for genuinely low-risk/simple products with a recorded reason.
+- Define production completion as verified deployment plus applicable health, smoke, logs/metrics and recovery evidence.
+
+### Release Readiness
+
+- Add consolidated Release Readiness protocol and YAML contract for exact release candidates.
+- Cover build, test, security, migration/recovery, infrastructure, staging, observability and documentation evidence.
+- READY remains technical readiness and never bypasses required human/security approval.
+- Apply the existing SAL 4 unresolved High/Critical hard floor without over-blocking lower SAL risk-accepted reviews.
+- Material candidate changes invalidate affected readiness evidence.
+
+### Deployment Automation
+
+- Require complete products to create repeatable CI/CD/deployment automation appropriate to the target platform.
+- Execute deployment automation when platform access and approval are available.
+- Persist runnable automation and mark delivery BLOCKED when required platform access/credentials are unavailable.
+- Keep production secrets outside source control.
+
+### Deterministic Delivery Checks
+
+- Add `scripts/check_release_readiness.py` to evaluate structured Release Readiness data before AI reasoning.
+- Add READY/BLOCKED/SAL3-risk fixtures and repository validation coverage.
+
+### Reuse and Documentation
+
+- Extend existing Delivery Planner, Cloud Architect, SRE and `delivery-planning` Skill rather than adding new delivery/DevOps Roles.
+- Update Product Creation, Planning Package, workspace state, Traditional Chinese Human Guide and architecture diagrams.
+- Add product-delivery architecture SVG and scenarios through Scenario 034.
+
+
 ## 0.4.0
 
 ### Creative Intelligence
