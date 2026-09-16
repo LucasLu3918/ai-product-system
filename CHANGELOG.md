@@ -1,5 +1,56 @@
 # Changelog
 
+## 0.9.0
+
+### Turn-Aware Global Harness
+
+- Upgrade Global Harness from session/bootstrap-oriented behavior to turn-aware context resolution.
+- Keep one Harness contract while using runtime-native integration: Codex CONTEXT_ALWAYS, Claude Code UserPromptSubmit when verifiable, and Gemini CLI BeforeAgent.
+- Compose AIPS through reversible managed instruction blocks/hooks/extensions without replacing user-owned Agent instructions or Skills.
+- Separate integration status from runtime capability truth: TURN_NATIVE / CONTEXT_ALWAYS / SESSION_ONLY / MANUAL / UNSUPPORTED.
+
+### Project Intelligence
+
+- Replace Project Knowledge as the canonical reusable brownfield understanding layer while preserving legacy knowledge as migration evidence.
+- Add PROJECT_INTELLIGENCE, SOURCE_REGISTRY, IMPACT_GRAPH and PROJECT_OVERRIDES contracts.
+- Add read-only breadth-first discovery followed by evidence-based semantic enrichment; inventory alone remains PARTIAL until finalize reaches READY.
+- Add runtime-aware source deduplication, branch/worktree/dirty-path freshness, one-writer atomic updates and targeted refresh.
+- Add deterministic self-contained Project Intelligence Review HTML with secret redaction.
+- Add External Project Intelligence Cache so EPHEMERAL projects can reuse understanding without creating project-local .ai state.
+- Add validated External ↔ Local Intelligence migration across attach/detach.
+
+### Existing-project Change Safety
+
+- Add Change Impact Guard and per-change impact artifacts covering inputs, outputs, data, events, consumers, security boundaries, invariants and compatibility.
+- Preserve valid project-native conventions while refusing to propagate unsafe or demonstrably broken legacy patterns.
+- Reconcile actual diff against declared Change Impact and refresh only affected reusable Intelligence.
+
+### Secret / Credential Safety
+
+- Add Secret Handling protocol for secure runtime acquisition through workload identity, secret managers, CI stores, OS/runtime credential stores or environment injection.
+- Prohibit real credentials in source, prompts, Project Intelligence, generated HTML, logs, fixtures, snapshots and review artifacts.
+- Add deterministic high-confidence secret leakage checker with redacted path/line/detector/fingerprint evidence; detected values are never echoed.
+- Add exposure containment/rotation guidance and release blocking for unresolved active production or SAL 3–4 credential exposure.
+
+### Core Change Testing
+
+- Add Impact-derived Core Change Testing contract and machine-readable test matrix.
+- Require applicable evidence for every materially affected Change Boundary, with concrete N/A reasons for non-applicable checks.
+- Recompute required tests when implementation scope expands and block completion/release on failing or missing required evidence.
+
+### Skill Admission Governance
+
+- Strengthen Capability Incubation with a New Skill admission contract.
+- Require reuse-first search, narrow responsibility, triggers/non-triggers, inputs/outputs/boundaries, context/model cost, scenario evidence, unique ID/path and private-config checks.
+- Keep project-specific conventions in Project Intelligence and one-off automation in project/run tooling instead of proliferating system Skills.
+
+### Documentation / Architecture / Regression
+
+- Refresh Human and Agent documentation for Turn Harness, Project Intelligence, secret handling, strict core-change testing and safe uninstall/cache behavior.
+- Add Project Intelligence architecture diagram and update system/harness/lifecycle diagrams; Product Delivery diagram remains N/A because its lifecycle is unchanged.
+- Extend acceptance scenarios through Scenario 095 and executable validator coverage for managed composition, Intelligence lifecycle/freshness, secret leakage, attach/detach migration, core test selection and Skill admission.
+- Constitution unchanged; no new Role, Skill or approval Gate.
+
 ## 0.8.0
 
 ### Global Agent Harness
