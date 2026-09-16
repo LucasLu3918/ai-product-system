@@ -41,3 +41,15 @@ current canonical behavior
 ~~~
 
 Do not create an evidence file merely to raise the automated percentage. It must materially exercise the Scenario it claims to support.
+
+## Validation Modules
+
+The stable entrypoint remains:
+
+~~~bash
+python tests/validate_repository.py
+~~~
+
+The entrypoint is intentionally a small aggregator. Validation logic is grouped under `tests/validation/` by subsystem, while focused Scenario evidence remains under `tests/evidence/`.
+
+Do not make callers depend on individual validation modules; CI and users should continue to invoke the stable top-level entrypoint.
