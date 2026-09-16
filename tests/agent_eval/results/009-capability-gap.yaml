@@ -1,0 +1,23 @@
+version: 1
+case_id: 009-capability-gap
+scenario_id: "009"
+case_fingerprint: sha256:e72d671f0027b85161ebd65a8bb3baba9c5fb435b89a2dc696a36fc32937cb58
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: CAPABILITY_GAP
+  affected_design_allowed: false
+  generic_backend_guess_allowed: false
+  new_role_required_by_default: false
+  user_approval_required_before_system_extension: true
+  actions:
+    - inspect_role_skill_capability_indexes
+    - identify_missing_specialized_knowledge
+    - propose_smallest_skill_or_capability_addition
+    - justify_any_new_role_by_distinct_authority
+    - await_user_approval
+  proposal: Add the narrowest reusable realtime-media/WebRTC knowledge or capability needed for the affected design; create a Role only if repeated evidence shows distinct responsibility, authority and review obligations.
+  summary: Stop the specialized design rather than letting a generic backend role guess, then propose the smallest reuse-first system extension for explicit approval.
