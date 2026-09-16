@@ -150,6 +150,7 @@ required_files = [
     "scripts/check_secret_leakage.py",
     "tests/evidence/governance_command_guard.py",
     "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml",
+    ".github/dependabot.yml", "SECURITY.md",
 ]
 security_templates = [
     "templates/security/SECURITY_PLAN.md",
@@ -170,6 +171,24 @@ planning_templates = [
 for rel in required_files + planning_templates + security_templates:
     if not (ROOT / rel).exists():
         errors.append(f"Missing required file: {rel}")
+
+workflow_text = (ROOT / ".github/workflows/validate.yml").read_text(encoding="utf-8") if (ROOT / ".github/workflows/validate.yml").exists() else ""
+for phrase in (
+    "permissions:\n  contents: read",
+    "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+    "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
+):
+    if phrase not in workflow_text:
+        errors.append(f"validate workflow missing public-repo hardening contract: {phrase}")
+
+dependabot_text = (ROOT / ".github/dependabot.yml").read_text(encoding="utf-8") if (ROOT / ".github/dependabot.yml").exists() else ""
+for ecosystem in ('package-ecosystem: "pip"', 'package-ecosystem: "github-actions"'):
+    if ecosystem not in dependabot_text:
+        errors.append(f"Dependabot config missing ecosystem: {ecosystem}")
+
+security_policy = (ROOT / "SECURITY.md").read_text(encoding="utf-8") if (ROOT / "SECURITY.md").exists() else ""
+if "do not disclose credentials" not in security_policy.lower() or "Report a vulnerability" not in security_policy:
+    errors.append("SECURITY.md missing private vulnerability reporting guidance")
 
 version = (ROOT / "VERSION").read_text(encoding="utf-8").strip() if (ROOT / "VERSION").exists() else ""
 if not re.fullmatch(r"\d+\.\d+\.\d+", version):
