@@ -1,5 +1,50 @@
 # Changelog
 
+## 0.8.0
+
+### Global Agent Harness
+
+- Add a cross-Agent Global Harness with a minimal bootstrap and lazy AIPS orchestration.
+- Add Runtime Adapter contracts and built-in integrations for Codex CLI, Claude Code and Gemini CLI plus a Generic Manual fallback.
+- Use AUTOMATIC / MANUAL / NOT_DETECTED / CONFLICT / ERROR machine-specific coverage states.
+- Preserve runtime-native/project instructions instead of replacing them with one global override.
+
+### Non-invasive Installation and Ownership
+
+- Add Harness Ownership Manifest and per-adapter state.
+- Never overwrite existing user AGENTS/CLAUDE/GEMINI instruction files to gain automatic coverage.
+- Record AIPS-owned runtime resources and remove only owned/unchanged resources.
+- Preserve modified AIPS-created bootstrap files rather than deleting possible user content.
+- Preserve ownership state when a runtime registration cannot be safely removed, enabling a later uninstall retry.
+- Prevent destructive ~/.local/bin/aips name collisions.
+
+### Ephemeral and Attached Project Modes
+
+- Make EPHEMERAL the default for projects without .ai/.
+- Stop preflight from implicitly attaching projects or creating persistent AIPS state.
+- Keep ATTACHED persistence opt-in through explicit aips attach.
+- Add deterministic `aips harness resolve` output for runtime, project root, instructions, Knowledge and State pointers.
+
+### Harness Lifecycle CLI
+
+- Add `aips harness install`, `uninstall`, `status`, `doctor` and `resolve`.
+- Make `aips install` enable the Global Harness and `aips uninstall` remove AIPS-owned integrations first.
+- Safely refresh/migrate the Harness after installed-system preflight updates.
+- Document the v0.7 → v0.8 upgrade path.
+
+### Architecture Diagram Integrity
+
+- Add mandatory Architecture Diagram Impact Check to the existing Documentation Impact Gate for Large/Core changes.
+- Update Maintainer Mermaid flows for Global Harness, runtime/project instruction composition, EPHEMERAL/ATTACHED lifecycle and current product delivery.
+- Add a Global Harness SVG and refresh system, product-delivery and installation lifecycle SVGs.
+- Require affected diagrams to be updated or explicitly marked N/A with a reason.
+
+### Documentation and Regression Coverage
+
+- Add Traditional Chinese Harness/installation/uninstallation guidance and explain exactly what AIPS preserves.
+- Add scenarios through Scenario 069 for automatic/manual adapters, ownership-safe uninstall, EPHEMERAL behavior, instruction composition, diagram impact, upgrade migration and CLI collision safety.
+- Extend existing orchestration only; no new Role, Skill or approval Gate.
+
 ## 0.7.0
 
 ### Quality-aware Product Planning
