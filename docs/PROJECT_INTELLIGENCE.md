@@ -58,3 +58,7 @@ Intelligence / HTML 不保存實際 Password、Token、Private Key、Secret env 
 ## Debug
 
 一般使用不需執行；排錯可用 `aips intelligence status/render/finalize/impact-init`。
+
+## Identity namespace
+
+Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL storage is workspace-scoped by canonical `workspace_id`; repository-wide writer coordination belongs to the isolation layer and uses `repository_id`.
