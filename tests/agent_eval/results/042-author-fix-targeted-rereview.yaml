@@ -1,0 +1,20 @@
+version: 1
+case_id: 042-author-fix-targeted-rereview
+scenario_id: "042"
+case_fingerprint: sha256:41fe1d3cdeda4a591b5d12d19bbc0393013f35559a96e0e709ab68979186962b
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: AUTHOR_FIX_REQUIRED
+  writer: ORIGINAL_AUTHOR
+  reviewer_writes_code: false
+  rereview_scope: TARGETED
+  full_review_condition: CHANGE_BOUNDARY_EXPANDED
+  actions:
+    - author_fixes_accepted_findings
+    - run_affected_tests
+    - rereview_original_finding_fix_diff_relevant_tests
+  summary: The original Author remains the writer; reviewers verify the accepted fixes using targeted evidence unless the fix expands the Change Boundary.
