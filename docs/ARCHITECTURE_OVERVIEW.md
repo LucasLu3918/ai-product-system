@@ -26,9 +26,19 @@ Codex 以 CONTEXT_ALWAYS 為目標；Claude Code / Gemini CLI 在 native Hook �
 
 後續 Turn 只讀 relevant Intelligence；watched source 真正受影響時才 Targeted Refresh。
 
-## 3. EPHEMERAL / ATTACHED
+## 3. Canonical Project Identity + EPHEMERAL / ATTACHED
 
-EPHEMERAL 不在 Project 建立 .ai/，Intelligence 可存在 AIPS External Cache；ATTACHED 使用 .ai/intelligence/。Attach/Detach 會 validated migrate/sync。
+~~~text
+Repository lineage
+→ repository_id
+   ├─ main worktree    → workspace_id A
+   ├─ feature worktree → workspace_id B
+   └─ AIPS worktree    → workspace_id C
+~~~
+
+Project Intelligence 與 Run State 使用 workspace_id；Execution Isolation 的 Single Writer coordination 使用 repository_id + Change Boundary。
+
+EPHEMERAL 不在 Project 建立 .ai/，Intelligence / Runs 可存在 AIPS External Cache；ATTACHED 使用 .ai/intelligence/ + .ai/runs/。Attach/Detach 會 validated migrate/sync。
 
 ## 4. Existing Project Mutation
 
@@ -80,7 +90,7 @@ Context capability 與 Governance Enforcement 分開呈現。這不增加新的 
 material step
 → CHECKPOINT.yaml + EVENTS.jsonl
 → interrupted / new Agent session
-→ compare recorded revision with current HEAD
+→ compare recorded workspace fingerprint with current identity / HEAD / branch / dirty state
 → CURRENT: resume from checkpoint
 → STALE: refresh/revalidate before continuation
 ~~~
