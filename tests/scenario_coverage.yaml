@@ -353,10 +353,10 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "057"
     path: tests/scenarios/057-global-harness-auto-bootstrap.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/057-global-harness-auto-bootstrap.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/harness_runtime_lifecycle.py
+      - tests/validate_repository.py
   - id: "058"
     path: tests/scenarios/058-existing-user-agent-file-preserved.md
     coverage: lifecycle
@@ -377,10 +377,10 @@ scenarios:
       - tests/validate_repository.py
   - id: "061"
     path: tests/scenarios/061-ephemeral-project-no-auto-attach.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/061-ephemeral-project-no-auto-attach.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/harness_runtime_lifecycle.py
+      - tests/validate_repository.py
   - id: "062"
     path: tests/scenarios/062-attached-project-persistence.md
     coverage: lifecycle
@@ -407,16 +407,16 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "066"
     path: tests/scenarios/066-gemini-namespaced-extension.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/066-gemini-namespaced-extension.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/harness_runtime_lifecycle.py
+      - tests/validate_repository.py
   - id: "067"
     path: tests/scenarios/067-failed-adapter-uninstall-preserves-ownership.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/067-failed-adapter-uninstall-preserves-ownership.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/harness_runtime_lifecycle.py
+      - tests/validate_repository.py
   - id: "068"
     path: tests/scenarios/068-v07-to-v08-harness-migration.md
     coverage: manual
@@ -443,16 +443,16 @@ scenarios:
       - tests/validate_repository.py
   - id: "072"
     path: tests/scenarios/072-gemini-before-agent-turn-context.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/072-gemini-before-agent-turn-context.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/harness_runtime_lifecycle.py
+      - tests/validate_repository.py
   - id: "073"
     path: tests/scenarios/073-runtime-capability-truth.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/073-runtime-capability-truth.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/harness_runtime_lifecycle.py
+      - tests/validate_repository.py
   - id: "074"
     path: tests/scenarios/074-ephemeral-external-intelligence.md
     coverage: lifecycle
