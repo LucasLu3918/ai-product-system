@@ -1,5 +1,48 @@
 # Changelog
 
+## 0.7.0
+
+### Quality-aware Product Planning
+
+- Add Q1 Lightweight / Q2 Standard / Q3 Critical quality baselines.
+- Evaluate Performance, Security, Usability, Reliability, Maintainability, Resource/Cost and Delivery Time for complete products.
+- Convert vague quality expectations into measurable targets/budgets, verification methods and evidence.
+- Use range + confidence for resource/cost/time estimates and refine after architecture decisions.
+- Keep observability requirements provider-neutral until the production environment is known.
+
+### Local Complete and Production Enablement
+
+- Split complete-product delivery into LOCAL_COMPLETE and PRODUCTION_VERIFIED milestones.
+- Default complete-product requests to a verified locally runnable system.
+- Ask whether to continue to Production only after LOCAL_COMPLETE when production was not explicitly requested.
+- Carry explicit production requests through Production Enablement without a redundant second prompt.
+- Plan structured logs/health/metrics/traces/audit instrumentation before deployment and choose concrete ELK/Loki/Prometheus/Grafana/OpenTelemetry/managed services later.
+
+### Persistent Project Knowledge
+
+- Add a Project Knowledge layer under .ai/knowledge for stable, expensive-to-rediscover information.
+- Prefer pointers to AGENTS/ADR/contracts/official docs instead of duplicating authoritative content.
+- Distinguish FACT / INTERPRETATION / OBSERVED_CONVENTION and AUTHORITATIVE / DISCOVERED / APPROVED / STALE states.
+- Add evidence/confidence, watched paths/signals, targeted refresh and optional promotion to authoritative project rules.
+- Keep cached security knowledge below active security review requirements.
+
+### Visual Consistency Repair
+
+- Add V1 Focused Repair and V2 Product Consistency Sweep.
+- Route whole-project vague visual cleanup requests to V2.
+- Add representative routes, component inventory, UI consistency baseline and visual outlier detection.
+- Require variant/exception classification before normalizing differences.
+- Map material findings to DOM/component/computed-style/token root causes where tooling permits.
+- Add state geometry stability and rendered before/after verification.
+- Persist reusable visual knowledge in PROJECT_VISUAL_PROFILE.yaml.
+
+### Regression Coverage
+
+- Add scenarios through Scenario 056 for quality planning, local/production milestones, observability, project knowledge and V2 visual consistency.
+- Extend repository validation to new Quality/Knowledge/Visual templates and workspace contracts.
+- Extend existing roles/skills only; no new Role, Skill or Gate.
+
+
 ## 0.6.0
 
 ### Progressive Requirement Clarification
