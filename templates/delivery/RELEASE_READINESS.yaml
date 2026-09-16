@@ -1,0 +1,59 @@
+version: 1
+status: NOT_READY # NOT_READY | READY | BLOCKED
+
+release:
+  version: null
+  candidate: null
+  target_environment: production
+
+build:
+  units: []
+
+tests:
+  static: null
+  unit: null
+  integration: null
+  contract: null
+  e2e: null
+  smoke: null
+
+security:
+  effective_sal: null
+  deterministic_checks: null
+  independent_review: null
+  unresolved_critical: 0
+  unresolved_high: 0
+
+data:
+  migration_required: false
+  migration_validated: null
+  recovery_defined: null
+
+infrastructure:
+  validated: null
+
+observability:
+  health_check: null
+  logs: null
+  metrics: null
+  alerts: null
+
+staging:
+  applicable: true
+  deployed: null
+  verification: null
+  reason_if_not_applicable: null
+
+documentation:
+  runbook: null
+  deployment: null
+  rollback: null
+
+approval:
+  production_promotion_required: null
+  approved: null
+  approved_by: null
+  approved_at: null
+
+blockers: []
+evidence: []

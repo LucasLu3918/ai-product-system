@@ -1,0 +1,60 @@
+version: 1
+status: draft
+
+product:
+  name: null
+  description: null
+  version: null
+
+workspace:
+  strategy: monorepo # monorepo | multi-repo
+  root: .
+
+deployment_units: []
+# Example:
+# - id: frontend
+#   type: web
+#   path: apps/frontend
+#   repository: null
+#   runtime: node
+#   deployable: true
+#   depends_on: [backend]
+
+contracts:
+  api: null
+  events: null
+
+data:
+  database: null
+  migrations: null
+
+brand:
+  profile: null
+
+environments:
+  local:
+    required: true
+    entry_command: null
+  staging:
+    required: true
+    reason_if_not_applicable: null
+  production:
+    required: true
+
+commands:
+  dev: null
+  test: null
+  security: null
+  build: null
+  smoke: null
+
+delivery:
+  release_readiness: deployment/RELEASE_READINESS.yaml
+  rollback: null
+  runbook: null
+
+observability:
+  health_check: null
+  logs: null
+  metrics: null
+  alerts: null

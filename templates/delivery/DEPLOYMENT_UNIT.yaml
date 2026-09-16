@@ -1,0 +1,25 @@
+version: 1
+id: null
+type: null # web | api | worker | job | other
+path: null
+repository: null
+
+runtime: null
+
+build:
+  command: null
+  artifact: null
+
+test:
+  command: null
+
+deploy:
+  command: null
+  target: null
+
+health:
+  endpoint: null
+  command: null
+
+depends_on: []
+contracts: []
