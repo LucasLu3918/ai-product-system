@@ -10,7 +10,18 @@ Every Adapter implements the same Turn Harness contract using the safest runtime
 - MANUAL — explicit action is required.
 - UNSUPPORTED — no safe supported integration.
 
-Installation status and capability are separate.
+Installation status and context capability are separate.
+
+## Governance enforcement capability
+
+Report this independently from context capability:
+
+- `ADVISORY` — instructions can request compliance but cannot deterministically intercept the protected tool call.
+- `TOOL_GUARDED` — a verified runtime-native pre-tool hook can block configured protected operations.
+- `ENFORCED` — the runtime/platform provides stronger non-bypassable enforcement for the declared operation class.
+- `UNSUPPORTED` — no safe supported enforcement integration exists.
+
+Never infer TOOL_GUARDED/ENFORCED from documentation alone; use installed adapter state. A guard may tighten policy but never create Human approval.
 
 ## Managed composition
 
@@ -24,7 +35,7 @@ Structured settings integrations add/remove only an AIPS namespaced hook entry a
 
 - Gemini CLI: extension + BeforeAgent → TURN_NATIVE.
 - Claude Code: UserPromptSubmit → TURN_NATIVE when verifiable; managed CLAUDE memory is CONTEXT_ALWAYS fallback.
-- Codex: managed global instruction composition → CONTEXT_ALWAYS; do not claim native per-turn interception.
+- Codex: managed global instruction composition → CONTEXT_ALWAYS; governance enforcement remains ADVISORY unless a native pre-tool guard is actually installed and verified.
 
 ## Adapter responsibilities
 
