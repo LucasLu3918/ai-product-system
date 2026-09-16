@@ -4,7 +4,7 @@ Use when the request is primarily UX, UI, brand identity, creative direction or 
 
 Default role: `product-designer`.
 
-Load only the needed design skills. Reuse current brand/project visual knowledge before generic references.
+Load only needed design skills and reuse current brand/project visual knowledge before generic references.
 
 For vague or trend-sensitive visual requests:
 
@@ -17,6 +17,8 @@ User assets / brand
 → design/generation
 → Visual Quality Review
 ~~~
+
+For an existing UI that is already directionally correct but looks awkward/inconsistent, use `orchestration/VISUAL_POLISH.md` instead of restarting Creative Direction.
 
 Do not load backend, database, infrastructure or security expertise unless the design depends on it.
 
