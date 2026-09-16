@@ -206,3 +206,18 @@ When Approval Binding / Governance Enforcement changes, review together:
 - scenarios 096-100 and deterministic guard tests.
 
 Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverifiable.
+
+## v0.12 consistency
+
+When durable run state changes, review together:
+
+- orchestration/RUN_RESUME.md;
+- templates/workspace/STATE.yaml + RUN_CHECKPOINT.yaml;
+- scripts/run_state.py + bin/aips run routing;
+- ATTACHED and EPHEMERAL storage semantics;
+- revision freshness behavior;
+- EVENTS.jsonl redaction / no-transcript contract;
+- scenarios 101-105 and executable lifecycle tests;
+- system/lifecycle architecture diagrams.
+
+Resume must never bypass current governance, security, impact or verification gates.

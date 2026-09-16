@@ -47,6 +47,11 @@ Usage:
   aips intelligence context --runtime <id> [--project <path>] [--prompt <text>]
   aips intelligence render [--project <path>]
 
+  aips run checkpoint --run-id <id> --step <step> [--project <path>]
+  aips run event --run-id <id> --event <name> [--project <path>]
+  aips run resume --run-id <id> [--project <path>]
+  aips run status --run-id <id> [--project <path>]
+
   aips attach <project-path>
   aips detach <project-path>
   aips status <project-path>
@@ -453,6 +458,13 @@ intelligence_cmd() {
   "$py" "$SYSTEM_DIR/scripts/project_intelligence.py" "$@"
 }
 
+run_state_cmd() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/run_state.py" "$@"
+}
+
 refresh_harness_if_installed() {
   # system-dir is created only by AIPS install. A plain repository checkout
   # must not register global Agent integrations implicitly.
@@ -836,6 +848,11 @@ case "${1:-help}" in
     sub="${2:-status}"
     shift 2 || true
     intelligence_cmd "$sub" "$@"
+    ;;
+  run)
+    sub="${2:-status}"
+    shift 2 || true
+    run_state_cmd "$sub" "$@"
     ;;
   attach)
     [ "$#" -ge 2 ] || die "Usage: aips attach <project-path>"

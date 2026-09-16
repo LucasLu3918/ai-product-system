@@ -255,3 +255,11 @@ approved proposal/scope
 ~~~
 
 Do not infer machine-bound approval from vague context. Runtime guards are enforcement transport; architectural/security reasoning remains in orchestration/review.
+
+## Checkpoint and resume
+
+Use `orchestration/RUN_RESUME.md` for substantial workflows that can span turns/sessions.
+
+Checkpoint after material phase transitions, approvals, implementation completion, test/review completion or blockers. Resume never means blindly continue: compare stored project revision/current evidence first and route stale state through the applicable freshness/impact/review checks.
+
+Do not serialize full conversation or private reasoning into run state.

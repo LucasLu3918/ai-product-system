@@ -516,3 +516,18 @@ flowchart TD
 ~~~
 
 Context capability and governance enforcement are independent runtime dimensions. Native tool hooks only perform deterministic policy checks; semantic review remains in Orchestration.
+
+## Durable workflow resume
+
+~~~mermaid
+flowchart TD
+    W[Material workflow step] --> CP[CHECKPOINT.yaml]
+    W --> EV[EVENTS.jsonl]
+    CP --> I[Interruption / new session]
+    I --> R[Resume]
+    R --> V{Project revision unchanged?}
+    V -->|yes| C[CURRENT → resume_from]
+    V -->|no| S[STALE → freshness / impact / review revalidation]
+~~~
+
+Run events are structured evidence only. Chat transcripts, private chain-of-thought and secrets are not run-state inputs.
