@@ -265,6 +265,13 @@ if release_checker.exists():
     if blocked.returncode == 0:
         errors.append("Release readiness checker accepted BLOCKED fixture")
 
+    sal3_risk = subprocess.run(
+        [sys.executable, str(release_checker), str(ROOT / "tests/fixtures/release-readiness-sal3-risk.yaml")],
+        capture_output=True, text=True,
+    )
+    if sal3_risk.returncode != 0:
+        errors.append(f"Release readiness checker over-blocked SAL 3 PASS WITH RISK fixture: {sal3_risk.stdout.strip()} {sal3_risk.stderr.strip()}")
+
 for shell in ("bin/aips", "scripts/bootstrap.sh"):
     p = ROOT / shell
     if p.exists():

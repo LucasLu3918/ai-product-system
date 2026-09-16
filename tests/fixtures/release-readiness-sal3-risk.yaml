@@ -1,0 +1,15 @@
+version: 1
+status: READY
+release:
+  version: 1.0.0
+  candidate: risk-accepted-123
+  target_environment: production
+security:
+  effective_sal: 3
+  deterministic_checks: pass
+  independent_review: PASS WITH RISK
+  unresolved_critical: 0
+  unresolved_high: 1
+blockers: []
+evidence:
+  - security-review://risk-accepted

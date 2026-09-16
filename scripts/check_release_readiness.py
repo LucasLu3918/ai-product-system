@@ -24,21 +24,27 @@ def main():
     declared = data.get("status")
     blockers = data.get("blockers") or []
     security = data.get("security") or {}
+    sal = security.get("effective_sal")
+    review = str(security.get("independent_review") or "").strip().upper()
     critical = security.get("unresolved_critical")
     high = security.get("unresolved_high")
 
     findings = []
     if declared == "READY" and blockers:
         findings.append("READY status has blockers")
-    if declared == "READY" and isinstance(critical, int) and critical > 0:
-        findings.append("READY status has unresolved Critical security findings")
-    if declared == "READY" and isinstance(high, int) and high > 0:
-        findings.append("READY status has unresolved High security findings")
+    if declared == "READY" and review in {"BLOCK", "BLOCKED", "REQUEST CHANGES"}:
+        findings.append(f"READY status conflicts with security review: {review}")
+    if declared == "READY" and sal == 4 and isinstance(critical, int) and critical > 0:
+        findings.append("SAL 4 READY status has unresolved Critical security findings")
+    if declared == "READY" and sal == 4 and isinstance(high, int) and high > 0:
+        findings.append("SAL 4 READY status has unresolved High security findings")
 
     summary = {
         "status": "pass" if declared == "READY" and not findings else "not_ready",
         "declared_status": declared,
         "blocker_count": len(blockers),
+        "effective_sal": sal,
+        "security_review": review or None,
         "unresolved_critical": critical,
         "unresolved_high": high,
         "findings": findings,
