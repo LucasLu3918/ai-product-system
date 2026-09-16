@@ -5,6 +5,16 @@ active_work_mode: null
 active_task:
   id: null
   status: null
+workflow:
+  run_id: null
+  protocol: null
+  current_step: null
+  status: null
+  completed_steps: []
+  waiting_for: []
+  resume_from: null
+  checkpoint: null
+  project_revision: null
 completed: []
 blocked: []
 waiting_for: []
