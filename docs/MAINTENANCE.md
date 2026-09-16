@@ -24,6 +24,8 @@ Every system change must assess downstream documentation and behavior before com
 | `orchestration/CREATIVE_DIRECTION.md` | creative workflow changes |
 | `orchestration/BRAND_SYSTEM.md` | brand workflow/precedence changes |
 | `orchestration/CAPABILITY_INCUBATION.md` | Role/Skill creation/reuse behavior changes |
+| `orchestration/SECRET_HANDLING.md` | credential acquisition/redaction/exposure behavior changes |
+| `orchestration/CORE_CHANGE_TESTING.md` | core-change test-selection/completion behavior changes |
 | `orchestration/DETERMINISTIC_AUTOMATION.md` | tool-vs-reasoning routing changes |
 | `orchestration/PRODUCT_DELIVERY.md` | complete-product lifecycle changes |
 | `orchestration/RELEASE_READINESS.md` | release/deployment readiness changes |
@@ -73,7 +75,7 @@ Before remote publication, present the Git Publish Proposal. A material differen
 7. Confirm changed routing/gate behavior has scenario coverage.
 8. Confirm planning/creative/brand/automation/product-delivery templates match their protocols when affected.
 9. Confirm Human and Agent documentation audiences are synchronized when behavior affects them.
-10. Confirm applicable secret/credential leakage and handling review is complete.
+10. Confirm applicable secret/credential leakage and handling review is complete; secret-scan evidence must not echo secret values.
 11. Update `VERSION` using SemVer.
 12. Update `CHANGELOG.md`.
 13. Ensure the system working tree is clean before publishing.

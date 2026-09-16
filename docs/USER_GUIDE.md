@@ -732,3 +732,38 @@ EPHEMERAL Project 也能在 AIPS External Cache 保存 Intelligence，因此不�
 Human Review HTML 讓使用者檢查 AI 對 Project 的理解。使用者的補充、例外與排除條件保存到 PROJECT_OVERRIDES.yaml。
 
 任何 Existing Project mutation 在 Coding 前都要評估 Change Impact：Input、Output、Data、Events、Consumers、Security Boundary、Business Invariant、Compatibility、Tests 等；完成後再用 Actual Diff 回頭核對。
+
+## 27. Secret / Key 安全
+
+需要 API Key、Token、Password、Certificate 等敏感資訊時，AIPS 不應要求把 Secret 直接寫進程式或貼進 Prompt。
+
+優先順序：
+
+~~~text
+Managed / Workload Identity
+→ Secret Manager / Vault
+→ Protected CI/CD Secret Store
+→ OS / Runtime Credential Store
+→ Runtime Environment
+→ 必要時才使用未提交的 local secret file
+~~~
+
+程式只保存 Secret reference/config name。若沒有可安全取得的 Credential，該 authenticated operation 應標記 BLOCKED，而不是 hard-code。
+
+Security Review 會檢查 Source/Config、Fixtures、Logs、Generated Intelligence/HTML 與 CI/Deployment artifacts 的 Secret leakage；scanner evidence 只輸出位置/fingerprint，不回顯 Secret value。
+
+## 28. Core Change Test Matrix
+
+大型或核心修改不能只因少數 Unit Test 綠燈就視為完成。
+
+AIPS 依 final Change Boundary 判斷 Static、Unit、Integration、Contract、E2E、Security、Migration/Recovery、CLI/Harness、Docs/Schema 等哪些測試適用。
+
+每個受影響 boundary 必須有 Evidence 或具體 N/A reason。若實作途中 Scope 擴大，就重新計算 Test Matrix；任何必要測試失敗都阻擋完成與 Release。
+
+## 29. 新增 Skill
+
+新增 Skill 前先搜尋 Skills/Capabilities Index 與最相近 Skill body。
+
+只有真正存在跨專案、可重用而且責任清楚的能力缺口才新增。Framework 名稱、一次性工具、Project Convention、Style variant 不應因名稱不同就建立新 Skill。
+
+New Skill Admission 至少要有：positive triggers、non-triggers、inputs、outputs、boundary、context cost、model requirements、reuse rationale、scenario evidence、unique ID/path，以及 secret/private-config check。

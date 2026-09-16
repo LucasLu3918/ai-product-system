@@ -85,8 +85,9 @@ aips harness resolve --cwd "$PWD"
 - 重大或核心修改先規劃、再確認、才實作。
 - 新增 Role / Skill / Capability 前先搜尋並重用既有能力。
 - 視覺設計先理解使用者素材、品牌與 Reference，不直接猜風格。
-- 高風險功能使用更嚴格的資安與可靠性審核。
+- 高風險功能使用更嚴格的資安與可靠性審核；Key/Token/Password 只從安全 Runtime Source 取得，不寫入程式、Prompt、Log 或 Intelligence。
 - 可用 Shell / 簡單程式確定產生的資料，先程式化再交回 AI。
+- Large/Core Change 依實際影響範圍建立 Test Matrix，所有適用測試通過才可完成/發布。
 - Git 遠端發布前先列出修改檔案、驗證結果與 Atomic Commit 計畫。
 - Human Docs 與 Agent Docs 分流，但流程異動時必須同步更新。
 

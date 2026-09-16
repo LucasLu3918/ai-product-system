@@ -118,6 +118,7 @@ required_files = [
     "orchestration/REQUIREMENT_CLARIFICATION.md", "orchestration/EXTERNAL_CONTEXT_RESOLUTION.md",
     "orchestration/VISUAL_POLISH.md", "orchestration/MULTI_REVIEW.md",
     "orchestration/QUALITY_PLANNING.md", "orchestration/PROJECT_KNOWLEDGE.md",
+    "orchestration/SECRET_HANDLING.md", "orchestration/CORE_CHANGE_TESTING.md",
     "orchestration/PROJECT_INTELLIGENCE.md", "orchestration/CHANGE_IMPACT.md",
     "orchestration/TURN_HARNESS.md", "orchestration/HARNESS_RESOLUTION.md",
     "harness/BOOTSTRAP.md", "harness/HARNESS_PROTOCOL.md", "harness/ADAPTER_CONTRACT.md",
@@ -132,7 +133,7 @@ required_files = [
     "templates/system-improvement-review.md", "templates/constitutional-change-proposal.md",
     "templates/core-change-proposal.md", "templates/git-publish-proposal.md",
     "templates/capability-reuse-review.md",
-    "templates/review/REVIEW_REPORT.md",
+    "templates/review/REVIEW_REPORT.md", "templates/review/CORE_CHANGE_TEST_MATRIX.yaml",
     "templates/knowledge/KNOWLEDGE_TOPIC.md",
     "templates/creative/CREATIVE_BRIEF.md", "templates/creative/REFERENCE_BOARD.md",
     "templates/creative/VISUAL_REVIEW.md",
@@ -145,6 +146,7 @@ required_files = [
     "templates/delivery/RUNBOOK.md",
     "scripts/check_release_readiness.py", "scripts/harness_resolve.py",
     "scripts/project_intelligence.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py",
+    "scripts/check_secret_leakage.py",
     "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml",
 ]
 security_templates = [
@@ -193,8 +195,8 @@ for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"
         errors.append(f"PLANNING_PACKAGE.md missing: {phrase}")
 
 scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
-if len(scenarios) < 88:
-    errors.append(f"Expected at least 88 acceptance scenarios, found {len(scenarios)}")
+if len(scenarios) < 95:
+    errors.append(f"Expected at least 95 acceptance scenarios, found {len(scenarios)}")
 
 security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
 for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):
@@ -205,6 +207,42 @@ for security_skill in ("threat-modeling", "authorization-security", "business-lo
     if security_skill not in (skills.get("skills") or {}):
         errors.append(f"Missing security skill in index: {security_skill}")
 
+
+
+secret_protocol = (ROOT / "orchestration/SECRET_HANDLING.md").read_text(encoding="utf-8") if (ROOT / "orchestration/SECRET_HANDLING.md").exists() else ""
+for phrase in ("Secret values are runtime inputs", "Acquisition priority", "Secret leakage review", "Exposure response"):
+    if phrase not in secret_protocol:
+        errors.append(f"SECRET_HANDLING.md missing: {phrase}")
+
+core_testing = (ROOT / "orchestration/CORE_CHANGE_TESTING.md").read_text(encoding="utf-8") if (ROOT / "orchestration/CORE_CHANGE_TESTING.md").exists() else ""
+for phrase in ("Impact-derived Test Matrix", "Recompute rule", "Strict completion rule", "Actual Diff"):
+    if phrase not in core_testing:
+        errors.append(f"CORE_CHANGE_TESTING.md missing: {phrase}")
+
+incubation = (ROOT / "orchestration/CAPABILITY_INCUBATION.md").read_text(encoding="utf-8") if (ROOT / "orchestration/CAPABILITY_INCUBATION.md").exists() else ""
+for phrase in ("New Skill admission contract", "positive triggers", "non-triggers", "context/token cost", "unique ID/path"):
+    if phrase.lower() not in incubation.lower():
+        errors.append(f"CAPABILITY_INCUBATION.md missing New Skill admission requirement: {phrase}")
+
+skill_paths = {}
+for skill_id, meta in (skills.get("skills") or {}).items():
+    path_value = meta.get("path")
+    if path_value in skill_paths:
+        errors.append(f"Duplicate Skill path registered by {skill_paths[path_value]} and {skill_id}: {path_value}")
+    else:
+        skill_paths[path_value] = skill_id
+    body_path = ROOT / "skills" / str(path_value)
+    if body_path.exists():
+        body = body_path.read_text(encoding="utf-8")
+        if body.startswith("---"):
+            match = re.search(r"(?m)^id:\\s*([^\\s]+)\\s*$", body)
+            if match and match.group(1) != skill_id:
+                errors.append(f"Skill frontmatter id mismatch: index={skill_id}, body={match.group(1)}")
+
+matrix_doc = load_yaml(ROOT / "templates/review/CORE_CHANGE_TEST_MATRIX.yaml") or {}
+for key in ("change", "matrix", "scope_recomputed_after_expansion", "actual_diff_reconciled", "blockers", "status"):
+    if key not in matrix_doc:
+        errors.append(f"CORE_CHANGE_TEST_MATRIX.yaml missing top-level key: {key}")
 
 constitution = (ROOT / "core/CONSTITUTION.md").read_text(encoding="utf-8") if (ROOT / "core/CONSTITUTION.md").exists() else ""
 for phrase in ("Protected Human Authority", "Truth and No Silent Assumptions", "Protected Safety Boundary", "Stop-the-Line", "Scope Integrity", "Explicit Approval for High-Risk Actions", "Amendment Protocol"):
@@ -646,7 +684,7 @@ with tempfile.TemporaryDirectory() as tmp:
     (project / "AGENTS.md").write_text("# Project Rules\nUse existing architecture.\n", encoding="utf-8")
     (project / "main.go").write_text("package main\nfunc main() {}\n", encoding="utf-8")
     (project / "internal" / "domain" / "order.go").write_text("package domain\ntype Order struct{}\n", encoding="utf-8")
-    (project / ".env").write_text("PASSWORD=super-secret\n", encoding="utf-8")
+    (project / ".env").write_text("PASSWORD=fixture-placeholder\n", encoding="utf-8")
     subprocess.run(["git", "init", "-q"], cwd=project, check=True)
     subprocess.run(["git", "config", "user.email", "aips@example.invalid"], cwd=project, check=True)
     subprocess.run(["git", "config", "user.name", "AIPS Test"], cwd=project, check=True)
@@ -707,7 +745,7 @@ with tempfile.TemporaryDirectory() as tmp:
         review_text = review.read_text(encoding="utf-8") if review.exists() else ""
         if not review.exists() or "Project Intelligence Review" not in review_text:
             errors.append("Deterministic Project Intelligence Review HTML missing")
-        if "super-secret" in review_text or "cdn." in review_text.lower() or "<script src=" in review_text.lower():
+        if "fixture-placeholder" in review_text or "cdn." in review_text.lower() or "<script src=" in review_text.lower():
             errors.append("Review HTML must be self-contained and must not expose secret values")
 
         # Unrelated commit must not stale Intelligence.
@@ -793,6 +831,30 @@ with tempfile.TemporaryDirectory() as tmp:
     if remove_hook.returncode != 0 or "PreToolUse" not in settings_doc.get("hooks", {}) or "UserPromptSubmit" in settings_doc.get("hooks", {}):
         errors.append("Claude hook uninstall must remove only AIPS UserPromptSubmit hook")
 
+
+
+# Secret scanner must detect high-confidence credentials without echoing the value.
+with tempfile.TemporaryDirectory() as tmp:
+    secret_root = Path(tmp)
+    secret_file = secret_root / "config.txt"
+    fake_token = "ghp_" + ("A" * 40)
+    secret_file.write_text("TOKEN=" + fake_token + "\\n", encoding="utf-8")
+    scanner = ROOT / "scripts/check_secret_leakage.py"
+    result = subprocess.run([sys.executable, str(scanner), "--root", str(secret_root), "--json"], capture_output=True, text=True)
+    if result.returncode == 0:
+        errors.append("Secret checker failed to detect a high-confidence token")
+    if fake_token in result.stdout or fake_token in result.stderr:
+        errors.append("Secret checker leaked the detected secret value in output")
+    try:
+        scan_doc = json.loads(result.stdout)
+        if not scan_doc.get("findings") or scan_doc["findings"][0].get("detector") != "github-token":
+            errors.append("Secret checker output missing expected redacted finding metadata")
+    except Exception:
+        errors.append("Secret checker did not emit valid JSON evidence")
+
+repo_scan = subprocess.run([sys.executable, str(ROOT / "scripts/check_secret_leakage.py"), "--root", str(ROOT), "--json"], capture_output=True, text=True)
+if repo_scan.returncode != 0:
+    errors.append("Repository secret leakage scan found high-confidence findings: " + repo_scan.stdout[:1200])
 
 for shell in ("bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "harness/adapters/gemini-cli/hooks/aips-turn-context.sh"):
     p = ROOT / shell

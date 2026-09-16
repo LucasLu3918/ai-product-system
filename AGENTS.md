@@ -8,8 +8,8 @@ Load minimally. Do not read the whole repository.
 4. If the change is large/core, obtain Core Change Approval before implementation.
 5. Resolve requirement readiness, external-source needs, then the smallest Work Mode, project state, risk/assurance and planning/creative/brand/product-delivery needs.
 6. For existing projects, preserve runtime-native/project instructions, resolve Project Intelligence, and load only task-relevant Intelligence topics. If Intelligence is missing, perform read-only bootstrap before mutation; if stale, targeted-refresh affected topics only.
-7. Resolve only required Roles and leaf Skills. Before adding/expanding Role/Capability/Skill, use `orchestration/CAPABILITY_INCUBATION.md`.
-8. Before an existing-project mutation, resolve Change Impact and preserve valid project-native conventions. Execute inside the approved boundary, refresh only affected Project Intelligence, and use multi-perspective review for large/core/high-risk changes.
+7. Resolve only required Roles and leaf Skills. Before adding/expanding Role/Capability/Skill, use `orchestration/CAPABILITY_INCUBATION.md`; a new Skill must pass reuse/admission/unique-ID/scenario checks.
+8. Before an existing-project mutation, resolve Change Impact and preserve valid project-native conventions. If credentials are needed, load `orchestration/SECRET_HANDLING.md`. For Large/Core changes, derive and execute the affected-boundary test matrix before review/completion.
 9. Before remote Git publication, run the Git Publish Approval Gate.
 
 Key protocol pointers:
@@ -30,6 +30,8 @@ Key protocol pointers:
 - creative direction: `orchestration/CREATIVE_DIRECTION.md`
 - brand system: `orchestration/BRAND_SYSTEM.md`
 - security assurance: `docs/SECURITY_ASSURANCE.md`
+- secret handling: `orchestration/SECRET_HANDLING.md`
+- core change testing: `orchestration/CORE_CHANGE_TESTING.md`
 - model routing: `orchestration/MODEL_ROUTING.md`
 - Constitution: `core/CONSTITUTION.md`
 

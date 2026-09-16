@@ -18,6 +18,7 @@ Agent Session / User Request
 → Initial read-only bootstrap or targeted refresh when required
 → Change Impact Guard before existing-project mutation
 → Risk / Assurance + Quality Classification
+→ Secret / Credential Handling when credentials are in scope
 → Creative / Brand / Capability Routing when relevant
 → Instruction Discovery (existing projects)
 → Minimal Context Manifest
@@ -26,6 +27,7 @@ Agent Session / User Request
 → Model + Tool Routing
 → Deterministic Automation when suitable
 → Execute
+→ Impact-derived Tests for Large/Core changes
 → Independent or Multi-Perspective Review
 → Author Fix / Targeted Re-review when needed
 → Artifact / Quality Gate
@@ -246,6 +248,19 @@ SAL 3–4 affected work activates the required Security Engineer review, evidenc
 
 Security Assurance informs Model Routing but is not the same as Model Tier.
 
+### Secret / Credential Handling
+
+When implementation, testing, deployment, API integration or debugging requires credentials, load orchestration/SECRET_HANDLING.md.
+
+Rules:
+
+- secrets are runtime inputs/references, never source code, prompts, Project Intelligence, generated HTML, fixtures, logs or review artifacts;
+- prefer managed/workload identity → approved secret manager → protected CI/CD store → OS/runtime credential store → runtime environment;
+- do not ask the user to paste a secret into chat when a secure provider/connector/store can supply it;
+- authenticated integration begins only after secure acquisition, least privilege and redaction are verified;
+- unavailable credentials make the authenticated operation BLOCKED, never hard-coded;
+- Security Review uses deterministic secret scanning where practical and never repeats a discovered secret value.
+
 ## Work mode
 
 Choose the smallest mode matching the user intent. See `work-modes/README.md`.
@@ -350,7 +365,15 @@ Reuse existing
 → New Role only for distinct responsibility + authority + review obligation
 ```
 
-Search the current indexes first and record overlap. Permanent or high-authority additions require human approval.
+Search the current indexes and relevant existing Skill bodies first and record overlap. Permanent or high-authority additions require human approval.
+
+For a new Skill, complete the New Skill Admission contract in orchestration/CAPABILITY_INCUBATION.md: narrow responsibility, positive/non-triggers, inputs/outputs/boundaries, context cost/model needs, cross-project reuse rationale, routing scenarios, unique ID/path, and secret/private-config check. Project-specific convention or one-off automation belongs in Project Intelligence or project/run tooling instead.
+
+## Core Change Testing
+
+For every Large/Core Change, load orchestration/CORE_CHANGE_TESTING.md.
+
+Derive required tests from the final Change Boundary. Every materially affected boundary must have applicable evidence or a concrete N/A reason. Recompute the matrix if scope expands. Failing required tests, missing affected-boundary evidence, or untested material diff blocks completion/release.
 
 ## Deterministic automation
 

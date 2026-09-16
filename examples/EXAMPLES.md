@@ -612,3 +612,45 @@ AIPS 已安裝，使用者問 Python tuple 和 list 差異。
 Core Change 改變 Global Harness、Project Persistence 或 Delivery Lifecycle。
 
 **預期行為**：Documentation Impact 必須檢查 docs/ARCHITECTURE.md Mermaid、Architecture Overview 與相關 SVG；受影響的圖必須更新，未受影響需 N/A + reason。
+
+## 範例 57：API Key 不寫進程式
+
+**使用者**
+> 幫我串接第三方付款 API，我有一組 API Key。
+
+**預期行為**
+
+- 不要求把 API Key 寫進 Source / AGENTS / Project Intelligence。
+- 先判斷 Provider-native auth / Secret Manager / CI Secret / Environment 哪個安全來源可用。
+- 程式只讀取 Secret reference，例如 PAYMENT_API_KEY。
+- Log / Error / HTTP trace 不輸出 Authorization 或 Secret value。
+- 如果目前沒有安全可取得的 Credential，Authenticated call = BLOCKED，不用 hard-code 繞過。
+- Security Review 執行 Secret Leakage / Redaction evidence，Finding 不回顯完整 Key。
+
+## 範例 58：核心 Harness 修改的嚴格測試
+
+修改 Global Harness Adapter、Attach/Detach Intelligence migration 與 CLI Uninstall。
+
+**預期行為**
+
+先依 final Change Boundary 建立 Impact-derived Test Matrix。至少評估 Shell/Python syntax、Runtime Adapter composition、install/uninstall lifecycle、External Cache migration、ownership recovery、secret leakage、docs/schema validator。任何適用項目未執行或失敗都不能發布。
+
+## 範例 59：要求新增相似 Skill
+
+**使用者**
+> 幫我新增 golang-rest-api Skill。
+
+**預期行為**
+
+先搜尋既有 rest-api、Go project conventions 與相關 Engineering Skills。若差異只是語言/framework context，可由既有 Skill + Project Intelligence / reference data 解決，則不建立重複 Skill。只有存在穩定、跨專案且無法合理 extend 的方法論缺口才進 New Skill Admission。
+
+## 範例 60：Security Review 發現疑似 Secret
+
+Scanner 在 Deployment Config 發現疑似 live token。
+
+**預期行為**
+
+- Finding 只記 path、line、detector、fingerprint，不把 token 貼進 Review。
+- 停止傳播該值；評估 provider/scope 與 history/log/cache exposure。
+- 需要時 rotate/revoke；清理 artifact 後重新 scan/test。
+- Production 或 SAL3–4 active exposure 未處理前 BLOCK Release。
