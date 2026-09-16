@@ -1,0 +1,26 @@
+version: 1
+case_id: 005-delivery-plan
+scenario_id: "005"
+case_fingerprint: sha256:1662d627cb94e30a7f3dd5ae9b9b9ddbbb9f4b279a83e5af3512336c3f4463a2
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: DELIVERY_PLANNING
+  rerun_discovery_by_default: false
+  code_modification_allowed: false
+  actions:
+    - inspect_existing_plan
+    - identify_dependencies
+    - create_work_breakdown
+    - define_milestones
+    - identify_delivery_risks
+    - recommend_execution_order
+  delivery_sequence:
+    - validate the existing plan for blocking gaps only
+    - order work by dependency and critical path
+    - define milestones and verification points
+    - surface delivery risks and handoff boundaries
+  summary: Treat the existing complete plan as authoritative input, avoid restarting discovery without a blocking gap, and return a dependency-aware delivery sequence without editing code.
