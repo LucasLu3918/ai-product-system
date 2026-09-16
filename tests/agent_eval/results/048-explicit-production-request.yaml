@@ -1,0 +1,26 @@
+version: 1
+case_id: 048-explicit-production-request
+scenario_id: "048"
+case_fingerprint: sha256:736951155d37dc7a3c6a0f14f067edd080ab0d95c12570916608b97e4444dbcf
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: PRODUCTION_DELIVERY_PLANNED
+  local_complete_still_required: true
+  redundant_deploy_question_required: false
+  release_readiness_required: true
+  production_planning:
+    - infrastructure
+    - deployment_automation
+    - secrets
+    - recovery
+    - observability
+  actions:
+    - plan_production_enablement_from_start
+    - reach_and_verify_local_complete
+    - continue_to_production_enablement
+    - run_release_readiness_before_promotion
+  summary: Include production concerns from planning onward, still prove LOCAL_COMPLETE first, and then continue directly into Production Enablement and Release Readiness because production was explicitly requested.
