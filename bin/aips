@@ -84,11 +84,23 @@ adapter_state_file() {
   printf '%s/%s.yaml\n' "$ADAPTER_STATE_HOME" "$1"
 }
 
-adapter_status_value() {
-  local file
-  file="$(adapter_state_file "$1")"
+adapter_state_value() {
+  local id="$1" field="$2" file
+  file="$(adapter_state_file "$id")"
   [ -f "$file" ] || return 1
-  awk -F': ' '/^status:/ {gsub(/"/,"",$2); print $2; exit}' "$file"
+  awk -v key="$field" -F': ' '$1 == key {gsub(/"/,"",$2); print $2; exit}' "$file"
+}
+
+adapter_status_value() {
+  adapter_state_value "$1" "status"
+}
+
+adapter_resource_value() {
+  adapter_state_value "$1" "resource"
+}
+
+adapter_strategy_value() {
+  adapter_state_value "$1" "strategy"
 }
 
 write_adapter_state() {
@@ -106,10 +118,21 @@ EOF
 write_ownership_manifest() {
   mkdir -p "$HARNESS_HOME"
   local codex_status claude_status gemini_status
+  local codex_strategy claude_strategy gemini_strategy
+  local codex_resource claude_resource gemini_resource
+
   codex_status="$(adapter_status_value codex 2>/dev/null || echo NOT_DETECTED)"
   claude_status="$(adapter_status_value claude-code 2>/dev/null || echo NOT_DETECTED)"
   gemini_status="$(adapter_status_value gemini-cli 2>/dev/null || echo NOT_DETECTED)"
-  cat > "$OWNERSHIP_MANIFEST" <<EOF
+  codex_strategy="$(adapter_strategy_value codex 2>/dev/null || true)"
+  claude_strategy="$(adapter_strategy_value claude-code 2>/dev/null || true)"
+  gemini_strategy="$(adapter_strategy_value gemini-cli 2>/dev/null || true)"
+  codex_resource="$(adapter_resource_value codex 2>/dev/null || true)"
+  claude_resource="$(adapter_resource_value claude-code 2>/dev/null || true)"
+  gemini_resource="$(adapter_resource_value gemini-cli 2>/dev/null || true)"
+
+  {
+    cat <<EOF
 version: 1
 installed_at: "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 
@@ -125,14 +148,49 @@ harness:
 owned_resources:
   - type: cli_symlink
     path: "$BIN_HOME/aips"
+EOF
+
+    if [ "$codex_status" = "AUTOMATIC" ] && [ -n "$codex_resource" ]; then
+      cat <<EOF
+  - type: runtime_bootstrap
+    runtime: codex
+    path: "$codex_resource"
+    snapshot: "$OWNED_HOME/codex.bootstrap"
+EOF
+    fi
+
+    if [ "$claude_status" = "AUTOMATIC" ] && [ -n "$claude_resource" ]; then
+      cat <<EOF
+  - type: runtime_bootstrap
+    runtime: claude-code
+    path: "$claude_resource"
+    snapshot: "$OWNED_HOME/claude-code.bootstrap"
+EOF
+    fi
+
+    if [ "$gemini_status" = "AUTOMATIC" ] && [ -n "$gemini_resource" ]; then
+      cat <<EOF
+  - type: runtime_registration
+    runtime: gemini-cli
+    id: "$gemini_resource"
+EOF
+    fi
+
+    cat <<EOF
 
 adapters:
   codex:
     status: "$codex_status"
+    strategy: "$codex_strategy"
+    resource: "$codex_resource"
   claude-code:
     status: "$claude_status"
+    strategy: "$claude_strategy"
+    resource: "$claude_resource"
   gemini-cli:
     status: "$gemini_status"
+    strategy: "$gemini_strategy"
+    resource: "$gemini_resource"
 
 preservation_policy:
   user_agent_instructions: untouched
@@ -142,6 +200,7 @@ preservation_policy:
   project_source: untouched
   project_ai_workspace: preserved
 EOF
+  } > "$OWNERSHIP_MANIFEST"
 }
 
 install_owned_instruction_file() {
@@ -249,8 +308,8 @@ uninstall_gemini_adapter() {
       say "Removed AIPS Gemini extension."
       return 0
     fi
-    warn "Could not unregister AIPS Gemini extension automatically."
-    return 0
+    warn "Could not unregister AIPS Gemini extension automatically; ownership state is being preserved for retry."
+    return 1
   fi
 
   local default_link="$HOME/.gemini/extensions/aips-global-harness"
@@ -263,14 +322,27 @@ uninstall_gemini_adapter() {
       return 0
     fi
   fi
-  warn "Gemini CLI is unavailable; any AIPS-owned Gemini registration could not be verified for removal."
+  warn "Gemini CLI is unavailable; AIPS-owned Gemini registration could not be safely verified for removal."
+  return 1
 }
 
 harness_uninstall() {
-  local codex_home="${CODEX_HOME:-$HOME/.codex}"
-  remove_owned_instruction_file "codex" "$codex_home/AGENTS.md"
-  remove_owned_instruction_file "claude-code" "$HOME/.claude/CLAUDE.md"
-  uninstall_gemini_adapter
+  local codex_target claude_target failed="false"
+  codex_target="$(adapter_resource_value codex 2>/dev/null || true)"
+  claude_target="$(adapter_resource_value claude-code 2>/dev/null || true)"
+
+  [ -n "$codex_target" ] && remove_owned_instruction_file "codex" "$codex_target"
+  [ -n "$claude_target" ] && remove_owned_instruction_file "claude-code" "$claude_target"
+
+  if ! uninstall_gemini_adapter; then
+    failed="true"
+  fi
+
+  if [ "$failed" = "true" ]; then
+    warn "Harness uninstall is incomplete. AIPS ownership state was preserved at: $HARNESS_HOME"
+    return 1
+  fi
+
   rm -rf "$HARNESS_HOME"
   say "AIPS Global Harness removed."
   say "User/project Agent instructions, Skills, source and project .ai workspaces were preserved."
@@ -301,20 +373,21 @@ harness_doctor() {
   [ -f "$SYSTEM_DIR/harness/BOOTSTRAP.md" ] && say "bootstrap: OK" || { warn "bootstrap missing"; failed="true"; }
   [ -f "$OWNERSHIP_MANIFEST" ] && say "ownership manifest: OK" || { warn "ownership manifest missing (run aips harness install)"; failed="true"; }
 
-  local codex_home="${CODEX_HOME:-$HOME/.codex}"
-  local codex_status claude_status gemini_status
+  local codex_status claude_status gemini_status codex_target claude_target
   codex_status="$(adapter_status_value codex 2>/dev/null || echo NOT_DETECTED)"
   claude_status="$(adapter_status_value claude-code 2>/dev/null || echo NOT_DETECTED)"
   gemini_status="$(adapter_status_value gemini-cli 2>/dev/null || echo NOT_DETECTED)"
+  codex_target="$(adapter_resource_value codex 2>/dev/null || true)"
+  claude_target="$(adapter_resource_value claude-code 2>/dev/null || true)"
 
   if [ "$codex_status" = "AUTOMATIC" ]; then
-    [ -f "$codex_home/AGENTS.md" ] && [ -f "$OWNED_HOME/codex.bootstrap" ] && say "codex adapter: OK" || { warn "codex adapter ownership mismatch"; failed="true"; }
+    [ -n "$codex_target" ] && [ -f "$codex_target" ] && [ -f "$OWNED_HOME/codex.bootstrap" ] && say "codex adapter: OK" || { warn "codex adapter ownership mismatch"; failed="true"; }
   else
     say "codex adapter: $codex_status"
   fi
 
   if [ "$claude_status" = "AUTOMATIC" ]; then
-    [ -f "$HOME/.claude/CLAUDE.md" ] && [ -f "$OWNED_HOME/claude-code.bootstrap" ] && say "claude-code adapter: OK" || { warn "claude-code adapter ownership mismatch"; failed="true"; }
+    [ -n "$claude_target" ] && [ -f "$claude_target" ] && [ -f "$OWNED_HOME/claude-code.bootstrap" ] && say "claude-code adapter: OK" || { warn "claude-code adapter ownership mismatch"; failed="true"; }
   else
     say "claude-code adapter: $claude_status"
   fi

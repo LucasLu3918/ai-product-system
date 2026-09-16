@@ -195,7 +195,7 @@
 
 **預期行為**
 
-先執行 `aips preflight /path/to/project`。只更新 AI Product System；若有本機修改、分歧或 MAJOR 版本改變則停止，不自動 merge/rebase。成功後把 version + commit 記錄到 `.ai/SYSTEM.yaml`。
+先執行 `aips preflight /path/to/project`。只更新 AI Product System；若有本機修改、分歧或 MAJOR 版本改變則停止，不自動 merge/rebase。若 Project 已 ATTACHED，更新 `.ai/SYSTEM.yaml`；若未 Attach，維持 EPHEMERAL 且不建立 `.ai/`。
 
 ## 範例 13：完整主體規劃後再詢問是否實作
 

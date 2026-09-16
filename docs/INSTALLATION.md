@@ -189,7 +189,7 @@ Read Ownership / Adapter state
 ✓ AIPS .venv（預設）
 ~~~
 
-如果某個 AIPS-owned bootstrap file 在安裝後被修改，Uninstall 會保留並警告，不會直接刪除。
+如果某個 AIPS-owned bootstrap file 在安裝後被修改，Uninstall 會保留並警告，不會直接刪除。若某個 AIPS-owned Runtime registration 無法安全解除，Uninstall 會停止並保留 Ownership state，讓使用者修復後重試，而不是遺失追蹤資訊。
 
 ## 12. 連 .venv 一起解除
 
