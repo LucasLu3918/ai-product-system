@@ -1,26 +1,20 @@
 # Reproducible Planning Package
 
-Use this protocol when the task creates or materially revises the **primary definition of a product/project**. Examples: a new product, a major redesign, a new platform, a major architecture/product plan, or a plan that future implementers will rely on.
-
-Do not use it for a small bugfix, isolated API change, narrow research task, or local refactor.
+Use when the task creates or materially revises the primary definition of a product/project.
 
 ## Workspace first
 
-Before producing the authoritative planning package, resolve where it will be persisted.
+Resolve the persistence workspace before producing the authoritative plan.
 
-For a complete product delivery, initialize the Product Workspace and a draft root `PRODUCT.yaml` using `templates/product/PRODUCT.yaml`.
-
-- If the user explicitly provided a workspace/repository/path, use it.
-- If no workspace was specified, **ask for the target workspace before creating the authoritative package**.
-- Do not treat the chat transcript as the System of Record.
+For complete product delivery, initialize PRODUCT.yaml and use `orchestration/QUALITY_PLANNING.md`.
 
 ## Required planning artifacts
 
-Create the smallest complete set that allows another competent AI agent or human team to reproduce substantially the same intended product.
+Create the smallest complete set another competent Agent/team can execute without hidden chat context.
 
 Recommended package:
 
-```text
+~~~text
 planning/
 ├── PLANNING_INDEX.md
 ├── PRODUCT_PLAN.md
@@ -30,169 +24,114 @@ planning/
 ├── API_SPEC.md
 ├── IMPLEMENTATION_PLAN.md
 ├── DECISIONS_ASSUMPTIONS.md
-├── brand/                    # when the product creates/depends on an authoritative brand
-└── security/                 # required artifacts for SAL 3–4 when applicable
-```
+├── brand/                    # when applicable
+└── security/                 # required for applicable SAL
+~~~
 
-Artifacts that are genuinely not applicable must be marked **N/A with a reason**, not silently omitted.
+For complete products also persist/link the Quality Profile, normally:
 
-### PLANNING_INDEX.md
+`docs/quality/QUALITY_PROFILE.yaml`
 
-- package purpose, version and status;
-- links to every authoritative artifact;
-- owner/reviewer/approval state;
-- applicable/N/A matrix;
-- reproducibility checklist;
-- unresolved blocking decisions.
+Genuinely non-applicable artifacts/dimensions are marked N/A with a reason.
 
-### PRODUCT_PLAN.md
+## Quality and delivery planning
 
-- vision and problem statement;
-- target users/personas;
-- goals and non-goals;
-- scope and release boundary;
-- functional and non-functional requirements;
-- user stories / acceptance criteria;
-- business rules and key terminology;
-- constraints and success metrics.
+Before architecture is locked:
 
-### EXPERIENCE_DESIGN.md
+1. classify Q1/Q2/Q3 baseline;
+2. derive seven quality dimensions;
+3. establish initial resource/cost/time ranges with confidence;
+4. define measurable targets/budgets and verification methods;
+5. plan provider-neutral logging/health/metrics/tracing/audit requirements;
+6. record material trade-offs.
 
-- information architecture;
-- key user journeys and flows;
-- screen/page inventory;
-- interaction states;
-- responsive/accessibility behavior;
-- UX rationale and edge cases.
+After architecture/dependency choices, refine resource/cost/time estimates.
 
-### VISUAL_SYSTEM.md
+## PLANNING_INDEX.md
 
-- visual direction and reference language;
-- **key visual / hero visual definition**;
-- typography, color, spacing, iconography and imagery rules;
-- component/design-token guidance;
-- visual consistency rules;
-- required asset list and generation/source notes.
+Include package purpose/version/status, authoritative links, approval state, applicable/N/A matrix, reproducibility checklist and blocking decisions.
 
-When visual generation tools are available and a main visual is part of the product, persist representative key-visual assets alongside this document. If an actual visual cannot be generated in the current environment, the plan must clearly identify that missing artifact before being called fully approved.
+## PRODUCT_PLAN.md
 
-### Brand / Creative artifacts
+Include vision/problem, target users, goals/non-goals, scope/release boundary, functional/non-functional requirements, acceptance criteria, business rules, constraints and success metrics.
 
-If the product creates a new brand or needs reusable brand guidance, persist the Brand System defined in `orchestration/BRAND_SYSTEM.md`.
+## EXPERIENCE_DESIGN.md
 
-If visual direction is material, persist the Creative Brief, references and approved Creative Direction. User-provided assets and references must be recorded so future agents do not depend on hidden chat context.
+Include information architecture, key journeys, screen/page inventory, interaction states, responsive/accessibility behavior, UX rationale and edge cases.
 
-### TECHNICAL_ARCHITECTURE.md
+## VISUAL_SYSTEM.md
 
-- system context and major components;
+Include visual direction, key visual, typography/color/spacing/iconography/imagery, design-token/component guidance, consistency rules and assets.
+
+## TECHNICAL_ARCHITECTURE.md
+
+Include:
+
+- system context/components;
 - Clean Architecture/DDD profile where justified;
-- data model and storage;
-- integrations;
-- security/trust boundaries;
-- observability;
+- data/storage/integrations;
+- trust/security boundaries;
 - performance/scalability assumptions;
-- deployment/runtime topology and Deployment Units;
-- repository strategy (monorepo by default; multi-repo only with rationale);
-- local/staging/production environment strategy;
-- observability;
-- failure/rollback considerations;
-- Mermaid diagrams when useful.
+- Quality Profile implications;
+- provider-neutral structured logging/health/metrics/tracing/audit instrumentation requirements;
+- Deployment Units/repository strategy;
+- local environment;
+- production-enablement assumptions if known;
+- failure/recovery considerations;
+- diagrams where useful.
 
-### API_SPEC.md
+Do not select an ELK/Prometheus/Grafana/etc. stack merely because observability is required; choose concrete services after production environment/operations constraints are known.
 
-When an API exists or is planned:
+## API_SPEC.md
 
-- endpoint/operation list;
-- method/path/purpose;
-- authentication/authorization;
-- request/response schema;
-- validation;
-- errors/status codes;
-- pagination/filtering/idempotency/versioning as applicable;
-- examples;
-- compatibility rules.
+When applicable define operations, auth/authz, request/response, validation/errors, pagination/filtering/idempotency/versioning/examples/compatibility. Prefer machine-readable contracts where appropriate.
 
-Prefer a machine-readable contract (OpenAPI/AsyncAPI/etc.) when appropriate, with the Markdown document explaining decisions. If there is no API, mark N/A.
-
-### Security assurance artifacts
+## Security assurance
 
 Classify Product Baseline SAL and Reliability Impact during planning.
 
-- SAL 0–2: security requirements may remain in Technical Architecture when that is sufficient.
-- SAL 3–4: persist the applicable security package under `planning/security/` using `templates/security/`:
-  - SECURITY_PLAN.md
-  - THREAT_MODEL.md
-  - ABUSE_CASES.md
-  - SECURITY_REVIEW.md (review evidence; planning status may remain pending until review)
+SAL 3–4 persist applicable security artifacts under planning/security. SAL4 economic-value features explicitly cover authorization, transaction/idempotency/replay/concurrency, audit/reconciliation and recovery.
 
-For SAL 4 economic-value features, explicitly define financial/business invariants, authorization, transaction/idempotency/replay/concurrency rules, audit/reconciliation and recovery.
+## IMPLEMENTATION_PLAN.md
 
-### IMPLEMENTATION_PLAN.md
+Describe implementation readiness:
 
-This file initially describes **implementation readiness**, not permission to start coding:
-
-- workstreams/components;
-- dependencies;
-- risks;
+- workstreams/dependencies/risks;
 - testing strategy;
 - milestones;
-- local environment/start commands;
-- CI/test layers and release candidate flow;
-- staging/production deployment plan;
-- migration/rollout/rollback;
-- observability/runbook expectations;
-- Definition of Done;
-- expected implementation artifacts.
+- local commands;
+- Quality Profile verification;
+- initial and refined resource/time/cost estimate;
+- LOCAL_COMPLETE Definition of Done;
+- Production Enablement plan when already requested;
+- CI/release/staging/production flow where applicable;
+- migration/recovery;
+- observability/runbook expectations.
 
-### DECISIONS_ASSUMPTIONS.md
+## DECISIONS_ASSUMPTIONS.md
 
-Track:
-
-- FACT;
-- ASSUMPTION;
-- PROPOSAL;
-- ACCEPTED DECISION;
-- UNKNOWN;
-- deferred decisions.
-
-No silent assumptions.
+Track FACT / ASSUMPTION / PROPOSAL / ACCEPTED DECISION / UNKNOWN / deferred decisions.
 
 ## Gate 1 — Planning Package Approval
 
-After the package is physically persisted:
-
-1. run cross-role consistency review, including Security Engineer planning review when Effective SAL requires it;
-2. show the user the package location and concise summary;
-3. surface unresolved material issues;
-4. ask the user to approve/revise the **planning package**.
-
-Do **not** begin implementation merely because planning is complete.
+Persist and cross-review the package, surface material issues, then obtain user planning approval. Do not start implementation yet.
 
 ## Gate 2 — Implementation Readiness Approval
 
-Only after Gate 1 is approved:
-
-1. derive a concrete **Initial Implementation Items** list;
-2. propose the **Recommended Implementation Flow / Order**;
-3. identify first milestone, dependencies, tests/review and risky steps;
-4. ask whether the user wants to proceed with implementation;
-5. wait for explicit confirmation.
-
-Only after Gate 2 approval may implementation begin.
+After Gate 1, derive Initial Implementation Items + recommended order, identify first milestone/dependencies/tests/risky steps, and obtain explicit implementation approval.
 
 ## Reproducibility standard
 
-The package is sufficient only when another competent agent/team can answer, without relying on the original chat:
+Another competent Agent/team must be able to answer without hidden chat context:
 
-- What are we building and why?
-- Who is it for?
-- What is in/out of scope?
-- What should it look/feel like?
-- What are the key flows/screens?
-- What are the contracts/APIs/data rules?
-- What architecture/security/performance constraints and Security Assurance Level apply?
-- What decisions/assumptions remain?
-- How should it be built, run locally, tested, security-reviewed, staged, released, observed and recovered?
-- Which artifacts are authoritative?
-
-If those answers require hidden chat context, the planning package is incomplete.
+- what/why/who/scope;
+- expected UX/visual behavior;
+- APIs/data/business rules;
+- quality/security/performance/reliability targets;
+- resource/cost/time expectations and confidence;
+- architecture decisions/assumptions;
+- how to run/test/review locally;
+- what LOCAL_COMPLETE means;
+- whether Production Enablement is in scope;
+- how production would be deployed/observed/recovered when applicable;
+- which artifacts are authoritative.

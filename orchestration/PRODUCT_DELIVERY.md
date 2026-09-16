@@ -1,17 +1,18 @@
 # End-to-End Product Delivery
 
-Use when the user wants a complete product delivered from idea/materials through a verified production deployment.
+Use when the user wants a complete product rather than an isolated change.
 
 ## Goal
 
-Deliver a product that is understandable, reproducible, testable, security-reviewed, deployable, observable and recoverable — not merely source code.
+Deliver a product that is understandable, reproducible, locally operable, testable and reviewable. Production enablement is a second milestone unless the user explicitly requested production from the start.
 
 ## Lifecycle
 
 ~~~text
 User Request / Assets
-→ Product Intake + Guided Discovery
+→ Guided Discovery
 → Product Workspace + PRODUCT.yaml
+→ Quality Planning + QUALITY_PROFILE.yaml
 → Reproducible Planning Package
 → Gate 1: Planning Approval
 → Architecture / UX / Brand / API / Data / Security / Delivery Design
@@ -19,16 +20,71 @@ User Request / Assets
 → Deployment Units + Local Environment
 → Implementation
 → Local Verification
-→ Security Verification + Independent Review
-→ Release Candidate
-→ Staging Deployment (default for material production systems)
-→ Staging Smoke / E2E / Security Verification
+→ Security / Quality / Performance / Usability Review as applicable
+→ LOCAL_COMPLETE
+→ Production requested already?
+   ├─ yes → Production Enablement
+   └─ no  → ask whether to continue to Production
+               ├─ no  → persist Local completion + future deployment notes
+               └─ yes → Production Enablement
+→ Infrastructure / CI/CD / Secrets / Domain / Data / Recovery
+→ Observability Infrastructure
+→ Staging when applicable
 → Release Readiness
 → Production Promotion
-→ Health / Smoke / Logs / Metrics
-→ Rollback if required
-→ Persist final state/evidence
+→ Health / Smoke / Logs / Metrics / Alerts
+→ Rollback / Roll-forward when required
+→ PRODUCTION_VERIFIED
 ~~~
+
+## Delivery milestones
+
+### LOCAL_COMPLETE
+
+A product may be complete for local use before any hosting/cloud decision is made.
+
+LOCAL_COMPLETE requires applicable:
+
+- functional acceptance criteria satisfied;
+- reproducible local start path;
+- frontend/backend/data integration works locally;
+- migrations/local data setup works;
+- static/unit/integration/contract/E2E checks;
+- required Security Assurance review;
+- applicable performance target evidence;
+- usability/visual review;
+- maintainability/architecture review;
+- local reliability/error handling;
+- documentation;
+- required logging/metrics/tracing instrumentation hooks implemented.
+
+Production infrastructure, hosted monitoring and production secrets are not required for LOCAL_COMPLETE unless the user explicitly included them in scope.
+
+### PRODUCTION_VERIFIED
+
+Requires LOCAL_COMPLETE plus applicable:
+
+- production infrastructure/configuration;
+- CI/CD or repeatable deployment automation;
+- runtime secrets;
+- domain/TLS/networking;
+- production database/migration/backup/recovery;
+- observability backend/collectors/dashboards/alerts;
+- staging verification when applicable;
+- Release Readiness;
+- production deployment;
+- health/smoke/critical-path verification;
+- immediate log/metric/alert inspection;
+- rollback/recovery path;
+- persisted evidence/state.
+
+## Quality planning
+
+For complete products load `orchestration/QUALITY_PLANNING.md`.
+
+Use Q1/Q2/Q3 only as baselines; individual quality dimensions may be independently raised/lowered.
+
+Persist `docs/quality/QUALITY_PROFILE.yaml` when applicable and use its targets/budgets as planning and verification inputs.
 
 ## Product Workspace
 
@@ -41,6 +97,7 @@ product/
 ├── .ai/
 ├── docs/
 │   ├── product/
+│   ├── quality/
 │   ├── design/
 │   ├── architecture/
 │   ├── api/
@@ -49,22 +106,16 @@ product/
 │   └── decisions/
 ├── brand/
 ├── apps/
-│   ├── frontend/
-│   └── backend/
 ├── packages/
 ├── database/
-│   └── migrations/
 ├── tests/
-│   ├── integration/
-│   ├── contract/
-│   └── e2e/
 ├── infra/
 ├── deployment/
 ├── scripts/
 └── Makefile
 ~~~
 
-Create only applicable paths. Do not generate empty structure for features that do not exist.
+Create only applicable paths.
 
 ## Deployment Units, not forced repositories
 
@@ -72,17 +123,13 @@ Frontend/backend/worker/etc. are independent Deployment Units when they need sep
 
 Independent deployability does not require an independent Git repository.
 
-Default:
-- use one repository when it keeps contracts, docs and cross-component testing simpler;
-- split repositories only when team ownership, permission/security boundary, release cadence, scale or shared-service topology materially justifies it.
-
-PRODUCT.yaml records each unit and its repository/path.
+Default to one repository unless team ownership, permission/security boundary, release cadence, scale or shared-service topology materially justifies multi-repo.
 
 ## Local developer experience
 
-Every implemented product must document a reliable local start/test path.
+Every implemented product needs a reliable local start/test path.
 
-Prefer one obvious entry command when practical, for example:
+Prefer obvious entry commands when practical:
 
 ~~~text
 make dev
@@ -91,7 +138,7 @@ make security
 make build
 ~~~
 
-The underlying mechanism may be Docker Compose, native runtimes or project-specific tooling. Do not force Docker when it adds no value.
+Do not force Docker when it adds no value.
 
 ## Verification layers
 
@@ -104,72 +151,73 @@ Static / Lint / Type
 → Contract
 → E2E
 → Security
+→ Performance / UX / Reliability evidence as required by Quality Profile
 → Build
 → Smoke
 ~~~
 
-Security is both design-time and verification-time:
-- Risk Profile / Threat / Authorization / Business invariants during planning;
-- deterministic scanners/tools where applicable;
-- independent Security Engineer reasoning for material boundaries;
-- SAL requirements remain authoritative.
+## Application observability before deployment
+
+Observability requirements are planned before production vendor selection.
+
+During architecture/coding, implement applicable provider-neutral instrumentation:
+
+- structured logs;
+- health/readiness endpoints;
+- metrics hooks;
+- trace context/instrumentation;
+- correlation/request IDs;
+- separate audit logging for high-value/security-sensitive actions.
+
+Never log credentials, tokens, secrets or prohibited sensitive payloads. Define redaction rules.
+
+Production baseline is structured logs + health check. Other capabilities are risk-proportional.
+
+## Production Enablement
+
+Choose concrete hosting/observability technology only after the target environment, scale, budget and operational preferences are known.
+
+Possible implementations include:
+
+- logs: ELK/Elastic, Loki, cloud/managed logging;
+- metrics: Prometheus or managed metrics;
+- dashboards: Grafana or provider dashboards;
+- traces: OpenTelemetry with Tempo/Jaeger/APM;
+- alerts: Alertmanager, Grafana/provider alerting.
+
+These are implementations, not hard-coded system requirements.
 
 ## Environments
 
-Typical formal flow:
+Typical production flow:
 
 ~~~text
 local → CI → staging → production
 ~~~
 
-Staging is default for material networked/production systems. It may be N/A for low-risk static or otherwise simple products when the reason is recorded.
+Staging is default for material networked production systems and may be N/A with a reason for sufficiently simple/low-risk products.
 
 ## Deployment automation
 
-For complete-product delivery, create the smallest repeatable deployment automation supported by the target platform, such as CI/CD configuration, infrastructure/deployment code or a bounded deployment script.
+Create the smallest repeatable automation supported by the target platform.
 
-Requirements:
-- build/test/deploy steps are reproducible;
-- staging uses the same release candidate path/artifact strategy as production where practical;
-- secrets come from approved runtime secret/configuration facilities, not source control;
-- deployment commands/pipelines are persisted in the Product Workspace;
-- automation is verified in staging before production when staging is applicable;
-- if required platform access/credentials/connectors are unavailable, persist the runnable configuration and mark deployment BLOCKED rather than claiming success.
-
-When tools/platform access are available and the approved release flow permits it, execute the deployment automation and continue with verification instead of stopping at documentation.
-
-## Production promotion
-
-Deployment automation is the default goal for a complete product; unconditional automatic production promotion is not.
-
-Release Readiness determines whether promotion is technically ready. Human approval requirements remain risk-proportional and follow existing governance.
-
-High-risk or difficult-to-recover production promotion requires explicit approval.
+If access/credentials/connectors are unavailable, persist runnable configuration and mark Production Enablement BLOCKED rather than claiming success.
 
 ## Secrets
 
-Never persist real secrets in the product workspace/repository.
+Never persist real secrets in the repository. Use examples/references only and target-platform secret/configuration facilities at runtime.
 
-Store examples/references only (for example `.env.example`). Runtime secrets belong in the target platform's approved secret manager/configuration facility.
+## Data migration and recovery
 
-## Data migration
+When persistent data/schema changes exist, include migration order, compatibility, backup/recovery, verification and rollback/roll-forward.
 
-When persistent data/schema changes exist, include:
-- migration order;
-- compatibility strategy;
-- backup/recovery as applicable;
-- verification;
-- rollback/roll-forward plan.
+## Completion
 
-## Production completion
+Do not describe a local product as production-ready merely because code exists.
 
-Production deployment alone is not Done.
+Use exact delivery state:
 
-Completion requires applicable:
-- deployment success;
-- health check;
-- smoke/E2E verification;
-- logs/metrics/alerts available;
-- security/release evidence persisted;
-- rollback/recovery path known;
-- PRODUCT.yaml and workspace state updated.
+- `LOCAL_COMPLETE`
+- `PRODUCTION_VERIFIED`
+
+If the user did not request production initially, ask whether to continue only after LOCAL_COMPLETE has been reached.
