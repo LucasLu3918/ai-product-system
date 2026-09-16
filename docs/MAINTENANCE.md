@@ -68,14 +68,14 @@ Before remote publication, present the Git Publish Proposal. A material differen
 3. Review the Documentation Impact Gate.
 4. For Large/Core changes, complete Architecture Diagram Impact Check.
 5. Confirm Mermaid and affected Human SVG diagrams match actual behavior.
-5. Confirm changed routing/gate behavior has scenario coverage.
-6. Confirm planning/creative/brand/automation/product-delivery templates match their protocols when affected.
-7. Confirm Human and Agent documentation audiences are synchronized when behavior affects them.
-8. Update `VERSION` using SemVer.
-9. Update `CHANGELOG.md`.
-10. Ensure the system working tree is clean before publishing.
-11. Prepare the Git Publish Proposal and obtain explicit approval.
-12. Prefer independent review/PR for material system changes.
+6. Confirm changed routing/gate behavior has scenario coverage.
+7. Confirm planning/creative/brand/automation/product-delivery templates match their protocols when affected.
+8. Confirm Human and Agent documentation audiences are synchronized when behavior affects them.
+9. Update `VERSION` using SemVer.
+10. Update `CHANGELOG.md`.
+11. Ensure the system working tree is clean before publishing.
+12. Prepare the Git Publish Proposal and obtain explicit approval.
+13. Prefer independent review/PR for material system changes.
 
 ## Versioning
 

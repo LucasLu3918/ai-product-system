@@ -203,11 +203,23 @@ aips uninstall --remove-venv
 
 先執行 aips uninstall --remove-venv；確認 Project Workspace 後，由使用者自行 rm -rf ~/Developer/ai-product-system。AIPS 不會在執行中的 Uninstall 自我刪除 Git Repository。
 
-## 14. 重新安裝
+## 14. 從 v0.7 升級到 v0.8
+
+若使用 `aips preflight <project>` 從 v0.7 升級，舊 CLI 完成更新後會 re-exec 新版 v0.8 CLI；新版會偵測既有 AIPS installation 並安全建立/刷新 Global Harness。
+
+若只從 v0.7 執行一次 `aips update`，舊版 process 本身無法在同一個 process 內執行尚未載入的 v0.8 Harness 邏輯；更新完成後請執行一次：
+
+~~~bash
+aips install
+~~~
+
+或在下一次 `aips preflight` 時完成 Harness migration。過程仍遵守「不覆寫使用者既有 Agent instructions / Skills」規則。
+
+## 15. 重新安裝
 
 Repository 尚在時回到 repo 執行 ./scripts/bootstrap.sh；若已刪除則重新 clone 後執行 bootstrap。原 Project 不需重建。
 
-## 15. 常用指令
+## 16. 常用指令
 
 ~~~text
 System

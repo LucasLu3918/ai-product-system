@@ -408,6 +408,15 @@ harness_resolve() {
   "$py" "$SYSTEM_DIR/scripts/harness_resolve.py" "$@"
 }
 
+refresh_harness_if_installed() {
+  # system-dir is created only by AIPS install. A plain repository checkout
+  # must not register global Agent integrations implicitly.
+  if [ -f "$CONFIG_HOME/system-dir" ]; then
+    say "Refreshing AIPS Global Harness for the installed system..."
+    harness_install
+  fi
+}
+
 write_system_snapshot() {
   local project="$1"
   local ai_dir="$project/.ai"
@@ -638,6 +647,8 @@ preflight_after_update() {
   local project="$1"
   [ -d "$project" ] || die "Project path does not exist: $project"
 
+  refresh_harness_if_installed
+
   if [ -d "$project/.ai" ]; then
     write_system_snapshot "$project"
     say "Project mode: ATTACHED"
@@ -752,6 +763,7 @@ case "${1:-help}" in
     allow="false"
     [ "${1:-}" = "--allow-major" ] && allow="true"
     update_system "$allow"
+    exec "$SYSTEM_DIR/bin/aips" _refresh-harness-after-update
     ;;
   preflight)
     shift
@@ -760,6 +772,9 @@ case "${1:-help}" in
   _preflight-after-update)
     shift
     preflight_after_update "$1"
+    ;;
+  _refresh-harness-after-update)
+    refresh_harness_if_installed
     ;;
   doctor)
     doctor
