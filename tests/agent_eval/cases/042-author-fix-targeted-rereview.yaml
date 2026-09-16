@@ -1,0 +1,28 @@
+version: 1
+id: 042-author-fix-targeted-rereview
+scenario_id: "042"
+description: Review findings return to the original Author, followed by affected tests and targeted re-review.
+input:
+  prompt: Consolidated findings are ready after multi-perspective review. Decide who fixes them and how re-review should run.
+  context:
+    change_boundary_expanded: false
+    findings_consolidated: true
+rubric:
+  equals:
+    response.status: AUTHOR_FIX_REQUIRED
+    response.writer: ORIGINAL_AUTHOR
+    response.reviewer_writes_code: false
+    response.rereview_scope: TARGETED
+    response.full_review_condition: CHANGE_BOUNDARY_EXPANDED
+  contains:
+    response.actions:
+      - author_fixes_accepted_findings
+      - run_affected_tests
+      - rereview_original_finding_fix_diff_relevant_tests
+  excludes:
+    response.actions:
+      - reviewer_silently_rewrites_code
+      - repeat_full_review_by_default
+  set_equals: {}
+  nonempty:
+    - response.summary

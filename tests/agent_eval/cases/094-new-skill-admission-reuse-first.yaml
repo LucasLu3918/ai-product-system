@@ -1,0 +1,34 @@
+version: 1
+id: 094-new-skill-admission-reuse-first
+scenario_id: "094"
+description: A project-specific Vue UI convention must not become a new global Skill when existing design skills/Project Intelligence are sufficient.
+input:
+  prompt: Add a new global 'Vue UI Conventions' Skill for this project's component naming, layout and style conventions.
+  context:
+    scope: single_project
+    closest_skills:
+      - ux-web-design
+      - visual-direction
+    project_specific_convention: true
+rubric:
+  equals:
+    response.status: REUSE_OR_PROJECT_INTELLIGENCE
+    response.new_skill_recommended: false
+    response.destination: PROJECT_INTELLIGENCE
+    response.reuse_review_completed: true
+  contains:
+    response.actions:
+      - search_skill_capability_indexes
+      - inspect_closest_skill_bodies
+      - evaluate_reuse_or_extension
+      - keep_project_specific_convention_out_of_global_skill
+    response.reuse_candidates:
+      - ux-web-design
+      - visual-direction
+  excludes:
+    response.actions:
+      - create_global_skill_without_admission_contract
+  set_equals: {}
+  nonempty:
+    - response.recommendation
+    - response.summary

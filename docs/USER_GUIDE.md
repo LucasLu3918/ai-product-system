@@ -856,3 +856,44 @@ aips identity --project /path/to/project
 - Run checkpoint 會保存 workspace fingerprint，除了 HEAD 也包含 branch 與未提交產品修改；
 - AIPS 自己寫入的 `.ai/` checkpoint/state 不會被算成產品 dirty drift；
 - 舊版 EPHEMERAL run cache 會在安全且沒有 destination conflict 時 lazy migrate。
+
+## v0.16 Agent Eval Conformance
+
+有些 Scenario 無法用單純程式判斷，例如：
+
+- 是否知道 Core Change 應先停下來等 Approval；
+- 是否避免建立重複 Role / Skill；
+- 是否只問真正阻塞的 Requirement；
+- 是否選出正確且 bounded 的 Review Panel。
+
+這些行為現在可使用 Agent Eval：
+
+~~~bash
+aips conformance agent-eval check
+aips conformance agent-eval report
+~~~
+
+Agent Eval 不要求特定 Provider。Case 與 Agent 執行分離，Result 只保存可以觀察的決策，例如：
+
+~~~text
+status
+selected reviewers
+selected roles / skills
+actions
+artifacts
+short summary
+~~~
+
+不保存 Chain-of-Thought 或 private reasoning。
+
+每份 Result 都綁定 Case fingerprint：
+
+~~~text
+Case 改變
+→ 舊 Result 變 STALE / FAIL
+→ 重新執行 Agent
+→ 記錄新的 observable Result
+→ deterministic scoring
+~~~
+
+因此「只有 Eval Prompt」不算 automated coverage，必須有實際 Result 且 scoring PASS。

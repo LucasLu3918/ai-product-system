@@ -54,6 +54,8 @@ Usage:
 
   aips conformance check [--format yaml|json]
   aips conformance report [--format yaml|json]
+  aips conformance agent-eval check [--format yaml|json]
+  aips conformance agent-eval report [--format yaml|json]
 
   aips isolation resolve --mode shared|worktree|sandbox [--project <path>] [--format yaml|json]
   aips isolation create --id <id> --boundary <id> [--mode worktree|sandbox] [--project <path>] [--ref <ref>]
@@ -482,6 +484,13 @@ conformance_cmd() {
   "$py" "$SYSTEM_DIR/scripts/scenario_conformance.py" "$@"
 }
 
+agent_eval_cmd() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/agent_eval.py" "$@"
+}
+
 isolation_cmd() {
   local py
   py="$(python_bin)"
@@ -887,8 +896,14 @@ case "${1:-help}" in
     ;;
   conformance)
     sub="${2:-report}"
-    shift 2 || true
-    conformance_cmd "$sub" "$@"
+    if [ "$sub" = "agent-eval" ]; then
+      action="${3:-report}"
+      shift 3 || true
+      agent_eval_cmd "$action" "$@"
+    else
+      shift 2 || true
+      conformance_cmd "$sub" "$@"
+    fi
     ;;
   isolation)
     sub="${2:-}"

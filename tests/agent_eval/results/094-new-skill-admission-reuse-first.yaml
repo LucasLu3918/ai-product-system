@@ -1,0 +1,24 @@
+version: 1
+case_id: 094-new-skill-admission-reuse-first
+scenario_id: "094"
+case_fingerprint: sha256:7bf9b4fbb3d224d4e88143b0a70f6e7e6f058ab4897d41c673c08e1154bb2d01
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: REUSE_OR_PROJECT_INTELLIGENCE
+  new_skill_recommended: false
+  destination: PROJECT_INTELLIGENCE
+  reuse_review_completed: true
+  reuse_candidates:
+    - ux-web-design
+    - visual-direction
+  actions:
+    - search_skill_capability_indexes
+    - inspect_closest_skill_bodies
+    - evaluate_reuse_or_extension
+    - keep_project_specific_convention_out_of_global_skill
+  recommendation: Keep this project's Vue naming/layout/style convention in Project Intelligence and reuse existing design skills for reusable methods.
+  summary: A single-project convention is not a new global Skill; reuse existing design capability and persist the project-specific rule at the project layer.

@@ -229,14 +229,15 @@ When Scenario behavior/coverage changes, review together:
 
 - tests/scenarios/*;
 - tests/scenario_coverage.yaml;
-- scripts/scenario_conformance.py;
+- scripts/scenario_conformance.py + scripts/agent_eval.py;
+- tests/agent_eval/cases/* + tests/agent_eval/results/*;
 - tests/evidence/*;
 - tests/validation/* + tests/validate_repository.py;
 - orchestration/CONFORMANCE.md;
 - docs/CONFORMANCE.md / USER_GUIDE;
 - coverage claims in CHANGELOG/release evidence.
 
-Before promoting legacy manual coverage: reconcile the Scenario to current canonical behavior, add direct evidence, then reclassify. Never infer automated coverage from Scenario count alone.
+Before promoting legacy manual coverage: reconcile the Scenario to current canonical behavior, add direct evidence, then reclassify. For semantic behavior, Agent Eval requires an actual recorded observable Result bound to the exact Case fingerprint and passing deterministic scoring. Never infer automated coverage from Scenario count or an eval prompt alone.
 
 ## Execution Isolation consistency
 

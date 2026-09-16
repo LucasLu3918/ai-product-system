@@ -79,6 +79,8 @@ yaml_files = [
     "templates/workspace/MANIFEST.yaml",
     "templates/workspace/STATE.yaml",
     "templates/workspace/SYSTEM.yaml",
+    "templates/conformance/AGENT_EVAL_CASE.yaml",
+    "templates/conformance/AGENT_EVAL_RESULT.yaml",
 ]
 for rel in yaml_files:
     p = ROOT / rel
@@ -120,7 +122,7 @@ required_files = [
     "orchestration/QUALITY_PLANNING.md", "orchestration/PROJECT_KNOWLEDGE.md",
     "orchestration/SECRET_HANDLING.md", "orchestration/CORE_CHANGE_TESTING.md",
     "orchestration/PROJECT_IDENTITY.md", "orchestration/PROJECT_INTELLIGENCE.md", "orchestration/CHANGE_IMPACT.md",
-    "orchestration/TURN_HARNESS.md", "orchestration/HARNESS_RESOLUTION.md",
+    "orchestration/TURN_HARNESS.md", "orchestration/HARNESS_RESOLUTION.md", "orchestration/CONFORMANCE.md", "orchestration/AGENT_EVAL.md",
     "harness/BOOTSTRAP.md", "harness/HARNESS_PROTOCOL.md", "harness/ADAPTER_CONTRACT.md",
     "harness/adapters/codex/AGENTS.md", "harness/adapters/claude-code/CLAUDE.md",
     "harness/adapters/gemini-cli/gemini-extension.json", "harness/adapters/gemini-cli/GEMINI.md",
@@ -147,7 +149,7 @@ required_files = [
     "scripts/check_release_readiness.py", "scripts/harness_resolve.py",
     "scripts/project_intelligence.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py",
     "scripts/aips_identity.py", "scripts/execution_isolation.py",
-    "scripts/check_secret_leakage.py",
+    "scripts/agent_eval.py", "scripts/check_secret_leakage.py",
     "tests/evidence/governance_command_guard.py",
     "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml",
     ".github/dependabot.yml", "SECURITY.md",
@@ -215,8 +217,8 @@ for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"
         errors.append(f"PLANNING_PACKAGE.md missing: {phrase}")
 
 scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
-if len(scenarios) < 120:
-    errors.append(f"Expected at least 120 acceptance scenarios, found {len(scenarios)}")
+if len(scenarios) < 125:
+    errors.append(f"Expected at least 125 acceptance scenarios, found {len(scenarios)}")
 
 security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
 for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):

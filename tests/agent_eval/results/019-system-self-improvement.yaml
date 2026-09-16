@@ -1,0 +1,29 @@
+version: 1
+case_id: 019-system-self-improvement
+scenario_id: "019"
+case_fingerprint: sha256:bb354f3c9e8c6638f5254a31d3628089671ca993edf39d833e629aa06a8a5d54
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: NEEDS_DIRECTION_CONFIRMATION
+  protocol: SYSTEM_SELF_IMPROVEMENT
+  problem_solution_separated: true
+  implementation_allowed: false
+  constitution_impact: "NO"
+  new_role_recommended: false
+  additional_optimization_policy: SEPARATE_CONFIRMATION
+  reuse_candidates:
+    - delivery-planner
+    - delivery-planning
+  actions:
+    - inspect_existing_coverage
+    - evaluate_context_cost
+    - evaluate_compatibility
+    - evaluate_tests_and_docs
+    - evaluate_architecture_diagrams
+    - await_user_direction_confirmation
+  recommended_solution: Reuse the existing delivery-planner and delivery-planning capability with narrower routing instead of loading a new permanent Planner Agent on every turn.
+  summary: Review the system-level proposal before implementation, prefer reuse and lower context cost, and wait for confirmation of the recommended direction.

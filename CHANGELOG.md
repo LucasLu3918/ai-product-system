@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.16.0
+
+### Provider-neutral Agent Eval Conformance
+
+- Add provider-neutral Agent Eval cases and recorded observable results for semantic behavior that cannot be truthfully reduced to deterministic repository checks.
+- Add deterministic Case SHA-256 fingerprint binding so changed eval contracts make previous recorded results stale.
+- Add structured rubric scoring for equals, contains, excludes, set equality and non-empty observable fields.
+- Reject private reasoning / chain-of-thought fields and high-confidence secret-like values in recorded Agent Eval results.
+- Keep model execution separate from CI scoring; AIPS core requires no provider SDK and does not claim CI generated a model response.
+- Add `aips conformance agent-eval check|report`.
+- Promote Scenarios 017, 019, 020, 025, 035, 041, 042 and 094 from manual to agent_eval using recorded GPT-5.6 Sol observable results from the maintainer implementation session.
+- Add Scenarios 121-125 for Agent Eval fingerprint, result binding, deterministic rubric, privacy/provider neutrality and lifecycle behavior.
+- Raise conformance baseline to 125 total / 69 manual / 19 deterministic / 29 lifecycle / 8 agent_eval / 56 automated / 0 uncovered (44.8% automated).
+- No new Role, Skill, Capability or Approval Gate.
+
 ## 0.15.1
 
 ### Validation Architecture Cleanup

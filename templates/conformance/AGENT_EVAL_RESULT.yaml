@@ -1,0 +1,10 @@
+version: 1
+case_id: null
+scenario_id: "000"
+case_fingerprint: null
+execution:
+  provider: null
+  model: null
+  runtime: null
+  executed_at: null
+response: {}

@@ -26,6 +26,25 @@ aips conformance report
 
 Do not mark a Scenario automated unless its evidence materially exercises that Scenario.
 
+### Agent Eval
+
+Semantic Scenarios use:
+
+~~~text
+tests/agent_eval/cases/
+tests/agent_eval/results/
+scripts/agent_eval.py
+~~~
+
+A committed Case alone is not evidence. A Result must come from an actual Agent execution, bind to the exact Case fingerprint, contain observable output only, and PASS deterministic scoring.
+
+~~~bash
+aips conformance agent-eval check
+aips conformance agent-eval report
+~~~
+
+Private chain-of-thought, scratchpads and live secrets must never be stored in Agent Eval results.
+
 ## Direct Evidence
 
 `tests/evidence/` contains focused executable evidence for Scenario contracts that would otherwise be hidden inside broad repository validation.

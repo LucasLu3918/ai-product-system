@@ -1,0 +1,24 @@
+version: 1
+case_id: 035-progressive-requirement-clarification
+scenario_id: "035"
+case_fingerprint: sha256:d08385796604307306ae4f74d3c31d51e5fe749704907a1fe3053d2251695c7b
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: NEEDS_CLARIFICATION
+  broad_implementation_allowed: false
+  uses_professional_defaults_for_non_material_details: true
+  clarification_dimensions:
+    - booking_subject
+    - target_user_or_actor
+    - core_booking_flow
+  actions:
+    - identify_blocking_unknowns
+    - ask_smallest_useful_question_batch
+    - offer_concrete_options_when_helpful
+  question_batch:
+    - What is being booked, who books it, and what is the essential booking flow that must work in the first version?
+  summary: Product direction is materially ambiguous, so ask one compact blocking question before broad implementation and derive low-level details professionally afterward.
