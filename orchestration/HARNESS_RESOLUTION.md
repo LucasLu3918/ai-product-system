@@ -1,127 +1,84 @@
 # Harness Resolution
 
-Use when AIPS is installed through the Global Harness or when an Agent needs to resolve runtime/project context without replaying setup instructions.
+Use this to deterministically resolve runtime/project context before reasoning.
 
-## Goal
+## Two levels
 
-Resolve deterministic environment facts before loading reasoning context.
-
-~~~text
-Agent Session
-→ Minimal Runtime Adapter Bootstrap
-→ aips harness resolve
-→ Runtime + Project + Mode + Instruction pointers
-→ AIPS applicable?
-   ├─ no  → normal conversation
-   └─ yes → minimal AIPS routing/context
-~~~
-
-## Applicability
-
-The Global Harness is always available, but full AIPS orchestration is not mandatory for unrelated conversation.
-
-AIPS orchestration is normally applicable to:
-
-- software/product/project planning;
-- implementation/refactoring/debugging;
-- architecture/API/data/security/quality work;
-- visual/product delivery work;
-- repository/documentation changes;
-- deployment/operations/release work.
-
-A general knowledge question with no active project/work product may proceed normally.
-
-## Deterministic resolver
-
-Use:
+### Session / environment resolution
 
 ~~~bash
 aips harness resolve --cwd "$PWD"
 ~~~
 
-When the runtime is known:
+Resolves runtime, project root, project mode and native instruction pointers.
+
+### Turn Context
 
 ~~~bash
-aips harness resolve --runtime codex --cwd "$PWD"
-aips harness resolve --runtime claude-code --cwd "$PWD"
-aips harness resolve --runtime gemini-cli --cwd "$PWD"
+aips intelligence context --runtime <runtime> --project <path> --prompt "<current request>"
 ~~~
 
-For an explicit project outside cwd:
+Resolves a compact TURN_CONTEXT_MANIFEST.
 
-~~~bash
-aips harness resolve --project /path/to/project
-~~~
-
-Do not infer an attached workspace when the resolver reports EPHEMERAL.
+Do not use Turn Context to perform repository-wide scans.
 
 ## Project modes
 
 ### EPHEMERAL
 
-- use AIPS governance/planning/review as applicable;
-- read project/runtime-native instructions;
-- inspect source when needed;
-- do not create `.ai/` automatically;
-- do not persist Project Knowledge/State unless the user explicitly attaches the project.
+- no project-local `.ai/` is created;
+- current tasks may use AIPS normally;
+- reusable Project Intelligence may persist externally under `~/.config/aips/projects/<project-id>/intelligence/`;
+- project source remains unchanged.
 
 ### ATTACHED
 
-The user explicitly enabled persistence with `aips attach <project>`.
+- explicit `aips attach`;
+- persistent workspace lives in project `.ai/`;
+- canonical Project Intelligence lives in `.ai/intelligence/`.
 
-AIPS may use:
+## Runtime capability
 
-- `.ai/STATE.yaml`;
-- `.ai/MANIFEST.yaml`;
-- `.ai/knowledge/`;
-- run/decision/event persistence.
+Installation status and capability are different.
+
+- TURN_NATIVE — native per-turn hook injection.
+- CONTEXT_ALWAYS — persistent instructions require per-turn AIPS resolution.
+- SESSION_ONLY — bootstrap at session only.
+- MANUAL — explicit action required.
+- UNSUPPORTED — no safe integration.
 
 ## Instruction composition
 
-AIPS does not replace runtime-native instructions.
-
-Resolve all applicable sources with their actual scope and native precedence, while keeping AIPS constitutional/governance rules mandatory within the AIPS workflow.
-
-Typical effective order:
+Resolve without replacing:
 
 ~~~text
-External platform / safety constraints
+Platform / Safety
 → AIPS Constitution / Governance
 → Current explicit user decision
-→ Runtime-native instructions in their native scope / precedence
-→ Nearest project AGENTS / accepted ADR / contracts
-→ Official project docs
-→ Project Knowledge
-→ Project-local Skills
+→ Runtime-native instructions
+→ nearest project instructions
+→ ADR / authoritative contracts / official docs
+→ PROJECT_OVERRIDES
+→ Project Intelligence
+→ project-local Skills
 → AIPS Skills
-→ Generic inference
+→ inference
 ~~~
 
-If native runtime rules force a different precedence, do not falsely claim enforcement. Surface material conflicts and follow the runtime/platform constraints.
+Runtime-mandated precedence remains authoritative for that Runtime.
 
-## Minimal loading
+## Runtime-aware deduplication
 
-The resolver returns pointers, not a request to open every source.
+SOURCE_REGISTRY distinguishes:
 
-Load only:
+- authoritative storage source;
+- scope;
+- hash/freshness;
+- which runtimes auto-load the source.
 
-1. Minimal AIPS entry/router when applicable;
-2. relevant runtime/project instructions;
-3. relevant Project Knowledge topics;
-4. selected protocol/Role/Skill leaves.
+Example: Codex may auto-load AGENTS.md while Claude does not. Therefore "do not duplicate storage" does not mean "never load it for another runtime".
 
-## Runtime coverage
+## Failure policy
 
-`aips harness status` reports machine-specific integration state.
-
-- AUTOMATIC — runtime loads an AIPS-owned bootstrap automatically.
-- MANUAL — runtime detected but a user-owned integration resource prevents safe automatic installation.
-- NOT_DETECTED — runtime not present.
-- CONFLICT — namespace/registration collision.
-- ERROR — installation/verification failed.
-
-MANUAL is intentional safety behavior, not a reason to patch existing user configuration.
-
-## Update / uninstall
-
-Adapters are AIPS-owned and independently removable. Uninstall does not remove project `.ai/`, user/project instructions, custom Skills or source code.
+- general/read-only request: Harness/Intelligence problems fail soft when safe;
+- existing-project mutation: missing required instructions/Intelligence/Impact context fails closed for the edit until resolved.

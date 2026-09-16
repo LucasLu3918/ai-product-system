@@ -23,10 +23,18 @@ artifacts: []
 quality:
   profile: null
   class: null
-knowledge:
+intelligence:
   index: null
+  readiness: null
+  review: null
+  freshness: null
   loaded_topics: []
   stale_topics: []
+  last_change_impact: null
+  external_cache: null
+knowledge_compat:
+  legacy_index: null
+  migration_required: false
 visual:
   profile: null
   last_audit: null

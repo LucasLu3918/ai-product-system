@@ -31,11 +31,19 @@ project_context:
   required: []
   optional: []
 
-project_knowledge:
-  index: .ai/knowledge/KNOWLEDGE_INDEX.yaml
-  authoritative_pointers: []
+project_intelligence:
+  index: null
+  source_registry: null
+  impact_graph: null
+  overrides: null
+  review_html: null
+  store_mode: null # ATTACHED | EXTERNAL_CACHE
   loaded_topics: []
   refresh_required: []
+
+project_knowledge_compat:
+  legacy_index: .ai/knowledge/KNOWLEDGE_INDEX.yaml
+  migration_required: false
 
 quality:
   profile: null

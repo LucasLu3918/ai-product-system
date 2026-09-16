@@ -4,42 +4,37 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 ## Minimal algorithm
 
-1. When entered through the Global Harness, resolve runtime/project context and applicability with `aips harness resolve`.
-2. If the request is unrelated to product/project/software work, continue normal conversation without loading full AIPS.
+1. Resolve current runtime/project/turn context through the Global Harness when installed.
+2. If the request is unrelated to product/project/software work, continue normal conversation without heavy AIPS context.
 3. Before mutating a target project, run System Update Preflight (`aips preflight <project>`).
-4. Resolve Project Mode: load/persist `.ai/` only in ATTACHED mode; remain non-persistent in EPHEMERAL mode.
-5. If the target is the AI Product System itself, run System Self-Improvement Review and Constitution Impact Check; wait for direction approval.
-6. Detect whether the request is a large/core change; if so, create the Core Change Proposal and obtain explicit approval before implementation.
-7. Run task preflight and resolve requirement status (READY / NEEDS_CLARIFICATION / BLOCKED).
-8. Resolve required user-provided external sources using connector-first External Context Resolution.
-9. Detect whether the task creates/revises the primary product/project plan and whether complete product delivery is in scope.
-10. For a primary planning task, resolve the persistence workspace before authoring the authoritative plan; if absent, ask the user.
-11. For existing projects, compose runtime-native + scoped project instructions/authoritative docs, then load only relevant Project Knowledge; targeted-discover only remaining gaps.
+4. Resolve project mode and Intelligence store: ATTACHED uses `.ai/intelligence/`; EPHEMERAL may use external AIPS cache without writing into the repository.
+5. If the target is AIPS itself, run System Self-Improvement Review and Constitution Impact Check.
+6. Detect large/core change and obtain Core Change Approval before implementation.
+7. Resolve requirement readiness and required external sources.
+8. Detect primary planning/full product delivery.
+9. For existing projects, compose runtime-native + scoped project instructions/authoritative docs via SOURCE_REGISTRY-aware resolution.
+10. Resolve Project Intelligence:
+    - missing + mutation/broad project task → read-only initial bootstrap;
+    - CURRENT → reuse;
+    - STALE → targeted refresh only;
+    - PARTIAL/BLOCKED → expand only required evidence.
+11. For an existing-project mutation, resolve Change Boundary and Change Impact (input/output/data/event/consumer/security/invariant compatibility) before editing.
 12. For complete products/material product plans, resolve Q1/Q2/Q3 Quality Planning before architecture is locked.
-13. If a material decision is needed, present the smallest useful option set and stop affected work.
-14. Classify intent; choose one primary work mode.
-15. Detect project state (`greenfield`, `brownfield`, `unknown`).
-16. Classify Product Baseline SAL / Change Security Impact / Reliability Impact when relevant.
-17. Build a minimal Context Manifest including only relevant runtime/project/knowledge context.
-18. Resolve the primary role and only necessary supporting roles.
-19. Resolve capabilities and leaf skills from task evidence and assurance requirements.
-20. Build an Execution Profile from business impact, complexity, risk, assurance and selected skill requirements.
-21. Decide whether bounded subagents are useful; resolve each subagent model/context independently.
-22. For primary planning, create/persist the Reproducible Planning Package and run cross-role consistency review.
-23. Gate 1: wait for human Planning Package approval.
-24. After Gate 1, derive Initial Implementation Items + Recommended Implementation Flow.
-25. Gate 2: wait for explicit human implementation approval.
-26. Select eligible model/tools using minimum sufficient intelligence; route deterministic processing to tools/helpers where suitable.
-27. Execute inside the approved boundary, including provider-neutral observability instrumentation required by the Quality Profile.
-28. For existing UI polish, run V1/V2 Visual Consistency Repair as applicable.
-29. Resolve independent review depth; large/core/high-risk work uses the needed Multi-Perspective Review Panel.
-30. Consolidate findings, return them to the original Author for fixes, then run targeted re-review unless the Change Boundary materially expanded.
-31. For SAL 3–4 affected work, persist Security Review evidence and run the Security Release Gate.
-32. Validate LOCAL_COMPLETE criteria for complete products.
-33. If production was explicitly requested, continue Production Enablement; otherwise ask whether to continue only after LOCAL_COMPLETE.
-34. When production is in scope, evaluate exact-candidate Release Readiness and verify production before PRODUCTION_VERIFIED.
-35. Extract lessons and refresh only affected Project Knowledge / Visual Profile topics when persistence is enabled.
-36. Persist state/provenance only where the current Project Mode permits it.
+13. If a material human decision is needed, present the smallest useful option set and stop affected work.
+14. Classify intent/work mode/project state/risk.
+15. Build a minimal Turn Context Manifest and load only relevant Intelligence topics/evidence.
+16. Resolve the primary role and only necessary supporting roles/skills.
+17. Build the Execution Profile and bounded subagent contexts.
+18. For primary planning, persist the Reproducible Planning Package and complete Gate 1 / Gate 2.
+19. Select model/tools; route deterministic processing to helpers.
+20. Implement inside the approved Change Boundary using valid project-native conventions.
+21. For UI work, run applicable V1/V2 Visual Consistency Repair.
+22. Run required tests/security/quality/review.
+23. Compare actual diff/contract effects against declared Change Impact; unexpected material impact requires review and possibly scope reapproval.
+24. Refresh only affected Intelligence/Impact Graph topics; preserve user Overrides and canonical authoritative pointers.
+25. Regenerate Project Intelligence Review HTML only when initial bootstrap or material Intelligence/Override changes warrant it.
+26. Complete LOCAL_COMPLETE / Production Enablement / PRODUCTION_VERIFIED rules when applicable.
+27. Persist state/provenance only in permitted stores and before remote publication run Git Publish Approval.
 
 ## System Update Preflight
 
@@ -141,14 +136,14 @@ Analysis/review may run in parallel. One writer owns a change boundary by defaul
 
 ## Architecture preflight
 
-1. Inspect current architecture/conventions first.
+1. Load current Project Intelligence + authoritative project sources first; bootstrap/refresh only if insufficient.
 2. Prefer the existing/simple structure when adequate.
 3. Apply Clean Architecture dependency principles without forcing a reference folder layout.
 4. Enable DDD only to the justified level: none, tactical, or strategic+tactical.
 5. Use TDD for testable behavior; use characterization tests before risky legacy changes with insufficient coverage.
 6. CQRS, event sourcing, microservices, saga or broad architecture rewrites require evidence and a material decision before adoption.
 
-Never refactor unrelated code merely to make the repository resemble a reference architecture.
+Preserve valid native conventions and never refactor unrelated code merely to make the repository resemble a reference architecture. Unsafe or demonstrably broken conventions are not propagated blindly.
 
 ## System self-change
 
@@ -228,11 +223,15 @@ Use `orchestration/MULTI_REVIEW.md` for large/core/high-risk changes. Resolve re
 After fixes, re-review only affected findings/diffs/tests unless scope expanded. Persist lessons at run/project level when useful; recommend System Capability improvement to the user only when evidence is repeated/generalizable.
 
 
-## Project Knowledge
+## Project Intelligence
 
-Use `orchestration/PROJECT_KNOWLEDGE.md`.
+Use `orchestration/PROJECT_INTELLIGENCE.md` and `orchestration/CHANGE_IMPACT.md`.
 
-The Knowledge Index is a navigation/cache surface. It never outranks AGENTS, ADR, contracts or official docs. Prefer authoritative pointers; persist derived knowledge only when it is stable and expensive to rediscover. Refresh only topics affected by watched paths/signals.
+Project Intelligence is the canonical existing-project reuse layer. Prefer SOURCE_REGISTRY pointers to authoritative instructions/docs, use IMPACT_GRAPH for dependency traversal, and preserve explicit human decisions in PROJECT_OVERRIDES.
+
+Initial bootstrap is read-only. EPHEMERAL projects may use external cache; ATTACHED projects use `.ai/intelligence/`. Do not full-rescan on every turn.
+
+`orchestration/PROJECT_KNOWLEDGE.md` exists only for v0.8 migration compatibility.
 
 ## Quality Planning
 

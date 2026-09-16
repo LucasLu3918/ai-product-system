@@ -1,45 +1,45 @@
 # Existing-Project Instruction Resolution
 
-Load this for brownfield work, Global Harness instruction composition, or when the user explicitly references runtime/project-local instructions.
+Use for brownfield work and Turn Harness context composition.
 
 ## Resolution order
 
-External platform/safety constraints and AIPS constitutional/governance rules remain mandatory. Do not replace runtime-native instructions. Inside project execution:
-
-```text
-Current explicit user instruction / accepted current decision
-→ runtime-native instructions in their native scope/precedence
-→ nearest applicable project instructions (including scoped AGENTS.md)
-→ accepted project ADR / authoritative contract
-→ broader official project standards/docs
-→ Project Knowledge cache (derived, non-governing)
-→ project-local skill/reference
-→ global AIPS skill/reference
+~~~text
+External platform / safety constraints
+→ AIPS Constitution / Governance
+→ current explicit user decision
+→ runtime-native instructions in native precedence
+→ nearest scoped project instructions
+→ accepted ADR / authoritative contracts
+→ broader official project docs
+→ PROJECT_OVERRIDES
+→ Project Intelligence (derived, non-governing)
+→ project-local Skills
+→ AIPS Skills
 → inference
-```
+~~~
 
-If the runtime enforces a different native precedence, obey that runtime rule and surface material conflicts.
+Material conflicts are surfaced; a runtime's mandatory native precedence is never falsely overridden.
+
+## Source Registry
+
+Use `SOURCE_REGISTRY.yaml` to record authoritative/native sources and runtime visibility.
+
+Do not copy source content into Intelligence merely to normalize formats.
+
+Storage deduplication and runtime-context deduplication are separate:
+
+- if a Runtime already auto-loads a source, Turn Context can point to it without reinjecting content;
+- if a Runtime does not auto-load an applicable authoritative source, include a pointer for targeted load.
 
 ## Scope
 
-An instruction applies only to files/components inside its declared or directory scope. When multiple `AGENTS.md` files apply, the one nearest to the target path is more specific.
-
-## Conflict handling
-
-- equivalent/local conflicts: choose the more specific current instruction;
-- material contract/architecture/security conflicts: surface impact and recommendation before implementation;
-- after user approval, follow the user decision within its approved scope.
+Directory-scoped instructions apply only to targets inside their scope. Nearest applicable project instruction wins over broader project instruction when otherwise equivalent.
 
 ## Temporary vs permanent
 
-A run-specific override is recorded under `.ai/runs/<run>/` and does not modify project policy. If the user approves a permanent change, update the authoritative project instruction/ADR/contract as part of the artifact contract.
+A task-specific override is temporary. A permanent user/project decision belongs in the appropriate authoritative project record or `PROJECT_OVERRIDES.yaml` when it specifically confirms/excepts derived Intelligence.
 
+## Adapter rule
 
-## Global Harness
-
-Runtime Adapters are integration mechanisms, not new instruction authorities.
-
-- Codex/Claude/Gemini native instruction files remain in their native locations.
-- AIPS does not copy their content into project knowledge.
-- Existing user-owned runtime instruction files block destructive automatic adapter installation and result in MANUAL coverage.
-- Project-specific instructions are still resolved for the actual target path.
+Runtime Adapters are transport/integration mechanisms, not new instruction authorities.

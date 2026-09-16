@@ -2,20 +2,23 @@
 
 Load minimally. Do not read the whole repository.
 
-1. If entered through the Global Harness, resolve context with `aips harness resolve`; otherwise read `SYSTEM.md` directly.
+1. If entered through the Global Harness, resolve the current turn with the runtime Adapter / `aips intelligence context`; otherwise read `SYSTEM.md` directly.
 2. For applicable project/software work, read `SYSTEM.md` with minimal context. Before mutating a target project, run `aips preflight <project-path>`.
 3. If changing this AI Product System, use `orchestration/SYSTEM_SELF_IMPROVEMENT.md`.
 4. If the change is large/core, obtain Core Change Approval before implementation.
 5. Resolve requirement readiness, external-source needs, then the smallest Work Mode, project state, risk/assurance and planning/creative/brand/product-delivery needs.
-6. For existing projects, preserve runtime-native instructions, discover applicable scoped project instructions/authoritative docs, then load the Project Knowledge Index and only relevant knowledge topics before rescanning source.
+6. For existing projects, preserve runtime-native/project instructions, resolve Project Intelligence, and load only task-relevant Intelligence topics. If Intelligence is missing, perform read-only bootstrap before mutation; if stale, targeted-refresh affected topics only.
 7. Resolve only required Roles and leaf Skills. Before adding/expanding Role/Capability/Skill, use `orchestration/CAPABILITY_INCUBATION.md`.
-8. Execute inside the approved boundary. Use V1/V2 visual consistency repair as appropriate, refresh reusable Project Knowledge, and use multi-perspective review for large/core/high-risk changes. Persist required artifacts/state/lessons.
+8. Before an existing-project mutation, resolve Change Impact and preserve valid project-native conventions. Execute inside the approved boundary, refresh only affected Project Intelligence, and use multi-perspective review for large/core/high-risk changes.
 9. Before remote Git publication, run the Git Publish Approval Gate.
 
 Key protocol pointers:
 - global harness: `harness/HARNESS_PROTOCOL.md`
 - harness resolution: `orchestration/HARNESS_RESOLUTION.md`
-- project knowledge: `orchestration/PROJECT_KNOWLEDGE.md`
+- turn harness: `orchestration/TURN_HARNESS.md`
+- project intelligence: `orchestration/PROJECT_INTELLIGENCE.md`
+- change impact: `orchestration/CHANGE_IMPACT.md`
+- project knowledge compatibility: `orchestration/PROJECT_KNOWLEDGE.md`
 - quality planning: `orchestration/QUALITY_PLANNING.md`
 - requirement clarification: `orchestration/REQUIREMENT_CLARIFICATION.md`
 - external context: `orchestration/EXTERNAL_CONTEXT_RESOLUTION.md`

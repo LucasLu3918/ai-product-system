@@ -4,9 +4,9 @@
 
 ```text
 Agent Session / User Request
-→ Global Harness Resolution when installed
+→ Turn-Aware Harness Context Resolution when installed
 → System Update Preflight for mutation
-→ Project Mode Resolution (EPHEMERAL / ATTACHED)
+→ Project Mode + Intelligence Store Resolution (EPHEMERAL external cache / ATTACHED local)
 → Task Preflight / Requirement Readiness
 → External Context Resolution when needed
 → Primary Planning / Full Product Delivery Detection
@@ -14,7 +14,9 @@ Agent Session / User Request
 → Intent + Work Mode
 → Project State
 → Runtime-native + Project Instruction Resolution
-→ Existing Project Knowledge Index / targeted discovery when relevant
+→ Project Intelligence readiness/freshness
+→ Initial read-only bootstrap or targeted refresh when required
+→ Change Impact Guard before existing-project mutation
 → Risk / Assurance + Quality Classification
 → Creative / Brand / Capability Routing when relevant
 → Instruction Discovery (existing projects)
@@ -30,7 +32,7 @@ Agent Session / User Request
 → LOCAL_COMPLETE for complete products
 → Production Enablement only when requested/approved
 → Release Readiness + PRODUCTION_VERIFIED when production is in scope
-→ Persist State + System Provenance / Knowledge refresh
+→ Persist State + System Provenance / targeted Intelligence refresh
 ```
 
 ## System Update Preflight
@@ -60,27 +62,32 @@ Read-only explanation/research that does not mutate a project does not need to m
 
 ## Global Agent Harness
 
-When AIPS is installed, supported Agent runtimes may load `harness/BOOTSTRAP.md` automatically through a runtime-specific AIPS-owned Adapter.
+Use `harness/HARNESS_PROTOCOL.md`, `orchestration/TURN_HARNESS.md` and `orchestration/HARNESS_RESOLUTION.md`.
 
-Use `orchestration/HARNESS_RESOLUTION.md`.
+The Harness is available after installation, but full AIPS orchestration activates only for applicable product/project/software work.
 
 Rules:
 
-- the Harness is always available, but full AIPS orchestration is only activated for applicable project/product/software work;
-- do not preload the whole AIPS repository at session start;
-- preserve runtime-native instructions and project instructions;
-- never overwrite user-owned AGENTS/CLAUDE/GEMINI files, Skills or runtime config to gain automatic coverage;
-- if safe automatic integration is blocked, report MANUAL rather than patching user content;
-- no attached workspace is implied by installation.
+- resolve a compact current Turn Context rather than preloading the AIPS repository;
+- preserve runtime-native and project-native instructions;
+- report runtime capability accurately: TURN_NATIVE / CONTEXT_ALWAYS / SESSION_ONLY / MANUAL / UNSUPPORTED;
+- use reversible managed composition when a shared runtime instruction/config surface is required;
+- every turn may resolve context, but repository-wide discovery is not repeated every turn.
 
 Project modes:
 
 ~~~text
-No .ai/ → EPHEMERAL
-Explicit aips attach → ATTACHED
+No .ai/
+→ EPHEMERAL
+→ no project-local AIPS state
+→ reusable Intelligence may live in ~/.config/aips/projects/<project-id>/
+
+Explicit aips attach
+→ ATTACHED
+→ .ai/intelligence/ + normal persistent workspace
 ~~~
 
-Only ATTACHED mode enables persistent AIPS project state/knowledge by default.
+EPHEMERAL remains non-invasive to project source.
 
 ## System Self-Improvement
 
@@ -185,15 +192,26 @@ Key rules:
 - production automation never bypasses risk-proportional approval, secret protection, migration/recovery or security rules;
 - production Done includes post-deploy health/smoke/observability verification.
 
-## Project knowledge
+## Project Intelligence
 
-For existing projects, use `orchestration/PROJECT_KNOWLEDGE.md`.
+For existing projects, use `orchestration/PROJECT_INTELLIGENCE.md` and `orchestration/CHANGE_IMPACT.md`.
 
-Load authoritative project instructions/docs first. Then read `.ai/knowledge/KNOWLEDGE_INDEX.yaml` when present and load only topics relevant to the current task.
+Project Intelligence replaces Project Knowledge as the canonical reusable understanding layer.
 
-If reusable project knowledge is missing, use targeted Project Knowledge Discovery rather than scanning every file. Persist only expensive-to-rediscover, stable knowledge not already covered by AGENTS/ADR/contracts/official docs. Prefer pointers over duplicated content.
+Rules:
 
-Project Knowledge has no governance authority and never replaces active security/reliability verification.
+- register authoritative runtime/project sources in SOURCE_REGISTRY instead of copying them;
+- initialize existing-project Intelligence with read-only breadth-first discovery;
+- use External Project Intelligence Cache in EPHEMERAL mode and `.ai/intelligence/` in ATTACHED mode;
+- keep readiness, human review and freshness as separate states;
+- use branch/worktree/dirty-path-aware targeted refresh;
+- keep Impact Graph machine-readable;
+- generate HTML deterministically as a review view only;
+- store human additions/exceptions/exclusions in PROJECT_OVERRIDES.yaml;
+- before mutation, create/resolve Change Impact and compare actual diff against declared impact;
+- Project Intelligence never replaces current security/reliability verification.
+
+Existing `.ai/knowledge/` is migration input only; new reusable conclusions are written to Project Intelligence.
 
 ## Quality planning
 
@@ -298,7 +316,7 @@ Inside the project execution layer, resolve applicable instructions approximatel
 3. nearest applicable scoped project instructions such as `AGENTS.md`;
 4. accepted project decisions / ADRs and authoritative contracts;
 5. broader official project standards/documentation and root instructions;
-6. current Project Knowledge cache/index (derived knowledge only, never governance);
+6. approved Project Overrides + current Project Intelligence (derived, non-governing);
 7. project-local skills and references;
 8. global AI Product System skills;
 9. agent inference.
