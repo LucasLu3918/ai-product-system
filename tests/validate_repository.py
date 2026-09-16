@@ -185,8 +185,8 @@ for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"
         errors.append(f"PLANNING_PACKAGE.md missing: {phrase}")
 
 scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
-if len(scenarios) < 68:
-    errors.append(f"Expected at least 68 acceptance scenarios, found {len(scenarios)}")
+if len(scenarios) < 69:
+    errors.append(f"Expected at least 69 acceptance scenarios, found {len(scenarios)}")
 
 security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
 for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):
@@ -417,6 +417,8 @@ if "Project mode: EPHEMERAL (no .ai workspace created)." not in cli_text:
     errors.append("bin/aips preflight must support EPHEMERAL mode without implicit attach")
 if "refresh_harness_if_installed" not in cli_text:
     errors.append("bin/aips must refresh/migrate Harness after installed-system updates")
+if 'die "CLI path already exists and is not an AIPS symlink' not in cli_text:
+    errors.append("bin/aips install must reject non-AIPS CLI path collisions")
 if "Project workspace is not attached; applying attach safety checks." in cli_text:
     errors.append("bin/aips still contains the old implicit preflight attach behavior")
 

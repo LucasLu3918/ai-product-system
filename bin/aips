@@ -146,9 +146,14 @@ harness:
   bootstrap: "$SYSTEM_DIR/harness/BOOTSTRAP.md"
 
 owned_resources:
+EOF
+
+    if [ -L "$BIN_HOME/aips" ] && [ "$(readlink "$BIN_HOME/aips" || true)" = "$SYSTEM_DIR/bin/aips" ]; then
+      cat <<EOF
   - type: cli_symlink
     path: "$BIN_HOME/aips"
 EOF
+    fi
 
     if [ "$codex_status" = "AUTOMATIC" ] && [ -n "$codex_resource" ]; then
       cat <<EOF
@@ -559,7 +564,20 @@ install_cli() {
   "$SYSTEM_DIR/.venv/bin/python" -m pip install --disable-pip-version-check -q -r "$SYSTEM_DIR/requirements.txt"
 
   mkdir -p "$BIN_HOME" "$CONFIG_HOME"
-  ln -sfn "$SYSTEM_DIR/bin/aips" "$BIN_HOME/aips"
+
+  if [ -e "$BIN_HOME/aips" ] || [ -L "$BIN_HOME/aips" ]; then
+    if [ -L "$BIN_HOME/aips" ]; then
+      local existing_target
+      existing_target="$(readlink "$BIN_HOME/aips" || true)"
+      if [ "$existing_target" != "$SYSTEM_DIR/bin/aips" ]; then
+        die "CLI path already exists and is not owned by this AIPS installation: $BIN_HOME/aips"
+      fi
+    else
+      die "CLI path already exists and is not an AIPS symlink: $BIN_HOME/aips"
+    fi
+  fi
+
+  ln -s "$SYSTEM_DIR/bin/aips" "$BIN_HOME/aips" 2>/dev/null || true
   printf '%s\n' "$SYSTEM_DIR" > "$CONFIG_HOME/system-dir"
 
   validate_repo

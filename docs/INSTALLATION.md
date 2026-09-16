@@ -38,6 +38,8 @@ aips harness status
 aips harness doctor
 ~~~
 
+如果 `~/.local/bin/aips` 已存在且不是目前 AIPS installation 擁有的 symlink，安裝會停止並保留原檔，不會強制覆寫。
+
 如果 ~/.local/bin 不在 PATH：
 
 ~~~bash
