@@ -60,3 +60,20 @@ Automated   33.0%
 ~~~
 
 仍為 manual 的 Scenario 不代表失敗；它們通常包含需要 Agent judgment、Human decision、外部環境或跨文件語意評估的行為，目前不會為提高百分比而虛假標記為 automated。
+
+## v0.15 Baseline
+
+Canonical Project Identity / Resume Integrity 新增 Scenario 116–120，全部具 executable evidence：
+
+~~~text
+Total       120
+Manual       77
+Deterministic 15
+Lifecycle    28
+Agent Eval    0
+Automated    43
+Uncovered     0
+Automated   35.8%
+~~~
+
+Identity/Resume evidence 同時驗證跨 worktree repository identity、dirty workspace STALE、legacy run migration、repository-wide Single Writer 與 Project Intelligence canonical namespace。
