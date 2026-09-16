@@ -1,0 +1,30 @@
+version: 1
+status: NEEDS_CLARIFICATION # READY | NEEDS_CLARIFICATION | BLOCKED
+
+objective: null
+
+actors:
+  primary: []
+  secondary: []
+
+expected_output: null
+
+scope:
+  included: []
+  excluded: []
+
+inputs:
+  required: []
+  available: []
+
+constraints: []
+
+success_criteria: []
+
+professional_defaults: []
+
+blocking_unknowns: []
+
+user_decisions: []
+
+notes: []
