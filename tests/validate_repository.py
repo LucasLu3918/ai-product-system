@@ -109,7 +109,7 @@ for skill_id, meta in (skills.get("skills") or {}).items():
 required_files = [
     "AGENTS.md", "SYSTEM.md", "README.md", "USER_GUIDE.md", "CHANGELOG.md", "VERSION",
     "core/CONSTITUTION.md", "core/PRINCIPLES.md", "core/GOVERNANCE.md", "core/DECISIONS.md",
-    "orchestration/ORCHESTRATOR.md", "orchestration/MODEL_ROUTING.md",
+    "orchestration/ORCHESTRATOR.md", "orchestration/MODEL_ROUTING.md", "orchestration/EXECUTION_ISOLATION.md",
     "orchestration/INSTRUCTION_RESOLUTION.md", "orchestration/WORKSPACE_STATE.md",
     "orchestration/PLANNING_PACKAGE.md", "orchestration/SYSTEM_SELF_IMPROVEMENT.md",
     "orchestration/CREATIVE_DIRECTION.md", "orchestration/BRAND_SYSTEM.md",
@@ -146,6 +146,7 @@ required_files = [
     "templates/delivery/RUNBOOK.md",
     "scripts/check_release_readiness.py", "scripts/harness_resolve.py",
     "scripts/project_intelligence.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py",
+    "scripts/execution_isolation.py",
     "scripts/check_secret_leakage.py",
     "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml",
 ]
@@ -195,8 +196,8 @@ for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"
         errors.append(f"PLANNING_PACKAGE.md missing: {phrase}")
 
 scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
-if len(scenarios) < 110:
-    errors.append(f"Expected at least 110 acceptance scenarios, found {len(scenarios)}")
+if len(scenarios) < 115:
+    errors.append(f"Expected at least 115 acceptance scenarios, found {len(scenarios)}")
 
 security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
 for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):
@@ -1048,8 +1049,8 @@ if conformance_helper.exists():
             errors.append("Scenario conformance total/registered count must match scenario inventory")
         if cov.get("uncovered") != 0:
             errors.append("Released scenario conformance registry must have no uncovered entries")
-        if cov.get("manual") != 95 or cov.get("automated") != 15:
-            errors.append("v0.13 baseline must conservatively report manual=95 and automated=15")
+        if cov.get("manual") != 95 or cov.get("automated") != 20:
+            errors.append("v0.14 baseline must conservatively report manual=95 and automated=20")
 
     with tempfile.TemporaryDirectory() as tmp:
         temp = Path(tmp)
@@ -1072,6 +1073,142 @@ if conformance_helper.exists():
             errors.append("Conformance checker must fail when a Scenario has no registry entry")
 
 for n in range(106, 111):
+    matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
+    if len(matches) != 1:
+        errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")
+
+# v0.14 execution isolation contract
+isolation_protocol = ROOT / "orchestration/EXECUTION_ISOLATION.md"
+isolation_helper = ROOT / "scripts/execution_isolation.py"
+for required in (isolation_protocol, isolation_helper):
+    if not required.exists():
+        errors.append(f"Missing v0.14 execution-isolation artifact: {required.relative_to(ROOT)}")
+
+if isolation_helper.exists():
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(isolation_helper)], capture_output=True, text=True)
+    if compiled.returncode != 0:
+        errors.append(f"execution_isolation.py syntax failed: {compiled.stderr.strip()}")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        project = base / "project"
+        config = base / "config"
+        project.mkdir()
+        (project / "README.md").write_text("test\n", encoding="utf-8")
+        subprocess.run(["git", "init", "-q"], cwd=project, check=True)
+        subprocess.run(["git", "config", "user.email", "aips@example.invalid"], cwd=project, check=True)
+        subprocess.run(["git", "config", "user.name", "AIPS Test"], cwd=project, check=True)
+        subprocess.run(["git", "add", "README.md"], cwd=project, check=True)
+        subprocess.run(["git", "commit", "-qm", "initial"], cwd=project, check=True)
+        env = dict(os.environ)
+        env["XDG_CONFIG_HOME"] = str(config)
+
+        shared = subprocess.run([
+            sys.executable, str(isolation_helper), "resolve",
+            "--project", str(project), "--mode", "shared", "--format", "json",
+        ], env=env, capture_output=True, text=True)
+        if shared.returncode != 0:
+            errors.append(f"Shared isolation resolution failed: {shared.stdout.strip()} {shared.stderr.strip()}")
+        else:
+            shared_doc = json.loads(shared.stdout)
+            if shared_doc.get("status") != "AVAILABLE" or shared_doc.get("isolated") is not False:
+                errors.append("Shared mode must be AVAILABLE but must not claim isolation")
+
+        sandbox = subprocess.run([
+            sys.executable, str(isolation_helper), "resolve",
+            "--project", str(project), "--mode", "sandbox", "--format", "json",
+        ], env=env, capture_output=True, text=True)
+        if sandbox.returncode != 0:
+            errors.append(f"Sandbox capability resolution should report state without failing: {sandbox.stdout.strip()} {sandbox.stderr.strip()}")
+        else:
+            sandbox_doc = json.loads(sandbox.stdout)
+            if sandbox_doc.get("status") != "UNSUPPORTED" or sandbox_doc.get("isolated") is not False:
+                errors.append("Sandbox must report UNSUPPORTED without a verified provider")
+        if (config / "aips" / "worktrees").exists():
+            errors.append("Isolation resolve must not create a fake sandbox/worktree directory")
+
+        created = subprocess.run([
+            sys.executable, str(isolation_helper), "create",
+            "--project", str(project), "--mode", "worktree",
+            "--id", "iso1", "--boundary", "orders", "--format", "json",
+        ], env=env, capture_output=True, text=True)
+        if created.returncode != 0:
+            errors.append(f"Worktree isolation creation failed: {created.stdout.strip()} {created.stderr.strip()}")
+        else:
+            created_doc = json.loads(created.stdout)
+            worktree = Path(created_doc.get("path") or "")
+            if not worktree.is_dir():
+                errors.append("Worktree isolation did not create the managed path")
+            else:
+                inside = subprocess.run(["git", "-C", str(worktree), "rev-parse", "--is-inside-work-tree"], capture_output=True, text=True)
+                if inside.returncode != 0 or inside.stdout.strip() != "true":
+                    errors.append("Worktree isolation path must be a real Git worktree")
+
+                status = subprocess.run([
+                    sys.executable, str(isolation_helper), "status",
+                    "--project", str(project), "--id", "iso1", "--format", "json",
+                ], env=env, capture_output=True, text=True)
+                if status.returncode != 0:
+                    errors.append(f"Worktree isolation status failed: {status.stdout.strip()} {status.stderr.strip()}")
+                else:
+                    status_doc = json.loads(status.stdout)
+                    if status_doc.get("status") != "ACTIVE" or status_doc.get("clean") is not True:
+                        errors.append("New AIPS worktree must report ACTIVE and clean")
+
+                duplicate = subprocess.run([
+                    sys.executable, str(isolation_helper), "create",
+                    "--project", str(project), "--mode", "worktree",
+                    "--id", "iso2", "--boundary", "orders", "--format", "json",
+                ], env=env, capture_output=True, text=True)
+                if duplicate.returncode == 0:
+                    errors.append("A second active writer for the same Change Boundary must be blocked")
+
+                dirty_file = worktree / "dirty.txt"
+                dirty_file.write_text("preserve me\n", encoding="utf-8")
+                dirty_remove = subprocess.run([
+                    sys.executable, str(isolation_helper), "remove",
+                    "--project", str(project), "--id", "iso1", "--format", "json",
+                ], env=env, capture_output=True, text=True)
+                if dirty_remove.returncode == 0 or not worktree.exists() or not dirty_file.exists():
+                    errors.append("Dirty AIPS worktree cleanup must block and preserve user changes")
+
+                dirty_file.unlink()
+                clean_remove = subprocess.run([
+                    sys.executable, str(isolation_helper), "remove",
+                    "--project", str(project), "--id", "iso1", "--format", "json",
+                ], env=env, capture_output=True, text=True)
+                if clean_remove.returncode != 0 or worktree.exists():
+                    errors.append(f"Clean AIPS worktree cleanup failed: {clean_remove.stdout.strip()} {clean_remove.stderr.strip()}")
+                branch = subprocess.run([
+                    "git", "-C", str(project), "show-ref", "--verify", "--quiet",
+                    "refs/heads/aips/isolation/iso1",
+                ])
+                if branch.returncode != 0:
+                    errors.append("AIPS worktree cleanup must preserve the managed branch")
+
+        sandbox_create = subprocess.run([
+            sys.executable, str(isolation_helper), "create",
+            "--project", str(project), "--mode", "sandbox",
+            "--id", "sandbox1", "--boundary", "sandbox-boundary", "--format", "json",
+        ], env=env, capture_output=True, text=True)
+        if sandbox_create.returncode == 0:
+            errors.append("Sandbox creation without a verified provider must be BLOCKED")
+        else:
+            try:
+                sandbox_create_doc = json.loads(sandbox_create.stdout)
+                if sandbox_create_doc.get("status") != "BLOCKED":
+                    errors.append("Blocked sandbox creation must emit structured BLOCKED state")
+            except Exception:
+                errors.append("Blocked sandbox creation must emit structured JSON evidence")
+
+        cli_isolation = subprocess.run([
+            "bash", str(ROOT / "bin/aips"), "isolation", "resolve",
+            "--project", str(project), "--mode", "shared", "--format", "json",
+        ], env=env, capture_output=True, text=True)
+        if cli_isolation.returncode != 0 or json.loads(cli_isolation.stdout).get("mode") != "shared":
+            errors.append(f"aips isolation CLI routing failed: {cli_isolation.stdout.strip()} {cli_isolation.stderr.strip()}")
+
+for n in range(111, 116):
     matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
     if len(matches) != 1:
         errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")
