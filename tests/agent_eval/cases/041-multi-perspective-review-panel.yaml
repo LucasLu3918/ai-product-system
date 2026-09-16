@@ -1,0 +1,36 @@
+version: 1
+id: 041-multi-perspective-review-panel
+scenario_id: "041"
+description: A public API/auth/database change should resolve a bounded, relevant review panel.
+input:
+  prompt: Review a large backend change that modifies a public API, authorization checks and database transaction behavior.
+  context:
+    semantic_impacts:
+      - public_api
+      - authorization
+      - database_transaction
+    large_change: true
+rubric:
+  equals:
+    response.status: REVIEW_PANEL_REQUIRED
+    response.permissions: READ_ONLY
+    response.scope_strategy: BOUNDED
+    response.review_entire_repository: false
+    response.deduplicate_findings: true
+  contains:
+    response.actions:
+      - trigger_review_from_semantic_impact
+      - assign_bounded_files_contracts_tests
+      - normalize_findings
+      - deduplicate_findings
+  excludes:
+    response.actions:
+      - assign_every_reviewer_entire_repository
+  set_equals:
+    response.selected_reviewers:
+      - quality-reviewer
+      - software-architect
+      - security-engineer
+      - database-engineer
+  nonempty:
+    - response.summary
