@@ -1,0 +1,31 @@
+version: 1
+case_id: 013-reproducible-planning-package
+scenario_id: "013"
+case_fingerprint: sha256:77b4c5978ce594c5eda299c28d4ccbce865d88b011709c9c429294b5e9675ea3
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: WORKSPACE_REQUIRED
+  chat_is_final_system_of_record: false
+  implementation_after_gate1: false
+  gate1_required: true
+  gate2_required: true
+  actions:
+    - ask_where_planning_package_should_be_persisted
+    - persist_reproducible_planning_package
+    - cross_review_package_consistency
+    - request_gate1_planning_approval
+    - derive_initial_implementation_items_after_gate1
+    - request_gate2_implementation_approval
+  required_artifacts:
+    - product_plan
+    - experience_design
+    - visual_system
+    - technical_architecture
+    - api_spec_when_applicable
+    - implementation_plan
+    - decisions_assumptions
+  summary: Resolve a persistent workspace before creating the authoritative planning package, make it reproducible without chat history, and keep Planning Approval distinct from the later Implementation Approval.
