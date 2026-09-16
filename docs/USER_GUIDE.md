@@ -216,3 +216,164 @@ Human Docs 使用繁體中文，專有名詞第一次出現附英文。
 Agent Docs 使用精簡英文，避免翻譯造成 Agent 路由歧義與 Token 浪費。
 
 流程異動時，Documentation Impact Gate 必須確認兩邊是否都需要同步更新。
+
+
+## 14. 完整產品交付（End-to-End Product Delivery）
+
+如果你的需求是：
+
+> 幫我從需求開始做成一個可以正式上線的完整產品。
+
+系統會把它視為完整產品交付，而不是只產生 Code。
+
+~~~text
+你的需求 / 素材
+→ 引導需求與規格
+→ Product Workspace
+→ PRODUCT.yaml
+→ Planning Package
+→ 規劃確認
+→ Frontend / Backend / Data / Infrastructure
+→ 本地環境（Local）
+→ Automated Tests
+→ Security Verification
+→ Release Candidate
+→ Staging
+→ Release Readiness
+→ Production
+→ Health / Smoke / Logs / Metrics
+~~~
+
+### Product Workspace
+
+建議一個完整產品有一個可被人類與 Agent 快速理解的根目錄：
+
+~~~text
+product/
+├── PRODUCT.yaml
+├── README.md
+├── .ai/
+├── docs/
+├── brand/
+├── apps/
+│   ├── frontend/
+│   └── backend/
+├── database/
+├── tests/
+├── infra/
+├── deployment/
+└── scripts/
+~~~
+
+實際不需要的內容不會硬建立。
+
+### Frontend / Backend 是否一定要兩個 Repository？
+
+不用。
+
+系統採用部署單元（Deployment Unit）概念。
+
+例如：
+
+~~~text
+apps/frontend
+apps/backend
+~~~
+
+兩者可以有各自的 Build / Test / Deploy，但仍放在同一個 Git Repository。
+
+只有當團隊、權限、Release Cycle、服務共用或規模等因素真的需要時，才拆成 Multi-Repo。
+
+因此：
+
+> Independent Deployability ≠ Independent Repository
+
+### PRODUCT.yaml
+
+`PRODUCT.yaml` 是整個產品的導航入口，記錄：
+
+- 有哪些 Deployment Units
+- API / Event Contracts
+- Database / Migration
+- Brand Profile
+- Local / Staging / Production
+- Dev / Test / Security / Build / Smoke Commands
+- Release Readiness
+- Runbook / Rollback
+- Health / Logs / Metrics / Alerts
+
+新的 Agent 不需要重新閱讀完整聊天，就可以先從 PRODUCT.yaml 理解產品。
+
+### Local Environment
+
+完整產品必須提供一條明確的本地啟動與驗證方式。
+
+例如：
+
+~~~bash
+make dev
+make test
+make security
+make build
+~~~
+
+底層可以是 Docker Compose、Native Runtime 或其他工具；系統不會為了形式強迫使用 Docker。
+
+### Security 不只在最後檢查
+
+完整產品採用：
+
+> 設計階段資安（Security by Design）＋驗證階段資安（Security by Verification）
+
+規劃時處理 Risk Profile、Threat Model、Authorization 與 Business Invariants。
+
+實作與 Release 時再執行適用的 Scanner / Test，並依 SAL 由 Security Engineer 做獨立判斷。
+
+### Staging
+
+正式產品預設流程：
+
+~~~text
+Local
+→ CI
+→ Staging
+→ Verification
+→ Production
+~~~
+
+低風險靜態產品如果不需要 Staging，可以標示 N/A 並記錄原因。
+
+### Release Readiness
+
+Production 前不新增一堆零散 Gate，而是統一整理成發布就緒（Release Readiness）。
+
+它會確認適用項目，例如：
+
+- 所有 Deployment Units Build 成功
+- Unit / Integration / Contract / E2E / Smoke
+- Security Assurance
+- Database Migration / Recovery
+- Infrastructure
+- Staging Verification
+- Health / Logs / Metrics / Alerts
+- Deployment / Rollback / Runbook
+
+`READY` 代表技術條件已完成，但不會繞過既有的 Human Approval 或高風險規則。
+
+### Production 完成條件
+
+部署成功不代表 Done。
+
+正式完成至少要確認適用的：
+
+~~~text
+Production Deploy
+→ Health Check
+→ Smoke Test
+→ Critical User Path
+→ Logs / Metrics
+→ Error Check
+→ Persist Evidence
+~~~
+
+失敗時依已定義策略 Rollback 或 Roll-forward。

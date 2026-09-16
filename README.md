@@ -35,6 +35,7 @@ aips preflight /path/to/project
 
 ## 你可以用它做什麼？
 
+- 完整產品從需求、規劃、程式、測試、資安到 Production 交付（End-to-End Product Delivery）
 - 新產品規劃與可重現規劃包（Reproducible Planning Package）
 - 既有程式修改與獨立審核（Independent Review）
 - 風險比例式資安審核（Risk-Proportional Security Assurance）
