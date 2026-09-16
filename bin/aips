@@ -60,6 +60,8 @@ Usage:
   aips isolation status --id <id> [--project <path>] [--format yaml|json]
   aips isolation remove --id <id> [--project <path>] [--format yaml|json]
 
+  aips identity [--project <path>] [--format yaml|json]
+
   aips attach <project-path>
   aips detach <project-path>
   aips status <project-path>
@@ -487,6 +489,13 @@ isolation_cmd() {
   "$py" "$SYSTEM_DIR/scripts/execution_isolation.py" "$@"
 }
 
+identity_cmd() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/aips_identity.py" show "$@"
+}
+
 refresh_harness_if_installed() {
   # system-dir is created only by AIPS install. A plain repository checkout
   # must not register global Agent integrations implicitly.
@@ -886,6 +895,10 @@ case "${1:-help}" in
     [ -n "$sub" ] || die "Usage: aips isolation <resolve|create|status|remove> ..."
     shift 2 || true
     isolation_cmd "$sub" "$@"
+    ;;
+  identity)
+    shift
+    identity_cmd "$@"
     ;;
   attach)
     [ "$#" -ge 2 ] || die "Usage: aips attach <project-path>"
