@@ -2,7 +2,7 @@
 
 ![AI Product System 架構總覽](assets/system-overview.svg)
 
-AIPS v0.11 是 Turn-Aware Global Harness + Project Intelligence + Change Impact Guard + Enforceable Governance。
+目前 AIPS 架構由 Turn-Aware Global Harness、Project Intelligence、Change Impact Guard、Enforceable Governance、Durable Run State、Scenario Conformance 與 Execution Isolation 組成。
 
 ## 1. Turn-Aware Global Harness
 
@@ -49,7 +49,7 @@ Current Prompt
 
 ![完整產品交付流程](assets/product-delivery-overview.svg)
 
-v0.9 沒有改變 LOCAL_COMPLETE → optional Production Enablement → PRODUCTION_VERIFIED 的主生命週期。
+完整產品交付主生命週期維持 LOCAL_COMPLETE → optional Production Enablement → PRODUCTION_VERIFIED。
 
 ## 6. Installation Lifecycle
 
@@ -59,7 +59,7 @@ Uninstall 只移除 AIPS-owned Managed Blocks / Hooks / Extensions / CLI。User 
 
 ## 7. Architecture Diagram Impact
 
-v0.9 影響 system-overview、harness-overview、system-lifecycle、project-intelligence-overview 與 Maintainer Mermaid。product-delivery-overview 為 N/A，因產品交付生命週期本身沒有改變。
+架構文件描述目前系統狀態；版本歷史與各版影響範圍集中在 CHANGELOG / Release Notes。Large/Core Change 仍必須在 Documentation Impact Gate 中判斷 Mermaid 與 Human SVG 是否受影響。
 
 ## 8. Enforceable Governance
 
