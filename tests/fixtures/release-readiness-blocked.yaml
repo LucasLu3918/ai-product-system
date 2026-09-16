@@ -1,0 +1,15 @@
+version: 1
+status: READY
+release:
+  version: 1.0.0
+  candidate: bad123
+  target_environment: production
+security:
+  effective_sal: 4
+  deterministic_checks: pass
+  independent_review: blocked
+  unresolved_critical: 1
+  unresolved_high: 0
+blockers:
+  - critical security finding
+evidence: []

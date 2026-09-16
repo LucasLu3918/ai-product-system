@@ -39,6 +39,9 @@ yaml_files = [
     "orchestration/schemas/execution-profile.yaml",
     "orchestration/schemas/risk-profile.yaml",
     "orchestration/schemas/brand-profile.yaml",
+    "templates/product/PRODUCT.yaml",
+    "templates/delivery/RELEASE_READINESS.yaml",
+    "templates/delivery/DEPLOYMENT_UNIT.yaml",
     "templates/creative/CREATIVE_DIRECTION.yaml",
     "templates/brand/BRAND_PROFILE.yaml",
     "templates/automation/AUTOMATION_CONTRACT.yaml",
@@ -90,9 +93,11 @@ required_files = [
     "orchestration/PLANNING_PACKAGE.md", "orchestration/SYSTEM_SELF_IMPROVEMENT.md",
     "orchestration/CREATIVE_DIRECTION.md", "orchestration/BRAND_SYSTEM.md",
     "orchestration/CAPABILITY_INCUBATION.md", "orchestration/DETERMINISTIC_AUTOMATION.md",
+    "orchestration/PRODUCT_DELIVERY.md", "orchestration/RELEASE_READINESS.md",
     "docs/ARCHITECTURE.md", "docs/MAINTENANCE.md", "docs/INSTALLATION.md", "docs/SECURITY_ASSURANCE.md",
     "docs/GETTING_STARTED.md", "docs/USER_GUIDE.md", "docs/DOCUMENTATION_MAP.md",
     "docs/ARCHITECTURE_OVERVIEW.md", "docs/assets/system-overview.svg",
+    "docs/assets/product-delivery-overview.svg",
     "examples/EXAMPLES.md", "work-modes/README.md",
     "templates/system-improvement-review.md", "templates/constitutional-change-proposal.md",
     "templates/core-change-proposal.md", "templates/git-publish-proposal.md",
@@ -103,6 +108,10 @@ required_files = [
     "templates/brand/BRAND_IDENTITY.md", "templates/brand/LOGO_SYSTEM.md",
     "templates/brand/VERBAL_IDENTITY.md", "templates/brand/BRAND_APPLICATION.md",
     "templates/brand/BRAND_GOVERNANCE.md",
+    "templates/product/PRODUCT_WORKSPACE.md",
+    "templates/delivery/LOCAL_ENVIRONMENT.md", "templates/delivery/DEPLOYMENT_PLAN.md",
+    "templates/delivery/RUNBOOK.md",
+    "scripts/check_release_readiness.py",
     "bin/aips", "scripts/bootstrap.sh", "requirements.txt", ".github/workflows/validate.yml",
 ]
 security_templates = [
@@ -141,7 +150,7 @@ for phrase in ("Update preflight", "Primary planning package", "Risk-proportiona
         errors.append(f"docs/ARCHITECTURE.md missing section: {phrase}")
 
 system = (ROOT / "SYSTEM.md").read_text(encoding="utf-8") if (ROOT / "SYSTEM.md").exists() else ""
-for phrase in ("System Update Preflight", "System Self-Improvement", "Core Change Approval Gate", "Git Publish Approval Gate", "Primary Planning Detection", "Security / Reliability Assurance", "Creative and Brand routing", "Deterministic automation", "Documentation Impact Gate"):
+for phrase in ("System Update Preflight", "System Self-Improvement", "Core Change Approval Gate", "Git Publish Approval Gate", "Primary Planning Detection", "Security / Reliability Assurance", "Creative and Brand routing", "Deterministic automation", "End-to-end product delivery", "Documentation Impact Gate"):
     if phrase not in system:
         errors.append(f"SYSTEM.md missing required behavior: {phrase}")
 
@@ -151,8 +160,8 @@ for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"
         errors.append(f"PLANNING_PACKAGE.md missing: {phrase}")
 
 scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
-if len(scenarios) < 27:
-    errors.append(f"Expected at least 27 acceptance scenarios, found {len(scenarios)}")
+if len(scenarios) < 33:
+    errors.append(f"Expected at least 33 acceptance scenarios, found {len(scenarios)}")
 
 security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
 for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):
@@ -184,6 +193,8 @@ for rel, phrases in {
     "orchestration/BRAND_SYSTEM.md": ("Brand creation flow", "Brand package", "Future artifact routing", "Campaign override"),
     "orchestration/CAPABILITY_INCUBATION.md": ("Reuse Check", "Creation preference", "Progressive incubation", "Role promotion test"),
     "orchestration/DETERMINISTIC_AUTOMATION.md": ("Good candidates", "Tool lifetime", "Output contract", "Shell vs Python"),
+    "orchestration/PRODUCT_DELIVERY.md": ("Lifecycle", "Product Workspace", "Deployment Units, not forced repositories", "Production completion"),
+    "orchestration/RELEASE_READINESS.md": ("Required evidence", "Status", "Candidate integrity", "Post-deploy"),
 }.items():
     text = (ROOT / rel).read_text(encoding="utf-8") if (ROOT / rel).exists() else ""
     for phrase in phrases:
@@ -222,6 +233,37 @@ for mode_file in (ROOT / "work-modes").glob("*.md"):
     for role_id in re.findall(r"Default role:\s*`([a-z0-9-]+)`", text):
         if role_id not in (roles.get("roles") or {}):
             errors.append(f"{mode_file.relative_to(ROOT)} references unknown default role: {role_id}")
+
+
+product_manifest = load_yaml(ROOT / "templates/product/PRODUCT.yaml") or {}
+for key in ("product", "workspace", "deployment_units", "environments", "commands", "delivery", "observability"):
+    if key not in product_manifest:
+        errors.append(f"PRODUCT.yaml missing top-level key: {key}")
+
+release_template = load_yaml(ROOT / "templates/delivery/RELEASE_READINESS.yaml") or {}
+for key in ("status", "release", "build", "tests", "security", "staging", "approval", "blockers", "evidence"):
+    if key not in release_template:
+        errors.append(f"RELEASE_READINESS.yaml missing top-level key: {key}")
+
+delivery_svg = (ROOT / "docs/assets/product-delivery-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/product-delivery-overview.svg").exists() else ""
+if "<svg" not in delivery_svg or "End-to-End Product Delivery" not in delivery_svg:
+    errors.append("Product delivery architecture SVG is missing or invalid")
+
+release_checker = ROOT / "scripts/check_release_readiness.py"
+if release_checker.exists():
+    ready = subprocess.run(
+        [sys.executable, str(release_checker), str(ROOT / "tests/fixtures/release-readiness-ready.yaml")],
+        capture_output=True, text=True,
+    )
+    if ready.returncode != 0:
+        errors.append(f"Release readiness checker rejected READY fixture: {ready.stdout.strip()} {ready.stderr.strip()}")
+
+    blocked = subprocess.run(
+        [sys.executable, str(release_checker), str(ROOT / "tests/fixtures/release-readiness-blocked.yaml")],
+        capture_output=True, text=True,
+    )
+    if blocked.returncode == 0:
+        errors.append("Release readiness checker accepted BLOCKED fixture")
 
 for shell in ("bin/aips", "scripts/bootstrap.sh"):
     p = ROOT / shell

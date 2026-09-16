@@ -1,0 +1,15 @@
+version: 1
+status: READY
+release:
+  version: 1.0.0
+  candidate: abc123
+  target_environment: production
+security:
+  effective_sal: 2
+  deterministic_checks: pass
+  independent_review: pass
+  unresolved_critical: 0
+  unresolved_high: 0
+blockers: []
+evidence:
+  - ci://example
