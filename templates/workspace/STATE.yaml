@@ -15,6 +15,10 @@ workflow:
   resume_from: null
   checkpoint: null
   project_revision: null
+  repository_id: null
+  workspace_id: null
+  workspace_fingerprint: null
+  dirty_fingerprint: null
 completed: []
 blocked: []
 waiting_for: []
