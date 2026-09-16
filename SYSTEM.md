@@ -417,3 +417,27 @@ Rules:
 - native tool guards enforce only deterministic policy and never create approval authority;
 - structured routing explanations record outcomes/reasons only, never private chain-of-thought;
 - v0.11 protects Git publication first; broader destructive-operation interception remains deferred.
+
+## Durable Run State
+
+For multi-step work that may be interrupted, reuse Workspace State and per-run artifacts rather than depending on chat history.
+
+~~~text
+workflow step
+→ checkpoint
+→ structured event evidence
+→ interruption
+→ resume request
+→ revision/freshness verification
+→ CURRENT: continue from checkpoint
+→ STALE: refresh/revalidate before continuing
+~~~
+
+Rules:
+
+- checkpoints are compact resume state, not transcripts;
+- EVENTS.jsonl records structured lifecycle evidence only;
+- never persist prompts, private chain-of-thought, credentials or unnecessary sensitive payloads;
+- ATTACHED projects persist under `.ai/runs/<run-id>/`;
+- EPHEMERAL projects use the external AIPS project cache and do not create `.ai/`;
+- revision drift marks resume state STALE; the Agent must re-evaluate affected Intelligence/tests/approvals before continuing.
