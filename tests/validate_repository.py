@@ -250,9 +250,55 @@ for phrase in ("Protected Human Authority", "Truth and No Silent Assumptions", "
         errors.append(f"CONSTITUTION.md missing protected article: {phrase}")
 
 self_improvement = (ROOT / "orchestration/SYSTEM_SELF_IMPROVEMENT.md").read_text(encoding="utf-8") if (ROOT / "orchestration/SYSTEM_SELF_IMPROVEMENT.md").exists() else ""
-for phrase in ("Self-Improvement Review", "Constitution Impact Check", "Lower-layer preference"):
+for phrase in (
+    "Self-Improvement Review",
+    "Problem / Solution Separation",
+    "User Problem",
+    "Proposed Solution",
+    "Recommended AIPS Solution",
+    "Additional Optimization Confirmation",
+    "NOW",
+    "LATER",
+    "REJECT",
+    "explicit Human confirmation",
+    "Constitution Impact Check",
+    "Lower-layer preference",
+):
     if phrase not in self_improvement:
         errors.append(f"SYSTEM_SELF_IMPROVEMENT.md missing: {phrase}")
+
+self_improvement_template = (ROOT / "templates/system-improvement-review.md").read_text(encoding="utf-8") if (ROOT / "templates/system-improvement-review.md").exists() else ""
+for phrase in (
+    "## User Problem",
+    "## Proposed Solution",
+    "## Existing Coverage",
+    "## Reuse / Extension Candidates",
+    "## Context / Token Cost",
+    "## Security / Reliability",
+    "## Architecture Diagram Impact",
+    "## Recommended AIPS Solution",
+    "## Additional Optimization Candidates",
+    "Recommended timing: NOW / LATER / REJECT",
+    "Approved additional optimizations:",
+    "Deferred optimizations:",
+):
+    if phrase not in self_improvement_template:
+        errors.append(f"system-improvement-review.md missing contract field: {phrase}")
+
+self_improvement_scenario = ROOT / "tests/scenarios/019-system-self-improvement.md"
+scenario_019 = self_improvement_scenario.read_text(encoding="utf-8") if self_improvement_scenario.exists() else ""
+for phrase in (
+    "User Problem, Proposed Solution and Recommended AIPS Solution",
+    "existing coverage",
+    "reuse/extension candidates",
+    "context/token cost",
+    "Human-facing docs and Agent-facing docs separately",
+    "Architecture Diagram Impact",
+    "NOW / LATER / REJECT",
+    "explicit Human confirmation",
+):
+    if phrase.lower() not in scenario_019.lower():
+        errors.append(f"Scenario 019 missing self-improvement acceptance contract: {phrase}")
 
 
 for creative_skill in ("creative-reference-research", "creative-calibration", "brand-foundation", "visual-quality-review"):
