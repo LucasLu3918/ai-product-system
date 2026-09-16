@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.16.1
+
+### Focused Harness Evidence Maturity
+
+- Add focused executable Harness runtime lifecycle evidence using isolated fake Codex, Claude and Gemini runtimes.
+- Verify truthful runtime installation status, Context Capability and Governance Enforcement state.
+- Verify Gemini uses the official namespaced extension mechanism with BeforeAgent Turn Context and does not overwrite user GEMINI.md/settings.
+- Verify projects without .ai remain EPHEMERAL during Harness resolution and are not auto-attached.
+- Verify Gemini uninstall targets only aips-global-harness.
+- Verify failed AIPS-owned Gemini unregister preserves ownership state for safe retry and succeeds after the runtime issue is resolved.
+- Reconcile malformed Scenario 072 Markdown into the current Gemini BeforeAgent contract.
+- Promote Scenarios 057, 061, 066, 067, 072 and 073 from manual to lifecycle coverage.
+- Raise conformance baseline to 125 total / 63 manual / 19 deterministic / 35 lifecycle / 8 agent_eval / 62 automated / 0 uncovered (49.6% automated).
+- No runtime, Role, Skill, Capability, Approval Gate or architecture behavior change.
+
 ## 0.16.0
 
 ### Provider-neutral Agent Eval Conformance
