@@ -293,8 +293,8 @@ preflight_after_update() {
   [ -d "$project" ] || die "Project path does not exist: $project"
 
   if [ ! -d "$project/.ai" ]; then
-    say "Project workspace is not initialized; initializing now."
-    init_project "$project"
+    say "Project workspace is not attached; applying attach safety checks."
+    attach_project "$project"
   else
     write_system_snapshot "$project"
   fi
