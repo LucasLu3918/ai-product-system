@@ -160,7 +160,7 @@ Schema current?
 
 ## Branch / worktree
 
-Project identity distinguishes repository lineage and active worktree/revision. Stable repository-level knowledge may be reused, but freshness is evaluated against the active workspace.
+Project identity follows `orchestration/PROJECT_IDENTITY.md`: repository_id represents lineage while workspace_id represents the active worktree. Stable repository-level understanding may be reused, but freshness is evaluated against the active workspace.
 
 ## Concurrency
 
