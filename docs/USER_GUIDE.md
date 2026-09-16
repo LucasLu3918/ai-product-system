@@ -699,7 +699,7 @@ v0.8 起，AIPS 可以在安全可逆的前提下接入支援的 Agent Runtime�
 
 AIPS 不會為了 Global Harness 覆寫既有 AGENTS.md、CLAUDE.md、GEMINI.md、Agent Config 或 Custom Skills；若自動接入會碰到使用者檔案，Runtime 改為 MANUAL。
 
-沒有 .ai/ 的 Project 預設 EPHEMERAL，不會被偷偷 Attach。需要持久 Project Knowledge / State 時才執行：
+沒有 `.ai/` 的 Project 預設 EPHEMERAL，不會被偷偷 Attach；但可使用 AIPS External Project Intelligence Cache 供後續 Agent 重用。需要 Project-local State 時才執行：
 
 ~~~bash
 aips attach /path/to/project
@@ -718,3 +718,17 @@ aips uninstall
 ~~~
 
 解除只處理 AIPS-owned integration；使用者/專案 instructions、Skills、source 與 .ai/ 都會保留。
+
+## 26. Project Intelligence
+
+v0.9 起，Existing Project 的長期理解層由 Project Knowledge 升級為 Project Intelligence。
+
+第一次需要廣泛理解或實際修改既有專案時，Agent 先做 read-only bootstrap，再針對 Architecture、Data Flow、Modules、Conventions、Testing、Security 等做 evidence-based semantic enrichment；只有 `finalize` 通過才視為 READY。
+
+已有 AGENTS / CLAUDE / GEMINI / ADR / Contract / 正式 Docs 的內容不複製，改用 SOURCE_REGISTRY Pointer。
+
+EPHEMERAL Project 也能在 AIPS External Cache 保存 Intelligence，因此不需要 Attach 才能避免每次重新掃描。
+
+Human Review HTML 讓使用者檢查 AI 對 Project 的理解。使用者的補充、例外與排除條件保存到 PROJECT_OVERRIDES.yaml。
+
+任何 Existing Project mutation 在 Coding 前都要評估 Change Impact：Input、Output、Data、Events、Consumers、Security Boundary、Business Invariant、Compatibility、Tests 等；完成後再用 Actual Diff 回頭核對。
