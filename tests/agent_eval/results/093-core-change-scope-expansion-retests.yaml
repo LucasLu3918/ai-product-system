@@ -1,0 +1,22 @@
+version: 1
+case_id: 093-core-change-scope-expansion-retests
+scenario_id: "093"
+case_fingerprint: sha256:6bd8166881b5cc2d26bf43c5bdd32fb934e0c17721344b818f66f6da853f1f4f
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: SCOPE_EXPANDED
+  original_test_matrix_still_sufficient: false
+  recompute_test_matrix: true
+  rerun_affected_review: true
+  scope_reapproval_when_applicable: true
+  actions:
+    - stop_affected_continuation
+    - update_change_boundary
+    - execute_newly_applicable_checks
+    - rerun_affected_review
+    - obtain_applicable_scope_reapproval
+  summary: Once a new public contract and migration path enter the Core Change, the original smaller test/approval boundary is stale; recompute tests, execute new checks, rereview and reapprove material scope.
