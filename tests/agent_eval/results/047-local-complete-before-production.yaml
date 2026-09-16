@@ -1,0 +1,27 @@
+version: 1
+case_id: 047-local-complete-before-production
+scenario_id: "047"
+case_fingerprint: sha256:9692aa3a118081cb5fa4b34b7cced249025b484ff3884edbcd7d51d6b35e7342
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: LOCAL_COMPLETE_TARGET
+  production_enablement_required_before_local_complete: false
+  ask_deploy_question_before_local_complete: false
+  hosting_provider_blocks_local_complete: false
+  local_complete_evidence:
+    - functional
+    - reproducible_local_start
+    - tests
+    - security
+    - maintainability
+    - documentation
+  actions:
+    - build_locally_runnable_complete_product
+    - verify_applicable_quality_evidence
+    - mark_local_complete
+    - ask_whether_to_continue_to_production_after_local_complete
+  summary: Finish and verify the complete locally runnable product first; an undecided hosting provider does not block LOCAL_COMPLETE, and production becomes an explicit follow-on decision afterward.
