@@ -79,19 +79,46 @@ EPHEMERAL:
 
 ## Diff reconciliation
 
-After implementation compare:
+After implementation run:
+
+~~~bash
+aips intelligence impact-reconcile --project /path/to/project --change-id <id>
+~~~
+
+The deterministic reconciler verifies the same repository/workspace/branch, requires a clean captured baseline and `status: READY`, then combines:
 
 ~~~text
-Declared Change Impact
-↔ Actual changed files/contracts/schema/events/tests
+baseline HEAD → current HEAD committed diff
++
+current staged / unstaged / untracked product paths
+-
+AIPS-owned .ai workspace state
+~~~
+
+It compares those paths with `change.target`.
+
+~~~text
+all actual paths inside declared targets
+→ MATCHED
+
+unexpected product paths
+→ EXPANDED
+→ retests_required = true
+→ scope_reapproval_required = true
+→ non-zero exit / stop continuation
+
+dirty/invalid/stale baseline or impact not READY
+→ BLOCKED
+→ non-zero exit
 ~~~
 
 If actual material impact falls outside the declared Change Boundary:
 
 1. stop affected continuation;
-2. update impact analysis;
-3. re-run required review/testing;
-4. obtain scope reapproval when the approved boundary materially expanded.
+2. update impact analysis and declared targets;
+3. recompute/rerun newly applicable testing and review;
+4. obtain applicable scope reapproval before protected continuation;
+5. run reconciliation again against a valid baseline when needed.
 
 ## Impact Graph maintenance
 
