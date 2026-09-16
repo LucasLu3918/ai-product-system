@@ -286,3 +286,70 @@
 **預期行為**
 
 這會修改 Stop-the-Line / Protected Safety 等憲法語意。系統必須標記 Constitution Impact=YES，說明風險與替代方案，明確指出受影響 Article，並要求第二次 Constitutional Approval。未取得該批准前不得修改 Constitution 或對等行為。
+
+
+## 範例 21：模糊的視覺需求
+
+**使用者**
+
+> 幫我做一個高質感、簡約、時尚的網站。
+
+**預期行為**
+
+不要直接實作完整網站。先讀既有 Brand / 使用者素材，必要時做最新 Reference Research，提出 2–3 個真正不同的 Creative Directions，讓使用者說明喜歡/不喜歡哪些部分，形成 Creative Direction Lock 後才大規模設計。
+
+## 範例 22：使用者素材製作 Banner
+
+**使用者**
+
+> 這是我的 Logo、商品照片和一張喜歡的參考圖，幫我做首頁 Banner。
+
+**預期行為**
+
+使用者素材優先於 generic style。Reference 應拆解成 layout/color/type/imagery 等特徵，不直接複製。保存 Creative Brief、Reference Mapping 與 Direction，再產出並做 Visual Quality Review。
+
+## 範例 23：建立品牌並重用
+
+**使用者**
+
+> 幫我建立一個咖啡品牌，之後網站和社群都要沿用。
+
+**預期行為**
+
+先做 Brand Foundation，不從 Logo 開始。保存 BRAND_PROFILE.yaml 與品牌導引。未來品牌 Artifact 先載入 Brand Profile，再只載入需要的深層文件。
+
+## 範例 24：混合 Reference
+
+**使用者**
+
+> 我喜歡 A 的排版、B 的配色、C 的攝影感。
+
+**預期行為**
+
+建立 aspect-level reference mapping，而不是要求選單一風格。把批准的組合保存到 Creative Direction。
+
+## 範例 25：避免重複 Role
+
+**使用者**
+
+> 幫我新增 UI Designer Role。
+
+**預期行為**
+
+先搜尋 Role/Skill Index，比較 Product Designer、ux-web-design、visual-direction 等責任與能力。若沒有新的獨立 Authority / Review obligation，建議 reuse/extend，不建立重複 Role。
+
+## 範例 26：固定資料先程式化
+
+有 20,000 行測試 log，需要找出失敗測試與統計。
+
+**預期行為**
+
+不要把全部 log 先塞給 AI。使用既有 Tool 或建立小型 Shell/Python helper，輸出 JSON/YAML summary 與 raw evidence path。AI 先讀 summary，需要 Debug 時才展開對應 evidence。
+
+## 範例 27：Human / Agent 文件同步
+
+Routing 行為改變且一般使用者操作方式也改變。
+
+**預期行為**
+
+Agent Protocol 與繁體中文 Human Guide 都更新；若只影響其中一方則只更新該 Audience。Documentation Impact Gate 檢查 DOCUMENTATION_MAP 與相關入口沒有失效。

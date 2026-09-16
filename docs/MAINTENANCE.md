@@ -10,11 +10,19 @@ Every system change must assess downstream documentation and behavior before com
 | `SYSTEM.md` | routing, planning gates, precedence, context or completion behavior changes |
 | `orchestration/*` | detailed execution/model/instruction/planning behavior changes |
 | `docs/ARCHITECTURE.md` | runtime flow, planning flow, boundaries or update lifecycle changes |
-| `README.md` | installation, structure or headline behavior changes |
-| `USER_GUIDE.md` | user-facing commands/behavior changes |
+| `README.md` | Human first-entry behavior changes |
+| `docs/GETTING_STARTED.md` | Human quick-start changes |
+| `docs/USER_GUIDE.md` | Human-facing workflows/commands change |
+| `docs/INSTALLATION.md` | Human installation/update lifecycle changes |
+| `docs/ARCHITECTURE_OVERVIEW.md` | Human architecture overview changes |
+| `AGENTS.md` | Agent bootloader changes |
 | `examples/*` | a new behavior needs a practical example |
 | `tests/scenarios/*` | routing/gate behavior changes or regressions need coverage |
-| templates/schemas | persisted contract/state/planning-package shape changes |
+| templates/schemas | persisted contract/state/planning/brand/creative/automation shapes change |
+| `orchestration/CREATIVE_DIRECTION.md` | creative workflow changes |
+| `orchestration/BRAND_SYSTEM.md` | brand workflow/precedence changes |
+| `orchestration/CAPABILITY_INCUBATION.md` | Role/Skill creation/reuse behavior changes |
+| `orchestration/DETERMINISTIC_AUTOMATION.md` | tool-vs-reasoning routing changes |
 | `VERSION` | release version changes |
 | `CHANGELOG.md` | every released behavioral change |
 
@@ -48,3 +56,22 @@ Before remote publication, present the Git Publish Proposal. A material differen
 - PATCH: clarification, typo or non-behavioral documentation fix.
 
 Major updates are not auto-applied by `aips preflight` without explicit `--allow-major`.
+
+
+## Documentation audience
+
+- Human docs use Traditional Chinese. Specialized terms include English on first use.
+- Agent docs remain concise English unless a concrete reason requires otherwise.
+- Do not maintain duplicate full Human guides in two languages by default.
+- `docs/DOCUMENTATION_MAP.md` is the audience map.
+- When behavior changes, explicitly check both Human and Agent documentation impact.
+
+## Simplicity / reuse review
+
+Before release, check:
+- no unnecessary new Role when an existing Role can own the work;
+- no new Skill that merely represents a visual style/artifact type;
+- no duplicate Role/Skill IDs;
+- repeated rules live in one authoritative protocol and are referenced elsewhere;
+- bootloader/README remain short entry documents;
+- deterministic data processing uses helpers when this materially reduces repeated model work.

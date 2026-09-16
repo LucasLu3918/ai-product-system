@@ -155,3 +155,75 @@ flowchart TD
 ~~~
 
 The Constitution is the highest internal authority. Prefer lower-layer changes whenever they solve the problem.
+
+
+## Creative direction and brand reuse
+
+~~~mermaid
+flowchart TD
+    U[User Creative Request] --> B{Approved Brand System?}
+    B -->|yes| BP[Load BRAND_PROFILE first]
+    B -->|no| A[Use user assets / references]
+    BP --> A
+    A --> R{Direction already clear?}
+    R -->|no| RR[Runtime Reference Research]
+    RR --> D[2-3 Differentiated Directions]
+    D --> C[Progressive Calibration]
+    C --> L[Creative Direction Lock]
+    R -->|yes| L
+    L --> G[Design / Generate]
+    G --> V[Visual Quality Review]
+    V --> O[Persist artifact + direction/evidence]
+~~~
+
+Styles are reference data, not skills. Brand knowledge is project knowledge, not a global skill.
+
+## Capability incubation
+
+~~~mermaid
+flowchart LR
+    N[New capability request] --> S[Search Role/Capability/Skill indexes]
+    S --> O{Overlap?}
+    O -->|high| R[Reuse]
+    O -->|partial| E[Extend existing]
+    O -->|low| K[Create minimal Skill]
+    K --> T[Scenario + Trial]
+    T --> P{Distinct responsibility + authority + review?}
+    P -->|no| K2[Keep as Skill/Capability]
+    P -->|yes| ROLE[Promote Role]
+~~~
+
+The system prefers reuse and extension over duplicate knowledge.
+
+## Deterministic automation
+
+~~~mermaid
+flowchart TD
+    X[Task step] --> D{Rule-based and verifiable?}
+    D -->|no| AI[AI reasoning]
+    D -->|yes| ET{Existing tool?}
+    ET -->|yes| RUN[Run tool]
+    ET -->|no| H[Create small Shell/Python helper]
+    H --> RUN
+    RUN --> S[Structured JSON/YAML summary]
+    S --> AI2[AI reads summary]
+    AI2 --> RAW{Need raw evidence?}
+    RAW -->|yes| E[Open targeted evidence]
+    RAW -->|no| DONE[Continue]
+~~~
+
+Helper lifetime is run-local → project reusable → system reusable only after demonstrated reuse.
+
+## Documentation audiences
+
+~~~mermaid
+flowchart LR
+    CHANGE[Behavior Change] --> H{Human usage affected?}
+    CHANGE --> A{Agent behavior affected?}
+    H -->|yes| HD[Update Traditional Chinese Human Docs]
+    A -->|yes| AD[Update concise Agent Docs]
+    HD --> M[Documentation Impact Gate]
+    AD --> M
+~~~
+
+Human and Agent docs are separate entry surfaces but share one behavior source.
