@@ -12,6 +12,15 @@ boundary:
   change: []
   excluded: []
 
+execution:
+  isolation:
+    mode: shared # shared | worktree | sandbox
+    status: null # AVAILABLE | ACTIVE | UNSUPPORTED | BLOCKED | REMOVED
+    id: null
+    boundary_id: null
+    provider: null
+    resource: null
+
 instructions:
   user: []
   scoped_agents_files: []
