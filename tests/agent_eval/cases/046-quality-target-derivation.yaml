@@ -1,0 +1,38 @@
+version: 1
+id: 046-quality-target-derivation
+scenario_id: "046"
+description: Quality targets are derived from business context without forcing users to invent p95, RTO or RPO.
+input:
+  prompt: I need a reliable SaaS for about 500 active users, but I do not know what p95 latency, RTO or RPO numbers I should choose.
+  context:
+    expected_scale: 500_active_users
+    user_knows_technical_targets: false
+    data_sensitivity: medium
+    failure_impact: medium
+rubric:
+  equals:
+    response.status: DRAFT_TARGETS_PROPOSED
+    response.ask_user_to_invent_p95_rto_rpo: false
+    response.assumptions_explicit: true
+    response.confidence_explicit: true
+    response.verification_defined: true
+  contains:
+    response.derivation_inputs:
+      - users_and_scale
+      - failure_impact
+      - data_sensitivity
+      - delivery_preference
+      - operations_preference
+    response.actions:
+      - derive_draft_targets
+      - state_assumptions
+      - state_confidence
+      - define_verification_method
+  excludes:
+    response.actions:
+      - demand_arbitrary_numeric_targets_from_user
+      - claim_false_precision
+  set_equals: {}
+  nonempty:
+    - response.draft_targets
+    - response.summary

@@ -1,0 +1,35 @@
+version: 1
+id: 045-quality-class-baseline
+scenario_id: "045"
+description: A normal production SaaS starts from Q2 Standard and evaluates all seven quality dimensions independently.
+input:
+  prompt: Plan quality for a normal production SaaS member platform. No special critical-risk requirements are known yet.
+  context:
+    product_type: production_saas
+    critical_financial_or_safety_risk: false
+rubric:
+  equals:
+    response.status: QUALITY_PROFILE_REQUIRED
+    response.quality_class: Q2
+    response.independent_dimension_adjustment_allowed: true
+    response.na_requires_reason: true
+    response.persist_quality_profile: true
+  contains:
+    response.quality_dimensions:
+      - performance
+      - security
+      - usability
+      - reliability
+      - maintainability
+      - resource_cost
+      - delivery_time
+    response.actions:
+      - derive_quality_profile
+      - define_verification_evidence
+  excludes:
+    response.actions:
+      - treat_q2_as_rigid_bundle
+      - skip_quality_profile
+  set_equals: {}
+  nonempty:
+    - response.summary

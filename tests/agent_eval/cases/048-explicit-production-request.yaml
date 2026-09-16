@@ -1,0 +1,35 @@
+version: 1
+id: 048-explicit-production-request
+scenario_id: "048"
+description: An explicit production request includes production planning from the start while still verifying LOCAL_COMPLETE first.
+input:
+  prompt: Build this product and deploy it to production when it is ready.
+  context:
+    complete_product: true
+    production_explicitly_requested: true
+rubric:
+  equals:
+    response.status: PRODUCTION_DELIVERY_PLANNED
+    response.local_complete_still_required: true
+    response.redundant_deploy_question_required: false
+    response.release_readiness_required: true
+  contains:
+    response.production_planning:
+      - infrastructure
+      - deployment_automation
+      - secrets
+      - recovery
+      - observability
+    response.actions:
+      - plan_production_enablement_from_start
+      - reach_and_verify_local_complete
+      - continue_to_production_enablement
+      - run_release_readiness_before_promotion
+  excludes:
+    response.actions:
+      - skip_local_complete
+      - ask_whether_to_deploy_after_explicit_request
+      - promote_without_release_readiness
+  set_equals: {}
+  nonempty:
+    - response.summary

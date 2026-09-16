@@ -1,0 +1,36 @@
+version: 1
+id: 047-local-complete-before-production
+scenario_id: "047"
+description: A complete product request without explicit production scope reaches LOCAL_COMPLETE before optional Production Enablement.
+input:
+  prompt: Build me a complete SaaS product. I have not decided where to host it yet.
+  context:
+    complete_product: true
+    production_explicitly_requested: false
+    hosting_provider_selected: false
+rubric:
+  equals:
+    response.status: LOCAL_COMPLETE_TARGET
+    response.production_enablement_required_before_local_complete: false
+    response.ask_deploy_question_before_local_complete: false
+    response.hosting_provider_blocks_local_complete: false
+  contains:
+    response.local_complete_evidence:
+      - functional
+      - reproducible_local_start
+      - tests
+      - security
+      - maintainability
+      - documentation
+    response.actions:
+      - build_locally_runnable_complete_product
+      - verify_applicable_quality_evidence
+      - mark_local_complete
+      - ask_whether_to_continue_to_production_after_local_complete
+  excludes:
+    response.actions:
+      - select_hosting_provider_as_blocking_prerequisite
+      - claim_production_verified
+  set_equals: {}
+  nonempty:
+    - response.summary

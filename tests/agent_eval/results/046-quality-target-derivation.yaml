@@ -1,0 +1,31 @@
+version: 1
+case_id: 046-quality-target-derivation
+scenario_id: "046"
+case_fingerprint: sha256:2f9bc0fa70cd40b2716db4aff99c726389a955aa536933587696d83ff6a7495b
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: DRAFT_TARGETS_PROPOSED
+  ask_user_to_invent_p95_rto_rpo: false
+  assumptions_explicit: true
+  confidence_explicit: true
+  verification_defined: true
+  derivation_inputs:
+    - users_and_scale
+    - failure_impact
+    - data_sensitivity
+    - delivery_preference
+    - operations_preference
+  actions:
+    - derive_draft_targets
+    - state_assumptions
+    - state_confidence
+    - define_verification_method
+  draft_targets:
+    performance: derive a moderate interactive/API latency budget appropriate to the observed workload and verify with benchmark/load evidence
+    reliability: derive pragmatic recovery targets from failure impact and data-loss tolerance, then verify backup/recovery behavior
+    security: use the applicable assurance profile and verify with security evidence rather than an arbitrary numeric target
+  summary: Derive a reviewable first draft from business context and state assumptions/confidence instead of asking the user to guess engineering numbers they do not know.

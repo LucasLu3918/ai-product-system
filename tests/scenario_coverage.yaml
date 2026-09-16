@@ -282,40 +282,46 @@ scenarios:
       - tests/validate_repository.py
   - id: "045"
     path: tests/scenarios/045-quality-class-baseline.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/045-quality-class-baseline.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/045-quality-class-baseline.yaml
+      - tests/agent_eval/results/045-quality-class-baseline.yaml
+      - scripts/agent_eval.py
   - id: "046"
     path: tests/scenarios/046-quality-target-derivation.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/046-quality-target-derivation.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/046-quality-target-derivation.yaml
+      - tests/agent_eval/results/046-quality-target-derivation.yaml
+      - scripts/agent_eval.py
   - id: "047"
     path: tests/scenarios/047-local-complete-before-production.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/047-local-complete-before-production.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/047-local-complete-before-production.yaml
+      - tests/agent_eval/results/047-local-complete-before-production.yaml
+      - scripts/agent_eval.py
   - id: "048"
     path: tests/scenarios/048-explicit-production-request.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/048-explicit-production-request.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/048-explicit-production-request.yaml
+      - tests/agent_eval/results/048-explicit-production-request.yaml
+      - scripts/agent_eval.py
   - id: "049"
     path: tests/scenarios/049-observability-before-vendor.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/049-observability-before-vendor.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/049-observability-before-vendor.yaml
+      - tests/agent_eval/results/049-observability-before-vendor.yaml
+      - scripts/agent_eval.py
   - id: "050"
     path: tests/scenarios/050-audit-log-high-value.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/050-audit-log-high-value.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/050-audit-log-high-value.yaml
+      - tests/agent_eval/results/050-audit-log-high-value.yaml
+      - scripts/agent_eval.py
   - id: "051"
     path: tests/scenarios/051-project-knowledge-pointer.md
     coverage: lifecycle

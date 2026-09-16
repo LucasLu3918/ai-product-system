@@ -1,0 +1,30 @@
+version: 1
+case_id: 050-audit-log-high-value
+scenario_id: "050"
+case_fingerprint: sha256:b5fc2a85e38066ffe26a7d292788ec9abc9a0391a77a49b1574365f93740b499
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: AUDIT_LOG_REQUIRED
+  separate_from_application_logs: true
+  log_secrets_or_prohibited_payloads: false
+  security_review_remains_required: true
+  audit_fields:
+    - actor
+    - action
+    - target
+    - result
+    - correlation
+  audit_controls:
+    - access_protection
+    - integrity
+    - retention
+    - sensitive_data_redaction
+  actions:
+    - define_audit_event_contract
+    - separate_audit_and_application_logging
+    - preserve_security_review
+  summary: Balance, points, refunds and role changes need a dedicated audit contract with stronger integrity/access/retention controls than ordinary application logs, while keeping security review active.
