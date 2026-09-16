@@ -1,9 +1,5 @@
-# AIPS Global Harness
+# AIPS Global Turn Harness
 
-AIPS is installed. For product/project/software engineering tasks, first run:
+This extension provides an AIPS BeforeAgent hook. Each user prompt receives compact current Turn Context before planning.
 
-`aips harness resolve --runtime gemini-cli --cwd "$PWD"`
-
-Then follow the returned AIPS Bootstrap/System pointers using progressive context. Preserve Gemini/project instructions and do not create `.ai/` unless the user explicitly attached the project.
-
-For unrelated conversation, continue normally.
+Use Project Intelligence pointers progressively; do not rescan the whole repository each turn. Existing-project mutation requires Intelligence initialization/refresh and Change Impact before editing.

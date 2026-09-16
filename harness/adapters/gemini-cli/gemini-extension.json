@@ -1,6 +1,6 @@
 {
   "name": "aips-global-harness",
-  "version": "0.8.0",
-  "description": "Minimal AI Product System global harness bootstrap",
+  "version": "0.9.0",
+  "description": "Turn-aware AI Product System global harness",
   "contextFileName": "GEMINI.md"
 }

@@ -1,121 +1,45 @@
 # Global Agent Harness Protocol
 
-AIPS Global Harness makes AIPS available automatically to supported Agent runtimes without taking ownership of the user's existing Agent ecosystem.
+AIPS Global Harness makes AIPS available to supported Agent runtimes while preserving the user's existing Agent ecosystem.
 
-## Purpose
+## Turn-aware flow
 
 ~~~text
-Agent Runtime
-→ Runtime Adapter
-→ Minimal AIPS Bootstrap
-→ Harness / Project Resolution
-→ Runtime + Project Instruction Composition
-→ AIPS Orchestration when applicable
-→ Execution / Verification / Persistence
+User Prompt
+→ runtime-native Turn/Context mechanism
+→ compact AIPS Turn Context
+→ runtime + project instructions
+→ relevant Project Intelligence
+→ AIPS orchestration when applicable
+→ execution / verification / targeted refresh
 ~~~
 
-The harness is always available after installation. Full AIPS orchestration is activated only for applicable product/project/software work.
+Every turn may resolve current context. Every turn must not rescan the repository.
 
 ## Non-invasive invariant
 
-AIPS MUST NOT overwrite, rewrite, delete or silently adopt user-owned:
+AIPS does not replace or delete user-owned Agent instructions, Skills, project source or unrelated runtime settings.
 
-- AGENTS.md / AGENTS.override.md;
-- CLAUDE.md;
-- GEMINI.md;
-- runtime settings/configuration;
-- user or project Skills;
-- project source.
+Shared instruction files use reversible delimited managed blocks. Structured settings files receive only an AIPS namespaced hook entry.
 
-An Adapter may create an AIPS-owned runtime registration/file only when:
+## Capability
 
-1. the runtime supports that integration;
-2. no user-owned resource must be overwritten;
-3. ownership can be recorded;
-4. uninstall is reversible.
+Report TURN_NATIVE / CONTEXT_ALWAYS / SESSION_ONLY / MANUAL / UNSUPPORTED separately from installation status.
 
-If safe automatic integration is not possible, mark the runtime `MANUAL`.
+## Project persistence
 
-## Adapter preference
+ATTACHED projects use `.ai/intelligence/`. EPHEMERAL projects remain source-clean but may reuse external Intelligence at `~/.config/aips/projects/<project-id>/intelligence/`.
 
-~~~text
-Official Extension / Plugin
-→ Official Hook / Context mechanism
-→ Official namespaced registration
-→ reversible AIPS-owned bootstrap file / wrapper
-→ MANUAL
-~~~
+## Context budget
 
-Do not patch an existing user file merely to achieve automatic coverage.
+Load minimal Harness rules, critical native/project instructions, task-relevant Intelligence, then optional evidence on demand.
 
-## Runtime coverage states
+## Mutation safety
 
-- `AUTOMATIC` — AIPS bootstrap is loaded automatically through an AIPS-owned integration.
-- `MANUAL` — runtime detected, but safe automatic bootstrap is unavailable or blocked by an existing user-owned resource.
-- `NOT_DETECTED` — runtime executable/config not detected.
-- `CONFLICT` — a resource/name collision prevents safe installation.
-- `ERROR` — integration attempted but verification failed.
+Existing-project mutations require current enough Intelligence, relevant native rules, Change Impact, valid project-native style preservation, and verification of declared inputs/outputs/data/events/consumers.
 
-Coverage is machine-specific. `aips harness status` is authoritative for the current machine.
-
-## Ownership
-
-Installation writes an Ownership Manifest under the AIPS config directory.
-
-Only resources listed as AIPS-owned may be removed automatically.
-
-For AIPS-owned plain files, keep a reference copy/checksum. If the live file no longer matches the installed AIPS copy, uninstall preserves it and reports the conflict rather than deleting possible user edits.
-
-## Project resolution
-
-Project selection order:
-
-1. explicit project path supplied to the task/resolver;
-2. current Git root, when present;
-3. current working directory.
-
-Then classify:
-
-- `.ai/` exists → `ATTACHED`;
-- no `.ai/` → `EPHEMERAL`.
-
-Ephemeral Mode never creates `.ai/` implicitly.
-
-## Instruction composition
-
-Adapters expose runtime-native instructions; AIPS resolves project instructions and its own governance.
-
-Do not copy runtime-native/project instructions into AIPS files just to normalize formats.
-
-Material conflicts are surfaced through existing instruction-resolution rules.
-
-## Update
-
-AIPS system updates may change the Bootstrap/Adapter implementation. AIPS-owned adapters should either point to the system copy or be safely refreshable.
-
-Never update an adapter by replacing a user-owned file.
+Missing required context fails closed for the affected mutation; general conversation fails soft.
 
 ## Uninstall
 
-~~~text
-Read Ownership Manifest
-→ disable/unregister AIPS-owned adapters
-→ remove only unchanged AIPS-owned bootstrap files
-→ preserve modified/conflicting files
-→ remove AIPS harness registry/config
-→ preserve user/project instructions, skills, source and project .ai/
-~~~
-
-Repository and `.venv` lifecycle remain controlled by existing uninstall flags.
-
-## Verification
-
-A supported automatic adapter is healthy only when:
-
-- runtime is detected;
-- the AIPS-owned integration is present;
-- Bootstrap target exists;
-- ownership is recorded;
-- uninstall path is known/reversible.
-
-Use `aips harness doctor`.
+Remove only AIPS managed blocks/hooks/extensions. Preserve modified managed content with conflict warning. Preserve Project Intelligence cache unless the user explicitly requests cache removal.

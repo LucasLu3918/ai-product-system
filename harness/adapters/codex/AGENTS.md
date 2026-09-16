@@ -1,8 +1,16 @@
-<!-- AIPS-OWNED-BOOTSTRAP: codex v1 -->
-# AIPS Global Harness
+# AIPS Global Turn Harness
 
-AIPS is installed. For product/project/software engineering tasks, first run `aips harness resolve --runtime codex --cwd "$PWD"`, then follow the returned AIPS Bootstrap/System pointers with minimal context.
+For every user turn involving software/product/project work, resolve the current AIPS Turn Context before analysis or mutation:
 
-Preserve and apply project-scoped AGENTS.md / ADR / contracts / official docs. Do not create `.ai/` unless the project is explicitly attached. For unrelated conversation, continue normally.
+`aips intelligence context --runtime codex --project "$PWD" --prompt "<current user request>"`
 
-This file is AIPS-owned only when it was created by `aips harness install`. If a user-owned global Codex instruction file already exists, AIPS does not modify it.
+Use returned pointers progressively. Preserve all existing user/project-native instructions.
+
+For an existing-project mutation:
+1. initialize Project Intelligence when missing;
+2. targeted-refresh it when stale;
+3. resolve Change Impact before editing;
+4. preserve valid project-native conventions;
+5. verify input/output/data/event/consumer impact after the diff.
+
+General conversation does not require heavy project initialization.

@@ -1,37 +1,32 @@
-version: 1
+version: 2
 
 adapters:
   codex:
     runtime: Codex CLI
     detect_command: codex
-    strategy: global_instruction_file_if_absent
-    automatic_when:
-      - "$CODEX_HOME/AGENTS.md or ~/.codex/AGENTS.md is absent"
-    collision_policy: manual
+    strategy: managed_global_instruction_block
+    capability: CONTEXT_ALWAYS
     source: harness/adapters/codex/AGENTS.md
 
   claude-code:
     runtime: Claude Code
     detect_command: claude
-    strategy: user_memory_file_if_absent
-    automatic_when:
-      - "~/.claude/CLAUDE.md is absent"
-    collision_policy: manual
+    strategy: managed_memory_block_plus_user_prompt_hook
+    capability:
+      preferred: TURN_NATIVE
+      fallback: CONTEXT_ALWAYS
     source: harness/adapters/claude-code/CLAUDE.md
 
   gemini-cli:
     runtime: Gemini CLI
     detect_command: gemini
-    strategy: official_extension
-    automatic_when:
-      - "Gemini CLI extension management is available"
-    collision_policy: conflict
+    strategy: official_extension_before_agent
+    capability: TURN_NATIVE
     source: harness/adapters/gemini-cli
 
   generic-manual:
     runtime: Other / Unsupported Runtime
     detect_command: null
     strategy: manual_bootstrap
-    automatic_when: []
-    collision_policy: manual
+    capability: MANUAL
     source: harness/adapters/generic/BOOTSTRAP.md

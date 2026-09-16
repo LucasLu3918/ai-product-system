@@ -1,0 +1,17 @@
+{
+  "hooks": {
+    "BeforeAgent": [
+      {
+        "hooks": [
+          {
+            "name": "aips-turn-context",
+            "type": "command",
+            "command": "\"${extensionPath}${/}hooks${/}aips-turn-context.sh\"",
+            "timeout": 5000,
+            "description": "Inject compact AIPS Turn Context before planning"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,47 +1,31 @@
 # Runtime Adapter Contract
 
-Every AIPS Runtime Adapter describes the smallest safe mechanism needed to place the Minimal Bootstrap into an Agent runtime.
+Every Adapter implements the same Turn Harness contract using the safest runtime-native mechanism.
 
-## Required fields
+## Capability states
 
-~~~yaml
-id:
-runtime:
-detection:
-integration:
-  strategy:
-  automatic:
-ownership:
-  resources: []
-bootstrap:
-  source:
-verification:
-uninstall:
-  reversible:
-  preserves_user_content:
-limitations: []
-~~~
+- TURN_NATIVE — native per-prompt hook injects current context before planning.
+- CONTEXT_ALWAYS — persistent instructions require current context resolution each turn; no deterministic native hook is claimed.
+- SESSION_ONLY — AIPS is loaded only at session start.
+- MANUAL — explicit action is required.
+- UNSUPPORTED — no safe supported integration.
+
+Installation status and capability are separate.
+
+## Managed composition
+
+When a shared instruction file is required, use an AIPS delimited managed block instead of owning the whole file. Existing user content remains unchanged outside the block.
+
+Uninstall removes only an unchanged AIPS managed block. If the managed block was edited, preserve it and report conflict.
+
+Structured settings integrations add/remove only an AIPS namespaced hook entry and preserve unrelated keys/hooks.
+
+## Runtime targets
+
+- Gemini CLI: extension + BeforeAgent → TURN_NATIVE.
+- Claude Code: UserPromptSubmit → TURN_NATIVE when verifiable; managed CLAUDE memory is CONTEXT_ALWAYS fallback.
+- Codex: managed global instruction composition → CONTEXT_ALWAYS; do not claim native per-turn interception.
 
 ## Adapter responsibilities
 
-An Adapter may:
-
-- detect the runtime;
-- install/register an AIPS-owned bootstrap integration;
-- report runtime-native instruction locations;
-- verify its own installation;
-- unregister/remove only AIPS-owned resources.
-
-An Adapter must not:
-
-- implement AIPS planning/security/quality logic;
-- copy the whole AIPS system into runtime context;
-- overwrite existing user instruction/config/skills;
-- claim AUTOMATIC if a manual user edit is required;
-- delete a file that differs from the AIPS-owned installed copy.
-
-## Runtime-native precedence
-
-Adapters record relevant native precedence/limitations. AIPS does not falsely claim that every runtime can enforce identical instruction precedence.
-
-If native precedence can override the Global Bootstrap, the Adapter documents that limitation and the Orchestrator surfaces conflicts when discovered.
+Adapters detect, integrate, verify and uninstall. They never implement Product/Security/Quality reasoning, preload the whole AIPS repository, replace user Skills, or hide capability limitations.
