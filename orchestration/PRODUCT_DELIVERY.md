@@ -211,7 +211,7 @@ Never persist real secrets in the repository. Use examples/references only and t
 
 When persistent data/schema changes exist, include migration order, compatibility, backup/recovery, verification and rollback/roll-forward.
 
-## Completion
+## Production completion
 
 Do not describe a local product as production-ready merely because code exists.
 

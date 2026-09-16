@@ -268,10 +268,11 @@ System guardrails are never overridden by project files. Inside the project exec
 1. current explicit user instruction / accepted current user decision;
 2. nearest applicable scoped `AGENTS.md` (nearest scope wins over broader scope);
 3. accepted project decisions / ADRs and authoritative contracts;
-4. broader project standards and root `AGENTS.md`;
-5. project-local skills and references;
-6. global AI Product System skills;
-7. agent inference.
+4. broader official project standards/documentation and root `AGENTS.md`;
+5. current Project Knowledge cache/index (derived knowledge only, never governance);
+6. project-local skills and references;
+7. global AI Product System skills;
+8. agent inference.
 
 Skills provide expertise, not governance authority.
 
@@ -328,4 +329,6 @@ For a primary planning task, completion of the Planning Package means the persis
 
 For SAL 3–4 affected work, completion also requires the applicable Security Review evidence and Security Release Gate.
 
-When production delivery is part of the approved scope, completion additionally requires Release Readiness, applicable staging verification, production promotion, post-deploy verification and persisted delivery evidence. Code generation alone is not completion.
+For a complete product, local completion is explicitly `LOCAL_COMPLETE`. If production was not requested, this can be the completed delivery state after the user declines/defer Production Enablement.
+
+When production delivery is part of the approved scope, completion requires Release Readiness, applicable staging verification, production promotion, post-deploy verification and persisted evidence before `PRODUCTION_VERIFIED`. Code generation alone is not completion.

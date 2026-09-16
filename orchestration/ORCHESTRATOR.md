@@ -10,32 +10,34 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 4. Detect whether the request is a large/core change; if so, create the Core Change Proposal and obtain explicit approval before implementation.
 5. Run task preflight and resolve requirement status (READY / NEEDS_CLARIFICATION / BLOCKED). If material ambiguity remains, use Progressive Requirement Clarification and stop implementation until READY.
 6. Resolve required user-provided external sources using connector-first External Context Resolution before asking for manual content.
-7. Detect whether the task creates/revises the primary product/project plan and whether complete production delivery is in scope.
+7. Detect whether the task creates/revises the primary product/project plan and whether complete product delivery is in scope.
 8. For a primary planning task, resolve the persistence workspace before authoring the authoritative plan; if absent, ask the user.
-9. If the request targets an existing project, discover applicable instructions/authoritative docs, read the Project Knowledge Index, then perform targeted knowledge discovery only for relevant gaps.
+9. For existing projects, discover scoped instructions/authoritative docs, read the Project Knowledge Index, then perform targeted knowledge discovery only for relevant gaps.
 10. For complete products/material product plans, resolve Q1/Q2/Q3 Quality Planning and persist applicable Quality Profile targets before architecture is locked.
 11. If a material decision is needed, present the smallest useful option set and stop affected work.
-11. Classify intent; choose one primary work mode.
-12. Detect project state (`greenfield`, `brownfield`, `unknown`).
-13. Classify Product Baseline SAL / Change Security Impact / Reliability Impact when relevant.
-14. Build a minimal Context Manifest.
-15. Resolve the primary role, then only necessary supporting roles, including Security Engineer when required by Effective SAL. Before proposing a new Role/Capability/Skill, run Capability Reuse Check.
-16. Resolve capabilities and leaf skills from task evidence and assurance requirements. For creative work, load approved Brand Profile and user-provided assets/references before generic style knowledge.
-17. Build an Execution Profile from business impact, complexity, risk, assurance and selected skill requirements.
-18. Decide whether bounded subagents are useful; resolve each subagent model/context independently.
-19. For primary planning, create/persist the Reproducible Planning Package and run cross-role consistency review, including planning-stage security review for SAL 3–4.
-20. Gate 1: wait for human Planning Package approval.
-21. After Gate 1, derive Initial Implementation Items + Recommended Implementation Flow.
-22. Gate 2: wait for explicit human implementation approval.
-23. Select eligible model/tools using minimum sufficient intelligence; route deterministic data-processing steps to existing tools or small helpers before model reasoning.
-24. Execute deterministic helpers first where suitable, pass only structured results/evidence references back to the agent, then execute reasoning-heavy work inside the approved boundary.
-25. For existing UI polish, run the rendered Visual Polish loop when applicable.
-26. Resolve independent review depth: ordinary material work uses an independent reviewer; large/core/high-risk work uses only the needed Multi-Perspective Review Panel.
-27. Consolidate findings, return them to the original Author for fixes, then run targeted re-review unless the Change Boundary materially expanded.
-28. For SAL 3–4 affected work, persist Security Review evidence and run the Security Release Gate.
-29. Validate acceptance criteria and artifacts; when production delivery is in scope, evaluate exact-candidate Release Readiness, deploy through the approved environment flow, and verify production health after promotion.
-30. Extract review lessons (run/project/system capability) and surface any generalizable capability-improvement recommendation to the user without silently changing permanent system behavior.
-31. Persist state, temporary overrides, provenance, assurance profile, lessons, exact system version/commit and next actions.
+12. Classify intent; choose one primary work mode.
+13. Detect project state (`greenfield`, `brownfield`, `unknown`).
+14. Classify Product Baseline SAL / Change Security Impact / Reliability Impact when relevant.
+15. Build a minimal Context Manifest, including only relevant Project Knowledge topics.
+16. Resolve the primary role, then only necessary supporting roles, including Security Engineer when required by Effective SAL. Before proposing a new Role/Capability/Skill, run Capability Reuse Check.
+17. Resolve capabilities and leaf skills from task evidence and assurance requirements.
+18. Build an Execution Profile from business impact, complexity, risk, assurance and selected skill requirements.
+19. Decide whether bounded subagents are useful; resolve each subagent model/context independently.
+20. For primary planning, create/persist the Reproducible Planning Package and run cross-role consistency review.
+21. Gate 1: wait for human Planning Package approval.
+22. After Gate 1, derive Initial Implementation Items + Recommended Implementation Flow.
+23. Gate 2: wait for explicit human implementation approval.
+24. Select eligible model/tools using minimum sufficient intelligence; route deterministic data-processing steps to existing tools/helpers where suitable.
+25. Execute inside the approved boundary, including provider-neutral observability instrumentation required by the Quality Profile.
+26. For existing UI polish, run V1/V2 Visual Consistency Repair as applicable.
+27. Resolve independent review depth; large/core/high-risk work uses the needed Multi-Perspective Review Panel.
+28. Consolidate findings, return them to the original Author for fixes, then run targeted re-review unless the Change Boundary materially expanded.
+29. For SAL 3–4 affected work, persist Security Review evidence and run the Security Release Gate.
+30. Validate LOCAL_COMPLETE criteria for complete products.
+31. If production was explicitly requested, continue Production Enablement; otherwise ask whether to continue only after LOCAL_COMPLETE.
+32. When production is in scope, evaluate exact-candidate Release Readiness, deploy through the approved environment flow, and verify production health/observability before PRODUCTION_VERIFIED.
+33. Extract review lessons and refresh only affected Project Knowledge / Visual Profile topics.
+34. Persist state, temporary overrides, provenance, assurance/quality profile, lessons, exact system version/commit and next actions.
 
 ## System Update Preflight
 
