@@ -1,0 +1,335 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tempfile
+
+import yaml
+
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def require(condition: bool, message: str) -> None:
+    if not condition:
+        raise AssertionError(message)
+
+
+def run(args: list[str], *, cwd: Path | None = None, env: dict[str, str] | None = None, check: bool = False) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(args, cwd=cwd, env=env, capture_output=True, text=True, check=check)
+
+
+def git(root: Path, *args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
+    return run(["git", *args], cwd=root, check=check)
+
+
+def configure_git(root: Path) -> None:
+    git(root, "config", "user.email", "aips@example.invalid")
+    git(root, "config", "user.name", "AIPS Evidence")
+
+
+def sentinel_validator(system: Path) -> None:
+    target = system / "tests" / "validate_repository.py"
+    target.write_text(
+        """from pathlib import Path
+import os
+marker = os.environ.get("AIPS_VALIDATION_MARKER")
+if marker:
+    path = Path(marker)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8") as fh:
+        fh.write("validated\\n")
+print("FIXTURE VALIDATION PASSED")
+""",
+        encoding="utf-8",
+    )
+
+
+def system_fixture(base: Path, name: str) -> tuple[Path, Path]:
+    system = base / f"{name}-system"
+    remote = base / f"{name}-remote.git"
+    shutil.copytree(
+        ROOT,
+        system,
+        ignore=shutil.ignore_patterns(".git", ".venv", "__pycache__", "*.pyc"),
+    )
+    sentinel_validator(system)
+    git(system, "init", "-q")
+    git(system, "branch", "-m", "main")
+    configure_git(system)
+    git(system, "add", "-A")
+    git(system, "commit", "-qm", "fixture baseline")
+    run(["git", "clone", "--bare", str(system), str(remote)], check=True)
+    git(system, "remote", "add", "origin", str(remote))
+    return system, remote
+
+
+def remote_commit(remote: Path, base: Path, name: str, mutate) -> str:
+    updater = base / name
+    run(["git", "clone", "-q", str(remote), str(updater)], check=True)
+    configure_git(updater)
+    mutate(updater)
+    git(updater, "add", "-A")
+    git(updater, "commit", "-qm", name)
+    git(updater, "push", "-q", "origin", "main")
+    return git(updater, "rev-parse", "HEAD").stdout.strip()
+
+
+def make_env(base: Path, marker: Path, *, bin_home: Path | None = None) -> dict[str, str]:
+    home = base / "home"
+    config = base / "config"
+    fake_bin = base / "fake-bin"
+    home.mkdir(parents=True, exist_ok=True)
+    fake_bin.mkdir(parents=True, exist_ok=True)
+    for runtime in ("codex", "claude", "gemini"):
+        p = fake_bin / runtime
+        p.write_text("#!/usr/bin/env bash\nexit 1\n", encoding="utf-8")
+        p.chmod(0o755)
+    env = dict(os.environ)
+    env.update({
+        "HOME": str(home),
+        "XDG_CONFIG_HOME": str(config),
+        "AIPS_BIN_HOME": str(bin_home or (base / "bin-home")),
+        "AIPS_VALIDATION_MARKER": str(marker),
+        "PATH": f"{fake_bin}:{env.get('PATH', '')}",
+    })
+    return env
+
+
+def cli(system: Path, args: list[str], env: dict[str, str]) -> subprocess.CompletedProcess[str]:
+    return run(["bash", str(system / "bin" / "aips"), *args], env=env)
+
+
+def init_product(base: Path) -> tuple[Path, Path, str, str]:
+    project = base / "product"
+    remote = base / "product-remote.git"
+    project.mkdir()
+    (project / "app.txt").write_text("local product\n", encoding="utf-8")
+    git(project, "init", "-q")
+    git(project, "branch", "-m", "main")
+    configure_git(project)
+    git(project, "add", "app.txt")
+    git(project, "commit", "-qm", "product baseline")
+    baseline = git(project, "rev-parse", "HEAD").stdout.strip()
+    run(["git", "clone", "--bare", str(project), str(remote)], check=True)
+    git(project, "remote", "add", "origin", str(remote))
+
+    def mutate(updater: Path) -> None:
+        (updater / "app.txt").write_text("remote product update\n", encoding="utf-8")
+
+    remote_commit(remote, base, "product-updater", mutate)
+    return project, remote, baseline, (project / "app.txt").read_text(encoding="utf-8")
+
+
+def next_patch(version: str) -> str:
+    parts = version.strip().split(".")
+    return f"{int(parts[0])}.{int(parts[1])}.{int(parts[2]) + 1}"
+
+
+def preflight_and_project_lifecycle() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        system, remote = system_fixture(base, "preflight")
+        marker = base / "validation.log"
+        env = make_env(base / "runtime", marker)
+        project, _, product_head, product_text = init_product(base)
+
+        git(system, "switch", "-qc", "feature")
+        wrong_branch = cli(system, ["preflight", str(project)], env)
+        require(wrong_branch.returncode != 0 and "must be on 'main'" in wrong_branch.stderr, "Preflight must stop when system branch is not main")
+        git(system, "switch", "-q", "main")
+
+        dirty = system / "UNCOMMITTED_FIXTURE"
+        dirty.write_text("dirty\n", encoding="utf-8")
+        dirty_result = cli(system, ["preflight", str(project)], env)
+        require(dirty_result.returncode != 0 and "local changes" in dirty_result.stderr, "Preflight must stop for dirty system worktree")
+        dirty.unlink()
+
+        first = cli(system, ["preflight", str(project)], env)
+        require(first.returncode == 0, f"clean main preflight failed: {first.stdout} {first.stderr}")
+        require("Project mode: EPHEMERAL" in first.stdout, "Preflight must report EPHEMERAL without .ai")
+        require(not (project / ".ai").exists(), "Preflight must not auto-attach an EPHEMERAL project")
+        require(marker.exists(), "Preflight must validate the system")
+        require(git(project, "rev-parse", "HEAD").stdout.strip() == product_head, "Preflight must not pull target product repository")
+        require((project / "app.txt").read_text(encoding="utf-8") == product_text, "Preflight changed target product source")
+
+        attached = cli(system, ["attach", str(project)], env)
+        require(attached.returncode == 0 and (project / ".ai").is_dir(), f"attach failed: {attached.stdout} {attached.stderr}")
+        status = cli(system, ["status", str(project)], env)
+        require(status.returncode == 0 and "Project attached: yes" in status.stdout and "Project mode: ATTACHED" in status.stdout, "status must report attached provenance")
+
+        old_version = (system / "VERSION").read_text(encoding="utf-8").strip()
+        upgraded_version = next_patch(old_version)
+
+        def system_update(updater: Path) -> None:
+            (updater / "VERSION").write_text(upgraded_version + "\n", encoding="utf-8")
+            cli_path = updater / "bin" / "aips"
+            text = cli_path.read_text(encoding="utf-8")
+            needle = 'preflight_after_update() {\n  local project="$1"'
+            replacement = needle + '\n  say "UPDATED_CLI_MARKER"'
+            require(needle in text, "fixture could not patch updated CLI marker")
+            cli_path.write_text(text.replace(needle, replacement, 1), encoding="utf-8")
+
+        remote_sha = remote_commit(remote, base, "system-updater", system_update)
+        upgraded = cli(system, ["preflight", str(project)], env)
+        require(upgraded.returncode == 0, f"fast-forward preflight failed: {upgraded.stdout} {upgraded.stderr}")
+        require("UPDATED_CLI_MARKER" in upgraded.stdout, "Preflight must re-enter the updated CLI after pull")
+        require((system / "VERSION").read_text(encoding="utf-8").strip() == upgraded_version, "Preflight did not fast-forward system version")
+        require(git(system, "rev-parse", "HEAD").stdout.strip() == remote_sha, "Preflight did not fast-forward to remote main")
+        snapshot = yaml.safe_load((project / ".ai" / "SYSTEM.yaml").read_text(encoding="utf-8")) or {}
+        require(str(snapshot.get("version")) == upgraded_version, "Attached preflight did not refresh exact system version")
+        require(str(snapshot.get("commit")) == remote_sha, "Attached preflight did not refresh exact system commit")
+        require(git(project, "rev-parse", "HEAD").stdout.strip() == product_head, "Attached preflight pulled target product repository")
+
+        detached = cli(system, ["detach", str(project)], env)
+        require(detached.returncode == 0 and not (project / ".ai").exists(), f"detach failed: {detached.stdout} {detached.stderr}")
+        archives = sorted(project.glob(".ai.detached-*"))
+        require(len(archives) == 1, "Detach must preserve exactly one archived workspace")
+        require((project / "app.txt").read_text(encoding="utf-8") == product_text, "Detach modified product source")
+
+        blocked_attach = cli(system, ["attach", str(project)], env)
+        require(blocked_attach.returncode != 0 and "detached AI workspace already exists" in blocked_attach.stderr, "Attach must stop when a detached workspace exists")
+
+        archives[0].rename(project / ".ai")
+        restored = cli(system, ["attach", str(project)], env)
+        require(restored.returncode == 0 and (project / ".ai").exists(), "Documented detached-workspace restore must allow attach")
+
+        bin_home = Path(env["AIPS_BIN_HOME"])
+        bin_home.mkdir(parents=True, exist_ok=True)
+        cli_link = bin_home / "aips"
+        cli_link.symlink_to(system / "bin" / "aips")
+        config_home = Path(env["XDG_CONFIG_HOME"]) / "aips"
+        config_home.mkdir(parents=True, exist_ok=True)
+        (config_home / "system-dir").write_text(str(system) + "\n", encoding="utf-8")
+        external = config_home / "projects" / "preserve-me"
+        external.mkdir(parents=True, exist_ok=True)
+        (external / "data.txt").write_text("preserve\n", encoding="utf-8")
+        venv = system / ".venv"
+        venv.mkdir()
+        (venv / "preserve.txt").write_text("preserve\n", encoding="utf-8")
+
+        uninstalled = cli(system, ["uninstall"], env)
+        require(uninstalled.returncode == 0, f"default uninstall failed: {uninstalled.stdout} {uninstalled.stderr}")
+        require(not cli_link.exists(), "Default uninstall must remove AIPS-owned CLI symlink")
+        require((project / ".ai").exists(), "Default uninstall must preserve project .ai workspace")
+        require((external / "data.txt").exists(), "Default uninstall must preserve External Project Intelligence")
+        require((venv / "preserve.txt").exists(), "Default uninstall must preserve system venv")
+        require(system.exists() and (system / ".git").exists(), "Uninstall must preserve AIPS repository")
+
+        explicit = cli(system, ["uninstall", "--remove-cache", "--remove-venv"], env)
+        require(explicit.returncode == 0, f"explicit cleanup uninstall failed: {explicit.stdout} {explicit.stderr}")
+        require(not (config_home / "projects").exists(), "--remove-cache must remove external cache")
+        require(not venv.exists(), "--remove-venv must remove system venv")
+
+
+def divergence_gate() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        system, remote = system_fixture(base, "diverge")
+        env = make_env(base / "runtime", base / "validation.log")
+        project = base / "project"
+        project.mkdir()
+
+        (system / "local.txt").write_text("local\n", encoding="utf-8")
+        git(system, "add", "local.txt")
+        git(system, "commit", "-qm", "local divergence")
+
+        def mutate(updater: Path) -> None:
+            (updater / "remote.txt").write_text("remote\n", encoding="utf-8")
+
+        remote_commit(remote, base, "diverge-updater", mutate)
+        result = cli(system, ["preflight", str(project)], env)
+        require(result.returncode != 0 and "diverged" in result.stderr, "Preflight must never auto merge/rebase divergent system history")
+
+
+def major_version_gate() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        system, remote = system_fixture(base, "major")
+        marker = base / "validation.log"
+        env = make_env(base / "runtime", marker)
+        project = base / "project"
+        project.mkdir()
+        local_version = (system / "VERSION").read_text(encoding="utf-8").strip()
+        major_version = f"{int(local_version.split('.')[0]) + 1}.0.0"
+
+        def mutate(updater: Path) -> None:
+            (updater / "VERSION").write_text(major_version + "\n", encoding="utf-8")
+
+        remote_commit(remote, base, "major-updater", mutate)
+        blocked = cli(system, ["preflight", str(project)], env)
+        require(blocked.returncode != 0 and "Major version change detected" in blocked.stderr, "Major upgrade must require explicit allow-major")
+
+        allowed = cli(system, ["preflight", str(project), "--allow-major"], env)
+        require(allowed.returncode == 0, f"allowed major preflight failed: {allowed.stdout} {allowed.stderr}")
+        require((system / "VERSION").read_text(encoding="utf-8").strip() == major_version, "--allow-major did not update system")
+        require(marker.exists(), "Allowed major preflight must validate updated system")
+
+
+def make_fake_venv(system: Path) -> None:
+    py = system / ".venv" / "bin" / "python"
+    py.parent.mkdir(parents=True)
+    body = f"""#!{sys.executable}
+import os
+import sys
+if len(sys.argv) >= 3 and sys.argv[1:3] == ["-m", "pip"]:
+    raise SystemExit(0)
+os.execv({sys.executable!r}, [{sys.executable!r}] + sys.argv[1:])
+"""
+    py.write_text(body, encoding="utf-8")
+    py.chmod(0o755)
+
+
+def cli_collision_contract() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        system, _ = system_fixture(base, "install")
+        make_fake_venv(system)
+
+        regular_home = base / "regular-bin"
+        regular_home.mkdir()
+        regular = regular_home / "aips"
+        regular.write_text("foreign cli\n", encoding="utf-8")
+        env_regular = make_env(base / "regular-runtime", base / "regular-validation.log", bin_home=regular_home)
+        regular_result = cli(system, ["install"], env_regular)
+        require(regular_result.returncode != 0 and "not an AIPS symlink" in regular_result.stderr, "Regular CLI collision must stop install")
+        require(regular.read_text(encoding="utf-8") == "foreign cli\n", "Regular CLI collision was overwritten or deleted")
+        require(not (Path(env_regular["XDG_CONFIG_HOME"]) / "aips" / "system-dir").exists(), "Collision must not claim installation complete")
+        require(not Path(env_regular["AIPS_VALIDATION_MARKER"]).exists(), "Collision must stop before validation/runtime install")
+
+        foreign_home = base / "foreign-bin"
+        foreign_home.mkdir()
+        target = base / "foreign-target"
+        target.write_text("foreign\n", encoding="utf-8")
+        foreign = foreign_home / "aips"
+        foreign.symlink_to(target)
+        env_foreign = make_env(base / "foreign-runtime", base / "foreign-validation.log", bin_home=foreign_home)
+        foreign_result = cli(system, ["install"], env_foreign)
+        require(foreign_result.returncode != 0 and "not owned by this AIPS installation" in foreign_result.stderr, "Foreign symlink collision must stop install")
+        require(foreign.is_symlink() and foreign.resolve() == target.resolve(), "Foreign symlink collision was replaced")
+
+        owned_home = base / "owned-bin"
+        owned_home.mkdir()
+        owned = owned_home / "aips"
+        owned.symlink_to(system / "bin" / "aips")
+        env_owned = make_env(base / "owned-runtime", base / "owned-validation.log", bin_home=owned_home)
+        owned_result = cli(system, ["install"], env_owned)
+        require(owned_result.returncode == 0, f"Exact AIPS symlink should be reusable: {owned_result.stdout} {owned_result.stderr}")
+        require(owned.is_symlink() and owned.resolve() == (system / "bin" / "aips").resolve(), "Owned CLI symlink was not preserved")
+        require(Path(env_owned["AIPS_VALIDATION_MARKER"]).exists(), "Owned symlink reuse must continue through repository validation")
+
+
+def main() -> int:
+    preflight_and_project_lifecycle()
+    divergence_gate()
+    major_version_gate()
+    cli_collision_contract()
+    print("install_preflight_lifecycle evidence: PASS")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
