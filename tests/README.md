@@ -25,3 +25,19 @@ aips conformance report
 ~~~
 
 Do not mark a Scenario automated unless its evidence materially exercises that Scenario.
+
+## Direct Evidence
+
+`tests/evidence/` contains focused executable evidence for Scenario contracts that would otherwise be hidden inside broad repository validation.
+
+Promotion rule:
+
+~~~text
+current canonical behavior
+→ reconcile Scenario if stale
+→ direct executable evidence
+→ registry reclassification
+→ repository validator executes the evidence
+~~~
+
+Do not create an evidence file merely to raise the automated percentage. It must materially exercise the Scenario it claims to support.
