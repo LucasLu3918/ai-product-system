@@ -1,0 +1,31 @@
+version: 1
+id: 009-capability-gap
+scenario_id: "009"
+description: Missing specialized capability blocks affected design and triggers the smallest reuse-first capability proposal.
+input:
+  prompt: Plan a large WebRTC realtime video platform.
+  context:
+    realtime_media_skill_exists: false
+    generic_backend_role_available: true
+rubric:
+  equals:
+    response.status: CAPABILITY_GAP
+    response.affected_design_allowed: false
+    response.generic_backend_guess_allowed: false
+    response.new_role_required_by_default: false
+    response.user_approval_required_before_system_extension: true
+  contains:
+    response.actions:
+      - inspect_role_skill_capability_indexes
+      - identify_missing_specialized_knowledge
+      - propose_smallest_skill_or_capability_addition
+      - justify_any_new_role_by_distinct_authority
+      - await_user_approval
+  excludes:
+    response.actions:
+      - let_generic_role_guess
+      - create_role_without_distinct_responsibility
+  set_equals: {}
+  nonempty:
+    - response.proposal
+    - response.summary
