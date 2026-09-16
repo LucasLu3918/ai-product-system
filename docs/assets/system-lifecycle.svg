@@ -2,7 +2,7 @@
 <rect width="1500" height="720" fill="#f7f7f5"/>
 <style>.title{font:700 32px system-ui,sans-serif;fill:#171717}.sub{font:400 15px system-ui,sans-serif;fill:#666}.h{font:700 17px system-ui,sans-serif;fill:#171717}.t{font:400 13px system-ui,sans-serif;fill:#444}.box{fill:#fff;stroke:#d8d8d3;stroke-width:2}.line{stroke:#aaa;stroke-width:2;fill:none;marker-end:url(#a)}</style>
 <defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#aaa"/></marker></defs>
-<text x="60" y="58" class="title">AIPS Installation, Harness, Intelligence &amp; Isolation Lifecycle</text><text x="60" y="88" class="sub">Install once · normal Agent use · reusable Intelligence · reversible ownership · safe worktrees</text>
+<text x="60" y="58" class="title">AIPS Installation, Harness &amp; Intelligence Lifecycle + Execution Isolation</text><text x="60" y="88" class="sub">Install once · normal Agent use · reusable Intelligence · reversible ownership · safe worktrees</text>
 <rect x="55" y="135" width="205" height="105" rx="16" class="box"/><text x="85" y="175" class="h">① Install</text><text x="85" y="205" class="t">CLI + managed adapters + guards</text>
 <rect x="305" y="135" width="250" height="105" rx="16" class="box"/><text x="335" y="175" class="h">② Agent Use</text><text x="335" y="205" class="t">Turn Context + guard + resume state</text>
 <rect x="600" y="135" width="250" height="105" rx="16" class="box"/><text x="630" y="175" class="h">③ EPHEMERAL</text><text x="630" y="205" class="t">No project .ai/</text>
