@@ -17,6 +17,7 @@
 | `orchestration/TURN_HARNESS.md` | Agent | 每 Turn context contract |
 | `orchestration/PROJECT_INTELLIGENCE.md` | Agent | Project Intelligence canonical protocol |
 | `orchestration/CHANGE_IMPACT.md` | Agent | Existing-project mutation impact guard |
+| `orchestration/EXECUTION_ISOLATION.md` | Agent / Maintainer | shared / worktree / sandbox 執行隔離與 ownership contract |
 | `orchestration/SECRET_HANDLING.md` | Agent / Reviewer | Key/Token/Password secure acquisition、redaction、exposure response |
 | `orchestration/CORE_CHANGE_TESTING.md` | Agent / Reviewer | Large/Core Change 的 affected-boundary Test Matrix |
 | `orchestration/PROJECT_KNOWLEDGE.md` | Agent | v0.8 compatibility/migration only |
