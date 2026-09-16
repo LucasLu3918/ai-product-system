@@ -43,3 +43,9 @@ Missing required context fails closed for the affected mutation; general convers
 ## Uninstall
 
 Remove only AIPS managed blocks/hooks/extensions. Preserve modified managed content with conflict warning. Preserve Project Intelligence cache unless the user explicitly requests cache removal.
+
+## Resumable workflow state
+
+For substantial multi-step engineering work, a Runtime may resume from AIPS run checkpoints rather than replaying conversation history.
+
+Resume state never bypasses current Turn Context, Project Intelligence freshness, Change Impact, approval, security or verification rules. Revision drift makes the checkpoint STALE until affected evidence is refreshed.
