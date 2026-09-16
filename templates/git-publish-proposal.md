@@ -37,3 +37,7 @@
 Status: PENDING
 Approved by:
 Approved at:
+Approval record:
+Proposal fingerprint:
+Scope fingerprint:
+Candidate commit:
