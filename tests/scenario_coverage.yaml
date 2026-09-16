@@ -467,10 +467,10 @@ scenarios:
       - tests/validate_repository.py
   - id: "076"
     path: tests/scenarios/076-source-registry-runtime-dedup.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/076-source-registry-runtime-dedup.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/intelligence_context_lifecycle.py
+      - tests/validate_repository.py
   - id: "077"
     path: tests/scenarios/077-unrelated-commit-keeps-intelligence-current.md
     coverage: lifecycle
@@ -527,10 +527,10 @@ scenarios:
       - tests/validate_repository.py
   - id: "086"
     path: tests/scenarios/086-normal-chat-no-intelligence-bootstrap.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/086-normal-chat-no-intelligence-bootstrap.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/intelligence_context_lifecycle.py
+      - tests/validate_repository.py
   - id: "087"
     path: tests/scenarios/087-monorepo-lazy-intelligence.md
     coverage: manual
