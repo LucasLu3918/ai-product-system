@@ -194,3 +194,19 @@ Typical guidance:
 - SAL 4: Security Reviewer Tier 3–4; critical decisions may impose Tier 4.
 
 Privacy, complexity, tools, context and total task cost remain part of model routing.
+
+
+## Secret and credential safety
+
+Use `orchestration/SECRET_HANDLING.md` whenever code, tests, deployment or an external integration needs credentials.
+
+Security review verifies:
+
+- no credential value is persisted in source, committed config, generated Intelligence/HTML, logs, fixtures, snapshots or review evidence;
+- runtime acquisition uses an approved secure source;
+- logs/traces/error paths redact sensitive headers/fields;
+- secret scanning evidence exists where practical.
+
+If credentials required for an API call are unavailable, the operation is BLOCKED. Never substitute hard-coded credentials.
+
+For SAL 3–4 or production credentials, an active exposed credential is release-blocking until containment and required rotation/revocation are complete.

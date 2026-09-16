@@ -21,6 +21,23 @@ Reviewer:
 
 -
 
+## Secrets / Credentials
+
+Required secret references:
+-
+
+Approved runtime source:
+-
+
+Least privilege / lifetime:
+-
+
+Redaction requirements:
+-
+
+Leakage/scanner evidence required:
+-
+
 ## Audit / Observability
 
 -

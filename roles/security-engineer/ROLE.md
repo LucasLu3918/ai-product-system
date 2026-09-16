@@ -27,3 +27,10 @@ Load only the skills required by the affected security boundary.
 Security boundary changes are material decisions; do not weaken controls silently.
 
 Do not confuse whole-product baseline risk with the current Change Boundary. A cosmetic change to a critical product may receive a lightweight review, while a payment/points/authorization change inherits the relevant high-risk floor.
+
+
+## Secret exposure responsibility
+
+When credentials are in scope, verify runtime acquisition, least privilege, redaction, generated artifacts, fixtures/logs and applicable secret-scanning evidence.
+
+Never copy discovered secret values into findings. Record redacted location/evidence only.

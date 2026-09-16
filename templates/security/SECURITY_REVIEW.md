@@ -28,6 +28,29 @@ Date:
 
 -
 
+### Secret Leakage Review
+
+Changed source/config:
+-
+
+Generated artifacts / Intelligence / HTML:
+-
+
+Fixtures / snapshots / logs:
+-
+
+Runtime acquisition mechanism:
+-
+
+Redaction behavior:
+-
+
+Scanner evidence:
+-
+
+Exposure / rotation status:
+-
+
 ## Concurrency / Idempotency / Replay
 
 -
