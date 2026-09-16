@@ -308,22 +308,6 @@ harness_install() {
   say "Run: aips harness status"
 }
 
-remove_owned_instruction_file() {
-  local id="$1" target="$2"
-  local snapshot="$OWNED_HOME/$id.bootstrap"
-  [ -f "$snapshot" ] || return 0
-
-  if [ -e "$target" ]; then
-    if cmp -s "$target" "$snapshot"; then
-      rm -f "$target"
-      say "Removed AIPS-owned adapter file: $target"
-    else
-      warn "Preserved modified adapter file (no longer identical to AIPS-owned copy): $target"
-    fi
-  fi
-  rm -f "$snapshot"
-}
-
 uninstall_gemini_adapter() {
   local status
   status="$(adapter_status_value gemini-cli 2>/dev/null || true)"
@@ -522,6 +506,15 @@ attach_project() {
   fi
 
   init_project "$project"
+
+  local migration
+  if ! migration="$(intelligence_cmd migrate-attached --project "$project" --format json 2>&1)"; then
+    warn "Project attached, but External Project Intelligence migration failed: $migration"
+    warn "Existing Intelligence was preserved; resolve this before relying on persistent Intelligence."
+  else
+    say "Project Intelligence migration: $migration"
+  fi
+
   say "Project attached to AI Product System: $project"
 }
 
@@ -533,6 +526,12 @@ detach_project() {
     say "Project is already detached (no .ai workspace): $project"
     return 0
   fi
+
+  local sync_result
+  if ! sync_result="$(intelligence_cmd sync-external --project "$project" --format json 2>&1)"; then
+    die "Cannot safely detach because Project Intelligence could not be synced to External Cache: $sync_result"
+  fi
+  say "Project Intelligence external sync: $sync_result"
 
   local stamp archive
   stamp="$(date -u +"%Y%m%d-%H%M%S")"
