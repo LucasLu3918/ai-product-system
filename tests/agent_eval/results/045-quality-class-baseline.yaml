@@ -1,0 +1,27 @@
+version: 1
+case_id: 045-quality-class-baseline
+scenario_id: "045"
+case_fingerprint: sha256:b36e2e215757d6ae3df63af27182bb0f1cfeba8f9fb111e11d2ad0235d790477
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: QUALITY_PROFILE_REQUIRED
+  quality_class: Q2
+  independent_dimension_adjustment_allowed: true
+  na_requires_reason: true
+  persist_quality_profile: true
+  quality_dimensions:
+    - performance
+    - security
+    - usability
+    - reliability
+    - maintainability
+    - resource_cost
+    - delivery_time
+  actions:
+    - derive_quality_profile
+    - define_verification_evidence
+  summary: Use Q2 as the starting baseline for a typical production SaaS, then adjust each quality dimension independently and persist the resulting Quality Profile with explicit verification evidence.
