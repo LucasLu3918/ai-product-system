@@ -1,0 +1,31 @@
+version: 1
+id: 007-adaptive-ddd-clean-architecture
+scenario_id: "007"
+description: Small brownfield CRUD changes preserve existing architecture while material cross-domain changes may justify DDD/architecture escalation.
+input:
+  prompt: Add an optional nickname field to an existing REST API in a small CRUD service.
+  context:
+    brownfield: true
+    change_scope: small_crud_field
+    cross_domain_change: false
+rubric:
+  equals:
+    response.status: ENGINEERING_CHANGE
+    response.project_state: BROWNFIELD
+    response.repository_wide_clean_architecture_rewrite: false
+    response.new_bounded_context_required: false
+    response.ddd_escalation_required: false
+  contains:
+    response.actions:
+      - inspect_existing_architecture
+      - load_only_affected_language_api_testing_skills
+      - preserve_project_native_style
+      - use_tdd_when_testable
+  excludes:
+    response.actions:
+      - introduce_repository_abstraction_without_need
+      - create_aggregate_without_domain_reason
+      - rewrite_repository_for_clean_architecture
+  set_equals: {}
+  nonempty:
+    - response.summary
