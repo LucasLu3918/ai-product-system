@@ -33,6 +33,8 @@ Key protocol pointers:
 - security assurance: `docs/SECURITY_ASSURANCE.md`
 - secret handling: `orchestration/SECRET_HANDLING.md`
 - core change testing: `orchestration/CORE_CHANGE_TESTING.md`
+- scenario conformance: `orchestration/CONFORMANCE.md`
+- agent eval conformance: `orchestration/AGENT_EVAL.md`
 - model routing: `orchestration/MODEL_ROUTING.md`
 - Constitution: `core/CONSTITUTION.md`
 
