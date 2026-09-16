@@ -1,0 +1,26 @@
+version: 1
+case_id: 041-multi-perspective-review-panel
+scenario_id: "041"
+case_fingerprint: sha256:60a0143be1e53bb0ae8af7c5e9d1d1a372945e9cfe9328146c32857bdb5d6fb3
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: REVIEW_PANEL_REQUIRED
+  permissions: READ_ONLY
+  scope_strategy: BOUNDED
+  review_entire_repository: false
+  deduplicate_findings: true
+  selected_reviewers:
+    - quality-reviewer
+    - software-architect
+    - security-engineer
+    - database-engineer
+  actions:
+    - trigger_review_from_semantic_impact
+    - assign_bounded_files_contracts_tests
+    - normalize_findings
+    - deduplicate_findings
+  summary: Use only the four perspectives implicated by API, authorization and transaction changes, give each a bounded read-only review assignment, then consolidate overlapping findings.
