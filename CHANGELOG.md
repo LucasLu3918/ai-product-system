@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.14.2
+
+### Governance and Public Repository Hardening
+
+- Normalize protected Git/GitHub publication command detection across executable paths, Git/GH global options, common environment/shell wrappers and compound protected commands.
+- Keep approval semantics unchanged while requiring every detected protected publication operation in a compound command to be approved.
+- Add focused governance command-normalization evidence to Scenario 099.
+- Harden GitHub Actions with explicit read-only contents permission and immutable full-SHA action references.
+- Add Dependabot coverage for Python and GitHub Actions dependencies.
+- Add SECURITY.md and link it from the Human entry documentation.
+- Reconcile Architecture Overview to describe current system state rather than historical version snapshots.
+- Align PATCH versioning policy with backward-compatible bug fixes and hardening.
+- License selection remains an explicit maintainer decision and is not changed by this release.
+
 ## 0.14.1
 
 ### Legacy Scenario Reconciliation

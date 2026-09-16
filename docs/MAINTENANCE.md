@@ -86,7 +86,7 @@ Before remote publication, present the Git Publish Proposal. A material differen
 
 - MAJOR: incompatible governance/protocol/contract changes.
 - MINOR: backward-compatible new behavior, role, skill, work mode, CLI capability or schema/planning extension.
-- PATCH: clarification, typo or non-behavioral documentation fix.
+- PATCH: backward-compatible bug fix, hardening, clarification, typo or non-behavioral documentation/evidence correction.
 
 Major updates are not auto-applied by `aips preflight` without explicit `--allow-major`.
 
