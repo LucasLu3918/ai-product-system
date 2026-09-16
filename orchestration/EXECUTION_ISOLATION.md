@@ -24,13 +24,13 @@ Unsupported isolation must become explicit BLOCKED/UNSUPPORTED state. Never sile
 
 AIPS-created worktrees live outside the project source tree:
 
-`~/.config/aips/worktrees/<project-id>/<isolation-id>/`
+`~/.config/aips/worktrees/<repository-id>/<isolation-id>/`
 
 Ownership records live at:
 
-`~/.config/aips/isolation/<project-id>/<isolation-id>.yaml`
+`~/.config/aips/isolation/<repository-id>/<isolation-id>.yaml`
 
-Each record binds the project, isolation id, Change Boundary, branch, path and base revision.
+Each record binds repository_id, workspace identity, isolation id, Change Boundary, branch, path and base revision.
 
 Creation uses a dedicated `aips/isolation/<id>` branch. Cleanup removes only the worktree; the branch is preserved so committed work is not deleted implicitly.
 
@@ -38,7 +38,7 @@ Creation uses a dedicated `aips/isolation/<id>` branch. Cleanup removes only the
 
 Parallel analysis and review remain allowed. A writable Change Boundary has one active writer by default.
 
-Before creating a worktree, AIPS scans active AIPS-owned isolation records for the same project and Change Boundary. A second active writer for that boundary is BLOCKED.
+Before creating a worktree, AIPS scans active AIPS-owned isolation records for the same repository_id and Change Boundary, including verifiable legacy records from another worktree. A second active writer for that boundary is BLOCKED.
 
 Isolation does not authorize broader scope. Governance, approval binding, Change Impact and test obligations still apply exactly as they do in shared mode.
 

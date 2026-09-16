@@ -31,7 +31,9 @@ Persist only compact execution state:
 - completed steps;
 - blockers/waiting-for;
 - evidence/artifact pointers;
-- project revision;
+- repository/workspace identity;
+- project revision + branch;
+- dirty-state/workspace fingerprint;
 - updated timestamp.
 
 Do not persist chat transcripts, prompts, private chain-of-thought, credentials or unnecessary sensitive payloads.
@@ -46,11 +48,14 @@ Free-form raw prompt/model reasoning is prohibited.
 
 ~~~text
 load checkpoint
-→ compare current project revision
-→ same revision?
+→ resolve canonical repository_id / workspace_id
+→ recompute workspace fingerprint
+→ same workspace state?
    ├─ yes → CURRENT → continue from recorded step
-   └─ no  → STALE → refresh/revalidate affected evidence before continuation
+   └─ no  → STALE → report revision/branch/dirty/identity drift → refresh/revalidate affected evidence
 ~~~
+
+The fingerprint hashes product workspace state; AIPS-owned `.ai/` state is excluded so checkpoint writes do not invalidate themselves. Legacy v1 checkpoints fall back conservatively: a dirty workspace cannot be reported CURRENT solely because HEAD matches.
 
 Resume status does not bypass Requirement, Change Impact, Approval, Security, Test, Review or Release gates.
 

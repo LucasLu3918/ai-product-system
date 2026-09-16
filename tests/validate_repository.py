@@ -119,7 +119,7 @@ required_files = [
     "orchestration/VISUAL_POLISH.md", "orchestration/MULTI_REVIEW.md",
     "orchestration/QUALITY_PLANNING.md", "orchestration/PROJECT_KNOWLEDGE.md",
     "orchestration/SECRET_HANDLING.md", "orchestration/CORE_CHANGE_TESTING.md",
-    "orchestration/PROJECT_INTELLIGENCE.md", "orchestration/CHANGE_IMPACT.md",
+    "orchestration/PROJECT_IDENTITY.md", "orchestration/PROJECT_INTELLIGENCE.md", "orchestration/CHANGE_IMPACT.md",
     "orchestration/TURN_HARNESS.md", "orchestration/HARNESS_RESOLUTION.md",
     "harness/BOOTSTRAP.md", "harness/HARNESS_PROTOCOL.md", "harness/ADAPTER_CONTRACT.md",
     "harness/adapters/codex/AGENTS.md", "harness/adapters/claude-code/CLAUDE.md",
@@ -146,7 +146,7 @@ required_files = [
     "templates/delivery/RUNBOOK.md",
     "scripts/check_release_readiness.py", "scripts/harness_resolve.py",
     "scripts/project_intelligence.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py",
-    "scripts/execution_isolation.py",
+    "scripts/aips_identity.py", "scripts/execution_isolation.py",
     "scripts/check_secret_leakage.py",
     "tests/evidence/governance_command_guard.py",
     "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml",
@@ -173,13 +173,12 @@ for rel in required_files + planning_templates + security_templates:
         errors.append(f"Missing required file: {rel}")
 
 workflow_text = (ROOT / ".github/workflows/validate.yml").read_text(encoding="utf-8") if (ROOT / ".github/workflows/validate.yml").exists() else ""
-for phrase in (
-    "permissions:\n  contents: read",
-    "actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
-    "actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065",
-):
-    if phrase not in workflow_text:
-        errors.append(f"validate workflow missing public-repo hardening contract: {phrase}")
+if "permissions:\n  contents: read" not in workflow_text:
+    errors.append("validate workflow missing explicit read-only contents permission")
+for action in ("actions/checkout", "actions/setup-python"):
+    match = re.search(r"uses:\s*" + re.escape(action) + r"@([0-9a-f]{40})(?:\s|$)", workflow_text)
+    if not match:
+        errors.append(f"validate workflow must pin {action} to an immutable full commit SHA")
 
 dependabot_text = (ROOT / ".github/dependabot.yml").read_text(encoding="utf-8") if (ROOT / ".github/dependabot.yml").exists() else ""
 for ecosystem in ('package-ecosystem: "pip"', 'package-ecosystem: "github-actions"'):
@@ -216,8 +215,8 @@ for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"
         errors.append(f"PLANNING_PACKAGE.md missing: {phrase}")
 
 scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
-if len(scenarios) < 115:
-    errors.append(f"Expected at least 115 acceptance scenarios, found {len(scenarios)}")
+if len(scenarios) < 120:
+    errors.append(f"Expected at least 120 acceptance scenarios, found {len(scenarios)}")
 
 security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
 for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):
@@ -1069,8 +1068,8 @@ if conformance_helper.exists():
             errors.append("Scenario conformance total/registered count must match scenario inventory")
         if cov.get("uncovered") != 0:
             errors.append("Released scenario conformance registry must have no uncovered entries")
-        if cov.get("manual") != 77 or cov.get("automated") != 38:
-            errors.append("v0.14.1 reconciled baseline must report manual=77 and automated=38")
+        if cov.get("manual") != 77 or cov.get("automated") != 43:
+            errors.append("v0.15 baseline must report manual=77 and automated=43")
 
     with tempfile.TemporaryDirectory() as tmp:
         temp = Path(tmp)
@@ -1096,6 +1095,32 @@ for n in range(106, 111):
     matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
     if len(matches) != 1:
         errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")
+
+# v0.15 canonical identity / resume integrity
+identity_helper = ROOT / "scripts/aips_identity.py"
+identity_evidence = ROOT / "tests/evidence/identity_resume_isolation.py"
+for required in (identity_helper, identity_evidence):
+    if not required.exists():
+        errors.append(f"Missing v0.15 identity artifact: {required.relative_to(ROOT)}")
+    else:
+        compiled = subprocess.run([sys.executable, "-m", "py_compile", str(required)], capture_output=True, text=True)
+        if compiled.returncode != 0:
+            errors.append(f"v0.15 identity artifact syntax failed: {required.relative_to(ROOT)}: {compiled.stderr.strip()}")
+if identity_evidence.exists():
+    result = subprocess.run([sys.executable, str(identity_evidence)], capture_output=True, text=True)
+    if result.returncode != 0:
+        errors.append(f"Identity/resume/isolation evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
+
+for n in range(116, 121):
+    matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
+    if len(matches) != 1:
+        errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")
+
+run_checkpoint_template = load_yaml(ROOT / "templates/workspace/RUN_CHECKPOINT.yaml") or {}
+workspace_contract = run_checkpoint_template.get("workspace") or {}
+for key in ("repository_id", "workspace_id", "revision", "dirty_fingerprint", "fingerprint"):
+    if key not in workspace_contract:
+        errors.append(f"RUN_CHECKPOINT.yaml workspace missing v0.15 key: {key}")
 
 # v0.14 execution isolation contract
 isolation_protocol = ROOT / "orchestration/EXECUTION_ISOLATION.md"

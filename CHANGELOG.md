@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.15.0
+
+### Canonical Project Identity and Resume Integrity
+
+- Add one canonical repository/workspace identity contract shared by Project Intelligence, Run State and Execution Isolation.
+- Separate repository_id (lineage / repository-wide coordination) from workspace_id (active worktree state) while retaining project_id as a compatibility alias.
+- Add `aips identity` for deterministic identity and workspace-fingerprint diagnostics.
+- Move EPHEMERAL Run State to the canonical workspace namespace with lazy migration of legacy absolute-path-hash runs.
+- Upgrade run checkpoints to version 2 with repository/workspace identity, branch, dirty fingerprint and workspace fingerprint.
+- Mark resume STALE when uncommitted product workspace state changes even if Git HEAD is unchanged.
+- Exclude AIPS-owned `.ai/` state from workspace fingerprints so checkpoints do not stale themselves.
+- Coordinate Execution Isolation writers by repository_id + Change Boundary across Git worktrees and discover verifiable legacy ownership records.
+- Keep Project Intelligence on the canonical workspace namespace with compatibility migration when required.
+- Add Scenarios 116-120 and executable cross-worktree / resume-integrity lifecycle evidence.
+- Raise conformance baseline to 120 total / 77 manual / 43 automated / 0 uncovered.
+
 ## 0.14.2
 
 ### Governance and Public Repository Hardening

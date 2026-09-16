@@ -10,7 +10,7 @@ flowchart TD
     RA --> TC[Compact Turn Context]
     TC --> ENG{Engineering / Project task?}
     ENG -->|no| CHAT[Normal conversation]
-    ENG -->|yes| P[Resolve Project + Mode + Intelligence Store]
+    ENG -->|yes| ID[Resolve repository_id + workspace_id]\n    ID --> P[Resolve Project Mode + Intelligence Store]
     P --> I{Intelligence state}
     I -->|MISSING| B[Read-only Bootstrap]
     I -->|STALE| R[Targeted Refresh]
@@ -531,12 +531,12 @@ flowchart TD
     W --> EV[EVENTS.jsonl]
     CP --> I[Interruption / new session]
     I --> R[Resume]
-    R --> V{Project revision unchanged?}
+    R --> V{Workspace fingerprint unchanged?}
     V -->|yes| C[CURRENT → resume_from]
-    V -->|no| S[STALE → freshness / impact / review revalidation]
+    V -->|no| S[STALE → identity / revision / branch / dirty-state revalidation]
 ~~~
 
-Run events are structured evidence only. Chat transcripts, private chain-of-thought and secrets are not run-state inputs.
+Workspace fingerprint excludes AIPS-owned `.ai/` state so checkpoint writes do not stale themselves. Run events are structured evidence only. Chat transcripts, private chain-of-thought and secrets are not run-state inputs.
 
 ## Execution isolation
 
@@ -548,7 +548,7 @@ flowchart TD
     R -->|sandbox| SP{Verified provider?}
     SP -->|yes| SB[Provider sandbox]
     SP -->|no| B[UNSUPPORTED / BLOCKED]
-    WT --> SW[Single writer per Change Boundary]
+    WT --> SW[repository_id + Change Boundary single writer]
     SB --> SW
     SH --> SW
     SW --> E[Execute under existing governance / impact / test rules]
@@ -557,7 +557,7 @@ flowchart TD
     C -->|clean AIPS worktree| RM[Remove worktree · preserve branch]
 ~~~
 
-Worktree state is stored outside the project source tree. Isolation strength is reported truthfully; a temporary directory is never labeled as a sandbox.
+Worktree ownership is repository-scoped across worktrees while workspace state remains workspace-scoped. Isolation strength is reported truthfully; a temporary directory is never labeled as a sandbox.
 
 ## Scenario conformance evidence
 

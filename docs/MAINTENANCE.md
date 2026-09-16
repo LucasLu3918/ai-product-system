@@ -263,3 +263,18 @@ When legacy Scenario reconciliation changes:
 - Architecture diagrams are N/A when no runtime/architecture behavior changes.
 
 Do not relabel stale historical behavior as automated evidence.
+
+## v0.15 consistency
+
+When Project / Workspace Identity changes, review together:
+
+- orchestration/PROJECT_IDENTITY.md;
+- scripts/aips_identity.py;
+- Project Intelligence external namespace / migration;
+- Run State checkpoint schema + workspace fingerprint / legacy migration;
+- Execution Isolation repository-level ownership and cross-worktree Single Writer behavior;
+- bin/aips identity;
+- system / lifecycle / Project Intelligence architecture diagrams;
+- scenarios 116-120 and direct identity lifecycle evidence.
+
+Identity changes must preserve user state or migrate it safely; never silently overwrite a canonical destination.

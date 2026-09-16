@@ -1,4 +1,4 @@
-version: 1
+version: 2
 run_id: null
 protocol: null
 status: ACTIVE # ACTIVE | WAITING | BLOCKED | COMPLETE
@@ -7,8 +7,18 @@ completed_steps: []
 waiting_for: []
 resume_from: null
 evidence: []
-project:
+project: # legacy compatibility
   root: null
   mode: EPHEMERAL # EPHEMERAL | ATTACHED
   revision: null
+workspace:
+  root: null
+  mode: EPHEMERAL # EPHEMERAL | ATTACHED
+  repository_id: null
+  workspace_id: null
+  revision: null
+  branch: null
+  dirty_fingerprint: null
+  fingerprint: null
+  clean: null
 updated_at: null

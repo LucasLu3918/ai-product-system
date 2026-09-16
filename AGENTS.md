@@ -16,6 +16,7 @@ Key protocol pointers:
 - global harness: `harness/HARNESS_PROTOCOL.md`
 - harness resolution: `orchestration/HARNESS_RESOLUTION.md`
 - turn harness: `orchestration/TURN_HARNESS.md`
+- project identity: `orchestration/PROJECT_IDENTITY.md`
 - project intelligence: `orchestration/PROJECT_INTELLIGENCE.md`
 - change impact: `orchestration/CHANGE_IMPACT.md`
 - project knowledge compatibility: `orchestration/PROJECT_KNOWLEDGE.md`

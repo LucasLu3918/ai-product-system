@@ -699,3 +699,38 @@ scenarios:
     evidence:
       - scripts/execution_isolation.py
       - tests/validate_repository.py
+  - id: "116"
+    path: tests/scenarios/116-canonical-project-workspace-identity.md
+    coverage: deterministic
+    evidence:
+      - tests/evidence/identity_resume_isolation.py
+      - scripts/aips_identity.py
+      - tests/validate_repository.py
+  - id: "117"
+    path: tests/scenarios/117-run-resume-dirty-workspace-stale.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/identity_resume_isolation.py
+      - scripts/run_state.py
+      - tests/validate_repository.py
+  - id: "118"
+    path: tests/scenarios/118-legacy-run-state-identity-migration.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/identity_resume_isolation.py
+      - scripts/run_state.py
+      - tests/validate_repository.py
+  - id: "119"
+    path: tests/scenarios/119-cross-worktree-single-writer.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/identity_resume_isolation.py
+      - scripts/execution_isolation.py
+      - tests/validate_repository.py
+  - id: "120"
+    path: tests/scenarios/120-project-intelligence-canonical-namespace.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/identity_resume_isolation.py
+      - scripts/project_intelligence.py
+      - tests/validate_repository.py
