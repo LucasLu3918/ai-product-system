@@ -1,7 +1,7 @@
 version: 1
 capabilities:
   product: Product discovery and requirement definition.
-  design: UX, information architecture and visual direction.
+  design: UX, creative direction, brand foundation and visual quality.
   software-architecture: Architecture boundaries, Clean Architecture and DDD.
   engineering: API/application implementation knowledge.
   database: Data modeling and database/query performance.

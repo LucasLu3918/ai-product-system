@@ -8,6 +8,7 @@ Own product intent, scope and requirement clarity. Convert user goals into testa
 
 - `product-discovery`
 - `requirements-definition`
+- `brand-foundation` when brand purpose, positioning or audience definition is needed
 
 ## Boundaries
 

@@ -54,6 +54,64 @@ skills:
       reliability: normal
       minimum_tier: 1
       preferred_tier: 2
+
+  creative-reference-research:
+    capability: design
+    path: design/creative-reference-research/SKILL.md
+    triggers:
+    - visual_reference_research
+    - current_design_style
+    - undefined_visual_direction
+    cost: medium
+    model_requirements:
+      reasoning: medium
+      coding: none
+      reliability: high
+      minimum_tier: 1
+      preferred_tier: 2
+  creative-calibration:
+    capability: design
+    path: design/creative-calibration/SKILL.md
+    triggers:
+    - vague_visual_request
+    - user_reference_assets
+    - style_calibration
+    cost: low
+    model_requirements:
+      reasoning: medium
+      coding: none
+      reliability: high
+      minimum_tier: 1
+      preferred_tier: 2
+  brand-foundation:
+    capability: design
+    path: design/brand-foundation/SKILL.md
+    triggers:
+    - create_brand
+    - brand_strategy
+    - brand_guide
+    cost: medium
+    model_requirements:
+      reasoning: high
+      coding: none
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 2
+  visual-quality-review:
+    capability: design
+    path: design/visual-quality-review/SKILL.md
+    triggers:
+    - visual_review
+    - brand_consistency_review
+    - creative_direction_review
+    cost: medium
+    model_requirements:
+      reasoning: high
+      coding: none
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 3
+
   rest-api:
     capability: engineering
     path: engineering/rest-api/SKILL.md
