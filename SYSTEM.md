@@ -12,7 +12,8 @@ User Request
 → Human decision only when materially required
 → Intent + Work Mode
 → Project State
-→ Risk / Assurance Classification
+→ Existing Project Knowledge Index / targeted discovery when relevant
+→ Risk / Assurance + Quality Classification
 → Creative / Brand / Capability Routing when relevant
 → Instruction Discovery (existing projects)
 → Minimal Context Manifest
@@ -24,8 +25,10 @@ User Request
 → Independent or Multi-Perspective Review
 → Author Fix / Targeted Re-review when needed
 → Artifact / Quality Gate
-→ Release Readiness / Deployment when production delivery is in scope
-→ Persist State + System Provenance
+→ LOCAL_COMPLETE for complete products
+→ Production Enablement only when requested/approved
+→ Release Readiness + PRODUCTION_VERIFIED when production is in scope
+→ Persist State + System Provenance / Knowledge refresh
 ```
 
 ## System Update Preflight
@@ -139,18 +142,38 @@ Simple bugfixes, isolated API changes, narrow research and local refactors do no
 
 ## End-to-end product delivery
 
-When the user requests a complete product through production, load `orchestration/PRODUCT_DELIVERY.md`.
+When the user requests a complete product, load `orchestration/PRODUCT_DELIVERY.md` and `orchestration/QUALITY_PLANNING.md`.
 
 Key rules:
 - create one discoverable Product Workspace and root `PRODUCT.yaml`;
 - treat frontend/backend/worker/etc. as Deployment Units; do not force separate Git repositories;
 - default to a monorepo unless ownership, permission, release cadence, scale or service boundaries justify multi-repo;
+- persist a Q1/Q2/Q3 Quality Profile with applicable measurable targets;
 - provide a reproducible local start/test path;
-- run applicable static/unit/integration/contract/E2E/security/build checks;
+- implement applicable structured logging/health/metrics/tracing/audit hooks before production vendor selection;
+- run applicable static/unit/integration/contract/E2E/security/performance/usability/reliability/build checks;
+- treat `LOCAL_COMPLETE` as the default complete-product milestone;
+- if production was not explicitly requested, ask whether to continue only after `LOCAL_COMPLETE`;
 - use staging by default for material production systems;
 - consolidate production conditions in `orchestration/RELEASE_READINESS.md`;
 - production automation never bypasses risk-proportional approval, secret protection, migration/recovery or security rules;
 - production Done includes post-deploy health/smoke/observability verification.
+
+## Project knowledge
+
+For existing projects, use `orchestration/PROJECT_KNOWLEDGE.md`.
+
+Load authoritative project instructions/docs first. Then read `.ai/knowledge/KNOWLEDGE_INDEX.yaml` when present and load only topics relevant to the current task.
+
+If reusable project knowledge is missing, use targeted Project Knowledge Discovery rather than scanning every file. Persist only expensive-to-rediscover, stable knowledge not already covered by AGENTS/ADR/contracts/official docs. Prefer pointers over duplicated content.
+
+Project Knowledge has no governance authority and never replaces active security/reliability verification.
+
+## Quality planning
+
+For complete products/material product plans, use `orchestration/QUALITY_PLANNING.md`.
+
+Use Q1/Q2/Q3 as adjustable baselines across Performance, Security, Usability, Reliability, Maintainability, Resource/Cost and Delivery Time. Convert vague expectations into targets/budgets + verification evidence where practical. Use range + confidence for time/cost estimates.
 
 ## Project state
 
@@ -208,8 +231,12 @@ When an existing UI is directionally correct but visually awkward/inconsistent, 
 Defaults:
 - Preserve Before Redesign;
 - Consistency First;
+- whole-project vague cleanup requests route to V2 Product Consistency Sweep;
+- use/create `docs/design/PROJECT_VISUAL_PROFILE.yaml` when reusable visual knowledge is valuable;
+- classify outlier vs valid variant/exception before fixing;
+- map material findings to DOM/component/computed style/token when tooling permits;
 - shared token/component fixes before page-specific patches;
-- rendered screenshot/responsive/state verification before PASS when the UI can be run.
+- rendered before/after + responsive/state verification before PASS when the UI can be run.
 
 ## Multi-perspective review
 

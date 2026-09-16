@@ -12,8 +12,9 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 6. Resolve required user-provided external sources using connector-first External Context Resolution before asking for manual content.
 7. Detect whether the task creates/revises the primary product/project plan and whether complete production delivery is in scope.
 8. For a primary planning task, resolve the persistence workspace before authoring the authoritative plan; if absent, ask the user.
-9. If the request targets an existing project, discover applicable instructions before generic skills.
-10. If a material decision is needed, present the smallest useful option set and stop affected work.
+9. If the request targets an existing project, discover applicable instructions/authoritative docs, read the Project Knowledge Index, then perform targeted knowledge discovery only for relevant gaps.
+10. For complete products/material product plans, resolve Q1/Q2/Q3 Quality Planning and persist applicable Quality Profile targets before architecture is locked.
+11. If a material decision is needed, present the smallest useful option set and stop affected work.
 11. Classify intent; choose one primary work mode.
 12. Detect project state (`greenfield`, `brownfield`, `unknown`).
 13. Classify Product Baseline SAL / Change Security Impact / Reliability Impact when relevant.
@@ -219,3 +220,18 @@ Use `orchestration/VISUAL_POLISH.md` when an existing UI looks awkward/inconsist
 Use `orchestration/MULTI_REVIEW.md` for large/core/high-risk changes. Resolve reviewer perspectives from the actual Change Boundary, run bounded read-only review in parallel where useful, normalize/deduplicate findings, and keep the original Author as the writer.
 
 After fixes, re-review only affected findings/diffs/tests unless scope expanded. Persist lessons at run/project level when useful; recommend System Capability improvement to the user only when evidence is repeated/generalizable.
+
+
+## Project Knowledge
+
+Use `orchestration/PROJECT_KNOWLEDGE.md`.
+
+The Knowledge Index is a navigation/cache surface. It never outranks AGENTS, ADR, contracts or official docs. Prefer authoritative pointers; persist derived knowledge only when it is stable and expensive to rediscover. Refresh only topics affected by watched paths/signals.
+
+## Quality Planning
+
+Use `orchestration/QUALITY_PLANNING.md` for complete products and material product plans. Q1/Q2/Q3 are baselines, not rigid bundles. Feed measurable targets/budgets into architecture, implementation verification and Release Readiness.
+
+## Local and production milestones
+
+A complete product normally reaches `LOCAL_COMPLETE` first. If production was not requested initially, ask whether to continue. If production was requested initially, continue into Production Enablement without a redundant confirmation. `PRODUCTION_VERIFIED` requires post-deploy verification.

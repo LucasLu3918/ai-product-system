@@ -20,8 +20,21 @@ lessons:
   system_capability_candidates: []
 temporary_overrides: []
 artifacts: []
+quality:
+  profile: null
+  class: null
+knowledge:
+  index: null
+  loaded_topics: []
+  stale_topics: []
+visual:
+  profile: null
+  last_audit: null
 delivery:
   product_manifest: null
+  status: null # planning | implementing | LOCAL_COMPLETE | production_enabling | PRODUCTION_VERIFIED | blocked
+  local_complete_evidence: []
+  production_enablement_requested: false
   release_candidate: null
   release_readiness: null
   environment: null
