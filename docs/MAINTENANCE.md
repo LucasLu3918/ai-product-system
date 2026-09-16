@@ -221,3 +221,17 @@ When durable run state changes, review together:
 - system/lifecycle architecture diagrams.
 
 Resume must never bypass current governance, security, impact or verification gates.
+
+## v0.13 consistency
+
+When Scenario behavior/coverage changes, review together:
+
+- tests/scenarios/*;
+- tests/scenario_coverage.yaml;
+- scripts/scenario_conformance.py;
+- tests/validate_repository.py;
+- orchestration/CONFORMANCE.md;
+- docs/CONFORMANCE.md / USER_GUIDE;
+- coverage claims in CHANGELOG/release evidence.
+
+Never infer automated coverage from Scenario count alone. New Scenarios must enter the registry in the same change.
