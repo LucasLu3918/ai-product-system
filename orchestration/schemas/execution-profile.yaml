@@ -2,6 +2,8 @@
 business_impact: low | medium | high | critical
 technical_complexity: low | medium | high | critical
 risk: normal | elevated | high | critical
+security_assurance: 0 | 1 | 2 | 3 | 4
+reliability_impact: 0 | 1 | 2 | 3 | 4
 reasoning: low | medium | high | very_high
 coding: none | normal | strong
 reliability: normal | high | critical

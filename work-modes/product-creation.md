@@ -9,6 +9,7 @@ Discovery
 → Resolve Planning Workspace
 → Product Definition
 → UX / Visual / Key Visual
+→ Risk Profile / Security Assurance Classification
 → API / Data / Architecture / Security / Test / Delivery Planning
 → Persist Reproducible Planning Package
 → Cross-role Consistency Review
@@ -23,6 +24,8 @@ If the user has not specified where the authoritative planning package should be
 Ask only blocking questions at each stage. Propose professional defaults instead of asking users to supply expert architecture decisions they may not know.
 
 Use `orchestration/PLANNING_PACKAGE.md` and `templates/planning-package/`.
+
+Security assurance is risk-proportional. SAL 3–4 planning must include the applicable security artifacts/review defined in `docs/SECURITY_ASSURANCE.md`; lower-risk products must not be burdened with unnecessary heavy security ceremony.
 
 The planning package must be complete enough that another competent AI agent or human team can build substantially the same intended product without relying on hidden chat context. API documentation, product plan, experience design, visual system/key visual, technical architecture, implementation planning and explicit decisions/assumptions are required when applicable; non-applicable artifacts must be marked N/A with reason.
 

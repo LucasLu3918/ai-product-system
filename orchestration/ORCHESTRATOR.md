@@ -13,21 +13,23 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 7. If a material decision is needed, present the smallest useful option set and stop affected work.
 8. Classify intent; choose one primary work mode.
 9. Detect project state (`greenfield`, `brownfield`, `unknown`).
-10. Build a minimal Context Manifest.
-11. Resolve the primary role, then only necessary supporting roles.
-12. Resolve capabilities and leaf skills from task evidence.
-13. Build an Execution Profile from business impact, complexity, risk and selected skill requirements.
-14. Decide whether bounded subagents are useful; resolve each subagent model/context independently.
-15. For primary planning, create/persist the Reproducible Planning Package and run cross-role consistency review.
-16. Gate 1: wait for human Planning Package approval.
-17. After Gate 1, derive Initial Implementation Items + Recommended Implementation Flow.
-18. Gate 2: wait for explicit human implementation approval.
-19. Select eligible model/tools using minimum sufficient intelligence.
-20. Execute inside the approved intent/change boundary.
-21. Expand context or model tier only when documented evidence shows a gap.
-22. Run independent review with an independently resolved reviewer tier where required.
-23. Validate acceptance criteria and artifacts.
-24. Persist state, temporary overrides, provenance, exact system version/commit and next actions.
+10. Classify Product Baseline SAL / Change Security Impact / Reliability Impact when relevant.
+11. Build a minimal Context Manifest.
+12. Resolve the primary role, then only necessary supporting roles, including Security Engineer when required by Effective SAL.
+13. Resolve capabilities and leaf skills from task evidence and assurance requirements.
+14. Build an Execution Profile from business impact, complexity, risk, assurance and selected skill requirements.
+15. Decide whether bounded subagents are useful; resolve each subagent model/context independently.
+16. For primary planning, create/persist the Reproducible Planning Package and run cross-role consistency review, including planning-stage security review for SAL 3–4.
+17. Gate 1: wait for human Planning Package approval.
+18. After Gate 1, derive Initial Implementation Items + Recommended Implementation Flow.
+19. Gate 2: wait for explicit human implementation approval.
+20. Select eligible model/tools using minimum sufficient intelligence.
+21. Execute inside the approved intent/change boundary.
+22. Expand context, security review depth or model tier only when documented evidence shows a gap.
+23. Run independent review with an independently resolved reviewer tier where required.
+24. For SAL 3–4 affected work, persist Security Review evidence and run the Security Release Gate.
+25. Validate acceptance criteria and artifacts.
+26. Persist state, temporary overrides, provenance, assurance profile, exact system version/commit and next actions.
 
 ## System Update Preflight
 
@@ -52,6 +54,18 @@ The planning package must be persisted outside the chat and sufficiently complet
 Do not claim planning completion if applicable product, UX, visual/key-visual, API/contract, architecture, testing/delivery or decision records are missing.
 
 Implementation requires both Planning Package approval (Gate 1) and Implementation Readiness approval (Gate 2).
+
+## Risk-Proportional Security Assurance
+
+Use `docs/SECURITY_ASSURANCE.md`.
+
+For planning, establish Product Baseline SAL and Reliability Impact. For every material change, classify Change Security Impact from the actual Change Boundary and protected assets touched.
+
+Critical risk floors override average scoring. High-value financial/stored-value boundaries are security boundaries, including payments, refunds, settlement, balances, points/credits/vouchers/coupons with economic value, redemption, transfer and withdrawal.
+
+SAL 3–4 activates independent Security Engineer review as applicable. SAL 4 unresolved High/Critical findings block release.
+
+Do not run full-product SAL 4 review for a cosmetic change that does not touch a protected boundary.
 
 ## Existing-project instruction discovery
 

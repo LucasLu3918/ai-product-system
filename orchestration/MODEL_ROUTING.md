@@ -25,10 +25,11 @@ Consider together:
 4. business impact;
 5. technical complexity;
 6. failure/security/irreversibility risk;
-7. reasoning and coding requirement;
-8. context complexity;
-9. reliability requirement;
-10. expected total cost.
+7. Effective Security Assurance Level and Reliability Impact;
+8. reasoning and coding requirement;
+9. context complexity;
+10. reliability requirement;
+11. expected total cost.
 
 Business impact is a factor, not a shortcut to a stronger model. Critical risk may impose a minimum tier regardless of weighted cost preference.
 
@@ -55,6 +56,8 @@ Before execution, resolve a compact profile:
 business_impact: medium
 technical_complexity: high
 risk: elevated
+security_assurance: 3
+reliability_impact: 3
 reasoning: high
 coding: strong
 reliability: high
@@ -108,6 +111,19 @@ expected_output:
 Start at the resolved minimum sufficient tier. Escalate when new evidence shows insufficient reasoning, higher risk, larger context or repeated unreliable results. De-escalate after the difficult decision is resolved when the remaining work is routine.
 
 A subagent must request escalation instead of guessing beyond its competence.
+
+## Security assurance interaction
+
+SAL is an assurance requirement, not a model tier.
+
+Typical routing guidance:
+
+- SAL 0–1: no dedicated high-tier Security Reviewer by default;
+- SAL 2: security review commonly Tier 2–3 when the affected boundary warrants it;
+- SAL 3: Security Reviewer normally minimum Tier 3;
+- SAL 4: Security Reviewer Tier 3–4; critical financial/integrity/security decisions may require Tier 4.
+
+The Router still considers privacy, task complexity, tools, context and total cost. A cosmetic low-impact change in a SAL 4 product can remain low-tier when it does not touch the protected boundary.
 
 ## Reviewer routing
 

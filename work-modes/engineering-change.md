@@ -8,7 +8,8 @@ Identify Target
 → Inspect Relevant Code/Tests/Contracts
 → Conflict + Better-Approach Preflight
 → Change Boundary
-→ Architecture/Test Strategy
+→ Change Security Impact / Reliability Impact
+→ Architecture/Test/Security Strategy
 → Implement
 → Independent Review
 → Quality Gate
@@ -22,6 +23,9 @@ Rules:
 - project ADR/contracts/standards and project-local skills are loaded before generic skills when relevant;
 - detect stack/conventions from repository evidence;
 - load only affected files, roles and leaf skills;
+- classify Effective SAL when the Change Boundary touches auth, sensitive data, externally exposed interfaces, high-value business logic or other protected assets;
+- high-value financial/stored-value boundaries impose the applicable critical security floor;
+- a high-risk product does not automatically require a full high-SAL review for unrelated cosmetic changes;
 - use TDD for testable behavior when practical;
 - add characterization coverage before risky legacy behavior changes when needed;
 - preserve current architecture when adequate; use Clean Architecture/DDD proportionally;

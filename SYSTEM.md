@@ -11,6 +11,7 @@ User Request
 → Human decision only when materially required
 → Intent + Work Mode
 → Project State
+→ Risk / Assurance Classification
 → Instruction Discovery (existing projects)
 → Minimal Context Manifest
 → Role + Skill Resolution
@@ -55,7 +56,8 @@ Before implementation, check only what can materially change the outcome:
 - a clearly better approach or prerequisite;
 - scope, contract, architecture, security, cost or destructive risk;
 - missing role/capability/skill expertise;
-- instructions that materially conflict.
+- instructions that materially conflict;
+- security assurance or reliability impact that materially changes review/gating.
 
 If a material choice exists, present a concise option set, recommend one, and stop affected work until the user decides. Batch non-blocking questions instead of interrupting repeatedly.
 
@@ -87,6 +89,25 @@ Simple bugfixes, isolated API changes, narrow research and local refactors do no
 - `unknown` — inspect before deciding.
 
 Project state is not a work mode.
+
+## Security / Reliability Assurance
+
+For product planning and for changes that may affect protected assets, resolve a Risk Profile using `orchestration/schemas/risk-profile.yaml` and `docs/SECURITY_ASSURANCE.md`.
+
+Keep separate:
+
+- Product Baseline SAL (Security Assurance Level);
+- Change Security Impact;
+- Effective SAL for the affected Change Boundary;
+- Reliability Impact.
+
+Do not average away critical dimensions. Payments, stored value, economically redeemable points/credits/vouchers/coupons and similar financial integrity boundaries impose a SAL 4 floor when affected.
+
+A high-risk product does not force every cosmetic change through SAL 4. Reclassify based on the actual Change Boundary and protected assets touched.
+
+SAL 3–4 affected work activates the required Security Engineer review, evidence and release gate. SAL 4 unresolved High/Critical findings block release.
+
+Security Assurance informs Model Routing but is not the same as Model Tier.
 
 ## Work mode
 
@@ -160,3 +181,5 @@ When modifying this AI Product System itself, pass the Documentation Impact Gate
 A task is complete only when its acceptance criteria, required review, required artifacts and persisted workspace state are satisfied. Producing code or prose alone is not completion.
 
 For a primary planning task, completion of the Planning Package means the persisted plan is ready for Gate 1 review; it does **not** imply implementation approval.
+
+For SAL 3–4 affected work, completion also requires the applicable Security Review evidence and Security Release Gate.

@@ -21,7 +21,9 @@ Stop affected work when:
 - a public contract, data model, security boundary, cost profile or product scope would materially change;
 - a destructive/difficult-to-recover action is requested;
 - evidence is insufficient for a claimed performance, cost or safety result;
-- required role/capability/skill expertise does not exist.
+- required role/capability/skill expertise does not exist;
+- a SAL 3–4 affected change lacks required independent Security Review/evidence;
+- a SAL 4 affected change has unresolved High/Critical security findings.
 
 Do not stop for cosmetic, equivalent or easily reversible local choices. Queue non-blocking questions and ask them together.
 
@@ -48,6 +50,16 @@ For high/critical project actions, present: action, impact, principal risks, rec
 - main branch/release/production: gated;
 - destructive actions: safety challenge + explicit approval;
 - secrets must never be persisted in prompts, state, artifacts or Git.
+
+## Security assurance and release
+
+Use `docs/SECURITY_ASSURANCE.md`.
+
+Security review depth follows the affected Change Boundary, not blindly the whole product baseline. Critical security floors cannot be averaged away.
+
+For SAL 3–4 affected work, persist required security evidence. For SAL 4, unresolved High/Critical findings require BLOCK unless governance permits and records an explicit accepted-risk decision.
+
+Security Engineer review is independent from the implementation author for material SAL 3–4 security boundaries.
 
 ## Author and reviewer
 
