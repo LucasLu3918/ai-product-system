@@ -1,10 +1,10 @@
 # 快速上手
 
-這份文件給第一次使用 AI Product System 的人。
+這份文件給第一次使用 AI Product System（AIPS）的人。
 
-## 1. 安裝系統（Install）
+## 1. 安裝
 
-完成 Git、Python 3 與 GitHub CLI（gh）設定後：
+需求：Git、Python 3；私人 Repository 建議使用 GitHub CLI（gh）。
 
 ~~~bash
 mkdir -p ~/Developer
@@ -14,101 +14,124 @@ cd ai-product-system
 ./scripts/bootstrap.sh
 ~~~
 
-確認：
+等同：
+
+~~~bash
+aips install
+~~~
+
+安裝會：
+
+~~~text
+Install AIPS Core / CLI
+→ 建立 Global Harness Ownership Manifest
+→ 偵測支援的 Agent Runtime
+→ 安全可逆時安裝 AIPS-owned Adapter
+→ 驗證
+~~~
+
+它不會覆寫既有的 AGENTS.md / AGENTS.override.md、~/.claude/CLAUDE.md、~/.gemini/GEMINI.md、Agent Runtime Config 或使用者/專案自訂 Skills。
+
+如果既有檔案會被覆寫，該 Runtime 會改成 MANUAL，而不是修改你的設定。
+
+## 2. 確認 Global Harness
 
 ~~~bash
 aips doctor
-aips version
+aips harness status
+aips harness doctor
 ~~~
 
-## 2. 連接專案（Attach Project）
+你可能看到：
+
+~~~text
+codex: AUTOMATIC
+claude-code: MANUAL
+gemini-cli: AUTOMATIC
+~~~
+
+AUTOMATIC 代表 Agent 啟動時能安全載入 AIPS Minimal Bootstrap。
+
+MANUAL 代表 Runtime 已偵測到，但 AIPS 為了保護既有使用者設定沒有自動修改它。
+
+## 3. 平常怎麼使用
+
+如果 Agent Adapter 是 AUTOMATIC：直接像原本一樣開啟 Codex / Claude Code / Gemini CLI 並對談，不需要每次貼「請使用 AIPS」。
+
+AIPS Global Harness 只先載入極小 Bootstrap；一般知識聊天不會因此跑完整 Product Planning。當任務屬於軟體 / 產品 / 專案工作時，Agent 才逐步載入需要的 AIPS Context。
+
+## 4. 專案不需要先 Attach
+
+在 Git Project 內直接工作時，若沒有 .ai/：
+
+~~~text
+Project Mode = EPHEMERAL
+~~~
+
+可以使用 AIPS 流程與專案自己的 AGENTS/CLAUDE/GEMINI/ADR/Docs，但不建立永久 AIPS State。
+
+需要保存 Project Knowledge、State、Runs 等資訊時才執行：
 
 ~~~bash
 aips attach ~/Developer/projects/my-project
 ~~~
 
-舊指令 aips init <project> 仍可使用。
+此後 Project Mode = ATTACHED。
 
-系統會建立：
-
-~~~text
-.ai/
-├── PROJECT.md
-├── STATE.yaml
-├── MANIFEST.yaml
-└── SYSTEM.yaml
-~~~
-
-## 3. 每次實作前
-
-執行系統更新預檢（System Update Preflight）：
+## 5. 每次修改專案前
 
 ~~~bash
 aips preflight ~/Developer/projects/my-project
 ~~~
 
-它只會安全更新 AI Product System，不會擅自 git pull 你的產品專案。
+Preflight 只安全更新/驗證 AIPS。若專案沒有 Attach，v0.8 起不會自動建立 .ai/。
 
-## 4. 查看狀態
+## 6. 查看解析結果
 
 ~~~bash
-aips status ~/Developer/projects/my-project
+aips harness resolve --cwd "$PWD"
 ~~~
 
-可確認 System version、CLI、專案是否已 Attach，以及 Workspace 位置。
+可查看 AIPS version / bootstrap、Runtime / Adapter 狀態、Project Root、EPHEMERAL / ATTACHED、Project instructions、Runtime-native instruction pointers，以及 Project Knowledge / State 是否可用。
 
-## 5. 開始交給 AI
-
-~~~text
-使用 ai-product-system 處理目前專案。
-
-System:
-~/Developer/ai-product-system
-
-Target Project:
-~/Developer/projects/my-project
-
-先閱讀 AGENTS.md，再依 SYSTEM.md 路由。
-如果需求還不夠明確，請先逐步引導我整理成可實作目標。
-如果有更適合的做法、重大風險或 Blocking Unknown，
-請先提出建議，不要直接實作。
-~~~
-
-## 6. 解除專案連接（Detach）
+## 7. 解除專案持久化
 
 ~~~bash
 aips detach ~/Developer/projects/my-project
 ~~~
 
-它不會刪除產品程式碼，也不會永久刪除 AI Workspace。
+.ai/ 會封存成 .ai.detached-*，產品程式碼不受影響。
 
-原本 .ai/ 會安全封存成：
+## 8. 解除 AIPS
 
-~~~text
-.ai.detached-YYYYMMDD-HHMMSS/
+~~~bash
+aips uninstall
 ~~~
 
-CLI 會顯示如何恢復。
-
-## 7. 解除安裝系統（Uninstall）
+或：
 
 ~~~bash
 cd ~/Developer/ai-product-system
 ./scripts/uninstall.sh
 ~~~
 
-或：
+解除會移除 AIPS-owned Adapter / Harness / CLI / config。
 
-~~~bash
-aips uninstall
+保留：
+
+~~~text
+✓ 使用者 AGENTS / CLAUDE / GEMINI instructions
+✓ 使用者 custom Skills
+✓ 專案 instructions / Skills
+✓ 專案原始碼
+✓ Project .ai/ Workspace
+✓ System Git Repository（除非你之後自行刪除）
 ~~~
 
-若連 System 的 Python Virtual Environment 一起移除：
+若連 AIPS Python Virtual Environment 一起移除：
 
 ~~~bash
-./scripts/uninstall.sh --remove-venv
+aips uninstall --remove-venv
 ~~~
 
-Repository 與產品專案都會保留。
-
-詳細生命週期請看：[安裝與生命週期](INSTALLATION.md)
+詳細生命週期請看 docs/INSTALLATION.md 與 docs/HARNESS.md。

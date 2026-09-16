@@ -691,3 +691,30 @@ Representative Routes
 不同不一定是 Bug。Hero CTA、small/default/large Button 等合法 Variant 會被保留。
 
 當專案有穩定視覺知識時，保存到 docs/design/PROJECT_VISUAL_PROFILE.yaml；下一個 Agent 直接載入，不需要重新理解整個網站風格。
+
+
+## 25. Global Agent Harness
+
+v0.8 起，AIPS 可以在安全可逆的前提下接入支援的 Agent Runtime。日常仍是開啟原本 Agent 直接對談；Runtime Adapter 為 AUTOMATIC 時，遇到軟體/產品/專案任務才進入 AIPS。
+
+AIPS 不會為了 Global Harness 覆寫既有 AGENTS.md、CLAUDE.md、GEMINI.md、Agent Config 或 Custom Skills；若自動接入會碰到使用者檔案，Runtime 改為 MANUAL。
+
+沒有 .ai/ 的 Project 預設 EPHEMERAL，不會被偷偷 Attach。需要持久 Project Knowledge / State 時才執行：
+
+~~~bash
+aips attach /path/to/project
+~~~
+
+查看解析：
+
+~~~bash
+aips harness resolve --cwd "$PWD"
+~~~
+
+解除：
+
+~~~bash
+aips uninstall
+~~~
+
+解除只處理 AIPS-owned integration；使用者/專案 instructions、Skills、source 與 .ai/ 都會保留。

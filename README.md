@@ -1,6 +1,6 @@
 # AI Product System
 
-AI Product System 是一套可重用的 AI 協作開發系統，讓不同 AI Agent 或人類團隊能依同一套規則規劃、設計、實作、審核與維護產品。
+AI Product System（AIPS）是一套可安裝、可解除的跨 Agent 軟體工程 Harness。安裝後，支援的 AI Agent Runtime 會先載入最小 AIPS Bootstrap，再依任務決定是否進入 AIPS 的規劃、實作、審核與交付流程。
 
 ## 5 分鐘開始
 
@@ -13,7 +13,16 @@ cd ai-product-system
 aips doctor
 ~~~
 
-連接專案（Attach Project）：
+安裝完成後可檢查 Global Harness：
+
+~~~bash
+aips harness status
+aips harness doctor
+~~~
+
+AIPS 不會覆寫你原本的 AGENTS.md、CLAUDE.md、GEMINI.md、Agent Config 或自訂 Skills。若某個 Runtime 已有使用者自訂的全域 instruction file，AIPS 會保留原檔並把該 Runtime 標示為 MANUAL，而不是強行修改。
+
+專案可以直接用 Ephemeral Mode 工作；只有要保存 AIPS Project State / Knowledge 時才需 Attach：
 
 ~~~bash
 aips attach /path/to/project
@@ -27,16 +36,17 @@ aips attach /path/to/project
 aips preflight /path/to/project
 ~~~
 
-接著告訴 AI：
+若目前 Agent 已顯示為 AUTOMATIC，日常使用不需要再手動貼「使用 ai-product-system」提示詞。直接和原本 Agent 對談即可。
 
-~~~text
-使用 ai-product-system 處理目前專案。
-先閱讀 ai-product-system/AGENTS.md，
-並依系統流程執行本次需求。
+需要確認某次 Session / Project 解析結果時：
+
+~~~bash
+aips harness resolve --cwd "$PWD"
 ~~~
 
 ## 你可以用它做什麼？
 
+- 安裝後自動接入支援的 Codex / Claude Code / Gemini CLI Runtime（安全可逆時）
 - 完整產品從需求、品質規劃、Local Complete 到可選的 Production Enablement（End-to-End Product Delivery）
 - 新產品規劃與可重現規劃包（Reproducible Planning Package）
 - 既有程式修改與獨立審核（Independent Review）
@@ -56,8 +66,9 @@ aips preflight /path/to/project
 
 1. [快速上手](docs/GETTING_STARTED.md)
 2. [完整使用指南](docs/USER_GUIDE.md)
-3. [安裝與生命週期](docs/INSTALLATION.md)
-4. [系統架構總覽](docs/ARCHITECTURE_OVERVIEW.md)
+3. [安裝與解除](docs/INSTALLATION.md)
+4. [Global Harness 與 Agent Adapter](docs/HARNESS.md)
+5. [系統架構總覽](docs/ARCHITECTURE_OVERVIEW.md)
 
 ### AI Agent
 
@@ -77,3 +88,18 @@ aips preflight /path/to/project
 - 可用 Shell / 簡單程式確定產生的資料，先程式化再交回 AI。
 - Git 遠端發布前先列出修改檔案、驗證結果與 Atomic Commit 計畫。
 - Human Docs 與 Agent Docs 分流，但流程異動時必須同步更新。
+
+
+## 最短解除方式
+
+~~~bash
+aips uninstall
+~~~
+
+或：
+
+~~~bash
+./scripts/uninstall.sh
+~~~
+
+解除會移除 AIPS-owned Harness Adapter、CLI 與 AIPS config；不會刪除或改寫使用者既有 Agent instructions、custom Skills、專案原始碼或 Project .ai/ Workspace。完整說明請看 docs/INSTALLATION.md。
