@@ -1,75 +1,90 @@
-# Installation & Lifecycle
+# 安裝、更新與解除安裝
 
-## New computer
+本文件給人類使用者。
 
-Prerequisites: Git and Python 3. GitHub CLI (`gh`) is convenient for cloning the private repository.
+## 新電腦安裝
 
-```bash
+需要：
+- Git
+- Python 3
+- GitHub CLI（`gh`，私人 Repository 建議使用）
+
+~~~bash
 mkdir -p ~/Developer
 cd ~/Developer
 gh repo clone LucasLu3918/ai-product-system
 cd ai-product-system
 ./scripts/bootstrap.sh
-```
+~~~
 
-If `~/.local/bin` is not in PATH:
+如果 `~/.local/bin` 不在 PATH：
 
-```bash
+~~~bash
 export PATH="$HOME/.local/bin:$PATH"
-```
+~~~
 
-Then verify:
+確認：
 
-```bash
+~~~bash
 aips doctor
 aips validate
 aips version
-```
+~~~
 
-## Initialize a project
+## 初始化專案
 
-```bash
+~~~bash
 aips init /path/to/project
-```
+~~~
 
-This creates only the minimum `.ai/` workspace and records the system version/commit in `.ai/SYSTEM.yaml`.
+它會建立最小的 AI Workspace，並將 AI Product System 的版本與 Commit 記錄到 `.ai/SYSTEM.yaml`。
 
-## Before implementation
+## 每次實作前更新
 
-Every mutating AI implementation session begins with:
+執行系統更新預檢（System Update Preflight）：
 
-```bash
+~~~bash
 aips preflight /path/to/project
-```
+~~~
 
-It updates only the AI Product System repository with `git pull --ff-only`, validates it, and records the exact version/commit used by the target project. It does **not** automatically pull the target project's Git repository.
+安全規則：
+- System repo 必須位於 `main`。
+- Working tree 必須乾淨。
+- 使用 `git pull --ff-only`。
+- 不自動 merge / rebase。
+- Major Version 更新需要明確確認。
+- 不會自動更新 Target Project Git。
 
-The preflight stops when the system repo has local changes, is not on `main`, has divergent history, or a MAJOR version change requires explicit review.
+## 手動更新
 
-After reviewing a major release:
-
-```bash
-aips preflight /path/to/project --allow-major
-```
-
-## Manual update
-
-```bash
+~~~bash
 aips update
-```
+~~~
 
-## Uninstall
+## 診斷
 
-Remove installed CLI/config and preserve the Git repository:
+~~~bash
+aips doctor
+~~~
 
-```bash
+## 驗證
+
+~~~bash
+aips validate
+~~~
+
+## 解除安裝
+
+只移除 CLI 與設定：
+
+~~~bash
 aips uninstall
-```
+~~~
 
-Also remove the validation virtual environment:
+連驗證用 Virtual Environment 一起移除：
 
-```bash
+~~~bash
 aips uninstall --remove-venv
-```
+~~~
 
-The repository is never deleted automatically.
+Repository 與產品專案不會被自動刪除。

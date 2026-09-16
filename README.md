@@ -1,120 +1,73 @@
 # AI Product System
 
-A platform-agnostic, filesystem-native operating system for AI-assisted product work.
+AI Product System 是一套可重用的 AI 協作開發系統，讓不同 AI Agent 或人類團隊能依同一套規則規劃、設計、實作、審核與維護產品。
 
-It turns a natural-language request into the **smallest safe execution plan**: safely update the system, preflight important decisions, persist authoritative planning when needed, select one work mode, load only required roles/skills/project context, choose an eligible cost-effective model/tool set, execute inside scope, independently review material work, and persist results/state.
+## 5 分鐘開始
 
-## Quick start
-
-On a new computer:
-
-```bash
+~~~bash
 mkdir -p ~/Developer
 cd ~/Developer
 gh repo clone LucasLu3918/ai-product-system
 cd ai-product-system
 ./scripts/bootstrap.sh
 aips doctor
-```
+~~~
 
-Initialize a target project:
+初始化專案：
 
-```bash
+~~~bash
 aips init /path/to/project
-```
+~~~
 
-Before every mutating implementation session:
+每次要修改專案前，先執行系統更新預檢（System Update Preflight）：
 
-```bash
+~~~bash
 aips preflight /path/to/project
-```
+~~~
 
-See `docs/INSTALLATION.md` for install/update/uninstall behavior.
+接著告訴 AI：
 
-## Core behavior
+~~~text
+使用 ai-product-system 處理目前專案。
+先閱讀 ai-product-system/AGENTS.md，
+並依系統流程執行本次需求。
+~~~
 
-```text
-Request
-→ Safe System Update Preflight
-→ Task Preflight
-→ Primary Planning Detection
-→ Reproducible Planning Package + Gate 1/2 when applicable
-→ Risk / Security Assurance Classification
-→ decision only when material
-→ Work Mode
-→ project/scoped instruction discovery when needed
-→ minimum Role + Skill + Context
-→ Execution Profile / bounded Subagents when useful
-→ minimum sufficient Model + Tools
-→ Execute
-→ Independent Review
-→ Persist + System Version/Commit
-```
+## 你可以用它做什麼？
 
-Key rules:
+- 新產品規劃與可重現規劃包（Reproducible Planning Package）
+- 既有程式修改與獨立審核（Independent Review）
+- 風險比例式資安審核（Risk-Proportional Security Assurance）
+- 網站、Banner、主視覺、社群圖等創意方向（Creative Direction）
+- 品牌基礎與品牌導引（Brand System）
+- 效能、成本、交付與 Incident 等工作模式（Work Modes）
+- 依風險與複雜度選擇最低足夠模型（Minimum Sufficient Intelligence）
+- 能用固定規則處理的資料，優先交給確定性自動化（Deterministic Automation）
 
-- never silently invent missing project facts;
-- recommend materially better approaches before implementation;
-- stop when required expertise does not exist and propose the smallest capability extension;
-- primary product/project planning must be physically persisted in a user-specified workspace; if no workspace is given, ask;
-- authoritative planning must be complete enough for another capable AI/human team to reproduce substantially the same intended product;
-- planning approval and implementation approval are separate gates;
-- security review depth is risk-proportional using SAL 0–4 and the actual affected Change Boundary;
-- payments, stored value, economically redeemable points/credits/vouchers/coupons and similar high-value business rules are security boundaries;
-- current explicit user decisions lead project execution, while system safety guardrails remain mandatory;
-- in existing projects, nearest scoped `AGENTS.md` beats broader scope and project-local knowledge beats generic skills;
-- use Clean Architecture principles and DDD proportionally, not ceremonially;
-- use TDD for testable behavior and characterization tests for risky legacy changes when appropriate;
-- verify dynamic prices, versions and limits at runtime;
-- one writer owns a change boundary by default;
-- Primary Agent, Subagent and Reviewer models are resolved independently from task risk/complexity and Skill hints;
-- system updates never auto merge/rebase and major-version changes require explicit review;
-- every suggestion to improve this AI Product System is evaluated for fit, overlap, simplification and better alternatives before implementation;
-- constitutional semantics are protected by a separate Constitutional Change Gate and second explicit approval;
-- large/core changes require a scope/impact proposal before implementation;
-- remote Git publication requires a complete changed-file list, validation evidence and atomic commit plan before approval;
-- system changes must pass the Documentation Impact Gate so docs, flows, diagrams and tests stay synchronized.
+## 文件入口
 
-## Start here
+### 一般使用者
 
-- Agent entry: `AGENTS.md`
-- Router: `SYSTEM.md`
-- User guide: `USER_GUIDE.md`
-- Installation/lifecycle: `docs/INSTALLATION.md`
-- Architecture diagrams: `docs/ARCHITECTURE.md`
-- Security assurance: `docs/SECURITY_ASSURANCE.md`
-- Constitution: `core/CONSTITUTION.md`
-- System self-improvement: `orchestration/SYSTEM_SELF_IMPROVEMENT.md`
-- Planning protocol: `orchestration/PLANNING_PACKAGE.md`
-- Maintenance: `docs/MAINTENANCE.md`
-- Examples: `examples/EXAMPLES.md`
-- Accepted decisions: `core/DECISIONS.md`
-- Release history: `CHANGELOG.md`
+1. [快速上手](docs/GETTING_STARTED.md)
+2. [完整使用指南](docs/USER_GUIDE.md)
+3. [安裝、更新與解除安裝](docs/INSTALLATION.md)
+4. [系統架構總覽](docs/ARCHITECTURE_OVERVIEW.md)
 
-## Compact repository structure
+### AI Agent
 
-```text
-ai-product-system/
-├── AGENTS.md
-├── SYSTEM.md
-├── USER_GUIDE.md
-├── bin/aips
-├── scripts/bootstrap.sh
-├── docs/
-├── core/
-├── orchestration/
-├── work-modes/
-├── roles/INDEX.yaml
-├── roles/*/ROLE.md
-├── capabilities/INDEX.yaml
-├── skills/INDEX.yaml
-├── skills/*/SKILL.md
-├── templates/
-│   └── planning-package/
-├── adapters/
-└── tests/scenarios/
-```
+1. `AGENTS.md`
+2. `SYSTEM.md`
+3. 只載入本次需要的 `orchestration/`、Role 與 Skill
 
-The indexes are routing metadata. Agents should read a selected role/skill body only after the index indicates it is relevant.
+完整文件用途請看 [文件導覽](docs/DOCUMENTATION_MAP.md)。
 
-Project-specific truth stays in the target project workspace, normally under `.ai/`; it is not copied into this system repository.
+## 核心原則
+
+- 不把未知當成事實。
+- 重大或核心修改先規劃、再確認、才實作。
+- 新增 Role / Skill / Capability 前先搜尋並重用既有能力。
+- 視覺設計先理解使用者素材、品牌與 Reference，不直接猜風格。
+- 高風險功能使用更嚴格的資安與可靠性審核。
+- 可用 Shell / 簡單程式確定產生的資料，先程式化再交回 AI。
+- Git 遠端發布前先列出修改檔案、驗證結果與 Atomic Commit 計畫。
+- Human Docs 與 Agent Docs 分流，但流程異動時必須同步更新。
