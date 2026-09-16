@@ -37,13 +37,16 @@ aips preflight /path/to/project
 
 ## 你可以用它做什麼？
 
-- 完整產品從需求、規劃、程式、測試、資安到 Production 交付（End-to-End Product Delivery）
+- 完整產品從需求、品質規劃、Local Complete 到可選的 Production Enablement（End-to-End Product Delivery）
 - 新產品規劃與可重現規劃包（Reproducible Planning Package）
 - 既有程式修改與獨立審核（Independent Review）
 - 風險比例式資安審核（Risk-Proportional Security Assurance）
 - 網站、Banner、主視覺、社群圖等創意方向（Creative Direction）
 - 品牌基礎與品牌導引（Brand System）
 - 效能、成本、交付與 Incident 等工作模式（Work Modes）
+- Q1/Q2/Q3 風險比例式品質規劃（Quality Planning）
+- 專案知識快取（Project Knowledge），避免不同 Agent 重複掃描整體專案
+- V1/V2 視覺一致性修復（Visual Consistency Repair）
 - 依風險與複雜度選擇最低足夠模型（Minimum Sufficient Intelligence）
 - 能用固定規則處理的資料，優先交給確定性自動化（Deterministic Automation）
 

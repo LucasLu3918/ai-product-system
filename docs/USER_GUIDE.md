@@ -530,3 +530,164 @@ System Capability Lesson
 只有跨專案、重複發生、可一般化的問題，才建議改善 AI Product System 的 Skill / Role / Protocol。
 
 系統不會因一次 Review 自動修改永久 Agent 能力，而會先把經驗與建議回饋給你，詢問是否啟動 System Improvement。
+
+
+## 20. 品質規劃（Quality Planning）
+
+完整產品預設會評估七個面向：
+
+~~~text
+Performance
+Security
+Usability
+Reliability
+Maintainability
+Resource / Cost
+Delivery Time
+~~~
+
+先使用 Q1 / Q2 / Q3 作為基準：
+
+- Q1 Lightweight：個人工具、Static Site、Demo、低風險內部工具。
+- Q2 Standard：一般 SaaS、會員平台、B2B、正式商業網站。
+- Q3 Critical：金流、Stored Value、高敏感資料、高可用或重大營運影響。
+
+Quality Class 只是 Baseline；個別面向可獨立提高或降低。例如 Q2 產品的 Security 可以提升到 Critical。
+
+系統不應直接要求你決定 p95、RTO、RPO。它先詢問使用者類型、規模、故障影響、資料敏感度、交付與維運偏好，再提出 QUALITY_PROFILE.yaml。
+
+品質要求盡量形成：
+
+~~~text
+需求
+→ Target / Budget
+→ 實作影響
+→ Verification
+→ Evidence
+~~~
+
+時間與成本使用 Range + Confidence，並在 Architecture 完成後重新估算。
+
+## 21. LOCAL_COMPLETE 與 PRODUCTION_VERIFIED
+
+完整產品預設先完成本地可運作版本：
+
+~~~text
+Planning
+→ Implementation
+→ Tests / Security / Quality Review
+→ Local Verification
+→ LOCAL_COMPLETE
+~~~
+
+如果一開始沒有要求正式上線，LOCAL_COMPLETE 後系統才詢問是否繼續 Production。
+
+如果一開始已明確要求 Production，則不用重複詢問。
+
+Production Enablement 會再處理：
+
+~~~text
+Infrastructure
+CI/CD
+Secrets
+Domain / TLS
+Database / Backup / Recovery
+Observability
+Staging
+Release Readiness
+Production
+Post-deploy Verification
+→ PRODUCTION_VERIFIED
+~~~
+
+## 22. Logging 與 Observability
+
+Logging/Metric/Trace 的「需求與程式 instrumentation」在 Architecture / Coding 階段就規劃，不等部署後才補。
+
+Production baseline：
+
+~~~text
+Structured Logs
++
+Health Check
+~~~
+
+Metrics、Dashboard、Alert、Trace 依 Quality Profile 與風險決定。
+
+金流、點數、退款、重要權限變更等高價值操作，應另外評估 Audit Log。
+
+實際技術保持 Provider-neutral。等正式環境確定後，再依成本與維運需求選擇 ELK、Loki、Prometheus、Grafana、OpenTelemetry、Tempo、Jaeger 或 Managed Service。
+
+## 23. Project Knowledge：避免重複掃描整個專案
+
+第一次接觸陌生專案時，系統會先讀：
+
+~~~text
+AGENTS.md
+ADR / Contract
+Official Docs
+PRODUCT / Brand / Visual / Quality artifacts
+~~~
+
+如果資訊已存在，就不重複建立文件，只在 Knowledge Index 保存 Pointer。
+
+只有「重新探索成本高、跨任務穩定、且既有權威文件沒有」的資訊才放進：
+
+~~~text
+.ai/knowledge/
+├── KNOWLEDGE_INDEX.yaml
+├── architecture.md
+├── backend.md
+├── data.md
+└── ...
+~~~
+
+實際只建立需要的 Topic。
+
+知識分：
+
+~~~text
+FACT
+INTERPRETATION
+OBSERVED_CONVENTION
+~~~
+
+狀態分：
+
+~~~text
+AUTHORITATIVE
+DISCOVERED
+APPROVED
+STALE
+~~~
+
+例如掃描 Go Backend 後發現 DDD + Clean Architecture，如果 AGENTS/ADR 已明確說明，就只存 Pointer；如果完全沒有文件，才保存 Evidence-based 的 architecture knowledge。
+
+變更也不會讓所有知識失效。每個 Topic 可以監看相關 Path/Signal，只做 Targeted Refresh。
+
+## 24. V2 Product Consistency Sweep
+
+如果你說：
+
+> 請幫我調整這個專案風格怪異的部分。
+
+預設不是局部修幾個 CSS，而是 V2 Product Consistency Sweep：
+
+~~~text
+Representative Routes
+→ Render
+→ Component Inventory
+→ UI Consistency Baseline
+→ Visual Outlier Detection
+→ Variant / Exception Check
+→ DOM / Component / Computed Style / Token Root Cause
+→ Shared Fix First
+→ Before / After
+→ Responsive + State Geometry
+→ Visual QA
+→ Update Project Visual Profile
+~~~
+
+不同不一定是 Bug。Hero CTA、small/default/large Button 等合法 Variant 會被保留。
+
+當專案有穩定視覺知識時，保存到 docs/design/PROJECT_VISUAL_PROFILE.yaml；下一個 Agent 直接載入，不需要重新理解整個網站風格。

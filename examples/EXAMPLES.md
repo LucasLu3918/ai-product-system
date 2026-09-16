@@ -491,3 +491,88 @@ Architect 建議把 transaction 拆開，Security/Database evidence 顯示拆開
 **預期行為**
 
 使用 ./scripts/uninstall.sh 或 aips uninstall；需要時加 --remove-venv。保留 Product repo / .ai workspace / System repo。若使用者要完整刪 System repo，完成 uninstall 後再由使用者明確刪 Repository。
+
+
+## 範例 42：Q2 SaaS 自動推導品質目標
+
+**使用者**
+
+> 幫我做一般會員 SaaS，初期大概幾千人使用，我希望好維護又不要太貴。
+
+**預期行為**
+
+先用 Q2 Standard，再依資料/Auth/故障影響推導各品質面向。AI 主動提出 Performance、Security、Usability、Reliability、Maintainability、TCO 與 Delivery range，不要求使用者自己決定 p95/RTO。保存 QUALITY_PROFILE.yaml。
+
+## 範例 43：Local 完成後才詢問 Production
+
+**使用者**
+
+> 幫我做一個完整的內部管理工具。
+
+**預期行為**
+
+完成可重現 Local Environment、功能、Tests、Security/Quality Review 後標記 LOCAL_COMPLETE。因使用者沒有要求上線，才詢問是否接續正式部署；不因 Hosting 尚未選定而阻擋 Local Product 完成。
+
+## 範例 44：一開始就要求正式上線
+
+**使用者**
+
+> 做一個會員平台並部署正式環境。
+
+**預期行為**
+
+Planning 從一開始包含 Production Enablement / Observability / Recovery，不在 LOCAL_COMPLETE 後重複詢問是否部署。
+
+## 範例 45：Logging 前移但不綁 ELK
+
+**情境**
+
+Backend 需要可追查 API error，但 Production 平台尚未決定。
+
+**預期行為**
+
+Architecture/Coding 先實作 Structured Log、request/trace correlation、redaction 與 Health Check。不要提前硬綁 ELK。Production Enablement 再依平台/成本選 Loki/ELK/Managed Logging、Prometheus/Grafana/OTel 等。
+
+## 範例 46：已有 AGENTS 就不重複寫 Knowledge
+
+專案 AGENTS.md 已明確規定 DDD + Clean Architecture dependency rules。
+
+**預期行為**
+
+KNOWLEDGE_INDEX 對 Architecture 建 AUTHORITATIVE pointer 到 AGENTS.md，不建立內容重複的 architecture.md。
+
+## 範例 47：從程式碼發現 DDD + CA
+
+專案沒有 Architecture 文件，但 domain/application/infrastructure 邊界、repository interface、aggregate evidence 清楚。
+
+**預期行為**
+
+建立 .ai/knowledge/architecture.md，標記 INTERPRETATION / DISCOVERED / confidence + evidence refs。不可僅從資料夾名稱推論，也不可把推論直接升成 Governance。
+
+## 範例 48：Knowledge Targeted Refresh
+
+只修改 README typo。
+
+**預期行為**
+
+architecture/backend/data knowledge 都不因 commit 改變而 STALE。
+
+若改寫 domain/application/infrastructure dependency boundary，才刷新 Architecture Topic。
+
+## 範例 49：整體怪異 UI 啟動 V2
+
+**使用者**
+
+> 請幫我調整這個專案風格怪異的部分。
+
+**預期行為**
+
+自動使用 V2 Product Consistency Sweep；選 Representative Routes、建立 Component Inventory、找 Button/Tag/Nav/Input Outliers、排除合法 Variant/Exception、追到 Implementation Root Cause，Shared Fix 後重新 Render Before/After。
+
+## 範例 50：Visual Profile 被下一個 Agent 重用
+
+第一次 Sweep 已建立 docs/design/PROJECT_VISUAL_PROFILE.yaml。
+
+**預期行為**
+
+下一個 Agent 先讀 Profile/Golden Components/Representative Routes。若 watch scope 未受影響，不重新掃整個網站；只檢查本次 affected UI。

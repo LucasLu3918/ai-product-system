@@ -394,3 +394,76 @@ flowchart LR
     DETACH --> UNINSTALL[Uninstall CLI/config]
     UNINSTALL --> REMOVE[Optional explicit repo removal]
 ~~~
+
+
+## Quality-aware product delivery
+
+~~~mermaid
+flowchart TD
+    U[Product Request] --> Q[Q1/Q2/Q3 Quality Planning]
+    Q --> P[Planning + Architecture]
+    P --> I[Implementation + Observability Instrumentation]
+    I --> V[Local Tests / Security / Quality Evidence]
+    V --> LC[LOCAL_COMPLETE]
+    LC --> R{Production already requested?}
+    R -->|no| ASK{User wants Production?}
+    ASK -->|no| DONE[Persist Local Product]
+    ASK -->|yes| PE[Production Enablement]
+    R -->|yes| PE
+    PE --> O[Infra / CI-CD / Data / Observability]
+    O --> ST[Staging when applicable]
+    ST --> RR[Release Readiness]
+    RR --> PROD[Production]
+    PROD --> PV[Health / Smoke / Logs / Metrics / Alerts]
+    PV --> DONE2[PRODUCTION_VERIFIED]
+~~~
+
+Quality classes are adjustable baselines. Quality targets feed architecture, implementation and verification.
+
+## Project Knowledge
+
+~~~mermaid
+flowchart TD
+    T[Existing Project Task] --> A[Scoped AGENTS / ADR / Contract / Official Docs]
+    A --> K{Knowledge Index exists?}
+    K -->|yes| L[Load only relevant topics]
+    K -->|no| G[Identify reusable knowledge gaps]
+    L --> S{Knowledge sufficient/current?}
+    S -->|yes| E[Execute task]
+    S -->|no| G
+    G --> D[Targeted Project Knowledge Discovery]
+    D --> X{Authoritative source already exists?}
+    X -->|yes| PTR[Store pointer only]
+    X -->|no| PERSIST[Persist concise stable derived knowledge]
+    PTR --> E
+    PERSIST --> E
+    E --> C{Watched paths/signals changed?}
+    C -->|yes| REFRESH[Targeted topic refresh]
+    C -->|no| END[Keep knowledge current]
+~~~
+
+Project Knowledge is a discovery cache, not governance authority.
+
+## Visual consistency repair
+
+~~~mermaid
+flowchart TD
+    U[Whole-project weird/inconsistent UI] --> VP{Current Visual Profile?}
+    VP -->|yes| STALE{Stale?}
+    VP -->|no| DISC[Discover routes/components]
+    STALE -->|no| BASE[Load baseline]
+    STALE -->|yes| DISC
+    DISC --> R[Render representative routes]
+    R --> INV[Component Inventory]
+    INV --> BASE2[Infer UI Consistency Baseline]
+    BASE --> OUT[Detect Outliers]
+    BASE2 --> OUT
+    OUT --> VAR{Valid variant / exception?}
+    VAR -->|yes| KEEP[Keep]
+    VAR -->|no| ROOT[Map DOM / Component / Style / Token Root Cause]
+    ROOT --> FIX[Shared Fix First]
+    FIX --> VERIFY[Before/After + Responsive + State Geometry]
+    VERIFY --> FIND{Material findings remain?}
+    FIND -->|yes| OUT
+    FIND -->|no| PROFILE[Update Project Visual Profile]
+~~~

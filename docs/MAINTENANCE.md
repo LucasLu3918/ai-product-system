@@ -106,3 +106,15 @@ When these behaviors change, review the linked artifacts together:
 - Installation lifecycle → bin/aips / bootstrap.sh / uninstall.sh / INSTALLATION / lifecycle SVG / CLI scenarios.
 
 Do not add new Role/Skill/Gate if these existing mechanisms can be extended cleanly.
+
+
+## v0.7 consistency
+
+When v0.7 behavior changes, review these sets together:
+
+- Quality Planning → QUALITY_PLANNING / QUALITY_PROFILE / Planning Package / Product Delivery / Product Manifest / Release Readiness / Human Guide / scenarios.
+- Local vs Production milestones → PRODUCT_DELIVERY / PRODUCT.yaml / STATE / Release Readiness / docs/scenarios.
+- Project Knowledge → PROJECT_KNOWLEDGE / KNOWLEDGE_INDEX / workspace MANIFEST+STATE / instruction precedence / scenarios.
+- Visual V1/V2 → VISUAL_POLISH / Project Visual Profile / Visual Audit / Product Designer / Frontend Engineer / visual-quality-review / scenarios.
+
+Project Knowledge must not become a duplicate documentation tree. Prefer authoritative pointers and targeted refresh.
