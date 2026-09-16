@@ -14,6 +14,7 @@ Before implementation, evaluate:
 - Is the behavior already covered by an existing principle, gate, role, skill, workflow or template?
 - Can the goal be achieved with less complexity or less context/token overhead?
 - Will it create Role/Skill/Gate proliferation?
+- If it proposes a Role/Skill/Capability, what existing items overlap and can be reused or extended?
 - Is it backward compatible?
 - What existing scenarios or projects could change behavior?
 - Does it affect security, reliability, human authority, project precedence, persistence or Git/release behavior?
@@ -81,6 +82,8 @@ Skill / Template
 ## Integration with other gates
 
 After self-improvement direction is approved:
+
+- run Capability Incubation before adding or materially expanding Roles/Skills/Capabilities;
 
 - use Core Change Approval for large/core changes;
 - implement within approved scope;

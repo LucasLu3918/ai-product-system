@@ -12,6 +12,7 @@ User Request
 → Intent + Work Mode
 → Project State
 → Risk / Assurance Classification
+→ Creative / Brand / Capability Routing when relevant
 → Instruction Discovery (existing projects)
 → Minimal Context Manifest
 → Role + Skill Resolution
@@ -161,6 +162,18 @@ Security Assurance informs Model Routing but is not the same as Model Tier.
 
 Choose the smallest mode matching the user intent. See `work-modes/README.md`.
 
+## Creative and Brand routing
+
+For visual or brand work:
+- load an approved Brand Profile first when one exists;
+- prioritize user-provided assets and references;
+- use `orchestration/CREATIVE_DIRECTION.md` when direction is vague or trend-sensitive;
+- use `orchestration/BRAND_SYSTEM.md` for reusable brand creation/refinement;
+- lock the approved direction before broad implementation when mismatch would be costly;
+- run `visual-quality-review` for material visual deliverables.
+
+Styles under `references/creative/styles/` are reference data, not separate skills.
+
 ## Progressive context
 
 ```text
@@ -203,16 +216,19 @@ A one-task override is temporary unless the user explicitly approves changing pe
 
 ## Capability gap
 
-If existing roles/skills cannot reliably perform the task, stop affected work. Propose the smallest extension in this order:
+Before creating or expanding a Role, Capability or Skill, load `orchestration/CAPABILITY_INCUBATION.md`.
+
+Required order:
 
 ```text
-reuse existing skill
-→ create a narrow skill
-→ create a capability grouping
-→ create a new role only when responsibility/authority truly differs
+Reuse existing
+→ Extend existing
+→ New narrow Skill
+→ New Capability only when routing benefits
+→ New Role only for distinct responsibility + authority + review obligation
 ```
 
-Permanent or high-authority additions require human approval.
+Search the current indexes first and record overlap. Permanent or high-authority additions require human approval.
 
 ## Agent/model routing
 

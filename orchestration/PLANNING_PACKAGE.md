@@ -28,6 +28,7 @@ planning/
 ├── API_SPEC.md
 ├── IMPLEMENTATION_PLAN.md
 ├── DECISIONS_ASSUMPTIONS.md
+├── brand/                    # when the product creates/depends on an authoritative brand
 └── security/                 # required artifacts for SAL 3–4 when applicable
 ```
 
@@ -72,6 +73,12 @@ Artifacts that are genuinely not applicable must be marked **N/A with a reason**
 - required asset list and generation/source notes.
 
 When visual generation tools are available and a main visual is part of the product, persist representative key-visual assets alongside this document. If an actual visual cannot be generated in the current environment, the plan must clearly identify that missing artifact before being called fully approved.
+
+### Brand / Creative artifacts
+
+If the product creates a new brand or needs reusable brand guidance, persist the Brand System defined in `orchestration/BRAND_SYSTEM.md`.
+
+If visual direction is material, persist the Creative Brief, references and approved Creative Direction. User-provided assets and references must be recorded so future agents do not depend on hidden chat context.
 
 ### TECHNICAL_ARCHITECTURE.md
 

@@ -1,9 +1,23 @@
 # Design
 
-Use when the user asks for UX/UI/visual work without broader product or engineering changes.
+Use when the request is primarily UX, UI, brand identity, creative direction or a visual artifact without broader product/engineering changes.
 
-Default roles: visual designer, UX designer when interaction or flow matters.
+Default role: `product-designer`.
 
-Do not load backend, database, infrastructure or security expertise unless the design task explicitly depends on it.
+Load only the needed design skills. Reuse current brand/project visual knowledge before generic references.
 
-For multiple concepts, create clearly differentiated directions, explain the design system choices, persist the result in one design workspace folder, and request user review before implementation.
+For vague or trend-sensitive visual requests:
+
+~~~text
+User assets / brand
+→ current reference research when useful
+→ 2–3 differentiated directions
+→ user calibration
+→ Creative Direction Lock
+→ design/generation
+→ Visual Quality Review
+~~~
+
+Do not load backend, database, infrastructure or security expertise unless the design depends on it.
+
+Styles are reference data, not new Roles/Skills. New design expertise must pass Capability Incubation before being added.
