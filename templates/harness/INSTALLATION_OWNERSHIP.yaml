@@ -17,6 +17,7 @@ adapters: {}
 # runtime-id:
 #   status: AUTOMATIC
 #   capability: TURN_NATIVE
+#   governance_enforcement: TOOL_GUARDED
 #   strategy: ...
 #   resource: ...
 
