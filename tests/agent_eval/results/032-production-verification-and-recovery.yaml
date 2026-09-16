@@ -1,0 +1,21 @@
+version: 1
+case_id: 032-production-verification-and-recovery
+scenario_id: "032"
+case_fingerprint: sha256:29c6a311e87912e92d29a044e7a22a3bc950c1574b0a001d4ba97e31f94d6496
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: PRODUCTION_NOT_VERIFIED
+  declare_complete: false
+  rollback_or_rollforward_required: true
+  repeat_health_and_smoke_required: true
+  persist_final_verified_state_only_after_success: true
+  actions:
+    - inspect_targeted_logs_metrics_evidence
+    - execute_documented_recovery_strategy
+    - repeat_health_and_smoke_verification
+    - persist_final_production_evidence_after_verification
+  summary: A successful deploy command is not production verification; failed health/smoke checks require targeted diagnosis and rollback or roll-forward, followed by repeated verification before completion is recorded.
