@@ -1,0 +1,34 @@
+version: 1
+id: 049-observability-before-vendor
+scenario_id: "049"
+description: Observability requirements are provider-neutral before the production vendor is selected.
+input:
+  prompt: Add production-grade observability, but we have not chosen AWS, GCP, Azure, Kubernetes, ELK, Prometheus or another platform yet.
+  context:
+    production_provider_selected: false
+    quality_profile_requires_observability: true
+rubric:
+  equals:
+    response.status: PROVIDER_NEUTRAL_OBSERVABILITY
+    response.hard_code_vendor_stack: false
+    response.structured_logs_required: true
+    response.health_check_required: true
+    response.vendor_selection_deferred_until_constraints_known: true
+  contains:
+    response.conditional_capabilities:
+      - metrics
+      - tracing
+      - audit_hooks
+    response.actions:
+      - implement_provider_neutral_instrumentation
+      - define_redaction_rules
+      - defer_concrete_backend_selection
+      - select_stack_during_production_enablement
+  excludes:
+    response.actions:
+      - force_elk
+      - force_prometheus
+      - force_grafana
+  set_equals: {}
+  nonempty:
+    - response.summary
