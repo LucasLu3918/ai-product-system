@@ -77,3 +77,51 @@ Automated   35.8%
 ~~~
 
 Identity/Resume evidence 同時驗證跨 worktree repository identity、dirty workspace STALE、legacy run migration、repository-wide Single Writer 與 Project Intelligence canonical namespace。
+
+## v0.16 Agent Eval Conformance
+
+需要 Agent 語意判斷的 Scenario 不再只能停留在 manual，也不會被硬改成 deterministic test。
+
+流程：
+
+~~~text
+Eval Case
+→ 任一 Provider / Runtime 的實際 Agent 執行
+→ Observable structured response
+→ Recorded Result
+→ Case SHA-256 fingerprint binding
+→ Deterministic rubric scoring
+→ PASS / FAIL
+~~~
+
+AIPS Core 不在 CI 裡呼叫特定模型 API。CI 驗證的是已記錄的 observable Result 是否仍綁定目前 Case，以及 rubric 是否通過。
+
+第一批 Agent Eval：
+
+~~~text
+017 Core Change Approval
+019 System Self-Improvement
+020 Constitutional Change
+025 Avoid Duplicate Role
+035 Requirement Clarification
+041 Multi-Perspective Review
+042 Author Fix / Targeted Re-review
+094 New Skill Admission
+~~~
+
+另外新增 Scenario 121–125 驗證 Agent Eval framework 自身的 fingerprint、result binding、rubric、privacy/provider-neutral 與 lifecycle。
+
+v0.16 baseline：
+
+~~~text
+Total         125
+Manual         69
+Deterministic  19
+Lifecycle      29
+Agent Eval      8
+Automated      56
+Uncovered       0
+Automated     44.8%
+~~~
+
+Agent Eval Result 禁止保存 Chain-of-Thought、private reasoning、scratchpad 與 Secret-like value。Case 修改後舊 Result fingerprint 失效，必須重新執行 Agent，不可只改 fingerprint。
