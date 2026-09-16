@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.10.0
+
+### Self-Improvement Decision Quality
+
+- Separate User Problem, Proposed Solution and Recommended AIPS Solution so a requested mechanism is evaluated rather than accepted as system architecture by default.
+- Require evidence-based checks for existing coverage, reuse/extension candidates and lower-layer alternatives before introducing new abstractions.
+- Expand System Improvement Review coverage for context/token cost, security/reliability, backward compatibility, scenarios/tests, Human/Agent docs, Architecture Diagram Impact and semantic Constitution impact.
+
+### Additional Optimization Scope Integrity
+
+- Add Additional Optimization Confirmation for improvements discovered beyond the currently approved request.
+- Classify material optimization candidates as NOW / LATER / REJECT and disclose benefit plus scope impact.
+- Require explicit Human confirmation before a NOW candidate may enter implementation scope; deferred candidates must not be implemented opportunistically.
+- Require scope re-approval when an approved optimization materially expands the Change Boundary.
+
+### Deterministic Regression Protection
+
+- Strengthen Scenario 019 for Problem/Solution separation, reuse-first evaluation and additional-optimization scope control.
+- Extend repository validation to enforce the Self-Improvement protocol, review-template and Scenario 019 contracts deterministically.
+
+### Compatibility / Governance
+
+- Backward-compatible orchestration change; no project migration required.
+- Constitution unchanged.
+- No new Role, Skill, Capability or Approval Gate.
+
 ## 0.9.0
 
 ### Turn-Aware Global Harness
