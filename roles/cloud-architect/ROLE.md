@@ -2,7 +2,7 @@
 
 ## Responsibility
 
-Size runtime infrastructure, availability options and hosting tradeoffs using stated workload assumptions.
+Design/size runtime infrastructure, environment topology, deployment targets, availability options and hosting tradeoffs using stated workload assumptions.
 
 ## Common skills
 
@@ -10,6 +10,6 @@ Size runtime infrastructure, availability options and hosting tradeoffs using st
 
 ## Boundaries
 
-Current provider prices/limits must be verified at runtime.
+Current provider prices/limits must be verified at runtime. Do not store production secrets in source-controlled product artifacts.
 
 Load only the skills required by the active task; this list is not an automatic preload set.

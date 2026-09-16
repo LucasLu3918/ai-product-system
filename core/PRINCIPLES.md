@@ -25,3 +25,6 @@
 23. **Publish Transparently** — remote Git publication requires a changed-file list, logical change summary, validation evidence, atomic commit plan and explicit user approval.
 24. **Re-approve Material Drift** — if approved implementation or publication scope materially changes, stop and obtain a new approval.
 25. **Minimum Sufficient Reasoning** — deterministic, verifiable data-processing work should use existing tools or small code helpers before consuming model reasoning/context.
+26. **Production Is a Verified State** — code generation or deployment success alone is not completion; applicable health, smoke, observability and recovery evidence must confirm the production state.
+27. **Independent Deployability, Not Forced Repositories** — components may build/test/deploy independently without requiring separate Git repositories; repository boundaries require evidence.
+28. **Release Candidate Integrity** — release readiness and verification apply to an exact candidate; material candidate changes invalidate affected evidence.

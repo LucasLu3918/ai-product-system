@@ -18,6 +18,13 @@ This file is the compact record of accepted design decisions. Use a new ADR only
 | System update | Before mutating implementation, run safe Update Preflight: clean `main`, fetch, `git pull --ff-only`, no auto merge/rebase |
 | Major upgrades | Explicit review/approval required before applying a new MAJOR system version |
 | System provenance | Record exact system version + commit in target project `.ai/SYSTEM.yaml` |
+| Complete product delivery | A complete-product request uses one Product Workspace and End-to-End Product Delivery from discovery through verified production |
+| Product manifest | Root PRODUCT.yaml is the compact navigation contract for Deployment Units, commands, environments, delivery and observability |
+| Deployment units | Frontend/backend/worker are independently buildable/testable/deployable units; separate repositories are optional and evidence-driven |
+| Repository strategy | Monorepo is the default for coordinated product work; multi-repo requires ownership/permission/release/scale/shared-service rationale |
+| Environment flow | Local → CI → Staging → Production is the default material production flow; staging may be N/A only with recorded reason |
+| Release readiness | Consolidate build/test/security/data/infra/observability/staging evidence for one exact candidate; READY does not override required human/security approval |
+| Production completion | Production is Done only after deployment plus applicable health/smoke/log/metric verification and a known recovery path |
 | Primary planning | Authoritative product/project planning must be physically persisted; ask for workspace when none is specified |
 | Planning completeness | Reproducible Planning Package contains product, experience, visual/key visual, architecture, API/contract when applicable, implementation readiness, and decisions/assumptions |
 | Planning approval | Gate 1 approves the persisted Planning Package; Gate 2 separately approves Initial Implementation Items + Recommended Implementation Flow before implementation |
