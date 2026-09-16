@@ -1,17 +1,23 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, hashlib, json, os, re, subprocess, sys
+import argparse, hashlib, json, os, re, shlex, subprocess, sys
 from pathlib import Path
 from typing import Any
 import yaml
 
-PROTECTED = {
-    "git_push": re.compile(r"(^|[;&|]\\s*)git\\s+push(?:\\s|$)"),
-    "git_tag": re.compile(r"(^|[;&|]\\s*)git\\s+tag(?:\\s|$)"),
-    "gh_pr_create": re.compile(r"(^|[;&|]\\s*)gh\\s+pr\\s+create(?:\\s|$)"),
-    "gh_release_create": re.compile(r"(^|[;&|]\\s*)gh\\s+release\\s+create(?:\\s|$)"),
-}
+PROTECTED = ("git_push", "git_tag", "gh_pr_create", "gh_release_create")
 SET_LIKE_KEYS = {"files", "boundaries", "operations"}
+ASSIGNMENT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
+CONTROL_TOKENS = {";", ";;", "&", "&&", "|", "||"}
+
+GIT_GLOBAL_WITH_VALUE = {
+    "-C", "-c", "--git-dir", "--work-tree", "--namespace", "--super-prefix",
+    "--config-env", "--exec-path",
+}
+GH_GLOBAL_WITH_VALUE = {"-R", "--repo", "--hostname"}
+ENV_WITH_VALUE = {"-u", "--unset", "-C", "--chdir", "-S", "--split-string"}
+SUDO_WITH_VALUE = {"-u", "--user", "-g", "--group", "-h", "--host", "-p", "--prompt", "-C", "--close-from"}
+
 
 def canonicalize(value: Any, key: str | None = None) -> Any:
     if isinstance(value, dict):
@@ -23,9 +29,11 @@ def canonicalize(value: Any, key: str | None = None) -> Any:
         return items
     return value
 
+
 def fingerprint(value: Any) -> str:
     payload = json.dumps(canonicalize(value), ensure_ascii=False, sort_keys=True, separators=(",", ":"))
     return "sha256:" + hashlib.sha256(payload.encode()).hexdigest()
+
 
 def load_yaml(path: Path) -> dict:
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
@@ -33,9 +41,11 @@ def load_yaml(path: Path) -> dict:
         raise ValueError("approval record must be a mapping")
     return data
 
+
 def git_output(cwd: Path, *args: str) -> str:
     r = subprocess.run(["git", "-C", str(cwd), *args], capture_output=True, text=True, timeout=5)
     return r.stdout.strip() if r.returncode == 0 else ""
+
 
 def actual_scope(cwd: Path, operation: str) -> dict:
     root_text = git_output(cwd, "rev-parse", "--show-toplevel")
@@ -47,6 +57,7 @@ def actual_scope(cwd: Path, operation: str) -> dict:
     if upstream:
         files = [x for x in git_output(root, "diff", "--name-only", upstream + "...HEAD").splitlines() if x]
     return {"branch": branch, "candidate_commit": commit, "files": sorted(files), "boundaries": [], "operations": [operation]}
+
 
 def approval_path(cwd: Path) -> Path | None:
     env = os.environ.get("AIPS_APPROVAL_RECORD")
@@ -61,6 +72,7 @@ def approval_path(cwd: Path) -> Path | None:
             return p if p.is_absolute() else cwd / p
     default = cwd / ".ai" / "approvals" / "ACTIVE.yaml"
     return default if default.exists() else None
+
 
 def verify_record(path: Path, operation: str, cwd: Path, check_actual: bool = True):
     doc = load_yaml(path)
@@ -84,11 +96,129 @@ def verify_record(path: Path, operation: str, cwd: Path, check_actual: bool = Tr
             return False, "current changed-file set does not match approved scope", doc
     return True, "approval binding valid", doc
 
+
+def _shell_tokens(command: str) -> list[str]:
+    lexer = shlex.shlex(command, posix=True, punctuation_chars=";&|")
+    lexer.whitespace_split = True
+    lexer.commenters = ""
+    return list(lexer)
+
+
+def _segments(command: str) -> list[list[str]]:
+    try:
+        tokens = _shell_tokens(command)
+    except ValueError:
+        return []
+    result: list[list[str]] = []
+    current: list[str] = []
+    for token in tokens:
+        if token in CONTROL_TOKENS or (token and all(ch in ";&|" for ch in token)):
+            if current:
+                result.append(current)
+                current = []
+        else:
+            current.append(token)
+    if current:
+        result.append(current)
+    return result
+
+
+def _strip_options(tokens: list[str], with_value: set[str]) -> list[str]:
+    result: list[str] = []
+    i = 0
+    while i < len(tokens):
+        token = tokens[i]
+        if token == "--":
+            result.extend(tokens[i + 1:])
+            break
+        matched = next((opt for opt in with_value if token == opt), None)
+        if matched:
+            i += 2
+            continue
+        matched_prefix = next((opt for opt in with_value if token.startswith(opt + "=")), None)
+        if matched_prefix:
+            i += 1
+            continue
+        if token.startswith("-"):
+            i += 1
+            continue
+        result.extend(tokens[i:])
+        break
+    return result
+
+
+def _unwrap(tokens: list[str]) -> list[str]:
+    tokens = list(tokens)
+    while tokens:
+        while tokens and ASSIGNMENT_RE.match(tokens[0]):
+            tokens.pop(0)
+        if not tokens:
+            return []
+        exe = Path(tokens[0]).name
+        if exe == "env":
+            tokens = _strip_options(tokens[1:], ENV_WITH_VALUE)
+            while tokens and ASSIGNMENT_RE.match(tokens[0]):
+                tokens.pop(0)
+            continue
+        if exe == "sudo":
+            tokens = _strip_options(tokens[1:], SUDO_WITH_VALUE)
+            continue
+        if exe == "command":
+            tokens = _strip_options(tokens[1:], set())
+            continue
+        break
+    return tokens
+
+
+def _direct_operations(tokens: list[str]) -> list[str]:
+    tokens = _unwrap(tokens)
+    if not tokens:
+        return []
+    exe = Path(tokens[0]).name
+
+    if exe in {"bash", "sh", "zsh"}:
+        for i, token in enumerate(tokens[1:], start=1):
+            if token == "-c" and i + 1 < len(tokens):
+                return operations_for(tokens[i + 1])
+            if token.startswith("-") and "c" in token[1:] and i + 1 < len(tokens):
+                return operations_for(tokens[i + 1])
+        return []
+
+    if exe == "eval" and len(tokens) > 1:
+        return operations_for(" ".join(tokens[1:]))
+
+    if exe == "git":
+        args = _strip_options(tokens[1:], GIT_GLOBAL_WITH_VALUE)
+        if not args:
+            return []
+        if args[0] == "push":
+            return ["git_push"]
+        if args[0] == "tag":
+            return ["git_tag"]
+        return []
+
+    if exe == "gh":
+        args = _strip_options(tokens[1:], GH_GLOBAL_WITH_VALUE)
+        if len(args) >= 2 and args[0:2] == ["pr", "create"]:
+            return ["gh_pr_create"]
+        if len(args) >= 2 and args[0:2] == ["release", "create"]:
+            return ["gh_release_create"]
+    return []
+
+
+def operations_for(command: str) -> list[str]:
+    operations: list[str] = []
+    for segment in _segments(command):
+        for operation in _direct_operations(segment):
+            if operation not in operations:
+                operations.append(operation)
+    return operations
+
+
 def operation_for(command: str):
-    for name, pattern in PROTECTED.items():
-        if pattern.search(command):
-            return name
-    return None
+    operations = operations_for(command)
+    return operations[0] if operations else None
+
 
 def hook(runtime: str) -> int:
     try:
@@ -96,19 +226,27 @@ def hook(runtime: str) -> int:
     except Exception:
         payload = {}
     command = str((payload.get("tool_input") or {}).get("command") or "")
-    operation = operation_for(command)
-    if not operation:
+    operations = operations_for(command)
+    if not operations:
         print("{}")
         return 0
+
     cwd = Path(str(payload.get("cwd") or os.getcwd())).resolve()
     path = approval_path(cwd)
     ok = False
     reason = "no active AIPS Approval Record"
     if path and path.exists():
         try:
-            ok, reason, _ = verify_record(path, operation, cwd)
+            failures = []
+            for operation in operations:
+                valid, op_reason, _ = verify_record(path, operation, cwd)
+                if not valid:
+                    failures.append(f"{operation}: {op_reason}")
+            ok = not failures
+            reason = "approval binding valid" if ok else "; ".join(failures)
         except Exception as exc:
             reason = "approval verification failed: " + str(exc)
+
     if runtime == "claude-code":
         print(json.dumps({"hookSpecificOutput": {
             "hookEventName": "PreToolUse",
@@ -121,6 +259,7 @@ def hook(runtime: str) -> int:
             result["reason"] = "AIPS blocked protected publication: " + reason
         print(json.dumps(result))
     return 0
+
 
 def main() -> int:
     p = argparse.ArgumentParser(description="AIPS deterministic approval binding and publication guard")
@@ -145,6 +284,7 @@ def main() -> int:
         print(json.dumps({"status": "VALID" if ok else "APPROVAL_STALE", "reason": reason}))
         return 0 if ok else 2
     return hook(a.runtime)
+
 
 if __name__ == "__main__":
     raise SystemExit(main())
