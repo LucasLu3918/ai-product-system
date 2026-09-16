@@ -1049,8 +1049,8 @@ if conformance_helper.exists():
             errors.append("Scenario conformance total/registered count must match scenario inventory")
         if cov.get("uncovered") != 0:
             errors.append("Released scenario conformance registry must have no uncovered entries")
-        if cov.get("manual") != 95 or cov.get("automated") != 20:
-            errors.append("v0.14 baseline must conservatively report manual=95 and automated=20")
+        if cov.get("manual") != 77 or cov.get("automated") != 38:
+            errors.append("v0.14.1 reconciled baseline must report manual=77 and automated=38")
 
     with tempfile.TemporaryDirectory() as tmp:
         temp = Path(tmp)
@@ -1212,6 +1212,90 @@ for n in range(111, 116):
     matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
     if len(matches) != 1:
         errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")
+
+# v0.14.1 legacy Scenario reconciliation and direct evidence
+legacy_evidence = (
+    "tests/evidence/adapter_composition.py",
+    "tests/evidence/project_intelligence_lifecycle.py",
+    "tests/evidence/secret_safety.py",
+)
+for rel in legacy_evidence:
+    evidence_path = ROOT / rel
+    if not evidence_path.exists():
+        errors.append(f"Missing v0.14.1 legacy evidence: {rel}")
+        continue
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(evidence_path)], capture_output=True, text=True)
+    if compiled.returncode != 0:
+        errors.append(f"Legacy evidence syntax failed: {rel}: {compiled.stderr.strip()}")
+        continue
+    result = subprocess.run([sys.executable, str(evidence_path)], capture_output=True, text=True)
+    if result.returncode != 0:
+        errors.append(f"Legacy evidence failed: {rel}: {result.stdout.strip()} {result.stderr.strip()}")
+
+reconciled_contracts = {
+    "011": (
+        "keep it EPHEMERAL",
+        "do not auto-attach",
+    ),
+    "044": (
+        "preflight keeps a project without `.ai/` EPHEMERAL",
+        "External Project Intelligence",
+    ),
+    "051": (
+        "SOURCE_REGISTRY.yaml",
+        "Project Intelligence",
+    ),
+    "053": (
+        "Targeted Project Intelligence Refresh",
+        "STALE",
+    ),
+    "058": (
+        "managed block",
+        "unrelated Claude settings/hooks remain intact",
+    ),
+    "059": (
+        "managed runtime instruction block",
+        "pre-existing user content",
+    ),
+    "060": (
+        "CONFLICT",
+        "preserves the live integration",
+    ),
+    "062": (
+        "Project Intelligence",
+        ".ai/intelligence/",
+    ),
+    "064": (
+        "SOURCE_REGISTRY.yaml",
+        "derived Project Intelligence remains non-governing",
+    ),
+    "068": (
+        "managed composition",
+        "MANUAL/CONFLICT",
+    ),
+    "073": (
+        "governance enforcement",
+        "TOOL_GUARDED",
+    ),
+}
+for scenario_id, phrases in reconciled_contracts.items():
+    matches = list((ROOT / "tests/scenarios").glob(f"{scenario_id}-*.md"))
+    if len(matches) != 1:
+        errors.append(f"Reconciled Scenario {scenario_id} missing or ambiguous")
+        continue
+    body = matches[0].read_text(encoding="utf-8")
+    for phrase in phrases:
+        normalized = phrase.replace("\\", "")
+        if normalized not in body:
+            errors.append(f"Reconciled Scenario {scenario_id} missing canonical contract: {normalized}")
+
+scenario_058 = next(iter((ROOT / "tests/scenarios").glob("058-*.md")), None)
+if scenario_058 and "AIPS does not edit, append, import into or replace the file" in scenario_058.read_text(encoding="utf-8"):
+    errors.append("Scenario 058 regressed to obsolete no-composition behavior")
+
+scenario_011 = next(iter((ROOT / "tests/scenarios").glob("011-*.md")), None)
+if scenario_011 and "initialize the target project's minimal `.ai/` workspace if missing" in scenario_011.read_text(encoding="utf-8"):
+    errors.append("Scenario 011 regressed to obsolete auto-attach preflight behavior")
 
 repo_scan = subprocess.run([sys.executable, str(ROOT / "scripts/check_secret_leakage.py"), "--root", str(ROOT), "--json"], capture_output=True, text=True)
 if repo_scan.returncode != 0:
