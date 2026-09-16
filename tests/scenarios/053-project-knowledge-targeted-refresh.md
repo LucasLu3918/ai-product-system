@@ -1,14 +1,14 @@
-# Scenario 053 — Targeted Knowledge Refresh
+# Scenario 053 — Targeted Project Intelligence Refresh
 
-A README typo changes after architecture knowledge was verified.
+A README typo changes after architecture Intelligence was verified.
 
 Expected:
-- architecture knowledge remains current.
+- architecture Intelligence remains CURRENT when the change is outside authoritative/watched sources.
 
 Then domain/application/infrastructure boundaries materially change.
 
 Expected:
-- mark only relevant architecture knowledge potentially STALE;
+- mark only relevant architecture Intelligence potentially STALE;
 - inspect changed/relevant sources;
 - refresh that topic;
-- do not rescan unrelated frontend/data/visual knowledge.
+- do not rescan unrelated frontend/data/visual Intelligence.
