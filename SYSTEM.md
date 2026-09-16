@@ -6,6 +6,7 @@
 Agent Session / User Request
 → Turn-Aware Harness Context Resolution when installed
 → System Update Preflight for mutation
+→ Canonical Repository / Workspace Identity Resolution
 → Project Mode + Intelligence Store Resolution (EPHEMERAL external cache / ATTACHED local)
 → Task Preflight / Requirement Readiness
 → External Context Resolution when needed
@@ -194,6 +195,16 @@ Key rules:
 - consolidate production conditions in `orchestration/RELEASE_READINESS.md`;
 - production automation never bypasses risk-proportional approval, secret protection, migration/recovery or security rules;
 - production Done includes post-deploy health/smoke/observability verification.
+
+## Project Identity
+
+Use `orchestration/PROJECT_IDENTITY.md` for canonical repository/workspace identity.
+
+- repository-wide coordination uses `repository_id`;
+- workspace-scoped Intelligence / Run State uses `workspace_id`;
+- `project_id` remains a compatibility alias for `workspace_id`;
+- Run Resume fingerprints product workspace state and excludes AIPS-owned `.ai/` state;
+- different worktrees of one repository share repository-level Single Writer coordination.
 
 ## Project Intelligence
 
@@ -453,7 +464,9 @@ Rules:
 - never persist prompts, private chain-of-thought, credentials or unnecessary sensitive payloads;
 - ATTACHED projects persist under `.ai/runs/<run-id>/`;
 - EPHEMERAL projects use the external AIPS project cache and do not create `.ai/`;
-- revision drift marks resume state STALE; the Agent must re-evaluate affected Intelligence/tests/approvals before continuing.
+- HEAD, branch, workspace identity or dirty-state drift marks resume state STALE;
+- AIPS-owned checkpoint/state writes do not count as product workspace drift;
+- the Agent must re-evaluate affected Intelligence/tests/approvals before continuing.
 
 ## Scenario Conformance
 
