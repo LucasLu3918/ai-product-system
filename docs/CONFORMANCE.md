@@ -28,3 +28,35 @@ Coverage percentage 是工程 evidence 指標，不是系統品質分數，也�
 ## v0.14 Baseline
 
 v0.14 新增 Scenario 111–115，全部都有直接 executable evidence：2 個 deterministic、3 個 lifecycle。若既有 001–095 不重新分類，release baseline 為 115 個 Scenario、95 manual、20 automated、0 uncovered。
+
+## v0.14.1 Legacy Scenario Reconciliation
+
+v0.14.1 重新核對 Scenario 001–095 與目前 canonical contracts，先修正規格漂移，再提升 automation evidence，避免把過時行為固定成自動化測試。
+
+已修正的主要 drift 包含：
+
+- Update Preflight：沒有 `.ai/` 的 Project 保持 EPHEMERAL，不再自動 Attach。
+- Project Knowledge：新 reusable understanding 以 Project Intelligence + SOURCE_REGISTRY 為 canonical；`.ai/knowledge/` 僅保留 migration compatibility。
+- Runtime instruction integration：Codex / Claude 使用 managed composition 保存既有使用者內容，不再因為檔案已存在就一律降為 MANUAL。
+- Harness lifecycle：ownership 以 managed block / namespaced hook 為單位安全移除；使用者內容與 unrelated settings 必須保留。
+- Runtime capability：Context Capability 與 Governance Enforcement 維持兩個獨立 truth axes。
+
+新增 direct evidence：
+
+- `tests/evidence/adapter_composition.py`
+- `tests/evidence/project_intelligence_lifecycle.py`
+- `tests/evidence/secret_safety.py`
+
+只有這些 evidence 實際覆蓋的 legacy Scenario 才從 `manual` 提升為 `deterministic` / `lifecycle`。
+
+v0.14.1 baseline：
+
+~~~text
+Total       115
+Manual       77
+Automated    38
+Uncovered     0
+Automated   33.0%
+~~~
+
+仍為 manual 的 Scenario 不代表失敗；它們通常包含需要 Agent judgment、Human decision、外部環境或跨文件語意評估的行為，目前不會為提高百分比而虛假標記為 automated。

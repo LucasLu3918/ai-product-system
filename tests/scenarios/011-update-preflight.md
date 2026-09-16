@@ -11,6 +11,6 @@ Expected:
 - stop for explicit approval on a MAJOR version change;
 - re-run using the updated CLI after a successful pull;
 - validate the updated system;
-- initialize the target project's minimal `.ai/` workspace if missing;
-- record exact system version + commit in `.ai/SYSTEM.yaml`;
+- if the target project is already ATTACHED, refresh exact system version + commit in `.ai/SYSTEM.yaml`;
+- if the target project has no `.ai/`, keep it EPHEMERAL and do not auto-attach or create project-local AIPS state;
 - do not automatically pull the target project's Git repository.

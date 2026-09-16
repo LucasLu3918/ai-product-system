@@ -250,3 +250,16 @@ When Execution Isolation behavior changes, review together:
 - scenarios 111-115 + scenario_coverage registry + executable lifecycle validation.
 
 Harness-specific, Project Intelligence-specific and Product Delivery-specific diagrams are N/A unless their own behavior changes.
+
+## v0.14.1 consistency
+
+When legacy Scenario reconciliation changes:
+
+- audit Scenario wording against current canonical System / Orchestration / Runtime contracts before reclassification;
+- keep Scenario IDs/paths stable unless a migration is explicitly required;
+- update `tests/scenario_coverage.yaml` only when direct evidence materially covers the Scenario;
+- run every promoted `tests/evidence/*` artifact from repository validation;
+- update `docs/CONFORMANCE.md`, `orchestration/CONFORMANCE.md`, VERSION and CHANGELOG;
+- Architecture diagrams are N/A when no runtime/architecture behavior changes.
+
+Do not relabel stale historical behavior as automated evidence.

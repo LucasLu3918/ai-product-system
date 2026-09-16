@@ -1,8 +1,9 @@
-# Scenario 060 — Modified AIPS-owned File Is Preserved
+# Scenario 060 — Modified AIPS-owned Integration Is Preserved
 
-After AIPS created a runtime bootstrap, the file was manually modified.
+After AIPS installed a managed instruction block or namespaced runtime integration, the AIPS-owned portion is manually modified.
 
 Expected:
-- uninstall detects that it no longer matches the installed AIPS copy;
-- uninstall preserves the live file and warns;
-- it does not delete possible user content merely because the file was originally AIPS-created.
+- uninstall detects that the owned content no longer matches its recorded snapshot;
+- uninstall preserves the live integration and reports CONFLICT/failure for safe retry;
+- it does not delete possible user modifications merely because the integration was originally AIPS-owned;
+- unrelated user content/settings remain untouched.

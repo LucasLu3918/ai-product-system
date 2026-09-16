@@ -1,9 +1,9 @@
-# Scenario 054 — Knowledge Promotion
+# Scenario 054 — Project Intelligence Promotion to Authoritative Source
 
-A discovered project invariant has been repeatedly confirmed and should become a permanent project rule.
+A derived project invariant has been repeatedly confirmed and should become a permanent project rule.
 
 Expected:
-- recommend promotion to AGENTS/ADR/official docs;
+- recommend promotion to AGENTS/ADR/official project docs;
 - require project/user approval;
-- after promotion, convert Knowledge Index entry to AUTHORITATIVE pointer;
-- avoid keeping duplicate authoritative content.
+- after promotion, register the authoritative source in `SOURCE_REGISTRY.yaml` and replace duplicate derived content with a pointer where appropriate;
+- avoid keeping duplicate authoritative content in Project Intelligence.

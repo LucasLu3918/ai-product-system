@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.14.1
+
+### Legacy Scenario Reconciliation
+
+- Audit legacy Scenarios 001-095 against the current canonical System, Orchestration, Harness and Project Intelligence contracts.
+- Reconcile stale preflight, Project Knowledge and runtime-instruction assumptions without changing Scenario IDs or paths.
+- Align legacy Project Knowledge scenarios to Project Intelligence + SOURCE_REGISTRY while preserving `.ai/knowledge/` only for migration compatibility.
+- Align Codex/Claude scenarios to managed composition, ownership-safe uninstall and separate context/enforcement capability truth.
+- Add focused direct evidence for adapter composition, Project Intelligence lifecycle/freshness/migration and secret redaction.
+- Promote only directly exercised legacy Scenarios from manual to deterministic/lifecycle coverage.
+- Update conservative conformance baseline to 115 total / 77 manual / 38 automated / 0 uncovered (33.0% automated).
+- No runtime behavior, Constitution, Role, Skill, Capability registry or Approval Gate change; architecture diagrams are N/A.
+
 ## 0.14.0
 
 ### Execution Isolation

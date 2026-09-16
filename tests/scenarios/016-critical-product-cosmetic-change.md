@@ -4,7 +4,7 @@ Context: product baseline SAL 4 because it handles payments. Request only change
 
 Expected:
 
-- retain Product Baseline SAL 4 in project knowledge;
+- retain Product Baseline SAL 4 in the Risk Profile / persisted project assurance state;
 - classify Change Security Impact low;
 - Effective SAL for the affected Change Boundary remains low;
 - do not run a full SAL 4 security review merely because the whole product is high-risk;
