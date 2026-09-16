@@ -6,6 +6,7 @@
 
 - Add focused executable Harness runtime lifecycle evidence using isolated fake Codex, Claude and Gemini runtimes.
 - Verify truthful runtime installation status, Context Capability and Governance Enforcement state.
+- Fix Harness Resolution to expose `runtime.governance_enforcement` separately from context `capability`, aligning runtime output with the existing Adapter Contract.
 - Verify Gemini uses the official namespaced extension mechanism with BeforeAgent Turn Context and does not overwrite user GEMINI.md/settings.
 - Verify projects without .ai remain EPHEMERAL during Harness resolution and are not auto-attached.
 - Verify Gemini uninstall targets only aips-global-harness.
