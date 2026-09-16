@@ -1,0 +1,12 @@
+id: quiet-premium
+summary: Restrained, spacious and premium without ornamental excess.
+traits: [neutral-palette, generous-whitespace, precise-grid, subtle-surfaces, single-accent]
+good_for: [premium-tools, saas, brand-sites, product-pages]
+avoid_when: [high-energy-youth-campaign]
+reference_strategy:
+  freshness: runtime
+  image_examples: search_or_generate_original_concept
+  search_queries:
+    - "quiet luxury digital design"
+    - "premium minimalist product website"
+    - "restrained modern brand design"

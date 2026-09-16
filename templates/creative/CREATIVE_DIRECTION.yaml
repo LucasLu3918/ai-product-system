@@ -1,0 +1,31 @@
+version: 1
+status: draft
+artifact_type: null
+brand_profile: null
+
+style_mix: []
+
+reference_mapping:
+  layout: null
+  color: null
+  typography: null
+  imagery: null
+  motion: null
+
+traits:
+  must_have: []
+  must_avoid: []
+
+axes:
+  premium: 0.5
+  minimal: 0.5
+  playful: 0.5
+  warm: 0.5
+  technical: 0.5
+  editorial: 0.5
+
+assets:
+  required: []
+  optional: []
+
+notes: []

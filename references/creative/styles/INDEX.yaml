@@ -1,0 +1,13 @@
+version: 1
+policy:
+  styles_are_reference_data: true
+  runtime_research_for_current_examples: true
+  do_not_store_third_party_assets_by_default: true
+
+styles:
+  quiet-premium: {path: quiet-premium.yaml}
+  editorial-minimal: {path: editorial-minimal.yaml}
+  modern-bento: {path: modern-bento.yaml}
+  japanese-minimal: {path: japanese-minimal.yaml}
+  cinematic-dark: {path: cinematic-dark.yaml}
+  soft-dimensional: {path: soft-dimensional.yaml}

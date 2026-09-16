@@ -1,0 +1,12 @@
+id: cinematic-dark
+summary: High-contrast dark direction with cinematic imagery and controlled typography.
+traits: [dark-field, cinematic-imagery, dramatic-scale, limited-accent, high-contrast]
+good_for: [entertainment, premium-campaigns, creative-portfolios, launches]
+avoid_when: [accessibility-sensitive-dense-tools]
+reference_strategy:
+  freshness: runtime
+  image_examples: search_or_generate_original_concept
+  search_queries:
+    - "cinematic dark website"
+    - "dark editorial campaign design"
+    - "premium dark brand visual"

@@ -1,0 +1,12 @@
+id: soft-dimensional
+summary: Soft surfaces and subtle depth with tactile visual feedback.
+traits: [soft-depth, muted-color, gentle-radius, subtle-shadow, tactile]
+good_for: [consumer-apps, friendly-tools, wellness, personal-products]
+avoid_when: [strict-editorial-luxury]
+reference_strategy:
+  freshness: runtime
+  image_examples: search_or_generate_original_concept
+  search_queries:
+    - "soft dimensional ui"
+    - "soft modern product design"
+    - "tactile minimal interface"

@@ -1,0 +1,12 @@
+id: modern-bento
+summary: Modular information hierarchy using varied but coherent blocks.
+traits: [modular-grid, clear-hierarchy, functional-cards, controlled-radius, scannable]
+good_for: [tools, saas, dashboards, feature-pages]
+avoid_when: [single-message-luxury-poster]
+reference_strategy:
+  freshness: runtime
+  image_examples: search_or_generate_original_concept
+  search_queries:
+    - "modern bento web design"
+    - "bento saas interface"
+    - "modular product landing page"

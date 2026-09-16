@@ -1,0 +1,12 @@
+id: editorial-minimal
+summary: Typography-led minimal composition with strong editorial hierarchy.
+traits: [large-type, high-whitespace, asymmetric-editorial-grid, limited-color, image-led-moments]
+good_for: [brand-sites, campaigns, presentations, fashion]
+avoid_when: [dense-operational-dashboards]
+reference_strategy:
+  freshness: runtime
+  image_examples: search_or_generate_original_concept
+  search_queries:
+    - "editorial minimal website design"
+    - "modern editorial branding"
+    - "minimal typography campaign"
