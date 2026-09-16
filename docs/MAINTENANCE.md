@@ -173,6 +173,8 @@ When Project Intelligence behavior changes, review together:
 
 Legacy Project Knowledge remains compatibility input only. New reusable understanding belongs in Project Intelligence.
 
+Focused Intelligence context evidence must distinguish storage deduplication from runtime-context deduplication. Do not promote conflict/override/change-impact/monorepo/migration Scenarios until their full contracts are actually enforced and directly exercised.
+
 ## Impact-derived regression testing
 
 For every Large/Core Change, testing is derived from the final Change Boundary, not from a fixed minimum smoke suite.
