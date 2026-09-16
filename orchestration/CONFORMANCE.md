@@ -41,3 +41,17 @@ A later change may raise an automation target only through normal System Improve
 Report total scenarios, each coverage bucket, automated count/percentage and uncovered IDs.
 
 Coverage percentage is evidence metadata, not a quality score and not a substitute for risk-based testing.
+
+## Legacy Scenario reconciliation
+
+Before promoting a legacy `manual` Scenario to automated coverage:
+
+1. compare the Scenario against current canonical System / Orchestration / Runtime contracts;
+2. reconcile superseded terminology or behavior first;
+3. add direct executable evidence that materially exercises the Scenario;
+4. point the registry at the direct evidence;
+5. keep judgment-heavy or environment-dependent behavior manual when no truthful automated evidence exists.
+
+Do not preserve an obsolete Scenario merely to keep historical wording stable. Scenario IDs/paths may remain stable while their expected contract is reconciled to the current canonical architecture.
+
+Prefer focused evidence under `tests/evidence/` when this makes one-to-one traceability clearer. Repository validation must execute promoted evidence rather than only checking that the evidence file exists.
