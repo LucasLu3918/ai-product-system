@@ -2,6 +2,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tempfile
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -42,6 +43,10 @@ yaml_files = [
     "templates/product/PRODUCT.yaml",
     "templates/delivery/RELEASE_READINESS.yaml",
     "templates/delivery/DEPLOYMENT_UNIT.yaml",
+    "templates/requirements/IMPLEMENTATION_GOAL.yaml",
+    "templates/context/EXTERNAL_SOURCE.yaml",
+    "templates/review/REVIEW_FINDING.yaml",
+    "templates/review/LESSONS.yaml",
     "templates/creative/CREATIVE_DIRECTION.yaml",
     "templates/brand/BRAND_PROFILE.yaml",
     "templates/automation/AUTOMATION_CONTRACT.yaml",
@@ -94,14 +99,17 @@ required_files = [
     "orchestration/CREATIVE_DIRECTION.md", "orchestration/BRAND_SYSTEM.md",
     "orchestration/CAPABILITY_INCUBATION.md", "orchestration/DETERMINISTIC_AUTOMATION.md",
     "orchestration/PRODUCT_DELIVERY.md", "orchestration/RELEASE_READINESS.md",
+    "orchestration/REQUIREMENT_CLARIFICATION.md", "orchestration/EXTERNAL_CONTEXT_RESOLUTION.md",
+    "orchestration/VISUAL_POLISH.md", "orchestration/MULTI_REVIEW.md",
     "docs/ARCHITECTURE.md", "docs/MAINTENANCE.md", "docs/INSTALLATION.md", "docs/SECURITY_ASSURANCE.md",
     "docs/GETTING_STARTED.md", "docs/USER_GUIDE.md", "docs/DOCUMENTATION_MAP.md",
     "docs/ARCHITECTURE_OVERVIEW.md", "docs/assets/system-overview.svg",
-    "docs/assets/product-delivery-overview.svg",
+    "docs/assets/product-delivery-overview.svg", "docs/assets/system-lifecycle.svg",
     "examples/EXAMPLES.md", "work-modes/README.md",
     "templates/system-improvement-review.md", "templates/constitutional-change-proposal.md",
     "templates/core-change-proposal.md", "templates/git-publish-proposal.md",
     "templates/capability-reuse-review.md",
+    "templates/review/REVIEW_REPORT.md",
     "templates/creative/CREATIVE_BRIEF.md", "templates/creative/REFERENCE_BOARD.md",
     "templates/creative/VISUAL_REVIEW.md",
     "templates/brand/BRAND_INDEX.md", "templates/brand/BRAND_FOUNDATION.md",
@@ -112,7 +120,7 @@ required_files = [
     "templates/delivery/LOCAL_ENVIRONMENT.md", "templates/delivery/DEPLOYMENT_PLAN.md",
     "templates/delivery/RUNBOOK.md",
     "scripts/check_release_readiness.py",
-    "bin/aips", "scripts/bootstrap.sh", "requirements.txt", ".github/workflows/validate.yml",
+    "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml",
 ]
 security_templates = [
     "templates/security/SECURITY_PLAN.md",
@@ -150,7 +158,7 @@ for phrase in ("Update preflight", "Primary planning package", "Risk-proportiona
         errors.append(f"docs/ARCHITECTURE.md missing section: {phrase}")
 
 system = (ROOT / "SYSTEM.md").read_text(encoding="utf-8") if (ROOT / "SYSTEM.md").exists() else ""
-for phrase in ("System Update Preflight", "System Self-Improvement", "Core Change Approval Gate", "Git Publish Approval Gate", "Primary Planning Detection", "Security / Reliability Assurance", "Creative and Brand routing", "Deterministic automation", "End-to-end product delivery", "Documentation Impact Gate"):
+for phrase in ("System Update Preflight", "System Self-Improvement", "Core Change Approval Gate", "Git Publish Approval Gate", "Primary Planning Detection", "Security / Reliability Assurance", "Creative and Brand routing", "External context", "Visual implementation polish", "Multi-perspective review", "Deterministic automation", "End-to-end product delivery", "Documentation Impact Gate"):
     if phrase not in system:
         errors.append(f"SYSTEM.md missing required behavior: {phrase}")
 
@@ -160,8 +168,8 @@ for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"
         errors.append(f"PLANNING_PACKAGE.md missing: {phrase}")
 
 scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
-if len(scenarios) < 34:
-    errors.append(f"Expected at least 34 acceptance scenarios, found {len(scenarios)}")
+if len(scenarios) < 44:
+    errors.append(f"Expected at least 44 acceptance scenarios, found {len(scenarios)}")
 
 security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
 for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):
@@ -195,6 +203,10 @@ for rel, phrases in {
     "orchestration/DETERMINISTIC_AUTOMATION.md": ("Good candidates", "Tool lifetime", "Output contract", "Shell vs Python"),
     "orchestration/PRODUCT_DELIVERY.md": ("Lifecycle", "Product Workspace", "Deployment Units, not forced repositories", "Deployment automation", "Production completion"),
     "orchestration/RELEASE_READINESS.md": ("Required evidence", "Status", "Candidate integrity", "Post-deploy"),
+    "orchestration/REQUIREMENT_CLARIFICATION.md": ("Status", "Decision rule", "Implementation-ready goal", "Guidance style"),
+    "orchestration/EXTERNAL_CONTEXT_RESOLUTION.md": ("Resolution order", "Authorization", "Fallback", "Source provenance"),
+    "orchestration/VISUAL_POLISH.md": ("Preserve Before Redesign", "Consistency First", "Shared root cause first", "Rendered evidence"),
+    "orchestration/MULTI_REVIEW.md": ("Reviewer resolution", "Bounded parallel review", "Consolidation", "Author fix loop", "Learning extraction"),
 }.items():
     text = (ROOT / rel).read_text(encoding="utf-8") if (ROOT / rel).exists() else ""
     for phrase in phrases:
@@ -272,7 +284,63 @@ if release_checker.exists():
     if sal3_risk.returncode != 0:
         errors.append(f"Release readiness checker over-blocked SAL 3 PASS WITH RISK fixture: {sal3_risk.stdout.strip()} {sal3_risk.stderr.strip()}")
 
-for shell in ("bin/aips", "scripts/bootstrap.sh"):
+
+implementation_goal = load_yaml(ROOT / "templates/requirements/IMPLEMENTATION_GOAL.yaml") or {}
+for key in ("status", "objective", "expected_output", "scope", "success_criteria", "blocking_unknowns"):
+    if key not in implementation_goal:
+        errors.append(f"IMPLEMENTATION_GOAL.yaml missing top-level key: {key}")
+
+external_source = load_yaml(ROOT / "templates/context/EXTERNAL_SOURCE.yaml") or {}
+for key in ("source", "resolution", "task", "provenance", "fallback"):
+    if key not in external_source:
+        errors.append(f"EXTERNAL_SOURCE.yaml missing top-level key: {key}")
+
+review_finding = load_yaml(ROOT / "templates/review/REVIEW_FINDING.yaml") or {}
+for key in ("id", "severity", "reviewer", "scope", "category", "finding", "impact", "evidence", "recommendation", "status"):
+    if key not in review_finding:
+        errors.append(f"REVIEW_FINDING.yaml missing top-level key: {key}")
+
+lessons = load_yaml(ROOT / "templates/review/LESSONS.yaml") or {}
+if "lessons" not in lessons:
+    errors.append("LESSONS.yaml missing lessons list")
+
+lifecycle_svg = (ROOT / "docs/assets/system-lifecycle.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/system-lifecycle.svg").exists() else ""
+if "<svg" not in lifecycle_svg or "Installation &amp; Project Lifecycle" not in lifecycle_svg:
+    errors.append("System lifecycle SVG is missing or invalid")
+
+cli_text = (ROOT / "bin/aips").read_text(encoding="utf-8") if (ROOT / "bin/aips").exists() else ""
+for phrase in ("aips attach <project-path>", "aips detach <project-path>", "aips status <project-path>"):
+    if phrase not in cli_text:
+        errors.append(f"bin/aips missing lifecycle command: {phrase}")
+
+with tempfile.TemporaryDirectory() as tmp:
+    project = Path(tmp) / "project"
+    project.mkdir()
+    cli = ROOT / "bin/aips"
+
+    attach = subprocess.run(["bash", str(cli), "attach", str(project)], capture_output=True, text=True)
+    if attach.returncode != 0 or not (project / ".ai").is_dir():
+        errors.append(f"aips attach lifecycle test failed: {attach.stdout.strip()} {attach.stderr.strip()}")
+    else:
+        status = subprocess.run(["bash", str(cli), "status", str(project)], capture_output=True, text=True)
+        if status.returncode != 0 or "Project attached: yes" not in status.stdout:
+            errors.append(f"aips status attached test failed: {status.stdout.strip()} {status.stderr.strip()}")
+
+        detach = subprocess.run(["bash", str(cli), "detach", str(project)], capture_output=True, text=True)
+        archives = sorted(project.glob(".ai.detached-*"))
+        if detach.returncode != 0 or (project / ".ai").exists() or len(archives) != 1:
+            errors.append(f"aips detach lifecycle test failed: {detach.stdout.strip()} {detach.stderr.strip()}")
+        else:
+            blocked_attach = subprocess.run(["bash", str(cli), "attach", str(project)], capture_output=True, text=True)
+            if blocked_attach.returncode == 0:
+                errors.append("aips attach should stop when detached workspace exists")
+
+            archives[0].rename(project / ".ai")
+            reattach = subprocess.run(["bash", str(cli), "attach", str(project)], capture_output=True, text=True)
+            if reattach.returncode != 0 or not (project / ".ai").is_dir():
+                errors.append(f"aips reattach lifecycle test failed: {reattach.stdout.strip()} {reattach.stderr.strip()}")
+
+for shell in ("bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh"):
     p = ROOT / shell
     if p.exists():
         result = subprocess.run(["bash", "-n", str(p)], capture_output=True, text=True)
