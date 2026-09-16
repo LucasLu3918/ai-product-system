@@ -1,0 +1,32 @@
+version: 1
+id: 025-avoid-duplicate-role
+scenario_id: "025"
+description: A requested UI Designer role must reuse or extend existing design responsibility when overlap is high.
+input:
+  prompt: Add a new UI Designer role to AIPS.
+  context:
+    existing_roles:
+      - product-designer
+    existing_skills:
+      - ux-web-design
+      - visual-direction
+rubric:
+  equals:
+    response.status: REUSE_OR_EXTEND
+    response.new_role_recommended: false
+    response.reuse_review_completed: true
+  contains:
+    response.actions:
+      - search_role_capability_skill_indexes
+      - compare_responsibility_trigger_io_authority_review
+    response.compared_candidates:
+      - product-designer
+      - ux-web-design
+      - visual-direction
+  excludes:
+    response.actions:
+      - create_role_without_reuse_review
+  set_equals: {}
+  nonempty:
+    - response.recommendation
+    - response.summary
