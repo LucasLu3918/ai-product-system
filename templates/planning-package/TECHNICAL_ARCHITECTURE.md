@@ -21,6 +21,13 @@ flowchart LR
 
 ## Integrations
 
+## Security Assurance
+
+- Product Baseline SAL:
+- Reliability Impact:
+- Critical security floors:
+- Protected assets:
+
 ## Security / Trust Boundaries
 
 ## Observability

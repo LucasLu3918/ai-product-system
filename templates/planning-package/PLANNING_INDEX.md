@@ -14,6 +14,7 @@ Last updated:
 | Visual System / Key Visual | Yes | VISUAL_SYSTEM.md | Draft |
 | Technical Architecture | Yes | TECHNICAL_ARCHITECTURE.md | Draft |
 | API Spec | TBD | API_SPEC.md | Draft/N/A |
+| Security Assurance | TBD | security/ | Draft/N/A |
 | Implementation Plan | Yes | IMPLEMENTATION_PLAN.md | Draft |
 | Decisions & Assumptions | Yes | DECISIONS_ASSUMPTIONS.md | Draft |
 
@@ -32,6 +33,8 @@ Last updated:
 - [ ] User flows/screens are defined.
 - [ ] Visual direction and key visual are defined.
 - [ ] Architecture/data/security/runtime constraints are defined.
+- [ ] Product Baseline SAL / Reliability Impact are classified.
+- [ ] SAL 3–4 security artifacts/review are present when applicable.
 - [ ] API/contract is defined or explicitly N/A.
 - [ ] Acceptance/testing/release approach is defined.
 - [ ] Assumptions and decisions are explicit.

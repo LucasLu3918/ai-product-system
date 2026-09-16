@@ -27,7 +27,8 @@ planning/
 ├── TECHNICAL_ARCHITECTURE.md
 ├── API_SPEC.md
 ├── IMPLEMENTATION_PLAN.md
-└── DECISIONS_ASSUMPTIONS.md
+├── DECISIONS_ASSUMPTIONS.md
+└── security/                 # required artifacts for SAL 3–4 when applicable
 ```
 
 Artifacts that are genuinely not applicable must be marked **N/A with a reason**, not silently omitted.
@@ -101,6 +102,19 @@ When an API exists or is planned:
 
 Prefer a machine-readable contract (OpenAPI/AsyncAPI/etc.) when appropriate, with the Markdown document explaining decisions. If there is no API, mark N/A.
 
+### Security assurance artifacts
+
+Classify Product Baseline SAL and Reliability Impact during planning.
+
+- SAL 0–2: security requirements may remain in Technical Architecture when that is sufficient.
+- SAL 3–4: persist the applicable security package under `planning/security/` using `templates/security/`:
+  - SECURITY_PLAN.md
+  - THREAT_MODEL.md
+  - ABUSE_CASES.md
+  - SECURITY_REVIEW.md (review evidence; planning status may remain pending until review)
+
+For SAL 4 economic-value features, explicitly define financial/business invariants, authorization, transaction/idempotency/replay/concurrency rules, audit/reconciliation and recovery.
+
 ### IMPLEMENTATION_PLAN.md
 
 This file initially describes **implementation readiness**, not permission to start coding:
@@ -131,7 +145,7 @@ No silent assumptions.
 
 After the package is physically persisted:
 
-1. run cross-role consistency review;
+1. run cross-role consistency review, including Security Engineer planning review when Effective SAL requires it;
 2. show the user the package location and concise summary;
 3. surface unresolved material issues;
 4. ask the user to approve/revise the **planning package**.
@@ -160,9 +174,9 @@ The package is sufficient only when another competent agent/team can answer, wit
 - What should it look/feel like?
 - What are the key flows/screens?
 - What are the contracts/APIs/data rules?
-- What architecture/security/performance constraints apply?
+- What architecture/security/performance constraints and Security Assurance Level apply?
 - What decisions/assumptions remain?
-- How should it be built, tested, reviewed and released?
+- How should it be built, tested, security-reviewed, reviewed and released?
 - Which artifacts are authoritative?
 
 If those answers require hidden chat context, the planning package is incomplete.

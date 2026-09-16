@@ -18,6 +18,13 @@ This section is finalized only after the Planning Package is approved.
 
 ## Test Strategy
 
+## Security Review Strategy
+
+- Effective SAL:
+- Required Security Engineer review:
+- Required security evidence:
+- Release Security Gate:
+
 ## Review Strategy
 
 ## Migration / Rollout / Rollback
