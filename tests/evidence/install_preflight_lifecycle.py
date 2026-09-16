@@ -180,8 +180,9 @@ def preflight_and_project_lifecycle() -> None:
         require((system / "VERSION").read_text(encoding="utf-8").strip() == upgraded_version, "Preflight did not fast-forward system version")
         require(git(system, "rev-parse", "HEAD").stdout.strip() == remote_sha, "Preflight did not fast-forward to remote main")
         snapshot = yaml.safe_load((project / ".ai" / "SYSTEM.yaml").read_text(encoding="utf-8")) or {}
-        require(str(snapshot.get("version")) == upgraded_version, "Attached preflight did not refresh exact system version")
-        require(str(snapshot.get("commit")) == remote_sha, "Attached preflight did not refresh exact system commit")
+        system_snapshot = snapshot.get("system") or {}
+        require(str(system_snapshot.get("version")) == upgraded_version, "Attached preflight did not refresh exact system version")
+        require(str(system_snapshot.get("commit")) == remote_sha, "Attached preflight did not refresh exact system commit")
         require(git(project, "rev-parse", "HEAD").stdout.strip() == product_head, "Attached preflight pulled target product repository")
 
         detached = cli(system, ["detach", str(project)], env)
