@@ -1,0 +1,32 @@
+version: 1
+id: 092-core-change-impact-test-matrix
+scenario_id: "092"
+description: Core-change testing is derived from the final Change Boundary and every affected boundary requires evidence or justified N/A.
+input:
+  prompt: A Large/Core change affects Harness behavior, persistence and a public workspace contract. Define required verification.
+  context:
+    large_core_change: true
+    affected_boundaries:
+      - harness
+      - persistence
+      - public_contract
+rubric:
+  equals:
+    response.status: IMPACT_DERIVED_TEST_MATRIX_REQUIRED
+    response.fixed_smoke_subset_sufficient: false
+    response.na_requires_concrete_reason: true
+    response.every_affected_boundary_requires_evidence: true
+  contains:
+    response.actions:
+      - derive_tests_from_final_change_boundary
+      - map_affected_boundaries_to_evidence
+      - include_contract_and_lifecycle_tests
+      - include_migration_or_recovery_when_applicable
+      - compare_test_matrix_to_actual_diff
+  excludes:
+    response.actions:
+      - accept_unrelated_green_subset
+      - leave_affected_boundary_without_evidence
+  set_equals: {}
+  nonempty:
+    - response.summary
