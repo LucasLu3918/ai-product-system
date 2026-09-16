@@ -21,6 +21,7 @@ yaml_files = [
     "orchestration/schemas/context-manifest.yaml",
     "orchestration/schemas/workspace-state.yaml",
     "orchestration/schemas/execution-profile.yaml",
+    "orchestration/schemas/risk-profile.yaml",
     "templates/artifact-contract.yaml",
     "templates/change-boundary.yaml",
     "templates/project/architecture-profile.yaml",
@@ -56,13 +57,21 @@ for skill_id, meta in (skills.get("skills") or {}).items():
 
 required_files = [
     "AGENTS.md", "SYSTEM.md", "README.md", "USER_GUIDE.md", "CHANGELOG.md", "VERSION",
-    "core/PRINCIPLES.md", "core/GOVERNANCE.md", "core/DECISIONS.md",
+    "core/CONSTITUTION.md", "core/PRINCIPLES.md", "core/GOVERNANCE.md", "core/DECISIONS.md",
     "orchestration/ORCHESTRATOR.md", "orchestration/MODEL_ROUTING.md",
     "orchestration/INSTRUCTION_RESOLUTION.md", "orchestration/WORKSPACE_STATE.md",
-    "orchestration/PLANNING_PACKAGE.md",
-    "docs/ARCHITECTURE.md", "docs/MAINTENANCE.md", "docs/INSTALLATION.md",
+    "orchestration/PLANNING_PACKAGE.md", "orchestration/SYSTEM_SELF_IMPROVEMENT.md",
+    "docs/ARCHITECTURE.md", "docs/MAINTENANCE.md", "docs/INSTALLATION.md", "docs/SECURITY_ASSURANCE.md",
     "examples/EXAMPLES.md", "work-modes/README.md",
+    "templates/system-improvement-review.md", "templates/constitutional-change-proposal.md",
+    "templates/core-change-proposal.md", "templates/git-publish-proposal.md",
     "bin/aips", "scripts/bootstrap.sh", "requirements.txt", ".github/workflows/validate.yml",
+]
+security_templates = [
+    "templates/security/SECURITY_PLAN.md",
+    "templates/security/THREAT_MODEL.md",
+    "templates/security/ABUSE_CASES.md",
+    "templates/security/SECURITY_REVIEW.md",
 ]
 planning_templates = [
     "templates/planning-package/PLANNING_INDEX.md",
@@ -74,7 +83,7 @@ planning_templates = [
     "templates/planning-package/IMPLEMENTATION_PLAN.md",
     "templates/planning-package/DECISIONS_ASSUMPTIONS.md",
 ]
-for rel in required_files + planning_templates:
+for rel in required_files + planning_templates + security_templates:
     if not (ROOT / rel).exists():
         errors.append(f"Missing required file: {rel}")
 
@@ -89,12 +98,12 @@ if version and f"## {version}" not in changelog:
 architecture = (ROOT / "docs/ARCHITECTURE.md").read_text(encoding="utf-8") if (ROOT / "docs/ARCHITECTURE.md").exists() else ""
 if "mermaid" not in architecture or "flowchart" not in architecture:
     errors.append("docs/ARCHITECTURE.md must contain source-controlled Mermaid diagrams")
-for phrase in ("Update preflight", "Primary planning package"):
+for phrase in ("Update preflight", "Primary planning package", "Risk-proportional security assurance"):
     if phrase not in architecture:
         errors.append(f"docs/ARCHITECTURE.md missing section: {phrase}")
 
 system = (ROOT / "SYSTEM.md").read_text(encoding="utf-8") if (ROOT / "SYSTEM.md").exists() else ""
-for phrase in ("System Update Preflight", "Primary Planning Detection", "Documentation Impact Gate"):
+for phrase in ("System Update Preflight", "System Self-Improvement", "Core Change Approval Gate", "Git Publish Approval Gate", "Primary Planning Detection", "Security / Reliability Assurance", "Documentation Impact Gate"):
     if phrase not in system:
         errors.append(f"SYSTEM.md missing required behavior: {phrase}")
 
@@ -104,8 +113,28 @@ for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"
         errors.append(f"PLANNING_PACKAGE.md missing: {phrase}")
 
 scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
-if len(scenarios) < 13:
-    errors.append(f"Expected at least 13 acceptance scenarios, found {len(scenarios)}")
+if len(scenarios) < 20:
+    errors.append(f"Expected at least 20 acceptance scenarios, found {len(scenarios)}")
+
+security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
+for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):
+    if phrase not in security_doc:
+        errors.append(f"SECURITY_ASSURANCE.md missing: {phrase}")
+
+for security_skill in ("threat-modeling", "authorization-security", "business-logic-abuse", "financial-integrity", "security-testing"):
+    if security_skill not in (skills.get("skills") or {}):
+        errors.append(f"Missing security skill in index: {security_skill}")
+
+
+constitution = (ROOT / "core/CONSTITUTION.md").read_text(encoding="utf-8") if (ROOT / "core/CONSTITUTION.md").exists() else ""
+for phrase in ("Protected Human Authority", "Truth and No Silent Assumptions", "Protected Safety Boundary", "Stop-the-Line", "Scope Integrity", "Explicit Approval for High-Risk Actions", "Amendment Protocol"):
+    if phrase not in constitution:
+        errors.append(f"CONSTITUTION.md missing protected article: {phrase}")
+
+self_improvement = (ROOT / "orchestration/SYSTEM_SELF_IMPROVEMENT.md").read_text(encoding="utf-8") if (ROOT / "orchestration/SYSTEM_SELF_IMPROVEMENT.md").exists() else ""
+for phrase in ("Self-Improvement Review", "Constitution Impact Check", "Lower-layer preference"):
+    if phrase not in self_improvement:
+        errors.append(f"SYSTEM_SELF_IMPROVEMENT.md missing: {phrase}")
 
 for shell in ("bin/aips", "scripts/bootstrap.sh"):
     p = ROOT / shell
