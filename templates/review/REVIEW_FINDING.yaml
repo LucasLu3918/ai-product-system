@@ -1,0 +1,22 @@
+id: null
+severity: medium # blocker | critical | high | medium | low | comment
+
+reviewer:
+  role: null
+  perspective: null
+
+scope:
+  files: []
+  location: null
+
+category: null
+
+finding: null
+impact: null
+
+evidence: []
+
+recommendation: null
+
+status: open # open | accepted | fixed | risk_accepted | rejected
+related_findings: []

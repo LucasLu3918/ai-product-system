@@ -1,0 +1,15 @@
+version: 1
+run_id: null
+
+lessons: []
+# - level: run # run | project | system_capability
+#   source_findings: []
+#   observation: null
+#   generalized_lesson: null
+#   evidence: []
+#   recurrence: null
+#   suggested_target:
+#     type: skill # project_adr | project_instruction | skill | role | protocol
+#     id: null
+#   recommendation: null
+#   user_feedback_required: false
