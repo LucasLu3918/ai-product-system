@@ -343,6 +343,19 @@ Local
 
 低風險靜態產品如果不需要 Staging，可以標示 N/A 並記錄原因。
 
+### 自動化部署（Deployment Automation）
+
+完整產品不只產生 Deployment 文件。
+
+如果目標平台與權限可用，系統應建立適合該專案的 CI/CD、Infrastructure / Deployment Config 或簡單部署 Script，先在 Staging 驗證，再依 Release Readiness 與風險規則 Promotion 到 Production。
+
+如果目前沒有 Cloud / Hosting 權限或 Secret：
+
+- 仍保存可執行的 Deployment Automation；
+- 列出缺少的 Connection / Secret；
+- 將 Deployment 標記為 BLOCKED；
+- 不宣稱 Production 已完成。
+
 ### Release Readiness
 
 Production 前不新增一堆零散 Gate，而是統一整理成發布就緒（Release Readiness）。

@@ -124,9 +124,23 @@ local → CI → staging → production
 
 Staging is default for material networked/production systems. It may be N/A for low-risk static or otherwise simple products when the reason is recorded.
 
+## Deployment automation
+
+For complete-product delivery, create the smallest repeatable deployment automation supported by the target platform, such as CI/CD configuration, infrastructure/deployment code or a bounded deployment script.
+
+Requirements:
+- build/test/deploy steps are reproducible;
+- staging uses the same release candidate path/artifact strategy as production where practical;
+- secrets come from approved runtime secret/configuration facilities, not source control;
+- deployment commands/pipelines are persisted in the Product Workspace;
+- automation is verified in staging before production when staging is applicable;
+- if required platform access/credentials/connectors are unavailable, persist the runnable configuration and mark deployment BLOCKED rather than claiming success.
+
+When tools/platform access are available and the approved release flow permits it, execute the deployment automation and continue with verification instead of stopping at documentation.
+
 ## Production promotion
 
-Deployment automation is encouraged; unconditional automatic production release is not.
+Deployment automation is the default goal for a complete product; unconditional automatic production promotion is not.
 
 Release Readiness determines whether promotion is technically ready. Human approval requirements remain risk-proportional and follow existing governance.
 

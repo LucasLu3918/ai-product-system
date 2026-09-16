@@ -11,6 +11,15 @@
 | Unit | Artifact | Target | Order | Command / Pipeline |
 |---|---|---|---|---|
 
+## Automation Artifacts
+
+- CI config:
+- Staging deploy config/script:
+- Production deploy config/script:
+- Infrastructure config:
+- Required external platform connection:
+- Missing access / blockers:
+
 ## CI / CD
 
 ### Continuous Integration
