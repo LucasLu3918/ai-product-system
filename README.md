@@ -70,6 +70,7 @@ aips harness resolve --cwd "$PWD"
 4. [Global Harness 與 Agent Adapter](docs/HARNESS.md)
 5. [Project Intelligence](docs/PROJECT_INTELLIGENCE.md)
 6. [系統架構總覽](docs/ARCHITECTURE_OVERVIEW.md)
+7. [Security Policy](SECURITY.md)
 
 ### AI Agent
 
