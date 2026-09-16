@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.13.0
+
+### Harness Conformance
+
+- Add a machine-readable Scenario Conformance Registry mapping every acceptance scenario to coverage type and evidence.
+- Distinguish deterministic, lifecycle, agent-eval, manual and uncovered coverage instead of treating scenario count as proof of conformance.
+- Add deterministic conformance check/report tooling and `aips conformance check|report`.
+- Conservatively classify legacy scenarios without explicit one-to-one executable evidence as manual rather than overstating automation.
+- Add scenarios 106-110 and CI checks for complete/unique registry coverage, reporting and missing-evidence failure.
+- Constitution, Roles, Skills, Capabilities and Approval Gates remain unchanged.
+
+
 ## 0.12.0
 
 ### Observable + Resumable Harness
