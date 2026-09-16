@@ -157,6 +157,8 @@ When Harness behavior changes, review together:
 
 Never trade away user-owned instruction/Skill preservation merely to improve automatic coverage.
 
+Install / Preflight lifecycle evidence should run against isolated temporary Git repositories and local bare remotes. System runtime artifacts such as Python `__pycache__/` / `*.py[cod]` must remain ignored so ordinary AIPS CLI execution cannot make the System repo fail its own clean-worktree preflight gate.
+
 ### Project Intelligence / Change Impact
 
 When Project Intelligence behavior changes, review together:
