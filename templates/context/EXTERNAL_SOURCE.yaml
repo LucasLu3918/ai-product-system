@@ -1,0 +1,26 @@
+version: 1
+
+source:
+  reference: null
+  provider: null
+  type: null
+
+resolution:
+  status: pending # pending | authorized | resolved | blocked
+  method: null # connector | public_web | other_provider | user_supplied
+  authorization_required: false
+  access_denied: false
+
+task:
+  objective: null
+  resume_step: null
+
+provenance:
+  resource_id: null
+  version: null
+  retrieved_at: null
+
+fallback:
+  requested_from_user: false
+  acceptable_formats: []
+  reason: null
