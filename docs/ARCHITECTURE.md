@@ -501,3 +501,18 @@ flowchart TD
     FIND -->|yes| OUT
     FIND -->|no| PROFILE[Update Project Visual Profile]
 ~~~
+
+## Enforceable governance
+
+~~~mermaid
+flowchart TD
+    H[Human Approval] --> AR[Approval Record]
+    AR --> CF[Canonical Scope Fingerprint]
+    C[Current Candidate / Tool Call] --> GV[Governance Guard]
+    CF --> GV
+    GV --> M{Binding valid?}
+    M -->|yes| A[Allow protected operation]
+    M -->|no| S[APPROVAL_STALE / Stop]
+~~~
+
+Context capability and governance enforcement are independent runtime dimensions. Native tool hooks only perform deterministic policy checks; semantic review remains in Orchestration.
