@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="700" viewBox="0 0 1500 700">
+<rect width="1500" height="700" fill="#f7f7f5"/>
+<style>.title{font:700 32px system-ui,-apple-system,sans-serif;fill:#171717}.sub{font:400 15px system-ui,-apple-system,sans-serif;fill:#666}.h{font:700 17px system-ui,-apple-system,sans-serif;fill:#171717}.t{font:400 13px system-ui,-apple-system,sans-serif;fill:#444}.box{fill:#fff;stroke:#d8d8d3;stroke-width:2}.dark{fill:#171717}.white{fill:#fff}.line{stroke:#aaa;stroke-width:2;fill:none;marker-end:url(#a)}</style>
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#aaa"/></marker></defs>
+<text x="60" y="58" class="title">AIPS Global Harness</text><text x="60" y="88" class="sub">Automatic where safe · Manual rather than overwriting user-owned configuration</text>
+<rect x="60" y="140" width="280" height="120" rx="16" class="box"/><text x="90" y="180" class="h">Agent Runtime</text><text x="90" y="210" class="t">Codex · Claude · Gemini</text><text x="90" y="235" class="t">or supported runtime</text>
+<rect x="400" y="140" width="280" height="120" rx="16" class="box"/><text x="430" y="180" class="h">Runtime Adapter</text><text x="430" y="210" class="t">AIPS-owned / reversible</text><text x="430" y="235" class="t">AUTOMATIC or MANUAL</text>
+<rect x="740" y="140" width="280" height="120" rx="16" class="box"/><text x="770" y="180" class="h">Minimal Bootstrap</text><text x="770" y="210" class="t">No full-context preload</text><text x="770" y="235" class="t">Resolve before engineering work</text>
+<rect x="1080" y="140" width="340" height="120" rx="16" class="box"/><text x="1110" y="180" class="h">Harness Resolver</text><text x="1110" y="210" class="t">Runtime · Project · Instructions</text><text x="1110" y="235" class="t">EPHEMERAL / ATTACHED</text>
+<path d="M340 200 L395 200" class="line"/><path d="M680 200 L735 200" class="line"/><path d="M1020 200 L1075 200" class="line"/>
+<rect x="190" y="355" width="500" height="170" rx="18" class="box"/><text x="220" y="395" class="h">Effective Context</text><text x="220" y="425" class="t">Runtime-native Instructions + Project AGENTS / ADR / Contracts</text><text x="220" y="453" class="t">Project Knowledge + Current User Request</text><text x="220" y="481" class="t">AIPS Protocol / Role / Skill lazy-loaded only when needed</text>
+<rect x="810" y="355" width="500" height="170" rx="18" class="dark"/><text x="840" y="395" class="h white">AIPS Orchestration</text><text x="840" y="425" class="t white">Planning · Quality · Security · Implementation · Review</text><text x="840" y="453" class="t white">Normal conversation bypasses heavy orchestration</text><text x="840" y="481" class="t white">Persistence only in ATTACHED mode</text>
+<path d="M1250 260 L1250 310 L440 310 L440 350" class="line"/><path d="M690 440 L805 440" class="line"/>
+<text x="60" y="620" class="t">Ownership invariant: Install/Uninstall never overwrites user-owned AGENTS / CLAUDE / GEMINI / Skills / Project source.</text>
+</svg>

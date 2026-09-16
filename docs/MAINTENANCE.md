@@ -14,6 +14,9 @@ Every system change must assess downstream documentation and behavior before com
 | `docs/USER_GUIDE.md` | Human-facing workflows/commands change |
 | `docs/INSTALLATION.md` | Human installation/update lifecycle changes |
 | `docs/ARCHITECTURE_OVERVIEW.md` | Human architecture overview changes |
+| `docs/assets/*.svg` | Human-facing architecture/lifecycle diagram changes |
+| `docs/HARNESS.md` | Global Harness / Adapter / ownership behavior changes |
+| `harness/*` | Global Harness / Adapter contract changes |
 | `AGENTS.md` | Agent bootloader changes |
 | `examples/*` | a new behavior needs a practical example |
 | `tests/scenarios/*` | routing/gate behavior changes or regressions need coverage |
@@ -31,6 +34,25 @@ Every system change must assess downstream documentation and behavior before com
 
 If an item is not affected, mark it N/A during change review rather than editing it unnecessarily.
 
+## Architecture Diagram Impact Check
+
+Every Large/Core Change must explicitly assess architecture-diagram impact as part of the existing Documentation Impact Gate. This is not a new approval gate.
+
+Trigger examples: Runtime/Routing/Context-loading flow changes; Harness/Adapter/instruction precedence changes; Project persistence/workspace lifecycle changes; complete-product/Release lifecycle changes; major Security/Quality/Review lifecycle changes; Install/Update/Uninstall behavior changes; a major new subsystem or boundary.
+
+Required review set:
+
+- docs/ARCHITECTURE.md Mermaid;
+- docs/ARCHITECTURE_OVERVIEW.md;
+- docs/assets/system-overview.svg;
+- docs/assets/harness-overview.svg when Harness is affected;
+- docs/assets/product-delivery-overview.svg when delivery is affected;
+- docs/assets/system-lifecycle.svg when install/project lifecycle is affected.
+
+For every relevant diagram: Affected → update diagram + explanation; Not affected → record N/A + concrete reason.
+
+A Large/Core Change that materially changes a documented architecture flow but leaves the corresponding diagram stale is documentation-incomplete and must not be released as complete.
+
 ## Self-improvement / Constitution / publish approval
 
 Changes to this system first pass `orchestration/SYSTEM_SELF_IMPROVEMENT.md`.
@@ -44,7 +66,8 @@ Before remote publication, present the Git Publish Proposal. A material differen
 1. Confirm System Improvement Review and applicable Constitutional/Core Change approvals.
 2. Run `aips validate`.
 3. Review the Documentation Impact Gate.
-4. Confirm Mermaid diagrams match actual runtime/planning flow.
+4. For Large/Core changes, complete Architecture Diagram Impact Check.
+5. Confirm Mermaid and affected Human SVG diagrams match actual behavior.
 5. Confirm changed routing/gate behavior has scenario coverage.
 6. Confirm planning/creative/brand/automation/product-delivery templates match their protocols when affected.
 7. Confirm Human and Agent documentation audiences are synchronized when behavior affects them.
@@ -118,3 +141,10 @@ When v0.7 behavior changes, review these sets together:
 - Visual V1/V2 → VISUAL_POLISH / Project Visual Profile / Visual Audit / Product Designer / Frontend Engineer / visual-quality-review / scenarios.
 
 Project Knowledge must not become a duplicate documentation tree. Prefer authoritative pointers and targeted refresh.
+
+
+## v0.8 consistency
+
+When Harness behavior changes, review together: harness/BOOTSTRAP + HARNESS_PROTOCOL + ADAPTER_CONTRACT; Runtime Adapter registry/files; HARNESS_RESOLUTION + INSTRUCTION_RESOLUTION; bin/aips install/uninstall/preflight/resolve/status/doctor; README / GETTING_STARTED / INSTALLATION / HARNESS; system-overview / harness-overview / system-lifecycle SVG; Ephemeral/Attached scenarios and ownership regression tests.
+
+Never trade away user-owned instruction/Skill preservation merely to improve automatic coverage.

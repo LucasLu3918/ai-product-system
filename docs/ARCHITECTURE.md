@@ -4,40 +4,43 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
-```mermaid
+~~~mermaid
 flowchart TD
-    U[User Request] --> UP[System Update Preflight]
-    UP -->|clean + compatible| P[Task Preflight]
-    UP -->|dirty/diverged/major change| STOP[Stop and ask for resolution]
-    P --> PP{Primary planning task?}
-    PP -->|yes| WS{Workspace specified?}
-    WS -->|no| ASK[Ask user for planning workspace]
-    WS -->|yes| PLAN[Create complete Planning Package]
-    ASK --> PLAN
-    PLAN --> REV[Cross-role consistency review]
-    REV --> G1[Gate 1: Human approves Planning Package]
-    G1 --> IR[Initial Implementation Items + Recommended Flow]
-    IR --> G2[Gate 2: Human approves implementation]
-    PP -->|no| D{Material decision?}
-    G2 --> W[Intent + Work Mode]
-    D -->|yes| H[Recommendation + Human Decision]
-    H --> W
-    D -->|no| W
-    W --> PS[Project State]
-    PS --> RA[Risk / Assurance Classification]
-    RA --> I[Instruction Discovery]
-    I --> C[Minimal Context Manifest]
-    C --> R[Role + Skill Resolution]
-    R --> E[Execution Profile]
-    E --> S{Subagents useful?}
-    S -->|yes| SA[Bounded Subagents with isolated context]
-    S -->|no| M[Model + Tool Routing]
-    SA --> M
-    M --> X[Execute inside Change Boundary]
-    X --> V[Independent Review]
-    V --> A[Artifact / Quality Gate]
-    A --> ST[Persist State + System Version/Commit]
-```
+    S[Agent Session / User Request] --> H{Global Harness installed?}
+    H -->|yes| HR[Harness Resolve: runtime / project / mode]
+    H -->|no| AIPS[AIPS direct entry]
+    HR --> AP{AIPS engineering task?}
+    AP -->|no| CHAT[Normal Agent Conversation]
+    AP -->|yes| UP[System Update Preflight for mutation]
+    AIPS --> UP
+    UP --> PM{Project mode}
+    PM -->|EPHEMERAL| E[No .ai persistence]
+    PM -->|ATTACHED| PSTATE[Load .ai state / knowledge]
+    E --> INS[Compose runtime-native + project instructions]
+    PSTATE --> INS
+    INS --> TP[Task Preflight / Requirement Readiness]
+    TP --> PLAN{Primary planning task?}
+    PLAN -->|yes| PP[Planning Package + Quality Profile]
+    PLAN -->|no| WM[Work Mode / Change Boundary]
+    PP --> G1[Gate 1 Planning Approval]
+    G1 --> G2[Gate 2 Implementation Approval]
+    G2 --> WM
+    WM --> R[Role / Skill / Model / Tool Routing]
+    R --> X[Execute]
+    X --> REV[Independent / Multi-Perspective Review]
+    REV --> Q[Artifact / Quality / Security Evidence]
+    Q --> LC{Complete product?}
+    LC -->|no| DONE[Persist only if mode permits]
+    LC -->|yes| LOCAL[LOCAL_COMPLETE]
+    LOCAL --> PROD{Production requested?}
+    PROD -->|no| DONE
+    PROD -->|yes| PE[Production Enablement]
+    PE --> RR[Release Readiness]
+    RR --> PV[PRODUCTION_VERIFIED]
+    PV --> DONE
+~~~
+
+The Harness is always available after installation, but full AIPS orchestration is only activated for applicable engineering/product work. EPHEMERAL mode never creates persistent project state automatically.
 
 ## Primary planning package
 
@@ -90,20 +93,25 @@ Security Assurance Level is distinct from Reliability Impact and Model Tier. A c
 
 ## Existing-project instruction resolution
 
-```mermaid
+~~~mermaid
 flowchart TD
-    A[System Safety / Governance] --> U[Current Explicit User Decision]
-    U --> N[Nearest Scoped AGENTS.md]
+    EXT[Platform / Safety Constraints] --> GOV[AIPS Constitution / Governance]
+    GOV --> U[Current Explicit User Decision]
+    U --> RN[Runtime-native Instructions]
+    RN --> N[Nearest Project Instructions / AGENTS]
     N --> ADR[Accepted ADR / Contract]
-    ADR --> B[Broader Project Standards]
-    B --> PS[Project-local Skills]
-    PS --> GS[Global Skills]
+    ADR --> DOC[Official Project Docs]
+    DOC --> PK[Project Knowledge Cache]
+    PK --> PS[Project-local Skills]
+    PS --> GS[AIPS Skills]
     GS --> INF[Agent Inference]
-```
+~~~
+
+Runtime-native mandatory precedence is respected. AIPS composes instructions; it does not overwrite user-owned runtime/project instructions.
 
 ## Update preflight
 
-```mermaid
+~~~mermaid
 flowchart TD
     C[Mutating implementation requested] --> G{System repo clean?}
     G -->|no| STOP[Stop: resolve local changes]
@@ -116,12 +124,14 @@ flowchart TD
     FF -->|yes| P[git pull --ff-only]
     P --> RE[Re-exec updated CLI]
     RE --> VAL[Validate system]
-    VAL --> REC[Record version + commit in .ai/SYSTEM.yaml]
+    VAL --> MODE{Project attached?}
+    MODE -->|yes| REC[Update .ai/SYSTEM.yaml provenance]
+    MODE -->|no| E[Remain EPHEMERAL; create no .ai]
     REC --> OK[Implementation may begin]
-```
+    E --> OK
+~~~
 
-Any change to runtime flow, planning gates, precedence, model routing, workspace contract, CLI lifecycle or release behavior must pass the Documentation Impact Gate in `docs/MAINTENANCE.md`.
-
+Preflight updates AIPS, not the target project's Git repository, and no longer performs implicit Attach.
 
 ## System self-improvement and constitutional governance
 
@@ -217,53 +227,56 @@ Helper lifetime is run-local → project reusable → system reusable only after
 ## Documentation audiences
 
 ~~~mermaid
-flowchart LR
-    CHANGE[Behavior Change] --> H{Human usage affected?}
+flowchart TD
+    CHANGE[System Behavior Change] --> CORE{Large / Core?}
+    CHANGE --> H{Human usage affected?}
     CHANGE --> A{Agent behavior affected?}
+    CORE -->|yes| DIA[Architecture Diagram Impact Check]
     H -->|yes| HD[Update Traditional Chinese Human Docs]
     A -->|yes| AD[Update concise Agent Docs]
-    HD --> M[Documentation Impact Gate]
-    AD --> M
+    DIA --> M1[Mermaid / Human SVG / Overview]
+    HD --> G[Documentation Impact Gate]
+    AD --> G
+    M1 --> G
+    CORE -->|no| G
 ~~~
 
-Human and Agent docs are separate entry surfaces but share one behavior source.
-
+For Large/Core changes, architecture-diagram impact is mandatory. Update each affected diagram or record N/A with a concrete reason. Human and Agent docs remain separate entry surfaces but share one behavior source.
 
 ## End-to-end product delivery
 
 ~~~mermaid
 flowchart TD
-    U[User Request / Assets] --> D[Guided Discovery]
-    D --> PW[Product Workspace + PRODUCT.yaml]
-    PW --> PP[Planning Package]
-    PP --> G1[Gate 1: Planning Approval]
-    G1 --> IR[Implementation Readiness]
-    IR --> G2[Gate 2: Implementation Approval]
-    G2 --> DU[Deployment Units]
-    DU --> L[Local Environment]
-    L --> T[Automated Test Pipeline]
-    T --> S[Security + Independent Review]
-    S --> RC[Exact Release Candidate]
-    RC --> ST{Staging applicable?}
-    ST -->|yes| SD[Deploy Staging]
-    SD --> SV[Smoke / E2E / Security / Migration Verification]
-    SV --> RR[Release Readiness]
-    ST -->|no with reason| RR
+    U[User Request / Assets] --> Q[Q1/Q2/Q3 Quality Planning]
+    Q --> PP[Planning Package]
+    PP --> G1[Gate 1 Planning Approval]
+    G1 --> G2[Gate 2 Implementation Approval]
+    G2 --> I[Implementation + Observability Instrumentation]
+    I --> V[Local Tests / Security / Quality Evidence]
+    V --> LC[LOCAL_COMPLETE]
+    LC --> R{Production requested already?}
+    R -->|no| ASK{Continue to Production?}
+    ASK -->|no| HOLD[Persist Local Product]
+    ASK -->|yes| PE[Production Enablement]
+    R -->|yes| PE
+    PE --> INF[Infra / CI-CD / Secrets / Data / Recovery]
+    INF --> OBS[Observability Stack]
+    OBS --> ST{Staging applicable?}
+    ST -->|yes| SV[Deploy + Smoke / E2E / Security / Migration]
+    ST -->|no with reason| RR[Release Readiness]
+    SV --> RR
     RR --> READY{READY?}
     READY -->|no| FIX[Fix / re-verify]
-    FIX --> T
-    READY -->|yes| AP{Production approval required?}
-    AP -->|yes| HA[Human Approval]
-    HA --> PROD[Production Promotion]
-    AP -->|no| PROD
-    PROD --> PV[Health / Smoke / Logs / Metrics]
+    FIX --> RR
+    READY -->|yes| PROD[Production Promotion]
+    PROD --> PV[Health / Smoke / Logs / Metrics / Alerts]
     PV --> OK{Healthy?}
-    OK -->|yes| DONE[Persist Production State + Evidence]
     OK -->|no| REC[Rollback / Roll-forward]
     REC --> PV
+    OK -->|yes| DONE[PRODUCTION_VERIFIED]
 ~~~
 
-A complete product is not complete when code is generated. Production completion requires applicable post-deploy verification and a known recovery path.
+LOCAL_COMPLETE is a valid complete delivery state when Production is not requested. Production completion requires applicable post-deploy verification and recovery evidence.
 
 ## Product workspace and deployment units
 
@@ -346,19 +359,27 @@ Exact user-provided source evidence has priority over generic search/inference.
 
 ~~~mermaid
 flowchart TD
-    U[Existing UI looks awkward] --> P[Preserve approved direction]
-    P --> RUN[Run / Render UI]
-    RUN --> AUDIT[Visual Implementation Audit]
-    AUDIT --> ROOT{Shared root cause?}
-    ROOT -->|yes| SHARED[Fix Token / Shared Component]
-    ROOT -->|no| PAGE[Fix justified local exception]
-    SHARED --> VERIFY[Re-render / Screenshot]
-    PAGE --> VERIFY
-    VERIFY --> STATES[Responsive + Hover / Focus / Active]
-    STATES --> QA[Visual Quality Review]
-    QA -->|material issue remains| AUDIT
-    QA -->|pass| DONE[Complete]
+    U[Existing UI request] --> MODE{Scope}
+    MODE -->|Focused| V1[V1 Focused Repair]
+    MODE -->|Whole project vague cleanup| V2[V2 Product Consistency Sweep]
+    V2 --> VP{Current Visual Profile?}
+    VP -->|yes/current| BASE[Load baseline / golden components]
+    VP -->|missing/stale| DISC[Representative routes + component inventory]
+    DISC --> BASE
+    V1 --> RUN[Run / Render target]
+    BASE --> RUN
+    RUN --> OUT[Detect material visual outliers]
+    OUT --> VAR{Valid variant / exception?}
+    VAR -->|yes| KEEP[Keep]
+    VAR -->|no| ROOT[Map DOM / Component / Computed Style / Token]
+    ROOT --> FIX[Shared token/component fix first]
+    FIX --> VERIFY[Before/After + Responsive + State Geometry]
+    VERIFY --> FIND{Material finding remains?}
+    FIND -->|yes| OUT
+    FIND -->|no| PROFILE[Refresh Project Visual Profile if reusable]
 ~~~
+
+Source-only review cannot PASS when the UI can be rendered.
 
 ## Multi-perspective review and learning
 
@@ -386,15 +407,30 @@ Multi-review is selected by semantic impact/risk, not LOC alone. Reviewers do no
 ## Installation and project lifecycle
 
 ~~~mermaid
-flowchart LR
-    CLONE[Clone] --> INSTALL[Install]
-    INSTALL --> ATTACH[Attach Project]
-    ATTACH --> USE[Status / Preflight / Use]
-    USE --> DETACH[Detach: preserve .ai archive]
-    DETACH --> UNINSTALL[Uninstall CLI/config]
-    UNINSTALL --> REMOVE[Optional explicit repo removal]
+flowchart TD
+    CLONE[Clone AIPS] --> INSTALL[aips install]
+    INSTALL --> CORE[CLI / venv / config]
+    INSTALL --> HAR[Global Harness Ownership]
+    HAR --> DET[Detect Agent Runtimes]
+    DET --> AD{Safe automatic Adapter?}
+    AD -->|yes| AUTO[AIPS-owned AUTOMATIC Adapter]
+    AD -->|no| MAN[MANUAL / preserve user config]
+    AUTO --> USE[Normal Agent Session]
+    MAN --> USE
+    USE --> PM{Project .ai exists?}
+    PM -->|no| E[EPHEMERAL]
+    PM -->|yes| A[ATTACHED]
+    E --> AT[aips attach only when persistence desired]
+    AT --> A
+    A --> DT[aips detach preserves .ai archive]
+    DT --> E
+    USE --> UN[aips uninstall]
+    UN --> OWN[Remove only AIPS-owned integrations]
+    OWN --> KEEP[Preserve user/project instructions, Skills, source, .ai]
+    KEEP --> RM[Optional explicit repo removal by user]
 ~~~
 
+Install/Uninstall lifecycle is non-invasive: existing user Agent files and Skills are never overwritten for automatic coverage.
 
 ## Quality-aware product delivery
 

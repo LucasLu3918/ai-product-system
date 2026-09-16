@@ -1,74 +1,69 @@
 # 系統架構總覽
 
-這份文件讓第一次接觸 AI Product System 的使用者快速理解整體流程。
+這份文件讓第一次接觸 AI Product System（AIPS）的使用者快速理解目前架構。
 
 ![AI Product System 架構總覽](assets/system-overview.svg)
 
-## 簡單理解
+## 1. Global Harness
 
-1. **使用者意圖與決策（Human Intent & Approval）**：需求、素材、Scope 與最終決策。
-2. **預檢與治理（Preflight & Governance）**：更新、風險、重大變更與規劃需求。
-3. **專案知識（Project Knowledge）**：優先重用既有 AGENTS / ADR / Docs / Knowledge Index，不重複掃描整體 Repository。
-4. **品質規劃（Quality Planning）**：Q1/Q2/Q3 基準下評估效能、安全、使用性、可靠性、維護性、成本與交付時間。
-5. **路由（Routing）**：選擇最小 Work Mode、Role、Skill、Context、Model 與 Tool。
-6. **執行與審核（Execution & Review）**：實作、驗證、Visual Consistency Repair、Independent / Multi-Perspective Review。
-7. **可接手工作區（Persistent Workspace）**：保存規劃、Project Knowledge、Quality、Visual Profile、Decision 與 Run State。
-8. **Git 發布確認（Publish Gate）**：Remote 發布前再次由使用者確認。
+![AIPS Global Harness](assets/harness-overview.svg)
 
-詳細技術架構請看 `docs/ARCHITECTURE.md`。
-
-## 完整產品交付
-
-完整產品預設先做到本地可運作、可測試、可審核：
+安裝 AIPS 後，支援的 Agent Runtime 先取得 Minimal Bootstrap：
 
 ~~~text
-需求
-→ Quality Profile
-→ Planning
-→ Implementation
-→ Local Verification
-→ LOCAL_COMPLETE
+Agent Runtime
+→ Runtime Adapter
+→ AIPS Minimal Bootstrap
+→ Harness Resolve
+→ Runtime + Project Instructions
+→ AIPS Orchestration（需要時）
 ~~~
 
-如果使用者一開始沒有要求正式上線，系統此時才詢問是否接續 Production Enablement。
+AIPS 不會為了自動接入覆寫使用者原有 Agent Instructions / Skills。安全自動接入不可行時會標示 MANUAL。
+
+## 2. Project Mode
 
 ~~~text
-LOCAL_COMPLETE
-→ Production Enablement
-→ Infrastructure / CI/CD / Data / Recovery
-→ Observability
-→ Staging
-→ Release Readiness
-→ Production
-→ Post-deploy Verification
-→ PRODUCTION_VERIFIED
+Project without .ai/
+→ EPHEMERAL
+→ 使用 AIPS，但不持久化
+
+aips attach
+→ ATTACHED
+→ 可使用 .ai State / Knowledge / Runs / Decisions
 ~~~
 
-Observability 在 Architecture / Coding 階段先規劃 Structured Logs、Health Check、Metrics/Trace/Audit hooks；ELK、Loki、Prometheus、Grafana、OpenTelemetry 或 Managed Service 等具體選型等 Production 環境確認後再決定。
+Preflight 不會再自動 Attach。
 
-## Project Knowledge
+## 3. Project Knowledge + Instruction Composition
 
-新的 Agent 不必每次重新理解整體專案。
+AIPS 組合 Runtime-native Instructions、Project AGENTS / ADR / Contracts / Docs、Project Knowledge 與 Current User Request。已經有權威資訊就存 Pointer，不重複掃描/複製整個專案。
 
-~~~text
-AGENTS / ADR / Contract / Official Docs
-→ Knowledge Index
-→ 本次相關 Topic
-→ 不足時才做 Targeted Discovery
-~~~
+## 4. Quality-aware Product Delivery
 
-已有權威文件就只建立 Pointer；只有重新探索成本高、跨任務穩定且缺少正式文件的知識才存進 `.ai/knowledge/`。
+![完整產品交付流程](assets/product-delivery-overview.svg)
 
-## Visual Consistency Repair
+完整產品先做到 Quality Profile → Planning → Implementation → Local Verification → LOCAL_COMPLETE。只有 Production 在 Scope 時才接續 Production Enablement → Observability → Staging / Release Readiness → Production → Post-deploy Verification → PRODUCTION_VERIFIED。
 
-「請幫我調整這個專案風格怪異的部分」預設進入 V2 Product Consistency Sweep。
+## 5. Visual Consistency Repair
 
-系統會使用 Representative Routes、Component Inventory、UI Consistency Baseline、Outlier/Variant 判斷、Implementation Root Cause 與 Before/After Render 驗證，而不是只改幾個局部 CSS。
+全專案「風格怪異」預設進入 V2 Product Consistency Sweep：Representative Routes → Component Inventory → Baseline → Outlier/Variant → Implementation Root Cause → Shared Fix → Before/After → Project Visual Profile。
 
-可重用的專案視覺知識保存在 `docs/design/PROJECT_VISUAL_PROFILE.yaml`。
-
-## 安裝與專案生命週期
+## 6. 安裝與生命週期
 
 ![安裝與專案生命週期](assets/system-lifecycle.svg)
 
-System Install 與 Project Attach 是不同層級。解除安裝 System 不會刪除產品；Detach Project 會保存可恢復的 AI Workspace。
+System / Harness / Project lifecycle 分離。解除 AIPS 只移除 AIPS-owned integrations；Project source、原本 Agent Instructions、Skills 與 .ai/ Workspace 都保留。
+
+## 7. 架構圖同步規則
+
+大型/Core Change 若改變 Routing、Instruction Composition、Persistence、Delivery、Install/Uninstall、Security/Quality lifecycle 或主要 Context flow，必須同步檢查：
+
+- docs/ARCHITECTURE.md Mermaid
+- docs/ARCHITECTURE_OVERVIEW.md
+- docs/assets/system-overview.svg
+- docs/assets/harness-overview.svg
+- docs/assets/product-delivery-overview.svg
+- docs/assets/system-lifecycle.svg
+
+若某張圖不受影響，要在 Documentation Impact Review 明確標示 N/A + reason。

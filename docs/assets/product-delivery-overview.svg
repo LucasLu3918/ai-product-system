@@ -1,79 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1020" viewBox="0 0 1500 1020">
-<rect width="1500" height="1020" fill="#f7f7f5"/>
-<style>
-.title{font:700 34px system-ui,-apple-system,sans-serif;fill:#171717}
-.sub{font:400 16px system-ui,-apple-system,sans-serif;fill:#666}
-.h{font:700 18px system-ui,-apple-system,sans-serif;fill:#171717}
-.t{font:400 14px system-ui,-apple-system,sans-serif;fill:#444}
-.box{fill:#fff;stroke:#d8d8d3;stroke-width:2;rx:18}
-.dark{fill:#171717}
-.white{fill:#fff}
-.line{stroke:#a7a7a0;stroke-width:2;fill:none;marker-end:url(#arrow)}
-</style>
-<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#a7a7a0"/></marker></defs>
-<text x="70" y="65" class="title">完整產品交付（End-to-End Product Delivery）</text>
-<text x="70" y="95" class="sub">需求 → 規範 → 實作 → Local → Security → Staging → Production → Verification</text>
-
-<rect x="90" y="135" width="1320" height="80" class="box"/>
-<text x="120" y="169" class="h">① 使用者需求與素材（User Intent & Assets）</text>
-<text x="120" y="195" class="t">需求、Logo / 圖片 / Brand、商業規則、限制與成功條件</text>
-<path d="M750 215 L750 255" class="line"/>
-
-<rect x="90" y="260" width="1320" height="95" class="box"/>
-<text x="120" y="298" class="h">② Guided Discovery + Planning Package</text>
-<text x="120" y="327" class="t">Product / UX / Brand / API / Data / Architecture / Risk / Security / Delivery</text>
-<path d="M750 355 L750 395" class="line"/>
-
-<rect x="90" y="400" width="400" height="160" class="box"/>
-<text x="120" y="438" class="h">③ Product Workspace</text>
-<text x="120" y="468" class="t">PRODUCT.yaml</text>
-<text x="120" y="495" class="t">Docs / Brand / Decisions</text>
-<text x="120" y="522" class="t">System of Record</text>
-
-<rect x="550" y="400" width="400" height="160" class="box"/>
-<text x="580" y="438" class="h">④ Deployment Units</text>
-<text x="580" y="468" class="t">Frontend / Backend / Worker</text>
-<text x="580" y="495" class="t">Independent Build / Test / Deploy</text>
-<text x="580" y="522" class="t">Monorepo default · Multi-Repo when justified</text>
-
-<rect x="1010" y="400" width="400" height="160" class="box"/>
-<text x="1040" y="438" class="h">⑤ Local Verification</text>
-<text x="1040" y="468" class="t">Static · Unit · Integration</text>
-<text x="1040" y="495" class="t">Contract · E2E · Build</text>
-<text x="1040" y="522" class="t">Security + Independent Review</text>
-
-<path d="M490 480 L545 480" class="line"/>
-<path d="M950 480 L1005 480" class="line"/>
-<path d="M1210 560 L1210 610" class="line"/>
-
-<rect x="90" y="615" width="400" height="155" class="box"/>
-<text x="120" y="653" class="h">⑥ Release Candidate</text>
-<text x="120" y="683" class="t">Exact code/config/infra candidate</text>
-<text x="120" y="710" class="t">Evidence attached to candidate</text>
-
-<rect x="550" y="615" width="400" height="155" class="box"/>
-<text x="580" y="653" class="h">⑦ Staging</text>
-<text x="580" y="683" class="t">Deploy · Smoke · E2E</text>
-<text x="580" y="710" class="t">Security / Migration verification</text>
-
-<rect x="1010" y="615" width="400" height="155" class="box"/>
-<text x="1040" y="653" class="h">⑧ Release Readiness</text>
-<text x="1040" y="683" class="t">Build / Test / Security / Data</text>
-<text x="1040" y="710" class="t">Infra / Observability / Rollback</text>
-
-<path d="M490 692 L545 692" class="line"/>
-<path d="M950 692 L1005 692" class="line"/>
-<path d="M1210 770 L1210 815" class="line"/>
-
-<rect x="270" y="820" width="420" height="135" class="dark" rx="18"/>
-<text x="305" y="860" class="h white">⑨ Production Promotion</text>
-<text x="305" y="890" class="t white">Risk-proportional approval</text>
-<text x="305" y="917" class="t white">Automated pipeline · no governance bypass</text>
-
-<rect x="810" y="820" width="420" height="135" class="box"/>
-<text x="845" y="860" class="h">⑩ Post-deploy Verification</text>
-<text x="845" y="890" class="t">Health · Smoke · Logs · Metrics</text>
-<text x="845" y="917" class="t">Rollback / Roll-forward · Persist Evidence</text>
-
-<path d="M690 887 L805 887" class="line"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1040" viewBox="0 0 1500 1040">
+<rect width="1500" height="1040" fill="#f7f7f5"/>
+<style>.title{font:700 34px system-ui,-apple-system,sans-serif;fill:#171717}.sub{font:400 16px system-ui,-apple-system,sans-serif;fill:#666}.h{font:700 18px system-ui,-apple-system,sans-serif;fill:#171717}.t{font:400 14px system-ui,-apple-system,sans-serif;fill:#444}.box{fill:#fff;stroke:#d8d8d3;stroke-width:2}.dark{fill:#171717}.white{fill:#fff}.line{stroke:#aaa;stroke-width:2;fill:none;marker-end:url(#a)}</style>
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#aaa"/></marker></defs>
+<text x="70" y="65" class="title">End-to-End Product Delivery — 品質感知完整產品交付</text><text x="70" y="95" class="sub">Quality Profile → Planning → Implementation → LOCAL_COMPLETE → optional Production Enablement → PRODUCTION_VERIFIED</text>
+<rect x="90" y="135" width="1320" height="85" rx="18" class="box"/><text x="120" y="170" class="h">① User Intent + Q1/Q2/Q3 Quality Planning</text><text x="120" y="198" class="t">Performance · Security · Usability · Reliability · Maintainability · Resource/Cost · Delivery</text><path d="M750 220 L750 255" class="line"/>
+<rect x="90" y="260" width="1320" height="90" rx="18" class="box"/><text x="120" y="296" class="h">② Planning Package + Architecture</text><text x="120" y="326" class="t">UX / Brand / API / Data / Security / Delivery + provider-neutral Logs / Health / Metrics / Trace / Audit requirements</text><path d="M750 350 L750 385" class="line"/>
+<rect x="90" y="390" width="400" height="160" rx="18" class="box"/><text x="120" y="428" class="h">③ Implementation</text><text x="120" y="458" class="t">Frontend / Backend / Data</text><text x="120" y="486" class="t">Tests + instrumentation hooks</text><text x="120" y="514" class="t">Shared contracts / migrations</text>
+<rect x="550" y="390" width="400" height="160" rx="18" class="box"/><text x="580" y="428" class="h">④ Local Verification</text><text x="580" y="458" class="t">Unit · Integration · Contract · E2E</text><text x="580" y="486" class="t">Security · Performance · UX / Visual</text><text x="580" y="514" class="t">Maintainability / Reliability evidence</text>
+<rect x="1010" y="390" width="400" height="160" rx="18" class="dark"/><text x="1040" y="428" class="h white">⑤ LOCAL_COMPLETE</text><text x="1040" y="458" class="t white">Locally runnable complete product</text><text x="1040" y="486" class="t white">Hosting/Production may remain undecided</text>
+<path d="M490 470 L545 470" class="line"/><path d="M950 470 L1005 470" class="line"/><path d="M1210 550 L1210 590" class="line"/>
+<rect x="90" y="595" width="400" height="165" rx="18" class="box"/><text x="120" y="635" class="h">⑥ Production Enablement</text><text x="120" y="665" class="t">Only when requested / user continues</text><text x="120" y="693" class="t">Infra · Secrets · Domain / TLS</text><text x="120" y="721" class="t">DB / Backup / Recovery · CI/CD</text>
+<rect x="550" y="595" width="400" height="165" rx="18" class="box"/><text x="580" y="635" class="h">⑦ Observability + Staging</text><text x="580" y="665" class="t">ELK/Loki/Managed Logs as justified</text><text x="580" y="693" class="t">Prometheus/Grafana/OTel/Alerts</text><text x="580" y="721" class="t">Staging Smoke / E2E / Security</text>
+<rect x="1010" y="595" width="400" height="165" rx="18" class="box"/><text x="1040" y="635" class="h">⑧ Release Readiness</text><text x="1040" y="665" class="t">Exact candidate + Build / Test / Security</text><text x="1040" y="693" class="t">Data / Recovery / Observability</text><text x="1040" y="721" class="t">READY / NOT_READY / BLOCKED</text>
+<path d="M490 678 L545 678" class="line"/><path d="M950 678 L1005 678" class="line"/><path d="M1210 760 L1210 805" class="line"/>
+<rect x="270" y="810" width="420" height="140" rx="18" class="box"/><text x="305" y="852" class="h">⑨ Production Promotion</text><text x="305" y="884" class="t">Risk-proportional approval</text><text x="305" y="912" class="t">Same verified candidate/artifact strategy</text>
+<rect x="810" y="810" width="420" height="140" rx="18" class="dark"/><text x="845" y="852" class="h white">⑩ PRODUCTION_VERIFIED</text><text x="845" y="884" class="t white">Health · Smoke · Critical path</text><text x="845" y="912" class="t white">Logs · Metrics · Alerts · Recovery evidence</text>
+<path d="M690 880 L805 880" class="line"/>
 </svg>
