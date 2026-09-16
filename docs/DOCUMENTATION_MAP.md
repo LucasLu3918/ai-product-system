@@ -28,3 +28,5 @@
 | `docs/MAINTENANCE.md` | Maintainer | System maintenance / Diagram Impact |
 
 Human Docs 使用繁體中文；Agent Docs 以精簡英文為主。Large/Core Change 必須檢查 Human Docs、Agent Docs 與受影響 Architecture Diagrams。
+
+- `docs/CONFORMANCE.md` — Scenario Conformance、coverage 類型、registry 與 report 使用方式。

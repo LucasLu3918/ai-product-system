@@ -1,0 +1,670 @@
+version: 1
+policy:
+  allowed_types: [deterministic, lifecycle, agent_eval, manual, uncovered]
+  automated_types: [deterministic, lifecycle, agent_eval]
+  release_requires:
+    no_missing_registry_entries: true
+    no_unknown_scenarios: true
+    no_uncovered: true
+
+scenarios:
+  - id: "001"
+    path: tests/scenarios/001-product-creation.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/001-product-creation.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "002"
+    path: tests/scenarios/002-existing-rest-api.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/002-existing-rest-api.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "003"
+    path: tests/scenarios/003-nordic-design.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/003-nordic-design.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "004"
+    path: tests/scenarios/004-api-performance.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/004-api-performance.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "005"
+    path: tests/scenarios/005-delivery-plan.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/005-delivery-plan.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "006"
+    path: tests/scenarios/006-cost-analysis.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/006-cost-analysis.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "007"
+    path: tests/scenarios/007-adaptive-ddd-clean-architecture.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/007-adaptive-ddd-clean-architecture.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "008"
+    path: tests/scenarios/008-scoped-instruction-precedence.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/008-scoped-instruction-precedence.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "009"
+    path: tests/scenarios/009-capability-gap.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/009-capability-gap.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "010"
+    path: tests/scenarios/010-adaptive-subagent-model-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/010-adaptive-subagent-model-routing.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "011"
+    path: tests/scenarios/011-update-preflight.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/011-update-preflight.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "012"
+    path: tests/scenarios/012-documentation-impact-gate.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/012-documentation-impact-gate.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "013"
+    path: tests/scenarios/013-reproducible-planning-package.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/013-reproducible-planning-package.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "014"
+    path: tests/scenarios/014-critical-financial-security.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/014-critical-financial-security.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "015"
+    path: tests/scenarios/015-low-impact-frontend-security.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/015-low-impact-frontend-security.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "016"
+    path: tests/scenarios/016-critical-product-cosmetic-change.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/016-critical-product-cosmetic-change.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "017"
+    path: tests/scenarios/017-core-change-approval.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/017-core-change-approval.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "018"
+    path: tests/scenarios/018-git-publish-approval.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/018-git-publish-approval.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "019"
+    path: tests/scenarios/019-system-self-improvement.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/019-system-self-improvement.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "020"
+    path: tests/scenarios/020-constitutional-change.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/020-constitutional-change.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "021"
+    path: tests/scenarios/021-vague-visual-request.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/021-vague-visual-request.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "022"
+    path: tests/scenarios/022-user-assets-banner.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/022-user-assets-banner.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "023"
+    path: tests/scenarios/023-mixed-reference-direction.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/023-mixed-reference-direction.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "024"
+    path: tests/scenarios/024-create-reuse-brand-system.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/024-create-reuse-brand-system.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "025"
+    path: tests/scenarios/025-avoid-duplicate-role.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/025-avoid-duplicate-role.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "026"
+    path: tests/scenarios/026-deterministic-automation.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/026-deterministic-automation.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "027"
+    path: tests/scenarios/027-documentation-audience-separation.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/027-documentation-audience-separation.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "028"
+    path: tests/scenarios/028-complete-product-to-production.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/028-complete-product-to-production.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "029"
+    path: tests/scenarios/029-deployment-units-repository-strategy.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/029-deployment-units-repository-strategy.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "030"
+    path: tests/scenarios/030-security-design-and-release.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/030-security-design-and-release.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "031"
+    path: tests/scenarios/031-release-readiness-blocks-production.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/031-release-readiness-blocks-production.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "032"
+    path: tests/scenarios/032-production-verification-and-recovery.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/032-production-verification-and-recovery.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "033"
+    path: tests/scenarios/033-low-risk-static-staging-na.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/033-low-risk-static-staging-na.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "034"
+    path: tests/scenarios/034-deployment-automation-access.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/034-deployment-automation-access.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "035"
+    path: tests/scenarios/035-progressive-requirement-clarification.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/035-progressive-requirement-clarification.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "036"
+    path: tests/scenarios/036-safe-default-no-unnecessary-question.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/036-safe-default-no-unnecessary-question.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "037"
+    path: tests/scenarios/037-external-context-authorization-resume.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/037-external-context-authorization-resume.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "038"
+    path: tests/scenarios/038-external-context-fallback.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/038-external-context-fallback.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "039"
+    path: tests/scenarios/039-visual-polish-shared-component.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/039-visual-polish-shared-component.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "040"
+    path: tests/scenarios/040-visual-polish-redesign-escalation.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/040-visual-polish-redesign-escalation.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "041"
+    path: tests/scenarios/041-multi-perspective-review-panel.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/041-multi-perspective-review-panel.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "042"
+    path: tests/scenarios/042-author-fix-targeted-rereview.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/042-author-fix-targeted-rereview.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "043"
+    path: tests/scenarios/043-review-learning-feedback.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/043-review-learning-feedback.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "044"
+    path: tests/scenarios/044-install-project-lifecycle.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/044-install-project-lifecycle.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "045"
+    path: tests/scenarios/045-quality-class-baseline.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/045-quality-class-baseline.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "046"
+    path: tests/scenarios/046-quality-target-derivation.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/046-quality-target-derivation.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "047"
+    path: tests/scenarios/047-local-complete-before-production.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/047-local-complete-before-production.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "048"
+    path: tests/scenarios/048-explicit-production-request.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/048-explicit-production-request.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "049"
+    path: tests/scenarios/049-observability-before-vendor.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/049-observability-before-vendor.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "050"
+    path: tests/scenarios/050-audit-log-high-value.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/050-audit-log-high-value.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "051"
+    path: tests/scenarios/051-project-knowledge-pointer.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/051-project-knowledge-pointer.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "052"
+    path: tests/scenarios/052-project-knowledge-discovery.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/052-project-knowledge-discovery.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "053"
+    path: tests/scenarios/053-project-knowledge-targeted-refresh.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/053-project-knowledge-targeted-refresh.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "054"
+    path: tests/scenarios/054-project-knowledge-promotion.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/054-project-knowledge-promotion.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "055"
+    path: tests/scenarios/055-v2-visual-consistency-sweep.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/055-v2-visual-consistency-sweep.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "056"
+    path: tests/scenarios/056-visual-profile-reuse.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/056-visual-profile-reuse.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "057"
+    path: tests/scenarios/057-global-harness-auto-bootstrap.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/057-global-harness-auto-bootstrap.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "058"
+    path: tests/scenarios/058-existing-user-agent-file-preserved.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/058-existing-user-agent-file-preserved.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "059"
+    path: tests/scenarios/059-owned-adapter-safe-uninstall.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/059-owned-adapter-safe-uninstall.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "060"
+    path: tests/scenarios/060-modified-owned-file-preserved.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/060-modified-owned-file-preserved.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "061"
+    path: tests/scenarios/061-ephemeral-project-no-auto-attach.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/061-ephemeral-project-no-auto-attach.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "062"
+    path: tests/scenarios/062-attached-project-persistence.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/062-attached-project-persistence.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "063"
+    path: tests/scenarios/063-normal-conversation-bypasses-heavy-orchestration.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/063-normal-conversation-bypasses-heavy-orchestration.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "064"
+    path: tests/scenarios/064-runtime-and-project-instruction-composition.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/064-runtime-and-project-instruction-composition.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "065"
+    path: tests/scenarios/065-architecture-diagram-impact-required.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/065-architecture-diagram-impact-required.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "066"
+    path: tests/scenarios/066-gemini-namespaced-extension.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/066-gemini-namespaced-extension.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "067"
+    path: tests/scenarios/067-failed-adapter-uninstall-preserves-ownership.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/067-failed-adapter-uninstall-preserves-ownership.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "068"
+    path: tests/scenarios/068-v07-to-v08-harness-migration.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/068-v07-to-v08-harness-migration.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "069"
+    path: tests/scenarios/069-cli-name-collision-nondestructive.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/069-cli-name-collision-nondestructive.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "070"
+    path: tests/scenarios/070-codex-managed-composition.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/070-codex-managed-composition.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "071"
+    path: tests/scenarios/071-claude-turn-hook-composition.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/071-claude-turn-hook-composition.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "072"
+    path: tests/scenarios/072-gemini-before-agent-turn-context.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/072-gemini-before-agent-turn-context.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "073"
+    path: tests/scenarios/073-runtime-capability-truth.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/073-runtime-capability-truth.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "074"
+    path: tests/scenarios/074-ephemeral-external-intelligence.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/074-ephemeral-external-intelligence.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "075"
+    path: tests/scenarios/075-semantic-bootstrap-readiness.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/075-semantic-bootstrap-readiness.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "076"
+    path: tests/scenarios/076-source-registry-runtime-dedup.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/076-source-registry-runtime-dedup.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "077"
+    path: tests/scenarios/077-unrelated-commit-keeps-intelligence-current.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/077-unrelated-commit-keeps-intelligence-current.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "078"
+    path: tests/scenarios/078-watched-change-targeted-stale.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/078-watched-change-targeted-stale.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "079"
+    path: tests/scenarios/079-dirty-worktree-freshness.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/079-dirty-worktree-freshness.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "080"
+    path: tests/scenarios/080-attach-detach-intelligence-migration.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/080-attach-detach-intelligence-migration.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "081"
+    path: tests/scenarios/081-review-html-self-contained-redacted.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/081-review-html-self-contained-redacted.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "082"
+    path: tests/scenarios/082-project-overrides-survive-refresh.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/082-project-overrides-survive-refresh.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "083"
+    path: tests/scenarios/083-intelligence-single-writer.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/083-intelligence-single-writer.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "084"
+    path: tests/scenarios/084-change-impact-before-mutation.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/084-change-impact-before-mutation.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "085"
+    path: tests/scenarios/085-uninstall-preserves-intelligence-cache.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/085-uninstall-preserves-intelligence-cache.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "086"
+    path: tests/scenarios/086-normal-chat-no-intelligence-bootstrap.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/086-normal-chat-no-intelligence-bootstrap.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "087"
+    path: tests/scenarios/087-monorepo-lazy-intelligence.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/087-monorepo-lazy-intelligence.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "088"
+    path: tests/scenarios/088-project-knowledge-migration.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/088-project-knowledge-migration.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "089"
+    path: tests/scenarios/089-secret-runtime-acquisition.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/089-secret-runtime-acquisition.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "090"
+    path: tests/scenarios/090-secret-scanner-redacted-evidence.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/090-secret-scanner-redacted-evidence.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "091"
+    path: tests/scenarios/091-secret-exposure-release-block.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/091-secret-exposure-release-block.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "092"
+    path: tests/scenarios/092-core-change-impact-test-matrix.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/092-core-change-impact-test-matrix.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "093"
+    path: tests/scenarios/093-core-change-scope-expansion-retests.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/093-core-change-scope-expansion-retests.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "094"
+    path: tests/scenarios/094-new-skill-admission-reuse-first.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/094-new-skill-admission-reuse-first.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "095"
+    path: tests/scenarios/095-new-skill-no-private-config.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/095-new-skill-no-private-config.md
+    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+  - id: "096"
+    path: tests/scenarios/096-approval-fingerprint-determinism.md
+    coverage: deterministic
+    evidence:
+      - scripts/governance_guard.py
+      - tests/validate_repository.py
+  - id: "097"
+    path: tests/scenarios/097-approval-scope-drift-stops-protected-action.md
+    coverage: deterministic
+    evidence:
+      - scripts/governance_guard.py
+      - tests/validate_repository.py
+  - id: "098"
+    path: tests/scenarios/098-runtime-governance-capability-truth.md
+    coverage: deterministic
+    evidence:
+      - harness/ADAPTER_CONTRACT.md
+      - tests/validate_repository.py
+  - id: "099"
+    path: tests/scenarios/099-git-publication-tool-guard.md
+    coverage: deterministic
+    evidence:
+      - scripts/governance_guard.py
+      - tests/validate_repository.py
+  - id: "100"
+    path: tests/scenarios/100-routing-explanation-structured.md
+    coverage: deterministic
+    evidence:
+      - scripts/project_intelligence.py
+      - tests/validate_repository.py
+  - id: "101"
+    path: tests/scenarios/101-run-checkpoint-persists-resume-state.md
+    coverage: lifecycle
+    evidence:
+      - scripts/run_state.py
+      - tests/validate_repository.py
+  - id: "102"
+    path: tests/scenarios/102-run-resume-current-revision.md
+    coverage: lifecycle
+    evidence:
+      - scripts/run_state.py
+      - tests/validate_repository.py
+  - id: "103"
+    path: tests/scenarios/103-run-resume-revision-drift-stale.md
+    coverage: lifecycle
+    evidence:
+      - scripts/run_state.py
+      - tests/validate_repository.py
+  - id: "104"
+    path: tests/scenarios/104-run-events-structured-no-cot-secrets.md
+    coverage: lifecycle
+    evidence:
+      - scripts/run_state.py
+      - tests/validate_repository.py
+  - id: "105"
+    path: tests/scenarios/105-ephemeral-run-state-external-cache.md
+    coverage: lifecycle
+    evidence:
+      - scripts/run_state.py
+      - tests/validate_repository.py
+  - id: "106"
+    path: tests/scenarios/106-scenario-coverage-registry-complete.md
+    coverage: deterministic
+    evidence:
+      - scripts/scenario_conformance.py
+      - tests/validate_repository.py
+  - id: "107"
+    path: tests/scenarios/107-scenario-coverage-unique-id.md
+    coverage: deterministic
+    evidence:
+      - scripts/scenario_conformance.py
+      - tests/validate_repository.py
+  - id: "108"
+    path: tests/scenarios/108-conformance-report-categories.md
+    coverage: deterministic
+    evidence:
+      - scripts/scenario_conformance.py
+      - tests/validate_repository.py
+  - id: "109"
+    path: tests/scenarios/109-conformance-missing-evidence-fails.md
+    coverage: deterministic
+    evidence:
+      - scripts/scenario_conformance.py
+      - tests/validate_repository.py
+  - id: "110"
+    path: tests/scenarios/110-scenario-count-is-not-conformance.md
+    coverage: deterministic
+    evidence:
+      - scripts/scenario_conformance.py
+      - tests/validate_repository.py

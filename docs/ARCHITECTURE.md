@@ -531,3 +531,24 @@ flowchart TD
 ~~~
 
 Run events are structured evidence only. Chat transcripts, private chain-of-thought and secrets are not run-state inputs.
+
+## Scenario conformance evidence
+
+~~~mermaid
+flowchart LR
+    S[Acceptance Scenario] --> R[scenario_coverage.yaml]
+    R --> T{Coverage type}
+    T --> D[deterministic]
+    T --> L[lifecycle]
+    T --> A[agent_eval]
+    T --> M[manual]
+    T --> U[uncovered]
+    D --> E[Executable evidence]
+    L --> E
+    A --> E
+    M --> REP[Coverage report]
+    U --> BLOCK[Release-blocking by policy]
+    E --> REP
+~~~
+
+Scenario file count remains the specification inventory. Conformance is established only through the explicit registry/evidence mapping.

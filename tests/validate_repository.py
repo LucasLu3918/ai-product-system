@@ -195,8 +195,8 @@ for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"
         errors.append(f"PLANNING_PACKAGE.md missing: {phrase}")
 
 scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
-if len(scenarios) < 95:
-    errors.append(f"Expected at least 95 acceptance scenarios, found {len(scenarios)}")
+if len(scenarios) < 110:
+    errors.append(f"Expected at least 110 acceptance scenarios, found {len(scenarios)}")
 
 security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
 for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):
@@ -1022,6 +1022,56 @@ if run_helper.exists():
                 errors.append("Run resume must report STALE and require freshness check after revision drift")
 
 for n in range(101, 106):
+    matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
+    if len(matches) != 1:
+        errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")
+
+# v0.13 scenario conformance contract
+conformance_protocol = ROOT / "orchestration/CONFORMANCE.md"
+conformance_registry = ROOT / "tests/scenario_coverage.yaml"
+conformance_helper = ROOT / "scripts/scenario_conformance.py"
+for required in (conformance_protocol, conformance_registry, conformance_helper):
+    if not required.exists():
+        errors.append(f"Missing v0.13 conformance artifact: {required.relative_to(ROOT)}")
+
+if conformance_helper.exists():
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(conformance_helper)], capture_output=True, text=True)
+    if compiled.returncode != 0:
+        errors.append(f"scenario_conformance.py syntax failed: {compiled.stderr.strip()}")
+    check = subprocess.run([sys.executable, str(conformance_helper), "check", "--format", "json"], capture_output=True, text=True)
+    if check.returncode != 0:
+        errors.append(f"Scenario conformance check failed: {check.stdout.strip()} {check.stderr.strip()}")
+    else:
+        check_doc = json.loads(check.stdout)
+        cov = check_doc.get("coverage") or {}
+        if cov.get("total") != len(scenarios) or cov.get("registered") != len(scenarios):
+            errors.append("Scenario conformance total/registered count must match scenario inventory")
+        if cov.get("uncovered") != 0:
+            errors.append("Released scenario conformance registry must have no uncovered entries")
+        if cov.get("manual") != 95 or cov.get("automated") != 15:
+            errors.append("v0.13 baseline must conservatively report manual=95 and automated=15")
+
+    with tempfile.TemporaryDirectory() as tmp:
+        temp = Path(tmp)
+        scenario_dir = temp / "scenarios"
+        scenario_dir.mkdir()
+        (scenario_dir / "001-test.md").write_text("# test\n", encoding="utf-8")
+        bad_registry = temp / "coverage.yaml"
+        bad_registry.write_text(yaml.safe_dump({
+            "version": 1,
+            "policy": {"release_requires": {"no_uncovered": True}},
+            "scenarios": [],
+        }, sort_keys=False), encoding="utf-8")
+        missing = subprocess.run([
+            sys.executable, str(conformance_helper), "check",
+            "--registry", str(bad_registry),
+            "--scenario-dir", str(scenario_dir),
+            "--format", "json",
+        ], capture_output=True, text=True)
+        if missing.returncode == 0:
+            errors.append("Conformance checker must fail when a Scenario has no registry entry")
+
+for n in range(106, 111):
     matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
     if len(matches) != 1:
         errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")

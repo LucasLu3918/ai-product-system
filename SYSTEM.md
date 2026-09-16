@@ -441,3 +441,26 @@ Rules:
 - ATTACHED projects persist under `.ai/runs/<run-id>/`;
 - EPHEMERAL projects use the external AIPS project cache and do not create `.ai/`;
 - revision drift marks resume state STALE; the Agent must re-evaluate affected Intelligence/tests/approvals before continuing.
+
+## Scenario Conformance
+
+Acceptance Scenario count is a specification inventory, not proof that each behavior is executable-tested.
+
+Use `tests/scenario_coverage.yaml` + `scripts/scenario_conformance.py` to maintain an explicit mapping:
+
+~~~text
+Scenario
+→ coverage type
+→ evidence
+→ conformance report
+~~~
+
+Coverage types:
+
+- `deterministic` — rule/schema/helper behavior executable without model judgment;
+- `lifecycle` — executable multi-step system/runtime lifecycle evidence;
+- `agent_eval` — model/agent evaluation evidence;
+- `manual` — reviewed specification with no claimed automated evidence;
+- `uncovered` — no acceptable evidence yet.
+
+Never upgrade a Scenario to automated coverage merely because a related validator exists. Evidence must materially test that Scenario's contract.

@@ -789,3 +789,14 @@ aips run resume --project /path/to/project --run-id change-123
 ATTACHED 專案寫入 `.ai/runs/<run-id>/`；EPHEMERAL 只寫 External Cache，不會因此建立 `.ai/`。
 
 如果 Git revision 已改變，resume 會回報 `STALE`，Agent 必須先重新檢查 freshness / impact / tests / approval，再繼續。
+
+## v0.13 Scenario Conformance
+
+Scenario 文件數量不再直接等同測試覆蓋率。
+
+~~~bash
+aips conformance check
+aips conformance report
+~~~
+
+Report 會分開顯示 deterministic / lifecycle / agent_eval / manual / uncovered。只有前三者計入 automated coverage；manual 不會被包裝成自動化測試。
