@@ -10,6 +10,18 @@ import yaml
 
 from .static_contracts import ROOT, errors, load_yaml, roles, skills, scenarios, version
 
+install_preflight_evidence = ROOT / "tests/evidence/install_preflight_lifecycle.py"
+if not install_preflight_evidence.exists():
+    errors.append("Missing install/preflight lifecycle evidence")
+else:
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(install_preflight_evidence)], capture_output=True, text=True)
+    if compiled.returncode != 0:
+        errors.append(f"Install/preflight lifecycle evidence syntax failed: {compiled.stderr.strip()}")
+    else:
+        focused = subprocess.run([sys.executable, str(install_preflight_evidence)], capture_output=True, text=True)
+        if focused.returncode != 0:
+            errors.append(f"Install/preflight lifecycle evidence failed: {focused.stdout.strip()} {focused.stderr.strip()}")
+
 harness_evidence = ROOT / "tests/evidence/harness_runtime_lifecycle.py"
 if not harness_evidence.exists():
     errors.append("Missing focused Harness runtime lifecycle evidence")
