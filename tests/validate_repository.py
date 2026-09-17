@@ -14,11 +14,14 @@ def _append_validation_git_config(key: str, value: str) -> None:
 
 
 # Lifecycle evidence rapidly creates, updates and deletes temporary Git repositories.
-# Disable automatic detached gc only for repository validation so a background Git
-# maintenance process cannot race TemporaryDirectory cleanup after the Git command
-# under test has already returned. Product/runtime Git behavior is intentionally unchanged.
+# Disable both legacy automatic gc and modern automatic maintenance only for repository
+# validation so no detached Git housekeeping process can race TemporaryDirectory cleanup
+# after the Git command under test has already returned. Product/runtime Git behavior is
+# intentionally unchanged, and cleanup failures remain fail-closed rather than ignored.
 _append_validation_git_config("gc.auto", "0")
 _append_validation_git_config("gc.autoDetach", "false")
+_append_validation_git_config("maintenance.auto", "false")
+_append_validation_git_config("maintenance.autoDetach", "false")
 
 from validation import static_contracts as static_contracts
 from validation import runtime_contracts as runtime_contracts  # noqa: F401
