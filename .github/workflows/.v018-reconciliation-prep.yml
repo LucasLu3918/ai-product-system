@@ -1,0 +1,33 @@
+name: v018-reconciliation-prep
+
+on:
+  push:
+    branches:
+      - release/v0.18.0-residual-capability
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: release/v0.18.0-residual-capability
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt
+      - run: python scripts/.v018_reconciliation_prep.py
+      - run: python -m py_compile scripts/project_intelligence.py tests/evidence/project_intelligence_reconciliation_lifecycle.py
+      - run: python tests/evidence/project_intelligence_reconciliation_lifecycle.py
+      - run: python tests/validate_repository.py
+      - name: Commit capability slice
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/project_intelligence.py bin/aips orchestration/PROJECT_INTELLIGENCE.md tests/evidence/project_intelligence_reconciliation_lifecycle.py
+          git commit -m "feat(intelligence): reconcile authoritative context conflicts"
+          git push origin HEAD:release/v0.18.0-residual-capability
