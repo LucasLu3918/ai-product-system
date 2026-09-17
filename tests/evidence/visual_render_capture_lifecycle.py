@@ -12,6 +12,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 CAPTURE = ROOT / "scripts" / "visual_capture.py"
+REVIEW = ROOT / "scripts" / "visual_consistency_review.py"
 EVIDENCE = ROOT / "scripts" / "visual_evidence.py"
 
 
@@ -63,6 +64,7 @@ def metric(capture: dict, name: str) -> dict:
 
 def main() -> int:
     require(CAPTURE.exists(), "visual capture helper missing")
+    require(REVIEW.exists(), "visual consistency review helper missing")
     require(EVIDENCE.exists(), "visual evidence helper missing")
 
     with tempfile.TemporaryDirectory() as tmp:
@@ -76,6 +78,7 @@ def main() -> int:
         inspect = [
             {"name": "save", "selector": "#save", "properties": ["height", "padding-top", "padding-bottom", "border-top-width"]},
             {"name": "tag", "selector": "#tag", "properties": ["height", "padding-top", "padding-bottom", "border-top-width"]},
+            {"name": "name", "selector": "#name", "properties": ["height", "padding-top", "padding-bottom", "border-top-width"]},
             {"name": "nav", "selector": "#nav", "properties": ["height", "padding-top", "padding-bottom"]},
         ]
 
@@ -138,7 +141,7 @@ def main() -> int:
         require(metric(by_id["before-desktop-default"], "save")["__rect"]["height"] == 44, "fixture must expose the original shared-control outlier")
         for cid in ("after-desktop-default", "after-desktop-hover"):
             require(metric(by_id[cid], "save")["__rect"]["height"] == 40, f"shared button geometry must be stable after fix: {cid}")
-        require(metric(by_id["after-desktop-focus"], "save")["__rect"]["height"] == 40, "focus capture must retain shared geometry")
+        require(metric(by_id["after-desktop-focus"], "name")["__rect"]["height"] == 40, "focused input must retain shared geometry")
         require(metric(by_id["after-desktop-selected"], "tag")["__rect"]["height"] == 40, "selected tag must retain shared geometry")
         require(metric(by_id["after-desktop-default"], "nav")["__rect"]["height"] == 40, "navigation must use shared geometry after fix")
 
@@ -178,7 +181,7 @@ def main() -> int:
                 "decision": "PENDING",
                 "quality_assessed_by": "visual_review",
                 "checks": [{"area": "rendered evidence available", "result": "pending_visual_judgment", "evidence": [c["artifact"] for c in after]}],
-                "notes": ["Real browser evidence exists; semantic Visual Quality Review is intentionally not synthesized by this lifecycle fixture."],
+                "notes": ["Real browser evidence exists; a separate reviewer must decide the objective consistency contract."],
             },
             "profile_updated": False,
             "remaining_material_findings": [],
@@ -197,7 +200,90 @@ def main() -> int:
         false_pass_data = json.loads(false_pass.stdout)
         require(any("Visual Quality Review" in error for error in false_pass_data.get("errors", [])), "false PASS must fail at visual-review gate")
 
-    print("REAL VISUAL RENDER / CAPTURE LIFECYCLE PASSED")
+        review_plan = {
+            "version": 1,
+            "checks": [
+                {
+                    "id": "captures-cover-responsive-and-states",
+                    "type": "capture_present",
+                    "captures": ["before-desktop-default", "before-mobile-default", "after-desktop-default", "after-desktop-hover", "after-desktop-focus", "after-desktop-selected", "after-mobile-default"],
+                    "area": "rendered evidence coverage",
+                },
+                {
+                    "id": "before-outlier-is-observable",
+                    "type": "metric_not_equal",
+                    "left": {"capture": "before-desktop-default", "metric": "save", "path": "__rect.height"},
+                    "right": {"capture": "before-desktop-default", "metric": "name", "path": "__rect.height"},
+                    "area": "before finding reproduction",
+                },
+                {
+                    "id": "button-matches-shared-control-baseline",
+                    "type": "metric_equal",
+                    "left": {"capture": "after-desktop-default", "metric": "save", "path": "__rect.height"},
+                    "right": {"capture": "after-desktop-default", "metric": "name", "path": "__rect.height"},
+                    "area": "shared component geometry",
+                },
+                {
+                    "id": "navigation-matches-shared-control-baseline",
+                    "type": "metric_equal",
+                    "left": {"capture": "after-desktop-default", "metric": "nav", "path": "__rect.height"},
+                    "right": {"capture": "after-desktop-default", "metric": "name", "path": "__rect.height"},
+                    "area": "navigation geometry",
+                },
+                {
+                    "id": "hover-state-geometry-stable",
+                    "type": "metric_equal",
+                    "left": {"capture": "after-desktop-default", "metric": "save", "path": "__rect.height"},
+                    "right": {"capture": "after-desktop-hover", "metric": "save", "path": "__rect.height"},
+                    "area": "hover state stability",
+                },
+                {
+                    "id": "focus-state-geometry-stable",
+                    "type": "metric_equal",
+                    "left": {"capture": "after-desktop-default", "metric": "name", "path": "__rect.height"},
+                    "right": {"capture": "after-desktop-focus", "metric": "name", "path": "__rect.height"},
+                    "area": "focus state stability",
+                },
+                {
+                    "id": "selected-state-geometry-stable",
+                    "type": "metric_equal",
+                    "left": {"capture": "after-desktop-default", "metric": "tag", "path": "__rect.height"},
+                    "right": {"capture": "after-desktop-selected", "metric": "tag", "path": "__rect.height"},
+                    "area": "selected state stability",
+                },
+                {
+                    "id": "mobile-shared-control-geometry",
+                    "type": "metric_equal",
+                    "left": {"capture": "after-mobile-default", "metric": "save", "path": "__rect.height"},
+                    "right": {"capture": "after-mobile-default", "metric": "name", "path": "__rect.height"},
+                    "area": "responsive consistency",
+                },
+            ],
+        }
+        review_plan_path = project / "VISUAL_REVIEW_PLAN.yaml"
+        review_result_path = project / "VISUAL_REVIEW_RESULT.yaml"
+        review_plan_path.write_text(yaml.safe_dump(review_plan, sort_keys=False), encoding="utf-8")
+        reviewed = run([sys.executable, str(REVIEW), str(result_path), str(review_plan_path), "--output", str(review_result_path), "--format", "json"])
+        require(reviewed.returncode == 0, f"independent objective consistency review failed: {reviewed.stdout} {reviewed.stderr}")
+        review_result = yaml.safe_load(review_result_path.read_text(encoding="utf-8")) or {}
+        require(review_result.get("decision") == "PASS", "objective rendered consistency review must PASS")
+        require(review_result.get("general_visual_quality_inferred") is False, "bounded consistency reviewer must not claim general aesthetic judgment")
+
+        audit["review"] = {
+            "decision": review_result["decision"],
+            "quality_assessed_by": review_result["quality_assessed_by"],
+            "checks": review_result["checks"],
+            "notes": [review_result["note"]],
+        }
+        audit["status"] = "pass"
+        audit_path.write_text(yaml.safe_dump(audit, sort_keys=False), encoding="utf-8")
+        final_evidence = run([sys.executable, str(EVIDENCE), str(audit_path), "--project", str(project), "--format", "json"])
+        require(final_evidence.returncode == 0, f"reviewed rendered evidence must PASS: {final_evidence.stdout} {final_evidence.stderr}")
+        final_data = json.loads(final_evidence.stdout)
+        require(final_data.get("evidence_integrity") == "PASS", "final evidence integrity must PASS")
+        require(final_data.get("visual_quality_inferred") is False, "evidence validator remains separate from the reviewer")
+
+    print("REAL VISUAL RENDER / CAPTURE / CONSISTENCY REVIEW LIFECYCLE PASSED")
     return 0
 
 
