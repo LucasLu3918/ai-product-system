@@ -7,6 +7,7 @@
 | `docs/INSTALLATION.md` | Human | Install / Adapter / Cache / Attach / Uninstall |
 | `docs/HARNESS.md` | Human | Turn-Aware Harness、Runtime Capability、Context Composition |
 | `docs/PROJECT_INTELLIGENCE.md` | Human | Existing Project 初始化、HTML Review、Overrides、Freshness、Change Impact |
+| `docs/EVOLUTION_RADAR.md` | Human / Maintainer | Weekly/Monthly 技術研究、evidence、Human decision boundary |
 | `docs/SECURITY_ASSURANCE.md` | Human / Reviewer | SAL、Secret/Credential Safety、Security Release evidence |
 | `docs/USER_GUIDE.md` | Human | 完整工作方式 |
 | `docs/ARCHITECTURE_OVERVIEW.md` | Human | 系統架構總覽 |
@@ -19,6 +20,7 @@
 | `orchestration/PROJECT_INTELLIGENCE.md` | Agent | Project Intelligence canonical protocol |
 | `orchestration/CHANGE_IMPACT.md` | Agent | Existing-project mutation impact guard |
 | `orchestration/EXECUTION_ISOLATION.md` | Agent / Maintainer | shared / worktree / sandbox 執行隔離與 ownership contract |
+| `orchestration/EVOLUTION_RADAR.md` | Agent / Maintainer | Scheduled signal collection、roll-up、recommendation authority boundary |
 | `orchestration/SECRET_HANDLING.md` | Agent / Reviewer | Key/Token/Password secure acquisition、redaction、exposure response |
 | `orchestration/CORE_CHANGE_TESTING.md` | Agent / Reviewer | Large/Core Change 的 affected-boundary Test Matrix |
 | `orchestration/PROJECT_KNOWLEDGE.md` | Agent | v0.8 compatibility/migration only |
