@@ -2,7 +2,7 @@
 
 ![AI Product System 架構總覽](assets/system-overview.svg)
 
-目前 AIPS 架構由 Turn-Aware Global Harness、Project Intelligence、Change Impact Guard、Enforceable Governance、Durable Run State、Scenario Conformance 與 Execution Isolation 組成。
+目前 AIPS 架構由 Turn-Aware Global Harness、Project Intelligence、Change Impact Guard、Enforceable Governance、Durable Run State、Scenario Conformance、Execution Isolation 與 Evolution Radar maintenance plane 組成。
 
 ## 1. Turn-Aware Global Harness
 
@@ -129,4 +129,21 @@ Execution Profile
 
 AIPS 不會用 temp directory 假裝成 sandbox。Worktree cleanup 只處理 AIPS-owned managed path；若存在未提交修改會停止並保留 workspace。Clean worktree 可移除，但其 branch 預設保留，避免隱性刪除已提交成果。
 
-v0.14 的 Architecture Diagram Impact：system-overview 與 system-lifecycle 受影響並更新；Harness、Project Intelligence、Product Delivery 本身的流程沒有改變，因此其專用圖為 N/A。
+## 12. Evolution Radar Maintenance Plane
+
+~~~text
+Scheduled / Manual Radar Trigger
+→ bounded public source collection
+→ provenance + normalization + deduplication
+→ weekly evidence Issue
+→ monthly recurrence roll-up
+→ semantic analyzer available?
+   ├─ yes → advisory recommendation
+   └─ no  → ANALYSIS_PENDING
+→ Human decision
+→ normal System Self-Improvement / Core / Git Publish gates
+~~~
+
+Evolution Radar 位於 maintenance plane，不在一般 Agent Turn 的 runtime hot path，因此不增加普通對話的 bootstrap/per-turn context cost。它只能讀 repository 並建立研究 Issue；沒有 code-write、PR、merge 或 release authority。
+
+v0.19.0 的 Architecture Diagram Impact：`system-overview.svg` 與本架構總覽受影響並更新；Harness、Project Intelligence、Product Delivery、Installation lifecycle 本身的 runtime flow 沒有改變，因此其專用 SVG 為 N/A。

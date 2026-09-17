@@ -4,6 +4,7 @@ from validation import visual_render_contracts as visual_render_contracts  # noq
 from validation import performance_evidence_contracts as performance_evidence_contracts  # noqa: F401
 from validation import creative_evidence_contracts as creative_evidence_contracts  # noqa: F401
 from validation import product_delivery_contracts as product_delivery_contracts  # noqa: F401
+from validation import evolution_radar_contracts as evolution_radar_contracts  # noqa: F401
 from validation import governance_resume as governance_resume  # noqa: F401
 from validation import conformance_isolation as conformance_isolation  # noqa: F401
 from validation import syntax_contracts as syntax_contracts  # noqa: F401

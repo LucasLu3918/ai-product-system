@@ -1,0 +1,52 @@
+version: 1
+run:
+  mode: weekly # weekly | monthly
+  generated_at: null
+  repository_revision: null
+  # Monthly roll-up only:
+  period: null # YYYY-MM
+  weekly_evidence_count: null
+  analyzer:
+    status: unavailable # available | unavailable
+    provider: null
+    model: null
+sources:
+  configured: []
+  attempted: []
+  failures: []
+signals: []
+# Each signal:
+# - fingerprint: sha256:<hex>
+#   title: ""
+#   canonical_url: ""
+#   source_id: ""
+#   published_at: null
+#   retrieved_at: ""
+#   summary: ""
+#   recurrence_count: 1
+#   duplicate_of: null
+recommendations: []
+# Each recommendation:
+# - signal_fingerprint: sha256:<hex>
+#   state: ANALYSIS_PENDING # COVERED | HOLD | ASSESS | TRIAL | ADOPT | ANALYSIS_PENDING
+#   aips_current_state: ""
+#   benefit: ""
+#   cost_complexity: ""
+#   reliability_security: ""
+#   confidence: null
+#   uncertainty: ""
+#   example: ""
+#   reuse_extension_path: []
+#   architecture_diagram_review_if_adopted: false
+summary:
+  signal_count: 0
+  deduplicated_count: 0
+  recommendation_count: 0
+  actionable_count: 0
+  zero_recommendations_valid: true
+authority:
+  code_change_authorized: false
+  branch_or_pr_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  human_decision_required: true

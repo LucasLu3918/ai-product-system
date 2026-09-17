@@ -842,3 +842,13 @@ scenarios:
       - tests/evidence/agent_eval_framework.py
       - scripts/agent_eval.py
       - tests/validate_repository.py
+  - id: "126"
+    path: tests/scenarios/126-evolution-radar-research-with-human-decision.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/evolution_radar_lifecycle.py
+      - scripts/evolution_radar.py
+      - scripts/evolution_radar_rollup.py
+      - orchestration/EVOLUTION_RADAR.md
+      - .github/workflows/evolution-radar.yml
+      - tests/validate_repository.py
