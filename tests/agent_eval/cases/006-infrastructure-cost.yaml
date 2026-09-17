@@ -1,0 +1,37 @@
+version: 1
+id: 006-infrastructure-cost
+scenario_id: "006"
+description: Infrastructure cost analysis should state workload assumptions, require current runtime pricing evidence, compare operational tradeoffs, and express uncertainty.
+input:
+  prompt: Estimate suitable AWS/GCP environments and monthly cost for this project and recommend an option.
+  context:
+    workload_profile_incomplete: true
+    current_cloud_prices_not_embedded_in_case: true
+    production_reliability_matters: true
+rubric:
+  equals:
+    response.status: READY_WITH_RUNTIME_PRICE_LOOKUP
+    response.uses_stale_recorded_prices_as_current: false
+    response.compares_tco_not_vm_only: true
+    response.confidence_stated: true
+  contains:
+    response.actions:
+      - derive_or_state_workload_assumptions
+      - verify_current_provider_prices_at_runtime
+      - compare_cost_scenarios
+      - compare_operations_and_reliability
+      - state_confidence_and_major_uncertainties
+    response.cost_dimensions:
+      - compute
+      - storage
+      - network
+      - managed_services
+      - operations
+  excludes:
+    response.actions:
+      - recommend_from_vm_price_only
+      - present_recorded_eval_price_as_current
+  set_equals: {}
+  nonempty:
+    - response.assumption_summary
+    - response.recommendation_basis
