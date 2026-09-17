@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.16.9
+
+### Interaction & Context Evidence Maturity
+
+- Add Agent Eval evidence for scoped instruction conflict handling, adaptive bounded subagent/model routing, safe professional defaults, external-context authorization/resume, external-context fallback and Architecture Diagram Impact decisions.
+- Promote Scenario 063 to lifecycle using the existing executable normal-chat Harness/Project Intelligence fixture; it verifies general conversation remains EPHEMERAL and does not create `.ai/`, External Project Intelligence or Change Impact state.
+- Keep Scenarios 064, 068 and 082 manual: current executable evidence covers adjacent source composition, preflight/Harness lifecycle and Project Intelligence refresh behavior, but does not yet exercise each scenario's complete contract end to end.
+- Promote Scenarios 008, 010, 036, 037, 038 and 065 to agent_eval, and Scenario 063 to lifecycle.
+- Raise conformance baseline to 125 total / 17 manual / 19 deterministic / 42 lifecycle / 47 agent_eval / 108 automated / 0 uncovered (86.4% automated).
+- Architecture Diagram Impact: N/A — evidence/conformance metadata only; no runtime topology, Role, Skill, Capability or Approval Gate change.
+
 ## 0.16.8
 
 ### Product & Visual Evidence Maturity
@@ -260,7 +271,7 @@
 ### Project Intelligence
 
 - Replace Project Knowledge as the canonical reusable brownfield understanding layer while preserving legacy knowledge as migration evidence.
-- Add PROJECT_INTELLIGENCE, SOURCE_REGISTRY, IMPACT_GRAPH and PROJECT_OVERRIDES contracts.
+- Add PROJECT_INTELLIGENCE, SOURCE_REGISTRY and IMPACT_GRAPH and PROJECT_OVERRIDES contracts.
 - Add read-only breadth-first discovery followed by evidence-based semantic enrichment; inventory alone remains PARTIAL until finalize reaches READY.
 - Add runtime-aware source deduplication, branch/worktree/dirty-path freshness, one-writer atomic updates and targeted refresh.
 - Add deterministic self-contained Project Intelligence Review HTML with secret redaction.
