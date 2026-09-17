@@ -122,6 +122,43 @@ Project Intelligence is below:
 
 If new evidence conflicts with an override, mark a conflict for human review.
 
+## Override reconciliation
+
+`PROJECT_OVERRIDES.yaml` version 2 gives approved decisions a stable `subject`, `scope` and `value`.
+Later discovery is reconciled through a separate candidate file rather than writing directly over approved state:
+
+~~~yaml
+version: 1
+discoveries:
+  - id: discovery-orders-persistence
+    subject: architecture.orders.persistence
+    scope: project
+    value: repository
+    type: OBSERVED_CONVENTION
+    confidence: high
+    evidence:
+      - internal/orders/repository.py
+~~~
+
+Run:
+
+~~~bash
+aips intelligence reconcile --project /path/to/project --discoveries /path/to/discoveries.yaml
+~~~
+
+Reconciliation is deterministic and non-destructive:
+
+- approved inferences, additional rules, exceptions and exclusions are preserved;
+- matching values are reported as aligned;
+- discoveries without an applicable override remain derived candidates;
+- contradictory discoveries create stable `DISCOVERY_OVERRIDE_CONFLICT` records in both Project Intelligence and `PROJECT_OVERRIDES.yaml`;
+- exclusion matches are conflicts rather than silently reintroduced inferences;
+- conflict records persist hashes/pointers/evidence metadata, not duplicate raw discovered values;
+- generated Human Review HTML surfaces the conflict;
+- legacy unkeyed override entries are preserved but are not guessed into reconciliation semantics.
+
+A later reconciliation can clear AIPS-managed conflicts when the candidate evidence no longer contradicts approved state. Manually maintained conflicts are preserved.
+
 ## Intelligence types
 
 Derived statements remain classified as:

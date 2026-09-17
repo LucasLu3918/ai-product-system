@@ -397,7 +397,7 @@ def bootstrap(root: Path) -> dict[str, Any]:
         overrides_path = store / "PROJECT_OVERRIDES.yaml"
         if not overrides_path.exists():
             atomic_yaml(overrides_path, {
-                "version": 1,
+                "version": 2,
                 "approved_inferences": [],
                 "additional_rules": [],
                 "exceptions": [],
@@ -556,6 +556,225 @@ def freshness(root: Path) -> dict[str, Any]:
     }
 
 
+
+RECONCILE_MANAGED_BY = "aips_project_intelligence_reconcile"
+RECONCILE_OVERRIDE_TYPES = (
+    "approved_inferences",
+    "additional_rules",
+    "exceptions",
+    "excluded_inferences",
+)
+
+
+def canonical_json(value: Any) -> str:
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+
+
+def reconciliation_subject(entry: dict[str, Any]) -> str:
+    return str(entry.get("subject") or "").strip()
+
+
+def reconciliation_scope(entry: dict[str, Any]) -> str:
+    value = str(entry.get("scope") or "project").strip().strip("/")
+    return value or "project"
+
+
+def reconciliation_value_hash(entry: dict[str, Any]) -> str | None:
+    if "value" not in entry:
+        return None
+    return sha(canonical_json(entry.get("value")))
+
+
+def scope_applies(override_scope: str, discovery_scope: str) -> bool:
+    if override_scope == "project":
+        return True
+    if discovery_scope == override_scope:
+        return True
+    return discovery_scope.startswith(override_scope.rstrip("/") + "/")
+
+
+def load_reconciliation_discoveries(path: Path) -> tuple[list[dict[str, Any]], str]:
+    candidate = path.expanduser().resolve()
+    if not candidate.is_file():
+        raise RuntimeError(f"Discovery candidate file does not exist: {candidate}")
+    doc = load_yaml(candidate, {})
+    if not isinstance(doc, dict) or doc.get("version") != 1:
+        raise RuntimeError("Discovery candidate file must be a mapping with version: 1")
+    raw = doc.get("discoveries")
+    if not isinstance(raw, list):
+        raise RuntimeError("Discovery candidate file must contain a discoveries list")
+
+    normalized: list[dict[str, Any]] = []
+    for index, item in enumerate(raw):
+        if not isinstance(item, dict):
+            raise RuntimeError(f"Discovery candidate #{index + 1} must be a mapping")
+        subject = reconciliation_subject(item)
+        if not subject:
+            raise RuntimeError(f"Discovery candidate #{index + 1} requires subject")
+        if "value" not in item:
+            raise RuntimeError(f"Discovery candidate {subject!r} requires value")
+        scope = reconciliation_scope(item)
+        identity_payload = {"subject": subject, "scope": scope, "value": item.get("value")}
+        normalized.append({
+            "id": str(item.get("id") or f"discovery-{sha(canonical_json(identity_payload))[:12]}"),
+            "subject": subject,
+            "scope": scope,
+            "value": item.get("value"),
+            "type": str(item.get("type") or "INTERPRETATION"),
+            "confidence": item.get("confidence"),
+            "evidence": [str(x) for x in (item.get("evidence") or [])][:50],
+            "material": bool(item.get("material", True)),
+        })
+    return normalized, file_hash(candidate)
+
+
+def managed_conflicts(conflicts: Any) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    preserved: list[dict[str, Any]] = []
+    managed: list[dict[str, Any]] = []
+    for item in conflicts or []:
+        if not isinstance(item, dict):
+            continue
+        if item.get("managed_by") == RECONCILE_MANAGED_BY:
+            managed.append(item)
+        else:
+            preserved.append(item)
+    return preserved, managed
+
+
+def reconcile(root: Path, discoveries_path: Path) -> dict[str, Any]:
+    store, mode, pid = intelligence_store(root)
+    intelligence_path = store / "PROJECT_INTELLIGENCE.yaml"
+    overrides_path = store / "PROJECT_OVERRIDES.yaml"
+    discovery_path = store / "DISCOVERY.yaml"
+    if not intelligence_path.is_file() or not overrides_path.is_file():
+        raise RuntimeError("Project Intelligence must be initialized before reconciliation")
+
+    discoveries, source_hash = load_reconciliation_discoveries(discoveries_path)
+    with writer_lock(store):
+        intel = load_yaml(intelligence_path, {})
+        overrides = load_yaml(overrides_path, {})
+        if not isinstance(overrides, dict):
+            raise RuntimeError("PROJECT_OVERRIDES.yaml must be a mapping")
+        version = overrides.get("version")
+        if version not in {1, 2}:
+            raise RuntimeError(f"Unsupported PROJECT_OVERRIDES version: {version}")
+
+        comparable: list[tuple[str, dict[str, Any], str, str, str]] = []
+        for override_type in RECONCILE_OVERRIDE_TYPES:
+            entries = overrides.get(override_type) or []
+            if not isinstance(entries, list):
+                raise RuntimeError(f"PROJECT_OVERRIDES {override_type} must be a list")
+            for entry in entries:
+                if not isinstance(entry, dict):
+                    continue
+                subject = reconciliation_subject(entry)
+                value_hash = reconciliation_value_hash(entry)
+                if not subject or value_hash is None:
+                    continue
+                comparable.append((
+                    override_type,
+                    entry,
+                    subject,
+                    reconciliation_scope(entry),
+                    value_hash,
+                ))
+
+        conflicts: list[dict[str, Any]] = []
+        aligned_ids: list[str] = []
+        accepted_ids: list[str] = []
+        for discovery in discoveries:
+            subject = discovery["subject"]
+            scope = discovery["scope"]
+            discovery_hash = sha(canonical_json(discovery["value"]))
+            applicable = [
+                item for item in comparable
+                if item[2] == subject and scope_applies(item[3], scope)
+            ]
+            if not applicable:
+                accepted_ids.append(discovery["id"])
+                continue
+
+            conflict_count = 0
+            for override_type, override, _, override_scope, override_hash in applicable:
+                is_conflict = override_type == "excluded_inferences" or override_hash != discovery_hash
+                if not is_conflict:
+                    continue
+                conflict_count += 1
+                conflict_payload = {
+                    "subject": subject,
+                    "scope": scope,
+                    "override_type": override_type,
+                    "override_id": str(override.get("id") or ""),
+                    "override_scope": override_scope,
+                    "override_value_hash": override_hash,
+                    "discovery_id": discovery["id"],
+                    "discovery_value_hash": discovery_hash,
+                }
+                conflicts.append({
+                    "id": f"reconcile-{sha(canonical_json(conflict_payload))[:16]}",
+                    "status": "OPEN",
+                    "kind": "DISCOVERY_OVERRIDE_CONFLICT",
+                    "material": discovery["material"],
+                    "subject": subject,
+                    "scope": scope,
+                    "managed_by": RECONCILE_MANAGED_BY,
+                    "override": {
+                        "type": override_type,
+                        "id": override.get("id"),
+                        "scope": override_scope,
+                        "value_hash": override_hash,
+                    },
+                    "discovery": {
+                        "id": discovery["id"],
+                        "type": discovery["type"],
+                        "confidence": discovery["confidence"],
+                        "evidence": discovery["evidence"],
+                        "value_hash": discovery_hash,
+                    },
+                })
+            if conflict_count:
+                continue
+            aligned_ids.append(discovery["id"])
+
+        conflicts = sorted(conflicts, key=lambda x: x["id"])
+        preserved_override_conflicts, _ = managed_conflicts(overrides.get("conflicts"))
+        overrides["conflicts"] = preserved_override_conflicts + conflicts
+        if version == 1 and comparable:
+            overrides["version"] = 2
+
+        preserved_intel_conflicts, _ = managed_conflicts(intel.get("conflicts"))
+        intel["conflicts"] = preserved_intel_conflicts + conflicts
+
+        discovery_doc = load_yaml(discovery_path, {}) if discovery_path.exists() else {}
+        if not isinstance(discovery_doc, dict):
+            discovery_doc = {}
+        discovery_doc["reconciliation"] = {
+            "version": 1,
+            "source_hash": source_hash,
+            "status": "CONFLICT" if conflicts else "ALIGNED",
+            "evaluated": len(discoveries),
+            "accepted_ids": sorted(accepted_ids),
+            "aligned_ids": sorted(aligned_ids),
+            "conflict_ids": [c["id"] for c in conflicts],
+        }
+
+        atomic_yaml(overrides_path, overrides)
+        atomic_yaml(intelligence_path, intel)
+        atomic_yaml(discovery_path, discovery_doc)
+
+    review = render_review(root)
+    return {
+        "project_id": pid,
+        "mode": mode,
+        "status": "CONFLICT" if conflicts else "ALIGNED",
+        "evaluated": len(discoveries),
+        "accepted": len(accepted_ids),
+        "aligned": len(aligned_ids),
+        "conflicts": len(conflicts),
+        "conflict_ids": [c["id"] for c in conflicts],
+        "review_html": str(review),
+    }
+
 def adapter_capability(runtime: str) -> str:
     state = config_home() / "harness" / "adapters" / f"{runtime}.yaml"
     if state.exists():
@@ -649,6 +868,10 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             "readiness": readiness,
             "review": state.get("review", "UNREVIEWED"),
             "freshness": fr["status"],
+            "conflicts": [
+                c for c in (intel.get("conflicts") or [])
+                if isinstance(c, dict) and c.get("status", "OPEN") == "OPEN"
+            ],
         },
         "freshness": {
             "status": fr["status"],
@@ -904,6 +1127,7 @@ def status(root: Path) -> dict[str, Any]:
         "store": str(store),
         "exists": bool(intel),
         "state": intel.get("state") if intel else None,
+        "conflicts": (intel.get("conflicts") or []) if intel else [],
         "freshness": freshness(root),
         "review_html": str(store / "reviews" / "PROJECT_INTELLIGENCE_REVIEW.html"),
     }
@@ -938,6 +1162,11 @@ def main() -> int:
     p.add_argument("--change-id")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
+    p = sub.add_parser("reconcile")
+    p.add_argument("--project", default=os.getcwd())
+    p.add_argument("--discoveries", required=True)
+    p.add_argument("--format", choices=["yaml", "json"], default="yaml")
+
     args = parser.parse_args()
     root = project_root(Path(args.project))
     try:
@@ -953,6 +1182,8 @@ def main() -> int:
             result = context_manifest(root, args.runtime, args.prompt, args.explain)
         elif args.command == "impact-init":
             result = impact_init(root, args.prompt, args.change_id)
+        elif args.command == "reconcile":
+            result = reconcile(root, Path(args.discoveries))
         elif args.command == "migrate-attached":
             result = migrate_attached(root)
         elif args.command == "sync-external":

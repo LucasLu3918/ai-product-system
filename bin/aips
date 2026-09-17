@@ -46,6 +46,7 @@ Usage:
   aips intelligence status [--project <path>]
   aips intelligence context --runtime <id> [--project <path>] [--prompt <text>]
   aips intelligence render [--project <path>]
+  aips intelligence reconcile --discoveries <yaml> [--project <path>]
 
   aips run checkpoint --run-id <id> --step <step> [--project <path>]
   aips run event --run-id <id> --event <name> [--project <path>]

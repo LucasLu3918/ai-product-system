@@ -1,19 +1,32 @@
-version: 1
+version: 2
 
 approved_inferences: []
+# - id: INF-001
+#   subject: architecture.orders.persistence
+#   scope: project
+#   value: repository
+#   reason: confirmed by project owner
 
 additional_rules: []
 # - id: RULE-001
+#   subject: architecture.payments.layering
 #   scope: project
-#   rule: null
-#   reason: null
+#   value: application-before-infrastructure
+#   reason: project policy
 
 exceptions: []
 # - id: EX-001
+#   subject: architecture.legacy-payment.layering
 #   scope: legacy/payment
-#   rule: clean_architecture_dependency
+#   value: direct-access-allowed
 #   reason: legacy migration
 
 excluded_inferences: []
+# - id: EXCLUDE-001
+#   subject: architecture.framework
+#   scope: project
+#   value: active-record
+#   reason: explicitly rejected inference
 
 conflicts: []
+# Managed reconciliation conflicts are added here without changing approved lists.
