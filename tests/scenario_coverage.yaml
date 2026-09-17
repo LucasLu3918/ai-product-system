@@ -149,16 +149,24 @@ scenarios:
       - scripts/agent_eval.py
   - id: "021"
     path: tests/scenarios/021-vague-visual-request.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/021-vague-visual-request.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/021-vague-visual-request.yaml
+      - tests/agent_eval/results/021-vague-visual-request.yaml
+      - tests/evidence/creative_render_lifecycle.py
+      - scripts/creative_evidence.py
+      - scripts/agent_eval.py
+      - tests/validate_repository.py
   - id: "022"
     path: tests/scenarios/022-user-assets-banner.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/022-user-assets-banner.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/022-user-assets-banner.yaml
+      - tests/agent_eval/results/022-user-assets-banner.yaml
+      - tests/evidence/creative_render_lifecycle.py
+      - scripts/creative_evidence.py
+      - scripts/agent_eval.py
+      - tests/validate_repository.py
   - id: "023"
     path: tests/scenarios/023-mixed-reference-direction.md
     coverage: agent_eval

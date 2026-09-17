@@ -1,0 +1,62 @@
+version: 1
+status: PENDING # PENDING | PASS | FAIL
+mode: vague_visual_request # vague_visual_request | user_asset_banner
+
+intake:
+  approved_brand_visual_system_loaded: false
+  user_assets_loaded: false
+
+references:
+  analyzed_by_aspect: false
+  literal_copy: false
+  aspects: [layout, color, typography, imagery]
+  current_research_used_when_unclear: false
+
+direction:
+  candidates:
+    - id: A
+      fingerprint: ""
+    - id: B
+      fingerprint: ""
+  selected: ""
+
+calibration:
+  likes: []
+  dislikes: []
+  aspect_mix: []
+
+approval:
+  status: draft
+  before_broad_implementation: false
+
+artifacts:
+  creative_brief: CREATIVE_BRIEF.md
+  reference_board: REFERENCE_BOARD.md
+  creative_direction: CREATIVE_DIRECTION.yaml
+  visual_review: VISUAL_REVIEW.md
+
+assets: []
+# For required user-owned assets record type/path, required=true,
+# sha256_before/sha256_after, used_in_render, visible and crop_reviewed.
+
+renders:
+  captures: []
+  checks:
+    required_assets_visible: false
+    safe_area_respected: false
+    headline_cta_visible: false
+    crop_reviewed: false
+    no_horizontal_overflow: false
+
+review:
+  decision: PENDING
+  quality_assessed_by: visual_review
+  checks:
+    - composition
+    - headline_cta_readability
+    - safe_area
+    - crop
+    - brand_consistency
+
+# This envelope records evidence integrity. It never infers subjective visual quality
+# from screenshot existence, candidate counts, or asset hashes alone.

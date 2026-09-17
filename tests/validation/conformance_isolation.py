@@ -32,8 +32,8 @@ if conformance_helper.exists():
             errors.append("Scenario conformance total/registered count must match scenario inventory")
         if cov.get("uncovered") != 0:
             errors.append("Released scenario conformance registry must have no uncovered entries")
-        if cov.get("manual") != 3 or cov.get("agent_eval") != 52 or cov.get("lifecycle") != 51 or cov.get("automated") != 122:
-            errors.append("current baseline must report manual=3, lifecycle=51, agent_eval=52 and automated=122")
+        if cov.get("manual") != 1 or cov.get("agent_eval") != 54 or cov.get("lifecycle") != 51 or cov.get("automated") != 124:
+            errors.append("current baseline must report manual=1, lifecycle=51, agent_eval=54 and automated=124")
 
     with tempfile.TemporaryDirectory() as tmp:
         temp = Path(tmp)
@@ -83,8 +83,8 @@ if agent_eval_helper.exists():
     else:
         eval_doc = json.loads(eval_check.stdout)
         summary = eval_doc.get("summary") or {}
-        if summary.get("cases") != 52 or summary.get("results") != 52 or summary.get("passed") != 52 or summary.get("failed") != 0:
-            errors.append("v0.18.3 committed Agent Eval baseline must contain 52 passing case/result pairs")
+        if summary.get("cases") != 54 or summary.get("results") != 54 or summary.get("passed") != 54 or summary.get("failed") != 0:
+            errors.append("v0.18.3 committed Agent Eval baseline must contain 54 passing case/result pairs")
 
     cli_eval = subprocess.run(
         ["bash", str(ROOT / "bin/aips"), "conformance", "agent-eval", "check", "--format", "json"],
