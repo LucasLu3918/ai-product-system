@@ -1,0 +1,20 @@
+version: 1
+case_id: 065-architecture-diagram-impact-required
+scenario_id: "065"
+case_fingerprint: sha256:44653efea593ea6ebb0c1f0d5f527fc4082e7c9fbfab5047eb4c3c5759275b2c
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: BLOCKED
+  architecture_diagram_impact_required: true
+  documentation_complete: false
+  actions:
+    - assess_architecture_diagram_impact
+    - check_maintainer_mermaid
+    - check_relevant_human_svg_or_overview
+    - update_affected_diagrams_or_record_na_reason
+    - block_on_stale_affected_diagram
+  blocking_reason: The Core routing and lifecycle change affects architecture representation and the maintainer diagram is stale, so documentation cannot be completed until affected diagrams are updated or a valid N/A determination is recorded for unaffected views.
