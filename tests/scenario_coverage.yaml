@@ -204,10 +204,14 @@ scenarios:
       - scripts/agent_eval.py
   - id: "028"
     path: tests/scenarios/028-complete-product-to-production.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/028-complete-product-to-production.md
-    note: "Requires an end-to-end executable product-to-production lifecycle including staging, release readiness, promotion and post-production verification; current evidence is partial."
+      - tests/evidence/product_delivery_lifecycle.py
+      - scripts/product_delivery_evidence.py
+      - scripts/check_release_readiness.py
+      - orchestration/PRODUCT_DELIVERY.md
+      - orchestration/RELEASE_READINESS.md
+      - tests/validate_repository.py
   - id: "029"
     path: tests/scenarios/029-deployment-units-repository-strategy.md
     coverage: agent_eval
