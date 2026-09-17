@@ -458,10 +458,10 @@ scenarios:
       - tests/validate_repository.py
   - id: "068"
     path: tests/scenarios/068-v07-to-v08-harness-migration.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/068-v07-to-v08-harness-migration.md
-    note: "Preflight and Harness lifecycle evidence cover adjacent behavior, but the full legacy-to-managed migration contract is not yet exercised end to end."
+      - tests/evidence/legacy_harness_migration_lifecycle.py
+      - tests/validate_repository.py
   - id: "069"
     path: tests/scenarios/069-cli-name-collision-nondestructive.md
     coverage: lifecycle

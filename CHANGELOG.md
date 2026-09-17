@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.17.1
+
+### Residual Harness Migration Evidence Maturity
+
+- Add executable lifecycle evidence for legacy AIPS installation migration through preflight into the managed Global Harness model.
+- Verify the old preflight fast-forwards and re-execs the updated CLI, an installed system refreshes managed Harness content, user-owned instructions survive composition, colliding foreign registrations remain CONFLICT/MANUAL, and a plain repository checkout does not register the Global Harness implicitly.
+- Promote Scenario 068 from manual to lifecycle without adding or changing runtime product behavior.
+- Keep the remaining manual Scenarios truthful: visual scenarios still require rendered evidence; API performance requires measured benchmark evidence; 028/054/064/082/087 require additional end-to-end product capabilities or conflict/lazy-loading behavior before promotion.
+- Raise conformance baseline to 125 total / 10 manual / 19 deterministic / 44 lifecycle / 52 agent_eval / 115 automated / 0 uncovered (92.0% automated).
+- Architecture Diagram Impact: N/A — evidence, validation and release metadata only; no runtime topology, Role, Skill, Capability, Approval Gate or Constitution change.
+
 ## 0.17.0
 
 ### Project / Architecture Lifecycle Evidence Maturity
