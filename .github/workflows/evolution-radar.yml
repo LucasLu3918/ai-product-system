@@ -47,7 +47,10 @@ jobs:
       - name: Load prior weekly evidence
         if: steps.mode.outputs.value == 'monthly'
         shell: bash
-        run: gh api "repos/${GITHUB_REPOSITORY}/issues?state=all&per_page=100" > evolution-radar-issues.json
+        run: >-
+          gh api --paginate --slurp
+          "repos/${GITHUB_REPOSITORY}/issues?state=all&per_page=100"
+          > evolution-radar-issues-pages.json
       - name: Resolve previous calendar month
         if: steps.mode.outputs.value == 'monthly'
         id: period
@@ -69,7 +72,7 @@ jobs:
         if: steps.mode.outputs.value == 'monthly'
         run: >-
           python scripts/evolution_radar_rollup.py monthly-rollup
-          --issues-json evolution-radar-issues.json
+          --issues-json evolution-radar-issues-pages.json
           --config config/evolution-sources.yaml
           --period "${{ steps.period.outputs.value }}"
           --output evolution-radar.yaml
