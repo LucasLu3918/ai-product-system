@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.18.4
+
+### Evidence Closure and Full Scenario Conformance
+
+- Add rendered visual evidence integrity plus real Chromium lifecycle coverage for shared-component visual repair and product consistency sweeps; promote Scenarios 039 and 055 to lifecycle while keeping screenshot existence separate from subjective visual-quality judgement.
+- Add reproducible performance evidence for Scenario 004 with raw latency samples, nearest-rank p95 recomputation, measured bottleneck profiling, profile-driven specialist routing and fail-closed target verification; `sql-performance` is loaded only when measured evidence implicates SQL.
+- Add hybrid Creative Evidence for Scenarios 021 and 022 using Agent Eval for semantic/creative judgement plus real desktop/mobile Chromium evidence for safe-area geometry, overflow, crop presentation and exact preservation of user-owned asset bytes. Objective artifact integrity never infers that a design is subjectively premium, minimal or fashionable.
+- Add executable end-to-end Product Delivery evidence for Scenario 028 across isolated local, staging and representative production environments, binding all environments to one immutable release candidate, requiring Release Readiness plus explicit exact-candidate production promotion approval, verifying post-deploy health/smoke/log evidence and exercising recovery after an injected failure.
+- Keep production claims truthful: the CI delivery lifecycle proves orchestration and gate behavior in representative isolated environments and explicitly does not claim deployment to an external/customer production platform.
+- Raise conformance baseline to 125 total / 0 manual / 19 deterministic / 52 lifecycle / 54 agent_eval / 125 automated / 0 uncovered (100% automated).
+- Reuse the existing Visual Quality Review, Creative Direction, Performance Profiling, Release Readiness and Product Delivery mechanisms instead of introducing duplicate Roles, Skills, capability categories or approval gates.
+- Architecture Diagram Impact: N/A — this release closes evidence/conformance gaps and updates release metadata; it does not change runtime topology, product architecture, Constitution semantics or Human Authority.
+
 ## 0.18.3
 
 ### Project Intelligence Promotion
