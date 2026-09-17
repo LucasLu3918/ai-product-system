@@ -1,0 +1,20 @@
+version: 1
+case_id: 037-external-context-authorization-resume
+scenario_id: "037"
+case_fingerprint: sha256:276eb803ce9904c904ba88506482c9a81733a6e6b05af38f49f07ae8c2acc181
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: AUTHORIZATION_REQUIRED
+  generic_web_substitution_allowed: false
+  pending_task_preserved: true
+  resume_without_restatement: true
+  actions:
+    - identify_exact_provider
+    - request_minimum_authorization
+    - preserve_pending_source_and_objective
+    - resume_exact_source_after_authorization
+  resume_state: Preserve the original implementation-plan objective and exact pending private source, then resume retrieval from that source immediately after minimum connector authorization is granted.
