@@ -1,0 +1,25 @@
+version: 1
+case_id: 052-project-intelligence-discovery
+scenario_id: "052"
+case_fingerprint: sha256:6fca5874c49abf5e513d7c4eac0786481ce40b7b256ae5d0f1f88028eaa61055
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: READY_TO_PERSIST_DERIVED_INTELLIGENCE
+  full_repository_preload: false
+  folder_names_alone_sufficient: false
+  actions:
+    - target_repository_discovery
+    - separate_fact_interpretation_observed_convention
+    - persist_only_stable_reusable_expensive_conclusions
+    - record_confidence_evidence_and_watch_information
+  epistemic_types:
+    - FACT
+    - INTERPRETATION
+    - OBSERVED_CONVENTION
+  architecture_interpretation: Repository evidence supports a high-confidence interpretation of inward dependency direction and DDD tactical boundaries, but the conclusion remains derived rather than authoritative because no architecture document exists.
+  evidence_summary: Use concrete dependency direction, adapter-to-port relationships and boundary-focused tests as evidence; directory names are discovery hints only.
+  watch_summary: Persist evidence references, confidence and focused watch paths for the source relationships that would invalidate or refine the derived architecture interpretation.

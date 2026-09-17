@@ -1,0 +1,28 @@
+version: 1
+case_id: 006-infrastructure-cost
+scenario_id: "006"
+case_fingerprint: sha256:d849fd16b2c58e642e579f51b9b01b74edb15ee550688675603fe3b34687e9d1
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: READY_WITH_RUNTIME_PRICE_LOOKUP
+  uses_stale_recorded_prices_as_current: false
+  compares_tco_not_vm_only: true
+  confidence_stated: true
+  actions:
+    - derive_or_state_workload_assumptions
+    - verify_current_provider_prices_at_runtime
+    - compare_cost_scenarios
+    - compare_operations_and_reliability
+    - state_confidence_and_major_uncertainties
+  cost_dimensions:
+    - compute
+    - storage
+    - network
+    - managed_services
+    - operations
+  assumption_summary: Build low/base/high workload scenarios from traffic, storage, data transfer, availability and operational assumptions; mark unknowns explicitly instead of inventing precision.
+  recommendation_basis: Verify current AWS/GCP prices at execution time, then compare scenario TCO, operational burden and reliability rather than selecting from VM price alone.

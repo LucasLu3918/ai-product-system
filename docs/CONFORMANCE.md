@@ -452,3 +452,47 @@ Automated     86.4%
 ~~~
 
 Architecture Diagram Impact: N/A. This release changes evidence/conformance metadata only and does not change runtime topology, Role, Skill, Capability, Approval Gate, or architecture behavior.
+
+## v0.17.0 Project / Architecture Lifecycle Evidence Maturity
+
+Promoted evidence:
+
+~~~text
+002 Existing REST API Change                    -> Agent Eval
+006 Infrastructure Cost                        -> Agent Eval
+029 Deployment Units vs Repository Strategy    -> Agent Eval
+043 Review Learning Feedback                   -> Agent Eval
+052 Project Intelligence Discovery             -> Agent Eval
+088 Legacy Project Knowledge Migration         -> Lifecycle
+~~~
+
+Scenarios 002, 006, 029, 043 and 052 use observable Agent Eval responses bound to exact Case SHA-256 fingerprints and deterministic rubrics. Scenario 006 validates that recommendations require runtime-current price verification and explicitly avoids treating recorded fixture prices as current truth.
+
+Scenario 088 executes a temporary Git project containing legacy `.ai/knowledge`, bootstraps canonical Project Intelligence, verifies migration provenance and pointer-over-copy authoritative sources, writes new reusable conclusions only to canonical Intelligence, finalizes READY, and confirms legacy knowledge remains byte-for-byte unchanged.
+
+The following roadmap targets intentionally remain manual:
+
+~~~text
+004 API Performance
+028 Complete Product to Production
+054 Project Intelligence Promotion to Authoritative Source
+087 Monorepo Lazy Intelligence
+~~~
+
+These scenarios require evidence that the current repository does not yet provide end to end: a reproducible benchmark/profile and measured p95; full staging-to-production lifecycle verification; approval-backed authoritative-source mutation and deduplication; and component-targeted monorepo lazy-loading execution. They remain manual rather than being partially promoted.
+
+v0.17.0 baseline:
+
+~~~text
+Total         125
+Manual         11
+Deterministic  19
+Lifecycle      43
+Agent Eval     52
+Automated     114
+Uncovered       0
+Automated     91.2%
+~~~
+
+Architecture Diagram Impact: N/A. This release changes evidence, conformance metadata and validation expectations only; it does not change runtime topology, Role, Skill, Capability, Approval Gate, Constitution, or canonical Project Intelligence behavior.
+

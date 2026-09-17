@@ -1,0 +1,36 @@
+version: 1
+id: 029-deployment-units-repository-strategy
+scenario_id: "029"
+description: Frontend and backend should be modeled as separate Deployment Units without automatically splitting Git repositories; repository strategy must be evidence-based.
+input:
+  prompt: This product has a frontend and backend. Decide the deployment-unit and repository strategy.
+  context:
+    coordinated_contracts: true
+    shared_docs_and_e2e: true
+    distinct_ownership_evidence: false
+    distinct_release_cadence_evidence: false
+rubric:
+  equals:
+    response.status: READY
+    response.deployment_units_count: 2
+    response.repository_strategy: monorepo
+    response.automatic_two_repo_split: false
+  contains:
+    response.deployment_units:
+      - frontend
+      - backend
+    response.multi_repo_triggers:
+      - distinct_ownership
+      - permission_boundary
+      - independent_release_cadence
+      - scale_boundary
+      - shared_service_boundary
+    response.actions:
+      - record_unit_paths_in_product_manifest
+      - record_repository_strategy_in_product_manifest
+  excludes:
+    response.actions:
+      - create_two_repositories_by_default
+  set_equals: {}
+  nonempty:
+    - response.strategy_basis

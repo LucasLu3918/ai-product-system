@@ -17,10 +17,11 @@ scenarios:
       - scripts/agent_eval.py
   - id: "002"
     path: tests/scenarios/002-existing-rest-api.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/002-existing-rest-api.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/002-existing-rest-api.yaml
+      - tests/agent_eval/results/002-existing-rest-api.yaml
+      - scripts/agent_eval.py
   - id: "003"
     path: tests/scenarios/003-nordic-design.md
     coverage: agent_eval
@@ -33,7 +34,7 @@ scenarios:
     coverage: manual
     evidence:
       - tests/scenarios/004-api-performance.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+    note: "Requires a reproducible benchmark/profile fixture and measured p95 under stated conditions; semantic-only evidence is insufficient."
   - id: "005"
     path: tests/scenarios/005-delivery-plan.md
     coverage: agent_eval
@@ -43,10 +44,11 @@ scenarios:
       - scripts/agent_eval.py
   - id: "006"
     path: tests/scenarios/006-cost-analysis.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/006-cost-analysis.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/006-infrastructure-cost.yaml
+      - tests/agent_eval/results/006-infrastructure-cost.yaml
+      - scripts/agent_eval.py
   - id: "007"
     path: tests/scenarios/007-adaptive-ddd-clean-architecture.md
     coverage: agent_eval
@@ -196,13 +198,14 @@ scenarios:
     coverage: manual
     evidence:
       - tests/scenarios/028-complete-product-to-production.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+    note: "Requires an end-to-end executable product-to-production lifecycle including staging, release readiness, promotion and post-production verification; current evidence is partial."
   - id: "029"
     path: tests/scenarios/029-deployment-units-repository-strategy.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/029-deployment-units-repository-strategy.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/029-deployment-units-repository-strategy.yaml
+      - tests/agent_eval/results/029-deployment-units-repository-strategy.yaml
+      - scripts/agent_eval.py
   - id: "030"
     path: tests/scenarios/030-security-design-and-release.md
     coverage: agent_eval
@@ -295,10 +298,11 @@ scenarios:
       - scripts/agent_eval.py
   - id: "043"
     path: tests/scenarios/043-review-learning-feedback.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/043-review-learning-feedback.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/043-review-learning-feedback.yaml
+      - tests/agent_eval/results/043-review-learning-feedback.yaml
+      - scripts/agent_eval.py
   - id: "044"
     path: tests/scenarios/044-install-project-lifecycle.md
     coverage: lifecycle
@@ -355,10 +359,11 @@ scenarios:
       - tests/validate_repository.py
   - id: "052"
     path: tests/scenarios/052-project-knowledge-discovery.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/052-project-knowledge-discovery.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/052-project-intelligence-discovery.yaml
+      - tests/agent_eval/results/052-project-intelligence-discovery.yaml
+      - scripts/agent_eval.py
   - id: "053"
     path: tests/scenarios/053-project-knowledge-targeted-refresh.md
     coverage: lifecycle
@@ -370,7 +375,7 @@ scenarios:
     coverage: manual
     evidence:
       - tests/scenarios/054-project-knowledge-promotion.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+    note: "Requires executable approval-to-authoritative-source promotion plus SOURCE_REGISTRY deduplication; current evidence does not exercise the complete mutation lifecycle."
   - id: "055"
     path: tests/scenarios/055-v2-visual-consistency-sweep.md
     coverage: manual
@@ -571,13 +576,13 @@ scenarios:
     coverage: manual
     evidence:
       - tests/scenarios/087-monorepo-lazy-intelligence.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+    note: "Requires a real monorepo fixture proving target-component plus shared-relationship lazy loading without unrelated application preload; current evidence is incomplete."
   - id: "088"
     path: tests/scenarios/088-project-knowledge-migration.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/088-project-knowledge-migration.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/project_knowledge_migration_lifecycle.py
+      - tests/validate_repository.py
   - id: "089"
     path: tests/scenarios/089-secret-runtime-acquisition.md
     coverage: agent_eval

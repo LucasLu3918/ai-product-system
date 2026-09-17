@@ -1,0 +1,22 @@
+version: 1
+case_id: 002-existing-rest-api
+scenario_id: "002"
+case_fingerprint: sha256:5529f4657044342e5dd1fbe483349fb5ce75da90d571399b9844dbdb1c1c2979
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: READY
+  change_boundary_bounded: true
+  unrelated_refactor: false
+  rest_contract_preserved: true
+  actions:
+    - discover_scoped_project_instructions_and_contracts
+    - inspect_affected_endpoint_and_tests
+    - establish_change_boundary
+    - use_characterization_or_tdd_as_applicable
+    - run_targeted_independent_review
+  change_summary: Add only the optional date-filter behavior to the existing orders REST contract and its affected implementation/tests, preserving unrelated modules and architecture.
+  evidence_basis: Use scoped project instructions, current REST contract, affected endpoint implementation and existing tests before selecting the minimal change and verification path.

@@ -1,0 +1,34 @@
+version: 1
+id: 002-existing-rest-api
+scenario_id: "002"
+description: A bounded change to an existing REST API should discover scoped project evidence, define a narrow change boundary, and avoid unrelated refactoring.
+input:
+  prompt: Add an optional date filter to the existing orders REST endpoint.
+  context:
+    existing_project: true
+    scoped_project_instructions_available: true
+    existing_rest_contract: true
+    existing_tests_available: true
+    unrelated_refactor_requested: false
+rubric:
+  equals:
+    response.status: READY
+    response.change_boundary_bounded: true
+    response.unrelated_refactor: false
+    response.rest_contract_preserved: true
+  contains:
+    response.actions:
+      - discover_scoped_project_instructions_and_contracts
+      - inspect_affected_endpoint_and_tests
+      - establish_change_boundary
+      - use_characterization_or_tdd_as_applicable
+      - run_targeted_independent_review
+  excludes:
+    response.actions:
+      - preload_entire_repository
+      - replace_rest_with_new_architecture
+      - refactor_unrelated_modules
+  set_equals: {}
+  nonempty:
+    - response.change_summary
+    - response.evidence_basis
