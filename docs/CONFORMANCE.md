@@ -308,6 +308,7 @@ Uncovered       0
 Automated     62.4%
 ~~~
 
+
 ## v0.16.6 Security & Production Readiness Semantic Evidence Maturity
 
 新增 8 組 Agent Eval，涵蓋高風險金融邊界、低風險前端、critical product 的 cosmetic change、Security at Design/Release、Release Readiness、Production Verification、staging N/A 與 deployment access。
