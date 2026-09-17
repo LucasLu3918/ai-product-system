@@ -38,6 +38,32 @@ if config_check.exists():
     if result.returncode != 0:
         errors.append(f"Evolution Radar source config failed: {result.stdout.strip()} {result.stderr.strip()}")
 
+    script_text = config_check.read_text(encoding="utf-8")
+    for contract in (
+        "resolve_public_destination",
+        "socket.getaddrinfo",
+        "ipaddress.ip_address",
+        "context.wrap_socket",
+        "server_hostname=hostname",
+        "max_response_bytes",
+        "max_redirects",
+        "public source redirect loop detected",
+    ):
+        if contract not in script_text:
+            errors.append(f"Evolution Radar network safety contract missing: {contract}")
+
+source_config = ROOT / "config/evolution-sources.yaml"
+if source_config.exists():
+    config_text = source_config.read_text(encoding="utf-8")
+    for contract in (
+        "public_only: true",
+        "credentials_in_repository: false",
+        "max_response_bytes:",
+        "max_redirects:",
+    ):
+        if contract not in config_text:
+            errors.append(f"Evolution Radar source policy missing: {contract}")
+
 lifecycle = ROOT / "tests/evidence/evolution_radar_lifecycle.py"
 if lifecycle.exists():
     try:

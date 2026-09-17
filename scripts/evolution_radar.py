@@ -10,13 +10,14 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import http.client
+import ipaddress
 import json
 from pathlib import Path
 import re
-import sys
-import urllib.error
+import socket
+import ssl
 import urllib.parse
-import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from typing import Any
@@ -26,6 +27,9 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "config/evolution-sources.yaml"
 ALLOWED_STATES = {"COVERED", "HOLD", "ASSESS", "TRIAL", "ADOPT", "ANALYSIS_PENDING"}
+REDIRECT_STATUSES = {301, 302, 303, 307, 308}
+DEFAULT_MAX_RESPONSE_BYTES = 2 * 1024 * 1024
+DEFAULT_MAX_REDIRECTS = 3
 
 
 def utc_now() -> str:
@@ -52,10 +56,172 @@ def signal_fingerprint(title: str, url: str) -> str:
     return "sha256:" + hashlib.sha256(basis).hexdigest()
 
 
-def fetch_bytes(url: str, timeout: float) -> bytes:
-    request = urllib.request.Request(url, headers={"User-Agent": "AIPS-Evolution-Radar/1"})
-    with urllib.request.urlopen(request, timeout=timeout) as response:  # nosec B310 - configured public URLs only
-        return response.read()
+def _is_global_ip(value: str) -> bool:
+    candidate = value.split("%", 1)[0]
+    try:
+        return ipaddress.ip_address(candidate).is_global
+    except ValueError:
+        return False
+
+
+def validate_public_url_syntax(url: str) -> urllib.parse.SplitResult:
+    value = (url or "").strip()
+    parsed = urllib.parse.urlsplit(value)
+    if parsed.scheme.lower() != "https" or not parsed.hostname:
+        raise ValueError("public source URL must use https and include a hostname")
+    if parsed.username is not None or parsed.password is not None:
+        raise ValueError("public source URL must not contain userinfo or credentials")
+    try:
+        port = parsed.port
+    except ValueError as exc:
+        raise ValueError("public source URL has an invalid port") from exc
+    if port is not None and not (1 <= port <= 65535):
+        raise ValueError("public source URL has an invalid port")
+
+    hostname = parsed.hostname.rstrip(".")
+    if not hostname or hostname.casefold() == "localhost" or hostname.casefold().endswith(".localhost"):
+        raise ValueError("public source URL must not target localhost")
+
+    try:
+        literal = ipaddress.ip_address(hostname.split("%", 1)[0])
+    except ValueError:
+        pass
+    else:
+        if not literal.is_global:
+            raise ValueError("public source URL must use a globally routable address")
+    return parsed
+
+
+def resolve_public_destination(url: str) -> tuple[urllib.parse.SplitResult, list[str]]:
+    parsed = validate_public_url_syntax(url)
+    hostname = (parsed.hostname or "").rstrip(".")
+    port = parsed.port or 443
+    try:
+        infos = socket.getaddrinfo(
+            hostname,
+            port,
+            type=socket.SOCK_STREAM,
+            proto=socket.IPPROTO_TCP,
+        )
+    except socket.gaierror as exc:
+        raise ValueError("public source hostname resolution failed") from exc
+
+    addresses: list[str] = []
+    for _, _, _, _, sockaddr in infos:
+        address = str(sockaddr[0]).split("%", 1)[0]
+        if not _is_global_ip(address):
+            raise ValueError("public source hostname resolved to a non-public address")
+        if address not in addresses:
+            addresses.append(address)
+    if not addresses:
+        raise ValueError("public source hostname resolved to no usable addresses")
+    return parsed, addresses
+
+
+def _bounded_read(response: http.client.HTTPResponse, max_response_bytes: int) -> bytes:
+    length = response.getheader("Content-Length")
+    if length:
+        try:
+            declared = int(length)
+        except ValueError:
+            declared = None
+        if declared is not None and declared > max_response_bytes:
+            raise ValueError("public source response exceeds configured size limit")
+    body = response.read(max_response_bytes + 1)
+    if len(body) > max_response_bytes:
+        raise ValueError("public source response exceeds configured size limit")
+    return body
+
+
+def _request_once(
+    parsed: urllib.parse.SplitResult,
+    addresses: list[str],
+    *,
+    timeout: float,
+    max_response_bytes: int,
+) -> tuple[int, dict[str, str], bytes]:
+    hostname = (parsed.hostname or "").rstrip(".")
+    port = parsed.port or 443
+    target = urllib.parse.urlunsplit(("", "", parsed.path or "/", parsed.query, ""))
+    headers = {
+        "User-Agent": "AIPS-Evolution-Radar/1",
+        "Accept": "application/rss+xml, application/atom+xml, application/json, text/xml;q=0.9, */*;q=0.1",
+        "Connection": "close",
+    }
+    last_error: BaseException | None = None
+    for address in addresses:
+        context = ssl.create_default_context()
+        conn = http.client.HTTPSConnection(hostname, port=port, timeout=timeout, context=context)
+        raw_socket = None
+        try:
+            raw_socket = socket.create_connection((address, port), timeout=timeout)
+            conn.sock = context.wrap_socket(raw_socket, server_hostname=hostname)
+            raw_socket = None
+            conn.request("GET", target, headers=headers)
+            response = conn.getresponse()
+            try:
+                status = int(response.status)
+                response_headers = {k.lower(): v for k, v in response.getheaders()}
+                if status in REDIRECT_STATUSES:
+                    return status, response_headers, b""
+                if not 200 <= status < 300:
+                    raise ValueError(f"public source returned HTTP status {status}")
+                return status, response_headers, _bounded_read(response, max_response_bytes)
+            finally:
+                response.close()
+        except (OSError, ssl.SSLError, http.client.HTTPException) as exc:
+            last_error = exc
+        finally:
+            if raw_socket is not None:
+                raw_socket.close()
+            conn.close()
+    if last_error is not None:
+        raise last_error
+    raise OSError("public source connection failed")
+
+
+def fetch_bytes(
+    url: str,
+    timeout: float,
+    *,
+    max_response_bytes: int = DEFAULT_MAX_RESPONSE_BYTES,
+    max_redirects: int = DEFAULT_MAX_REDIRECTS,
+) -> bytes:
+    if timeout <= 0:
+        raise ValueError("timeout must be positive")
+    if max_response_bytes < 1:
+        raise ValueError("max_response_bytes must be positive")
+    if max_redirects < 0:
+        raise ValueError("max_redirects must be non-negative")
+
+    current = (url or "").strip()
+    visited: set[str] = set()
+    redirects = 0
+    while True:
+        parsed, addresses = resolve_public_destination(current)
+        normalized = canonical_url(current)
+        if normalized in visited:
+            raise ValueError("public source redirect loop detected")
+        visited.add(normalized)
+
+        status, headers, body = _request_once(
+            parsed,
+            addresses,
+            timeout=timeout,
+            max_response_bytes=max_response_bytes,
+        )
+        if status not in REDIRECT_STATUSES:
+            return body
+
+        location = headers.get("location")
+        if not location:
+            raise ValueError("public source redirect is missing Location")
+        if redirects >= max_redirects:
+            raise ValueError("public source redirect limit exceeded")
+        next_url = urllib.parse.urljoin(current, location)
+        validate_public_url_syntax(next_url)
+        current = next_url
+        redirects += 1
 
 
 def _rss_items(data: bytes) -> list[dict[str, Any]]:
@@ -80,17 +246,28 @@ def _rss_items(data: bytes) -> list[dict[str, Any]]:
     return items
 
 
-def collect_source(source: dict[str, Any], max_items: int, timeout: float) -> list[dict[str, Any]]:
+def collect_source(
+    source: dict[str, Any],
+    max_items: int,
+    timeout: float,
+    *,
+    max_response_bytes: int = DEFAULT_MAX_RESPONSE_BYTES,
+    max_redirects: int = DEFAULT_MAX_REDIRECTS,
+) -> list[dict[str, Any]]:
     kind = source.get("kind")
     url = source.get("url")
+    fetch_options = {
+        "max_response_bytes": max_response_bytes,
+        "max_redirects": max_redirects,
+    }
     if kind == "rss":
-        raw = _rss_items(fetch_bytes(url, timeout))[:max_items]
+        raw = _rss_items(fetch_bytes(url, timeout, **fetch_options))[:max_items]
     elif kind == "json" and source.get("item_url_template"):
-        ids = json.loads(fetch_bytes(url, timeout).decode("utf-8"))[:max_items]
+        ids = json.loads(fetch_bytes(url, timeout, **fetch_options).decode("utf-8"))[:max_items]
         raw = []
         for item_id in ids:
             item_url = source["item_url_template"].format(id=item_id)
-            item = json.loads(fetch_bytes(item_url, timeout).decode("utf-8"))
+            item = json.loads(fetch_bytes(item_url, timeout, **fetch_options).decode("utf-8"))
             if item.get("title"):
                 raw.append({
                     "title": normalize_text(item.get("title", "")),
@@ -116,28 +293,56 @@ def collect_source(source: dict[str, Any], max_items: int, timeout: float) -> li
     return out
 
 
+def _policy_int(policy: dict[str, Any], key: str, default: int, errors: list[str]) -> int:
+    try:
+        return int(policy.get(key, default))
+    except (TypeError, ValueError):
+        errors.append(f"{key} must be an integer")
+        return default
+
+
 def validate_config(doc: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     policy = doc.get("policy") or {}
     sources = [s for s in (doc.get("sources") or []) if s.get("enabled", True)]
-    minimum = int(policy.get("minimum_sources_when_available", 5))
-    maximum = int(policy.get("max_items_per_source", 5))
+    minimum = _policy_int(policy, "minimum_sources_when_available", 5, errors)
+    maximum = _policy_int(policy, "max_items_per_source", 5, errors)
+    max_response_bytes = _policy_int(policy, "max_response_bytes", DEFAULT_MAX_RESPONSE_BYTES, errors)
+    max_redirects = _policy_int(policy, "max_redirects", DEFAULT_MAX_REDIRECTS, errors)
+
     if minimum < 1:
         errors.append("minimum_sources_when_available must be >= 1")
     if maximum < 1 or maximum > 25:
         errors.append("max_items_per_source must be between 1 and 25")
+    if max_response_bytes < 1024 or max_response_bytes > 10 * 1024 * 1024:
+        errors.append("max_response_bytes must be between 1024 and 10485760")
+    if max_redirects < 0 or max_redirects > 10:
+        errors.append("max_redirects must be between 0 and 10")
+    if policy.get("public_only") is not True:
+        errors.append("public_only must be true")
+    if policy.get("credentials_in_repository") is not False:
+        errors.append("credentials_in_repository must be false")
+
     ids = [s.get("id") for s in sources]
     if len(ids) != len(set(ids)) or any(not x for x in ids):
         errors.append("enabled source ids must be unique and non-empty")
     if len(sources) < minimum:
         errors.append(f"configured enabled sources {len(sources)} is below minimum {minimum}")
+
     for source in sources:
-        url = str(source.get("url") or "")
-        parsed = urllib.parse.urlsplit(url)
-        if parsed.scheme != "https" or not parsed.netloc:
-            errors.append(f"source {source.get('id')} must use a public https URL")
+        source_id = source.get("id")
+        for field in ("url", "item_url_template"):
+            value = source.get(field)
+            if value is None:
+                continue
+            try:
+                validate_public_url_syntax(str(value).format(id=1) if field == "item_url_template" else str(value))
+            except (KeyError, ValueError) as exc:
+                errors.append(f"source {source_id} {field} must be a credential-free public https URL: {exc}")
         if source.get("kind") not in {"rss", "json"}:
-            errors.append(f"source {source.get('id')} has unsupported kind")
+            errors.append(f"source {source_id} has unsupported kind")
+        if source.get("kind") == "json" and not source.get("item_url_template"):
+            errors.append(f"source {source_id} json source requires item_url_template")
     return errors
 
 
@@ -164,6 +369,8 @@ def build_evidence(config: dict[str, Any], *, mode: str, timeout: float = 8.0) -
 
     policy = config["policy"]
     maximum = int(policy["max_items_per_source"])
+    max_response_bytes = int(policy["max_response_bytes"])
+    max_redirects = int(policy["max_redirects"])
     enabled = [s for s in config["sources"] if s.get("enabled", True)]
     attempted: list[str] = []
     failures: list[dict[str, str]] = []
@@ -171,8 +378,16 @@ def build_evidence(config: dict[str, Any], *, mode: str, timeout: float = 8.0) -
     for source in enabled:
         attempted.append(source["id"])
         try:
-            collected.extend(collect_source(source, maximum, timeout))
-        except (OSError, ValueError, ET.ParseError, json.JSONDecodeError, urllib.error.URLError) as exc:
+            collected.extend(
+                collect_source(
+                    source,
+                    maximum,
+                    timeout,
+                    max_response_bytes=max_response_bytes,
+                    max_redirects=max_redirects,
+                )
+            )
+        except (OSError, ValueError, ET.ParseError, json.JSONDecodeError, http.client.HTTPException) as exc:
             failures.append({"source_id": source["id"], "error": type(exc).__name__})
 
     unique = deduplicate(collected)

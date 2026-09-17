@@ -18,6 +18,21 @@ GitHub Actions 每週執行一次 bounded scan：
 
 來源失敗會被記錄，不會用推測資料補齊。
 
+## Public-only 網路安全
+
+內建 scheduled Radar 的 `public_only: true` 是實際執行的安全邊界，不只是設定註記。
+
+Collector 會：
+
+- 只接受不含帳密／userinfo 的 HTTPS source URL；
+- 拒絕 localhost、loopback、private、link-local、reserved 與其他 non-global IP；
+- hostname 解析後，只要任何 resolved address 不是 global public IP，就 fail closed；
+- 實際連線使用已驗證的 public IP，同時保留原 hostname 做 TLS/SNI 憑證驗證，避免驗證後又重新 DNS lookup；
+- 每一個 redirect target 都重新做相同 public-destination 驗證，HTTP downgrade 直接拒絕；
+- redirect 次數與單次 response bytes 都有明確上限，目前預設為 3 hops 與 2 MiB。
+
+DNS 解析失敗、不安全 redirect 或 response 超過上限都只會被記錄為該 source 的 retrieval failure；Radar 不會為了湊齊資料而繞過 public-source boundary。
+
 ### 每月 Deep Review
 
 每月流程不是單純再跑一次 weekly scan，而是讀取先前 weekly Issue 中的 evidence，重新去重並累計 recurrence，形成月度 roll-up。
@@ -42,7 +57,9 @@ Radar contract 支援：
 Deterministic collector 能可靠完成：
 
 - source config validation；
+- public-destination network safety validation；
 - bounded collection；
+- bounded redirects / response bytes；
 - provenance；
 - fingerprint；
 - deduplication；

@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import copy
 from pathlib import Path
+import socket
 import sys
 import tempfile
 import yaml
@@ -20,17 +21,173 @@ def require(condition: bool, message: str) -> None:
         raise AssertionError(message)
 
 
+def expect_value_error(fn, message: str) -> None:
+    try:
+        fn()
+    except ValueError:
+        return
+    raise AssertionError(message)
+
+
 def main() -> int:
     config = yaml.safe_load((ROOT / "config/evolution-sources.yaml").read_text(encoding="utf-8")) or {}
     require(not radar.validate_config(config), "real Evolution Radar source config must validate")
     require(len([s for s in config["sources"] if s.get("enabled", True)]) >= 5, "at least five sources required")
     require(config["policy"]["max_items_per_source"] == 5, "source item bound must remain five")
+    require(config["policy"]["public_only"] is True, "Evolution Radar sources must remain public-only")
+    require(config["policy"]["credentials_in_repository"] is False, "source credentials must remain outside repository")
+    require(config["policy"]["max_response_bytes"] == 2097152, "response byte cap must remain explicit")
+    require(config["policy"]["max_redirects"] == 3, "redirect cap must remain explicit")
+
+    for blocked_url in (
+        "http://example.com/feed",
+        "https://user:secret@example.com/feed",
+        "https://localhost/feed",
+        "https://127.0.0.1/feed",
+        "https://10.0.0.1/feed",
+        "https://172.16.0.1/feed",
+        "https://192.168.1.1/feed",
+        "https://169.254.169.254/latest/meta-data/",
+        "https://[::1]/feed",
+        "https://[fe80::1]/feed",
+    ):
+        expect_value_error(
+            lambda url=blocked_url: radar.validate_public_url_syntax(url),
+            f"non-public or credential-bearing URL must fail: {blocked_url}",
+        )
+
+    original_getaddrinfo = radar.socket.getaddrinfo
+
+    def fake_getaddrinfo(host, port, type=0, proto=0):
+        mapping = {
+            "public.example": ["93.184.216.34"],
+            "private.example": ["10.0.0.9"],
+            "mixed.example": ["93.184.216.34", "192.168.1.8"],
+        }
+        if host == "missing.example":
+            raise socket.gaierror("not found")
+        addresses = mapping.get(host)
+        if addresses is None:
+            raise socket.gaierror("unexpected host")
+        rows = []
+        for address in addresses:
+            family = socket.AF_INET6 if ":" in address else socket.AF_INET
+            sockaddr = (address, port, 0, 0) if family == socket.AF_INET6 else (address, port)
+            rows.append((family, socket.SOCK_STREAM, socket.IPPROTO_TCP, "", sockaddr))
+        return rows
+
+    original_request_once = radar._request_once
+    radar.socket.getaddrinfo = fake_getaddrinfo
+    try:
+        _, resolved = radar.resolve_public_destination("https://public.example/feed")
+        require(resolved == ["93.184.216.34"], "public DNS resolution must return the pinned public address")
+        expect_value_error(
+            lambda: radar.resolve_public_destination("https://private.example/feed"),
+            "hostname resolving only to private IP must fail closed",
+        )
+        expect_value_error(
+            lambda: radar.resolve_public_destination("https://mixed.example/feed"),
+            "hostname resolving to any private IP must fail closed",
+        )
+        expect_value_error(
+            lambda: radar.resolve_public_destination("https://missing.example/feed"),
+            "DNS resolution failure must fail closed",
+        )
+
+        def redirect_private(parsed, addresses, *, timeout, max_response_bytes):
+            require(addresses == ["93.184.216.34"], "HTTP request must use the previously validated public address")
+            return 302, {"location": "https://private.example/internal"}, b""
+
+        radar._request_once = redirect_private
+        expect_value_error(
+            lambda: radar.fetch_bytes(
+                "https://public.example/start",
+                1.0,
+                max_response_bytes=1024,
+                max_redirects=3,
+            ),
+            "public-to-private redirect must fail before a second request",
+        )
+
+        def redirect_http(parsed, addresses, *, timeout, max_response_bytes):
+            return 302, {"location": "http://public.example/plain"}, b""
+
+        radar._request_once = redirect_http
+        expect_value_error(
+            lambda: radar.fetch_bytes(
+                "https://public.example/start",
+                1.0,
+                max_response_bytes=1024,
+                max_redirects=3,
+            ),
+            "HTTPS downgrade redirect must fail",
+        )
+
+        def redirect_loop(parsed, addresses, *, timeout, max_response_bytes):
+            return 302, {"location": "/start"}, b""
+
+        radar._request_once = redirect_loop
+        expect_value_error(
+            lambda: radar.fetch_bytes(
+                "https://public.example/start",
+                1.0,
+                max_response_bytes=1024,
+                max_redirects=3,
+            ),
+            "redirect loop must fail",
+        )
+
+        def redirect_chain(parsed, addresses, *, timeout, max_response_bytes):
+            if parsed.path == "/one":
+                return 302, {"location": "/two"}, b""
+            if parsed.path == "/two":
+                return 302, {"location": "/three"}, b""
+            return 200, {}, b"ok"
+
+        radar._request_once = redirect_chain
+        expect_value_error(
+            lambda: radar.fetch_bytes(
+                "https://public.example/one",
+                1.0,
+                max_response_bytes=1024,
+                max_redirects=1,
+            ),
+            "redirect chain beyond configured limit must fail",
+        )
+    finally:
+        radar.socket.getaddrinfo = original_getaddrinfo
+        radar._request_once = original_request_once
+
+    class FakeResponse:
+        def __init__(self, payload: bytes, declared: str | None = None):
+            self.payload = payload
+            self.declared = declared
+
+        def getheader(self, name):
+            if name == "Content-Length":
+                return self.declared
+            return None
+
+        def read(self, size):
+            return self.payload[:size]
+
+    expect_value_error(
+        lambda: radar._bounded_read(FakeResponse(b"x", declared="2049"), 2048),
+        "declared oversized response must fail before unbounded read",
+    )
+    expect_value_error(
+        lambda: radar._bounded_read(FakeResponse(b"x" * 2049), 2048),
+        "streamed oversized response must fail after bounded max+1 read",
+    )
+    require(radar._bounded_read(FakeResponse(b"ok", declared="2"), 2048) == b"ok", "bounded response must succeed")
 
     original_collect = radar.collect_source
 
-    def fake_collect(source, max_items, timeout):
+    def fake_collect(source, max_items, timeout, *, max_response_bytes, max_redirects):
         require(max_items == 5, "collector must pass the configured bounded item count")
         require(timeout > 0, "collector must use a finite positive timeout")
+        require(max_response_bytes == 2097152, "collector must enforce configured response cap")
+        require(max_redirects == 3, "collector must enforce configured redirect cap")
         source_id = source["id"]
         if source_id in {config["sources"][0]["id"], config["sources"][1]["id"]}:
             return [{
@@ -116,6 +273,18 @@ def main() -> int:
     bad_config = copy.deepcopy(config)
     bad_config["sources"] = bad_config["sources"][:4]
     require(radar.validate_config(bad_config), "fewer than five configured sources must fail")
+
+    bad_public_policy = copy.deepcopy(config)
+    bad_public_policy["policy"]["public_only"] = False
+    require(radar.validate_config(bad_public_policy), "public_only=false must fail config validation")
+
+    bad_credentials_policy = copy.deepcopy(config)
+    bad_credentials_policy["policy"]["credentials_in_repository"] = True
+    require(radar.validate_config(bad_credentials_policy), "credentials_in_repository=true must fail config validation")
+
+    bad_private_source = copy.deepcopy(config)
+    bad_private_source["sources"][0]["url"] = "https://127.0.0.1/feed"
+    require(radar.validate_config(bad_private_source), "private literal source must fail config validation")
 
     bad_authority = copy.deepcopy(weekly)
     bad_authority["authority"]["branch_or_pr_authorized"] = True
