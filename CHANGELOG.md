@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.18.2
+
+### Monorepo Lazy Intelligence
+
+- Add an explicit component-targeted Project Intelligence selector for monorepos without introducing a second Intelligence store or prompt-based component guessing.
+- Extend Project Intelligence with optional `components` and `shared_relationships` semantic indexes; `aips intelligence context --component <id>` loads only the system summary, target component topics and declared shared relationship topics.
+- Keep component topics lazy when no component is requested, exclude unrelated application topics, and fail explicitly for unknown components instead of falling back to repository-wide preload.
+- Add executable temporary-monorepo lifecycle evidence and promote Scenario 087 from manual to lifecycle.
+- Raise conformance baseline to 125 total / 7 manual / 19 deterministic / 47 lifecycle / 52 agent_eval / 118 automated / 0 uncovered (94.4% automated).
+- Architecture Diagram Impact: N/A — this extends the existing Project Intelligence context-selection contract only; no runtime topology, Role, Skill, Capability category, Approval Gate or Constitution change.
+
 ## 0.18.1
 
 ### Runtime / Project Instruction Conflict Composition

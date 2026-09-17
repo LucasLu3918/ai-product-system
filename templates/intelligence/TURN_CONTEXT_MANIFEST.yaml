@@ -24,6 +24,14 @@ context:
   optional_evidence: []
 
 
+component_resolution:
+  requested: null
+  resolved: false
+  system_summary: null
+  target: null
+  shared_relationships: []
+  excluded_components: []
+
 instruction_resolution:
   precedence:
     - runtime_native_scoped
