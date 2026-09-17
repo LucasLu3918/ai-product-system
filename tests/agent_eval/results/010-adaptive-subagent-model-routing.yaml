@@ -1,0 +1,25 @@
+version: 1
+case_id: 010-adaptive-subagent-model-routing
+scenario_id: "010"
+case_fingerprint: sha256:d92110721e274d45c1101f491371027e9915faa050cf7e0fbd0954a07ea59576
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: READY
+  single_writer: true
+  fixed_agent_team: false
+  strongest_model_by_default: false
+  subagents:
+    - database-engineer
+    - security-engineer
+  actions:
+    - preflight_primary_task
+    - delegate_bounded_database_investigation
+    - delegate_independent_security_review
+    - resolve_model_tier_per_agent
+    - escalate_when_context_is_insufficient
+  execution_profile: The primary change owner keeps the code boundary; bounded read-only database investigation and independent security review receive only relevant context and independently resolved model tiers.
+  routing_summary: Delegation is activated by evidence and risk rather than a fixed team, while skill metadata informs requirements without forcing a provider model.
