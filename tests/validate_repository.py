@@ -1,4 +1,6 @@
 import os
+from pathlib import Path
+import tempfile
 
 
 def _append_validation_git_config(key: str, value: str) -> None:
@@ -13,11 +15,33 @@ def _append_validation_git_config(key: str, value: str) -> None:
     os.environ["GIT_CONFIG_COUNT"] = str(count + 1)
 
 
+def _install_validation_global_git_config() -> tempfile.TemporaryDirectory[str]:
+    """Provide the same no-maintenance policy to local-transport Git children."""
+    config_dir = tempfile.TemporaryDirectory(prefix="aips-validation-git-config-")
+    config_path = Path(config_dir.name) / "gitconfig"
+    config_path.write_text(
+        """[gc]
+    auto = 0
+    autoDetach = false
+[maintenance]
+    auto = false
+    autoDetach = false
+""",
+        encoding="utf-8",
+    )
+    os.environ["GIT_CONFIG_GLOBAL"] = str(config_path)
+    os.environ["GIT_CONFIG_NOSYSTEM"] = "1"
+    return config_dir
+
+
 # Lifecycle evidence rapidly creates, updates and deletes temporary Git repositories.
 # Disable both legacy automatic gc and modern automatic maintenance only for repository
 # validation so no detached Git housekeeping process can race TemporaryDirectory cleanup
-# after the Git command under test has already returned. Product/runtime Git behavior is
-# intentionally unchanged, and cleanup failures remain fail-closed rather than ignored.
+# after the Git command under test has already returned. The command-scope settings cover
+# direct Git commands; the validation-only global config also covers local-transport child
+# processes such as receive-pack. Product/runtime Git behavior is intentionally unchanged,
+# and cleanup failures remain fail-closed rather than ignored or retried in the evidence.
+_VALIDATION_GIT_CONFIG_DIR = _install_validation_global_git_config()
 _append_validation_git_config("gc.auto", "0")
 _append_validation_git_config("gc.autoDetach", "false")
 _append_validation_git_config("maintenance.auto", "false")
