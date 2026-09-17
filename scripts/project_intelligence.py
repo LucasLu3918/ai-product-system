@@ -706,7 +706,66 @@ def reconcile_overrides(root: Path) -> dict[str, Any]:
     }
 
 
-def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = False) -> dict[str, Any]:
+def resolve_component_context(store: Path, intel: dict[str, Any], component: str | None) -> tuple[dict[str, Any], list[str]]:
+    components = intel.get("components") or {}
+    relationships = intel.get("shared_relationships") or {}
+    public: dict[str, Any] = {
+        "requested": component,
+        "resolved": False,
+        "system_summary": (intel.get("architecture") or {}).get("summary"),
+        "target": None,
+        "shared_relationships": [],
+        "excluded_components": [],
+    }
+    if not component:
+        return public, []
+    target = components.get(component)
+    if not isinstance(target, dict):
+        raise RuntimeError(f"Unknown Project Intelligence component: {component}")
+
+    loaded_paths: list[str] = []
+    target_topics: list[str] = []
+    for value in target.get("topics") or []:
+        topic_path = store / str(value)
+        if not topic_path.is_file():
+            raise RuntimeError(f"Component topic is missing: {value}")
+        absolute = str(topic_path)
+        target_topics.append(absolute)
+        loaded_paths.append(absolute)
+
+    shared: list[dict[str, Any]] = []
+    for relationship_id in target.get("shared_relationships") or []:
+        relationship = relationships.get(str(relationship_id))
+        if not isinstance(relationship, dict):
+            raise RuntimeError(f"Unknown shared relationship for component {component}: {relationship_id}")
+        relationship_path = relationship.get("path")
+        if not relationship_path:
+            raise RuntimeError(f"Shared relationship has no path: {relationship_id}")
+        absolute_path = store / str(relationship_path)
+        if not absolute_path.is_file():
+            raise RuntimeError(f"Shared relationship topic is missing: {relationship_path}")
+        absolute = str(absolute_path)
+        loaded_paths.append(absolute)
+        shared.append({
+            "id": str(relationship_id),
+            "path": absolute,
+            "components": [str(value) for value in (relationship.get("components") or [])],
+        })
+
+    public.update({
+        "resolved": True,
+        "target": {
+            "id": component,
+            "root": target.get("root"),
+            "topics": target_topics,
+        },
+        "shared_relationships": shared,
+        "excluded_components": sorted(str(key) for key in components if str(key) != component),
+    })
+    return public, list(dict.fromkeys(loaded_paths))
+
+
+def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = False, component: str | None = None) -> dict[str, Any]:
     store, mode, pid = intelligence_store(root)
     category, mutation, desired_topics = classify_prompt(prompt)
     fr = freshness(root)
@@ -721,6 +780,9 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
         topic = available.get(name)
         if isinstance(topic, dict) and topic.get("path"):
             selected.append(str(store / topic["path"]))
+
+    component_resolution, component_paths = resolve_component_context(store, intel, component)
+    selected = list(dict.fromkeys([*selected, *component_paths]))
 
     project_native: list[str] = []
     runtime_visible: list[str] = []
@@ -786,6 +848,7 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             "conflicts": authority_conflicts,
             "requires_resolution": bool(authority_conflicts),
         },
+        "component_resolution": component_resolution,
         "intelligence": {
             "readiness": readiness,
             "review": state.get("review", "UNREVIEWED"),
@@ -1070,6 +1133,7 @@ def main() -> int:
     p.add_argument("--project", default=os.getcwd())
     p.add_argument("--runtime", default="unknown")
     p.add_argument("--prompt", default="")
+    p.add_argument("--component")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
     p.add_argument("--explain", action="store_true")
 
@@ -1091,7 +1155,7 @@ def main() -> int:
         elif args.command == "finalize":
             result = finalize(root)
         elif args.command == "context":
-            result = context_manifest(root, args.runtime, args.prompt, args.explain)
+            result = context_manifest(root, args.runtime, args.prompt, args.explain, args.component)
         elif args.command == "impact-init":
             result = impact_init(root, args.prompt, args.change_id)
         elif args.command == "migrate-attached":

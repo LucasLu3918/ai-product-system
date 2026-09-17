@@ -597,3 +597,32 @@ Automated     93.6%
 
 Architecture Diagram Impact: N/A. This release extends the existing Project Authority/context-resolution contract only; it introduces no runtime topology, Role, Skill, Capability category, Approval Gate or Constitution change.
 
+## v0.18.2 Monorepo Lazy Intelligence
+
+Promoted evidence:
+
+~~~text
+087 Monorepo Lazy Intelligence -> Lifecycle
+~~~
+
+Scenario 087 now executes a temporary Git monorepo with API, Admin and shared-auth areas. Project Intelligence is semantically enriched with explicit component and shared-relationship indexes. Turn Context with `--component api` resolves the system summary, API topic and shared auth relationship while proving the unrelated Admin topic is not preloaded. Context without an explicit component keeps component topics lazy. An unknown component fails explicitly rather than widening scope.
+
+This release intentionally does not infer component identity from prompt text or folder-name heuristics and does not create a second Intelligence store.
+
+v0.18.2 baseline:
+
+~~~text
+Total         125
+Manual          7
+Deterministic  19
+Lifecycle      47
+Agent Eval     52
+Automated     118
+Uncovered       0
+Automated     94.4%
+~~~
+
+Residual manual gaps remain 004, 021, 022, 028, 039, 054 and 055.
+
+Architecture Diagram Impact: N/A. This is an additive Project Intelligence selection contract and lifecycle-evidence change only; runtime topology and governance layers are unchanged.
+

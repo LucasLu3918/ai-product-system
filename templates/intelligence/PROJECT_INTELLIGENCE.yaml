@@ -36,6 +36,21 @@ topics: {}
 #     - internal/domain/**
 #     - internal/application/**
 
+components: {}
+# api:
+#   root: apps/api
+#   topics:
+#     - topics/components/api.md
+#   shared_relationships:
+#     - auth-contract
+
+shared_relationships: {}
+# auth-contract:
+#   path: topics/shared/auth-contract.md
+#   components:
+#     - api
+#     - admin
+
 canonical_artifacts: {}
 # visual:
 #   path: docs/design/PROJECT_VISUAL_PROFILE.yaml

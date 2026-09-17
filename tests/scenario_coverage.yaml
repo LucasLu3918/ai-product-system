@@ -575,10 +575,11 @@ scenarios:
       - tests/validate_repository.py
   - id: "087"
     path: tests/scenarios/087-monorepo-lazy-intelligence.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/087-monorepo-lazy-intelligence.md
-    note: "Requires a real monorepo fixture proving target-component plus shared-relationship lazy loading without unrelated application preload; current evidence is incomplete."
+      - tests/evidence/monorepo_lazy_intelligence_lifecycle.py
+      - scripts/project_intelligence.py
+      - tests/validate_repository.py
   - id: "088"
     path: tests/scenarios/088-project-knowledge-migration.md
     coverage: lifecycle
