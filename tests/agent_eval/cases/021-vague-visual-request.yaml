@@ -1,0 +1,40 @@
+version: 1
+id: 021-vague-visual-request
+scenario_id: "021"
+description: A vague premium/minimal/fashionable request must be calibrated before broad implementation, preserve approved inputs, lock a Creative Direction, and end with Visual Quality Review.
+input:
+  prompt: Make this look premium, minimal and fashionable.
+  context:
+    approved_brand_visual_system_exists: true
+    user_assets_exist: true
+    direction_is_not_locked: true
+    visual_mismatch_cost: material
+rubric:
+  equals:
+    response.status: CREATIVE_DIRECTION_CALIBRATION
+    response.broad_implementation_before_direction_lock: false
+    response.loads_brand_visual_system_first: true
+    response.loads_user_assets_first: true
+    response.current_reference_research_when_unclear: true
+    response.materially_different_direction_count: 3
+    response.aspect_level_mixing_supported: true
+    response.approved_direction_persisted_before_broad_implementation: true
+    response.final_visual_quality_review_required: true
+  contains:
+    response.actions:
+      - load_approved_brand_visual_system
+      - load_user_assets
+      - research_current_references_if_direction_remains_unclear
+      - offer_materially_different_directions
+      - calibrate_likes_dislikes_and_aspect_mix
+      - persist_approved_creative_direction
+      - implement_after_direction_lock
+      - run_visual_quality_review
+  excludes:
+    response.actions:
+      - jump_directly_to_broad_implementation
+      - treat_vague_adjectives_as_complete_direction
+      - skip_final_visual_review
+  set_equals: {}
+  nonempty:
+    - response.summary
