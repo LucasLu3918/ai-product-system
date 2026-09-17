@@ -1,0 +1,24 @@
+version: 1
+case_id: 038-external-context-fallback
+scenario_id: "038"
+case_fingerprint: sha256:e82c62402eeffe59b54bd7f36b3ef1ded09b4fe3811aacbefbdaefc14518b00f
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: SOURCE_REQUIRED
+  generic_web_substitution_allowed: false
+  provenance_preserved: true
+  actions:
+    - try_supported_direct_or_public_access
+    - request_minimum_authoritative_fallback
+    - record_original_source_provenance
+    - record_fallback_provenance
+  acceptable_fallbacks:
+    - text
+    - export
+    - pdf
+    - screenshot
+  request: Provide the smallest authoritative artifact available from the original source, such as pasted text, an export, PDF, or screenshot, while retaining both original-source and fallback provenance.
