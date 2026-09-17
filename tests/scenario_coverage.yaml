@@ -56,10 +56,11 @@ scenarios:
       - scripts/agent_eval.py
   - id: "008"
     path: tests/scenarios/008-scoped-instruction-precedence.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/008-scoped-instruction-precedence.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/008-scoped-instruction-precedence.yaml
+      - tests/agent_eval/results/008-scoped-instruction-precedence.yaml
+      - scripts/agent_eval.py
   - id: "009"
     path: tests/scenarios/009-capability-gap.md
     coverage: agent_eval
@@ -69,10 +70,11 @@ scenarios:
       - scripts/agent_eval.py
   - id: "010"
     path: tests/scenarios/010-adaptive-subagent-model-routing.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/010-adaptive-subagent-model-routing.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/010-adaptive-subagent-model-routing.yaml
+      - tests/agent_eval/results/010-adaptive-subagent-model-routing.yaml
+      - scripts/agent_eval.py
   - id: "011"
     path: tests/scenarios/011-update-preflight.md
     coverage: lifecycle
@@ -245,22 +247,25 @@ scenarios:
       - scripts/agent_eval.py
   - id: "036"
     path: tests/scenarios/036-safe-default-no-unnecessary-question.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/036-safe-default-no-unnecessary-question.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/036-safe-default-no-unnecessary-question.yaml
+      - tests/agent_eval/results/036-safe-default-no-unnecessary-question.yaml
+      - scripts/agent_eval.py
   - id: "037"
     path: tests/scenarios/037-external-context-authorization-resume.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/037-external-context-authorization-resume.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/037-external-context-authorization-resume.yaml
+      - tests/agent_eval/results/037-external-context-authorization-resume.yaml
+      - scripts/agent_eval.py
   - id: "038"
     path: tests/scenarios/038-external-context-fallback.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/038-external-context-fallback.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/038-external-context-fallback.yaml
+      - tests/agent_eval/results/038-external-context-fallback.yaml
+      - scripts/agent_eval.py
   - id: "039"
     path: tests/scenarios/039-visual-polish-shared-component.md
     coverage: manual
@@ -417,22 +422,23 @@ scenarios:
       - tests/validate_repository.py
   - id: "063"
     path: tests/scenarios/063-normal-conversation-bypasses-heavy-orchestration.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/063-normal-conversation-bypasses-heavy-orchestration.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/intelligence_context_lifecycle.py
+      - tests/validate_repository.py
   - id: "064"
     path: tests/scenarios/064-runtime-and-project-instruction-composition.md
     coverage: manual
     evidence:
       - tests/scenarios/064-runtime-and-project-instruction-composition.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+    note: "Existing lifecycle evidence covers native/project source composition and deduplication, but material conflict surfacing is not yet directly exercised."
   - id: "065"
     path: tests/scenarios/065-architecture-diagram-impact-required.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/065-architecture-diagram-impact-required.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/065-architecture-diagram-impact-required.yaml
+      - tests/agent_eval/results/065-architecture-diagram-impact-required.yaml
+      - scripts/agent_eval.py
   - id: "066"
     path: tests/scenarios/066-gemini-namespaced-extension.md
     coverage: lifecycle
@@ -450,7 +456,7 @@ scenarios:
     coverage: manual
     evidence:
       - tests/scenarios/068-v07-to-v08-harness-migration.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+    note: "Preflight and Harness lifecycle evidence cover adjacent behavior, but the full legacy-to-managed migration contract is not yet exercised end to end."
   - id: "069"
     path: tests/scenarios/069-cli-name-collision-nondestructive.md
     coverage: lifecycle
@@ -534,7 +540,7 @@ scenarios:
     coverage: manual
     evidence:
       - tests/scenarios/082-project-overrides-survive-refresh.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+    note: "No direct executable refresh-conflict evidence currently proves approved overrides survive contradictory discovery, so this remains manual."
   - id: "083"
     path: tests/scenarios/083-intelligence-single-writer.md
     coverage: lifecycle

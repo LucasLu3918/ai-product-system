@@ -1,0 +1,19 @@
+version: 1
+case_id: 036-safe-default-no-unnecessary-question
+scenario_id: "036"
+case_fingerprint: sha256:7ba215403c485c503ac2153d8916a37af4b24da430b9cf97458b371a0e7d0a40
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: PROCEED
+  ask_user_question: false
+  uses_existing_token_or_component: true
+  actions:
+    - inspect_existing_ui_conventions
+    - apply_consistent_spacing_default
+    - keep_scope_local
+  default_basis: Existing shared button component and design spacing tokens provide a discoverable, low-risk project-consistent default.
+  summary: Apply the established spacing convention without asking for an exact pixel value because the ambiguity is non-material.

@@ -1,0 +1,29 @@
+version: 1
+id: 036-safe-default-no-unnecessary-question
+scenario_id: "036"
+description: A low-risk visual spacing request with discoverable project tokens should use a professional default instead of asking an unnecessary question.
+input:
+  prompt: Adjust this button spacing to match the existing UI.
+  context:
+    existing_design_tokens_available: true
+    shared_component_available: true
+    ambiguity_material: false
+rubric:
+  equals:
+    response.status: PROCEED
+    response.ask_user_question: false
+    response.uses_existing_token_or_component: true
+  contains:
+    response.actions:
+      - inspect_existing_ui_conventions
+      - apply_consistent_spacing_default
+      - keep_scope_local
+  excludes:
+    response.actions:
+      - ask_exact_pixel_value
+      - invent_new_design_system
+      - broaden_to_redesign
+  set_equals: {}
+  nonempty:
+    - response.default_basis
+    - response.summary

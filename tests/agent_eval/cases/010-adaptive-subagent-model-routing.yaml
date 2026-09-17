@@ -1,0 +1,36 @@
+version: 1
+id: 010-adaptive-subagent-model-routing
+scenario_id: "010"
+description: Route bounded database and security review work adaptively without creating a fixed agent team or multiple writers.
+input:
+  prompt: Optimize the order API, investigate database latency, and review security risk. Use subagents if useful.
+  context:
+    business_impact: high
+    database_latency_signal: true
+    security_sensitive_behavior: true
+    single_change_boundary: true
+rubric:
+  equals:
+    response.status: READY
+    response.single_writer: true
+    response.fixed_agent_team: false
+    response.strongest_model_by_default: false
+  contains:
+    response.actions:
+      - preflight_primary_task
+      - delegate_bounded_database_investigation
+      - delegate_independent_security_review
+      - resolve_model_tier_per_agent
+      - escalate_when_context_is_insufficient
+    response.subagents:
+      - database-engineer
+      - security-engineer
+  excludes:
+    response.actions:
+      - send_full_repository_to_every_subagent
+      - allow_overlapping_uncoordinated_writers
+      - let_skill_force_provider_model
+  set_equals: {}
+  nonempty:
+    - response.execution_profile
+    - response.routing_summary

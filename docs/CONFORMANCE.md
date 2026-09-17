@@ -410,3 +410,45 @@ Automated     80.8%
 
 Architecture Diagram Impact: N/A. This release adds bounded evidence tooling beneath the existing Visual Polish / Project Visual Profile flow and does not change system topology.
 
+## v0.16.9 Interaction & Context Evidence Maturity
+
+Promoted evidence:
+
+~~~text
+008 Scoped Instruction Precedence             -> Agent Eval
+010 Adaptive Subagent Model Routing            -> Agent Eval
+036 Safe Default / No Unnecessary Question     -> Agent Eval
+037 External Context Authorization Resume      -> Agent Eval
+038 External Context Fallback                  -> Agent Eval
+063 Normal Conversation Bypasses Heavy Flow    -> Lifecycle
+065 Architecture Diagram Impact Required       -> Agent Eval
+~~~
+
+Scenario 063 reuses the executable `tests/evidence/intelligence_context_lifecycle.py` fixture: a general-knowledge turn is classified non-mutating, remains EPHEMERAL, and does not create project `.ai/`, External Project Intelligence, or Change Impact state.
+
+Scenarios 008, 010, 036, 037, 038 and 065 use recorded observable Agent Eval responses bound to exact Case SHA-256 fingerprints and deterministic rubrics. The results contain no Chain-of-Thought/private reasoning/scratchpad or secret values.
+
+The following roadmap targets intentionally remain manual in this release:
+
+~~~text
+064 Runtime + Project Instruction Composition
+068 v0.7 -> v0.8 Harness Migration
+082 Project Overrides Survive Refresh
+~~~
+
+Existing lifecycle evidence proves important adjacent behavior, but does not yet execute each complete acceptance contract: 064 still lacks direct material-conflict surfacing evidence; 068 lacks one end-to-end legacy-install-to-managed-Harness migration fixture; 082 lacks executable contradictory-discovery/approved-override conflict preservation.
+
+v0.16.9 baseline:
+
+~~~text
+Total         125
+Manual         17
+Deterministic  19
+Lifecycle      42
+Agent Eval     47
+Automated     108
+Uncovered       0
+Automated     86.4%
+~~~
+
+Architecture Diagram Impact: N/A. This release changes evidence/conformance metadata only and does not change runtime topology, Role, Skill, Capability, Approval Gate, or architecture behavior.
