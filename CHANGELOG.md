@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.19.2
+
+### Lifecycle Validation Reliability
+
+- Stabilize repository lifecycle validation after v0.19.1 exposed intermittent `TemporaryDirectory` teardown races in temporary Git repositories and bare remotes; these failures happened after successful assertions and reproduced as `Directory not empty: .../.git`-style cleanup errors.
+- Preserve the original #47 validation-only `gc.auto=0` and `gc.autoDetach=false` protection, while recording that it was insufficient under repeated post-merge stress validation.
+- Complete the fix in #48 by also disabling modern automatic Git maintenance with `maintenance.auto=false` and `maintenance.autoDetach=false`, and by propagating the same validation-only policy through an isolated `GIT_CONFIG_GLOBAL` so local-transport child Git processes such as `receive-pack` inherit it.
+- Keep product/runtime Git behavior unchanged: no user, system or repository Git configuration is written, and the no-maintenance policy exists only for the repository validation process and inherited evidence subprocesses.
+- Preserve fail-closed cleanup semantics: validation does not catch, ignore or retry `TemporaryDirectory` cleanup errors inside evidence, so unrelated resource leaks and teardown failures still fail CI truthfully.
+- Validate the final #48 head through four consecutive full `repository` workflow successes, then verify the protected merged main SHA with repeated successful `repository` checks before release finalization.
+- Keep Scenario Conformance at 126 total / 0 manual / 19 deterministic / 53 lifecycle / 54 agent_eval / 126 automated / 0 uncovered (100% automated); no new Scenario, Role, Skill, capability category, Approval Gate or subsystem is introduced.
+- Quarterly Evolution Review and autonomous experiment execution remain deferred.
+- Architecture Diagram Impact: N/A — this patch changes validation-process reliability only and does not change runtime topology, product behavior, Constitution semantics or Human Authority.
+
 ## 0.19.1
 
 ### Evolution Radar Public Network Safety
