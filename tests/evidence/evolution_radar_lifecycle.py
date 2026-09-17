@@ -77,18 +77,31 @@ def main() -> int:
     weekly2 = copy.deepcopy(weekly)
     weekly2["run"]["generated_at"] = "2026-09-08T01:00:00Z"
     body2 = rollup.issue_markdown(weekly2)
+    old_weekly = copy.deepcopy(weekly)
+    old_weekly["run"]["generated_at"] = "2026-08-25T01:00:00Z"
+    old_body = rollup.issue_markdown(old_weekly)
     issues = [
-        {"title": "Evolution Radar [weekly] 2026-09-01", "body": body1},
-        {"title": "Evolution Radar [weekly] 2026-09-08", "body": body2},
-        {"title": "Unrelated issue", "body": body1},
-        {"title": "Evolution Radar [weekly] malformed", "body": "no evidence"},
+        {"title": "Evolution Radar [weekly] 2026-09-01", "created_at": "2026-09-01T01:05:00Z", "body": body1},
+        {"title": "Evolution Radar [weekly] 2026-09-08", "created_at": "2026-09-08T01:05:00Z", "body": body2},
+        {"title": "Evolution Radar [weekly] 2026-08-25", "created_at": "2026-08-25T01:05:00Z", "body": old_body},
+        {"title": "Unrelated issue", "created_at": "2026-09-09T01:05:00Z", "body": body1},
+        {"title": "Evolution Radar [weekly] malformed", "created_at": "2026-09-15T01:05:00Z", "body": "no evidence"},
     ]
-    monthly = rollup.monthly_rollup(issues, config)
-    require(monthly["run"]["weekly_evidence_count"] == 2, "monthly rollup must consume durable weekly evidence")
+    monthly = rollup.monthly_rollup(issues, config, period="2026-09")
+    require(monthly["run"]["period"] == "2026-09", "monthly evidence must record the reviewed calendar period")
+    require(monthly["run"]["weekly_evidence_count"] == 2, "monthly rollup must consume only weekly evidence from the requested calendar period")
+    require(monthly["summary"]["signal_count"] == 8, "out-of-period weekly evidence must be excluded")
     require(monthly["summary"]["deduplicated_count"] == 4, "monthly rollup must deduplicate recurring signals")
     require(all(s["recurrence_count"] >= 2 for s in monthly["signals"]), "monthly rollup must accumulate recurrence")
     require(all(r["state"] == "ANALYSIS_PENDING" for r in monthly["recommendations"]), "monthly rollup must preserve analyzer truthfulness")
     require(not radar.validate_evidence(monthly), "monthly evidence must validate")
+
+    try:
+        rollup.monthly_rollup(issues, config, period="2026/09")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("invalid monthly period format must fail closed")
 
     bad_config = copy.deepcopy(config)
     bad_config["sources"] = bad_config["sources"][:4]
@@ -114,6 +127,7 @@ def main() -> int:
         "issues: write",
         "gh issue create",
         "monthly-rollup",
+        "--period",
     ):
         require(required in workflow, f"workflow missing contract: {required}")
     for forbidden in ("contents: write", "pull-requests: write", "git push", "gh pr create", "gh pr merge", "releases: write"):
