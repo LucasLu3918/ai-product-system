@@ -496,3 +496,42 @@ Automated     91.2%
 
 Architecture Diagram Impact: N/A. This release changes evidence, conformance metadata and validation expectations only; it does not change runtime topology, Role, Skill, Capability, Approval Gate, Constitution, or canonical Project Intelligence behavior.
 
+## v0.17.1 Residual Harness Migration Evidence Maturity
+
+Promoted evidence:
+
+~~~text
+068 Legacy Installation to Managed Harness Migration -> Lifecycle
+~~~
+
+Scenario 068 now executes two temporary Git-system lifecycles. The installed-system path establishes managed Harness state, performs a remote AIPS update through `preflight`, proves the updated CLI is re-entered, refreshes managed adapter content, preserves pre-existing user instructions, and keeps a colliding foreign Gemini registration as `CONFLICT` / `MANUAL` without overwriting it. The plain-checkout path performs the same update/re-exec flow without an installation marker and proves no Global Harness state is registered implicitly.
+
+Residual manual gap classification:
+
+~~~text
+004                         measured benchmark/profile evidence required
+021 / 022 / 039 / 055       rendered/screenshot visual evidence infrastructure required
+028                         complete staging-to-production delivery lifecycle required
+054                         approval-backed authoritative promotion mutation required
+064                         executable material instruction-conflict surfacing required
+082                         contradictory discovery vs approved override preservation required
+087                         component-targeted monorepo lazy-loading execution required
+~~~
+
+These remain manual rather than being promoted by partial or semantic-only evidence.
+
+v0.17.1 baseline:
+
+~~~text
+Total         125
+Manual         10
+Deterministic  19
+Lifecycle      44
+Agent Eval     52
+Automated     115
+Uncovered       0
+Automated     92.0%
+~~~
+
+Architecture Diagram Impact: N/A. This release adds executable evidence and conformance metadata only; it does not change runtime topology, Role, Skill, Capability, Approval Gate, Constitution, or managed Harness behavior.
+
