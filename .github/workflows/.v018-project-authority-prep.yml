@@ -8,6 +8,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: v018-project-authority-prep
+  cancel-in-progress: false
+
 jobs:
   prepare:
     if: github.actor != 'github-actions[bot]'
@@ -21,10 +25,14 @@ jobs:
           python-version: "3.12"
       - run: python -m pip install -r requirements.txt
       - run: python scripts/.v018_project_authority_prep.py
-      - name: Commit capability changes
+      - name: Commit prepared v0.18.0 release
         run: |
+          if git diff --quiet; then
+            echo "No release-prep changes to commit"
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add scripts/project_intelligence.py orchestration/PROJECT_INTELLIGENCE.md tests/evidence/project_override_reconciliation_lifecycle.py
-          git commit -m "feat(intelligence): reconcile approved project overrides"
+          git add VERSION CHANGELOG.md docs/CONFORMANCE.md orchestration/PROJECT_INTELLIGENCE.md bin/aips scripts/project_intelligence.py tests/evidence/project_override_reconciliation_lifecycle.py tests/scenario_coverage.yaml tests/validation/conformance_isolation.py
+          git commit -m "chore(release): prepare v0.18.0 project authority"
           git push origin HEAD:release/v0.18.0-project-authority
