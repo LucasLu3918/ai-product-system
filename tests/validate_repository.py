@@ -1,6 +1,7 @@
 from validation import static_contracts as static_contracts
 from validation import runtime_contracts as runtime_contracts  # noqa: F401
 from validation import visual_render_contracts as visual_render_contracts  # noqa: F401
+from validation import performance_evidence_contracts as performance_evidence_contracts  # noqa: F401
 from validation import governance_resume as governance_resume  # noqa: F401
 from validation import conformance_isolation as conformance_isolation  # noqa: F401
 from validation import syntax_contracts as syntax_contracts  # noqa: F401
