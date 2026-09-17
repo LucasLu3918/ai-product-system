@@ -78,16 +78,28 @@ A source should be:
 - retrievable without embedding credentials in the repository;
 - attributable to a stable URL or source identifier.
 
+For the built-in scheduled Radar, `public_only: true` is an enforced network boundary, not descriptive metadata. Retrieval must:
+- use credential-free HTTPS URLs only;
+- reject localhost and literal loopback/private/link-local/reserved/non-global destinations;
+- resolve hostnames before connecting and reject the destination if any resolved address is non-global;
+- connect to the already validated public IP while preserving the original hostname for TLS/SNI certificate verification;
+- re-run the same validation on every redirect, reject HTTPS downgrade and stop at the configured redirect limit;
+- read at most the configured response byte limit.
+
+These checks must fail closed. DNS failure, unsafe redirect or oversized content is recorded as a source failure; the collector must not bypass the public-source boundary to improve evidence breadth.
+
 The collector records provenance and retrieval failures. Missing or failed sources reduce evidence breadth and must not be silently replaced with fabricated results.
 
 ## Deterministic versus semantic work
 
 Deterministic automation owns:
 - source configuration validation;
+- public-destination network safety validation;
 - normalization;
 - canonical URL/title fingerprinting;
 - duplicate suppression;
 - bounded item counts;
+- bounded redirects and response bytes;
 - evidence schema validation;
 - prior-signal lookup and recurrence counts.
 
