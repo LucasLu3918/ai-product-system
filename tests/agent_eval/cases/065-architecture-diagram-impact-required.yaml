@@ -1,0 +1,30 @@
+version: 1
+id: 065-architecture-diagram-impact-required
+scenario_id: "065"
+description: A Core change must explicitly assess architecture diagram impact and block documentation completion when affected diagrams are stale.
+input:
+  prompt: Finalize documentation for a Core routing and lifecycle change.
+  context:
+    change_class: core
+    routing_changed: true
+    lifecycle_changed: true
+    maintainer_mermaid_stale: true
+rubric:
+  equals:
+    response.status: BLOCKED
+    response.architecture_diagram_impact_required: true
+    response.documentation_complete: false
+  contains:
+    response.actions:
+      - assess_architecture_diagram_impact
+      - check_maintainer_mermaid
+      - check_relevant_human_svg_or_overview
+      - update_affected_diagrams_or_record_na_reason
+      - block_on_stale_affected_diagram
+  excludes:
+    response.actions:
+      - skip_diagram_impact_for_core_change
+      - mark_documentation_complete_with_stale_diagram
+  set_equals: {}
+  nonempty:
+    - response.blocking_reason
