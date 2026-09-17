@@ -135,7 +135,7 @@ def load_yaml(path: Path) -> dict:
 
 
 def installed_legacy_preflight_migrates_to_managed_harness() -> None:
-    with tempfile.TemporaryDirectory() as tmp:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         base = Path(tmp)
         system, remote = system_fixture(base, "installed")
         make_fake_venv(system)
@@ -204,7 +204,7 @@ exit 0
 
 
 def collision_surfaces_manual_without_overwrite() -> None:
-    with tempfile.TemporaryDirectory() as tmp:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         base = Path(tmp)
         system, _ = system_fixture(base, "collision")
         env = runtime_env(base / "runtime")
@@ -231,7 +231,7 @@ exit 0
 
 
 def plain_checkout_does_not_register_harness() -> None:
-    with tempfile.TemporaryDirectory() as tmp:
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp:
         base = Path(tmp)
         system, _ = system_fixture(base, "checkout")
         env = runtime_env(base / "runtime")

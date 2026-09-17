@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.17.1
+
+### Legacy Harness Migration Evidence Maturity
+
+- Add an executable end-to-end lifecycle for Scenario 068 covering installed legacy-system preflight update, re-execution through the updated CLI, and automatic Global Harness refresh only when AIPS installation ownership is present.
+- Verify managed Claude instruction refresh preserves user-owned instruction content while applying the updated AIPS-managed block.
+- Verify an unowned Gemini integration name collision is preserved and surfaced as `CONFLICT` with `MANUAL` capability instead of being overwritten.
+- Verify a plain repository checkout without AIPS installation ownership does not implicitly create or register Global Harness adapters during preflight.
+- Promote Scenario 068 from manual to lifecycle and raise conformance to 125 total / 10 manual / 19 deterministic / 44 lifecycle / 52 agent_eval / 115 automated / 0 uncovered (92.0% automated).
+- Architecture Diagram Impact: N/A — evidence/conformance and release metadata only; no runtime topology, Role, Skill, Capability, Approval Gate or Constitution change.
+
 ## 0.17.0
 
 ### Project / Architecture Lifecycle Evidence Maturity

@@ -32,8 +32,8 @@ if conformance_helper.exists():
             errors.append("Scenario conformance total/registered count must match scenario inventory")
         if cov.get("uncovered") != 0:
             errors.append("Released scenario conformance registry must have no uncovered entries")
-        if cov.get("manual") != 11 or cov.get("agent_eval") != 52 or cov.get("lifecycle") != 43 or cov.get("automated") != 114:
-            errors.append("v0.17.0 baseline must report manual=11, lifecycle=43, agent_eval=52 and automated=114")
+        if cov.get("manual") != 10 or cov.get("agent_eval") != 52 or cov.get("lifecycle") != 44 or cov.get("automated") != 115:
+            errors.append("v0.17.1 baseline must report manual=10, lifecycle=44, agent_eval=52 and automated=115")
 
     with tempfile.TemporaryDirectory() as tmp:
         temp = Path(tmp)
@@ -288,6 +288,19 @@ for rel in legacy_evidence:
     result = subprocess.run([sys.executable, str(evidence_path)], capture_output=True, text=True)
     if result.returncode != 0:
         errors.append(f"Legacy evidence failed: {rel}: {result.stdout.strip()} {result.stderr.strip()}")
+
+# v0.17.1 legacy installation to managed Harness migration lifecycle
+legacy_harness_migration_evidence = ROOT / "tests/evidence/legacy_harness_migration_lifecycle.py"
+if not legacy_harness_migration_evidence.exists():
+    errors.append("Missing v0.17.1 legacy Harness migration lifecycle evidence")
+else:
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(legacy_harness_migration_evidence)], capture_output=True, text=True)
+    if compiled.returncode != 0:
+        errors.append(f"Legacy Harness migration evidence syntax failed: {compiled.stderr.strip()}")
+    else:
+        result = subprocess.run([sys.executable, str(legacy_harness_migration_evidence)], capture_output=True, text=True)
+        if result.returncode != 0:
+            errors.append(f"Legacy Harness migration lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
 
 # v0.17 legacy Project Knowledge migration lifecycle
 project_knowledge_migration_evidence = ROOT / "tests/evidence/project_knowledge_migration_lifecycle.py"

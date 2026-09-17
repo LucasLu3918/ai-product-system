@@ -496,3 +496,45 @@ Automated     91.2%
 
 Architecture Diagram Impact: N/A. This release changes evidence, conformance metadata and validation expectations only; it does not change runtime topology, Role, Skill, Capability, Approval Gate, Constitution, or canonical Project Intelligence behavior.
 
+## v0.17.1 Legacy Harness Migration Evidence Maturity
+
+Promoted evidence:
+
+~~~text
+068 Legacy Installation to Managed Harness Migration -> Lifecycle
+~~~
+
+The lifecycle fixture creates isolated local Git repositories and runtimes and exercises the complete migration contract without network access. It proves that an installed older AIPS system fast-forwards during preflight, re-enters the updated CLI, refreshes the managed Global Harness because installation ownership exists, and preserves user-owned Claude instructions while updating the AIPS-managed block.
+
+The same fixture exercises the unsafe path: an existing Gemini integration named `aips-global-harness` without AIPS ownership is left untouched and recorded as `CONFLICT` / `MANUAL`. A separate plain-checkout path proves preflight does not implicitly create Harness state when `system-dir` installation ownership is absent.
+
+The remaining manual Scenarios are:
+
+~~~text
+004 API Performance
+021 Vague Visual Request
+022 User Assets Banner
+028 Complete Product to Production
+039 Visual Polish Shared Component
+054 Project Intelligence Promotion
+055 V2 Visual Consistency Sweep
+064 Runtime and Project Instruction Composition
+082 Project Overrides Survive Refresh
+087 Monorepo Lazy Intelligence
+~~~
+
+v0.17.1 baseline:
+
+~~~text
+Total         125
+Manual         10
+Deterministic  19
+Lifecycle      44
+Agent Eval     52
+Automated     115
+Uncovered       0
+Automated     92.0%
+~~~
+
+Architecture Diagram Impact: N/A. This release adds executable evidence and updates conformance metadata only; it does not change runtime topology or governance behavior.
+
