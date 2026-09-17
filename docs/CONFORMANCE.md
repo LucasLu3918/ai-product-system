@@ -535,3 +535,30 @@ Automated     92.0%
 
 Architecture Diagram Impact: N/A. This release adds executable evidence and conformance metadata only; it does not change runtime topology, Role, Skill, Capability, Approval Gate, Constitution, or managed Harness behavior.
 
+## v0.18.0 Project Authority Reconciliation
+
+Promoted evidence:
+
+~~~text
+082 Project Overrides Survive Refresh -> Lifecycle
+~~~
+
+Scenario 082 now executes a temporary Git project lifecycle: bootstrap Project Intelligence, persist approved overrides, advance repository evidence, bootstrap again, prove overrides survive, add later structured semantic discovery, reconcile it, persist a deterministic contradiction conflict, re-run reconciliation through the public CLI without duplication, and prove a mutating Turn Context surfaces the active authority conflict and fails closed.
+
+The reconciler compares structured discovery assertions (`id` + `value` + evidence) with structured approved assertions. It does not parse arbitrary prose to manufacture semantic contradictions. This keeps Scenario 064 manual until direct material instruction-conflict detection has truthful executable evidence.
+
+v0.18.0 baseline:
+
+~~~text
+Total         125
+Manual          9
+Deterministic   19
+Lifecycle       45
+Agent Eval      52
+Automated      116
+Uncovered        0
+Automated      92.8%
+~~~
+
+Architecture Diagram Impact: N/A. v0.18.0 implements an already-defined Project Intelligence authority/reconciliation contract and adds no new system topology or governance layer.
+

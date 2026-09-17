@@ -215,6 +215,12 @@ The HTML is self-contained and must not require CDN/network access.
 
 User corrections persist in `PROJECT_OVERRIDES.yaml`, not by editing generated HTML.
 
+### Override reconciliation
+
+Later semantic discovery may emit structured `DISCOVERY.yaml` inferences with an `id`, `value`, and evidence. Run `aips intelligence reconcile-overrides` after such enrichment. The deterministic reconciler compares matching structured assertions in `approved_inferences`, `additional_rules`, `exceptions`, and `excluded_inferences`. It never replaces an approved override. A contradictory value is appended as an idempotent `OPEN` conflict in `PROJECT_OVERRIDES.yaml`.
+
+Active authority conflicts are included in the Turn Context Manifest. Material mutation fails closed with `unresolved_authority_conflict` until a human resolves or dismisses the conflict. This mechanism surfaces registered semantic contradictions; it does not guess conflicts by keyword-matching arbitrary Markdown.
+
 ## Context loading
 
 Every turn resolves the Intelligence index, but does not reload every topic.
