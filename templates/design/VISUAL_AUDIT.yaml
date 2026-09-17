@@ -21,22 +21,42 @@ findings: []
 #     source: src/components/Tag.tsx
 #     style: null
 #     token: null
+#     mechanism: null
 #   fix: null
-#   status: open
+#   status: open # open | fixed | closed
 
 verification:
+  # Declare only the viewport/state matrix that is materially required for this target.
+  required_viewports: [desktop, mobile]
+  required_states: [default]
   before: []
+  # - id: home-desktop-before
+  #   kind: screenshot # screenshot | rendered_artifact
+  #   target: /
+  #   state: default
+  #   viewport:
+  #     label: desktop
+  #     width: 1440
+  #     height: 900
+  #   artifact: evidence/visual/home-desktop-before.png
+  #   input_assets: []
+  #   provenance:
+  #     provider: project-browser
+  #     source_revision: <git-sha-or-equivalent>
+  #     captured_at: <ISO-8601>
+  #     command: null
   after: []
-  desktop: pending
-  tablet: not_applicable
-  mobile: pending
-  states:
-    default: pending
-    hover: pending
-    focus: pending
-    active: pending
-    selected: pending
-    disabled: pending
+
+# This records the independent/semantic quality judgment. Deterministic validation
+# checks evidence integrity only and must never infer visual quality from file existence.
+review:
+  decision: PENDING # PENDING | PASS | PASS_WITH_COMMENTS | REQUEST_CHANGES | BLOCK
+  quality_assessed_by: visual_review # human | agent_eval | visual_review
+  checks: []
+  # - area: composition
+  #   result: pending
+  #   evidence: []
+  notes: []
 
 profile_updated: false
 remaining_material_findings: []
