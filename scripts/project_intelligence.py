@@ -584,8 +584,23 @@ def _canonical_value(value: Any) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
 
 
-def active_authority_conflicts(store: Path, intel: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+def active_authority_conflicts(
+    store: Path,
+    intel: dict[str, Any] | None = None,
+    registry: dict[str, Any] | None = None,
+    runtime: str | None = None,
+) -> list[dict[str, Any]]:
     intel = intel or {}
+    registry = registry or load_yaml(store / "SOURCE_REGISTRY.yaml", {"sources": []})
+    aliases: dict[str, dict[str, Any]] = {}
+    for source in registry.get("sources") or []:
+        if not isinstance(source, dict):
+            continue
+        if source.get("id"):
+            aliases[str(source["id"])] = source
+        if source.get("path"):
+            aliases[str(source["path"])] = source
+
     overrides = load_yaml(store / "PROJECT_OVERRIDES.yaml", {"conflicts": []})
     result: list[dict[str, Any]] = []
     for origin, items in (("project_overrides", overrides.get("conflicts") or []), ("project_intelligence", intel.get("conflicts") or [])):
@@ -594,8 +609,29 @@ def active_authority_conflicts(store: Path, intel: dict[str, Any] | None = None)
                 continue
             if str(item.get("status", "OPEN")).upper() in {"RESOLVED", "DISMISSED"}:
                 continue
+            runtimes = [str(value) for value in (item.get("runtimes") or [])]
+            if runtime and runtimes and runtime not in runtimes:
+                continue
             entry = dict(item)
             entry.setdefault("origin", origin)
+            if "sources" in entry:
+                resolved_sources: list[dict[str, Any]] = []
+                for source_ref in entry.get("sources") or []:
+                    ref = str(source_ref)
+                    source = aliases.get(ref)
+                    if source is None:
+                        resolved_sources.append({"ref": ref, "registered": False})
+                    else:
+                        resolved_sources.append({
+                            "ref": ref,
+                            "registered": True,
+                            "id": source.get("id"),
+                            "path": source.get("path"),
+                            "authority": source.get("authority"),
+                            "scope": source.get("scope"),
+                            "runtime_native": bool(runtime and runtime in (source.get("auto_loaded_by") or [])),
+                        })
+                entry["sources"] = resolved_sources
             result.append(entry)
     return result
 
@@ -677,7 +713,7 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
     intel = load_yaml(store / "PROJECT_INTELLIGENCE.yaml", {}) if (store / "PROJECT_INTELLIGENCE.yaml").exists() else {}
     registry = load_yaml(store / "SOURCE_REGISTRY.yaml", {"sources": []}) if store.exists() else {"sources": []}
     state = intel.get("state") or {}
-    authority_conflicts = active_authority_conflicts(store, intel) if store.exists() else []
+    authority_conflicts = active_authority_conflicts(store, intel, registry, runtime) if store.exists() else []
 
     available = intel.get("topics") or {}
     selected: list[str] = []
@@ -738,6 +774,17 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             "intelligence_topics": selected,
             "optional_evidence": [str(store / "DISCOVERY.yaml")] if (store / "DISCOVERY.yaml").exists() else [],
             "authority_conflicts": authority_conflicts,
+        },
+        "instruction_resolution": {
+            "precedence": [
+                "runtime_native_scoped",
+                "project_authoritative_scoped",
+                "derived_project_intelligence",
+            ],
+            "authoritative_sources_preserved": True,
+            "derived_intelligence_governing": False,
+            "conflicts": authority_conflicts,
+            "requires_resolution": bool(authority_conflicts),
         },
         "intelligence": {
             "readiness": readiness,
