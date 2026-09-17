@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.19.1
+
+### Evolution Radar Public Network Safety
+
+- Enforce the existing `public_only: true` Evolution Radar policy as an executable network boundary instead of descriptive configuration.
+- Require credential-free HTTPS source URLs and reject localhost plus literal loopback, private, link-local, reserved and other non-global destinations.
+- Resolve source hostnames before connection, fail closed when any resolved address is non-global, and connect to the validated public IP while preserving the original hostname for TLS/SNI certificate verification.
+- Revalidate every redirect target, reject HTTPS downgrade, detect redirect loops and cap redirect depth at the configured maximum.
+- Bound each public-source response by the configured byte limit (2 MiB in the built-in policy) in addition to the existing finite timeout and per-source item limit.
+- Add deterministic lifecycle evidence for private/mixed DNS resolution, DNS failure, unsafe redirects, redirect depth/loop handling, credential-bearing URLs and oversized responses while preserving `ANALYSIS_PENDING`, provenance and Human-only adoption authority.
+- Keep Scenario Conformance at 126 total / 0 manual / 19 deterministic / 53 lifecycle / 54 agent_eval / 126 automated / 0 uncovered (100% automated); no new Scenario, Role, Skill, capability category, Approval Gate or subsystem is introduced.
+- Quarterly Evolution Review and autonomous experiment execution remain deferred.
+- Architecture Diagram Impact: N/A — this patch hardens the existing Evolution Radar retrieval boundary without changing maintenance-plane topology, Constitution semantics or Human Authority.
+
 ## 0.19.0
 
 ### Governed Evolution Radar
