@@ -57,6 +57,20 @@ API_WORDS = {"api", "endpoint", "request", "response", "handler", "route", "接�
 SECURITY_WORDS = {"auth", "authorization", "security", "permission", "token", "權限", "驗證", "資安"}
 TEST_WORDS = {"test", "spec", "coverage", "測試"}
 
+INSTRUCTION_PRECEDENCE = (
+    "platform_safety",
+    "aips_constitution_governance",
+    "explicit_user_decision",
+    "runtime_native",
+    "nearest_project_instruction",
+    "authoritative_contract",
+    "project_overrides",
+    "project_intelligence",
+    "project_local_skills",
+    "aips_skills",
+    "inference",
+)
+
 REDACTION_PATTERNS = (
     re.compile(r"(?i)(password\s*[:=]\s*)([^\s,;]+)"),
     re.compile(r"(?i)((?:api[_-]?key|token|secret)\s*[:=]\s*)([^\s,;]+)"),
@@ -580,13 +594,82 @@ def adapter_enforcement(runtime: str) -> str:
     return {"codex": "ADVISORY", "claude-code": "ADVISORY", "gemini-cli": "ADVISORY"}.get(runtime, "UNSUPPORTED")
 
 
+def instruction_sources(root: Path, runtime: str, registry: dict[str, Any]) -> list[dict[str, Any]]:
+    resolved: list[dict[str, Any]] = []
+    for src in registry.get("sources") or []:
+        path_value = str(src.get("path", ""))
+        if not path_value:
+            continue
+        authority = str(src.get("authority", "unknown"))
+        auto_loaded = runtime in (src.get("auto_loaded_by") or [])
+        scope = str(src.get("scope", "."))
+        resolved.append({
+            "id": src.get("id"),
+            "path": str(root / path_value),
+            "relative_path": path_value,
+            "authority": authority,
+            "scope": scope,
+            "scope_depth": len([part for part in Path(scope).parts if part not in {".", ""}]),
+            "delivery": "runtime_native" if auto_loaded else "targeted_pointer",
+            "precedence_layer": (
+                "nearest_project_instruction"
+                if authority == "project_instruction" and not auto_loaded
+                else "runtime_native"
+                if authority == "project_instruction" and auto_loaded
+                else "authoritative_contract"
+            ),
+            "runtime_auto_loaded": auto_loaded,
+            "content_duplicated": bool(src.get("content_duplicated", False)),
+        })
+    return sorted(
+        resolved,
+        key=lambda item: (
+            INSTRUCTION_PRECEDENCE.index(item["precedence_layer"]),
+            -int(item.get("scope_depth", 0)),
+            str(item.get("relative_path", "")),
+        ),
+    )
+
+
+def instruction_conflicts(intel: dict[str, Any], overrides: dict[str, Any]) -> list[dict[str, Any]]:
+    conflicts: list[dict[str, Any]] = []
+    for origin, doc in (("project_intelligence", intel), ("project_overrides", overrides)):
+        for raw in doc.get("conflicts") or []:
+            if isinstance(raw, str):
+                item: dict[str, Any] = {"summary": raw}
+            elif isinstance(raw, dict):
+                item = dict(raw)
+            else:
+                continue
+            item.setdefault("id", f"conflict-{sha(origin + ':' + str(item.get('summary', item)))[:12]}")
+            item.setdefault("summary", "Material instruction conflict requires resolution")
+            item.setdefault("material", True)
+            item.setdefault("status", "UNRESOLVED")
+            item.setdefault("sources", [])
+            item["origin"] = origin
+            conflicts.append(item)
+    return conflicts
+
+
+def unresolved_material_conflicts(conflicts: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    resolved_states = {"RESOLVED", "ACCEPTED", "WAIVED"}
+    return [
+        item for item in conflicts
+        if bool(item.get("material", True)) and str(item.get("status", "UNRESOLVED")).upper() not in resolved_states
+    ]
+
+
 def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = False) -> dict[str, Any]:
     store, mode, pid = intelligence_store(root)
     category, mutation, desired_topics = classify_prompt(prompt)
     fr = freshness(root)
     intel = load_yaml(store / "PROJECT_INTELLIGENCE.yaml", {}) if (store / "PROJECT_INTELLIGENCE.yaml").exists() else {}
     registry = load_yaml(store / "SOURCE_REGISTRY.yaml", {"sources": []}) if store.exists() else {"sources": []}
+    overrides = load_yaml(store / "PROJECT_OVERRIDES.yaml", {}) if store.exists() else {}
     state = intel.get("state") or {}
+    resolved_instruction_sources = instruction_sources(root, runtime, registry)
+    conflicts = instruction_conflicts(intel, overrides)
+    unresolved_conflicts = unresolved_material_conflicts(conflicts)
 
     available = intel.get("topics") or {}
     selected: list[str] = []
@@ -618,6 +701,8 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             fail_closed_reasons.append("intelligence_stale")
         if readiness != "READY":
             fail_closed_reasons.append(f"intelligence_readiness_{readiness.lower()}")
+        if unresolved_conflicts:
+            fail_closed_reasons.append("instruction_conflict_unresolved")
 
     return {
         "version": 1,
@@ -664,6 +749,10 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
         },
         "resolution": {
             "explained": explain,
+            "instruction_precedence": list(INSTRUCTION_PRECEDENCE),
+            "instruction_sources": resolved_instruction_sources,
+            "instruction_conflicts": conflicts,
+            "instruction_conflict_status": "BLOCKED" if unresolved_conflicts else "CLEAR",
             "decisions": ([
                 {"subject": "task.category", "selected": category, "reasons": ["prompt_classification"]},
                 {"subject": "change_impact", "selected": mutation, "reasons": ["existing_project_mutation"] if mutation else ["read_only_or_non_mutating"]},

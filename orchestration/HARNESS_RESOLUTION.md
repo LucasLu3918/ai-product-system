@@ -67,6 +67,8 @@ Platform / Safety
 
 Runtime-mandated precedence remains authoritative for that Runtime.
 
+The Turn Context manifest exposes this as structured `resolution.instruction_precedence` and `resolution.instruction_sources`. AIPS does not guess semantic contradictions with string heuristics. Material conflicts identified by the Agent or an approved project override are recorded structurally in Project Intelligence / `PROJECT_OVERRIDES.yaml`, surfaced as `resolution.instruction_conflicts`, and an unresolved material conflict fails closed for mutation while remaining visible for read-only work. Resolving a conflict records the decision; it does not silently rewrite the underlying permanent instruction source.
+
 ## Runtime-aware deduplication
 
 SOURCE_REGISTRY distinguishes:
