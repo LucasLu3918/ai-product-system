@@ -1,214 +1,126 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from pathlib import Path
+import re
 import subprocess
 import sys
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-PI = ROOT / "scripts" / "project_intelligence.py"
-DOC = ROOT / "orchestration" / "PROJECT_INTELLIGENCE.md"
-EVIDENCE = ROOT / "tests" / "evidence" / "project_override_reconciliation_lifecycle.py"
 
 
-def patch_pi() -> None:
-    text = PI.read_text(encoding="utf-8")
-
-    anchor = '''def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = False) -> dict[str, Any]:\n'''
-    block = '''def _canonical_value(value: Any) -> str:\n    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))\n\n\ndef active_authority_conflicts(store: Path, intel: dict[str, Any] | None = None) -> list[dict[str, Any]]:\n    intel = intel or {}\n    overrides = load_yaml(store / "PROJECT_OVERRIDES.yaml", {"conflicts": []})\n    result: list[dict[str, Any]] = []\n    for origin, items in (("project_overrides", overrides.get("conflicts") or []), ("project_intelligence", intel.get("conflicts") or [])):\n        for item in items:\n            if not isinstance(item, dict):\n                continue\n            if str(item.get("status", "OPEN")).upper() in {"RESOLVED", "DISMISSED"}:\n                continue\n            entry = dict(item)\n            entry.setdefault("origin", origin)\n            result.append(entry)\n    return result\n\n\ndef reconcile_overrides(root: Path) -> dict[str, Any]:\n    store, mode, pid = intelligence_store(root)\n    intel_path = store / "PROJECT_INTELLIGENCE.yaml"\n    overrides_path = store / "PROJECT_OVERRIDES.yaml"\n    discovery_path = store / "DISCOVERY.yaml"\n    if not intel_path.exists() or not overrides_path.exists() or not discovery_path.exists():\n        raise RuntimeError("Project Intelligence, PROJECT_OVERRIDES and DISCOVERY must exist before reconciliation")\n\n    with writer_lock(store):\n        overrides = load_yaml(overrides_path, {})\n        discovery = load_yaml(discovery_path, {})\n        discovered: dict[str, dict[str, Any]] = {}\n        for item in discovery.get("inferences") or []:\n            if not isinstance(item, dict) or not item.get("id") or "value" not in item:\n                continue\n            discovered[str(item["id"])] = item\n\n        generated: list[dict[str, Any]] = []\n        preserved_assertions = 0\n        categories = ("approved_inferences", "additional_rules", "exceptions", "excluded_inferences")\n        for category in categories:\n            for assertion in overrides.get(category) or []:\n                if not isinstance(assertion, dict) or not assertion.get("id") or "value" not in assertion:\n                    continue\n                preserved_assertions += 1\n                assertion_id = str(assertion["id"])
-                candidate = discovered.get(assertion_id)\n                if not candidate or _canonical_value(candidate.get("value")) == _canonical_value(assertion.get("value")):\n                    continue\n                conflict_seed = _canonical_value({\n                    "category": category,\n                    "assertion_id": assertion_id,\n                    "approved_value": assertion.get("value"),\n                    "discovered_value": candidate.get("value"),\n                })\n                generated.append({\n                    "id": f"conflict-{sha(conflict_seed)[:12]}",\n                    "type": "override_discovery_contradiction",\n                    "status": "OPEN",\n                    "override_category": category,\n                    "assertion_id": assertion_id,\n                    "approved_value": assertion.get("value"),\n                    "discovered_value": candidate.get("value"),\n                    "evidence": candidate.get("evidence") or [],\n                    "source": "deterministic_override_reconciliation",\n                })\n\n        existing = [item for item in (overrides.get("conflicts") or []) if isinstance(item, dict)]\n        existing_ids = {str(item.get("id")) for item in existing if item.get("id")}\n        for conflict in generated:\n            if conflict["id"] not in existing_ids:\n                existing.append(conflict)\n                existing_ids.add(conflict["id"])\n        overrides["conflicts"] = existing\n        atomic_yaml(overrides_path, overrides)\n\n    active = [item for item in existing if str(item.get("status", "OPEN")).upper() not in {"RESOLVED", "DISMISSED"}]\n    return {\n        "project_id": pid,\n        "mode": mode,\n        "preserved_assertions": preserved_assertions,\n        "discovered_inferences": len(discovered),\n        "new_conflicts": len([item for item in generated if item["id"] in existing_ids]),\n        "active_conflicts": len(active),\n        "conflicts": active,\n    }\n\n\n'''
-    if "def reconcile_overrides(root: Path)" not in text:
-        if anchor not in text:
-            raise RuntimeError("context_manifest anchor not found")
-        text = text.replace(anchor, block + anchor, 1)
-
-    old = '''    registry = load_yaml(store / "SOURCE_REGISTRY.yaml", {"sources": []}) if store.exists() else {"sources": []}\n    state = intel.get("state") or {}\n'''
-    new = '''    registry = load_yaml(store / "SOURCE_REGISTRY.yaml", {"sources": []}) if store.exists() else {"sources": []}\n    state = intel.get("state") or {}\n    authority_conflicts = active_authority_conflicts(store, intel) if store.exists() else []\n'''
-    if old in text:
-        text = text.replace(old, new, 1)
-    elif "authority_conflicts = active_authority_conflicts" not in text:
-        raise RuntimeError("context registry/state anchor not found")
-
-    old = '''        if readiness != "READY":\n            fail_closed_reasons.append(f"intelligence_readiness_{readiness.lower()}")\n\n    return {\n'''
-    new = '''        if readiness != "READY":\n            fail_closed_reasons.append(f"intelligence_readiness_{readiness.lower()}")\n        if authority_conflicts:\n            fail_closed_reasons.append("unresolved_authority_conflict")\n\n    return {\n'''
-    if old in text:
-        text = text.replace(old, new, 1)
-    elif 'fail_closed_reasons.append("unresolved_authority_conflict")' not in text:
-        raise RuntimeError("fail policy anchor not found")
-
-    old = '''            "optional_evidence": [str(store / "DISCOVERY.yaml")] if (store / "DISCOVERY.yaml").exists() else [],\n        },\n        "intelligence": {\n'''
-    new = '''            "optional_evidence": [str(store / "DISCOVERY.yaml")] if (store / "DISCOVERY.yaml").exists() else [],\n            "authority_conflicts": authority_conflicts,\n        },\n        "intelligence": {\n'''
-    if old in text:
-        text = text.replace(old, new, 1)
-    elif '"authority_conflicts": authority_conflicts' not in text:
-        raise RuntimeError("context output anchor not found")
-
-    old = '''    for name in ("bootstrap", "status", "render", "finalize", "migrate-attached", "sync-external"):\n'''
-    new = '''    for name in ("bootstrap", "status", "render", "finalize", "migrate-attached", "sync-external", "reconcile-overrides"):\n'''
-    if old in text:
-        text = text.replace(old, new, 1)
-    elif '"reconcile-overrides"' not in text:
-        raise RuntimeError("CLI parser anchor not found")
-
-    old = '''        elif args.command == "sync-external":\n            result = sync_external(root)\n        else:\n'''
-    new = '''        elif args.command == "sync-external":\n            result = sync_external(root)\n        elif args.command == "reconcile-overrides":\n            result = reconcile_overrides(root)\n        else:\n'''
-    if old in text:
-        text = text.replace(old, new, 1)
-    elif 'args.command == "reconcile-overrides"' not in text:
-        raise RuntimeError("CLI dispatch anchor not found")
-
-    PI.write_text(text, encoding="utf-8")
+def fix_reconcile_count() -> None:
+    path = ROOT / "scripts/project_intelligence.py"
+    text = path.read_text(encoding="utf-8")
+    old = '''        existing = [item for item in (overrides.get("conflicts") or []) if isinstance(item, dict)]\n        existing_ids = {str(item.get("id")) for item in existing if item.get("id")}\n        for conflict in generated:\n            if conflict["id"] not in existing_ids:\n                existing.append(conflict)\n                existing_ids.add(conflict["id"])\n        overrides["conflicts"] = existing\n        atomic_yaml(overrides_path, overrides)\n\n    active = [item for item in existing if str(item.get("status", "OPEN")).upper() not in {"RESOLVED", "DISMISSED"}]\n    return {\n        "project_id": pid,\n        "mode": mode,\n        "preserved_assertions": preserved_assertions,\n        "discovered_inferences": len(discovered),\n        "new_conflicts": len([item for item in generated if item["id"] in existing_ids]),\n'''
+    new = '''        existing = [item for item in (overrides.get("conflicts") or []) if isinstance(item, dict)]\n        existing_ids = {str(item.get("id")) for item in existing if item.get("id")}\n        new_conflicts = 0\n        for conflict in generated:\n            if conflict["id"] not in existing_ids:\n                existing.append(conflict)\n                existing_ids.add(conflict["id"])\n                new_conflicts += 1\n        overrides["conflicts"] = existing\n        atomic_yaml(overrides_path, overrides)\n\n    active = [item for item in existing if str(item.get("status", "OPEN")).upper() not in {"RESOLVED", "DISMISSED"}]\n    return {\n        "project_id": pid,\n        "mode": mode,\n        "preserved_assertions": preserved_assertions,\n        "discovered_inferences": len(discovered),\n        "new_conflicts": new_conflicts,\n'''
+    if old not in text:
+        raise RuntimeError("reconcile count anchor not found")
+    path.write_text(text.replace(old, new, 1), encoding="utf-8")
 
 
-def write_evidence() -> None:
-    EVIDENCE.write_text(r'''#!/usr/bin/env python3
-from __future__ import annotations
+def update_cli_and_evidence() -> None:
+    cli = ROOT / "bin/aips"
+    text = cli.read_text(encoding="utf-8")
+    old = '''  aips intelligence context --runtime <id> [--project <path>] [--prompt <text>]\n  aips intelligence render [--project <path>]\n'''
+    new = '''  aips intelligence context --runtime <id> [--project <path>] [--prompt <text>]\n  aips intelligence reconcile-overrides [--project <path>]\n  aips intelligence render [--project <path>]\n'''
+    if old not in text:
+        raise RuntimeError("CLI usage anchor not found")
+    cli.write_text(text.replace(old, new, 1), encoding="utf-8")
 
-import json
-import os
-from pathlib import Path
-import subprocess
-import sys
-import tempfile
-
-import yaml
-
-ROOT = Path(__file__).resolve().parents[2]
-PI = ROOT / "scripts" / "project_intelligence.py"
-
-
-def run(args: list[str], env: dict[str, str]) -> subprocess.CompletedProcess[str]:
-    return subprocess.run(args, env=env, capture_output=True, text=True)
-
-
-def require(condition: bool, message: str) -> None:
-    if not condition:
-        raise AssertionError(message)
+    evidence = ROOT / "tests/evidence/project_override_reconciliation_lifecycle.py"
+    et = evidence.read_text(encoding="utf-8")
+    et = et.replace(
+        'PI = ROOT / "scripts" / "project_intelligence.py"\n',
+        'PI = ROOT / "scripts" / "project_intelligence.py"\nCLI = ROOT / "bin" / "aips"\n',
+        1,
+    )
+    old_call = '''        again = run([sys.executable, str(PI), "reconcile-overrides", "--project", str(project), "--format", "json"], env)\n        require(again.returncode == 0, "idempotent reconciliation failed")\n        require(len(load_yaml(overrides_path).get("conflicts") or []) == 1, "reconciliation must not duplicate same conflict")\n'''
+    new_call = '''        again = run(["bash", str(CLI), "intelligence", "reconcile-overrides", "--project", str(project), "--format", "json"], env)\n        require(again.returncode == 0, f"CLI idempotent reconciliation failed: {again.stdout} {again.stderr}")\n        again_doc = json.loads(again.stdout)\n        require(again_doc.get("new_conflicts") == 0, "second reconciliation must report zero new conflicts")\n        require(len(load_yaml(overrides_path).get("conflicts") or []) == 1, "reconciliation must not duplicate same conflict")\n'''
+    if old_call not in et:
+        raise RuntimeError("evidence idempotence anchor not found")
+    evidence.write_text(et.replace(old_call, new_call, 1), encoding="utf-8")
 
 
-def load_yaml(path: Path) -> dict:
-    return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+def promote_082() -> None:
+    path = ROOT / "tests/scenario_coverage.yaml"
+    text = path.read_text(encoding="utf-8")
+    pattern = re.compile(
+        r'(?ms)(  - id: "082"\n    path: tests/scenarios/082-project-overrides-survive-refresh\.md\n)'
+        r'    coverage: manual\n'
+        r'    evidence:\n      - tests/scenarios/082-project-overrides-survive-refresh\.md\n'
+        r'    note: [^\n]+\n'
+    )
+    replacement = (
+        r'\1'
+        '    coverage: lifecycle\n'
+        '    evidence:\n'
+        '      - tests/evidence/project_override_reconciliation_lifecycle.py\n'
+        '      - scripts/project_intelligence.py\n'
+        '      - tests/validate_repository.py\n'
+    )
+    updated, count = pattern.subn(replacement, text, count=1)
+    if count != 1:
+        raise RuntimeError("Scenario 082 manual registry block not found exactly once")
+    path.write_text(updated, encoding="utf-8")
 
 
-def git(project: Path, *args: str) -> None:
-    subprocess.run(["git", *args], cwd=project, check=True, capture_output=True, text=True)
+def update_validator() -> None:
+    path = ROOT / "tests/validation/conformance_isolation.py"
+    text = path.read_text(encoding="utf-8")
+    old = '''        if cov.get("manual") != 10 or cov.get("agent_eval") != 52 or cov.get("lifecycle") != 44 or cov.get("automated") != 115:\n            errors.append("v0.17.1 baseline must report manual=10, lifecycle=44, agent_eval=52 and automated=115")'''
+    new = '''        if cov.get("manual") != 9 or cov.get("agent_eval") != 52 or cov.get("lifecycle") != 45 or cov.get("automated") != 116:\n            errors.append("v0.18.0 baseline must report manual=9, lifecycle=45, agent_eval=52 and automated=116")'''
+    if old not in text:
+        raise RuntimeError("v0.17.1 conformance baseline marker not found")
+    text = text.replace(old, new, 1)
+    text = text.replace(
+        'errors.append("v0.17.1 committed Agent Eval baseline must contain 52 passing case/result pairs")',
+        'errors.append("v0.18.0 committed Agent Eval baseline must contain 52 passing case/result pairs")',
+        1,
+    )
+
+    marker = '# v0.15 canonical identity / resume integrity\n'
+    block = '''# v0.18 Project Authority reconciliation lifecycle\nproject_authority_evidence = ROOT / "tests/evidence/project_override_reconciliation_lifecycle.py"\nif not project_authority_evidence.exists():\n    errors.append("Missing v0.18 Project Authority reconciliation lifecycle evidence")\nelse:\n    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(project_authority_evidence)], capture_output=True, text=True)\n    if compiled.returncode != 0:\n        errors.append(f"Project Authority reconciliation evidence syntax failed: {compiled.stderr.strip()}")\n    else:\n        result = subprocess.run([sys.executable, str(project_authority_evidence)], capture_output=True, text=True)\n        if result.returncode != 0:\n            errors.append(f"Project Authority reconciliation lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")\n\n'''
+    if marker not in text:
+        raise RuntimeError("validator insertion marker not found")
+    if block not in text:
+        text = text.replace(marker, block + marker, 1)
+    path.write_text(text, encoding="utf-8")
 
 
-def main() -> int:
-    with tempfile.TemporaryDirectory() as tmp:
-        base = Path(tmp)
-        project = base / "project"
-        home = base / "home"
-        config = base / "config"
-        project.mkdir()
-        home.mkdir()
-        (project / "AGENTS.md").write_text("# Rules\nPreserve domain boundaries.\n", encoding="utf-8")
-        (project / "main.py").write_text("print('fixture')\n", encoding="utf-8")
-        git(project, "init", "-q")
-        git(project, "config", "user.email", "aips@example.invalid")
-        git(project, "config", "user.name", "AIPS Test")
-        git(project, "add", "AGENTS.md", "main.py")
-        git(project, "commit", "-qm", "initial")
+def update_release_metadata() -> None:
+    version = ROOT / "VERSION"
+    if version.read_text(encoding="utf-8").strip() != "0.17.1":
+        raise RuntimeError("v0.18.0 prep requires VERSION 0.17.1 baseline")
+    version.write_text("0.18.0\n", encoding="utf-8")
 
-        env = dict(os.environ)
-        env["HOME"] = str(home)
-        env["XDG_CONFIG_HOME"] = str(config)
+    changelog = ROOT / "CHANGELOG.md"
+    text = changelog.read_text(encoding="utf-8")
+    section = '''## 0.18.0\n\n### Project Authority Reconciliation\n\n- Implement deterministic reconciliation between later structured Project Intelligence discovery and user/project-approved `PROJECT_OVERRIDES.yaml` assertions.\n- Preserve approved inferences, additional rules, exceptions and exclusions across refresh; contradictory structured discovery creates an idempotent `OPEN` authority conflict rather than replacing approved state.\n- Surface active authority conflicts in Turn Context and fail closed for material mutation with `unresolved_authority_conflict`.\n- Add the stable `aips intelligence reconcile-overrides` CLI command and lifecycle evidence covering refresh preservation, contradictory evidence, idempotence, CLI routing and mutation blocking.\n- Promote Scenario 082 from manual to lifecycle. Scenario 064 remains manual because v0.18.0 surfaces registered semantic conflicts but intentionally does not guess arbitrary Markdown conflicts by keyword heuristics.\n- Raise conformance baseline to 125 total / 9 manual / 19 deterministic / 45 lifecycle / 52 agent_eval / 116 automated / 0 uncovered (92.8% automated).\n- Architecture Diagram Impact: N/A — this completes an existing Project Intelligence authority contract; no new Role, Skill, Capability category, Approval Gate, Constitution layer, or runtime topology is introduced.\n\n'''
+    marker = "# Changelog\n\n"
+    if "## 0.18.0\n" not in text:
+        if not text.startswith(marker):
+            raise RuntimeError("CHANGELOG heading marker not found")
+        changelog.write_text(text.replace(marker, marker + section, 1), encoding="utf-8")
 
-        first = run([sys.executable, str(PI), "bootstrap", "--project", str(project), "--format", "json"], env)
-        require(first.returncode == 0, f"initial bootstrap failed: {first.stdout} {first.stderr}")
-        store = Path(json.loads(first.stdout)["store"])
-        overrides_path = store / "PROJECT_OVERRIDES.yaml"
-        overrides = load_yaml(overrides_path)
-        approved = {
-            "id": "architecture.domain_boundary",
-            "value": "isolated-domain",
-            "approved_by": "project-owner",
-            "evidence": ["AGENTS.md"],
-        }
-        overrides["approved_inferences"] = [approved]
-        overrides["additional_rules"] = [{"id": "testing.minimum", "value": "characterization-first"}]
-        overrides_path.write_text(yaml.safe_dump(overrides, sort_keys=False), encoding="utf-8")
-
-        (project / "docs").mkdir()
-        (project / "docs" / "architecture.md").write_text("New scan evidence for fixture.\n", encoding="utf-8")
-        git(project, "add", "docs/architecture.md")
-        git(project, "commit", "-qm", "new discovery evidence")
-
-        second = run([sys.executable, str(PI), "bootstrap", "--project", str(project), "--format", "json"], env)
-        require(second.returncode == 0, f"refresh bootstrap failed: {second.stdout} {second.stderr}")
-        after_refresh = load_yaml(overrides_path)
-        require(after_refresh.get("approved_inferences") == [approved], "refresh must preserve approved inference")
-        require((after_refresh.get("additional_rules") or [])[0].get("value") == "characterization-first", "refresh must preserve additional rule")
-
-        discovery_path = store / "DISCOVERY.yaml"
-        discovery = load_yaml(discovery_path)
-        discovery["inferences"] = [{
-            "id": "architecture.domain_boundary",
-            "value": "shared-domain",
-            "type": "INTERPRETATION",
-            "confidence": "high",
-            "evidence": ["docs/architecture.md"],
-        }]
-        discovery_path.write_text(yaml.safe_dump(discovery, sort_keys=False), encoding="utf-8")
-
-        reconcile = run([sys.executable, str(PI), "reconcile-overrides", "--project", str(project), "--format", "json"], env)
-        require(reconcile.returncode == 0, f"reconcile failed: {reconcile.stdout} {reconcile.stderr}")
-        result = json.loads(reconcile.stdout)
-        require(result.get("active_conflicts") == 1, "contradictory discovery must create one active conflict")
-
-        reconciled = load_yaml(overrides_path)
-        require(reconciled.get("approved_inferences") == [approved], "reconciliation must not overwrite approved inference")
-        conflicts = reconciled.get("conflicts") or []
-        require(len(conflicts) == 1, "conflict must persist in PROJECT_OVERRIDES")
-        conflict = conflicts[0]
-        require(conflict.get("type") == "override_discovery_contradiction", "wrong conflict type")
-        require(conflict.get("approved_value") == "isolated-domain", "approved value must remain visible")
-        require(conflict.get("discovered_value") == "shared-domain", "discovered contradiction must remain visible")
-        require(conflict.get("evidence") == ["docs/architecture.md"], "conflict evidence must be retained")
-
-        again = run([sys.executable, str(PI), "reconcile-overrides", "--project", str(project), "--format", "json"], env)
-        require(again.returncode == 0, "idempotent reconciliation failed")
-        require(len(load_yaml(overrides_path).get("conflicts") or []) == 1, "reconciliation must not duplicate same conflict")
-
-        context = run([
-            sys.executable, str(PI), "context", "--project", str(project), "--runtime", "codex",
-            "--prompt", "modify API handler", "--format", "json", "--explain",
-        ], env)
-        require(context.returncode == 0, f"context failed: {context.stdout} {context.stderr}")
-        context_doc = json.loads(context.stdout)
-        surfaced = (context_doc.get("context") or {}).get("authority_conflicts") or []
-        require(len(surfaced) == 1, "active authority conflict must surface in turn context")
-        fail_reasons = (context_doc.get("fail_policy") or {}).get("reasons") or []
-        require("unresolved_authority_conflict" in fail_reasons, "mutation must fail closed on unresolved authority conflict")
-
-    print("project_override_reconciliation_lifecycle evidence: PASS")
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())
-''', encoding="utf-8")
-
-
-def update_doc() -> None:
-    text = DOC.read_text(encoding="utf-8")
-    marker = '''User corrections persist in `PROJECT_OVERRIDES.yaml`, not by editing generated HTML.\n'''
-    addition = '''User corrections persist in `PROJECT_OVERRIDES.yaml`, not by editing generated HTML.\n\n### Override reconciliation\n\nLater semantic discovery may emit structured `DISCOVERY.yaml` inferences with an `id`, `value`, and evidence. Run `aips intelligence reconcile-overrides` after such enrichment. The deterministic reconciler compares matching structured assertions in `approved_inferences`, `additional_rules`, `exceptions`, and `excluded_inferences`. It never replaces an approved override. A contradictory value is appended as an idempotent `OPEN` conflict in `PROJECT_OVERRIDES.yaml`.\n\nActive authority conflicts are included in the Turn Context Manifest. Material mutation fails closed with `unresolved_authority_conflict` until a human resolves or dismisses the conflict. This mechanism surfaces registered semantic contradictions; it does not guess conflicts by keyword-matching arbitrary Markdown.\n'''
-    if "### Override reconciliation" not in text:
-        if marker not in text:
-            raise RuntimeError("Project Intelligence override marker not found")
-        text = text.replace(marker, addition, 1)
-    DOC.write_text(text, encoding="utf-8")
+    conformance = ROOT / "docs/CONFORMANCE.md"
+    ct = conformance.read_text(encoding="utf-8")
+    if "## v0.18.0 Project Authority Reconciliation" not in ct:
+        ct = ct.rstrip() + '''\n\n## v0.18.0 Project Authority Reconciliation\n\nPromoted evidence:\n\n~~~text\n082 Project Overrides Survive Refresh -> Lifecycle\n~~~\n\nScenario 082 now executes a temporary Git project lifecycle: bootstrap Project Intelligence, persist approved overrides, advance repository evidence, bootstrap again, prove overrides survive, add later structured semantic discovery, reconcile it, persist a deterministic contradiction conflict, re-run reconciliation through the public CLI without duplication, and prove a mutating Turn Context surfaces the active authority conflict and fails closed.\n\nThe reconciler compares structured discovery assertions (`id` + `value` + evidence) with structured approved assertions. It does not parse arbitrary prose to manufacture semantic contradictions. This keeps Scenario 064 manual until direct material instruction-conflict detection has truthful executable evidence.\n\nv0.18.0 baseline:\n\n~~~text\nTotal         125\nManual          9\nDeterministic   19\nLifecycle       45\nAgent Eval      52\nAutomated      116\nUncovered        0\nAutomated      92.8%\n~~~\n\nArchitecture Diagram Impact: N/A. v0.18.0 implements an already-defined Project Intelligence authority/reconciliation contract and adds no new system topology or governance layer.\n''' + "\n"
+        conformance.write_text(ct, encoding="utf-8")
 
 
 def main() -> int:
-    patch_pi()
-    write_evidence()
-    update_doc()
-    subprocess.run([sys.executable, "-m", "py_compile", str(PI), str(EVIDENCE)], cwd=ROOT, check=True)
-    subprocess.run([sys.executable, str(EVIDENCE)], cwd=ROOT, check=True)
-    subprocess.run([sys.executable, str(ROOT / "tests" / "validate_repository.py")], cwd=ROOT, check=True)
-    print("v0.18.0 project authority capability prep: PASS")
+    fix_reconcile_count()
+    update_cli_and_evidence()
+    promote_082()
+    update_validator()
+    update_release_metadata()
+    evidence = ROOT / "tests/evidence/project_override_reconciliation_lifecycle.py"
+    subprocess.run([sys.executable, "-m", "py_compile", str(ROOT / "scripts/project_intelligence.py"), str(evidence)], cwd=ROOT, check=True)
+    subprocess.run([sys.executable, str(evidence)], cwd=ROOT, check=True)
+    subprocess.run([sys.executable, str(ROOT / "tests/validate_repository.py")], cwd=ROOT, check=True)
+    print("v0.18.0 Project Authority release prep: PASS")
     return 0
 
 
