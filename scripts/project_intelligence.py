@@ -402,6 +402,7 @@ def bootstrap(root: Path) -> dict[str, Any]:
                 "additional_rules": [],
                 "exceptions": [],
                 "excluded_inferences": [],
+                "promotion_approvals": [],
                 "conflicts": [],
             })
         atomic_yaml(store / "PROJECT_INTELLIGENCE.yaml", intel)
@@ -705,6 +706,186 @@ def reconcile_overrides(root: Path) -> dict[str, Any]:
         "conflicts": active,
     }
 
+
+
+def _promotion_candidate(store: Path, intel: dict[str, Any], topic_name: str) -> tuple[dict[str, Any], Path]:
+    topic = (intel.get("topics") or {}).get(topic_name)
+    if not isinstance(topic, dict):
+        raise RuntimeError(f"Unknown Project Intelligence topic: {topic_name}")
+    path_value = topic.get("path")
+    if not path_value:
+        raise RuntimeError(f"Project Intelligence topic has no derived content path: {topic_name}")
+    derived_path = store / str(path_value)
+    if not derived_path.is_file():
+        raise RuntimeError(f"Project Intelligence topic content is missing: {path_value}")
+    promotion = topic.get("promotion") or {}
+    confirmations = [str(value) for value in (promotion.get("confirmations") or []) if str(value).strip()]
+    confirmations = list(dict.fromkeys(confirmations))
+    eligible = (
+        len(confirmations) >= 2
+        and topic.get("type") in {"FACT", "INTERPRETATION", "OBSERVED_CONVENTION"}
+        and bool(topic.get("evidence"))
+    )
+    return {
+        "topic": topic_name,
+        "status": "RECOMMENDED" if eligible else "NOT_READY",
+        "approval_required": True,
+        "mutation_performed": False,
+        "confirmations": confirmations,
+        "confirmation_count": len(confirmations),
+        "reason": "repeated_confirmed_derived_invariant" if eligible else "insufficient_confirmation_or_evidence",
+        "allowed_targets": ["AGENTS.md", "AGENTS.override.md", "docs/<official-project-rule>.md"],
+    }, derived_path
+
+
+def promotion_plan(root: Path, topic_name: str) -> dict[str, Any]:
+    store, mode, pid = intelligence_store(root)
+    intel_path = store / "PROJECT_INTELLIGENCE.yaml"
+    if not intel_path.exists():
+        raise RuntimeError("Project Intelligence is not initialized")
+    intel = load_yaml(intel_path, {})
+    candidate, _ = _promotion_candidate(store, intel, topic_name)
+    return {"project_id": pid, "mode": mode, **candidate}
+
+
+def _promotion_target(root: Path, target: str) -> Path:
+    raw = Path(target)
+    if raw.is_absolute():
+        raise RuntimeError("Promotion target must be project-relative")
+    resolved = (root / raw).resolve()
+    try:
+        relative = resolved.relative_to(root.resolve()).as_posix()
+    except ValueError as exc:
+        raise RuntimeError("Promotion target escapes project root") from exc
+    allowed = raw.name in SOURCE_NAMES or (relative.startswith("docs/") and raw.suffix.lower() in DOC_EXT)
+    if not allowed:
+        raise RuntimeError("Promotion target must be AGENTS*/runtime instruction source or an official docs/* document")
+    return resolved
+
+
+def promotion_apply(root: Path, topic_name: str, target: str, approval_id: str) -> dict[str, Any]:
+    store, mode, pid = intelligence_store(root)
+    intel_path = store / "PROJECT_INTELLIGENCE.yaml"
+    registry_path = store / "SOURCE_REGISTRY.yaml"
+    overrides_path = store / "PROJECT_OVERRIDES.yaml"
+    for required in (intel_path, registry_path, overrides_path):
+        if not required.exists():
+            raise RuntimeError(f"Required Project Intelligence artifact missing: {required.name}")
+
+    target_path = _promotion_target(root, target)
+    target_rel = target_path.relative_to(root.resolve()).as_posix()
+    if target_path.exists():
+        raise RuntimeError(f"Promotion target already exists; automatic overwrite is not allowed: {target_rel}")
+
+    with writer_lock(store):
+        intel = load_yaml(intel_path, {})
+        registry = load_yaml(registry_path, {"version": 1, "sources": []})
+        overrides = load_yaml(overrides_path, {})
+        candidate, derived_path = _promotion_candidate(store, intel, topic_name)
+        if candidate["status"] != "RECOMMENDED":
+            raise RuntimeError(f"Project Intelligence topic is not ready for promotion: {topic_name}")
+
+        approval = None
+        for item in overrides.get("promotion_approvals") or []:
+            if not isinstance(item, dict) or str(item.get("id")) != approval_id:
+                continue
+            if (
+                str(item.get("status", "")).upper() == "APPROVED"
+                and str(item.get("topic")) == topic_name
+                and str(item.get("target")) == target_rel
+                and str(item.get("approved_by", "")).strip()
+                and str(item.get("approved_at", "")).strip()
+            ):
+                approval = item
+                break
+        if approval is None:
+            raise RuntimeError("Matching APPROVED promotion approval is required before authoritative mutation")
+
+        content = derived_path.read_text(encoding="utf-8")
+        source_id = f"src-{sha(target_rel)[:10]}"
+        authority = "project_instruction" if target_path.name in SOURCE_NAMES else "official_document"
+        auto: list[str] = []
+        if target_path.name.startswith("AGENTS"):
+            auto.append("codex")
+        if target_path.name == "CLAUDE.md":
+            auto.append("claude-code")
+        if target_path.name == "GEMINI.md":
+            auto.append("gemini-cli")
+
+        existing_sources = [item for item in (registry.get("sources") or []) if isinstance(item, dict)]
+        if any(str(item.get("path")) == target_rel for item in existing_sources):
+            raise RuntimeError(f"SOURCE_REGISTRY already contains promotion target: {target_rel}")
+        new_source = {
+            "id": source_id,
+            "path": target_rel,
+            "authority": authority,
+            "scope": str(Path(target_rel).parent.as_posix()),
+            "hash": sha(content),
+            "auto_loaded_by": auto,
+            "content_duplicated": False,
+            "promoted_from": topic_name,
+            "approval_id": approval_id,
+        }
+
+        topic = (intel.get("topics") or {}).get(topic_name)
+        original_topic = dict(topic)
+        original_registry = list(existing_sources)
+        original_approval = dict(approval)
+        derived_content = content
+        target_created = False
+        derived_removed = False
+        try:
+            atomic_text(target_path, content)
+            target_created = True
+            # Verify bytes before registering authoritative source.
+            new_source["hash"] = file_hash(target_path)
+            registry["sources"] = sorted([*existing_sources, new_source], key=lambda item: str(item.get("path", "")))
+
+            topic.pop("path", None)
+            topic["authoritative_pointer"] = {"source_id": source_id, "path": target_rel}
+            topic["content_duplicated"] = False
+            topic["promotion"] = {
+                "status": "PROMOTED",
+                "approval_id": approval_id,
+                "approved_by": approval.get("approved_by"),
+                "approved_at": approval.get("approved_at"),
+                "promoted_at": utc_now(),
+            }
+            approval["status"] = "APPLIED"
+            approval["applied_at"] = utc_now()
+            approval["source_id"] = source_id
+
+            atomic_yaml(registry_path, registry)
+            atomic_yaml(intel_path, intel)
+            atomic_yaml(overrides_path, overrides)
+            derived_path.unlink()
+            derived_removed = True
+        except Exception:
+            if target_created:
+                with contextlib.suppress(FileNotFoundError):
+                    target_path.unlink()
+            if derived_removed and not derived_path.exists():
+                atomic_text(derived_path, derived_content)
+            (intel.get("topics") or {})[topic_name] = original_topic
+            registry["sources"] = original_registry
+            approval.clear()
+            approval.update(original_approval)
+            atomic_yaml(registry_path, registry)
+            atomic_yaml(intel_path, intel)
+            atomic_yaml(overrides_path, overrides)
+            raise
+
+    return {
+        "project_id": pid,
+        "mode": mode,
+        "topic": topic_name,
+        "status": "PROMOTED",
+        "approval_id": approval_id,
+        "authoritative_source": target_rel,
+        "source_id": source_id,
+        "derived_content_removed": True,
+        "content_duplicated": False,
+    }
 
 def resolve_component_context(store: Path, intel: dict[str, Any], component: str | None) -> tuple[dict[str, Any], list[str]]:
     components = intel.get("components") or {}
@@ -1137,6 +1318,18 @@ def main() -> int:
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
     p.add_argument("--explain", action="store_true")
 
+    p = sub.add_parser("promotion-plan")
+    p.add_argument("--project", default=os.getcwd())
+    p.add_argument("--topic", required=True)
+    p.add_argument("--format", choices=["yaml", "json"], default="yaml")
+
+    p = sub.add_parser("promotion-apply")
+    p.add_argument("--project", default=os.getcwd())
+    p.add_argument("--topic", required=True)
+    p.add_argument("--target", required=True)
+    p.add_argument("--approval-id", required=True)
+    p.add_argument("--format", choices=["yaml", "json"], default="yaml")
+
     p = sub.add_parser("impact-init")
     p.add_argument("--project", default=os.getcwd())
     p.add_argument("--prompt", default="")
@@ -1156,6 +1349,10 @@ def main() -> int:
             result = finalize(root)
         elif args.command == "context":
             result = context_manifest(root, args.runtime, args.prompt, args.explain, args.component)
+        elif args.command == "promotion-plan":
+            result = promotion_plan(root, args.topic)
+        elif args.command == "promotion-apply":
+            result = promotion_apply(root, args.topic, args.target, args.approval_id)
         elif args.command == "impact-init":
             result = impact_init(root, args.prompt, args.change_id)
         elif args.command == "migrate-attached":

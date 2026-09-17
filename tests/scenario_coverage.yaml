@@ -372,10 +372,11 @@ scenarios:
       - tests/validate_repository.py
   - id: "054"
     path: tests/scenarios/054-project-knowledge-promotion.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/054-project-knowledge-promotion.md
-    note: "Requires executable approval-to-authoritative-source promotion plus SOURCE_REGISTRY deduplication; current evidence does not exercise the complete mutation lifecycle."
+      - tests/evidence/project_intelligence_promotion_lifecycle.py
+      - scripts/project_intelligence.py
+      - tests/validate_repository.py
   - id: "055"
     path: tests/scenarios/055-v2-visual-consistency-sweep.md
     coverage: manual
