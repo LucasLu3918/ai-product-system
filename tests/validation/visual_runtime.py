@@ -5,9 +5,10 @@ import sys
 from .static_contracts import ROOT, errors
 
 capture_helper = ROOT / "scripts" / "visual_capture.py"
+review_helper = ROOT / "scripts" / "visual_consistency_review.py"
 render_evidence = ROOT / "tests" / "evidence" / "visual_render_capture_lifecycle.py"
 
-for required in (capture_helper, render_evidence):
+for required in (capture_helper, review_helper, render_evidence):
     if not required.exists():
         errors.append(f"Missing real visual render artifact: {required.relative_to(ROOT)}")
     else:
