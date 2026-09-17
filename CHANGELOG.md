@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.18.0
+
+### Project Authority Reconciliation
+
+- Implement deterministic reconciliation between later structured Project Intelligence discovery and user/project-approved `PROJECT_OVERRIDES.yaml` assertions.
+- Preserve approved inferences, additional rules, exceptions and exclusions across refresh; contradictory structured discovery creates an idempotent `OPEN` authority conflict rather than replacing approved state.
+- Surface active authority conflicts in Turn Context and fail closed for material mutation with `unresolved_authority_conflict`.
+- Add the stable `aips intelligence reconcile-overrides` CLI command and lifecycle evidence covering refresh preservation, contradictory evidence, idempotence, CLI routing and mutation blocking.
+- Promote Scenario 082 from manual to lifecycle. Scenario 064 remains manual because v0.18.0 surfaces registered semantic conflicts but intentionally does not guess arbitrary Markdown conflicts by keyword heuristics.
+- Raise conformance baseline to 125 total / 9 manual / 19 deterministic / 45 lifecycle / 52 agent_eval / 116 automated / 0 uncovered (92.8% automated).
+- Architecture Diagram Impact: N/A — this completes an existing Project Intelligence authority contract; no new Role, Skill, Capability category, Approval Gate, Constitution layer, or runtime topology is introduced.
+
 ## 0.17.1
 
 ### Residual Harness Migration Evidence Maturity

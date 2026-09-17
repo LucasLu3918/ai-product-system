@@ -45,6 +45,7 @@ Usage:
   aips intelligence bootstrap [--project <path>]
   aips intelligence status [--project <path>]
   aips intelligence context --runtime <id> [--project <path>] [--prompt <text>]
+  aips intelligence reconcile-overrides [--project <path>]
   aips intelligence render [--project <path>]
 
   aips run checkpoint --run-id <id> --step <step> [--project <path>]

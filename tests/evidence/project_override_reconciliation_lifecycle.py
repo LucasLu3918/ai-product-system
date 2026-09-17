@@ -12,6 +12,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 PI = ROOT / "scripts" / "project_intelligence.py"
+CLI = ROOT / "bin" / "aips"
 
 
 def run(args: list[str], env: dict[str, str]) -> subprocess.CompletedProcess[str]:
@@ -103,8 +104,10 @@ def main() -> int:
         require(conflict.get("discovered_value") == "shared-domain", "discovered contradiction must remain visible")
         require(conflict.get("evidence") == ["docs/architecture.md"], "conflict evidence must be retained")
 
-        again = run([sys.executable, str(PI), "reconcile-overrides", "--project", str(project), "--format", "json"], env)
-        require(again.returncode == 0, "idempotent reconciliation failed")
+        again = run(["bash", str(CLI), "intelligence", "reconcile-overrides", "--project", str(project), "--format", "json"], env)
+        require(again.returncode == 0, f"CLI idempotent reconciliation failed: {again.stdout} {again.stderr}")
+        again_doc = json.loads(again.stdout)
+        require(again_doc.get("new_conflicts") == 0, "second reconciliation must report zero new conflicts")
         require(len(load_yaml(overrides_path).get("conflicts") or []) == 1, "reconciliation must not duplicate same conflict")
 
         context = run([

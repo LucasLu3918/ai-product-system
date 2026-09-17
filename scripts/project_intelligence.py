@@ -649,10 +649,12 @@ def reconcile_overrides(root: Path) -> dict[str, Any]:
 
         existing = [item for item in (overrides.get("conflicts") or []) if isinstance(item, dict)]
         existing_ids = {str(item.get("id")) for item in existing if item.get("id")}
+        new_conflicts = 0
         for conflict in generated:
             if conflict["id"] not in existing_ids:
                 existing.append(conflict)
                 existing_ids.add(conflict["id"])
+                new_conflicts += 1
         overrides["conflicts"] = existing
         atomic_yaml(overrides_path, overrides)
 
@@ -662,7 +664,7 @@ def reconcile_overrides(root: Path) -> dict[str, Any]:
         "mode": mode,
         "preserved_assertions": preserved_assertions,
         "discovered_inferences": len(discovered),
-        "new_conflicts": len([item for item in generated if item["id"] in existing_ids]),
+        "new_conflicts": new_conflicts,
         "active_conflicts": len(active),
         "conflicts": active,
     }
