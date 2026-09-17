@@ -1,0 +1,39 @@
+version: 1
+case_id: 022-user-assets-banner
+scenario_id: "022"
+case_fingerprint: sha256:d3322b50a3be284dcbd843c06b398bd146ef91619e430f19883270a58abfeea4
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: USER_ASSET_BANNER_DIRECTION
+  user_assets_are_first_class_inputs: true
+  references_copied_literally: false
+  required_logo_preserved: true
+  required_product_assets_preserved: true
+  creative_brief_persisted: true
+  reference_board_persisted: true
+  approved_direction_persisted_before_generation: true
+  final_visual_quality_review_required: true
+  reference_analysis_aspects:
+    - layout
+    - color
+    - typography
+    - imagery
+  review_checks:
+    - composition
+    - headline_cta_readability
+    - safe_area
+    - crop
+    - brand_consistency
+  actions:
+    - intake_user_owned_assets
+    - analyze_references_by_visual_aspect
+    - persist_creative_brief
+    - persist_reference_board
+    - persist_approved_creative_direction
+    - generate_after_direction_is_clear
+    - run_visual_quality_review
+  summary: Treat the user's logo and product artwork as required source inputs, analyze references by visual aspect rather than copying them, persist the Brief/Reference Board/approved Direction before generation, then review the rendered banner for composition, readability, safe area, crop and brand consistency.
