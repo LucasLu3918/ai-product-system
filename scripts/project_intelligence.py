@@ -580,6 +580,94 @@ def adapter_enforcement(runtime: str) -> str:
     return {"codex": "ADVISORY", "claude-code": "ADVISORY", "gemini-cli": "ADVISORY"}.get(runtime, "UNSUPPORTED")
 
 
+def _canonical_value(value: Any) -> str:
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
+def active_authority_conflicts(store: Path, intel: dict[str, Any] | None = None) -> list[dict[str, Any]]:
+    intel = intel or {}
+    overrides = load_yaml(store / "PROJECT_OVERRIDES.yaml", {"conflicts": []})
+    result: list[dict[str, Any]] = []
+    for origin, items in (("project_overrides", overrides.get("conflicts") or []), ("project_intelligence", intel.get("conflicts") or [])):
+        for item in items:
+            if not isinstance(item, dict):
+                continue
+            if str(item.get("status", "OPEN")).upper() in {"RESOLVED", "DISMISSED"}:
+                continue
+            entry = dict(item)
+            entry.setdefault("origin", origin)
+            result.append(entry)
+    return result
+
+
+def reconcile_overrides(root: Path) -> dict[str, Any]:
+    store, mode, pid = intelligence_store(root)
+    intel_path = store / "PROJECT_INTELLIGENCE.yaml"
+    overrides_path = store / "PROJECT_OVERRIDES.yaml"
+    discovery_path = store / "DISCOVERY.yaml"
+    if not intel_path.exists() or not overrides_path.exists() or not discovery_path.exists():
+        raise RuntimeError("Project Intelligence, PROJECT_OVERRIDES and DISCOVERY must exist before reconciliation")
+
+    with writer_lock(store):
+        overrides = load_yaml(overrides_path, {})
+        discovery = load_yaml(discovery_path, {})
+        discovered: dict[str, dict[str, Any]] = {}
+        for item in discovery.get("inferences") or []:
+            if not isinstance(item, dict) or not item.get("id") or "value" not in item:
+                continue
+            discovered[str(item["id"])] = item
+
+        generated: list[dict[str, Any]] = []
+        preserved_assertions = 0
+        categories = ("approved_inferences", "additional_rules", "exceptions", "excluded_inferences")
+        for category in categories:
+            for assertion in overrides.get(category) or []:
+                if not isinstance(assertion, dict) or not assertion.get("id") or "value" not in assertion:
+                    continue
+                preserved_assertions += 1
+                assertion_id = str(assertion["id"])
+                candidate = discovered.get(assertion_id)
+                if not candidate or _canonical_value(candidate.get("value")) == _canonical_value(assertion.get("value")):
+                    continue
+                conflict_seed = _canonical_value({
+                    "category": category,
+                    "assertion_id": assertion_id,
+                    "approved_value": assertion.get("value"),
+                    "discovered_value": candidate.get("value"),
+                })
+                generated.append({
+                    "id": f"conflict-{sha(conflict_seed)[:12]}",
+                    "type": "override_discovery_contradiction",
+                    "status": "OPEN",
+                    "override_category": category,
+                    "assertion_id": assertion_id,
+                    "approved_value": assertion.get("value"),
+                    "discovered_value": candidate.get("value"),
+                    "evidence": candidate.get("evidence") or [],
+                    "source": "deterministic_override_reconciliation",
+                })
+
+        existing = [item for item in (overrides.get("conflicts") or []) if isinstance(item, dict)]
+        existing_ids = {str(item.get("id")) for item in existing if item.get("id")}
+        for conflict in generated:
+            if conflict["id"] not in existing_ids:
+                existing.append(conflict)
+                existing_ids.add(conflict["id"])
+        overrides["conflicts"] = existing
+        atomic_yaml(overrides_path, overrides)
+
+    active = [item for item in existing if str(item.get("status", "OPEN")).upper() not in {"RESOLVED", "DISMISSED"}]
+    return {
+        "project_id": pid,
+        "mode": mode,
+        "preserved_assertions": preserved_assertions,
+        "discovered_inferences": len(discovered),
+        "new_conflicts": len([item for item in generated if item["id"] in existing_ids]),
+        "active_conflicts": len(active),
+        "conflicts": active,
+    }
+
+
 def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = False) -> dict[str, Any]:
     store, mode, pid = intelligence_store(root)
     category, mutation, desired_topics = classify_prompt(prompt)
@@ -587,6 +675,7 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
     intel = load_yaml(store / "PROJECT_INTELLIGENCE.yaml", {}) if (store / "PROJECT_INTELLIGENCE.yaml").exists() else {}
     registry = load_yaml(store / "SOURCE_REGISTRY.yaml", {"sources": []}) if store.exists() else {"sources": []}
     state = intel.get("state") or {}
+    authority_conflicts = active_authority_conflicts(store, intel) if store.exists() else []
 
     available = intel.get("topics") or {}
     selected: list[str] = []
@@ -618,6 +707,8 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             fail_closed_reasons.append("intelligence_stale")
         if readiness != "READY":
             fail_closed_reasons.append(f"intelligence_readiness_{readiness.lower()}")
+        if authority_conflicts:
+            fail_closed_reasons.append("unresolved_authority_conflict")
 
     return {
         "version": 1,
@@ -644,6 +735,7 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             "project_native": project_native[:30],
             "intelligence_topics": selected,
             "optional_evidence": [str(store / "DISCOVERY.yaml")] if (store / "DISCOVERY.yaml").exists() else [],
+            "authority_conflicts": authority_conflicts,
         },
         "intelligence": {
             "readiness": readiness,
@@ -920,7 +1012,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="AIPS Project Intelligence deterministic helper")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    for name in ("bootstrap", "status", "render", "finalize", "migrate-attached", "sync-external"):
+    for name in ("bootstrap", "status", "render", "finalize", "migrate-attached", "sync-external", "reconcile-overrides"):
         p = sub.add_parser(name)
         p.add_argument("--project", default=os.getcwd())
         p.add_argument("--format", choices=["yaml", "json"], default="yaml")
@@ -957,6 +1049,8 @@ def main() -> int:
             result = migrate_attached(root)
         elif args.command == "sync-external":
             result = sync_external(root)
+        elif args.command == "reconcile-overrides":
+            result = reconcile_overrides(root)
         else:
             raise RuntimeError("unsupported command")
     except (RuntimeError, OSError, ValueError) as exc:
