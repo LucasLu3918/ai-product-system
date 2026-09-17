@@ -1,0 +1,27 @@
+version: 1
+case_id: 029-deployment-units-repository-strategy
+scenario_id: "029"
+case_fingerprint: sha256:90b812f864b75482885f9a5fe5feaeb9e8a80e2fe8835ec90ab282799bcb669e
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: READY
+  deployment_units_count: 2
+  repository_strategy: monorepo
+  automatic_two_repo_split: false
+  deployment_units:
+    - frontend
+    - backend
+  multi_repo_triggers:
+    - distinct_ownership
+    - permission_boundary
+    - independent_release_cadence
+    - scale_boundary
+    - shared_service_boundary
+  actions:
+    - record_unit_paths_in_product_manifest
+    - record_repository_strategy_in_product_manifest
+  strategy_basis: Frontend and backend have independent build/test/deploy behavior but share coordinated contracts, documentation, E2E and local development, so monorepo is the default until evidence supports a repository boundary.
