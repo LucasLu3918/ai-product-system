@@ -1,0 +1,40 @@
+version: 1
+id: 052-project-intelligence-discovery
+scenario_id: "052"
+description: Project Intelligence discovery should infer architecture only from targeted repository evidence, preserve epistemic type/confidence/evidence/freshness, and avoid folder-name-only conclusions.
+input:
+  prompt: Discover reusable architecture understanding for this undocumented existing project.
+  context:
+    repository_evidence:
+      - domain entities and use cases have inward-only dependencies
+      - adapters depend on application ports
+      - tests exercise domain/application boundaries
+    folder_names_include:
+      - domain
+      - application
+      - infrastructure
+    architecture_documentation_exists: false
+rubric:
+  equals:
+    response.status: READY_TO_PERSIST_DERIVED_INTELLIGENCE
+    response.full_repository_preload: false
+    response.folder_names_alone_sufficient: false
+  contains:
+    response.actions:
+      - target_repository_discovery
+      - separate_fact_interpretation_observed_convention
+      - persist_only_stable_reusable_expensive_conclusions
+      - record_confidence_evidence_and_watch_information
+    response.epistemic_types:
+      - FACT
+      - INTERPRETATION
+      - OBSERVED_CONVENTION
+  excludes:
+    response.actions:
+      - infer_architecture_from_folder_names_only
+      - copy_authoritative_sources_into_derived_intelligence
+  set_equals: {}
+  nonempty:
+    - response.architecture_interpretation
+    - response.evidence_summary
+    - response.watch_summary
