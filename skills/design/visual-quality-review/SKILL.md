@@ -61,4 +61,26 @@ python scripts/visual_evidence.py <VISUAL_AUDIT.yaml> --project <project>
 
 This helper may reject missing artifacts, incomplete provenance, missing required viewport/state coverage, a PASS without before/after evidence, or a closed finding without implementation root-cause evidence. It does **not** inspect pixels or infer visual quality; quality remains a Visual Quality Review judgment backed by the rendered evidence.
 
+## Reproducible browser capture provider
+
+When no project-native browser/screenshot command already exists, AIPS may use the system reusable capture helper:
+
+~~~text
+python scripts/visual_capture.py <CAPTURE_PLAN.yaml> --project <project> --output <CAPTURE_RESULT.yaml>
+~~~
+
+The helper is a capture provider, not a design judge. Its current reference implementation uses the Playwright Python client with an already-installed Google Chrome channel. It must not silently download or install a browser as part of ordinary repository validation.
+
+A capture plan may describe:
+
+- local rendered fixture paths or explicit URLs;
+- desktop/mobile viewport dimensions;
+- default, hover, focus and click-driven states;
+- screenshot artifact destinations;
+- optional computed-style inspection for root-cause/state-geometry evidence.
+
+The result records real PNG artifacts, SHA-256 fingerprints, browser/provider versions, source revision, timestamps and observable computed-style metrics. These outputs can populate `VISUAL_AUDIT.yaml`, but a passing `visual_evidence.py` integrity check still does not authorize a Visual Quality Review PASS.
+
+Prefer project-native capture tooling when it already exists and is reproducible. Do not make Playwright a required production runtime dependency for projects that do not need this evidence path.
+
 Return PASS / PASS WITH COMMENTS / REQUEST CHANGES / BLOCK with concrete evidence and recommendations.
