@@ -3,6 +3,9 @@ run:
   mode: weekly # weekly | monthly
   generated_at: null
   repository_revision: null
+  # Monthly roll-up only:
+  period: null # YYYY-MM
+  weekly_evidence_count: null
   analyzer:
     status: unavailable # available | unavailable
     provider: null
