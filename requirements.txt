@@ -1,1 +1,2 @@
 PyYAML>=6.0.3,<7
+playwright==1.63.0
