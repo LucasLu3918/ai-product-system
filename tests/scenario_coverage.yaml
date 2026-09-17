@@ -271,10 +271,11 @@ scenarios:
       - scripts/agent_eval.py
   - id: "039"
     path: tests/scenarios/039-visual-polish-shared-component.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/039-visual-polish-shared-component.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/visual_render_lifecycle.py
+      - scripts/visual_evidence.py
+      - tests/validate_repository.py
   - id: "040"
     path: tests/scenarios/040-visual-polish-redesign-escalation.md
     coverage: agent_eval
@@ -379,10 +380,11 @@ scenarios:
       - tests/validate_repository.py
   - id: "055"
     path: tests/scenarios/055-v2-visual-consistency-sweep.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/055-v2-visual-consistency-sweep.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/evidence/visual_render_lifecycle.py
+      - scripts/visual_evidence.py
+      - tests/validate_repository.py
   - id: "056"
     path: tests/scenarios/056-visual-profile-reuse.md
     coverage: lifecycle
