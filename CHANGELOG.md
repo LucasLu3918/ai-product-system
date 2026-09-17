@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.19.2
+
+### Lifecycle Validation Reliability
+
+- Stabilize repository lifecycle validation by disabling automatic detached Git garbage collection only inside the validation process and its inherited evidence subprocesses, preventing transient `.git` teardown races in temporary fixture repositories.
+- Apply `gc.auto=0` and `gc.autoDetach=false` through process-local `GIT_CONFIG_*` environment values only; no user, repository or product/runtime Git configuration is written or changed.
+- Preserve fail-closed teardown semantics: validation does not catch or ignore `TemporaryDirectory` cleanup errors, so unrelated resource leaks and cleanup failures still fail CI truthfully.
+- Validate the exact feature SHA through three consecutive full `repository` workflow successes, the protected PR check, and the post-merge main check without reproducing the prior `Directory not empty: .../.git` race.
+- Keep Scenario Conformance at 126 total / 0 manual / 19 deterministic / 53 lifecycle / 54 agent_eval / 126 automated / 0 uncovered (100% automated); no new Scenario, Role, Skill, capability category, Approval Gate or subsystem is introduced.
+- Quarterly Evolution Review and autonomous experiment execution remain deferred.
+- Architecture Diagram Impact: N/A — this patch changes validation-process reliability only and does not change runtime topology, product behavior, Constitution semantics or Human Authority.
+
 ## 0.19.1
 
 ### Evolution Radar Public Network Safety
