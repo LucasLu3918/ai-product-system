@@ -271,7 +271,7 @@
 ### Project Intelligence
 
 - Replace Project Knowledge as the canonical reusable brownfield understanding layer while preserving legacy knowledge as migration evidence.
-- Add PROJECT_INTELLIGENCE, SOURCE_REGISTRY and IMPACT_GRAPH and PROJECT_OVERRIDES contracts.
+- Add PROJECT_INTELLIGENCE, SOURCE_REGISTRY, IMPACT_GRAPH and PROJECT_OVERRIDES contracts.
 - Add read-only breadth-first discovery followed by evidence-based semantic enrichment; inventory alone remains PARTIAL until finalize reaches READY.
 - Add runtime-aware source deduplication, branch/worktree/dirty-path freshness, one-writer atomic updates and targeted refresh.
 - Add deterministic self-contained Project Intelligence Review HTML with secret redaction.
