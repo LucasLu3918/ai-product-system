@@ -69,13 +69,23 @@ def pending_recommendations(signals: list[dict[str, Any]]) -> list[dict[str, Any
     ]
 
 
-def monthly_rollup(issues: list[dict[str, Any]], config: dict[str, Any]) -> dict[str, Any]:
+def monthly_rollup(
+    issues: list[dict[str, Any]],
+    config: dict[str, Any],
+    *,
+    period: str | None = None,
+) -> dict[str, Any]:
     errors = validate_config(config)
     if errors:
         raise ValueError("; ".join(errors))
+    if period is not None and not (len(period) == 7 and period[4] == "-" and period.replace("-", "").isdigit()):
+        raise ValueError("period must be YYYY-MM")
+
     weekly_docs: list[dict[str, Any]] = []
     for issue in issues:
         if not str(issue.get("title") or "").startswith("Evolution Radar [weekly]"):
+            continue
+        if period is not None and not str(issue.get("created_at") or "").startswith(period + "-"):
             continue
         doc = extract_evidence(str(issue.get("body") or ""))
         if doc and (doc.get("run") or {}).get("mode") == "weekly":
@@ -92,6 +102,7 @@ def monthly_rollup(issues: list[dict[str, Any]], config: dict[str, Any]) -> dict
             "mode": "monthly",
             "generated_at": None,
             "repository_revision": None,
+            "period": period,
             "weekly_evidence_count": len(weekly_docs),
             "analyzer": {"status": "unavailable", "provider": None, "model": None},
         },
@@ -129,6 +140,8 @@ def issue_markdown(doc: dict[str, Any]) -> str:
         f"- Source failures: {len(sources.get('failures') or [])}",
     ]
     if mode == "monthly":
+        if run.get("period"):
+            lines.append(f"- Review period: {run.get('period')}")
         lines.append(f"- Weekly evidence bundles reviewed: {run.get('weekly_evidence_count', 0)}")
     lines += [
         "- Semantic assessment: `ANALYSIS_PENDING` when no analyzer is configured",
@@ -151,6 +164,7 @@ def main() -> int:
     rollup = sub.add_parser("monthly-rollup")
     rollup.add_argument("--issues-json", required=True)
     rollup.add_argument("--config", required=True)
+    rollup.add_argument("--period")
     rollup.add_argument("--output", required=True)
     issue = sub.add_parser("issue-body")
     issue.add_argument("evidence")
@@ -162,7 +176,7 @@ def main() -> int:
         config = yaml.safe_load(Path(args.config).read_text(encoding="utf-8")) or {}
         if not isinstance(issues, list):
             raise ValueError("issues JSON must be an array")
-        doc = monthly_rollup(issues, config)
+        doc = monthly_rollup(issues, config, period=args.period)
         Path(args.output).write_text(yaml.safe_dump(doc, sort_keys=False, allow_unicode=True), encoding="utf-8")
         return 0
 
