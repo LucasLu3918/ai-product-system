@@ -32,8 +32,8 @@ if conformance_helper.exists():
             errors.append("Scenario conformance total/registered count must match scenario inventory")
         if cov.get("uncovered") != 0:
             errors.append("Released scenario conformance registry must have no uncovered entries")
-        if cov.get("manual") != 24 or cov.get("agent_eval") != 41 or cov.get("lifecycle") != 41 or cov.get("automated") != 101:
-            errors.append("v0.16.8 baseline must report manual=24, lifecycle=41, agent_eval=41 and automated=101")
+        if cov.get("manual") != 17 or cov.get("agent_eval") != 47 or cov.get("lifecycle") != 42 or cov.get("automated") != 108:
+            errors.append("v0.16.9 baseline must report manual=17, lifecycle=42, agent_eval=47 and automated=108")
 
     with tempfile.TemporaryDirectory() as tmp:
         temp = Path(tmp)
@@ -83,8 +83,8 @@ if agent_eval_helper.exists():
     else:
         eval_doc = json.loads(eval_check.stdout)
         summary = eval_doc.get("summary") or {}
-        if summary.get("cases") != 41 or summary.get("results") != 41 or summary.get("passed") != 41 or summary.get("failed") != 0:
-            errors.append("v0.16.8 committed Agent Eval baseline must contain 41 passing case/result pairs")
+        if summary.get("cases") != 47 or summary.get("results") != 47 or summary.get("passed") != 47 or summary.get("failed") != 0:
+            errors.append("v0.16.9 committed Agent Eval baseline must contain 47 passing case/result pairs")
 
     cli_eval = subprocess.run(
         ["bash", str(ROOT / "bin/aips"), "conformance", "agent-eval", "check", "--format", "json"],
@@ -357,4 +357,3 @@ if scenario_011 and "initialize the target project's minimal `.ai/` workspace if
 repo_scan = subprocess.run([sys.executable, str(ROOT / "scripts/check_secret_leakage.py"), "--root", str(ROOT), "--json"], capture_output=True, text=True)
 if repo_scan.returncode != 0:
     errors.append("Repository secret leakage scan found high-confidence findings: " + repo_scan.stdout[:1200])
-
