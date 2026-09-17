@@ -1,0 +1,33 @@
+version: 1
+case_id: 012-documentation-impact-gate
+scenario_id: "012"
+case_fingerprint: sha256:fa05831c9dc72423c63674e163b1249db9f011e9c5e1cae58f3db60204b55ff7
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: DOCUMENTATION_IMPACT_REQUIRED
+  update_only_affected_artifacts: true
+  unaffected_marked_na: true
+  scenario_coverage_required_for_behavior_change: true
+  semver_review_required: true
+  repository_validation_required: true
+  impact_surfaces:
+    - AGENTS
+    - SYSTEM
+    - orchestration_docs
+    - architecture_diagrams
+    - user_guide
+    - examples
+    - scenarios
+    - schemas_templates
+    - VERSION
+    - CHANGELOG
+  actions:
+    - assess_documentation_impact
+    - keep_mermaid_aligned_with_runtime
+    - update_human_and_agent_surfaces_when_affected
+    - validate_repository_before_completion
+  summary: Evaluate each documentation and contract surface against the real routing change, update only what is affected, align diagrams/scenarios/versioning, and require repository validation before completion.

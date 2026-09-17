@@ -1,0 +1,32 @@
+version: 1
+id: 093-core-change-scope-expansion-retests
+scenario_id: "093"
+description: Material scope expansion recomputes the test matrix, executes newly applicable checks and reruns affected review/approval.
+input:
+  prompt: During an approved Core Change, implementation expands into a new public contract and migration path not in the original boundary.
+  context:
+    original_boundary_approved: true
+    material_scope_expansion: true
+    new_public_contract: true
+    new_migration_path: true
+rubric:
+  equals:
+    response.status: SCOPE_EXPANDED
+    response.original_test_matrix_still_sufficient: false
+    response.recompute_test_matrix: true
+    response.rerun_affected_review: true
+    response.scope_reapproval_when_applicable: true
+  contains:
+    response.actions:
+      - stop_affected_continuation
+      - update_change_boundary
+      - execute_newly_applicable_checks
+      - rerun_affected_review
+      - obtain_applicable_scope_reapproval
+  excludes:
+    response.actions:
+      - keep_original_smaller_matrix
+      - rely_on_existing_green_ci_only
+  set_equals: {}
+  nonempty:
+    - response.summary

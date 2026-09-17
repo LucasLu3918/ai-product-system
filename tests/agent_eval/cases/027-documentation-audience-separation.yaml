@@ -1,0 +1,29 @@
+version: 1
+id: 027-documentation-audience-separation
+scenario_id: "027"
+description: Routing changes update concise Agent protocols and Traditional Chinese Human docs without duplicating full guides.
+input:
+  prompt: Change a routing behavior and its user-facing workflow.
+  context:
+    agent_behavior_changes: true
+    human_workflow_changes: true
+rubric:
+  equals:
+    response.status: BOTH_AUDIENCES_AFFECTED
+    response.root_entry_surfaces_remain_short: true
+    response.duplicate_full_bilingual_guides_by_default: false
+    response.documentation_impact_gate_checks_both_audiences: true
+  contains:
+    response.actions:
+      - update_agent_entry_or_protocol_docs
+      - update_traditional_chinese_human_docs
+      - add_english_annotations_for_specialized_terms
+      - validate_documentation_map
+      - validate_architecture_overview_image
+  excludes:
+    response.actions:
+      - copy_full_human_guide_into_agent_docs
+      - maintain_duplicate_full_language_guides_without_need
+  set_equals: {}
+  nonempty:
+    - response.summary

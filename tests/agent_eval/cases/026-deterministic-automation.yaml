@@ -1,0 +1,31 @@
+version: 1
+id: 026-deterministic-automation
+scenario_id: "026"
+description: Large deterministic parsing tasks should use bounded tools before model reasoning.
+input:
+  prompt: Analyze 20,000 lines of test output and tell me failure counts and failed-test names.
+  context:
+    input_lines: 20000
+    deterministic_extraction_possible: true
+rubric:
+  equals:
+    response.status: DETERMINISTIC_PREPROCESSING
+    response.send_all_raw_output_to_model_first: false
+    response.helper_default_read_only: true
+    response.helper_default_least_privilege: true
+    response.summary_first: true
+    response.helper_lifetime_default: RUN_LOCAL
+  contains:
+    response.actions:
+      - use_existing_tool_or_small_helper
+      - produce_structured_summary
+      - retain_raw_evidence_location
+      - inspect_targeted_raw_evidence_only_when_needed
+  excludes:
+    response.actions:
+      - use_model_for_counting_first
+      - promote_one_off_helper_to_system
+  set_equals: {}
+  nonempty:
+    - response.summary_format
+    - response.summary

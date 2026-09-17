@@ -327,3 +327,44 @@ Automated     68.8%
 ~~~
 
 核心原則維持 risk-proportional assurance：critical financial/stored-value boundary 使用 SAL4 floor；低風險 change 不因 product baseline 過度升級；production promotion 對 recovery、staging、security、health/smoke evidence fail-closed；缺少平台 access 時保留 runnable automation 但不得宣稱已部署成功。
+
+## v0.16.7 Core Planning & Change Assurance Semantic Evidence Maturity
+
+新增 9 組 Agent Eval：
+
+~~~text
+005 Existing Product Plan to Delivery
+007 Adaptive DDD + Clean Architecture
+009 Capability Gap
+012 Documentation Impact Gate
+013 Reproducible Planning Package
+026 Deterministic Automation Before AI Parsing
+027 Human / Agent Documentation Separation
+092 Core Change Impact-derived Test Matrix
+093 Core Change Scope Expansion Recomputes Tests
+~~~
+
+這批 evidence 驗證：
+
+- 既有完整 planning 不重跑 discovery，只做 delivery sequencing；
+- 小型 brownfield CRUD change 不為了方法論硬做 DDD / Clean Architecture rewrite；
+- specialized capability gap fail-closed，generic role 不可猜；
+- Core routing change 必須跑 Documentation Impact Gate 與 SemVer/scenario/diagram validation；
+- primary product planning 需要 persistent workspace + reproducible package + Gate 1 / Gate 2；
+- 大量 deterministic parsing 先使用 bounded tool/helper，再交給 AI reasoning；
+- Human / Agent docs 分 audience 維護；
+- Core Change test matrix 由 final Change Boundary 推導；
+- material scope expansion 重新計算 tests/review/approval。
+
+v0.16.7 baseline：
+
+~~~text
+Total         125
+Manual         30
+Deterministic  19
+Lifecycle      40
+Agent Eval     36
+Automated      95
+Uncovered       0
+Automated     76.0%
+~~~

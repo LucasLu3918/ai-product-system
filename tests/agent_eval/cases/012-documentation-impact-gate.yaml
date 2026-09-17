@@ -1,0 +1,41 @@
+version: 1
+id: 012-documentation-impact-gate
+scenario_id: "012"
+description: A core routing change must assess all documentation/contracts and update only affected surfaces before release.
+input:
+  prompt: Change a core AIPS routing rule that alters when a protocol is loaded.
+  context:
+    core_change: true
+    routing_behavior_changes: true
+rubric:
+  equals:
+    response.status: DOCUMENTATION_IMPACT_REQUIRED
+    response.update_only_affected_artifacts: true
+    response.unaffected_marked_na: true
+    response.scenario_coverage_required_for_behavior_change: true
+    response.semver_review_required: true
+    response.repository_validation_required: true
+  contains:
+    response.impact_surfaces:
+      - AGENTS
+      - SYSTEM
+      - orchestration_docs
+      - architecture_diagrams
+      - user_guide
+      - examples
+      - scenarios
+      - schemas_templates
+      - VERSION
+      - CHANGELOG
+    response.actions:
+      - assess_documentation_impact
+      - keep_mermaid_aligned_with_runtime
+      - update_human_and_agent_surfaces_when_affected
+      - validate_repository_before_completion
+  excludes:
+    response.actions:
+      - update_every_document_blindly
+      - skip_semver_review
+  set_equals: {}
+  nonempty:
+    - response.summary

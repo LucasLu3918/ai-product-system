@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.16.7
+
+### Core Planning & Change Assurance Semantic Evidence Maturity
+
+- Add Agent Eval evidence for delivery sequencing from an existing complete plan, adaptive DDD/Clean Architecture use, capability gaps, Documentation Impact, reproducible two-gate Planning Packages, deterministic preprocessing, audience-separated documentation and Core Change impact-derived testing.
+- Add scope-expansion evidence that recomputes the Core Change Test Matrix, executes newly applicable checks, reruns affected review and follows applicable reapproval.
+- Promote Scenarios 005, 007, 009, 012, 013, 026, 027, 092 and 093 from manual to agent_eval.
+- Raise conformance baseline to 125 total / 30 manual / 19 deterministic / 40 lifecycle / 36 agent_eval / 95 automated / 0 uncovered (76.0% automated).
+- No runtime behavior, Role, Skill, Capability, Approval Gate or architecture-topology change.
+
 ## 0.16.6
 
 ### Security & Production Readiness Semantic Evidence Maturity

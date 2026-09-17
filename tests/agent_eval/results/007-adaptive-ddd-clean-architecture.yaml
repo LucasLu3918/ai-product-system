@@ -1,0 +1,21 @@
+version: 1
+case_id: 007-adaptive-ddd-clean-architecture
+scenario_id: "007"
+case_fingerprint: sha256:9c6ce8e2745742431b964f8fa394c618354c6b672fa1e3aa1cb360f1dfc2cc99
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: ENGINEERING_CHANGE
+  project_state: BROWNFIELD
+  repository_wide_clean_architecture_rewrite: false
+  new_bounded_context_required: false
+  ddd_escalation_required: false
+  actions:
+    - inspect_existing_architecture
+    - load_only_affected_language_api_testing_skills
+    - preserve_project_native_style
+    - use_tdd_when_testable
+  summary: Make the smallest project-native API/model/test change; do not introduce DDD or Clean Architecture abstractions just because they exist as techniques.

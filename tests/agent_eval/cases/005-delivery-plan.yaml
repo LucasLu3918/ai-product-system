@@ -1,0 +1,30 @@
+version: 1
+id: 005-delivery-plan
+scenario_id: "005"
+description: An existing complete product plan should be turned into a delivery sequence without rerunning discovery unless a blocking gap exists.
+input:
+  prompt: We already have a complete product plan. Arrange the production workflow and execution order.
+  context:
+    complete_plan_exists: true
+    blocking_gap_known: false
+rubric:
+  equals:
+    response.status: DELIVERY_PLANNING
+    response.rerun_discovery_by_default: false
+    response.code_modification_allowed: false
+  contains:
+    response.actions:
+      - inspect_existing_plan
+      - identify_dependencies
+      - create_work_breakdown
+      - define_milestones
+      - identify_delivery_risks
+      - recommend_execution_order
+  excludes:
+    response.actions:
+      - restart_product_discovery
+      - modify_code
+  set_equals: {}
+  nonempty:
+    - response.delivery_sequence
+    - response.summary
