@@ -1,3 +1,25 @@
+import os
+
+
+def _append_validation_git_config(key: str, value: str) -> None:
+    """Apply test-only Git config to this validation process and its children."""
+    raw_count = os.environ.get("GIT_CONFIG_COUNT", "0")
+    try:
+        count = int(raw_count)
+    except ValueError as exc:
+        raise RuntimeError(f"invalid inherited GIT_CONFIG_COUNT: {raw_count!r}") from exc
+    os.environ[f"GIT_CONFIG_KEY_{count}"] = key
+    os.environ[f"GIT_CONFIG_VALUE_{count}"] = value
+    os.environ["GIT_CONFIG_COUNT"] = str(count + 1)
+
+
+# Lifecycle evidence rapidly creates, updates and deletes temporary Git repositories.
+# Disable automatic detached gc only for repository validation so a background Git
+# maintenance process cannot race TemporaryDirectory cleanup after the Git command
+# under test has already returned. Product/runtime Git behavior is intentionally unchanged.
+_append_validation_git_config("gc.auto", "0")
+_append_validation_git_config("gc.autoDetach", "false")
+
 from validation import static_contracts as static_contracts
 from validation import runtime_contracts as runtime_contracts  # noqa: F401
 from validation import visual_render_contracts as visual_render_contracts  # noqa: F401
