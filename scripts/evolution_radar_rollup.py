@@ -33,6 +33,24 @@ def extract_evidence(body: str) -> dict[str, Any] | None:
     return doc
 
 
+def flatten_issue_pages(value: Any) -> list[dict[str, Any]]:
+    """Accept one GitHub Issues page or gh api --paginate --slurp pages."""
+    if not isinstance(value, list):
+        raise ValueError("issues JSON must be an array")
+    if not value:
+        return []
+    if all(isinstance(item, dict) for item in value):
+        return value
+    if all(isinstance(page, list) for page in value):
+        issues: list[dict[str, Any]] = []
+        for page in value:
+            if not all(isinstance(item, dict) for item in page):
+                raise ValueError("issues JSON pages must contain issue objects")
+            issues.extend(page)
+        return issues
+    raise ValueError("issues JSON must be an issue array or an array of issue pages")
+
+
 def aggregate_signals(docs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     seen: dict[str, dict[str, Any]] = {}
     for doc in docs:
@@ -172,10 +190,9 @@ def main() -> int:
     args = parser.parse_args()
 
     if args.command == "monthly-rollup":
-        issues = json.loads(Path(args.issues_json).read_text(encoding="utf-8"))
+        raw_issues = json.loads(Path(args.issues_json).read_text(encoding="utf-8"))
+        issues = flatten_issue_pages(raw_issues)
         config = yaml.safe_load(Path(args.config).read_text(encoding="utf-8")) or {}
-        if not isinstance(issues, list):
-            raise ValueError("issues JSON must be an array")
         doc = monthly_rollup(issues, config, period=args.period)
         Path(args.output).write_text(yaml.safe_dump(doc, sort_keys=False, allow_unicode=True), encoding="utf-8")
         return 0
