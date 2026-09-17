@@ -31,10 +31,11 @@ scenarios:
       - scripts/agent_eval.py
   - id: "004"
     path: tests/scenarios/004-api-performance.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/004-api-performance.md
-    note: "Requires a reproducible benchmark/profile fixture and measured p95 under stated conditions; semantic-only evidence is insufficient."
+      - tests/evidence/performance_evidence_lifecycle.py
+      - scripts/performance_evidence.py
+      - tests/validate_repository.py
   - id: "005"
     path: tests/scenarios/005-delivery-plan.md
     coverage: agent_eval
