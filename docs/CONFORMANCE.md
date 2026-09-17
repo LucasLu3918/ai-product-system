@@ -562,3 +562,38 @@ Automated      92.8%
 
 Architecture Diagram Impact: N/A. v0.18.0 implements an already-defined Project Intelligence authority/reconciliation contract and adds no new system topology or governance layer.
 
+## v0.18.1 Runtime / Project Instruction Conflict Composition
+
+Promoted evidence:
+
+~~~text
+064 Runtime and Project Instruction Composition -> Lifecycle
+~~~
+
+The lifecycle fixture uses the same Project Authority conflict channel introduced in v0.18.0. It creates runtime-native `AGENTS.md` and an official ADR, records an unresolved material instruction conflict with source pointers and runtime scope, and resolves Turn Context for Codex. The evidence proves both sources remain present, `SOURCE_REGISTRY.yaml` resolves their authority/runtime visibility without copying content, derived Project Intelligence remains non-governing, precedence is explicit, runtime scoping prevents conflict leakage to another runtime, read-only work remains soft, and mutating work continues to fail closed through `unresolved_authority_conflict`. No semantic winner is invented automatically.
+
+Residual manual Scenarios:
+
+~~~text
+004                         measured benchmark/profile evidence required
+021 / 022 / 039 / 055       rendered/screenshot visual evidence infrastructure required
+028                         complete staging-to-production delivery lifecycle required
+054                         approval-backed authoritative promotion mutation required
+087                         component-targeted monorepo lazy-loading execution required
+~~~
+
+v0.18.1 baseline:
+
+~~~text
+Total         125
+Manual          8
+Deterministic  19
+Lifecycle      46
+Agent Eval     52
+Automated     117
+Uncovered       0
+Automated     93.6%
+~~~
+
+Architecture Diagram Impact: N/A. This release extends the existing Project Authority/context-resolution contract only; it introduces no runtime topology, Role, Skill, Capability category, Approval Gate or Constitution change.
+

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.18.1
+
+### Runtime / Project Instruction Conflict Composition
+
+- Extend the v0.18.0 Project Authority conflict pipeline to runtime/project instruction conflicts instead of introducing a parallel conflict engine.
+- Resolve conflict source references through `SOURCE_REGISTRY.yaml`, preserve both runtime-native and project-authoritative pointers, and expose runtime-scoped conflicts only to applicable runtimes.
+- Add an additive `instruction_resolution` Turn Context surface with explicit precedence and a non-governing derived Project Intelligence guarantee.
+- Keep the existing v0.18.0 fail-closed `unresolved_authority_conflict` behavior for mutating work while read-only inspection remains soft.
+- Add executable lifecycle evidence and promote Scenario 064 from manual to lifecycle.
+- Raise conformance baseline to 125 total / 8 manual / 19 deterministic / 46 lifecycle / 52 agent_eval / 117 automated / 0 uncovered (93.6% automated).
+- Architecture Diagram Impact: N/A — this extends the existing Project Authority/context-resolution contract; no runtime topology, Role, Skill, Capability category, Approval Gate or Constitution change.
+
 ## 0.18.0
 
 ### Project Authority Reconciliation
