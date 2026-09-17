@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.19.0
+
+### Governed Evolution Radar
+
+- Add a governed Evolution Radar maintenance plane with bounded weekly public-source scans and monthly recurrence review, using configurable sources with explicit provenance, source-failure recording and per-source item limits.
+- Normalize URLs/titles and compute deterministic fingerprints so recurring signals are deduplicated instead of repeatedly presented as novel technology.
+- Build monthly review from durable prior weekly Radar Issues using fully paginated Issue retrieval, preserving recurrence evidence across the complete review period.
+- Keep semantic adoption assessment provider-neutral and truthful: when no reliable analyzer is available, the Radar reports `ANALYSIS_PENDING` instead of inferring novelty, benefit or adoption suitability from popularity alone.
+- Keep `COVERED`, `HOLD`, `ASSESS`, `TRIAL` and `ADOPT` advisory only; every material recommendation still requires Human decision followed by the existing System Self-Improvement / Core Change / Git Publish gates.
+- Restrict scheduled workflow authority to `contents: read` and `issues: write`; Evolution Radar has no code-write, implementation-PR, merge, protected-branch or release authority.
+- Add Scenario 126 lifecycle evidence and raise conformance to 126 total / 0 manual / 19 deterministic / 53 lifecycle / 54 agent_eval / 126 automated / 0 uncovered (100% automated).
+- Update Human architecture documentation and `system-overview.svg` for the new maintenance plane without adding Roles, Skills, capability categories, Approval Gates or Constitution changes; Quarterly Evolution Review and autonomous experiment execution remain deferred.
+
 ## 0.18.4
 
 ### Evidence Closure and Full Scenario Conformance
