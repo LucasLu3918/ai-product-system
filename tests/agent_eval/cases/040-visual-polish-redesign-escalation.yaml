@@ -1,0 +1,30 @@
+version: 1
+id: 040-visual-polish-redesign-escalation
+scenario_id: "040"
+description: When consistency fixes cannot solve a mismatch because the approved direction itself is wrong, visual polish must stop and return to direction calibration before redesign.
+input:
+  prompt: Keep polishing this UI, but token and shared-component fixes still do not achieve the intended look.
+  context:
+    consistency_repairs_exhausted: true
+    evidence_points_to_direction_mismatch: true
+    approved_visual_direction_exists: true
+rubric:
+  equals:
+    response.status: REDESIGN_CONFIRMATION_REQUIRED
+    response.silent_redesign_allowed: false
+    response.polish_loop_stopped: true
+    response.return_to_creative_direction: true
+    response.broad_redesign_allowed_before_confirmation: false
+  contains:
+    response.actions:
+      - explain_direction_mismatch_evidence
+      - stop_visual_polish_loop
+      - return_to_creative_direction_calibration
+      - request_user_direction_confirmation
+  excludes:
+    response.actions:
+      - silently_replace_approved_direction
+      - continue_pixel_nudges_indefinitely
+  set_equals: {}
+  nonempty:
+    - response.summary

@@ -1,0 +1,25 @@
+version: 1
+case_id: 023-mixed-reference-direction
+scenario_id: "023"
+case_fingerprint: sha256:e67a5df36fc9596a7a14ca48bd1522b4f5c88f3fd15453ef20250c09fce6191d
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: CREATIVE_DIRECTION_MAPPING
+  one_reference_controls_everything: false
+  material_brand_conflicts_must_surface: true
+  temporary_override_scope: current_artifact_or_campaign
+  permanent_brand_mutation: false
+  reference_mapping:
+    - "A:layout"
+    - "B:color"
+    - "C:photography"
+  actions:
+    - map_references_by_visual_aspect
+    - record_mapping_in_creative_direction
+    - surface_material_brand_conflicts
+    - scope_approved_temporary_deviation
+  summary: Map each reference only to the requested visual aspect, record that mapping in the Creative Direction, surface any conflict with the accepted Brand System, and keep any approved exception scoped to this artifact or campaign.

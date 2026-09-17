@@ -1,0 +1,29 @@
+version: 1
+case_id: 003-nordic-design
+scenario_id: "003"
+case_fingerprint: sha256:2b2ee7250ff0f257bd7913af79069f4b0309ab122f1c41e4f6bc89b346317ad4
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: DESIGN
+  primary_role: product-designer
+  backend_loaded: false
+  database_loaded: false
+  devops_loaded: false
+  concept_count: 3
+  user_review_required: true
+  skills:
+    - ux-web-design
+    - visual-direction
+  actions:
+    - create_materially_differentiated_concepts
+    - persist_design_directions
+    - request_user_review
+  concepts:
+    - Quiet Nordic Gallery
+    - Warm Scandinavian Home
+    - Editorial Nordic Studio
+  summary: Keep the request in design mode with the product designer, produce three genuinely different Nordic directions, persist them for comparison, and ask the user to choose or mix aspects without loading backend or infrastructure expertise.

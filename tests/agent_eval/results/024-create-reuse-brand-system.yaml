@@ -1,0 +1,31 @@
+version: 1
+case_id: 024-create-reuse-brand-system
+scenario_id: "024"
+case_fingerprint: sha256:23c6e3c7a0f1277f0796ebba0ad36131f90df22346426e6b55cb052324b0e8d9
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: BRAND_SYSTEM_CREATION
+  logo_first: false
+  progressive_guidance: true
+  brand_profile_required: true
+  future_work_loads_profile_first: true
+  temporary_campaign_override_mutates_brand: false
+  foundation_topics:
+    - audience
+    - positioning
+    - purpose
+    - values
+    - personality
+    - verbal_direction
+    - visual_direction
+  actions:
+    - establish_brand_foundation
+    - calibrate_visual_identity_directions
+    - persist_brand_profile_yaml
+    - persist_applicable_human_brand_documents
+    - reuse_profile_before_deeper_docs
+  summary: Build the coffee brand from audience, positioning, purpose and personality before identity execution; persist BRAND_PROFILE.yaml plus applicable human brand docs so later website, social and banner work can reuse the compact profile first.

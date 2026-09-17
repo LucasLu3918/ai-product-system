@@ -1,0 +1,21 @@
+version: 1
+case_id: 040-visual-polish-redesign-escalation
+scenario_id: "040"
+case_fingerprint: sha256:99e34ec4b4bf06aa6e304b5717c456a0a6889cd2705e0393efefdb731d545a8a
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: REDESIGN_CONFIRMATION_REQUIRED
+  silent_redesign_allowed: false
+  polish_loop_stopped: true
+  return_to_creative_direction: true
+  broad_redesign_allowed_before_confirmation: false
+  actions:
+    - explain_direction_mismatch_evidence
+    - stop_visual_polish_loop
+    - return_to_creative_direction_calibration
+    - request_user_direction_confirmation
+  summary: Once evidence shows the approved visual direction itself is the mismatch, stop consistency repair, explain why, return to Creative Direction calibration, and wait for user confirmation before any broad redesign.

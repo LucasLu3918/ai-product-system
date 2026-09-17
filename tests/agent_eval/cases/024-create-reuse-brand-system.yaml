@@ -1,0 +1,39 @@
+version: 1
+id: 024-create-reuse-brand-system
+scenario_id: "024"
+description: Reusable brand creation starts from foundation, guides non-experts progressively, persists a compact profile plus human docs, and keeps campaign overrides scoped.
+input:
+  prompt: Create a coffee brand that future website, social, and banner work should reuse.
+  context:
+    reusable_brand_requested: true
+    user_is_non_expert: true
+rubric:
+  equals:
+    response.status: BRAND_SYSTEM_CREATION
+    response.logo_first: false
+    response.progressive_guidance: true
+    response.brand_profile_required: true
+    response.future_work_loads_profile_first: true
+    response.temporary_campaign_override_mutates_brand: false
+  contains:
+    response.foundation_topics:
+      - audience
+      - positioning
+      - purpose
+      - values
+      - personality
+      - verbal_direction
+      - visual_direction
+    response.actions:
+      - establish_brand_foundation
+      - calibrate_visual_identity_directions
+      - persist_brand_profile_yaml
+      - persist_applicable_human_brand_documents
+      - reuse_profile_before_deeper_docs
+  excludes:
+    response.actions:
+      - start_with_logo_generation
+      - silently_promote_campaign_override
+  set_equals: {}
+  nonempty:
+    - response.summary

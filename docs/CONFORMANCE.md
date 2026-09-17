@@ -368,3 +368,45 @@ Automated      95
 Uncovered       0
 Automated     76.0%
 ~~~
+
+## v0.16.8 Product & Visual Evidence Maturity
+
+Promoted semantic evidence:
+
+~~~text
+001 Product Creation                         -> Agent Eval
+003 Nordic Design Only                       -> Agent Eval
+023 Mixed Reference Direction                -> Agent Eval
+024 Create and Reuse a Brand System          -> Agent Eval
+040 Visual Polish Redesign Escalation        -> Agent Eval
+056 Project Visual Profile Reuse             -> Lifecycle
+~~~
+
+Scenario 056 now has executable design-state evidence through scripts/visual_profile.py and tests/evidence/visual_profile_lifecycle.py. The helper loads PROJECT_VISUAL_PROFILE.yaml first, validates last_verified_commit and watch paths against real Git history plus dirty state, returns REUSE when watched visual sources are unchanged, and returns TARGETED_REFRESH when shared visual sources changed. Missing/unusable baselines fail closed to FULL_DISCOVERY. Subjective visual archetypes remain inferred until approved.
+
+The following visual scenarios intentionally remain manual:
+
+~~~text
+021 Vague Visual Request
+022 User-owned Assets for Banner
+039 Visual Polish Shared Component First
+055 V2 Product Consistency Sweep
+~~~
+
+These scenarios require actual rendered composition, crop/safe-area, responsive/state or before/after visual evidence. The current repository-only validation harness has no verified renderer/screenshot provider, so text-only Agent Eval would not truthfully cover the full acceptance behavior.
+
+v0.16.8 baseline:
+
+~~~text
+Total         125
+Manual         24
+Deterministic  19
+Lifecycle      41
+Agent Eval     41
+Automated     101
+Uncovered       0
+Automated     80.8%
+~~~
+
+Architecture Diagram Impact: N/A. This release adds bounded evidence tooling beneath the existing Visual Polish / Project Visual Profile flow and does not change system topology.
+

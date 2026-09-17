@@ -10,6 +10,20 @@ import yaml
 
 from .static_contracts import ROOT, errors, load_yaml, roles, skills, scenarios, version
 
+visual_profile_helper = ROOT / "scripts/visual_profile.py"
+visual_profile_evidence = ROOT / "tests/evidence/visual_profile_lifecycle.py"
+for required in (visual_profile_helper, visual_profile_evidence):
+    if not required.exists():
+        errors.append(f"Missing visual profile lifecycle artifact: {required.relative_to(ROOT)}")
+    else:
+        compiled = subprocess.run([sys.executable, "-m", "py_compile", str(required)], capture_output=True, text=True)
+        if compiled.returncode != 0:
+            errors.append(f"Visual profile lifecycle artifact syntax failed: {required.relative_to(ROOT)}: {compiled.stderr.strip()}")
+if visual_profile_evidence.exists():
+    focused = subprocess.run([sys.executable, str(visual_profile_evidence)], capture_output=True, text=True)
+    if focused.returncode != 0:
+        errors.append(f"Visual profile lifecycle evidence failed: {focused.stdout.strip()} {focused.stderr.strip()}")
+
 intelligence_context_evidence = ROOT / "tests/evidence/intelligence_context_lifecycle.py"
 if not intelligence_context_evidence.exists():
     errors.append("Missing Intelligence context lifecycle evidence")
