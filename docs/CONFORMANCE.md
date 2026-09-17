@@ -535,3 +535,43 @@ Automated     92.0%
 
 Architecture Diagram Impact: N/A. This release adds executable evidence and conformance metadata only; it does not change runtime topology, Role, Skill, Capability, Approval Gate, Constitution, or managed Harness behavior.
 
+## v0.18.0 Project Intelligence Reconciliation
+
+Promoted evidence:
+
+~~~text
+082 Project Overrides Survive Refresh -> Lifecycle
+~~~
+
+Project Intelligence now exposes a deterministic reconciliation primitive for structured discovery candidates. `PROJECT_OVERRIDES.yaml` version 2 gives approved decisions stable subject/scope/value keys. Reconciliation preserves approved inference/rule/exception/exclusion lists and never treats newly discovered evidence as permission to overwrite them. Matching evidence is aligned, unmatched evidence remains a derived candidate, and contradictory or explicitly excluded evidence produces a stable `DISCOVERY_OVERRIDE_CONFLICT`.
+
+The executable lifecycle creates a temporary attached Git project, bootstraps Project Intelligence, establishes approved inference/rule/exception/exclusion decisions plus a manual conflict, and then reconciles aligned, contradictory, scoped and unmatched candidates through the public `aips intelligence reconcile` command. It verifies that approved state remains byte-for-byte equivalent at the semantic list level, scoped exceptions apply to descendant scopes, manual conflicts survive, raw contradictory values are not duplicated into conflict records, review output surfaces the conflict, repeated reconciliation is idempotent, and AIPS-managed conflicts clear when later candidate evidence aligns.
+
+Residual manual gap classification:
+
+~~~text
+004                         measured benchmark/profile evidence required
+021 / 022 / 039 / 055       rendered/screenshot visual evidence infrastructure required
+028                         complete staging-to-production delivery lifecycle required
+054                         approval-backed authoritative promotion mutation required
+064                         executable material runtime/project instruction-conflict surfacing required
+087                         component-targeted monorepo lazy-loading execution required
+~~~
+
+These remain manual rather than being promoted by adjacent or partial evidence. Scenario 082 is the only Scenario promoted in this release.
+
+v0.18.0 baseline:
+
+~~~text
+Total         125
+Manual          9
+Deterministic  19
+Lifecycle      45
+Agent Eval     52
+Automated     116
+Uncovered       0
+Automated     92.8%
+~~~
+
+Architecture Diagram Impact: N/A. This release extends behavior inside the existing Project Intelligence component and does not change runtime topology, Role, Skill, Capability boundary, Approval Gate, or Constitution.
+

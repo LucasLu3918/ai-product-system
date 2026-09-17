@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.18.0
+
+### Project Intelligence Reconciliation
+
+- Add deterministic `aips intelligence reconcile --discoveries <yaml>` for comparing structured repository discovery candidates with approved Project Intelligence overrides.
+- Evolve newly created `PROJECT_OVERRIDES.yaml` to version 2 with stable subject/scope/value keys while preserving legacy unkeyed entries without guessing their semantics.
+- Preserve approved inferences, additional rules, exceptions and exclusions; matching evidence is aligned, unmatched evidence remains derived, and contradictory evidence becomes a stable `DISCOVERY_OVERRIDE_CONFLICT` instead of overwriting approved state.
+- Persist conflict metadata using stable hashes/pointers rather than duplicating raw discovered values, preserve manually maintained conflicts, and surface open conflicts through status/context/review outputs.
+- Add executable lifecycle evidence proving approved overrides survive contradictory refresh input, scoped exceptions are respected, conflict IDs are deterministic/idempotent, and AIPS-managed conflicts clear when later evidence aligns.
+- Promote Scenario 082 from manual to lifecycle. Remaining manual Scenarios: 004, 021, 022, 028, 039, 054, 055, 064 and 087.
+- Raise conformance baseline to 125 total / 9 manual / 19 deterministic / 45 lifecycle / 52 agent_eval / 116 automated / 0 uncovered (92.8% automated).
+- Architecture Diagram Impact: N/A — behavior is added inside the existing Project Intelligence component; no runtime topology, Role, Skill, Capability boundary, Approval Gate or Constitution change.
+
 ## 0.17.1
 
 ### Residual Harness Migration Evidence Maturity

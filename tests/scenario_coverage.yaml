@@ -542,10 +542,10 @@ scenarios:
       - tests/validate_repository.py
   - id: "082"
     path: tests/scenarios/082-project-overrides-survive-refresh.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/082-project-overrides-survive-refresh.md
-    note: "No direct executable refresh-conflict evidence currently proves approved overrides survive contradictory discovery, so this remains manual."
+      - tests/evidence/project_override_reconciliation_lifecycle.py
+      - tests/validate_repository.py
   - id: "083"
     path: tests/scenarios/083-intelligence-single-writer.md
     coverage: lifecycle
