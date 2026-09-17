@@ -1,0 +1,51 @@
+version: 1
+id: 022-user-assets-banner
+scenario_id: "022"
+description: A banner using user-owned logo, product photos and references must preserve required assets, analyze references by visual aspect, persist creative artifacts before generation, and review render-specific quality.
+input:
+  prompt: Use my logo, product photos and visual references to design a website banner.
+  context:
+    user_owned_assets:
+      - logo
+      - product_photos
+    visual_references_provided: true
+    banner_requires_responsive_review: true
+rubric:
+  equals:
+    response.status: USER_ASSET_BANNER_DIRECTION
+    response.user_assets_are_first_class_inputs: true
+    response.references_copied_literally: false
+    response.required_logo_preserved: true
+    response.required_product_assets_preserved: true
+    response.creative_brief_persisted: true
+    response.reference_board_persisted: true
+    response.approved_direction_persisted_before_generation: true
+    response.final_visual_quality_review_required: true
+  contains:
+    response.reference_analysis_aspects:
+      - layout
+      - color
+      - typography
+      - imagery
+    response.review_checks:
+      - composition
+      - headline_cta_readability
+      - safe_area
+      - crop
+      - brand_consistency
+    response.actions:
+      - intake_user_owned_assets
+      - analyze_references_by_visual_aspect
+      - persist_creative_brief
+      - persist_reference_board
+      - persist_approved_creative_direction
+      - generate_after_direction_is_clear
+      - run_visual_quality_review
+  excludes:
+    response.actions:
+      - copy_reference_wholesale
+      - replace_required_user_assets
+      - generate_before_direction_is_clear
+  set_equals: {}
+  nonempty:
+    - response.summary
