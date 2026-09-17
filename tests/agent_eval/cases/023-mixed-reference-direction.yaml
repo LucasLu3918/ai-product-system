@@ -1,0 +1,36 @@
+version: 1
+id: 023-mixed-reference-direction
+scenario_id: "023"
+description: Mixed visual references should be mapped by aspect, conflicts surfaced, and temporary deviations scoped without mutating permanent brand policy.
+input:
+  prompt: Use A's layout, B's colors and C's photography mood.
+  context:
+    references:
+      A: layout
+      B: color
+      C: photography
+    accepted_brand_system_exists: true
+rubric:
+  equals:
+    response.status: CREATIVE_DIRECTION_MAPPING
+    response.one_reference_controls_everything: false
+    response.material_brand_conflicts_must_surface: true
+    response.temporary_override_scope: current_artifact_or_campaign
+    response.permanent_brand_mutation: false
+  set_equals:
+    response.reference_mapping:
+      - A:layout
+      - B:color
+      - C:photography
+  contains:
+    response.actions:
+      - map_references_by_visual_aspect
+      - record_mapping_in_creative_direction
+      - surface_material_brand_conflicts
+      - scope_approved_temporary_deviation
+  excludes:
+    response.actions:
+      - copy_one_reference_wholesale
+      - silently_update_permanent_brand_system
+  nonempty:
+    - response.summary

@@ -10,10 +10,11 @@ policy:
 scenarios:
   - id: "001"
     path: tests/scenarios/001-product-creation.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/001-product-creation.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/001-product-creation.yaml
+      - tests/agent_eval/results/001-product-creation.yaml
+      - scripts/agent_eval.py
   - id: "002"
     path: tests/scenarios/002-existing-rest-api.md
     coverage: manual
@@ -22,10 +23,11 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "003"
     path: tests/scenarios/003-nordic-design.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/003-nordic-design.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/003-nordic-design.yaml
+      - tests/agent_eval/results/003-nordic-design.yaml
+      - scripts/agent_eval.py
   - id: "004"
     path: tests/scenarios/004-api-performance.md
     coverage: manual
@@ -154,16 +156,18 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "023"
     path: tests/scenarios/023-mixed-reference-direction.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/023-mixed-reference-direction.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/023-mixed-reference-direction.yaml
+      - tests/agent_eval/results/023-mixed-reference-direction.yaml
+      - scripts/agent_eval.py
   - id: "024"
     path: tests/scenarios/024-create-reuse-brand-system.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/024-create-reuse-brand-system.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/024-create-reuse-brand-system.yaml
+      - tests/agent_eval/results/024-create-reuse-brand-system.yaml
+      - scripts/agent_eval.py
   - id: "025"
     path: tests/scenarios/025-avoid-duplicate-role.md
     coverage: agent_eval
@@ -265,10 +269,11 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "040"
     path: tests/scenarios/040-visual-polish-redesign-escalation.md
-    coverage: manual
+    coverage: agent_eval
     evidence:
-      - tests/scenarios/040-visual-polish-redesign-escalation.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - tests/agent_eval/cases/040-visual-polish-redesign-escalation.yaml
+      - tests/agent_eval/results/040-visual-polish-redesign-escalation.yaml
+      - scripts/agent_eval.py
   - id: "041"
     path: tests/scenarios/041-multi-perspective-review-panel.md
     coverage: agent_eval
@@ -369,10 +374,11 @@ scenarios:
     note: "Legacy specification; automated one-to-one evidence is not claimed yet."
   - id: "056"
     path: tests/scenarios/056-visual-profile-reuse.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/056-visual-profile-reuse.md
-    note: "Legacy specification; automated one-to-one evidence is not claimed yet."
+      - scripts/visual_profile.py
+      - tests/evidence/visual_profile_lifecycle.py
+      - tests/validate_repository.py
   - id: "057"
     path: tests/scenarios/057-global-harness-auto-bootstrap.md
     coverage: lifecycle

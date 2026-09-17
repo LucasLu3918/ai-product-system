@@ -1,0 +1,35 @@
+version: 1
+id: 003-nordic-design
+scenario_id: "003"
+description: A design-only Nordic furniture request should stay in design mode, use the product designer, produce three differentiated directions, and avoid engineering skill preload.
+input:
+  prompt: 只設計北歐風家具網站，給我 3 個樣式，不要寫後端。
+  context:
+    design_only: true
+    requested_concepts: 3
+    backend_explicitly_excluded: true
+rubric:
+  equals:
+    response.status: DESIGN
+    response.primary_role: product-designer
+    response.backend_loaded: false
+    response.database_loaded: false
+    response.devops_loaded: false
+    response.concept_count: 3
+    response.user_review_required: true
+  contains:
+    response.skills:
+      - ux-web-design
+      - visual-direction
+    response.actions:
+      - create_materially_differentiated_concepts
+      - persist_design_directions
+      - request_user_review
+  excludes:
+    response.actions:
+      - implement_backend
+      - load_infrastructure_by_default
+  set_equals: {}
+  nonempty:
+    - response.concepts
+    - response.summary

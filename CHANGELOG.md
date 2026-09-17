@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.16.8
+
+### Product & Visual Evidence Maturity
+
+- Add Agent Eval evidence for Product Creation, design-only Nordic concepts, aspect-level mixed references, reusable Brand System creation and evidence-driven redesign escalation.
+- Add deterministic Project Visual Profile freshness evaluation plus lifecycle evidence: unchanged watched visual sources reuse the approved profile, while changed shared tokens/components trigger targeted refresh instead of a blind full rescan.
+- Keep Scenarios 021, 022, 039 and 055 manual because complete verification requires real rendered/screenshot evidence that the repository-only harness cannot currently produce.
+- Promote Scenarios 001, 003, 023, 024 and 040 to agent_eval, and Scenario 056 to lifecycle.
+- Raise conformance baseline to 125 total / 24 manual / 19 deterministic / 41 lifecycle / 41 agent_eval / 101 automated / 0 uncovered (80.8% automated).
+- Architecture Diagram Impact: N/A — no runtime topology, Role, Skill, Capability or Approval Gate change.
+
 ## 0.16.7
 
 ### Core Planning & Change Assurance Semantic Evidence Maturity

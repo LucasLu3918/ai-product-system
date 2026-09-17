@@ -224,6 +224,22 @@ Subjective style labels remain `inferred` until approved. Objective facts can be
 
 If an existing authoritative Visual System already contains equivalent information, prefer a pointer rather than duplication through `orchestration/PROJECT_KNOWLEDGE.md`.
 
+## Deterministic Project Visual Profile freshness
+
+When docs/design/PROJECT_VISUAL_PROFILE.yaml exists, evaluate its reusable design-state before rescanning the whole UI:
+
+~~~text
+python scripts/visual_profile.py status --project <project> --format json
+~~~
+
+The helper must load the profile first and compare last_verified_commit plus watch.paths against real Git history and dirty state.
+
+- REUSE: watched visual sources are unchanged. Reuse Golden Components, representative routes, state rules and approved exceptions; do not rebuild the full baseline.
+- TARGETED_REFRESH: watched tokens/shared components/global visual sources changed. Refresh only the affected visual knowledge and then perform the required rendered checks.
+- FULL_DISCOVERY: the profile is missing, explicitly stale, lacks a usable baseline/watch scope, or its baseline cannot be reconciled safely.
+
+This helper is design-state freshness evidence only. It never replaces rendered before/after, responsive, crop/safe-area or interaction-state review when the application can render.
+
 ## Completion
 
 V2 cannot PASS until applicable:

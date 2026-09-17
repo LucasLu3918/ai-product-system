@@ -1,0 +1,33 @@
+version: 1
+id: 001-product-creation
+scenario_id: "001"
+description: A new shopping-site request should enter product creation, discover before coding, persist planning, and wait for human planning approval before implementation.
+input:
+  prompt: 我要製作一個購物網站。
+  context:
+    greenfield: true
+    complete_product_requested: true
+rubric:
+  equals:
+    response.status: PRODUCT_CREATION
+    response.discovery_before_code: true
+    response.ask_only_blocking_questions: true
+    response.planning_package_persisted_before_implementation: true
+    response.planning_approval_required: true
+    response.implementation_allowed_before_planning_approval: false
+    response.preload_backend_database_by_default: false
+  contains:
+    response.actions:
+      - resolve_product_workspace
+      - run_guided_discovery
+      - define_product_and_quality
+      - design_applicable_ux_brand_architecture
+      - persist_reproducible_planning_package
+      - request_human_planning_approval
+  excludes:
+    response.actions:
+      - start_coding_immediately
+      - preload_backend_database_without_need
+  set_equals: {}
+  nonempty:
+    - response.summary

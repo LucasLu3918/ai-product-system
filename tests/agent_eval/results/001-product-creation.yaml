@@ -1,0 +1,25 @@
+version: 1
+case_id: 001-product-creation
+scenario_id: "001"
+case_fingerprint: sha256:adf7204677ed0227e355f4df3cf33d1ff62cb2bc5aec079eb9fe0bc6e360ceec
+execution:
+  provider: openai
+  model: GPT-5.6 Sol
+  runtime: ChatGPT
+  executed_at: "2026-09-17"
+response:
+  status: PRODUCT_CREATION
+  discovery_before_code: true
+  ask_only_blocking_questions: true
+  planning_package_persisted_before_implementation: true
+  planning_approval_required: true
+  implementation_allowed_before_planning_approval: false
+  preload_backend_database_by_default: false
+  actions:
+    - resolve_product_workspace
+    - run_guided_discovery
+    - define_product_and_quality
+    - design_applicable_ux_brand_architecture
+    - persist_reproducible_planning_package
+    - request_human_planning_approval
+  summary: Treat the shopping-site request as a complete greenfield product, resolve a persistent workspace and discovery inputs first, persist the reproducible plan, then wait for human planning approval before implementation.

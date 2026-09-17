@@ -149,8 +149,8 @@ required_files = [
     "scripts/check_release_readiness.py", "scripts/harness_resolve.py",
     "scripts/project_intelligence.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py",
     "scripts/aips_identity.py", "scripts/execution_isolation.py",
-    "scripts/agent_eval.py", "scripts/check_secret_leakage.py",
-    "tests/evidence/governance_command_guard.py",
+    "scripts/agent_eval.py", "scripts/check_secret_leakage.py", "scripts/visual_profile.py",
+    "tests/evidence/governance_command_guard.py", "tests/evidence/visual_profile_lifecycle.py",
     "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml",
     ".github/dependabot.yml", "SECURITY.md",
 ]
