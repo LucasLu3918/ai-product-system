@@ -122,6 +122,8 @@ Project Intelligence is below:
 
 If new evidence conflicts with an override, mark a conflict for human review.
 
+Semantic discovery remains an Agent responsibility. When refreshed discovery produces structured observations (`key`, `value`, `evidence`), run `aips intelligence reconcile-overrides --project <path> --observations-file <yaml>` before accepting refreshed conclusions. The deterministic reconciler compares those observations with structured user-approved entries in `PROJECT_OVERRIDES.yaml`, preserves `approved_inferences`, `additional_rules`, `exceptions`, and `excluded_inferences` byte-semantically, and appends an idempotent unresolved conflict instead of replacing an approved decision.
+
 ## Intelligence types
 
 Derived statements remain classified as:

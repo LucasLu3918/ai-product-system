@@ -767,6 +767,89 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
     }
 
 
+def canonical_semantic_value(value: Any) -> str:
+    return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+
+
+def reconcile_overrides(root: Path, observations_file: Path) -> dict[str, Any]:
+    store, mode, pid = intelligence_store(root)
+    overrides_path = store / "PROJECT_OVERRIDES.yaml"
+    if not overrides_path.exists():
+        raise RuntimeError("Project Intelligence is not initialized")
+    if not observations_file.is_file():
+        raise RuntimeError(f"Discovery observations file not found: {observations_file}")
+    observations_doc = load_yaml(observations_file, {})
+    observations = observations_doc.get("observations") or []
+    if not isinstance(observations, list):
+        raise RuntimeError("Discovery observations must be a list")
+
+    with writer_lock(store):
+        overrides = load_yaml(overrides_path, {})
+        protected_sections = ("approved_inferences", "additional_rules", "exceptions", "excluded_inferences")
+        before = {name: canonical_semantic_value(overrides.get(name) or []) for name in protected_sections}
+        existing_conflicts = list(overrides.get("conflicts") or [])
+        by_id = {str(item.get("id")): item for item in existing_conflicts if isinstance(item, dict) and item.get("id")}
+        added: list[str] = []
+
+        candidates: list[tuple[str, dict[str, Any]]] = []
+        for section in protected_sections:
+            for raw in overrides.get(section) or []:
+                if isinstance(raw, dict) and raw.get("key") is not None:
+                    candidates.append((section, raw))
+
+        for observation in observations:
+            if not isinstance(observation, dict) or observation.get("key") is None:
+                continue
+            key = str(observation["key"])
+            observed_value = observation.get("value")
+            for section, approved in candidates:
+                if str(approved.get("key")) != key:
+                    continue
+                if section == "excluded_inferences":
+                    contradictory = approved.get("value") is None or canonical_semantic_value(approved.get("value")) == canonical_semantic_value(observed_value)
+                else:
+                    contradictory = canonical_semantic_value(approved.get("value")) != canonical_semantic_value(observed_value)
+                if not contradictory:
+                    continue
+                conflict_id = "override-discovery-" + sha(
+                    section + ":" + key + ":" + canonical_semantic_value(approved.get("value")) + ":" + canonical_semantic_value(observed_value)
+                )[:16]
+                if conflict_id in by_id:
+                    continue
+                conflict = {
+                    "id": conflict_id,
+                    "type": "override_discovery_conflict",
+                    "summary": f"Discovery for {key} conflicts with user-approved {section}.",
+                    "material": True,
+                    "status": "UNRESOLVED",
+                    "key": key,
+                    "override_section": section,
+                    "approved_value": approved.get("value"),
+                    "discovered_value": observed_value,
+                    "sources": list(observation.get("evidence") or []),
+                }
+                existing_conflicts.append(conflict)
+                by_id[conflict_id] = conflict
+                added.append(conflict_id)
+
+        for name in protected_sections:
+            if canonical_semantic_value(overrides.get(name) or []) != before[name]:
+                raise RuntimeError(f"Protected override section changed during reconciliation: {name}")
+        overrides["conflicts"] = existing_conflicts
+        atomic_yaml(overrides_path, overrides)
+
+    review = render_review(root)
+    return {
+        "project_id": pid,
+        "mode": mode,
+        "status": "CONFLICT" if added else "UNCHANGED",
+        "added_conflicts": added,
+        "conflict_count": len(existing_conflicts),
+        "overrides_preserved": True,
+        "review_html": str(review),
+    }
+
+
 def topic_is_complete(store: Path, name: str, topic: Any) -> bool:
     if not isinstance(topic, dict):
         return False
@@ -1021,6 +1104,11 @@ def main() -> int:
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
     p.add_argument("--explain", action="store_true")
 
+    p = sub.add_parser("reconcile-overrides")
+    p.add_argument("--project", default=os.getcwd())
+    p.add_argument("--observations-file", required=True)
+    p.add_argument("--format", choices=["yaml", "json"], default="yaml")
+
     p = sub.add_parser("impact-init")
     p.add_argument("--project", default=os.getcwd())
     p.add_argument("--prompt", default="")
@@ -1040,6 +1128,8 @@ def main() -> int:
             result = finalize(root)
         elif args.command == "context":
             result = context_manifest(root, args.runtime, args.prompt, args.explain)
+        elif args.command == "reconcile-overrides":
+            result = reconcile_overrides(root, Path(args.observations_file).resolve())
         elif args.command == "impact-init":
             result = impact_init(root, args.prompt, args.change_id)
         elif args.command == "migrate-attached":
