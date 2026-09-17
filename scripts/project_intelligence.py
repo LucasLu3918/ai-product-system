@@ -659,7 +659,55 @@ def unresolved_material_conflicts(conflicts: list[dict[str, Any]]) -> list[dict[
     ]
 
 
-def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = False) -> dict[str, Any]:
+def selected_topics_for_task(available: dict[str, Any], desired_topics: list[str], component: str | None) -> list[tuple[str, dict[str, Any]]]:
+    selected: list[tuple[str, dict[str, Any]]] = []
+    for name, raw in available.items():
+        if not isinstance(raw, dict) or not raw.get("path"):
+            continue
+        semantic = str(raw.get("topic", name))
+        if semantic not in desired_topics:
+            continue
+        owner = raw.get("component")
+        if component and owner not in (None, "", "system", "shared", component):
+            continue
+        selected.append((name, raw))
+    return selected
+
+
+def scoped_graph_context(graph: dict[str, Any], component: str | None) -> dict[str, Any]:
+    if not component:
+        return {"target_component": None, "nodes": [], "edges": [], "excluded_components": []}
+    nodes = graph.get("nodes") or {}
+    if not isinstance(nodes, dict):
+        nodes = {}
+    selected_ids: set[str] = set()
+    excluded: set[str] = set()
+    for node_id, raw in nodes.items():
+        if not isinstance(raw, dict):
+            continue
+        owner = raw.get("component")
+        if owner in (None, "", "system", "shared", component):
+            selected_ids.add(str(node_id))
+        else:
+            excluded.add(str(owner))
+    selected_nodes = [dict({"id": node_id}, **nodes[node_id]) for node_id in sorted(selected_ids)]
+    selected_edges: list[dict[str, Any]] = []
+    for raw in graph.get("edges") or []:
+        if not isinstance(raw, dict):
+            continue
+        source = str(raw.get("source", ""))
+        target = str(raw.get("target", ""))
+        if source in selected_ids and target in selected_ids:
+            selected_edges.append(dict(raw))
+    return {
+        "target_component": component,
+        "nodes": selected_nodes,
+        "edges": selected_edges,
+        "excluded_components": sorted(excluded),
+    }
+
+
+def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = False, component: str | None = None) -> dict[str, Any]:
     store, mode, pid = intelligence_store(root)
     category, mutation, desired_topics = classify_prompt(prompt)
     fr = freshness(root)
@@ -672,11 +720,10 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
     unresolved_conflicts = unresolved_material_conflicts(conflicts)
 
     available = intel.get("topics") or {}
-    selected: list[str] = []
-    for name in desired_topics:
-        topic = available.get(name)
-        if isinstance(topic, dict) and topic.get("path"):
-            selected.append(str(store / topic["path"]))
+    selected_records = selected_topics_for_task(available, desired_topics, component)
+    selected = [str(store / topic["path"]) for _, topic in selected_records]
+    graph = load_yaml(store / "IMPACT_GRAPH.yaml", {"nodes": {}, "edges": []}) if store.exists() else {"nodes": {}, "edges": []}
+    scoped_graph = scoped_graph_context(graph, component)
 
     project_native: list[str] = []
     runtime_visible: list[str] = []
@@ -729,6 +776,12 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             "project_native": project_native[:30],
             "intelligence_topics": selected,
             "optional_evidence": [str(store / "DISCOVERY.yaml")] if (store / "DISCOVERY.yaml").exists() else [],
+            "monorepo": {
+                "target_component": component,
+                "system_summary": (intel.get("architecture") or {}).get("summary"),
+                "selected_topic_keys": [name for name, _ in selected_records],
+                "shared_relationships": scoped_graph,
+            },
         },
         "intelligence": {
             "readiness": readiness,
@@ -847,6 +900,88 @@ def reconcile_overrides(root: Path, observations_file: Path) -> dict[str, Any]:
         "conflict_count": len(existing_conflicts),
         "overrides_preserved": True,
         "review_html": str(review),
+    }
+
+
+def promotion_target_allowed(root: Path, target: Path) -> bool:
+    try:
+        relative = target.resolve().relative_to(root.resolve()).as_posix()
+    except ValueError:
+        return False
+    if target.name in SOURCE_NAMES and target.parent.resolve() == root.resolve():
+        return True
+    return relative.startswith("docs/") and target.suffix.lower() == ".md"
+
+
+def promote_invariant(root: Path, invariant_id: str, target_path: str, approved: bool) -> dict[str, Any]:
+    if not approved:
+        raise RuntimeError("Promotion requires explicit project/user approval (--approved)")
+    store, mode, pid = intelligence_store(root)
+    intel_path = store / "PROJECT_INTELLIGENCE.yaml"
+    registry_path = store / "SOURCE_REGISTRY.yaml"
+    if not intel_path.exists() or not registry_path.exists():
+        raise RuntimeError("Project Intelligence is not initialized")
+    target = root / target_path
+    if not target.is_file():
+        raise RuntimeError("Promotion target must already exist")
+    if not promotion_target_allowed(root, target):
+        raise RuntimeError("Promotion target must be a root project instruction or docs/*.md")
+
+    with writer_lock(store):
+        intel = load_yaml(intel_path, {})
+        candidates = intel.get("derived_invariants") or []
+        if not isinstance(candidates, list):
+            raise RuntimeError("derived_invariants must be a list")
+        candidate = next((item for item in candidates if isinstance(item, dict) and str(item.get("id")) == invariant_id), None)
+        if candidate is None:
+            raise RuntimeError(f"Derived invariant not found: {invariant_id}")
+        statement = candidate.get("statement") or candidate.get("text") or candidate.get("value")
+        if not isinstance(statement, str) or not statement.strip():
+            if candidate.get("status") == "PROMOTED" and candidate.get("authoritative_source") == target_path:
+                return {"project_id": pid, "mode": mode, "status": "ALREADY_PROMOTED", "target": target_path, "invariant_id": invariant_id}
+            raise RuntimeError("Derived invariant has no promotable statement")
+
+        begin = f"<!-- AIPS:promoted:{invariant_id} -->"
+        end = f"<!-- /AIPS:promoted:{invariant_id} -->"
+        body = target.read_text(encoding="utf-8")
+        managed = f"{begin}\n- {statement.strip()}\n{end}"
+        if begin not in body:
+            atomic_text(target, body.rstrip() + "\n\n" + managed + "\n")
+
+        registry = load_yaml(registry_path, {"version": 1, "sources": []})
+        sources = registry.setdefault("sources", [])
+        rel_target = rel(root, target)
+        source = next((item for item in sources if isinstance(item, dict) and item.get("path") == rel_target), None)
+        if source is None:
+            authority = "project_instruction" if target.name in SOURCE_NAMES else "official_document"
+            auto = ["codex"] if target.name.startswith("AGENTS") else ["claude-code"] if target.name == "CLAUDE.md" else ["gemini-cli"] if target.name == "GEMINI.md" else []
+            source = {
+                "id": f"src-{sha(rel_target)[:10]}", "path": rel_target, "authority": authority,
+                "scope": str(Path(rel_target).parent.as_posix()), "hash": file_hash(target),
+                "auto_loaded_by": auto, "content_duplicated": False,
+            }
+            sources.append(source)
+        else:
+            source["hash"] = file_hash(target)
+            source["content_duplicated"] = False
+        registry["sources"] = sorted(sources, key=lambda item: str(item.get("path", "")))
+        visibility = registry.setdefault("runtime_visibility", {})
+        for runtime in ("codex", "claude-code", "gemini-cli"):
+            visibility[runtime] = sorted({str(item.get("path")) for item in sources if runtime in (item.get("auto_loaded_by") or []) and item.get("path")})
+        atomic_yaml(registry_path, registry)
+
+        for key in ("statement", "text", "value"):
+            candidate.pop(key, None)
+        candidate["status"] = "PROMOTED"
+        candidate["authoritative_source"] = rel_target
+        candidate["authoritative_pointer"] = {"path": rel_target, "marker": begin}
+        candidate["promoted_at"] = utc_now()
+        atomic_yaml(intel_path, intel)
+
+    review = render_review(root)
+    return {
+        "project_id": pid, "mode": mode, "status": "PROMOTED", "target": rel(root, target),
+        "invariant_id": invariant_id, "content_duplicated": False, "review_html": str(review),
     }
 
 
@@ -1103,10 +1238,18 @@ def main() -> int:
     p.add_argument("--prompt", default="")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
     p.add_argument("--explain", action="store_true")
+    p.add_argument("--component")
 
     p = sub.add_parser("reconcile-overrides")
     p.add_argument("--project", default=os.getcwd())
     p.add_argument("--observations-file", required=True)
+    p.add_argument("--format", choices=["yaml", "json"], default="yaml")
+
+    p = sub.add_parser("promote-invariant")
+    p.add_argument("--project", default=os.getcwd())
+    p.add_argument("--invariant-id", required=True)
+    p.add_argument("--target", required=True)
+    p.add_argument("--approved", action="store_true")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
     p = sub.add_parser("impact-init")
@@ -1127,9 +1270,11 @@ def main() -> int:
         elif args.command == "finalize":
             result = finalize(root)
         elif args.command == "context":
-            result = context_manifest(root, args.runtime, args.prompt, args.explain)
+            result = context_manifest(root, args.runtime, args.prompt, args.explain, args.component)
         elif args.command == "reconcile-overrides":
             result = reconcile_overrides(root, Path(args.observations_file).resolve())
+        elif args.command == "promote-invariant":
+            result = promote_invariant(root, args.invariant_id, args.target, args.approved)
         elif args.command == "impact-init":
             result = impact_init(root, args.prompt, args.change_id)
         elif args.command == "migrate-attached":
