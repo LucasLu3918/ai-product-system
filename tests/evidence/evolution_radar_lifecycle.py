@@ -87,7 +87,17 @@ def main() -> int:
         {"title": "Unrelated issue", "created_at": "2026-09-09T01:05:00Z", "body": body1},
         {"title": "Evolution Radar [weekly] malformed", "created_at": "2026-09-15T01:05:00Z", "body": "no evidence"},
     ]
-    monthly = rollup.monthly_rollup(issues, config, period="2026-09")
+    require(rollup.flatten_issue_pages(issues) == issues, "single-page issue arrays must remain supported")
+    paged = rollup.flatten_issue_pages([issues[:2], issues[2:]])
+    require(paged == issues, "paginated gh api --slurp pages must flatten without losing evidence")
+    try:
+        rollup.flatten_issue_pages([[issues[0]], ["invalid"]])
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("invalid paginated issue payload must fail closed")
+
+    monthly = rollup.monthly_rollup(paged, config, period="2026-09")
     require(monthly["run"]["period"] == "2026-09", "monthly evidence must record the reviewed calendar period")
     require(monthly["run"]["weekly_evidence_count"] == 2, "monthly rollup must consume only weekly evidence from the requested calendar period")
     require(monthly["summary"]["signal_count"] == 8, "out-of-period weekly evidence must be excluded")
@@ -128,6 +138,7 @@ def main() -> int:
         "gh issue create",
         "monthly-rollup",
         "--period",
+        "gh api --paginate --slurp",
     ):
         require(required in workflow, f"workflow missing contract: {required}")
     for forbidden in ("contents: write", "pull-requests: write", "git push", "gh pr create", "gh pr merge", "releases: write"):
