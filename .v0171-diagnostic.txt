@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "/home/runner/work/ai-product-system/ai-product-system/tests/evidence/legacy_harness_migration_lifecycle.py", line 263, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/runner/work/ai-product-system/ai-product-system/tests/evidence/legacy_harness_migration_lifecycle.py", line 256, in main
+    collision_surfaces_manual_without_overwrite()
+  File "/home/runner/work/ai-product-system/ai-product-system/tests/evidence/legacy_harness_migration_lifecycle.py", line 207, in collision_surfaces_manual_without_overwrite
+    with tempfile.TemporaryDirectory() as tmp:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/tempfile.py", line 950, in __exit__
+    self.cleanup()
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/tempfile.py", line 954, in cleanup
+    self._rmtree(self.name, ignore_errors=self._ignore_cleanup_errors)
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/tempfile.py", line 934, in _rmtree
+    _shutil.rmtree(name, onexc=onexc)
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/shutil.py", line 759, in rmtree
+    _rmtree_safe_fd(stack, onexc)
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/shutil.py", line 703, in _rmtree_safe_fd
+    onexc(func, path, err)
+  File "/opt/hostedtoolcache/Python/3.12.14/x64/lib/python3.12/shutil.py", line 662, in _rmtree_safe_fd
+    os.rmdir(name, dir_fd=dirfd)
+OSError: [Errno 39] Directory not empty: '/tmp/tmpzr45clkb/collision-system/.git'
+exit_code=1
