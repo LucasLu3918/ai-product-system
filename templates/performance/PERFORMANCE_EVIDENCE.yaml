@@ -1,0 +1,49 @@
+version: 1
+status: PENDING # PENDING | PASS | PASS_WITH_COMMENTS | FAIL
+
+target:
+  endpoint: /orders
+  metric: p95_response_time_ms
+  threshold_ms: 2000
+
+conditions:
+  requests: 12
+  concurrency: 12
+  dataset: orders-fixture-200
+  environment: localhost-threaded-http
+  provider: python-stdlib-http
+
+baseline:
+  source_revision: ""
+  samples_ms: []
+  p95_ms:
+  profile:
+    component_mean_ms: {}
+    bottleneck:
+      name: ""
+      category: "" # sql | cache | backend | infrastructure | other
+    method: ""
+
+optimization:
+  root_cause: ""
+  mechanism: ""
+  loaded_skills:
+    - performance-profiling
+  # Add sql-performance only when baseline profile evidence identifies SQL
+  # as the dominant bottleneck.
+
+after:
+  source_revision: ""
+  samples_ms: []
+  p95_ms:
+
+evidence:
+  benchmark_artifact: performance-benchmark.json
+
+# PASS is valid only when:
+# - stated benchmark conditions and raw baseline/after samples exist,
+# - p95 is recomputed from those samples,
+# - the baseline demonstrates the target needed optimization,
+# - after p95 is strictly below target,
+# - root cause matches measured profile evidence,
+# - sql-performance is loaded iff SQL is actually implicated.
