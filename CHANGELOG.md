@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.18.3
+
+### Project Intelligence Promotion
+
+- Add a non-mutating `promotion-plan` stage for repeatedly confirmed derived project invariants; recommendation never implies authority and always reports approval required.
+- Add approval-backed `promotion-apply` using the existing `PROJECT_OVERRIDES.yaml` authority container rather than introducing a new Approval Agent or gate.
+- Restrict automatic authoritative mutation to new project instruction sources or `docs/` official documents; existing targets are never overwritten automatically.
+- After an approved promotion, register the authoritative source in `SOURCE_REGISTRY.yaml`, transition the approval to `APPLIED`, remove duplicate derived topic content, and retain only an authoritative pointer in Project Intelligence.
+- Add executable temporary-project lifecycle evidence and promote Scenario 054 from manual to lifecycle.
+- Raise conformance baseline to 125 total / 6 manual / 19 deterministic / 48 lifecycle / 52 agent_eval / 119 automated / 0 uncovered (95.2% automated).
+- Architecture Diagram Impact: N/A — this extends existing Project Intelligence / Project Authority mutation semantics; no runtime topology, Role, Skill, Capability category, Approval Gate, or Constitution change.
+
 ## 0.18.2
 
 ### Monorepo Lazy Intelligence

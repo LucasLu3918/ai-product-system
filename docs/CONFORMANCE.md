@@ -626,3 +626,30 @@ Residual manual gaps remain 004, 021, 022, 028, 039, 054 and 055.
 
 Architecture Diagram Impact: N/A. This is an additive Project Intelligence selection contract and lifecycle-evidence change only; runtime topology and governance layers are unchanged.
 
+## v0.18.3 Project Intelligence Promotion
+
+Promoted evidence:
+
+~~~text
+054 Project Intelligence Promotion to Authoritative Source -> Lifecycle
+~~~
+
+Scenario 054 now executes a temporary Git project with a repeatedly confirmed derived invariant. The lifecycle proves recommendation is non-mutating, missing approval fails closed, a matching human/project approval in `PROJECT_OVERRIDES.yaml` permits creation of a new authoritative project document, `SOURCE_REGISTRY.yaml` records that source with promotion provenance and pointer-over-copy semantics, the duplicate derived topic file is removed, and Project Intelligence retains only an authoritative pointer. Existing authoritative targets are never overwritten automatically.
+
+v0.18.3 baseline:
+
+~~~text
+Total         125
+Manual          6
+Deterministic  19
+Lifecycle      48
+Agent Eval     52
+Automated     119
+Uncovered       0
+Automated     95.2%
+~~~
+
+Residual manual gaps remain 004, 021, 022, 028, 039 and 055.
+
+Architecture Diagram Impact: N/A. This is an additive Project Intelligence / Project Authority lifecycle contract; runtime topology and governance layers are unchanged.
+

@@ -16,6 +16,14 @@ exceptions: []
 
 excluded_inferences: []
 
+promotion_approvals: []
+# - id: PROMOTE-001
+#   topic: api-error-contract
+#   target: docs/API_ERROR_RULE.md
+#   status: APPROVED
+#   approved_by: human
+#   approved_at: 2026-01-01T00:00:00Z
+
 conflicts: []
 # - id: CONFLICT-001
 #   type: instruction_conflict
