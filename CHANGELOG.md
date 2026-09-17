@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.18.0
+
+### Instruction Conflict Resolution Surface
+
+- Add a structured instruction-resolution surface to Turn Context that preserves runtime-native and project-authoritative sources while keeping derived Project Intelligence explicitly non-governing.
+- Surface recorded instruction conflicts from Project Overrides / Project Intelligence with registered source pointers, scope, materiality and status instead of silently discarding either source.
+- Fail closed for mutating work when an unresolved material instruction conflict is present; read-only work remains soft while exposing the conflict for human/Agent reconciliation.
+- Extend Project Overrides and Turn Context templates with the additive conflict-resolution contract.
+- Add executable lifecycle evidence for Scenario 064 and promote it from manual to lifecycle.
+- Raise conformance baseline to 125 total / 9 manual / 19 deterministic / 45 lifecycle / 52 agent_eval / 116 automated / 0 uncovered (92.8% automated).
+- Architecture Diagram Impact: N/A — context-resolution behavior and schema are extended, but runtime topology, Role, Skill, Capability, Approval Gate and Constitution remain unchanged.
+
 ## 0.17.1
 
 ### Residual Harness Migration Evidence Maturity

@@ -433,10 +433,11 @@ scenarios:
       - tests/validate_repository.py
   - id: "064"
     path: tests/scenarios/064-runtime-and-project-instruction-composition.md
-    coverage: manual
+    coverage: lifecycle
     evidence:
-      - tests/scenarios/064-runtime-and-project-instruction-composition.md
-    note: "Existing lifecycle evidence covers native/project source composition and deduplication, but material conflict surfacing is not yet directly exercised."
+      - tests/evidence/intelligence_context_lifecycle.py
+      - scripts/project_intelligence.py
+      - tests/validate_repository.py
   - id: "065"
     path: tests/scenarios/065-architecture-diagram-impact-required.md
     coverage: agent_eval

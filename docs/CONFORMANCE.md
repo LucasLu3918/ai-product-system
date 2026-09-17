@@ -535,3 +535,39 @@ Automated     92.0%
 
 Architecture Diagram Impact: N/A. This release adds executable evidence and conformance metadata only; it does not change runtime topology, Role, Skill, Capability, Approval Gate, Constitution, or managed Harness behavior.
 
+## v0.18.0 Instruction Conflict Resolution Surface
+
+Promoted evidence:
+
+~~~text
+064 Runtime and Project Instruction Composition -> Lifecycle
+~~~
+
+The lifecycle fixture creates runtime-native `AGENTS.md` plus an official project ADR, bootstraps Project Intelligence, records an unresolved material conflict in the existing Project Overrides conflict channel, and resolves Turn Context for Codex. It proves both authoritative sources remain present, conflict source pointers are registered rather than copied, derived Project Intelligence is non-governing, the conflict is surfaced structurally, read-only work remains soft, and mutating work fails closed until the material conflict is reconciled. No deterministic semantic winner is invented.
+
+Residual manual Scenarios:
+
+~~~text
+004                         measured benchmark/profile evidence required
+021 / 022 / 039 / 055       rendered/screenshot visual evidence infrastructure required
+028                         complete staging-to-production delivery lifecycle required
+054                         approval-backed authoritative promotion mutation required
+082                         contradictory discovery vs approved override preservation required
+087                         component-targeted monorepo lazy-loading execution required
+~~~
+
+v0.18.0 baseline:
+
+~~~text
+Total         125
+Manual          9
+Deterministic  19
+Lifecycle      45
+Agent Eval     52
+Automated     116
+Uncovered       0
+Automated     92.8%
+~~~
+
+Architecture Diagram Impact: N/A. This release extends context-resolution behavior and additive manifest schema only; it does not change runtime topology, Role, Skill, Capability, Approval Gate or Constitution.
+

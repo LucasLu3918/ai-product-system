@@ -23,6 +23,17 @@ context:
   intelligence_topics: []
   optional_evidence: []
 
+
+instruction_resolution:
+  precedence:
+    - runtime_native_scoped
+    - project_authoritative_scoped
+    - derived_project_intelligence
+  authoritative_sources_preserved: true
+  derived_intelligence_governing: false
+  conflicts: []
+  requires_resolution: false
+
 freshness:
   status: UNKNOWN
   reasons: []
@@ -38,3 +49,4 @@ resolution:
 
 fail_policy:
   mode: soft
+  reasons: []

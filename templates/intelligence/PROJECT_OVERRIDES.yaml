@@ -17,3 +17,12 @@ exceptions: []
 excluded_inferences: []
 
 conflicts: []
+# - id: CONFLICT-001
+#   material: true
+#   status: OPEN
+#   scope: project
+#   summary: null
+#   sources:
+#     - AGENTS.md
+#     - docs/ADR-001.md
+#   runtimes: []

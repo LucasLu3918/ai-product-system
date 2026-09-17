@@ -32,8 +32,8 @@ if conformance_helper.exists():
             errors.append("Scenario conformance total/registered count must match scenario inventory")
         if cov.get("uncovered") != 0:
             errors.append("Released scenario conformance registry must have no uncovered entries")
-        if cov.get("manual") != 10 or cov.get("agent_eval") != 52 or cov.get("lifecycle") != 44 or cov.get("automated") != 115:
-            errors.append("v0.17.1 baseline must report manual=10, lifecycle=44, agent_eval=52 and automated=115")
+        if cov.get("manual") != 9 or cov.get("agent_eval") != 52 or cov.get("lifecycle") != 45 or cov.get("automated") != 116:
+            errors.append("v0.18.0 baseline must report manual=9, lifecycle=45, agent_eval=52 and automated=116")
 
     with tempfile.TemporaryDirectory() as tmp:
         temp = Path(tmp)
@@ -84,7 +84,7 @@ if agent_eval_helper.exists():
         eval_doc = json.loads(eval_check.stdout)
         summary = eval_doc.get("summary") or {}
         if summary.get("cases") != 52 or summary.get("results") != 52 or summary.get("passed") != 52 or summary.get("failed") != 0:
-            errors.append("v0.17.1 committed Agent Eval baseline must contain 52 passing case/result pairs")
+            errors.append("v0.18.0 committed Agent Eval baseline must contain 52 passing case/result pairs")
 
     cli_eval = subprocess.run(
         ["bash", str(ROOT / "bin/aips"), "conformance", "agent-eval", "check", "--format", "json"],
@@ -288,6 +288,19 @@ for rel in legacy_evidence:
     result = subprocess.run([sys.executable, str(evidence_path)], capture_output=True, text=True)
     if result.returncode != 0:
         errors.append(f"Legacy evidence failed: {rel}: {result.stdout.strip()} {result.stderr.strip()}")
+
+# v0.18.0 runtime/project instruction conflict lifecycle
+instruction_context_evidence = ROOT / "tests/evidence/intelligence_context_lifecycle.py"
+if not instruction_context_evidence.exists():
+    errors.append("Missing v0.18.0 instruction context lifecycle evidence")
+else:
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(instruction_context_evidence)], capture_output=True, text=True)
+    if compiled.returncode != 0:
+        errors.append(f"Instruction context evidence syntax failed: {compiled.stderr.strip()}")
+    else:
+        result = subprocess.run([sys.executable, str(instruction_context_evidence)], capture_output=True, text=True)
+        if result.returncode != 0:
+            errors.append(f"Instruction context lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
 
 # v0.17 legacy Project Knowledge migration lifecycle
 project_knowledge_migration_evidence = ROOT / "tests/evidence/project_knowledge_migration_lifecycle.py"

@@ -580,12 +580,79 @@ def adapter_enforcement(runtime: str) -> str:
     return {"codex": "ADVISORY", "claude-code": "ADVISORY", "gemini-cli": "ADVISORY"}.get(runtime, "UNSUPPORTED")
 
 
+
+def collect_instruction_conflicts(store: Path, registry: dict[str, Any], runtime: str) -> list[dict[str, Any]]:
+    aliases: dict[str, dict[str, Any]] = {}
+    for source in registry.get("sources") or []:
+        if not isinstance(source, dict):
+            continue
+        if source.get("id"):
+            aliases[str(source["id"])] = source
+        if source.get("path"):
+            aliases[str(source["path"])] = source
+
+    result: list[dict[str, Any]] = []
+    seen: set[tuple[str, str]] = set()
+    for origin_name, conflict_path in (
+        ("project_overrides", store / "PROJECT_OVERRIDES.yaml"),
+        ("project_intelligence", store / "PROJECT_INTELLIGENCE.yaml"),
+    ):
+        doc = load_yaml(conflict_path, {}) if conflict_path.exists() else {}
+        for index, item in enumerate(doc.get("conflicts") or []):
+            if not isinstance(item, dict):
+                continue
+            runtimes = [str(x) for x in (item.get("runtimes") or [])]
+            if runtimes and runtime not in runtimes:
+                continue
+            conflict_id = str(item.get("id") or f"{origin_name}-{index + 1}")
+            key = (origin_name, conflict_id)
+            if key in seen:
+                continue
+            seen.add(key)
+            resolved_sources: list[dict[str, Any]] = []
+            for ref in item.get("sources") or []:
+                ref_value = str(ref)
+                source = aliases.get(ref_value)
+                if source is None:
+                    resolved_sources.append({"ref": ref_value, "registered": False})
+                    continue
+                resolved_sources.append({
+                    "ref": ref_value,
+                    "registered": True,
+                    "id": source.get("id"),
+                    "path": source.get("path"),
+                    "authority": source.get("authority"),
+                    "scope": source.get("scope"),
+                    "runtime_native": runtime in (source.get("auto_loaded_by") or []),
+                })
+            result.append({
+                "id": conflict_id,
+                "origin": origin_name,
+                "material": item.get("material") is True,
+                "status": str(item.get("status") or "OPEN").upper(),
+                "scope": item.get("scope"),
+                "summary": item.get("summary") or item.get("reason"),
+                "sources": resolved_sources,
+            })
+    return result
+
+
+def unresolved_material_conflicts(conflicts: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    terminal = {"RESOLVED", "CLOSED", "SUPERSEDED", "ACCEPTED"}
+    return [
+        item for item in conflicts
+        if item.get("material") is True
+        and str(item.get("status", "OPEN")).upper() not in terminal
+    ]
+
 def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = False) -> dict[str, Any]:
     store, mode, pid = intelligence_store(root)
     category, mutation, desired_topics = classify_prompt(prompt)
     fr = freshness(root)
     intel = load_yaml(store / "PROJECT_INTELLIGENCE.yaml", {}) if (store / "PROJECT_INTELLIGENCE.yaml").exists() else {}
     registry = load_yaml(store / "SOURCE_REGISTRY.yaml", {"sources": []}) if store.exists() else {"sources": []}
+    instruction_conflicts = collect_instruction_conflicts(store, registry, runtime) if store.exists() else []
+    open_material_conflicts = unresolved_material_conflicts(instruction_conflicts)
     state = intel.get("state") or {}
 
     available = intel.get("topics") or {}
@@ -618,6 +685,8 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             fail_closed_reasons.append("intelligence_stale")
         if readiness != "READY":
             fail_closed_reasons.append(f"intelligence_readiness_{readiness.lower()}")
+        if open_material_conflicts:
+            fail_closed_reasons.append("material_instruction_conflict")
 
     return {
         "version": 1,
@@ -644,6 +713,17 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             "project_native": project_native[:30],
             "intelligence_topics": selected,
             "optional_evidence": [str(store / "DISCOVERY.yaml")] if (store / "DISCOVERY.yaml").exists() else [],
+        },
+        "instruction_resolution": {
+            "precedence": [
+                "runtime_native_scoped",
+                "project_authoritative_scoped",
+                "derived_project_intelligence",
+            ],
+            "authoritative_sources_preserved": True,
+            "derived_intelligence_governing": False,
+            "conflicts": instruction_conflicts,
+            "requires_resolution": bool(open_material_conflicts),
         },
         "intelligence": {
             "readiness": readiness,

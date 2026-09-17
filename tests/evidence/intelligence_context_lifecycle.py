@@ -113,6 +113,85 @@ def source_registry_runtime_dedup(base: Path, env: dict[str, str]) -> None:
     require((intel.get("topics") or {}) == {}, "deterministic bootstrap must not copy authoritative source content into derived topics")
 
 
+
+def material_instruction_conflict_surface(base: Path, env: dict[str, str]) -> None:
+    project = base / "instruction-conflict-project"
+    init_repo(project)
+    (project / "docs").mkdir()
+    (project / "AGENTS.md").write_text(
+        "# Project instructions\nArchitecture changes require ADR alignment.\n",
+        encoding="utf-8",
+    )
+    (project / "docs" / "ADR-001.md").write_text(
+        "# ADR 001\nOfficial architecture rule.\n",
+        encoding="utf-8",
+    )
+    (project / "main.py").write_text("print('ok')\n", encoding="utf-8")
+    git(project, "add", "-A")
+    git(project, "commit", "-qm", "baseline")
+
+    boot = json_run(
+        [sys.executable, str(PI), "bootstrap", "--project", str(project), "--format", "json"],
+        env,
+    )
+    store = Path(boot["store"])
+    overrides_path = store / "PROJECT_OVERRIDES.yaml"
+    overrides = load_yaml(overrides_path)
+    overrides["conflicts"] = [{
+        "id": "CONFLICT-ARCH-001",
+        "material": True,
+        "status": "OPEN",
+        "scope": "project",
+        "summary": "Runtime-native project instruction and official ADR require explicit reconciliation.",
+        "sources": ["AGENTS.md", "docs/ADR-001.md"],
+        "runtimes": ["codex"],
+    }]
+    overrides_path.write_text(yaml.safe_dump(overrides, sort_keys=False), encoding="utf-8")
+
+    read_ctx = json_run([
+        sys.executable, str(PI), "context",
+        "--project", str(project),
+        "--runtime", "codex",
+        "--prompt", "Explain the current architecture.",
+        "--format", "json",
+    ], env)
+    runtime_native = (read_ctx.get("context") or {}).get("runtime_native", [])
+    project_native = (read_ctx.get("context") or {}).get("project_native", [])
+    require(str(project / "AGENTS.md") in runtime_native, "runtime-native AGENTS source must be preserved")
+    require(str(project / "docs" / "ADR-001.md") in project_native, "official ADR source must be preserved")
+    resolution = read_ctx.get("instruction_resolution") or {}
+    require(resolution.get("authoritative_sources_preserved") is True, "authoritative sources must be preserved")
+    require(resolution.get("derived_intelligence_governing") is False, "derived Intelligence must be non-governing")
+    require(resolution.get("precedence") == [
+        "runtime_native_scoped",
+        "project_authoritative_scoped",
+        "derived_project_intelligence",
+    ], "instruction precedence contract mismatch")
+    require(resolution.get("requires_resolution") is True, "open material conflict must require resolution")
+    conflicts = resolution.get("conflicts") or []
+    require(len(conflicts) == 1, "exactly one conflict should be surfaced")
+    conflict = conflicts[0]
+    require(conflict.get("id") == "CONFLICT-ARCH-001", "conflict id mismatch")
+    require(conflict.get("material") is True and conflict.get("status") == "OPEN", "conflict state mismatch")
+    sources = {item.get("path"): item for item in (conflict.get("sources") or []) if item.get("registered")}
+    require("AGENTS.md" in sources and "docs/ADR-001.md" in sources, "conflict must retain both source pointers")
+    require(sources["AGENTS.md"].get("runtime_native") is True, "AGENTS must be runtime-native for Codex")
+    require(sources["docs/ADR-001.md"].get("runtime_native") is False, "ADR must remain project-authoritative")
+    require((read_ctx.get("fail_policy") or {}).get("mode") == "soft", "read-only conflict should remain soft")
+
+    mutate_ctx = json_run([
+        sys.executable, str(PI), "context",
+        "--project", str(project),
+        "--runtime", "codex",
+        "--prompt", "Modify the API implementation to follow the architecture rule.",
+        "--format", "json",
+    ], env)
+    fail_policy = mutate_ctx.get("fail_policy") or {}
+    require(fail_policy.get("mode") == "closed", "mutation with unresolved material conflict must fail closed")
+    require("material_instruction_conflict" in (fail_policy.get("reasons") or []), "material conflict fail reason missing")
+    intel = load_yaml(store / "PROJECT_INTELLIGENCE.yaml")
+    require((intel.get("topics") or {}) == {}, "authoritative instruction content must not be copied into derived Intelligence")
+
 def normal_chat_no_bootstrap(base: Path, env: dict[str, str]) -> None:
     project = base / "chat-project"
     init_repo(project)
@@ -179,6 +258,7 @@ def main() -> int:
         env["XDG_CONFIG_HOME"] = str(config)
 
         source_registry_runtime_dedup(base, env)
+        material_instruction_conflict_surface(base, env)
         # Use a separate config root so the dedup fixture's Intelligence cannot affect the normal-chat assertion.
         chat_env = dict(env)
         chat_env["XDG_CONFIG_HOME"] = str(base / "chat-config")
