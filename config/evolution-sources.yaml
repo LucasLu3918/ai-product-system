@@ -1,0 +1,33 @@
+version: 1
+policy:
+  minimum_sources_when_available: 5
+  max_items_per_source: 5
+  public_only: true
+  credentials_in_repository: false
+sources:
+  - id: github-blog
+    name: GitHub Blog
+    kind: rss
+    url: https://github.blog/feed/
+    enabled: true
+  - id: cloudflare-blog
+    name: Cloudflare Blog
+    kind: rss
+    url: https://blog.cloudflare.com/rss/
+    enabled: true
+  - id: google-developers-blog
+    name: Google Developers Blog
+    kind: rss
+    url: https://developers.googleblog.com/feeds/posts/default
+    enabled: true
+  - id: hugging-face-blog
+    name: Hugging Face Blog
+    kind: rss
+    url: https://huggingface.co/blog/feed.xml
+    enabled: true
+  - id: hacker-news
+    name: Hacker News
+    kind: json
+    url: https://hacker-news.firebaseio.com/v0/topstories.json
+    item_url_template: https://hacker-news.firebaseio.com/v0/item/{id}.json
+    enabled: true
