@@ -713,12 +713,14 @@ Required case 失敗會照常 block CI；Diagnostic case 若未達 threshold，r
 
 ## Structural Retrieval Candidate Trial（Scenario 130）
 
-Scenario 130 把 v0.22.1 已發現的 cross-file structural gap 轉成真正的 controlled candidate comparison。
+Scenario 130 把 v0.22.1 已發現的 cross-file structural gap 保留成可重播的 controlled candidate comparison。
 
-同一個 temporary repository / 9-case corpus 會跑兩次：
+同一個 temporary repository / 9-case corpus 明確跑：
 
-- baseline：目前正式 local hybrid retrieval；
-- candidate：額外啟用 exact-identifier two-hop structural relation graph。
+- baseline：explicit structural OFF；
+- candidate：explicit structural ON。
+
+因此即使 Scenario 131 已正式採用 Structural Retrieval，Trial replay 仍能重現 adoption 前的比較，不會因 production default 改變而失去證據。
 
 CI 要求：
 
@@ -726,7 +728,17 @@ CI 要求：
 - `cross-file-call-chain` baseline 必須仍能重現不完整 recall；
 - structural candidate 必須把該 case 提升到完整 Recall@K；
 - candidate ranking evidence 必須明確包含 `structural_reference_graph`；
-- baseline 不得偷偷啟用 structural lane；
-- PASS 仍標記 `automatic_adoption=false` / `automatic_default_enablement=false`。
+- PASS 仍標記 `automatic_adoption=false`，Trial 本身不取得 merge/release authority。
 
-目前 Scenario inventory 為 **130**：20 deterministic + 56 lifecycle + 54 agent_eval，**130 / 130 automated、0 manual、0 uncovered**。
+## Structural Retrieval Adoption（Scenario 131）
+
+Scenario 131 驗證 Human-approved adoption 後的正式行為：
+
+- 一般 `aips intelligence retrieve` 預設 structural ON；
+- Turn Context 預設 structural ON；
+- evidence 明確顯示 `default_enabled=true`、`enabled=true` 與 traversal telemetry；
+- `--no-structural` 可明確關閉 structural lane 做 debug / regression；
+- 關閉 structural 不影響 lexical / symbol / test / Impact Graph / Git history 等其他 lanes；
+- 不新增 Tree-sitter、LSP、Sourcegraph 或 remote provider dependency。
+
+目前 Scenario inventory 為 **131**：20 deterministic + 57 lifecycle + 54 agent_eval，**131 / 131 automated、0 manual、0 uncovered**。

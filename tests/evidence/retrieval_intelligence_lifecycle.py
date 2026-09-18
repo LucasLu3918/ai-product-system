@@ -120,6 +120,14 @@ def main() -> int:
         ], env)
         require(query.get("status") == "READY", "retrieval query must succeed")
         require(query.get("estimated_tokens", 99999) <= 1200, "retrieval must honor token budget")
+        structural = query.get("structural") or {}
+        ranking = query.get("ranking") or {}
+        require(structural.get("status") == "READY", "structural retrieval must be READY by default")
+        require(structural.get("default_enabled") is True, "structural retrieval must be adopted as default")
+        require(structural.get("enabled") is True, "default retrieval must enable structural lane")
+        require(structural.get("selection") == "default", "default structural selection must be explicit in evidence")
+        require("structural_reference_graph" in (ranking.get("lanes") or []),
+                "default retrieval ranking must include structural relation graph")
         results = query.get("results") or []
         require(results, "retrieval must return evidence")
 
@@ -138,6 +146,22 @@ def main() -> int:
             require(bool(result.get("content_hash")), "every retrieval result must carry content provenance")
             revision = result.get("revision") or {}
             require(bool(revision.get("git_head")), "every retrieval result must bind git revision")
+
+        no_structural = json_run([
+            sys.executable, str(PI), "retrieve",
+            "--project", str(project),
+            "--prompt", "modify refund retry inventory compensation RefundService",
+            "--token-budget", "1200",
+            "--limit", "8",
+            "--no-structural",
+            "--format", "json",
+        ], env)
+        no_structural_doc = no_structural.get("structural") or {}
+        no_structural_ranking = no_structural.get("ranking") or {}
+        require(no_structural_doc.get("enabled") is False, "--no-structural must disable structural expansion")
+        require(no_structural_doc.get("selection") == "explicit", "opt-out must be recorded as explicit selection")
+        require("structural_reference_graph" not in (no_structural_ranking.get("lanes") or []),
+                "opt-out ranking must exclude structural lane")
 
         # Dirty current workspace content must supersede the indexed committed revision.
         refund.write_text(
@@ -170,6 +194,12 @@ def main() -> int:
         retrieval = (context.get("context") or {}).get("retrieval") or {}
         require(retrieval.get("status") == "READY", "Turn Context must expose Retrieval Intelligence")
         require(retrieval.get("results"), "Turn Context must carry bounded retrieval evidence")
+        context_structural = retrieval.get("structural") or {}
+        context_ranking = retrieval.get("ranking") or {}
+        require(context_structural.get("enabled") is True, "Turn Context must use adopted structural retrieval")
+        require(context_structural.get("selection") == "default", "Turn Context structural selection must be default")
+        require("structural_reference_graph" in (context_ranking.get("lanes") or []),
+                "Turn Context ranking must expose structural relation graph")
 
     print("retrieval_intelligence_lifecycle evidence: PASS")
     return 0

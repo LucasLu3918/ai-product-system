@@ -397,7 +397,9 @@ func TestReservationRollback(t *testing.T) {
         )
         structural_doc = (target.get("candidate") or {}).get("structural") or {}
         telemetry = structural_doc.get("telemetry") or {}
-        require(structural_doc.get("status") == "TRIAL_ENABLED", "structural candidate status must be explicit")
+        require(structural_doc.get("status") == "READY", "structural candidate status must be explicit")
+        require(structural_doc.get("enabled") is True, "trial candidate must explicitly enable structural retrieval")
+        require(structural_doc.get("selection") == "explicit", "trial candidate activation must remain explicit")
         require(structural_doc.get("external_dependency") is False, "structural trial must remain dependency-free")
         require(telemetry.get("truncated") is False, "fixture structural traversal must remain inside declared bounds")
         require(int(telemetry.get("seed_symbols") or 0) >= 1, "structural trial must report exact seed symbols")

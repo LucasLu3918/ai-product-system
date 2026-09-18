@@ -256,9 +256,10 @@ Default local retrieval uses multiple lanes rather than treating vector similari
 
 1. lexical repository search;
 2. symbol-definition matching;
-3. related test evidence;
-4. Impact Graph path boosts;
-5. relevant Git commit/diff history.
+3. bounded exact-identifier structural relationship expansion;
+4. related test evidence;
+5. Impact Graph path boosts;
+6. relevant Git commit/diff history.
 
 An optional future semantic/embedding provider is an enhancement lane, not a dependency. If no semantic provider is configured, metadata reports `NOT_CONFIGURED` and deterministic/local retrieval remains available.
 
@@ -337,38 +338,41 @@ aips intelligence evaluate \
 
 Evaluation is non-authoritative. PASS or FAIL never enables embeddings, changes ranking weights, selects Tree-sitter/LSP/Sourcegraph, modifies code or grants publication authority. A material retrieval architecture change still requires normal System Self-Improvement / Core Change / Git Publish governance.
 
-## Structural Retrieval Candidate Trial
+## Structural Retrieval
 
-When diagnostic gaps cluster around `cross-file-call-chain` / `structural-retrieval`, AIPS may trial a structural candidate without changing the default Turn Context retrieval contract.
+AIPS now adopts the bounded exact-identifier two-hop relation graph as part of normal Retrieval Intelligence after the controlled candidate passed the full corpus and Human Adoption Decision.
 
-The first candidate is deliberately dependency-free, exact-identifier based and bounded. It uses the existing lexical index to locate bridge references, the indexed symbol table to resolve outgoing identifiers, and hard limits on bridge chunks, identifiers, target definitions and companion-test scans. Trial telemetry reports whether any limit truncated traversal.
-
+The adopted lane remains local, deterministic, provider-neutral and dependency-free:
 
 ~~~text
 exact query symbol definition
         ↓
-chunks referencing that exact identifier
+lexical-index bridge discovery
         ↓
-bridge chunk
+bridge chunk referencing the exact seed
         ↓
-other exact symbol identifiers in bridge
+other exact identifiers in the bridge
         ↓
-target symbol definitions
+indexed target symbol definitions
         ↓
 optional companion test boost
 ~~~
 
-The lane is enabled only through the trial path. Normal `query_repository` calls keep `structural=false` and therefore remain unchanged.
+The implementation is bounded by hard limits on bridge chunks, identifiers per bridge, target definitions and companion-test scans. Retrieval output reports structural status, whether the lane was enabled by default or explicitly, and traversal telemetry including truncation.
 
-Trial acceptance requires:
+Normal `query_repository` / Turn Context retrieval enables the structural lane by default. Diagnostic callers can explicitly disable it; the CLI exposes `aips intelligence retrieve ... --no-structural` for regression/debug comparison.
 
-- every `required` corpus case has no Recall/MRR/threshold regression;
-- every diagnostic case tagged `structural-retrieval` has positive Recall@K delta and reaches its declared recall threshold;
-- token budget, provenance and secret filtering stay intact;
-- the report states `default_enabled: false` and `external_dependency: false`;
-- PASS produces evidence only and still requires a separate Human Adoption Decision.
+Adoption constraints remain:
 
-This trial intentionally precedes Tree-sitter/LSP adoption. Tree-sitter-like syntax parsing and LSP semantic reference providers remain candidate implementation technologies only if the dependency-free structural relation graph is insufficient or if broader language-accurate reference resolution is later justified by the corpus.
+- source/test/history token budgets and provenance rules are unchanged;
+- secret-path exclusion/redaction remains mandatory;
+- no Tree-sitter/LSP/Sourcegraph dependency is introduced;
+- semantic provider status remains independent and truthful;
+- exact structural traversal does not claim compiler-grade semantic resolution;
+- the retained Scenario 130 Trial harness can replay explicit OFF/ON comparison;
+- Retrieval Quality Evaluation measures the adopted default behavior.
+
+The earlier candidate passed with no required-case regression and recovered complete Recall@K for the cross-file structural diagnostic. This adoption does not create a new Role, Skill, Human Approval Gate or publication authority.
 
 ## Migration from v0.8 Project Knowledge
 
