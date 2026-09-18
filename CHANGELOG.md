@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.22.0
+
+### Retrieval Quality Evaluation
+
+- Add a provider-neutral Retrieval Quality Evaluation harness under Project Intelligence so retrieval architecture changes are driven by measured repository evidence rather than technology novelty.
+- Compare current local hybrid Retrieval Intelligence against an explicitly declared v0.20-style static topic-context baseline with repository-specific expected source paths and optional Git-history terms.
+- Compute deterministic Precision@K, Recall@K, F1@K, MRR, Git-history recall, irrelevant-context rate, direct-source-recall delta and token usage; record wall-clock latency only as informational evidence rather than a shared-runner CI SLO.
+- Add `aips intelligence evaluate --suite ...` with optional report output plus `RETRIEVAL_EVALUATION.yaml` as the reusable suite contract.
+- Bind evaluation evidence to suite fingerprint, repository revision/dirty state, deterministic metrics/checks and authority boundary while deliberately excluding observed latency, machine-local paths and index timestamps from the result fingerprint.
+- Keep evaluation control data outside indexed product source (or inside excluded AIPS workspace state) so expected-answer fixtures cannot contaminate FTS results.
+- Use the new benchmark to identify and fix two concrete v0.21 local-ranking gaps without weakening evaluation thresholds: exact symbol definitions now outrank generic lexical overlap, and Git-history ranking prioritizes commit-message intent while suppressing weak path-only history when strong intent evidence exists.
+- Tighten Git-history evidence size so broad initialization commits cannot dominate the bounded retrieval context merely because they touched a matching path.
+- Preserve architecture/provider neutrality: benchmark PASS/FAIL cannot enable embeddings, change ranking weights automatically, select Tree-sitter/LSP/Sourcegraph, modify product code or grant publication authority.
+- Add Scenario 129 executable lifecycle evidence and raise Scenario Conformance to 129 total / 0 manual / 20 deterministic / 55 lifecycle / 54 agent_eval / 129 automated / 0 uncovered (100% automated).
+- The benchmark fixture passes without a semantic provider under unchanged floors: Recall@K >= 0.66, Precision@K >= 0.40, MRR >= 0.50, History Recall = 1.0, Irrelevant Context Rate <= 0.55 and Direct-source Recall Delta >= 0.60, with aggregate retrieval token usage reduced by more than 50% versus the controlled static-topic fixture.
+- Feature implementation merged through #55; exact merged main `f6731faf2b20ebbdd99ba58cfe2c06f1b223c4ab` passed protected-main `repository` Run #871 before release metadata finalization.
+- Constitution impact: NO. No new Role, Skill, capability category, Human Approval Gate or autonomous publication authority is introduced.
+- Architecture Diagram Impact: YES. A detailed Retrieval Quality Evaluation feedback loop and Human/Agent Project Intelligence documentation were added while Runtime Harness, Product Delivery, Installation and Evolution Radar topology remain unchanged.
+
 ## 0.21.0
 
 ### Just-in-Time Retrieval Intelligence
