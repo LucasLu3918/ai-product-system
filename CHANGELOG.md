@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.22.2
+
+### Structural Retrieval Candidate Trial
+
+- Add a bounded, dependency-free Structural Retrieval candidate lane for controlled evaluation of cross-file relationship retrieval without changing normal Turn Context behavior.
+- Keep current local hybrid Retrieval Intelligence as the baseline; structural expansion is enabled only inside the candidate trial and remains disabled by default.
+- Seed the candidate from exact query symbol definitions, discover bridge chunks that reference those symbols, follow exact identifiers in those bridge chunks to target symbol definitions and optionally boost companion tests.
+- Bound traversal with explicit caps for bridge chunks, identifiers per bridge, target definitions and test chunks, and expose deterministic telemetry including truncation state, seed count, bridge count and target-definition count.
+- Tighten the committed `cross-file-call-chain` diagnostic so the query names `CheckoutCoordinator` and the business intent but not the downstream `ReserveStock` implementation; a wiring file provides the actual two-hop relation.
+- Add a full-corpus controlled comparison that runs baseline and candidate retrieval on the same 9-case suite, requires all 6 required cases to avoid regression and requires every diagnostic tagged `structural-retrieval` to improve Recall@K.
+- The trial proves a real baseline structural gap remains reproducible while the bounded exact-identifier candidate recovers the complete expected source set at Recall@K = 1.0.
+- Preserve all existing retrieval safety boundaries: token budget, provenance, secret-path filtering and truthful semantic-provider status remain unchanged.
+- Add Scenario 130 lifecycle evidence and raise Scenario Conformance to 130 total / 0 manual / 20 deterministic / 56 lifecycle / 54 agent_eval / 130 automated / 0 uncovered (100% automated).
+- Trial PASS is evidence only: `automatic_adoption=false`, `automatic_default_enablement=false`, no parser/LSP dependency is added and a separate Human Adoption Decision is still required before structural retrieval can become part of normal Turn Context retrieval.
+- No Tree-sitter, gopls/LSP, Sourcegraph, Embedding or Vector DB dependency is introduced by this patch.
+- Feature implementation merged through #59; exact merged main `3af4fa8a3ad78459ffc9e4154fd8e60912d1678d` passed protected-main `repository` Run #954 before release metadata finalization.
+- Constitution impact: NO. No new Role, Skill, capability category, Human Approval Gate or autonomous publication authority is introduced.
+- Architecture Diagram Impact: YES. Detailed Retrieval Quality architecture and Human Project Intelligence documentation now include the structural candidate trial path; high-level Runtime Harness/Product Delivery topology is unchanged.
+
 ## 0.22.1
 
 ### Retrieval Benchmark Corpus Maturity
