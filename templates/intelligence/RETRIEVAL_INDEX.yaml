@@ -18,6 +18,11 @@ providers:
   symbols: language-aware-regex
   graph: project-intelligence-impact-graph
   history: git
+  structural:
+    status: READY
+    provider: builtin-exact-identifier-two-hop
+    external_dependency: false
+    default_enabled: true
   semantic:
     status: NOT_CONFIGURED
     provider: null

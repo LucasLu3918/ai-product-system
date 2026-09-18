@@ -897,3 +897,13 @@ scenarios:
       - tests/fixtures/retrieval_quality_corpus.yaml
       - orchestration/PROJECT_INTELLIGENCE.md
       - tests/validate_repository.py
+  - id: "131"
+    path: tests/scenarios/131-structural-retrieval-adoption.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/retrieval_intelligence_lifecycle.py
+      - scripts/retrieval_intelligence.py
+      - scripts/project_intelligence.py
+      - templates/intelligence/RETRIEVAL_INDEX.yaml
+      - orchestration/PROJECT_INTELLIGENCE.md
+      - tests/validate_repository.py

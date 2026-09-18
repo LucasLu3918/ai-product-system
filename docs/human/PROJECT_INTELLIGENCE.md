@@ -131,37 +131,36 @@ aips intelligence evaluate \
 
 Benchmark 結果只是 evidence。它不會自動開啟 semantic provider、不會自行改 ranking 權重，也不會替 Human 決定下一步要使用 Tree-sitter/LSP、Embedding 或 Sourcegraph。
 
-## Structural Retrieval Candidate Trial：先驗證關係圖，再決定 Parser / LSP
+## Structural Retrieval：已採用的跨檔關係檢索
 
-當 diagnostic gap 集中在 cross-file call chain 時，AIPS 先測一個不增加外部 dependency 的候選方案：
+Structural Retrieval 已在 controlled Trial 通過 full corpus 並取得 Human Adoption Decision，因此現在成為正常 Retrieval Intelligence 的預設 lane。
 
 ~~~text
-Exact Symbol
+Exact Query Symbol
    ↓
-誰引用這個 Symbol？
+Lexical Index 找引用它的 Bridge
    ↓
-Bridge File
+Bridge 內其他 Exact Identifier
    ↓
-Bridge 又引用哪些其他 Symbol？
+Indexed Symbol Definition
    ↓
-Target Definition
-   ↓
-Related Test
+Target Definition / Related Test
 ~~~
 
-例如 CheckoutCoordinator 的 query 本身不直接提到 `ReserveStock`，但 wiring file 同時引用 `CheckoutCoordinator` 與 `ReserveStock`。Structural candidate 可以透過這條 two-hop exact-identifier 關係把 inventory reservation definition 找回來。
+例如查詢只知道 `CheckoutCoordinator` 與「downstream allocation / rollback」，系統可以先找到 wiring file，再沿 wiring 中的 exact identifier 找到 inventory reservation definition，不需要 query 直接寫出 `ReserveStock`。
 
-這個候選不是全庫無限制掃描：Bridge 先透過既有 lexical index 找候選，再用 indexed symbol table 解 exact identifiers，並限制 bridge chunks、每個 bridge identifiers、target definitions 與 companion-test scan 數量；report 會顯示是否發生 truncation。
+正式採用仍維持幾個邊界：
 
-這個能力目前是 **trial-only**：
-
-- 正常 Retrieval Intelligence 預設不開啟 structural lane；
-- Trial 必須在 9-case corpus 上證明 required cases 不 regression；
-- `structural-retrieval` diagnostic case 必須有實際 Recall 提升；
-- Trial PASS 仍不能自動改成 default；
-- 不會因此自動加入 Tree-sitter、gopls/LSP 或其他 parser/server dependency。
-
-因此下一步技術選型會由 trial evidence 決定，而不是先選工具再找理由。
+- Bridge discovery 使用既有 lexical index，不做無限制全庫掃描；
+- target resolution 使用 indexed symbol table；
+- bridge / identifier / target / test scan 都有 hard limit；
+- retrieval evidence 會顯示 structural telemetry 與是否發生 truncation；
+- 不新增 Tree-sitter、gopls/LSP、Sourcegraph 或 remote semantic dependency；
+- 這是 exact-identifier relation graph，不宣稱 compiler-grade semantic resolution；
+- Turn Context 與一般 `aips intelligence retrieve` 預設啟用；
+- debug / regression 可用 `--no-structural` 明確關閉；
+- Scenario 130 仍保留 explicit OFF/ON Trial replay；
+- Retrieval Quality Evaluation 會量測目前已採用的 default behavior。
 
 ## Debug
 

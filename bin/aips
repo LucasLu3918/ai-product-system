@@ -46,7 +46,7 @@ Usage:
   aips intelligence status [--project <path>]
   aips intelligence context --runtime <id> [--project <path>] [--prompt <text>]
   aips intelligence index [--project <path>] [--force]
-  aips intelligence retrieve --prompt <text> [--project <path>] [--token-budget <n>] [--limit <n>]
+  aips intelligence retrieve --prompt <text> [--project <path>] [--token-budget <n>] [--limit <n>] [--no-structural]
   aips intelligence evaluate --suite <yaml> [--project <path>] [--output <yaml|json>]
   aips intelligence reconcile-overrides [--project <path>]
   aips intelligence promotion-plan --topic <name> [--project <path>]

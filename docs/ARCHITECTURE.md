@@ -20,7 +20,7 @@ flowchart TD
     F --> IDX[Ensure rebuildable Retrieval Index]
     R --> L
     L --> Q{Retrieval index available?}
-    Q -->|yes| RET[Hybrid JIT Retrieval: code + symbols + tests + graph + Git history]
+    Q -->|yes| RET[Hybrid JIT Retrieval: lexical + symbols + structural + tests + graph + Git history]
     Q -->|no| DEG[Truthful fallback to stable Intelligence]
     IDX --> RET
     RET --> BUD[Rank + token budget + provenance]
@@ -59,25 +59,25 @@ flowchart LR
 
 The evaluator measures task-specific evidence retrieval only. It records deterministic quality/token metrics plus informational observed latency, and has no authority to enable semantic providers, change rank weights or select a new retrieval technology.
 
-### Structural candidate trial path
+### Adopted structural retrieval + retained trial replay
 
 ~~~mermaid
 flowchart LR
-    Q[Diagnostic structural gap] --> B[Baseline local hybrid retrieval]
-    Q --> S[Structural candidate: exact symbol seed]
-    S --> R1[Incoming exact-identifier references]
-    R1 --> BR[Bridge chunk]
-    BR --> R2[Outgoing exact-identifier references]
-    R2 --> T[Target definitions + companion tests]
-    B --> CMP[Same corpus metrics]
-    T --> CMP
-    CMP --> G{Required regression? / Structural recall improved?}
-    G -->|FAIL| KEEP[Keep candidate disabled]
-    G -->|PASS| EVID[Trial evidence only]
-    EVID --> H[Separate Human Adoption Decision]
+    Q[Task query with exact symbol seed] --> L[Lexical-index bridge discovery]
+    L --> BR[Bridge chunks]
+    BR --> ID[Bounded exact identifiers]
+    ID --> DEF[Indexed target definitions]
+    DEF --> TEST[Companion test boost]
+    TEST --> RANK[Hybrid ranking + token budget]
+    RANK --> CTX[Turn Context]
+
+    TRIAL[Scenario 130 replay] --> OFF[Explicit structural OFF baseline]
+    TRIAL --> ON[Explicit structural ON candidate]
+    OFF --> CMP[Same corpus metrics]
+    ON --> CMP
 ~~~
 
-The structural lane is not part of normal Turn Context retrieval during the trial. It remains local/provider-neutral and does not introduce a parser or language-server dependency.
+Structural Retrieval is part of normal Turn Context after Human Adoption Decision. The implementation remains bounded and dependency-free; `--no-structural` exists for diagnostic comparison, while the retained Trial harness can still replay OFF/ON behavior.
 
 ## Primary planning package
 

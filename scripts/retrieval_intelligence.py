@@ -498,6 +498,12 @@ def index_repository(root: Path, store: Path, force: bool = False) -> dict[str, 
                 "symbols": "language-aware-regex",
                 "graph": "project-intelligence-impact-graph",
                 "history": "git",
+                "structural": {
+                    "status": "READY",
+                    "provider": "builtin-exact-identifier-two-hop",
+                    "external_dependency": False,
+                    "default_enabled": True,
+                },
                 "semantic": {
                     "status": "NOT_CONFIGURED",
                     "provider": None,
@@ -932,7 +938,7 @@ def query_repository(
     token_budget: int = DEFAULT_TOKEN_BUDGET,
     limit: int = DEFAULT_RESULT_LIMIT,
     refresh: bool = True,
-    structural: bool = False,
+    structural: bool | None = None,
 ) -> dict[str, Any]:
     status_before = index_status(root, store)
     index_update = None
@@ -961,6 +967,8 @@ def query_repository(
             "estimated_tokens": 0,
         }
 
+    structural_enabled = True if structural is None else structural
+    structural_selection = "default" if structural is None else "explicit"
     terms = query_terms(query)
     db_path = index_path(root)
     conn, fts_available = open_db(db_path)
@@ -975,7 +983,7 @@ def query_repository(
             "test_chunks_scanned": 0,
             "truncated": False,
         }
-        if structural:
+        if structural_enabled:
             structural_map, structural_stats = structural_relation_boosts(
                 conn, symbol_map, terms, fts_available
             )
@@ -1102,10 +1110,12 @@ def query_repository(
             "index_update": index_update,
             "semantic": semantic,
             "structural": {
-                "status": "TRIAL_ENABLED" if structural else "DISABLED",
+                "status": "READY" if structural_enabled else "DISABLED",
                 "mode": "exact-identifier-two-hop",
                 "external_dependency": False,
-                "default_enabled": False,
+                "default_enabled": True,
+                "enabled": structural_enabled,
+                "selection": structural_selection,
                 "telemetry": structural_stats,
             },
             "ranking": {
@@ -1113,13 +1123,13 @@ def query_repository(
                     "lexical",
                     "symbol",
                     "companion_test",
-                    *(["structural_reference_graph"] if structural else []),
+                    *(["structural_reference_graph"] if structural_enabled else []),
                     "impact_graph",
                     "test_evidence",
                     "git_history",
                 ],
                 "semantic_lane_active": semantic.get("status") == "READY",
-                "structural_lane_active": structural,
+                "structural_lane_active": structural_enabled,
             },
             "token_budget": token_budget,
             "estimated_tokens": consumed,

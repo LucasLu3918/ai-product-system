@@ -286,6 +286,7 @@ def evaluate_case(
         token_budget=token_budget,
         limit=result_limit,
         refresh=True,
+        structural=None,
     )
     latency_ms = (time.perf_counter() - started) * 1000.0
     metrics = retrieval_metrics(retrieval, relevant_paths, history_terms, top_k)
@@ -322,7 +323,7 @@ def evaluate_case(
         "relevant_history_terms": history_terms,
         "baseline": baseline_result,
         "retrieval": {
-            "strategy": "v0.21-local-hybrid-retrieval",
+            "strategy": "current-local-hybrid-structural-retrieval",
             "semantic_status": (retrieval.get("semantic") or {}).get("status"),
             "ranking_lanes": (retrieval.get("ranking") or {}).get("lanes") or [],
             "metrics": metrics,
@@ -410,7 +411,7 @@ def evaluate_suite(root: Path, store: Path, suite: dict[str, Any]) -> dict[str, 
         },
         "comparison": {
             "baseline": "v0.20-style-static-topic-context",
-            "candidate": "v0.21-local-hybrid-retrieval",
+            "candidate": "current-local-hybrid-structural-retrieval",
             "scope": "task-specific repository evidence retrieval only",
             "does_not_measure": [
                 "overall Agent task completion quality",
