@@ -59,6 +59,26 @@ flowchart LR
 
 The evaluator measures task-specific evidence retrieval only. It records deterministic quality/token metrics plus informational observed latency, and has no authority to enable semantic providers, change rank weights or select a new retrieval technology.
 
+### Structural candidate trial path
+
+~~~mermaid
+flowchart LR
+    Q[Diagnostic structural gap] --> B[Baseline local hybrid retrieval]
+    Q --> S[Structural candidate: exact symbol seed]
+    S --> R1[Incoming exact-identifier references]
+    R1 --> BR[Bridge chunk]
+    BR --> R2[Outgoing exact-identifier references]
+    R2 --> T[Target definitions + companion tests]
+    B --> CMP[Same corpus metrics]
+    T --> CMP
+    CMP --> G{Required regression? / Structural recall improved?}
+    G -->|FAIL| KEEP[Keep candidate disabled]
+    G -->|PASS| EVID[Trial evidence only]
+    EVID --> H[Separate Human Adoption Decision]
+~~~
+
+The structural lane is not part of normal Turn Context retrieval during the trial. It remains local/provider-neutral and does not introduce a parser or language-server dependency.
+
 ## Primary planning package
 
 ```mermaid

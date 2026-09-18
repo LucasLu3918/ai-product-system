@@ -97,3 +97,18 @@ Current automated inventory after Scenario 129:
 - manual: 0
 - uncovered: 0
 - automated: 129 / 129
+
+## Scenario 130 — Structural Retrieval Candidate Trial
+
+Scenario 130 is lifecycle-covered by the same full Retrieval Quality fixture plus `scripts/structural_retrieval_trial.py`. The evidence keeps current local hybrid retrieval as baseline, enables exact-identifier two-hop structural expansion only for the candidate run, proves all required corpus cases avoid regression, and requires the `cross-file-call-chain` diagnostic to improve from incomplete source recall to complete Recall@K.
+
+Trial PASS remains evidence only: default structural retrieval stays disabled, no external dependency is added and a separate Human Adoption Decision is required.
+
+Current automated inventory after Scenario 130:
+
+- deterministic: 20
+- lifecycle: 56
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 130 / 130

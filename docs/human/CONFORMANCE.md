@@ -710,3 +710,23 @@ Scenario 129 的 evidence corpus 進一步擴展為 9 cases：
 - 3 個 **diagnostic** stress cases：low lexical overlap / synonymy、cross-file call chain、credential-rotation 語意查詢。
 
 Required case 失敗會照常 block CI；Diagnostic case 若未達 threshold，report 必須保留 FAIL 並彙總 gap dimensions，但不把探索性能力缺口誤當成 repository regression。這讓 CI 可以長期觀察「目前 local hybrid retrieval 做不到什麼」，又不必把 benchmark 門檻調低或假裝所有壓力案例都已解決。
+
+## Structural Retrieval Candidate Trial（Scenario 130）
+
+Scenario 130 把 v0.22.1 已發現的 cross-file structural gap 轉成真正的 controlled candidate comparison。
+
+同一個 temporary repository / 9-case corpus 會跑兩次：
+
+- baseline：目前正式 local hybrid retrieval；
+- candidate：額外啟用 exact-identifier two-hop structural relation graph。
+
+CI 要求：
+
+- 6 個 required case 不得 regression；
+- `cross-file-call-chain` baseline 必須仍能重現不完整 recall；
+- structural candidate 必須把該 case 提升到完整 Recall@K；
+- candidate ranking evidence 必須明確包含 `structural_reference_graph`；
+- baseline 不得偷偷啟用 structural lane；
+- PASS 仍標記 `automatic_adoption=false` / `automatic_default_enablement=false`。
+
+目前 Scenario inventory 為 **130**：20 deterministic + 56 lifecycle + 54 agent_eval，**130 / 130 automated、0 manual、0 uncovered**。
