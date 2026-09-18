@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.20.0
+
+### Governed Semantic Evolution and Human Documentation Namespace
+
+- Extend Evolution Radar from collection-only research into scheduled provider-neutral semantic analysis when a configured provider credential is available, while preserving truthful `ANALYSIS_PENDING` fallback when credentials are missing, provider execution fails or deterministic output validation rejects the result.
+- Bind semantic recommendations to the exact Radar evidence digest and repository revision; keep provider/model output advisory-only while deterministic AIPS code owns baseline, fingerprints, provenance and all authority=false governance fields.
+- Add explicit Human Decision Binding for `REJECT`, `HOLD`, `ASSESS`, `TRIAL` and `ADOPT`, including candidate/evidence/baseline/scope/actor/time fingerprints and fail-closed positive progression when the Radar baseline is stale.
+- Add Human-approved Controlled Trial execution inside an AIPS-managed Git worktree using bounded approved path globs, forbidden governance/publication paths, changed-file and diff-line limits, no trial commits, repository validation and PASS / FAIL / BLOCKED Trial Reports.
+- Add optional PASS Trial → ADOPT evidence binding that verifies the exact Trial fingerprint, candidate, signal and baseline before handing off to the existing System Self-Improvement process; Trial success never grants code publication, PR, merge or release authority.
+- Keep Evolution Radar / Human Decision workflow repository permissions at `contents: read` + `issues: write`; semantic analysis runs read-only and Trial execution remains ephemeral workspace mutation without persisted GitHub credentials or remote publication authority.
+- Add Documentation Consistency Contract enforcement so configured behavior-bearing changes require mapped Human docs, Agent docs and the Human Technology Guide to be updated in the same Git change.
+- Establish `docs/human/` as the canonical namespace for Human-only permanent documentation, preserve explicit shared canonical technical references outside it, and require registered standalone Human-only artifacts outside the namespace to use the `HUMAN_` prefix.
+- Add the Human Evolution Radar lifecycle overview and bilingual Technology Guide, update all migrated links/assets, and enforce both audience placement and stale legacy-path detection deterministically.
+- Add Scenario 127 and raise Scenario Conformance to 127 total / 0 manual / 20 deterministic / 53 lifecycle / 54 agent_eval / 127 automated / 0 uncovered (100% automated).
+- Feature implementation merged through #51; exact merged main `ccea8d523546ea7bbf52ac7c6775f769a9c75843` passed protected-main `repository` Run #800 before release metadata finalization.
+- Constitution impact: NO. No new Role, Skill, Human Approval Gate or autonomous formal implementation/release authority is introduced. Quarterly Evolution Review, automatic adoption after Trial PASS, automatic formal implementation PR creation, merge and release remain outside this release.
+- Architecture Diagram Impact: Human architecture/Evolution Radar diagrams and documentation were updated for the new maintenance-plane behavior; existing runtime Harness, Project Intelligence, Product Delivery and installation topology remains unchanged.
+
 ## 0.19.2
 
 ### Lifecycle Validation Reliability
