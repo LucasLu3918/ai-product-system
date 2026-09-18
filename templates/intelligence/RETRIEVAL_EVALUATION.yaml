@@ -1,0 +1,26 @@
+version: 1
+name: retrieval-quality-suite
+
+defaults:
+  top_k: 5
+  result_limit: 8
+  token_budget: 6000
+  thresholds:
+    recall_at_k_min: 0.70
+    precision_at_k_min: 0.40
+    mrr_min: 0.50
+    history_recall_min: 1.00
+    irrelevant_context_rate_max: 0.50
+    direct_source_recall_delta_min: 0.25
+
+cases:
+  - id: example-task
+    query: "replace with a repository-specific engineering task"
+    relevant_paths:
+      - path/to/implementation.py
+      - tests/path/to/test_implementation.py
+    relevant_history_terms:
+      - "prior related fix"
+    baseline_context_files:
+      - intelligence:topics/architecture.md
+      - intelligence:topics/modules.md

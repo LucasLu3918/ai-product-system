@@ -283,6 +283,56 @@ aips intelligence retrieve --project /path/to/project --prompt "<task>" --token-
 
 The Human normally does not need to run these commands. When the Turn Context reports `retrieval_index_required=true`, the Agent should build the index as an engineering preparation step. Missing/unavailable Retrieval Intelligence degrades to existing stable Project Intelligence; it does not silently claim semantic evidence and does not by itself change authority.
 
+## Retrieval Quality Evaluation
+
+Do not add a semantic provider, new parser/index dependency or ranking complexity merely because it is available. Measure the current retrieval layer first with a repository-specific evaluation suite.
+
+~~~text
+Declared task cases + expected source evidence
+              │
+              ├─ v0.20-style static topic context baseline
+              │
+              └─ current local hybrid Retrieval Intelligence
+                              │
+                              ▼
+Precision@K / Recall@K / F1@K / MRR
+history recall / irrelevant-context rate
+token usage / observed latency
+                              │
+                              ▼
+                   Evidence-only report
+                              │
+                    Human review of gaps
+                              │
+                decide next optimization
+~~~
+
+The baseline is explicitly a controlled v0.20-style static-topic comparison, not a claim that every historical v0.20 turn behaved identically. Evaluation scope is limited to task-specific repository evidence retrieval. It does not measure overall Agent task completion, stable Intelligence semantic correctness, model/provider quality or a production latency SLO.
+
+Keep evaluation control data outside the indexed product source (or under the attached AIPS `.ai/` workspace, which Retrieval Intelligence excludes) so expected answers cannot contaminate retrieval results.
+
+A suite declares:
+
+- task query;
+- expected relevant source paths;
+- optional expected Git-history terms;
+- baseline context files;
+- top-K / result / token budgets;
+- deterministic thresholds.
+
+A report records Precision@K, Recall@K, F1@K, MRR, history recall, irrelevant-context rate, direct-source-recall delta and token use. Wall-clock latency is recorded only as an observation because shared CI timing is not a reliable pass/fail SLO. The result fingerprint binds the suite, repository revision/dirty state, deterministic metrics/checks and authority boundary; observed latency, machine-local paths and index timestamps are deliberately excluded from the fingerprint.
+
+Use:
+
+~~~bash
+aips intelligence evaluate \
+  --project /path/to/project \
+  --suite retrieval-evaluation.yaml \
+  --output retrieval-evaluation-report.json
+~~~
+
+Evaluation is non-authoritative. PASS or FAIL never enables embeddings, changes ranking weights, selects Tree-sitter/LSP/Sourcegraph, modifies code or grants publication authority. A material retrieval architecture change still requires normal System Self-Improvement / Core Change / Git Publish governance.
+
 ## Migration from v0.8 Project Knowledge
 
 If `.ai/knowledge/KNOWLEDGE_INDEX.yaml` exists and no Intelligence exists:

@@ -678,3 +678,26 @@ Scenario 128 新增 executable lifecycle evidence，驗證 Just-in-Time Retrieva
 - 未設定 optional semantic provider 時明確回報 `NOT_CONFIGURED`，仍保留 local hybrid fallback。
 
 目前 Scenario inventory 為 128，全部具有 deterministic / lifecycle / agent_eval automated evidence，manual 與 uncovered 都是 0。
+
+## Retrieval Quality Evaluation（Scenario 129）
+
+Scenario 129 用 temporary Git repository 真正執行 retrieval benchmark，而不是只檢查 YAML 是否存在。
+
+測試會建立多組工程任務與 distractor files，並為每個 case 宣告：
+
+- expected relevant source paths；
+- relevant Git-history terms；
+- v0.20-style static topic baseline；
+- Top-K / Result Limit / Token Budget；
+- Precision / Recall / MRR / history / irrelevant-context / direct-source delta 門檻。
+
+CI 重新計算 Precision@K、Recall@K、F1@K、MRR、History Recall、Irrelevant Context Rate 與 token usage；Observed Latency 只記錄、不用來判定 CI PASS/FAIL，避免 shared runner 負載造成誤判。
+
+這個 Scenario 也驗證 benchmark report 沒有權限自動：
+
+- 啟用 Semantic / Embedding provider；
+- 修改 ranking weights；
+- 選擇 Tree-sitter / LSP / Sourcegraph；
+- 變更 architecture 或 publication authority。
+
+目前 Scenario inventory 為 **129**：20 deterministic + 55 lifecycle + 54 agent_eval，**129 / 129 automated、0 manual、0 uncovered**。
