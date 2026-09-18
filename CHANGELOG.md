@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.23.0
+
+### Adopted Bounded Structural Retrieval
+
+- Adopt the bounded built-in exact-identifier two-hop Structural Retrieval relation graph as part of normal local Retrieval Intelligence after explicit Human ADOPT decision and successful controlled Trial evidence.
+- Enable structural expansion by default for normal `aips intelligence retrieve` and Turn Context retrieval while preserving `--no-structural` as an explicit diagnostic opt-out that disables only the structural lane.
+- Keep traversal local, deterministic and provider-neutral: exact query symbols seed bounded bridge discovery through the existing lexical index / fallback, bridge identifiers resolve through the indexed symbol table and target definitions / companion tests receive bounded structural boosts.
+- Preserve explicit hard limits and telemetry for bridge chunks, identifiers per bridge, target definitions, test chunks and truncation state so default structural traversal remains bounded and observable.
+- Update Retrieval Quality Evaluation to measure the adopted default retrieval behavior while preserving Scenario 130 as an explicit structural OFF/ON Trial replay for regression and comparison evidence.
+- Preserve all existing safety contracts: token budgets, result/revision provenance, secret-path filtering, incremental freshness and truthful semantic-provider status remain unchanged.
+- Keep the capability dependency-free: no Tree-sitter, gopls/LSP, Sourcegraph, Embedding or Vector DB dependency is introduced by adoption.
+- Add Scenario 131 lifecycle evidence proving default structural enablement, Turn Context use, metadata truthfulness and explicit opt-out behavior.
+- Raise Scenario Conformance to 131 total / 0 manual / 20 deterministic / 57 lifecycle / 54 agent_eval / 131 automated / 0 uncovered (100% automated).
+- Feature implementation merged through #61; exact merged main `5fb4890512bf4b6488845f221d9ac2a951f38aaf` passed protected-main `repository` Run #982 before release metadata finalization.
+- Constitution impact: NO. No new Role, Skill, capability category, Human Approval Gate or autonomous publication authority is introduced.
+- Architecture Diagram Impact: YES. Retrieval Intelligence architecture and Human/Agent Project Intelligence documentation now represent Structural Retrieval as the adopted default lane while retaining the explicit Trial replay path.
+
 ## 0.22.2
 
 ### Structural Retrieval Candidate Trial
