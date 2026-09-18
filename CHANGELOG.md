@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.23.2
+
+### Semantic Alias Expansion Trial — HOLD
+
+- Complete a dependency-free Semantic Alias Expansion candidate Trial for the remaining low-lexical-overlap / synonymy retrieval research without enabling an embedding model, Vector DB or remote semantic provider.
+- Keep current v0.23.1 Retrieval Intelligence, including adopted Structural Retrieval, as the baseline and enable only a transparent source-controlled software-engineering alias expansion lane in the candidate replay.
+- Preserve truthful provider state throughout the Trial: `semantic.status=NOT_CONFIGURED`, `embedding_provider_used=false`, `default_enabled=false` and `external_dependency=false`.
+- Record the actual controlled-Trial outcome as **FAIL / HOLD** rather than weakening corpus thresholds or tuning weights until CI turns green.
+- PR validation Run #991 exposed required regressions in auth-token-expiry, Go receipt reconciliation and TypeScript session refresh; registration baseline source recall regressed under alias expansion; synonym-access-rotation remained unresolved.
+- Run #992 added cross-group coherence and active-target classification but reproduced the same safety/quality conclusion: required regressions remained, registration recall still regressed and the active synonym-access target did not improve.
+- Preserve the candidate implementation and matched-group / expanded-term telemetry only as reproducible research evidence; normal Turn Context and normal retrieval do not enable the alias lane.
+- Add explicit Trial recommendation `HOLD` and make Scenario 132 intentionally expect the candidate process to exit non-zero while proving negative evidence, instead of treating all valid Trials as mandatory PASS outcomes.
+- Scenario 132 verifies the known HOLD cannot auto-adopt itself, enable an embedding provider or silently rewrite negative evidence as success.
+- A materially different semantic retrieval candidate (for example a real local or remote embedding provider) requires a separate Human-reviewed Trial covering source-code transfer/privacy, provider configuration, cost/cache and fallback boundaries before implementation/adoption.
+- Raise Scenario Conformance to 132 total / 0 manual / 20 deterministic / 58 lifecycle / 54 agent_eval / 132 automated / 0 uncovered (100% automated).
+- Feature evidence merged through #65; exact merged main `431ccc5f999e036aa74904d87c64e336d1da4e5f` passed protected-main `repository` Run #994 before release metadata finalization.
+- Constitution impact: NO. No new Role, Skill, capability category, Human Approval Gate or autonomous publication authority is introduced.
+- Architecture Diagram Impact: YES. Retrieval evaluation documentation now includes the semantic-alias candidate Trial and its explicit FAIL → KEEP / HOLD outcome; production Retrieval topology remains unchanged.
+
 ## 0.23.1
 
 ### CI Validation Hygiene and Atomic Git Publication
