@@ -38,6 +38,10 @@ Remote Git publication is gated. Before a remote branch/ref update intended for 
 
 Commits are grouped by logical capability and should be independently reviewable/revertible. Do not split commits merely by file.
 
+For multi-file engineering changes, prefer an atomic remote branch update: assemble and validate the complete approved logical change before creating/updating the remote engineering ref. Tool/API limitations must not cause one remote commit/push per file or publish knowingly incomplete intermediate states. Local/intermediate commits are allowed when useful; remote incremental publication is exceptional and should be deliberate (for example, collaboration or diagnostic CI), with the reason included in the publish plan.
+
+If a PR is already open and follow-up changes are required, batch the approved logical correction into one consolidated remote branch update when practical. Repository validation still runs on PR synchronization, but superseded in-progress validation should be cancellable by CI concurrency policy.
+
 If the publish plan materially changes after approval, re-approval is required.
 
 ## Decision levels

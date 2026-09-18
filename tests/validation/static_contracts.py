@@ -180,6 +180,17 @@ for rel in required_files + planning_templates + security_templates:
 workflow_text = (ROOT / ".github/workflows/validate.yml").read_text(encoding="utf-8") if (ROOT / ".github/workflows/validate.yml").exists() else ""
 if "permissions:\n  contents: read" not in workflow_text:
     errors.append("validate workflow missing explicit read-only contents permission")
+for contract in (
+    "push:\n    branches:\n      - main",
+    "pull_request:",
+    "workflow_dispatch:",
+    "concurrency:",
+    "group: validate-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}",
+    "cancel-in-progress: true",
+    "github.event_name == 'push' && github.event.before",
+):
+    if contract not in workflow_text:
+        errors.append(f"validate workflow missing CI-noise contract: {contract}")
 for action in ("actions/checkout", "actions/setup-python"):
     match = re.search(r"uses:\s*" + re.escape(action) + r"@([0-9a-f]{40})(?:\s|$)", workflow_text)
     if not match:
