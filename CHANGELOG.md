@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.21.0
+
+### Just-in-Time Retrieval Intelligence
+
+- Evolve Project Intelligence into a two-layer model: stable evidence/authority-aware Project Intelligence plus a rebuildable Just-in-Time Retrieval Intelligence cache for task-specific repository evidence.
+- Add a workspace-scoped local SQLite retrieval index with lexical FTS search, language-aware symbol matching, related-test weighting, Impact Graph path boosts and relevant Git commit/diff history without making the cache a canonical source of truth.
+- Add incremental retrieval freshness bound to the active workspace: committed and dirty changed paths are refreshed before query results are returned, while each result carries path/line or commit provenance, content hash, Git HEAD and dirty-workspace fingerprint.
+- Add bounded context assembly with deterministic result limits and token budgeting so Agents receive high-relevance evidence instead of preloading unrelated modules or whole-repository summaries.
+- Integrate Retrieval Intelligence with the existing Turn Context Manifest and runtime hook while preserving the existing stable Project Intelligence fallback when the retrieval index is missing or unavailable.
+- Add `aips intelligence index` and `aips intelligence retrieve` commands as deterministic/local building blocks; normal Agent use may create the index when Turn Context reports `retrieval_index_required=true`.
+- Keep semantic/embedding retrieval provider-neutral and optional. The v0.21.0 core truthfully reports `semantic.status: NOT_CONFIGURED` when no provider exists and continues lexical/symbol/graph/history retrieval instead of pretending semantic search ran.
+- Harden secret handling across both source indexing and Git-history evidence: credential/secret path families are excluded, history diffs are restricted to safe indexable paths, and secret-like values receive defense-in-depth redaction.
+- Add Scenario 128 executable lifecycle evidence covering target implementation + related tests, relevant Git history, unrelated-module exclusion, dirty-workspace incremental refresh, secret-path exclusion, provenance, token budget and Turn Context integration.
+- Raise Scenario Conformance to 128 total / 0 manual / 20 deterministic / 54 lifecycle / 54 agent_eval / 128 automated / 0 uncovered (100% automated).
+- Feature implementation merged through #53; exact merged main `b92f5b8d062b5bd1976cf14fb6172aad243a1f45` passed protected-main `repository` Run #831 before release metadata finalization.
+- Constitution impact: NO. No new Role, Skill, capability category, Human Approval Gate or autonomous merge/release authority is introduced; Retrieval Intelligence remains a lower-layer Project Intelligence infrastructure capability.
+- Architecture Diagram Impact: YES. Runtime flow, Human architecture overview, Project Intelligence Human/Agent documentation, Technology Guide, Conformance and Documentation Consistency mappings were updated for bounded just-in-time retrieval.
+
 ## 0.20.0
 
 ### Governed Semantic Evolution and Human Documentation Namespace
