@@ -881,6 +881,7 @@ scenarios:
     coverage: lifecycle
     evidence:
       - tests/evidence/retrieval_quality_evaluation_lifecycle.py
+      - tests/fixtures/retrieval_quality_corpus.yaml
       - scripts/retrieval_evaluation.py
       - scripts/retrieval_intelligence.py
       - templates/intelligence/RETRIEVAL_EVALUATION.yaml

@@ -318,9 +318,13 @@ A suite declares:
 - optional expected Git-history terms;
 - baseline context files;
 - top-K / result / token budgets;
-- deterministic thresholds.
+- deterministic thresholds;
+- case enforcement: `required` or `diagnostic`;
+- dimensions such as language, monorepo/shared-module, low-lexical-overlap, synonymy or cross-file-call-chain.
 
-A report records Precision@K, Recall@K, F1@K, MRR, history recall, irrelevant-context rate, direct-source-recall delta and token use. Wall-clock latency is recorded only as an observation because shared CI timing is not a reliable pass/fail SLO. The result fingerprint binds the suite, repository revision/dirty state, deterministic metrics/checks and authority boundary; observed latency, machine-local paths and index timestamps are deliberately excluded from the fingerprint.
+`required` cases are release regressions: any threshold failure fails the evaluation suite. `diagnostic` cases are intentionally harder probes of capability boundaries: they still compute the same thresholds and retain explicit `FAIL` status, but their failure is aggregated as diagnostic gap evidence instead of blocking the suite. Diagnostic gaps must never be rewritten as PASS merely to keep CI green.
+
+A report records Precision@K, Recall@K, F1@K, MRR, history recall, irrelevant-context rate, direct-source-recall delta and token use. It also records required pass/fail counts plus diagnostic gap IDs, dimension aggregation and failed-check aggregation so repeated structural gaps can justify a later retrieval-architecture review. Wall-clock latency is recorded only as an observation because shared CI timing is not a reliable pass/fail SLO. The result fingerprint binds the suite, repository revision/dirty state, deterministic metrics/checks and authority boundary; observed latency, machine-local paths and index timestamps are deliberately excluded from the fingerprint.
 
 Use:
 

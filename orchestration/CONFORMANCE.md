@@ -87,7 +87,7 @@ Current automated inventory after Scenario 128:
 
 ## Scenario 129 — Retrieval Quality Evaluation
 
-Scenario 129 is lifecycle-covered by `tests/evidence/retrieval_quality_evaluation_lifecycle.py`. The fixture runs a repository-specific evaluation suite against a declared v0.20-style static topic baseline and current local hybrid retrieval, recomputes Precision@K / Recall@K / F1@K / MRR / history recall / irrelevant-context rate / token use, records latency only as informational evidence, and proves the report cannot automatically enable providers, change ranking weights or select a new retrieval architecture.
+Scenario 129 is lifecycle-covered by `tests/evidence/retrieval_quality_evaluation_lifecycle.py` plus the committed `tests/fixtures/retrieval_quality_corpus.yaml`. The corpus spans Python, Go, TypeScript, SQL, monorepo/shared-module, low-lexical-overlap, synonymy and cross-file-call-chain dimensions. The fixture runs the suite against a declared v0.20-style static topic baseline and current local hybrid retrieval, recomputes Precision@K / Recall@K / F1@K / MRR / history recall / irrelevant-context rate / token use, records latency only as informational evidence, verifies required failures remain release-blocking, verifies diagnostic failures remain explicit gap evidence without failing the whole suite, and proves the report cannot automatically enable providers, change ranking weights or select a new retrieval architecture.
 
 Current automated inventory after Scenario 129:
 
