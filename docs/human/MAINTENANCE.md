@@ -64,6 +64,8 @@ If Constitution semantics are affected, the Constitutional Change Gate must comp
 
 Before remote publication, present the Git Publish Proposal. A material difference from the approved implementation/publication plan requires re-approval.
 
+Multi-file changes should normally be assembled into one coherent remote branch update after the logical change is complete. Avoid file-by-file remote commits/pushes that expose temporary incomplete repository states to CI. If incremental remote publication is necessary for collaboration or diagnosis, record that reason in the Git Publish Proposal.
+
 ## Release checklist
 
 1. Confirm System Improvement Review and applicable Constitutional/Core Change approvals.
@@ -265,6 +267,9 @@ When public repository hardening changes, review together:
 - requirements.txt;
 - immutable full-SHA action pinning;
 - explicit least-privilege workflow permissions;
+- validation trigger policy: automatic on PR synchronization and main pushes, manual via workflow_dispatch, not on every standalone feature-branch push;
+- concurrency cancellation so a newer PR/main validation supersedes older in-progress work for the same ref/PR;
+- atomic remote branch-update practice so CI receives coherent logical states instead of file-by-file intermediate states;
 - validator contracts that check policy properties rather than freezing one dependency version.
 
 ## Validation architecture consistency
