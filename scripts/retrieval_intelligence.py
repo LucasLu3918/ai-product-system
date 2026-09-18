@@ -22,6 +22,7 @@ DEFAULT_TOKEN_BUDGET = 6000
 DEFAULT_RESULT_LIMIT = 12
 MAX_FILE_BYTES = 1_000_000
 MAX_HISTORY = 200
+MAX_HISTORY_DIFF_CHARS = 1600
 CHUNK_LINES = 100
 CHUNK_OVERLAP = 20
 
@@ -597,7 +598,8 @@ def symbol_boosts(conn: sqlite3.Connection, terms: list[str]) -> dict[int, tuple
         if not matched:
             continue
         exact = any(term == name for term in terms)
-        value = 0.45 if exact else 0.28
+        # Exact symbol definitions should outrank generic lexical overlap.
+        value = 0.95 if exact else 0.35
         old_value, old_reasons = boosts.get(int(chunk_id), (0.0, []))
         boosts[int(chunk_id)] = (
             max(old_value, value),
@@ -645,37 +647,56 @@ def lexical_score(rank: Any) -> float:
 
 
 def history_candidates(conn: sqlite3.Connection, root: Path, terms: list[str], limit: int = 3) -> list[dict[str, Any]]:
-    ranked: list[tuple[int, sqlite3.Row]] = []
+    ranked: list[tuple[int, int, int, sqlite3.Row]] = []
     for row in conn.execute("SELECT sha, subject, body, paths, authored_at FROM commits").fetchall():
-        haystack = f"{row['subject']} {row['body']} {row['paths']}".lower()
-        overlap = sum(1 for term in terms if term in haystack)
-        if overlap:
-            ranked.append((overlap, row))
-    ranked.sort(key=lambda item: (-item[0], str(item[1]["authored_at"])), reverse=False)
+        message = f"{row['subject']} {row['body']}".lower()
+        path_text = str(row["paths"]).lower()
+        message_overlap = sum(1 for term in terms if term in message)
+        path_overlap = sum(1 for term in terms if term in path_text)
+        if message_overlap or path_overlap:
+            # Commit-message intent is stronger evidence than a broad commit merely
+            # touching a path whose name happens to overlap the query.
+            rank_value = message_overlap * 10 + min(path_overlap, 3)
+            ranked.append((rank_value, message_overlap, path_overlap, row))
+    best_message_overlap = max((item[1] for item in ranked), default=0)
+    if best_message_overlap:
+        # When commit intent is visible in the message, suppress weak path-only
+        # history and low-signal message matches from broad initialization commits.
+        message_floor = max(1, math.ceil(best_message_overlap / 2))
+        ranked = [item for item in ranked if item[1] >= message_floor]
+    ranked.sort(key=lambda item: (-item[0], str(item[3]["authored_at"])), reverse=False)
 
     results: list[dict[str, Any]] = []
-    for overlap, row in ranked[:limit]:
+    for _, message_overlap, path_overlap, row in ranked[:limit]:
         safe_paths = [
             path for path in str(row["paths"]).splitlines()
             if path and is_indexable(path) and not is_secret_path(path)
         ]
         if safe_paths:
-            diff = run_git(root, ["show", "--format=", "--unified=8", str(row["sha"]), "--", *safe_paths]) or ""
+            diff = run_git(root, ["show", "--format=", "--unified=6", str(row["sha"]), "--", *safe_paths]) or ""
         else:
             diff = ""
-        diff = redact_text(diff)
-        diff_lines = diff.splitlines()[:120]
-        snippet = "\n".join(diff_lines)
+        snippet = redact_text(diff)[:MAX_HISTORY_DIFF_CHARS]
+        reasons: list[str] = []
+        if message_overlap:
+            reasons.append("git_history_message_overlap")
+        if path_overlap:
+            reasons.append("git_history_path_overlap")
+        score = min(
+            0.60,
+            0.16 + message_overlap * 0.10 + min(path_overlap, 3) * 0.025,
+        )
+        evidence_text = f"{row['subject']}\n{snippet}"
         results.append({
             "type": "history",
             "commit": row["sha"],
             "subject": row["subject"],
             "authored_at": row["authored_at"],
-            "paths": [p for p in str(row["paths"]).splitlines() if p][:20],
-            "score": round(min(0.85, 0.25 + overlap * 0.12), 4),
-            "reason": ["git_history_query_overlap"],
+            "paths": safe_paths[:20],
+            "score": round(score, 4),
+            "reason": reasons,
             "snippet": snippet,
-            "content_hash": sha(snippet),
+            "content_hash": sha(evidence_text),
         })
     return results
 

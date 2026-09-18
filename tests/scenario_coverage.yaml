@@ -876,3 +876,13 @@ scenarios:
       - templates/intelligence/RETRIEVAL_INDEX.yaml
       - orchestration/PROJECT_INTELLIGENCE.md
       - tests/validate_repository.py
+  - id: "129"
+    path: tests/scenarios/129-retrieval-quality-evaluation.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/retrieval_quality_evaluation_lifecycle.py
+      - scripts/retrieval_evaluation.py
+      - scripts/retrieval_intelligence.py
+      - templates/intelligence/RETRIEVAL_EVALUATION.yaml
+      - orchestration/PROJECT_INTELLIGENCE.md
+      - tests/validate_repository.py

@@ -31,6 +31,11 @@ from retrieval_intelligence import (
     index_status as retrieval_index_status,
     query_repository as retrieval_query_repository,
 )
+from retrieval_evaluation import (
+    evaluate_suite as retrieval_evaluate_suite,
+    load_suite as retrieval_load_suite,
+    write_report as retrieval_write_report,
+)
 
 SCHEMA_VERSION = 1
 
@@ -1407,6 +1412,12 @@ def main() -> int:
     p.add_argument("--no-refresh", action="store_true")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
+    p = sub.add_parser("evaluate")
+    p.add_argument("--project", default=os.getcwd())
+    p.add_argument("--suite", required=True)
+    p.add_argument("--output")
+    p.add_argument("--format", choices=["yaml", "json"], default="yaml")
+
     args = parser.parse_args()
     root = project_root(Path(args.project))
     try:
@@ -1443,6 +1454,14 @@ def main() -> int:
                 limit=max(1, min(50, args.limit)),
                 refresh=not args.no_refresh,
             )
+        elif args.command == "evaluate":
+            store, _, _ = intelligence_store(root)
+            if not (store / "PROJECT_INTELLIGENCE.yaml").exists():
+                raise RuntimeError("Project Intelligence must be initialized before Retrieval Intelligence evaluation")
+            suite_path = Path(args.suite).resolve()
+            result = retrieval_evaluate_suite(root, store, retrieval_load_suite(suite_path))
+            if args.output:
+                retrieval_write_report(Path(args.output).resolve(), result)
         elif args.command == "migrate-attached":
             result = migrate_attached(root)
         elif args.command == "sync-external":
@@ -1455,6 +1474,8 @@ def main() -> int:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
     output(result, args.format)
+    if args.command == "evaluate" and result.get("status") == "FAIL":
+        return 1
     return 0
 
 

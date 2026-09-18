@@ -43,6 +43,22 @@ flowchart TD
 
 The synchronous Turn Hook resolves identity/freshness plus bounded evidence from an already available Retrieval Index. Whole-project bootstrap, initial index construction, semantic enrichment, impact-graph rebuilding and HTML generation stay outside the hook latency path. Retrieval cache state is non-canonical and degrades truthfully to stable Project Intelligence when unavailable.
 
+## Retrieval quality evaluation
+
+~~~mermaid
+flowchart LR
+    CASE[Repository-specific evaluation cases] --> BASE[Static topic-context baseline]
+    CASE --> RET[Current local hybrid retrieval]
+    BASE --> MET[Deterministic retrieval metrics]
+    RET --> MET
+    MET --> REP[Evidence-only report + fingerprints]
+    REP --> H{Human review}
+    H -->|measured gap justifies it| OPT[Normal System Improvement path]
+    H -->|insufficient evidence| KEEP[Keep current retrieval architecture]
+~~~
+
+The evaluator measures task-specific evidence retrieval only. It records deterministic quality/token metrics plus informational observed latency, and has no authority to enable semantic providers, change rank weights or select a new retrieval technology.
+
 ## Primary planning package
 
 ```mermaid

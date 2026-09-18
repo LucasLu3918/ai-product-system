@@ -86,9 +86,47 @@ Semantic/Embedding Provider 是可選擴充，不是必要依賴。沒有設定�
 
 每個結果會保留 path + line（或 commit）、content hash、Git HEAD / dirty fingerprint，並先排除 credential / secret path、限制最大 Context Token。
 
+## Retrieval Quality Evaluation：先量測，再決定下一項技術
+
+AIPS 不會因為「Vector DB、Embedding、Tree-sitter、LSP 或 Sourcegraph 看起來更進階」就直接導入。下一步先使用 repository-specific benchmark，對照：
+
+~~~text
+v0.20-style Static Topic Context
+                vs
+v0.21 Local Hybrid Retrieval
+                ↓
+Precision@K / Recall@K / F1@K / MRR
+Git History Recall
+Irrelevant Context Rate
+Token Usage
+Observed Latency
+~~~
+
+其中 Static Topic baseline 是可重現的「v0.20-style」比較基準，不宣稱能逐字重建所有歷史 v0.20 Agent Turn。Benchmark 評的是「本次工程任務能否取得正確 repository evidence」，不是 Agent 整體任務品質。
+
+Suite 會明確列出每個案例的 expected source paths、可選的 history term、baseline topic files、Top-K、Token Budget 與門檻。Benchmark 控制資料應放在 indexed product source 之外，或 ATTACHED project 的 `.ai/` workspace，避免 expected answer 本身被 FTS 找回而污染評估。
+
+系統另外區分：
+
+- **reference recall**：Topic 有提到某個 source path；
+- **direct source recall**：實際把該 source evidence 取回 Context。
+
+因此不會把「summary 裡有寫到檔名」誤算成已取得真正程式碼 evidence。
+
+Latency 只記錄 observed value，不作為共享 CI 的 pass/fail 門檻；避免 runner 負載造成假 regression。Result fingerprint 只綁定 suite、repository revision / dirty state、deterministic metrics/checks 與 authority boundary；observed latency、machine-local path、index timestamp 不進 fingerprint，因此相同 evidence 不會因 runner 速度不同而變成另一份證據。
+
+~~~bash
+aips intelligence evaluate \
+  --project /path/to/project \
+  --suite retrieval-evaluation.yaml \
+  --output retrieval-report.json
+~~~
+
+Benchmark 結果只是 evidence。它不會自動開啟 semantic provider、不會自行改 ranking 權重，也不會替 Human 決定下一步要使用 Tree-sitter/LSP、Embedding 或 Sourcegraph。
+
 ## Debug
 
-一般使用不需執行；排錯可用 `aips intelligence status/render/finalize/impact-init`。
+一般使用不需執行；排錯可用 `aips intelligence status/render/finalize/impact-init/index/retrieve/evaluate`。
 
 ## Identity namespace
 

@@ -84,3 +84,16 @@ Current automated inventory after Scenario 128:
 - manual: 0
 - uncovered: 0
 - automated: 128 / 128
+
+## Scenario 129 — Retrieval Quality Evaluation
+
+Scenario 129 is lifecycle-covered by `tests/evidence/retrieval_quality_evaluation_lifecycle.py`. The fixture runs a repository-specific evaluation suite against a declared v0.20-style static topic baseline and current local hybrid retrieval, recomputes Precision@K / Recall@K / F1@K / MRR / history recall / irrelevant-context rate / token use, records latency only as informational evidence, and proves the report cannot automatically enable providers, change ranking weights or select a new retrieval architecture.
+
+Current automated inventory after Scenario 129:
+
+- deterministic: 20
+- lifecycle: 55
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 129 / 129

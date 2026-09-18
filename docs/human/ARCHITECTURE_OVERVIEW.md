@@ -2,7 +2,7 @@
 
 ![AI Product System 架構總覽](assets/system-overview.svg)
 
-目前 AIPS 架構由 Turn-Aware Global Harness、Project Intelligence、Change Impact Guard、Enforceable Governance、Durable Run State、Scenario Conformance、Execution Isolation、Evolution Radar maintenance plane 與 Documentation Consistency Contract 組成。
+目前 AIPS 架構由 Turn-Aware Global Harness、Project Intelligence + Retrieval Intelligence / Quality Evaluation、Change Impact Guard、Enforceable Governance、Durable Run State、Scenario Conformance、Execution Isolation、Evolution Radar maintenance plane 與 Documentation Consistency Contract 組成。
 
 完整技術與中英文專有名詞可由 [`TECHNOLOGY_GUIDE.html`](TECHNOLOGY_GUIDE.html) 閱讀；Evolution Radar 的 Human 圖解流程見 [`EVOLUTION_RADAR_OVERVIEW.html`](EVOLUTION_RADAR_OVERVIEW.html)。
 
@@ -23,6 +23,10 @@ Codex 以 CONTEXT_ALWAYS 為目標；Claude Code / Gemini CLI 在 native Hook �
 ## Just-in-Time Retrieval Intelligence
 
 Project Intelligence 現在分成兩個互補層次：穩定的 Architecture / Source Registry / Impact Graph / Overrides，以及可重建的即時 Retrieval cache。Agent 每次工作先依任務查詢 code、symbols、tests、Impact Graph 與 Git history，再經 ranking 與 token budget 只帶入必要 evidence。Retrieval cache 不具有治理 authority，缺少 optional semantic provider 時會退回 deterministic/local lanes 與既有 Project Intelligence。
+
+## Retrieval Quality Evaluation
+
+Retrieval Intelligence 的下一步採「Measure before dependency」。AIPS 以 repository-specific suite 比較 v0.20-style static topic baseline 與目前 local hybrid retrieval，量測 Precision@K、Recall@K、MRR、history recall、irrelevant context 與 token 使用量；latency 只做觀察值。Report 只提供 evidence，不能自行啟用 embedding、改 ranking 或選擇 Sourcegraph/LSP。是否增加新 retrieval technology 仍由 Human 依量測缺口決策。
 
 ## 2. Project Intelligence
 
@@ -182,7 +186,7 @@ Behavior-bearing technical change
 
 [`TECHNOLOGY_GUIDE.html`](TECHNOLOGY_GUIDE.html) 是 Human 一頁式技術總覽，以中英文整理 AIPS 的主要技術、架構概念、用途、可用情境與關聯文件。它本身受 Documentation Consistency Contract 維護，因此後續新增或修改設定範圍內的技術實作時，CI 會要求同一 change 重新 review/update 這份總覽。
 
-本次 Architecture Diagram Impact：Evolution Radar Human inline SVG、本架構總覽與 Human Documentation Namespace 說明受影響並更新；既有 `system-overview.svg` 高階 topology 未改變，Harness、Project Intelligence、Product Delivery、Installation lifecycle 專用 SVG 亦未改變，因此這些 SVG 為 N/A。
+Retrieval Quality Evaluation 新增的是 Project Intelligence 的 evidence feedback loop，不改變 Runtime Harness、Product Delivery、Installation 或 Evolution Radar topology；因此 detailed Mermaid 與本 Human overview 已同步，既有高階 SVG 不需要新增節點。
 
 
 ## 15. Human Documentation Namespace
