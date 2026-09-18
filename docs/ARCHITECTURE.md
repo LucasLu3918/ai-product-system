@@ -79,6 +79,24 @@ flowchart LR
 
 Structural Retrieval is part of normal Turn Context after Human Adoption Decision. The implementation remains bounded and dependency-free; `--no-structural` exists for diagnostic comparison, while the retained Trial harness can still replay OFF/ON behavior.
 
+### Semantic alias candidate trial
+
+~~~mermaid
+flowchart LR
+    Q[Low lexical overlap / synonymy query] --> BASE[Current default retrieval]
+    Q --> ALIAS[Version-controlled alias groups]
+    ALIAS --> EXP[Low-weight expanded terms]
+    EXP --> CAND[Current retrieval + alias lane]
+    BASE --> CMP[Same corpus metrics]
+    CAND --> CMP
+    CMP --> G{Required regression? / Synonym recall improved?}
+    G -->|FAIL| KEEP[Keep alias lane disabled]
+    G -->|PASS| EVID[Trial evidence only]
+    EVID --> H[Separate Human Adoption Decision]
+~~~
+
+The alias candidate is deterministic and transparent. It is not an embedding provider and does not change `semantic.status=NOT_CONFIGURED`. The committed Trial follows the FAIL → KEEP branch: required regressions and no synonym-recall improvement produce recommendation `HOLD`. Normal Turn Context retrieval therefore does not enable the alias lane.
+
 ## Primary planning package
 
 ```mermaid

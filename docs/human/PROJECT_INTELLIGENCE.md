@@ -162,6 +162,21 @@ Target Definition / Related Test
 - Scenario 130 仍保留 explicit OFF/ON Trial replay；
 - Retrieval Quality Evaluation 會量測目前已採用的 default behavior。
 
+## Semantic Alias Expansion Candidate Trial：HOLD
+
+Structural Retrieval 採用後，AIPS 先測了一個不需要 Embedding / Vector DB 的 deterministic alias expansion 候選，希望處理 low lexical overlap / synonymy。
+
+這次完整 9-case corpus 的結論不是 PASS，而是 **FAIL / HOLD**：
+
+- `auth-token-expiry`、Go receipt reconciliation、TypeScript session refresh 三個 required case 出現 regression；
+- 原本 registration diagnostic baseline 已經 Recall@K=1.0，但 alias candidate 反而降低 source recall；
+- `synonym-access-rotation` 仍沒有 source-recall 改善；
+- 真正 semantic provider 全程仍正確顯示 `NOT_CONFIGURED`。
+
+因此這個 alias candidate **不採用、不進 Turn Context default**。Scenario 132 會刻意重播這個失敗結果，要求 Trial 回傳 `HOLD`，避免後續只靠調權重把負向 evidence 洗成 PASS。
+
+如果後續還要處理 semantic gap，下一個候選必須是 materially different 的方案，例如真正的 embedding / semantic provider；但開始之前需要另外做 Human review，明確決定 source-code 是否可送往 provider、使用 local 或 remote embedding、成本/快取/隱私/fallback 邊界。Scenario 132 不會自動啟用任何 provider。
+
 ## Debug
 
 一般使用不需執行；排錯可用 `aips intelligence status/render/finalize/impact-init/index/retrieve/evaluate`。

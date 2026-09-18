@@ -13,6 +13,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 PI = ROOT / "scripts" / "project_intelligence.py"
 STRUCTURAL_TRIAL = ROOT / "scripts" / "structural_retrieval_trial.py"
+RETRIEVAL_EVAL = ROOT / "scripts" / "retrieval_evaluation.py"
 CORPUS = ROOT / "tests" / "fixtures" / "retrieval_quality_corpus.yaml"
 
 
@@ -416,6 +417,79 @@ func TestReservationRollback(t *testing.T) {
         require(authority.get("human_adoption_decision_required") is True, "structural adoption must require Human decision")
         require(trial_path.is_file(), "structural trial report must be writable")
         print("structural_trial_summary=" + json.dumps(summary, sort_keys=True))
+
+        semantic_trial_path = base / "semantic-alias-trial-report.json"
+        semantic_trial = json_run([
+            sys.executable, str(RETRIEVAL_EVAL),
+            "--project", str(project),
+            "--store", str(store),
+            "--suite", str(suite_path),
+            "--trial", "semantic-alias",
+            "--output", str(semantic_trial_path),
+            "--format", "json",
+        ], env, expected=1)
+        trial_doc = semantic_trial.get("trial") or {}
+        require(trial_doc.get("status") == "FAIL", "semantic alias candidate must reproduce the measured failed trial")
+        require(trial_doc.get("recommendation") == "HOLD", "failed semantic alias trial must recommend HOLD")
+        semantic_summary = semantic_trial.get("summary") or {}
+        require(
+            set(semantic_summary.get("required_regressions") or []) == {
+                "auth-token-expiry",
+                "go-receipt-reconciliation",
+                "typescript-session-refresh",
+            },
+            "semantic alias HOLD evidence must preserve the observed required regressions",
+        )
+        require(
+            semantic_summary.get("recall_regressions") == ["low-lexical-overlap-registration"],
+            "semantic alias HOLD evidence must preserve the observed registration recall regression",
+        )
+        require(
+            semantic_summary.get("semantic_targets") == ["synonym-access-rotation"],
+            "synonym-access-rotation must remain the unresolved active semantic target",
+        )
+        require(
+            not (semantic_summary.get("improved_semantic_targets") or []),
+            "failed semantic alias candidate must not claim a semantic target improvement",
+        )
+
+        registration = next(
+            case for case in (semantic_trial.get("cases") or [])
+            if case.get("id") == "low-lexical-overlap-registration"
+        )
+        registration_baseline = float(((registration.get("baseline") or {}).get("metrics") or {}).get("recall_at_k") or 0)
+        registration_candidate = float(((registration.get("candidate") or {}).get("metrics") or {}).get("recall_at_k") or 0)
+        require(registration_baseline == 1.0, "registration baseline must remain fully covered")
+        require(registration_candidate < registration_baseline, "failed alias candidate must reproduce registration recall regression")
+
+        target = next(
+            case for case in (semantic_trial.get("cases") or [])
+            if case.get("id") == "synonym-access-rotation"
+        )
+        baseline_metrics = ((target.get("baseline") or {}).get("metrics") or {})
+        candidate_metrics = ((target.get("candidate") or {}).get("metrics") or {})
+        require(float(baseline_metrics.get("recall_at_k") or 0) < 1.0, "synonym-access baseline must retain a real semantic gap")
+        require(
+            float(candidate_metrics.get("recall_at_k") or 0) <= float(baseline_metrics.get("recall_at_k") or 0),
+            "failed alias candidate must not claim source-recall improvement",
+        )
+        candidate = target.get("candidate") or {}
+        require(candidate.get("semantic_status") == "NOT_CONFIGURED", "alias trial must not pretend an embedding provider ran")
+        alias_doc = candidate.get("semantic_alias") or {}
+        require(alias_doc.get("status") == "TRIAL_ENABLED", "semantic alias trial status must be explicit")
+        require(alias_doc.get("external_dependency") is False, "semantic alias trial must remain dependency-free")
+        require(alias_doc.get("default_enabled") is False, "semantic alias expansion must remain trial-only")
+        telemetry = alias_doc.get("telemetry") or {}
+        require(telemetry.get("matched_groups"), "semantic alias trial must report matched alias groups")
+        require(telemetry.get("expanded_terms"), "semantic alias trial must report expanded terms")
+        require(telemetry.get("matched_group_terms"), "semantic alias trial must expose group membership used by coherence scoring")
+        require("semantic_alias_expansion" in ((candidate.get("ranking") or {}).get("lanes") or []), "candidate ranking must expose semantic alias lane")
+        semantic_authority = semantic_trial.get("authority") or {}
+        require(semantic_authority.get("automatic_adoption") is False, "semantic alias FAIL must not auto-adopt")
+        require(semantic_authority.get("automatic_embedding_provider_enablement") is False, "trial must not enable embedding provider")
+        require(semantic_authority.get("human_adoption_decision_required") is True, "next semantic optimization must require Human review")
+        require(semantic_trial_path.is_file(), "semantic alias trial report must be writable")
+        print("semantic_alias_trial_summary=" + json.dumps(semantic_summary, sort_keys=True))
 
         probe_required = dict(suite["cases"][0])
         probe_required["id"] = "required-probe"

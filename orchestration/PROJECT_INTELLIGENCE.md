@@ -374,6 +374,21 @@ Adoption constraints remain:
 
 The earlier candidate passed with no required-case regression and recovered complete Recall@K for the cross-file structural diagnostic. This adoption does not create a new Role, Skill, Human Approval Gate or publication authority.
 
+## Semantic Alias Expansion Candidate Trial — HOLD
+
+After Structural Retrieval adoption, AIPS tested a dependency-free deterministic alias-expansion bridge before adding embeddings or a remote semantic provider.
+
+The candidate uses transparent source-controlled software-engineering alias groups and cross-group coherence scoring. It remains useful as a reproducible research artifact, but the committed full-corpus Trial outcome is **FAIL / HOLD**:
+
+- `auth-token-expiry`, `go-receipt-reconciliation` and `typescript-session-refresh` regress under the candidate;
+- the already-covered registration diagnostic drops below its baseline source recall;
+- the unresolved `synonym-access-rotation` diagnostic does not improve source recall;
+- the actual semantic provider remains truthfully `NOT_CONFIGURED`.
+
+Therefore alias expansion stays disabled by default and is not an adoption candidate. Scenario 132 intentionally replays the failing candidate and expects recommendation `HOLD`; this prevents ranking tweaks from silently rewriting negative evidence into a PASS.
+
+This result narrows the next research question: if AIPS continues semantic retrieval work, it should evaluate a materially different candidate (for example a real embedding/semantic provider) under a separate Human-reviewed Trial, with source-code transfer/privacy, provider configuration, cost, cache and fallback boundaries explicitly approved first. No provider is enabled by Scenario 132.
+
 ## Migration from v0.8 Project Knowledge
 
 If `.ai/knowledge/KNOWLEDGE_INDEX.yaml` exists and no Intelligence exists:

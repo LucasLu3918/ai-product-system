@@ -32,6 +32,10 @@ Retrieval Intelligence 的下一步採「Measure before dependency」。AIPS 以
 
 Cross-file call chain candidate 已通過 full corpus Trial 並取得 Human Adoption Decision。現在正常 Retrieval Intelligence 預設啟用 bounded exact-identifier two-hop relation graph：用 lexical index 找 bridge、用 indexed symbol table 解 target definition / related test，並以 hard limits 約束 traversal。它不新增 parser/LSP dependency；`--no-structural` 只作 debug / regression opt-out，Scenario 130 仍保留 explicit OFF/ON Trial replay。
 
+### Semantic Alias Expansion Candidate Trial（HOLD）
+
+AIPS 已完成 dependency-free software-engineering alias expansion Trial。它沒有啟用 Embedding，semantic provider 仍維持 `NOT_CONFIGURED`。完整 corpus 顯示 required regressions、registration recall regression，而且 `synonym-access-rotation` 沒有改善，因此 Trial 結論為 **FAIL / HOLD**，alias lane 不進正常 Turn Context。下一個 semantic retrieval 候選若要研究，需另做 Human-reviewed Trial。
+
 ## 2. Project Intelligence
 
 ![Project Intelligence](assets/project-intelligence-overview.svg)
