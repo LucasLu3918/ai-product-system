@@ -389,6 +389,43 @@ Therefore alias expansion stays disabled by default and is not an adoption candi
 
 This result narrows the next research question: if AIPS continues semantic retrieval work, it should evaluate a materially different candidate (for example a real embedding/semantic provider) under a separate Human-reviewed Trial, with source-code transfer/privacy, provider configuration, cost, cache and fallback boundaries explicitly approved first. No provider is enabled by Scenario 132.
 
+## Remote Embedding Retrieval Trial Readiness
+
+Scenario 133 prepares that materially different candidate without changing production Retrieval Intelligence.
+
+The first adapter uses the approved OpenAI embeddings endpoint with a bounded configuration contract and reuses the protected CI secret reference already used by Evolution Radar. The Trial is synthetic-only: it may transmit the committed Retrieval Quality fixture, but MUST NOT transmit AIPS repository/product source.
+
+~~~text
+9-case synthetic corpus
+        ↓
+current Retrieval baseline
+        ↓
+remote embedding candidate (bounded)
+        ↓
+in-memory cosine merge
+        ↓
+same Recall / Precision / MRR / history / purity checks
+        ↓
+PASS / FAIL / PENDING / BLOCKED evidence
+        ↓
+Human review before adoption
+~~~
+
+Safety / authority boundaries:
+
+- normal Pull Request and main validation do not call the embedding provider;
+- the remote Trial runs only on the dedicated Trial branch or explicit workflow dispatch;
+- missing credentials produce `TRIAL_PENDING`;
+- provider/network/runtime failure produces `TRIAL_BLOCKED`;
+- request count, candidate chunk count and remote input characters are bounded;
+- no Vector DB is introduced; candidate vectors are ephemeral/in-memory Trial data;
+- provider/model metadata and usage tokens are recorded, but secret values never enter payloads or reports;
+- normal Turn Context does not enable any embedding lane;
+- production source transfer remains forbidden;
+- PASS does not grant provider enablement, adoption, publication, merge or release authority.
+
+The initial adapter defaults to `text-embedding-3-small`, with model override through repository variable only. A different provider can be introduced later through the same Trial contract rather than becoming a hard dependency.
+
 ## Migration from v0.8 Project Knowledge
 
 If `.ai/knowledge/KNOWLEDGE_INDEX.yaml` exists and no Intelligence exists:
