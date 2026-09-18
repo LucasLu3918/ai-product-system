@@ -1,0 +1,118 @@
+version: 1
+name: retrieval-quality-corpus
+
+cases:
+  - id: refund-retry
+    enforcement: required
+    dimensions: [python, exact-symbol, history]
+    query: "refund retry inventory compensation RefundService"
+    relevant_paths:
+      - orders/refund_service.py
+      - tests/test_refund_service.py
+    relevant_history_terms: ["fix refund retry inventory compensation"]
+    baseline_context_files: [intelligence:topics/refund.md]
+
+  - id: auth-token-expiry
+    enforcement: required
+    dimensions: [python, exact-symbol, history]
+    query: "auth token expiry validation TokenValidator"
+    relevant_paths:
+      - auth/token_validator.py
+      - tests/test_token_validator.py
+    relevant_history_terms: ["harden auth token expiry validation"]
+    baseline_context_files: [intelligence:topics/auth.md]
+
+  - id: refund-status-migration
+    enforcement: required
+    dimensions: [python, sql, exact-symbol, history]
+    query: "refund status migration repository RefundRepository"
+    relevant_paths:
+      - billing/refund_repository.py
+      - billing/migrations/004_add_refund_status.sql
+      - tests/test_refund_repository.py
+    relevant_history_terms: ["add refund status migration"]
+    baseline_context_files: [intelligence:topics/billing.md]
+
+  - id: go-receipt-reconciliation
+    enforcement: required
+    dimensions: [go, exact-symbol, test-retrieval]
+    query: "reconcile receipt retry ReceiptService"
+    relevant_paths:
+      - services/receipts/service.go
+      - services/receipts/service_test.go
+    relevant_history_terms: ["stabilize receipt reconciliation retry"]
+    baseline_context_files: [intelligence:topics/receipts.md]
+
+  - id: typescript-session-refresh
+    enforcement: required
+    dimensions: [typescript, exact-symbol, test-retrieval]
+    query: "session refresh expired browser SessionRefreshCoordinator"
+    relevant_paths:
+      - web/session_refresh.ts
+      - web/session_refresh.test.ts
+    relevant_history_terms: ["guard expired browser session refresh"]
+    baseline_context_files: [intelligence:topics/session.md]
+
+  - id: monorepo-shared-permission-policy
+    enforcement: required
+    dimensions: [monorepo, shared-module, python]
+    query: "api authorization shared permission policy PermissionPolicy authorize"
+    relevant_paths:
+      - apps/api/authorization.py
+      - shared/security/permission_policy.py
+      - tests/api/test_authorization.py
+    relevant_history_terms: ["centralize api permission policy"]
+    baseline_context_files: [intelligence:topics/monorepo-auth.md]
+
+  - id: low-lexical-overlap-registration
+    enforcement: diagnostic
+    dimensions: [low-lexical-overlap, synonymy, python]
+    query: "avoid sending the welcome message twice when a new account request is retried"
+    relevant_paths:
+      - accounts/registration_coordinator.py
+      - messaging/outbox_relay.py
+      - tests/accounts/test_registration_idempotency.py
+    relevant_history_terms: ["make registration notification idempotent"]
+    baseline_context_files: [intelligence:topics/registration.md]
+    thresholds:
+      recall_at_k_min: 1.00
+      precision_at_k_min: 0.40
+      mrr_min: 0.50
+      history_recall_min: 1.00
+      irrelevant_context_rate_max: 0.55
+      direct_source_recall_delta_min: 1.00
+
+  - id: cross-file-call-chain
+    enforcement: diagnostic
+    dimensions: [cross-file-call-chain, structural-retrieval, go]
+    query: "Trace CheckoutCoordinator place order through stock reservation and verify the rollback test"
+    relevant_paths:
+      - checkout/coordinator.go
+      - inventory/reservation.go
+      - checkout/coordinator_test.go
+    relevant_history_terms: ["connect checkout coordinator to reservation rollback"]
+    baseline_context_files: [intelligence:topics/checkout.md]
+    thresholds:
+      recall_at_k_min: 1.00
+      precision_at_k_min: 0.40
+      mrr_min: 0.50
+      history_recall_min: 1.00
+      irrelevant_context_rate_max: 0.55
+      direct_source_recall_delta_min: 1.00
+
+  - id: synonym-access-rotation
+    enforcement: diagnostic
+    dimensions: [low-lexical-overlap, synonymy, typescript]
+    query: "kick users out after their credentials are rotated"
+    relevant_paths:
+      - identity/access_epoch.ts
+      - identity/access_epoch.test.ts
+    relevant_history_terms: ["invalidate access after credential rotation"]
+    baseline_context_files: [intelligence:topics/identity.md]
+    thresholds:
+      recall_at_k_min: 1.00
+      precision_at_k_min: 0.40
+      mrr_min: 0.50
+      history_recall_min: 1.00
+      irrelevant_context_rate_max: 0.55
+      direct_source_recall_delta_min: 1.00

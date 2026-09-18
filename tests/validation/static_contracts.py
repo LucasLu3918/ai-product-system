@@ -55,6 +55,7 @@ yaml_files = [
     "templates/intelligence/TURN_CONTEXT_MANIFEST.yaml",
     "templates/intelligence/RETRIEVAL_INDEX.yaml",
     "templates/intelligence/RETRIEVAL_EVALUATION.yaml",
+    "tests/fixtures/retrieval_quality_corpus.yaml",
     "templates/quality/QUALITY_PROFILE.yaml",
     "templates/knowledge/KNOWLEDGE_INDEX.yaml",
     "templates/design/PROJECT_VISUAL_PROFILE.yaml",

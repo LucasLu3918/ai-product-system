@@ -125,6 +125,14 @@ def validate_suite(suite: dict[str, Any], root: Path, store: Path) -> list[str]:
         history_terms = (case or {}).get("relevant_history_terms", [])
         if not isinstance(history_terms, list):
             errors.append(f"{prefix}.relevant_history_terms must be a list")
+
+        enforcement = str((case or {}).get("enforcement") or "required")
+        if enforcement not in {"required", "diagnostic"}:
+            errors.append(f"{prefix}.enforcement must be required or diagnostic")
+
+        dimensions = (case or {}).get("dimensions", [])
+        if not isinstance(dimensions, list) or any(not str(item).strip() for item in dimensions):
+            errors.append(f"{prefix}.dimensions must be a list of non-empty strings")
     return errors
 
 
@@ -257,6 +265,8 @@ def evaluate_case(
     token_budget = int(case.get("token_budget") or defaults["token_budget"])
     thresholds = dict(defaults.get("thresholds") or {})
     thresholds.update(case.get("thresholds") or {})
+    enforcement = str(case.get("enforcement") or "required")
+    dimensions = [str(item) for item in (case.get("dimensions") or [])]
 
     relevant_paths = [str(path) for path in case["relevant_paths"]]
     history_terms = [str(term) for term in (case.get("relevant_history_terms") or [])]
@@ -305,6 +315,8 @@ def evaluate_case(
     return {
         "id": str(case["id"]),
         "query": str(case["query"]),
+        "enforcement": enforcement,
+        "dimensions": dimensions,
         "status": "PASS" if all(checks.values()) else "FAIL",
         "relevant_paths": relevant_paths,
         "relevant_history_terms": history_terms,
@@ -346,10 +358,31 @@ def evaluate_suite(root: Path, store: Path, suite: dict[str, Any]) -> dict[str, 
 
     baseline_tokens = sum(case["baseline"]["estimated_tokens"] for case in case_results)
     retrieval_tokens = sum(case["retrieval"]["metrics"]["estimated_tokens"] for case in case_results)
+    required_cases = [case for case in case_results if case["enforcement"] == "required"]
+    diagnostic_cases = [case for case in case_results if case["enforcement"] == "diagnostic"]
+    diagnostic_gaps = [case for case in diagnostic_cases if case["status"] == "FAIL"]
+    gaps_by_dimension: dict[str, int] = {}
+    gaps_by_check: dict[str, int] = {}
+    for case in diagnostic_gaps:
+        for dimension in case.get("dimensions") or ["unspecified"]:
+            gaps_by_dimension[str(dimension)] = gaps_by_dimension.get(str(dimension), 0) + 1
+        for check, passed in (case.get("checks") or {}).items():
+            if not passed:
+                gaps_by_check[str(check)] = gaps_by_check.get(str(check), 0) + 1
+
     aggregate = {
         "cases": len(case_results),
         "passed": sum(1 for case in case_results if case["status"] == "PASS"),
         "failed": sum(1 for case in case_results if case["status"] == "FAIL"),
+        "required_cases": len(required_cases),
+        "required_passed": sum(1 for case in required_cases if case["status"] == "PASS"),
+        "required_failed": sum(1 for case in required_cases if case["status"] == "FAIL"),
+        "diagnostic_cases": len(diagnostic_cases),
+        "diagnostic_passed": sum(1 for case in diagnostic_cases if case["status"] == "PASS"),
+        "diagnostic_gaps": len(diagnostic_gaps),
+        "diagnostic_gap_ids": [case["id"] for case in diagnostic_gaps],
+        "diagnostic_gaps_by_dimension": dict(sorted(gaps_by_dimension.items())),
+        "diagnostic_gaps_by_check": dict(sorted(gaps_by_check.items())),
         "macro_precision_at_k": macro_average(case_results, "precision_at_k"),
         "macro_recall_at_k": macro_average(case_results, "recall_at_k"),
         "macro_f1_at_k": macro_average(case_results, "f1_at_k"),
@@ -394,8 +427,9 @@ def evaluate_suite(root: Path, store: Path, suite: dict[str, Any]) -> dict[str, 
             "automatic_rank_weight_change": False,
             "automatic_architecture_change": False,
             "human_review_required_for_next_optimization": True,
+            "diagnostic_gaps_are_evidence_only": True,
         },
-        "status": "PASS" if aggregate["failed"] == 0 else "FAIL",
+        "status": "PASS" if aggregate["required_failed"] == 0 else "FAIL",
     }
     fingerprint_cases: list[dict[str, Any]] = []
     for case in case_results:
@@ -404,6 +438,8 @@ def evaluate_suite(root: Path, store: Path, suite: dict[str, Any]) -> dict[str, 
         fingerprint_cases.append({
             "id": case["id"],
             "query": case["query"],
+            "enforcement": case["enforcement"],
+            "dimensions": case["dimensions"],
             "status": case["status"],
             "relevant_paths": case["relevant_paths"],
             "relevant_history_terms": case["relevant_history_terms"],

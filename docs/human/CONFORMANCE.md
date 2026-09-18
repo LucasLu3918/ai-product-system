@@ -701,3 +701,12 @@ CI 重新計算 Precision@K、Recall@K、F1@K、MRR、History Recall、Irrelevan
 - 變更 architecture 或 publication authority。
 
 目前 Scenario inventory 為 **129**：20 deterministic + 55 lifecycle + 54 agent_eval，**129 / 129 automated、0 manual、0 uncovered**。
+
+### Scenario 129 Corpus Maturity
+
+Scenario 129 的 evidence corpus 進一步擴展為 9 cases：
+
+- 6 個 **required** regression cases：Python、Go、TypeScript、SQL、monorepo/shared-module 與 test/history retrieval；
+- 3 個 **diagnostic** stress cases：low lexical overlap / synonymy、cross-file call chain、credential-rotation 語意查詢。
+
+Required case 失敗會照常 block CI；Diagnostic case 若未達 threshold，report 必須保留 FAIL 並彙總 gap dimensions，但不把探索性能力缺口誤當成 repository regression。這讓 CI 可以長期觀察「目前 local hybrid retrieval 做不到什麼」，又不必把 benchmark 門檻調低或假裝所有壓力案例都已解決。

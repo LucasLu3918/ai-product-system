@@ -608,6 +608,38 @@ def symbol_boosts(conn: sqlite3.Connection, terms: list[str]) -> dict[int, tuple
     return boosts
 
 
+def companion_test_key(path: str) -> str:
+    name = Path(path).name.lower()
+    name = re.sub(
+        r"(?:\.test|\.spec)?\.(?:py|go|js|jsx|ts|tsx|java|kt|kts|cs|php|rb|rs|swift|vue|svelte)$",
+        "",
+        name,
+    )
+    name = re.sub(r"^(?:test[_-])", "", name)
+    name = re.sub(r"(?:[_-]test)$", "", name)
+    return re.sub(r"[^a-z0-9]+", "", name)
+
+
+def exact_symbol_companion_keys(
+    conn: sqlite3.Connection,
+    symbol_map: dict[int, tuple[float, list[str]]],
+) -> dict[str, str]:
+    result: dict[str, str] = {}
+    for chunk_id, (boost, _) in symbol_map.items():
+        if boost < 0.9:
+            continue
+        row = conn.execute("SELECT path FROM chunks WHERE id = ?", (chunk_id,)).fetchone()
+        if not row:
+            continue
+        path = str(row["path"])
+        if is_test_path(path):
+            continue
+        key = companion_test_key(path)
+        if key:
+            result[key] = path
+    return result
+
+
 def lexical_candidates(conn: sqlite3.Connection, fts_available: bool, terms: list[str], limit: int = 80) -> list[sqlite3.Row]:
     if not terms:
         return []
@@ -746,6 +778,7 @@ def query_repository(
     conn, fts_available = open_db(db_path)
     try:
         symbol_map = symbol_boosts(conn, terms)
+        exact_companion_keys = exact_symbol_companion_keys(conn, symbol_map)
         graph_paths = load_graph_boosts(store, terms)
         candidates = lexical_candidates(conn, fts_available, terms)
 
@@ -765,6 +798,10 @@ def query_repository(
             if is_test_path(str(row["path"])):
                 score += 0.08
                 reasons.append("test_evidence")
+                test_key = companion_test_key(str(row["path"]))
+                if test_key in exact_companion_keys:
+                    score += 0.70
+                    reasons.append(f"companion_test:{exact_companion_keys[test_key]}")
             scored.append({
                 "type": str(row["kind"]),
                 "path": str(row["path"]),
@@ -840,7 +877,7 @@ def query_repository(
             "index_update": index_update,
             "semantic": semantic,
             "ranking": {
-                "lanes": ["lexical", "symbol", "impact_graph", "test_evidence", "git_history"],
+                "lanes": ["lexical", "symbol", "companion_test", "impact_graph", "test_evidence", "git_history"],
                 "semantic_lane_active": semantic.get("status") == "READY",
             },
             "token_budget": token_budget,
