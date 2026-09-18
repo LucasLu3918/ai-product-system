@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.23.1
+
+### CI Validation Hygiene and Atomic Git Publication
+
+- Scope the repository `validate` workflow to automatic Pull Request updates and `main` pushes, while adding `workflow_dispatch` for explicit manual validation. Standalone feature-branch pushes no longer run the full repository validation automatically.
+- Add workflow concurrency keyed by Pull Request / ref with `cancel-in-progress: true`, so newer validation supersedes an older still-running validation for the same logical publication target.
+- Preserve the protected-main required `repository` check: PR validation and merged-main validation remain mandatory and unchanged in authority.
+- Make documentation diff-base behavior explicit across PR, push and manual-dispatch events; main pushes compare against `github.event.before`, feature-branch manual dispatch can compare against the default branch and main manual revalidation does not invent a missing push base.
+- Adopt atomic remote branch updates as the default Git publication strategy for multi-file logical changes: assemble the coherent approved tree first, then create/update the remote engineering ref once instead of publishing one intermediate remote commit per file.
+- Extend the Git Publish Proposal and Scenario 018 so remote update strategy, expected ref-update count and any deliberate incremental-publication reason are explicit approval inputs.
+- Strengthen repository static contracts so CI trigger scope, manual dispatch, concurrency cancellation and push diff-base policy cannot silently regress.
+- Update Human Maintenance and Technology Guide documentation to explain the new CI lifecycle and why true PR/main failures remain notified while transient standalone feature-push failures are avoided.
+- Observed evidence: creating `feature/ci-validation-hygiene` at exact commit `97e4c9b3724acfed63762dd4c5485bfd4c53962c` produced zero standalone feature push validation runs; PR #63 produced one required Run #987 (SUCCESS); merged main `c6fa89ae3fde6ff804f7ead76ea411b389dc324d` produced one protected-main Run #988 (SUCCESS).
+- Scenario Conformance remains 131 total / 0 manual / 20 deterministic / 57 lifecycle / 54 agent_eval / 131 automated / 0 uncovered.
+- Constitution impact: NO. Git Publish governance is clarified/hardened without changing Human publication authority.
+- Architecture Diagram Impact: N/A. This patch changes CI trigger/publication hygiene inside the existing Git governance/release path; Runtime, Retrieval and Product Delivery topology are unchanged.
+
 ## 0.23.0
 
 ### Adopted Bounded Structural Retrieval
