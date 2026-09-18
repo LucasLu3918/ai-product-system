@@ -229,9 +229,59 @@ Every turn resolves the Intelligence index, but does not reload every topic.
 Current task
 → Turn Context Manifest
 → relevant authoritative sources
-→ relevant Intelligence topics
+→ relevant stable Intelligence topics
+→ bounded Retrieval Intelligence evidence
 → optional evidence only when required
 ~~~
+
+## Retrieval Intelligence
+
+Project Intelligence is the stable understanding and authority/provenance layer. Retrieval Intelligence is a rebuildable, non-canonical cache used to assemble just-in-time repository evidence for the current task.
+
+The two layers are complementary:
+
+~~~text
+Stable Project Intelligence
+  PROJECT_INTELLIGENCE / SOURCE_REGISTRY / IMPACT_GRAPH / OVERRIDES
+                         +
+Rebuildable Retrieval Intelligence
+  source chunks / symbols / tests / Impact Graph boosts / Git history
+                         ↓
+                   bounded Turn Context
+~~~
+
+The retrieval database MUST NOT become a source of truth and may be deleted/rebuilt at any time. Canonical facts, approved overrides and authority precedence continue to live in Project Intelligence and project-native sources.
+
+Default local retrieval uses multiple lanes rather than treating vector similarity as sufficient:
+
+1. lexical repository search;
+2. symbol-definition matching;
+3. related test evidence;
+4. Impact Graph path boosts;
+5. relevant Git commit/diff history.
+
+An optional future semantic/embedding provider is an enhancement lane, not a dependency. If no semantic provider is configured, metadata reports `NOT_CONFIGURED` and deterministic/local retrieval remains available.
+
+The rebuildable SQLite cache is workspace-scoped under the AIPS cache home. `RETRIEVAL_INDEX.yaml` beside Project Intelligence contains only metadata/provenance and explicitly marks the database as non-canonical.
+
+Before indexing or returning snippets:
+
+- respect Git ignore/exclusion behavior;
+- exclude credential/secret path families;
+- redact secret-like values;
+- bind results to current Git HEAD and dirty-workspace fingerprint;
+- incrementally refresh committed or dirty changed paths;
+- return path/line or commit provenance plus content hash;
+- enforce a token budget and bounded result count.
+
+Use:
+
+~~~bash
+aips intelligence index --project /path/to/project
+aips intelligence retrieve --project /path/to/project --prompt "<task>" --token-budget 6000
+~~~
+
+The Human normally does not need to run these commands. When the Turn Context reports `retrieval_index_required=true`, the Agent should build the index as an engineering preparation step. Missing/unavailable Retrieval Intelligence degrades to existing stable Project Intelligence; it does not silently claim semantic evidence and does not by itself change authority.
 
 ## Migration from v0.8 Project Knowledge
 
@@ -286,6 +336,8 @@ Turn Context says Intelligence MISSING/PARTIAL
 → Agent performs bootstrap
 → targeted semantic enrichment
 → finalize
+→ ensure Retrieval Intelligence index
+→ retrieve bounded task evidence
 → Change Impact
 → mutation
 ~~~

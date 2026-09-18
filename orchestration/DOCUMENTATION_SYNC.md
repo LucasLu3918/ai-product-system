@@ -25,6 +25,8 @@ When a configured behavior-bearing source path changes, the same change MUST upd
 
 The mapping is explicit and deterministic. Do not guess from file names during validation.
 
+Project Intelligence documentation mapping includes both the stable intelligence implementation and the rebuildable Retrieval Intelligence implementation, so changes to indexing/ranking/context assembly require the Human Project Intelligence guide, Agent protocol and Technology Guide to be reviewed together.
+
 ## Technology Guide rule
 
 `docs/human/TECHNOLOGY_GUIDE.html` is a maintained Human inventory of important AIPS techniques and terms. A configured technical change requires the guide to be updated in the same diff, even when the update only clarifies that the technology inventory is unchanged and records the reviewed behavior.

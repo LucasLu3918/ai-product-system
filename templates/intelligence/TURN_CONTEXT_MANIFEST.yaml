@@ -22,6 +22,16 @@ context:
   project_native: []
   intelligence_topics: []
   optional_evidence: []
+  retrieval:
+    status: INDEX_MISSING
+    query: null
+    token_budget: 6000
+    estimated_tokens: 0
+    semantic:
+      status: NOT_CONFIGURED
+      provider: null
+      required: false
+    results: []
 
 
 component_resolution:
