@@ -20,7 +20,7 @@ flowchart TD
     F --> IDX[Ensure rebuildable Retrieval Index]
     R --> L
     L --> Q{Retrieval index available?}
-    Q -->|yes| RET[Hybrid JIT Retrieval: code + symbols + tests + graph + Git history]
+    Q -->|yes| RET[Hybrid JIT Retrieval: lexical + symbols + structural + tests + graph + Git history]
     Q -->|no| DEG[Truthful fallback to stable Intelligence]
     IDX --> RET
     RET --> BUD[Rank + token budget + provenance]
@@ -58,6 +58,26 @@ flowchart LR
 ~~~
 
 The evaluator measures task-specific evidence retrieval only. It records deterministic quality/token metrics plus informational observed latency, and has no authority to enable semantic providers, change rank weights or select a new retrieval technology.
+
+### Adopted structural retrieval + retained trial replay
+
+~~~mermaid
+flowchart LR
+    Q[Task query with exact symbol seed] --> L[Lexical-index bridge discovery]
+    L --> BR[Bridge chunks]
+    BR --> ID[Bounded exact identifiers]
+    ID --> DEF[Indexed target definitions]
+    DEF --> TEST[Companion test boost]
+    TEST --> RANK[Hybrid ranking + token budget]
+    RANK --> CTX[Turn Context]
+
+    TRIAL[Scenario 130 replay] --> OFF[Explicit structural OFF baseline]
+    TRIAL --> ON[Explicit structural ON candidate]
+    OFF --> CMP[Same corpus metrics]
+    ON --> CMP
+~~~
+
+Structural Retrieval is part of normal Turn Context after Human Adoption Decision. The implementation remains bounded and dependency-free; `--no-structural` exists for diagnostic comparison, while the retained Trial harness can still replay OFF/ON behavior.
 
 ## Primary planning package
 

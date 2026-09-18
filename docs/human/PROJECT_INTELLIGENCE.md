@@ -131,6 +131,37 @@ aips intelligence evaluate \
 
 Benchmark 結果只是 evidence。它不會自動開啟 semantic provider、不會自行改 ranking 權重，也不會替 Human 決定下一步要使用 Tree-sitter/LSP、Embedding 或 Sourcegraph。
 
+## Structural Retrieval：已採用的跨檔關係檢索
+
+Structural Retrieval 已在 controlled Trial 通過 full corpus 並取得 Human Adoption Decision，因此現在成為正常 Retrieval Intelligence 的預設 lane。
+
+~~~text
+Exact Query Symbol
+   ↓
+Lexical Index 找引用它的 Bridge
+   ↓
+Bridge 內其他 Exact Identifier
+   ↓
+Indexed Symbol Definition
+   ↓
+Target Definition / Related Test
+~~~
+
+例如查詢只知道 `CheckoutCoordinator` 與「downstream allocation / rollback」，系統可以先找到 wiring file，再沿 wiring 中的 exact identifier 找到 inventory reservation definition，不需要 query 直接寫出 `ReserveStock`。
+
+正式採用仍維持幾個邊界：
+
+- Bridge discovery 使用既有 lexical index，不做無限制全庫掃描；
+- target resolution 使用 indexed symbol table；
+- bridge / identifier / target / test scan 都有 hard limit；
+- retrieval evidence 會顯示 structural telemetry 與是否發生 truncation；
+- 不新增 Tree-sitter、gopls/LSP、Sourcegraph 或 remote semantic dependency；
+- 這是 exact-identifier relation graph，不宣稱 compiler-grade semantic resolution；
+- Turn Context 與一般 `aips intelligence retrieve` 預設啟用；
+- debug / regression 可用 `--no-structural` 明確關閉；
+- Scenario 130 仍保留 explicit OFF/ON Trial replay；
+- Retrieval Quality Evaluation 會量測目前已採用的 default behavior。
+
 ## Debug
 
 一般使用不需執行；排錯可用 `aips intelligence status/render/finalize/impact-init/index/retrieve/evaluate`。

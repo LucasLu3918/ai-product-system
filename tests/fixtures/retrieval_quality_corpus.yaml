@@ -85,9 +85,10 @@ cases:
   - id: cross-file-call-chain
     enforcement: diagnostic
     dimensions: [cross-file-call-chain, structural-retrieval, go]
-    query: "Trace CheckoutCoordinator place order through stock reservation and verify the rollback test"
+    query: "Trace CheckoutCoordinator order placement to downstream allocation and verify the rollback test"
     relevant_paths:
       - checkout/coordinator.go
+      - checkout/wiring.go
       - inventory/reservation.go
       - checkout/coordinator_test.go
     relevant_history_terms: ["connect checkout coordinator to reservation rollback"]

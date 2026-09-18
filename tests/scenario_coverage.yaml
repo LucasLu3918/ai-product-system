@@ -887,3 +887,23 @@ scenarios:
       - templates/intelligence/RETRIEVAL_EVALUATION.yaml
       - orchestration/PROJECT_INTELLIGENCE.md
       - tests/validate_repository.py
+  - id: "130"
+    path: tests/scenarios/130-structural-retrieval-candidate-trial.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/retrieval_quality_evaluation_lifecycle.py
+      - scripts/structural_retrieval_trial.py
+      - scripts/retrieval_intelligence.py
+      - tests/fixtures/retrieval_quality_corpus.yaml
+      - orchestration/PROJECT_INTELLIGENCE.md
+      - tests/validate_repository.py
+  - id: "131"
+    path: tests/scenarios/131-structural-retrieval-adoption.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/retrieval_intelligence_lifecycle.py
+      - scripts/retrieval_intelligence.py
+      - scripts/project_intelligence.py
+      - templates/intelligence/RETRIEVAL_INDEX.yaml
+      - orchestration/PROJECT_INTELLIGENCE.md
+      - tests/validate_repository.py

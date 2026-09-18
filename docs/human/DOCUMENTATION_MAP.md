@@ -13,7 +13,7 @@ AIPS 將文件依主要讀者分流，避免 Human 說明與 Agent canonical con
 | `docs/human/INSTALLATION.md` | Install / Adapter / Cache / Attach / Uninstall |
 | `docs/human/USER_GUIDE.md` | 完整工作方式 |
 | `docs/human/HARNESS.md` | Turn-Aware Harness、Runtime Capability、Context Composition |
-| `docs/human/PROJECT_INTELLIGENCE.md` | Existing Project 初始化、Review、Overrides、Freshness、Retrieval Intelligence / Quality Evaluation、Change Impact |
+| `docs/human/PROJECT_INTELLIGENCE.md` | Existing Project 初始化、Review、Overrides、Freshness、Retrieval Intelligence / Quality Evaluation / Structural Retrieval + Trial、Change Impact |
 | `docs/human/CONFORMANCE.md` | Scenario Conformance、coverage 與 evidence |
 | `docs/human/EVOLUTION_RADAR.md` | Weekly/Monthly research、Semantic Analysis、Human Decision、Controlled Trial |
 | `docs/human/EVOLUTION_RADAR_OVERVIEW.html` | Evolution Radar 一頁完整圖解 |

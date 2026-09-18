@@ -97,3 +97,33 @@ Current automated inventory after Scenario 129:
 - manual: 0
 - uncovered: 0
 - automated: 129 / 129
+
+## Scenario 130 — Structural Retrieval Candidate Trial
+
+Scenario 130 is lifecycle-covered by the same full Retrieval Quality fixture plus `scripts/structural_retrieval_trial.py`. The replay harness explicitly disables structural retrieval for its baseline and explicitly enables the bounded exact-identifier two-hop candidate, proves all required corpus cases avoid regression, and requires the `cross-file-call-chain` diagnostic to improve from incomplete source recall to complete Recall@K.
+
+Trial PASS remains evidence only. Scenario 131 separately records the Human-approved production adoption.
+
+Current automated inventory after Scenario 130:
+
+- deterministic: 20
+- lifecycle: 56
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 130 / 130
+
+## Scenario 131 — Structural Retrieval Adoption
+
+Scenario 131 is lifecycle-covered by `tests/evidence/retrieval_intelligence_lifecycle.py`. It proves normal `retrieve` and Turn Context paths enable bounded Structural Retrieval by default, that evidence reports default/enabled selection plus telemetry, and that `--no-structural` explicitly disables only the structural ranking lane for regression/debug comparison.
+
+The adopted implementation remains local/provider-neutral and adds no parser/LSP dependency, Role, Skill, Approval Gate or publication authority.
+
+Current automated inventory after Scenario 131:
+
+- deterministic: 20
+- lifecycle: 57
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 131 / 131

@@ -12,6 +12,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 PI = ROOT / "scripts" / "project_intelligence.py"
+STRUCTURAL_TRIAL = ROOT / "scripts" / "structural_retrieval_trial.py"
 CORPUS = ROOT / "tests" / "fixtures" / "retrieval_quality_corpus.yaml"
 
 
@@ -144,6 +145,15 @@ func (CheckoutCoordinator) PlaceOrder(orderID string, reserve func(string) bool)
     return reserve(orderID)
 }
 """)
+        write(project, "checkout/wiring.go", """package checkout
+
+import "example/inventory"
+
+func ExecuteCheckout(orderID string) bool {
+    coordinator := CheckoutCoordinator{}
+    return coordinator.PlaceOrder(orderID, inventory.ReserveStock)
+}
+""")
         write(project, "inventory/reservation.go", """package inventory
 
 func ReserveStock(orderID string) bool {
@@ -252,7 +262,7 @@ func TestReservationRollback(t *testing.T) {
             "session.md": ("Browser Session Refresh", ["web/session_refresh.ts", "web/session_refresh.test.ts"]),
             "monorepo-auth.md": ("Monorepo Authorization", ["apps/api/authorization.py", "shared/security/permission_policy.py", "tests/api/test_authorization.py"]),
             "registration.md": ("Registration Messaging", ["accounts/registration_coordinator.py", "messaging/outbox_relay.py", "tests/accounts/test_registration_idempotency.py"]),
-            "checkout.md": ("Checkout Reservation Flow", ["checkout/coordinator.go", "inventory/reservation.go", "checkout/coordinator_test.go"]),
+            "checkout.md": ("Checkout Reservation Flow", ["checkout/coordinator.go", "checkout/wiring.go", "inventory/reservation.go", "checkout/coordinator_test.go"]),
             "identity.md": ("Identity Session Invalidation", ["identity/access_epoch.ts", "identity/access_epoch.test.ts"]),
         }
         for filename, (title, refs) in topic_specs.items():
@@ -350,6 +360,62 @@ func TestReservationRollback(t *testing.T) {
             "same repository/suite evidence must keep a stable fingerprint across observed latency changes",
         )
         print("retrieval_quality_metrics=" + json.dumps(aggregate, sort_keys=True))
+
+        trial_path = base / "structural-trial-report.json"
+        trial = json_run([
+            sys.executable, str(STRUCTURAL_TRIAL),
+            "--project", str(project),
+            "--store", str(store),
+            "--suite", str(suite_path),
+            "--output", str(trial_path),
+        ], env)
+        require((trial.get("trial") or {}).get("status") == "PASS", f"structural trial failed: {trial}")
+        summary = trial.get("summary") or {}
+        require(not (summary.get("required_regressions") or []), "structural candidate must not regress required cases")
+        require(
+            "cross-file-call-chain" in (summary.get("improved_structural_targets") or []),
+            "cross-file structural diagnostic must improve under candidate",
+        )
+        target = next(
+            case for case in (trial.get("cases") or [])
+            if case.get("id") == "cross-file-call-chain"
+        )
+        baseline_metrics = ((target.get("baseline") or {}).get("metrics") or {})
+        candidate_metrics = ((target.get("candidate") or {}).get("metrics") or {})
+        require(
+            float(baseline_metrics.get("recall_at_k") or 0) < 1.0,
+            "trial must demonstrate a real baseline structural gap",
+        )
+        require(
+            float(candidate_metrics.get("recall_at_k") or 0) == 1.0,
+            "structural candidate must recover the complete cross-file source set",
+        )
+        candidate_ranking = (target.get("candidate") or {}).get("ranking") or {}
+        require(
+            "structural_reference_graph" in (candidate_ranking.get("lanes") or []),
+            "candidate report must prove structural lane activation",
+        )
+        structural_doc = (target.get("candidate") or {}).get("structural") or {}
+        telemetry = structural_doc.get("telemetry") or {}
+        require(structural_doc.get("status") == "READY", "structural candidate status must be explicit")
+        require(structural_doc.get("enabled") is True, "trial candidate must explicitly enable structural retrieval")
+        require(structural_doc.get("selection") == "explicit", "trial candidate activation must remain explicit")
+        require(structural_doc.get("external_dependency") is False, "structural trial must remain dependency-free")
+        require(telemetry.get("truncated") is False, "fixture structural traversal must remain inside declared bounds")
+        require(int(telemetry.get("seed_symbols") or 0) >= 1, "structural trial must report exact seed symbols")
+        require(int(telemetry.get("bridge_chunks") or 0) >= 1, "structural trial must report bridge chunks")
+        require(int(telemetry.get("target_definitions") or 0) >= 1, "structural trial must report target definitions")
+        baseline_ranking = (target.get("baseline") or {}).get("ranking") or {}
+        require(
+            "structural_reference_graph" not in (baseline_ranking.get("lanes") or []),
+            "baseline retrieval must remain unchanged",
+        )
+        authority = trial.get("authority") or {}
+        require(authority.get("automatic_adoption") is False, "trial PASS must not auto-adopt")
+        require(authority.get("automatic_default_enablement") is False, "trial PASS must not enable default retrieval")
+        require(authority.get("human_adoption_decision_required") is True, "structural adoption must require Human decision")
+        require(trial_path.is_file(), "structural trial report must be writable")
+        print("structural_trial_summary=" + json.dumps(summary, sort_keys=True))
 
         probe_required = dict(suite["cases"][0])
         probe_required["id"] = "required-probe"

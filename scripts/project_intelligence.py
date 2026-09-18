@@ -1410,6 +1410,7 @@ def main() -> int:
     p.add_argument("--token-budget", type=int, default=RETRIEVAL_DEFAULT_TOKEN_BUDGET)
     p.add_argument("--limit", type=int, default=RETRIEVAL_DEFAULT_RESULT_LIMIT)
     p.add_argument("--no-refresh", action="store_true")
+    p.add_argument("--no-structural", action="store_true")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
     p = sub.add_parser("evaluate")
@@ -1453,6 +1454,7 @@ def main() -> int:
                 token_budget=max(256, args.token_budget),
                 limit=max(1, min(50, args.limit)),
                 refresh=not args.no_refresh,
+                structural=False if args.no_structural else None,
             )
         elif args.command == "evaluate":
             store, _, _ = intelligence_store(root)
