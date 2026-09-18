@@ -131,6 +131,38 @@ aips intelligence evaluate \
 
 Benchmark 結果只是 evidence。它不會自動開啟 semantic provider、不會自行改 ranking 權重，也不會替 Human 決定下一步要使用 Tree-sitter/LSP、Embedding 或 Sourcegraph。
 
+## Structural Retrieval Candidate Trial：先驗證關係圖，再決定 Parser / LSP
+
+當 diagnostic gap 集中在 cross-file call chain 時，AIPS 先測一個不增加外部 dependency 的候選方案：
+
+~~~text
+Exact Symbol
+   ↓
+誰引用這個 Symbol？
+   ↓
+Bridge File
+   ↓
+Bridge 又引用哪些其他 Symbol？
+   ↓
+Target Definition
+   ↓
+Related Test
+~~~
+
+例如 CheckoutCoordinator 的 query 本身不直接提到 `ReserveStock`，但 wiring file 同時引用 `CheckoutCoordinator` 與 `ReserveStock`。Structural candidate 可以透過這條 two-hop exact-identifier 關係把 inventory reservation definition 找回來。
+
+這個候選不是全庫無限制掃描：Bridge 先透過既有 lexical index 找候選，再用 indexed symbol table 解 exact identifiers，並限制 bridge chunks、每個 bridge identifiers、target definitions 與 companion-test scan 數量；report 會顯示是否發生 truncation。
+
+這個能力目前是 **trial-only**：
+
+- 正常 Retrieval Intelligence 預設不開啟 structural lane；
+- Trial 必須在 9-case corpus 上證明 required cases 不 regression；
+- `structural-retrieval` diagnostic case 必須有實際 Recall 提升；
+- Trial PASS 仍不能自動改成 default；
+- 不會因此自動加入 Tree-sitter、gopls/LSP 或其他 parser/server dependency。
+
+因此下一步技術選型會由 trial evidence 決定，而不是先選工具再找理由。
+
 ## Debug
 
 一般使用不需執行；排錯可用 `aips intelligence status/render/finalize/impact-init/index/retrieve/evaluate`。

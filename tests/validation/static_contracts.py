@@ -150,7 +150,7 @@ required_files = [
     "templates/delivery/LOCAL_ENVIRONMENT.md", "templates/delivery/DEPLOYMENT_PLAN.md",
     "templates/delivery/RUNBOOK.md",
     "scripts/check_release_readiness.py", "scripts/harness_resolve.py",
-    "scripts/project_intelligence.py", "scripts/retrieval_intelligence.py", "scripts/retrieval_evaluation.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py",
+    "scripts/project_intelligence.py", "scripts/retrieval_intelligence.py", "scripts/retrieval_evaluation.py", "scripts/structural_retrieval_trial.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py",
     "scripts/aips_identity.py", "scripts/execution_isolation.py",
     "scripts/agent_eval.py", "scripts/check_secret_leakage.py", "scripts/visual_profile.py",
     "tests/evidence/governance_command_guard.py", "tests/evidence/visual_profile_lifecycle.py",
@@ -580,7 +580,7 @@ for rel, keys in {
         if key not in doc:
             errors.append(f"{rel} missing top-level key: {key}")
 
-for helper in ("scripts/harness_resolve.py", "scripts/project_intelligence.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py"):
+for helper in ("scripts/harness_resolve.py", "scripts/project_intelligence.py", "scripts/retrieval_intelligence.py", "scripts/retrieval_evaluation.py", "scripts/structural_retrieval_trial.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py"):
     helper_path = ROOT / helper
     if helper_path.exists():
         compiled = subprocess.run([sys.executable, "-m", "py_compile", str(helper_path)], capture_output=True, text=True)

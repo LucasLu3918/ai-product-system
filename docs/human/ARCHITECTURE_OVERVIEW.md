@@ -28,6 +28,10 @@ Project Intelligence 現在分成兩個互補層次：穩定的 Architecture / S
 
 Retrieval Intelligence 的下一步採「Measure before dependency」。AIPS 以 repository-specific suite 比較 v0.20-style static topic baseline 與目前 local hybrid retrieval，量測 Precision@K、Recall@K、MRR、history recall、irrelevant context 與 token 使用量；latency 只做觀察值。Report 只提供 evidence，不能自行啟用 embedding、改 ranking 或選擇 Sourcegraph/LSP。是否增加新 retrieval technology 仍由 Human 依量測缺口決策。
 
+### Structural Retrieval Candidate Trial
+
+針對 cross-file call chain gap，AIPS 先以 trial-only exact-identifier two-hop relation graph 驗證：從 exact symbol 找到引用它的 bridge chunk，再沿 bridge 中的其他 exact symbol identifier 找到 target definition / related test。這條 lane 預設關閉、不新增 parser/LSP dependency；只有 full corpus 證明 required cases 不 regression 且 structural diagnostic recall 真正改善後，才進入 Human Adoption Decision。
+
 ## 2. Project Intelligence
 
 ![Project Intelligence](assets/project-intelligence-overview.svg)

@@ -337,6 +337,39 @@ aips intelligence evaluate \
 
 Evaluation is non-authoritative. PASS or FAIL never enables embeddings, changes ranking weights, selects Tree-sitter/LSP/Sourcegraph, modifies code or grants publication authority. A material retrieval architecture change still requires normal System Self-Improvement / Core Change / Git Publish governance.
 
+## Structural Retrieval Candidate Trial
+
+When diagnostic gaps cluster around `cross-file-call-chain` / `structural-retrieval`, AIPS may trial a structural candidate without changing the default Turn Context retrieval contract.
+
+The first candidate is deliberately dependency-free, exact-identifier based and bounded. It uses the existing lexical index to locate bridge references, the indexed symbol table to resolve outgoing identifiers, and hard limits on bridge chunks, identifiers, target definitions and companion-test scans. Trial telemetry reports whether any limit truncated traversal.
+
+
+~~~text
+exact query symbol definition
+        ↓
+chunks referencing that exact identifier
+        ↓
+bridge chunk
+        ↓
+other exact symbol identifiers in bridge
+        ↓
+target symbol definitions
+        ↓
+optional companion test boost
+~~~
+
+The lane is enabled only through the trial path. Normal `query_repository` calls keep `structural=false` and therefore remain unchanged.
+
+Trial acceptance requires:
+
+- every `required` corpus case has no Recall/MRR/threshold regression;
+- every diagnostic case tagged `structural-retrieval` has positive Recall@K delta and reaches its declared recall threshold;
+- token budget, provenance and secret filtering stay intact;
+- the report states `default_enabled: false` and `external_dependency: false`;
+- PASS produces evidence only and still requires a separate Human Adoption Decision.
+
+This trial intentionally precedes Tree-sitter/LSP adoption. Tree-sitter-like syntax parsing and LSP semantic reference providers remain candidate implementation technologies only if the dependency-free structural relation graph is insufficient or if broader language-accurate reference resolution is later justified by the corpus.
+
 ## Migration from v0.8 Project Knowledge
 
 If `.ai/knowledge/KNOWLEDGE_INDEX.yaml` exists and no Intelligence exists:
