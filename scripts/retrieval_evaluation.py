@@ -482,6 +482,197 @@ def evaluate_suite(root: Path, store: Path, suite: dict[str, Any]) -> dict[str, 
     return result_payload
 
 
+
+def _semantic_trial_mode(
+    root: Path,
+    store: Path,
+    case: dict[str, Any],
+    defaults: dict[str, Any],
+    *,
+    enabled: bool,
+) -> dict[str, Any]:
+    top_k = int(case.get("top_k") or defaults["top_k"])
+    result_limit = int(case.get("result_limit") or defaults["result_limit"])
+    token_budget = int(case.get("token_budget") or defaults["token_budget"])
+    result = query_repository(
+        root,
+        store,
+        str(case["query"]),
+        token_budget=token_budget,
+        limit=result_limit,
+        refresh=True,
+        semantic_aliases=enabled,
+    )
+    metrics = retrieval_metrics(
+        result,
+        [str(path) for path in case["relevant_paths"]],
+        [str(term) for term in (case.get("relevant_history_terms") or [])],
+        top_k,
+    )
+    return {
+        "status": result.get("status"),
+        "semantic_status": (result.get("semantic") or {}).get("status"),
+        "semantic_alias": result.get("semantic_alias") or {},
+        "ranking": result.get("ranking") or {},
+        "metrics": metrics,
+    }
+
+
+def evaluate_semantic_alias_trial(
+    root: Path,
+    store: Path,
+    suite: dict[str, Any],
+) -> dict[str, Any]:
+    errors = validate_suite(suite, root, store)
+    if errors:
+        raise ValueError("invalid retrieval evaluation suite: " + "; ".join(errors))
+
+    index = index_repository(root, store, force=False)
+    defaults = suite["defaults"]
+    case_results: list[dict[str, Any]] = []
+    for case in suite["cases"]:
+        baseline = _semantic_trial_mode(root, store, case, defaults, enabled=False)
+        candidate = _semantic_trial_mode(root, store, case, defaults, enabled=True)
+        thresholds = dict(defaults.get("thresholds") or {})
+        thresholds.update(case.get("thresholds") or {})
+        dimensions = [str(item) for item in (case.get("dimensions") or [])]
+        semantic_dimension = "low-lexical-overlap" in dimensions or "synonymy" in dimensions
+        baseline_recall = float(baseline["metrics"]["recall_at_k"])
+        declared_recall = float(thresholds["recall_at_k_min"])
+        semantic_target = semantic_dimension and baseline_recall < declared_recall
+
+        recall_delta = _round(
+            float(candidate["metrics"]["recall_at_k"]) - float(baseline["metrics"]["recall_at_k"])
+        )
+        precision_delta = _round(
+            float(candidate["metrics"]["precision_at_k"]) - float(baseline["metrics"]["precision_at_k"])
+        )
+        irrelevant_delta = _round(
+            float(candidate["metrics"]["irrelevant_context_rate"])
+            - float(baseline["metrics"]["irrelevant_context_rate"])
+        )
+
+        candidate_checks = {
+            "ready": candidate["status"] == "READY",
+            "semantic_provider_truthful": candidate["semantic_status"] == "NOT_CONFIGURED",
+            "recall_threshold": float(candidate["metrics"]["recall_at_k"]) >= float(thresholds["recall_at_k_min"]),
+            "precision_threshold": float(candidate["metrics"]["precision_at_k"]) >= float(thresholds["precision_at_k_min"]),
+            "mrr_threshold": float(candidate["metrics"]["mrr"]) >= float(thresholds["mrr_min"]),
+            "history_threshold": float(candidate["metrics"]["history_recall"]) >= float(thresholds["history_recall_min"]),
+            "irrelevant_threshold": float(candidate["metrics"]["irrelevant_context_rate"]) <= float(thresholds["irrelevant_context_rate_max"]),
+        }
+        required = str(case.get("enforcement") or "required") == "required"
+        no_recall_regression = float(candidate["metrics"]["recall_at_k"]) >= baseline_recall
+        no_required_regression = True
+        if required:
+            no_required_regression = (
+                no_recall_regression
+                and float(candidate["metrics"]["mrr"]) >= float(baseline["metrics"]["mrr"])
+                and all(candidate_checks.values())
+            )
+        target_improved = True
+        if semantic_target:
+            target_improved = recall_delta > 0 and candidate_checks["recall_threshold"]
+
+        case_results.append({
+            "id": str(case["id"]),
+            "enforcement": str(case.get("enforcement") or "required"),
+            "dimensions": dimensions,
+            "semantic_dimension": semantic_dimension,
+            "semantic_target": semantic_target,
+            "baseline": baseline,
+            "candidate": candidate,
+            "delta": {
+                "recall_at_k": recall_delta,
+                "precision_at_k": precision_delta,
+                "irrelevant_context_rate": irrelevant_delta,
+            },
+            "checks": {
+                "no_recall_regression": no_recall_regression,
+                "no_required_regression": no_required_regression,
+                "semantic_target_improved": target_improved,
+                "candidate_thresholds": candidate_checks,
+            },
+        })
+
+    required_regressions = [
+        case["id"] for case in case_results
+        if case["enforcement"] == "required" and not case["checks"]["no_required_regression"]
+    ]
+    recall_regressions = [
+        case["id"] for case in case_results if not case["checks"]["no_recall_regression"]
+    ]
+    semantic_dimension_cases = [case for case in case_results if case["semantic_dimension"]]
+    targets = [case for case in semantic_dimension_cases if case["semantic_target"]]
+    already_covered = [case["id"] for case in semantic_dimension_cases if not case["semantic_target"]]
+    improved_targets = [
+        case["id"] for case in targets if case["checks"]["semantic_target_improved"]
+    ]
+    passed = (
+        not required_regressions
+        and not recall_regressions
+        and bool(targets)
+        and len(improved_targets) == len(targets)
+    )
+    recommendation = "REVIEW_FOR_ADOPTION" if passed else "HOLD"
+
+    deterministic_cases = [{
+        "id": case["id"],
+        "enforcement": case["enforcement"],
+        "dimensions": case["dimensions"],
+        "semantic_dimension": case["semantic_dimension"],
+        "semantic_target": case["semantic_target"],
+        "baseline_metrics": case["baseline"]["metrics"],
+        "candidate_metrics": case["candidate"]["metrics"],
+        "delta": case["delta"],
+        "checks": case["checks"],
+    } for case in case_results]
+    fingerprint_payload = {
+        "suite": yaml.safe_dump(suite, sort_keys=True, allow_unicode=True),
+        "repository_revision": run_git(root, ["rev-parse", "HEAD"]) or "unknown",
+        "dirty_fingerprint": dirty_fingerprint(root),
+        "cases": deterministic_cases,
+        "required_regressions": required_regressions,
+        "recall_regressions": recall_regressions,
+        "improved_targets": improved_targets,
+        "trial_status": "PASS" if passed else "FAIL",
+    }
+    return {
+        "schema": {"version": SCHEMA_VERSION},
+        "trial": {
+            "candidate": "builtin-curated-software-alias-expansion",
+            "status": "PASS" if passed else "FAIL",
+            "default_enabled": False,
+            "external_dependency": False,
+            "embedding_provider_used": False,
+            "recommendation": recommendation,
+        },
+        "repository": {
+            "revision": run_git(root, ["rev-parse", "HEAD"]) or "unknown",
+            "dirty_fingerprint": dirty_fingerprint(root),
+        },
+        "index": index,
+        "summary": {
+            "cases": len(case_results),
+            "required_regressions": required_regressions,
+            "recall_regressions": recall_regressions,
+            "semantic_dimension_cases": [case["id"] for case in semantic_dimension_cases],
+            "semantic_targets": [case["id"] for case in targets],
+            "already_covered_semantic_cases": already_covered,
+            "improved_semantic_targets": improved_targets,
+        },
+        "cases": case_results,
+        "authority": {
+            "automatic_adoption": False,
+            "automatic_default_enablement": False,
+            "automatic_embedding_provider_enablement": False,
+            "human_adoption_decision_required": True,
+        },
+        "trial_fingerprint": sha(
+            json.dumps(fingerprint_payload, ensure_ascii=False, sort_keys=True)
+        ),
+    }
+
 def load_suite(path: Path) -> dict[str, Any]:
     if not path.is_file():
         raise ValueError(f"evaluation suite not found: {path}")
@@ -510,11 +701,15 @@ def main() -> int:
     parser.add_argument("--suite", type=Path, required=True)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--format", choices=("json", "yaml"), default="json")
+    parser.add_argument("--trial", choices=("semantic-alias",))
     args = parser.parse_args()
 
     try:
         suite = load_suite(args.suite)
-        report = evaluate_suite(args.project.resolve(), args.store.resolve(), suite)
+        if args.trial == "semantic-alias":
+            report = evaluate_semantic_alias_trial(args.project.resolve(), args.store.resolve(), suite)
+        else:
+            report = evaluate_suite(args.project.resolve(), args.store.resolve(), suite)
     except (OSError, RuntimeError, ValueError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
@@ -525,7 +720,8 @@ def main() -> int:
         print(json.dumps(report, ensure_ascii=False, indent=2))
     else:
         print(yaml.safe_dump(report, sort_keys=False, allow_unicode=True).rstrip())
-    return 0 if report["status"] == "PASS" else 1
+    status = ((report.get("trial") or {}).get("status") if args.trial else report.get("status"))
+    return 0 if status == "PASS" else 1
 
 
 if __name__ == "__main__":

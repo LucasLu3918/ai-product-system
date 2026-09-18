@@ -742,3 +742,25 @@ Scenario 131 驗證 Human-approved adoption 後的正式行為：
 - 不新增 Tree-sitter、LSP、Sourcegraph 或 remote provider dependency。
 
 目前 Scenario inventory 為 **131**：20 deterministic + 57 lifecycle + 54 agent_eval，**131 / 131 automated、0 manual、0 uncovered**。
+
+## Semantic Alias Expansion Candidate Trial（Scenario 132）
+
+Scenario 132 保留 deterministic alias expansion 的完整負向 Trial evidence。
+
+同一個 9-case corpus 比較：
+
+- baseline：目前正式 Retrieval（包含 Structural Retrieval）；
+- candidate：baseline + trial-only `semantic_alias_expansion`。
+
+實測結果是 **FAIL / HOLD**：
+
+- required regressions：`auth-token-expiry`、Go receipt reconciliation、TypeScript session refresh；
+- registration baseline 已 Recall@K=1.0，但 candidate 造成 source-recall regression；
+- `synonym-access-rotation` 仍無 source-recall improvement；
+- semantic provider 仍是 `NOT_CONFIGURED`，沒有假裝跑過 Embedding。
+
+CI 因此不是要求這個 candidate PASS，而是要求能穩定重播上述失敗、回傳 non-zero Trial status + `recommendation=HOLD`，並證明 `automatic_adoption=false` / `automatic_embedding_provider_enablement=false`。
+
+這代表「先試 deterministic alias」研究項目已完成，答案是 **不採用**。若要研究真正 semantic/embedding retrieval，需另開 Human-reviewed Trial。
+
+目前 Scenario inventory 為 **132**：20 deterministic + 58 lifecycle + 54 agent_eval，**132 / 132 automated、0 manual、0 uncovered**。

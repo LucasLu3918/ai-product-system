@@ -32,8 +32,8 @@ if conformance_helper.exists():
             errors.append("Scenario conformance total/registered count must match scenario inventory")
         if cov.get("uncovered") != 0:
             errors.append("Released scenario conformance registry must have no uncovered entries")
-        if cov.get("manual") != 0 or cov.get("agent_eval") != 54 or cov.get("lifecycle") != 57 or cov.get("automated") != 131:
-            errors.append("current baseline must report manual=0, lifecycle=57, agent_eval=54 and automated=131")
+        if cov.get("manual") != 0 or cov.get("agent_eval") != 54 or cov.get("lifecycle") != 58 or cov.get("automated") != 132:
+            errors.append("current baseline must report manual=0, lifecycle=58, agent_eval=54 and automated=132")
 
     with tempfile.TemporaryDirectory() as tmp:
         temp = Path(tmp)
@@ -94,7 +94,7 @@ if agent_eval_helper.exists():
     if cli_eval.returncode != 0:
         errors.append(f"aips conformance agent-eval CLI failed: {cli_eval.stdout.strip()} {cli_eval.stderr.strip()}")
 
-for n in range(121, 132):
+for n in range(121, 133):
     matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
     if len(matches) != 1:
         errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")

@@ -127,3 +127,27 @@ Current automated inventory after Scenario 131:
 - manual: 0
 - uncovered: 0
 - automated: 131 / 131
+
+## Scenario 132 — Semantic Alias Expansion Candidate Trial
+
+Scenario 132 is lifecycle-covered by the full Retrieval Quality fixture plus the `--trial semantic-alias` mode in `scripts/retrieval_evaluation.py`.
+
+The committed candidate outcome is **FAIL / HOLD**, and the lifecycle evidence intentionally expects the Trial process to exit non-zero. It proves the source-controlled alias expansion candidate:
+
+- regresses the required auth-token-expiry, Go receipt and TypeScript session cases;
+- regresses source recall for the already-covered registration diagnostic;
+- does not improve the active `synonym-access-rotation` source-recall gap;
+- keeps the real semantic provider truthfully `NOT_CONFIGURED`;
+- keeps alias expansion disabled by default and reports recommendation `HOLD`;
+- cannot auto-adopt itself or enable an embedding provider.
+
+Negative Trial evidence is therefore a valid conformance result. A materially different semantic retrieval candidate requires a separate Human-reviewed Trial.
+
+Current automated inventory after Scenario 132:
+
+- deterministic: 20
+- lifecycle: 58
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 132 / 132

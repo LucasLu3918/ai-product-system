@@ -907,3 +907,14 @@ scenarios:
       - templates/intelligence/RETRIEVAL_INDEX.yaml
       - orchestration/PROJECT_INTELLIGENCE.md
       - tests/validate_repository.py
+  - id: "132"
+    path: tests/scenarios/132-semantic-alias-expansion-candidate-trial.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/retrieval_quality_evaluation_lifecycle.py
+      - scripts/retrieval_evaluation.py
+      - scripts/retrieval_intelligence.py
+      - templates/intelligence/SEMANTIC_ALIASES.yaml
+      - tests/fixtures/retrieval_quality_corpus.yaml
+      - orchestration/PROJECT_INTELLIGENCE.md
+      - tests/validate_repository.py

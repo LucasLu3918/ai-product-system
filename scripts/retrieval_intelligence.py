@@ -27,6 +27,8 @@ STRUCTURAL_MAX_BRIDGES = 120
 STRUCTURAL_MAX_IDENTIFIERS_PER_BRIDGE = 200
 STRUCTURAL_MAX_TARGET_DEFINITIONS = 200
 STRUCTURAL_MAX_TEST_CHUNKS = 500
+SEMANTIC_ALIAS_LIMIT = 32
+SEMANTIC_ALIAS_PATH = Path(__file__).resolve().parents[1] / "templates/intelligence/SEMANTIC_ALIASES.yaml"
 CHUNK_LINES = 100
 CHUNK_OVERLAP = 20
 
@@ -572,6 +574,53 @@ def query_terms(query: str) -> list[str]:
     return result[:20]
 
 
+def semantic_alias_expansion(terms: list[str]) -> tuple[list[str], dict[str, Any]]:
+    telemetry: dict[str, Any] = {
+        "provider": "builtin-curated-software-aliases",
+        "matched_groups": [],
+        "matched_group_terms": {},
+        "expanded_terms": [],
+        "truncated": False,
+        "limit": SEMANTIC_ALIAS_LIMIT,
+    }
+    if not SEMANTIC_ALIAS_PATH.is_file():
+        telemetry["status"] = "UNAVAILABLE"
+        return [], telemetry
+    try:
+        doc = yaml.safe_load(SEMANTIC_ALIAS_PATH.read_text(encoding="utf-8")) or {}
+    except Exception:
+        telemetry["status"] = "INVALID"
+        return [], telemetry
+
+    source_terms = set(terms)
+    expanded: list[str] = []
+    for group in doc.get("groups") or []:
+        if not isinstance(group, dict):
+            continue
+        group_terms = [
+            str(item).lower()
+            for item in (group.get("terms") or [])
+            if str(item).strip()
+        ]
+        if not source_terms.intersection(group_terms):
+            continue
+        group_id = str(group.get("id") or "unnamed")
+        telemetry["matched_groups"].append(group_id)
+        telemetry["matched_group_terms"][group_id] = group_terms
+        for term in group_terms:
+            if term in source_terms or term in expanded:
+                continue
+            if len(expanded) >= SEMANTIC_ALIAS_LIMIT:
+                telemetry["truncated"] = True
+                break
+            expanded.append(term)
+        if telemetry["truncated"]:
+            break
+    telemetry["expanded_terms"] = expanded
+    telemetry["status"] = "READY"
+    return expanded, telemetry
+
+
 def fts_expression(terms: list[str]) -> str:
     safe = [re.sub(r"[^A-Za-z0-9_\u4e00-\u9fff]", "", term) for term in terms]
     safe = [term for term in safe if term]
@@ -863,6 +912,49 @@ def lexical_candidates(conn: sqlite3.Connection, fts_available: bool, terms: lis
     ).fetchall()
 
 
+def semantic_alias_boosts(
+    conn: sqlite3.Connection,
+    fts_available: bool,
+    alias_terms: list[str],
+    matched_group_terms: dict[str, list[str]],
+    limit: int = 80,
+) -> dict[int, tuple[float, list[str]]]:
+    if not alias_terms or not matched_group_terms:
+        return {}
+    boosts: dict[int, tuple[float, list[str]]] = {}
+    for row in lexical_candidates(conn, fts_available, alias_terms, limit=limit):
+        text = str(row["text"]).lower()
+        matched_groups: list[str] = []
+        matched_terms: list[str] = []
+        for group_id, group_terms in matched_group_terms.items():
+            hits = [term for term in group_terms if term in text]
+            if not hits:
+                continue
+            matched_groups.append(group_id)
+            matched_terms.extend(hits[:2])
+        if not matched_groups:
+            continue
+
+        # Cross-group coherence is the signal. A single broad alias such as
+        # "session" or "token" must not outrank a chunk that jointly expresses
+        # credential lifecycle + invalidation + rotation intent.
+        group_count = len(matched_groups)
+        if group_count >= 3:
+            value = 0.78
+        elif group_count == 2:
+            value = 0.58
+        else:
+            value = 0.06
+        boosts[int(row["id"])] = (
+            value,
+            [
+                *[f"semantic_alias_group:{group}" for group in matched_groups[:4]],
+                *[f"semantic_alias:{term}" for term in list(dict.fromkeys(matched_terms))[:4]],
+            ],
+        )
+    return boosts
+
+
 def lexical_score(rank: Any) -> float:
     try:
         value = abs(float(rank))
@@ -939,6 +1031,7 @@ def query_repository(
     limit: int = DEFAULT_RESULT_LIMIT,
     refresh: bool = True,
     structural: bool | None = None,
+    semantic_aliases: bool = False,
 ) -> dict[str, Any]:
     status_before = index_status(root, store)
     index_update = None
@@ -970,11 +1063,28 @@ def query_repository(
     structural_enabled = True if structural is None else structural
     structural_selection = "default" if structural is None else "explicit"
     terms = query_terms(query)
+    alias_terms: list[str] = []
+    alias_telemetry: dict[str, Any] = {
+        "provider": "builtin-curated-software-aliases",
+        "matched_groups": [],
+        "expanded_terms": [],
+        "truncated": False,
+        "limit": SEMANTIC_ALIAS_LIMIT,
+        "status": "DISABLED",
+    }
+    if semantic_aliases:
+        alias_terms, alias_telemetry = semantic_alias_expansion(terms)
     db_path = index_path(root)
     conn, fts_available = open_db(db_path)
     try:
         symbol_map = symbol_boosts(conn, terms)
         exact_companion_keys = exact_symbol_companion_keys(conn, symbol_map)
+        alias_map = semantic_alias_boosts(
+            conn,
+            fts_available,
+            alias_terms,
+            dict(alias_telemetry.get("matched_group_terms") or {}),
+        ) if semantic_aliases else {}
         structural_map: dict[int, tuple[float, list[str]]] = {}
         structural_stats: dict[str, Any] = {
             "seed_symbols": 0,
@@ -1004,6 +1114,10 @@ def query_repository(
                 boost, structural_reasons = structural_map[chunk_id]
                 score += boost
                 reasons.extend(structural_reasons)
+            if chunk_id in alias_map:
+                boost, alias_reasons = alias_map[chunk_id]
+                score += boost
+                reasons.extend(alias_reasons)
             if str(row["path"]) in graph_paths:
                 score += 0.25
                 reasons.append("impact_graph")
@@ -1066,8 +1180,33 @@ def query_repository(
             })
             seen_chunks.add(chunk_id)
 
+        for chunk_id, (boost, alias_reasons) in alias_map.items():
+            if chunk_id in seen_chunks:
+                continue
+            row = conn.execute("SELECT * FROM chunks WHERE id = ?", (chunk_id,)).fetchone()
+            if not row:
+                continue
+            reasons = list(alias_reasons)
+            score = boost
+            if is_test_path(str(row["path"])):
+                score += 0.08
+                reasons.append("test_evidence")
+            scored.append({
+                "type": str(row["kind"]),
+                "path": str(row["path"]),
+                "start_line": int(row["start_line"]),
+                "end_line": int(row["end_line"]),
+                "score": round(min(score, 1.5), 4),
+                "reason": list(dict.fromkeys(reasons)),
+                "snippet": str(row["text"]),
+                "content_hash": str(row["content_hash"]),
+                "_chunk_id": chunk_id,
+            })
+            seen_chunks.add(chunk_id)
+
         scored.sort(key=lambda item: (-float(item["score"]), item["path"], item["start_line"]))
-        history = history_candidates(conn, root, terms)
+        history_terms = [*terms, *alias_terms] if semantic_aliases else terms
+        history = history_candidates(conn, root, history_terms)
 
         combined = [*scored[: max(limit * 3, 20)], *history]
         combined.sort(key=lambda item: (-float(item["score"]), str(item.get("path") or item.get("commit") or "")))
@@ -1109,6 +1248,13 @@ def query_repository(
             "index": status_now,
             "index_update": index_update,
             "semantic": semantic,
+            "semantic_alias": {
+                "status": "TRIAL_ENABLED" if semantic_aliases else "DISABLED",
+                "provider": "builtin-curated-software-aliases",
+                "external_dependency": False,
+                "default_enabled": False,
+                "telemetry": alias_telemetry,
+            },
             "structural": {
                 "status": "READY" if structural_enabled else "DISABLED",
                 "mode": "exact-identifier-two-hop",
@@ -1124,12 +1270,14 @@ def query_repository(
                     "symbol",
                     "companion_test",
                     *(["structural_reference_graph"] if structural_enabled else []),
+                    *(["semantic_alias_expansion"] if semantic_aliases else []),
                     "impact_graph",
                     "test_evidence",
                     "git_history",
                 ],
                 "semantic_lane_active": semantic.get("status") == "READY",
                 "structural_lane_active": structural_enabled,
+                "semantic_alias_lane_active": semantic_aliases,
             },
             "token_budget": token_budget,
             "estimated_tokens": consumed,

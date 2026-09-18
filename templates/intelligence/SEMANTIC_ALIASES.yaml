@@ -1,0 +1,20 @@
+version: 1
+provider: builtin-curated-software-aliases
+description: >-
+  Transparent deterministic software-engineering alias groups used only by the
+  Semantic Alias Expansion candidate trial. This is not an embedding model and
+  does not claim general semantic equivalence.
+
+groups:
+  - id: registration
+    terms: [account, signup, register, registration, enroll, enrollment, onboarding]
+  - id: notification
+    terms: [message, notification, notice, event, welcome, onboarding]
+  - id: idempotency
+    terms: [retry, retried, retries, duplicate, duplicated, twice, idempotent, idempotency, once, deduplicate]
+  - id: credential-access
+    terms: [credential, credentials, auth, authentication, access, token, session]
+  - id: invalidation
+    terms: [kick, logout, signout, revoke, revokes, revoked, invalidate, invalidation, expire, expired, stale]
+  - id: rotation
+    terms: [rotate, rotated, rotation, epoch, version, generation]
