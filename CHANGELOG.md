@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.22.1
+
+### Retrieval Benchmark Corpus Maturity
+
+- Expand Retrieval Quality Evaluation from 3 controlled cases to a committed 9-case corpus spanning Python, Go, TypeScript, SQL, monorepo/shared-module, low-lexical-overlap, synonymy and cross-file-call-chain retrieval dimensions.
+- Introduce explicit `required` vs `diagnostic` case enforcement: required threshold failures remain release-blocking, while diagnostic stress failures retain FAIL/gap evidence without being rewritten as PASS or blocking the whole suite.
+- Aggregate diagnostic evidence by gap ID, dimension and failed check so capability limitations can be tracked over time before selecting another retrieval technology.
+- Tighten diagnostic stress cases to require 100% source recall/direct-source delta, preventing partial retrieval from being mistaken for semantic or structural completeness.
+- Add deterministic companion-test ranking for exact symbol targets using common Python/Go/JavaScript/TypeScript naming conventions, so target implementation + matching test evidence remain stable as corpus noise grows.
+- The first expanded-corpus run exposed a real required regression where `RefundService` ranked correctly but its companion test was displaced by generic refund matches; the local companion-test fix restored all 6 required regression cases without adding an external provider.
+- The same expanded evidence exposed diagnostic gaps across low lexical overlap / synonymy and cross-file structural retrieval, which remain evidence for later Human architecture review rather than triggering automatic Embedding, Tree-sitter/LSP or Sourcegraph adoption.
+- Preserve the existing provider-neutral/local-first architecture: no Embedding, Vector DB, Tree-sitter/LSP or Sourcegraph dependency is introduced by this patch.
+- Strengthen existing Scenario 129 evidence without adding a new Scenario; Scenario Conformance remains 129 total / 0 manual / 20 deterministic / 55 lifecycle / 54 agent_eval / 129 automated / 0 uncovered.
+- Feature implementation merged through #57; exact merged main `7e2e89a6c27ea3c1b97947196a551715ca493cb2` passed protected-main `repository` Run #897 before release metadata finalization.
+- Constitution impact: NO. No new Role, Skill, capability category, Human Approval Gate or autonomous publication authority is introduced.
+- Architecture Diagram Impact: N/A. This patch refines Retrieval Intelligence evaluation/ranking behavior inside the existing Project Intelligence topology.
+
 ## 0.22.0
 
 ### Retrieval Quality Evaluation
