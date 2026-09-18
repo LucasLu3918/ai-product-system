@@ -4,7 +4,6 @@ import tempfile
 
 
 def _append_validation_git_config(key: str, value: str) -> None:
-    """Apply test-only Git config to this validation process and its children."""
     raw_count = os.environ.get("GIT_CONFIG_COUNT", "0")
     try:
         count = int(raw_count)
@@ -16,7 +15,6 @@ def _append_validation_git_config(key: str, value: str) -> None:
 
 
 def _install_validation_global_git_config() -> tempfile.TemporaryDirectory[str]:
-    """Provide the same no-maintenance policy to local-transport Git children."""
     config_dir = tempfile.TemporaryDirectory(prefix="aips-validation-git-config-")
     config_path = Path(config_dir.name) / "gitconfig"
     config_path.write_text(
@@ -34,13 +32,6 @@ def _install_validation_global_git_config() -> tempfile.TemporaryDirectory[str]:
     return config_dir
 
 
-# Lifecycle evidence rapidly creates, updates and deletes temporary Git repositories.
-# Disable both legacy automatic gc and modern automatic maintenance only for repository
-# validation so no detached Git housekeeping process can race TemporaryDirectory cleanup
-# after the Git command under test has already returned. The command-scope settings cover
-# direct Git commands; the validation-only global config also covers local-transport child
-# processes such as receive-pack. Product/runtime Git behavior is intentionally unchanged,
-# and cleanup failures remain fail-closed rather than ignored or retried in the evidence.
 _VALIDATION_GIT_CONFIG_DIR = _install_validation_global_git_config()
 _append_validation_git_config("gc.auto", "0")
 _append_validation_git_config("gc.autoDetach", "false")
@@ -54,6 +45,9 @@ from validation import performance_evidence_contracts as performance_evidence_co
 from validation import creative_evidence_contracts as creative_evidence_contracts  # noqa: F401
 from validation import product_delivery_contracts as product_delivery_contracts  # noqa: F401
 from validation import evolution_radar_contracts as evolution_radar_contracts  # noqa: F401
+from validation import evolution_governance_contracts as evolution_governance_contracts  # noqa: F401
+from validation import documentation_sync_contracts as documentation_sync_contracts  # noqa: F401
+from validation import documentation_audience_contracts as documentation_audience_contracts  # noqa: F401
 from validation import governance_resume as governance_resume  # noqa: F401
 from validation import conformance_isolation as conformance_isolation  # noqa: F401
 from validation import syntax_contracts as syntax_contracts  # noqa: F401

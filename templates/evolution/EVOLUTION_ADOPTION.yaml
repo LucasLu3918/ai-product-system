@@ -1,0 +1,18 @@
+version: 1
+adoption:
+  candidate_id: "EVO-XXXXXXXXXXXX"
+  signal_fingerprint: "sha256:"
+  decision_fingerprint: "sha256:"
+  trial_fingerprint: "sha256:"
+  baseline_repository_revision: ""
+  trial_status: PASS
+  decided_by: ""
+  decided_at: ""
+  next_action: system_improvement_review
+adoption_fingerprint: "sha256:"
+authority:
+  code_change_authorized: false
+  remote_branch_or_pr_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  normal_system_gates_required: true

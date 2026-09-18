@@ -1,0 +1,29 @@
+version: 1
+analysis:
+  provider: ""
+  model: ""
+  analyzed_at: ""
+baseline:
+  repository_revision: ""
+  evidence_digest: "sha256:"
+recommendations:
+  - signal_fingerprint: "sha256:"
+    state: HOLD
+    aips_current_state: ""
+    gap: ""
+    benefit: ""
+    cost_complexity: ""
+    reliability_security: ""
+    maturity: ""
+    confidence: 0.0
+    uncertainty: ""
+    example: ""
+    reuse_extension_path: []
+    evidence_refs: []
+    architecture_diagram_review_if_adopted: false
+authority:
+  advisory_only: true
+  code_change_authorized: false
+  branch_or_pr_authorized: false
+  merge_authorized: false
+  release_authorized: false

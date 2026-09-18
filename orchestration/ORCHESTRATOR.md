@@ -64,7 +64,7 @@ Implementation requires both Planning Package approval (Gate 1) and Implementati
 
 ## Risk-Proportional Security Assurance
 
-Use `docs/SECURITY_ASSURANCE.md`.
+Use `docs/human/SECURITY_ASSURANCE.md`.
 
 For planning, establish Product Baseline SAL and Reliability Impact. For every material change, classify Change Security Impact from the actual Change Boundary and protected assets touched.
 
@@ -147,7 +147,7 @@ Preserve valid native conventions and never refactor unrelated code merely to ma
 
 ## System self-change
 
-When this repository itself changes, the final review must include the Documentation Impact Gate in `docs/MAINTENANCE.md`. A system change is incomplete if affected docs, flows, diagrams, examples, scenarios, templates/schemas, VERSION or CHANGELOG are stale.
+When this repository itself changes, the final review must include the Documentation Impact Gate in `docs/human/MAINTENANCE.md`. A system change is incomplete if affected docs, flows, diagrams, examples, scenarios, templates/schemas, VERSION or CHANGELOG are stale.
 
 
 ## System Self-Improvement

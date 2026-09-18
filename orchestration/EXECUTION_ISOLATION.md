@@ -68,3 +68,20 @@ aips isolation remove --project /path/to/project --id change-123
 ~~~
 
 The helper emits YAML by default and supports `--format json` for deterministic orchestration.
+
+
+## Evolution Trial use
+
+A Human-approved Evolution `TRIAL` reuses this worktree isolation contract. The Trial workflow MUST request `worktree`; shared mode is not an allowed fallback.
+
+The Trial worktree is ephemeral evidence infrastructure on the GitHub-hosted runner:
+
+- checkout credentials are not persisted;
+- the semantic execution provider receives no remote publication authority;
+- the Human Decision supplies repository-relative approved path patterns;
+- deterministic Trial evaluation rejects forbidden/out-of-scope paths, excessive diff size and any commit created inside the Trial;
+- repository validation runs only after scope checks pass;
+- Trial changes are not pushed and disappear with the runner;
+- a Trial Report is returned to the Human before any adoption decision.
+
+If worktree isolation is unavailable, the Trial is `BLOCKED`. Do not downgrade it to `shared`.

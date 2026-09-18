@@ -1,0 +1,57 @@
+version: 1
+human_root: docs/human
+standalone_human_prefix: HUMAN_
+standalone_human_documents: []
+shared_docs:
+  - docs/ARCHITECTURE.md
+repository_root_exceptions:
+  - README.md
+  - CHANGELOG.md
+  - SECURITY.md
+  - USER_GUIDE.md
+human_documents:
+  - docs/human/GETTING_STARTED.md
+  - docs/human/USER_GUIDE.md
+  - docs/human/INSTALLATION.md
+  - docs/human/HARNESS.md
+  - docs/human/PROJECT_INTELLIGENCE.md
+  - docs/human/CONFORMANCE.md
+  - docs/human/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR_OVERVIEW.html
+  - docs/human/TECHNOLOGY_GUIDE.html
+  - docs/human/DOCUMENTATION_SYNC.md
+  - docs/human/SECURITY_ASSURANCE.md
+  - docs/human/ARCHITECTURE_OVERVIEW.md
+  - docs/human/MAINTENANCE.md
+  - docs/human/DOCUMENTATION_MAP.md
+human_assets_root: docs/human/assets
+legacy_paths:
+  docs/GETTING_STARTED.md: docs/human/GETTING_STARTED.md
+  docs/USER_GUIDE.md: docs/human/USER_GUIDE.md
+  docs/INSTALLATION.md: docs/human/INSTALLATION.md
+  docs/HARNESS.md: docs/human/HARNESS.md
+  docs/PROJECT_INTELLIGENCE.md: docs/human/PROJECT_INTELLIGENCE.md
+  docs/CONFORMANCE.md: docs/human/CONFORMANCE.md
+  docs/EVOLUTION_RADAR.md: docs/human/EVOLUTION_RADAR.md
+  docs/EVOLUTION_RADAR_OVERVIEW.html: docs/human/EVOLUTION_RADAR_OVERVIEW.html
+  docs/TECHNOLOGY_GUIDE.html: docs/human/TECHNOLOGY_GUIDE.html
+  docs/DOCUMENTATION_SYNC.md: docs/human/DOCUMENTATION_SYNC.md
+  docs/SECURITY_ASSURANCE.md: docs/human/SECURITY_ASSURANCE.md
+  docs/ARCHITECTURE_OVERVIEW.md: docs/human/ARCHITECTURE_OVERVIEW.md
+  docs/MAINTENANCE.md: docs/human/MAINTENANCE.md
+  docs/DOCUMENTATION_MAP.md: docs/human/DOCUMENTATION_MAP.md
+  docs/assets/: docs/human/assets/
+scan_roots:
+  - README.md
+  - USER_GUIDE.md
+  - AGENTS.md
+  - SYSTEM.md
+  - docs/ARCHITECTURE.md
+  - orchestration
+  - harness
+  - config
+  - references
+  - scripts
+  - templates
+  - tests
+  - .github/workflows

@@ -127,10 +127,10 @@ required_files = [
     "harness/adapters/codex/AGENTS.md", "harness/adapters/claude-code/CLAUDE.md",
     "harness/adapters/gemini-cli/gemini-extension.json", "harness/adapters/gemini-cli/GEMINI.md",
     "harness/adapters/generic/BOOTSTRAP.md",
-    "docs/ARCHITECTURE.md", "docs/MAINTENANCE.md", "docs/INSTALLATION.md", "docs/SECURITY_ASSURANCE.md",
-    "docs/GETTING_STARTED.md", "docs/USER_GUIDE.md", "docs/DOCUMENTATION_MAP.md", "docs/HARNESS.md",
-    "docs/PROJECT_INTELLIGENCE.md", "docs/ARCHITECTURE_OVERVIEW.md", "docs/assets/system-overview.svg",
-    "docs/assets/harness-overview.svg", "docs/assets/project-intelligence-overview.svg", "docs/assets/product-delivery-overview.svg", "docs/assets/system-lifecycle.svg",
+    "docs/ARCHITECTURE.md", "docs/human/MAINTENANCE.md", "docs/human/INSTALLATION.md", "docs/human/SECURITY_ASSURANCE.md",
+    "docs/human/GETTING_STARTED.md", "docs/human/USER_GUIDE.md", "docs/human/DOCUMENTATION_MAP.md", "docs/human/HARNESS.md",
+    "docs/human/PROJECT_INTELLIGENCE.md", "docs/human/ARCHITECTURE_OVERVIEW.md", "docs/human/assets/system-overview.svg",
+    "docs/human/assets/harness-overview.svg", "docs/human/assets/project-intelligence-overview.svg", "docs/human/assets/product-delivery-overview.svg", "docs/human/assets/system-lifecycle.svg",
     "examples/EXAMPLES.md", "work-modes/README.md",
     "templates/system-improvement-review.md", "templates/constitutional-change-proposal.md",
     "templates/core-change-proposal.md", "templates/git-publish-proposal.md",
@@ -220,7 +220,7 @@ scenarios = sorted((ROOT / "tests/scenarios").glob("*.md"))
 if len(scenarios) < 125:
     errors.append(f"Expected at least 125 acceptance scenarios, found {len(scenarios)}")
 
-security_doc = (ROOT / "docs/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/SECURITY_ASSURANCE.md").exists() else ""
+security_doc = (ROOT / "docs/human/SECURITY_ASSURANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/human/SECURITY_ASSURANCE.md").exists() else ""
 for phrase in ("SAL 0", "SAL 4", "Critical risk floors", "Product baseline vs change impact", "Release Security Gate"):
     if phrase not in security_doc:
         errors.append(f"SECURITY_ASSURANCE.md missing: {phrase}")
@@ -360,13 +360,13 @@ for style_id, meta in (style_index.get("styles") or {}).items():
 
 human_docs = (
     "README.md",
-    "docs/GETTING_STARTED.md",
-    "docs/USER_GUIDE.md",
-    "docs/INSTALLATION.md",
-    "docs/HARNESS.md",
-    "docs/PROJECT_INTELLIGENCE.md",
-    "docs/ARCHITECTURE_OVERVIEW.md",
-    "docs/DOCUMENTATION_MAP.md",
+    "docs/human/GETTING_STARTED.md",
+    "docs/human/USER_GUIDE.md",
+    "docs/human/INSTALLATION.md",
+    "docs/human/HARNESS.md",
+    "docs/human/PROJECT_INTELLIGENCE.md",
+    "docs/human/ARCHITECTURE_OVERVIEW.md",
+    "docs/human/DOCUMENTATION_MAP.md",
 )
 for rel in human_docs:
     text = (ROOT / rel).read_text(encoding="utf-8") if (ROOT / rel).exists() else ""
@@ -374,20 +374,20 @@ for rel in human_docs:
         errors.append(f"Human doc is expected to contain Traditional Chinese content: {rel}")
 
 root_user_guide = (ROOT / "USER_GUIDE.md").read_text(encoding="utf-8") if (ROOT / "USER_GUIDE.md").exists() else ""
-if len(root_user_guide) > 1200 or "docs/USER_GUIDE.md" not in root_user_guide:
-    errors.append("Root USER_GUIDE.md should remain a short redirect to docs/USER_GUIDE.md")
+if len(root_user_guide) > 1200 or "docs/human/USER_GUIDE.md" not in root_user_guide:
+    errors.append("Root USER_GUIDE.md should remain a short redirect to docs/human/USER_GUIDE.md")
 
-svg = (ROOT / "docs/assets/system-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/system-overview.svg").exists() else ""
+svg = (ROOT / "docs/human/assets/system-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/human/assets/system-overview.svg").exists() else ""
 if "<svg" not in svg or "AI Product System" not in svg:
     errors.append("Human architecture SVG is missing or invalid")
 if "EPHEMERAL" not in svg or "ATTACHED" not in svg or "Turn-Aware Harness" not in svg:
     errors.append("System overview SVG must reflect Turn-Aware Harness and EPHEMERAL/ATTACHED architecture")
 
-harness_svg = (ROOT / "docs/assets/harness-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/harness-overview.svg").exists() else ""
+harness_svg = (ROOT / "docs/human/assets/harness-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/human/assets/harness-overview.svg").exists() else ""
 if "<svg" not in harness_svg or "Turn-Aware" not in harness_svg:
     errors.append("Harness architecture SVG is missing or invalid")
 
-intelligence_svg = (ROOT / "docs/assets/project-intelligence-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/project-intelligence-overview.svg").exists() else ""
+intelligence_svg = (ROOT / "docs/human/assets/project-intelligence-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/human/assets/project-intelligence-overview.svg").exists() else ""
 if "<svg" not in intelligence_svg or "Project Intelligence" not in intelligence_svg or "Change Impact" not in intelligence_svg:
     errors.append("Project Intelligence architecture SVG is missing or invalid")
 
@@ -408,7 +408,7 @@ for key in ("status", "release", "build", "tests", "security", "staging", "appro
     if key not in release_template:
         errors.append(f"RELEASE_READINESS.yaml missing top-level key: {key}")
 
-delivery_svg = (ROOT / "docs/assets/product-delivery-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/product-delivery-overview.svg").exists() else ""
+delivery_svg = (ROOT / "docs/human/assets/product-delivery-overview.svg").read_text(encoding="utf-8") if (ROOT / "docs/human/assets/product-delivery-overview.svg").exists() else ""
 if "<svg" not in delivery_svg or "End-to-End Product Delivery" not in delivery_svg:
     errors.append("Product delivery architecture SVG is missing or invalid")
 if "LOCAL_COMPLETE" not in delivery_svg or "PRODUCTION_VERIFIED" not in delivery_svg:
@@ -457,7 +457,7 @@ lessons = load_yaml(ROOT / "templates/review/LESSONS.yaml") or {}
 if "lessons" not in lessons:
     errors.append("LESSONS.yaml missing lessons list")
 
-lifecycle_svg = (ROOT / "docs/assets/system-lifecycle.svg").read_text(encoding="utf-8") if (ROOT / "docs/assets/system-lifecycle.svg").exists() else ""
+lifecycle_svg = (ROOT / "docs/human/assets/system-lifecycle.svg").read_text(encoding="utf-8") if (ROOT / "docs/human/assets/system-lifecycle.svg").exists() else ""
 if "<svg" not in lifecycle_svg or "Installation, Harness &amp; Intelligence Lifecycle" not in lifecycle_svg:
     errors.append("System lifecycle SVG is missing or invalid")
 if "EPHEMERAL" not in lifecycle_svg or "ATTACHED" not in lifecycle_svg or "managed adapters" not in lifecycle_svg:
@@ -544,9 +544,9 @@ if 'die "CLI path already exists and is not an AIPS symlink' not in cli_text:
 if "Project workspace is not attached; applying attach safety checks." in cli_text:
     errors.append("bin/aips still contains the old implicit preflight attach behavior")
 
-maintenance_text = (ROOT / "docs/MAINTENANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/MAINTENANCE.md").exists() else ""
+maintenance_text = (ROOT / "docs/human/MAINTENANCE.md").read_text(encoding="utf-8") if (ROOT / "docs/human/MAINTENANCE.md").exists() else ""
 if "Architecture Diagram Impact Check" not in maintenance_text:
-    errors.append("docs/MAINTENANCE.md missing Architecture Diagram Impact Check")
+    errors.append("docs/human/MAINTENANCE.md missing Architecture Diagram Impact Check")
 
 core_change_text = (ROOT / "templates/core-change-proposal.md").read_text(encoding="utf-8") if (ROOT / "templates/core-change-proposal.md").exists() else ""
 if "Architecture Diagram Impact" not in core_change_text:

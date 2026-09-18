@@ -30,7 +30,7 @@ Key protocol pointers:
 - primary planning: `orchestration/PLANNING_PACKAGE.md`
 - creative direction: `orchestration/CREATIVE_DIRECTION.md`
 - brand system: `orchestration/BRAND_SYSTEM.md`
-- security assurance: `docs/SECURITY_ASSURANCE.md`
+- security assurance: `docs/human/SECURITY_ASSURANCE.md`
 - secret handling: `orchestration/SECRET_HANDLING.md`
 - core change testing: `orchestration/CORE_CHANGE_TESTING.md`
 - scenario conformance: `orchestration/CONFORMANCE.md`
