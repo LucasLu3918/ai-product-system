@@ -14,6 +14,8 @@ Agent canonical protocol：[`orchestration/DOCUMENTATION_SYNC.md`](../../orchest
 
 當 behavior-bearing script / config / template / workflow / protocol 改變時，CI 依 changed-path mapping 要求相應 Human docs、Agent docs 與 Technology Guide 在同一 change 被 review / update。
 
+Project Intelligence mapping 同時涵蓋 stable intelligence 與 `scripts/retrieval_intelligence.py`；未來 indexing、ranking、Git-history retrieval、token budgeting 或 context assembly 改變時，也必須同步 review Human / Agent Project Intelligence 文件。
+
 ### 2. Documentation Audience Placement
 
 核心設定：[`config/documentation-audience.yaml`](../../config/documentation-audience.yaml)

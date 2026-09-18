@@ -24,6 +24,13 @@ from aips_identity import (
     project_root as canonical_project_root,
     repository_identity as canonical_repository_identity,
 )
+from retrieval_intelligence import (
+    DEFAULT_RESULT_LIMIT as RETRIEVAL_DEFAULT_RESULT_LIMIT,
+    DEFAULT_TOKEN_BUDGET as RETRIEVAL_DEFAULT_TOKEN_BUDGET,
+    index_repository as retrieval_index_repository,
+    index_status as retrieval_index_status,
+    query_repository as retrieval_query_repository,
+)
 
 SCHEMA_VERSION = 1
 
@@ -955,6 +962,43 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
     state = intel.get("state") or {}
     authority_conflicts = active_authority_conflicts(store, intel, registry, runtime) if store.exists() else []
 
+    retrieval: dict[str, Any] = {
+        "status": "INDEX_MISSING",
+        "results": [],
+        "token_budget": RETRIEVAL_DEFAULT_TOKEN_BUDGET,
+        "estimated_tokens": 0,
+    }
+    retrieval_state = {"status": "MISSING"}
+    if store.exists() and (store / "PROJECT_INTELLIGENCE.yaml").exists():
+        try:
+            retrieval_state = retrieval_index_status(root, store)
+            if prompt and retrieval_state.get("status") in {"CURRENT", "STALE"}:
+                retrieval = retrieval_query_repository(
+                    root,
+                    store,
+                    prompt,
+                    token_budget=RETRIEVAL_DEFAULT_TOKEN_BUDGET,
+                    limit=RETRIEVAL_DEFAULT_RESULT_LIMIT,
+                    refresh=True,
+                )
+            else:
+                retrieval = {
+                    "status": "INDEX_MISSING" if retrieval_state.get("status") == "MISSING" else str(retrieval_state.get("status")),
+                    "index": retrieval_state,
+                    "results": [],
+                    "token_budget": RETRIEVAL_DEFAULT_TOKEN_BUDGET,
+                    "estimated_tokens": 0,
+                }
+        except Exception as exc:
+            retrieval = {
+                "status": "UNAVAILABLE",
+                "reason": str(exc),
+                "index": retrieval_state,
+                "results": [],
+                "token_budget": RETRIEVAL_DEFAULT_TOKEN_BUDGET,
+                "estimated_tokens": 0,
+            }
+
     available = intel.get("topics") or {}
     selected: list[str] = []
     for name in desired_topics:
@@ -1016,6 +1060,7 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             "project_native": project_native[:30],
             "intelligence_topics": selected,
             "optional_evidence": [str(store / "DISCOVERY.yaml")] if (store / "DISCOVERY.yaml").exists() else [],
+            "retrieval": retrieval,
             "authority_conflicts": authority_conflicts,
         },
         "instruction_resolution": {
@@ -1044,6 +1089,10 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
         "requirements": {
             "initialize_intelligence": initialize,
             "semantic_enrichment_required": readiness != "READY",
+            "retrieval_index_required": bool(
+                (store / "PROJECT_INTELLIGENCE.yaml").exists()
+                and retrieval_state.get("status") == "MISSING"
+            ),
             "targeted_refresh": refresh,
             "change_impact_required": mutation,
         },
@@ -1053,6 +1102,15 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
                 {"subject": "task.category", "selected": category, "reasons": ["prompt_classification"]},
                 {"subject": "change_impact", "selected": mutation, "reasons": ["existing_project_mutation"] if mutation else ["read_only_or_non_mutating"]},
                 {"subject": "intelligence_topics", "selected": selected, "reasons": ["task_relevant_topics_only"]},
+                {
+                    "subject": "retrieval_intelligence",
+                    "selected": {
+                        "status": retrieval.get("status"),
+                        "result_count": len(retrieval.get("results") or []),
+                        "estimated_tokens": retrieval.get("estimated_tokens", 0),
+                    },
+                    "reasons": ["just_in_time_repository_evidence"],
+                },
                 {"subject": "governance_enforcement", "selected": adapter_enforcement(runtime), "reasons": ["installed_adapter_state_or_safe_fallback"]},
             ] if explain else []),
         },
@@ -1336,6 +1394,19 @@ def main() -> int:
     p.add_argument("--change-id")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
+    p = sub.add_parser("index")
+    p.add_argument("--project", default=os.getcwd())
+    p.add_argument("--force", action="store_true")
+    p.add_argument("--format", choices=["yaml", "json"], default="yaml")
+
+    p = sub.add_parser("retrieve")
+    p.add_argument("--project", default=os.getcwd())
+    p.add_argument("--prompt", required=True)
+    p.add_argument("--token-budget", type=int, default=RETRIEVAL_DEFAULT_TOKEN_BUDGET)
+    p.add_argument("--limit", type=int, default=RETRIEVAL_DEFAULT_RESULT_LIMIT)
+    p.add_argument("--no-refresh", action="store_true")
+    p.add_argument("--format", choices=["yaml", "json"], default="yaml")
+
     args = parser.parse_args()
     root = project_root(Path(args.project))
     try:
@@ -1355,6 +1426,23 @@ def main() -> int:
             result = promotion_apply(root, args.topic, args.target, args.approval_id)
         elif args.command == "impact-init":
             result = impact_init(root, args.prompt, args.change_id)
+        elif args.command == "index":
+            store, _, _ = intelligence_store(root, create=True)
+            if not (store / "PROJECT_INTELLIGENCE.yaml").exists():
+                raise RuntimeError("Project Intelligence must be initialized before Retrieval Intelligence indexing")
+            result = retrieval_index_repository(root, store, force=args.force)
+        elif args.command == "retrieve":
+            store, _, _ = intelligence_store(root)
+            if not (store / "PROJECT_INTELLIGENCE.yaml").exists():
+                raise RuntimeError("Project Intelligence must be initialized before Retrieval Intelligence query")
+            result = retrieval_query_repository(
+                root,
+                store,
+                args.prompt,
+                token_budget=max(256, args.token_budget),
+                limit=max(1, min(50, args.limit)),
+                refresh=not args.no_refresh,
+            )
         elif args.command == "migrate-attached":
             result = migrate_attached(root)
         elif args.command == "sync-external":

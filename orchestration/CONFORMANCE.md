@@ -71,3 +71,16 @@ Do not count an eval prompt or rubric by itself as Agent evidence.
 - Scenario 127 is deterministic coverage for Human Documentation Namespace placement: permanent Human-only docs live under `docs/human/`; shared canonical docs are allowlisted; standalone Human artifacts outside that root require explicit registration plus the `HUMAN_` prefix.
 
 These classifications are evidence claims, not quality scores.
+
+## Scenario 128 — Retrieval Intelligence
+
+Scenario 128 is lifecycle-covered by `tests/evidence/retrieval_intelligence_lifecycle.py`. The executable fixture proves target implementation/test retrieval, bounded token assembly, relevant Git-history evidence, dirty-workspace incremental refresh, secret-path exclusion, revision/content provenance and truthful `NOT_CONFIGURED` semantic-provider fallback.
+
+Current automated inventory after Scenario 128:
+
+- deterministic: 20
+- lifecycle: 54
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 128 / 128

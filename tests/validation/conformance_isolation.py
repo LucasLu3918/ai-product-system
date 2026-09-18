@@ -32,8 +32,8 @@ if conformance_helper.exists():
             errors.append("Scenario conformance total/registered count must match scenario inventory")
         if cov.get("uncovered") != 0:
             errors.append("Released scenario conformance registry must have no uncovered entries")
-        if cov.get("manual") != 0 or cov.get("agent_eval") != 54 or cov.get("lifecycle") != 53 or cov.get("automated") != 127:
-            errors.append("current baseline must report manual=0, lifecycle=53, agent_eval=54 and automated=127")
+        if cov.get("manual") != 0 or cov.get("agent_eval") != 54 or cov.get("lifecycle") != 54 or cov.get("automated") != 128:
+            errors.append("current baseline must report manual=0, lifecycle=54, agent_eval=54 and automated=128")
 
     with tempfile.TemporaryDirectory() as tmp:
         temp = Path(tmp)
@@ -94,10 +94,23 @@ if agent_eval_helper.exists():
     if cli_eval.returncode != 0:
         errors.append(f"aips conformance agent-eval CLI failed: {cli_eval.stdout.strip()} {cli_eval.stderr.strip()}")
 
-for n in range(121, 128):
+for n in range(121, 129):
     matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
     if len(matches) != 1:
         errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")
+
+# v0.21 Retrieval Intelligence lifecycle
+retrieval_intelligence_evidence = ROOT / "tests/evidence/retrieval_intelligence_lifecycle.py"
+if not retrieval_intelligence_evidence.exists():
+    errors.append("Missing v0.21 Retrieval Intelligence lifecycle evidence")
+else:
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(retrieval_intelligence_evidence)], capture_output=True, text=True)
+    if compiled.returncode != 0:
+        errors.append(f"Retrieval Intelligence evidence syntax failed: {compiled.stderr.strip()}")
+    else:
+        result = subprocess.run([sys.executable, str(retrieval_intelligence_evidence)], capture_output=True, text=True)
+        if result.returncode != 0:
+            errors.append(f"Retrieval Intelligence lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
 
 # v0.18.3 Project Intelligence promotion lifecycle
 project_intelligence_promotion_evidence = ROOT / "tests/evidence/project_intelligence_promotion_lifecycle.py"

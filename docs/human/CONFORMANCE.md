@@ -663,3 +663,18 @@ Architecture Diagram Impact: N/A. This is an additive Project Intelligence / Pro
 - **127 Human Documentation Namespace**：使用 deterministic evidence 驗證永久 Human-only 文件集中於 `docs/human/`、shared canonical allowlist，以及外部 standalone Human artifact 的 registry + `HUMAN_` prefix 規則。
 
 這兩項新增 coverage 都遵守既有原則：Scenario 數量只是規格 inventory；只有 direct evidence 真正覆蓋的行為才宣稱 automated coverage。
+
+## Retrieval Intelligence（Scenario 128）
+
+Scenario 128 新增 executable lifecycle evidence，驗證 Just-in-Time Retrieval Intelligence 不只是「有索引檔」：
+
+- 會找出目標 implementation 與相關 tests；
+- 可帶入符合任務的 Git history / diff evidence；
+- 不把 unrelated module 塞進 bounded results；
+- Dirty workspace 內容會先增量更新再被檢索；
+- Secret / credential path 不會進入 index/output；
+- 每筆結果都有 content hash + repository revision provenance；
+- Token Budget 受到實際限制；
+- 未設定 optional semantic provider 時明確回報 `NOT_CONFIGURED`，仍保留 local hybrid fallback。
+
+目前 Scenario inventory 為 128，全部具有 deterministic / lifecycle / agent_eval automated evidence，manual 與 uncovered 都是 0。

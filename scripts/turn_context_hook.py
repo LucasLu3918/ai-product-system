@@ -51,9 +51,29 @@ def compact_context(data: dict) -> str:
         lines.append("project_sources=" + ",".join(ctx["project_native"][:12]))
     if ctx.get("intelligence_topics"):
         lines.append("intelligence_topics=" + ",".join(ctx["intelligence_topics"][:12]))
+
+    retrieval = ctx.get("retrieval") or {}
+    lines.append(f"retrieval_status={retrieval.get('status')}")
+    if req.get("retrieval_index_required"):
+        lines.append("retrieval_index_required=True (Agent should run: aips intelligence index --project <project>)")
+    retrieval_results = retrieval.get("results") or []
+    if retrieval_results:
+        lines.append("retrieval_evidence:")
+        for item in retrieval_results[:4]:
+            if item.get("type") == "history":
+                pointer = f"commit:{item.get('commit')} {item.get('subject')}"
+            else:
+                pointer = f"{item.get('path')}:{item.get('start_line')}-{item.get('end_line')}"
+            reasons = ",".join(item.get("reason") or [])
+            lines.append(f"- {pointer} score={item.get('score')} reason={reasons}")
+            snippet = str(item.get("snippet") or "").strip().replace("\x00", "")
+            if snippet:
+                compact = snippet[:900].replace("\n", "\n    ")
+                lines.append("    " + compact)
+
     lines.append(
         "For existing-project mutation: satisfy Intelligence initialization/refresh/readiness, "
-        "resolve Change Impact, preserve valid native conventions, then implement."
+        "ensure Retrieval Intelligence when requested, resolve Change Impact, preserve valid native conventions, then implement."
     )
     return "\n".join(lines)
 

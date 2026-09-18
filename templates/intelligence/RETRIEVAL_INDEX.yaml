@@ -1,0 +1,31 @@
+schema:
+  version: 1
+
+generated_at: null
+
+repository:
+  head: null
+  dirty_fingerprint: null
+  workspace_id: null
+
+cache:
+  kind: rebuildable
+  database: null
+  canonical: false
+
+providers:
+  lexical: sqlite-fts5
+  symbols: language-aware-regex
+  graph: project-intelligence-impact-graph
+  history: git
+  semantic:
+    status: NOT_CONFIGURED
+    provider: null
+    model: null
+    required: false
+
+coverage:
+  files: 0
+  chunks: 0
+  symbols: 0
+  commits: 0

@@ -20,6 +20,10 @@ User Prompt
 
 Codex 以 CONTEXT_ALWAYS 為目標；Claude Code / Gemini CLI 在 native Hook 可驗證時提供 TURN_NATIVE。
 
+## Just-in-Time Retrieval Intelligence
+
+Project Intelligence 現在分成兩個互補層次：穩定的 Architecture / Source Registry / Impact Graph / Overrides，以及可重建的即時 Retrieval cache。Agent 每次工作先依任務查詢 code、symbols、tests、Impact Graph 與 Git history，再經 ranking 與 token budget 只帶入必要 evidence。Retrieval cache 不具有治理 authority，缺少 optional semantic provider 時會退回 deterministic/local lanes 與既有 Project Intelligence。
+
 ## 2. Project Intelligence
 
 ![Project Intelligence](assets/project-intelligence-overview.svg)

@@ -14,12 +14,18 @@ flowchart TD
     P --> I{Intelligence state}
     I -->|MISSING| B[Read-only Bootstrap]
     I -->|STALE| R[Targeted Refresh]
-    I -->|CURRENT| L[Load relevant Intelligence]
+    I -->|CURRENT| L[Load relevant stable Intelligence]
     B --> E[Semantic Enrichment]
     E --> F[Finalize READY]
-    F --> L
+    F --> IDX[Ensure rebuildable Retrieval Index]
     R --> L
-    L --> M{Existing-project mutation?}
+    L --> Q{Retrieval index available?}
+    Q -->|yes| RET[Hybrid JIT Retrieval: code + symbols + tests + graph + Git history]
+    Q -->|no| DEG[Truthful fallback to stable Intelligence]
+    IDX --> RET
+    RET --> BUD[Rank + token budget + provenance]
+    DEG --> M{Existing-project mutation?}
+    BUD --> M
     M -->|yes| CI[Change Impact Guard]
     M -->|no| ROUTE[AIPS Routing]
     CI --> ROUTE
@@ -35,7 +41,7 @@ flowchart TD
     IR --> DONE[Persist / Complete]
 ~~~
 
-The synchronous Turn Hook resolves identity, freshness and pointers only. Whole-project bootstrap, semantic enrichment, impact-graph rebuilding and HTML generation are outside the hook latency path.
+The synchronous Turn Hook resolves identity/freshness plus bounded evidence from an already available Retrieval Index. Whole-project bootstrap, initial index construction, semantic enrichment, impact-graph rebuilding and HTML generation stay outside the hook latency path. Retrieval cache state is non-canonical and degrades truthfully to stable Project Intelligence when unavailable.
 
 ## Primary planning package
 

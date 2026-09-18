@@ -866,3 +866,13 @@ scenarios:
       - config/documentation-audience.yaml
       - tests/validation/documentation_audience_contracts.py
       - tests/validate_repository.py
+  - id: "128"
+    path: tests/scenarios/128-just-in-time-retrieval-intelligence.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/retrieval_intelligence_lifecycle.py
+      - scripts/retrieval_intelligence.py
+      - scripts/project_intelligence.py
+      - templates/intelligence/RETRIEVAL_INDEX.yaml
+      - orchestration/PROJECT_INTELLIGENCE.md
+      - tests/validate_repository.py
