@@ -1,0 +1,142 @@
+# Evolution Radar 持續演進研究
+
+Evolution Radar 是 AIPS 的**研究、語意分析與建議層**，目的在於定期觀察外部技術訊號，找出可能值得評估的改進方向；它不是自動改版機制，也沒有權限自行修改 AIPS。
+
+完整 Human 圖解版請閱讀 [`EVOLUTION_RADAR_OVERVIEW.html`](EVOLUTION_RADAR_OVERVIEW.html)，技術與專有名詞整理於 [`TECHNOLOGY_GUIDE.html`](TECHNOLOGY_GUIDE.html)。
+
+## Weekly Signal Scan
+
+GitHub Actions 每週執行 bounded scan：從 `config/evolution-sources.yaml` 讀取至少 5 個公開來源，每來源最多 5 筆；記錄來源、URL、日期與失敗來源；正規化 URL／標題、去重、建立 machine-readable evidence。若 repository 已安全配置 `OPENAI_API_KEY`，排程會以 pinned `openai/codex-action` 執行 read-only semantic analysis；沒有 credential、provider 執行失敗或輸出驗證失敗時，仍誠實保持 `ANALYSIS_PENDING`。最後才發布 `Evolution Radar [weekly] ...` GitHub Issue。
+
+來源失敗會被記錄，不會推測補齊；0 個 actionable recommendation 是合法結果。
+
+## Public-only 網路安全
+
+`public_only: true` 是執行邊界：只接受 credential-free HTTPS；拒絕 localhost/private/link-local/reserved/non-global destination；DNS 後若任何位址非 global public 即 fail closed；連線使用已驗證 IP 並保留原 hostname 做 TLS/SNI；每個 redirect 重新驗證、拒絕 HTTPS downgrade；response bytes 與 redirect depth 都有上限。
+
+## Monthly Deep Review
+
+Monthly 不重跑 weekly，而是讀取前一月 Weekly Issues 的 evidence，重新去重並累積 recurrence，避免同一熱門主題每週都被當成新技術。
+
+## Recommendation 狀態
+
+- `COVERED`：AIPS 已有實質能力；
+- `HOLD`：證據／成熟度／關聯性不足；
+- `ASSESS`：值得進 System Improvement Review；
+- `TRIAL`：值得 bounded experiment，但需明確批准 scope；
+- `ADOPT`：證據支持改進方向，但仍只是建議；
+- `ANALYSIS_PENDING`：只有 collection evidence，沒有可靠 semantic analyzer。
+
+`TRIAL` / `ADOPT` 都不是 implementation approval。
+
+## Provider-neutral Semantic Analysis（供應商中立語意分析）
+
+Deterministic collector 負責 network safety、bounded collection、provenance、fingerprint、deduplication、recurrence、schema validation。是否值得導入則需要 semantic reasoning。
+
+AIPS 使用：
+
+- `scripts/evolution_analysis.py`
+- `config/evolution-analyzer.yaml`
+- `templates/evolution/EVOLUTION_ANALYSIS.yaml`
+- `templates/evolution/EVOLUTION_ANALYZER_RESULT.schema.json`
+- `templates/evolution/EVOLUTION_ANALYZER_PROMPT.md`
+- `references/evolution/CAPABILITY_MAP.yaml`
+
+可靠 Analyzer 必須把結果綁定 exact Radar `evidence_digest` + `repository_revision`，並對每個 signal 說明 current state、gap、benefit、cost/complexity、reliability/security、maturity、confidence、uncertainty、evidence refs、簡單案例、reuse/extension path 與 architecture-diagram impact。
+
+如果沒有可靠 analyzer，必須維持 `ANALYSIS_PENDING`，不能因為熱門度／關鍵字自行產生 `ADOPT`。
+
+Semantic provider 只產生 recommendation payload；`evidence_digest`、`repository_revision`、provider metadata 與所有 authority=false 欄位由 deterministic Python 包裝與驗證，避免模型自行改寫治理事實。Analyzer 使用 `:read-only` permission profile、`drop-sudo` safety strategy，且不取得 repository write authority。
+
+## Human Decision Binding（人類決策綁定）
+
+研究 Issue 本身不是批准。Human 使用 `.github/workflows/evolution-decision.yml` 明確指定：Radar Issue、signal fingerprint、`REJECT/HOLD/ASSESS/TRIAL/ADOPT`、reason，以及 TRIAL/ADOPT 的 exact approved scope。`TRIAL` 另外必須提供 repository-relative `approved_paths` globs，讓實驗的實際 diff 可被 deterministic guard 驗證。
+
+Decision Record 會綁定 candidate、signal、evidence digest、baseline repository revision、CURRENT/STALE、advisory recommendation、Human decision、scope、actor/time、next action 與 decision fingerprint。
+
+正向推進 `ASSESS/TRIAL/ADOPT` 若 baseline 已不是 current revision 會 fail closed。Human 仍可 override advisory recommendation，但 reason 必須以 `override:` 開頭留下 audit evidence。
+
+| Human decision | next action |
+|---|---|
+| `REJECT` | `close_candidate` |
+| `HOLD` | `continue_monitoring` |
+| `ASSESS` | `system_improvement_review` |
+| `TRIAL` | `controlled_trial_execution` |
+| `ADOPT` | `system_improvement_review` |
+
+Evolution Radar 與 Decision workflow 都只有 `contents: read` + `issues: write`，沒有 remote code-write / PR / merge / release authority。TRIAL Agent 只可在 GitHub-hosted runner 的 AIPS-managed isolated worktree 中做 ephemeral workspace mutation，且 checkout 不持久化 GitHub credentials。
+
+## Human Authority
+
+~~~text
+Radar evidence / recommendation
+→ Human Decision Record
+→ System Self-Improvement Review
+→ Core / Constitutional Gate（適用時）
+→ Implementation + Tests + Review
+→ Documentation Consistency Check
+→ Git Publish Proposal
+→ Human publication approval
+→ PR / Merge / Release
+~~~
+
+## 手動執行
+
+`evolution-radar` workflow 支援 `weekly` / `monthly`；`evolution-decision` workflow 用來記錄 Human Candidate Decision。
+
+## 文件同步
+
+Evolution Radar 的 scripts/config/template/workflow/reference 發生設定範圍內的異動時，Documentation Consistency Contract 會要求同步更新：
+
+- `docs/human/EVOLUTION_RADAR.md`
+- `docs/human/EVOLUTION_RADAR_OVERVIEW.html`
+- `orchestration/EVOLUTION_RADAR.md`
+- `orchestration/EXECUTION_ISOLATION.md`
+- `docs/human/TECHNOLOGY_GUIDE.html`
+
+詳細規則見 [`DOCUMENTATION_SYNC.md`](DOCUMENTATION_SYNC.md)。
+
+## Human-approved Controlled Trial（受控實驗）
+
+當 Human 選擇 `TRIAL`：
+
+~~~text
+Human Decision + approved scope + approved paths
+→ verify CURRENT baseline + decision fingerprint
+→ AIPS-managed Git worktree
+→ Codex :workspace / no network / no persisted checkout credential
+→ smallest reversible prototype
+→ deterministic diff guard
+   - approved path match
+   - forbidden path rejection
+   - max changed files / diff lines
+   - no trial commit
+→ repository validation
+→ Trial Report comment
+→ Human Adoption Decision
+~~~
+
+若 `OPENAI_API_KEY` 不存在、worktree isolation 建立失敗或 Agent 執行失敗，Trial 回報 `BLOCKED`，不會降級到 shared workspace。
+
+Trial workspace 是 ephemeral evidence environment；它不直接成為正式實作 branch，也不會 push prototype。Human 看完 Trial Report 後仍需另外決定 Reject / Hold / Adopt。
+
+### Trial → ADOPT Evidence Binding（實驗採用證據綁定）
+
+如果 Human 是依據某次 PASS Trial 決定 `ADOPT`，可以在同一次 `evolution-decision` workflow 填入該 Trial Report 的 exact `trial_fingerprint`。系統會 deterministic 驗證：
+
+- fingerprint 在同一 Radar Issue 中只對應一份合法 Trial Report；
+- Trial 狀態必須是 `PASS`；
+- Candidate、signal fingerprint 與 baseline revision 必須和新的 ADOPT Decision 完全一致；
+- 最終只產生 `system_improvement_review` handoff，不取得 code-write、PR、merge、release authority。
+
+Human 仍可不經 Trial 直接做 ADOPT，但這種情況不會被標記為「Trial-backed adoption」。
+
+## 目前仍不包含
+
+- Quarterly Evolution Review；
+- Trial PASS 後自動 Adopt；
+- 自動建立正式 implementation PR；
+- 自動 merge；
+- 自動 release。
+
+`ADOPT` 仍只會 handoff 到既有 System Self-Improvement Review。正式實作、驗證與發布繼續受 Core / Constitutional / Git Publish gates 管理。

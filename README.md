@@ -64,12 +64,12 @@ aips harness resolve --cwd "$PWD"
 
 ### 一般使用者
 
-1. [快速上手](docs/GETTING_STARTED.md)
-2. [完整使用指南](docs/USER_GUIDE.md)
-3. [安裝與解除](docs/INSTALLATION.md)
-4. [Global Harness 與 Agent Adapter](docs/HARNESS.md)
-5. [Project Intelligence](docs/PROJECT_INTELLIGENCE.md)
-6. [系統架構總覽](docs/ARCHITECTURE_OVERVIEW.md)
+1. [快速上手](docs/human/GETTING_STARTED.md)
+2. [完整使用指南](docs/human/USER_GUIDE.md)
+3. [安裝與解除](docs/human/INSTALLATION.md)
+4. [Global Harness 與 Agent Adapter](docs/human/HARNESS.md)
+5. [Project Intelligence](docs/human/PROJECT_INTELLIGENCE.md)
+6. [系統架構總覽](docs/human/ARCHITECTURE_OVERVIEW.md)
 7. [Security Policy](SECURITY.md)
 
 ### AI Agent
@@ -78,7 +78,7 @@ aips harness resolve --cwd "$PWD"
 2. `SYSTEM.md`
 3. 只載入本次需要的 `orchestration/`、Role 與 Skill
 
-完整文件用途請看 [文件導覽](docs/DOCUMENTATION_MAP.md)。
+完整文件用途請看 [文件導覽](docs/human/DOCUMENTATION_MAP.md)。
 
 ## 核心原則
 
@@ -105,4 +105,4 @@ aips uninstall
 ./scripts/uninstall.sh
 ~~~
 
-解除會移除 AIPS-owned Harness Adapter 與 CLI；不會刪除使用者既有 Agent instructions、custom Skills、專案原始碼或 Project `.ai/` Workspace。External Project Intelligence 預設也會保留；只有明確加 `--remove-cache` 才刪除。完整說明請看 docs/INSTALLATION.md。
+解除會移除 AIPS-owned Harness Adapter 與 CLI；不會刪除使用者既有 Agent instructions、custom Skills、專案原始碼或 Project `.ai/` Workspace。External Project Intelligence 預設也會保留；只有明確加 `--remove-cache` 才刪除。完整說明請看 docs/human/INSTALLATION.md。

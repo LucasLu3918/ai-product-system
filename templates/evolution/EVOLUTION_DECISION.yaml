@@ -1,0 +1,25 @@
+version: 1
+decision:
+  candidate_id: "EVO-XXXXXXXXXXXX"
+  signal_fingerprint: "sha256:"
+  signal_title: ""
+  evidence_digest: "sha256:"
+  baseline_repository_revision: ""
+  baseline_status: CURRENT
+  recommendation_state: HOLD
+  decision: HOLD
+  approved_scope: ""
+  approved_paths: []
+  reason: ""
+  human_override: false
+  decided_by: ""
+  decided_at: ""
+  next_action: continue_monitoring
+decision_fingerprint: "sha256:"
+authority:
+  human_decision_recorded: true
+  code_change_authorized: false
+  branch_or_pr_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  normal_system_gates_required: false

@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AIPS Evolution Analyzer Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["recommendations"],
+  "properties": {
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "signal_fingerprint",
+          "state",
+          "aips_current_state",
+          "gap",
+          "benefit",
+          "cost_complexity",
+          "reliability_security",
+          "maturity",
+          "confidence",
+          "uncertainty",
+          "example",
+          "reuse_extension_path",
+          "evidence_refs",
+          "architecture_diagram_review_if_adopted"
+        ],
+        "properties": {
+          "signal_fingerprint": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+          "state": {"type": "string", "enum": ["COVERED", "HOLD", "ASSESS", "TRIAL", "ADOPT"]},
+          "aips_current_state": {"type": "string", "minLength": 1},
+          "gap": {"type": "string"},
+          "benefit": {"type": "string", "minLength": 1},
+          "cost_complexity": {"type": "string", "minLength": 1},
+          "reliability_security": {"type": "string", "minLength": 1},
+          "maturity": {"type": "string", "minLength": 1},
+          "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+          "uncertainty": {"type": "string", "minLength": 1},
+          "example": {"type": "string", "minLength": 1},
+          "reuse_extension_path": {"type": "array", "items": {"type": "string"}},
+          "evidence_refs": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+          "architecture_diagram_review_if_adopted": {"type": "boolean"}
+        }
+      }
+    }
+  }
+}

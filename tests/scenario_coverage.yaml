@@ -847,8 +847,22 @@ scenarios:
     coverage: lifecycle
     evidence:
       - tests/evidence/evolution_radar_lifecycle.py
+      - tests/evidence/evolution_governance_lifecycle.py
       - scripts/evolution_radar.py
       - scripts/evolution_radar_rollup.py
+      - scripts/evolution_analysis.py
+      - scripts/evolution_decision.py
+      - scripts/evolution_trial.py
+      - scripts/evolution_adoption.py
       - orchestration/EVOLUTION_RADAR.md
       - .github/workflows/evolution-radar.yml
+      - .github/workflows/evolution-decision.yml
+      - tests/validate_repository.py
+  - id: "127"
+    path: tests/scenarios/127-human-documentation-namespace.md
+    coverage: deterministic
+    evidence:
+      - scripts/documentation_audience.py
+      - config/documentation-audience.yaml
+      - tests/validation/documentation_audience_contracts.py
       - tests/validate_repository.py

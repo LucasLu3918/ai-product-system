@@ -1,0 +1,64 @@
+version: 1
+technology_guide:
+  enabled: true
+  path: docs/human/TECHNOLOGY_GUIDE.html
+  triggers:
+    - harness/**
+    - orchestration/**
+    - scripts/**
+    - templates/**
+    - config/**
+    - references/**
+    - .github/workflows/**
+    - requirements*.txt
+rules:
+  - id: evolution-radar
+    triggers:
+      - scripts/evolution_radar.py
+      - scripts/evolution_radar_rollup.py
+      - scripts/evolution_analysis.py
+      - scripts/evolution_decision.py
+      - scripts/evolution_trial.py
+      - scripts/evolution_adoption.py
+      - config/evolution-sources.yaml
+      - config/evolution-analyzer.yaml
+      - config/evolution-trial.yaml
+      - references/evolution/**
+      - templates/evolution/**
+      - .github/workflows/evolution-radar.yml
+      - .github/workflows/evolution-decision.yml
+    human_docs:
+      - docs/human/EVOLUTION_RADAR.md
+      - docs/human/EVOLUTION_RADAR_OVERVIEW.html
+    agent_docs:
+      - orchestration/EVOLUTION_RADAR.md
+      - orchestration/EXECUTION_ISOLATION.md
+  - id: documentation-governance
+    triggers:
+      - scripts/documentation_sync.py
+      - scripts/documentation_audience.py
+      - config/documentation-sync.yaml
+      - config/documentation-audience.yaml
+      - tests/validation/documentation_sync_contracts.py
+      - tests/validation/documentation_audience_contracts.py
+    human_docs:
+      - docs/human/DOCUMENTATION_SYNC.md
+      - docs/human/DOCUMENTATION_MAP.md
+    agent_docs:
+      - orchestration/DOCUMENTATION_SYNC.md
+  - id: harness
+    triggers: [scripts/manage_runtime_adapter.py, scripts/harness_resolve.py, harness/adapters/**, templates/harness/**]
+    human_docs: [docs/human/HARNESS.md]
+    agent_docs: [harness/HARNESS_PROTOCOL.md]
+  - id: project-intelligence
+    triggers: [scripts/project_intelligence.py, scripts/turn_context_hook.py, templates/intelligence/**]
+    human_docs: [docs/human/PROJECT_INTELLIGENCE.md]
+    agent_docs: [orchestration/PROJECT_INTELLIGENCE.md]
+  - id: execution-isolation
+    triggers: [scripts/execution_isolation.py, orchestration/schemas/execution-profile.yaml]
+    human_docs: [docs/human/ARCHITECTURE_OVERVIEW.md]
+    agent_docs: [orchestration/EXECUTION_ISOLATION.md]
+  - id: scenario-conformance
+    triggers: [scripts/scenario_conformance.py, scripts/agent_eval.py, templates/conformance/**, tests/scenario_coverage.yaml]
+    human_docs: [docs/human/CONFORMANCE.md]
+    agent_docs: [orchestration/CONFORMANCE.md]

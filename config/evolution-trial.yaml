@@ -1,0 +1,43 @@
+version: 1
+execution:
+  isolation_mode: worktree
+  provider: openai
+  adapter: codex-action
+  action_commit: 86365089eb2b84e0a8fb0717b304f8bdcb13b20e
+  codex_version: "0.155.0"
+  required_secret: OPENAI_API_KEY
+  model_repository_variable: AIPS_EVOLUTION_MODEL
+  default_model_label: provider-default
+  effort: high
+  safety_strategy: drop-sudo
+  permission_profile: ":workspace"
+limits:
+  max_changed_files: 12
+  max_diff_lines: 800
+forbidden_paths:
+  - .github/workflows/**
+  - core/CONSTITUTION.md
+  - core/GOVERNANCE.md
+  - core/DECISIONS.md
+  - VERSION
+  - CHANGELOG.md
+  - SECURITY.md
+  - config/documentation-sync.yaml
+  - config/documentation-audience.yaml
+  - config/evolution-trial.yaml
+  - scripts/evolution_decision.py
+  - scripts/evolution_trial.py
+  - scripts/governance_guard.py
+  - scripts/documentation_sync.py
+  - scripts/documentation_audience.py
+  - tests/validate_repository.py
+  - tests/validation/**
+  - orchestration/SYSTEM_SELF_IMPROVEMENT.md
+  - templates/constitutional-change-proposal.md
+validation:
+  command: python tests/validate_repository.py
+authority:
+  publish_code: false
+  create_remote_branch_or_pr: false
+  merge: false
+  release: false

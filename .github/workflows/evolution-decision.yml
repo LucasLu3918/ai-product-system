@@ -1,0 +1,209 @@
+name: evolution-decision
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue_number:
+        description: Evolution Radar Issue number
+        required: true
+        type: string
+      signal_fingerprint:
+        description: Exact signal fingerprint (sha256:...)
+        required: true
+        type: string
+      decision:
+        description: Human decision
+        required: true
+        default: HOLD
+        type: choice
+        options: [REJECT, HOLD, ASSESS, TRIAL, ADOPT]
+      approved_scope:
+        description: Required for TRIAL/ADOPT; exact bounded scope
+        required: false
+        type: string
+      approved_paths:
+        description: Required for TRIAL; comma/newline-separated repository-relative path globs
+        required: false
+        type: string
+      trial_fingerprint:
+        description: Optional for ADOPT-after-Trial; exact PASS Trial Report fingerprint
+        required: false
+        type: string
+      reason:
+        description: Decision reason. Prefix with 'override:' only for explicit Human override of advisory state.
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  record:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt
+
+      - name: Load Radar issue and analysis
+        run: gh issue view "${{ inputs.issue_number }}" --json number,title,body,comments > evolution-radar-issue.json
+
+      - name: Bind Human decision to current evidence
+        shell: bash
+        run: |
+          decided_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          python scripts/evolution_decision.py create             --issue-json evolution-radar-issue.json             --signal-fingerprint "${{ inputs.signal_fingerprint }}"             --decision "${{ inputs.decision }}"             --approved-scope "${{ inputs.approved_scope }}"             --approved-paths "${{ inputs.approved_paths }}"             --reason "${{ inputs.reason }}"             --decided-by "$GITHUB_ACTOR"             --decided-at "$decided_at"             --current-revision "$GITHUB_SHA"             --output evolution-decision.yaml
+
+      - run: python scripts/evolution_decision.py validate evolution-decision.yaml
+      - run: python scripts/evolution_decision.py markdown evolution-decision.yaml --output evolution-decision.md
+
+      - name: Publish Human decision record
+        run: gh issue comment "${{ inputs.issue_number }}" --body-file evolution-decision.md
+
+      - name: Bind ADOPT to PASS Trial evidence
+        if: inputs.decision == 'ADOPT' && inputs.trial_fingerprint != ''
+        shell: bash
+        run: |
+          python scripts/evolution_adoption.py bind \
+            --issue-json evolution-radar-issue.json \
+            --decision evolution-decision.yaml \
+            --trial-fingerprint "${{ inputs.trial_fingerprint }}" \
+            --output evolution-adoption.yaml
+          python scripts/evolution_adoption.py validate evolution-adoption.yaml
+          python scripts/evolution_adoption.py markdown evolution-adoption.yaml --output evolution-adoption.md
+
+      - name: Publish Trial to ADOPT binding
+        if: inputs.decision == 'ADOPT' && inputs.trial_fingerprint != ''
+        run: gh issue comment "${{ inputs.issue_number }}" --body-file evolution-adoption.md
+
+      - name: Build controlled trial plan
+        if: inputs.decision == 'TRIAL'
+        id: trial_plan
+        shell: bash
+        run: |
+          python scripts/evolution_trial.py plan             --decision evolution-decision.yaml             --config config/evolution-trial.yaml             --current-revision "$GITHUB_SHA"             --output evolution-trial-plan.yaml
+          echo "started_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+
+      - name: Detect trial provider credential
+        if: inputs.decision == 'TRIAL'
+        id: trial_secret
+        shell: bash
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if [[ -n "$OPENAI_API_KEY" ]]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create AIPS-managed isolated worktree
+        if: inputs.decision == 'TRIAL' && steps.trial_secret.outputs.available == 'true'
+        id: isolation
+        continue-on-error: true
+        shell: bash
+        run: |
+          trial_id="$(python - <<'PY'
+          import yaml
+          doc=yaml.safe_load(open("evolution-trial-plan.yaml")) or {}
+          print(str(doc["trial"]["trial_id"]).lower())
+          PY
+          )"
+          boundary="$(python - <<'PY'
+          import yaml
+          doc=yaml.safe_load(open("evolution-trial-plan.yaml")) or {}
+          print(doc["trial"]["boundary_id"])
+          PY
+          )"
+          python scripts/execution_isolation.py create             --project "$GITHUB_WORKSPACE"             --mode worktree             --id "$trial_id"             --boundary "$boundary"             --ref "$GITHUB_SHA"             --format json > evolution-isolation.json
+          path="$(python - <<'PY'
+          import json
+          print(json.load(open("evolution-isolation.json"))["path"])
+          PY
+          )"
+          echo "path=$path" >> "$GITHUB_OUTPUT"
+
+      - name: Run Human-approved isolated trial
+        id: trial_agent
+        if: inputs.decision == 'TRIAL' && steps.trial_secret.outputs.available == 'true' && steps.isolation.outcome == 'success'
+        continue-on-error: true
+        uses: openai/codex-action@86365089eb2b84e0a8fb0717b304f8bdcb13b20e # v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          working-directory: ${{ steps.isolation.outputs.path }}
+          permission-profile: ":workspace"
+          codex-version: "0.155.0"
+          model: ${{ vars.AIPS_EVOLUTION_MODEL }}
+          effort: high
+          safety-strategy: drop-sudo
+          prompt: |
+            Follow templates/evolution/EVOLUTION_TRIAL_PROMPT.md as the controlling trial instructions.
+
+            Human-approved scope:
+            ${{ inputs.approved_scope }}
+
+            Human-approved repository-relative path patterns:
+            ${{ inputs.approved_paths }}
+
+            This is an experiment only. Do not commit, push, create a PR, merge, release, or edit outside the approved paths.
+
+      - name: Capture bounded trial agent summary
+        if: always() && inputs.decision == 'TRIAL' && steps.trial_agent.outcome != 'skipped'
+        shell: bash
+        env:
+          TRIAL_AGENT_SUMMARY: ${{ steps.trial_agent.outputs.final-message }}
+        run: |
+          python - <<'PY'
+          import os
+          from pathlib import Path
+          Path("evolution-trial-agent-summary.txt").write_text(
+              os.environ.get("TRIAL_AGENT_SUMMARY", "")[:6000],
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Evaluate isolated trial deterministically
+        if: always() && inputs.decision == 'TRIAL' && steps.trial_secret.outputs.available == 'true' && steps.isolation.outcome == 'success'
+        shell: bash
+        env:
+          TRIAL_AGENT_OUTCOME: ${{ steps.trial_agent.outcome }}
+        run: |
+          python scripts/evolution_trial.py evaluate             --plan evolution-trial-plan.yaml             --config config/evolution-trial.yaml             --worktree "${{ steps.isolation.outputs.path }}"             --agent-outcome "${TRIAL_AGENT_OUTCOME:-failure}"             --agent-summary-file evolution-trial-agent-summary.txt             --started-at "${{ steps.trial_plan.outputs.started_at }}"             --output evolution-trial-result.yaml
+
+      - name: Record blocked trial when execution provider is unavailable
+        if: always() && inputs.decision == 'TRIAL'
+        shell: bash
+        env:
+          SECRET_AVAILABLE: ${{ steps.trial_secret.outputs.available }}
+          ISOLATION_OUTCOME: ${{ steps.isolation.outcome }}
+        run: |
+          if [[ -f evolution-trial-result.yaml ]]; then
+            exit 0
+          fi
+          if [[ "$SECRET_AVAILABLE" != "true" ]]; then
+            reason="OPENAI_API_KEY is not configured; the approved Trial was recorded but not executed."
+          elif [[ "$ISOLATION_OUTCOME" != "success" ]]; then
+            reason="AIPS-managed worktree isolation could not be established; Trial execution failed closed."
+          else
+            reason="Trial execution did not produce a deterministic result artifact."
+          fi
+          python scripts/evolution_trial.py blocked             --plan evolution-trial-plan.yaml             --reason "$reason"             --output evolution-trial-result.yaml
+
+      - name: Validate and render controlled trial report
+        if: always() && inputs.decision == 'TRIAL'
+        shell: bash
+        run: |
+          python scripts/evolution_trial.py validate evolution-trial-result.yaml
+          python scripts/evolution_trial.py markdown evolution-trial-result.yaml --output evolution-trial-report.md
+
+      - name: Publish controlled trial report
+        if: always() && inputs.decision == 'TRIAL'
+        run: gh issue comment "${{ inputs.issue_number }}" --body-file evolution-trial-report.md

@@ -63,3 +63,11 @@ For `agent_eval`, load `orchestration/AGENT_EVAL.md`.
 Registry evidence must include both a concrete `tests/agent_eval/cases/*` Case and a `tests/agent_eval/results/*` recorded Result. Repository validation must run the deterministic scorer and reject stale fingerprints, missing/orphan results, private reasoning fields, secret-like values and rubric failures.
 
 Do not count an eval prompt or rubric by itself as Agent evidence.
+
+
+## Scenario 126 / 127 current evidence
+
+- Scenario 126 is lifecycle-covered by deterministic Radar collection plus the governed semantic-analysis / Human Decision / isolated Controlled Trial lifecycle evidence. A Trial PASS remains evidence only and requires a separate Human Adoption Decision.
+- Scenario 127 is deterministic coverage for Human Documentation Namespace placement: permanent Human-only docs live under `docs/human/`; shared canonical docs are allowlisted; standalone Human artifacts outside that root require explicit registration plus the `HUMAN_` prefix.
+
+These classifications are evidence claims, not quality scores.

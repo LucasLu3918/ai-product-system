@@ -653,3 +653,13 @@ Residual manual gaps remain 004, 021, 022, 028, 039 and 055.
 
 Architecture Diagram Impact: N/A. This is an additive Project Intelligence / Project Authority lifecycle contract; runtime topology and governance layers are unchanged.
 
+
+
+## Evolution / Human Documentation Namespace（Scenario 126–127）
+
+目前 acceptance inventory 新增至 127 個 Scenario：
+
+- **126 Evolution Radar Research With Human Decision**：使用 lifecycle evidence 驗證 bounded research、Semantic Analysis binding、Human Decision、Human-approved isolated Trial、scope/forbidden-path/no-commit guard、PASS/FAIL/BLOCKED Trial Report 與 Trial→ADOPT evidence binding。
+- **127 Human Documentation Namespace**：使用 deterministic evidence 驗證永久 Human-only 文件集中於 `docs/human/`、shared canonical allowlist，以及外部 standalone Human artifact 的 registry + `HUMAN_` prefix 規則。
+
+這兩項新增 coverage 都遵守既有原則：Scenario 數量只是規格 inventory；只有 direct evidence 真正覆蓋的行為才宣稱 automated coverage。

@@ -53,7 +53,7 @@ Rotation/revocation plan if exposure is found:
 
 Architecture Diagram Impact:
 - docs/ARCHITECTURE.md Mermaid: AFFECTED / N/A — reason
-- docs/ARCHITECTURE_OVERVIEW.md: AFFECTED / N/A — reason
+- docs/human/ARCHITECTURE_OVERVIEW.md: AFFECTED / N/A — reason
 - Human SVG architecture/lifecycle diagrams: AFFECTED / N/A — reason
 
 ## Risks

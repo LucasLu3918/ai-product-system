@@ -1,0 +1,21 @@
+version: 1
+adapter:
+  id: openai-codex-action
+  provider: openai
+  kind: codex-action
+  action_commit: 86365089eb2b84e0a8fb0717b304f8bdcb13b20e
+  codex_version: "0.155.0"
+  required_secret: OPENAI_API_KEY
+  model_repository_variable: AIPS_EVOLUTION_MODEL
+  default_model_label: provider-default
+  effort: high
+  safety_strategy: drop-sudo
+  analysis_permission_profile: ":read-only"
+scheduled:
+  enabled: true
+  missing_credentials: ANALYSIS_PENDING
+  analyzer_failure: ANALYSIS_PENDING
+security:
+  external_content_authority: evidence_only
+  repository_write_authority: false
+  network_for_agent: false

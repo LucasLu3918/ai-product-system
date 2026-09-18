@@ -1,0 +1,21 @@
+version: 1
+purpose: Compact current-AIPS capability index for Evolution Radar semantic comparison; canonical behavior remains in referenced protocols.
+capabilities:
+  - {id: turn-aware-global-harness, name_en: Turn-Aware Global Harness, name_zh: 回合感知全域代理框架, docs: [harness/HARNESS_PROTOCOL.md, orchestration/TURN_HARNESS.md, docs/human/HARNESS.md]}
+  - {id: project-intelligence, name_en: Project Intelligence, name_zh: 專案智慧, docs: [orchestration/PROJECT_INTELLIGENCE.md, docs/human/PROJECT_INTELLIGENCE.md]}
+  - {id: canonical-project-identity, name_en: Canonical Project Identity, name_zh: 標準專案身分識別, docs: [orchestration/PROJECT_IDENTITY.md]}
+  - {id: change-impact-guard, name_en: Change Impact Guard, name_zh: 變更影響防護, docs: [orchestration/CHANGE_IMPACT.md]}
+  - {id: enforceable-governance, name_en: Enforceable Governance, name_zh: 可執行治理, docs: [core/GOVERNANCE.md, orchestration/SYSTEM_SELF_IMPROVEMENT.md]}
+  - {id: durable-run-state, name_en: Durable Run State, name_zh: 可持久化執行狀態, docs: [orchestration/RUN_RESUME.md, orchestration/WORKSPACE_STATE.md]}
+  - {id: scenario-conformance, name_en: Scenario Conformance, name_zh: 情境符合性驗證, docs: [orchestration/CONFORMANCE.md, docs/human/CONFORMANCE.md]}
+  - {id: agent-eval, name_en: Agent Evaluation, name_zh: 代理評估, docs: [orchestration/AGENT_EVAL.md]}
+  - {id: execution-isolation, name_en: Execution Isolation, name_zh: 執行隔離, docs: [orchestration/EXECUTION_ISOLATION.md]}
+  - {id: deterministic-automation, name_en: Deterministic Automation, name_zh: 決定性自動化, docs: [orchestration/DETERMINISTIC_AUTOMATION.md]}
+  - {id: security-assurance, name_en: Security Assurance Level, name_zh: 安全保證等級, docs: [docs/human/SECURITY_ASSURANCE.md]}
+  - {id: secret-handling, name_en: Secret Handling, name_zh: 機密資訊處理, docs: [orchestration/SECRET_HANDLING.md]}
+  - {id: product-delivery, name_en: Product Delivery Lifecycle, name_zh: 產品交付生命週期, docs: [orchestration/PRODUCT_DELIVERY.md]}
+  - {id: evolution-radar, name_en: Evolution Radar, name_zh: 持續演化雷達, docs: [orchestration/EVOLUTION_RADAR.md, docs/human/EVOLUTION_RADAR.md]}
+  - {id: documentation-consistency, name_en: Documentation Consistency Contract, name_zh: 文件一致性契約, docs: [orchestration/DOCUMENTATION_SYNC.md, docs/human/DOCUMENTATION_SYNC.md]}
+  - {id: controlled-evolution-trial, name_en: Controlled Evolution Trial, name_zh: 受控演化實驗, docs: [orchestration/EVOLUTION_RADAR.md, orchestration/EXECUTION_ISOLATION.md, docs/human/EVOLUTION_RADAR.md]}
+  - {id: human-documentation-namespace, name_en: Human Documentation Namespace, name_zh: 人類文件命名空間, docs: [orchestration/DOCUMENTATION_SYNC.md, docs/human/DOCUMENTATION_SYNC.md, docs/human/DOCUMENTATION_MAP.md]}
+  - {id: trial-adoption-binding, name_en: Trial-to-ADOPT Evidence Binding, name_zh: 實驗採用證據綁定, docs: [orchestration/EVOLUTION_RADAR.md, docs/human/EVOLUTION_RADAR.md]}

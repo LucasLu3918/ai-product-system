@@ -243,7 +243,7 @@ Project state is not a work mode.
 
 ## Security / Reliability Assurance
 
-For product planning and for changes that may affect protected assets, resolve a Risk Profile using `orchestration/schemas/risk-profile.yaml` and `docs/SECURITY_ASSURANCE.md`.
+For product planning and for changes that may affect protected assets, resolve a Risk Profile using `orchestration/schemas/risk-profile.yaml` and `docs/human/SECURITY_ASSURANCE.md`.
 
 Keep separate:
 
@@ -403,7 +403,7 @@ Subagents receive only the context required for their objective. Do not delegate
 
 ## System-change maintenance
 
-When modifying this AI Product System itself, first use the System Self-Improvement Protocol; Core Change Approval normally applies before implementation, and the Git Publish Approval Gate applies before remote publication. Also pass the Documentation Impact Gate in `docs/MAINTENANCE.md`. Assess related documentation, flows, Mermaid architecture diagrams, examples, scenarios, schemas/templates, VERSION and CHANGELOG. Update affected artifacts; explicitly treat unaffected artifacts as N/A rather than editing them unnecessarily.
+When modifying this AI Product System itself, first use the System Self-Improvement Protocol; Core Change Approval normally applies before implementation, and the Git Publish Approval Gate applies before remote publication. Also pass the Documentation Impact Gate in `docs/human/MAINTENANCE.md`. Assess related documentation, flows, Mermaid architecture diagrams, examples, scenarios, schemas/templates, VERSION and CHANGELOG. Update affected artifacts; explicitly treat unaffected artifacts as N/A rather than editing them unnecessarily.
 
 ## Completion
 
