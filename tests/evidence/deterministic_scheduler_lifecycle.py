@@ -73,6 +73,53 @@ def main() -> int:
         assert proc.returncode == 2
         assert "dependency cycle" in proc.stdout
 
+    # A task that may write is fail-closed without an explicit Change Boundary.
+    writable_without_boundary = {
+        "version": 1,
+        "plan_id": "missing-boundary",
+        "max_parallel": 1,
+        "tasks": [
+            {"id": "writer", "dependencies": [], "write_set": ["modules/api/**"]},
+        ],
+    }
+    with tempfile.TemporaryDirectory() as td:
+        tmp = Path(td)
+        p = tmp / "graph.yaml"
+        p.write_text(yaml.safe_dump(writable_without_boundary), encoding="utf-8")
+        proc = subprocess.run(["python3", str(SCRIPT), "--graph", str(p)], text=True, capture_output=True)
+        assert proc.returncode == 2
+        assert "requires non-empty change_boundary" in proc.stdout
+
+    # An explicitly read-only task may omit Change Boundary because it owns no writer lock.
+    read_only_graph = {
+        "version": 1,
+        "plan_id": "read-only",
+        "max_parallel": 1,
+        "tasks": [
+            {"id": "inspect", "dependencies": [], "read_only": True, "write_set": [], "change_boundary": []},
+        ],
+    }
+    rc_read, read_decision = run(read_only_graph, {"plan_id": "read-only", "tasks": {}})
+    assert rc_read == 0
+    assert read_decision["dispatch"] == ["inspect"]
+
+    # read_only is a contract, not a bypass for a declared write set.
+    invalid_read_only = {
+        "version": 1,
+        "plan_id": "invalid-read-only",
+        "max_parallel": 1,
+        "tasks": [
+            {"id": "bad", "dependencies": [], "read_only": True, "write_set": ["modules/api/**"], "change_boundary": []},
+        ],
+    }
+    with tempfile.TemporaryDirectory() as td:
+        tmp = Path(td)
+        p = tmp / "graph.yaml"
+        p.write_text(yaml.safe_dump(invalid_read_only), encoding="utf-8")
+        proc = subprocess.run(["python3", str(SCRIPT), "--graph", str(p)], text=True, capture_output=True)
+        assert proc.returncode == 2
+        assert "read_only task must not declare write_set" in proc.stdout
+
     print("deterministic scheduler lifecycle: PASS")
     return 0
 

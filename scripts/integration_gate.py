@@ -132,6 +132,7 @@ def main() -> int:
     parser.add_argument("--profile", required=True, type=Path)
     parser.add_argument("--base", required=True)
     parser.add_argument("--head", required=True)
+    parser.add_argument("--base-tip")
     parser.add_argument("--matrix", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--format", choices=("yaml", "json"), default="yaml")
@@ -141,6 +142,9 @@ def main() -> int:
         profile = load_yaml(args.profile)
         base_sha = resolve_commit(args.base)
         head_sha = resolve_commit(args.head)
+        base_tip_sha = resolve_commit(args.base_tip) if args.base_tip else None
+        if base_tip_sha is not None and base_tip_sha != base_sha:
+            raise GateError(f"candidate base is stale: declared={base_sha} current={base_tip_sha}")
         current_sha = resolve_commit("HEAD")
         if current_sha != head_sha:
             raise GateError(f"candidate checkout mismatch: HEAD={current_sha} expected={head_sha}")
@@ -151,6 +155,7 @@ def main() -> int:
         profile_hash = canonical_hash(profile)
         candidate = {
             "base_sha": base_sha,
+            "base_tip_sha": base_tip_sha,
             "head_sha": head_sha,
             "changed_files": files,
             "changed_files_hash": canonical_hash(files),

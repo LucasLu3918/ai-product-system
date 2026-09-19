@@ -69,3 +69,18 @@ Use `templates/review/INTEGRATION_GATE_REPORT.yaml`.
 The report stores only bounded command output tails plus fingerprints/status. It must not persist secrets or private model reasoning.
 
 PASS means deterministic validation evidence is green. It does **not** authorize merge, publication, release, scope expansion or risk acceptance.
+
+## PR base freshness
+
+For pull-request validation, the caller should provide `--base-tip <fresh-target-ref>` after freshly fetching the target branch.
+
+The Gate resolves both the declared base and current target tip. If they differ, the candidate is BLOCKED before validation commands execute:
+
+~~~text
+declared PR base SHA
+↔ freshly fetched target branch tip
+→ equal: continue exact-candidate validation
+→ different: BLOCKED / regenerate and revalidate
+~~~
+
+When provided, `base_tip_sha` is included in candidate evidence/fingerprinting. This complements the existing exact-head checkout check and Human/GitHub merge preflight.

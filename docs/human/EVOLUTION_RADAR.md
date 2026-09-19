@@ -140,3 +140,14 @@ Human 仍可不經 Trial 直接做 ADOPT，但這種情況不會被標記為「T
 - 自動 release。
 
 `ADOPT` 仍只會 handoff 到既有 System Self-Improvement Review。正式實作、驗證與發布繼續受 Core / Constitutional / Git Publish gates 管理。
+
+## v0.27 Provider-neutral handoff
+
+每次 Radar 都先建立可重建的 semantic analysis package。OpenAI Codex Action 只是 optional adapter；沒有 `OPENAI_API_KEY` 時不再只留下「無法分析」資訊，而會在同一個 Issue 附上 provider-neutral handoff：
+
+- exact repository revision / evidence digest / package digest；
+- Capability Map、Analyzer Prompt、Result Schema 路徑；
+- 可由 ChatGPT、其他已連線 Agent、local model 或其他 provider 產生結果；
+- 最後仍由 deterministic finalize/apply 驗證結果是否綁定正確 evidence。
+
+沒有真正語意結果時狀態仍是 `ANALYSIS_PENDING`，不會假裝已完成適配性判斷。

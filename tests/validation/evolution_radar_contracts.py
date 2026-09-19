@@ -10,6 +10,10 @@ required = (
     ROOT / "templates/evolution/EVOLUTION_RADAR.yaml",
     ROOT / "scripts/evolution_radar.py",
     ROOT / "scripts/evolution_radar_rollup.py",
+    ROOT / "scripts/evolution_analysis.py",
+    ROOT / "config/evolution-analyzer.yaml",
+    ROOT / "templates/evolution/EVOLUTION_ANALYZER_PROMPT.md",
+    ROOT / "templates/evolution/EVOLUTION_ANALYZER_RESULT.schema.json",
     ROOT / ".github/workflows/evolution-radar.yml",
     ROOT / "tests/evidence/evolution_radar_lifecycle.py",
 )
@@ -20,6 +24,7 @@ for path in required:
 for path in (
     ROOT / "scripts/evolution_radar.py",
     ROOT / "scripts/evolution_radar_rollup.py",
+    ROOT / "scripts/evolution_analysis.py",
     ROOT / "tests/evidence/evolution_radar_lifecycle.py",
 ):
     if not path.exists():
@@ -73,3 +78,30 @@ if lifecycle.exists():
     else:
         if result.returncode != 0:
             errors.append(f"Evolution Radar lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}")
+
+# provider-neutral semantic handoff contract
+analyzer_config = ROOT / "config/evolution-analyzer.yaml"
+if analyzer_config.exists():
+    analyzer_text = analyzer_config.read_text(encoding="utf-8")
+    for contract in (
+        "fallback: handoff",
+        "optional: true",
+        "credential_required: false",
+        "result_schema_path:",
+        "binding_script: scripts/evolution_analysis.py",
+    ):
+        if contract not in analyzer_text:
+            errors.append(f"Evolution Radar analyzer config missing provider-neutral contract: {contract}")
+
+workflow_path = ROOT / ".github/workflows/evolution-radar.yml"
+if workflow_path.exists():
+    workflow_text = workflow_path.read_text(encoding="utf-8")
+    for contract in (
+        "semantic_provider:",
+        "Build provider-neutral semantic handoff",
+        "scripts/evolution_analysis.py handoff",
+        "--handoff evolution-analysis-handoff.md",
+        "selected=\"handoff\"",
+    ):
+        if contract not in workflow_text:
+            errors.append(f"Evolution Radar workflow missing provider-neutral contract: {contract}")

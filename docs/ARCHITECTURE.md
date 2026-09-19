@@ -710,3 +710,28 @@ flowchart LR
 ~~~
 
 Scenario file count remains the specification inventory. Agent Eval generation is provider-neutral and separate from deterministic scoring; private chain-of-thought is never evidence. Conformance is established only through the explicit registry/evidence mapping.
+
+## v0.27 reliability hardening
+
+~~~mermaid
+flowchart LR
+    R[Radar evidence] --> P[Deterministic analysis package]
+    P --> A{Optional scheduled provider available?}
+    A -->|yes| S[Validated semantic result]
+    A -->|no| H[Provider-neutral Human/Agent handoff]
+    S --> B[Deterministic evidence binding]
+    H --> B
+
+    TG[Structured Task Graph] --> W{Task explicitly read-only?}
+    W -->|no| CB{Non-empty Change Boundary?}
+    CB -->|no| SB[SCHEDULER BLOCKED]
+    CB -->|yes| D[Deterministic dispatch]
+    W -->|yes| D
+
+    PR[PR candidate] --> F[Fresh-fetch target branch]
+    F --> BF{Declared base == current base tip?}
+    BF -->|no| IB[INTEGRATION GATE BLOCKED]
+    BF -->|yes| IG[Exact-candidate Janitor checks]
+~~~
+
+The new paths add fail-closed evidence and handoff behavior beneath existing topology; they do not add a Role, Skill, autonomous approval gate, merge authority or release authority.

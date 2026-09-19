@@ -209,6 +209,48 @@ def apply_analysis(evidence: dict[str, Any], analysis: dict[str, Any]) -> dict[s
     return output
 
 
+def handoff_markdown(
+    package: dict[str, Any],
+    *,
+    prompt_path: str,
+    schema_path: str,
+    capability_map_path: str,
+) -> str:
+    baseline = package.get("baseline") or {}
+    package_digest = canonical_digest(package)
+    return "\n".join(
+        [
+            "## Evolution Radar — Provider-Neutral Semantic Analysis Handoff",
+            "",
+            "This handoff is generated even when no scheduled model credential is configured.",
+            "It is analysis input only and does not authorize implementation, publication, merge or release.",
+            "",
+            f"- Repository revision: `{baseline.get('repository_revision')}`",
+            f"- Evidence digest: `{baseline.get('evidence_digest')}`",
+            f"- Analysis package digest: `{package_digest}`",
+            f"- Capability map: `{capability_map_path}`",
+            f"- Analyzer prompt: `{prompt_path}`",
+            f"- Result schema: `{schema_path}`",
+            "",
+            "A Human-selected connected Agent, local model, or other provider may analyze the exact evidence from this Issue.",
+            "Reconstruct the package at the recorded repository revision, return JSON matching the result schema, then bind it deterministically:",
+            "",
+            "~~~bash",
+            "python scripts/evolution_analysis.py package --evidence evolution-radar.yaml --capabilities "
+            + capability_map_path
+            + " --output evolution-analysis-package.yaml",
+            "python scripts/evolution_analysis.py finalize --evidence evolution-radar.yaml --result evolution-analysis-result.json "
+            "--provider <provider-id> --model <model-id> --output evolution-analysis.yaml",
+            "python scripts/evolution_analysis.py apply --evidence evolution-radar.yaml --analysis evolution-analysis.yaml "
+            "--output evolution-radar-analyzed.yaml",
+            "~~~",
+            "",
+            "The deterministic finalize/apply steps verify exact evidence/repository binding and keep every authority field false.",
+            "",
+        ]
+    )
+
+
 def analysis_markdown(analysis: dict[str, Any]) -> str:
     return "\n".join(
         [
@@ -257,6 +299,13 @@ def main() -> int:
     package.add_argument("--capabilities", required=True)
     package.add_argument("--output", required=True)
 
+    handoff = sub.add_parser("handoff")
+    handoff.add_argument("--package", required=True)
+    handoff.add_argument("--prompt", required=True)
+    handoff.add_argument("--schema", required=True)
+    handoff.add_argument("--capabilities", required=True)
+    handoff.add_argument("--output", required=True)
+
     finalize = sub.add_parser("finalize")
     finalize.add_argument("--evidence", required=True)
     finalize.add_argument("--result", required=True)
@@ -284,6 +333,19 @@ def main() -> int:
         capabilities = load_mapping(args.capabilities)
         Path(args.output).write_text(
             yaml.safe_dump(build_analysis_package(evidence, capabilities), sort_keys=False, allow_unicode=True),
+            encoding="utf-8",
+        )
+        return 0
+
+    if args.command == "handoff":
+        package_doc = load_mapping(args.package)
+        Path(args.output).write_text(
+            handoff_markdown(
+                package_doc,
+                prompt_path=args.prompt,
+                schema_path=args.schema,
+                capability_map_path=args.capabilities,
+            ),
             encoding="utf-8",
         )
         return 0

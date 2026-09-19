@@ -269,3 +269,9 @@ Use `orchestration/RUN_RESUME.md` for substantial workflows that can span turns/
 Checkpoint after material phase transitions, approvals, implementation completion, test/review completion or blockers. Resume never means blindly continue: compare stored project revision/current evidence first and route stale state through the applicable freshness/impact/review checks.
 
 Do not serialize full conversation or private reasoning into run state.
+
+## v0.27 deterministic hardening
+
+When emitting a Structured Task Graph, treat tasks as writable by default. Set `read_only: true` only when the task has no writes; otherwise declare a non-empty Change Boundary.
+
+For Evolution Radar semantic work, prefer the generated provider-neutral handoff when no scheduled provider is available rather than inventing a recommendation. For PR integration, stale target-base evidence must route back to refresh/revalidation rather than proceeding with an old PASS.

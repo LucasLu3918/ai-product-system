@@ -1,16 +1,27 @@
 version: 1
+selection:
+  default: auto
+  fallback: handoff
 adapter:
   id: openai-codex-action
   provider: openai
   kind: codex-action
+  optional: true
   action_commit: 86365089eb2b84e0a8fb0717b304f8bdcb13b20e
   codex_version: "0.155.0"
-  required_secret: OPENAI_API_KEY
+  credential_secret: OPENAI_API_KEY
   model_repository_variable: AIPS_EVOLUTION_MODEL
   default_model_label: provider-default
   effort: high
   safety_strategy: drop-sudo
   analysis_permission_profile: ":read-only"
+handoff:
+  enabled: true
+  credential_required: false
+  capability_map_path: references/evolution/CAPABILITY_MAP.yaml
+  prompt_path: templates/evolution/EVOLUTION_ANALYZER_PROMPT.md
+  result_schema_path: templates/evolution/EVOLUTION_ANALYZER_RESULT.schema.json
+  binding_script: scripts/evolution_analysis.py
 scheduled:
   enabled: true
   missing_credentials: ANALYSIS_PENDING

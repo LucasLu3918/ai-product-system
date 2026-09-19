@@ -259,3 +259,13 @@ exact base SHA + head SHA
 Janitor 的正式契約名稱是 Integration Gate。它只做 deterministic validation，不是新的 Human Approval Gate。Candidate、base、validation profile 或 test matrix 任何一項改變，舊 PASS 都不再代表新候選。
 
 GitHub CI 保留既有 required check 名稱 `repository`：先執行 `janitor`，只有 Janitor success 時 `repository` aggregate 才能 success，因此不必先改 branch protection 也能把新的 gate 變成 merge 前強制條件。
+
+## v0.27 Reliability Hardening
+
+三個既有流程增加 fail-closed 保護：
+
+1. Evolution Radar：optional scheduled provider → provider-neutral semantic handoff；沒有 API key 仍能把 exact evidence 交給 Human-selected Agent / local model。
+2. Deterministic Scheduler：writable/未明示 read-only 的 task 必須有 Change Boundary；只有 explicit read-only task 可以沒有 writer lock。
+3. Integration/Janitor Gate：PR 驗證前 fresh-fetch target branch，declared base 與 current base tip 不一致直接 BLOCKED。
+
+這些能力都延伸既有 Research / Execution Isolation / Integration Gate，不新增 Role、Skill 或 Approval Authority。

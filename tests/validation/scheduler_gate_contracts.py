@@ -58,17 +58,20 @@ for phrase in (
     "requirements-validation.txt",
     "scripts/integration_gate.py",
     "github.event.pull_request.head.sha",
+    "AIPS_GATE_BASE_TIP",
+    "Refresh pull request base tip",
+    "--base-tip",
 ):
     if phrase not in workflow:
         errors.append(f"validate workflow missing Integration Gate contract: {phrase}")
 
 scheduler_doc = (ROOT / "orchestration/DETERMINISTIC_SCHEDULER.md").read_text(encoding="utf-8")
-for phrase in ("Structured Task Graph", "Change Boundary", "same Task Graph + state", "SCHEDULER BLOCKED"):
+for phrase in ("Structured Task Graph", "Change Boundary", "same Task Graph + state", "SCHEDULER BLOCKED", "read_only"):
     if phrase not in scheduler_doc:
         errors.append(f"DETERMINISTIC_SCHEDULER.md missing: {phrase}")
 
 gate_doc = (ROOT / "orchestration/INTEGRATION_GATE.md").read_text(encoding="utf-8")
-for phrase in ("Exact-candidate binding", "Validation Profile", "Core Change Test Matrix reuse", "repository required aggregate"):
+for phrase in ("Exact-candidate binding", "Validation Profile", "Core Change Test Matrix reuse", "repository required aggregate", "base freshness"):
     if phrase not in gate_doc:
         errors.append(f"INTEGRATION_GATE.md missing: {phrase}")
 

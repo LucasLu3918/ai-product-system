@@ -7,6 +7,7 @@ tasks: []
 #   order: 10
 #   objective: change one approved module boundary
 #   dependencies: []
+#   read_only: false
 #   change_boundary: [services/orders]
 #   read_set: [services/orders/**, tests/orders/**]
 #   write_set: [services/orders/**, tests/orders/**]

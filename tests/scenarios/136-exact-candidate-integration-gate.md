@@ -10,3 +10,9 @@ Expected:
 - Core Change Test Matrix is reused when required rather than creating a parallel Janitor matrix;
 - PASS is validation evidence only and grants no merge/release/Human authority;
 - a changed candidate invalidates the prior fingerprint and must be validated again.
+
+## Base Freshness
+
+For pull requests, Janitor must freshly resolve the current target branch tip and compare it with the candidate's declared base SHA before running expensive checks.
+
+If the target branch has advanced, the candidate is `BLOCKED` as stale and must be regenerated/revalidated. The current base-tip SHA is included in candidate evidence/fingerprints when supplied.

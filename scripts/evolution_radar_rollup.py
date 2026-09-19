@@ -144,7 +144,7 @@ def monthly_rollup(
     }
 
 
-def issue_markdown(doc: dict[str, Any]) -> str:
+def issue_markdown(doc: dict[str, Any], handoff_text: str | None = None) -> str:
     summary = doc.get("summary") or {}
     sources = doc.get("sources") or {}
     run = doc.get("run") or {}
@@ -162,10 +162,14 @@ def issue_markdown(doc: dict[str, Any]) -> str:
             lines.append(f"- Review period: {run.get('period')}")
         lines.append(f"- Weekly evidence bundles reviewed: {run.get('weekly_evidence_count', 0)}")
     lines += [
-        "- Semantic assessment: `ANALYSIS_PENDING` when no analyzer is configured",
+        "- Semantic assessment: `ANALYSIS_PENDING` until a validated analyzer result is bound",
         "",
         "This report is evidence/recommendation input only. It does not authorize code changes, PRs, merges or releases.",
         "",
+    ]
+    if handoff_text:
+        lines += [handoff_text.rstrip(), ""]
+    lines += [
         EVIDENCE_START,
         "```yaml",
         yaml.safe_dump(doc, sort_keys=False, allow_unicode=True).rstrip(),
@@ -186,6 +190,7 @@ def main() -> int:
     rollup.add_argument("--output", required=True)
     issue = sub.add_parser("issue-body")
     issue.add_argument("evidence")
+    issue.add_argument("--handoff")
     issue.add_argument("--output", required=True)
     args = parser.parse_args()
 
@@ -201,7 +206,8 @@ def main() -> int:
     errors = validate_evidence(doc)
     if errors:
         raise ValueError("invalid evidence: " + "; ".join(errors))
-    Path(args.output).write_text(issue_markdown(doc), encoding="utf-8")
+    handoff_text = Path(args.handoff).read_text(encoding="utf-8") if args.handoff else None
+    Path(args.output).write_text(issue_markdown(doc, handoff_text), encoding="utf-8")
     return 0
 
 

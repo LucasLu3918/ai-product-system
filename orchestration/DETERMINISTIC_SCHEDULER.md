@@ -81,3 +81,13 @@ Output includes graph/state/decision SHA-256 fingerprints for reproducibility.
 Invalid graph, unknown dependency, cycle, invalid state or plan mismatch is `SCHEDULER BLOCKED`.
 
 The Scheduler never falls back to LLM coordination to make a blocked graph look executable.
+
+## Read-only declaration and fail-closed boundary
+
+Task Graphs now include explicit `read_only` intent.
+
+- default/omitted `read_only` means the task may write and therefore MUST declare a non-empty Change Boundary;
+- only `read_only: true` may omit Change Boundary;
+- a read-only task with a non-empty `write_set` or explicitly writable isolation is invalid.
+
+This rule prevents missing planning metadata from becoming an unlocked writer. The Scheduler blocks the graph instead of assuming an empty boundary is safe.

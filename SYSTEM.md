@@ -524,3 +524,13 @@ provider-neutral Eval Case
 ~~~
 
 Do not persist or score private chain-of-thought. A Case without a recorded passing Result is not agent_eval coverage.
+
+## v0.27 reliability hardening
+
+AIPS extends existing components rather than adding new authority layers:
+
+- Evolution Radar produces a credential-free provider-neutral semantic handoff whenever an optional scheduled analyzer is unavailable.
+- Deterministic Scheduler blocks any potentially writable task that omits Change Boundary; only explicit read-only tasks may run boundary-free.
+- Integration/Janitor Gate can bind a freshly fetched target-branch tip and blocks stale PR bases before running candidate checks.
+
+These are validation/research/execution hardening rules only. Protected Human Authority, Git Publish Approval, merge authority and release authority remain unchanged.
