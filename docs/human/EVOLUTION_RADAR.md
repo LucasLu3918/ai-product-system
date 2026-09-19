@@ -151,12 +151,3 @@ Human 仍可不經 Trial 直接做 ADOPT，但這種情況不會被標記為「T
 - 最後仍由 deterministic finalize/apply 驗證結果是否綁定正確 evidence。
 
 沒有真正語意結果時狀態仍是 `ANALYSIS_PENDING`，不會假裝已完成適配性判斷。
-
-
-## Agent Runtime Assurance capability-map synchronization
-
-v0.29 將 Resource Authorization 之上的兩個 Radar ASSESS 方向收斂為同一個 evidence-only capability：provider-neutral semantic intent binding 與 out-of-band runtime anomaly audit。
-
-`references/evolution/CAPABILITY_MAP.yaml` 現在登記 `agent-runtime-assurance`，讓後續 Evolution Radar 在 semantic comparison 時知道這項能力已存在，避免重複建議第二套 runtime authority / anomaly / intent subsystem。
-
-Radar 仍只提供研究與 advisory evidence；Capability Map 的新增不會讓 Radar 取得 implementation、tool-call、merge、release 或 Human approval authority。

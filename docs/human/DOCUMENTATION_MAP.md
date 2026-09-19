@@ -74,13 +74,3 @@ Human Docs 使用繁體中文並在首次出現時保留重要英文術語；Age
 ## Resource Authorization navigation
 
 Resource-scoped authorization is documented through `ARCHITECTURE_OVERVIEW.md` and `USER_GUIDE.md` for Human readers, with canonical Agent behavior in `orchestration/RESOURCE_AUTHORIZATION.md`. It is an Execution Profile/Governance extension, not a new Role or Skill.
-
-
-## Agent Runtime Assurance
-
-- Human 架構/操作：`ARCHITECTURE_OVERVIEW.md`、`USER_GUIDE.md`
-- Agent canonical protocol：`../../orchestration/AGENT_RUNTIME_ASSURANCE.md`
-- 權限基礎：`../../orchestration/RESOURCE_AUTHORIZATION.md`
-- Evolution capability feedback：`EVOLUTION_RADAR.md`
-
-這項能力是 evidence-only extension，不建立第二套 Runtime authority。

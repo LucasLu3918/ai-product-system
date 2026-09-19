@@ -122,8 +122,3 @@ Execution Profile
 ~~~
 
 The authorization profile defaults to DENY and can only narrow ordinary operations. It cannot grant merge, release, publication, destructive administration, Human approval or a wider Change Boundary.
-
-
-## Agent Runtime Assurance relationship
-
-Agent Runtime Assurance does not replace isolation or writer ownership. Pre-execution intent evidence is evaluated after ordinary resource-operation authorization and may only narrow it. Post-execution anomaly auditing is intentionally outside the critical path and cannot clean up, terminate, publish or mutate a worktree automatically.

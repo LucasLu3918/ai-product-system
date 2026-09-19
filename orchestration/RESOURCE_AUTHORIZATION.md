@@ -70,10 +70,3 @@ aips authorization check \
 ~~~
 
 An ALLOW means only that the declared ordinary resource operation is within the deterministic profile. All other applicable governance/testing/publication gates still apply.
-
-
-## Agent Runtime Assurance extension
-
-orchestration/AGENT_RUNTIME_ASSURANCE.md extends this contract with optional provider-neutral intent evidence and post-execution anomaly audit.
-
-The ordering is strict: Resource Authorization is evaluated first. Intent evidence may only narrow an existing ALLOW and can never convert DENY to ALLOW. A postflight anomaly report does not retroactively authorize an operation and has no automatic remediation authority.

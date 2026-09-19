@@ -2,20 +2,16 @@
 
 ## 0.29.0
 
-### Agent Runtime Least-Privilege & Assurance
+### Resource-Scoped Agent Authorization
 
 - Add Resource-Scoped Agent Authorization as a deterministic extension of the existing Execution Profile / Governance path. Resource profiles are fail-closed with `default_effect: DENY`, require explicit resource + ordinary-operation grants, can require Change Boundary evidence for mutation, reject secret values, and never grant merge, release, publication, administration, destructive deletion or Human approval authority.
-- Add provider-neutral Agent Runtime Assurance evidence for semantic intent binding and out-of-band anomaly detection. Semantic intent can only narrow an existing Resource Authorization ALLOW; AMBIGUOUS / MISALIGNED / HIGH_RISK results remain BLOCKED evidence, and Resource Authorization DENY can never be promoted to compatible.
-- Add deterministic post-execution anomaly auditing for unauthorized success, subject mismatch, unsupported operations and forbidden network use. Postflight evidence binds exact observed-event fingerprints, treats expected runtime denials as non-anomalous, runs outside the critical path, and has no automatic remediation authority.
-- Keep enforcement truth explicit: Resource Authorization and semantic intent outputs are pre-execution evidence unless a separately verified runtime pre-tool guard consumes them. AIPS Core does not claim universal tool interception.
-- Add Scenarios 138–140 and raise Scenario Conformance to 140/140 automated. Roles remain 12 and Skills remain 25; no new Role/Skill or provider dependency is introduced.
-- Feature PR #87 exact final head `f1491f7316159edc09c7d83f11425672c633862b` passed Janitor and required `repository` in validate Run #1039, was squash-merged to main as `4595b21d33b8ca6608e371c620b3afcfc5c285d0`, and protected-main validate Run #1040 completed SUCCESS.
-- Feature PR #88 exact final head `fa79bd0636ac9217fc8e8914c1b6921baeb0fd51` passed Janitor and required `repository` in validate Run #1042, was squash-merged to main as `cbdf8db9f405d9e8f97791c6753492df9104ff2b`, and protected-main validate Run #1043 independently completed `janitor=SUCCESS` and `repository=SUCCESS`.
-- The three Evolution Radar signals previously retained as ASSESS-only—resource-scoped agent authorization, out-of-band anomaly evidence and semantic intent governance—are now represented by implemented, tested capabilities on current main. Existing Radar evidence history remains provenance; no stale Human Decision Record is fabricated.
+- Keep enforcement truth explicit: Resource Authorization produces deterministic `PRE_EXECUTION_EVIDENCE`; without a separately verified runtime pre-tool guard, AIPS does not claim universal runtime/tool-call enforcement.
+- Add Scenario 138 and raise Scenario Conformance to 138/138 automated. Roles remain 12 and Skills remain 25; no new Role, Skill or provider dependency is introduced.
+- Feature PR #87 exact final head `f1491f7316159edc09c7d83f11425672c633862b` passed Janitor and required `repository` in validate Run #1039 and was squash-merged to main as `4595b21d33b8ca6608e371c620b3afcfc5c285d0`.
+- Scope reconciliation removes the later PR #88 Agent Runtime Assurance additions from the effective v0.29.0 capability set because out-of-band anomaly detection and semantic intent governance were outside the approved v0.29.0 implementation boundary. Those Evolution Radar signals remain ASSESS-only pending a separate Human-authorized decision.
 - Constitution impact: NO. Protected Human Authority, existing approval binding, Change Boundary, Execution Isolation, Git Publish, merge/release governance and destructive-operation safety remain intact.
-- Architecture impact: capability expansion inside the existing Execution/Governance/Conformance path; no second runtime authority subsystem is introduced.
+- Architecture impact: capability expansion stays inside the existing Execution Profile / Resource Authorization / Governance / Conformance path; no second runtime authority subsystem is introduced.
 - Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
-
 
 ## 0.28.0
 

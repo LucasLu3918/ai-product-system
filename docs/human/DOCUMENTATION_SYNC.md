@@ -100,10 +100,3 @@ Deterministic validator 能保證：
 ## Resource Authorization documentation mapping
 
 Resource-scoped authorization extends the existing Execution Profile and security/governance path. Changes to its evaluator, schema/template or Execution Profile binding must update Human Architecture/User guidance, Agent Execution Isolation/Orchestrator guidance and the Technology Guide in the same diff. This mapping documents enforcement truth explicitly: deterministic authorization is pre-execution evidence unless a verified runtime pre-tool guard consumes it.
-
-
-## Agent Runtime Assurance 文件同步
-
-`agent-runtime-assurance` mapping 會監看 intent/anomaly evaluator 與 canonical Agent protocol。行為改變時必須同步 review Human Architecture/User Guide、Agent Resource Authorization/Execution Isolation 與 Technology Guide。
-
-若同一 change 更新 Evolution Capability Map，還會同時觸發 Evolution Radar 文件同步；這是刻意的，確保 Radar 的「系統已具備哪些能力」與實際 runtime evidence contract 一致。

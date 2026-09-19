@@ -19,4 +19,3 @@ capabilities:
   - {id: controlled-evolution-trial, name_en: Controlled Evolution Trial, name_zh: 受控演化實驗, docs: [orchestration/EVOLUTION_RADAR.md, orchestration/EXECUTION_ISOLATION.md, docs/human/EVOLUTION_RADAR.md]}
   - {id: human-documentation-namespace, name_en: Human Documentation Namespace, name_zh: 人類文件命名空間, docs: [orchestration/DOCUMENTATION_SYNC.md, docs/human/DOCUMENTATION_SYNC.md, docs/human/DOCUMENTATION_MAP.md]}
   - {id: trial-adoption-binding, name_en: Trial-to-ADOPT Evidence Binding, name_zh: 實驗採用證據綁定, docs: [orchestration/EVOLUTION_RADAR.md, docs/human/EVOLUTION_RADAR.md]}
-  - {id: agent-runtime-assurance, name_en: Agent Runtime Assurance, name_zh: 代理執行保證證據, docs: [orchestration/AGENT_RUNTIME_ASSURANCE.md, orchestration/RESOURCE_AUTHORIZATION.md, orchestration/AGENT_EVAL.md]}

@@ -1,24 +1,24 @@
 version: 1
 candidate:
-  base_sha: 4595b21d33b8ca6608e371c620b3afcfc5c285d0
-  changed_files_hash: 23560bbef8cd67ee4a9a224fe6ab9650a3624982ed9896b2c1d8871f7f8a7ecb
+  base_sha: 568c21ed67a51c786860043600ccdaf707448dd7
+  changed_files_hash: 7e3c11acb7a040f2dfdad64b2dfc23e8677b9f8e9f44b3927c389b286b399423
 change:
-  id: v0.29.0-agent-runtime-assurance
-  summary: Add provider-neutral semantic intent binding and out-of-band anomaly evidence as evidence-only extensions of Resource Authorization, Agent Eval and Execution Isolation.
-  boundary: [resource-authorization, agent-runtime-assurance, conformance, cli, documentation]
+  id: v0.29.0-scope-reconciliation
+  summary: Reconcile v0.29.0 to the approved Resource-Scoped Agent Authorization boundary by removing unapproved Agent Runtime Assurance scope while preserving release truth and Human authority.
+  boundary: [resource-authorization, conformance, evolution-radar, cli, documentation, release-metadata]
 matrix:
-  - boundary: agent-runtime-assurance
-    reason: Security-sensitive pre/post execution evidence must only narrow authority and must not create autonomous remediation or protected-operation authority.
+  - boundary: scope-reconciliation
+    reason: Security-sensitive rollback removes capabilities that were merged outside the approved v0.29.0 boundary and restores the exact post-PR-87 functional baseline plus corrected release metadata.
     checks:
       static_lint: {applicable: true, evidence: "Janitor ruff-critical"}
-      unit: {applicable: true, evidence: "tests/evidence/agent_runtime_assurance_lifecycle.py covers intent binding, deny monotonicity, anomaly detection and secret rejection"}
-      integration: {applicable: true, evidence: "aips assurance CLI routes to deterministic provider-neutral evaluator"}
-      contract: {applicable: true, evidence: "Scenarios 139-140 + orchestration/AGENT_RUNTIME_ASSURANCE.md"}
-      e2e: {applicable: true, evidence: "protected PR Janitor + repository aggregate"}
-      security: {applicable: true, evidence: "Resource DENY cannot be widened; secret-like declared intent/result rejected before persistence; semantic result authority false; automatic remediation false; event evidence fingerprinted"}
-      migration_recovery: {applicable: false, na_reason: "Capability is additive evidence-only and existing execution profiles remain valid"}
-      cli_harness: {applicable: true, evidence: "aips assurance intent-request/intent-finalize/intent-gate/postflight"}
-      docs_schema: {applicable: true, evidence: "Human/Agent architecture, user, conformance, technology, documentation-sync and Evolution Radar capability-map contracts synchronized"}
+      unit: {applicable: true, evidence: "Resource Authorization lifecycle evidence remains authoritative; Agent Runtime Assurance implementation/tests are removed"}
+      integration: {applicable: true, evidence: "aips authorization CLI remains available while assurance CLI surface is removed"}
+      contract: {applicable: true, evidence: "Scenario registry returns to Scenario 138 / 138 automated and Evolution Radar keeps anomaly/semantic signals ASSESS-only"}
+      e2e: {applicable: true, evidence: "protected PR Janitor + required repository aggregate + protected-main validation"}
+      security: {applicable: true, evidence: "default-DENY Resource Authorization and Protected Human Authority are preserved; no anomaly/semantic authority remains enabled"}
+      migration_recovery: {applicable: true, evidence: "All PR #88 touched paths are restored to exact PR #87 merge-tree blobs or deleted when introduced by PR #88; no persisted data migration is required"}
+      cli_harness: {applicable: true, evidence: "bin/aips is restored to the PR #87 merge state"}
+      docs_schema: {applicable: true, evidence: "Human/Agent docs, Documentation Sync, Evolution Radar capability map and CHANGELOG are reconciled to the approved scope"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

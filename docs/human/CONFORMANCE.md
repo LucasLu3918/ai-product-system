@@ -843,12 +843,3 @@ Automated     138
 Uncovered       0
 Automated    100%
 ~~~
-
-
-## Scenarios 139–140 — Agent Runtime Assurance
-
-Scenario 139 以 lifecycle evidence 驗證 out-of-band runtime anomaly audit：成功執行但原本應 DENY、subject mismatch、unsupported operation、違反 network_allowed=false 都會產生 REVIEW evidence；正常被拒絕的操作不算 anomaly，且 automatic remediation 固定關閉。
-
-Scenario 140 驗證 provider-neutral semantic intent binding：assessment 必須綁定 exact request fingerprint / authorization profile；只有既有 Resource Authorization ALLOW + ALIGNED 才得到 COMPATIBLE evidence，其他狀態只能 BLOCKED，永遠不能把 DENY 升級為允許。
-
-目前自動化覆蓋為 140 / 140。
