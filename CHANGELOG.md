@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.28.0
+
+### Agent Eval Repeatability Evidence
+
+- Extend existing provider-neutral Agent Eval with deterministic consistency analysis across repeated executions of the exact same Case fingerprint, without introducing a new Role, Skill, provider dependency or runtime authority.
+- Add `agent_eval.py consistency` and `aips conformance agent-eval consistency` to report repetition count, PASS rate, outcome consistency, observable-response diversity and exact response repeatability while keeping response bodies/private reasoning out of aggregate evidence.
+- Keep freshness fail-closed: stale, missing or invalid Agent Eval evidence remains invalid even when a caller chooses a relaxed pass-rate threshold.
+- Add Scenario 137 and raise Scenario Conformance to 137/137 automated while preserving the existing recorded Agent Eval case/result pairs.
+- Feature PR #85 exact head `1822bb9769979dce2cf1ad24dee4e6823448f75d` passed Janitor and required `repository` in validate Run #1032 and was squash-merged to main as `32889482b67f96518f3fe483242a1a477d8520f8`.
+- Protected-main validate Run #1033 independently completed `janitor=SUCCESS` and `repository=SUCCESS` on exact merged main.
+- Evolution Radar Issue #79 was semantically reviewed after implementation: 2 signals COVERED, 3 ASSESS, 20 HOLD, 0 TRIAL and 0 ADOPT. The repeated-run Agent reliability signal is now COVERED on current main; resource-scoped agent authorization, out-of-band anomaly evidence and semantic intent governance remain ASSESS-only and require a fresh current-baseline review before any Trial or implementation.
+- Preserve the Radar authority boundary: the Issue #79 evidence baseline predates current main and is explicitly treated as STALE for new positive progression; no Human Decision Record was fabricated from advisory analysis.
+- Constitution impact: NO. No merge, release, Human approval, provider-routing or tool-call authority is added.
+- Architecture Diagram Impact: NO material topology change. This release strengthens conformance evidence inside the existing Agent Eval/Scenario Conformance path.
+- Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
+
 ## 0.27.2
 
 ### Remote Branch Hygiene Reporting
