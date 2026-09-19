@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.27.2
+
+### Remote Branch Hygiene Reporting
+
+- Make deterministic Branch Hygiene usable in GitHub Actions against the actual repository branch set by adding explicit remote-ref classification through `scripts/branch_hygiene.py --remote origin`.
+- Preserve the existing conservative integration rules from v0.27.1: direct ancestry, patch equivalence and squash-aware synthetic merge-tree equality remain the only paths to `integrated_into_target=true`.
+- Add `.github/workflows/branch-hygiene.yml` with weekly schedule, manual dispatch and targeted main-push verification when Branch Hygiene implementation/config changes. The workflow uses `contents: read`, fetches/prunes `refs/remotes/origin/*`, publishes a Job Summary and verifies `branch_deletion_authorized=false`.
+- Add local + remote lifecycle evidence and repository contract checks so CI fails if remote enumeration, read-only permissions or report-only authority regress.
+- Synchronize Human Maintenance and Technology Guide documentation with the new remote-report execution path.
+- PR #82 exact final head `c231b769bfe58ff9bef698dbdda08796d9f4b13a` passed Janitor and required `repository` in validate Run #1028 and was squash-merged to main as `ffa97df1ad85588496e5d1dd5758054b1d29e794`.
+- Protected-main validate Run #1029 independently completed `janitor=SUCCESS` and `repository=SUCCESS` on exact merged main.
+- Branch Hygiene production Run #1 completed SUCCESS on exact main: full-depth checkout, remote-ref refresh, deterministic report generation, Job Summary publication and report-only authority verification all passed.
+- The prior v0.27.1 closeout already removed all then-known deterministic deletion candidates and preserved operational `feature/retrieval-embedding-trial`; this patch adds repeatable evidence generation rather than automatic deletion.
+- Constitution impact: NO. No branch deletion, ref rewrite, merge or release authority is added.
+- Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
+
 ## 0.27.1
 
 ### Branch Hygiene Squash Detection & v0.27 Closeout
