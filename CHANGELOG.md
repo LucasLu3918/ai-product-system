@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.27.0
+
+### Reliability & Governance Hardening
+
+- Make Evolution Radar semantic analysis provider-neutral: scheduled runs now always produce a credential-free semantic handoff bound to the exact analysis package/evidence digest, while the existing OpenAI Codex Action adapter becomes optional. Missing `OPENAI_API_KEY` no longer prevents deterministic research packaging; recommendations remain `ANALYSIS_PENDING` until a validated semantic result is explicitly bound and applied.
+- Harden the Deterministic Scheduler fail-closed boundary contract: potentially writable tasks must declare a non-empty Change Boundary, explicit `read_only: true` tasks may omit it only when no write set exists, and contradictory read-only/write declarations are blocked.
+- Harden the Integration/Janitor Gate against stale pull-request bases by freshly resolving the target branch tip and blocking candidates whose declared base no longer matches current target state before expensive checks execute.
+- Add conditional Core Change Test Matrix enforcement. Explicit `aips:large-change` / `aips:core-change` candidates require exact candidate-bound Matrix evidence, while ordinary standard changes remain Matrix-optional unless they touch a narrow governance-core Integration Gate safety net.
+- Keep Matrix enforcement proportional: broad `scripts/**` / `config/**` rules are intentionally avoided so routine changes are not misclassified as Core solely by file type.
+- Add deterministic branch lifecycle hygiene with `PERSISTENT`, `EPHEMERAL` and `UNCLASSIFIED` classification. The policy is report-only: only integrated ephemeral branches become deletion candidates, operational branches such as `feature/retrieval-embedding-trial` remain explicitly persistent, and no automatic branch-deletion authority is introduced.
+- Reduce duplicate CI work by allowing repository validation to skip focused Scheduler/Integration Gate lifecycle evidence only when the active Validation Profile already executed those checks. Standalone `tests/validate_repository.py` remains complete.
+- Close a validation coverage hole found during PR #76 review by adding executable `branch_hygiene_contracts.py` and correcting the repository-validator import so Branch Hygiene config, syntax and lifecycle evidence are actually enforced.
+- Feature PR #75 exact head `760fa012170178df107d7bf9e9336116c39d85b4` was squash-merged to main as `2097c2dc1c28ee221b795daa47fba104dbf75fa5`; protected-main validate Run #1018 completed SUCCESS.
+- Governance hardening PR #76 exact final head `0a5a1da9094b20536e56c792cf691b5c7f4385d9` passed Janitor and required `repository` in validate Run #1020, then was squash-merged to main as `37578a1707ae7439d2d002e59b6cbb898e4b7fc3`.
+- Protected-main validate Run #1021 independently completed `janitor=SUCCESS` and `repository=SUCCESS` on exact merged main. The final governance candidate bound changed-files hash `c356c77646612f9c197424f510bbce7bd54210f47fb7255ea2a1cddeb033880c`, Matrix hash `d393a5df8cbc394ec6ffea2cbce5b3d174ad66025b2ffefc3c6e33cfe8dd195f`, no blockers and preserved Human authority.
+- Scenario inventory remains 136 automated scenarios; Roles remain 12 and Skills remain 25. No new Role, Skill or autonomous approval layer is introduced.
+- Constitution impact: NO. Protected Human Authority, Git Publish Approval semantics, merge authority and release authority remain unchanged.
+- Architecture Diagram Impact: YES. Human/Agent architecture and maintenance documentation now describe provider-neutral Radar handoff, writable-task fail-closed scheduling, PR base freshness, conditional Matrix enforcement, branch hygiene and validation de-duplication.
+- Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
+
 ## 0.26.0
 
 ### Deterministic Scheduler + Exact-Candidate Integration Gate
