@@ -229,6 +229,46 @@ Dedicated workflow 會把 machine report 轉成 GitHub Job Summary，因此 **wo
 
 目前 normal Retrieval / Turn Context 與 production source-transfer policy 在上述流程中都不會改變。
 
+## Provider-Neutral Local-First Embedding Trial（Scenario 134）
+
+Scenario 133 的 remote adapter 與安全邊界保留，但不再把 remote credential 當成 semantic research 的預設前置條件。Scenario 134 將 embedding Trial 改成 **local-first / remote-optional**：
+
+~~~text
+Synthetic 9-case corpus
+   ↓
+正式 Retrieval baseline
+   ↓
+Provider selection
+   ├─ local（default）→ pinned BGE model → runner-local inference
+   └─ remote（optional）→ OpenAI-compatible embeddings
+   ↓
+In-memory cosine ranking
+   ↓
+同一套 retrieval metrics / thresholds
+   ↓
+PASS / FAIL / TRIAL_PENDING / TRIAL_BLOCKED
+   ↓
+Human Adoption Decision（PASS 也不自動採用）
+~~~
+
+預設 local provider：
+
+- runtime dependency：pinned `sentence-transformers`；
+- model：`BAAI/bge-small-en-v1.5`；
+- model revision：固定 commit，不追隨 mutable `main`；
+- dimensions：384；
+- 不需要 `OPENAI_API_KEY`；
+- 第一次 Trial 可從 Hugging Face 下載 model artifact，但 query / fixture embedding inference 在 GitHub Actions runner 內完成；
+- `HF_HUB_DISABLE_TELEMETRY=1`；
+- repository/product source transfer 仍為 false；
+- model download/load/inference failure → `TRIAL_BLOCKED / HOLD`。
+
+Remote provider 仍可透過 `AIPS_RETRIEVAL_EMBEDDING_PROVIDER=remote` 顯式選擇。只有這條 optional path 才需要 `OPENAI_API_KEY`；若缺少 credential 仍誠實回 `TRIAL_PENDING`。
+
+正常 PR/main validation 不安裝 semantic Trial dependency、不下載 model、不執行 embedding；dedicated `retrieval-semantic-trial` 才安裝 `requirements-semantic-trial.txt` 並執行真正 embedding benchmark。
+
+Scenario 134 不改 production Retrieval / Turn Context。Local Trial PASS 也只代表 evidence eligible for Human review；production embedding lane、cache、source-transfer policy 與 default enablement 都仍需另外 Human Adoption Decision。
+
 ## Debug
 
 一般使用不需執行；排錯可用 `aips intelligence status/render/finalize/impact-init/index/retrieve/evaluate`。

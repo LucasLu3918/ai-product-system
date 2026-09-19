@@ -40,6 +40,10 @@ AIPS 已完成 dependency-free software-engineering alias expansion Trial。它�
 
 Scenario 133 準備 materially different 的真實 embedding 候選，但只允許 synthetic fixture 送往 provider。正常 PR/main CI 與 Turn Context 不呼叫 embedding；專用 Trial branch / manual dispatch 才能執行。缺 credential 回 `TRIAL_PENDING`、provider failure 回 `TRIAL_BLOCKED`，PASS 也仍需 Human Adoption Decision。
 
+### Provider-Neutral Local-First Embedding Trial
+
+Scenario 134 把真正 embedding quality evidence 的預設路徑改成 runner-local。Dedicated Trial 使用 pinned `sentence-transformers` 與 pinned `BAAI/bge-small-en-v1.5` revision，在 GitHub Actions runner 內產生 vectors；model artifact 可由外部下載，但 query / synthetic source 不送往 embedding provider。原有 OpenAI-compatible adapter 保留為 optional comparison path，只有顯式選擇 remote 才需要 `OPENAI_API_KEY`。Normal Retrieval / Turn Context 仍不啟用 embedding，PASS 仍停在 Human Adoption Decision。
+
 ## 2. Project Intelligence
 
 ![Project Intelligence](assets/project-intelligence-overview.svg)

@@ -175,3 +175,29 @@ Current automated inventory after Scenario 133:
 - manual: 0
 - uncovered: 0
 - automated: 133 / 133
+
+## Scenario 134 — Provider-Neutral Local-First Embedding Retrieval Trial
+
+Scenario 134 is deterministic-covered by `tests/validation/retrieval_embedding_trial_contracts.py`. It extends Scenario 133 without rewriting its historical remote-readiness evidence.
+
+The contract proves:
+
+- embedding Trial provider selection defaults to `local` and remains explicitly configurable;
+- the local runtime dependency, model identifier, dimensions and exact model revision are pinned;
+- local readiness is `READY` without `OPENAI_API_KEY`, reports credential_required=false, executes inference runner-local and reports inference_source_transfer=false;
+- model artifact download is a dedicated-Trial infrastructure operation, with telemetry disabled, and does not authorize repository/product source transfer;
+- the existing OpenAI-compatible adapter remains available only as an explicit optional `remote` provider;
+- explicit remote mode without its credential remains truthfully `TRIAL_PENDING`;
+- local dependency/model download/load/inference failures resolve to `TRIAL_BLOCKED / HOLD`;
+- normal PR/main repository validation does not install or execute the semantic Trial model;
+- the same 9-case quality corpus, thresholds and required-regression gates remain unchanged;
+- vectors remain ephemeral, no Vector DB is introduced, production/default enablement remains false, and PASS still requires a separate Human Adoption Decision.
+
+Current automated inventory after Scenario 134:
+
+- deterministic: 22
+- lifecycle: 58
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 134 / 134

@@ -783,3 +783,20 @@ Scenario 133 不要求正常 CI 呼叫外部 provider；它 deterministic 驗證
 - PASS / FAIL 都只是 evidence，Human Adoption Decision 仍是必要 gate。
 
 目前 Scenario inventory 為 **133**：21 deterministic + 58 lifecycle + 54 agent_eval，**133 / 133 automated、0 manual、0 uncovered**。
+
+## Provider-Neutral Local-First Embedding Trial（Scenario 134）
+
+Scenario 134 將 Scenario 133 的 remote-only readiness 擴充為 local-first / remote-optional provider-neutral Trial，而且不改 production Retrieval。
+
+Deterministic contract 會驗證：
+
+- provider default 必須是 `local`；
+- local runtime dependency 有明確 pin；
+- local model = `BAAI/bge-small-en-v1.5`、384 dimensions，且 model revision 必須是 exact commit；
+- local readiness 在沒有 `OPENAI_API_KEY` 時仍為 `READY`、credential_required=false、runner-local inference、inference_source_transfer=false；
+- 顯式選擇 remote 且沒有 key 時仍為 `TRIAL_PENDING`；
+- dedicated workflow 才安裝 semantic Trial dependency，normal PR/main validation 不執行 embedding model；
+- Job Summary 對 local blocked 與 remote pending 提供不同且 truthful 的 operator guidance；
+- repository source transfer、automatic provider/default enablement、production source transfer 與 adoption_without_human_decision 都維持 false。
+
+目前 Scenario inventory 為 **134**：22 deterministic + 58 lifecycle + 54 agent_eval，**134 / 134 automated、0 manual、0 uncovered**。

@@ -439,6 +439,43 @@ Status handling is fixed:
 
 The summary may report provider/model identifiers, credential availability as a boolean, privacy scope, request/token counts and authority flags. It MUST NOT print credential values.
 
+## Provider-Neutral Local-First Embedding Trial
+
+Scenario 134 removes the remote credential as the default semantic-retrieval research blocker while preserving Scenario 133 as historical remote-readiness evidence.
+
+Provider selection is explicit and bounded:
+
+~~~text
+synthetic corpus
+      ↓
+current Retrieval baseline
+      ↓
+provider selector
+   ├─ local (default): pinned sentence-transformers + pinned BGE revision
+   └─ remote (optional): existing OpenAI-compatible adapter
+      ↓
+ephemeral in-memory cosine merge
+      ↓
+same quality/regression checks
+      ↓
+PASS / FAIL / PENDING / BLOCKED
+      ↓
+Human review before adoption
+~~~
+
+Local-mode contracts:
+
+- local mode is the default and requires no credential;
+- the model identifier and exact model revision are pinned in configuration;
+- model artifact download may use network on the dedicated Trial runner, but synthetic query/chunk inference remains runner-local;
+- Hugging Face telemetry is disabled by workflow environment;
+- model dependency/download/load/inference failure is `TRIAL_BLOCKED / HOLD`;
+- normal PR/main validation does not install the semantic Trial dependency or execute the model.
+
+Remote-mode contracts remain available only when `AIPS_RETRIEVAL_EMBEDDING_PROVIDER=remote` is explicitly selected. That path retains protected `OPENAI_API_KEY` injection and truthful `TRIAL_PENDING` when the credential is unavailable.
+
+Both modes preserve `synthetic_fixture_only`, repository/product source-transfer=false, bounded candidate/input/batch limits, ephemeral vectors, no Vector DB, default enablement=false, provider auto-enablement=false and mandatory Human Adoption Decision after PASS.
+
 ## Migration from v0.8 Project Knowledge
 
 If `.ai/knowledge/KNOWLEDGE_INDEX.yaml` exists and no Intelligence exists:

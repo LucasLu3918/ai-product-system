@@ -116,6 +116,31 @@ flowchart LR
 
 The remote candidate is explicitly synthetic-only. Normal PR/main validation never sends repository source to an embedding provider. The dedicated Trial workflow uses bounded request/chunk/input limits, protected secret injection and no Vector DB; production source transfer and default embedding enablement remain false.
 
+### Provider-neutral local-first embedding Trial
+
+~~~mermaid
+flowchart LR
+    FIX[9-case synthetic fixture] --> BASE[Current default retrieval]
+    FIX --> SEL{Embedding provider}
+    SEL -->|default| LOCAL[Pinned local BGE model]
+    LOCAL --> LINFER[Runner-local inference]
+    SEL -->|explicit optional| REMOTE[OpenAI-compatible remote adapter]
+    REMOTE --> RSTATE{Credential available?}
+    RSTATE -->|no| PEND[TRIAL_PENDING]
+    RSTATE -->|yes| RINFER[Remote synthetic-only inference]
+    LINFER --> MEM[Ephemeral in-memory cosine ranking]
+    RINFER --> MEM
+    BASE --> MET[Same retrieval metrics]
+    MEM --> MET
+    MET --> OUT{Quality result}
+    OUT -->|runtime/provider failure| BLOCK[TRIAL_BLOCKED / HOLD]
+    OUT -->|quality fail| HOLD[FAIL / HOLD]
+    OUT -->|quality pass| REVIEW[PASS / Human review]
+    REVIEW --> HAD[Separate Human Adoption Decision]
+~~~
+
+Scenario 134 makes local inference the default Trial path, so `OPENAI_API_KEY` is no longer a prerequisite for real embedding quality evidence. The local model/runtime and exact model revision are pinned; model artifact download is allowed only as Trial infrastructure and does not transmit query/source content. The existing remote adapter remains an explicit optional comparison path. Normal PR/main validation and normal Turn Context still do not execute embedding inference.
+
 ## Primary planning package
 
 ```mermaid

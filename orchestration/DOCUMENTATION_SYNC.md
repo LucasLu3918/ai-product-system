@@ -25,7 +25,7 @@ When a configured behavior-bearing source path changes, the same change MUST upd
 
 The mapping is explicit and deterministic. Do not guess from file names during validation.
 
-Project Intelligence documentation mapping includes the stable intelligence implementation, rebuildable Retrieval Intelligence implementation, Retrieval Quality Evaluation harness, Structural Retrieval trial/adoption harness and remote embedding Trial readiness/operator-summary surfaces, so changes to indexing/ranking/context assembly/evaluation metrics, structural retrieval behavior or embedding Trial provider/privacy/operator-handoff contracts require the Human Project Intelligence guide, Agent protocol and Technology Guide to be reviewed together.
+Project Intelligence documentation mapping includes the stable intelligence implementation, rebuildable Retrieval Intelligence implementation, Retrieval Quality Evaluation harness, Structural Retrieval trial/adoption harness and provider-neutral local-first embedding Trial / optional remote operator-summary surfaces, including the dedicated semantic Trial dependency, so changes to indexing/ranking/context assembly/evaluation metrics, structural retrieval behavior or embedding Trial provider/privacy/operator-handoff contracts require the Human Project Intelligence guide, Agent protocol and Technology Guide to be reviewed together.
 
 ## Technology Guide rule
 
