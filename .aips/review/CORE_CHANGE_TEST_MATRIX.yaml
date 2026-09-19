@@ -1,24 +1,24 @@
 version: 1
 candidate:
-  base_sha: 2097c2dc1c28ee221b795daa47fba104dbf75fa5
-  changed_files_hash: c356c77646612f9c197424f510bbce7bd54210f47fb7255ea2a1cddeb033880c
+  base_sha: 5136519e7afeed4f5b157bf77d50780b176b343b
+  changed_files_hash: af306cde9a37eef703270a90548dc2248168ea88066671e58f61b90a659e49d6
 change:
-  id: v0.27.0-governance-hardening
-  summary: Conditional Core Matrix enforcement, report-only branch lifecycle hygiene, CI lifecycle de-duplication, and synchronized governance documentation.
-  boundary: [integration-gate, validation, repository-maintenance]
+  id: v0.28.0-agent-eval-repeatability
+  summary: Extend provider-neutral Agent Eval with deterministic multi-run repeatability evidence while preserving observable-output-only privacy and Human authority.
+  boundary: [agent-eval, scenario-conformance, cli, documentation]
 matrix:
-  - boundary: integration-gate
-    reason: Core candidate validation semantics are changing.
+  - boundary: agent-eval
+    reason: Reliability evidence semantics expand from one recorded execution to bounded multi-run consistency measurement.
     checks:
       static_lint: {applicable: true, evidence: "Janitor ruff-critical"}
-      unit: {applicable: false, na_reason: "Lifecycle contract is authoritative for this CLI"}
-      integration: {applicable: true, evidence: "tests/evidence/integration_gate_lifecycle.py"}
-      contract: {applicable: true, evidence: "tests/validation/scheduler_gate_contracts.py"}
+      unit: {applicable: true, evidence: "tests/evidence/agent_eval_framework.py exercises consistency metrics and invalid evidence"}
+      integration: {applicable: true, evidence: "Agent Eval CLI + aips CLI repeatability lifecycle"}
+      contract: {applicable: true, evidence: "Scenario 137 + Scenario Conformance registry"}
       e2e: {applicable: true, evidence: "protected PR Janitor + repository aggregate"}
-      security: {applicable: true, evidence: "fail-closed matrix binding and no new write authority"}
-      migration_recovery: {applicable: false, na_reason: "No persisted data/schema migration"}
-      cli_harness: {applicable: true, evidence: "Integration Gate CLI lifecycle"}
-      docs_schema: {applicable: true, evidence: "Documentation Sync + repository validation"}
+      security: {applicable: true, evidence: "aggregate stores fingerprints/status only; existing private-reasoning and secret validation remains mandatory"}
+      migration_recovery: {applicable: false, na_reason: "Existing Agent Eval Result schema and committed 54 result pairs remain backward compatible"}
+      cli_harness: {applicable: true, evidence: "aips conformance agent-eval consistency route"}
+      docs_schema: {applicable: true, evidence: "Agent/Human Conformance docs + Technology Guide synchronized"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

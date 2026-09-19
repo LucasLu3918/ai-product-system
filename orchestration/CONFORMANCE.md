@@ -219,3 +219,18 @@ Current automated inventory after Scenario 136:
 - manual: 0
 - uncovered: 0
 - automated: 136 / 136
+
+## Scenario 137 — Agent Eval Repeatability
+
+Scenario 137 is lifecycle-covered by `tests/evidence/agent_eval_framework.py` plus the new `agent_eval.py consistency` mode. It proves that multiple independently recorded Results for one exact Case fingerprint can be evaluated as a reliability set without requiring exact wording equality.
+
+The report keeps rubric success and literal response repeatability separate, rejects stale/invalid Result evidence even when a relaxed pass-rate threshold would otherwise pass, and persists only aggregate status/fingerprints rather than private reasoning.
+
+Current automated inventory after Scenario 137:
+
+- deterministic: 22
+- lifecycle: 61
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 137 / 137

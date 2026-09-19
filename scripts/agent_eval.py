@@ -215,6 +215,86 @@ def score(case: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+
+def response_fingerprint(response: dict[str, Any]) -> str:
+    """Fingerprint observable response data without persisting response text in the report."""
+    return fingerprint({"response": response})
+
+
+def consistency(
+    case: dict[str, Any],
+    named_results: list[tuple[str, dict[str, Any]]],
+    *,
+    min_repetitions: int = 5,
+    min_pass_rate: float = 1.0,
+) -> dict[str, Any]:
+    """Measure repeatability across independently recorded observable Agent Eval results."""
+    errors = validate_case(case)
+    if min_repetitions < 2:
+        errors.append("min_repetitions must be >= 2")
+    if not 0.0 <= min_pass_rate <= 1.0:
+        errors.append("min_pass_rate must be between 0 and 1")
+
+    passed = 0
+    failed = 0
+    valid = 0
+    response_counts: dict[str, int] = {}
+    runs: list[dict[str, Any]] = []
+
+    for source, result in named_results:
+        validation_errors = validate_result(case, result)
+        response_fp: str | None = None
+        if validation_errors:
+            errors.extend(f"{source}: {message}" for message in validation_errors)
+            run_status = "INVALID"
+        else:
+            valid += 1
+            scored = score(case, result)
+            run_status = scored["status"]
+            if run_status == "PASS":
+                passed += 1
+            else:
+                failed += 1
+            response = result.get("response") or {}
+            if isinstance(response, dict):
+                response_fp = response_fingerprint(response)
+                response_counts[response_fp] = response_counts.get(response_fp, 0) + 1
+
+        runs.append({"source": source, "status": run_status, "response_fingerprint": response_fp})
+
+    repetitions = len(named_results)
+    if repetitions < min_repetitions:
+        errors.append(f"insufficient repetitions: required {min_repetitions}, got {repetitions}")
+
+    pass_rate = (passed / repetitions) if repetitions else 0.0
+    if pass_rate + 1e-12 < min_pass_rate:
+        errors.append(f"pass rate below threshold: required {min_pass_rate:.3f}, got {pass_rate:.3f}")
+
+    outcome_consistency = (max(passed, failed) / valid) if valid else 0.0
+    response_repeatability = (max(response_counts.values()) / valid) if valid and response_counts else 0.0
+
+    return {
+        "status": "PASS" if not errors else "FAIL",
+        "case_id": case.get("id"),
+        "scenario_id": str(case.get("scenario_id") or ""),
+        "case_fingerprint": fingerprint(case),
+        "policy": {"min_repetitions": min_repetitions, "min_pass_rate": min_pass_rate},
+        "summary": {
+            "repetitions": repetitions,
+            "valid_results": valid,
+            "invalid_results": repetitions - valid,
+            "passed": passed,
+            "failed": failed,
+            "pass_rate": round(pass_rate, 6),
+            "outcome_consistency": round(outcome_consistency, 6),
+            "unique_observable_responses": len(response_counts),
+            "response_repeatability": round(response_repeatability, 6),
+        },
+        "errors": errors,
+        "runs": runs,
+    }
+
+
 def case_files(directory: Path) -> dict[str, Path]:
     result: dict[str, Path] = {}
     for path in sorted(directory.glob("*.yaml")):
@@ -308,6 +388,13 @@ def main() -> int:
     sc.add_argument("--result", required=True)
     sc.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
+    co = sub.add_parser("consistency")
+    co.add_argument("--case", required=True)
+    co.add_argument("--results-dir", required=True)
+    co.add_argument("--min-repetitions", type=int, default=5)
+    co.add_argument("--min-pass-rate", type=float, default=1.0)
+    co.add_argument("--format", choices=["yaml", "json"], default="yaml")
+
     args = parser.parse_args()
     try:
         if args.command == "fingerprint":
@@ -315,6 +402,13 @@ def main() -> int:
             return 0
         if args.command == "score":
             data = score(load_yaml(Path(args.case)), load_yaml(Path(args.result)))
+            emit(data, args.format)
+            return 0 if data["status"] == "PASS" else 2
+        if args.command == "consistency":
+            case = load_yaml(Path(args.case))
+            results_dir = Path(args.results_dir).resolve()
+            named_results = [(display_path(path), load_yaml(path)) for path in sorted(results_dir.glob("*.yaml"))]
+            data = consistency(case, named_results, min_repetitions=args.min_repetitions, min_pass_rate=args.min_pass_rate)
             emit(data, args.format)
             return 0 if data["status"] == "PASS" else 2
 
