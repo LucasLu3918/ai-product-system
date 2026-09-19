@@ -1,0 +1,63 @@
+version: 1
+trial_id: issue-79-agent-observable-event-integration-v1
+baseline_repository_revision: e5e47b28a524352f7f549b49a40a294ddb50a364
+decision_fingerprint: sha256:3b3368af2d560a97e998500f680c48a14c1ed47fb496e54c0eac75cffc70ffb8
+mode: ADAPTER_EXPORT_REPLAY
+live_capture_verified: false
+raw_payload_persisted: false
+case_count: 12
+normalized_field_set:
+  - adapter_id
+  - change_boundary
+  - event_id
+  - network_used
+  - observed_at
+  - observed_outcome
+  - operation
+  - resource_id
+  - runtime
+  - subject
+metrics:
+  true_positive: 6
+  false_positive: 0
+  true_negative: 6
+  false_negative: 0
+  precision: 1.0
+  recall: 1.0
+  false_positive_rate: 0.0
+  false_negative_rate: 0.0
+thresholds:
+  min_precision: 1.0
+  min_recall: 1.0
+  max_false_positive_rate: 0.0
+  max_false_negative_rate: 0.0
+cases:
+  - {id: canonical-allowed-read, adapter: canonical-v1, runtime: representative-canonical, event_fingerprint: "sha256:d645cf1b42b31cdab24ba9180352366fea835a6f04d16e84e042f29585f494d6", expected_anomaly: false, detected_anomaly: false, expected_types: [], detected_types: [], classification_correct: true}
+  - {id: tool-allowed-update, adapter: tool-export-v1, runtime: representative-tool-runtime, event_fingerprint: "sha256:65490bee3d2cc8003a422ebec015c1d891b5ee89e21011f8d47de3d464c2f418", expected_anomaly: false, detected_anomaly: false, expected_types: [], detected_types: [], classification_correct: true}
+  - {id: execution-expected-resource-denial, adapter: execution-export-v1, runtime: representative-execution-runtime, event_fingerprint: "sha256:ab13f99b347c10497314b21caae2c3485a99aa4086185584da8c8996868c3ab6", expected_anomaly: false, detected_anomaly: false, expected_types: [], detected_types: [], classification_correct: true}
+  - {id: canonical-expected-boundary-denial, adapter: canonical-v1, runtime: representative-canonical, event_fingerprint: "sha256:919da74836154a7450dd8b3fcb3204904caecaf8c6465f70d6173f13c01bc83e", expected_anomaly: false, detected_anomaly: false, expected_types: [], detected_types: [], classification_correct: true}
+  - {id: tool-ordinary-failure, adapter: tool-export-v1, runtime: representative-tool-runtime, event_fingerprint: "sha256:57fa93d0f8900741b1d043e58bd708691da7957a44db9db3472490290e438162", expected_anomaly: false, detected_anomaly: false, expected_types: [], detected_types: [], classification_correct: true}
+  - {id: execution-allowed-search, adapter: execution-export-v1, runtime: representative-execution-runtime, event_fingerprint: "sha256:be92ba856495fc3ab35d9cc96d27a5a9be31ca3638dd7d90a111c32a56b23c74", expected_anomaly: false, detected_anomaly: false, expected_types: [], detected_types: [], classification_correct: true}
+  - {id: canonical-unauthorized-success, adapter: canonical-v1, runtime: representative-canonical, event_fingerprint: "sha256:1c471b6e17f20ffb02190fe8290c90c34ae44bf59955fcc6092721d667649a00", expected_anomaly: true, detected_anomaly: true, expected_types: [unauthorized_success], detected_types: [unauthorized_success], classification_correct: true}
+  - {id: tool-missing-boundary-success, adapter: tool-export-v1, runtime: representative-tool-runtime, event_fingerprint: "sha256:8e7e67f00f2c31fc6f1206bf1db990b155c466d2feac5ac23ba591da52c83fc0", expected_anomaly: true, detected_anomaly: true, expected_types: [missing_required_change_boundary, unauthorized_success], detected_types: [missing_required_change_boundary, unauthorized_success], classification_correct: true}
+  - {id: execution-forbidden-network, adapter: execution-export-v1, runtime: representative-execution-runtime, event_fingerprint: "sha256:f0e96f580f671f07889bc5385580eb9811070266c7467eb463d7aac5158ede9d", expected_anomaly: true, detected_anomaly: true, expected_types: [network_policy_violation], detected_types: [network_policy_violation], classification_correct: true}
+  - {id: canonical-subject-mismatch, adapter: canonical-v1, runtime: representative-canonical, event_fingerprint: "sha256:43bd1a8afea43cc0da42efbefda238a9521b56f449178dbf0b9caee655e5c78c", expected_anomaly: true, detected_anomaly: true, expected_types: [subject_mismatch], detected_types: [subject_mismatch], classification_correct: true}
+  - {id: tool-protected-release, adapter: tool-export-v1, runtime: representative-tool-runtime, event_fingerprint: "sha256:9a211512a1e11cc86659202474ed4835fcd049524b37dd08b4f63f10424841f0", expected_anomaly: true, detected_anomaly: true, expected_types: [protected_operation_observed], detected_types: [protected_operation_observed], classification_correct: true}
+  - {id: execution-unsupported-operation, adapter: execution-export-v1, runtime: representative-execution-runtime, event_fingerprint: "sha256:5775e59e984afe27975397de294a926e5f13bc1b5da18682fb53cd3e0e8f0e04", expected_anomaly: true, detected_anomaly: true, expected_types: [unsupported_operation_observed], detected_types: [unsupported_operation_observed], classification_correct: true}
+status: PASS
+recommendation: HUMAN_REVIEW_TRIAL_RESULT
+trial_fingerprint: sha256:9270bab940c38558575490f4948589cf1ff3b6dc4477daf7eb0ff7caca4e187c
+enforcement:
+  mode: POST_EXECUTION_EVIDENCE
+  runtime_enforced: false
+  critical_path: false
+  automatic_remediation: false
+authority:
+  human_adoption_decision_required: true
+  live_runtime_capture_authorized: false
+  runtime_enforcement_authorized: false
+  automatic_remediation_authorized: false
+  human_approval_granted: false
+  merge_authorized: false
+  release_authorized: false
+  publication_authorized: false

@@ -863,3 +863,24 @@ Lifecycle 另外驗證 private reasoning / secret-like input 會 BLOCKED，且�
 
 目前 Scenario inventory 為 **139**：22 deterministic + 63 lifecycle + 54 agent_eval，**139 / 139 automated、0 manual、0 uncovered**。
 
+## Scenario 140 — Agent Observable-Event Integration Controlled Trial
+
+Scenario 140 把 v0.30.0 的 anomaly evaluator 往前推一層，但仍停留在 **replay-only Trial evidence**。
+
+Human Decision 綁定 `main@e5e47b28a524352f7f549b49a40a294ddb50a364`，從 ASSESS 明確 override 到 TRIAL；Decision fingerprint 為 `sha256:3b3368af2d560a97e998500f680c48a14c1ed47fb496e54c0eac75cffc70ffb8`。
+
+Trial 使用三種代表性 adapter-export dialect，把只允許的欄位正規化成 canonical observable event，再交給既有 Resource Authorization-backed Scenario 139 evaluator。任何未 mapping 的 raw field、private reasoning、secret-like value、stale Decision 都 fail closed。
+
+12-case replay corpus 結果：
+
+- TP=6 / FP=0 / TN=6 / FN=0；
+- precision=1.0 / recall=1.0；
+- FPR=0 / FNR=0；
+- raw payload 不寫入 committed Trial report。
+
+這些數字只代表 replay fixture。Trial 明確記錄 `live_capture_verified=false`、`runtime_enforced=false`、`critical_path=false`、`automatic_remediation=false`。
+
+Trial status = **PASS**，但 recommendation 只有 `HUMAN_REVIEW_TRIAL_RESULT`，仍需另外的 Human Adoption Decision 才能進入正式 runtime integration / adoption review。
+
+目前 Scenario inventory 為 **140**：22 deterministic + 64 lifecycle + 54 agent_eval，**140 / 140 automated、0 manual、0 uncovered**。
+

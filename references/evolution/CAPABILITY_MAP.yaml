@@ -21,4 +21,5 @@ capabilities:
   - {id: trial-adoption-binding, name_en: Trial-to-ADOPT Evidence Binding, name_zh: 實驗採用證據綁定, docs: [orchestration/EVOLUTION_RADAR.md, docs/human/EVOLUTION_RADAR.md]}
   - {id: resource-authorization, name_en: Resource-Scoped Agent Authorization, name_zh: 資源範圍代理授權, docs: [orchestration/RESOURCE_AUTHORIZATION.md, orchestration/EXECUTION_ISOLATION.md, docs/human/ARCHITECTURE_OVERVIEW.md, docs/human/USER_GUIDE.md]}
   - {id: agent-anomaly-evaluation, name_en: Agent Anomaly Evidence Evaluation, name_zh: 代理異常證據評估, docs: [orchestration/AGENT_ANOMALY_EVALUATION.md, orchestration/EVOLUTION_RADAR.md, docs/human/EVOLUTION_RADAR.md]}
+  - {id: agent-observable-event-trial-evidence, name_en: Observable-Event Integration Trial Evidence, name_zh: 可觀測事件整合實驗證據, docs: [orchestration/AGENT_ANOMALY_EVALUATION.md, orchestration/EVOLUTION_RADAR.md, docs/human/EVOLUTION_RADAR.md]}
 

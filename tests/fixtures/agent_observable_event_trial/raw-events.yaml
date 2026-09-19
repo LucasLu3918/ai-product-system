@@ -1,0 +1,82 @@
+version: 1
+trial_id: issue-79-agent-observable-event-integration-v1
+baseline_repository_revision: e5e47b28a524352f7f549b49a40a294ddb50a364
+decision_fingerprint: sha256:3b3368af2d560a97e998500f680c48a14c1ed47fb496e54c0eac75cffc70ffb8
+thresholds:
+  min_precision: 1.0
+  min_recall: 1.0
+  max_false_positive_rate: 0.0
+  max_false_negative_rate: 0.0
+cases:
+  - id: canonical-allowed-read
+    adapter: canonical-v1
+    runtime: representative-canonical
+    expected_anomaly: false
+    expected_types: []
+    raw_event: {event_id: evt-001, observed_at: "2026-09-20T00:00:01Z", subject: implementation-agent, resource_id: application-source, operation: read, observed_outcome: SUCCESS, network_used: false}
+  - id: tool-allowed-update
+    adapter: tool-export-v1
+    runtime: representative-tool-runtime
+    expected_anomaly: false
+    expected_types: []
+    raw_event: {id: evt-002, time: "2026-09-20T00:00:02Z", actor: implementation-agent, target: application-source, action: update, result: ok, used_network: false, boundary: orders}
+  - id: execution-expected-resource-denial
+    adapter: execution-export-v1
+    runtime: representative-execution-runtime
+    expected_anomaly: false
+    expected_types: []
+    raw_event: {event: evt-003, timestamp: "2026-09-20T00:00:03Z", subject_id: implementation-agent, resource: production, verb: read, status: denied, network: false}
+  - id: canonical-expected-boundary-denial
+    adapter: canonical-v1
+    runtime: representative-canonical
+    expected_anomaly: false
+    expected_types: []
+    raw_event: {event_id: evt-004, observed_at: "2026-09-20T00:00:04Z", subject: implementation-agent, resource_id: application-source, operation: update, observed_outcome: DENIED, network_used: false}
+  - id: tool-ordinary-failure
+    adapter: tool-export-v1
+    runtime: representative-tool-runtime
+    expected_anomaly: false
+    expected_types: []
+    raw_event: {id: evt-005, time: "2026-09-20T00:00:05Z", actor: implementation-agent, target: human-docs, action: read, result: error, used_network: false}
+  - id: execution-allowed-search
+    adapter: execution-export-v1
+    runtime: representative-execution-runtime
+    expected_anomaly: false
+    expected_types: []
+    raw_event: {event: evt-006, timestamp: "2026-09-20T00:00:06Z", subject_id: implementation-agent, resource: human-docs, verb: search, status: success, network: false}
+  - id: canonical-unauthorized-success
+    adapter: canonical-v1
+    runtime: representative-canonical
+    expected_anomaly: true
+    expected_types: [unauthorized_success]
+    raw_event: {event_id: evt-007, observed_at: "2026-09-20T00:00:07Z", subject: implementation-agent, resource_id: production, operation: read, observed_outcome: SUCCESS, network_used: false}
+  - id: tool-missing-boundary-success
+    adapter: tool-export-v1
+    runtime: representative-tool-runtime
+    expected_anomaly: true
+    expected_types: [missing_required_change_boundary, unauthorized_success]
+    raw_event: {id: evt-008, time: "2026-09-20T00:00:08Z", actor: implementation-agent, target: application-source, action: update, result: ok, used_network: false}
+  - id: execution-forbidden-network
+    adapter: execution-export-v1
+    runtime: representative-execution-runtime
+    expected_anomaly: true
+    expected_types: [network_policy_violation]
+    raw_event: {event: evt-009, timestamp: "2026-09-20T00:00:09Z", subject_id: implementation-agent, resource: application-source, verb: read, status: success, network: true}
+  - id: canonical-subject-mismatch
+    adapter: canonical-v1
+    runtime: representative-canonical
+    expected_anomaly: true
+    expected_types: [subject_mismatch]
+    raw_event: {event_id: evt-010, observed_at: "2026-09-20T00:00:10Z", subject: unexpected-agent, resource_id: application-source, operation: read, observed_outcome: SUCCESS, network_used: false}
+  - id: tool-protected-release
+    adapter: tool-export-v1
+    runtime: representative-tool-runtime
+    expected_anomaly: true
+    expected_types: [protected_operation_observed]
+    raw_event: {id: evt-011, time: "2026-09-20T00:00:11Z", actor: implementation-agent, target: repository, action: release, result: error, used_network: false}
+  - id: execution-unsupported-operation
+    adapter: execution-export-v1
+    runtime: representative-execution-runtime
+    expected_anomaly: true
+    expected_types: [unsupported_operation_observed]
+    raw_event: {event: evt-012, timestamp: "2026-09-20T00:00:12Z", subject_id: implementation-agent, resource: application-source, verb: impersonate, status: failed, network: false}

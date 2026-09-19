@@ -1,0 +1,36 @@
+version: 1
+assessment_id: issue-79-agent-anomaly-trial-baseline
+baseline:
+  repository_revision: e5e47b28a524352f7f549b49a40a294ddb50a364
+  version: 0.30.0
+  issue: 79
+  signal_fingerprint: sha256:7da9fc0c0ad89a0c7d0315aa2a5f4aa7ceb9842149a969a84708ce382c3082b3
+  signal_title: Agent Anomaly Detection, now in Private Preview on the Gemini Enterprise Agent Platform
+current_state: ASSESS
+evidence:
+  scenario_139_status: PASS
+  synthetic_case_count: 11
+  metrics:
+    true_positive: 6
+    false_positive: 0
+    true_negative: 5
+    false_negative: 0
+    precision: 1.0
+    recall: 1.0
+    false_positive_rate: 0.0
+    false_negative_rate: 0.0
+  production_runtime_hook: false
+  live_capture_verified: false
+  runtime_enforced: false
+  automatic_remediation: false
+recommendation:
+  state: ASSESS
+  next_step: bounded_observable_event_integration_trial
+  reason: Scenario 139 proves deterministic anomaly rules on a fixed synthetic corpus; the next bounded question is whether representative adapter exports can be normalized into the same canonical event contract without collecting private reasoning or secrets.
+authority:
+  human_decision_recorded: false
+  trial_authorized: false
+  code_change_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  publication_authorized: false

@@ -1,24 +1,24 @@
 version: 1
 candidate:
-  base_sha: 60f13d3a18cc67388c0b148bc08f2eaea691e88e
-  changed_files_hash: f01c6e01f22b0189d52bda26d43c0242f8f3a3512b5e0b97a8f97916ada52f3f
+  base_sha: e5e47b28a524352f7f549b49a40a294ddb50a364
+  changed_files_hash: 76d70807d8af89f1618981142ca8cc9e15ac2d5d59fd3eb352979538e64c0ca5
 change:
-  id: v0.30.0-agent-anomaly-evaluation
-  summary: Add a bounded deterministic offline evaluation lane for Issue #79 out-of-band Agent anomaly evidence without runtime enforcement or automatic remediation.
-  boundary: [resource-authorization, anomaly-evaluation, evolution-radar, scenario-conformance, documentation]
+  id: v0.31.0-agent-observable-event-integration-trial
+  summary: Add a Human-bound replay-only observable-event integration Controlled Trial that normalizes representative adapter exports into the existing anomaly evaluator without live runtime capture or automatic remediation.
+  boundary: [evolution-decision, observable-event-contract, anomaly-evaluation, scenario-conformance, documentation]
 matrix:
-  - boundary: anomaly-evaluation
-    reason: Security-sensitive evaluation must prove measurable behavior while staying outside the runtime critical path and preserving Protected Human Authority.
+  - boundary: observable-event-trial
+    reason: Security-sensitive Trial must prove adapter normalization and evidence binding without collecting private reasoning/secrets or claiming runtime enforcement.
     checks:
       static_lint: {applicable: true, evidence: "Janitor ruff-critical"}
-      unit: {applicable: true, evidence: "agent_anomaly_evaluation.py deterministic detector and metrics contracts"}
-      integration: {applicable: true, evidence: "evaluation reuses resource_authorization.py against committed profile/corpus fixtures"}
-      contract: {applicable: true, evidence: "Scenario 139 + validation contract + conformance baseline"}
+      unit: {applicable: true, evidence: "agent_observable_event_trial.py validation/normalization contracts"}
+      integration: {applicable: true, evidence: "representative adapter exports normalize into Scenario 139 anomaly evaluator using Resource Authorization truth"}
+      contract: {applicable: true, evidence: "Scenario 140 + observable-event schema + Human Decision/baseline/result bindings"}
       e2e: {applicable: true, evidence: "protected PR Janitor + required repository aggregate + protected-main validation"}
-      security: {applicable: true, evidence: "private reasoning/secret-like input blocked; runtime_enforced=false; critical_path=false; automatic_remediation=false; all protected authority false"}
-      migration_recovery: {applicable: false, na_reason: "Additive offline evaluation artifacts; no persisted runtime state or production integration"}
-      cli_harness: {applicable: true, evidence: "direct deterministic script validate/evaluate lifecycle; no production CLI/runtime hook is added"}
-      docs_schema: {applicable: true, evidence: "Evolution Radar, Execution Isolation, Human Technology Guide and Conformance documentation synchronized"}
+      security: {applicable: true, evidence: "unmapped/private/secret payloads blocked; no raw persistence; live_capture_verified=false; runtime_enforced=false; automatic remediation/protected authority false"}
+      migration_recovery: {applicable: false, na_reason: "Replay-only additive Trial; no production runtime state or migration"}
+      cli_harness: {applicable: false, na_reason: "Trial intentionally remains direct source-controlled replay helper; no production CLI or runtime hook is added"}
+      docs_schema: {applicable: true, evidence: "Evolution Radar, anomaly evaluation, Execution Isolation, Conformance and Human Technology docs synchronized"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

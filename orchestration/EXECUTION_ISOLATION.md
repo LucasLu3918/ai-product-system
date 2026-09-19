@@ -137,3 +137,11 @@ Because it performs no trial workspace mutation, it does not require a managed w
 
 The evaluation cannot widen Resource Authorization, Change Boundary or Human authority and cannot automatically remediate observed anomalies.
 
+## Observable-event integration Trial isolation
+
+Scenario 140 executes deterministic replay only. It does not invoke an Agent to mutate a Trial worktree and does not attach a capture hook to a live runtime, so its Trial execution is read-only evidence generation over committed sanitized fixtures.
+
+The Human Decision's approved mutation path remains bounded for any future agent-generated prototype, but the committed replay itself writes no source/runtime state.
+
+Any future Trial that installs a real runtime capture hook, modifies adapter configuration, or creates Agent-authored prototype files must return to the normal managed worktree / Change Boundary / forbidden-path checks. A replay PASS cannot bypass those controls.
+

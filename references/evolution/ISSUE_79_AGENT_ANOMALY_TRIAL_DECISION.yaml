@@ -1,0 +1,26 @@
+version: 1
+decision:
+  candidate_id: EVO-7DA9FC0C0AD8
+  signal_fingerprint: sha256:7da9fc0c0ad89a0c7d0315aa2a5f4aa7ceb9842149a969a84708ce382c3082b3
+  signal_title: Agent Anomaly Detection, now in Private Preview on the Gemini Enterprise Agent Platform
+  evidence_digest: sha256:a1b738d0367f2ef8ca799f3d9461ae70ea13f0d38bf19c16e6708005b37f35e3
+  baseline_repository_revision: e5e47b28a524352f7f549b49a40a294ddb50a364
+  baseline_status: CURRENT
+  recommendation_state: ASSESS
+  decision: TRIAL
+  approved_scope: Replay-only provider-neutral observable-event integration trial using synthetic/sanitized representative adapter exports; no live production capture, semantic intent gate, automatic remediation, or runtime enforcement.
+  approved_paths:
+    - experiments/agent-observable-event/**
+  reason: "override: The repository maintainer explicitly authorized implementing the recommended observable-event integration Controlled Trial on the current v0.30.0 baseline. The trial is limited to replay-only sanitized adapter exports and must preserve Protected Human Authority."
+  human_override: true
+  decided_by: repository maintainer LucasLu3918
+  decided_at: "2026-09-20T03:33:00+08:00"
+  next_action: controlled_trial_execution
+decision_fingerprint: sha256:3b3368af2d560a97e998500f680c48a14c1ed47fb496e54c0eac75cffc70ffb8
+authority:
+  human_decision_recorded: true
+  code_change_authorized: false
+  branch_or_pr_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  normal_system_gates_required: true

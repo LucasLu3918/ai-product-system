@@ -272,3 +272,22 @@ Current automated inventory after Scenario 139:
 - uncovered: 0
 - automated: 139 / 139
 
+## Scenario 140 — Observable-Event Integration Controlled Trial
+
+Scenario 140 is lifecycle-covered by `tests/evidence/agent_observable_event_trial_lifecycle.py` and `scripts/agent_observable_event_trial.py`.
+
+It binds a current-baseline Human TRIAL Decision to replay-only adapter-export evidence, normalizes only whitelisted fields into the canonical observable-event contract, and reuses the existing Resource Authorization-backed anomaly evaluator.
+
+The 12-case representative replay corpus produces TP=6, FP=0, TN=6 and FN=0. Lifecycle evidence also proves unknown adapters, unmapped payload fields, private reasoning, secret-like values, stale decisions and false live-capture claims fail closed.
+
+The committed result remains non-production evidence: `live_capture_verified=false`, `runtime_enforced=false`, `critical_path=false`, `automatic_remediation=false`, and PASS stops at `HUMAN_REVIEW_TRIAL_RESULT`.
+
+Current automated inventory after Scenario 140:
+
+- deterministic: 22
+- lifecycle: 64
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 140 / 140
+

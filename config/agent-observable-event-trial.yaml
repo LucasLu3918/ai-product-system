@@ -1,0 +1,57 @@
+version: 1
+mode: ADAPTER_EXPORT_REPLAY
+live_capture_verified: false
+raw_payload_persisted: false
+max_events: 50
+max_string_length: 160
+adapters:
+  canonical-v1:
+    field_map:
+      event_id: event_id
+      observed_at: observed_at
+      subject: subject
+      resource_id: resource_id
+      operation: operation
+      observed_outcome: observed_outcome
+      network_used: network_used
+      change_boundary: change_boundary
+    outcome_map:
+      SUCCESS: SUCCESS
+      DENIED: DENIED
+      FAILED: FAILED
+  tool-export-v1:
+    field_map:
+      event_id: id
+      observed_at: time
+      subject: actor
+      resource_id: target
+      operation: action
+      observed_outcome: result
+      network_used: used_network
+      change_boundary: boundary
+    outcome_map:
+      ok: SUCCESS
+      blocked: DENIED
+      error: FAILED
+  execution-export-v1:
+    field_map:
+      event_id: event
+      observed_at: timestamp
+      subject: subject_id
+      resource_id: resource
+      operation: verb
+      observed_outcome: status
+      network_used: network
+      change_boundary: change_boundary
+    outcome_map:
+      success: SUCCESS
+      denied: DENIED
+      failed: FAILED
+authority:
+  live_runtime_capture_authorized: false
+  runtime_enforcement_authorized: false
+  automatic_remediation_authorized: false
+  human_approval_granted: false
+  merge_authorized: false
+  release_authorized: false
+  publication_authorized: false
