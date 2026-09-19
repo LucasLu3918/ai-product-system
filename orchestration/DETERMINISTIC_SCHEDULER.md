@@ -91,3 +91,7 @@ Task Graphs now include explicit `read_only` intent.
 - a read-only task with a non-empty `write_set` or explicitly writable isolation is invalid.
 
 This rule prevents missing planning metadata from becoming an unlocked writer. The Scheduler blocks the graph instead of assuming an empty boundary is safe.
+
+## Validation de-duplication boundary
+
+The repository validator may skip the focused Scheduler/Integration Gate lifecycle only when `AIPS_PROFILE_LIFECYCLE_ALREADY_EXECUTED=1` is injected by the deterministic Validation Profile after those checks already ran. Standalone repository validation must execute the lifecycle evidence normally.

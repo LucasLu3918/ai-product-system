@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
 
@@ -61,6 +62,10 @@ for phrase in (
     "AIPS_GATE_BASE_TIP",
     "Refresh pull request base tip",
     "--base-tip",
+    "--matrix",
+    "--change-class",
+    "aips:large-change",
+    "aips:core-change",
 ):
     if phrase not in workflow:
         errors.append(f"validate workflow missing Integration Gate contract: {phrase}")

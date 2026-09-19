@@ -93,3 +93,7 @@ exact base/head candidate
 A stale candidate, missing required matrix, unresolved blocker, failed required command or unreconciled actual diff blocks the candidate.
 
 Integration Gate PASS is evidence only. It never supplies Human approval, merge authority, publication authority, architecture approval or risk acceptance.
+
+## Conditional CI enforcement
+
+AIPS CI resolves `standard | large | core` from explicit PR change-class labels. Large/Core candidates require the bound Core Change Test Matrix. Standard changes remain Matrix-optional unless a narrow Validation Profile path rule identifies a governance-core surface. Do not use broad rules such as all `scripts/**` or all `config/**` merely to force Matrix usage.

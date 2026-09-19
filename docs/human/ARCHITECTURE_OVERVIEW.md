@@ -269,3 +269,17 @@ GitHub CI 保留既有 required check 名稱 `repository`：先執行 `janitor`�
 3. Integration/Janitor Gate：PR 驗證前 fresh-fetch target branch，declared base 與 current base tip 不一致直接 BLOCKED。
 
 這些能力都延伸既有 Research / Execution Isolation / Integration Gate，不新增 Role、Skill 或 Approval Authority。
+
+## 18. v0.27 Governance Hardening
+
+~~~text
+PR candidate
+→ change class: standard | large | core
+→ Large/Core or governance-core surface?
+   ├─ no  → Core Change Test Matrix optional
+   └─ yes → exact candidate-bound Matrix required
+→ Janitor checks
+→ repository compatibility aggregate
+~~~
+
+Integration Gate now enforces the existing Core Change Test Matrix conditionally. Known governance-core surfaces fail closed even if a PR label is missing. Branch hygiene remains read-only/report-only: persistent operational branches are preserved and only integrated ephemeral branches are reported as deletion candidates. CI also avoids rerunning focused Scheduler/Integration Gate lifecycle evidence inside repository validation when the active profile already executed it; standalone repository validation remains complete.
