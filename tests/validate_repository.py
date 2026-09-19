@@ -50,6 +50,7 @@ from validation import documentation_sync_contracts as documentation_sync_contra
 from validation import documentation_audience_contracts as documentation_audience_contracts  # noqa: F401
 from validation import governance_resume as governance_resume  # noqa: F401
 from validation import conformance_isolation as conformance_isolation  # noqa: F401
+from validation import retrieval_embedding_trial_contracts as retrieval_embedding_trial_contracts  # noqa: F401
 from validation import syntax_contracts as syntax_contracts  # noqa: F401
 
 errors = static_contracts.errors

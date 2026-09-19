@@ -36,6 +36,10 @@ Cross-file call chain candidate 已通過 full corpus Trial 並取得 Human Adop
 
 AIPS 已完成 dependency-free software-engineering alias expansion Trial。它沒有啟用 Embedding，semantic provider 仍維持 `NOT_CONFIGURED`。完整 corpus 顯示 required regressions、registration recall regression，而且 `synonym-access-rotation` 沒有改善，因此 Trial 結論為 **FAIL / HOLD**，alias lane 不進正常 Turn Context。下一個 semantic retrieval 候選若要研究，需另做 Human-reviewed Trial。
 
+### Remote Embedding Retrieval Trial Readiness
+
+Scenario 133 準備 materially different 的真實 embedding 候選，但只允許 synthetic fixture 送往 provider。正常 PR/main CI 與 Turn Context 不呼叫 embedding；專用 Trial branch / manual dispatch 才能執行。缺 credential 回 `TRIAL_PENDING`、provider failure 回 `TRIAL_BLOCKED`，PASS 也仍需 Human Adoption Decision。
+
 ## 2. Project Intelligence
 
 ![Project Intelligence](assets/project-intelligence-overview.svg)

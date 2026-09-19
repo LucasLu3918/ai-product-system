@@ -918,3 +918,13 @@ scenarios:
       - tests/fixtures/retrieval_quality_corpus.yaml
       - orchestration/PROJECT_INTELLIGENCE.md
       - tests/validate_repository.py
+  - id: "133"
+    path: tests/scenarios/133-remote-embedding-retrieval-trial-readiness.md
+    coverage: deterministic
+    evidence:
+      - tests/validation/retrieval_embedding_trial_contracts.py
+      - scripts/retrieval_embedding_trial.py
+      - config/retrieval-embedding-trial.yaml
+      - .github/workflows/retrieval-semantic-trial.yml
+      - orchestration/PROJECT_INTELLIGENCE.md
+      - tests/validate_repository.py

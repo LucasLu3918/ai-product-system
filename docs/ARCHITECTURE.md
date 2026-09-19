@@ -97,6 +97,25 @@ flowchart LR
 
 The alias candidate is deterministic and transparent. It is not an embedding provider and does not change `semantic.status=NOT_CONFIGURED`. The committed Trial follows the FAIL → KEEP branch: required regressions and no synonym-recall improvement produce recommendation `HOLD`. Normal Turn Context retrieval therefore does not enable the alias lane.
 
+### Remote embedding Trial readiness
+
+~~~mermaid
+flowchart LR
+    FIX[9-case synthetic fixture] --> BASE[Current default retrieval]
+    FIX --> EMB[Remote embedding candidate]
+    EMB --> MEM[Ephemeral in-memory cosine ranking]
+    BASE --> MET[Same retrieval metrics]
+    MEM --> MET
+    MET --> OUT{Trial result}
+    OUT -->|credential missing| PEND[TRIAL_PENDING]
+    OUT -->|provider failure| BLOCK[TRIAL_BLOCKED]
+    OUT -->|quality fail| HOLD[FAIL / HOLD]
+    OUT -->|quality pass| REVIEW[PASS / Human review]
+    REVIEW --> HAD[Separate Human Adoption Decision]
+~~~
+
+The remote candidate is explicitly synthetic-only. Normal PR/main validation never sends repository source to an embedding provider. The dedicated Trial workflow uses bounded request/chunk/input limits, protected secret injection and no Vector DB; production source transfer and default embedding enablement remain false.
+
 ## Primary planning package
 
 ```mermaid

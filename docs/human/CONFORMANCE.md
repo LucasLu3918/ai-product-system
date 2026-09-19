@@ -764,3 +764,20 @@ CI 因此不是要求這個 candidate PASS，而是要求能穩定重播上述�
 這代表「先試 deterministic alias」研究項目已完成，答案是 **不採用**。若要研究真正 semantic/embedding retrieval，需另開 Human-reviewed Trial。
 
 目前 Scenario inventory 為 **132**：20 deterministic + 58 lifecycle + 54 agent_eval，**132 / 132 automated、0 manual、0 uncovered**。
+
+## Remote Embedding Retrieval Trial Readiness（Scenario 133）
+
+Scenario 133 不要求正常 CI 呼叫外部 provider；它 deterministic 驗證「真實 embedding Trial 是否已安全準備好」。
+
+驗證內容包括：
+
+- secret 只透過 protected CI secret reference 注入；
+- Trial 只可送 synthetic fixture，不可送 AIPS repository/product source；
+- provider endpoint / model / dimensions / request limits 都有 machine contract；
+- missing credential 必須回 `TRIAL_PENDING`；
+- provider failure 必須回 `TRIAL_BLOCKED`；
+- normal Retrieval / Turn Context 仍不啟用 embedding；
+- Trial workflow 只綁定專用 feature branch + manual dispatch；
+- PASS / FAIL 都只是 evidence，Human Adoption Decision 仍是必要 gate。
+
+目前 Scenario inventory 為 **133**：21 deterministic + 58 lifecycle + 54 agent_eval，**133 / 133 automated、0 manual、0 uncovered**。

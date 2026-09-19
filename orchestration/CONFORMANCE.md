@@ -151,3 +151,26 @@ Current automated inventory after Scenario 132:
 - manual: 0
 - uncovered: 0
 - automated: 132 / 132
+
+## Scenario 133 — Remote Embedding Retrieval Trial Readiness
+
+Scenario 133 is deterministic-covered by `tests/validation/retrieval_embedding_trial_contracts.py`. It validates the remote embedding Trial contract without performing an external provider call during normal repository validation.
+
+The contract proves:
+
+- the Trial reuses a protected secret reference instead of committed credentials;
+- source transfer is restricted to the synthetic Retrieval Quality fixture;
+- AIPS repository/product source transfer is false;
+- missing credentials resolve to `TRIAL_PENDING`;
+- provider failure resolves to `TRIAL_BLOCKED`;
+- provider/default enablement and adoption without Human decision remain false;
+- the dedicated workflow is scoped to the Trial feature branch plus explicit manual dispatch, not every PR/main validation.
+
+Current automated inventory after Scenario 133:
+
+- deterministic: 21
+- lifecycle: 58
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 133 / 133

@@ -177,6 +177,40 @@ Structural Retrieval 採用後，AIPS 先測了一個不需要 Embedding / Vecto
 
 如果後續還要處理 semantic gap，下一個候選必須是 materially different 的方案，例如真正的 embedding / semantic provider；但開始之前需要另外做 Human review，明確決定 source-code 是否可送往 provider、使用 local 或 remote embedding、成本/快取/隱私/fallback 邊界。Scenario 132 不會自動啟用任何 provider。
 
+## Remote Embedding Retrieval Trial Readiness（Scenario 133）
+
+AIPS 接著準備真正的 remote embedding Trial，但仍然不改正式 Turn Context。
+
+第一版 Trial 只允許傳送 **synthetic Retrieval Quality fixture**，不允許傳 AIPS repository / product source。Credential 沿用 protected CI secret reference，不寫進 source、log 或 report。
+
+~~~text
+Synthetic 9-case corpus
+   ↓
+正式 Retrieval baseline
+   ↓
+Remote Embedding candidate
+   ↓
+In-memory cosine ranking
+   ↓
+同一套 retrieval metrics
+   ↓
+PASS / FAIL / TRIAL_PENDING / TRIAL_BLOCKED
+~~~
+
+邊界：
+
+- 正常 PR / main CI 不呼叫 remote embedding；
+- 只有專用 Trial branch 或手動 workflow dispatch 才會嘗試；
+- 沒有 `OPENAI_API_KEY` → `TRIAL_PENDING`；
+- provider/network failure → `TRIAL_BLOCKED`；
+- request、candidate chunks、remote characters 都有 hard limit；
+- 不新增 Vector DB，向量只在 Trial runtime 暫存；
+- 正常 Retrieval / Turn Context 仍完全不啟用 embedding lane；
+- production source transfer 維持 false；
+- 即使 Trial PASS，也只能進 Human Adoption Decision，不能自動採用。
+
+第一個 adapter 使用 OpenAI embeddings endpoint，預設 model 為 `text-embedding-3-small`；model 可以用 repository variable 覆寫，但 provider 不因此成為 AIPS 必要依賴。
+
 ## Debug
 
 一般使用不需執行；排錯可用 `aips intelligence status/render/finalize/impact-init/index/retrieve/evaluate`。

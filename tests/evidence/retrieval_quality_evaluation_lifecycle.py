@@ -14,6 +14,8 @@ ROOT = Path(__file__).resolve().parents[2]
 PI = ROOT / "scripts" / "project_intelligence.py"
 STRUCTURAL_TRIAL = ROOT / "scripts" / "structural_retrieval_trial.py"
 RETRIEVAL_EVAL = ROOT / "scripts" / "retrieval_evaluation.py"
+EMBEDDING_TRIAL = ROOT / "scripts" / "retrieval_embedding_trial.py"
+EMBEDDING_TRIAL_CONFIG = ROOT / "config" / "retrieval-embedding-trial.yaml"
 CORPUS = ROOT / "tests" / "fixtures" / "retrieval_quality_corpus.yaml"
 
 
@@ -490,6 +492,40 @@ func TestReservationRollback(t *testing.T) {
         require(semantic_authority.get("human_adoption_decision_required") is True, "next semantic optimization must require Human review")
         require(semantic_trial_path.is_file(), "semantic alias trial report must be writable")
         print("semantic_alias_trial_summary=" + json.dumps(semantic_summary, sort_keys=True))
+
+        if os.environ.get("AIPS_RUN_REMOTE_EMBEDDING_TRIAL") == "1":
+            embedding_output = Path(
+                os.environ.get("AIPS_EMBEDDING_TRIAL_OUTPUT")
+                or str(base / "retrieval-embedding-trial.json")
+            )
+            proc = subprocess.run([
+                sys.executable, str(EMBEDDING_TRIAL),
+                "--project", str(project),
+                "--store", str(store),
+                "--suite", str(suite_path),
+                "--config", str(EMBEDDING_TRIAL_CONFIG),
+                "--output", str(embedding_output),
+            ], env=env, capture_output=True, text=True)
+            require(proc.returncode in {0, 1}, f"embedding trial execution error: {proc.stdout} {proc.stderr}")
+            embedding_trial = json.loads(proc.stdout)
+            embedding_status = ((embedding_trial.get("trial") or {}).get("status") or "")
+            require(
+                embedding_status in {"PASS", "FAIL", "TRIAL_PENDING", "TRIAL_BLOCKED"},
+                f"unexpected embedding trial status: {embedding_status}",
+            )
+            privacy = embedding_trial.get("privacy") or {}
+            require(privacy.get("source_scope") == "synthetic_fixture_only", "embedding Trial may transfer only synthetic fixture source")
+            require(privacy.get("repository_source_transfer") is False, "embedding Trial must not transfer AIPS repository source")
+            authority = embedding_trial.get("authority") or {}
+            require(authority.get("default_enablement") is False, "embedding Trial must not enable default retrieval")
+            require(authority.get("provider_auto_enablement") is False, "embedding Trial must not auto-enable provider")
+            require(authority.get("adoption_without_human_decision") is False, "embedding Trial adoption must require Human decision")
+            require(embedding_output.is_file(), "embedding Trial report must be persisted")
+            print("remote_embedding_trial=" + json.dumps({
+                "status": embedding_status,
+                "recommendation": (embedding_trial.get("trial") or {}).get("recommendation"),
+                "summary": embedding_trial.get("summary") or {},
+            }, sort_keys=True))
 
         probe_required = dict(suite["cases"][0])
         probe_required["id"] = "required-probe"

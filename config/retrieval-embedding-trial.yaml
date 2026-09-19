@@ -1,0 +1,29 @@
+version: 1
+provider:
+  id: openai-embeddings
+  kind: openai-compatible-embeddings
+  endpoint: https://api.openai.com/v1/embeddings
+  default_model: text-embedding-3-small
+  model_env: AIPS_RETRIEVAL_EMBEDDING_MODEL
+  dimensions: 512
+  required_secret: OPENAI_API_KEY
+
+privacy:
+  source_scope: synthetic_fixture_only
+  repository_source_transfer: false
+  secret_values_in_payload: false
+
+limits:
+  max_requests: 12
+  max_candidate_chunks: 64
+  max_remote_characters_per_case: 40000
+
+fallback:
+  missing_credentials: TRIAL_PENDING
+  provider_failure: TRIAL_BLOCKED
+
+authority:
+  default_enablement: false
+  provider_auto_enablement: false
+  production_source_transfer: false
+  adoption_without_human_decision: false
