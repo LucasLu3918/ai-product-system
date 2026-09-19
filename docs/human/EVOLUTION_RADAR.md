@@ -179,3 +179,21 @@ Evaluator 直接 reuse Resource Authorization，不新增權限系統。固定 c
 
 Semantic intent governance 仍維持 ASSESS，沒有在本 Scenario 順便加入。
 
+## Issue #79 — Observable-Event Integration Trial（Scenario 140）
+
+Repository maintainer 已在 current v0.30.0 baseline 上明確授權 anomaly candidate 由 ASSESS 進入 bounded TRIAL。Durable evidence：
+
+- `references/evolution/ISSUE_79_AGENT_ANOMALY_TRIAL_BASELINE.yaml`
+- `references/evolution/ISSUE_79_AGENT_ANOMALY_TRIAL_DECISION.yaml`
+- `references/evolution/ISSUE_79_AGENT_OBSERVABLE_EVENT_TRIAL_RESULT.yaml`
+
+Trial 不是 live runtime hook。它只 replay synthetic/sanitized representative adapter exports，將 whitelisted fields 正規化為 canonical observable events，再重用 Scenario 139 anomaly evaluator。
+
+結果是 PASS（12 cases，TP=6 / FP=0 / TN=6 / FN=0），但只代表這組 replay corpus。AIPS 仍沒有 verified live capture、runtime enforcement 或 automatic remediation。
+
+因此目前狀態是：
+
+- Resource-Scoped Agent Authorization：COVERED；
+- Out-of-band Agent anomaly：**TRIAL PASS → awaiting separate Human Adoption Decision**；
+- Semantic intent governance：仍為 ASSESS，未隨本 Trial 導入。
+

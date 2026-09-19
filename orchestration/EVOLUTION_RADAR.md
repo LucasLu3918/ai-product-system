@@ -190,3 +190,13 @@ The lane reuses Resource Authorization as the authorization truth, consumes only
 
 A PASS means `HUMAN_REVIEW_TRIAL_EVIDENCE` only. It does not create a TRIAL/ADOPT Human Decision, runtime hook, remediation authority or publication authority. Semantic intent governance remains separately ASSESS-only and is not implemented by this lane.
 
+## Issue #79 observable-event integration Trial
+
+The out-of-band anomaly candidate now has a current-baseline Human TRIAL Decision and deterministic replay result.
+
+The Decision intentionally overrides advisory ASSESS only for a replay-only observable-event integration Trial. It does not authorize adoption or live production capture.
+
+Scenario 140 maps representative adapter exports into a minimal canonical event contract and reuses Scenario 139 anomaly evaluation. The committed replay result is PASS, but it remains `HUMAN_REVIEW_TRIAL_RESULT` with `live_capture_verified=false`.
+
+A separate Human Adoption Decision is still required before System Improvement Review can consider any production/live-capture design. Semantic intent governance remains independently ASSESS-only.
+

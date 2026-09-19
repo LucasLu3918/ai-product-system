@@ -985,4 +985,14 @@ scenarios:
       - tests/validation/agent_anomaly_evaluation_contracts.py
       - orchestration/AGENT_ANOMALY_EVALUATION.md
       - tests/validate_repository.py
+  - id: "140"
+    path: tests/scenarios/140-agent-observable-event-integration-trial.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/agent_observable_event_trial_lifecycle.py
+      - scripts/agent_observable_event_trial.py
+      - config/agent-observable-event-trial.yaml
+      - orchestration/schemas/agent-observable-event.yaml
+      - references/evolution/ISSUE_79_AGENT_OBSERVABLE_EVENT_TRIAL_RESULT.yaml
+      - tests/validate_repository.py
 

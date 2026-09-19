@@ -1,0 +1,34 @@
+version: 1
+name: agent-observable-event
+purpose: Minimal provider-neutral observable-event contract for replay-only anomaly evaluation.
+canonical_fields:
+  required:
+    event_id: non_empty_string
+    observed_at: iso8601_timestamp
+    runtime: non_empty_string
+    adapter_id: non_empty_string
+    subject: non_empty_string
+    resource_id: non_empty_string
+    operation: non_empty_string
+    observed_outcome: [SUCCESS, DENIED, FAILED]
+    network_used: boolean
+  optional:
+    change_boundary: non_empty_string_or_null
+privacy:
+  raw_payload_persisted: false
+  private_reasoning_allowed: false
+  secret_values_allowed: false
+  unmapped_fields_allowed: false
+enforcement:
+  mode: POST_EXECUTION_EVIDENCE
+  runtime_enforced: false
+  critical_path: false
+  automatic_remediation: false
+authority:
+  live_runtime_capture_authorized: false
+  runtime_enforcement_authorized: false
+  automatic_remediation_authorized: false
+  human_approval_granted: false
+  merge_authorized: false
+  release_authorized: false
+  publication_authorized: false

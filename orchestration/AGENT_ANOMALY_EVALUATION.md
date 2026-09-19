@@ -46,3 +46,22 @@ A PASS returns `recommendation=HUMAN_REVIEW_TRIAL_EVIDENCE`, not ADOPT.
 This evaluation does not create an Evolution Human Decision Record, does not activate a runtime hook, and cannot authorize implementation of semantic intent governance, automatic remediation, merge, release, publication, destructive operations or Human approval.
 
 A future production anomaly capability requires a separate current-baseline System Improvement / Human decision, a real observable-event integration contract, representative evaluation evidence and truthful runtime-enforcement verification.
+
+## Observable-event integration Controlled Trial
+
+Scenario 140 adds the next bounded evidence layer without turning this capability into a production runtime monitor.
+
+A Human Decision bound to exact v0.30.0 current-main evidence explicitly authorizes a replay-only Trial. `scripts/agent_observable_event_trial.py` maps representative adapter exports through `config/agent-observable-event-trial.yaml` into `orchestration/schemas/agent-observable-event.yaml`.
+
+The normalization boundary is deliberately narrow:
+
+- only mapped fields enter the canonical event;
+- unmapped raw fields are rejected;
+- private reasoning and secret-like values are rejected before normalization;
+- raw event payloads are not persisted into the Trial report;
+- normalized events reuse this module's existing deterministic anomaly evaluator and Resource Authorization truth.
+
+The committed Trial PASS covers only the 12-case representative replay corpus. It records `live_capture_verified=false`, `runtime_enforced=false`, `critical_path=false` and `automatic_remediation=false`.
+
+PASS produces `HUMAN_REVIEW_TRIAL_RESULT`; it is not an ADOPT decision. A separate Human Adoption Decision and System Improvement Review are required before any live runtime capture/integration can be designed as a production capability.
+
