@@ -10,6 +10,7 @@ The infrastructure must:
 - keep normal Pull Request and main validation free from external embedding calls;
 - run automatically only on the dedicated Trial feature branch or by explicit workflow dispatch;
 - report missing credentials as `TRIAL_PENDING` and provider/runtime failures as `TRIAL_BLOCKED`;
+- publish a Human-readable GitHub Job Summary that distinguishes workflow success from Trial quality status and states the next operator action without exposing secret values;
 - keep normal Retrieval/Turn Context unchanged and keep provider/default enablement false;
 - preserve the current 9-case corpus, Structural Retrieval baseline and required-case regression checks;
 - permit PASS or FAIL as evidence, but never convert either result into automatic adoption;
