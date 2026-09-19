@@ -1,24 +1,24 @@
 version: 1
 candidate:
-  base_sha: 5136519e7afeed4f5b157bf77d50780b176b343b
-  changed_files_hash: af306cde9a37eef703270a90548dc2248168ea88066671e58f61b90a659e49d6
+  base_sha: a44c8f908c0f8eb9a468f4afd90c53685e7e2297
+  changed_files_hash: 1b0f9ed23b72a5c9b92cffba7f6a8c3a60bbfd4942f8bfbfdebe33b727b6c3f3
 change:
-  id: v0.28.0-agent-eval-repeatability
-  summary: Extend provider-neutral Agent Eval with deterministic multi-run repeatability evidence while preserving observable-output-only privacy and Human authority.
-  boundary: [agent-eval, scenario-conformance, cli, documentation]
+  id: v0.29.0-resource-scoped-agent-authorization
+  summary: Add fail-closed resource-scoped pre-execution authorization evidence by extending the existing Execution Profile and governance path.
+  boundary: [execution-profile, resource-authorization, orchestration, scenario-conformance, cli, documentation]
 matrix:
-  - boundary: agent-eval
-    reason: Reliability evidence semantics expand from one recorded execution to bounded multi-run consistency measurement.
+  - boundary: resource-authorization
+    reason: Security-sensitive least-privilege semantics are added without expanding Human/protected-operation authority.
     checks:
       static_lint: {applicable: true, evidence: "Janitor ruff-critical"}
-      unit: {applicable: true, evidence: "tests/evidence/agent_eval_framework.py exercises consistency metrics and invalid evidence"}
-      integration: {applicable: true, evidence: "Agent Eval CLI + aips CLI repeatability lifecycle"}
-      contract: {applicable: true, evidence: "Scenario 137 + Scenario Conformance registry"}
+      unit: {applicable: true, evidence: "tests/evidence/resource_authorization_lifecycle.py covers allow/deny/boundary/profile failures"}
+      integration: {applicable: true, evidence: "aips authorization CLI routes to deterministic evaluator"}
+      contract: {applicable: true, evidence: "Scenario 138 + Resource Authorization Profile schema/template"}
       e2e: {applicable: true, evidence: "protected PR Janitor + repository aggregate"}
-      security: {applicable: true, evidence: "aggregate stores fingerprints/status only; existing private-reasoning and secret validation remains mandatory"}
-      migration_recovery: {applicable: false, na_reason: "Existing Agent Eval Result schema and committed 54 result pairs remain backward compatible"}
-      cli_harness: {applicable: true, evidence: "aips conformance agent-eval consistency route"}
-      docs_schema: {applicable: true, evidence: "Agent/Human Conformance docs + Technology Guide synchronized"}
+      security: {applicable: true, evidence: "default DENY; protected authority false; secret values forbidden; no claimed runtime enforcement"}
+      migration_recovery: {applicable: false, na_reason: "Execution Profile field is optional and existing profiles remain valid"}
+      cli_harness: {applicable: true, evidence: "aips authorization validate/check command"}
+      docs_schema: {applicable: true, evidence: "Documentation Sync + Human/Agent architecture/conformance/user/technology docs synchronized"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

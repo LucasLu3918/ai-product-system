@@ -75,3 +75,8 @@ Do not create a parallel `docs/agent/` tree. Existing `orchestration/`, `harness
 The `deterministic-execution` rule binds Scheduler / Integration Gate implementation, Task Graph / Validation Profile contracts, validation dependencies and the GitHub validation workflow to their Human architecture/user guidance and Agent orchestration protocols.
 
 This keeps the runtime implementation, exact-candidate CI behavior and authority boundaries synchronized when future changes touch scheduling or Janitor behavior.
+
+
+## Resource authorization mapping
+
+The `resource-authorization` rule binds the deterministic evaluator, Resource Authorization Profile schema/template and Execution Profile reference to Human Architecture/User guidance plus Agent Execution Isolation/Orchestrator protocols. Any behavior change must keep default-DENY semantics, protected-authority boundaries and runtime-enforcement truth synchronized across those surfaces.

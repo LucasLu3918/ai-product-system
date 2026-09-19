@@ -1,0 +1,27 @@
+version: 1
+default_effect: DENY
+subject:
+  id: implementation-agent
+  role: backend-engineer
+grants:
+  - id: application-source
+    kind: repository_path
+    selector: "src/**"
+    operations: [read, search, update]
+    constraints:
+      change_boundary_required: true
+      network_allowed: false
+      credential_reference: null
+  - id: project-tests
+    kind: repository_path
+    selector: "tests/**"
+    operations: [read, search, create, update, execute]
+    constraints:
+      change_boundary_required: true
+      network_allowed: false
+      credential_reference: null
+authority:
+  human_approval_granted: false
+  merge_authorized: false
+  release_authorized: false
+  protected_operation_authorized: false

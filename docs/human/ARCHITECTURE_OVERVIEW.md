@@ -283,3 +283,19 @@ PR candidate
 ~~~
 
 Integration Gate now enforces the existing Core Change Test Matrix conditionally. Known governance-core surfaces fail closed even if a PR label is missing. Branch hygiene remains read-only/report-only: persistent operational branches are preserved and only integrated ephemeral branches are reported as deletion candidates. CI also avoids rerunning focused Scheduler/Integration Gate lifecycle evidence inside repository validation when the active profile already executed it; standalone repository validation remains complete.
+
+
+## 19. Resource-Scoped Agent Authorization
+
+~~~text
+Execution Profile
+→ Resource Authorization Profile (default DENY)
+→ subject + resource + ordinary operation
+→ constraints / Change Boundary
+→ deterministic ALLOW or DENY evidence
+→ Runtime execution only when applicable gates also allow
+~~~
+
+AIPS 現在能把「Agent 能做什麼」從粗粒度 read/write 描述收斂成明確 resource grant。未宣告資源、未宣告 operation、或要求 Change Boundary 卻缺少 boundary 時一律 DENY。
+
+這是 pre-execution evidence，不會假裝所有 Runtime 都能硬攔工具呼叫；只有已驗證的 pre-tool guard 才能進一步消費此 evidence。Profile 不授權 merge、release、publication、administration、destructive deletion 或 Human approval。

@@ -24,4 +24,8 @@ isolation:
   boundary_id: null
   provider: null
   resource: null
+authorization:
+  profile: null
+  status: NOT_EVALUATED | ALLOW | DENY | BLOCKED
+  enforcement: PRE_EXECUTION_EVIDENCE | RUNTIME_GUARDED
 subagents: []
