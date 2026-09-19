@@ -1,0 +1,81 @@
+name: branch-hygiene
+
+on:
+  schedule:
+    - cron: "0 2 * * 1"  # Monday 10:00 Asia/Taipei
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/branch_hygiene.py
+      - config/branch-lifecycle.yaml
+      - .github/workflows/branch-hygiene.yml
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - run: python -m pip install -r requirements.txt
+
+      - name: Refresh remote branch refs
+        shell: bash
+        run: git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
+
+      - name: Build deterministic report
+        run: >-
+          python scripts/branch_hygiene.py
+          --config config/branch-lifecycle.yaml
+          --target main
+          --remote origin
+          > branch-hygiene.yaml
+
+      - name: Publish report summary
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+
+          report = yaml.safe_load(Path("branch-hygiene.yaml").read_text(encoding="utf-8"))
+          rows = report.get("branches") or []
+          candidates = [row["branch"] for row in rows if row.get("deletion_candidate")]
+          persistent = [row["branch"] for row in rows if row.get("lifecycle") == "PERSISTENT"]
+          with Path(__import__("os").environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as out:
+              out.write("# Branch Hygiene Report\n\n")
+              out.write(f"- target: `{report['target']}`\n")
+              out.write(f"- ref scope: `{report['ref_scope']}`\n")
+              out.write(f"- policy: `{report['policy']}`\n")
+              out.write(f"- branches inspected: **{len(rows)}**\n")
+              out.write(f"- deletion candidates: **{len(candidates)}**\n")
+              out.write(f"- persistent branches: **{len(persistent)}**\n")
+              out.write("- branch_deletion_authorized: **false**\n")
+              out.write("- human_authority_preserved: **true**\n\n")
+              if candidates:
+                  out.write("## Deletion candidates\n\n")
+                  for name in candidates:
+                      out.write(f"- `{name}`\n")
+          PY
+
+      - name: Verify report-only authority
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+          report = yaml.safe_load(Path("branch-hygiene.yaml").read_text(encoding="utf-8"))
+          authority = report.get("authority") or {}
+          assert authority.get("branch_deletion_authorized") is False
+          assert authority.get("human_authority_preserved") is True
+          PY
