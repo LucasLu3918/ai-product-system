@@ -1,0 +1,22 @@
+version: 1
+adoption:
+  candidate_id: EVO-7DA9FC0C0AD8
+  signal_fingerprint: sha256:7da9fc0c0ad89a0c7d0315aa2a5f4aa7ceb9842149a969a84708ce382c3082b3
+  decision_fingerprint: sha256:c742a082dd00bd9e451810b5ce4640413e420b06acb97311db42112150b13f3e
+  trial_decision_fingerprint: sha256:3b3368af2d560a97e998500f680c48a14c1ed47fb496e54c0eac75cffc70ffb8
+  trial_fingerprint: sha256:9270bab940c38558575490f4948589cf1ff3b6dc4477daf7eb0ff7caca4e187c
+  baseline_repository_revision: a92a8d83c4cd6d2a04055312ebfa118d4df39f42
+  trial_baseline_repository_revision: e5e47b28a524352f7f549b49a40a294ddb50a364
+  baseline_evidence_digest: sha256:7c7737374bdd76b5a1740b28f979e92a270cd82f6394d3c76566c67155afcc7a
+  binding_mode: COMMITTED_CURRENT_BASELINE_TRIAL
+  trial_status: PASS
+  decided_by: repository maintainer LucasLu3918
+  decided_at: "2026-09-20T04:44:00+08:00"
+  next_action: system_improvement_review
+adoption_fingerprint: sha256:1263e376a83926de458605f758b718fa6c7e0e3771d2ae19e6b53434f826ef89
+authority:
+  code_change_authorized: false
+  remote_branch_or_pr_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  normal_system_gates_required: true

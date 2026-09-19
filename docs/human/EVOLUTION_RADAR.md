@@ -197,3 +197,37 @@ Trial 不是 live runtime hook。它只 replay synthetic/sanitized representativ
 - Out-of-band Agent anomaly：**TRIAL PASS → awaiting separate Human Adoption Decision**；
 - Semantic intent governance：仍為 ASSESS，未隨本 Trial 導入。
 
+## Issue #79 — Trial-backed Human ADOPT + System Improvement Review（Scenario 141）
+
+v0.31.0 的 replay Trial 已 PASS，因此本輪不再重用 stale 的原始 Radar baseline，而是建立 v0.31.0 current-main adoption baseline，再記錄獨立 Human ADOPT Decision。
+
+Durable evidence：
+
+- `references/evolution/ISSUE_79_AGENT_ANOMALY_ADOPTION_BASELINE.yaml`
+- `references/evolution/ISSUE_79_AGENT_ANOMALY_ADOPTION_DECISION.yaml`
+- `references/evolution/ISSUE_79_AGENT_ANOMALY_ADOPTION_BINDING.yaml`
+- `references/evolution/ISSUE_79_AGENT_ANOMALY_SYSTEM_IMPROVEMENT_REVIEW.yaml`
+
+這次 ADOPT 的意思是「採用設計方向」，不是「已啟用 production capability」。
+
+System Improvement Review 的最小解：
+
+~~~text
+runtime adapter
+→ opt-in POST_EXECUTION metadata exporter
+→ strict sanitizer / whitelist mapping
+→ canonical observable event
+→ bounded out-of-band evaluation
+→ Human evidence review
+~~~
+
+未來若要真的接某個 runtime，必須另開 bounded implementation Trial，證明 runtime-native hook、資料清理、event-loss/overhead 與 exact candidate validation。
+
+目前狀態：
+
+- Resource-Scoped Agent Authorization：COVERED；
+- Agent anomaly evaluator：COVERED as evidence lane；
+- Observable-event replay integration：TRIAL PASS；
+- Live observable-event capture：**ADOPTED DESIGN DIRECTION / NOT IMPLEMENTED**；
+- Semantic intent governance：仍為 ASSESS。
+

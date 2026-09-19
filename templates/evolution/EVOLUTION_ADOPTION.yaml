@@ -3,8 +3,12 @@ adoption:
   candidate_id: "EVO-XXXXXXXXXXXX"
   signal_fingerprint: "sha256:"
   decision_fingerprint: "sha256:"
+  trial_decision_fingerprint: "sha256:"
   trial_fingerprint: "sha256:"
   baseline_repository_revision: ""
+  trial_baseline_repository_revision: ""
+  baseline_evidence_digest: "sha256:"
+  binding_mode: "COMMITTED_CURRENT_BASELINE_TRIAL"
   trial_status: PASS
   decided_by: ""
   decided_at: ""

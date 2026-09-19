@@ -1,0 +1,94 @@
+version: 1
+review:
+  review_id: issue-79-agent-anomaly-live-capture-adoption-review
+  baseline_repository_revision: a92a8d83c4cd6d2a04055312ebfa118d4df39f42
+  adoption_fingerprint: sha256:1263e376a83926de458605f758b718fa6c7e0e3771d2ae19e6b53434f826ef89
+  user_problem: Decide whether the successful replay-only observable-event Trial justifies a formal live-capture design direction without prematurely enabling production monitoring or expanding Agent authority.
+  proposed_solution: Proceed from TRIAL PASS to a Human ADOPT direction, then perform System Improvement Review for live observable-event capture.
+  appropriateness: SUITABLE_WITH_BOUNDS
+  existing_coverage:
+    - Harness runtime adapters already provide the narrow integration layer for runtime-specific behavior.
+    - Resource Authorization remains the deterministic authorization truth.
+    - Scenario 139 provides deterministic anomaly evaluation.
+    - Scenario 140 proves provider-neutral adapter-export normalization on sanitized replay evidence.
+    - Evolution Radar already defines Human Decision, Trial, ADOPT, and System Improvement handoff stages.
+  reuse_extension_candidates:
+    - extend Harness adapters with an optional post-execution event-export capability in a future implementation
+    - reuse orchestration/schemas/agent-observable-event.yaml as the canonical event contract
+    - reuse scripts/agent_anomaly_evaluation.py for out-of-band evaluation
+    - extend evolution_adoption.py for current-baseline committed Trial binding instead of creating a parallel adoption framework
+  lower_layer_alternative: Keep capture as an opt-in adapter-level POST_EXECUTION evidence source rather than a new global runtime service or pre-execution gate.
+  context_token_cost:
+    bootstrap: none for current runtime because the design adds no always-loaded context
+    per_turn: none in this release; future implementation should emit bounded metadata outside prompt context
+    on_demand: Human/reviewer reads adoption/review evidence only when evolution governance is invoked
+    mitigation: keep the design and evidence out of ordinary Turn Context and load on demand
+  security_reliability:
+    security_boundary_impact: No authority expansion. Future capture may observe only canonical metadata and must reject private reasoning, secret-like values, and unmapped raw payload.
+    reliability_failure_mode: Future capture/evaluation stays outside the critical execution path; capture failure must degrade evidence truthfully rather than alter tool execution outcome.
+    secret_persistence_concurrency_recovery: No raw payload persistence. Any future durable canonical-event storage, queueing, retention, or cross-runtime correlation requires a separate bounded review and tests.
+  backward_compatibility:
+    compatibility: Fully backward compatible in this release because no runtime hook is enabled and existing adapters are unchanged.
+    migration_required: false
+    existing_runtime_project_behavior_affected: false
+  scenario_test_impact:
+    existing_scenarios: ["139", "140"]
+    new_scenario: "141"
+    evidence: trial-backed adoption binding and System Improvement Review lifecycle
+  documentation:
+    human:
+      - docs/human/EVOLUTION_RADAR.md
+      - docs/human/EVOLUTION_RADAR_OVERVIEW.html
+      - docs/human/CONFORMANCE.md
+      - docs/human/TECHNOLOGY_GUIDE.html
+    agent:
+      - orchestration/EVOLUTION_RADAR.md
+      - orchestration/EXECUTION_ISOLATION.md
+      - orchestration/AGENT_ANOMALY_EVALUATION.md
+      - orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md
+      - orchestration/CONFORMANCE.md
+  architecture_diagram_impact:
+    current_state_diagrams: N/A
+    reason: This release adopts a design direction but does not alter current runtime topology. The future-state flow is documented only in the dedicated capture design document until an implementation Trial verifies a real runtime hook.
+  constitution_impact: "NO"
+  constitution_reason: Protected Human Authority, authorization precedence, merge/release/publication authority, and safety boundaries remain unchanged; the adopted direction is post-execution evidence only.
+  recommended_solution: Adopt an opt-in, metadata-only, adapter-level POST_EXECUTION capture contract that feeds the existing canonical event normalizer and anomaly evaluator asynchronously/out-of-band. Default remains disabled. No live capture is claimed until a later runtime-specific Trial verifies it.
+  additional_optimizations:
+    - {candidate: production runtime capture hook, benefit: real operational evidence, timing: LATER, status: DEFERRED}
+    - {candidate: durable canonical-event persistence and retention, benefit: longitudinal anomaly evidence, timing: LATER, status: DEFERRED}
+    - {candidate: semantic intent governance, benefit: detect intent-level risk beyond deterministic policy, timing: LATER, status: DEFERRED}
+    - {candidate: automatic remediation, benefit: faster response to confirmed anomalies, timing: LATER, status: DEFERRED}
+  scope:
+    in_scope:
+      - adopt the opt-in metadata-only POST_EXECUTION observable-event capture design direction
+      - reuse existing Harness runtime adapters, canonical observable-event schema, Resource Authorization truth, and Scenario 139/140 evaluator
+      - define future live-capture source contract, sanitization, bounded buffering, failure semantics, evidence handoff, and acceptance gates
+      - record Human Adoption Decision and deterministic Trial-to-ADOPT binding on the v0.31.0 current baseline
+    out_of_scope:
+      - enable any live production capture hook
+      - claim live_capture_verified=true
+      - runtime enforcement or execution blocking based on anomaly evidence
+      - automatic remediation
+      - semantic intent governance
+      - new Role, Skill, provider dependency, or authorization system
+      - durable raw payload persistence
+  risks:
+    - event metadata can still leak sensitive information if resource identifiers are not sanitized
+    - runtime-specific hooks can diverge semantically and create false comparability
+    - out-of-band queues can drop events or add overhead unless bounded and observable
+    - fixture-perfect metrics can be overinterpreted as production accuracy
+  approval:
+    status: APPROVED
+    approved_direction: Design-only adoption of opt-in metadata-only POST_EXECUTION observable-event capture.
+    approved_additional_optimizations: []
+    deferred_optimizations:
+      - production runtime capture hook
+      - durable canonical-event persistence and retention
+      - semantic intent governance
+      - automatic remediation
+    approved_by: repository maintainer LucasLu3918
+    approved_at: "2026-09-20T04:44:00+08:00"
+    approval_record: "Current user request: implement the recommended next step and run the Git update flow without further confirmation."
+    scope_fingerprint: sha256:8a95cb254cc1d66594e2e2f64dcf24b958b05b8e0d38ae97fccca766043378f2
+    proposal_fingerprint: sha256:c2de4d087b1b7c4032da0983f8aeb94bb3936b4224dbf84cba600f976cd5be14
+review_fingerprint: sha256:6706443ed1a6f620ef3960b9ea28cff476a10d0b162ef3d32a859c989b6a8479

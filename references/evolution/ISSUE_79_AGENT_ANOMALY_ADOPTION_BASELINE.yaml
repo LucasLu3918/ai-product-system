@@ -1,0 +1,32 @@
+version: 1
+assessment_id: issue-79-agent-anomaly-adoption-baseline
+baseline:
+  repository_revision: a92a8d83c4cd6d2a04055312ebfa118d4df39f42
+  version: 0.31.0
+  issue: 79
+  signal_fingerprint: sha256:7da9fc0c0ad89a0c7d0315aa2a5f4aa7ceb9842149a969a84708ce382c3082b3
+  signal_title: Agent Anomaly Detection, now in Private Preview on the Gemini Enterprise Agent Platform
+current_state: TRIAL_PASS
+trial:
+  decision_fingerprint: sha256:3b3368af2d560a97e998500f680c48a14c1ed47fb496e54c0eac75cffc70ffb8
+  trial_fingerprint: sha256:9270bab940c38558575490f4948589cf1ff3b6dc4477daf7eb0ff7caca4e187c
+  status: PASS
+  recommendation: HUMAN_REVIEW_TRIAL_RESULT
+  result_path: references/evolution/ISSUE_79_AGENT_OBSERVABLE_EVENT_TRIAL_RESULT.yaml
+  live_capture_verified: false
+  runtime_enforced: false
+  automatic_remediation: false
+review:
+  recommendation: ADOPT_DIRECTION
+  approved_scope: Adopt the design direction for opt-in, metadata-only, POST_EXECUTION observable-event capture and run System Improvement Review; do not enable production capture, runtime enforcement, semantic intent governance, or automatic remediation.
+  reason: The replay Trial passed its bounded fixture and preserved privacy/authority boundaries. The remaining gap is live-capture design and operational evidence, not anomaly-rule feasibility.
+authority:
+  human_decision_recorded: false
+  adoption_authorized: false
+  code_change_authorized: false
+  live_runtime_capture_authorized: false
+  runtime_enforcement_authorized: false
+  automatic_remediation_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  publication_authorized: false

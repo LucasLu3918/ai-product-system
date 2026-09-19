@@ -145,3 +145,9 @@ The Human Decision's approved mutation path remains bounded for any future agent
 
 Any future Trial that installs a real runtime capture hook, modifies adapter configuration, or creates Agent-authored prototype files must return to the normal managed worktree / Change Boundary / forbidden-path checks. A replay PASS cannot bypass those controls.
 
+## Trial-backed adoption is not an execution workspace
+
+Scenario 141 creates no Trial worktree and runs no live capture hook. It binds already committed PASS evidence to a current-baseline Human ADOPT Decision and System Improvement Review.
+
+Any future implementation of `AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md` that mutates a runtime adapter or installs a runtime hook returns to the normal Execution Isolation rules: explicit Change Boundary, isolated writer where applicable, exact-candidate validation and no publication authority derived from the adoption artifact.
+

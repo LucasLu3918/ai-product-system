@@ -291,3 +291,27 @@ Current automated inventory after Scenario 140:
 - uncovered: 0
 - automated: 140 / 140
 
+## Scenario 141 — Trial-backed anomaly adoption and System Improvement Review
+
+Scenario 141 proves that a committed PASS Trial can be adopted from a newer current repository baseline without pretending the original Radar revision is still current.
+
+`scripts/evolution_adoption.py bind-committed` verifies:
+
+- exact prior TRIAL Decision fingerprint;
+- exact committed PASS Trial fingerprint;
+- current-baseline adoption evidence digest;
+- a separate CURRENT Human ADOPT Decision;
+- matching candidate/signal identity;
+- no runtime/protected authority in the Trial result.
+
+The adoption artifact hands off only to `system_improvement_review`. The approved review adopts an opt-in, metadata-only, adapter-level POST_EXECUTION capture **design direction**, while production hook, persistence, semantic intent governance and automatic remediation remain deferred.
+
+Current automated inventory:
+
+- deterministic: 22
+- lifecycle: 65
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 141 / 141
+

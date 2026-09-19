@@ -65,3 +65,20 @@ The committed Trial PASS covers only the 12-case representative replay corpus. I
 
 PASS produces `HUMAN_REVIEW_TRIAL_RESULT`; it is not an ADOPT decision. A separate Human Adoption Decision and System Improvement Review are required before any live runtime capture/integration can be designed as a production capability.
 
+## Adopted live-capture design direction
+
+After Scenario 140 PASS, Scenario 141 records a separate Human ADOPT Decision and System Improvement Review.
+
+The adopted direction is intentionally narrower than a production detector:
+
+- extend runtime adapters only when a concrete runtime supports a verifiable post-execution hook;
+- export metadata only;
+- sanitize before canonicalization;
+- reuse this evaluator and Resource Authorization truth;
+- keep capture opt-in and disabled by default;
+- remain out-of-band and non-remediating.
+
+The future-state contract is documented in `orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md`.
+
+This release still reports `live_capture_verified=false`. No current adapter is a verified live capture source, and anomaly evidence still cannot authorize, block, remediate, merge, release or publish.
+
