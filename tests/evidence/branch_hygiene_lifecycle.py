@@ -27,6 +27,19 @@ def main() -> int:
         git(repo, "add", ".")
         git(repo, "commit", "-qm", "base")
         git(repo, "branch", "-M", "main")
+
+        # Simulate a multi-commit feature branch that is later squash-merged.
+        git(repo, "checkout", "-qb", "feature/squashed")
+        (repo / "squashed-a.txt").write_text("a\n", encoding="utf-8")
+        git(repo, "add", ".")
+        git(repo, "commit", "-qm", "squashed a")
+        (repo / "squashed-b.txt").write_text("b\n", encoding="utf-8")
+        git(repo, "add", ".")
+        git(repo, "commit", "-qm", "squashed b")
+        git(repo, "checkout", "-q", "main")
+        git(repo, "merge", "--squash", "feature/squashed")
+        git(repo, "commit", "-qm", "squash feature")
+
         git(repo, "branch", "feature/merged")
         git(repo, "branch", "feature/retrieval-embedding-trial")
         git(repo, "checkout", "-qb", "feature/pending")
@@ -59,6 +72,7 @@ deletion:
         payload = yaml.safe_load(proc.stdout)
         rows = {row["branch"]: row for row in payload["branches"]}
         assert rows["feature/merged"]["deletion_candidate"] is True
+        assert rows["feature/squashed"]["deletion_candidate"] is True
         assert rows["feature/pending"]["deletion_candidate"] is False
         assert rows["feature/retrieval-embedding-trial"]["lifecycle"] == "PERSISTENT"
         assert payload["authority"]["branch_deletion_authorized"] is False

@@ -34,11 +34,30 @@ def integrated(branch: str, target: str) -> bool:
     ancestor = git("merge-base", "--is-ancestor", branch, target, check=False)
     if ancestor.returncode == 0:
         return True
+
     cherry = git("cherry", target, branch, check=False)
-    if cherry.returncode != 0:
+    if cherry.returncode == 0:
+        rows = [line.strip() for line in cherry.stdout.splitlines() if line.strip()]
+        if not rows or all(row.startswith("-") for row in rows):
+            return True
+
+    # Multi-commit branches are often squash-merged, so their individual patch IDs
+    # do not necessarily appear in the target. A clean synthetic merge whose tree is
+    # identical to the target proves that the branch contributes no remaining net
+    # change without relying on GitHub PR metadata.
+    merge_tree = git("merge-tree", "--write-tree", target, branch, check=False)
+    if merge_tree.returncode != 0:
         return False
-    rows = [line.strip() for line in cherry.stdout.splitlines() if line.strip()]
-    return not rows or all(row.startswith("-") for row in rows)
+    merged_tree = next(
+        (line.strip() for line in merge_tree.stdout.splitlines() if line.strip()),
+        "",
+    )
+    target_tree = git("rev-parse", f"{target}^{{tree}}", check=False)
+    return (
+        target_tree.returncode == 0
+        and bool(merged_tree)
+        and merged_tree == target_tree.stdout.strip()
+    )
 
 
 def classify(name: str, config: dict[str, Any]) -> str:
