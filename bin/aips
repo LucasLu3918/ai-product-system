@@ -68,6 +68,10 @@ Usage:
   aips isolation status --id <id> [--project <path>] [--format yaml|json]
   aips isolation remove --id <id> [--project <path>] [--format yaml|json]
 
+  aips scheduler --graph <yaml> [--state <yaml>] [--format yaml|json]
+  aips integration-gate --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>]
+  aips janitor --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>]
+
   aips identity [--project <path>] [--format yaml|json]
 
   aips attach <project-path>
@@ -504,6 +508,20 @@ isolation_cmd() {
   "$py" "$SYSTEM_DIR/scripts/execution_isolation.py" "$@"
 }
 
+scheduler_cmd() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/deterministic_scheduler.py" "$@"
+}
+
+integration_gate_cmd() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/integration_gate.py" "$@"
+}
+
 identity_cmd() {
   local py
   py="$(python_bin)"
@@ -916,6 +934,14 @@ case "${1:-help}" in
     [ -n "$sub" ] || die "Usage: aips isolation <resolve|create|status|remove> ..."
     shift 2 || true
     isolation_cmd "$sub" "$@"
+    ;;
+  scheduler)
+    shift
+    scheduler_cmd "$@"
+    ;;
+  integration-gate|janitor)
+    shift
+    integration_gate_cmd "$@"
     ;;
   identity)
     shift

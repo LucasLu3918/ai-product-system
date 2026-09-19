@@ -800,3 +800,14 @@ Deterministic contract 會驗證：
 - repository source transfer、automatic provider/default enablement、production source transfer 與 adoption_without_human_decision 都維持 false。
 
 目前 Scenario inventory 為 **134**：22 deterministic + 58 lifecycle + 54 agent_eval，**134 / 134 automated、0 manual、0 uncovered**。
+
+
+## Deterministic Scheduler + Integration Gate（Scenario 135–136）
+
+Scenario 135 用 lifecycle evidence 驗證多 Agent 工作不需要每一步再交給 LLM 協調：相同 Task Graph + state 必須得到相同 dispatch / fingerprint，dependency、max_parallel 與 Change Boundary lock 都由程式決定；cycle、stale/failed dependency 會 fail closed。
+
+Scenario 136 用 temporary Git repository 真正建立 base/candidate commits，驗證 Integration Gate 綁定 exact base/head、changed-file hash 與 validation profile；HEAD 不符會 BLOCKED，required command 失敗會 FAIL，PASS 仍不取得 merge/release authority。
+
+GitHub Actions 的 `repository` required check 保持相容，但改成只能在 `janitor` success 後通過。
+
+目前 Scenario inventory 為 **136**：22 deterministic + 60 lifecycle + 54 agent_eval，**136 / 136 automated、0 manual、0 uncovered**。

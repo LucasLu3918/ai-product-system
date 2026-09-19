@@ -897,3 +897,24 @@ Case 改變
 ~~~
 
 因此「只有 Eval Prompt」不算 automated coverage，必須有實際 Result 且 scoring PASS。
+
+
+## Deterministic Scheduler / Integration Gate
+
+當已批准的工作被拆成多個明確 Change Boundary，可用：
+
+~~~bash
+aips scheduler --graph TASK_GRAPH.yaml --state STATE.yaml --format yaml
+~~~
+
+Scheduler 只負責 dependency、固定排序、平行槽位與 boundary lock，不會代替 Human/Architect 做範圍或架構決策。
+
+要在 merge 前驗證 exact candidate，可用：
+
+~~~bash
+aips integration-gate --profile VALIDATION_PROFILE.yaml --base <base-ref> --head <head-ref>
+# janitor 是相同指令的別名
+aips janitor --profile VALIDATION_PROFILE.yaml --base <base-ref> --head <head-ref>
+~~~
+
+大型/Core Change 若 profile 要求 Test Matrix，另外傳入 `--matrix CORE_CHANGE_TEST_MATRIX.yaml`。PASS 只是 validation evidence；Git publication、merge 與 release 仍遵循原本 Human Approval / Git Publish 流程。

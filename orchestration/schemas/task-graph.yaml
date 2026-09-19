@@ -1,0 +1,18 @@
+version: 1
+plan_id: string
+base_revision: git-sha-or-project-revision
+max_parallel: 1
+tasks:
+  - id: string
+    order: 100
+    objective: string
+    dependencies: []
+    change_boundary: []
+    read_set: []
+    write_set: []
+    role: null
+    skills: []
+    isolation:
+      mode: worktree
+      required: true
+    validation_profile: default

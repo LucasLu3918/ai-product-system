@@ -88,3 +88,16 @@ Prefer Shell for short filesystem/process/Git composition.
 Prefer Python when parsing structured data, applying non-trivial transformations or producing structured reports.
 
 Use the language already available in the project when that materially reduces setup or maintenance.
+
+
+## Scheduling after planning
+
+When a Human-approved/planned change is already decomposed into bounded tasks, do not spend model turns repeatedly deciding which ready task runs next.
+
+Use `orchestration/DETERMINISTIC_SCHEDULER.md` and a Structured Task Graph. The LLM/Orchestrator owns semantic planning; deterministic code owns dependency readiness, stable ordering, parallel capacity and Change Boundary locks.
+
+A blocked graph returns to planning/governance only when semantic change is actually required. The Scheduler must not silently invent a workaround.
+
+## Merge-candidate validation
+
+Use `orchestration/INTEGRATION_GATE.md` for exact-candidate deterministic validation. Validation Profiles are project-native argv contracts; Core Change Test Matrix evidence is reused rather than duplicated.

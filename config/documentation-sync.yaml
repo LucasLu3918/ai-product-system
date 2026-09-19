@@ -58,6 +58,24 @@ rules:
     triggers: [scripts/execution_isolation.py, orchestration/schemas/execution-profile.yaml]
     human_docs: [docs/human/ARCHITECTURE_OVERVIEW.md]
     agent_docs: [orchestration/EXECUTION_ISOLATION.md]
+  - id: deterministic-execution
+    triggers:
+      - scripts/deterministic_scheduler.py
+      - scripts/integration_gate.py
+      - orchestration/schemas/task-graph.yaml
+      - templates/automation/TASK_GRAPH.yaml
+      - templates/automation/VALIDATION_PROFILE.yaml
+      - templates/review/INTEGRATION_GATE_REPORT.yaml
+      - config/integration-gate.yaml
+      - requirements-validation.txt
+      - .github/workflows/validate.yml
+    human_docs:
+      - docs/human/ARCHITECTURE_OVERVIEW.md
+      - docs/human/USER_GUIDE.md
+    agent_docs:
+      - orchestration/DETERMINISTIC_SCHEDULER.md
+      - orchestration/INTEGRATION_GATE.md
+      - orchestration/ORCHESTRATOR.md
   - id: scenario-conformance
     triggers: [scripts/scenario_conformance.py, scripts/agent_eval.py, templates/conformance/**, tests/scenario_coverage.yaml]
     human_docs: [docs/human/CONFORMANCE.md]

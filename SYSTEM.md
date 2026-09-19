@@ -442,6 +442,28 @@ Execution isolation is an Execution Profile capability, not a new Role, Skill or
 
 Use `orchestration/EXECUTION_ISOLATION.md` and `scripts/execution_isolation.py`. Isolation never bypasses governance, Change Impact, test or approval requirements.
 
+## Deterministic Scheduler
+
+After semantic planning has produced an approved bounded task decomposition, repeated coordination is deterministic.
+
+~~~text
+Human-approved scope
+→ LLM Planner / Orchestrator once
+→ Structured Task Graph
+→ dependency readiness + stable ordering + Change Boundary locks
+→ bounded worktree writers
+~~~
+
+Use `orchestration/DETERMINISTIC_SCHEDULER.md` and `scripts/deterministic_scheduler.py`. The Scheduler cannot invent tasks, expand scope, resolve architecture/requirement conflicts, approve risk, merge or release. The same graph + task state produces the same scheduling decision/fingerprint.
+
+## Integration Gate (Janitor)
+
+Before merge/publication of an exact candidate, deterministic validation binds base/head SHAs, changed-file hash, Validation Profile and any required Core Change Test Matrix to one candidate fingerprint.
+
+Project-native lint/static/type/test/security commands are declared as argv arrays. A stale candidate or required failure returns BLOCKED/FAIL. PASS is evidence only; it grants no Human, merge or release authority.
+
+The existing protected-main `repository` required check remains compatible: GitHub Actions runs `janitor` first, then the `repository` aggregate can succeed only when Janitor succeeds. See `orchestration/INTEGRATION_GATE.md`.
+
 ## Durable Run State
 
 For multi-step work that may be interrupted, reuse Workspace State and per-run artifacts rather than depending on chat history.

@@ -24,12 +24,12 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 14. Classify intent/work mode/project state/risk.
 15. Build a minimal Turn Context Manifest and load only relevant Intelligence topics/evidence.
 16. Resolve the primary role and only necessary supporting roles/skills.
-17. Build the Execution Profile and bounded subagent contexts; resolve `shared | worktree | sandbox` through `orchestration/EXECUTION_ISOLATION.md` before creating a writer workspace.
+17. Build the Execution Profile and bounded subagent contexts; resolve `shared | worktree | sandbox` through `orchestration/EXECUTION_ISOLATION.md` before creating a writer workspace. When approved work decomposes into multiple writable tasks, freeze a Structured Task Graph and route readiness/parallel dispatch through `orchestration/DETERMINISTIC_SCHEDULER.md` instead of repeated LLM coordination.
 18. For primary planning, persist the Reproducible Planning Package and complete Gate 1 / Gate 2.
 19. Select model/tools; route deterministic processing to helpers.
 20. Implement inside the approved Change Boundary using valid project-native conventions.
 21. For UI work, run applicable V1/V2 Visual Consistency Repair.
-22. Run required tests/security/quality/review.
+22. Run required tests/security/quality/review. Before merge/publication of the exact integration candidate, run `orchestration/INTEGRATION_GATE.md` with the project Validation Profile and applicable Core Change Test Matrix; FAIL/BLOCKED evidence stops the candidate.
 23. Compare actual diff/contract effects against declared Change Impact; unexpected material impact requires review and possibly scope reapproval.
 24. Refresh only affected Intelligence/Impact Graph topics; preserve user Overrides and canonical authoritative pointers.
 25. Regenerate Project Intelligence Review HTML only when initial bootstrap or material Intelligence/Override changes warrant it.
@@ -134,6 +134,8 @@ Subagents do not inherit the full primary context or model automatically. They r
 
 Analysis/review may run in parallel. One writer owns a change boundary by default.
 
+For multiple approved writer tasks, the Deterministic Scheduler may dispatch them concurrently only when their canonical Change Boundaries do not overlap. Boundary locking is mechanical enforcement of this existing rule, not a relaxation of it.
+
 ## Architecture preflight
 
 1. Load current Project Intelligence + authoritative project sources first; bootstrap/refresh only if insufficient.
@@ -183,6 +185,10 @@ Before creating or materially expanding a Role, Capability or Skill, use `orches
 Use `orchestration/DETERMINISTIC_AUTOMATION.md`.
 
 Prefer deterministic code for repeatable parsing, filtering, counting, validation and transformation. Keep helpers scoped to run-local/project/system based on demonstrated reuse. Structured output should be read before raw evidence.
+
+For multi-task execution after planning, use `orchestration/DETERMINISTIC_SCHEDULER.md`: planning/replanning remains reasoning work, while dependency readiness, stable ordering, parallel slots and Change Boundary locks are deterministic.
+
+For merge-candidate verification, use `orchestration/INTEGRATION_GATE.md`: exact base/head identity, project-native validation commands and candidate fingerprints are deterministic evidence and never create approval authority.
 
 
 ## End-to-end product delivery
