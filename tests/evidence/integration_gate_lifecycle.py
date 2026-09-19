@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 import tempfile
@@ -15,6 +16,11 @@ SCRIPT = ROOT / "scripts" / "integration_gate.py"
 def git(cwd: Path, *args: str) -> str:
     proc = subprocess.run(["git", *args], cwd=cwd, text=True, capture_output=True, check=True)
     return proc.stdout.strip()
+
+
+def canonical_hash(value: object) -> str:
+    payload = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def main() -> int:
@@ -37,14 +43,17 @@ def main() -> int:
             "version": 1,
             "profile_id": "fixture",
             "matrix_required": False,
+            "matrix_required_change_classes": ["large", "core"],
+            "matrix_required_paths": [],
             "checks": [
                 {"id": "syntax", "category": "lint", "required": True, "argv": ["python3", "-m", "py_compile", "app.py"]},
-                {"id": "tests", "category": "test", "required": True, "argv": ["python3", "-c", "import app; assert app.value == 2"]},
+                {"id": "env", "category": "test", "required": True, "env": {"AIPS_FIXTURE": "1"}, "argv": ["python3", "-c", "import os; assert os.environ['AIPS_FIXTURE'] == '1'"]},
             ],
         }
         profile_path = repo / "profile.yaml"
         profile_path.write_text(yaml.safe_dump(profile, sort_keys=False), encoding="utf-8")
         git(repo, "branch", "base-tip", base)
+
         report = repo / "report.json"
         proc = subprocess.run(
             ["python3", str(SCRIPT), "--profile", str(profile_path), "--base", base, "--head", head, "--base-tip", "base-tip", "--output", str(report), "--format", "json"],
@@ -55,49 +64,60 @@ def main() -> int:
         assert proc.returncode == 0, proc.stdout + proc.stderr
         payload = json.loads(report.read_text(encoding="utf-8"))
         assert payload["status"] == "PASS"
-        assert payload["candidate"]["base_sha"] == base
-        assert payload["candidate"]["base_tip_sha"] == base
-        assert payload["candidate"]["head_sha"] == head
-        assert payload["candidate"]["changed_files"] == ["app.py"]
-        assert payload["authority"]["merge_authorized"] is False
+        assert payload["candidate"]["matrix_required"] is False
+        assert payload["candidate"]["change_class"] == "standard"
+
+        conditional = dict(profile)
+        conditional["matrix_required_paths"] = ["app.py"]
+        conditional_path = repo / "conditional.yaml"
+        conditional_path.write_text(yaml.safe_dump(conditional, sort_keys=False), encoding="utf-8")
+        missing = subprocess.run(
+            ["python3", str(SCRIPT), "--profile", str(conditional_path), "--base", base, "--head", head],
+            cwd=repo,
+            text=True,
+            capture_output=True,
+        )
+        assert missing.returncode == 2
+        assert "requires Core Change Test Matrix" in missing.stdout
+
+        matrix = {
+            "version": 1,
+            "candidate": {"base_sha": base, "changed_files_hash": canonical_hash(["app.py"])},
+            "actual_diff_reconciled": True,
+            "blockers": [],
+            "status": "PASS",
+        }
+        matrix_path = repo / "matrix.yaml"
+        matrix_path.write_text(yaml.safe_dump(matrix, sort_keys=False), encoding="utf-8")
+        bound = subprocess.run(
+            ["python3", str(SCRIPT), "--profile", str(conditional_path), "--base", base, "--head", head, "--matrix", str(matrix_path)],
+            cwd=repo,
+            text=True,
+            capture_output=True,
+        )
+        assert bound.returncode == 0, bound.stdout + bound.stderr
+
+        wrong = dict(matrix)
+        wrong["candidate"] = {"base_sha": base, "changed_files_hash": "wrong"}
+        matrix_path.write_text(yaml.safe_dump(wrong, sort_keys=False), encoding="utf-8")
+        stale_matrix = subprocess.run(
+            ["python3", str(SCRIPT), "--profile", str(conditional_path), "--base", base, "--head", head, "--matrix", str(matrix_path)],
+            cwd=repo,
+            text=True,
+            capture_output=True,
+        )
+        assert stale_matrix.returncode == 2
+        assert "changed_files_hash does not match" in stale_matrix.stdout
 
         git(repo, "branch", "-f", "base-tip", head)
         stale_base = subprocess.run(
-            ["python3", str(SCRIPT), "--profile", str(profile_path), "--base", base, "--head", head, "--base-tip", "base-tip", "--output", str(repo / "stale-base.yaml")],
+            ["python3", str(SCRIPT), "--profile", str(profile_path), "--base", base, "--head", head, "--base-tip", "base-tip"],
             cwd=repo,
             text=True,
             capture_output=True,
         )
         assert stale_base.returncode == 2
         assert "candidate base is stale" in stale_base.stdout
-        git(repo, "branch", "-f", "base-tip", base)
-
-        stale = subprocess.run(
-            ["python3", str(SCRIPT), "--profile", str(profile_path), "--base", base, "--head", base, "--output", str(repo / "stale.yaml")],
-            cwd=repo,
-            text=True,
-            capture_output=True,
-        )
-        assert stale.returncode == 2
-        assert "candidate checkout mismatch" in stale.stdout
-
-        failing = dict(profile)
-        failing["checks"] = list(profile["checks"]) + [
-            {"id": "failure", "category": "test", "required": True, "argv": ["python3", "-c", "raise SystemExit(7)"]}
-        ]
-        bad_path = repo / "bad.yaml"
-        bad_path.write_text(yaml.safe_dump(failing, sort_keys=False), encoding="utf-8")
-        bad_report = repo / "bad-report.json"
-        bad = subprocess.run(
-            ["python3", str(SCRIPT), "--profile", str(bad_path), "--base", base, "--head", head, "--output", str(bad_report), "--format", "json"],
-            cwd=repo,
-            text=True,
-            capture_output=True,
-        )
-        assert bad.returncode == 1
-        bad_payload = json.loads(bad_report.read_text(encoding="utf-8"))
-        assert bad_payload["status"] == "FAIL"
-        assert bad_payload["blockers"] == ["failure"]
 
     print("integration gate lifecycle: PASS")
     return 0

@@ -302,3 +302,7 @@ When deterministic scheduling or merge-candidate validation changes, review toge
 - Human Architecture Overview / User Guide / Technology Guide.
 
 Do not let the Scheduler make semantic scope decisions, and do not let Integration Gate PASS create merge/release authority.
+
+## Branch lifecycle hygiene
+
+Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanup. Persistent operational branches are preserved; ephemeral branches become deletion candidates only after deterministic integration into `main`; unclassified branches are preserved by default. The policy is `report_only`: branch deletion remains an explicit maintenance action outside this classifier.

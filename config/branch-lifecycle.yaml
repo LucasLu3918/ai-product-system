@@ -1,0 +1,17 @@
+version: 1
+default_branch: main
+persistent_exact:
+  - main
+  - feature/retrieval-embedding-trial
+persistent_patterns: []
+ephemeral_patterns:
+  - feature/*
+  - release/*
+  - noop-check
+deletion:
+  mode: report_only
+  require_integrated_into_default: true
+  preserve_unclassified: true
+notes:
+  - feature/retrieval-embedding-trial is operational because retrieval-semantic-trial.yml listens to pushes on it.
+  - report_only intentionally separates deterministic classification from branch deletion authority.

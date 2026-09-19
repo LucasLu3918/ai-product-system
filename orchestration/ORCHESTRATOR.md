@@ -275,3 +275,7 @@ Do not serialize full conversation or private reasoning into run state.
 When emitting a Structured Task Graph, treat tasks as writable by default. Set `read_only: true` only when the task has no writes; otherwise declare a non-empty Change Boundary.
 
 For Evolution Radar semantic work, prefer the generated provider-neutral handoff when no scheduled provider is available rather than inventing a recommendation. For PR integration, stale target-base evidence must route back to refresh/revalidation rather than proceeding with an old PASS.
+
+## Change-class handoff to Integration Gate
+
+When a repository PR represents an already approved Large/Core Change, preserve that classification into deterministic CI with `aips:large-change` or `aips:core-change`. Integration Gate uses the change class only to select evidence requirements; it does not create semantic classification or approval authority.

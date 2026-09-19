@@ -1,0 +1,25 @@
+version: 1
+candidate:
+  base_sha: 2097c2dc1c28ee221b795daa47fba104dbf75fa5
+  changed_files_hash: c356c77646612f9c197424f510bbce7bd54210f47fb7255ea2a1cddeb033880c
+change:
+  id: v0.27.0-governance-hardening
+  summary: Conditional Core Matrix enforcement, report-only branch lifecycle hygiene, CI lifecycle de-duplication, and synchronized governance documentation.
+  boundary: [integration-gate, validation, repository-maintenance]
+matrix:
+  - boundary: integration-gate
+    reason: Core candidate validation semantics are changing.
+    checks:
+      static_lint: {applicable: true, evidence: "Janitor ruff-critical"}
+      unit: {applicable: false, na_reason: "Lifecycle contract is authoritative for this CLI"}
+      integration: {applicable: true, evidence: "tests/evidence/integration_gate_lifecycle.py"}
+      contract: {applicable: true, evidence: "tests/validation/scheduler_gate_contracts.py"}
+      e2e: {applicable: true, evidence: "protected PR Janitor + repository aggregate"}
+      security: {applicable: true, evidence: "fail-closed matrix binding and no new write authority"}
+      migration_recovery: {applicable: false, na_reason: "No persisted data/schema migration"}
+      cli_harness: {applicable: true, evidence: "Integration Gate CLI lifecycle"}
+      docs_schema: {applicable: true, evidence: "Documentation Sync + repository validation"}
+scope_recomputed_after_expansion: true
+actual_diff_reconciled: true
+blockers: []
+status: PASS

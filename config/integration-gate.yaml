@@ -1,6 +1,18 @@
 version: 1
 profile_id: aips-repository
 matrix_required: false
+matrix_required_change_classes: [large, core]
+matrix_required_paths:
+  # Narrow fail-closed safety net for governance-core Integration Gate surfaces.
+  # Ordinary changes remain matrix-optional unless classified large/core.
+  - scripts/integration_gate.py
+  - config/integration-gate.yaml
+  - .github/workflows/validate.yml
+  - orchestration/CORE_CHANGE_TESTING.md
+  - orchestration/INTEGRATION_GATE.md
+  - templates/review/CORE_CHANGE_TEST_MATRIX.yaml
+  - tests/validation/scheduler_gate_contracts.py
+  - tests/evidence/integration_gate_lifecycle.py
 checks:
   - id: ruff-critical
     category: lint
@@ -44,8 +56,10 @@ checks:
     paths:
       - scripts/integration_gate.py
       - orchestration/INTEGRATION_GATE.md
+      - orchestration/CORE_CHANGE_TESTING.md
       - templates/automation/VALIDATION_PROFILE.yaml
       - templates/review/INTEGRATION_GATE_REPORT.yaml
+      - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
       - config/integration-gate.yaml
       - .github/workflows/validate.yml
       - tests/evidence/integration_gate_lifecycle.py
@@ -54,5 +68,7 @@ checks:
     category: test
     required: true
     timeout_seconds: 900
+    env:
+      AIPS_PROFILE_LIFECYCLE_ALREADY_EXECUTED: "1"
     argv: [python3, tests/validate_repository.py]
     paths: ["**"]
