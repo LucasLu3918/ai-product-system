@@ -30,7 +30,7 @@ for rel, keys in {
     "templates/automation/TASK_GRAPH.yaml": ("version", "plan_id", "base_revision", "max_parallel", "tasks"),
     "templates/automation/VALIDATION_PROFILE.yaml": ("version", "profile_id", "matrix_required", "checks"),
     "templates/review/INTEGRATION_GATE_REPORT.yaml": ("version", "candidate", "candidate_fingerprint", "checks", "status", "authority"),
-    "config/integration-gate.yaml": ("version", "profile_id", "matrix_required", "checks"),
+    "config/integration-gate.yaml": ("version", "profile_id", "matrix_required", "matrix_required_change_classes", "matrix_required_paths", "checks"),
 }.items():
     doc = load_yaml(ROOT / rel) or {}
     for key in keys:
@@ -75,11 +75,12 @@ for phrase in ("Exact-candidate binding", "Validation Profile", "Core Change Tes
     if phrase not in gate_doc:
         errors.append(f"INTEGRATION_GATE.md missing: {phrase}")
 
-for evidence in (
-    ROOT / "tests/evidence/deterministic_scheduler_lifecycle.py",
-    ROOT / "tests/evidence/integration_gate_lifecycle.py",
-):
-    if evidence.exists():
-        proc = subprocess.run([sys.executable, str(evidence)], cwd=ROOT, text=True, capture_output=True)
-        if proc.returncode != 0:
-            errors.append(f"Scheduler/Integration Gate lifecycle failed: {evidence.relative_to(ROOT)}: {proc.stdout.strip()} {proc.stderr.strip()}")
+if os.environ.get("AIPS_PROFILE_LIFECYCLE_ALREADY_EXECUTED") != "1":
+    for evidence in (
+        ROOT / "tests/evidence/deterministic_scheduler_lifecycle.py",
+        ROOT / "tests/evidence/integration_gate_lifecycle.py",
+    ):
+        if evidence.exists():
+            proc = subprocess.run([sys.executable, str(evidence)], cwd=ROOT, text=True, capture_output=True)
+            if proc.returncode != 0:
+                errors.append(f"Scheduler/Integration Gate lifecycle failed: {evidence.relative_to(ROOT)}: {proc.stdout.strip()} {proc.stderr.strip()}")
