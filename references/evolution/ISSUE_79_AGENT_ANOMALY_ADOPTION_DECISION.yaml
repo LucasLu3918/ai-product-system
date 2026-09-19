@@ -1,0 +1,25 @@
+version: 1
+decision:
+  candidate_id: EVO-7DA9FC0C0AD8
+  signal_fingerprint: sha256:7da9fc0c0ad89a0c7d0315aa2a5f4aa7ceb9842149a969a84708ce382c3082b3
+  signal_title: Agent Anomaly Detection, now in Private Preview on the Gemini Enterprise Agent Platform
+  evidence_digest: sha256:7c7737374bdd76b5a1740b28f979e92a270cd82f6394d3c76566c67155afcc7a
+  baseline_repository_revision: a92a8d83c4cd6d2a04055312ebfa118d4df39f42
+  baseline_status: CURRENT
+  recommendation_state: TRIAL
+  decision: ADOPT
+  approved_scope: Adopt the design direction for an opt-in, metadata-only, POST_EXECUTION observable-event capture contract and System Improvement Review only; no production capture hook, runtime enforcement, semantic intent governance, automatic remediation, or protected-operation authority.
+  approved_paths: []
+  reason: "override: The repository maintainer explicitly accepted the recommended next step after the v0.31.0 PASS Trial: adopt the bounded live-capture design direction and perform System Improvement Review while keeping production/runtime authority disabled."
+  human_override: true
+  decided_by: repository maintainer LucasLu3918
+  decided_at: "2026-09-20T04:44:00+08:00"
+  next_action: system_improvement_review
+decision_fingerprint: sha256:c742a082dd00bd9e451810b5ce4640413e420b06acb97311db42112150b13f3e
+authority:
+  human_decision_recorded: true
+  code_change_authorized: false
+  branch_or_pr_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  normal_system_gates_required: true

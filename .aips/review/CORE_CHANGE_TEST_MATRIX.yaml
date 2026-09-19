@@ -1,24 +1,24 @@
 version: 1
 candidate:
-  base_sha: e5e47b28a524352f7f549b49a40a294ddb50a364
-  changed_files_hash: 76d70807d8af89f1618981142ca8cc9e15ac2d5d59fd3eb352979538e64c0ca5
+  base_sha: a92a8d83c4cd6d2a04055312ebfa118d4df39f42
+  changed_files_hash: 94a8d22ec4a2bb6b2545327c259ddb4d1f9e75d29a83a7ab28f073d00afad04d
 change:
-  id: v0.31.0-agent-observable-event-integration-trial
-  summary: Add a Human-bound replay-only observable-event integration Controlled Trial that normalizes representative adapter exports into the existing anomaly evaluator without live runtime capture or automatic remediation.
-  boundary: [evolution-decision, observable-event-contract, anomaly-evaluation, scenario-conformance, documentation]
+  id: v0.32.0-agent-anomaly-trial-backed-adoption-review
+  summary: Bind the v0.31.0 committed PASS Trial to a current-baseline Human ADOPT direction and System Improvement Review without enabling live runtime capture.
+  boundary: [evolution-adoption, system-improvement-review, observable-event-design, scenario-conformance, documentation]
 matrix:
-  - boundary: observable-event-trial
-    reason: Security-sensitive Trial must prove adapter normalization and evidence binding without collecting private reasoning/secrets or claiming runtime enforcement.
+  - boundary: trial-backed-adoption-review
+    reason: Governance-sensitive adoption must distinguish the stale original Radar baseline from the current v0.31.0 baseline and must not turn design adoption into production/runtime authority.
     checks:
       static_lint: {applicable: true, evidence: "Janitor ruff-critical"}
-      unit: {applicable: true, evidence: "agent_observable_event_trial.py validation/normalization contracts"}
-      integration: {applicable: true, evidence: "representative adapter exports normalize into Scenario 139 anomaly evaluator using Resource Authorization truth"}
-      contract: {applicable: true, evidence: "Scenario 140 + observable-event schema + Human Decision/baseline/result bindings"}
+      unit: {applicable: true, evidence: "evolution_adoption.py current-baseline committed Trial binding validation"}
+      integration: {applicable: true, evidence: "v0.31 Trial Decision + PASS result + current adoption baseline + Human ADOPT Decision bind deterministically"}
+      contract: {applicable: true, evidence: "Scenario 141 + System Improvement Review + adopted future-state capture design"}
       e2e: {applicable: true, evidence: "protected PR Janitor + required repository aggregate + protected-main validation"}
-      security: {applicable: true, evidence: "unmapped/private/secret payloads blocked; no raw persistence; live_capture_verified=false; runtime_enforced=false; automatic remediation/protected authority false"}
-      migration_recovery: {applicable: false, na_reason: "Replay-only additive Trial; no production runtime state or migration"}
-      cli_harness: {applicable: false, na_reason: "Trial intentionally remains direct source-controlled replay helper; no production CLI or runtime hook is added"}
-      docs_schema: {applicable: true, evidence: "Evolution Radar, anomaly evaluation, Execution Isolation, Conformance and Human Technology docs synchronized"}
+      security: {applicable: true, evidence: "live capture/runtime enforcement/remediation remain false; secret/private reasoning/raw payload excluded; Protected Human Authority preserved"}
+      migration_recovery: {applicable: false, na_reason: "Design/adoption evidence only; existing runtimes and projects are unchanged"}
+      cli_harness: {applicable: false, na_reason: "No live Harness/runtime hook is enabled in this release"}
+      docs_schema: {applicable: true, evidence: "Evolution Radar, anomaly evaluation, isolation, conformance and Human technology docs synchronized; current-state architecture diagrams explicitly N/A until a verified runtime hook exists"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

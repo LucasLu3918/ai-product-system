@@ -995,4 +995,16 @@ scenarios:
       - orchestration/schemas/agent-observable-event.yaml
       - references/evolution/ISSUE_79_AGENT_OBSERVABLE_EVENT_TRIAL_RESULT.yaml
       - tests/validate_repository.py
+  - id: "141"
+    path: tests/scenarios/141-agent-anomaly-trial-backed-adoption-review.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/agent_anomaly_adoption_lifecycle.py
+      - scripts/evolution_adoption.py
+      - references/evolution/ISSUE_79_AGENT_ANOMALY_ADOPTION_BASELINE.yaml
+      - references/evolution/ISSUE_79_AGENT_ANOMALY_ADOPTION_DECISION.yaml
+      - references/evolution/ISSUE_79_AGENT_ANOMALY_ADOPTION_BINDING.yaml
+      - references/evolution/ISSUE_79_AGENT_ANOMALY_SYSTEM_IMPROVEMENT_REVIEW.yaml
+      - orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md
+      - tests/validate_repository.py
 

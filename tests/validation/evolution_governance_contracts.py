@@ -17,6 +17,12 @@ required = (
     ROOT / 'templates/evolution/EVOLUTION_DECISION.yaml',
     ROOT / 'templates/evolution/EVOLUTION_TRIAL.yaml',
     ROOT / 'templates/evolution/EVOLUTION_ADOPTION.yaml',
+    ROOT / 'references/evolution/ISSUE_79_AGENT_ANOMALY_ADOPTION_BASELINE.yaml',
+    ROOT / 'references/evolution/ISSUE_79_AGENT_ANOMALY_ADOPTION_DECISION.yaml',
+    ROOT / 'references/evolution/ISSUE_79_AGENT_ANOMALY_ADOPTION_BINDING.yaml',
+    ROOT / 'references/evolution/ISSUE_79_AGENT_ANOMALY_SYSTEM_IMPROVEMENT_REVIEW.yaml',
+    ROOT / 'orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md',
+    ROOT / 'tests/evidence/agent_anomaly_adoption_lifecycle.py',
     ROOT / 'templates/evolution/EVOLUTION_ANALYZER_RESULT.schema.json',
     ROOT / 'templates/evolution/EVOLUTION_ANALYZER_PROMPT.md',
     ROOT / 'templates/evolution/EVOLUTION_TRIAL_PROMPT.md',
@@ -285,3 +291,37 @@ if lifecycle.exists():
     else:
         if result.returncode != 0:
             errors.append(f'Evolution governance lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}')
+
+# v0.32 current-baseline committed Trial -> ADOPT binding
+adoption_lifecycle = ROOT / "tests/evidence/agent_anomaly_adoption_lifecycle.py"
+if adoption_lifecycle.exists():
+    result = subprocess.run([sys.executable, str(adoption_lifecycle)], capture_output=True, text=True, timeout=45)
+    if result.returncode != 0:
+        errors.append(f"Agent anomaly Trial-backed adoption lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}")
+
+try:
+    import evolution_analysis as _evolution_analysis
+    adoption_baseline = yaml.safe_load((ROOT / "references/evolution/ISSUE_79_AGENT_ANOMALY_ADOPTION_BASELINE.yaml").read_text(encoding="utf-8")) or {}
+    adoption_decision = yaml.safe_load((ROOT / "references/evolution/ISSUE_79_AGENT_ANOMALY_ADOPTION_DECISION.yaml").read_text(encoding="utf-8")) or {}
+    adoption_binding = yaml.safe_load((ROOT / "references/evolution/ISSUE_79_AGENT_ANOMALY_ADOPTION_BINDING.yaml").read_text(encoding="utf-8")) or {}
+    improvement_review = yaml.safe_load((ROOT / "references/evolution/ISSUE_79_AGENT_ANOMALY_SYSTEM_IMPROVEMENT_REVIEW.yaml").read_text(encoding="utf-8")) or {}
+
+    if adoption_decision.get("decision_fingerprint") != "sha256:c742a082dd00bd9e451810b5ce4640413e420b06acb97311db42112150b13f3e":
+        errors.append("Agent anomaly ADOPT Decision fingerprint changed unexpectedly")
+    if adoption_binding.get("adoption_fingerprint") != "sha256:1263e376a83926de458605f758b718fa6c7e0e3771d2ae19e6b53434f826ef89":
+        errors.append("Agent anomaly adoption binding fingerprint changed unexpectedly")
+    review_core = improvement_review.get("review") or {}
+    if improvement_review.get("review_fingerprint") != _evolution_analysis.canonical_digest(review_core):
+        errors.append("Agent anomaly System Improvement Review fingerprint mismatch")
+    if review_core.get("constitution_impact") != "NO":
+        errors.append("Agent anomaly design-only adoption must not claim Constitution impact")
+    if (review_core.get("approval") or {}).get("status") != "APPROVED":
+        errors.append("Agent anomaly System Improvement Review must retain explicit Human approval")
+    if any((item or {}).get("timing") == "NOW" for item in (review_core.get("additional_optimizations") or [])):
+        errors.append("Agent anomaly adoption review must not silently include additional NOW optimizations")
+    baseline_authority = adoption_baseline.get("authority") or {}
+    if any(value is not False for value in baseline_authority.values()):
+        errors.append("Agent anomaly adoption baseline must grant no authority")
+except Exception as exc:
+    errors.append(f"Agent anomaly adoption evidence validation failed: {exc}")
+

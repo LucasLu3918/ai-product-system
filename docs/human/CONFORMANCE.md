@@ -884,3 +884,21 @@ Trial status = **PASS**，但 recommendation 只有 `HUMAN_REVIEW_TRIAL_RESULT`�
 
 目前 Scenario inventory 為 **140**：22 deterministic + 64 lifecycle + 54 agent_eval，**140 / 140 automated、0 manual、0 uncovered**。
 
+## Scenario 141 — Trial-backed Agent Anomaly Adoption Review
+
+Scenario 141 把 Scenario 140 的 PASS Trial 接到一個**新的 current-baseline Human ADOPT Decision**，而不是重用 Issue #79 已 stale 的原始 Radar revision。
+
+關鍵 binding：
+
+- current adoption baseline：`main@a92a8d83c4cd6d2a04055312ebfa118d4df39f42` / v0.31.0；
+- prior TRIAL Decision：`sha256:3b3368af2d560a97e998500f680c48a14c1ed47fb496e54c0eac75cffc70ffb8`；
+- PASS Trial：`sha256:9270bab940c38558575490f4948589cf1ff3b6dc4477daf7eb0ff7caca4e187c`；
+- Human ADOPT Decision：`sha256:c742a082dd00bd9e451810b5ce4640413e420b06acb97311db42112150b13f3e`；
+- deterministic adoption binding：`sha256:1263e376a83926de458605f758b718fa6c7e0e3771d2ae19e6b53434f826ef89`。
+
+ADOPT 的範圍只有「採用 live observable-event capture 的**設計方向**並完成 System Improvement Review」。本版本沒有 live runtime hook、沒有 runtime enforcement、沒有 automatic remediation，也沒有 semantic intent governance。
+
+System Improvement Review 結論為 `SUITABLE_WITH_BOUNDS`：未來最小實作應延伸既有 Harness adapter，採 opt-in、metadata-only、POST_EXECUTION、out-of-band 設計；預設 disabled。
+
+目前 Scenario inventory 為 **141**：22 deterministic + 65 lifecycle + 54 agent_eval，**141 / 141 automated、0 manual、0 uncovered**。
+

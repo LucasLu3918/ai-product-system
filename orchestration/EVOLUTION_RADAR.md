@@ -200,3 +200,20 @@ Scenario 140 maps representative adapter exports into a minimal canonical event 
 
 A separate Human Adoption Decision is still required before System Improvement Review can consider any production/live-capture design. Semantic intent governance remains independently ASSESS-only.
 
+## Current-baseline committed Trial → Human ADOPT
+
+Scenario 141 extends the existing adoption abstraction for the case where Trial evidence has been committed/released and the original Radar revision is necessarily stale.
+
+`evolution_adoption.py bind-committed` binds four exact inputs:
+
+1. current-baseline adoption evidence;
+2. prior Human TRIAL Decision;
+3. committed PASS Trial result;
+4. separate CURRENT Human ADOPT Decision.
+
+The binding fails closed on baseline mismatch, Trial fingerprint mismatch, non-PASS result, candidate/signal mismatch, or any Trial authority expansion.
+
+This path does not weaken the normal stale-baseline rule. It creates a new current evidence envelope around the immutable prior Trial evidence.
+
+For Issue #79, the Human ADOPT scope is design-only. The System Improvement Review adopts the future opt-in metadata-only POST_EXECUTION capture direction and defers all live runtime implementation to a separate later Trial.
+
