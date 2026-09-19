@@ -298,6 +298,11 @@ def main() -> int:
     bad_duplicate["signals"].append(copy.deepcopy(bad_duplicate["signals"][0]))
     require(radar.validate_evidence(bad_duplicate), "duplicate fingerprints must fail evidence validation")
 
+    analyzer_config = yaml.safe_load((ROOT / "config/evolution-analyzer.yaml").read_text(encoding="utf-8")) or {}
+    require((analyzer_config.get("selection") or {}).get("fallback") == "handoff", "semantic analyzer fallback must be provider-neutral handoff")
+    require((analyzer_config.get("adapter") or {}).get("optional") is True, "OpenAI adapter must be optional")
+    require((analyzer_config.get("handoff") or {}).get("credential_required") is False, "handoff must not require model API credentials")
+
     workflow = (ROOT / ".github/workflows/evolution-radar.yml").read_text(encoding="utf-8")
     for required in (
         'cron: "0 1 * * 1"',
@@ -308,6 +313,10 @@ def main() -> int:
         "monthly-rollup",
         "--period",
         "gh api --paginate --slurp",
+        "semantic_provider:",
+        "Build provider-neutral semantic handoff",
+        "--handoff evolution-analysis-handoff.md",
+        'selected="handoff"',
     ):
         require(required in workflow, f"workflow missing contract: {required}")
     for forbidden in ("contents: write", "pull-requests: write", "git push", "gh pr create", "gh pr merge", "releases: write"):
@@ -318,8 +327,10 @@ def main() -> int:
         issue_body = Path(tmp) / "issue.md"
         evidence.write_text(yaml.safe_dump(weekly, sort_keys=False), encoding="utf-8")
         require(not radar.validate_evidence(yaml.safe_load(evidence.read_text(encoding="utf-8"))), "serialized evidence must validate")
-        issue_body.write_text(rollup.issue_markdown(weekly), encoding="utf-8")
+        handoff = "## Evolution Radar — Provider-Neutral Semantic Analysis Handoff\n\n- Analysis package digest: `sha256:test`"
+        issue_body.write_text(rollup.issue_markdown(weekly, handoff), encoding="utf-8")
         require(issue_body.stat().st_size > 0, "Human review artifact must be non-empty")
+        require("Provider-Neutral Semantic Analysis Handoff" in issue_body.read_text(encoding="utf-8"), "Issue must carry provider-neutral analysis handoff")
 
     print("EVOLUTION RADAR LIFECYCLE PASSED")
     return 0

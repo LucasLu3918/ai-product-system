@@ -66,7 +66,27 @@ def validate_graph(graph: dict[str, Any]) -> dict[str, dict[str, Any]]:
         if task_id in by_id:
             raise SchedulerError(f"duplicate task id: {task_id}")
         item = dict(item)
+        read_only = item.get("read_only", False)
+        if not isinstance(read_only, bool):
+            raise SchedulerError(f"task {task_id}: read_only must be boolean")
+        item["read_only"] = read_only
+        write_set = item.get("write_set") or []
+        if not isinstance(write_set, list) or not all(isinstance(x, str) and x.strip() for x in write_set):
+            raise SchedulerError(f"task {task_id}: write_set must be a list of non-empty paths")
+        item["write_set"] = sorted(set(x.strip() for x in write_set))
         item["change_boundary"] = normalize_boundaries(item.get("change_boundary"))
+        if not item["change_boundary"] and not read_only:
+            raise SchedulerError(
+                f"task {task_id}: writable or unspecified task requires non-empty change_boundary; "
+                "only explicit read_only tasks may omit it"
+            )
+        if read_only and item["write_set"]:
+            raise SchedulerError(f"task {task_id}: read_only task must not declare write_set")
+        isolation = item.get("isolation") or {}
+        if not isinstance(isolation, dict):
+            raise SchedulerError(f"task {task_id}: isolation must be a mapping")
+        if read_only and isolation.get("writable") is True:
+            raise SchedulerError(f"task {task_id}: read_only task cannot declare writable isolation")
         deps = item.get("dependencies") or []
         if not isinstance(deps, list) or not all(isinstance(x, str) for x in deps):
             raise SchedulerError(f"task {task_id}: dependencies must be a list of ids")

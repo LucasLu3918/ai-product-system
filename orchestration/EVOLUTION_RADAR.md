@@ -163,3 +163,13 @@ Still not automatic:
 - release.
 
 `ADOPT` hands off to the normal System Self-Improvement / Core / Constitutional / Git Publish process.
+
+## Provider-Neutral Semantic Handoff
+
+Scheduled semantic analysis no longer treats one provider credential as the only path forward.
+
+`config/evolution-analyzer.yaml` defines an optional OpenAI Codex Action adapter plus a credential-free `handoff` fallback. Every Radar run builds a deterministic analysis package and handoff record bound to the exact repository revision/evidence digest.
+
+When an optional scheduled provider is unavailable, recommendations remain truthfully `ANALYSIS_PENDING`, but the GitHub Issue includes the package digest, capability-map/prompt/result-schema paths, and deterministic finalize/apply commands. A Human-selected connected Agent, local model, or other provider can therefore continue semantic assessment without storing an `OPENAI_API_KEY` in AIPS.
+
+Provider output still has no authority. `scripts/evolution_analysis.py finalize/apply` must validate exact evidence binding before any recommendation can move out of `ANALYSIS_PENDING`.

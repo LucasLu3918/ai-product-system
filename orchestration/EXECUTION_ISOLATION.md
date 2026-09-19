@@ -99,3 +99,9 @@ When one approved plan has multiple writer tasks, `orchestration/DETERMINISTIC_S
 - stale/failed task state blocks dependent dispatch until normal replan/recovery rules resolve it.
 
 This adds deterministic coordination; it does not create a second workspace ownership system.
+
+## Scheduler write-boundary hardening
+
+A Scheduler task is treated as potentially writable unless it explicitly declares `read_only: true`. A writable/unspecified task without a non-empty Change Boundary is `SCHEDULER BLOCKED` before dispatch.
+
+An explicit read-only task may omit a writer boundary only when it has no `write_set` and does not declare writable isolation. This keeps Execution Isolation fail-closed when planning metadata is incomplete.

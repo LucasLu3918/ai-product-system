@@ -2,6 +2,7 @@ version: 1
 profile_id: null
 candidate:
   base_sha: null
+  base_tip_sha: null
   head_sha: null
   changed_files: []
   changed_files_hash: null

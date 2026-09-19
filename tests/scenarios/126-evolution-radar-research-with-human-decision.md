@@ -30,3 +30,9 @@ Expected:
 - scheduled Radar and Human Decision/Trial workflows retain only `contents: read` + `issues: write` repository permissions;
 - any material adopted improvement still requires the normal System Self-Improvement/Core/Constitution/Git Publish gates;
 - quarterly Evolution Review, automatic formal implementation PR creation, automatic merge and automatic release remain outside this scope.
+
+## Provider-neutral analyzer handoff
+
+If the optional scheduled semantic provider is unavailable, the run MUST still publish a deterministic handoff bound to the exact Radar evidence/package digest. The handoff may be consumed by a Human-selected connected Agent, local model, or another provider without requiring `OPENAI_API_KEY`.
+
+Until a result matching the canonical schema is deterministically finalized/applied, recommendations remain `ANALYSIS_PENDING`. The handoff has no implementation/publication authority.

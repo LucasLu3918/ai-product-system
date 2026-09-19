@@ -918,3 +918,9 @@ aips janitor --profile VALIDATION_PROFILE.yaml --base <base-ref> --head <head-re
 ~~~
 
 大型/Core Change 若 profile 要求 Test Matrix，另外傳入 `--matrix CORE_CHANGE_TEST_MATRIX.yaml`。PASS 只是 validation evidence；Git publication、merge 與 release 仍遵循原本 Human Approval / Git Publish 流程。
+
+## v0.27 Reliability Hardening
+
+- Evolution Radar 若沒有 `OPENAI_API_KEY`，Issue 會提供 provider-neutral semantic handoff；你可以把同一份 evidence 交給已連線 ChatGPT、其他 Agent 或 local model，再用 deterministic binding 套回結果。
+- Scheduler 的寫入 task 若沒有 Change Boundary 會直接 BLOCKED。純讀取 task 必須明確標示 `read_only: true` 才可省略 boundary。
+- PR 的 Janitor 會重新抓 target branch tip；base 已前進時舊 candidate 不會沿用綠燈，而是要求重新驗證。

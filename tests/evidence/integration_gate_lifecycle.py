@@ -44,9 +44,10 @@ def main() -> int:
         }
         profile_path = repo / "profile.yaml"
         profile_path.write_text(yaml.safe_dump(profile, sort_keys=False), encoding="utf-8")
+        git(repo, "branch", "base-tip", base)
         report = repo / "report.json"
         proc = subprocess.run(
-            ["python3", str(SCRIPT), "--profile", str(profile_path), "--base", base, "--head", head, "--output", str(report), "--format", "json"],
+            ["python3", str(SCRIPT), "--profile", str(profile_path), "--base", base, "--head", head, "--base-tip", "base-tip", "--output", str(report), "--format", "json"],
             cwd=repo,
             text=True,
             capture_output=True,
@@ -55,9 +56,21 @@ def main() -> int:
         payload = json.loads(report.read_text(encoding="utf-8"))
         assert payload["status"] == "PASS"
         assert payload["candidate"]["base_sha"] == base
+        assert payload["candidate"]["base_tip_sha"] == base
         assert payload["candidate"]["head_sha"] == head
         assert payload["candidate"]["changed_files"] == ["app.py"]
         assert payload["authority"]["merge_authorized"] is False
+
+        git(repo, "branch", "-f", "base-tip", head)
+        stale_base = subprocess.run(
+            ["python3", str(SCRIPT), "--profile", str(profile_path), "--base", base, "--head", head, "--base-tip", "base-tip", "--output", str(repo / "stale-base.yaml")],
+            cwd=repo,
+            text=True,
+            capture_output=True,
+        )
+        assert stale_base.returncode == 2
+        assert "candidate base is stale" in stale_base.stdout
+        git(repo, "branch", "-f", "base-tip", base)
 
         stale = subprocess.run(
             ["python3", str(SCRIPT), "--profile", str(profile_path), "--base", base, "--head", base, "--output", str(repo / "stale.yaml")],

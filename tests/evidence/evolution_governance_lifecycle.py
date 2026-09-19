@@ -93,6 +93,17 @@ def main() -> int:
 
         fingerprint = 'sha256:' + '2' * 64
         raw = evidence(revision, fingerprint)
+        package = analysis.build_analysis_package(raw, {'version': 1, 'capabilities': []})
+        handoff = analysis.handoff_markdown(
+            package,
+            prompt_path='templates/evolution/EVOLUTION_ANALYZER_PROMPT.md',
+            schema_path='templates/evolution/EVOLUTION_ANALYZER_RESULT.schema.json',
+            capability_map_path='references/evolution/CAPABILITY_MAP.yaml',
+        )
+        require('Provider-Neutral Semantic Analysis Handoff' in handoff, 'provider-neutral handoff must be generated')
+        require(package['baseline']['evidence_digest'] in handoff, 'handoff must bind exact evidence digest')
+        require('does not authorize implementation' in handoff, 'handoff must preserve authority boundary')
+
         provider = {'recommendations': [{
             'signal_fingerprint': fingerprint,
             'state': 'TRIAL',

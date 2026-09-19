@@ -14,6 +14,15 @@ on:
         options:
           - weekly
           - monthly
+      semantic_provider:
+        description: Optional scheduled semantic provider; handoff requires no model API credential
+        required: true
+        default: auto
+        type: choice
+        options:
+          - auto
+          - openai-codex-action
+          - handoff
 
 permissions:
   contents: read
@@ -109,6 +118,15 @@ jobs:
           --capabilities references/evolution/CAPABILITY_MAP.yaml
           --output evolution-analysis-package.yaml
 
+      - name: Build provider-neutral semantic handoff
+        run: >-
+          python scripts/evolution_analysis.py handoff
+          --package evolution-analysis-package.yaml
+          --prompt templates/evolution/EVOLUTION_ANALYZER_PROMPT.md
+          --schema templates/evolution/EVOLUTION_ANALYZER_RESULT.schema.json
+          --capabilities references/evolution/CAPABILITY_MAP.yaml
+          --output evolution-analysis-handoff.md
+
       - name: Detect semantic analyzer credential
         id: analyzer_secret
         shell: bash
@@ -121,9 +139,29 @@ jobs:
             echo "available=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Resolve semantic provider
+        id: semantic_provider
+        shell: bash
+        env:
+          REQUESTED_PROVIDER: ${{ inputs.semantic_provider || 'auto' }}
+          SECRET_AVAILABLE: ${{ steps.analyzer_secret.outputs.available }}
+        run: |
+          selected="$REQUESTED_PROVIDER"
+          if [[ "$selected" == "auto" ]]; then
+            if [[ "$SECRET_AVAILABLE" == "true" ]]; then
+              selected="openai-codex-action"
+            else
+              selected="handoff"
+            fi
+          fi
+          if [[ "$selected" == "openai-codex-action" && "$SECRET_AVAILABLE" != "true" ]]; then
+            selected="handoff"
+          fi
+          echo "value=$selected" >> "$GITHUB_OUTPUT"
+
       - name: Run bounded semantic analyzer
         id: semantic
-        if: steps.analyzer_secret.outputs.available == 'true'
+        if: steps.semantic_provider.outputs.value == 'openai-codex-action' && steps.analyzer_secret.outputs.available == 'true'
         continue-on-error: true
         uses: openai/codex-action@86365089eb2b84e0a8fb0717b304f8bdcb13b20e # v1
         with:
@@ -159,6 +197,7 @@ jobs:
           SECRET_AVAILABLE: ${{ steps.analyzer_secret.outputs.available }}
           SEMANTIC_OUTCOME: ${{ steps.semantic.outcome }}
           APPLY_OUTCOME: ${{ steps.analysis_apply.outcome }}
+          SELECTED_PROVIDER: ${{ steps.semantic_provider.outputs.value }}
         run: |
           python - <<'PY'
           import os
@@ -169,8 +208,10 @@ jobs:
           doc = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
           analyzer = (doc.get("run") or {}).get("analyzer") or {}
           if analyzer.get("status") != "available":
-              if os.environ.get("SECRET_AVAILABLE") != "true":
-                  reason = "OPENAI_API_KEY is not configured; semantic analysis was not attempted. Recommendations remain ANALYSIS_PENDING."
+              if os.environ.get("SELECTED_PROVIDER") == "handoff":
+                  reason = "No scheduled semantic provider was selected or available; provider-neutral handoff is READY. Recommendations remain ANALYSIS_PENDING until a validated result is bound and applied."
+              elif os.environ.get("SECRET_AVAILABLE") != "true":
+                  reason = "Selected provider credential is unavailable; provider-neutral handoff is READY and recommendations remain ANALYSIS_PENDING."
               elif os.environ.get("SEMANTIC_OUTCOME") != "success":
                   reason = "Semantic analyzer execution failed; recommendations remain ANALYSIS_PENDING and no suitability conclusion was inferred."
               else:
@@ -186,8 +227,16 @@ jobs:
       - name: Validate final evidence
         run: python scripts/evolution_radar.py validate evolution-radar.yaml
 
+      - name: Publish semantic handoff summary
+        if: always()
+        shell: bash
+        run: cat evolution-analysis-handoff.md >> "$GITHUB_STEP_SUMMARY"
+
       - name: Build Human review issue
-        run: python scripts/evolution_radar_rollup.py issue-body evolution-radar.yaml --output evolution-radar-issue.md
+        run: >-
+          python scripts/evolution_radar_rollup.py issue-body evolution-radar.yaml
+          --handoff evolution-analysis-handoff.md
+          --output evolution-radar-issue.md
 
       - name: Publish research report only
         shell: bash

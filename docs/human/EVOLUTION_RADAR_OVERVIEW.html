@@ -50,4 +50,9 @@ Human chooses: REJECT / HOLD / ASSESS / TRIAL / ADOPT</pre></section>
 → Human approval
 → PR / required check / merge / release
 → new release becomes next Radar baseline</pre></section>
-</div><div class="foot">AIPS Evolution Radar Human Overview · research and decisions are auditable; material mutation remains Human-governed</div></main></body></html>
+</div><div class="foot">AIPS Evolution Radar Human Overview · research and decisions are auditable; material mutation remains Human-governed</div><section id="v0.27-provider-neutral-handoff">
+  <h2>v0.27 Provider-neutral Semantic Handoff</h2>
+  <p>排程仍可使用 optional OpenAI Codex Action，但 <code>OPENAI_API_KEY</code> 不再是唯一前進方式。每次 Radar 都先建立 deterministic analysis package；若沒有 provider credential，Issue 會附上 exact evidence/package digest、Capability Map、Prompt、Result Schema 與 finalize/apply 指令，讓 Human 選擇 ChatGPT、其他 Agent、local model 或其他 provider 接手。</p>
+  <p>沒有 validated semantic result 時仍維持 <code>ANALYSIS_PENDING</code>；handoff 本身沒有 code/PR/merge/release authority。</p>
+</section>
+</main></body></html>
