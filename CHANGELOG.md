@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.26.0
+
+### Deterministic Scheduler + Exact-Candidate Integration Gate
+
+- Add a code-driven Deterministic Scheduler that consumes a structured Task Graph after semantic planning and deterministically enforces dependency readiness, stable ordering, `max_parallel`, active Change Boundary locks and blocked downstream work without creating a new Role, Skill or autonomous authority.
+- Add versioned Task Graph schema/template contracts plus `aips scheduler` CLI support, while preserving existing Execution Isolation, single-writer Change Boundary rules and durable run/workspace state as the canonical execution model.
+- Add the canonical Integration Gate (informal/CLI alias: Janitor) to validate the exact candidate bound to base/head SHAs, changed-file hash, Validation Profile hash and optional Core Change Test Matrix hash.
+- Add project-native Validation Profiles and deterministic argv-based checks; the AIPS repository profile requires Ruff critical lint, mypy for the new runtime helpers, Scheduler lifecycle evidence, Integration Gate lifecycle evidence and full repository validation.
+- Preserve the protected-main required check name `repository`: the new `janitor` job runs first and the required `repository` aggregate can succeed only when Janitor succeeds, so existing branch protection remains compatible without migration.
+- Add Scenario 135 for deterministic multi-agent scheduling and Scenario 136 for exact-candidate Integration Gate behavior. Scenario Conformance is now 136 total / 0 manual / 22 deterministic / 60 lifecycle / 54 agent_eval / 136 automated / 0 uncovered (100% automated).
+- Feature PR #73 exact head `4b8fb81fddc5127ff6426f1a98843fa6131d6b2a` passed `janitor` and required `repository` in validate Run #1013 and was squash-merged to main as `6c251e072c84095097ce6181bad60b4f492d59a1`.
+- Protected-main validate Run #1014 independently re-ran the new pipeline on exact merged main and completed `janitor=SUCCESS`, `repository=SUCCESS`.
+- Janitor Run #1013 reported candidate fingerprint `ae068e7ca1df9005f08b5bc62b0a0040c1225a04f980c5f3bbd62650cb04c032`, all required checks PASS, no blockers, `merge_authorized=false`, `release_authorized=false` and `human_authority_preserved=true`.
+- Keep the Integration Gate as deterministic evidence rather than a new approval authority: PASS never authorizes merge, release, architecture decisions or Human-gated actions.
+- Constitution impact: NO. Protected Human Authority, Git Publish Approval and existing governance boundaries remain unchanged.
+- Architecture Diagram Impact: YES. System/Human architecture and execution documentation now include Structured Task Graph -> Deterministic Scheduler -> isolated parallel work -> Integration Candidate -> Integration/Janitor Gate -> required `repository` aggregate.
+- Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
+
 ## 0.25.0
 
 ### Provider-Neutral Local-First Embedding Trial — HOLD
