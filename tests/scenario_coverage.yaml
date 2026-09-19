@@ -958,3 +958,11 @@ scenarios:
       - .github/workflows/validate.yml
       - orchestration/INTEGRATION_GATE.md
       - tests/validate_repository.py
+  - id: "137"
+    path: tests/scenarios/137-agent-eval-repeatability.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/agent_eval_framework.py
+      - scripts/agent_eval.py
+      - orchestration/AGENT_EVAL.md
+      - tests/validate_repository.py

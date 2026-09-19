@@ -178,6 +178,56 @@ def main() -> int:
         )
         require(orphan_check.returncode != 0, "orphan result must fail Agent Eval check")
 
+    with tempfile.TemporaryDirectory() as tmp:
+        root = Path(tmp)
+        case_path = root / "repeatability-case.yaml"
+        repetitions = root / "repetitions"
+        write_yaml(case_path, case)
+        for index in range(5):
+            repeated = base_result(module, case, provider=f"provider-{index % 2}")
+            repeated["execution"]["executed_at"] = f"2026-09-19T00:00:0{index}Z"
+            repeated["response"]["summary"] = f"Observable decision run {index}."
+            write_yaml(repetitions / f"run-{index}.yaml", repeated)
+
+        consistent = subprocess.run([
+            sys.executable, str(AGENT_EVAL), "consistency", "--case", str(case_path),
+            "--results-dir", str(repetitions), "--min-repetitions", "5", "--min-pass-rate", "1.0", "--format", "json",
+        ], capture_output=True, text=True)
+        require(consistent.returncode == 0, f"repeatability evidence should PASS: {consistent.stdout} {consistent.stderr}")
+        consistent_doc = json.loads(consistent.stdout)
+        require(consistent_doc["summary"]["repetitions"] == 5, "repeatability repetition count mismatch")
+        require(consistent_doc["summary"]["passed"] == 5, "repeatability PASS count mismatch")
+        require(consistent_doc["summary"]["pass_rate"] == 1.0, "repeatability pass rate mismatch")
+        require(consistent_doc["summary"]["unique_observable_responses"] == 5, "observable response diversity must remain visible")
+        require(consistent_doc["summary"]["response_repeatability"] == 0.2, "exact response repeatability must be measured separately from rubric success")
+
+        degraded = yaml.safe_load((repetitions / "run-4.yaml").read_text(encoding="utf-8"))
+        degraded["response"]["status"] = "READY"
+        write_yaml(repetitions / "run-4.yaml", degraded)
+        strict = subprocess.run([
+            sys.executable, str(AGENT_EVAL), "consistency", "--case", str(case_path),
+            "--results-dir", str(repetitions), "--min-repetitions", "5", "--min-pass-rate", "1.0", "--format", "json",
+        ], capture_output=True, text=True)
+        require(strict.returncode != 0, "strict repeatability policy must fail a 4/5 outcome")
+        require(json.loads(strict.stdout)["summary"]["pass_rate"] == 0.8, "degraded repeatability pass rate mismatch")
+
+        relaxed = subprocess.run([
+            "bash", str(ROOT / "bin" / "aips"), "conformance", "agent-eval", "consistency",
+            "--case", str(case_path), "--results-dir", str(repetitions), "--min-repetitions", "5",
+            "--min-pass-rate", "0.8", "--format", "json",
+        ], capture_output=True, text=True)
+        require(relaxed.returncode == 0, f"configured 80% repeatability threshold should PASS: {relaxed.stdout} {relaxed.stderr}")
+
+        stale = yaml.safe_load((repetitions / "run-3.yaml").read_text(encoding="utf-8"))
+        stale["case_fingerprint"] = "sha256:" + ("0" * 64)
+        write_yaml(repetitions / "run-3.yaml", stale)
+        invalid = subprocess.run([
+            sys.executable, str(AGENT_EVAL), "consistency", "--case", str(case_path),
+            "--results-dir", str(repetitions), "--min-repetitions", "5", "--min-pass-rate", "0.8", "--format", "json",
+        ], capture_output=True, text=True)
+        require(invalid.returncode != 0, "stale repetition evidence must fail regardless of pass-rate threshold")
+        require(json.loads(invalid.stdout)["summary"]["invalid_results"] == 1, "stale repetition must be reported as invalid")
+
     print("agent_eval_framework evidence: PASS")
     return 0
 

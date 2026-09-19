@@ -811,3 +811,17 @@ Scenario 136 用 temporary Git repository 真正建立 base/candidate commits，
 GitHub Actions 的 `repository` required check 保持相容，但改成只能在 `janitor` success 後通過。
 
 目前 Scenario inventory 為 **136**：22 deterministic + 60 lifecycle + 54 agent_eval，**136 / 136 automated、0 manual、0 uncovered**。
+
+## Agent Eval Repeatability（Scenario 137）
+
+單次 Agent Eval PASS 只能證明「這一次」的 observable response 符合 rubric，不能代表相同任務重跑仍穩定。Scenario 137 因此沿用既有 Agent Eval Case / Result 契約，新增多次結果的一致性量測：每一筆都必須綁定同一個 Case fingerprint，先逐筆做 privacy / secret / stale validation 與 deterministic rubric scoring，再計算 repetitions、PASS rate、outcome consistency、unique observable-response fingerprints 與 exact response repeatability。
+
+這個設計刻意把「答案文字是否完全一樣」和「行為是否持續符合契約」分開；不同措辭可以同時 PASS，但差異仍會被 fingerprint telemetry 看見。任何 stale/invalid evidence 都不能靠降低 pass-rate threshold 混過去。
+
+CLI 可用：
+
+~~~bash
+aips conformance agent-eval consistency --case <case.yaml> --results-dir <runs/> --min-repetitions 5 --min-pass-rate 1.0
+~~~
+
+目前 Scenario inventory 為 **137**：22 deterministic + 61 lifecycle + 54 agent_eval，**137 / 137 automated、0 manual、0 uncovered**。
