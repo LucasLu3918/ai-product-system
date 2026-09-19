@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.30.0
+
+### Agent Anomaly Evidence Evaluation
+
+- Add a bounded, deterministic offline evaluation lane for the Issue #79 out-of-band Agent anomaly candidate without reintroducing the removed Agent Runtime Assurance production scope.
+- Reuse the existing default-DENY Resource Authorization Profile as the sole authorization truth; no second permission system, runtime hook, semantic intent gate, provider dependency, Role or Skill is introduced.
+- Add a fixed 11-case synthetic/sanitized observable-event corpus covering normal success, expected denials, ordinary failure, unauthorized success, missing Change Boundary, forbidden network use, subject mismatch, protected-operation observation and unsupported-operation observation.
+- Report TP/FP/TN/FN, precision, recall, false-positive rate and false-negative rate. The committed fixture yields TP=6, FP=0, TN=5, FN=0, precision=1.0, recall=1.0, FPR=0 and FNR=0; these are regression metrics for the fixed corpus only and are not a production-accuracy claim.
+- Fail closed on private-reasoning fields and secret-like values; intentionally incorrect expected labels make the benchmark FAIL.
+- Keep enforcement truth explicit: output is `POST_EXECUTION_EVIDENCE`, `runtime_enforced=false`, `critical_path=false`, `automatic_remediation=false`, and all Human/protected/publication/merge/release authority flags remain false.
+- PASS returns only `HUMAN_REVIEW_TRIAL_EVIDENCE`; the Evolution Radar anomaly candidate remains ASSESS pending a separate Human decision for any real observable-event integration Trial. Semantic intent governance remains separately ASSESS and is not implemented.
+- Add Scenario 139 and raise Scenario Conformance to 139/139 automated; Roles remain 12 and Skills remain 25.
+- Feature PR #92 exact final head `51fa69ec54c56be458bdaf0bc8146646496afbd7` passed core-change Janitor and required `repository` in validate Run #1052 with changed-files hash `f01c6e01f22b0189d52bda26d43c0242f8f3a3512b5e0b97a8f97916ada52f3f`, Matrix hash `dd2b6b35816c59fe2723166a50b5fb41b93a9e9c058e85f46c2a351121ec3204`, candidate fingerprint `ad138d1d6d72c20e8991f1aed7ab5f2cc813feb9bedbce3eed98af1c461684f9`, no blockers and preserved Human authority.
+- PR #92 was squash-merged to main as `a548dc63fb81411ab6b33aaedab69ca78ee3ef12`; protected-main validate Run #1053 completed Janitor and required `repository` successfully with 139 scenarios.
+- Constitution impact: NO. No automatic remediation, protected-operation, Human approval, merge, release or publication authority is introduced.
+- Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
+
 ## 0.29.0
 
 ### Resource-Scoped Agent Authorization
