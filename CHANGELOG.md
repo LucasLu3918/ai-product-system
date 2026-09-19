@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.27.1
+
+### Branch Hygiene Squash Detection & v0.27 Closeout
+
+- Fix deterministic Branch Hygiene false negatives for multi-commit branches that were integrated through squash merge. Integration detection now remains conservative in order: direct ancestry, per-commit patch equivalence, then a clean synthetic `git merge-tree --write-tree` whose resulting tree must exactly equal the target tree.
+- Add lifecycle regression evidence for a two-commit feature branch squash-merged into `main`, while preserving `deletion.mode=report_only`, unclassified-branch preservation and the persistent operational `feature/retrieval-embedding-trial` branch.
+- PR #80 exact head `81ac3b5e5caba44efc6478cfab8f27972cb2a05e` passed Janitor and required `repository` in validate Run #1024 and was squash-merged to main as `e654384a2970dc450dbc0a5d97b1c2814f063a5c`.
+- Protected-main validate Run #1025 independently completed `janitor=SUCCESS` and `repository=SUCCESS` on exact merged main.
+- Validate the v0.27 provider-neutral Evolution Radar production path on exact `main@e256f8817839bef0c282b352754dca91d32fdf69`: workflow-dispatch Run #2 completed SUCCESS, produced the deterministic semantic handoff and created current Human review Issue #79. Pre-v0.27 Issue #50 and stale duplicate Issue #78 were closed as superseded/duplicate.
+- Execute Human-authorized branch maintenance only from deterministic report output. The first v0.27 closeout pass reported 37 integrated EPHEMERAL deletion candidates; after the squash-aware fix, a second pass found two additional candidates (`feature/branch-hygiene-squash-detection` and `release/v0.18.4`) and deleted them. Post-cleanup verification reported zero remaining deterministic deletion candidates.
+- One-time maintenance runner branches deleted themselves after completion and did not modify `main`.
+- No automatic branch-deletion authority is introduced; the classifier remains report-only and deletion still requires an explicit maintenance authorization outside the classifier.
+- Constitution impact: NO. Protected Human Authority, Git Publish/merge/release governance and existing publication boundaries remain unchanged.
+- Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
+
 ## 0.27.0
 
 ### Reliability & Governance Hardening
