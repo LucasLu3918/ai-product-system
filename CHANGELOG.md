@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.31.0
+
+### Observable-Event Integration Controlled Trial
+
+- Add a current-baseline Human TRIAL Decision for the Issue #79 out-of-band Agent anomaly candidate. The Decision binds signal `sha256:7da9fc0c0ad89a0c7d0315aa2a5f4aa7ceb9842149a969a84708ce382c3082b3` to v0.30.0 main `e5e47b28a524352f7f549b49a40a294ddb50a364` and explicitly overrides ASSESS only for a bounded replay-only Trial.
+- Add a provider-neutral canonical observable-event contract and three representative adapter-export dialects. Only whitelisted event metadata is normalized; unknown adapters, unmapped raw fields, private reasoning and secret-like values fail closed.
+- Reuse the existing Resource Authorization-backed Scenario 139 anomaly evaluator rather than creating a second permission system.
+- Record a 12-case synthetic/sanitized replay Trial with TP=6, FP=0, TN=6, FN=0, precision=1.0, recall=1.0, FPR=0 and FNR=0. These are fixture regression metrics only and are not production anomaly-detection accuracy.
+- Do not persist raw event payloads into the committed Trial result. The result records `live_capture_verified=false`, `runtime_enforced=false`, `critical_path=false` and `automatic_remediation=false`.
+- Trial PASS stops at `HUMAN_REVIEW_TRIAL_RESULT` and keeps `human_adoption_decision_required=true`; no live runtime capture, runtime hook, automatic remediation or production adoption is authorized by this release.
+- Semantic intent governance remains ASSESS-only and is not included in this Trial.
+- Add Scenario 140 and raise Scenario Conformance to 140/140 automated. Roles remain 12 and Skills remain 25.
+- Feature PR #94 exact final head `b5e3d6f80c4341e0fd9843557293b7e9d8e40f31` passed core-change Janitor and required `repository` in validate Run #1057 with changed-files hash `76d70807d8af89f1618981142ca8cc9e15ac2d5d59fd3eb352979538e64c0ca5`, Matrix hash `53fcb7eb474cddf59880a00b231304ecf2d834e48ac4e5387d095e21a4165859`, candidate fingerprint `02c9a0f7ddc4fcd6b6a5dffcdcd6023cc2b240f0ddc6f3fbf677eff450369974`, no blockers and preserved Human authority.
+- PR #94 was squash-merged to main as `692123765f90182c1679c666f9a9b8647c325235`.
+- Constitution impact: NO. Protected Human Authority remains intact; all merge, release, publication, protected-operation and automatic-remediation authority remains outside the Trial.
+- Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
+
 ## 0.30.0
 
 ### Agent Anomaly Evidence Evaluation
