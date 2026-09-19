@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.24.1
+
+### Remote Embedding Trial Operator Handoff
+
+- Add `scripts/retrieval_embedding_trial_summary.py` to render the machine-readable embedding Trial report into a safe Human-readable GitHub Job Summary.
+- Make workflow-level `SUCCESS` explicitly distinct from Trial `PASS`, `FAIL`, `TRIAL_PENDING` and `TRIAL_BLOCKED`.
+- Surface provider/model identifiers, credential availability as a boolean, privacy scope, request/token counts when present, authority flags and the exact next operator action without exposing credential values.
+- Define state-specific operator guidance: PENDING asks for repository Actions secret `OPENAI_API_KEY` and a workflow re-run; BLOCKED keeps HOLD until provider/network/config issues are corrected; FAIL preserves negative evidence; PASS stops at a separate Human Adoption Decision.
+- Strengthen Scenario 133 and `retrieval_embedding_trial_contracts.py` so Job Summary publication and operator guidance are deterministic release contracts.
+- Extend Documentation Sync coverage to the summary helper and synchronize Human/Agent Project Intelligence, Conformance, Documentation Sync and Technology Guide surfaces.
+- Initial PR #69 validation Run #1002 correctly failed because the documentation map and exact Human Adoption Decision guidance were incomplete; the change was rebuilt as one atomic commit rather than stacking intermediate remote commits.
+- Exact corrected PR #69 head `bfd851d2c916942ffab1d132885e796dc74cbc29` passed required `repository` Run #1003.
+- Feature implementation merged through #69; exact merged main `ffdf61aaedc1c78c8322c5e5ded79676d4260a1e` passed protected-main `repository` Run #1004.
+- The dedicated `feature/retrieval-embedding-trial` branch was then aligned to that exact main and Trial Run #4 completed successfully at workflow level; `Publish Trial operator summary` also completed successfully.
+- Trial Run #4 truthfully remains `TRIAL_PENDING / PENDING_CREDENTIAL` with `credential_available=false`; the provider was not called. This is the sole remaining external prerequisite for obtaining provider-backed quality evidence.
+- Production Retrieval Intelligence / Turn Context behavior is unchanged; repository/product source transfer remains false and no embedding provider is enabled by default.
+- Scenario Conformance remains 133 total / 0 manual / 21 deterministic / 58 lifecycle / 54 agent_eval / 133 automated / 0 uncovered (100% automated).
+- Constitution impact: NO. Human adoption/publication authority is unchanged.
+- Architecture Diagram Impact: N/A. This patch improves Trial operations and evidence handoff inside the existing v0.24.0 remote Trial path.
+
 ## 0.24.0
 
 ### Remote Embedding Retrieval Trial Readiness
