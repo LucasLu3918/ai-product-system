@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.24.0
+
+### Remote Embedding Retrieval Trial Readiness
+
+- Add Scenario 133 and a provider-backed Retrieval Trial readiness path for materially different semantic retrieval research after the deterministic Semantic Alias Expansion candidate remained HOLD.
+- Introduce a bounded OpenAI-compatible embeddings adapter using the approved `v1/embeddings` endpoint, default model `text-embedding-3-small`, optional repository-variable model override, 512 dimensions and protected `OPENAI_API_KEY` secret injection.
+- Keep the Trial synthetic-only: only the committed 9-case Retrieval Quality fixture may be transmitted; AIPS repository/product source transfer remains explicitly forbidden.
+- Keep normal Retrieval Intelligence and Turn Context unchanged. No embedding lane, provider or production source transfer is enabled by default.
+- Add explicit hard limits for provider requests, candidate chunks and remote input characters. Candidate vectors remain ephemeral/in-memory; no Vector DB is introduced.
+- Define truthful fallback states: missing credentials produce `TRIAL_PENDING`; provider/network/runtime failures produce `TRIAL_BLOCKED`; neither state may be rewritten as quality PASS/FAIL evidence.
+- Add a dedicated `retrieval-semantic-trial` workflow scoped to the Trial feature branch plus manual dispatch; normal Pull Request and main validation never call the remote embedding provider.
+- Preserve the current v0.23.2 default Retrieval + adopted Structural Retrieval as the baseline and reuse the same 9-case quality corpus and regression thresholds for future provider-backed comparisons.
+- First dedicated Trial execution on the feature head completed successfully at the workflow level and truthfully reported `TRIAL_PENDING / PENDING_CREDENTIAL` with `credential_available=false`; the provider was not called.
+- PR #67 exact corrected head `41ea8fcc7c19d08b82ae76f7d62048692e7ce191` passed required `repository` Run #998 after secret-scanner-safe credential handling.
+- Feature implementation merged through #67; exact merged main `bdd4d6c6ec49521be678626ca1d05a82200aac60` passed protected-main `repository` Run #999 before release metadata finalization.
+- Raise Scenario Conformance to 133 total / 0 manual / 21 deterministic / 58 lifecycle / 54 agent_eval / 133 automated / 0 uncovered (100% automated).
+- Constitution impact: NO. No new Role, Skill, capability category, Human Approval Gate or autonomous publication authority is introduced.
+- Architecture Diagram Impact: YES. Retrieval architecture documentation now includes the synthetic-only remote embedding Trial readiness path and PENDING/BLOCKED/Human-review branches; production Retrieval topology is unchanged.
+
 ## 0.23.2
 
 ### Semantic Alias Expansion Trial — HOLD
