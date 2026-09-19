@@ -55,4 +55,5 @@ Human chooses: REJECT / HOLD / ASSESS / TRIAL / ADOPT</pre></section>
   <p>排程仍可使用 optional OpenAI Codex Action，但 <code>OPENAI_API_KEY</code> 不再是唯一前進方式。每次 Radar 都先建立 deterministic analysis package；若沒有 provider credential，Issue 會附上 exact evidence/package digest、Capability Map、Prompt、Result Schema 與 finalize/apply 指令，讓 Human 選擇 ChatGPT、其他 Agent、local model 或其他 provider 接手。</p>
   <p>沒有 validated semantic result 時仍維持 <code>ANALYSIS_PENDING</code>；handoff 本身沒有 code/PR/merge/release authority。</p>
 </section>
-</main></body></html>
+</main><section class="card"><h2>v0.29 Capability Map Feedback</h2><p><code>agent-runtime-assurance</code> 已登記到 Evolution Radar Capability Map，代表 provider-neutral intent binding 與 out-of-band anomaly evidence 已成為現有 AIPS capability。後續 Radar 應優先判斷 reuse / gap，而不是再建立平行 runtime authority。Capability Map 只改善 semantic comparison，不授予 Radar implementation、merge、release 或 Human approval 權限。</p></section>
+</body></html>

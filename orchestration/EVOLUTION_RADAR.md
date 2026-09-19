@@ -173,3 +173,12 @@ Scheduled semantic analysis no longer treats one provider credential as the only
 When an optional scheduled provider is unavailable, recommendations remain truthfully `ANALYSIS_PENDING`, but the GitHub Issue includes the package digest, capability-map/prompt/result-schema paths, and deterministic finalize/apply commands. A Human-selected connected Agent, local model, or other provider can therefore continue semantic assessment without storing an `OPENAI_API_KEY` in AIPS.
 
 Provider output still has no authority. `scripts/evolution_analysis.py finalize/apply` must validate exact evidence binding before any recommendation can move out of `ANALYSIS_PENDING`.
+
+
+## Agent Runtime Assurance capability feedback
+
+The Evolution capability map registers `agent-runtime-assurance` after the v0.29 evidence-only extension is adopted.
+
+Semantic comparison MUST treat it as an existing capability composed from Resource Authorization, Agent Eval and Execution Isolation. New research on semantic intent or runtime anomaly detection should first identify a concrete gap in that composition instead of proposing a parallel authority subsystem.
+
+This map entry is descriptive evidence only. Evolution Radar retains no implementation, tool-call, merge, release or Human approval authority.

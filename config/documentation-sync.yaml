@@ -90,6 +90,17 @@ rules:
     agent_docs:
       - orchestration/EXECUTION_ISOLATION.md
       - orchestration/ORCHESTRATOR.md
+  - id: agent-runtime-assurance
+    triggers:
+      - scripts/agent_assurance.py
+      - orchestration/AGENT_RUNTIME_ASSURANCE.md
+      - tests/validation/agent_runtime_assurance_contracts.py
+    human_docs:
+      - docs/human/ARCHITECTURE_OVERVIEW.md
+      - docs/human/USER_GUIDE.md
+    agent_docs:
+      - orchestration/RESOURCE_AUTHORIZATION.md
+      - orchestration/EXECUTION_ISOLATION.md
   - id: scenario-conformance
     triggers: [scripts/scenario_conformance.py, scripts/agent_eval.py, templates/conformance/**, tests/scenario_coverage.yaml]
     human_docs: [docs/human/CONFORMANCE.md]
