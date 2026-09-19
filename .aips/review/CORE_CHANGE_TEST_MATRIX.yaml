@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 2097c2dc1c28ee221b795daa47fba104dbf75fa5
-  changed_files_hash: 4accac087ef57a5fa965124706189b3b7015185422d850fff2426693eb952e40
+  changed_files_hash: c356c77646612f9c197424f510bbce7bd54210f47fb7255ea2a1cddeb033880c
 change:
   id: v0.27.0-governance-hardening
   summary: Conditional Core Matrix enforcement, report-only branch lifecycle hygiene, CI lifecycle de-duplication, and synchronized governance documentation.
