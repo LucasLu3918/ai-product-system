@@ -73,21 +73,49 @@ def classify(name: str, config: dict[str, Any]) -> str:
     return "UNCLASSIFIED"
 
 
+def branch_refs(target: str, remote: str | None) -> tuple[str, list[tuple[str, str]]]:
+    if remote:
+        scope = f"refs/remotes/{remote}"
+        raw = git("for-each-ref", "--format=%(refname:short)", scope).stdout.splitlines()
+        prefix = f"{remote}/"
+        rows: list[tuple[str, str]] = []
+        for ref in raw:
+            ref = ref.strip()
+            if not ref or ref == f"{remote}/HEAD" or not ref.startswith(prefix):
+                continue
+            name = ref[len(prefix):]
+            if name == target:
+                continue
+            rows.append((name, ref))
+        target_ref = f"{remote}/{target}"
+        verify = git("rev-parse", "--verify", target_ref, check=False)
+        if verify.returncode != 0:
+            raise BranchHygieneError(f"remote target ref not found: {target_ref}")
+        return target_ref, sorted(set(rows))
+
+    raw = git("for-each-ref", "--format=%(refname:short)", "refs/heads").stdout.splitlines()
+    rows = sorted({(ref.strip(), ref.strip()) for ref in raw if ref.strip() and ref.strip() != target})
+    return target, rows
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=Path("config/branch-lifecycle.yaml"))
     parser.add_argument("--target")
+    parser.add_argument(
+        "--remote",
+        help="Classify refs/remotes/<remote> instead of only local refs/heads; intended for CI.",
+    )
     args = parser.parse_args()
 
     try:
         config = load_yaml(args.config)
         target = args.target or str(config.get("default_branch") or "main")
-        refs = git("for-each-ref", "--format=%(refname:short)", "refs/heads").stdout.splitlines()
-        branches = sorted({ref.strip() for ref in refs if ref.strip() and ref.strip() != target})
+        target_ref, refs = branch_refs(target, args.remote)
         report = []
-        for name in branches:
+        for name, ref in refs:
             lifecycle = classify(name, config)
-            is_integrated = integrated(name, target)
+            is_integrated = integrated(ref, target_ref)
             report.append({
                 "branch": name,
                 "lifecycle": lifecycle,
@@ -97,6 +125,7 @@ def main() -> int:
         payload = {
             "version": 1,
             "target": target,
+            "ref_scope": f"remote:{args.remote}" if args.remote else "local",
             "policy": "report_only",
             "branches": report,
             "authority": {

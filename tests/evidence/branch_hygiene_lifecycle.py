@@ -16,9 +16,20 @@ def git(cwd: Path, *args: str) -> str:
     return proc.stdout.strip()
 
 
+def validate(payload: dict) -> None:
+    rows = {row["branch"]: row for row in payload["branches"]}
+    assert rows["feature/merged"]["deletion_candidate"] is True
+    assert rows["feature/squashed"]["deletion_candidate"] is True
+    assert rows["feature/pending"]["deletion_candidate"] is False
+    assert rows["feature/retrieval-embedding-trial"]["lifecycle"] == "PERSISTENT"
+    assert payload["authority"]["branch_deletion_authorized"] is False
+    assert payload["authority"]["human_authority_preserved"] is True
+
+
 def main() -> int:
     with tempfile.TemporaryDirectory() as td:
-        repo = Path(td) / "repo"
+        root = Path(td)
+        repo = root / "repo"
         repo.mkdir()
         git(repo, "init", "-q")
         git(repo, "config", "user.email", "test@example.com")
@@ -28,7 +39,6 @@ def main() -> int:
         git(repo, "commit", "-qm", "base")
         git(repo, "branch", "-M", "main")
 
-        # Simulate a multi-commit feature branch that is later squash-merged.
         git(repo, "checkout", "-qb", "feature/squashed")
         (repo / "squashed-a.txt").write_text("a\n", encoding="utf-8")
         git(repo, "add", ".")
@@ -62,20 +72,43 @@ deletion:
 """,
             encoding="utf-8",
         )
-        proc = subprocess.run(
+
+        local = subprocess.run(
             ["python3", str(SCRIPT), "--config", str(config), "--target", "main"],
             cwd=repo,
             text=True,
             capture_output=True,
         )
-        assert proc.returncode == 0, proc.stdout + proc.stderr
-        payload = yaml.safe_load(proc.stdout)
-        rows = {row["branch"]: row for row in payload["branches"]}
-        assert rows["feature/merged"]["deletion_candidate"] is True
-        assert rows["feature/squashed"]["deletion_candidate"] is True
-        assert rows["feature/pending"]["deletion_candidate"] is False
-        assert rows["feature/retrieval-embedding-trial"]["lifecycle"] == "PERSISTENT"
-        assert payload["authority"]["branch_deletion_authorized"] is False
+        assert local.returncode == 0, local.stdout + local.stderr
+        local_payload = yaml.safe_load(local.stdout)
+        assert local_payload["ref_scope"] == "local"
+        validate(local_payload)
+
+        remote = root / "remote.git"
+        git(root, "init", "--bare", "-q", str(remote))
+        git(repo, "remote", "add", "origin", str(remote))
+        git(repo, "push", "-q", "origin", "--all")
+        git(repo, "fetch", "-q", "origin", "+refs/heads/*:refs/remotes/origin/*")
+
+        remote_run = subprocess.run(
+            [
+                "python3",
+                str(SCRIPT),
+                "--config",
+                str(config),
+                "--target",
+                "main",
+                "--remote",
+                "origin",
+            ],
+            cwd=repo,
+            text=True,
+            capture_output=True,
+        )
+        assert remote_run.returncode == 0, remote_run.stdout + remote_run.stderr
+        remote_payload = yaml.safe_load(remote_run.stdout)
+        assert remote_payload["ref_scope"] == "remote:origin"
+        validate(remote_payload)
 
     print("branch hygiene lifecycle: PASS")
     return 0
