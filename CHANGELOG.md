@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.25.0
+
+### Provider-Neutral Local-First Embedding Trial — HOLD
+
+- Add Scenario 134 and make the dedicated Retrieval embedding Trial provider-neutral with a credential-free local provider as the default, while preserving the existing OpenAI-compatible remote adapter as an explicit optional comparison path.
+- Add pinned `sentence-transformers` Trial dependency plus pinned `BAAI/bge-small-en-v1.5` model revision `0b329b72cad8d6ff9a504a30a6c239b87802dc84`, 384 dimensions and runner-local inference.
+- Keep normal Pull Request/main validation and normal Retrieval Intelligence / Turn Context free from embedding execution. The semantic Trial dependency is installed only by the dedicated `retrieval-semantic-trial` workflow.
+- Preserve synthetic-only Trial scope, repository/product source transfer=false, ephemeral in-memory vectors, no Vector DB, unchanged 9-case corpus/thresholds and no automatic provider/default enablement.
+- Keep remote mode optional through `AIPS_RETRIEVAL_EMBEDDING_PROVIDER=remote`; only that explicit path uses the protected `OPENAI_API_KEY` reference and retains truthful `TRIAL_PENDING` when the credential is unavailable.
+- Feature PR #71 exact final head `5d758cee76e30ecb5871d05e990a2b7da48fdb41` passed required `repository` Run #1009 and was squash-merged to main as `6a9291eefcb1922e244e55d7edbb2a17a146d22c`.
+- Protected-main `repository` Run #1010 passed on exact merged main before Trial execution.
+- The dedicated `feature/retrieval-embedding-trial` branch was fast-forwarded to exact main and local Trial Run #8 completed with workflow `SUCCESS`; all dependency, Trial, bounded-evidence and operator-summary steps completed successfully without an OpenAI API key.
+- Real local embedding quality evidence is **FAIL / HOLD**, not a credential or runtime block: all 9 embedding batches completed with local `sentence-transformers` inference.
+- The semantic target `synonym-access-rotation` improved, but the candidate introduced required regression `go-receipt-reconciliation` and recall regression `low-lexical-overlap-registration`; therefore the embedding lane remains disabled and thresholds are not weakened to manufacture PASS.
+- Scenario Conformance is 134 total / 0 manual / 22 deterministic / 58 lifecycle / 54 agent_eval / 134 automated / 0 uncovered (100% automated).
+- No Human Adoption Decision is requested because Trial status is FAIL. Production Retrieval / Turn Context remains on the existing adopted deterministic + Structural Retrieval path.
+- Constitution impact: NO. No new Role, Skill, capability category, Human Approval Gate or autonomous publication authority is introduced.
+- Architecture Diagram Impact: YES. Retrieval architecture now documents local-first / remote-optional embedding Trial selection while production Retrieval topology remains unchanged.
+
 ## 0.24.1
 
 ### Remote Embedding Trial Operator Handoff
