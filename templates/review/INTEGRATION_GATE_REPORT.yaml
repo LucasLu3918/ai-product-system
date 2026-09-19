@@ -1,0 +1,17 @@
+version: 1
+profile_id: null
+candidate:
+  base_sha: null
+  head_sha: null
+  changed_files: []
+  changed_files_hash: null
+  profile_hash: null
+  matrix_hash: null
+candidate_fingerprint: null
+checks: []
+status: BLOCKED
+blockers: []
+authority:
+  merge_authorized: false
+  release_authorized: false
+  human_authority_preserved: true

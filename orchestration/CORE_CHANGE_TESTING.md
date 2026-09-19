@@ -74,3 +74,22 @@ Final Change Boundary
 ~~~
 
 Material mismatch requires additional testing or explicit scope correction before PASS.
+
+
+## Integration Gate enforcement
+
+Before merge/publication of an integration candidate, use `orchestration/INTEGRATION_GATE.md`.
+
+For Large/Core changes, the existing Impact-derived Test Matrix remains authoritative for applicability. The Integration Gate may require the matrix and binds:
+
+~~~text
+exact base/head candidate
+↔ actual changed files
+↔ Validation Profile
+↔ Core Change Test Matrix
+↔ deterministic command results
+~~~
+
+A stale candidate, missing required matrix, unresolved blocker, failed required command or unreconciled actual diff blocks the candidate.
+
+Integration Gate PASS is evidence only. It never supplies Human approval, merge authority, publication authority, architecture approval or risk acceptance.

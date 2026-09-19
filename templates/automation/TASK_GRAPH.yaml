@@ -1,0 +1,18 @@
+version: 1
+plan_id: null
+base_revision: null
+max_parallel: 1
+tasks: []
+# - id: orders-api
+#   order: 10
+#   objective: change one approved module boundary
+#   dependencies: []
+#   change_boundary: [services/orders]
+#   read_set: [services/orders/**, tests/orders/**]
+#   write_set: [services/orders/**, tests/orders/**]
+#   role: backend-engineer
+#   skills: []
+#   isolation:
+#     mode: worktree
+#     required: true
+#   validation_profile: project-default

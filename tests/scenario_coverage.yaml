@@ -940,3 +940,21 @@ scenarios:
       - .github/workflows/retrieval-semantic-trial.yml
       - orchestration/PROJECT_INTELLIGENCE.md
       - tests/validate_repository.py
+  - id: "135"
+    path: tests/scenarios/135-deterministic-multi-agent-scheduler.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/deterministic_scheduler_lifecycle.py
+      - scripts/deterministic_scheduler.py
+      - orchestration/DETERMINISTIC_SCHEDULER.md
+      - tests/validate_repository.py
+  - id: "136"
+    path: tests/scenarios/136-exact-candidate-integration-gate.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/integration_gate_lifecycle.py
+      - scripts/integration_gate.py
+      - config/integration-gate.yaml
+      - .github/workflows/validate.yml
+      - orchestration/INTEGRATION_GATE.md
+      - tests/validate_repository.py

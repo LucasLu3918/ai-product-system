@@ -60,3 +60,12 @@ Repository root 的 `README.md`、`CHANGELOG.md`、`SECURITY.md` 與 compatibili
 詳細說明見 [文件一致性契約](DOCUMENTATION_SYNC.md)。
 
 Human Docs 使用繁體中文並在首次出現時保留重要英文術語；Agent Docs 以精簡英文為主。Large/Core Change 必須同時評估 Human Docs、Agent Docs 與 Architecture Diagram Impact。
+
+
+## Deterministic execution / merge validation
+
+- Human 架構入口：`ARCHITECTURE_OVERVIEW.md`
+- Human 操作入口：`USER_GUIDE.md`
+- Agent Scheduler protocol：`../../orchestration/DETERMINISTIC_SCHEDULER.md`
+- Agent Integration Gate protocol：`../../orchestration/INTEGRATION_GATE.md`
+- Shared detailed architecture：`../ARCHITECTURE.md`

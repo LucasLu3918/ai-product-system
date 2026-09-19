@@ -663,6 +663,30 @@ flowchart TD
 
 Worktree ownership is repository-scoped across worktrees while workspace state remains workspace-scoped. Isolation strength is reported truthfully; a temporary directory is never labeled as a sandbox.
 
+## Deterministic multi-agent scheduling and integration gate
+
+~~~mermaid
+flowchart TD
+    H[Human-approved Change Boundary] --> P[Planner / Orchestrator]
+    P --> TG[Structured Task Graph]
+    TG --> DS[Deterministic Scheduler]
+    DS --> L{Dependency + Boundary locks}
+    L --> A[Worktree Task A]
+    L --> B[Worktree Task B]
+    L --> C[Deferred / Blocked Task]
+    A --> IC[Exact Integration Candidate]
+    B --> IC
+    IC --> FP[base/head + diff + profile + matrix fingerprint]
+    FP --> J[Integration / Janitor Gate]
+    J -->|PASS| R[required repository aggregate]
+    J -->|FAIL / BLOCKED| S[Stop candidate]
+    R --> M[Human/GitHub merge flow]
+~~~
+
+Planning remains semantic and Human-governed. Scheduling only evaluates the frozen task graph/state with stable ordering, parallel capacity and canonical Change Boundary locks. Integration Gate checks exact-candidate deterministic evidence; it cannot reinterpret failures or authorize merge/release.
+
+The existing single-writer rule remains authoritative per Change Boundary. Independent approved boundaries may run concurrently in separate worktrees; overlapping ancestor/descendant boundaries serialize.
+
 ## Scenario conformance evidence
 
 ~~~mermaid

@@ -224,3 +224,38 @@ Repository root conventions
 ~~~
 
 永久 Human-only 文件由 `config/documentation-audience.yaml` 管理。若獨立 Human report 必須持久存在其他位置，需在 `standalone_human_documents` 明確登記並使用 `HUMAN_` prefix；不建立平行 `docs/agent/`，避免第二份 Agent canonical source。
+
+
+## 16. Deterministic Scheduler（決定性排程器）
+
+~~~text
+Human-approved scope
+→ LLM Planner / Orchestrator 一次完成語意規劃
+→ Structured Task Graph
+→ Deterministic Scheduler
+   → dependency readiness
+   → stable order
+   → max_parallel
+   → Change Boundary lock
+→ 各自的 worktree writer
+~~~
+
+Scheduler 不是 Agent/Role，也不做架構判斷。相同 Task Graph + task state 會得到相同 dispatch 與 fingerprint。若 dependency 失敗、狀態 stale、boundary 重疊或 graph 無效，就明確 BLOCKED/defer，不會再耗 LLM token「猜下一步」。
+
+這個機制沿用既有 Execution Isolation、Single Writer、Run Resume，不建立第二套 workspace/state 系統。
+
+## 17. Integration Gate / Janitor（整合候選看門人）
+
+~~~text
+exact base SHA + head SHA
+→ changed files/hash
+→ Validation Profile hash
+→ Core Change Test Matrix hash（適用時）
+→ candidate fingerprint
+→ lint / type / test / security / repository checks
+→ PASS / FAIL / BLOCKED
+~~~
+
+Janitor 的正式契約名稱是 Integration Gate。它只做 deterministic validation，不是新的 Human Approval Gate。Candidate、base、validation profile 或 test matrix 任何一項改變，舊 PASS 都不再代表新候選。
+
+GitHub CI 保留既有 required check 名稱 `repository`：先執行 `janitor`，只有 Janitor success 時 `repository` aggregate 才能 success，因此不必先改 branch protection 也能把新的 gate 變成 merge 前強制條件。

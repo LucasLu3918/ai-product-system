@@ -1,0 +1,58 @@
+version: 1
+profile_id: aips-repository
+matrix_required: false
+checks:
+  - id: ruff-critical
+    category: lint
+    required: true
+    timeout_seconds: 120
+    argv: [python3, -m, ruff, check, --select, "E9,F63,F7,F82", scripts, tests]
+    paths: ["**"]
+  - id: scheduler-gate-types
+    category: type
+    required: true
+    timeout_seconds: 120
+    argv: [python3, -m, mypy, --ignore-missing-imports, scripts/deterministic_scheduler.py, scripts/integration_gate.py]
+    paths:
+      - scripts/deterministic_scheduler.py
+      - scripts/integration_gate.py
+      - orchestration/DETERMINISTIC_SCHEDULER.md
+      - orchestration/INTEGRATION_GATE.md
+      - orchestration/schemas/task-graph.yaml
+      - templates/automation/TASK_GRAPH.yaml
+      - templates/automation/VALIDATION_PROFILE.yaml
+      - templates/review/INTEGRATION_GATE_REPORT.yaml
+      - config/integration-gate.yaml
+      - .github/workflows/validate.yml
+  - id: deterministic-scheduler-lifecycle
+    category: test
+    required: true
+    timeout_seconds: 120
+    argv: [python3, tests/evidence/deterministic_scheduler_lifecycle.py]
+    paths:
+      - scripts/deterministic_scheduler.py
+      - orchestration/DETERMINISTIC_SCHEDULER.md
+      - orchestration/schemas/task-graph.yaml
+      - templates/automation/TASK_GRAPH.yaml
+      - tests/evidence/deterministic_scheduler_lifecycle.py
+      - tests/scenarios/135-deterministic-multi-agent-scheduler.md
+  - id: integration-gate-lifecycle
+    category: test
+    required: true
+    timeout_seconds: 120
+    argv: [python3, tests/evidence/integration_gate_lifecycle.py]
+    paths:
+      - scripts/integration_gate.py
+      - orchestration/INTEGRATION_GATE.md
+      - templates/automation/VALIDATION_PROFILE.yaml
+      - templates/review/INTEGRATION_GATE_REPORT.yaml
+      - config/integration-gate.yaml
+      - .github/workflows/validate.yml
+      - tests/evidence/integration_gate_lifecycle.py
+      - tests/scenarios/136-exact-candidate-integration-gate.md
+  - id: repository-validation
+    category: test
+    required: true
+    timeout_seconds: 900
+    argv: [python3, tests/validate_repository.py]
+    paths: ["**"]

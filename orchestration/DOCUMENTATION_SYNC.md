@@ -68,3 +68,10 @@ Permanent Human-only documentation MUST live under `docs/human/`. The detailed a
 - standalone Human artifacts outside the Human root MUST be listed in `standalone_human_documents` and use the `HUMAN_` prefix.
 
 Do not create a parallel `docs/agent/` tree. Existing `orchestration/`, `harness/`, Roles, Skills, templates and schemas remain canonical Agent/machine surfaces.
+
+
+## Deterministic execution mapping
+
+The `deterministic-execution` rule binds Scheduler / Integration Gate implementation, Task Graph / Validation Profile contracts, validation dependencies and the GitHub validation workflow to their Human architecture/user guidance and Agent orchestration protocols.
+
+This keeps the runtime implementation, exact-candidate CI behavior and authority boundaries synchronized when future changes touch scheduling or Janitor behavior.

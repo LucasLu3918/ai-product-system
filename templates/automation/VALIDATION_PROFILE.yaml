@@ -1,0 +1,10 @@
+version: 1
+profile_id: null
+matrix_required: false
+checks: []
+# - id: lint
+#   category: lint
+#   required: true
+#   timeout_seconds: 120
+#   argv: [go, vet, ./...]
+#   paths: ["**/*.go"]

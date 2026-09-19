@@ -201,3 +201,21 @@ Current automated inventory after Scenario 134:
 - manual: 0
 - uncovered: 0
 - automated: 134 / 134
+
+
+## Scenarios 135–136 — Deterministic Scheduling and Exact-Candidate Integration Gate
+
+Scenario 135 is lifecycle-covered by `tests/evidence/deterministic_scheduler_lifecycle.py`. It proves stable dispatch/fingerprints for the same Task Graph + state, dependency readiness, max-parallel enforcement, canonical Change Boundary locking, resume from persisted task state and fail-closed dependency/cycle behavior.
+
+Scenario 136 is lifecycle-covered by `tests/evidence/integration_gate_lifecycle.py`. It proves exact base/head binding, changed-file/candidate fingerprints, deterministic argv validation, stale checkout BLOCKED behavior, required-check FAIL behavior and zero merge/release authority.
+
+The new system capability reuses Execution Isolation, Run State and Core Change Test Matrix rather than creating parallel ownership/test systems.
+
+Current automated inventory after Scenario 136:
+
+- deterministic: 22
+- lifecycle: 60
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 136 / 136

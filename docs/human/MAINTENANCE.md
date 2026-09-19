@@ -285,3 +285,20 @@ When public repository hardening changes, review together:
 
 Keep the top-level validator as an aggregator. New substantial validation belongs in the narrowest existing module or a focused evidence runner rather than expanding the entrypoint back into a monolith.
 
+
+
+## Deterministic Scheduler / Integration Gate consistency
+
+When deterministic scheduling or merge-candidate validation changes, review together:
+
+- `orchestration/DETERMINISTIC_SCHEDULER.md` + `scripts/deterministic_scheduler.py`;
+- `orchestration/INTEGRATION_GATE.md` + `scripts/integration_gate.py`;
+- Task Graph / Validation Profile / Integration Gate Report contracts;
+- Execution Isolation single-writer behavior and Run Resume semantics;
+- Core Change Test Matrix reuse and exact-candidate fingerprinting;
+- `bin/aips` scheduler / integration-gate / janitor routing;
+- `.github/workflows/validate.yml` required `repository` aggregate compatibility;
+- Scenario 135–136 lifecycle evidence and coverage registry;
+- Human Architecture Overview / User Guide / Technology Guide.
+
+Do not let the Scheduler make semantic scope decisions, and do not let Integration Gate PASS create merge/release authority.

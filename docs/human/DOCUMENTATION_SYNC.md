@@ -82,3 +82,16 @@ Deterministic validator 能保證：
 3. [架構總覽](ARCHITECTURE_OVERVIEW.md)
 4. [Evolution Radar 完整圖解](EVOLUTION_RADAR_OVERVIEW.html)
 5. [Evolution Radar 操作說明](EVOLUTION_RADAR.md)
+
+
+## Deterministic Scheduler / Integration Gate 文件同步
+
+`deterministic-execution` mapping 會監看 Scheduler、Integration Gate、Task Graph / Validation Profile templates、validation dependencies 與 `.github/workflows/validate.yml`。
+
+這些檔案發生行為性變更時，同一個 change 必須同步 review：
+
+- Human：`ARCHITECTURE_OVERVIEW.md`、`USER_GUIDE.md`；
+- Agent：`DETERMINISTIC_SCHEDULER.md`、`INTEGRATION_GATE.md`、`ORCHESTRATOR.md`；
+- Human Technology Guide。
+
+目的是避免「CI 已改成新的 merge gate，但文件仍描述舊流程」或「Scheduler contract 改了，Human 仍照舊指令操作」。

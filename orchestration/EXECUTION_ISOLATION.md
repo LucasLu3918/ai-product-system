@@ -85,3 +85,17 @@ The Trial worktree is ephemeral evidence infrastructure on the GitHub-hosted run
 - a Trial Report is returned to the Human before any adoption decision.
 
 If worktree isolation is unavailable, the Trial is `BLOCKED`. Do not downgrade it to `shared`.
+
+
+## Deterministic Scheduler integration
+
+When one approved plan has multiple writer tasks, `orchestration/DETERMINISTIC_SCHEDULER.md` reuses this isolation/single-writer contract.
+
+- each scheduled writable task declares canonical Change Boundary IDs;
+- active worktree boundaries are locks;
+- equal/ancestor/descendant boundaries conflict and are serialized;
+- non-overlapping approved boundaries may consume separate parallel slots;
+- the scheduler cannot widen scope or downgrade required isolation;
+- stale/failed task state blocks dependent dispatch until normal replan/recovery rules resolve it.
+
+This adds deterministic coordination; it does not create a second workspace ownership system.
