@@ -182,3 +182,11 @@ The Issue #79 runtime-security reassessment is durable evidence at `references/e
 
 This assessment does not create a Human Decision Record and grants no code-write, runtime enforcement, merge, release or publication authority.
 
+## Issue #79 anomaly evaluation evidence
+
+The out-of-band anomaly candidate remains ASSESS-only, but AIPS now has a bounded deterministic evaluation lane in `scripts/agent_anomaly_evaluation.py`.
+
+The lane reuses Resource Authorization as the authorization truth, consumes only committed synthetic/sanitized observable-event fixtures, measures confusion-matrix quality, rejects private reasoning and secret-like values, and remains outside the critical path.
+
+A PASS means `HUMAN_REVIEW_TRIAL_EVIDENCE` only. It does not create a TRIAL/ADOPT Human Decision, runtime hook, remediation authority or publication authority. Semantic intent governance remains separately ASSESS-only and is not implemented by this lane.
+

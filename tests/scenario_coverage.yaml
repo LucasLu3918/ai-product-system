@@ -976,3 +976,13 @@ scenarios:
       - orchestration/RESOURCE_AUTHORIZATION.md
       - orchestration/schemas/resource-authorization-profile.yaml
       - tests/validate_repository.py
+  - id: "139"
+    path: tests/scenarios/139-out-of-band-agent-anomaly-evaluation.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/agent_anomaly_evaluation_lifecycle.py
+      - scripts/agent_anomaly_evaluation.py
+      - tests/validation/agent_anomaly_evaluation_contracts.py
+      - orchestration/AGENT_ANOMALY_EVALUATION.md
+      - tests/validate_repository.py
+

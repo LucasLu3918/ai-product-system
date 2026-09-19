@@ -129,3 +129,11 @@ Issue #79 keeps out-of-band anomaly evidence and semantic intent governance outs
 
 If a future Human-approved Trial is created, anomaly analysis must consume bounded observable events rather than private chain-of-thought or secret values, and semantic intent output must be monotonic with Resource Authorization: it may DENY or ESCALATE an otherwise-allowed operation, but it must never widen a resource grant, Change Boundary, protected-operation authority or Human approval.
 
+## Agent anomaly evaluation lane
+
+Scenario 139 does not create another Execution Isolation mode and does not attach a detector to runtime execution. The benchmark reads committed synthetic fixtures and Resource Authorization policy, then emits post-execution evaluation evidence.
+
+Because it performs no trial workspace mutation, it does not require a managed worktree. Any future Human-approved prototype that captures real runtime observable events or mutates integration code must return to the normal Controlled Trial / Change Boundary / worktree rules.
+
+The evaluation cannot widen Resource Authorization, Change Boundary or Human authority and cannot automatically remediate observed anomalies.
+

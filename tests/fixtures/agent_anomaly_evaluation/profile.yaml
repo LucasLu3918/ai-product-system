@@ -1,0 +1,25 @@
+version: 1
+default_effect: DENY
+subject:
+  id: implementation-agent
+  role: backend-engineer
+grants:
+  - id: application-source
+    kind: repository_path
+    selector: "src/**"
+    operations: [read, search, update]
+    constraints:
+      change_boundary_required: true
+      network_allowed: false
+  - id: human-docs
+    kind: repository_path
+    selector: "docs/human/**"
+    operations: [read, search]
+    constraints:
+      change_boundary_required: false
+      network_allowed: false
+authority:
+  human_approval_granted: false
+  merge_authorized: false
+  release_authorized: false
+  protected_operation_authorized: false

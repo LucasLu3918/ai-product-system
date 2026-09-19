@@ -1,24 +1,24 @@
 version: 1
 candidate:
-  base_sha: 568c21ed67a51c786860043600ccdaf707448dd7
-  changed_files_hash: 7e3c11acb7a040f2dfdad64b2dfc23e8677b9f8e9f44b3927c389b286b399423
+  base_sha: 60f13d3a18cc67388c0b148bc08f2eaea691e88e
+  changed_files_hash: f01c6e01f22b0189d52bda26d43c0242f8f3a3512b5e0b97a8f97916ada52f3f
 change:
-  id: v0.29.0-scope-reconciliation
-  summary: Reconcile v0.29.0 to the approved Resource-Scoped Agent Authorization boundary by removing unapproved Agent Runtime Assurance scope while preserving release truth and Human authority.
-  boundary: [resource-authorization, conformance, evolution-radar, cli, documentation, release-metadata]
+  id: v0.30.0-agent-anomaly-evaluation
+  summary: Add a bounded deterministic offline evaluation lane for Issue #79 out-of-band Agent anomaly evidence without runtime enforcement or automatic remediation.
+  boundary: [resource-authorization, anomaly-evaluation, evolution-radar, scenario-conformance, documentation]
 matrix:
-  - boundary: scope-reconciliation
-    reason: Security-sensitive rollback removes capabilities that were merged outside the approved v0.29.0 boundary and restores the exact post-PR-87 functional baseline plus corrected release metadata.
+  - boundary: anomaly-evaluation
+    reason: Security-sensitive evaluation must prove measurable behavior while staying outside the runtime critical path and preserving Protected Human Authority.
     checks:
       static_lint: {applicable: true, evidence: "Janitor ruff-critical"}
-      unit: {applicable: true, evidence: "Resource Authorization lifecycle evidence remains authoritative; Agent Runtime Assurance implementation/tests are removed"}
-      integration: {applicable: true, evidence: "aips authorization CLI remains available while assurance CLI surface is removed"}
-      contract: {applicable: true, evidence: "Scenario registry returns to Scenario 138 / 138 automated and Evolution Radar keeps anomaly/semantic signals ASSESS-only"}
+      unit: {applicable: true, evidence: "agent_anomaly_evaluation.py deterministic detector and metrics contracts"}
+      integration: {applicable: true, evidence: "evaluation reuses resource_authorization.py against committed profile/corpus fixtures"}
+      contract: {applicable: true, evidence: "Scenario 139 + validation contract + conformance baseline"}
       e2e: {applicable: true, evidence: "protected PR Janitor + required repository aggregate + protected-main validation"}
-      security: {applicable: true, evidence: "default-DENY Resource Authorization and Protected Human Authority are preserved; no anomaly/semantic authority remains enabled"}
-      migration_recovery: {applicable: true, evidence: "All PR #88 touched paths are restored to exact PR #87 merge-tree blobs or deleted when introduced by PR #88; no persisted data migration is required"}
-      cli_harness: {applicable: true, evidence: "bin/aips is restored to the PR #87 merge state"}
-      docs_schema: {applicable: true, evidence: "Human/Agent docs, Documentation Sync, Evolution Radar capability map and CHANGELOG are reconciled to the approved scope"}
+      security: {applicable: true, evidence: "private reasoning/secret-like input blocked; runtime_enforced=false; critical_path=false; automatic_remediation=false; all protected authority false"}
+      migration_recovery: {applicable: false, na_reason: "Additive offline evaluation artifacts; no persisted runtime state or production integration"}
+      cli_harness: {applicable: true, evidence: "direct deterministic script validate/evaluate lifecycle; no production CLI/runtime hook is added"}
+      docs_schema: {applicable: true, evidence: "Evolution Radar, Execution Isolation, Human Technology Guide and Conformance documentation synchronized"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

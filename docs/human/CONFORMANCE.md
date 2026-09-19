@@ -843,3 +843,23 @@ Automated     138
 Uncovered       0
 Automated    100%
 ~~~
+
+## Scenario 139 — Out-of-Band Agent Anomaly Evidence Evaluation
+
+Scenario 139 新增一條**離線、deterministic、evidence-only** 的 anomaly benchmark，不把 anomaly detector 接到 production runtime。
+
+固定 synthetic/sanitized corpus 共 11 cases（6 anomaly / 5 non-anomaly），直接重用 Resource Authorization Profile 作為授權真相，量測：
+
+- TP / FP / TN / FN；
+- precision / recall；
+- false-positive rate / false-negative rate；
+- 每個 case 的 detected anomaly types。
+
+目前固定 fixture 的 evidence 為 TP=6、FP=0、TN=5、FN=0、precision=1.0、recall=1.0、FPR=0、FNR=0。這些數字只代表 source-controlled synthetic corpus，**不能外推為 production detection accuracy**。
+
+Lifecycle 另外驗證 private reasoning / secret-like input 會 BLOCKED，且故意製造錯誤 expected label 時 benchmark 必須 FAIL。
+
+輸出固定為 `POST_EXECUTION_EVIDENCE`、`runtime_enforced=false`、`critical_path=false`、`automatic_remediation=false`。PASS 只回傳 `HUMAN_REVIEW_TRIAL_EVIDENCE`，不代表 ADOPT 或 runtime integration approval。
+
+目前 Scenario inventory 為 **139**：22 deterministic + 63 lifecycle + 54 agent_eval，**139 / 139 automated、0 manual、0 uncovered**。
+
