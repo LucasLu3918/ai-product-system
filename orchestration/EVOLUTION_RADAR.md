@@ -173,3 +173,12 @@ Scheduled semantic analysis no longer treats one provider credential as the only
 When an optional scheduled provider is unavailable, recommendations remain truthfully `ANALYSIS_PENDING`, but the GitHub Issue includes the package digest, capability-map/prompt/result-schema paths, and deterministic finalize/apply commands. A Human-selected connected Agent, local model, or other provider can therefore continue semantic assessment without storing an `OPENAI_API_KEY` in AIPS.
 
 Provider output still has no authority. `scripts/evolution_analysis.py finalize/apply` must validate exact evidence binding before any recommendation can move out of `ANALYSIS_PENDING`.
+
+## v0.29 current-main assessment baseline
+
+Semantic assessment MUST compare signals against the exact current-main Capability Map before claiming a gap. Resource-Scoped Agent Authorization is now a covered capability and is indexed in `references/evolution/CAPABILITY_MAP.yaml`.
+
+The Issue #79 runtime-security reassessment is durable evidence at `references/evolution/ISSUE_79_RUNTIME_SECURITY_REASSESSMENT.yaml`. Out-of-band anomaly evidence and semantic intent governance remain ASSESS-only. A future anomaly Trial must operate on observable events without private reasoning or secret values and must not automatically remediate. A future semantic-intent Trial must be monotonic with deterministic Resource Authorization: semantic output may narrow or escalate, but can never turn a deterministic DENY into ALLOW.
+
+This assessment does not create a Human Decision Record and grants no code-write, runtime enforcement, merge, release or publication authority.
+

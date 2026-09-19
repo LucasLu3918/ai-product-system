@@ -1,0 +1,74 @@
+version: 1
+assessment_id: issue-79-runtime-security-reassessment
+generated_at: "2026-09-20"
+baseline:
+  issue: 79
+  repository_revision: 87e3a67753dd69ac165a636641f7d96129eb07c9
+  version: "0.29.0"
+  prior_scope_reconciliation_pr: 90
+purpose: Reassess the remaining runtime-security candidates against the exact post-reconciliation current main without granting implementation authority.
+items:
+  - id: resource-scoped-agent-authorization
+    advisory_state: COVERED
+    current_state: Resource Authorization Profile is present on current main with default-DENY deterministic PRE_EXECUTION_EVIDENCE.
+    gap: No gap for the Issue #79 granular-authorization signal at the evidence layer.
+    next_step: continue_validation
+  - id: out-of-band-agent-anomaly-evidence
+    advisory_state: ASSESS
+    current_state: AIPS has Agent Eval, Security Assurance, Execution Isolation and Resource Authorization but no active provider-neutral post-execution anomaly capability.
+    benefit: Detect multi-turn or behavioral misuse that may not violate a single deterministic pre-execution rule.
+    evidence_quality: External evidence supports post-deployment monitoring and out-of-band agent anomaly analysis, but a prominent implementation remains vendor-specific and Private Preview.
+    next_step: bounded_trial_candidate
+    trial_prerequisites:
+      - canonical observable-event schema with bounded fields
+      - synthetic or sanitized evaluation corpus with expected anomaly labels
+      - deterministic baseline detectors before optional semantic scoring
+      - precision, recall, false-positive and false-negative evidence
+      - no private chain-of-thought capture
+      - no secret values
+      - no automatic remediation
+      - no protected-operation authority
+      - truthful runtime_enforced=false unless a separately verified guard exists
+  - id: semantic-intent-governance
+    advisory_state: ASSESS
+    current_state: Deterministic Resource Authorization can decide declared resource and operation scope but does not infer business intent from natural language.
+    benefit: Could detect syntactically valid requests whose semantic intent conflicts with business policy.
+    evidence_quality: External examples show a plausible gap, but policy interpretation is probabilistic and managed-platform implementations are not a provider-neutral AIPS contract.
+    next_step: defer_trial_until_prerequisites
+    prerequisites:
+      - stable observable intent/request schema
+      - policy fixture corpus with explicit Human-authored expected outcomes
+      - calibration and disagreement evidence
+      - monotonic authorization rule: semantic output may DENY or ESCALATE but never widen a deterministic DENY
+      - no autonomous Human approval, publication or destructive authority
+      - no private chain-of-thought persistence
+priority:
+  first: out-of-band-agent-anomaly-evidence
+  later: semantic-intent-governance
+  rationale: Post-execution observable evidence can be evaluated without entering the critical pre-tool authorization path; semantic intent gating should depend on a stronger evaluation and observability contract.
+external_evidence:
+  - title: Agent Anomaly Detection, now in Private Preview on the Gemini Enterprise Agent Platform
+    url: "https://developers.googleblog.com/agent-anomaly-detection-now-in-private-preview-on-the-gemini-enterprise-agent-platform/"
+    observed: Out-of-band trace/tool-call analysis can flag behavioral anomalies without adding live-request latency; the referenced implementation is Private Preview and vendor-specific.
+  - title: Build zero-trust AI agents that judge intent, not just syntax
+    url: "https://developers.googleblog.com/build-zero-trust-ai-agents-that-judge-intent-not-just-syntax/"
+    observed: Semantic governance can identify business-policy violations that syntax-only checks miss, but it moves policy evaluation into probabilistic runtime reasoning.
+  - title: OWASP Top 10 for Agentic Applications 2026
+    url: "https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"
+    observed: Tool misuse, identity/privilege abuse, cascading failures and rogue-agent risks justify layered agent controls and monitoring.
+  - title: OWASP Agent Control Standard
+    url: "https://genai.owasp.org/resource/agent-control-standard-acs/"
+    observed: Agent systems should be inspectable, traceable and instrumentable, with portable middleware control hooks.
+  - title: NIST Summary Analysis of Responses Regarding Security Considerations for AI Agents
+    url: "https://www.nist.gov/publications/summary-analysis-responses-request-information-regarding-security-considerations-ai"
+    observed: Agent security requires adaptations of existing security practice and stronger implementation guidance and assessment.
+authority:
+  human_decision_record_created: false
+  code_change_authorized_by_assessment: false
+  trial_authorized_by_assessment: false
+  runtime_enforcement_authorized: false
+  automatic_remediation_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  publication_authorized: false
+  human_approval_granted: false

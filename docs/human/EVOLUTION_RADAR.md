@@ -151,3 +151,15 @@ Human 仍可不經 Trial 直接做 ADOPT，但這種情況不會被標記為「T
 - 最後仍由 deterministic finalize/apply 驗證結果是否綁定正確 evidence。
 
 沒有真正語意結果時狀態仍是 `ANALYSIS_PENDING`，不會假裝已完成適配性判斷。
+
+## v0.29 Current-main capability baseline and Issue #79 reassessment
+
+Evolution Radar semantic comparison MUST use a Capability Map that reflects the exact current-main capabilities. After v0.29.0, `references/evolution/CAPABILITY_MAP.yaml` explicitly includes Resource-Scoped Agent Authorization so future analysis does not rediscover an already-covered least-privilege gap.
+
+Issue #79 runtime-security reassessment is recorded in `references/evolution/ISSUE_79_RUNTIME_SECURITY_REASSESSMENT.yaml`. The record is advisory evidence only:
+
+- Resource-Scoped Agent Authorization = `COVERED` on current main.
+- Out-of-band Agent anomaly evidence remains `ASSESS`; it is a bounded Trial candidate only after an observable-event contract and deterministic evaluation corpus exist.
+- Semantic intent governance remains `ASSESS`; any future Trial must be monotonic with deterministic authorization: semantic reasoning may only DENY / ESCALATE / narrow authority, never grant an operation denied by Resource Authorization.
+- No assessment result grants implementation, runtime enforcement, automatic remediation, merge, release, publication, destructive operation or Human approval authority.
+
