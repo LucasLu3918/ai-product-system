@@ -5,15 +5,17 @@ import os
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 import yaml
 
 from .static_contracts import ROOT, errors
 
 CONFIG = ROOT / "config" / "retrieval-embedding-trial.yaml"
 SCRIPT = ROOT / "scripts" / "retrieval_embedding_trial.py"
+SUMMARY_SCRIPT = ROOT / "scripts" / "retrieval_embedding_trial_summary.py"
 WORKFLOW = ROOT / ".github" / "workflows" / "retrieval-semantic-trial.yml"
 
-for path in (CONFIG, SCRIPT, WORKFLOW):
+for path in (CONFIG, SCRIPT, SUMMARY_SCRIPT, WORKFLOW):
     if not path.is_file():
         errors.append(f"Missing embedding Trial artifact: {path.relative_to(ROOT)}")
 
@@ -76,6 +78,9 @@ if WORKFLOW.is_file():
         'AIPS_RUN_REMOTE_EMBEDDING_TRIAL: "1"',
         "AIPS_EMBEDDING_TRIAL_OUTPUT:",
         "python tests/evidence/retrieval_quality_evaluation_lifecycle.py",
+        "Publish Trial operator summary",
+        "scripts/retrieval_embedding_trial_summary.py",
+        "GITHUB_STEP_SUMMARY",
     ]
     for needle in required:
         if needle not in workflow_text:
@@ -84,3 +89,59 @@ if WORKFLOW.is_file():
         errors.append("Embedding Trial workflow must not run on every pull request")
     if "branches:\n      - main" in workflow_text:
         errors.append("Embedding Trial workflow must not run on every main push")
+
+
+if SUMMARY_SCRIPT.is_file():
+    compiled = subprocess.run(
+        [sys.executable, "-m", "py_compile", str(SUMMARY_SCRIPT)],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+    if compiled.returncode != 0:
+        errors.append(f"Embedding Trial summary syntax failed: {compiled.stderr.strip()}")
+    with tempfile.TemporaryDirectory(prefix="aips-embedding-summary-") as tmp:
+        temp = Path(tmp)
+        report = temp / "report.json"
+        output = temp / "summary.md"
+        report.write_text(json.dumps({
+            "trial": {"status": "TRIAL_PENDING", "recommendation": "PENDING_CREDENTIAL"},
+            "provider": {
+                "id": "openai-embeddings",
+                "model": "text-embedding-3-small",
+                "credential_available": False,
+            },
+            "privacy": {
+                "source_scope": "synthetic_fixture_only",
+                "repository_source_transfer": False,
+            },
+            "summary": {"reason": "required credential is unavailable; provider was not called"},
+            "authority": {
+                "default_enablement": False,
+                "provider_auto_enablement": False,
+                "production_source_transfer": False,
+                "adoption_without_human_decision": False,
+            },
+        }), encoding="utf-8")
+        rendered = subprocess.run([
+            sys.executable, str(SUMMARY_SCRIPT),
+            "--report", str(report),
+            "--output", str(output),
+        ], cwd=ROOT, capture_output=True, text=True)
+        if rendered.returncode != 0:
+            errors.append(f"Embedding Trial summary render failed: {rendered.stdout} {rendered.stderr}")
+        elif not output.is_file():
+            errors.append("Embedding Trial summary renderer must create the requested output")
+        else:
+            summary_text = output.read_text(encoding="utf-8")
+            for needle in (
+                "TRIAL_PENDING",
+                "PENDING_CREDENTIAL",
+                "OPENAI_API_KEY",
+                "retrieval-semantic-trial",
+                "Credential available",
+                "Repository source transfer",
+                "Human Adoption Decision",
+            ):
+                if needle not in summary_text:
+                    errors.append(f"Embedding Trial summary missing operator guidance: {needle}")

@@ -40,3 +40,10 @@ jobs:
           else
             echo '{"trial":{"status":"TRIAL_BLOCKED","recommendation":"HOLD"},"summary":{"reason":"Trial report was not produced"}}'
           fi
+      - name: Publish Trial operator summary
+        if: always()
+        shell: bash
+        run: |
+          python scripts/retrieval_embedding_trial_summary.py \
+            --report retrieval-embedding-trial.json \
+            --output "$GITHUB_STEP_SUMMARY"

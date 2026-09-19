@@ -211,6 +211,24 @@ PASS / FAIL / TRIAL_PENDING / TRIAL_BLOCKED
 
 第一個 adapter 使用 OpenAI embeddings endpoint，預設 model 為 `text-embedding-3-small`；model 可以用 repository variable 覆寫，但 provider 不因此成為 AIPS 必要依賴。
 
+### 如何完成真實 Provider Trial
+
+Dedicated workflow 會把 machine report 轉成 GitHub Job Summary，因此 **workflow 顯示 SUCCESS 不代表 Trial 已 PASS**。
+
+操作順序：
+
+1. 在 repository 的 GitHub Actions secrets 配置名稱為 `OPENAI_API_KEY` 的 repository secret；不要把 key 寫入 repository、Issue、PR 或 log。
+2. 如需覆寫預設 model，可設定 repository variable `AIPS_RETRIEVAL_EMBEDDING_MODEL`；沒有設定時使用 `text-embedding-3-small`。
+3. 重新執行 `retrieval-semantic-trial` workflow。
+4. 直接查看 Job Summary：
+   - `TRIAL_PENDING`：credential 仍不可用，provider 未執行；
+   - `TRIAL_BLOCKED`：provider/network/config 有阻塞，維持 HOLD；
+   - `FAIL`：品質不達標，保留負向 evidence，不採用；
+   - `PASS`：只代表可以進 Human review，仍不能自動啟用 embedding。
+5. 只有 `PASS` 且 Human 明確做出 Adoption Decision 後，才可另開正式 adoption change。
+
+目前 normal Retrieval / Turn Context 與 production source-transfer policy 在上述流程中都不會改變。
+
 ## Debug
 
 一般使用不需執行；排錯可用 `aips intelligence status/render/finalize/impact-init/index/retrieve/evaluate`。

@@ -778,6 +778,8 @@ Scenario 133 不要求正常 CI 呼叫外部 provider；它 deterministic 驗證
 - provider failure 必須回 `TRIAL_BLOCKED`；
 - normal Retrieval / Turn Context 仍不啟用 embedding；
 - Trial workflow 只綁定專用 feature branch + manual dispatch；
+- workflow 會輸出 Human-readable GitHub Job Summary，明確區分 workflow SUCCESS 與 Trial PASS / FAIL / PENDING / BLOCKED；
+- Summary 必須提供下一步，但不得輸出 credential 值；
 - PASS / FAIL 都只是 evidence，Human Adoption Decision 仍是必要 gate。
 
 目前 Scenario inventory 為 **133**：21 deterministic + 58 lifecycle + 54 agent_eval，**133 / 133 automated、0 manual、0 uncovered**。

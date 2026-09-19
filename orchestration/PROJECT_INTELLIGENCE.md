@@ -426,6 +426,19 @@ Safety / authority boundaries:
 
 The initial adapter defaults to `text-embedding-3-small`, with model override through repository variable only. A different provider can be introduced later through the same Trial contract rather than becoming a hard dependency.
 
+### Remote Trial operator handoff
+
+The dedicated workflow MUST publish a GitHub Job Summary from the machine-readable Trial report. Workflow-level `SUCCESS` is not equivalent to Trial `PASS`.
+
+Status handling is fixed:
+
+- `TRIAL_PENDING`: configure the repository Actions secret `OPENAI_API_KEY`, then re-run `retrieval-semantic-trial`;
+- `TRIAL_BLOCKED`: inspect provider/network/config evidence and keep HOLD until corrected;
+- `FAIL`: preserve negative evidence and keep remote embedding disabled;
+- `PASS`: stop at Human review; a separate Human Adoption Decision is required.
+
+The summary may report provider/model identifiers, credential availability as a boolean, privacy scope, request/token counts and authority flags. It MUST NOT print credential values.
+
 ## Migration from v0.8 Project Knowledge
 
 If `.ai/knowledge/KNOWLEDGE_INDEX.yaml` exists and no Intelligence exists:

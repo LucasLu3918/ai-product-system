@@ -51,7 +51,7 @@ rules:
     human_docs: [docs/human/HARNESS.md]
     agent_docs: [harness/HARNESS_PROTOCOL.md]
   - id: project-intelligence
-    triggers: [scripts/project_intelligence.py, scripts/retrieval_intelligence.py, scripts/retrieval_evaluation.py, scripts/structural_retrieval_trial.py, scripts/retrieval_embedding_trial.py, scripts/turn_context_hook.py, config/retrieval-embedding-trial.yaml, templates/intelligence/**, .github/workflows/retrieval-semantic-trial.yml]
+    triggers: [scripts/project_intelligence.py, scripts/retrieval_intelligence.py, scripts/retrieval_evaluation.py, scripts/structural_retrieval_trial.py, scripts/retrieval_embedding_trial.py, scripts/retrieval_embedding_trial_summary.py, scripts/turn_context_hook.py, config/retrieval-embedding-trial.yaml, templates/intelligence/**, .github/workflows/retrieval-semantic-trial.yml]
     human_docs: [docs/human/PROJECT_INTELLIGENCE.md]
     agent_docs: [orchestration/PROJECT_INTELLIGENCE.md]
   - id: execution-isolation

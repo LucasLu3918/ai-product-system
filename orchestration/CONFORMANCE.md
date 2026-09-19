@@ -164,7 +164,8 @@ The contract proves:
 - missing credentials resolve to `TRIAL_PENDING`;
 - provider failure resolves to `TRIAL_BLOCKED`;
 - provider/default enablement and adoption without Human decision remain false;
-- the dedicated workflow is scoped to the Trial feature branch plus explicit manual dispatch, not every PR/main validation.
+- the dedicated workflow is scoped to the Trial feature branch plus explicit manual dispatch, not every PR/main validation;
+- the workflow publishes a Human-readable Job Summary that preserves the distinction between workflow success and Trial PASS/FAIL/PENDING/BLOCKED and gives the next operator action without exposing credential values.
 
 Current automated inventory after Scenario 133:
 
