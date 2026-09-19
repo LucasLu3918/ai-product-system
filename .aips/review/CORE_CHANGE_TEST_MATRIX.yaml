@@ -1,24 +1,24 @@
 version: 1
 candidate:
-  base_sha: a44c8f908c0f8eb9a468f4afd90c53685e7e2297
-  changed_files_hash: 1b0f9ed23b72a5c9b92cffba7f6a8c3a60bbfd4942f8bfbfdebe33b727b6c3f3
+  base_sha: 4595b21d33b8ca6608e371c620b3afcfc5c285d0
+  changed_files_hash: 23560bbef8cd67ee4a9a224fe6ab9650a3624982ed9896b2c1d8871f7f8a7ecb
 change:
-  id: v0.29.0-resource-scoped-agent-authorization
-  summary: Add fail-closed resource-scoped pre-execution authorization evidence by extending the existing Execution Profile and governance path.
-  boundary: [execution-profile, resource-authorization, orchestration, scenario-conformance, cli, documentation]
+  id: v0.29.0-agent-runtime-assurance
+  summary: Add provider-neutral semantic intent binding and out-of-band anomaly evidence as evidence-only extensions of Resource Authorization, Agent Eval and Execution Isolation.
+  boundary: [resource-authorization, agent-runtime-assurance, conformance, cli, documentation]
 matrix:
-  - boundary: resource-authorization
-    reason: Security-sensitive least-privilege semantics are added without expanding Human/protected-operation authority.
+  - boundary: agent-runtime-assurance
+    reason: Security-sensitive pre/post execution evidence must only narrow authority and must not create autonomous remediation or protected-operation authority.
     checks:
       static_lint: {applicable: true, evidence: "Janitor ruff-critical"}
-      unit: {applicable: true, evidence: "tests/evidence/resource_authorization_lifecycle.py covers allow/deny/boundary/profile failures"}
-      integration: {applicable: true, evidence: "aips authorization CLI routes to deterministic evaluator"}
-      contract: {applicable: true, evidence: "Scenario 138 + Resource Authorization Profile schema/template"}
+      unit: {applicable: true, evidence: "tests/evidence/agent_runtime_assurance_lifecycle.py covers intent binding, deny monotonicity, anomaly detection and secret rejection"}
+      integration: {applicable: true, evidence: "aips assurance CLI routes to deterministic provider-neutral evaluator"}
+      contract: {applicable: true, evidence: "Scenarios 139-140 + orchestration/AGENT_RUNTIME_ASSURANCE.md"}
       e2e: {applicable: true, evidence: "protected PR Janitor + repository aggregate"}
-      security: {applicable: true, evidence: "default DENY; protected authority false; secret values forbidden; no claimed runtime enforcement"}
-      migration_recovery: {applicable: false, na_reason: "Execution Profile field is optional and existing profiles remain valid"}
-      cli_harness: {applicable: true, evidence: "aips authorization validate/check command"}
-      docs_schema: {applicable: true, evidence: "Documentation Sync + Human/Agent architecture/conformance/user/technology docs synchronized"}
+      security: {applicable: true, evidence: "Resource DENY cannot be widened; secret-like declared intent/result rejected before persistence; semantic result authority false; automatic remediation false; event evidence fingerprinted"}
+      migration_recovery: {applicable: false, na_reason: "Capability is additive evidence-only and existing execution profiles remain valid"}
+      cli_harness: {applicable: true, evidence: "aips assurance intent-request/intent-finalize/intent-gate/postflight"}
+      docs_schema: {applicable: true, evidence: "Human/Agent architecture, user, conformance, technology, documentation-sync and Evolution Radar capability-map contracts synchronized"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

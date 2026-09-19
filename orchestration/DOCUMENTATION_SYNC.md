@@ -80,3 +80,10 @@ This keeps the runtime implementation, exact-candidate CI behavior and authority
 ## Resource authorization mapping
 
 The `resource-authorization` rule binds the deterministic evaluator, Resource Authorization Profile schema/template and Execution Profile reference to Human Architecture/User guidance plus Agent Execution Isolation/Orchestrator protocols. Any behavior change must keep default-DENY semantics, protected-authority boundaries and runtime-enforcement truth synchronized across those surfaces.
+
+
+## Agent Runtime Assurance mapping
+
+The `agent-runtime-assurance` documentation rule binds the provider-neutral intent/anomaly evaluator and Agent protocol to Human Architecture/User guidance plus Resource Authorization / Execution Isolation contracts.
+
+When the same change updates `references/evolution/CAPABILITY_MAP.yaml`, the Evolution Radar mapping also applies. This intentionally keeps semantic capability discovery synchronized with the implemented evidence contract and prevents future duplicate subsystem recommendations.

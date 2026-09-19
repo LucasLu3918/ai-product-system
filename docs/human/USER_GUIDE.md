@@ -964,3 +964,24 @@ aips authorization check --profile RESOURCE_AUTHORIZATION_PROFILE.yaml --resourc
 ~~~
 
 Profile 預設 DENY，只能約束一般 read/search/create/update/execute；它不能取代 Git Publish Approval、Human Approval 或 destructive safety challenge。沒有 verified runtime pre-tool guard 時，結果只代表 pre-execution evidence，不宣稱工具層已被強制攔截。
+
+
+## Agent Runtime Assurance
+
+需要在 ordinary resource authorization 之外加入 intent evidence，可先產生 deterministic request，再由 Human-selected Agent/provider 回傳結構化 assessment：
+
+~~~bash
+aips assurance intent-request --profile RESOURCE_AUTHORIZATION_PROFILE.yaml --resource-id application-source --operation update --change-boundary orders --declared-intent "Update refund validation"
+aips assurance intent-finalize --request request.yaml --result result.yaml
+aips assurance intent-gate --profile RESOURCE_AUTHORIZATION_PROFILE.yaml --assessment assessment.yaml
+~~~
+
+COMPATIBLE 只表示既有 ALLOW 沒有被 intent evidence 收窄，不是新的工具授權。AMBIGUOUS / MISALIGNED / HIGH_RISK 會 BLOCKED；既有 DENY 永遠不能升級。
+
+執行後可離線稽核 observed events：
+
+~~~bash
+aips assurance postflight --profile RESOURCE_AUTHORIZATION_PROFILE.yaml --events AGENT_RUNTIME_EVENTS.yaml
+~~~
+
+Audit 只產生 evidence，不在 critical path，自動修復固定關閉。

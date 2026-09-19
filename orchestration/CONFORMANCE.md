@@ -252,3 +252,19 @@ Current automated inventory after Scenario 138:
 - manual: 0
 - uncovered: 0
 - automated: 138 / 138
+
+
+## Scenarios 139–140 — Agent Runtime Assurance
+
+Scenario 139 is lifecycle-covered by tests/evidence/agent_runtime_assurance_lifecycle.py plus scripts/agent_assurance.py postflight. It proves deterministic out-of-band detection of unauthorized success, subject mismatch, unsupported operations and forbidden network use while expected denials remain non-anomalous. The report is evidence only; automatic remediation is false.
+
+Scenario 140 uses the same lifecycle evidence to prove exact request/profile binding for provider-neutral semantic intent assessment. Intent evidence can only narrow Resource Authorization: DENY never becomes compatible; ALLOW is compatible only with an exact-bound ALIGNED assessment. Private reasoning, secret-like values and authority-bearing semantic results are rejected.
+
+Current automated inventory after Scenario 140:
+
+- deterministic: 22
+- lifecycle: 64
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 140 / 140
