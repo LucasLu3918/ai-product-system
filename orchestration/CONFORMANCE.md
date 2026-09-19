@@ -252,3 +252,23 @@ Current automated inventory after Scenario 138:
 - manual: 0
 - uncovered: 0
 - automated: 138 / 138
+
+## Scenario 139 — Agent Anomaly Evidence Evaluation
+
+Scenario 139 is lifecycle-covered by `tests/evidence/agent_anomaly_evaluation_lifecycle.py` and `scripts/agent_anomaly_evaluation.py`.
+
+It proves a provider-neutral, offline evaluation lane can reuse Resource Authorization truth against a fixed synthetic corpus and report TP/FP/TN/FN, precision, recall, false-positive rate and false-negative rate without becoming a runtime enforcement component.
+
+The committed 11-case fixture produces TP=6, FP=0, TN=5 and FN=0. This is fixture evidence only, not a general production-accuracy claim. Lifecycle evidence also proves private-reasoning/secret-like inputs are rejected and that intentionally incorrect expected labels make evaluation FAIL.
+
+Every report remains `POST_EXECUTION_EVIDENCE`, `runtime_enforced=false`, `critical_path=false`, `automatic_remediation=false`, and keeps Human/merge/release/publication/protected-operation authority false. PASS recommends only `HUMAN_REVIEW_TRIAL_EVIDENCE`.
+
+Current automated inventory after Scenario 139:
+
+- deterministic: 22
+- lifecycle: 63
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 139 / 139
+

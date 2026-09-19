@@ -163,3 +163,19 @@ Issue #79 runtime-security reassessment is recorded in `references/evolution/ISS
 - Semantic intent governance remains `ASSESS`; any future Trial must be monotonic with deterministic authorization: semantic reasoning may only DENY / ESCALATE / narrow authority, never grant an operation denied by Resource Authorization.
 - No assessment result grants implementation, runtime enforcement, automatic remediation, merge, release, publication, destructive operation or Human approval authority.
 
+## Issue #79 — Agent Anomaly Evidence Evaluation（Scenario 139）
+
+Out-of-band anomaly candidate 目前仍是 **ASSESS**，但其前置驗證已從「只有概念」提升為可重播 deterministic benchmark：
+
+~~~bash
+python scripts/agent_anomaly_evaluation.py evaluate \
+  --profile tests/fixtures/agent_anomaly_evaluation/profile.yaml \
+  --corpus tests/fixtures/agent_anomaly_evaluation/corpus.yaml
+~~~
+
+Evaluator 直接 reuse Resource Authorization，不新增權限系統。固定 corpus 同時包含正常成功、預期 DENY、一般失敗與已標記 anomaly；CI 計算 TP/FP/TN/FN、precision、recall、FPR、FNR。
+
+這是 **evaluation evidence**，不是 Evolution Human Decision Record，也不是 production anomaly detector。PASS 只表示「這組 deterministic rule 在固定 synthetic corpus 上達到門檻」，下一步仍需 Human review 才能決定是否值得設計真正 observable-event integration Trial。
+
+Semantic intent governance 仍維持 ASSESS，沒有在本 Scenario 順便加入。
+
