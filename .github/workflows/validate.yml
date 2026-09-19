@@ -39,18 +39,36 @@ jobs:
         run: >-
           git fetch --no-tags origin
           "+refs/heads/$AIPS_GATE_BASE_REF:refs/remotes/origin/$AIPS_GATE_BASE_REF"
+      - name: Resolve change class
+        id: change_class
+        shell: bash
+        env:
+          PR_LABELS: ${{ github.event_name == 'pull_request' && join(github.event.pull_request.labels.*.name, ',') || '' }}
+        run: |
+          value=standard
+          case ",$PR_LABELS," in
+            *,aips:core-change,*) value=core ;;
+            *,aips:large-change,*) value=large ;;
+          esac
+          echo "value=$value" >> "$GITHUB_OUTPUT"
       - name: deterministic integration gate
         shell: bash
         run: |
           base_tip_args=()
+          matrix_args=()
           if [[ -n "$AIPS_GATE_BASE_TIP" ]]; then
             base_tip_args=(--base-tip "$AIPS_GATE_BASE_TIP")
+          fi
+          if [[ -f .aips/review/CORE_CHANGE_TEST_MATRIX.yaml ]]; then
+            matrix_args=(--matrix .aips/review/CORE_CHANGE_TEST_MATRIX.yaml)
           fi
           python scripts/integration_gate.py \
             --profile config/integration-gate.yaml \
             --base "$AIPS_GATE_BASE" \
             --head "$AIPS_GATE_HEAD" \
+            --change-class "${{ steps.change_class.outputs.value }}" \
             "${base_tip_args[@]}" \
+            "${matrix_args[@]}" \
             --output integration-gate-report.yaml
 
   repository:
