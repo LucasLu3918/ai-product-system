@@ -493,7 +493,7 @@ func TestReservationRollback(t *testing.T) {
         require(semantic_trial_path.is_file(), "semantic alias trial report must be writable")
         print("semantic_alias_trial_summary=" + json.dumps(semantic_summary, sort_keys=True))
 
-        if os.environ.get("AIPS_RUN_REMOTE_EMBEDDING_TRIAL") == "1":
+        if os.environ.get("AIPS_RUN_EMBEDDING_TRIAL") == "1":
             embedding_output = Path(
                 os.environ.get("AIPS_EMBEDDING_TRIAL_OUTPUT")
                 or str(base / "retrieval-embedding-trial.json")
@@ -521,7 +521,7 @@ func TestReservationRollback(t *testing.T) {
             require(authority.get("provider_auto_enablement") is False, "embedding Trial must not auto-enable provider")
             require(authority.get("adoption_without_human_decision") is False, "embedding Trial adoption must require Human decision")
             require(embedding_output.is_file(), "embedding Trial report must be persisted")
-            print("remote_embedding_trial=" + json.dumps({
+            print("embedding_trial=" + json.dumps({
                 "status": embedding_status,
                 "recommendation": (embedding_trial.get("trial") or {}).get("recommendation"),
                 "summary": embedding_trial.get("summary") or {},

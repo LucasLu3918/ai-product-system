@@ -17,10 +17,14 @@ jobs:
   synthetic-embedding-trial:
     runs-on: ubuntu-latest
     env:
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      AIPS_RETRIEVAL_EMBEDDING_PROVIDER: ${{ vars.AIPS_RETRIEVAL_EMBEDDING_PROVIDER }}
       AIPS_RETRIEVAL_EMBEDDING_MODEL: ${{ vars.AIPS_RETRIEVAL_EMBEDDING_MODEL }}
-      AIPS_RUN_REMOTE_EMBEDDING_TRIAL: "1"
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+      AIPS_RUN_EMBEDDING_TRIAL: "1"
       AIPS_EMBEDDING_TRIAL_OUTPUT: ${{ github.workspace }}/retrieval-embedding-trial.json
+      SENTENCE_TRANSFORMERS_HOME: ${{ runner.temp }}/aips-semantic-model-cache
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -28,7 +32,7 @@ jobs:
       - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: "3.12"
-      - run: python -m pip install -r requirements.txt -r requirements-visual.txt
+      - run: python -m pip install -r requirements.txt -r requirements-visual.txt -r requirements-semantic-trial.txt
       - name: Run synthetic-only embedding retrieval Trial
         run: python tests/evidence/retrieval_quality_evaluation_lifecycle.py
       - name: Print bounded Trial evidence

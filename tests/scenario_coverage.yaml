@@ -928,3 +928,15 @@ scenarios:
       - .github/workflows/retrieval-semantic-trial.yml
       - orchestration/PROJECT_INTELLIGENCE.md
       - tests/validate_repository.py
+  - id: "134"
+    path: tests/scenarios/134-provider-neutral-local-embedding-trial.md
+    coverage: deterministic
+    evidence:
+      - tests/validation/retrieval_embedding_trial_contracts.py
+      - scripts/retrieval_embedding_trial.py
+      - scripts/retrieval_embedding_trial_summary.py
+      - config/retrieval-embedding-trial.yaml
+      - requirements-semantic-trial.txt
+      - .github/workflows/retrieval-semantic-trial.yml
+      - orchestration/PROJECT_INTELLIGENCE.md
+      - tests/validate_repository.py

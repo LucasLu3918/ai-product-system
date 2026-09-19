@@ -1,12 +1,28 @@
-version: 1
+version: 2
+
 provider:
-  id: openai-embeddings
-  kind: openai-compatible-embeddings
-  endpoint: https://api.openai.com/v1/embeddings
-  default_model: text-embedding-3-small
-  model_env: AIPS_RETRIEVAL_EMBEDDING_MODEL
-  dimensions: 512
-  required_secret: OPENAI_API_KEY
+  default: local
+  selection_env: AIPS_RETRIEVAL_EMBEDDING_PROVIDER
+
+providers:
+  local:
+    id: local-bge-small
+    kind: sentence-transformers
+    default_model: BAAI/bge-small-en-v1.5
+    model_env: AIPS_RETRIEVAL_EMBEDDING_MODEL
+    model_revision: 0b329b72cad8d6ff9a504a30a6c239b87802dc84
+    dimensions: 384
+    execution_location: runner-local
+    model_download_network: true
+  remote:
+    id: openai-embeddings
+    kind: openai-compatible-embeddings
+    endpoint: https://api.openai.com/v1/embeddings
+    default_model: text-embedding-3-small
+    model_env: AIPS_RETRIEVAL_EMBEDDING_MODEL
+    dimensions: 512
+    required_secret: OPENAI_API_KEY
+    execution_location: remote
 
 privacy:
   source_scope: synthetic_fixture_only
@@ -14,12 +30,12 @@ privacy:
   secret_values_in_payload: false
 
 limits:
-  max_requests: 12
+  max_embedding_batches: 12
   max_candidate_chunks: 64
-  max_remote_characters_per_case: 40000
+  max_input_characters_per_case: 40000
 
 fallback:
-  missing_credentials: TRIAL_PENDING
+  missing_remote_credentials: TRIAL_PENDING
   provider_failure: TRIAL_BLOCKED
 
 authority:
