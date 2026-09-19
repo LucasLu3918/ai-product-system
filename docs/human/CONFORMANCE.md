@@ -825,3 +825,21 @@ aips conformance agent-eval consistency --case <case.yaml> --results-dir <runs/>
 ~~~
 
 目前 Scenario inventory 為 **137**：22 deterministic + 61 lifecycle + 54 agent_eval，**137 / 137 automated、0 manual、0 uncovered**。
+
+
+## v0.29 Resource-Scoped Agent Authorization
+
+Scenario 138 新增 lifecycle evidence，驗證 default-DENY Resource Authorization Profile、明確 resource/operation grant、寫入操作 Change Boundary requirement、undeclared resource DENY、protected authority 不可由 profile 取得，以及 `runtime_enforced=false` 的 truthful reporting。
+
+v0.29 capability candidate baseline：
+
+~~~text
+Total         138
+Manual          0
+Deterministic  22
+Lifecycle      62
+Agent Eval     54
+Automated     138
+Uncovered       0
+Automated    100%
+~~~

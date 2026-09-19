@@ -95,3 +95,8 @@ Deterministic validator 能保證：
 - Human Technology Guide。
 
 目的是避免「CI 已改成新的 merge gate，但文件仍描述舊流程」或「Scheduler contract 改了，Human 仍照舊指令操作」。
+
+
+## Resource Authorization documentation mapping
+
+Resource-scoped authorization extends the existing Execution Profile and security/governance path. Changes to its evaluator, schema/template or Execution Profile binding must update Human Architecture/User guidance, Agent Execution Isolation/Orchestrator guidance and the Technology Guide in the same diff. This mapping documents enforcement truth explicitly: deterministic authorization is pre-execution evidence unless a verified runtime pre-tool guard consumes it.

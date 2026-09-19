@@ -105,3 +105,20 @@ This adds deterministic coordination; it does not create a second workspace owne
 A Scheduler task is treated as potentially writable unless it explicitly declares `read_only: true`. A writable/unspecified task without a non-empty Change Boundary is `SCHEDULER BLOCKED` before dispatch.
 
 An explicit read-only task may omit a writer boundary only when it has no `write_set` and does not declare writable isolation. This keeps Execution Isolation fail-closed when planning metadata is incomplete.
+
+
+## Resource-scoped authorization
+
+Execution Isolation answers **where** a task runs and enforces the existing single-writer boundary. It does not by itself answer which resources/operations an Agent may use inside that workspace.
+
+When a task has material tool/resource access, pair the Execution Profile with `orchestration/RESOURCE_AUTHORIZATION.md`:
+
+~~~text
+Execution Profile
+→ Isolation mode / Change Boundary
+→ Resource Authorization Profile
+→ deterministic pre-execution ALLOW / DENY evidence
+→ runtime/tool execution when all other gates allow
+~~~
+
+The authorization profile defaults to DENY and can only narrow ordinary operations. It cannot grant merge, release, publication, destructive administration, Human approval or a wider Change Boundary.

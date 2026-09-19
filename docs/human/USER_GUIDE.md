@@ -930,3 +930,37 @@ aips janitor --profile VALIDATION_PROFILE.yaml --base <base-ref> --head <head-re
 For a PR classified with `aips:large-change` or `aips:core-change`, Janitor requires a candidate-bound `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`. Ordinary standard changes do not need a Matrix unless they modify the narrow governance-core Integration Gate safety-net paths.
 
 `python scripts/branch_hygiene.py` classifies branches as persistent, ephemeral or unclassified and reports only integrated ephemeral branches as deletion candidates. It never deletes a branch. `feature/retrieval-embedding-trial` is explicitly persistent because a dedicated workflow listens to it.
+
+
+## v0.29 Resource-Scoped Agent Authorization
+
+需要限制 Agent 只操作特定資源時，可以建立 Resource Authorization Profile：
+
+~~~yaml
+version: 1
+default_effect: DENY
+subject:
+  id: implementation-agent
+grants:
+  - id: application-source
+    kind: repository_path
+    selector: "src/**"
+    operations: [read, search, update]
+    constraints:
+      change_boundary_required: true
+      network_allowed: false
+authority:
+  human_approval_granted: false
+  merge_authorized: false
+  release_authorized: false
+  protected_operation_authorized: false
+~~~
+
+檢查：
+
+~~~bash
+aips authorization validate --profile RESOURCE_AUTHORIZATION_PROFILE.yaml
+aips authorization check --profile RESOURCE_AUTHORIZATION_PROFILE.yaml --resource-id application-source --operation update --change-boundary orders
+~~~
+
+Profile 預設 DENY，只能約束一般 read/search/create/update/execute；它不能取代 Git Publish Approval、Human Approval 或 destructive safety challenge。沒有 verified runtime pre-tool guard 時，結果只代表 pre-execution evidence，不宣稱工具層已被強制攔截。

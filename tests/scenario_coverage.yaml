@@ -966,3 +966,13 @@ scenarios:
       - scripts/agent_eval.py
       - orchestration/AGENT_EVAL.md
       - tests/validate_repository.py
+
+  - id: "138"
+    path: tests/scenarios/138-resource-scoped-agent-authorization.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/resource_authorization_lifecycle.py
+      - scripts/resource_authorization.py
+      - orchestration/RESOURCE_AUTHORIZATION.md
+      - orchestration/schemas/resource-authorization-profile.yaml
+      - tests/validate_repository.py

@@ -234,3 +234,21 @@ Current automated inventory after Scenario 137:
 - manual: 0
 - uncovered: 0
 - automated: 137 / 137
+
+
+## Scenario 138 — Resource-Scoped Agent Authorization
+
+Scenario 138 is lifecycle-covered by `tests/evidence/resource_authorization_lifecycle.py` plus the deterministic `scripts/resource_authorization.py` evaluator.
+
+It proves default-DENY behavior, explicit resource/operation grants, Change Boundary enforcement for mutation, rejection of undeclared/protected operations, secret-reference-only configuration and truthful `runtime_enforced=false` reporting.
+
+The capability extends the existing Execution Profile and Governance path; it does not introduce a Role, Skill or approval gate.
+
+Current automated inventory after Scenario 138:
+
+- deterministic: 22
+- lifecycle: 62
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 138 / 138

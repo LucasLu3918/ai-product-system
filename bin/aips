@@ -502,6 +502,13 @@ agent_eval_cmd() {
   "$py" "$SYSTEM_DIR/scripts/agent_eval.py" "$@"
 }
 
+resource_authorization_cmd() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/resource_authorization.py" "$@"
+}
+
 isolation_cmd() {
   local py
   py="$(python_bin)"
@@ -929,6 +936,12 @@ case "${1:-help}" in
       shift 2 || true
       conformance_cmd "$sub" "$@"
     fi
+    ;;
+  authorization)
+    sub="${2:-}"
+    [ -n "$sub" ] || die "Usage: aips authorization <validate|check> ..."
+    shift 2 || true
+    resource_authorization_cmd "$sub" "$@"
     ;;
   isolation)
     sub="${2:-}"

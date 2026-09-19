@@ -1,0 +1,21 @@
+# Reference shape for deterministic pre-execution least-privilege evidence.
+version: 1
+default_effect: DENY
+subject:
+  id: agent-or-task-id
+  role: optional-role-id
+grants:
+  - id: resource-id
+    kind: repository_path | workspace | runtime_tool | connector | external_service
+    selector: "resource-specific selector"
+    operations:
+      - read | search | create | update | execute
+    constraints:
+      change_boundary_required: true
+      network_allowed: false
+      credential_reference: null
+authority:
+  human_approval_granted: false
+  merge_authorized: false
+  release_authorized: false
+  protected_operation_authorized: false
