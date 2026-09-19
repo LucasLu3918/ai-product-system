@@ -299,20 +299,3 @@ Execution Profile
 AIPS 現在能把「Agent 能做什麼」從粗粒度 read/write 描述收斂成明確 resource grant。未宣告資源、未宣告 operation、或要求 Change Boundary 卻缺少 boundary 時一律 DENY。
 
 這是 pre-execution evidence，不會假裝所有 Runtime 都能硬攔工具呼叫；只有已驗證的 pre-tool guard 才能進一步消費此 evidence。Profile 不授權 merge、release、publication、administration、destructive deletion 或 Human approval。
-
-
-## v0.29 Agent Runtime Assurance
-
-Resource Authorization 之上新增 evidence-only 的 Agent Runtime Assurance，但不建立第二套 Runtime 權限系統。
-
-~~~text
-Declared operation
-→ Resource Authorization (default DENY)
-→ optional provider-neutral Intent Assessment
-→ compatible / blocked evidence
-→ Runtime execution
-→ structured observed events
-→ out-of-band anomaly audit
-~~~
-
-Intent Assessment 只能縮小既有授權：Resource Authorization 已 DENY 的操作不可能因語意評估變成允許。Postflight audit 位於 critical path 外，只輸出 POST_EXECUTION_EVIDENCE；不自動 remediation、不改權限、不執行 Git publish/merge/release。

@@ -279,12 +279,3 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 ## Change-class handoff to Integration Gate
 
 When a repository PR represents an already approved Large/Core Change, preserve that classification into deterministic CI with `aips:large-change` or `aips:core-change`. Integration Gate uses the change class only to select evidence requirements; it does not create semantic classification or approval authority.
-
-
-## Agent Runtime Assurance
-
-When risk justifies semantic intent evidence for an ordinary resource operation, load `orchestration/AGENT_RUNTIME_ASSURANCE.md` only after Resource Authorization has resolved the operation.
-
-Intent evidence is monotonic: it may narrow an existing ALLOW to BLOCKED, but can never convert DENY to ALLOW. COMPATIBLE remains evidence, not tool-call authority.
-
-After execution, structured observed events may be evaluated out-of-band. Postflight anomaly evidence is outside the critical path and cannot automatically remediate, widen permissions, publish Git refs, merge, release or replace any Human approval gate.
