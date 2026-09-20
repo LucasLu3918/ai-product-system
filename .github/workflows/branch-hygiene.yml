@@ -10,6 +10,7 @@ on:
     paths:
       - scripts/branch_hygiene.py
       - config/branch-lifecycle.yaml
+      - config/branch-cleanup-manifest.yaml
       - .github/workflows/branch-hygiene.yml
 
 permissions:
@@ -78,4 +79,57 @@ jobs:
           authority = report.get("authority") or {}
           assert authority.get("branch_deletion_authorized") is False
           assert authority.get("human_authority_preserved") is True
+          PY
+
+  cleanup:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: report
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - run: python -m pip install -r requirements.txt
+
+      - name: Refresh exact remote branch refs
+        shell: bash
+        run: git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
+
+      - name: Apply exact Human-authorized cleanup manifest
+        run: >-
+          python scripts/branch_hygiene.py
+          --config config/branch-lifecycle.yaml
+          --target main
+          --remote origin
+          --apply-cleanup config/branch-cleanup-manifest.yaml
+          > branch-cleanup-result.yaml
+
+      - name: Publish cleanup result
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import os
+          import yaml
+
+          result = yaml.safe_load(Path("branch-cleanup-result.yaml").read_text(encoding="utf-8"))
+          summary = result.get("summary") or {}
+          authority = result.get("authority") or {}
+          assert authority.get("authorization_scope") == "exact_manifest_only"
+          assert authority.get("human_authority_preserved") is True
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as out:
+              out.write("# Controlled Branch Cleanup\n\n")
+              out.write(f"- cleanup_id: `{result.get('cleanup_id')}`\n")
+              out.write(f"- requested: **{summary.get('requested', 0)}**\n")
+              out.write(f"- deleted: **{summary.get('deleted', 0)}**\n")
+              out.write(f"- already absent: **{summary.get('already_absent', 0)}**\n")
+              out.write("- authorization scope: **exact_manifest_only**\n")
+              out.write("- human authority preserved: **true**\n")
           PY
