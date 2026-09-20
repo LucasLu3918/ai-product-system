@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.36.0
+
+### External Credential Dependency Guard
+
+- Add a deterministic, source-controlled External Credential Dependency Guard so external Agent/provider API keys cannot silently become AIPS baseline or release prerequisites.
+- Add `config/external-credentials.yaml` as the explicit registry for external provider credentials and their allowed executable/configuration consumers. Current registered credentials are `GEMINI_API_KEY` and `OPENAI_API_KEY`; both remain optional with `required_for_baseline=false` and `required_for_release=false`.
+- Add `scripts/external_credential_guard.py` to scan GitHub Actions workflows, configuration, and Python scripts for external credential references; undeclared credentials, undeclared/stale consumers, pull-request secret exposure, or policy attempts to make an external credential baseline/release-required fail repository validation.
+- The first exact-head validation demonstrated the guard working as intended by discovering the previously omitted existing `config/evolution-trial.yaml` `OPENAI_API_KEY` consumer; the registry and synchronized Evolution Radar documentation were then corrected rather than weakening the guard.
+- Narrow `.github/workflows/retrieval-semantic-trial.yml` so the local/default embedding Trial no longer receives `OPENAI_API_KEY`; the secret is injected only into the explicitly selected `remote` step.
+- Preserve credential-free defaults: Evolution Radar continues provider-neutral handoff without an external semantic provider key; Retrieval defaults to local embedding; Gemini CLI real-runtime/tool/AfterTool verification remains credential-free.
+- Complete every non-live Gemini provider-key path requested by the maintainer: repository validation now executes `gemini_provider_session_verification.py` with `GEMINI_API_KEY` absent and requires `SKIPPED_NOT_CONFIGURED`, `provider_verification_enabled=false`, `required_for_release=false`, `live_provider_session_verified=false`, and `provider_model_execution_verified=false`.
+- Reconcile Secret Handling, Security Assurance, Technology Guide, Evolution Radar, Execution Isolation, Capability Map, and Conformance documentation so optional missing credentials use truthful non-PASS states and do not block unrelated baseline/release work.
+- Add Scenario 145 and raise Scenario Conformance to 145/145 automated: 24 deterministic + 67 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- Feature PR #109 exact final head `177d62cf2a84a69671d77a35143c06ca722268b9` passed exact-head validate Run #1119 with changed-files hash `08b6c8d087c4b4bdabaabc5d6241d9156520a1738f5d3d53e6778ee5b57a00ea`.
+- PR #109 was squash-merged to main as `6bed9e16691fa58ae2ba938811692c7905d57acf`; protected-main validate Run #1120 succeeded.
+- The real `GEMINI_API_KEY` provider/model connection remains intentionally unexecuted and unverified. No provider PASS is claimed, no replacement OAuth/Vertex/OIDC authentication is introduced, and live provider/model truth remains false.
+- Roles remain 12 and Skills remain 25.
+- Constitution impact: NO. Protected Human Authority, merge/release/publication authority, runtime enforcement, automatic remediation, and credential-creation authority remain unchanged.
+- Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
+
 ## 0.35.0
 
 ### Optional External Provider Credential Policy
