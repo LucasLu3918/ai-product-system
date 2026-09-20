@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.32.0
+
+### Trial-backed Agent Anomaly Adoption Review
+
+- Record a separate current-baseline Human ADOPT Decision for the Issue #79 Agent anomaly candidate after the v0.31.0 observable-event replay Trial PASS.
+- Extend the existing Evolution adoption abstraction with `bind-committed` so a released/committed PASS Trial can be bound to a newer current repository baseline without pretending the original Radar revision remains current.
+- Bind the prior TRIAL Decision `sha256:3b3368af2d560a97e998500f680c48a14c1ed47fb496e54c0eac75cffc70ffb8`, PASS Trial `sha256:9270bab940c38558575490f4948589cf1ff3b6dc4477daf7eb0ff7caca4e187c`, Human ADOPT Decision `sha256:c742a082dd00bd9e451810b5ce4640413e420b06acb97311db42112150b13f3e`, and adoption binding `sha256:1263e376a83926de458605f758b718fa6c7e0e3771d2ae19e6b53434f826ef89`.
+- Add the durable System Improvement Review with conclusion `SUITABLE_WITH_BOUNDS`. The adopted direction is an opt-in, metadata-only, adapter-level `POST_EXECUTION` observable-event capture design that reuses Harness adapters, the canonical observable-event schema, Resource Authorization truth, and the existing anomaly evaluator.
+- Add `orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md` as future-state design evidence. No runtime adapter is marked live-capture verified by this release.
+- Keep production/live runtime hooks, `live_capture_verified=true`, runtime enforcement, durable event persistence/retention, semantic intent governance, automatic remediation, new Role/Skill/provider dependency, and any second authorization system explicitly deferred.
+- Keep current-state architecture diagrams unchanged with an explicit N/A rationale: v0.32.0 adopts a design direction but does not alter current runtime topology.
+- Add Scenario 141 and raise Scenario Conformance to 141/141 automated. Roles remain 12 and Skills remain 25.
+- Feature PR #96 exact final head `e2571b4923d298da91859849acdc2b4375e69632` passed core-change Janitor and required `repository` in validate Run #1063 with changed-files hash `94a8d22ec4a2bb6b2545327c259ddb4d1f9e75d29a83a7ab28f073d00afad04d`, Matrix hash `2204393b2cf441cba1a028bf0b7549c358b93abc83d896216cff47a5dab58f8c`, candidate fingerprint `aa48d812abe06254291ef7948206c21be84b6177225c4a6504010946ac01f35b`, no blockers and preserved Human authority.
+- PR #96 was squash-merged to main as `1c71cdf08b4199a2b45b7ae9c99d36c7073a610b`; protected-main validate Run #1064 succeeded.
+- Constitution impact: NO. Protected Human Authority, deterministic Resource Authorization, merge/release/publication authority and safety boundaries remain unchanged.
+- Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
+
 ## 0.31.0
 
 ### Observable-Event Integration Controlled Trial
