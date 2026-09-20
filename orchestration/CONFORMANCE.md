@@ -561,3 +561,21 @@ Current automated inventory after Scenario 155:
 - automated: 155 / 155
 
 The monthly workflow requires no external Agent/provider credential and has only `contents: read + issues: write`. Effectiveness evidence cannot authorize implementation, PR, merge or release.
+
+
+## Scenario 156 — Human-authorized Exact Branch Cleanup
+
+Scenario 156 validates that normal branch hygiene stays report-only while a separately reviewed one-time manifest may delete only exact EPHEMERAL branch+SHA entries after complete-batch preflight. Any moved ref, non-ephemeral branch or non-integrated branch blocks the batch before deletion. Persistent/unclassified/pending branches remain preserved.
+
+## Scenario 157 — Stale Evolution Issue Lifecycle Reconciliation
+
+Scenario 157 binds Issue #79 to the current released truth, preserves COVERED and bounded ADOPT outcomes, keeps provider/model verification false where unproven, and marks semantic-intent governance DEFERRED. The stale Issue becomes ready to close; future positive progression requires fresh current-main evidence and a new Human Decision.
+
+Current automated inventory after Scenario 157:
+
+- deterministic: 24
+- lifecycle: 79
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 157 / 157
