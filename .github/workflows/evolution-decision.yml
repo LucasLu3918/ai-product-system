@@ -29,6 +29,12 @@ on:
         description: Optional for ADOPT-after-Trial; exact PASS Trial Report fingerprint
         required: false
         type: string
+      trial_provider:
+        description: Controlled Trial execution provider; handoff needs no provider credential
+        required: true
+        default: auto
+        type: choice
+        options: [auto, openai-codex-action, handoff]
       reason:
         description: Decision reason. Prefix with 'override:' only for explicit Human override of advisory state.
         required: true
@@ -105,8 +111,41 @@ jobs:
             echo "available=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Resolve trial provider
+        if: inputs.decision == 'TRIAL'
+        id: trial_provider
+        shell: bash
+        env:
+          REQUESTED_PROVIDER: ${{ inputs.trial_provider }}
+          SECRET_AVAILABLE: ${{ steps.trial_secret.outputs.available }}
+        run: |
+          selected="$REQUESTED_PROVIDER"
+          if [[ "$selected" == "auto" ]]; then
+            if [[ "$SECRET_AVAILABLE" == "true" ]]; then
+              selected="openai-codex-action"
+            else
+              selected="handoff"
+            fi
+          fi
+          if [[ "$selected" == "openai-codex-action" && "$SECRET_AVAILABLE" != "true" ]]; then
+            selected="handoff"
+          fi
+          echo "value=$selected" >> "$GITHUB_OUTPUT"
+
+      - name: Build provider-neutral Trial handoff
+        if: inputs.decision == 'TRIAL' && steps.trial_provider.outputs.value == 'handoff'
+        shell: bash
+        run: |
+          python scripts/evolution_trial.py handoff --plan evolution-trial-plan.yaml --config config/evolution-trial.yaml --output evolution-trial-handoff.yaml
+          python scripts/evolution_trial.py handoff-validate evolution-trial-handoff.yaml
+          python scripts/evolution_trial.py handoff-markdown evolution-trial-handoff.yaml --output evolution-trial-handoff.md
+
+      - name: Publish provider-neutral Trial handoff
+        if: inputs.decision == 'TRIAL' && steps.trial_provider.outputs.value == 'handoff'
+        run: gh issue comment "${{ inputs.issue_number }}" --body-file evolution-trial-handoff.md
+
       - name: Create AIPS-managed isolated worktree
-        if: inputs.decision == 'TRIAL' && steps.trial_secret.outputs.available == 'true'
+        if: inputs.decision == 'TRIAL' && steps.trial_provider.outputs.value == 'openai-codex-action' && steps.trial_secret.outputs.available == 'true'
         id: isolation
         continue-on-error: true
         shell: bash
@@ -133,7 +172,7 @@ jobs:
 
       - name: Run Human-approved isolated trial
         id: trial_agent
-        if: inputs.decision == 'TRIAL' && steps.trial_secret.outputs.available == 'true' && steps.isolation.outcome == 'success'
+        if: inputs.decision == 'TRIAL' && steps.trial_provider.outputs.value == 'openai-codex-action' && steps.trial_secret.outputs.available == 'true' && steps.isolation.outcome == 'success'
         continue-on-error: true
         uses: openai/codex-action@86365089eb2b84e0a8fb0717b304f8bdcb13b20e # v1
         with:
@@ -171,15 +210,15 @@ jobs:
           PY
 
       - name: Evaluate isolated trial deterministically
-        if: always() && inputs.decision == 'TRIAL' && steps.trial_secret.outputs.available == 'true' && steps.isolation.outcome == 'success'
+        if: always() && inputs.decision == 'TRIAL' && steps.trial_provider.outputs.value == 'openai-codex-action' && steps.trial_secret.outputs.available == 'true' && steps.isolation.outcome == 'success'
         shell: bash
         env:
           TRIAL_AGENT_OUTCOME: ${{ steps.trial_agent.outcome }}
         run: |
           python scripts/evolution_trial.py evaluate             --plan evolution-trial-plan.yaml             --config config/evolution-trial.yaml             --worktree "${{ steps.isolation.outputs.path }}"             --agent-outcome "${TRIAL_AGENT_OUTCOME:-failure}"             --agent-summary-file evolution-trial-agent-summary.txt             --started-at "${{ steps.trial_plan.outputs.started_at }}"             --output evolution-trial-result.yaml
 
-      - name: Record blocked trial when execution provider is unavailable
-        if: always() && inputs.decision == 'TRIAL'
+      - name: Record blocked trial when selected execution fails
+        if: always() && inputs.decision == 'TRIAL' && steps.trial_provider.outputs.value == 'openai-codex-action'
         shell: bash
         env:
           SECRET_AVAILABLE: ${{ steps.trial_secret.outputs.available }}
@@ -189,7 +228,7 @@ jobs:
             exit 0
           fi
           if [[ "$SECRET_AVAILABLE" != "true" ]]; then
-            reason="OPENAI_API_KEY is not configured; the approved Trial was recorded but not executed."
+            reason="Selected OpenAI Trial provider credential is unavailable; provider-neutral handoff should be used instead."
           elif [[ "$ISOLATION_OUTCOME" != "success" ]]; then
             reason="AIPS-managed worktree isolation could not be established; Trial execution failed closed."
           else
@@ -198,12 +237,12 @@ jobs:
           python scripts/evolution_trial.py blocked             --plan evolution-trial-plan.yaml             --reason "$reason"             --output evolution-trial-result.yaml
 
       - name: Validate and render controlled trial report
-        if: always() && inputs.decision == 'TRIAL'
+        if: always() && inputs.decision == 'TRIAL' && steps.trial_provider.outputs.value == 'openai-codex-action'
         shell: bash
         run: |
           python scripts/evolution_trial.py validate evolution-trial-result.yaml
           python scripts/evolution_trial.py markdown evolution-trial-result.yaml --output evolution-trial-report.md
 
       - name: Publish controlled trial report
-        if: always() && inputs.decision == 'TRIAL'
+        if: always() && inputs.decision == 'TRIAL' && steps.trial_provider.outputs.value == 'openai-codex-action'
         run: gh issue comment "${{ inputs.issue_number }}" --body-file evolution-trial-report.md
