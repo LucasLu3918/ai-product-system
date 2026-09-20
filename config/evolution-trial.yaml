@@ -1,4 +1,8 @@
 version: 1
+selection:
+  default: auto
+  fallback: handoff
+  allowed: [auto, openai-codex-action, handoff]
 execution:
   isolation_mode: worktree
   provider: openai
@@ -11,6 +15,13 @@ execution:
   effort: high
   safety_strategy: drop-sudo
   permission_profile: ":workspace"
+handoff:
+  enabled: true
+  state: TRIAL_HANDOFF_READY
+  credential_required: false
+  prompt_path: templates/evolution/EVOLUTION_TRIAL_PROMPT.md
+  binding_script: scripts/evolution_trial.py
+  deterministic_validation_required: true
 limits:
   max_changed_files: 12
   max_diff_lines: 800
