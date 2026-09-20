@@ -1029,3 +1029,14 @@ scenarios:
       - harness/adapters/gemini-cli/gemini-extension.json
       - tests/validate_repository.py
 
+- id: "144"
+    path: tests/scenarios/144-optional-external-provider-credentials.md
+    coverage: deterministic
+    evidence:
+      - .github/workflows/gemini-provider-session-verification.yml
+      - scripts/gemini_provider_session_verification.py
+      - tests/validation/gemini_provider_session_verification_contracts.py
+      - tests/validation/gemini_provider_session_workflow_contracts.py
+      - references/evolution/ISSUE_79_PROVIDER_CREDENTIAL_POLICY_DECISION.yaml
+      - references/evolution/ISSUE_79_GEMINI_PROVIDER_SESSION_RESULT.yaml
+      - tests/validate_repository.py
