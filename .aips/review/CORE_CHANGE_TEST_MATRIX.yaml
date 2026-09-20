@@ -1,24 +1,24 @@
 version: 1
 candidate:
-  base_sha: dac529ed2c385081547c3c3de4820f7a80b97101
-  changed_files_hash: ec5a10d0786a659e3045c1dac0a4d203f6a2b97d94546a3d16c31774b4f553d1
+  base_sha: 75db6fc7adf67862e1948882a290e79c922f7e85
+  changed_files_hash: 70a51a63c7c4d051f69d8e588afceb20a8b78d2bdf3304e498b84968f5f1bbf0
 change:
-  id: v0.34.0-gemini-exact-candidate-real-runtime-verification
-  summary: Verify the pinned real Gemini CLI binary, built-in tools and AIPS AfterTool hook on the exact candidate while keeping provider/model verification separate.
-  boundary: [gemini-cli-adapter, real-runtime-verification, observable-event-capture, evolution-trial, scenario-conformance, documentation]
+  id: v0.35.0-gemini-provider-session-governance-gate
+  summary: Record the Human-approved Gemini live-provider Trial and secret-isolation contract without claiming provider verification before a trusted-main workflow runs.
+  boundary: [gemini-cli-provider-verification, secret-handling, evolution-trial, documentation]
 matrix:
-  - boundary: gemini-cli-real-runtime-verification
-    reason: Runtime truth must be based on actual bundled CLI/tool/hook execution, not fixture-only contract replay.
+  - boundary: gemini-provider-session-governance
+    reason: Provider credentials must never be exposed to unmerged candidate code or persisted evidence.
     checks:
-      static_lint: {applicable: true, evidence: "Janitor ruff-critical + verifier py_compile"}
-      unit: {applicable: true, evidence: "manifest/env sanitization and workflow contract checks"}
-      integration: {applicable: true, evidence: "pinned Gemini CLI v0.60.0 + real read_file/write_file/replace + linked AIPS extension"}
-      contract: {applicable: true, evidence: "Scenario 143 + runtime/provider truth separation"}
-      e2e: {applicable: true, evidence: "gemini-runtime-verification exact-head workflow + required repository aggregate + protected-main validation"}
-      security: {applicable: true, evidence: "no provider credential required; metadata-only sink; raw/private/secret leakage=0; no enforcement/remediation authority"}
-      migration_recovery: {applicable: false, na_reason: "Verification-only change; capture remains opt-in and existing projects are unchanged"}
-      cli_harness: {applicable: true, evidence: "real bundled Gemini CLI binary and linked extension execute on exact candidate; all Gemini hook wrappers resolve symlinked extension paths physically"}
-      docs_schema: {applicable: true, evidence: "Harness, Evolution Radar, Conformance, Execution Isolation and capture-design docs synchronized"}
+      static_lint: {applicable: true, evidence: "repository validator and YAML/document contracts"}
+      unit: {applicable: true, evidence: "Decision/result truth is pending until secure provider workflow exists"}
+      integration: {applicable: false, na_reason: "This candidate intentionally does not execute or inject provider credentials"}
+      contract: {applicable: true, evidence: "Human TRIAL Decision binds credential source and forbids credential persistence"}
+      e2e: {applicable: false, na_reason: "Provider session remains pending secure trusted-main execution"}
+      security: {applicable: true, evidence: "No secret-bearing workflow or secret value is introduced by this candidate"}
+      migration_recovery: {applicable: false, na_reason: "Governance/evidence change only"}
+      cli_harness: {applicable: false, na_reason: "Existing Scenario 143 runtime path is unchanged"}
+      docs_schema: {applicable: true, evidence: "Technology Guide, Evolution Radar, Execution Isolation, Harness Protocol, Human Harness, Gemini adapter and Secret Handling docs synchronized"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

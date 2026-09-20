@@ -31,3 +31,11 @@ The shell wrappers resolve their physical script directory before locating the A
 
 Scenario 143 also verifies the official extension-settings path: the isolated Gemini settings enable `experimental.extensionConfig`, and the non-sensitive capture controls are supplied from the temporary workspace `.env`. Parent-process environment inheritance is not treated as proof that hook settings propagate.
 
+## Live provider-session gate
+
+Provider/model inference is intentionally verified separately from the deterministic Scenario 143 runtime path.
+
+The Human-approved next step is a bounded provider session using the protected GitHub Actions `GEMINI_API_KEY` secret. Until a trusted-main workflow executes that session successfully, this adapter MUST keep `live_provider_session_verified=false` and `provider_model_execution_verified=false`.
+
+The provider secret must never be persisted into extension settings, workspace evidence, canonical events, logs, or committed result files.
+

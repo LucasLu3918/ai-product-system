@@ -1,0 +1,27 @@
+version: 1
+assessment_id: issue-79-gemini-live-provider-session-baseline
+baseline:
+  repository_revision: 75db6fc7adf67862e1948882a290e79c922f7e85
+  version: 0.34.0
+  issue: 79
+  signal_fingerprint: sha256:7da9fc0c0ad89a0c7d0315aa2a5f4aa7ceb9842149a969a84708ce382c3082b3
+current_state: REAL_RUNTIME_VERIFIED
+prior_runtime_evidence:
+  result_path: references/evolution/ISSUE_79_GEMINI_RUNTIME_VERIFICATION_RESULT.yaml
+  status: PASS
+  live_runtime_execution_verified: true
+  live_capture_verified: true
+  live_provider_session_verified: false
+  provider_model_execution_verified: false
+recommendation:
+  next_step: bounded_live_provider_session_verification
+  credential_source: github_actions_secret:GEMINI_API_KEY
+authority:
+  human_decision_recorded: false
+  live_provider_session_authorized: false
+  credential_value_persistence_authorized: false
+  runtime_enforcement_authorized: false
+  automatic_remediation_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  publication_authorized: false

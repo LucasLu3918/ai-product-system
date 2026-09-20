@@ -237,3 +237,17 @@ The official `--fake-responses` interface supplies deterministic model turns, wh
 
 Provider/model API verification remains explicitly false and is a separate future decision.
 
+## Gemini live-provider-session verification gate
+
+Scenario 143 proves the actual Gemini CLI runtime/tool/hook path with deterministic fake model responses. Provider inference is a separate evidence dimension.
+
+The repository maintainer has authorized a bounded provider-session TRIAL, but the credential boundary is stricter than ordinary candidate validation:
+
+- unmerged pull-request code MUST NOT receive `GEMINI_API_KEY`;
+- the secret may only be consumed from a trusted protected-main CI secret context;
+- committed evidence stores only boolean/source metadata, never the value;
+- missing credential or unavailable secure execution remains PENDING/BLOCKED;
+- provider verification cannot grant runtime enforcement, remediation, merge, release or publication authority.
+
+Until trusted-main provider execution succeeds, `live_provider_session_verified` and `provider_model_execution_verified` remain false.
+

@@ -180,3 +180,11 @@ The runtime workflow:
 
 Gemini extension hook wrappers resolve their physical source path before locating the repository so symlink-based extension loading cannot redirect hook execution toward the temporary HOME.
 
+## Gemini provider-session credential isolation
+
+Live provider verification uses the already-verified Gemini CLI runtime path, but the provider credential adds a separate isolation boundary.
+
+A bounded provider-session Trial MUST run only after its verification infrastructure is trusted on protected main. Unmerged PR code must not receive the provider credential. Temporary HOME/workspace and capture sink remain disposable, and only metadata evidence may persist.
+
+A missing secure credential context leaves the provider-session state PENDING/BLOCKED. It must not be downgraded to fake-response evidence or treated as provider verification.
+

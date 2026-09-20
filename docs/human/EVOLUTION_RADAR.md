@@ -278,3 +278,19 @@ v0.33.0 已完成 source-level Gemini AfterTool implementation Trial；Scenario 
 
 也就是「已驗證真實 CLI capture path」，不是「已驗證真實 Gemini provider/model session」。
 
+## Issue #79 — Gemini Live Provider Session Gate
+
+v0.34.0 已完成 Scenario 143：真實 Gemini CLI、built-in tools 與 AIPS AfterTool capture path 都有 exact-candidate evidence，但 provider/model inference 尚未驗證。
+
+Repository maintainer 已明確批准下一個 bounded TRIAL：使用 protected GitHub Actions `GEMINI_API_KEY` 執行真實 provider session。不過 provider secret 不得暴露給未 merge PR code，因此目前先記錄 current baseline、Human Decision 與 secret-isolation contract。
+
+目前 truth：
+
+- `live_runtime_execution_verified=true`
+- Gemini runtime-specific `live_capture_verified=true`
+- `live_provider_session_verified=false`
+- `provider_model_execution_verified=false`
+- status = `PENDING_SECURE_PROVIDER_WORKFLOW`
+
+只有 trusted protected-main secret-backed workflow 真正執行 provider/model request + real tool + real capture hook 成功後，才能進下一個 evidence/release gate。
+
