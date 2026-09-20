@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.33.0
+
+### Gemini CLI AfterTool Capture Implementation Trial
+
+- Add the first runtime-specific bounded observable-event capture implementation Trial for Gemini CLI using its native `AfterTool` hook.
+- Scope the hook to `read_file|write_file|replace`, keep capture disabled by default, require explicit opt-in plus an explicit sink under the system temporary directory, and persist canonical metadata only.
+- Reuse the existing Resource Authorization truth and anomaly evaluator; no second authorization system, semantic intent gate, or automatic remediation path is introduced.
+- Record 6/6 supported fixture captures with zero unexpected event loss, four expected degraded/skipped cases, zero raw/private/secret leakage, and bounded enabled-subprocess overhead asserted in CI.
+- Preserve runtime truth: current official Gemini CLI documentation confirms `AfterTool` inputs and regex matchers, but Gemini CLI waits synchronously for hooks. The Trial therefore distinguishes non-enforcing flow control from latency: `decision=allow`, `result_flow_control_authorized=false`, `synchronous_hook=true`, `latency_path=synchronous`. `critical_path=false` refers only to authorization/result-enforcement semantics.
+- Add a disabled shell fast path that returns allow without starting Python; enabled-hook overhead remains bounded and measured.
+- Keep `live_runtime_execution_verified=false` and `live_capture_verified=false` because CI does not execute a real Gemini CLI binary.
+- Keep durable production persistence, shell/MCP/network capture, semantic intent governance, automatic remediation, new Role/Skill/provider dependency, and protected-operation/publication authority out of scope.
+- Add Scenario 142 and raise Scenario Conformance to 142/142 automated. Roles remain 12 and Skills remain 25.
+- Feature PR #98 exact final head `c95f4e315079a6b9185357f498be97e6cac3ab0c` passed core-change Janitor and required `repository` in validate Run #1071 with changed-files hash `28fc987415361e978b129e5608552ccad79ff0912cf07b5c6da488f684c1e24e`, Matrix hash `fc5f32dec7315cc525858e722edf4f0b17290c51210f32c72f76ac11011d3ae4`, candidate fingerprint `59815c9535e25fe435427a220b5f659239e21cad6722e3a98c978438d9ce0e72`, no blockers and preserved Human authority.
+- PR #98 was squash-merged to main as `30b8b363983b116bde5692cc66d69c93b7c42915`; protected-main validate Run #1072 completed successfully.
+- Constitution impact: NO. Protected Human Authority, deterministic Resource Authorization, merge/release/publication authority and safety boundaries remain unchanged.
+- Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
+
 ## 0.32.0
 
 ### Trial-backed Agent Anomaly Adoption Review
