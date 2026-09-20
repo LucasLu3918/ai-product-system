@@ -57,7 +57,7 @@ local_preanalysis:
     - to
     - for
     - in
-    - on
+    - "on"
     - with
     - from
     - by
