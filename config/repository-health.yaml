@@ -1,4 +1,7 @@
 version: 1
+evidence_binding:
+  manifest: complete
+  dirty_workspace: report_non_reproducible
 truth_sources:
   capability_map: references/evolution/CAPABILITY_MAP.yaml
   scenario_registry: tests/scenario_coverage.yaml

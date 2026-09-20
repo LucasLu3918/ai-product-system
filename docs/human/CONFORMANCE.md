@@ -1018,3 +1018,17 @@ Lifecycle evidence 會重播相同輸入兩次並要求 artifact 完全一致，
 Scenario 147 covers the credential-free Repository Health / Architecture Drift detector as lifecycle evidence. The detector reuses the canonical Scenario Conformance registry/checker rather than introducing a second Scenario evidence model.
 
 The released target for this increment is 147 automated Scenarios: 24 deterministic + 69 lifecycle + 54 agent_eval, with 0 manual and 0 uncovered. Repository Health PASS remains consistency evidence only and grants no code-change, PR, merge, release, publication or automatic-remediation authority.
+
+## Scenario 148 — Repository Health Evidence Binding
+
+Scenario 148 將 Repository Health 的 evidence truth 從「少數主要 digest」擴充成完整 deterministic input manifest。Capability targets、core surfaces、documentation bindings、Scenario inventory/evidence references、Scenario checker 與 Integration Gate contract files 都會進入 sorted manifest；存在的檔案記錄 SHA-256，不存在的 bound target 保留 `exists=false`。
+
+同時 audit 明確區分 Git workspace：
+
+- clean Git → `EXACT_REVISION` / `revision_reproducible=true`；
+- staged / unstaged / untracked changes → `DIRTY_WORKTREE` / `revision_reproducible=false`；
+- 非 Git fixture → `NO_GIT`。
+
+Dirty workspace 本身不是 architecture drift，因此不會只因 dirty 就改成 `DRIFT_DETECTED`；但 evidence 不得再被描述成 exact-revision reproducible。相同 revision + workspace state + manifest + drift 會產生相同 evidence fingerprint。
+
+目前 Scenario inventory 為 **148**：24 deterministic + 70 lifecycle + 54 agent_eval，**148 / 148 automated、0 manual、0 uncovered**。

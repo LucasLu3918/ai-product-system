@@ -1075,3 +1075,14 @@ scenarios:
       - orchestration/REPOSITORY_HEALTH.md
       - references/evolution/CAPABILITY_MAP.yaml
       - tests/validate_repository.py
+
+- id: "148"
+    path: tests/scenarios/148-repository-health-evidence-binding.md
+    coverage: lifecycle
+    evidence:
+      - scripts/repository_health.py
+      - config/repository-health.yaml
+      - tests/evidence/repository_health_lifecycle.py
+      - tests/validation/repository_health_contracts.py
+      - orchestration/REPOSITORY_HEALTH.md
+      - tests/validate_repository.py
