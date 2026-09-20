@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: fa341d69f5c6c501350168af30ac46b36703b606
-  changed_files_hash: 913957d52499462546e26bf5431f1ac3614b1517a57743d8cbaba050ff33987e
+  changed_files_hash: 08b6c8d087c4b4bdabaabc5d6241d9156520a1738f5d3d53e6778ee5b57a00ea
 change:
   id: external-credential-dependency-guard
   summary: Add a deterministic repository-wide guard so external Agent/provider API keys remain optional, non-release-blocking dependencies, while narrowing secret exposure to explicit credential-dependent lanes.
@@ -10,6 +10,7 @@ change:
     - secret-handling
     - github-actions
     - retrieval-trial
+    - evolution-radar
     - repository-validation
     - conformance
     - documentation
@@ -25,7 +26,7 @@ matrix:
       security: {applicable: true, evidence: "external secrets cannot be exposed to pull-request workflows and credential values are never read"}
       migration_recovery: {applicable: true, evidence: "existing GEMINI_API_KEY and OPENAI_API_KEY consumers are explicitly inventoried; undeclared future consumers fail closed"}
       cli_harness: {applicable: false, na_reason: "No Harness runtime routing behavior changes"}
-      docs_schema: {applicable: true, evidence: "Secret Handling, Security Assurance, Technology Guide, Capability Map and Conformance docs are synchronized"}
+      docs_schema: {applicable: true, evidence: "Secret Handling, Security Assurance, Evolution Radar, Technology Guide, Capability Map and Conformance docs are synchronized"}
   - boundary: retrieval-trial-secret-exposure
     reason: The local/default Retrieval semantic Trial must not receive an optional remote provider secret.
     checks:
@@ -49,7 +50,19 @@ matrix:
       security: {applicable: true, evidence: "no credential value is used in the no-key path"}
       migration_recovery: {applicable: true, evidence: "real provider path remains dormant and unchanged for future explicit configuration"}
       cli_harness: {applicable: false, na_reason: "Credential-free Gemini runtime verification remains unchanged"}
-      docs_schema: {applicable: true, evidence: "stale BLOCKED/PENDING documentation is reconciled"}
+      docs_schema: {applicable: true, evidence: "stale BLOCKED/PENDING provider documentation is reconciled across Human and Agent docs"}
+  - boundary: evolution-radar-provider-neutrality
+    reason: Capability-map and credential-policy changes must preserve Evolution Radar research/handoff operation without an external semantic provider key.
+    checks:
+      static_lint: {applicable: true, evidence: "existing analyzer config still defaults to provider-neutral handoff when credentials are unavailable"}
+      unit: {applicable: false, na_reason: "No semantic provider implementation is added"}
+      integration: {applicable: true, evidence: "documentation sync requires Human/Agent Evolution Radar surfaces to update together"}
+      contract: {applicable: true, evidence: "external credential registry inventories Evolution Radar OPENAI_API_KEY consumers as optional"}
+      e2e: {applicable: false, na_reason: "No external provider call is required or authorized"}
+      security: {applicable: true, evidence: "missing provider key cannot block evidence collection or expand authority"}
+      migration_recovery: {applicable: true, evidence: "provider-neutral handoff remains the credential-free fallback"}
+      cli_harness: {applicable: false, na_reason: "No Harness behavior changes"}
+      docs_schema: {applicable: true, evidence: "EVOLUTION_RADAR Human/Agent docs and overview are synchronized"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

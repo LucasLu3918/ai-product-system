@@ -290,9 +290,11 @@ Repository maintainer 已明確批准下一個 bounded TRIAL：使用 protected 
 - Gemini runtime-specific `live_capture_verified=true`
 - `live_provider_session_verified=false`
 - `provider_model_execution_verified=false`
-- status = `PENDING_SECURE_PROVIDER_WORKFLOW`
+- status = `NOT_CONFIGURED_BY_POLICY`
+- missing credential = `SKIPPED_NOT_CONFIGURED`
+- `required_for_release=false`
 
-只有 trusted protected-main secret-backed workflow 真正執行 provider/model request + real tool + real capture hook 成功後，才能進下一個 evidence/release gate。
+Live provider verification 保留為 optional dormant capability。只有未來明確設定 credential 且 trusted protected-main workflow 真正成功，才可能新增 provider evidence；目前不阻擋 AIPS baseline 或 release。
 
 <!-- AIPS_PROVIDER_CREDENTIAL_POLICY_V1 -->
 ## Optional External Agent / Provider Credential Policy
@@ -302,3 +304,17 @@ External Agent/provider credentials are not required for normal AIPS operation. 
 For Gemini live provider-session verification, an absent `GEMINI_API_KEY` now means `SKIPPED_NOT_CONFIGURED`, not a blocked or failed system state. The verified Gemini CLI runtime, built-in tool execution, AfterTool capture, deterministic validation, and other credential-free AIPS paths remain available.
 
 This policy does not introduce OAuth, Vertex AI, GitHub OIDC / Workload Identity Federation, or another login/authentication path. Live provider/model verification remains false until real evidence exists, but it is not a release prerequisite.
+
+## External Credential Dependency Guard（Scenario 145）
+
+AIPS 現在使用 `config/external-credentials.yaml` + `scripts/external_credential_guard.py` 對外部 Agent/provider credential 做 repository-wide deterministic inventory。
+
+Guard 會驗證：
+
+- 所有 executable/config credential reference 都已登記；
+- consumer surface 沒有偷偷擴張；
+- external Key 不得成為 baseline/release prerequisite；
+- credential-consuming workflow 不得暴露 secret 給 pull-request code；
+- credential-free default lane 不得取得 optional provider secret。
+
+目前 `GEMINI_API_KEY` 與 `OPENAI_API_KEY` 都維持 optional。Evolution Radar 沒有 semantic provider credential 時繼續走 provider-neutral handoff；不會因缺 Key 停止 research evidence 產生。
