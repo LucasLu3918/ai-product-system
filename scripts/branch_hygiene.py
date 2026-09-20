@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Deterministic read-only branch lifecycle classifier for AIPS."""
+"""Deterministic branch lifecycle reporting and exact-manifest cleanup for AIPS."""
 
 from __future__ import annotations
 
 import argparse
 import fnmatch
+import re
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -19,7 +20,7 @@ class BranchHygieneError(ValueError):
 def load_yaml(path: Path) -> dict[str, Any]:
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     if not isinstance(data, dict) or data.get("version") != 1:
-        raise BranchHygieneError("branch lifecycle config must be version 1 mapping")
+        raise BranchHygieneError(f"{path} must be a version 1 mapping")
     return data
 
 
@@ -41,35 +42,21 @@ def integrated(branch: str, target: str) -> bool:
         if not rows or all(row.startswith("-") for row in rows):
             return True
 
-    # Multi-commit branches are often squash-merged, so their individual patch IDs
-    # do not necessarily appear in the target. A clean synthetic merge whose tree is
-    # identical to the target proves that the branch contributes no remaining net
-    # change without relying on GitHub PR metadata.
     merge_tree = git("merge-tree", "--write-tree", target, branch, check=False)
     if merge_tree.returncode != 0:
         return False
-    merged_tree = next(
-        (line.strip() for line in merge_tree.stdout.splitlines() if line.strip()),
-        "",
-    )
+    merged_tree = next((line.strip() for line in merge_tree.stdout.splitlines() if line.strip()), "")
     target_tree = git("rev-parse", f"{target}^{{tree}}", check=False)
-    return (
-        target_tree.returncode == 0
-        and bool(merged_tree)
-        and merged_tree == target_tree.stdout.strip()
-    )
+    return target_tree.returncode == 0 and bool(merged_tree) and merged_tree == target_tree.stdout.strip()
 
 
 def classify(name: str, config: dict[str, Any]) -> str:
-    persistent = set(config.get("persistent_exact") or [])
-    if name in persistent:
+    if name in set(config.get("persistent_exact") or []):
         return "PERSISTENT"
-    for pattern in config.get("persistent_patterns") or []:
-        if fnmatch.fnmatch(name, pattern):
-            return "PERSISTENT"
-    for pattern in config.get("ephemeral_patterns") or []:
-        if fnmatch.fnmatch(name, pattern):
-            return "EPHEMERAL"
+    if any(fnmatch.fnmatch(name, pattern) for pattern in config.get("persistent_patterns") or []):
+        return "PERSISTENT"
+    if any(fnmatch.fnmatch(name, pattern) for pattern in config.get("ephemeral_patterns") or []):
+        return "EPHEMERAL"
     return "UNCLASSIFIED"
 
 
@@ -84,12 +71,10 @@ def branch_refs(target: str, remote: str | None) -> tuple[str, list[tuple[str, s
             if not ref or ref == f"{remote}/HEAD" or not ref.startswith(prefix):
                 continue
             name = ref[len(prefix):]
-            if name == target:
-                continue
-            rows.append((name, ref))
+            if name != target:
+                rows.append((name, ref))
         target_ref = f"{remote}/{target}"
-        verify = git("rev-parse", "--verify", target_ref, check=False)
-        if verify.returncode != 0:
+        if git("rev-parse", "--verify", target_ref, check=False).returncode != 0:
             raise BranchHygieneError(f"remote target ref not found: {target_ref}")
         return target_ref, sorted(set(rows))
 
@@ -98,41 +83,137 @@ def branch_refs(target: str, remote: str | None) -> tuple[str, list[tuple[str, s
     return target, rows
 
 
+def build_report(config: dict[str, Any], target: str, remote: str | None) -> dict[str, Any]:
+    target_ref, refs = branch_refs(target, remote)
+    rows = []
+    for name, ref in refs:
+        lifecycle = classify(name, config)
+        is_integrated = integrated(ref, target_ref)
+        rows.append({
+            "branch": name,
+            "lifecycle": lifecycle,
+            "integrated_into_target": is_integrated,
+            "deletion_candidate": lifecycle == "EPHEMERAL" and is_integrated,
+        })
+    return {
+        "version": 1,
+        "target": target,
+        "ref_scope": f"remote:{remote}" if remote else "local",
+        "policy": "report_only",
+        "branches": rows,
+        "authority": {
+            "branch_deletion_authorized": False,
+            "human_authority_preserved": True,
+        },
+    }
+
+
+def validate_cleanup_manifest(doc: dict[str, Any]) -> None:
+    if doc.get("version") != 1:
+        raise BranchHygieneError("cleanup manifest version must be 1")
+    if not re.fullmatch(r"[0-9a-f]{40}", str(doc.get("baseline_main_sha") or "")):
+        raise BranchHygieneError("cleanup manifest baseline_main_sha must be a full commit SHA")
+    auth = doc.get("authorization") or {}
+    if auth.get("type") != "explicit_user_request" or auth.get("scope") != "exact_manifest_only":
+        raise BranchHygieneError("cleanup manifest requires explicit exact-list Human authorization")
+    if auth.get("one_time") is not True:
+        raise BranchHygieneError("cleanup manifest must be one_time=true")
+    rows = doc.get("branches")
+    if not isinstance(rows, list) or not rows:
+        raise BranchHygieneError("cleanup manifest branches must be a non-empty list")
+    seen: set[str] = set()
+    for row in rows:
+        if not isinstance(row, dict):
+            raise BranchHygieneError("cleanup manifest branch entries must be mappings")
+        name = str(row.get("branch") or "")
+        sha = str(row.get("expected_sha") or "")
+        if not name or name in seen:
+            raise BranchHygieneError("cleanup manifest branch names must be unique and non-empty")
+        if not re.fullmatch(r"[0-9a-f]{40}", sha):
+            raise BranchHygieneError(f"{name}: expected_sha must be a full commit SHA")
+        if not isinstance(row.get("merged_pr"), int) or row["merged_pr"] < 1:
+            raise BranchHygieneError(f"{name}: merged_pr must be a positive integer")
+        seen.add(name)
+
+
+def apply_cleanup(config: dict[str, Any], manifest: dict[str, Any], *, target: str, remote: str) -> dict[str, Any]:
+    validate_cleanup_manifest(manifest)
+    target_ref, refs = branch_refs(target, remote)
+    ref_map = dict(refs)
+    preflight: list[dict[str, Any]] = []
+    blockers: list[str] = []
+
+    for row in manifest["branches"]:
+        name = row["branch"]
+        expected = row["expected_sha"]
+        ref = ref_map.get(name)
+        if ref is None:
+            preflight.append({"branch": name, "expected_sha": expected, "status": "ALREADY_ABSENT"})
+            continue
+        if name == target or classify(name, config) != "EPHEMERAL":
+            blockers.append(f"{name}: branch is not an EPHEMERAL cleanup target")
+            continue
+        current = git("rev-parse", ref).stdout.strip()
+        if current != expected:
+            blockers.append(f"{name}: ref moved from approved SHA {expected} to {current}")
+            continue
+        if not integrated(ref, target_ref):
+            blockers.append(f"{name}: branch is not deterministically integrated into {target}")
+            continue
+        preflight.append({"branch": name, "expected_sha": expected, "status": "READY"})
+
+    if blockers:
+        raise BranchHygieneError("cleanup preflight blocked: " + "; ".join(blockers))
+
+    results: list[dict[str, Any]] = []
+    for row in preflight:
+        if row["status"] == "ALREADY_ABSENT":
+            results.append(row)
+            continue
+        name = row["branch"]
+        proc = git("push", remote, "--delete", name, check=False)
+        if proc.returncode != 0:
+            raise BranchHygieneError(proc.stderr.strip() or f"failed to delete {name}")
+        results.append({**row, "status": "DELETED"})
+
+    return {
+        "version": 1,
+        "cleanup_id": manifest.get("cleanup_id"),
+        "target": target,
+        "remote": remote,
+        "baseline_main_sha": manifest.get("baseline_main_sha"),
+        "results": results,
+        "summary": {
+            "requested": len(results),
+            "deleted": sum(row["status"] == "DELETED" for row in results),
+            "already_absent": sum(row["status"] == "ALREADY_ABSENT" for row in results),
+        },
+        "authority": {
+            "branch_deletion_authorized": True,
+            "authorization_scope": "exact_manifest_only",
+            "human_authority_preserved": True,
+        },
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", type=Path, default=Path("config/branch-lifecycle.yaml"))
     parser.add_argument("--target")
-    parser.add_argument(
-        "--remote",
-        help="Classify refs/remotes/<remote> instead of only local refs/heads; intended for CI.",
-    )
+    parser.add_argument("--remote", help="Classify refs/remotes/<remote>; required for approved cleanup.")
+    parser.add_argument("--apply-cleanup", type=Path, help="Apply one exact Human-authorized cleanup manifest.")
     args = parser.parse_args()
 
     try:
         config = load_yaml(args.config)
         target = args.target or str(config.get("default_branch") or "main")
-        target_ref, refs = branch_refs(target, args.remote)
-        report = []
-        for name, ref in refs:
-            lifecycle = classify(name, config)
-            is_integrated = integrated(ref, target_ref)
-            report.append({
-                "branch": name,
-                "lifecycle": lifecycle,
-                "integrated_into_target": is_integrated,
-                "deletion_candidate": lifecycle == "EPHEMERAL" and is_integrated,
-            })
-        payload = {
-            "version": 1,
-            "target": target,
-            "ref_scope": f"remote:{args.remote}" if args.remote else "local",
-            "policy": "report_only",
-            "branches": report,
-            "authority": {
-                "branch_deletion_authorized": False,
-                "human_authority_preserved": True,
-            },
-        }
+        if args.apply_cleanup:
+            if not args.remote:
+                raise BranchHygieneError("--apply-cleanup requires --remote")
+            manifest = load_yaml(args.apply_cleanup)
+            payload = apply_cleanup(config, manifest, target=target, remote=args.remote)
+        else:
+            payload = build_report(config, target, args.remote)
     except (OSError, yaml.YAMLError, BranchHygieneError) as exc:
         print(f"BRANCH HYGIENE BLOCKED: {exc}")
         return 2
