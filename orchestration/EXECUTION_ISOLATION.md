@@ -151,3 +151,11 @@ Scenario 141 creates no Trial worktree and runs no live capture hook. It binds a
 
 Any future implementation of `AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md` that mutates a runtime adapter or installs a runtime hook returns to the normal Execution Isolation rules: explicit Change Boundary, isolated writer where applicable, exact-candidate validation and no publication authority derived from the adoption artifact.
 
+## Codex capture Trial and execution isolation
+
+Scenario 142 installs a disabled-by-default post-execution hook contract but does not create another writer or pre-execution control path.
+
+The hook runs after the matched tool has produced output and is configured async. Capture failure, sensitive payload rejection, unresolved outcome or buffer exhaustion may reduce evidence quality but must not rewrite the completed tool result or widen execution authority.
+
+The bounded spool is AIPS runtime evidence outside project source. It contains sanitized canonical metadata only. A future real-session smoke test must remain scoped to one Codex installation and must not be interpreted as authorization to enable capture globally.
+

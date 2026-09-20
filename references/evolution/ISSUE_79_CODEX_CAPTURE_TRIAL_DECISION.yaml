@@ -1,0 +1,34 @@
+version: 1
+decision:
+  candidate_id: EVO-7DA9FC0C0AD8
+  signal_fingerprint: sha256:7da9fc0c0ad89a0c7d0315aa2a5f4aa7ceb9842149a969a84708ce382c3082b3
+  signal_title: Agent Anomaly Detection, now in Private Preview on the Gemini Enterprise Agent Platform
+  evidence_digest: sha256:24d08e1d5a983ad20a5c9b98dab19b902cce971f1a49555ba778c76f6b26fbee
+  baseline_repository_revision: e00c4c28b7d8a7e4a925d57c5c6613413d8be48d
+  baseline_status: CURRENT
+  recommendation_state: ADOPT
+  decision: TRIAL
+  approved_scope: "Bounded Codex PostToolUse capture implementation Trial: install a reversible disabled-by-default async hook for apply_patch/Edit/Write, sanitize metadata into the canonical observable-event contract, record bounded local event/drop evidence, and verify overhead/degradation behavior. No production-wide enablement, runtime enforcement, semantic intent governance, durable raw payload persistence, or automatic remediation."
+  approved_paths:
+    - harness/adapters/codex/**
+    - scripts/manage_runtime_adapter.py
+    - scripts/agent_observable_event_capture.py
+    - bin/aips
+    - tests/**
+    - references/evolution/**
+    - orchestration/**
+    - docs/human/**
+    - templates/harness/**
+  reason: The repository maintainer explicitly authorized implementing the recommended next step after v0.32.0, a single-runtime bounded live-capture implementation Trial. Codex is selected because its official PostToolUse hook matches the adopted post-execution out-of-band design. The Trial must remain disabled by default and must not claim real-session verification unless actually exercised by a Codex runtime.
+  human_override: false
+  decided_by: repository maintainer LucasLu3918
+  decided_at: "2026-09-20T10:29:00+08:00"
+  next_action: controlled_trial_execution
+decision_fingerprint: sha256:5b9108c6b0e998c35c9643f0a43d262fa3f32e0895167232588d98af901bb7e6
+authority:
+  human_decision_recorded: true
+  code_change_authorized: false
+  branch_or_pr_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  normal_system_gates_required: true

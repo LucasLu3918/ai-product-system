@@ -315,3 +315,30 @@ Current automated inventory:
 - uncovered: 0
 - automated: 141 / 141
 
+## Scenario 142 — Codex PostToolUse capture implementation Trial
+
+Scenario 142 is lifecycle-covered by `tests/evidence/codex_live_capture_trial_lifecycle.py`, `scripts/agent_observable_event_capture.py`, and the structured hook composition in `scripts/manage_runtime_adapter.py`.
+
+It verifies a single runtime-specific implementation boundary:
+
+- Codex `PostToolUse` async hook composition for apply-patch aliases;
+- unrelated hook preservation and conflict-safe uninstall;
+- disabled-by-default capture;
+- metadata-only canonical persistence;
+- sensitive/unresolved/buffer-full degradation without blocking;
+- bounded concurrency;
+- conservative p95 processing threshold.
+
+The Trial explicitly distinguishes `hook_contract_verified=true` from runtime trust and real-session verification. Repository CI does not launch Codex, so `hook_trust_verified=false`, `live_runtime_exercised=false`, and `live_capture_verified=false` remain required.
+
+Scenario 142 also repairs the repository aggregate imports for the dedicated Scenario 139/140 validation modules.
+
+Current automated inventory:
+
+- deterministic: 22
+- lifecycle: 66
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 142 / 142
+

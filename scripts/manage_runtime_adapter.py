@@ -70,6 +70,92 @@ def save_json(path: Path, data: dict):
     temp.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     os.replace(temp, path)
 
+def codex_capture_hook_entry(command: str) -> dict:
+    return {
+        "matcher": "^(apply_patch|Edit|Write)$",
+        "hooks": [{
+            "type": "command",
+            "command": command,
+            "timeout": 2,
+            "async": True,
+            "statusMessage": "Recording AIPS post-execution evidence",
+        }],
+    }
+
+def _read_hook_snapshot(snapshot: Path) -> dict | None:
+    if not snapshot.exists():
+        return None
+    try:
+        value = json.loads(snapshot.read_text(encoding="utf-8"))
+    except Exception:
+        return None
+    return value if isinstance(value, dict) else None
+
+def install_codex_hook(settings: Path, command: str, snapshot: Path):
+    try:
+        data = load_json(settings)
+    except Exception as exc:
+        return "ERROR", f"cannot safely parse Codex hooks: {exc}"
+    hooks = data.setdefault("hooks", {})
+    groups = hooks.setdefault("PostToolUse", [])
+    if not isinstance(groups, list):
+        return "ERROR", "Codex hooks.PostToolUse is not a list"
+
+    desired = codex_capture_hook_entry(command)
+    previous = _read_hook_snapshot(snapshot)
+    existing_index = next(
+        (i for i, group in enumerate(groups) if isinstance(group, dict) and is_aips_hook(group)),
+        None,
+    )
+    if existing_index is not None:
+        existing = groups[existing_index]
+        if previous is not None and existing != previous:
+            return "CONFLICT", "existing AIPS Codex hook was modified; preserved"
+        groups[existing_index] = desired
+    else:
+        groups.append(desired)
+
+    save_json(settings, data)
+    snapshot.parent.mkdir(parents=True, exist_ok=True)
+    snapshot.write_text(json.dumps(desired, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    return "OK", str(settings)
+
+def uninstall_codex_hook(settings: Path, snapshot: Path):
+    if not settings.exists() or not snapshot.exists():
+        return "OK", "nothing to remove"
+    try:
+        data = load_json(settings)
+    except Exception as exc:
+        return "ERROR", f"cannot safely parse Codex hooks: {exc}"
+    hooks = data.get("hooks")
+    if not isinstance(hooks, dict):
+        snapshot.unlink(missing_ok=True)
+        return "OK", "no hooks"
+
+    groups = hooks.get("PostToolUse")
+    if not isinstance(groups, list):
+        snapshot.unlink(missing_ok=True)
+        return "OK", "no PostToolUse hooks"
+    expected = _read_hook_snapshot(snapshot)
+    existing_index = next(
+        (i for i, group in enumerate(groups) if isinstance(group, dict) and is_aips_hook(group)),
+        None,
+    )
+    if existing_index is None:
+        snapshot.unlink(missing_ok=True)
+        return "OK", "managed hook already absent"
+    if expected is None or groups[existing_index] != expected:
+        return "CONFLICT", "managed Codex hook changed; preserved"
+
+    groups.pop(existing_index)
+    if not groups:
+        hooks.pop("PostToolUse", None)
+    if not hooks:
+        data.pop("hooks", None)
+    save_json(settings, data)
+    snapshot.unlink(missing_ok=True)
+    return "OK", str(settings)
+
 def claude_hook_entry(command: str) -> dict:
     return {"hooks": [{"type": "command", "command": command, "timeout": 10}]}
 
@@ -127,7 +213,7 @@ def uninstall_claude_hook(settings: Path):
 
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("action", choices=["install-block","uninstall-block","install-claude-hook","uninstall-claude-hook"])
+    p.add_argument("action", choices=["install-block","uninstall-block","install-codex-hook","uninstall-codex-hook","install-claude-hook","uninstall-claude-hook"])
     p.add_argument("--target"); p.add_argument("--source"); p.add_argument("--snapshot")
     p.add_argument("--settings"); p.add_argument("--command"); p.add_argument("--guard-command")
     a = p.parse_args()
@@ -135,6 +221,10 @@ def main():
         status, message = install_block(Path(a.target), Path(a.source), Path(a.snapshot))
     elif a.action == "uninstall-block":
         status, message = uninstall_block(Path(a.target), Path(a.snapshot))
+    elif a.action == "install-codex-hook":
+        status, message = install_codex_hook(Path(a.settings), str(a.command), Path(a.snapshot))
+    elif a.action == "uninstall-codex-hook":
+        status, message = uninstall_codex_hook(Path(a.settings), Path(a.snapshot))
     elif a.action == "install-claude-hook":
         status, message = install_claude_hook(Path(a.settings), str(a.command), str(a.guard_command) if a.guard_command else None)
     else:

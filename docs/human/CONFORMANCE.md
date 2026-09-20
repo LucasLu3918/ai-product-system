@@ -902,3 +902,23 @@ System Improvement Review 結論為 `SUITABLE_WITH_BOUNDS`：未來最小實作�
 
 目前 Scenario inventory 為 **141**：22 deterministic + 65 lifecycle + 54 agent_eval，**141 / 141 automated、0 manual、0 uncovered**。
 
+## Scenario 142 — Codex PostToolUse Live-Capture Implementation Trial
+
+Scenario 142 選擇 **Codex CLI** 作為第一個 runtime-specific capture Trial，原因是 Codex 已有官方 `PostToolUse` command-hook contract，並支援 async handler，符合 v0.32.0 核准的 POST_EXECUTION / out-of-band 設計。
+
+AIPS 現在可在 `~/.codex/hooks.json` 組合自己的 namespaced PostToolUse hook，但 capture **預設 disabled**，且不繞過 Codex hook trust review。Trial 只針對 `apply_patch/Edit/Write` matcher；實際 stdin 必須是 canonical `tool_name=apply_patch` 才會進一步處理。
+
+Lifecycle 驗證：
+
+- 保留 unrelated user hooks，AIPS hook 可安全 install / idempotent update / uninstall；
+- AIPS-managed hook 被人工改動後 uninstall 會 CONFLICT 並保留；
+- raw `tool_input` / `tool_response` / session / turn 資料不寫入 event；
+- private reasoning、secret-like payload 與 unresolved outcome 會 drop/degrade，不阻擋已完成的工具；
+- bounded spool 在 concurrency 下不超過設定 event 上限；
+- hook-processing p95 必須低於保守的 250 ms CI threshold；
+- `hook_contract_verified=true`，但因 CI 未啟動真正已信任的 Codex session，`live_runtime_exercised=false`、`live_capture_verified=false`。
+
+另外本 Scenario 同步修正 repository validator regression：Scenario 139/140 的 dedicated validation imports 先前被字面 `\n` 留在註解行中，現在恢復為真正的 Python imports，Scenario 142 contract 也正式加入 aggregate。
+
+目前 Scenario inventory 為 **142**：22 deterministic + 66 lifecycle + 54 agent_eval，**142 / 142 automated、0 manual、0 uncovered**。
+

@@ -1,0 +1,50 @@
+version: 1
+trial_id: issue-79-codex-post-tool-capture-v1
+baseline_repository_revision: e00c4c28b7d8a7e4a925d57c5c6613413d8be48d
+decision_fingerprint: sha256:5b9108c6b0e998c35c9643f0a43d262fa3f32e0895167232588d98af901bb7e6
+runtime: codex
+hook:
+  event: PostToolUse
+  matcher: "^(apply_patch|Edit|Write)$"
+  async: true
+  timeout_seconds: 2
+  trust_required: true
+  hook_contract_verified: true
+  installed_state_verified: true
+  live_runtime_exercised: false
+  live_capture_verified: false
+capture:
+  mode: POST_EXECUTION_EVIDENCE
+  default_enabled: false
+  critical_path: false
+  runtime_enforced: false
+  automatic_remediation: false
+  raw_payload_persisted: false
+  private_reasoning_persisted: false
+  secret_values_persisted: false
+  canonical_resource: repository-patch
+  canonical_operation: update
+bounded_evidence:
+  success_fixture_persisted: true
+  failed_fixture_persisted: true
+  secret_fixture_dropped: true
+  private_reasoning_fixture_dropped: true
+  unresolved_outcome_fixture_dropped: true
+  buffer_full_degradation_reported: true
+  concurrent_event_count_bounded: true
+  user_hook_preservation_verified: true
+  safe_uninstall_verified: true
+  overhead_threshold_ms: 250
+  overhead_threshold_verified_in_ci: true
+status: PASS
+recommendation: HUMAN_REVIEW_RUNTIME_SMOKE_TEST
+trial_fingerprint: sha256:17788abd4f78b8047c92059e512b11759edf91e9188e8466ff214148aa840fd8
+authority:
+  human_runtime_smoke_test_required: true
+  live_runtime_capture_authorized: false
+  runtime_enforcement_authorized: false
+  automatic_remediation_authorized: false
+  human_approval_granted: false
+  merge_authorized: false
+  release_authorized: false
+  publication_authorized: false

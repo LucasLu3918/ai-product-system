@@ -1,6 +1,6 @@
 # Agent Observable-Event Capture Design
 
-Status: **ADOPTED DIRECTION — NOT A LIVE RUNTIME CAPABILITY**
+Status: **ADOPTED DIRECTION + CODEX HOOK CONTRACT TRIAL — LIVE SESSION NOT VERIFIED**
 
 This document is the System Improvement Review design handoff for the Issue #79 Agent anomaly candidate after Scenario 140 PASS. It defines the smallest future implementation shape. It does not enable a runtime hook.
 
@@ -77,7 +77,7 @@ Durable event retention, cross-runtime correlation and queue recovery are separa
 
 ## Runtime support truth
 
-No current adapter is marked live-capture verified by this release.
+Codex now has a bounded PostToolUse hook-contract implementation Trial. The hook is composed disabled-by-default, but no adapter is marked live-capture verified because repository CI does not execute a real trusted runtime session.
 
 A future adapter implementation must demonstrate:
 
@@ -91,11 +91,32 @@ A future adapter implementation must demonstrate:
 
 Only then may `live_capture_verified` become true for that specific runtime integration.
 
-## Future implementation gate
+## Runtime-specific implementation status
 
-The next engineering step is intentionally deferred. A later Human-approved change must select one concrete runtime adapter and run a bounded live-capture implementation Trial.
+Scenario 142 selects Codex for the first bounded implementation Trial. The repository can now compose a reversible async `PostToolUse` hook and sanitize structured `apply_patch` evidence into the canonical event shape.
 
-That later scope must not include semantic intent governance or automatic remediation unless separately approved.
+Verified in repository CI:
+
+- namespaced hooks.json composition and safe uninstall;
+- disabled-by-default behavior;
+- raw payload/private reasoning/secret exclusion;
+- bounded buffer and concurrency degradation;
+- conservative hook-processing overhead threshold;
+- hook contract shape.
+
+Not verified in repository CI:
+
+- Codex runtime trust for the installed hook;
+- a real Codex session emitting the event;
+- production event completeness.
+
+Therefore `hook_contract_verified=true` is truthful while `hook_trust_verified=false` and `live_capture_verified=false`.
+
+## Next gate
+
+The next step is a Human-reviewed smoke test in one real Codex runtime installation. It must verify trust, actual PostToolUse delivery, sanitized event output and observable degradation behavior before any live verification flag changes.
+
+That smoke test still grants no runtime enforcement or automatic remediation.
 
 ## Architecture diagram impact
 

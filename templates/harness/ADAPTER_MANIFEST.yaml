@@ -11,6 +11,10 @@ integration:
   status: null # AUTOMATIC | MANUAL | NOT_DETECTED | CONFLICT | ERROR
   capability: null # TURN_NATIVE | CONTEXT_ALWAYS | SESSION_ONLY | MANUAL | UNSUPPORTED
   governance_enforcement: null # ADVISORY | TOOL_GUARDED | ENFORCED | UNSUPPORTED
+  observable_capture_mode: null # POST_EXECUTION_EVIDENCE | UNSUPPORTED
+  hook_contract_verified: false
+  hook_trust_verified: false
+  live_capture_verified: false
 
 ownership:
   resources: []

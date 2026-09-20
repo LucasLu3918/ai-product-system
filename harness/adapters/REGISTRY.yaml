@@ -4,9 +4,18 @@ adapters:
   codex:
     runtime: Codex CLI
     detect_command: codex
-    strategy: managed_global_instruction_block
+    strategy: managed_global_instruction_block_plus_post_tool_capture_hook
     capability: CONTEXT_ALWAYS
     governance_enforcement: ADVISORY
+    observable_event_capture:
+      mode: POST_EXECUTION_EVIDENCE
+      hook_event: PostToolUse
+      matcher: "^(apply_patch|Edit|Write)$"
+      async: true
+      default_enabled: false
+      hook_contract_verified: true
+      hook_trust_verified: false
+      live_capture_verified: false
     source: harness/adapters/codex/AGENTS.md
 
   claude-code:

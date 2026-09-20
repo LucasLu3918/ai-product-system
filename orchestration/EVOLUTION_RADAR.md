@@ -217,3 +217,13 @@ This path does not weaken the normal stale-baseline rule. It creates a new curre
 
 For Issue #79, the Human ADOPT scope is design-only. The System Improvement Review adopts the future opt-in metadata-only POST_EXECUTION capture direction and defers all live runtime implementation to a separate later Trial.
 
+## Codex runtime-specific capture Trial
+
+Scenario 142 is the first implementation Trial after the Scenario 141 design-only ADOPT.
+
+The current v0.32.0 baseline is bound to a Human TRIAL Decision for Codex only. The runtime choice is based on a native post-tool lifecycle contract; this does not generalize capture support to Claude Code, Gemini CLI or unknown runtimes.
+
+The committed Trial result may report `hook_contract_verified=true` after deterministic install/sanitization/bounded-spool evidence passes. It MUST keep `hook_trust_verified=false`, `live_runtime_exercised=false` and `live_capture_verified=false` until a real trusted Codex session is exercised.
+
+PASS hands off to `HUMAN_REVIEW_RUNTIME_SMOKE_TEST`, not ADOPT/production enablement.
+

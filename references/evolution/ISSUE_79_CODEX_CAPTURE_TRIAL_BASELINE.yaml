@@ -1,0 +1,31 @@
+version: 1
+assessment_id: issue-79-codex-post-tool-capture-trial-baseline
+baseline:
+  repository_revision: e00c4c28b7d8a7e4a925d57c5c6613413d8be48d
+  version: 0.32.0
+  issue: 79
+  signal_fingerprint: sha256:7da9fc0c0ad89a0c7d0315aa2a5f4aa7ceb9842149a969a84708ce382c3082b3
+  signal_title: Agent Anomaly Detection, now in Private Preview on the Gemini Enterprise Agent Platform
+current_state: ADOPTED_DIRECTION
+adoption:
+  decision_fingerprint: sha256:c742a082dd00bd9e451810b5ce4640413e420b06acb97311db42112150b13f3e
+  adoption_fingerprint: sha256:1263e376a83926de458605f758b718fa6c7e0e3771d2ae19e6b53434f826ef89
+  review_conclusion: SUITABLE_WITH_BOUNDS
+  live_capture_verified: false
+runtime_selection:
+  runtime: codex
+  reason: Codex exposes an official PostToolUse command-hook contract that runs after supported tool output and supports async handlers, matching the adopted POST_EXECUTION out-of-band design.
+  official_hook_event: PostToolUse
+  official_matcher_scope: [apply_patch, Edit, Write]
+  trust_required: true
+trial_question: Can AIPS install a reversible disabled-by-default Codex PostToolUse hook and convert only bounded apply_patch metadata into canonical observable-event evidence without persisting raw payload, private reasoning or secrets, while remaining outside the critical path?
+authority:
+  human_decision_recorded: false
+  trial_authorized: false
+  code_change_authorized: false
+  live_runtime_capture_authorized: false
+  runtime_enforcement_authorized: false
+  automatic_remediation_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  publication_authorized: false

@@ -231,3 +231,34 @@ runtime adapter
 - Live observable-event capture：**ADOPTED DESIGN DIRECTION / NOT IMPLEMENTED**；
 - Semantic intent governance：仍為 ASSESS。
 
+## Issue #79 — Codex PostToolUse Capture Implementation Trial（Scenario 142）
+
+在 v0.32.0 採用 live-capture 設計方向後，本輪 Human Decision 將 current `main@e00c4c28b7d8a7e4a925d57c5c6613413d8be48d` 綁定到單一 runtime 的 bounded TRIAL。
+
+選擇 Codex 的理由是其官方 hook contract 已具備符合需求的 `PostToolUse` 與 async command handler。Trial 不會把所有 runtime 一次宣稱支援，也不會把 repository CI fixture 冒充成真正使用者 session。
+
+Durable evidence：
+
+- `references/evolution/ISSUE_79_CODEX_CAPTURE_TRIAL_BASELINE.yaml`
+- `references/evolution/ISSUE_79_CODEX_CAPTURE_TRIAL_DECISION.yaml`
+- `references/evolution/ISSUE_79_CODEX_CAPTURE_TRIAL_RESULT.yaml`
+
+Trial PASS 代表：
+
+- hook composition / reversible ownership contract verified；
+- sanitizer / bounded spool / degradation / overhead contract verified；
+- default-disabled 與 hook-trust boundary verified。
+
+但仍明確：
+
+~~~text
+hook_contract_verified = true
+hook_trust_verified = false
+live_runtime_exercised = false
+live_capture_verified = false
+~~~
+
+所以下一步不是直接 production enable，而是 **Human-reviewed real Codex runtime smoke test**。只有真正已信任的 Codex session 產生 PostToolUse event 並通過 evidence checks，才有資格討論該特定 runtime 的 `live_capture_verified=true`。
+
+Semantic intent governance 與 automatic remediation 仍不在本 Trial。
+

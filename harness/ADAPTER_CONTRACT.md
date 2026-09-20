@@ -40,3 +40,23 @@ Structured settings integrations add/remove only an AIPS namespaced hook entry a
 ## Adapter responsibilities
 
 Adapters detect, integrate, verify and uninstall. They never implement Product/Security/Quality reasoning, preload the whole AIPS repository, replace user Skills, or hide capability limitations.
+
+## Observable-event capture truth
+
+Observable-event capture is reported separately from context capability and governance enforcement.
+
+- `UNSUPPORTED` — no AIPS capture hook contract is installed/verified.
+- `POST_EXECUTION_EVIDENCE` — a post-execution evidence hook contract exists; this does **not** mean it is enabled, trusted or live-verified.
+
+Additional truth fields:
+
+- `hook_contract_verified` — AIPS can deterministically compose and validate the runtime-native hook shape.
+- `hook_trust_verified` — the runtime itself has accepted/trusted that exact non-managed hook definition.
+- `live_capture_verified` — a real runtime session actually emitted evidence through the hook and passed the declared smoke-test contract.
+
+Never infer later states from earlier ones. In particular, an installed Codex `PostToolUse` JSON entry is not proof that Codex trusted or executed it.
+
+### Codex bounded capture
+
+Scenario 142 composes an async, default-disabled `PostToolUse` hook for `apply_patch/Edit/Write`. It persists only sanitized canonical metadata and remains outside the critical path. Governance enforcement stays ADVISORY; anomaly evidence does not block or undo tool execution.
+

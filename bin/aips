@@ -137,7 +137,7 @@ adapter_strategy_value() {
 }
 
 write_adapter_state() {
-  local id="$1" status="$2" strategy="$3" resource="${4:-}" capability="${5:-MANUAL}" enforcement="${6:-}"
+  local id="$1" status="$2" strategy="$3" resource="${4:-}" capability="${5:-MANUAL}" enforcement="${6:-}" capture_mode="${7:-UNSUPPORTED}" hook_contract="${8:-false}" live_capture="${9:-false}"
   if [ -z "$enforcement" ]; then
     [ "$capability" = "UNSUPPORTED" ] && enforcement="UNSUPPORTED" || enforcement="ADVISORY"
   fi
@@ -149,6 +149,9 @@ strategy: "$strategy"
 resource: "$resource"
 capability: "$capability"
 governance_enforcement: "$enforcement"
+observable_capture_mode: "$capture_mode"
+hook_contract_verified: "$hook_contract"
+live_capture_verified: "$live_capture"
 updated_at: "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 EOF
 }
@@ -160,6 +163,7 @@ write_ownership_manifest() {
   local codex_resource claude_resource gemini_resource
   local codex_capability claude_capability gemini_capability
   local codex_enforcement claude_enforcement gemini_enforcement
+  local codex_capture_mode codex_hook_contract codex_live_capture
 
   codex_status="$(adapter_status_value codex 2>/dev/null || echo NOT_DETECTED)"
   claude_status="$(adapter_status_value claude-code 2>/dev/null || echo NOT_DETECTED)"
@@ -174,6 +178,9 @@ write_ownership_manifest() {
   claude_capability="$(adapter_state_value claude-code capability 2>/dev/null || echo MANUAL)"
   gemini_capability="$(adapter_state_value gemini-cli capability 2>/dev/null || echo MANUAL)"
   codex_enforcement="$(adapter_state_value codex governance_enforcement 2>/dev/null || echo ADVISORY)"
+  codex_capture_mode="$(adapter_state_value codex observable_capture_mode 2>/dev/null || echo UNSUPPORTED)"
+  codex_hook_contract="$(adapter_state_value codex hook_contract_verified 2>/dev/null || echo false)"
+  codex_live_capture="$(adapter_state_value codex live_capture_verified 2>/dev/null || echo false)"
   claude_enforcement="$(adapter_state_value claude-code governance_enforcement 2>/dev/null || echo ADVISORY)"
   gemini_enforcement="$(adapter_state_value gemini-cli governance_enforcement 2>/dev/null || echo ADVISORY)"
 
@@ -208,6 +215,14 @@ EOF
     path: "$codex_resource"
     snapshot: "$OWNED_HOME/codex.block"
 EOF
+      if [ -f "$OWNED_HOME/codex-post-tool-hook.json" ]; then
+        cat <<EOF
+  - type: runtime_composed_hook
+    runtime: codex
+    path: "${CODEX_HOME:-$HOME/.codex}/hooks.json"
+    snapshot: "$OWNED_HOME/codex-post-tool-hook.json"
+EOF
+      fi
     fi
 
     if [ "$claude_status" = "AUTOMATIC" ] && [ -n "$claude_resource" ]; then
@@ -234,6 +249,9 @@ adapters:
     status: "$codex_status"
     capability: "$codex_capability"
     governance_enforcement: "$codex_enforcement"
+    observable_capture_mode: "$codex_capture_mode"
+    hook_contract_verified: "$codex_hook_contract"
+    live_capture_verified: "$codex_live_capture"
     strategy: "$codex_strategy"
     resource: "$codex_resource"
   claude-code:
@@ -262,17 +280,31 @@ EOF
 
 install_codex_adapter() {
   local codex_home="${CODEX_HOME:-$HOME/.codex}"
-  local target="$codex_home/AGENTS.md" py
+  local target="$codex_home/AGENTS.md" hooks="$codex_home/hooks.json" py
+  local block_ok="false" hook_ok="false" hook_cmd
   py="$(python_bin)"
   if ! command -v codex >/dev/null 2>&1; then
     write_adapter_state "codex" "NOT_DETECTED" "managed_global_instruction_block" "" "UNSUPPORTED"
     return 0
   fi
   if "$py" "$SYSTEM_DIR/scripts/manage_runtime_adapter.py" install-block       --target "$target"       --source "$SYSTEM_DIR/harness/adapters/codex/AGENTS.md"       --snapshot "$OWNED_HOME/codex.block" >/dev/null; then
-    write_adapter_state "codex" "AUTOMATIC" "managed_global_instruction_block" "$target" "CONTEXT_ALWAYS"
-    say "Harness adapter composed: codex capability=CONTEXT_ALWAYS -> $target"
+    block_ok="true"
+  fi
+
+  hook_cmd="AIPS_MANAGED_HOOK=1 '$py' '$SYSTEM_DIR/scripts/agent_observable_event_capture.py' hook --runtime codex --spool '$CONFIG_HOME/harness/observable-events/codex'"
+  if "$py" "$SYSTEM_DIR/scripts/manage_runtime_adapter.py" install-codex-hook       --settings "$hooks" --command "$hook_cmd" --snapshot "$OWNED_HOME/codex-post-tool-hook.json" >/dev/null; then
+    hook_ok="true"
+  fi
+
+  if [ "$block_ok" = "true" ] && [ "$hook_ok" = "true" ]; then
+    write_adapter_state "codex" "AUTOMATIC" "managed_global_instruction_block_plus_post_tool_capture_hook" "$target" "CONTEXT_ALWAYS" "ADVISORY" "POST_EXECUTION_EVIDENCE" "true" "false"
+    say "Harness adapter composed: codex capability=CONTEXT_ALWAYS capture=POST_EXECUTION_EVIDENCE(default-disabled)"
+    warn "Codex PostToolUse capture hook requires Codex hook trust review before it can run; AIPS does not bypass hook trust."
+  elif [ "$block_ok" = "true" ]; then
+    write_adapter_state "codex" "AUTOMATIC" "managed_global_instruction_block" "$target" "CONTEXT_ALWAYS" "ADVISORY" "UNSUPPORTED" "false" "false"
+    warn "Codex managed instructions installed, but post-tool capture hook could not be composed safely."
   else
-    write_adapter_state "codex" "CONFLICT" "managed_global_instruction_block" "$target" "MANUAL"
+    write_adapter_state "codex" "CONFLICT" "managed_global_instruction_block_plus_post_tool_capture_hook" "$target" "MANUAL" "ADVISORY" "UNSUPPORTED" "false" "false"
     warn "Codex AIPS managed block could not be updated safely; existing content was preserved."
   fi
 }
@@ -389,6 +421,14 @@ harness_uninstall() {
     fi
   fi
 
+  local codex_hooks="${CODEX_HOME:-$HOME/.codex}/hooks.json"
+  if [ -f "$OWNED_HOME/codex-post-tool-hook.json" ]; then
+    if ! "$py" "$SYSTEM_DIR/scripts/manage_runtime_adapter.py" uninstall-codex-hook         --settings "$codex_hooks" --snapshot "$OWNED_HOME/codex-post-tool-hook.json" >/dev/null; then
+      warn "Codex AIPS PostToolUse hook changed; preserved."
+      failed="true"
+    fi
+  fi
+
   local claude_resource claude_target claude_settings
   claude_resource="$(adapter_resource_value claude-code 2>/dev/null || true)"
   claude_target="${claude_resource%%|*}"
@@ -435,7 +475,10 @@ harness_status() {
       resource="$(adapter_state_value "$id" resource 2>/dev/null || true)"
       capability="$(adapter_state_value "$id" capability 2>/dev/null || echo MANUAL)"
       enforcement="$(adapter_state_value "$id" governance_enforcement 2>/dev/null || echo ADVISORY)"
-      say "$id: $status capability=$capability enforcement=$enforcement ($strategy)${resource:+ -> $resource}"
+      local capture live
+      capture="$(adapter_state_value "$id" observable_capture_mode 2>/dev/null || echo UNSUPPORTED)"
+      live="$(adapter_state_value "$id" live_capture_verified 2>/dev/null || echo false)"
+      say "$id: $status capability=$capability enforcement=$enforcement capture=$capture live=$live ($strategy)${resource:+ -> $resource}"
     else
       say "$id: NOT_DETECTED capability=UNSUPPORTED enforcement=UNSUPPORTED"
     fi
@@ -457,6 +500,11 @@ harness_doctor() {
 
   if [ "$(adapter_status_value codex 2>/dev/null || true)" = "AUTOMATIC" ] && [ ! -f "$OWNED_HOME/codex.block" ]; then
     warn "codex managed block ownership snapshot missing"; failed="true"
+  fi
+  if [ "$(adapter_state_value codex hook_contract_verified 2>/dev/null || true)" = "true" ]; then
+    local codex_hooks="${CODEX_HOME:-$HOME/.codex}/hooks.json"
+    [ -f "$OWNED_HOME/codex-post-tool-hook.json" ] || { warn "codex post-tool hook ownership snapshot missing"; failed="true"; }
+    [ -f "$codex_hooks" ] && grep -q "AIPS_MANAGED_HOOK=1" "$codex_hooks" || { warn "codex PostToolUse capture hook is not verifiable"; failed="true"; }
   fi
   if [ "$(adapter_status_value claude-code 2>/dev/null || true)" = "AUTOMATIC" ] && [ ! -f "$OWNED_HOME/claude-code.block" ]; then
     warn "claude managed block ownership snapshot missing"; failed="true"

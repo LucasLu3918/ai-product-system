@@ -49,3 +49,32 @@ Remove only AIPS managed blocks/hooks/extensions. Preserve modified managed cont
 For substantial multi-step engineering work, a Runtime may resume from AIPS run checkpoints rather than replaying conversation history.
 
 Resume state never bypasses current Turn Context, Project Intelligence freshness, Change Impact, approval, security or verification rules. Revision drift makes the checkpoint STALE until affected evidence is refreshed.
+
+## Codex post-execution evidence hook
+
+Codex may have an AIPS-managed `PostToolUse` hook in the user-level hooks configuration.
+
+The hook is a separate observability lane, not a Turn Context or authorization mechanism:
+
+~~~text
+apply_patch completes
+→ Codex PostToolUse
+→ AIPS sanitizer
+→ bounded canonical event spool
+→ later evidence analysis
+~~~
+
+Requirements:
+
+- default disabled unless an explicit AIPS capture config enables it;
+- async and bounded;
+- matcher limited to apply-patch aliases;
+- actual hook payload must report canonical `tool_name=apply_patch`;
+- persist no raw tool input/output, transcript/session/turn content, private reasoning or secret-like values;
+- unresolved outcome or sensitive input degrades/drops evidence and returns success to the completed tool path;
+- preserve unrelated user hooks during install/uninstall;
+- do not bypass Codex hook trust review;
+- do not report `live_capture_verified=true` until a real trusted Codex session is exercised.
+
+This lane cannot grant, revoke or widen Resource Authorization and cannot automatically remediate.
+

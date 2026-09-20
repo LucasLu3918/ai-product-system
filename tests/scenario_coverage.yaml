@@ -1007,4 +1007,15 @@ scenarios:
       - references/evolution/ISSUE_79_AGENT_ANOMALY_SYSTEM_IMPROVEMENT_REVIEW.yaml
       - orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md
       - tests/validate_repository.py
+  - id: "142"
+    path: tests/scenarios/142-codex-post-tool-live-capture-trial.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/codex_live_capture_trial_lifecycle.py
+      - scripts/agent_observable_event_capture.py
+      - scripts/manage_runtime_adapter.py
+      - harness/adapters/REGISTRY.yaml
+      - references/evolution/ISSUE_79_CODEX_CAPTURE_TRIAL_RESULT.yaml
+      - tests/validation/codex_live_capture_trial_contracts.py
+      - tests/validate_repository.py
 
