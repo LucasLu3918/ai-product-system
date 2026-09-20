@@ -14,6 +14,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 DRIFT_KEYS = (
     "missing_capability_targets",
+    "architecture_surface_drift",
     "orphan_capability_surfaces",
     "stale_documentation_links",
     "scenario_evidence_drift",
@@ -164,16 +165,31 @@ def build_input_manifest(
     config: dict[str, Any],
     capability_map_path: Path,
     capability_map: dict[str, Any],
+    architecture_inventory_path: Path,
+    architecture_inventory: dict[str, Any],
     scenario_registry_path: Path,
     scenario_dir: Path,
     scenario_helper: Path,
+    repository_validator_path: Path,
     discovered_surfaces: set[str],
 ) -> dict[str, Any]:
     paths: dict[str, set[str]] = {}
     add_manifest_path(paths, root, config_path, "repository_health_config")
     add_manifest_path(paths, root, capability_map_path, "capability_map")
+    add_manifest_path(
+        paths,
+        root,
+        architecture_inventory_path,
+        "architecture_surface_inventory",
+    )
     add_manifest_path(paths, root, scenario_registry_path, "scenario_registry")
     add_manifest_path(paths, root, scenario_helper, "scenario_checker")
+    add_manifest_path(
+        paths,
+        root,
+        repository_validator_path,
+        "repository_validator",
+    )
 
     for item in as_list(capability_map.get("capabilities"), "capability_map.capabilities"):
         if not isinstance(item, dict):
@@ -181,15 +197,23 @@ def build_input_manifest(
         for raw in as_list(item.get("docs"), "capability.docs"):
             add_manifest_path(paths, root, str(raw), "capability_target")
 
-    for capability_id, raw_surface in as_mapping(
-        config.get("capability_surfaces"), "capability_surfaces"
-    ).items():
-        surface = as_mapping(raw_surface, f"capability_surfaces.{capability_id}")
-        for raw in as_list(
-            surface.get("required"),
-            f"capability_surfaces.{capability_id}.required",
+    for index, raw_surface in enumerate(
+        as_list(architecture_inventory.get("surfaces"), "architecture_inventory.surfaces")
+    ):
+        surface = as_mapping(
+            raw_surface,
+            f"architecture_inventory.surfaces[{index}]",
+        )
+        for field, role in (
+            ("required_paths", "architecture_surface"),
+            ("canonical_docs", "architecture_canonical_doc"),
+            ("validation_paths", "architecture_validation"),
         ):
-            add_manifest_path(paths, root, str(raw), "capability_surface")
+            for raw in as_list(
+                surface.get(field),
+                f"architecture_inventory.surfaces[{index}].{field}",
+            ):
+                add_manifest_path(paths, root, str(raw), role)
 
     for rel in discovered_surfaces:
         add_manifest_path(paths, root, rel, "discovered_surface")
@@ -297,6 +321,20 @@ def analyze(root: Path, config_path: Path) -> dict[str, Any]:
         root,
         str(truth.get("scenario_helper") or "scripts/scenario_conformance.py"),
     )
+    architecture_inventory_path = resolve(
+        root,
+        str(
+            truth.get("architecture_surfaces")
+            or "config/architecture-surfaces.yaml"
+        ),
+    )
+    repository_validator_path = resolve(
+        root,
+        str(
+            truth.get("repository_validator")
+            or "tests/validate_repository.py"
+        ),
+    )
     for required in (capability_map_path, scenario_registry_path):
         if not required.exists():
             raise ValueError(
@@ -310,6 +348,7 @@ def analyze(root: Path, config_path: Path) -> dict[str, Any]:
         "capability_map.capabilities",
     )
     capability_ids: set[str] = set()
+    capability_docs_by_id: dict[str, set[str]] = {}
 
     for item in capabilities:
         if not isinstance(item, dict):
@@ -329,6 +368,9 @@ def analyze(root: Path, config_path: Path) -> dict[str, Any]:
             )
         capability_ids.add(capability_id)
         docs = as_list(item.get("docs"), f"capability {capability_id}.docs")
+        capability_docs_by_id.setdefault(capability_id, set()).update(
+            str(raw) for raw in docs
+        )
         if not docs:
             drift["missing_capability_targets"].append(
                 f"capability {capability_id} has no canonical docs"
@@ -340,36 +382,223 @@ def analyze(root: Path, config_path: Path) -> dict[str, Any]:
                     f"capability {capability_id} target missing: {rel}"
                 )
 
-    surfaces = as_mapping(
-        config.get("capability_surfaces"),
-        "capability_surfaces",
+    scenario_registry = load_yaml(scenario_registry_path)
+    scenario_evidence_paths: set[str] = set()
+    for index, raw_entry in enumerate(
+        as_list(scenario_registry.get("scenarios"), "scenario_registry.scenarios")
+    ):
+        entry = as_mapping(
+            raw_entry,
+            f"scenario_registry.scenarios[{index}]",
+        )
+        for raw in as_list(
+            entry.get("evidence"),
+            f"scenario_registry.scenarios[{index}].evidence",
+        ):
+            rel = str(raw)
+            if rel and not rel.startswith("external:"):
+                scenario_evidence_paths.add(rel)
+
+    repository_validator_text = (
+        repository_validator_path.read_text(encoding="utf-8")
+        if repository_validator_path.exists()
+        else ""
     )
+
+    def validation_path_is_bound(rel: str) -> bool:
+        if rel in scenario_evidence_paths:
+            return True
+        if rel.startswith("tests/validation/") and rel.endswith(".py"):
+            module = Path(rel).stem
+            return f"from validation import {module}" in repository_validator_text
+        return False
+
+    architecture_inventory: dict[str, Any] = {}
+    if architecture_inventory_path.exists():
+        architecture_inventory = load_yaml(architecture_inventory_path)
+    else:
+        drift["architecture_surface_drift"].append(
+            "architecture surface inventory missing: "
+            f"{relative_path(root, architecture_inventory_path)}"
+        )
+
+    if architecture_inventory.get("version") != 1:
+        drift["architecture_surface_drift"].append(
+            "architecture surface inventory version must be 1"
+        )
+
+    inventory_policy = as_mapping(
+        architecture_inventory.get("policy"),
+        "architecture_inventory.policy",
+    )
+    if inventory_policy.get("capability_accounting") != "complete":
+        drift["architecture_surface_drift"].append(
+            "architecture surface inventory capability_accounting "
+            "must be complete"
+        )
+    if (
+        inventory_policy.get("validation_binding")
+        != "scenario_or_repository_validator"
+    ):
+        drift["architecture_surface_drift"].append(
+            "architecture surface inventory validation_binding must be "
+            "scenario_or_repository_validator"
+        )
+
     declared_surface_paths: set[str] = set()
-    for capability_id, raw_surface in sorted(surfaces.items()):
+    assigned_capabilities: dict[str, str] = {}
+    surface_ids: set[str] = set()
+    validation_paths_seen: set[str] = set()
+    raw_surfaces = as_list(
+        architecture_inventory.get("surfaces"),
+        "architecture_inventory.surfaces",
+    )
+    if not raw_surfaces:
+        drift["architecture_surface_drift"].append(
+            "architecture surface inventory must declare surfaces"
+        )
+
+    for index, raw_surface in enumerate(raw_surfaces):
         surface = as_mapping(
             raw_surface,
-            f"capability_surfaces.{capability_id}",
+            f"architecture_inventory.surfaces[{index}]",
         )
-        if capability_id not in capability_ids:
-            drift["orphan_capability_surfaces"].append(
-                "configured core surface has no Capability Map entry: "
-                f"{capability_id}"
+        surface_id = str(surface.get("id") or "").strip()
+        if not surface_id:
+            drift["architecture_surface_drift"].append(
+                f"architecture surface {index} missing id"
             )
-        required_paths = as_list(
-            surface.get("required"),
-            f"capability_surfaces.{capability_id}.required",
-        )
+            surface_id = f"<index:{index}>"
+        elif surface_id in surface_ids:
+            drift["architecture_surface_drift"].append(
+                f"duplicate architecture surface id: {surface_id}"
+            )
+        surface_ids.add(surface_id)
+
+        covered_capabilities = [
+            str(item)
+            for item in as_list(
+                surface.get("capabilities"),
+                f"architecture surface {surface_id}.capabilities",
+            )
+        ]
+        if not covered_capabilities:
+            drift["architecture_surface_drift"].append(
+                f"architecture surface {surface_id} has no capabilities"
+            )
+        for capability_id in covered_capabilities:
+            if capability_id not in capability_ids:
+                drift["architecture_surface_drift"].append(
+                    f"architecture surface {surface_id} references unknown "
+                    f"capability: {capability_id}"
+                )
+                continue
+            previous = assigned_capabilities.get(capability_id)
+            if previous is not None:
+                drift["architecture_surface_drift"].append(
+                    f"capability {capability_id} assigned to multiple "
+                    f"architecture surfaces: {previous}, {surface_id}"
+                )
+            else:
+                assigned_capabilities[capability_id] = surface_id
+
+        required_paths = [
+            str(item)
+            for item in as_list(
+                surface.get("required_paths"),
+                f"architecture surface {surface_id}.required_paths",
+            )
+        ]
         if not required_paths:
-            drift["orphan_capability_surfaces"].append(
-                f"configured core surface has no required paths: {capability_id}"
+            drift["architecture_surface_drift"].append(
+                f"architecture surface {surface_id} has no required paths"
             )
-        for raw in required_paths:
-            rel = str(raw)
+        for rel in required_paths:
             declared_surface_paths.add(rel)
             if not resolve(root, rel).exists():
-                drift["orphan_capability_surfaces"].append(
-                    f"{capability_id} required surface missing: {rel}"
+                drift["architecture_surface_drift"].append(
+                    f"architecture surface {surface_id} required path "
+                    f"missing: {rel}"
                 )
+
+        capability_docs: set[str] = set()
+        for capability_id in covered_capabilities:
+            capability_docs.update(
+                capability_docs_by_id.get(capability_id, set())
+            )
+        canonical_docs = [
+            str(item)
+            for item in as_list(
+                surface.get("canonical_docs"),
+                f"architecture surface {surface_id}.canonical_docs",
+            )
+        ]
+        if not canonical_docs:
+            drift["architecture_surface_drift"].append(
+                f"architecture surface {surface_id} has no canonical docs"
+            )
+        for rel in canonical_docs:
+            if not resolve(root, rel).exists():
+                drift["architecture_surface_drift"].append(
+                    f"architecture surface {surface_id} canonical doc "
+                    f"missing: {rel}"
+                )
+            if rel not in capability_docs:
+                drift["architecture_surface_drift"].append(
+                    f"architecture surface {surface_id} canonical doc is "
+                    f"not declared by its Capability Map entries: {rel}"
+                )
+
+        validation_paths = [
+            str(item)
+            for item in as_list(
+                surface.get("validation_paths"),
+                f"architecture surface {surface_id}.validation_paths",
+            )
+        ]
+        if not validation_paths:
+            drift["architecture_surface_drift"].append(
+                f"architecture surface {surface_id} has no validation paths"
+            )
+        for rel in validation_paths:
+            validation_paths_seen.add(rel)
+            if not resolve(root, rel).exists():
+                drift["architecture_surface_drift"].append(
+                    f"architecture surface {surface_id} validation path "
+                    f"missing: {rel}"
+                )
+            elif not validation_path_is_bound(rel):
+                drift["architecture_surface_drift"].append(
+                    f"architecture surface {surface_id} validation path "
+                    f"is not bound by Scenario Conformance or repository "
+                    f"validator: {rel}"
+                )
+
+    unclassified_capabilities = sorted(
+        capability_ids - set(assigned_capabilities)
+    )
+    for capability_id in unclassified_capabilities:
+        drift["architecture_surface_drift"].append(
+            f"Capability Map entry is not classified into an "
+            f"architecture surface: {capability_id}"
+        )
+
+    architecture_summary = {
+        "path": relative_path(root, architecture_inventory_path),
+        "digest": (
+            file_digest(architecture_inventory_path)
+            if architecture_inventory_path.exists()
+            else None
+        ),
+        "surface_count": len(surface_ids),
+        "capability_count": len(capability_ids),
+        "capability_accounted": len(
+            capability_ids & set(assigned_capabilities)
+        ),
+        "unclassified_capabilities": unclassified_capabilities,
+        "validation_path_count": len(validation_paths_seen),
+        "validation_binding": "scenario_or_repository_validator",
+    }
 
     discovery = as_mapping(
         config.get("surface_discovery"),
@@ -483,9 +712,12 @@ def analyze(root: Path, config_path: Path) -> dict[str, Any]:
         config,
         capability_map_path,
         capability_map,
+        architecture_inventory_path,
+        architecture_inventory,
         scenario_registry_path,
         scenario_dir,
         scenario_helper,
+        repository_validator_path,
         discovered,
     )
     evidence_status = binding_status(workspace)
@@ -518,6 +750,14 @@ def analyze(root: Path, config_path: Path) -> dict[str, Any]:
                 "path": relative_path(root, capability_map_path),
                 "digest": file_digest(capability_map_path),
             },
+            "architecture_surface_inventory": {
+                "path": relative_path(root, architecture_inventory_path),
+                "digest": (
+                    file_digest(architecture_inventory_path)
+                    if architecture_inventory_path.exists()
+                    else None
+                ),
+            },
             "scenario_registry": {
                 "path": relative_path(root, scenario_registry_path),
                 "digest": file_digest(scenario_registry_path),
@@ -534,6 +774,7 @@ def analyze(root: Path, config_path: Path) -> dict[str, Any]:
             "input_manifest_digest": manifest["digest"],
             "evidence_fingerprint": evidence_fingerprint,
         },
+        "architecture_surfaces": architecture_summary,
         "drift": drift,
         "execution": {
             "deterministic": True,
@@ -608,6 +849,7 @@ def main() -> int:
         }
         fallback_drift = {
             "missing_capability_targets": [],
+            "architecture_surface_drift": [],
             "orphan_capability_surfaces": [],
             "stale_documentation_links": [],
             "scenario_evidence_drift": [],

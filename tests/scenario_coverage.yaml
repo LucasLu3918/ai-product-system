@@ -1086,3 +1086,15 @@ scenarios:
       - tests/validation/repository_health_contracts.py
       - orchestration/REPOSITORY_HEALTH.md
       - tests/validate_repository.py
+
+  - id: "149"
+    path: tests/scenarios/149-repository-health-architecture-surface-inventory.md
+    coverage: lifecycle
+    evidence:
+      - config/architecture-surfaces.yaml
+      - config/repository-health.yaml
+      - scripts/repository_health.py
+      - tests/evidence/repository_health_lifecycle.py
+      - tests/validation/repository_health_contracts.py
+      - orchestration/REPOSITORY_HEALTH.md
+      - .github/workflows/validate.yml

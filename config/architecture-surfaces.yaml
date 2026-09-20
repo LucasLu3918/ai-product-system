@@ -1,0 +1,171 @@
+version: 1
+purpose: Deterministic inventory of major AIPS architecture surfaces and their capability, repository, documentation, and validation bindings.
+policy:
+  capability_accounting: complete
+  validation_binding: scenario_or_repository_validator
+surfaces:
+  - id: harness-runtime
+    capabilities:
+      - turn-aware-global-harness
+      - execution-isolation
+      - resource-authorization
+      - gemini-cli-observable-event-capture-trial
+      - gemini-cli-real-runtime-verification
+    required_paths:
+      - harness/HARNESS_PROTOCOL.md
+      - scripts/harness_resolve.py
+      - orchestration/EXECUTION_ISOLATION.md
+      - orchestration/RESOURCE_AUTHORIZATION.md
+      - orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md
+    canonical_docs:
+      - harness/HARNESS_PROTOCOL.md
+      - orchestration/EXECUTION_ISOLATION.md
+      - orchestration/RESOURCE_AUTHORIZATION.md
+      - orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md
+    validation_paths:
+      - tests/evidence/harness_runtime_lifecycle.py
+      - tests/evidence/resource_authorization_lifecycle.py
+
+  - id: project-intelligence
+    capabilities:
+      - project-intelligence
+      - canonical-project-identity
+      - change-impact-guard
+      - durable-run-state
+    required_paths:
+      - scripts/project_intelligence.py
+      - orchestration/PROJECT_INTELLIGENCE.md
+      - orchestration/PROJECT_IDENTITY.md
+      - orchestration/CHANGE_IMPACT.md
+      - orchestration/RUN_RESUME.md
+    canonical_docs:
+      - orchestration/PROJECT_INTELLIGENCE.md
+      - orchestration/PROJECT_IDENTITY.md
+      - orchestration/CHANGE_IMPACT.md
+      - orchestration/RUN_RESUME.md
+    validation_paths:
+      - tests/evidence/project_intelligence_lifecycle.py
+      - tests/evidence/identity_resume_isolation.py
+
+  - id: governance-security
+    capabilities:
+      - enforceable-governance
+      - deterministic-automation
+      - security-assurance
+      - secret-handling
+      - external-credential-dependency-guard
+    required_paths:
+      - scripts/governance_guard.py
+      - core/GOVERNANCE.md
+      - orchestration/DETERMINISTIC_AUTOMATION.md
+      - docs/human/SECURITY_ASSURANCE.md
+      - orchestration/SECRET_HANDLING.md
+      - scripts/external_credential_guard.py
+      - orchestration/EXTERNAL_CREDENTIAL_DEPENDENCY_GUARD.md
+    canonical_docs:
+      - core/GOVERNANCE.md
+      - orchestration/DETERMINISTIC_AUTOMATION.md
+      - docs/human/SECURITY_ASSURANCE.md
+      - orchestration/SECRET_HANDLING.md
+      - orchestration/EXTERNAL_CREDENTIAL_DEPENDENCY_GUARD.md
+    validation_paths:
+      - tests/evidence/governance_command_guard.py
+      - tests/evidence/external_credential_guard_lifecycle.py
+
+  - id: scenario-conformance
+    capabilities:
+      - scenario-conformance
+      - agent-eval
+    required_paths:
+      - scripts/scenario_conformance.py
+      - scripts/agent_eval.py
+      - tests/scenario_coverage.yaml
+      - orchestration/CONFORMANCE.md
+      - orchestration/AGENT_EVAL.md
+    canonical_docs:
+      - orchestration/CONFORMANCE.md
+      - orchestration/AGENT_EVAL.md
+    validation_paths:
+      - scripts/scenario_conformance.py
+      - tests/evidence/agent_eval_framework.py
+
+  - id: product-delivery
+    capabilities:
+      - product-delivery
+    required_paths:
+      - orchestration/PRODUCT_DELIVERY.md
+      - tests/evidence/product_delivery_lifecycle.py
+    canonical_docs:
+      - orchestration/PRODUCT_DELIVERY.md
+    validation_paths:
+      - tests/evidence/product_delivery_lifecycle.py
+
+  - id: evolution-radar
+    capabilities:
+      - evolution-radar
+      - controlled-evolution-trial
+      - trial-adoption-binding
+      - agent-anomaly-evaluation
+      - agent-observable-event-trial-evidence
+      - evolution-local-deterministic-preanalysis
+    required_paths:
+      - scripts/evolution_radar.py
+      - scripts/evolution_analysis.py
+      - scripts/evolution_trial.py
+      - scripts/evolution_adoption.py
+      - orchestration/EVOLUTION_RADAR.md
+      - orchestration/AGENT_ANOMALY_EVALUATION.md
+      - docs/human/EVOLUTION_RADAR.md
+    canonical_docs:
+      - orchestration/EVOLUTION_RADAR.md
+      - orchestration/AGENT_ANOMALY_EVALUATION.md
+      - docs/human/EVOLUTION_RADAR.md
+    validation_paths:
+      - tests/evidence/evolution_radar_lifecycle.py
+      - tests/evidence/evolution_governance_lifecycle.py
+
+  - id: documentation-consistency
+    capabilities:
+      - documentation-consistency
+      - human-documentation-namespace
+    required_paths:
+      - scripts/documentation_sync.py
+      - config/documentation-sync.yaml
+      - orchestration/DOCUMENTATION_SYNC.md
+      - docs/human/DOCUMENTATION_SYNC.md
+    canonical_docs:
+      - orchestration/DOCUMENTATION_SYNC.md
+      - docs/human/DOCUMENTATION_SYNC.md
+    validation_paths:
+      - tests/validation/documentation_sync_contracts.py
+
+  - id: integration-gate
+    capabilities:
+      - integration-gate
+    required_paths:
+      - scripts/integration_gate.py
+      - config/integration-gate.yaml
+      - orchestration/INTEGRATION_GATE.md
+      - .github/workflows/validate.yml
+    canonical_docs:
+      - orchestration/INTEGRATION_GATE.md
+    validation_paths:
+      - tests/evidence/integration_gate_lifecycle.py
+
+  - id: repository-health
+    capabilities:
+      - repository-health-architecture-drift
+    required_paths:
+      - scripts/repository_health.py
+      - config/repository-health.yaml
+      - config/architecture-surfaces.yaml
+      - orchestration/REPOSITORY_HEALTH.md
+      - docs/ARCHITECTURE.md
+      - docs/human/MAINTENANCE.md
+    canonical_docs:
+      - orchestration/REPOSITORY_HEALTH.md
+      - docs/ARCHITECTURE.md
+      - docs/human/MAINTENANCE.md
+    validation_paths:
+      - tests/evidence/repository_health_lifecycle.py
+      - tests/validation/repository_health_contracts.py

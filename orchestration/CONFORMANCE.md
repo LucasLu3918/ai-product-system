@@ -458,3 +458,20 @@ Current automated inventory after Scenario 148:
 - manual: 0
 - uncovered: 0
 - automated: 148 / 148
+
+## Scenario 149 — Repository Health architecture surface inventory
+
+Scenario 149 is lifecycle-covered by `tests/evidence/repository_health_lifecycle.py`. It proves that `config/architecture-surfaces.yaml` deterministically accounts for every Capability Map entry exactly once and binds each major subsystem to required repository paths, canonical docs and validation paths.
+
+Validation paths must be traceable either to Scenario Conformance evidence or to a validation module imported by `tests/validate_repository.py`. Unclassified capabilities, missing surface paths, Capability Map/document mismatches and unbound validation paths produce `architecture_surface_drift`.
+
+The exact-candidate validate workflow also emits and uploads `repository-health-report.json` as review evidence. The artifact is observational only and does not grant remediation, merge, release or publication authority.
+
+Current automated inventory after Scenario 149:
+
+- deterministic: 24
+- lifecycle: 71
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 149 / 149

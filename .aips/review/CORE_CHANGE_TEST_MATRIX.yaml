@@ -1,55 +1,42 @@
 version: 1
 candidate:
-  base_sha: 7cf7d36b47ae196a896c8ac8f93c6eab0383824f
-  changed_files_hash: f20945a9668eeaad41cabca4f6b44fe420b96ae171858138b126480daa6b6160
+  base_sha: 3758a8b5c52df01fc433b5f7e309945b68a07e6e
+  changed_files_hash: 2ee46231a748858b2988ba875972a79364254ffd4c7ea0a1a6b36df11978a116
 change:
-  id: evolution-local-deterministic-preanalysis
-  summary: Add a credential-free deterministic first-pass Evolution Radar triage lane for near-duplicate grouping, topic/capability hints, and Human review priority without inferring semantic suitability.
+  id: repository-health-architecture-surface-inventory
+  summary: Add explicit deterministic architecture-surface accounting and exact-candidate Repository Health CI evidence without external provider credentials or remediation authority.
   boundary:
-    - evolution-radar
-    - deterministic-preanalysis
-    - human-review-evidence
-    - provider-neutrality
+    - repository-health
+    - architecture-surface-inventory
     - scenario-conformance
+    - validation-workflow
     - documentation
 matrix:
-  - boundary: deterministic-preanalysis
-    reason: The local lane must be reproducible, credential-free, network-free, bound to exact evidence/config/capability inputs, and incapable of emitting semantic adoption states.
+  - boundary: architecture-surface-inventory
+    reason: Every Capability Map entry must be accounted for exactly once and bound to concrete repository, documentation and validation surfaces.
     checks:
-      static_lint: {applicable: true, evidence: "evolution_analysis.py and config/evolution-analyzer.yaml are compiled/contract-checked by repository validation"}
-      unit: {applicable: true, evidence: "Evolution Radar lifecycle validates rule configuration, deterministic repeated output, tamper rejection, and semantic-state preservation"}
-      integration: {applicable: true, evidence: "weekly/monthly Radar evidence flows through local preanalysis before optional semantic analysis"}
-      contract: {applicable: true, evidence: "Scenario 146 requires semantic_suitability_inferred=false, recommendation_state_mutated=false, no credential and no extra network"}
-      e2e: {applicable: true, evidence: "lifecycle evidence builds preanalysis, round-trips durable markdown, and embeds it into the Human review Issue"}
-      security: {applicable: true, evidence: "preanalysis reads only collected evidence, committed rules and Capability Map; it has no provider credential or additional network path"}
-      migration_recovery: {applicable: true, evidence: "provider-neutral handoff and optional semantic analyzer remain unchanged as the next analysis layer"}
-      cli_harness: {applicable: false, na_reason: "No Runtime/Harness execution path changes"}
-      docs_schema: {applicable: true, evidence: "Evolution Radar Human/Agent docs, overview, Technology Guide and Conformance are synchronized"}
-  - boundary: human-review-priority
-    reason: HIGH/MEDIUM/LOW is only a deterministic reading-order hint and must never be interpreted as COVERED/HOLD/ASSESS/TRIAL/ADOPT or Human approval.
+      static_lint: {applicable: true, evidence: "repository validation compiles and contract-checks repository_health.py"}
+      unit: {applicable: true, evidence: "Repository Health lifecycle exercises unclassified capability, missing path and unbound validation negative paths"}
+      integration: {applicable: true, evidence: "Repository Health reuses Capability Map, Scenario Conformance and tests/validate_repository.py bindings"}
+      contract: {applicable: true, evidence: "Scenario 149 locks complete capability accounting and validation binding semantics"}
+      e2e: {applicable: true, evidence: "validate workflow executes the exact candidate, emits repository-health-report.json and uploads it as an artifact"}
+      security: {applicable: true, evidence: "audit remains credential-free, read-only and provider-network-free; artifact upload grants no authority"}
+      migration_recovery: {applicable: false, na_reason: "No persisted user/project data or schema migration is changed"}
+      cli_harness: {applicable: false, na_reason: "No CLI or Runtime Adapter behavior changes"}
+      docs_schema: {applicable: true, evidence: "Repository Health, Maintenance, Architecture, Conformance and Technology Guide docs are synchronized"}
+  - boundary: validation-workflow
+    reason: The required validate workflow changes and must preserve the existing Integration Gate and repository aggregate contract.
     checks:
-      static_lint: {applicable: true, evidence: "preanalysis annotations reject state/decision/recommendation fields"}
-      unit: {applicable: true, evidence: "tampered semantic_suitability_inferred=true evidence is rejected"}
-      integration: {applicable: true, evidence: "Human review Issue carries both deterministic preanalysis and separate provider-neutral semantic handoff"}
-      contract: {applicable: true, evidence: "semantic recommendation remains ANALYSIS_PENDING through the local-preanalysis lifecycle"}
-      e2e: {applicable: true, evidence: "same evidence/config/capability inputs produce byte-equivalent data structures before serialization"}
-      security: {applicable: true, evidence: "all Human/branch/PR/merge/release/publication authority flags remain false"}
-      migration_recovery: {applicable: true, evidence: "removing/altering local rules cannot silently convert preanalysis into semantic decisions because validation binds mode and preserved state"}
-      cli_harness: {applicable: false, na_reason: "No CLI/Harness permission surface changes"}
-      docs_schema: {applicable: true, evidence: "docs explicitly define priority as Human review ordering rather than adoption scoring"}
-  - boundary: near-duplicate-and-capability-hints
-    reason: Local heuristics must stay explainable and reference only existing source-controlled capability IDs.
-    checks:
-      static_lint: {applicable: true, evidence: "configured category capability_ids are validated against CAPABILITY_MAP.yaml"}
-      unit: {applicable: true, evidence: "fixture titles prove deterministic token/Jaccard clustering and declared capability matching"}
-      integration: {applicable: true, evidence: "preanalysis baseline binds the Capability Map digest and local config digest"}
-      contract: {applicable: true, evidence: "unknown capability IDs and invalid thresholds fail validation"}
-      e2e: {applicable: false, na_reason: "No external semantic or provider execution is required for deterministic title heuristics"}
-      security: {applicable: true, evidence: "no raw provider payload, secret, private reasoning or external content fetch is added"}
-      migration_recovery: {applicable: true, evidence: "Capability Map changes invalidate prior preanalysis bindings through digest mismatch"}
-      cli_harness: {applicable: false, na_reason: "No runtime adapter behavior changes"}
-      docs_schema: {applicable: true, evidence: "Scenario 146 and Evolution Radar docs explain the bounded heuristic semantics"}
+      static_lint: {applicable: true, evidence: "existing workflow/static validation enforces immutable action SHA pinning and syntax contracts"}
+      unit: {applicable: false, na_reason: "Workflow wiring is integration-level behavior"}
+      integration: {applicable: true, evidence: "Integration Gate exact-candidate run remains the first required janitor gate"}
+      contract: {applicable: true, evidence: "repository-health config requires the report command, report filename, upload action and required repository aggregate strings"}
+      e2e: {applicable: true, evidence: "PR CI must complete janitor plus required repository aggregate on the exact head"}
+      security: {applicable: true, evidence: "workflow permissions remain contents: read and upload-artifact is pinned to the existing repository-approved SHA"}
+      migration_recovery: {applicable: false, na_reason: "No deployment or persistence migration"}
+      cli_harness: {applicable: false, na_reason: "No CLI/Harness interface changes"}
+      docs_schema: {applicable: true, evidence: "Maintenance and Repository Health docs describe artifact semantics and authority boundary"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
-status: PASS
+status: READY

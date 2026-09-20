@@ -741,7 +741,8 @@ The new paths add fail-closed evidence and handoff behavior beneath existing top
 ~~~mermaid
 flowchart LR
     CM[Capability Map] --> RH[Deterministic Repository Health]
-    CS[Configured core surfaces] --> RH
+    ASI[Architecture Surface Inventory] --> RH
+    GD[Bounded guard/gate discovery] --> RH
     SC[Scenario Conformance] --> RH
     DOC[Canonical documentation bindings] --> RH
     IG[Integration Gate + validate workflow] --> RH
@@ -750,4 +751,4 @@ flowchart LR
     DRIFT --> HUMAN[Human review]
 ~~~
 
-Repository Health is credential-free consistency evidence over existing truths. It calls Scenario Conformance and verifies Integration Gate wiring; it does not create a second Change Impact system or repair drift automatically.
+Repository Health is credential-free consistency evidence over existing truths. The explicit Architecture Surface Inventory classifies every Capability Map entry into a major subsystem and binds repository paths, canonical docs and validation evidence. It calls Scenario Conformance, verifies Integration Gate wiring, and emits an exact-candidate CI evidence artifact; it does not create a second Change Impact system or repair drift automatically.

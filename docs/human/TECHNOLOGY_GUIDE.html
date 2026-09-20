@@ -92,4 +92,11 @@
 <div class="note"><strong>No provider call:</strong> Credential Guard 只掃 repository source/config，不讀 secret value、不登入 provider、不建立 credential，也不取得 merge/release/publication authority。</div>
 </section>
 <section class="card s12" id="evolution-local-deterministic-preanalysis"><h2>46. Evolution Radar Local Deterministic Pre-analysis</h2><p>在 optional semantic provider 之前，Radar 會先對既有 title / metadata 做 credential-free deterministic triage：分類主題、提示既有 Capability、建立 near-duplicate cluster，並產生 Human review priority。</p><p>Priority score 只由 source-controlled rule weight、capability match 與 recurrence 組成，因此可解釋、可重播；它不是技術採用評分。Semantic recommendation 仍維持 <code>ANALYSIS_PENDING</code>。</p><div class="note"><strong>No external Agent Key：</strong>此 lane 不使用 <code>OPENAI_API_KEY</code>、<code>GEMINI_API_KEY</code> 或其他 model credential，也不新增外部 network call。Artifact 綁定 exact evidence/config/Capability Map digests。</div></section>
+<section class="card s12" id="repository-health-architecture-surface-inventory">
+<h2>47. Repository Health Architecture Surface Inventory</h2>
+<p>v0.40.0 以 <code>config/architecture-surfaces.yaml</code> 建立顯式的 major-subsystem inventory。所有 Capability Map ID 必須全部且只被分類一次，並綁定 required repository paths、canonical docs 與 validation paths。</p>
+<p>Repository Health 會檢查 required path 是否存在、canonical doc 是否真的由該 surface 所涵蓋的 Capability Map entry 宣告，以及 validation path 是否能追溯到 Scenario Conformance evidence 或 <code>tests/validate_repository.py</code> 匯入的 validation module。</p>
+<p>新增未分類 capability、遺失 surface path、文件與 Capability Map 不一致，或 validation evidence 未被正式驗證入口綁定，都會產生 <code>architecture_surface_drift</code>。</p>
+<div class="note"><strong>CI evidence：</strong><code>.github/workflows/validate.yml</code> 會對 exact candidate 產生 <code>repository-health-report.json</code> 並上傳為短期 artifact。Audit 本身仍不使用外部 Agent/provider key、不做 provider call，也沒有 automatic remediation、PR、merge、release 或 publication authority。</div>
+</section>
 </body></html>

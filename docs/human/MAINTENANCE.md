@@ -311,10 +311,10 @@ Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanu
 
 Repository-wide architecture consistency is checked by scripts/repository_health.py using config/repository-health.yaml. The detailed contract is orchestration/REPOSITORY_HEALTH.md.
 
-It reuses the Capability Map, Scenario Conformance and Integration Gate. Review registered canonical targets, configured guard/gate surfaces, tests/scenario_coverage.yaml evidence, and .github/workflows/validate.yml plus config/integration-gate.yaml wiring.
+It reuses the Capability Map, Scenario Conformance and Integration Gate. The explicit major-subsystem inventory lives in config/architecture-surfaces.yaml and must account for every Capability Map entry exactly once. Review inventory required paths, canonical docs, validation bindings, bounded guard/gate discovery, tests/scenario_coverage.yaml evidence, and .github/workflows/validate.yml plus config/integration-gate.yaml wiring.
 
 Run:
 
     python scripts/repository_health.py audit --config config/repository-health.yaml
 
-PASS is consistency evidence only. Repository Health is Detect + Evidence + Human Review and has no automatic remediation, code-change, PR, merge, release or publication authority. Review evidence_binding together with the sorted input manifest: clean Git must report EXACT_REVISION/revision_reproducible=true; staged, unstaged or untracked state must report DIRTY_WORKTREE/revision_reproducible=false rather than pretending the current HEAD fully reproduces the audit.
+PASS is consistency evidence only. Repository Health is Detect + Evidence + Human Review and has no automatic remediation, code-change, PR, merge, release or publication authority. Review evidence_binding together with the sorted input manifest: clean Git must report EXACT_REVISION/revision_reproducible=true; staged, unstaged or untracked state must report DIRTY_WORKTREE/revision_reproducible=false rather than pretending the current HEAD fully reproduces the audit. CI additionally uploads repository-health-report.json as exact-candidate evidence; this artifact is observational only and grants no authority.

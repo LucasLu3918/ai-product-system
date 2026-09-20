@@ -8,11 +8,13 @@ from .static_contracts import ROOT, errors
 
 required = (
     ROOT / "config/repository-health.yaml",
+    ROOT / "config/architecture-surfaces.yaml",
     ROOT / "scripts/repository_health.py",
     ROOT / "orchestration/REPOSITORY_HEALTH.md",
     ROOT / "tests/evidence/repository_health_lifecycle.py",
     ROOT / "tests/scenarios/147-repository-health-architecture-drift.md",
     ROOT / "tests/scenarios/148-repository-health-evidence-binding.md",
+    ROOT / "tests/scenarios/149-repository-health-architecture-surface-inventory.md",
 )
 for path in required:
     if not path.exists():
@@ -63,6 +65,35 @@ if script.exists():
                 errors.append(
                     "Repository Health baseline must PASS"
                 )
+            architecture = report.get("architecture_surfaces") or {}
+            if architecture.get("surface_count") != 9:
+                errors.append(
+                    "Repository Health architecture inventory must "
+                    "contain 9 major surfaces"
+                )
+            if architecture.get("capability_count") != 27:
+                errors.append(
+                    "Repository Health architecture inventory must "
+                    "observe all 27 Capability Map entries"
+                )
+            if architecture.get("capability_accounted") != 27:
+                errors.append(
+                    "Repository Health architecture inventory must "
+                    "classify all Capability Map entries"
+                )
+            if architecture.get("unclassified_capabilities"):
+                errors.append(
+                    "Repository Health architecture inventory must "
+                    "have no unclassified capabilities"
+                )
+            if architecture.get("validation_binding") != (
+                "scenario_or_repository_validator"
+            ):
+                errors.append(
+                    "Repository Health validation binding contract "
+                    "changed unexpectedly"
+                )
+
             for key, findings in (
                 report.get("drift") or {}
             ).items():
@@ -230,4 +261,18 @@ if lifecycle.exists():
                 "Repository Health lifecycle failed: "
                 f"{result.stdout.strip()} "
                 f"{result.stderr.strip()}"
+            )
+
+workflow = ROOT / ".github/workflows/validate.yml"
+if workflow.exists():
+    workflow_text = workflow.read_text(encoding="utf-8")
+    for required_text in (
+        "scripts/repository_health.py audit",
+        "repository-health-report.json",
+        "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+    ):
+        if required_text not in workflow_text:
+            errors.append(
+                "validate workflow missing Repository Health CI evidence "
+                f"contract: {required_text}"
             )

@@ -70,6 +70,21 @@ jobs:
             "${base_tip_args[@]}" \
             "${matrix_args[@]}" \
             --output integration-gate-report.yaml
+      - name: Repository Health evidence
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          python scripts/repository_health.py audit \
+            --config config/repository-health.yaml \
+            --format json > repository-health-report.json
+      - name: Upload Repository Health evidence
+        if: ${{ always() && hashFiles('repository-health-report.json') != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: repository-health-${{ github.run_id }}-${{ github.run_attempt }}
+          path: repository-health-report.json
+          if-no-files-found: error
+          retention-days: 14
 
   repository:
     needs: janitor
