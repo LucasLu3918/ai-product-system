@@ -1,5 +1,26 @@
 # Changelog
 
+## 0.40.0
+
+### Repository Health Architecture Surface Inventory + CI Evidence
+
+- Add `config/architecture-surfaces.yaml` as the explicit deterministic inventory for major AIPS architecture surfaces.
+- Classify all 27 current Capability Map entries exactly once across 9 major surfaces, eliminating the prior non-guard/gate accounting blind spot without semantic inference.
+- Bind every surface to required repository paths, canonical Capability Map documentation and validation paths.
+- Add `architecture_surface_drift` for unclassified capabilities, duplicate capability assignment, missing required paths, canonical-document mismatches and validation paths not bound by Scenario Conformance or the repository validator.
+- Keep bounded `*_guard.py` / `*_gate.py` discovery as a secondary orphan safety net rather than a substitute for the explicit inventory.
+- Extend the deterministic input manifest to bind the architecture inventory, declared surface paths, validation paths and the top-level repository validator.
+- Add exact-candidate Repository Health CI evidence: `.github/workflows/validate.yml` writes `repository-health-report.json` and uploads it as a short-retention artifact with an immutable pinned upload action.
+- Preserve Repository Health as Detect + Evidence + Human Review only: no automatic remediation, code-change, branch/PR, merge, release or publication authority.
+- Require no `OPENAI_API_KEY`, `GEMINI_API_KEY`, other external Agent/provider credential or provider network call.
+- Add Scenario 149 and raise Scenario Conformance to 149/149 automated: 24 deterministic + 71 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- Initial feature Run #1138 correctly failed on a missing Technology Guide sync and incomplete repository-validator manifest binding; both were corrected without weakening any gate.
+- Feature PR #117 final head `842a2fb84299ef3be6e4842b693b65d4b70691ff` passed exact-head validate Run #1139; Repository Health artifact `repository-health-35516387867-1` was published.
+- PR #117 was merged to main as `6616e84fef902e10568a6dffb3b06f16ec5c6aff`; protected-main validate Run #1140 succeeded.
+- Roles remain 12 and Skills remain 25.
+- Constitution impact: NO. Protected Human Authority and existing merge/release/publication boundaries remain unchanged.
+- Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
+
 ## 0.39.0
 
 ### Repository Health Deterministic Evidence Binding
