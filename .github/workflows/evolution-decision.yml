@@ -136,6 +136,7 @@ jobs:
         if: inputs.decision == 'TRIAL' && steps.trial_provider.outputs.value == 'handoff'
         shell: bash
         run: |
+          echo "Trial state: TRIAL_HANDOFF_READY" >> "$GITHUB_STEP_SUMMARY"
           python scripts/evolution_trial.py handoff --plan evolution-trial-plan.yaml --config config/evolution-trial.yaml --output evolution-trial-handoff.yaml
           python scripts/evolution_trial.py handoff-validate evolution-trial-handoff.yaml
           python scripts/evolution_trial.py handoff-markdown evolution-trial-handoff.yaml --output evolution-trial-handoff.md
