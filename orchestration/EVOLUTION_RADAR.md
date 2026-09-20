@@ -325,3 +325,20 @@ per-source candidates <= 8
 Signals outside the semantic queue remain `ANALYSIS_PENDING`. Partial semantic analysis is explicitly reported as PARTIAL coverage and is applied only to the selected fingerprints. A semantic provider MUST NOT produce `ADOPT` for a signal whose explicit provenance contains `community` but no `primary` role. Forum/community popularity is discovery evidence, never sufficient adoption evidence.
 
 Source failures are durable evidence. Falling below the healthy community floor produces `DEGRADED` coverage but MUST NOT fabricate missing signals or silently substitute unconfigured sources.
+
+
+## Evidence quality and primary-source corroboration
+
+Technology Intelligence source provenance is normalized into deterministic evidence-quality metadata before semantic reasoning:
+
+~~~text
+level 0 = one community source only
+level 1 = multiple community sources, no primary source
+level 2 = at least one primary source
+level 3 = primary + community corroboration
+level 4 = multiple independent primary sources
+~~~
+
+The minimum deterministic evidence level for advisory `ADOPT` is 2. The semantic provider cannot create, upgrade or rewrite the evidence level; it may only reason over the bound evidence package. Pre-analysis may use a bounded evidence-quality bonus for Human review ordering, but evidence strength itself is not a semantic suitability decision.
+
+Monthly and quarterly rollups MUST preserve source counts, exact provenance and evidence level. No evidence-quality state grants Human Decision, implementation, Trial execution, PR, merge, release or publication authority.
