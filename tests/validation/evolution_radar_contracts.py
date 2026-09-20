@@ -67,6 +67,9 @@ if source_config.exists():
         "target_community_sources: 6",
         "max_items_per_source: 8",
         "max_raw_signals: 50",
+        "evidence_quality:",
+        "adopt_minimum_level: 2",
+        "multi_primary_corroborated: 4",
         "role: community",
         "role: primary",
         "max_response_bytes:",
@@ -104,6 +107,7 @@ if analyzer_config.exists():
         "shortlist_max: 12",
         "semantic_analysis_max: 10",
         "actionable_recommendations_max: 5",
+        "evidence_bonus_max: 2",
     ):
         if contract not in analyzer_text:
             errors.append(f"Evolution Radar analyzer config missing provider-neutral contract: {contract}")
@@ -158,7 +162,8 @@ if analysis_script.exists():
         "_build_review_queue",
         "deterministic_preanalysis_rank",
         "max_actionable_recommendations",
-        "community discovery signal requires primary-source corroboration before ADOPT",
+        "evidence_quality_is_deterministic_metadata",
+        "ADOPT requires deterministic evidence level",
     ):
         if contract not in analysis_text:
             errors.append(f"Evolution Radar local preanalysis contract missing: {contract}")
