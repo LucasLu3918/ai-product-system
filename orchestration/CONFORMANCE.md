@@ -362,3 +362,26 @@ The model layer is deterministic fake-response input, so the result may set runt
 
 Current automated inventory: deterministic 22, lifecycle 67, agent_eval 54, total 143 / 143.
 
+## Scenario 144 — Optional External Provider Credentials
+
+Scenario 144 deterministically locks the external-provider credential policy.
+
+It proves:
+
+- baseline AIPS operation requires no external Agent/provider credential;
+- missing `GEMINI_API_KEY` is `SKIPPED_NOT_CONFIGURED`, never a provider PASS and never a release blocker;
+- disabled evidence reports `provider_verification_enabled=false` and `required_for_release=false`;
+- provider/model verification truth remains false until real provider evidence exists;
+- absent credentials skip provider-specific install/inference steps;
+- the provider workflow has no `pull_request` trigger and keeps credential values non-persistent;
+- OAuth, Vertex AI, GitHub OIDC/WIF, and other replacement login flows remain disabled unless a later Human Decision explicitly adopts them;
+- credential-free Gemini runtime/tool/AfterTool verification remains independent.
+
+Current automated inventory after Scenario 144:
+
+- deterministic: 23
+- lifecycle: 67
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 144 / 144

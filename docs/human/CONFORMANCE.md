@@ -956,3 +956,19 @@ Gemini extension manifest 同步宣告兩個 capture control env vars，避免 G
 
 目前 Scenario inventory 為 **143**：22 deterministic + 67 lifecycle + 54 agent_eval，**143 / 143 automated、0 manual、0 uncovered**。
 
+## Scenario 144 — Optional External Provider Credentials
+
+Scenario 144 將外部 Agent / Provider credential 的新政策鎖成 deterministic conformance：AIPS 的正常運作不依賴外部 API Key，credential-dependent lane 只有在對應 credential 明確設定時才啟用。
+
+驗證重點：
+
+- 缺少 `GEMINI_API_KEY` 必須是 `SKIPPED_NOT_CONFIGURED`，不能視為 BLOCKED、FAIL 或 PASS；
+- disabled report 必須保持 `provider_verification_enabled=false`、`required_for_release=false`；
+- 沒有真實 provider evidence 時，`live_provider_session_verified=false`、`provider_model_execution_verified=false` 不得被改寫；
+- 無 credential 時，provider-specific install 與 live provider/model execution 必須 SKIPPED；
+- provider workflow 仍不得在 `pull_request` 事件取得 secret；
+- 不得自動導入 OAuth、Vertex AI、GitHub OIDC / Workload Identity Federation 或其他 replacement login；
+- 既有 Gemini CLI credential-free real-runtime / tool / AfterTool 驗證保持獨立可用；
+- optional credential 缺失不阻擋 unrelated validation、merge 或 release。
+
+目前 Scenario inventory 為 **144**：23 deterministic + 67 lifecycle + 54 agent_eval，**144 / 144 automated、0 manual、0 uncovered**。

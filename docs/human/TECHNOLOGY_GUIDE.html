@@ -67,4 +67,11 @@
 <p>The already verified Gemini CLI runtime, tool execution and AfterTool capture remain available without claiming live provider verification. <code>live_provider_session_verified</code> and <code>provider_model_execution_verified</code> stay false until real provider evidence exists.</p>
 <div class="note"><strong>No replacement login:</strong> this policy does not introduce OAuth, Vertex AI credentials, GitHub OIDC / Workload Identity Federation, or any other external authentication flow. Those require a later explicit Human Decision.</div>
 </section>
+
+<section class="card s12" id="scenario-144-optional-provider-credentials">
+<h2>44. Scenario 144 — Optional External Provider Credential Conformance</h2>
+<p>Scenario 144 將 optional external Agent / provider credential policy 納入 deterministic conformance。AIPS baseline 不要求外部 API Key；沒有 <code>GEMINI_API_KEY</code> 時，provider verification 必須回報 <code>SKIPPED_NOT_CONFIGURED</code>，並保持 <code>provider_verification_enabled=false</code>、<code>required_for_release=false</code>。</p>
+<p>沒有真實 provider evidence 時，<code>live_provider_session_verified</code> 與 <code>provider_model_execution_verified</code> 必須保持 false；provider-specific install / inference step 必須跳過。既有 credential-free Gemini CLI runtime / tool / AfterTool verification 不受影響。</p>
+<p>此 contract 同時禁止在沒有新的 Human Decision 下自動導入 OAuth、Vertex AI、GitHub OIDC / Workload Identity Federation 或其他 replacement login flow。</p>
+</section>
 </body></html>
