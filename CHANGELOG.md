@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.45.0
+
+### Provider-neutral Controlled Trial Handoff
+
+- Add deterministic Controlled Trial provider resolution across `auto`, the existing pinned OpenAI Codex executor, and a provider-neutral handoff.
+- When the optional `OPENAI_API_KEY` is unavailable, `auto` now emits a credential-free `TRIAL_HANDOFF_READY` artifact instead of treating credential absence as a failed experiment.
+- Bind the handoff to the exact repository baseline, Human Decision fingerprint, Trial fingerprint, approved scope/paths, forbidden paths, changed-file/diff limits, worktree-isolation requirement, and deterministic repository validation command.
+- Explicitly require `external_executor_may_claim_pass=false`; compatible external Agents may execute the bounded contract, but PASS/FAIL remains valid only after AIPS deterministic scope/diff/commit/repository validation.
+- Preserve the existing pinned Codex Action path when it is selected/resolved and the optional credential exists.
+- Keep publication, remote branch/PR, merge, release, and Human-adoption authority false for both direct execution and handoff.
+- Reconcile the external credential registry so missing OpenAI Trial credentials resolve to `TRIAL_HANDOFF_READY` rather than the obsolete `TRIAL_NOT_EXECUTED` behavior.
+- Add Scenario 154 and raise Scenario Conformance to 154/154 automated: 24 deterministic + 76 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- Initial PR #127 validation correctly detected that the workflow did not visibly expose the `TRIAL_HANDOFF_READY` state; the workflow now writes the state into the GitHub Job Summary without weakening any gate.
+- Feature PR #127 exact final head `d833ad33e3bdf83bdc3e8e501e08e30636d2725f` passed validate Run #1168.
+- PR #127 was squash-merged to main as `0c87c6fb9c31dfe00d11e7922c83317f342101e3`; protected-main validate Run #1169 succeeded.
+- No new Role or Skill. Constitution impact: NO.
+- Release model remains `VERSION + CHANGELOG + protected-main validation`; no GitHub Release object or tag is introduced.
+
 ## 0.44.0
 
 ### Evolution Evidence Quality & Primary-source Corroboration
