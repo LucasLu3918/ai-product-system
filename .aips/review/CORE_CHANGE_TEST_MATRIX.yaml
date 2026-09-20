@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 3758a8b5c52df01fc433b5f7e309945b68a07e6e
-  changed_files_hash: 91ca3bb88b6f7855ed02cd9f8c0ddacd835d9265dac8f92cf72417d6210128a7
+  changed_files_hash: 2ee46231a748858b2988ba875972a79364254ffd4c7ea0a1a6b36df11978a116
 change:
   id: repository-health-architecture-surface-inventory
   summary: Add explicit deterministic architecture-surface accounting and exact-candidate Repository Health CI evidence without external provider credentials or remediation authority.
@@ -23,7 +23,7 @@ matrix:
       security: {applicable: true, evidence: "audit remains credential-free, read-only and provider-network-free; artifact upload grants no authority"}
       migration_recovery: {applicable: false, na_reason: "No persisted user/project data or schema migration is changed"}
       cli_harness: {applicable: false, na_reason: "No CLI or Runtime Adapter behavior changes"}
-      docs_schema: {applicable: true, evidence: "Repository Health, Maintenance, Architecture and Conformance docs are synchronized"}
+      docs_schema: {applicable: true, evidence: "Repository Health, Maintenance, Architecture, Conformance and Technology Guide docs are synchronized"}
   - boundary: validation-workflow
     reason: The required validate workflow changes and must preserve the existing Integration Gate and repository aggregate contract.
     checks:

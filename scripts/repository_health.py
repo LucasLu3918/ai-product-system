@@ -170,6 +170,7 @@ def build_input_manifest(
     scenario_registry_path: Path,
     scenario_dir: Path,
     scenario_helper: Path,
+    repository_validator_path: Path,
     discovered_surfaces: set[str],
 ) -> dict[str, Any]:
     paths: dict[str, set[str]] = {}
@@ -183,6 +184,12 @@ def build_input_manifest(
     )
     add_manifest_path(paths, root, scenario_registry_path, "scenario_registry")
     add_manifest_path(paths, root, scenario_helper, "scenario_checker")
+    add_manifest_path(
+        paths,
+        root,
+        repository_validator_path,
+        "repository_validator",
+    )
 
     for item in as_list(capability_map.get("capabilities"), "capability_map.capabilities"):
         if not isinstance(item, dict):
@@ -710,6 +717,7 @@ def analyze(root: Path, config_path: Path) -> dict[str, Any]:
         scenario_registry_path,
         scenario_dir,
         scenario_helper,
+        repository_validator_path,
         discovered,
     )
     evidence_status = binding_status(workspace)
