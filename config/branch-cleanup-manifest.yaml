@@ -1,0 +1,187 @@
+version: 1
+cleanup_id: v0.47.0-controlled-branch-cleanup
+baseline_main_sha: cc813579fdf8d22f08876404ea3d1fcf0c0ac859
+authorization:
+  type: explicit_user_request
+  approved_by: repository maintainer
+  approved_at: '2026-09-21'
+  scope: exact_manifest_only
+  one_time: true
+branches:
+  - branch: "feature/provider-neutral-local-embedding-trial"
+    expected_sha: 5d758cee76e30ecb5871d05e990a2b7da48fdb41
+    merged_pr: 71
+  - branch: "feature/v0.27.0-governance-hardening"
+    expected_sha: 0a5a1da9094b20536e56c792cf691b5c7f4385d9
+    merged_pr: 76
+  - branch: "feature/v0.27.1-branch-hygiene-remote-report"
+    expected_sha: c231b769bfe58ff9bef698dbdda08796d9f4b13a
+    merged_pr: 82
+  - branch: "feature/v0.28.0-agent-eval-repeatability"
+    expected_sha: 1822bb9769979dce2cf1ad24dee4e6823448f75d
+    merged_pr: 85
+  - branch: "feature/v0.29.0-agent-runtime-assurance"
+    expected_sha: fa79bd0636ac9217fc8e8914c1b6921baeb0fd51
+    merged_pr: 88
+  - branch: "feature/v0.29.0-resource-scoped-authorization"
+    expected_sha: f1491f7316159edc09c7d83f11425672c633862b
+    merged_pr: 87
+  - branch: "feature/v0.30.0-agent-anomaly-evaluation"
+    expected_sha: 51fa69ec54c56be458bdaf0bc8146646496afbd7
+    merged_pr: 92
+  - branch: "feature/v0.31.0-agent-observable-event-trial"
+    expected_sha: b5e3d6f80c4341e0fd9843557293b7e9d8e40f31
+    merged_pr: 94
+  - branch: "feature/v0.32.0-agent-anomaly-adoption-review"
+    expected_sha: e2571b4923d298da91859849acdc2b4375e69632
+    merged_pr: 96
+  - branch: "feature/v0.33.0-gemini-aftertool-capture-trial"
+    expected_sha: c95f4e315079a6b9185357f498be97e6cac3ab0c
+    merged_pr: 98
+  - branch: "feature/v0.34.0-gemini-real-runtime-verification"
+    expected_sha: 1f6cd76926c89b5a61365c7851bcdbb02bf9a8e7
+    merged_pr: 101
+  - branch: "feature/v0.35.0-gemini-provider-session-gate"
+    expected_sha: 5c076997c86eca4c2e5d8d24fc14b05c6b619d5f
+    merged_pr: 103
+  - branch: "feature/v0.35.0-gemini-provider-session-verifier"
+    expected_sha: d0985689b299d794a98dd0742cb3e8ac234cb9fe
+    merged_pr: 104
+  - branch: "feature/v0.35.0-optional-provider-credential-conformance"
+    expected_sha: a3d395505dc5899ae464b008989dedbf59150016
+    merged_pr: 107
+  - branch: "feature/v0.35.0-optional-provider-credentials"
+    expected_sha: af21622ba76ecba2dce4408dbdad0b63c4cb419c
+    merged_pr: 106
+  - branch: "feature/v0.36.0-external-credential-dependency-guard"
+    expected_sha: 177d62cf2a84a69671d77a35143c06ca722268b9
+    merged_pr: 109
+  - branch: "feature/v0.37.0-evolution-local-preanalysis"
+    expected_sha: 630df595e5e979b74ca793e1d1eccfb14eeaf699
+    merged_pr: 111
+  - branch: "feature/v0.43.0-technology-intelligence-expansion"
+    expected_sha: 614f32c8e7914da5fd562aed75c613474dd423ec
+    merged_pr: 123
+  - branch: "feature/v0.44.0-evidence-quality-corroboration"
+    expected_sha: 002a3215b7c5f503524da48d4a8d909181eff9e2
+    merged_pr: 125
+  - branch: "feature/v0.45.0-provider-neutral-trial-handoff"
+    expected_sha: d833ad33e3bdf83bdc3e8e501e08e30636d2725f
+    merged_pr: 127
+  - branch: "feature/v0.46.0-evolution-effectiveness-feedback"
+    expected_sha: 80d51851bd0c2074b79939a6cf1f7ee141e96aea
+    merged_pr: 129
+  - branch: "release/v0.16.6"
+    expected_sha: 5543ed9e3be5bd75522043ecdeba2c632a336cc8
+    merged_pr: 27
+  - branch: "release/v0.16.7"
+    expected_sha: 8240c19eff01923dbd99918799f2df504387954f
+    merged_pr: 28
+  - branch: "release/v0.16.9"
+    expected_sha: 7d9f5475df592191d060e548f128b528c81283ad
+    merged_pr: 30
+  - branch: "release/v0.17.0-evidence"
+    expected_sha: fe532c33d8ea7b9f0c804a63ffa9ac35ffdc8431
+    merged_pr: 31
+  - branch: "release/v0.17.1-evidence"
+    expected_sha: b015a3346e00d1ce3fe0eedef09441783fc648d8
+    merged_pr: 32
+  - branch: "release/v0.18.0-project-authority"
+    expected_sha: 8e4041893c1bbcabf7d6301fd52bbe99df5b805d
+    merged_pr: 33
+  - branch: "release/v0.18.1-instruction-conflict"
+    expected_sha: a359e717b9a9ad61dc502b4e60b38dac57ff667c
+    merged_pr: 34
+  - branch: "release/v0.18.2-monorepo-lazy"
+    expected_sha: 7edb3f4169e8479f56dc799cad3a3f939fbd09e8
+    merged_pr: 35
+  - branch: "release/v0.18.3-project-intelligence-promotion"
+    expected_sha: 098cf49fba434d59ba8d9977d598c9769315eb77
+    merged_pr: 36
+  - branch: "release/v0.18.4-creative-evidence"
+    expected_sha: b75114115dd66f1343e905184b35e6b69dca1325
+    merged_pr: 40
+  - branch: "release/v0.18.4-finalization"
+    expected_sha: dcaffdb1231db2559d6c85796badf07be6221f9e
+    merged_pr: 42
+  - branch: "release/v0.18.4-performance-evidence"
+    expected_sha: 77083f332d45cf8a75e8145da2f84cbefe4fd09d
+    merged_pr: 39
+  - branch: "release/v0.18.4-product-delivery-evidence"
+    expected_sha: ccde39896c06b26c42e1e476d82b909f71397983
+    merged_pr: 41
+  - branch: "release/v0.18.4-visual-render"
+    expected_sha: 637fef81ff109aece9a43d50437fc7ce00037272
+    merged_pr: 38
+  - branch: "release/v0.19.0-evolution-radar"
+    expected_sha: 213e063f5decf621284d09b0efd8caa3a6071508
+    merged_pr: 43
+  - branch: "release/v0.19.0-finalization"
+    expected_sha: aa2fc6e8b9b6acdf6bd13aaa4459a9ac9757a6b6
+    merged_pr: 44
+  - branch: "release/v0.19.1-evolution-network-safety"
+    expected_sha: aabf12e74f138754b6b974448dc4ad3df2c6d0ca
+    merged_pr: 45
+  - branch: "release/v0.19.2-lifecycle-cleanup-reliability-v2"
+    expected_sha: 8cc72611811bf69286be1b11f6d27d5cf84591c8
+    merged_pr: 48
+  - branch: "release/v0.27.2-finalization"
+    expected_sha: 2f3c2636e626ffac2e85f6795867a0b804a5cd24
+    merged_pr: 83
+  - branch: "release/v0.28.0-finalization"
+    expected_sha: d72c5f103266fee88bbb92821f7ae327c42a0059
+    merged_pr: 86
+  - branch: "release/v0.29.0-finalization"
+    expected_sha: addd662e31384c7d4549b7e272e22a2994b0e694
+    merged_pr: 89
+  - branch: "release/v0.30.0-finalization"
+    expected_sha: 8f284f76bf23f5495b74e2af59bddb4572420d50
+    merged_pr: 93
+  - branch: "release/v0.31.0-finalization"
+    expected_sha: dd682f399095a4ec11721b80b3d0504ff29c7cb3
+    merged_pr: 95
+  - branch: "release/v0.32.0-finalization"
+    expected_sha: 1a9a376611ed030351aeeb00ebab3859d1b7c0e8
+    merged_pr: 97
+  - branch: "release/v0.33.0-finalization"
+    expected_sha: eb0b5b45b9905fd3e9274825d88e603dcfe7e98b
+    merged_pr: 99
+  - branch: "release/v0.34.0-finalization"
+    expected_sha: 3d44f4ff96a477330c39ccc2ec5c996c6a9bb426
+    merged_pr: 102
+  - branch: "release/v0.35.0-finalization"
+    expected_sha: 3501cb1ab35655f68f8ad432184247c10864a4fc
+    merged_pr: 108
+  - branch: "release/v0.36.0-finalization"
+    expected_sha: 437cb91957c1b708294973446cec433efb114ce2
+    merged_pr: 110
+  - branch: "release/v0.37.0-finalization"
+    expected_sha: ed0eccc407b9d07adecd6c29e89a7a0d42fcff8e
+    merged_pr: 112
+  - branch: "release/v0.38.0"
+    expected_sha: 0a07ba38e53c9b3e4dd7f66325ce18df6cbd73d1
+    merged_pr: 114
+  - branch: "release/v0.39.0"
+    expected_sha: 5bc065b81b5536aa3aafe99b92aac11e6202236c
+    merged_pr: 116
+  - branch: "release/v0.40.0"
+    expected_sha: a1d0385d636882b6ff73eb609d9ea302f8ad7242
+    merged_pr: 118
+  - branch: "release/v0.41.0"
+    expected_sha: d2d308ea50124829c78681fad4f3fbd58ac01e22
+    merged_pr: 120
+  - branch: "release/v0.42.0"
+    expected_sha: f29c90b95d09b55fa8bf638a58d73ff5ff376111
+    merged_pr: 122
+  - branch: "release/v0.43.0"
+    expected_sha: 54ddf178cc0a559e3787f483a3fec087848244b3
+    merged_pr: 124
+  - branch: "release/v0.44.0"
+    expected_sha: d8911cd82297f0577659cf6d743904e1316f3ea7
+    merged_pr: 126
+  - branch: "release/v0.45.0"
+    expected_sha: 25e9a43490aebdbd24231791c4fca89799f670db
+    merged_pr: 128
+  - branch: "release/v0.46.0"
+    expected_sha: 3441f85a6089f7e6bbd4175835a6afd70bdeb2aa
+    merged_pr: 130
