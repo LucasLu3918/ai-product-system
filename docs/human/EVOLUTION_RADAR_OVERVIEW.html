@@ -90,4 +90,6 @@ Human chooses: REJECT / HOLD / ASSESS / TRIAL / ADOPT</pre></section>
 </section>
 
 <section class="card s12" id="evidence-quality-corroboration"><h2>Scenario 153 — Evidence Quality & Primary-source Corroboration</h2><p>Radar 將 discovery popularity 與 technical verification 分離，依 exact source provenance 產生 Level 0–4 deterministic evidence strength。Level 0/1 只有 community evidence；Level 2 起至少有 primary source；Level 3 為 primary + community corroboration；Level 4 為多個 independent primary sources。</p><div class="note warn"><strong>ADOPT floor：</strong>advisory <code>ADOPT</code> 至少需要 evidence level 2。Semantic provider 不能捏造或提升 evidence level；Monthly / Quarterly rollup 也必須保留來源 counts 與 evidence metadata。這不授權 Trial、implementation、PR、merge 或 release。</div></section>
+
+<section class="card s12" id="provider-neutral-trial-handoff"><h2>Scenario 154 — Provider-neutral Controlled Trial Handoff</h2><p><code>TRIAL</code> 仍先綁定 Human Decision 與 exact Trial Plan。<code>auto</code> 有 OpenAI credential 時使用 pinned Codex；無 credential 時改產生 <code>TRIAL_HANDOFF_READY</code>，讓 Human 選擇 compatible Agent 接手。</p><div class="note warn"><strong>Truth boundary：</strong>handoff 不是 PASS，也不是 shared-workspace fallback。External executor 不能 self-assert PASS；必須回到 AIPS deterministic scope/diff/repository validation，且不取得 PR/merge/release/publication authority。</div></section>
 </body></html>

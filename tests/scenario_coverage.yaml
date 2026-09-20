@@ -1151,3 +1151,16 @@ scenarios:
       - orchestration/EVOLUTION_RADAR.md
       - docs/human/EVOLUTION_RADAR.md
 
+
+  - id: "154"
+    path: tests/scenarios/154-provider-neutral-controlled-trial-handoff.md
+    coverage: lifecycle
+    evidence:
+      - config/evolution-trial.yaml
+      - scripts/evolution_trial.py
+      - .github/workflows/evolution-decision.yml
+      - tests/validation/evolution_governance_contracts.py
+      - orchestration/EVOLUTION_RADAR.md
+      - orchestration/EXECUTION_ISOLATION.md
+      - docs/human/EVOLUTION_RADAR.md
+

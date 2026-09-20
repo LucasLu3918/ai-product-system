@@ -225,3 +225,10 @@ Evolution Radar v0.43 expands research discovery and bounded semantic selection 
 ## Evolution evidence-quality boundary
 
 Evidence-quality classification is a read-only deterministic transform over collected source provenance. It does not create or select an execution workspace, and it does not authorize a Controlled Trial. A higher evidence level may make a signal eligible for advisory semantic `ADOPT`, but any actual mutation still requires the existing Human Decision and Execution Isolation contracts. Semantic providers cannot upgrade evidence metadata to obtain broader execution authority.
+
+
+## Provider-neutral Trial handoff isolation
+
+`TRIAL_HANDOFF_READY` does not weaken the isolation contract. It records that execution has been handed to a Human-selected compatible provider; it does not create a shared-workspace fallback and it is not a PASS/BLOCKED Trial result.
+
+The external executor is required to honor the exact `worktree` isolation requirement, approved path patterns, forbidden paths and change limits from the bound Trial Plan. Any eventual Trial claim must return to AIPS deterministic diff/commit/repository validation before PASS/FAIL evidence can be accepted. An external provider cannot widen the Change Boundary or gain publication credentials through the handoff.

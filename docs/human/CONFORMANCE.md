@@ -1083,3 +1083,21 @@ Current automated inventory after Scenario 153:
 
 Evidence strength is advisory input only and grants no Human-decision, implementation, PR, merge, release or publication authority.
 
+
+
+## Scenario 154 — Provider-neutral Controlled Trial Handoff
+
+Scenario 154 keeps the Human-approved Controlled Trial contract usable when the optional OpenAI executor credential is unavailable. Provider resolution is bounded to `auto / openai-codex-action / handoff`; `auto` falls back to credential-free `TRIAL_HANDOFF_READY` instead of misclassifying a missing optional key as a failed experiment.
+
+The handoff binds the exact baseline, Human Decision fingerprint, Trial fingerprint, approved scope/paths, forbidden paths, diff/file limits, worktree-isolation requirement and repository validation command. An external executor cannot self-assert PASS: AIPS deterministic scope/diff/repository validation remains required before PASS/FAIL Trial evidence exists.
+
+Current automated inventory after Scenario 154:
+
+- deterministic: 24
+- lifecycle: 76
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 154 / 154
+
+The handoff grants no PR, merge, release, publication or Human-adoption authority.
