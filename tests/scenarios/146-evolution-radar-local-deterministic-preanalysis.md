@@ -10,6 +10,8 @@ Expected:
 - produce deterministic topic-category hints and matched AIPS capability hints;
 - detect bounded near-duplicate title clusters with a deterministic token/Jaccard rule;
 - compute a deterministic Human review priority (HIGH / MEDIUM / LOW) from declared rule weights, capability matches, and recurrence only;
+- build a deterministic Human shortlist capped at 12 and a near-duplicate-aware semantic candidate queue capped at 10;
+- carry a maximum of five actionable semantic recommendations into the bounded analysis contract;
 - preserve every semantic recommendation as `ANALYSIS_PENDING`; local pre-analysis must not emit COVERED/HOLD/ASSESS/TRIAL/ADOPT or mutate recommendation state;
 - explicitly report `semantic_suitability_inferred=false` and `recommendation_state_mutated=false`;
 - bind output to the exact repository revision, evidence digest, local-preanalysis config digest, and Capability Map digest;

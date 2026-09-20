@@ -728,9 +728,9 @@ def validate_analysis(evidence: dict[str, Any], analysis: dict[str, Any]) -> lis
 
         if state == "ADOPT":
             signal = signal_by_id.get(str(recommendation.get("signal_fingerprint"))) or {}
-            roles = set(signal.get("source_roles") or ([signal.get("source_role")] if signal.get("source_role") else ["legacy"]))
-            if "primary" not in roles:
-                errors.append("community/legacy discovery signal requires primary-source corroboration before ADOPT")
+            roles = set(signal.get("source_roles") or ([signal.get("source_role")] if signal.get("source_role") else []))
+            if "community" in roles and "primary" not in roles:
+                errors.append("community discovery signal requires primary-source corroboration before ADOPT")
 
     if isinstance(max_actionable, int) and actionable_count > max_actionable:
         errors.append("analysis exceeds scoped actionable recommendation budget")
