@@ -342,3 +342,12 @@ level 4 = multiple independent primary sources
 The minimum deterministic evidence level for advisory `ADOPT` is 2. The semantic provider cannot create, upgrade or rewrite the evidence level; it may only reason over the bound evidence package. Pre-analysis may use a bounded evidence-quality bonus for Human review ordering, but evidence strength itself is not a semantic suitability decision.
 
 Monthly and quarterly rollups MUST preserve source counts, exact provenance and evidence level. No evidence-quality state grants Human Decision, implementation, Trial execution, PR, merge, release or publication authority.
+
+
+## Provider-neutral Controlled Trial handoff
+
+Controlled Trial provider selection is now `auto / openai-codex-action / handoff`. The Human TRIAL Decision and exact Trial Plan remain provider-independent.
+
+When `auto` cannot resolve the optional OpenAI credential, AIPS emits `TRIAL_HANDOFF_READY` rather than treating credential absence as Trial failure. The handoff binds the exact repository baseline, decision/trial fingerprints, approved scope and paths, forbidden paths, file/diff limits, required worktree isolation and deterministic repository validation command.
+
+A compatible external Agent may execute the bounded contract, but `external_executor_may_claim_pass=false`. Provider output alone is not Trial PASS evidence. PASS/FAIL remains valid only after AIPS deterministic scope, diff, commit-boundary and repository-validation checks. Handoff grants no code publication, PR, merge, release or Human-adoption authority.
