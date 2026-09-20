@@ -318,3 +318,15 @@ Run:
     python scripts/repository_health.py audit --config config/repository-health.yaml
 
 PASS is consistency evidence only. Repository Health is Detect + Evidence + Human Review and has no automatic remediation, code-change, PR, merge, release or publication authority. Review evidence_binding together with the sorted input manifest: clean Git must report EXACT_REVISION/revision_reproducible=true; staged, unstaged or untracked state must report DIRTY_WORKTREE/revision_reproducible=false rather than pretending the current HEAD fully reproduces the audit. CI additionally uploads repository-health-report.json as exact-candidate evidence; this artifact is observational only and grants no authority.
+
+
+## Repository Health 定期維護觀測
+
+`.github/workflows/repository-health.yml` 會每週定期執行一次 Repository Health，亦支援手動 `workflow_dispatch`。執行時只讀取目前預設分支的精確 revision，產生 `repository-health-report.json`、上傳短期 GitHub Actions artifact，並把摘要寫入 Job Summary。
+
+- PASS：只留下觀測證據，不建立 Issue。
+- DRIFT_DETECTED：依 deterministic evidence fingerprint 去重；同一 fingerprint 最多保留一個 open drift Issue，之後讓 workflow 明確失敗以顯示需要 Human review。
+- Workflow 只使用 GitHub 自身控制平面發布 artifact／Issue；Repository Health detector 本身仍不需要 `OPENAI_API_KEY`、`GEMINI_API_KEY` 或其他外部 Agent/provider credential。
+- 此流程沒有 `contents: write`，不會自動修改程式碼、建立 implementation PR、merge、release 或自動修復 drift。
+
+這個排程是 maintenance observation，不是新的治理 authority。正式變更仍走既有 System Self-Improvement、validation、PR、merge 與 release 流程。

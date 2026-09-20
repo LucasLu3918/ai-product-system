@@ -99,4 +99,9 @@
 <p>新增未分類 capability、遺失 surface path、文件與 Capability Map 不一致，或 validation evidence 未被正式驗證入口綁定，都會產生 <code>architecture_surface_drift</code>。</p>
 <div class="note"><strong>CI evidence：</strong><code>.github/workflows/validate.yml</code> 會對 exact candidate 產生 <code>repository-health-report.json</code> 並上傳為短期 artifact。Audit 本身仍不使用外部 Agent/provider key、不做 provider call，也沒有 automatic remediation、PR、merge、release 或 publication authority。</div>
 </section>
+
+<section>
+  <h2>Repository Health 定期維護觀測</h2>
+  <p><code>.github/workflows/repository-health.yml</code> 會每週與手動執行決定性的 Repository Health audit，保存 JSON artifact 與 Job Summary。只有偵測到 drift 時才依 evidence fingerprint 建立去重 Issue，並讓 workflow 維持失敗狀態供 Human review；它不會自動修改程式碼、建立 implementation PR、merge 或 release，也不需要外部 Agent/provider key。</p>
+</section>
 </body></html>

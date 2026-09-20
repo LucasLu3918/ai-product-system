@@ -1098,3 +1098,15 @@ scenarios:
       - tests/validation/repository_health_contracts.py
       - orchestration/REPOSITORY_HEALTH.md
       - .github/workflows/validate.yml
+
+  - id: "150"
+    path: tests/scenarios/150-repository-health-scheduled-maintenance.md
+    coverage: lifecycle
+    evidence:
+      - .github/workflows/repository-health.yml
+      - config/repository-health.yaml
+      - config/architecture-surfaces.yaml
+      - scripts/repository_health.py
+      - tests/validation/repository_health_contracts.py
+      - orchestration/REPOSITORY_HEALTH.md
+      - docs/human/MAINTENANCE.md
