@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.38.0
+
+### Repository Health / Architecture Drift Deterministic Detection
+
+- Add a credential-free deterministic Repository Health / Architecture Drift detector that compares source-controlled architecture declarations with actual repository surfaces.
+- Reuse existing truth surfaces instead of creating parallel frameworks: Capability Map for capability identity/docs, Scenario Conformance for registry/evidence integrity, Integration Gate for exact-candidate validation, Documentation Consistency for changed-file documentation impact, Change Impact for proposed-change scope, and External Credential Dependency Guard for credential policy.
+- Detect bounded drift classes for missing capability targets, orphan core guard/gate surfaces, stale canonical documentation references, Scenario evidence drift, and validation-workflow contract drift.
+- Reconcile a real baseline catalog gap by registering the already-existing Integration Gate in the Capability Map rather than suppressing the finding.
+- Add deterministic input binding through repository revision plus config, Capability Map, and Scenario registry digests.
+- Preserve a bounded v1 false-positive/false-negative contract: explicit source-controlled surfaces and guard/gate discovery only; no semantic inference over arbitrary files.
+- Keep the capability Detect + Evidence + Human Review only: no automatic remediation, code-change, branch/PR, merge, release, publication, runtime-enforcement, or credential-acquisition authority.
+- Require no `OPENAI_API_KEY`, `GEMINI_API_KEY`, other external Agent/provider credential, or additional external network request.
+- Add Scenario 147 and raise Scenario Conformance to 147/147 automated: 24 deterministic + 69 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- Feature PR #113 final head `4941285a3dd94d44acc5f6715c0d3ba93298a3ad` passed exact-head validate Run #1129.
+- PR #113 was merged to main as `0fbd125abd58ece77e21aa92182d0837385a7994`; protected-main validate Run #1130 succeeded.
+- Roles remain 12 and Skills remain 25.
+- Constitution impact: NO. Protected Human Authority and existing merge/release/publication boundaries remain unchanged.
+- Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
+
 ## 0.37.0
 
 ### Evolution Radar Local Deterministic Pre-analysis
