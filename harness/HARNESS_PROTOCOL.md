@@ -77,3 +77,11 @@ Scenario 143 pins Gemini CLI v0.60.0 and executes the bundled CLI, built-in file
 
 A runtime may claim `live_capture_verified=true` for this bounded Gemini CLI integration only after that exact-head workflow succeeds. Provider/model session verification remains a separate state.
 
+## Live provider-session verification boundary
+
+Real runtime execution and live provider/model execution are distinct claims.
+
+After Scenario 143, Gemini CLI may truthfully report runtime-specific `live_capture_verified=true`, but provider/model verification remains false until a trusted protected-main session executes with a protected credential.
+
+Provider credentials must not be injected into unmerged PR code. A secure provider-session verification may only persist redacted/boolean evidence and must preserve the existing non-enforcing AfterTool semantics.
+

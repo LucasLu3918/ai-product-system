@@ -91,3 +91,15 @@ If a real secret is exposed:
 Deleting a committed secret alone does not make the credential safe.
 
 For SAL 3–4 or production credentials, unresolved active exposure blocks release.
+
+## Protected-main provider verification
+
+A provider credential verification workflow MUST NOT expose a provider secret to unmerged pull-request code.
+
+For Gemini live-provider verification:
+
+- `GEMINI_API_KEY` may be consumed only from a protected GitHub Actions secret context after the verification infrastructure is trusted;
+- the value must not be written to workspace `.env`, extension settings, logs, canonical event sink, artifacts or committed evidence;
+- missing or unavailable credentials keep provider verification PENDING/BLOCKED and cannot be interpreted as PASS;
+- provider-session verification grants no runtime enforcement, remediation, merge, release or publication authority.
+

@@ -85,3 +85,9 @@ Extension manifest 也正式宣告：
 
 讓 Gemini CLI 的 extension environment sanitization 能合法傳遞這兩個非祕密控制值。
 
+## Gemini Live Provider Session Gate
+
+v0.34.0 已驗證真實 Gemini CLI / tool / extension hook，但 provider inference 仍是 fake-response。下一個 gate 必須把 provider credential 與未 merge 的 PR 程式碼隔離。
+
+Human 已批准 bounded live-provider Trial，但目前 durable state 仍是 `PENDING_SECURE_PROVIDER_WORKFLOW`。只有受保護 main 上的 secret-backed verification 成功後，才可把 `live_provider_session_verified` 或 `provider_model_execution_verified` 設為 true。
+
