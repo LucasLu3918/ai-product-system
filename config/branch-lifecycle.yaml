@@ -12,6 +12,10 @@ deletion:
   mode: report_only
   require_integrated_into_default: true
   preserve_unclassified: true
+  approved_cleanup_manifest: config/branch-cleanup-manifest.yaml
+  apply_only_on_protected_main_push: true
 notes:
   - feature/retrieval-embedding-trial is operational because retrieval-semantic-trial.yml listens to pushes on it.
   - report_only intentionally separates deterministic classification from branch deletion authority.
+  - Exact branch deletion is permitted only by the separately reviewed one-time cleanup manifest on a protected-main push.
+  - The cleanup manifest binds each branch to an expected SHA and merged PR; any ref movement or integration mismatch blocks the entire batch before deletion.
