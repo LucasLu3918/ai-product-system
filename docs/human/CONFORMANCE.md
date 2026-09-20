@@ -1101,3 +1101,21 @@ Current automated inventory after Scenario 154:
 - automated: 154 / 154
 
 The handoff grants no PR, merge, release, publication or Human-adoption authority.
+
+
+## Scenario 155 — Evolution Effectiveness Metrics and Feedback Loop
+
+Scenario 155 validates a credential-free monthly effectiveness layer over durable weekly Evolution Radar evidence. It aggregates signal/duplicate volume, shortlist and semantic selection, semantic actionable states, Human Decisions, provider-neutral Trial handoffs, Trial outcomes and Trial→ADOPT bindings, then attributes downstream observations back to exact source provenance.
+
+Per-source ratios are deterministic basis-point calculations. Low-yield, high-failure and zero-actionable conditions may emit Human-review flags only after minimum observation thresholds; automatic source weighting, enable/disable and configuration mutation remain forbidden.
+
+Current automated inventory after Scenario 155:
+
+- deterministic: 24
+- lifecycle: 77
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 155 / 155
+
+The monthly workflow requires no external Agent/provider credential and has only `contents: read + issues: write`. Effectiveness evidence cannot authorize implementation, PR, merge or release.
