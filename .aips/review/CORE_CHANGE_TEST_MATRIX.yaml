@@ -1,24 +1,24 @@
 version: 1
 candidate:
-  base_sha: 4de28479a72c884533b31f00a1e6ff761203b6a1
-  changed_files_hash: 0dc28a7f0f854633f19ca8fdb79b2bfbf03fe453f43d00cbd0c11afb3695bcf4
+  base_sha: 3e9332d4f27d02117b00e2d2ec79d805077f75b6
+  changed_files_hash: 7a85bc7d88383427f5ede9d052fcdeeb895457a61c32a2ee360806ed2a29bd63
 change:
-  id: v0.35.0-gemini-provider-session-verifier
-  summary: Add the trusted provider-session verifier and deterministic secret-safety contracts without injecting any credential in pull-request CI.
-  boundary: [gemini-provider-verifier, secret-handling, validation]
+  id: v0.35.0-gemini-provider-session-trusted-main-workflow
+  summary: Add a trusted-main-only Gemini provider-session workflow that never exposes GEMINI_API_KEY to pull-request code and fails closed to blocked evidence when the secret is unavailable.
+  boundary: [github-actions, provider-session-verification, secret-isolation, documentation]
 matrix:
-  - boundary: gemini-provider-verifier
-    reason: The verifier must be trusted on protected main before any GitHub secret is wired to it.
+  - boundary: trusted-main-provider-session
+    reason: Provider credentials must only reach code already trusted on protected main.
     checks:
-      static_lint: {applicable: true, evidence: "ruff-critical + py_compile contract"}
-      unit: {applicable: true, evidence: "static provider verifier secret-safety contract"}
-      integration: {applicable: false, na_reason: "No provider credential is injected by this PR"}
-      contract: {applicable: true, evidence: "No fake responses; blocked state on missing credential; no credential print/persistence tokens"}
-      e2e: {applicable: false, na_reason: "Live provider execution belongs to the later trusted-main workflow"}
-      security: {applicable: true, evidence: "Verifier contains redaction/leakage checks and receives no PR secret"}
+      static_lint: {applicable: true, evidence: "repository validation imports dedicated workflow contract"}
+      unit: {applicable: true, evidence: "workflow contract forbids pull_request trigger and requires secret-gated execution"}
+      integration: {applicable: false, na_reason: "PR candidate intentionally receives no provider credential; live integration runs only after merge on trusted main"}
+      contract: {applicable: true, evidence: "missing credential -> BLOCKED_MISSING_CREDENTIAL; secret-backed path requires exact SHA and provider PASS"}
+      e2e: {applicable: false, na_reason: "The protected-main push created by merging this PR is the first permitted live-provider e2e execution"}
+      security: {applicable: true, evidence: "contents:read only; no pull_request trigger; secret checked without printing; credential value never persisted"}
       migration_recovery: {applicable: false, na_reason: "No project/runtime migration"}
-      cli_harness: {applicable: false, na_reason: "Existing Scenario 143 runtime path is unchanged"}
-      docs_schema: {applicable: true, evidence: "Technology Guide documents the trusted-main verifier boundary, missing-credential blocked state, and no-PR-secret rule"}
+      cli_harness: {applicable: true, evidence: "secret-backed path uses pinned Gemini CLI v0.60.0 and trusted verifier already on main"}
+      docs_schema: {applicable: true, evidence: "Technology Guide documents trusted-main secret isolation and blocked-state semantics"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
