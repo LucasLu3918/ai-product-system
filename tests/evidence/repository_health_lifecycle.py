@@ -80,6 +80,14 @@ def build_fixture(root: Path) -> str:
         "# Fixture Scenario\n",
     )
     write(
+        root / "tests/validate_repository.py",
+        "from validation import fixture_contracts\n",
+    )
+    write(
+        root / "tests/validation/fixture_contracts.py",
+        "# fixture validation\n",
+    )
+    write(
         root / "references/evolution/CAPABILITY_MAP.yaml",
         yaml.safe_dump(
             {
@@ -118,6 +126,36 @@ def build_fixture(root: Path) -> str:
         ),
     )
     write(
+        root / "config/architecture-surfaces.yaml",
+        yaml.safe_dump(
+            {
+                "version": 1,
+                "policy": {
+                    "capability_accounting": "complete",
+                    "validation_binding": (
+                        "scenario_or_repository_validator"
+                    ),
+                },
+                "surfaces": [
+                    {
+                        "id": "fixture",
+                        "capabilities": ["fixture-capability"],
+                        "required_paths": [
+                            "scripts/core_guard.py",
+                            "docs/capability.md",
+                        ],
+                        "canonical_docs": ["docs/capability.md"],
+                        "validation_paths": [
+                            "scripts/core_guard.py",
+                            "tests/validation/fixture_contracts.py",
+                        ],
+                    }
+                ],
+            },
+            sort_keys=False,
+        ),
+    )
+    write(
         root / "config/repository-health.yaml",
         yaml.safe_dump(
             {
@@ -130,6 +168,12 @@ def build_fixture(root: Path) -> str:
                     "capability_map": (
                         "references/evolution/CAPABILITY_MAP.yaml"
                     ),
+                    "architecture_surfaces": (
+                        "config/architecture-surfaces.yaml"
+                    ),
+                    "repository_validator": (
+                        "tests/validate_repository.py"
+                    ),
                     "scenario_registry": (
                         "tests/scenario_coverage.yaml"
                     ),
@@ -137,14 +181,6 @@ def build_fixture(root: Path) -> str:
                     "scenario_helper": (
                         "scripts/scenario_conformance.py"
                     ),
-                },
-                "capability_surfaces": {
-                    "fixture-capability": {
-                        "required": [
-                            "scripts/core_guard.py",
-                            "docs/capability.md",
-                        ]
-                    }
                 },
                 "surface_discovery": {
                     "patterns": ["scripts/*_guard.py"],
@@ -207,7 +243,10 @@ with tempfile.TemporaryDirectory(
     assert manifest["count"] == len(manifest["entries"])
     assert {
         "config/repository-health.yaml",
+        "config/architecture-surfaces.yaml",
         "references/evolution/CAPABILITY_MAP.yaml",
+        "tests/validate_repository.py",
+        "tests/validation/fixture_contracts.py",
         "scripts/scenario_conformance.py",
         "scripts/core_guard.py",
         "docs/capability.md",
@@ -216,6 +255,13 @@ with tempfile.TemporaryDirectory(
         "tests/scenarios/001-fixture.md",
         "tests/scenario_coverage.yaml",
     }.issubset(manifest_paths)
+
+    architecture = report1["architecture_surfaces"]
+    assert architecture["surface_count"] == 1
+    assert architecture["capability_count"] == 1
+    assert architecture["capability_accounted"] == 1
+    assert architecture["unclassified_capabilities"] == []
+    assert architecture["validation_path_count"] == 2
 
     assert report1["execution"]["credential_required"] is False
     assert report1["execution"]["external_network_required"] is False
@@ -285,6 +331,82 @@ with tempfile.TemporaryDirectory(
         fixture / "docs/capability.md",
         "# Fixture capability\n",
     )
+
+    capability_map = yaml.safe_load(
+        (
+            fixture / "references/evolution/CAPABILITY_MAP.yaml"
+        ).read_text(encoding="utf-8")
+    )
+    capability_map["capabilities"].append(
+        {
+            "id": "unclassified-capability",
+            "name_en": "Unclassified",
+            "docs": ["docs/capability.md"],
+        }
+    )
+    write(
+        fixture / "references/evolution/CAPABILITY_MAP.yaml",
+        yaml.safe_dump(capability_map, sort_keys=False),
+    )
+    code, report = run(fixture)
+    assert code != 0
+    assert any(
+        "unclassified-capability" in item
+        for item in report["drift"]["architecture_surface_drift"]
+    )
+    capability_map["capabilities"].pop()
+    write(
+        fixture / "references/evolution/CAPABILITY_MAP.yaml",
+        yaml.safe_dump(capability_map, sort_keys=False),
+    )
+
+    inventory = yaml.safe_load(
+        (
+            fixture / "config/architecture-surfaces.yaml"
+        ).read_text(encoding="utf-8")
+    )
+    inventory["surfaces"][0]["required_paths"].append(
+        "scripts/missing_surface.py"
+    )
+    write(
+        fixture / "config/architecture-surfaces.yaml",
+        yaml.safe_dump(inventory, sort_keys=False),
+    )
+    code, report = run(fixture)
+    assert code != 0
+    assert any(
+        "missing_surface.py" in item
+        for item in report["drift"]["architecture_surface_drift"]
+    )
+    inventory["surfaces"][0]["required_paths"].pop()
+    write(
+        fixture / "config/architecture-surfaces.yaml",
+        yaml.safe_dump(inventory, sort_keys=False),
+    )
+
+    write(
+        fixture / "tests/evidence/unbound_validation.py",
+        "# not registered\n",
+    )
+    inventory["surfaces"][0]["validation_paths"].append(
+        "tests/evidence/unbound_validation.py"
+    )
+    write(
+        fixture / "config/architecture-surfaces.yaml",
+        yaml.safe_dump(inventory, sort_keys=False),
+    )
+    code, report = run(fixture)
+    assert code != 0
+    assert any(
+        "unbound_validation.py" in item
+        for item in report["drift"]["architecture_surface_drift"]
+    )
+    inventory["surfaces"][0]["validation_paths"].pop()
+    write(
+        fixture / "config/architecture-surfaces.yaml",
+        yaml.safe_dump(inventory, sort_keys=False),
+    )
+    (fixture / "tests/evidence/unbound_validation.py").unlink()
 
     write(
         fixture / "scripts/orphan_guard.py",

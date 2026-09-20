@@ -1032,3 +1032,13 @@ Scenario 148 將 Repository Health 的 evidence truth 從「少數主要 digest�
 Dirty workspace 本身不是 architecture drift，因此不會只因 dirty 就改成 `DRIFT_DETECTED`；但 evidence 不得再被描述成 exact-revision reproducible。相同 revision + workspace state + manifest + drift 會產生相同 evidence fingerprint。
 
 目前 Scenario inventory 為 **148**：24 deterministic + 70 lifecycle + 54 agent_eval，**148 / 148 automated、0 manual、0 uncovered**。
+
+## Scenario 149 — Repository Health Architecture Surface Inventory
+
+Scenario 149 把 Repository Health 的「重大架構 surface」改成顯式、可驗證的 source-controlled inventory：`config/architecture-surfaces.yaml`。
+
+目前 27 個 Capability Map ID 必須全部且只被分類一次；每個 major surface 同時綁定 required repository paths、canonical docs 與 validation paths。validation path 必須能追溯到 Scenario Conformance evidence，或是由 `tests/validate_repository.py` 匯入的 repository validator module。新增 capability 卻沒有分類、required path 消失、canonical doc 與 Capability Map 不一致，或 validation path 未被任何驗證入口綁定，都會產生 `architecture_surface_drift`。
+
+`.github/workflows/validate.yml` 同時會產生 `repository-health-report.json` 並上傳為短期 CI artifact，供 exact-candidate review；artifact 只是 evidence，不具修復、PR、merge、release 或 publication authority。
+
+目前 Scenario inventory 為 **149**：24 deterministic + 71 lifecycle + 54 agent_eval，**149 / 149 automated、0 manual、0 uncovered**。
