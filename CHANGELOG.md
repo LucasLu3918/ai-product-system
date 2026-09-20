@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.46.0
+
+### Evolution Effectiveness Metrics & Feedback Loop
+
+- Add a credential-free monthly effectiveness layer over durable weekly Evolution Radar Issues and comments.
+- Aggregate raw/unique signal observations, duplicate rate, deterministic shortlist/semantic selection, latest semantic recommendation states, Human Decisions, provider-neutral Trial handoffs, Trial PASS/FAIL/BLOCKED results, and Trial→ADOPT bindings.
+- Attribute collected/shortlisted/semantic/actionable/Trial/PASS/adoption observations back to exact source provenance.
+- Calculate deterministic basis-point ratios for shortlist yield, semantic yield, actionable conversion, Trial conversion, adoption conversion, and source failure rate.
+- Emit `REVIEW_LOW_SHORTLIST_YIELD`, `REVIEW_HIGH_FAILURE_RATE`, and `REVIEW_ZERO_ACTIONABLE_AFTER_SEMANTIC` only after configured minimum observations.
+- Keep automatic source reweighting, source enable/disable, source/config mutation, code change, PR, merge and release authority false.
+- Add monthly `evolution-effectiveness` workflow on day 2 after the monthly Radar review; it uses `contents: read + issues: write` only and requires no external Agent/provider credential.
+- Reconcile one durable `Evolution Effectiveness [monthly] YYYY-MM` Issue per cohort; no review flags closes it as completed, while deterministic review flags keep/reopen it for Human review.
+- Register the effectiveness script/config/workflow in the Evolution Radar documentation-sync mapping and Architecture Surface Inventory.
+- Add Scenario 155 and raise Scenario Conformance to 155/155 automated: 24 deterministic + 77 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- Feature PR #129 exact final head `80d51851bd0c2074b79939a6cf1f7ee141e96aea` passed validate Run #1172.
+- PR #129 was squash-merged to main as `5340dc82ed010e19f4c17b0edac1814a312b5535`; protected-main validate Run #1173 succeeded.
+- No new Role or Skill. Constitution impact: NO.
+- Release model remains `VERSION + CHANGELOG + protected-main validation`; no GitHub Release object or tag is introduced.
+
 ## 0.45.0
 
 ### Provider-neutral Controlled Trial Handoff
