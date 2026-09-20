@@ -1,0 +1,38 @@
+version: 1
+truth_sources:
+  capability_map: references/evolution/CAPABILITY_MAP.yaml
+  scenario_registry: tests/scenario_coverage.yaml
+  scenario_dir: tests/scenarios
+  scenario_helper: scripts/scenario_conformance.py
+capability_surfaces:
+  project-intelligence:
+    required: [scripts/project_intelligence.py, orchestration/PROJECT_INTELLIGENCE.md, docs/human/PROJECT_INTELLIGENCE.md]
+  change-impact-guard:
+    required: [orchestration/CHANGE_IMPACT.md, templates/intelligence/CHANGE_IMPACT.yaml]
+  documentation-consistency:
+    required: [scripts/documentation_sync.py, config/documentation-sync.yaml, orchestration/DOCUMENTATION_SYNC.md, docs/human/DOCUMENTATION_SYNC.md]
+  scenario-conformance:
+    required: [scripts/scenario_conformance.py, tests/scenario_coverage.yaml, orchestration/CONFORMANCE.md, docs/human/CONFORMANCE.md]
+  enforceable-governance:
+    required: [scripts/governance_guard.py, core/GOVERNANCE.md]
+  integration-gate:
+    required: [scripts/integration_gate.py, config/integration-gate.yaml, orchestration/INTEGRATION_GATE.md, .github/workflows/validate.yml]
+  external-credential-dependency-guard:
+    required: [scripts/external_credential_guard.py, config/external-credentials.yaml, orchestration/EXTERNAL_CREDENTIAL_DEPENDENCY_GUARD.md]
+  repository-health-architecture-drift:
+    required: [scripts/repository_health.py, config/repository-health.yaml, orchestration/REPOSITORY_HEALTH.md, tests/validation/repository_health_contracts.py, tests/evidence/repository_health_lifecycle.py, tests/scenarios/147-repository-health-architecture-drift.md]
+surface_discovery:
+  patterns: [scripts/*_guard.py, scripts/*_gate.py]
+  ignore: []
+documentation_bindings:
+  - source: orchestration/REPOSITORY_HEALTH.md
+    required_references: [config/repository-health.yaml, scripts/repository_health.py, references/evolution/CAPABILITY_MAP.yaml, scripts/scenario_conformance.py, config/integration-gate.yaml]
+  - source: docs/human/MAINTENANCE.md
+    required_references: [orchestration/REPOSITORY_HEALTH.md, scripts/repository_health.py]
+contract_files:
+  - path: .github/workflows/validate.yml
+    required_strings: [scripts/integration_gate.py, config/integration-gate.yaml, "repository:", "needs: janitor"]
+  - path: config/integration-gate.yaml
+    required_strings: ["id: repository-validation", tests/validate_repository.py, 'paths: ["**"]']
+  - path: tests/validate_repository.py
+    required_strings: ["from validation import conformance_isolation", "from validation import repository_health_contracts"]

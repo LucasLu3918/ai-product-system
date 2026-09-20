@@ -299,3 +299,9 @@ Execution Profile
 AIPS 現在能把「Agent 能做什麼」從粗粒度 read/write 描述收斂成明確 resource grant。未宣告資源、未宣告 operation、或要求 Change Boundary 卻缺少 boundary 時一律 DENY。
 
 這是 pre-execution evidence，不會假裝所有 Runtime 都能硬攔工具呼叫；只有已驗證的 pre-tool guard 才能進一步消費此 evidence。Profile 不授權 merge、release、publication、administration、destructive deletion 或 Human approval。
+
+## Repository Health and architecture drift
+
+AIPS has a deterministic Repository Health lane that checks declared capabilities, canonical documentation targets, Scenario evidence and Integration Gate wiring against repository reality. It runs without external Agent credentials or network calls and reports PASS or DRIFT_DETECTED for Human review.
+
+The lane does not edit code, authorize PRs, merge, release or publish. Project Intelligence, Change Impact, Scenario Conformance, Documentation Consistency, Integration Gate and External Credential Dependency Guard remain authoritative for their own concerns.

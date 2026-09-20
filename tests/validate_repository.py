@@ -58,6 +58,7 @@ from validation import resource_authorization_contracts as resource_authorizatio
 from validation import gemini_runtime_verification_contracts as gemini_runtime_verification_contracts  # noqa: F401\nfrom validation import gemini_provider_session_verification_contracts as gemini_provider_session_verification_contracts  # noqa: F401
 from validation import gemini_provider_session_workflow_contracts as gemini_provider_session_workflow_contracts  # noqa: F401
 from validation import external_credential_guard_contracts as external_credential_guard_contracts  # noqa: F401
+from validation import repository_health_contracts as repository_health_contracts  # noqa: F401
 
 errors = static_contracts.errors
 

@@ -343,3 +343,7 @@ Evolution Radar 在 evidence 收集／deduplication 完成後，現在會先執�
 - artifact 綁定 repository revision、evidence digest、config digest 與 Capability Map digest。
 
 Provider-neutral handoff 與 optional semantic analyzer 仍保留在下一層；deterministic pre-analysis 不取代語意分析或 Human Decision。
+
+### Capability Map repository-health reconciliation
+
+The Capability Map explicitly includes the existing Integration Gate and deterministic Repository Health / Architecture Drift capability so Evolution comparison stays aligned with source-controlled architecture. Repository Health is separate credential-free consistency evidence and does not change Radar recommendation semantics or Human decision authority.

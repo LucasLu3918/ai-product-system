@@ -1063,3 +1063,15 @@ scenarios:
       - tests/validation/evolution_radar_contracts.py
       - references/evolution/CAPABILITY_MAP.yaml
       - tests/validate_repository.py
+
+  - id: "147"
+    path: tests/scenarios/147-repository-health-architecture-drift.md
+    coverage: lifecycle
+    evidence:
+      - config/repository-health.yaml
+      - scripts/repository_health.py
+      - tests/evidence/repository_health_lifecycle.py
+      - tests/validation/repository_health_contracts.py
+      - orchestration/REPOSITORY_HEALTH.md
+      - references/evolution/CAPABILITY_MAP.yaml
+      - tests/validate_repository.py

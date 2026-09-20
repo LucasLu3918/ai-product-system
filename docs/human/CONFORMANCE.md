@@ -1012,3 +1012,9 @@ Scenario 146 將 Evolution Radar 的第一層 triage 做成完全 credential-fre
 Lifecycle evidence 會重播相同輸入兩次並要求 artifact 完全一致，也驗證 near-duplicate、Capability Map references、tamper detection 與 Human review Issue embedding。
 
 目前 Scenario inventory 為 **146**：24 deterministic + 68 lifecycle + 54 agent_eval，**146 / 146 automated、0 manual、0 uncovered**。
+
+## v0.38 Repository Health Scenario
+
+Scenario 147 covers the credential-free Repository Health / Architecture Drift detector as lifecycle evidence. The detector reuses the canonical Scenario Conformance registry/checker rather than introducing a second Scenario evidence model.
+
+The released target for this increment is 147 automated Scenarios: 24 deterministic + 69 lifecycle + 54 agent_eval, with 0 manual and 0 uncovered. Repository Health PASS remains consistency evidence only and grants no code-change, PR, merge, release, publication or automatic-remediation authority.

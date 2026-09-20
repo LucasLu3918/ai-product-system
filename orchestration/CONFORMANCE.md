@@ -437,3 +437,9 @@ Current automated inventory after Scenario 146:
 - manual: 0
 - uncovered: 0
 - automated: 146 / 146
+
+## Repository Health reuse
+
+Repository Health / Architecture Drift invokes this existing Scenario Conformance checker for scenario_evidence_drift. This file, tests/scenario_coverage.yaml and scripts/scenario_conformance.py remain the canonical Scenario evidence model; Repository Health must not reimplement or reinterpret Scenario coverage semantics.
+
+Scenario 147 is lifecycle-covered by tests/evidence/repository_health_lifecycle.py. The current v0.38 target is 147 automated Scenarios: 24 deterministic + 69 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
