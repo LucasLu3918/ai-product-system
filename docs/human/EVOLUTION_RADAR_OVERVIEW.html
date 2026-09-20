@@ -88,4 +88,6 @@ Human chooses: REJECT / HOLD / ASSESS / TRIAL / ADOPT</pre></section>
 <p>Community pool 包含 Hacker News、Lobsters、DEV Community、Stack Overflow、Software Engineering Stack Exchange 與 best-effort Reddit r/programming；GitHub / Cloudflare / Google Developers / Hugging Face 保留為 primary evidence lane。</p>
 <div class="note warn"><strong>Forum ≠ adoption authority：</strong>community-only evidence 標記為 <code>DISCOVERY_ONLY</code>，沒有 primary-source corroboration 時不能直接 <code>ADOPT</code>。未進 semantic queue 的項目保持 <code>ANALYSIS_PENDING</code>。</div>
 </section>
+
+<section class="card s12" id="evidence-quality-corroboration"><h2>Scenario 153 — Evidence Quality & Primary-source Corroboration</h2><p>Radar 將 discovery popularity 與 technical verification 分離，依 exact source provenance 產生 Level 0–4 deterministic evidence strength。Level 0/1 只有 community evidence；Level 2 起至少有 primary source；Level 3 為 primary + community corroboration；Level 4 為多個 independent primary sources。</p><div class="note warn"><strong>ADOPT floor：</strong>advisory <code>ADOPT</code> 至少需要 evidence level 2。Semantic provider 不能捏造或提升 evidence level；Monthly / Quarterly rollup 也必須保留來源 counts 與 evidence metadata。這不授權 Trial、implementation、PR、merge 或 release。</div></section>
 </body></html>
