@@ -9,7 +9,8 @@ case "${AIPS_OBSERVABLE_EVENT_CAPTURE:-}" in
     ;;
 esac
 
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)"
+SCRIPT_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
+ROOT="$(cd "$SCRIPT_DIR/../../../.." && pwd -P)"
 PY="$ROOT/.venv/bin/python"
 [ -x "$PY" ] || PY="$(command -v python3)"
 exec "$PY" "$ROOT/scripts/gemini_observable_event_capture.py" hook --config "$ROOT/config/gemini-observable-event-capture.yaml"

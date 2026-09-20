@@ -69,3 +69,11 @@ Scenario 142 adds the first implementation for Gemini CLI `AfterTool` with these
 
 Runtime-native contract verification and actual runtime execution verification are distinct. Source-controlled CI may verify hook schema/wiring while `live_runtime_execution_verified=false`; only an exact-candidate real-runtime Trial may promote that runtime-specific verification state.
 
+## Exact-candidate real-runtime verification
+
+Runtime adapter source-contract verification is not the same as executing the actual runtime binary.
+
+Scenario 143 pins Gemini CLI v0.60.0 and executes the bundled CLI, built-in file tools and linked AIPS extension on the exact PR head. Gemini CLI's official `--fake-responses` interface replaces provider inference only; it does not replace CLI/tool/hook execution.
+
+A runtime may claim `live_capture_verified=true` for this bounded Gemini CLI integration only after that exact-head workflow succeeds. Provider/model session verification remains a separate state.
+

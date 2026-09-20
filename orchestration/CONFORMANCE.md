@@ -342,3 +342,23 @@ Current automated inventory:
 - uncovered: 0
 - automated: 142 / 142
 
+## Scenario 143 — Gemini CLI real-runtime verification
+
+Scenario 143 is lifecycle-covered by a dedicated GitHub Actions workflow plus static contracts.
+
+It verifies:
+
+- pinned official Gemini CLI v0.60.0;
+- exact candidate SHA identity;
+- official extension link/validation;
+- real built-in read/write/replace execution;
+- real AfterTool hook execution;
+- 3/3 expected canonical events and zero unexpected loss;
+- actual write/replace workspace mutations;
+- zero raw/private/secret payload persistence;
+- disabled capture writes no sink.
+
+The model layer is deterministic fake-response input, so the result may set runtime-specific `live_runtime_execution_verified=true` / `live_capture_verified=true`, but must keep provider/model session verification false.
+
+Current automated inventory: deterministic 22, lifecycle 67, agent_eval 54, total 143 / 143.
+

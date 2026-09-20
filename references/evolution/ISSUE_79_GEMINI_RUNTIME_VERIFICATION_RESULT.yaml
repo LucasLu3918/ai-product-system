@@ -1,0 +1,68 @@
+version: 1
+verification_id: issue-79-gemini-cli-real-runtime-v1
+baseline_repository_revision: dac529ed2c385081547c3c3de4820f7a80b97101
+runtime: gemini-cli
+pinned_cli_version: 0.60.0
+model_selection: gemini-2.5-flash-explicit_no_auto_router
+verification_mode: bundled_real_cli_with_fake_model_responses
+expected_runtime_evidence:
+  real_cli_binary_executed: true
+  real_tool_execution_verified: true
+  real_extension_hook_execution_verified: true
+  fake_model_responses_used: true
+  extension_config_enabled: true
+  extension_settings_scope: workspace_dotenv
+  auth_type_selector_only: true
+  credential_material_present: false
+  live_provider_session_verified: false
+  supported_tools: [read_file, write_file, replace]
+  expected_events: 3
+  unexpected_event_loss: 0
+  raw_private_secret_leakage: 0
+  disabled_capture_wrote_sink: false
+runtime_truth:
+  live_runtime_execution_verified: true
+  live_capture_verified: true
+  live_capture_scope: deterministic_real_cli_runtime_with_fake_model_responses
+  live_provider_session_verified: false
+  provider_model_execution_verified: false
+enforcement:
+  runtime_enforced: false
+  critical_path: false
+  critical_path_semantics: authorization_or_result_enforcement_only
+  synchronous_hook: true
+  latency_path: synchronous
+  result_flow_control_authorized: false
+  automatic_remediation: false
+observed_runtime_evidence:
+  probe_run: 10
+  probe_candidate_head: 9777e203d3e58d1d637d2d8398e055b3877decc0
+  real_cli_binary_executed: true
+  real_tool_execution_verified: true
+  real_extension_hook_execution_verified: true
+  captured_events: 3
+  expected_events: 3
+  unexpected_event_loss: 0
+  raw_private_secret_leakage: 0
+  disabled_capture_wrote_sink: false
+  enabled_invocation_max_ms: 2268.651
+  disabled_invocation_ms: 2001.305
+  fake_model_responses_used: true
+  extension_config_enabled: true
+  extension_settings_scope: workspace_dotenv
+  auth_type_selector_only: true
+  credential_material_present: false
+  live_provider_session_verified: false
+verification_gate:
+  exact_head_workflow_required: true
+  workflow: gemini-runtime-verification
+status: PASS
+recommendation: HUMAN_REVIEW_PROVIDER_SESSION_VERIFICATION
+authority:
+  live_provider_session_authorized: false
+  runtime_enforcement_authorized: false
+  automatic_remediation_authorized: false
+  human_approval_granted: false
+  merge_authorized: false
+  release_authorized: false
+  publication_authorized: false

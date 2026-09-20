@@ -153,3 +153,11 @@ live_capture_verified: false
 
 The next gate is a real-runtime execution verification on an exact candidate. Only that later evidence may change these flags for Gemini CLI.
 
+## Gemini CLI exact-candidate runtime verification
+
+Scenario 143 closes the gap between source-controlled hook wiring and actual runtime execution.
+
+The verification workflow pins Gemini CLI v0.60.0, links the real extension, executes built-in file tools, and observes the actual AfterTool command. The CLI's official fake-response generator is used only to deterministically drive tool calls without external provider credentials.
+
+This permits a runtime-specific `live_capture_verified=true` claim only when the exact candidate workflow succeeds. It does not prove a live provider/model API session and does not change enforcement or remediation authority.
+

@@ -1,0 +1,20 @@
+version: 1
+decision:
+  candidate_id: EVO-7DA9FC0C0AD8
+  signal_fingerprint: sha256:7da9fc0c0ad89a0c7d0315aa2a5f4aa7ceb9842149a969a84708ce382c3082b3
+  baseline_repository_revision: dac529ed2c385081547c3c3de4820f7a80b97101
+  baseline_status: CURRENT
+  recommendation_state: IMPLEMENTATION_TRIAL_PASS
+  decision: TRIAL
+  approved_scope: Verify one exact-candidate Gemini CLI runtime using the pinned official bundled CLI, deterministic fake model responses, actual read_file/write_file/replace execution, the real AIPS extension hook, metadata sink, leakage checks and latency evidence; do not use or require a live provider credential.
+  reason: The repository maintainer explicitly authorized the recommended next step after v0.33.0.
+  decided_by: repository maintainer LucasLu3918
+  decided_at: "2026-09-20T13:08:00+08:00"
+  next_action: real_runtime_verification
+authority:
+  human_decision_recorded: true
+  live_provider_session_authorized: false
+  runtime_enforcement_authorized: false
+  automatic_remediation_authorized: false
+  merge_authorized: false
+  release_authorized: false

@@ -1,24 +1,24 @@
 version: 1
 candidate:
-  base_sha: e00c4c28b7d8a7e4a925d57c5c6613413d8be48d
-  changed_files_hash: 28fc987415361e978b129e5608552ccad79ff0912cf07b5c6da488f684c1e24e
+  base_sha: dac529ed2c385081547c3c3de4820f7a80b97101
+  changed_files_hash: ec5a10d0786a659e3045c1dac0a4d203f6a2b97d94546a3d16c31774b4f553d1
 change:
-  id: v0.33.0-gemini-after-tool-live-capture-trial
-  summary: Add the first runtime-specific opt-in observable-event capture hook for Gemini CLI AfterTool, bounded to file tools and explicit ephemeral sinks, without claiming real Gemini CLI runtime verification.
-  boundary: [gemini-cli-adapter, observable-event-capture, evolution-trial, scenario-conformance, documentation]
+  id: v0.34.0-gemini-exact-candidate-real-runtime-verification
+  summary: Verify the pinned real Gemini CLI binary, built-in tools and AIPS AfterTool hook on the exact candidate while keeping provider/model verification separate.
+  boundary: [gemini-cli-adapter, real-runtime-verification, observable-event-capture, evolution-trial, scenario-conformance, documentation]
 matrix:
-  - boundary: gemini-cli-live-capture-trial
-    reason: Runtime-specific capture must prove hook wiring, sanitization, loss/degradation and bounded overhead without becoming an enforcement or persistence path.
+  - boundary: gemini-cli-real-runtime-verification
+    reason: Runtime truth must be based on actual bundled CLI/tool/hook execution, not fixture-only contract replay.
     checks:
-      static_lint: {applicable: true, evidence: "Janitor ruff-critical"}
-      unit: {applicable: true, evidence: "gemini_observable_event_capture.py config/input/sink validation"}
-      integration: {applicable: true, evidence: "official AfterTool-shaped fixtures -> canonical metadata -> Resource Authorization/anomaly evaluator"}
-      contract: {applicable: true, evidence: "Scenario 142 + exact Gemini hooks.json matcher + current-baseline Human TRIAL evidence"}
-      e2e: {applicable: true, evidence: "protected PR Janitor + required repository aggregate + protected-main validation"}
-      security: {applicable: true, evidence: "disabled-by-default, explicit /tmp sink, no raw/tool/private/secret persistence, decision=allow/no result-flow authority, synchronous-hook truth explicit, all protected authority false"}
-      migration_recovery: {applicable: false, na_reason: "Opt-in Trial hook; default behavior and existing projects are unchanged"}
-      cli_harness: {applicable: true, evidence: "Gemini CLI extension AfterTool wiring and shell wrapper are source-controlled; real Gemini binary execution remains a later verification gate"}
-      docs_schema: {applicable: true, evidence: "Gemini adapter, Harness protocol/Human Harness, Evolution Radar, Execution Isolation, capture design, Conformance and Human docs synchronized"}
+      static_lint: {applicable: true, evidence: "Janitor ruff-critical + verifier py_compile"}
+      unit: {applicable: true, evidence: "manifest/env sanitization and workflow contract checks"}
+      integration: {applicable: true, evidence: "pinned Gemini CLI v0.60.0 + real read_file/write_file/replace + linked AIPS extension"}
+      contract: {applicable: true, evidence: "Scenario 143 + runtime/provider truth separation"}
+      e2e: {applicable: true, evidence: "gemini-runtime-verification exact-head workflow + required repository aggregate + protected-main validation"}
+      security: {applicable: true, evidence: "no provider credential required; metadata-only sink; raw/private/secret leakage=0; no enforcement/remediation authority"}
+      migration_recovery: {applicable: false, na_reason: "Verification-only change; capture remains opt-in and existing projects are unchanged"}
+      cli_harness: {applicable: true, evidence: "real bundled Gemini CLI binary and linked extension execute on exact candidate; all Gemini hook wrappers resolve symlinked extension paths physically"}
+      docs_schema: {applicable: true, evidence: "Harness, Evolution Radar, Conformance, Execution Isolation and capture-design docs synchronized"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

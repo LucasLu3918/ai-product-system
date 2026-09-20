@@ -935,3 +935,24 @@ CI 只驗證官方 AfterTool-shaped contract 與 source-controlled hook wiring�
 
 目前 Scenario inventory 為 **142**：22 deterministic + 66 lifecycle + 54 agent_eval，**142 / 142 automated、0 manual、0 uncovered**。
 
+## Scenario 143 — Gemini CLI Exact-Candidate Real-Runtime Verification
+
+Scenario 143 使用固定的官方 Gemini CLI v0.60.0 bundled binary，實際跑完整 CLI → built-in tool → extension → AfterTool hook 路徑。
+
+為了讓結果 deterministic 且不要求第三方 credential，model response 使用 Gemini CLI 官方 `--fake-responses` 測試介面；因此：
+
+- `real_cli_binary_executed=true`
+- `real_tool_execution_verified=true`
+- `real_extension_hook_execution_verified=true`
+- `live_runtime_execution_verified=true`
+- Gemini CLI runtime-specific `live_capture_verified=true`
+- 但 `fake_model_responses_used=true`
+- `live_provider_session_verified=false`
+- `provider_model_execution_verified=false`
+
+驗證會真的執行 `read_file / write_file / replace`，確認 workspace mutation、3/3 canonical events、unexpected event loss=0、raw/private/secret leakage=0、disabled capture 不寫 sink，並將 workflow 綁定 exact PR head SHA。
+
+Gemini extension manifest 同步宣告兩個 capture control env vars，避免 Gemini CLI 的 extension environment sanitization 在真實執行時把 opt-in 設定移除。
+
+目前 Scenario inventory 為 **143**：22 deterministic + 67 lifecycle + 54 agent_eval，**143 / 143 automated、0 manual、0 uncovered**。
+
