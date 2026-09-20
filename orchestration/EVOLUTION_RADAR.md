@@ -351,3 +351,21 @@ Controlled Trial provider selection is now `auto / openai-codex-action / handoff
 When `auto` cannot resolve the optional OpenAI credential, AIPS emits `TRIAL_HANDOFF_READY` rather than treating credential absence as Trial failure. The handoff binds the exact repository baseline, decision/trial fingerprints, approved scope and paths, forbidden paths, file/diff limits, required worktree isolation and deterministic repository validation command.
 
 A compatible external Agent may execute the bounded contract, but `external_executor_may_claim_pass=false`. Provider output alone is not Trial PASS evidence. PASS/FAIL remains valid only after AIPS deterministic scope, diff, commit-boundary and repository-validation checks. Handoff grants no code publication, PR, merge, release or Human-adoption authority.
+
+
+## Evolution Effectiveness feedback
+
+The monthly effectiveness layer measures the observed value of the Technology Intelligence funnel without becoming a self-modifying source policy.
+
+It reads durable weekly Radar evidence plus embedded/pre-existing deterministic pre-analysis, semantic analysis, Human Decision, Trial handoff/result and Trial→ADOPT artifacts. The report is bound to the exact cohort month, repository revision, Issue manifest and deterministic input digest.
+
+Per-source evidence includes collected, shortlisted, semantic-selected, actionable, Trial-decision, PASS-Trial, adoption and failure counts plus deterministic basis-point ratios. Review flags are emitted only after configured minimum observations.
+
+The following MUST remain false:
+
+- automatic source weight changes;
+- automatic source enable/disable;
+- automatic source/config mutation;
+- code-change / PR / merge / release authority.
+
+Effectiveness flags inform Human source-policy review only. They do not change `config/evolution-sources.yaml`, do not create implementation branches, and do not alter Protected Human Authority.
