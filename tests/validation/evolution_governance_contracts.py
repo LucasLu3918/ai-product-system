@@ -21,6 +21,8 @@ required = (
     ROOT / 'references/evolution/ISSUE_79_AGENT_ANOMALY_ADOPTION_DECISION.yaml',
     ROOT / 'references/evolution/ISSUE_79_AGENT_ANOMALY_ADOPTION_BINDING.yaml',
     ROOT / 'references/evolution/ISSUE_79_AGENT_ANOMALY_SYSTEM_IMPROVEMENT_REVIEW.yaml',
+    ROOT / 'references/evolution/ISSUE_79_LIFECYCLE_RECONCILIATION.yaml',
+    ROOT / 'tests/evidence/evolution_issue_reconciliation_lifecycle.py',
     ROOT / 'orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md',
     ROOT / 'tests/evidence/agent_anomaly_adoption_lifecycle.py',
     ROOT / 'templates/evolution/EVOLUTION_ANALYZER_RESULT.schema.json',
@@ -351,3 +353,9 @@ try:
 except Exception as exc:
     errors.append(f"Agent anomaly adoption evidence validation failed: {exc}")
 
+
+issue_reconciliation = ROOT / "tests/evidence/evolution_issue_reconciliation_lifecycle.py"
+if issue_reconciliation.exists():
+    result = subprocess.run([sys.executable, str(issue_reconciliation)], capture_output=True, text=True, timeout=45)
+    if result.returncode != 0:
+        errors.append(f"Issue #79 lifecycle reconciliation failed: {result.stdout.strip()} {result.stderr.strip()}")

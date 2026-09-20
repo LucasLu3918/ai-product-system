@@ -417,3 +417,16 @@ AIPS 現在會在每月第 2 天，於 monthly Radar 之後建立上一個 calen
 只有在來源已有足夠 observation 時，系統才會產生 `REVIEW_LOW_SHORTLIST_YIELD`、`REVIEW_HIGH_FAILURE_RATE` 或 `REVIEW_ZERO_ACTIONABLE_AFTER_SEMANTIC`。這些都是 **Human review flags**，不是自動調權重或停用來源的指令。
 
 Workflow 只使用 `contents: read + issues: write`：同一月份的 Effectiveness Issue 會 deterministic update；沒有 review flag 時會標記 completed/closed，有 flag 時會保持或 reopen，方便 Human 檢視。任何 source weight、enable/disable、replacement 或 config mutation 仍必須走正常 Human-governed change。
+
+
+## Issue #79 lifecycle reconciliation
+
+2026-09-19 的 weekly Radar Issue #79 使用的原始 repository revision 已經 stale。v0.47 將這批歷史研究做 durable reconciliation：
+
+- repeated-run Agent Eval：`COVERED`；
+- Resource-Scoped Agent Authorization：`COVERED`；
+- out-of-band Agent anomaly evidence：已完成 bounded Trial → Human ADOPT direction → Gemini runtime-specific real capture verification，維持 `runtime_enforced=false` 與 `automatic_remediation=false`；
+- live provider/model session：仍為 optional / not verified，不是 baseline 或 release prerequisite；
+- semantic-intent governance：明確 `DEFERRED`，Issue #79 不授權 Trial / ADOPT。
+
+因此 Issue #79 可以以 completed 關閉。任何未來 semantic-intent progression 都必須來自 fresh current-main evidence 與新的 explicit Human Decision，不能沿用 stale Issue #79。

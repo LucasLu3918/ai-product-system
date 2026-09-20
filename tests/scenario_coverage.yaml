@@ -1177,3 +1177,25 @@ scenarios:
       - orchestration/EVOLUTION_RADAR.md
       - docs/human/EVOLUTION_RADAR.md
 
+
+  - id: "156"
+    path: tests/scenarios/156-human-authorized-exact-branch-cleanup.md
+    coverage: lifecycle
+    evidence:
+      - config/branch-lifecycle.yaml
+      - config/branch-cleanup-manifest.yaml
+      - scripts/branch_hygiene.py
+      - .github/workflows/branch-hygiene.yml
+      - tests/evidence/branch_hygiene_lifecycle.py
+      - tests/validation/branch_hygiene_contracts.py
+      - docs/human/MAINTENANCE.md
+
+  - id: "157"
+    path: tests/scenarios/157-stale-evolution-issue-lifecycle-reconciliation.md
+    coverage: lifecycle
+    evidence:
+      - references/evolution/ISSUE_79_LIFECYCLE_RECONCILIATION.yaml
+      - tests/evidence/evolution_issue_reconciliation_lifecycle.py
+      - tests/validation/evolution_governance_contracts.py
+      - orchestration/EVOLUTION_RADAR.md
+      - docs/human/EVOLUTION_RADAR.md

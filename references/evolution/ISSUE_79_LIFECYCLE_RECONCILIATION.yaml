@@ -1,0 +1,55 @@
+version: 1
+reconciliation_id: issue-79-lifecycle-reconciliation-v0.47
+issue:
+  number: 79
+  title: Evolution Radar [weekly] 2026-09-19
+  original_repository_revision: e256f8817839bef0c282b352754dca91d32fdf69
+  status_before_reconciliation: OPEN
+baseline:
+  repository_revision: cc813579fdf8d22f08876404ea3d1fcf0c0ac859
+  version: "0.46.0"
+  original_radar_baseline_status: STALE
+outcomes:
+  repeated_run_agent_eval:
+    state: COVERED
+    evidence: Scenario 137 and later released Agent Eval repeatability evidence
+  resource_scoped_agent_authorization:
+    state: COVERED
+    evidence: v0.29.0 default-DENY Resource Authorization with deterministic PRE_EXECUTION_EVIDENCE
+  out_of_band_agent_anomaly_evidence:
+    state: ADOPTED_WITH_BOUNDS
+    evidence:
+      - v0.30.0 bounded anomaly evaluation
+      - v0.31.0 Human-bound Controlled Trial PASS
+      - v0.32.0 Human ADOPT direction and System Improvement Review
+      - v0.33.0 Gemini AfterTool capture Trial
+      - v0.34.0 exact-candidate real Gemini CLI runtime/capture verification
+    current_truth:
+      live_runtime_execution_verified: true
+      runtime_specific_live_capture_verified: true
+      live_provider_session_verified: false
+      provider_model_execution_verified: false
+      runtime_enforced: false
+      automatic_remediation: false
+    provider_verification_policy: OPTIONAL_NOT_REQUIRED_FOR_BASELINE_OR_RELEASE
+  semantic_intent_governance:
+    state: DEFERRED
+    reason: Probabilistic semantic intent policy remains outside the active deterministic authorization path and was never authorized for Trial or adoption by Issue #79.
+    next_entry_rule: Any future progression requires fresh current-main Radar/evidence plus a new explicit Human Decision; the stale Issue #79 baseline cannot authorize it.
+  remaining_original_signals:
+    state: TERMINAL
+    disposition: Original COVERED/HOLD classifications remain historical advisory evidence; no active implementation authority remains.
+closure:
+  status: READY_TO_CLOSE
+  state_reason: completed
+  rationale: The original weekly Radar batch has durable outcomes or explicit deferral for every material candidate. Keeping the stale issue open would incorrectly imply current positive-progression authority.
+  future_work_requires_fresh_issue: true
+authority:
+  issue_close_authorized: true
+  authorization_source: explicit_user_request_to_complete_recommended_maintenance
+  semantic_intent_trial_authorized: false
+  code_change_authorized_by_reconciliation: false
+  runtime_enforcement_authorized: false
+  automatic_remediation_authorized: false
+  merge_authorized_by_reconciliation: false
+  release_authorized_by_reconciliation: false

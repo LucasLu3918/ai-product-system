@@ -343,3 +343,17 @@ PASS is consistency evidence only. Repository Health is Detect + Evidence + Huma
 - no source weight, enable/disable state, source URL or repository config is changed automatically.
 
 This is observational maintenance evidence. Any actual source-policy adjustment remains a normal reviewed repository change.
+
+
+## Controlled branch cleanup
+
+一般 Branch Hygiene 仍是 `report_only`。只有在 repository maintainer 明確批准的 one-time manifest 中，AIPS 才可刪除 remote branch。
+
+`config/branch-cleanup-manifest.yaml` 會逐筆綁定 branch name、exact expected SHA 與 merged PR evidence。Protected-main cleanup job 在刪除前會重新驗證：
+
+- branch 仍存在且 SHA 沒有漂移；
+- lifecycle 是 `EPHEMERAL`；
+- branch 已 deterministic integrated into `main`；
+- manifest authorization 是 `explicit_user_request + exact_manifest_only + one_time`。
+
+任何一筆失敗都會在第一個 delete 前 block 整批。Persistent、unclassified、pending 或 manifest 外 branch 一律不刪。Scheduled/manual hygiene report 仍只有 `contents: read`；只有 protected-main cleanup job 在這份 exact manifest 範圍內取得 `contents: write`。
