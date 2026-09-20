@@ -1,0 +1,44 @@
+version: 1
+verification_id: issue-79-gemini-cli-real-runtime-execution-v1
+baseline_repository_revision: dac529ed2c385081547c3c3de4820f7a80b97101
+decision_fingerprint: sha256:64784fd4c4b6abd1b6c95b0fef8577588d56ad0e75d487a31906986abc9a54f3
+runtime: gemini-cli
+gemini_cli_version: "0.60.0"
+execution_mode: installed_real_cli_with_deterministic_fake_model_responses
+binary_execution_verified: true
+extension_loading_verified: true
+real_tool_execution_verified: true
+after_tool_hook_execution_verified: true
+supported_tools_verified: [read_file, write_file, replace]
+expected_capture_events: 3
+verified_capture_events: 3
+unexpected_event_loss: 0
+secret_private_raw_leakage: 0
+raw_payload_persisted: false
+disabled_by_default: true
+provider_model_api_exercised: false
+provider_model_execution_verified: false
+network_model_call_verified: false
+live_runtime_execution_verified: true
+live_capture_verified: true
+live_capture_verified_scope: "Gemini CLI v0.60.0 binary + local agent/tool lifecycle + AIPS extension AfterTool hook for read_file/write_file/replace under deterministic fake model responses; no provider API/model execution."
+status: PASS_REQUIRED_BY_EXACT_CANDIDATE_CI
+recommendation: HUMAN_REVIEW_PROVIDER_BACKED_VALIDATION
+verification_fingerprint: sha256:f0ae8090823eb6b2fe9cbd6bf2342f2cf622821d43deb1ef91112f4dc442c0eb
+enforcement:
+  mode: POST_EXECUTION_EVIDENCE
+  runtime_enforced: false
+  critical_path: false
+  critical_path_semantics: authorization_or_result_enforcement_only
+  synchronous_hook: true
+  latency_path: synchronous
+  result_flow_control_authorized: false
+  automatic_remediation: false
+authority:
+  live_runtime_capture_authorized: false
+  runtime_enforcement_authorized: false
+  automatic_remediation_authorized: false
+  human_approval_granted: false
+  merge_authorized: false
+  release_authorized: false
+  publication_authorized: false

@@ -229,3 +229,15 @@ CI validates current official AfterTool-shaped inputs, sanitizer projection, eve
 
 Because CI does not execute an actual Gemini CLI process, the result is intentionally `HUMAN_REVIEW_RUNTIME_EXECUTION_VERIFICATION`, not full live-capture verification.
 
+## Gemini CLI exact-candidate real-runtime verification
+
+Scenario 143 records a current-baseline Human TRIAL Decision for the verification gate left by v0.33.0.
+
+The required validation workflow installs pinned Gemini CLI v0.60.0 and runs the actual CLI executable with Gemini CLI's maintained `--fake-responses` testing interface. This exercises the real extension loader, file-tool implementation and native AfterTool lifecycle without requiring a provider secret.
+
+A PASS may set `live_runtime_execution_verified=true` and `live_capture_verified=true` only for the narrow Gemini CLI v0.60.0 + read/write/replace tool/hook scope.
+
+It MUST NOT be restated as provider-backed model verification. `provider_model_api_exercised=false`, `provider_model_execution_verified=false` and `network_model_call_verified=false` remain explicit evidence fields.
+
+The runtime verification job is folded into the existing `repository` compatibility aggregate for core/large pull requests and protected-main pushes; it grants no merge/release authority itself.
+

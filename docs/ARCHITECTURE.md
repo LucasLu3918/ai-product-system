@@ -735,3 +735,21 @@ flowchart LR
 ~~~
 
 The new paths add fail-closed evidence and handoff behavior beneath existing topology; they do not add a Role, Skill, autonomous approval gate, merge authority or release authority.
+
+## Verified Gemini CLI observable-event capture path
+
+~~~mermaid
+flowchart LR
+    U[Gemini CLI v0.60.0 Agent Loop] --> T[read_file / write_file / replace]
+    T --> A[Native AfterTool Hook]
+    A --> S[Metadata-only Sanitizer]
+    S --> E[Canonical Observable Event]
+    E --> Q[Ephemeral Bounded Sink]
+    Q --> D[Deterministic Anomaly Evidence]
+    D --> H[Human Review]
+~~~
+
+Scenario 143 verifies this **current-state runtime path** with the installed Gemini CLI binary and the CLI's official deterministic fake-response test interface. The real CLI, extension loader, tool executor and AfterTool hook are exercised; provider/model API execution is not.
+
+The path remains opt-in, synchronous and non-enforcing. It does not alter Resource Authorization, protected operations, merge/release/publication authority or automatic remediation.
+

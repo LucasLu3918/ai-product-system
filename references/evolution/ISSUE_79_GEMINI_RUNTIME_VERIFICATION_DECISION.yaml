@@ -1,0 +1,26 @@
+version: 1
+decision:
+  candidate_id: EVO-7DA9FC0C0AD8
+  signal_fingerprint: sha256:7da9fc0c0ad89a0c7d0315aa2a5f4aa7ceb9842149a969a84708ce382c3082b3
+  signal_title: Agent Anomaly Detection, now in Private Preview on the Gemini Enterprise Agent Platform
+  evidence_digest: sha256:62bfff09aeeab8decc352975b47e5b71d7149b834265deab7654006edb1ed47b
+  baseline_repository_revision: dac529ed2c385081547c3c3de4820f7a80b97101
+  baseline_status: CURRENT
+  recommendation_state: HUMAN_REVIEW_RUNTIME_EXECUTION_VERIFICATION
+  decision: TRIAL
+  approved_scope: Execute pinned Gemini CLI v0.60.0 on the exact candidate with deterministic fake model responses to exercise real read_file/write_file/replace tool execution and the AIPS AfterTool capture hook; verify canonical metadata, event loss, file effects, disabled-by-default behavior and runtime truth without provider credentials.
+  approved_paths:
+    - tests/fixtures/gemini_cli_runtime_verification/**
+  reason: "override: The repository maintainer explicitly authorized the recommended next step: exact-candidate real Gemini CLI runtime execution verification. The Trial may verify the installed CLI/tool/hook path only and must not claim provider-model API execution, runtime enforcement, automatic remediation, durable production persistence, or broader runtime coverage."
+  human_override: true
+  decided_by: repository maintainer LucasLu3918
+  decided_at: "2026-09-20T12:15:00+08:00"
+  next_action: controlled_trial_execution
+decision_fingerprint: sha256:64784fd4c4b6abd1b6c95b0fef8577588d56ad0e75d487a31906986abc9a54f3
+authority:
+  human_decision_recorded: true
+  code_change_authorized: false
+  branch_or_pr_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  normal_system_gates_required: true

@@ -166,3 +166,11 @@ The capture lane is isolated from normal project state by default:
 
 If a later verification executes a real Gemini CLI binary, that verification must use an exact candidate and an isolated disposable project/workspace. A successful hook invocation still does not authorize production persistence or broader tool matchers.
 
+## Gemini CLI runtime verification isolation
+
+Scenario 143 runs the installed Gemini CLI inside a temporary HOME/workspace with source-controlled fake model responses and an explicit ephemeral capture sink under the system temporary directory.
+
+The runtime job executes real file tools only inside that temporary workspace. It does not point Gemini CLI at the repository for mutation, does not use a provider credential, and does not create durable event storage.
+
+The required CI evidence verifies runtime/tool/hook behavior only. It does not grant publication authority or weaken the normal exact-candidate / Change Boundary / protected-main gates.
+

@@ -342,3 +342,27 @@ Current automated inventory:
 - uncovered: 0
 - automated: 142 / 142
 
+## Scenario 143 — Gemini CLI real runtime execution verification
+
+Scenario 143 is lifecycle-covered by a dedicated required CI job that installs pinned Gemini CLI v0.60.0 and invokes the actual `gemini` executable.
+
+The job links the AIPS extension, uses Gemini CLI's official `--fake-responses` interface, executes real `read_file`, `write_file` and `replace` tool paths, and verifies the native `AfterTool` hook emits three canonical events.
+
+The verification truth is deliberately split:
+
+- Gemini CLI binary/tool/hook path: verified;
+- live capture for the bounded file-tool scope: verified;
+- provider/model API execution: not exercised or verified;
+- runtime enforcement / result-flow authority / remediation: still false.
+
+The required `repository` aggregate now incorporates this job for core/large PRs and protected-main pushes.
+
+Current automated inventory:
+
+- deterministic: 22
+- lifecycle: 67
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 143 / 143
+

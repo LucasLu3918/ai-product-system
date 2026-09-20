@@ -279,3 +279,12 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 ## Change-class handoff to Integration Gate
 
 When a repository PR represents an already approved Large/Core Change, preserve that classification into deterministic CI with `aips:large-change` or `aips:core-change`. Integration Gate uses the change class only to select evidence requirements; it does not create semantic classification or approval authority.
+
+## Runtime verification evidence
+
+The Orchestrator may treat Scenario 143 Gemini CLI runtime verification as bounded execution evidence only after the exact candidate's required `repository` check succeeds.
+
+It MUST preserve the verification scope: real Gemini CLI binary/tool/hook execution is verified for read/write/replace, while provider/model API execution, enforcement and remediation remain outside the claim.
+
+The Orchestrator cannot infer Human approval, merge, release or broader runtime support from this evidence.
+

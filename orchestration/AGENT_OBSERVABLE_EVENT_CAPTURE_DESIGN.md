@@ -1,6 +1,6 @@
 # Agent Observable-Event Capture Design
 
-Status: **ADOPTED DIRECTION — NOT A LIVE RUNTIME CAPABILITY**
+Status: **ADOPTED DIRECTION — GEMINI CLI FILE-TOOL RUNTIME CAPTURE VERIFIED**
 
 This document is the System Improvement Review design handoff for the Issue #79 Agent anomaly candidate after Scenario 140 PASS. It defines the smallest future implementation shape. It does not enable a runtime hook.
 
@@ -77,7 +77,7 @@ Durable event retention, cross-runtime correlation and queue recovery are separa
 
 ## Runtime support truth
 
-No current adapter is marked live-capture verified by this release.
+Gemini CLI v0.60.0 is now marked live-capture verified only for the exact read_file/write_file/replace local runtime/tool/hook scope proven by Scenario 143. Other runtimes and provider-backed model execution remain unverified.
 
 A future adapter implementation must demonstrate:
 
@@ -151,5 +151,7 @@ live_runtime_execution_verified: false
 live_capture_verified: false
 ~~~
 
-The next gate is a real-runtime execution verification on an exact candidate. Only that later evidence may change these flags for Gemini CLI.
+Scenario 143 completes that gate with the installed Gemini CLI v0.60.0 binary and official `--fake-responses` interface. The real CLI, extension loader, file-tool executor and AfterTool hook are exercised on the exact candidate.
+
+This permits `live_runtime_execution_verified=true` and `live_capture_verified=true` for that narrow scope only. It does not verify a live provider/model API call: provider/model execution evidence remains false and separately scoped.
 

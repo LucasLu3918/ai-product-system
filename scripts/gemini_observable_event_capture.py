@@ -54,10 +54,21 @@ def validate_config(config: dict[str, Any]) -> None:
         if not str(mapping.get("resource_id") or "").strip():
             raise CaptureError(f"{tool_name}: resource_id is required")
     verification = config.get("verification") or {}
-    if verification.get("live_runtime_execution_verified") is not False:
-        raise CaptureError("live_runtime_execution_verified must remain false in this Trial")
-    if verification.get("live_capture_verified") is not False:
-        raise CaptureError("live_capture_verified must remain false in this Trial")
+    live_runtime = verification.get("live_runtime_execution_verified")
+    live_capture = verification.get("live_capture_verified")
+    if not isinstance(live_runtime, bool) or not isinstance(live_capture, bool):
+        raise CaptureError("runtime/capture verification flags must be boolean")
+    if live_capture and not live_runtime:
+        raise CaptureError("live_capture_verified requires live_runtime_execution_verified")
+    if live_runtime:
+        if verification.get("verification_method") != "exact_candidate_installed_cli_fake_responses":
+            raise CaptureError("verified live runtime requires exact-candidate installed CLI evidence")
+        if verification.get("gemini_cli_version") != "0.60.0":
+            raise CaptureError("verified Gemini CLI version must remain pinned to 0.60.0")
+        if verification.get("provider_model_api_exercised") is not False:
+            raise CaptureError("runtime verification must not claim provider API execution")
+        if verification.get("provider_model_execution_verified") is not False:
+            raise CaptureError("runtime verification must keep provider-model verification false")
     enforcement = config.get("enforcement") or {}
     for key in ("runtime_enforced", "critical_path", "automatic_remediation"):
         if enforcement.get(key) is not False:

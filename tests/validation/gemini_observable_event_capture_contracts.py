@@ -37,10 +37,16 @@ if config_path.exists():
     if config.get("enabled_by_default") is not False:
         errors.append("Gemini observable-event capture must remain disabled by default")
     verification = config.get("verification") or {}
-    if verification.get("live_runtime_execution_verified") is not False:
-        errors.append("Gemini Trial must not claim live runtime execution")
-    if verification.get("live_capture_verified") is not False:
-        errors.append("Gemini Trial must not claim live capture verified")
+    if verification.get("live_runtime_execution_verified") is not True:
+        errors.append("Gemini current config must require verified real CLI runtime execution")
+    if verification.get("live_capture_verified") is not True:
+        errors.append("Gemini current config must require verified AfterTool live capture")
+    if verification.get("verification_method") != "exact_candidate_installed_cli_fake_responses":
+        errors.append("Gemini current config must bind live verification to the exact-candidate installed CLI method")
+    if verification.get("gemini_cli_version") != "0.60.0":
+        errors.append("Gemini current config must pin the verified CLI version")
+    if verification.get("provider_model_api_exercised") is not False or verification.get("provider_model_execution_verified") is not False:
+        errors.append("Gemini runtime verification must not overclaim provider/model API execution")
     enforcement = config.get("enforcement") or {}
     if enforcement.get("critical_path") is not False:
         errors.append("Gemini capture critical_path must mean no authorization/result enforcement")

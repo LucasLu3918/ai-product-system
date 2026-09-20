@@ -69,3 +69,22 @@ Scenario 142 adds the first implementation for Gemini CLI `AfterTool` with these
 
 Runtime-native contract verification and actual runtime execution verification are distinct. Source-controlled CI may verify hook schema/wiring while `live_runtime_execution_verified=false`; only an exact-candidate real-runtime Trial may promote that runtime-specific verification state.
 
+## Gemini CLI verified observable-event scope
+
+Scenario 143 verifies the AIPS Gemini extension inside the installed Gemini CLI v0.60.0 runtime. Required CI uses Gemini CLI's official `--fake-responses` interface to drive the real agent/tool/hook lifecycle without a provider secret.
+
+Verified:
+
+- extension loading;
+- real `read_file`, `write_file`, `replace` execution;
+- native AfterTool delivery to the AIPS capture hook;
+- canonical metadata capture and default-off behavior.
+
+Not verified:
+
+- provider-backed Gemini model/API execution;
+- shell/MCP/network capture;
+- runtime enforcement or automatic remediation.
+
+The adapter remains opt-in for capture and synchronous from a latency perspective.
+

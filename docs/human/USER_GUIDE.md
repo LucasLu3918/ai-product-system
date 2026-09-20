@@ -964,3 +964,10 @@ aips authorization check --profile RESOURCE_AUTHORIZATION_PROFILE.yaml --resourc
 ~~~
 
 Profile 預設 DENY，只能約束一般 read/search/create/update/execute；它不能取代 Git Publish Approval、Human Approval 或 destructive safety challenge。沒有 verified runtime pre-tool guard 時，結果只代表 pre-execution evidence，不宣稱工具層已被強制攔截。
+
+## Gemini CLI runtime verification in required CI
+
+Core/large changes now include a dedicated Gemini CLI runtime verification job inside the existing required `repository` aggregate. The job installs Gemini CLI v0.60.0 and proves the bounded file-tool AfterTool capture path on the exact candidate.
+
+Ordinary standard pull requests may skip this heavier runtime job; protected-main pushes run it. A skipped job is accepted only where the workflow intentionally marks it non-applicable. This does not create a new approval gate or give CI merge/release authority.
+

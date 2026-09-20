@@ -72,3 +72,19 @@ Hook 不保存 `tool_input`、`tool_response`、prompt、response、private reas
 
 目前 CI 驗證的是官方 `AfterTool` input contract 與 extension wiring，尚未執行真實 Gemini CLI binary，所以仍為 `live_capture_verified=false`。
 
+## Gemini CLI real-runtime capture verification
+
+Gemini CLI observable-event capture 已從「只有 contract / fixture 驗證」提升到 narrow runtime verification。
+
+Required CI 會安裝固定的 Gemini CLI v0.60.0，link AIPS extension，透過官方 `--fake-responses` 讓真正的 CLI 執行 `read_file / write_file / replace`，並檢查 AfterTool sink。
+
+因此目前可以對這個明確範圍報告：
+
+- real Gemini CLI binary execution：verified；
+- AIPS extension loading：verified；
+- real file-tool execution：verified；
+- AfterTool live capture：verified；
+- provider-backed Gemini model/API：未驗證。
+
+Capture 仍預設關閉，也仍是 synchronous / non-enforcing；`decision=allow` 不具有 result-flow、remediation 或 Protected Human Authority。
+

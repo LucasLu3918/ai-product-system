@@ -299,3 +299,21 @@ Execution Profile
 AIPS 現在能把「Agent 能做什麼」從粗粒度 read/write 描述收斂成明確 resource grant。未宣告資源、未宣告 operation、或要求 Change Boundary 卻缺少 boundary 時一律 DENY。
 
 這是 pre-execution evidence，不會假裝所有 Runtime 都能硬攔工具呼叫；只有已驗證的 pre-tool guard 才能進一步消費此 evidence。Profile 不授權 merge、release、publication、administration、destructive deletion 或 Human approval。
+
+## 20. Gemini CLI verified observable-event runtime path
+
+~~~text
+Gemini CLI v0.60.0
+→ real read_file / write_file / replace execution
+→ native AfterTool
+→ metadata-only AIPS sanitizer
+→ canonical observable event
+→ ephemeral bounded sink
+→ anomaly evidence
+→ Human review
+~~~
+
+Scenario 143 讓這條路徑從 future-state design 變成 **Gemini CLI file-tool scope 的 current-state verified runtime path**。驗證使用真實安裝的 Gemini CLI binary 與官方 `--fake-responses` 介面，因此 CLI / extension / tool / hook 都是真實執行，但不包含 provider-backed model/API。
+
+這不改變核心權限模型：capture 預設關閉、同步但 non-enforcing、沒有 automatic remediation，也不能取得 Human/merge/release/publication authority。
+

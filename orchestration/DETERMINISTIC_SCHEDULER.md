@@ -95,3 +95,10 @@ This rule prevents missing planning metadata from becoming an unlocked writer. T
 ## Validation de-duplication boundary
 
 The repository validator may skip the focused Scheduler/Integration Gate lifecycle only when `AIPS_PROFILE_LIFECYCLE_ALREADY_EXECUTED=1` is injected by the deterministic Validation Profile after those checks already ran. Standalone repository validation must execute the lifecycle evidence normally.
+
+## Runtime verification and scheduling boundary
+
+The Gemini CLI runtime verification job added in Scenario 143 is a deterministic CI validation lane, not a Scheduler task and not an Agent worker. The Deterministic Scheduler remains responsible only for frozen Task Graph dispatch and Change Boundary locking.
+
+Integration Gate / repository aggregation may require external runtime evidence after scheduled work completes; that evidence does not alter task ordering or create a new writer.
+

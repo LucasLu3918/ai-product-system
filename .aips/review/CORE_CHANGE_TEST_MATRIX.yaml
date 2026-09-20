@@ -1,24 +1,24 @@
 version: 1
 candidate:
-  base_sha: e00c4c28b7d8a7e4a925d57c5c6613413d8be48d
-  changed_files_hash: 28fc987415361e978b129e5608552ccad79ff0912cf07b5c6da488f684c1e24e
+  base_sha: dac529ed2c385081547c3c3de4820f7a80b97101
+  changed_files_hash: b9e8c74a4816a6f9991416dbfc59b0e17d0d469ca43bb8dc493df0bf0a0de14f
 change:
-  id: v0.33.0-gemini-after-tool-live-capture-trial
-  summary: Add the first runtime-specific opt-in observable-event capture hook for Gemini CLI AfterTool, bounded to file tools and explicit ephemeral sinks, without claiming real Gemini CLI runtime verification.
-  boundary: [gemini-cli-adapter, observable-event-capture, evolution-trial, scenario-conformance, documentation]
+  id: v0.34.0-gemini-cli-real-runtime-verification
+  summary: Verify the bounded Gemini CLI file-tool AfterTool capture path with the installed real Gemini CLI v0.60.0 binary on the exact candidate while keeping provider/model execution and enforcement out of scope.
+  boundary: [gemini-runtime-verification, harness-after-tool, observable-event-capture, required-ci, scenario-conformance, documentation]
 matrix:
-  - boundary: gemini-cli-live-capture-trial
-    reason: Runtime-specific capture must prove hook wiring, sanitization, loss/degradation and bounded overhead without becoming an enforcement or persistence path.
+  - boundary: gemini-cli-real-runtime-verification
+    reason: Runtime-security evidence must exercise the actual CLI/tool/hook path, preserve default-off/privacy boundaries, and avoid overstating provider-backed or enforcement guarantees.
     checks:
-      static_lint: {applicable: true, evidence: "Janitor ruff-critical"}
-      unit: {applicable: true, evidence: "gemini_observable_event_capture.py config/input/sink validation"}
-      integration: {applicable: true, evidence: "official AfterTool-shaped fixtures -> canonical metadata -> Resource Authorization/anomaly evaluator"}
-      contract: {applicable: true, evidence: "Scenario 142 + exact Gemini hooks.json matcher + current-baseline Human TRIAL evidence"}
-      e2e: {applicable: true, evidence: "protected PR Janitor + required repository aggregate + protected-main validation"}
-      security: {applicable: true, evidence: "disabled-by-default, explicit /tmp sink, no raw/tool/private/secret persistence, decision=allow/no result-flow authority, synchronous-hook truth explicit, all protected authority false"}
-      migration_recovery: {applicable: false, na_reason: "Opt-in Trial hook; default behavior and existing projects are unchanged"}
-      cli_harness: {applicable: true, evidence: "Gemini CLI extension AfterTool wiring and shell wrapper are source-controlled; real Gemini binary execution remains a later verification gate"}
-      docs_schema: {applicable: true, evidence: "Gemini adapter, Harness protocol/Human Harness, Evolution Radar, Execution Isolation, capture design, Conformance and Human docs synchronized"}
+      static_lint: {applicable: true, evidence: "Janitor ruff-critical / repository validation"}
+      unit: {applicable: true, evidence: "capture config/contracts and source-controlled fake-response JSONL validation"}
+      integration: {applicable: true, evidence: "pinned @google/gemini-cli@0.60.0 invokes real CLI, extension loader, read_file/write_file/replace and AfterTool hook"}
+      contract: {applicable: true, evidence: "Scenario 143 + current-baseline Human TRIAL Decision + runtime verification result contract"}
+      e2e: {applicable: true, evidence: "required gemini-runtime-verification job + repository aggregate + protected-main rerun"}
+      security: {applicable: true, evidence: "capture default-off, temp-only sink, 3/3 metadata events, no raw/tool/private/secret leakage, provider/model execution explicitly false, protected authority false"}
+      migration_recovery: {applicable: false, na_reason: "Additive CI/runtime verification and evidence state; no durable production migration"}
+      cli_harness: {applicable: true, evidence: "real installed Gemini CLI extension loading and native AfterTool lifecycle"}
+      docs_schema: {applicable: true, evidence: "Architecture, Harness, Evolution Radar, Conformance, Integration Gate, Orchestrator, Execution Isolation and Technology Guide synchronized"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

@@ -1018,4 +1018,16 @@ scenarios:
       - harness/adapters/gemini-cli/hooks/aips-observable-event-capture.sh
       - references/evolution/ISSUE_79_GEMINI_LIVE_CAPTURE_TRIAL_RESULT.yaml
       - tests/validate_repository.py
+  - id: "143"
+    path: tests/scenarios/143-gemini-cli-real-runtime-execution-verification.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/gemini_cli_runtime_verification.py
+      - tests/validation/gemini_cli_runtime_verification_contracts.py
+      - tests/fixtures/gemini_cli_runtime_verification/read.responses
+      - tests/fixtures/gemini_cli_runtime_verification/write.responses
+      - tests/fixtures/gemini_cli_runtime_verification/replace.responses
+      - .github/workflows/validate.yml
+      - references/evolution/ISSUE_79_GEMINI_RUNTIME_VERIFICATION_RESULT.yaml
+      - tests/validate_repository.py
 

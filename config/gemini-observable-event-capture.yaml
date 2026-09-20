@@ -25,8 +25,13 @@ supported_tools:
 verification:
   official_after_tool_contract_verified: true
   official_contract_checked_at: "2026-09-20"
-  live_runtime_execution_verified: false
-  live_capture_verified: false
+  verification_method: exact_candidate_installed_cli_fake_responses
+  gemini_cli_version: "0.60.0"
+  live_runtime_execution_verified: true
+  live_capture_verified: true
+  live_capture_verified_scope: "Gemini CLI v0.60.0 binary + local agent/tool lifecycle + AIPS extension AfterTool hook for read_file/write_file/replace under deterministic fake model responses"
+  provider_model_api_exercised: false
+  provider_model_execution_verified: false
 enforcement:
   runtime_enforced: false
   critical_path: false

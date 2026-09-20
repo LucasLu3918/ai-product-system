@@ -90,3 +90,12 @@ When provided, `base_tip_sha` is included in candidate evidence/fingerprinting. 
 Validation Profiles may declare `matrix_required_change_classes` plus a narrow `matrix_required_paths` safety net. Standard changes are Matrix-optional by default; `aips:large-change` and `aips:core-change` resolve to required Matrix evidence. Known governance-core Integration Gate surfaces may also require the Matrix when labels are absent.
 
 When required, the Matrix must bind the exact base SHA and deterministic changed-files hash, be reconciled to the actual diff, contain no blockers and have executable status. PASS remains evidence only.
+
+## Runtime-specific required evidence
+
+Scenario 143 extends the GitHub compatibility aggregate without changing Integration Gate authority.
+
+For core/large pull requests and protected-main pushes, `gemini-runtime-verification` runs after exact checkout and exercises the installed Gemini CLI v0.60.0 binary. The final required `repository` context succeeds only when Janitor succeeds and the runtime job is either SUCCESS or intentionally SKIPPED by applicability rules.
+
+Runtime verification does not issue PASS authority for merge/release. It is additional evidence consumed by the existing protected branch flow.
+

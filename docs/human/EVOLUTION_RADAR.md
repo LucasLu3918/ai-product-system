@@ -258,3 +258,21 @@ Trial result：
 
 因此目前狀態是 **implementation contract PASS / live runtime verification pending**，不是 production-ready live capture。
 
+## Issue #79 — Gemini CLI exact-candidate runtime verification（Scenario 143）
+
+v0.33.0 已完成 Gemini CLI AfterTool implementation Trial，但當時只驗證 hook contract / wiring，沒有啟動真實 Gemini CLI binary。
+
+Scenario 143 使用新的 current-baseline Human TRIAL Decision，將驗證綁定 `main@dac529ed2c385081547c3c3de4820f7a80b97101`，並在 required CI 中固定安裝 Gemini CLI stable v0.60.0。
+
+驗證方式使用 Gemini CLI 官方 `--fake-responses` 測試介面。這不是直接呼叫 hook，也不是 mock Gemini CLI；真正執行的是已安裝的 `gemini` binary、extension loader、file-tool executor 與 AfterTool hook，只把 model provider response 換成 deterministic source-controlled responses。
+
+因此通過後的 capability truth 是：
+
+- Gemini CLI v0.60.0 local runtime/tool/hook path：**VERIFIED**；
+- `live_runtime_execution_verified=true`；
+- `live_capture_verified=true`，只限 `read_file|write_file|replace`；
+- provider/model API execution：**NOT VERIFIED / NOT EXERCISED**；
+- semantic intent、automatic remediation、runtime enforcement、durable production persistence：仍未導入。
+
+這個 runtime job 被納入既有 required `repository` aggregate，不建立第二個 branch-protection authority。
+

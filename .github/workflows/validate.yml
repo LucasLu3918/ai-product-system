@@ -71,10 +71,38 @@ jobs:
             "${matrix_args[@]}" \
             --output integration-gate-report.yaml
 
+  gemini-runtime-verification:
+    if: ${{ github.event_name == 'push' || contains(github.event.pull_request.labels.*.name, 'aips:core-change') || contains(github.event.pull_request.labels.*.name, 'aips:large-change') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt -r requirements-validation.txt
+      - name: Install pinned Gemini CLI stable
+        run: npm install --global @google/gemini-cli@0.60.0
+      - name: Verify real Gemini CLI tool and AfterTool capture path
+        run: >-
+          python tests/evidence/gemini_cli_runtime_verification.py
+          --gemini gemini
+          --expected-version 0.60.0
+          --output gemini-runtime-verification-report.json
+
   repository:
-    needs: janitor
+    needs: [janitor, gemini-runtime-verification]
     if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
       - name: required repository aggregate
-        run: test "${{ needs.janitor.result }}" = "success"
+        shell: bash
+        run: |
+          test "${{ needs.janitor.result }}" = "success"
+          case "${{ needs.gemini-runtime-verification.result }}" in
+            success|skipped) ;;
+            *) exit 1 ;;
+          esac

@@ -935,3 +935,27 @@ CI 只驗證官方 AfterTool-shaped contract 與 source-controlled hook wiring�
 
 目前 Scenario inventory 為 **142**：22 deterministic + 66 lifecycle + 54 agent_eval，**142 / 142 automated、0 manual、0 uncovered**。
 
+## Scenario 143 — Gemini CLI Real Runtime Execution Verification
+
+Scenario 143 把 v0.33.0 的 source-controlled implementation contract 推進到**真實 Gemini CLI binary / tool / hook execution**。
+
+Exact-candidate CI 安裝固定 Gemini CLI stable `0.60.0`，使用 Gemini CLI 官方維護的 `--fake-responses` 測試入口，讓真正的 CLI agent loop 執行：
+
+- `read_file`
+- `write_file`
+- `replace`
+
+並由已安裝的 AIPS extension 真正觸發 `AfterTool` capture hook。
+
+這裡的「real runtime verified」只表示 CLI binary、extension loading、file-tool executor 與 hook path 都是真實執行；model responses 是 deterministic fake responses，因此：
+
+- `live_runtime_execution_verified=true`
+- `live_capture_verified=true`
+- `provider_model_api_exercised=false`
+- `provider_model_execution_verified=false`
+- `network_model_call_verified=false`
+
+CI 還會驗證 disabled-by-default real CLI run 不產生 sink、write/replace 的實際檔案結果、3/3 canonical capture、unexpected event loss=0，以及 raw/tool/private/secret-like leakage=0。
+
+目前 Scenario inventory 為 **143**：22 deterministic + 67 lifecycle + 54 agent_eval，**143 / 143 automated、0 manual、0 uncovered**。
+
