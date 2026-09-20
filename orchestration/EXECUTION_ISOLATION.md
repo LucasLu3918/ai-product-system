@@ -239,3 +239,8 @@ The external executor is required to honor the exact `worktree` isolation requir
 Effectiveness analysis is a read-only deterministic evidence aggregation over already-published Evolution Radar Issues and comments. It creates no Trial worktree, invokes no execution provider, and mutates no repository source.
 
 The scheduled workflow may create/update/close/reopen its own GitHub effectiveness Issue using `issues: write`, but has only `contents: read`. Review flags cannot reweight, enable, disable or replace sources and cannot authorize a Trial, code change, PR, merge or release.
+
+
+## Historical Evolution Issue reconciliation boundary
+
+Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. It creates no execution workspace, Trial authorization, runtime hook, enforcement path or remediation authority. Any deferred candidate that later becomes active must re-enter the normal current-baseline Human Decision + Controlled Trial + Execution Isolation flow.
