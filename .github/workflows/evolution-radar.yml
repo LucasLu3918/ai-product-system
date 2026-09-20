@@ -111,6 +111,23 @@ jobs:
       - name: Validate raw evidence
         run: python scripts/evolution_radar.py validate evolution-radar.yaml
 
+      - name: Build deterministic local pre-analysis
+        shell: bash
+        run: |
+          python scripts/evolution_analysis.py preanalyze \
+            --evidence evolution-radar.yaml \
+            --config config/evolution-analyzer.yaml \
+            --capabilities references/evolution/CAPABILITY_MAP.yaml \
+            --output evolution-local-preanalysis.yaml
+          python scripts/evolution_analysis.py preanalysis-validate \
+            --evidence evolution-radar.yaml \
+            --config config/evolution-analyzer.yaml \
+            --capabilities references/evolution/CAPABILITY_MAP.yaml \
+            --preanalysis evolution-local-preanalysis.yaml
+          python scripts/evolution_analysis.py preanalysis-markdown \
+            --preanalysis evolution-local-preanalysis.yaml \
+            --output evolution-local-preanalysis.md
+
       - name: Build semantic analysis package
         run: >-
           python scripts/evolution_analysis.py package
@@ -227,14 +244,19 @@ jobs:
       - name: Validate final evidence
         run: python scripts/evolution_radar.py validate evolution-radar.yaml
 
-      - name: Publish semantic handoff summary
+      - name: Publish local pre-analysis and semantic handoff summary
         if: always()
         shell: bash
-        run: cat evolution-analysis-handoff.md >> "$GITHUB_STEP_SUMMARY"
+        run: |
+          if [[ -f evolution-local-preanalysis.md ]]; then
+            cat evolution-local-preanalysis.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+          cat evolution-analysis-handoff.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build Human review issue
         run: >-
           python scripts/evolution_radar_rollup.py issue-body evolution-radar.yaml
+          --preanalysis evolution-local-preanalysis.md
           --handoff evolution-analysis-handoff.md
           --output evolution-radar-issue.md
 

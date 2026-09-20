@@ -12,6 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
+import evolution_analysis as analysis  # noqa: E402
 import evolution_radar as radar  # noqa: E402
 import evolution_radar_rollup as rollup  # noqa: E402
 
@@ -302,6 +303,61 @@ def main() -> int:
     require((analyzer_config.get("selection") or {}).get("fallback") == "handoff", "semantic analyzer fallback must be provider-neutral handoff")
     require((analyzer_config.get("adapter") or {}).get("optional") is True, "OpenAI adapter must be optional")
     require((analyzer_config.get("handoff") or {}).get("credential_required") is False, "handoff must not require model API credentials")
+    local_config = analyzer_config.get("local_preanalysis") or {}
+    require(local_config.get("credential_required") is False, "local preanalysis must require no credential")
+    require(local_config.get("external_network_required") is False, "local preanalysis must require no extra network")
+    require(local_config.get("preserve_semantic_state") == "ANALYSIS_PENDING", "local preanalysis must preserve semantic pending state")
+
+    capability_map = yaml.safe_load((ROOT / "references/evolution/CAPABILITY_MAP.yaml").read_text(encoding="utf-8")) or {}
+    triage_evidence = copy.deepcopy(weekly)
+    triage_titles = [
+        "Agent authorization anomaly detection for runtime tools",
+        "Agent authorization anomaly detection runtime tools",
+        "Retrieval context embedding reliability evaluation",
+        "Marketing conference posters and event planning",
+    ]
+    for signal, title in zip(triage_evidence["signals"], triage_titles, strict=True):
+        signal["title"] = title
+    triage = analysis.build_local_preanalysis(triage_evidence, analyzer_config, capability_map)
+    require(
+        not analysis.validate_local_preanalysis(triage_evidence, analyzer_config, capability_map, triage),
+        "deterministic local preanalysis must validate",
+    )
+    require(
+        triage == analysis.build_local_preanalysis(triage_evidence, analyzer_config, capability_map),
+        "identical local-preanalysis inputs must produce identical output",
+    )
+    require(triage["execution"]["semantic_suitability_inferred"] is False, "local preanalysis must not infer suitability")
+    require(triage["execution"]["recommendation_state_mutated"] is False, "local preanalysis must not mutate semantic state")
+    require(triage["execution"]["credential_required"] is False, "local preanalysis must remain credential-free")
+    require(triage["execution"]["external_network_required"] is False, "local preanalysis must not require extra network")
+    require(triage["summary"]["near_duplicate_groups"] == 1, "two near-identical agent titles must form one deterministic cluster")
+    require(triage["summary"]["priority_counts"]["HIGH"] >= 2, "high-signal engineering titles should reach HIGH Human review priority")
+    require(triage["summary"]["priority_counts"]["LOW"] >= 1, "unmatched titles should remain LOW Human review priority")
+    require(
+        all(item["state"] == "ANALYSIS_PENDING" for item in triage_evidence["recommendations"]),
+        "local preanalysis must leave semantic recommendations ANALYSIS_PENDING",
+    )
+    require(
+        all("state" not in item and "decision" not in item and "recommendation" not in item for item in triage["signals"]),
+        "local preanalysis annotations must not contain semantic decision fields",
+    )
+    preanalysis_markdown = analysis.preanalysis_markdown(triage)
+    extracted_preanalysis = analysis.extract_preanalysis(preanalysis_markdown)
+    require(extracted_preanalysis == triage, "preanalysis markdown must round-trip exact deterministic evidence")
+
+    tampered = copy.deepcopy(triage)
+    tampered["execution"]["semantic_suitability_inferred"] = True
+    require(
+        analysis.validate_local_preanalysis(triage_evidence, analyzer_config, capability_map, tampered),
+        "semantic-suitability claim must fail local-preanalysis validation",
+    )
+    credentialized = copy.deepcopy(analyzer_config)
+    credentialized["local_preanalysis"]["credential_required"] = True
+    require(
+        analysis.validate_local_preanalysis_config(credentialized, capability_map),
+        "local preanalysis must reject credential-required configuration",
+    )
 
     workflow = (ROOT / ".github/workflows/evolution-radar.yml").read_text(encoding="utf-8")
     for required in (
@@ -314,6 +370,11 @@ def main() -> int:
         "--period",
         "gh api --paginate --slurp",
         "semantic_provider:",
+        "Build deterministic local pre-analysis",
+        "evolution_analysis.py preanalyze",
+        "preanalysis-validate",
+        "evolution-local-preanalysis.md",
+        "--preanalysis evolution-local-preanalysis.md",
         "Build provider-neutral semantic handoff",
         "--handoff evolution-analysis-handoff.md",
         'selected="handoff"',
@@ -328,9 +389,11 @@ def main() -> int:
         evidence.write_text(yaml.safe_dump(weekly, sort_keys=False), encoding="utf-8")
         require(not radar.validate_evidence(yaml.safe_load(evidence.read_text(encoding="utf-8"))), "serialized evidence must validate")
         handoff = "## Evolution Radar — Provider-Neutral Semantic Analysis Handoff\n\n- Analysis package digest: `sha256:test`"
-        issue_body.write_text(rollup.issue_markdown(weekly, handoff), encoding="utf-8")
+        issue_body.write_text(rollup.issue_markdown(weekly, handoff, preanalysis_markdown), encoding="utf-8")
         require(issue_body.stat().st_size > 0, "Human review artifact must be non-empty")
-        require("Provider-Neutral Semantic Analysis Handoff" in issue_body.read_text(encoding="utf-8"), "Issue must carry provider-neutral analysis handoff")
+        issue_text = issue_body.read_text(encoding="utf-8")
+        require("Deterministic Local Pre-analysis" in issue_text, "Issue must carry credential-free local preanalysis")
+        require("Provider-Neutral Semantic Analysis Handoff" in issue_text, "Issue must carry provider-neutral analysis handoff")
 
     print("EVOLUTION RADAR LIFECYCLE PASSED")
     return 0

@@ -30,3 +30,74 @@ security:
   external_content_authority: evidence_only
   repository_write_authority: false
   network_for_agent: false
+
+local_preanalysis:
+  version: 1
+  enabled: true
+  mode: deterministic_title_metadata_only
+  credential_required: false
+  external_network_required: false
+  preserve_semantic_state: ANALYSIS_PENDING
+  near_duplicate:
+    enabled: true
+    jaccard_threshold: 0.72
+    minimum_shared_terms: 3
+  review_priority:
+    high_min_score: 7
+    medium_min_score: 4
+    recurrence_bonus_max: 2
+    capability_bonus_max: 2
+  stopwords:
+    - a
+    - an
+    - the
+    - and
+    - or
+    - of
+    - to
+    - for
+    - in
+    - on
+    - with
+    - from
+    - by
+    - is
+    - are
+    - how
+    - why
+    - your
+    - our
+    - using
+    - use
+    - build
+    - building
+    - introducing
+    - new
+    - now
+    - as
+    - at
+  categories:
+    - id: agent-security-governance
+      weight: 3
+      terms: [agent, authorization, zero trust, security, permission, access, policy, credential, secret, remediation]
+      capability_ids: [resource-authorization, security-assurance, secret-handling, external-credential-dependency-guard, enforceable-governance]
+    - id: reliability-observability
+      weight: 3
+      terms: [eval, evaluation, reliability, consistency, anomaly, observability, trace, monitoring]
+      capability_ids: [agent-eval, agent-anomaly-evaluation, agent-observable-event-trial-evidence]
+    - id: retrieval-context
+      weight: 3
+      terms: [retrieval, rag, context, embedding, semantic search, code search, mcp, skill]
+      capability_ids: [project-intelligence, deterministic-automation]
+    - id: runtime-tooling
+      weight: 2
+      terms: [runtime, cli, sdk, tool, hook, workflow, copilot, automation]
+      capability_ids: [turn-aware-global-harness, deterministic-automation]
+    - id: delivery-operations
+      weight: 2
+      terms: [ci, release, deployment, scheduler, availability, incident, performance, latency]
+      capability_ids: [product-delivery, deterministic-automation, controlled-evolution-trial]
+    - id: model-training-research
+      weight: 1
+      terms: [training, post training, grpo, lora, encoder, model]
+      capability_ids: [evolution-radar]

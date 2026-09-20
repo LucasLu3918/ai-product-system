@@ -89,6 +89,11 @@ if analyzer_config.exists():
         "credential_required: false",
         "result_schema_path:",
         "binding_script: scripts/evolution_analysis.py",
+        "local_preanalysis:",
+        "mode: deterministic_title_metadata_only",
+        "credential_required: false",
+        "external_network_required: false",
+        "preserve_semantic_state: ANALYSIS_PENDING",
     ):
         if contract not in analyzer_text:
             errors.append(f"Evolution Radar analyzer config missing provider-neutral contract: {contract}")
@@ -98,6 +103,10 @@ if workflow_path.exists():
     workflow_text = workflow_path.read_text(encoding="utf-8")
     for contract in (
         "semantic_provider:",
+        "Build deterministic local pre-analysis",
+        "scripts/evolution_analysis.py preanalyze",
+        "preanalysis-validate",
+        "--preanalysis evolution-local-preanalysis.md",
         "Build provider-neutral semantic handoff",
         "scripts/evolution_analysis.py handoff",
         "--handoff evolution-analysis-handoff.md",
@@ -105,3 +114,18 @@ if workflow_path.exists():
     ):
         if contract not in workflow_text:
             errors.append(f"Evolution Radar workflow missing provider-neutral contract: {contract}")
+
+analysis_script = ROOT / "scripts/evolution_analysis.py"
+if analysis_script.exists():
+    analysis_text = analysis_script.read_text(encoding="utf-8")
+    for contract in (
+        "build_local_preanalysis",
+        "validate_local_preanalysis",
+        "DETERMINISTIC_PREANALYSIS",
+        "semantic_suitability_inferred",
+        "recommendation_state_mutated",
+        "title_and_evidence_metadata_only",
+        "PREANALYSIS_START",
+    ):
+        if contract not in analysis_text:
+            errors.append(f"Evolution Radar local preanalysis contract missing: {contract}")

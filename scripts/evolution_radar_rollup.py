@@ -144,7 +144,7 @@ def monthly_rollup(
     }
 
 
-def issue_markdown(doc: dict[str, Any], handoff_text: str | None = None) -> str:
+def issue_markdown(doc: dict[str, Any], handoff_text: str | None = None, preanalysis_text: str | None = None) -> str:
     summary = doc.get("summary") or {}
     sources = doc.get("sources") or {}
     run = doc.get("run") or {}
@@ -167,6 +167,8 @@ def issue_markdown(doc: dict[str, Any], handoff_text: str | None = None) -> str:
         "This report is evidence/recommendation input only. It does not authorize code changes, PRs, merges or releases.",
         "",
     ]
+    if preanalysis_text:
+        lines += [preanalysis_text.rstrip(), ""]
     if handoff_text:
         lines += [handoff_text.rstrip(), ""]
     lines += [
@@ -191,6 +193,7 @@ def main() -> int:
     issue = sub.add_parser("issue-body")
     issue.add_argument("evidence")
     issue.add_argument("--handoff")
+    issue.add_argument("--preanalysis")
     issue.add_argument("--output", required=True)
     args = parser.parse_args()
 
@@ -207,7 +210,8 @@ def main() -> int:
     if errors:
         raise ValueError("invalid evidence: " + "; ".join(errors))
     handoff_text = Path(args.handoff).read_text(encoding="utf-8") if args.handoff else None
-    Path(args.output).write_text(issue_markdown(doc, handoff_text), encoding="utf-8")
+    preanalysis_text = Path(args.preanalysis).read_text(encoding="utf-8") if args.preanalysis else None
+    Path(args.output).write_text(issue_markdown(doc, handoff_text, preanalysis_text), encoding="utf-8")
     return 0
 
 

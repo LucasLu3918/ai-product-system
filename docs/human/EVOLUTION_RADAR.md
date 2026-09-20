@@ -318,3 +318,28 @@ Guard 會驗證：
 - credential-free default lane 不得取得 optional provider secret。
 
 目前 `GEMINI_API_KEY` 與 `OPENAI_API_KEY` 都維持 optional。Evolution Radar 沒有 semantic provider credential 時繼續走 provider-neutral handoff；不會因缺 Key 停止 research evidence 產生。
+
+## Deterministic Local Pre-analysis（Scenario 146）
+
+Evolution Radar 在 evidence 收集／deduplication 完成後，現在會先執行一層**不需要任何外部 Agent Key**的 deterministic pre-analysis。
+
+輸入只包含：
+
+- 已收集的 signal title；
+- source / recurrence 等 evidence metadata；
+- `config/evolution-analyzer.yaml` 內 source-controlled 規則；
+- `references/evolution/CAPABILITY_MAP.yaml`。
+
+輸出包含 topic category hints、Capability Map hints、title near-duplicate cluster 與 HIGH / MEDIUM / LOW Human review priority。
+
+重要邊界：
+
+- HIGH 只表示「建議 Human 優先閱讀」，不表示適合導入；
+- local rules 不得產生 COVERED / HOLD / ASSESS / TRIAL / ADOPT；
+- `recommendations.state` 保持 `ANALYSIS_PENDING`；
+- 不需要 `OPENAI_API_KEY`、`GEMINI_API_KEY` 或其他 provider credential；
+- pre-analysis 不額外連外，只處理既有 Radar evidence；
+- identical evidence/config/capability inputs 必須得到 identical artifact；
+- artifact 綁定 repository revision、evidence digest、config digest 與 Capability Map digest。
+
+Provider-neutral handoff 與 optional semantic analyzer 仍保留在下一層；deterministic pre-analysis 不取代語意分析或 Human Decision。
