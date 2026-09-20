@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.43.0
+
+### Technology Intelligence Expansion
+
+- Expand the weekly Evolution Radar into a bounded Technology Intelligence funnel with six configured community discovery sources plus retained primary/vendor evidence sources.
+- Require a healthy floor of five successful community sources when available; best-effort source failures remain explicit degraded evidence and are never fabricated away.
+- Increase per-source collection to at most eight candidates and add a deterministic global raw-signal cap of 50 using round-robin source fairness.
+- Preserve source roles and multi-source provenance through deduplication with DISCOVERY_ONLY, PRIMARY_SOURCE, and PRIMARY_CORROBORATED verification states.
+- Extend credential-free deterministic local pre-analysis with a Human shortlist capped at 12, a near-duplicate-aware semantic queue capped at 10, and an actionable recommendation budget capped at 5.
+- Bind the semantic analysis package to the exact deterministic queue; signals outside that queue remain truthfully ANALYSIS_PENDING and partial semantic coverage is explicit.
+- Require primary-source corroboration before an explicit community-only discovery signal may produce ADOPT; forum/community popularity alone is not adoption evidence.
+- Keep optional semantic providers and the existing provider-neutral handoff; no external Agent/provider credential becomes a baseline or release prerequisite.
+- Preserve Protected Human Authority: research remains evidence/recommendation-only and grants no implementation, PR, merge, release, publication, or Human-decision authority.
+- Add Scenario 152 and raise Scenario Conformance to 152/152 automated: 24 deterministic + 74 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- Initial PR #123 candidate validation correctly failed on a stale monthly rollup expectation after the expanded source fixture; the test expectation was reconciled without weakening the implementation.
+- Feature PR #123 exact final head `614f32c8e7914da5fd562aed75c613474dd423ec` passed validate Run #1155.
+- PR #123 was squash-merged to main as `a3539935ca35634ecf4c5f428f018fafc16b7390`; protected-main validate Run #1156 succeeded.
+- No new Role or Skill. Constitution impact: NO.
+- Release model remains `VERSION + CHANGELOG + protected-main validation`; no GitHub Release object or tag is introduced.
+
 ## 0.42.0
 
 ### Evolution Radar Quarterly Deterministic Review
