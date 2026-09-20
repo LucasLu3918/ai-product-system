@@ -44,15 +44,17 @@ def main() -> int:
     if not api_key:
         report = {
             "version": 1,
-            "status": "BLOCKED_MISSING_CREDENTIAL",
-            "credential_source": "environment:GEMINI_API_KEY",
+            "status": "SKIPPED_NOT_CONFIGURED",
+            "credential_source": "optional_environment:GEMINI_API_KEY",
             "credential_present": False,
+            "provider_verification_enabled": False,
+            "required_for_release": False,
             "live_provider_session_verified": False,
             "provider_model_execution_verified": False,
         }
         args.output.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         print(json.dumps(report, sort_keys=True))
-        return 2
+        return 0
 
     expected_sha = os.environ.get("AIPS_EXPECTED_SHA", "")
     extension = args.extension.resolve()
@@ -207,8 +209,10 @@ def main() -> int:
             "gemini_cli_version": version_text,
             "model": "gemini-2.5-flash",
             "provider_auth_method": "gemini_api_key",
-            "credential_source": "environment:GEMINI_API_KEY",
+            "credential_source": "optional_environment:GEMINI_API_KEY",
             "credential_present": True,
+            "provider_verification_enabled": True,
+            "required_for_release": False,
             "credential_value_persisted": False,
             "fake_model_responses_used": False,
             "live_provider_session_verified": True,

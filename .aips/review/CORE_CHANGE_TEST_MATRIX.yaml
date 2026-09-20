@@ -1,24 +1,24 @@
 version: 1
 candidate:
-  base_sha: 3e9332d4f27d02117b00e2d2ec79d805077f75b6
-  changed_files_hash: 7a85bc7d88383427f5ede9d052fcdeeb895457a61c32a2ee360806ed2a29bd63
+  base_sha: 54d4b5a4f388d0f77c6e43bb4ec02c176504cf9e
+  changed_files_hash: a10ff874f83df4b67c6f57b98b430193d21d817bf945ddc9328b7299b64f602e
 change:
-  id: v0.35.0-gemini-provider-session-trusted-main-workflow
-  summary: Add a trusted-main-only Gemini provider-session workflow that never exposes GEMINI_API_KEY to pull-request code and fails closed to blocked evidence when the secret is unavailable.
-  boundary: [github-actions, provider-session-verification, secret-isolation, documentation]
+  id: optional-provider-credential-policy
+  summary: Make external Agent/provider credentials opt-in enhancements so missing credentials skip provider-specific verification without blocking normal AIPS operation or release.
+  boundary: [provider-credentials, github-actions, gemini-provider-session, governance, documentation]
 matrix:
-  - boundary: trusted-main-provider-session
-    reason: Provider credentials must only reach code already trusted on protected main.
+  - boundary: optional-provider-credentials
+    reason: Credential-dependent capabilities must stay disabled unless explicitly configured, while preserving truthful verification state and secret isolation.
     checks:
-      static_lint: {applicable: true, evidence: "repository validation imports dedicated workflow contract"}
-      unit: {applicable: true, evidence: "workflow contract forbids pull_request trigger and requires secret-gated execution"}
-      integration: {applicable: false, na_reason: "PR candidate intentionally receives no provider credential; live integration runs only after merge on trusted main"}
-      contract: {applicable: true, evidence: "missing credential -> BLOCKED_MISSING_CREDENTIAL; secret-backed path requires exact SHA and provider PASS"}
-      e2e: {applicable: false, na_reason: "The protected-main push created by merging this PR is the first permitted live-provider e2e execution"}
-      security: {applicable: true, evidence: "contents:read only; no pull_request trigger; secret checked without printing; credential value never persisted"}
-      migration_recovery: {applicable: false, na_reason: "No project/runtime migration"}
-      cli_harness: {applicable: true, evidence: "secret-backed path uses pinned Gemini CLI v0.60.0 and trusted verifier already on main"}
-      docs_schema: {applicable: true, evidence: "Technology Guide documents trusted-main secret isolation and blocked-state semantics"}
+      static_lint: {applicable: true, evidence: "repository validation imports updated Gemini verifier/workflow contracts"}
+      unit: {applicable: true, evidence: "contracts require SKIPPED_NOT_CONFIGURED and reject alternative auth/blocking tokens"}
+      integration: {applicable: true, evidence: "trusted-main workflow runs credential-free disabled path without installing or invoking live provider/model verification"}
+      contract: {applicable: true, evidence: "missing credential is non-blocking SKIPPED_NOT_CONFIGURED; present credential retains exact-SHA real-provider PASS requirements"}
+      e2e: {applicable: false, na_reason: "No live provider credential is configured by current Human policy"}
+      security: {applicable: true, evidence: "no pull_request secret exposure; no OAuth/Vertex/OIDC replacement authentication introduced"}
+      migration_recovery: {applicable: true, evidence: "existing v0.34 Gemini runtime/capture verification remains valid and unchanged"}
+      cli_harness: {applicable: true, evidence: "credential-free runtime/capture path remains separate from optional live provider verification"}
+      docs_schema: {applicable: true, evidence: "Human and Agent evolution/execution docs record optional credential semantics and non-blocking release behavior"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

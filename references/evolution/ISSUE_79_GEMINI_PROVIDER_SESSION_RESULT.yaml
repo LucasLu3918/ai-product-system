@@ -4,9 +4,10 @@ baseline_repository_revision: 75db6fc7adf67862e1948882a290e79c922f7e85
 runtime: gemini-cli
 pinned_cli_version: 0.60.0
 model: gemini-2.5-flash
-verification_mode: protected_main_live_provider_session
+verification_mode: optional_protected_main_live_provider_session
 credential:
-  source: github_actions_secret:GEMINI_API_KEY
+  source: optional_github_actions_secret:GEMINI_API_KEY
+  configuration_policy: absent_by_default
   value_persistence_authorized: false
 runtime_truth:
   live_runtime_execution_verified: true
@@ -14,14 +15,21 @@ runtime_truth:
   live_provider_session_verified: false
   provider_model_execution_verified: false
   fake_model_responses_used: false
-status: PENDING_SECURE_PROVIDER_WORKFLOW
-recommendation: RUN_PROTECTED_MAIN_PROVIDER_VERIFICATION
+status: NOT_CONFIGURED_BY_POLICY
+recommendation: ENABLE_ONLY_WHEN_CREDENTIAL_IS_EXPLICITLY_CONFIGURED
+policy:
+  provider_verification_enabled_by_default: false
+  provider_verification_required_for_release: false
+  missing_credential_status: SKIPPED_NOT_CONFIGURED
+  alternate_authentication_enabled: false
+  alternate_authentication_modes: []
+  normal_runtime_and_capture_remain_available: true
 authority:
-  live_provider_session_authorized: true
+  live_provider_session_authorized_when_explicitly_configured: true
   credential_value_persistence_authorized: false
   runtime_enforcement_authorized: false
   automatic_remediation_authorized: false
-  human_approval_granted: false
+  human_approval_granted: true
   merge_authorized: false
   release_authorized: false
   publication_authorized: false

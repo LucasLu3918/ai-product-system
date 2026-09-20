@@ -251,3 +251,16 @@ The repository maintainer has authorized a bounded provider-session TRIAL, but t
 
 Until trusted-main provider execution succeeds, `live_provider_session_verified` and `provider_model_execution_verified` remain false.
 
+<!-- AIPS_PROVIDER_CREDENTIAL_POLICY_V1 -->
+## Optional Provider Credential Policy
+
+External provider credentials are optional capability inputs, not AIPS platform prerequisites.
+
+- default: credential-dependent provider features are disabled;
+- activation: only when the exact expected credential is explicitly configured;
+- missing credential: emit `SKIPPED_NOT_CONFIGURED` / `NOT_CONFIGURED_BY_POLICY`, never infer PASS;
+- release semantics: absence of an optional provider credential is non-blocking;
+- fallback: prefer deterministic/provider-neutral evidence paths already available;
+- alternate authentication: do not introduce OAuth, Vertex AI, OIDC/WIF, or another login flow unless a later Human Decision explicitly authorizes it.
+
+Gemini runtime verification and observable-event capture remain independent of live provider/model verification.
