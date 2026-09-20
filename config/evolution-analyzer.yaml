@@ -47,6 +47,10 @@ local_preanalysis:
     medium_min_score: 4
     recurrence_bonus_max: 2
     capability_bonus_max: 2
+  selection_budget:
+    shortlist_max: 12
+    semantic_analysis_max: 10
+    actionable_recommendations_max: 5
   stopwords:
     - a
     - an

@@ -63,6 +63,12 @@ if source_config.exists():
     for contract in (
         "public_only: true",
         "credentials_in_repository: false",
+        "minimum_community_sources_when_available: 5",
+        "target_community_sources: 6",
+        "max_items_per_source: 8",
+        "max_raw_signals: 50",
+        "role: community",
+        "role: primary",
         "max_response_bytes:",
         "max_redirects:",
     ):
@@ -94,6 +100,10 @@ if analyzer_config.exists():
         "credential_required: false",
         "external_network_required: false",
         "preserve_semantic_state: ANALYSIS_PENDING",
+        "selection_budget:",
+        "shortlist_max: 12",
+        "semantic_analysis_max: 10",
+        "actionable_recommendations_max: 5",
     ):
         if contract not in analyzer_text:
             errors.append(f"Evolution Radar analyzer config missing provider-neutral contract: {contract}")
@@ -109,6 +119,8 @@ if workflow_path.exists():
         "--preanalysis evolution-local-preanalysis.md",
         "Build provider-neutral semantic handoff",
         "scripts/evolution_analysis.py handoff",
+        "--preanalysis evolution-local-preanalysis.yaml",
+        "--package evolution-analysis-package.yaml",
         "--handoff evolution-analysis-handoff.md",
         "selected=\"handoff\"",
         "quarterly",
@@ -143,6 +155,10 @@ if analysis_script.exists():
         "recommendation_state_mutated",
         "title_and_evidence_metadata_only",
         "PREANALYSIS_START",
+        "_build_review_queue",
+        "deterministic_preanalysis_rank",
+        "max_actionable_recommendations",
+        "community discovery signal requires primary-source corroboration before ADOPT",
     ):
         if contract not in analysis_text:
             errors.append(f"Evolution Radar local preanalysis contract missing: {contract}")

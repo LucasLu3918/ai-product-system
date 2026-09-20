@@ -491,3 +491,19 @@ The quarterly lane performs no additional source collection and requires no exte
 
 Released Scenario Conformance baseline: 151 / 151 automated = 24 deterministic + 73 lifecycle + 54 agent_eval; manual 0; uncovered 0.
 
+
+
+## Scenario 152 — Technology Intelligence Expansion
+
+Scenario 152 is lifecycle-covered by `tests/evidence/evolution_radar_lifecycle.py` and the Evolution Radar static contracts. It proves six configured community discovery sources with a healthy floor of five successful communities, per-source <= 8, deterministic round-robin raw cap <= 50, provenance/verification roles, shortlist <= 12, semantic queue <= 10, actionable semantic states <= 5, partial semantic application, and primary-source corroboration before explicit community-discovered ADOPT.
+
+Current automated inventory after Scenario 152:
+
+- deterministic: 24
+- lifecycle: 74
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 152 / 152
+
+Coverage remains evidence-only and grants no implementation, PR, merge, release, publication or Human-decision authority.

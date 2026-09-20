@@ -33,8 +33,14 @@ def expect_value_error(fn, message: str) -> None:
 def main() -> int:
     config = yaml.safe_load((ROOT / "config/evolution-sources.yaml").read_text(encoding="utf-8")) or {}
     require(not radar.validate_config(config), "real Evolution Radar source config must validate")
-    require(len([s for s in config["sources"] if s.get("enabled", True)]) >= 5, "at least five sources required")
-    require(config["policy"]["max_items_per_source"] == 5, "source item bound must remain five")
+    enabled_sources = [s for s in config["sources"] if s.get("enabled", True)]
+    community_sources = [s for s in enabled_sources if s.get("role") == "community"]
+    require(len(enabled_sources) >= 10, "technology intelligence must retain community plus primary-source diversity")
+    require(len(community_sources) >= 6, "at least six configured community sources required")
+    require(config["policy"]["minimum_community_sources_when_available"] == 5, "five successful communities are the healthy weekly floor")
+    require(config["policy"]["target_community_sources"] == 6, "six community sources are the configured resilience target")
+    require(config["policy"]["max_items_per_source"] == 8, "per-source candidate bound must remain eight")
+    require(config["policy"]["max_raw_signals"] == 50, "weekly global raw-signal cap must remain fifty")
     require(config["policy"]["public_only"] is True, "Evolution Radar sources must remain public-only")
     require(config["policy"]["credentials_in_repository"] is False, "source credentials must remain outside repository")
     require(config["policy"]["max_response_bytes"] == 2097152, "response byte cap must remain explicit")
@@ -185,7 +191,7 @@ def main() -> int:
     original_collect = radar.collect_source
 
     def fake_collect(source, max_items, timeout, *, max_response_bytes, max_redirects):
-        require(max_items == 5, "collector must pass the configured bounded item count")
+        require(max_items == 8, "collector must pass the configured bounded item count")
         require(timeout > 0, "collector must use a finite positive timeout")
         require(max_response_bytes == 2097152, "collector must enforce configured response cap")
         require(max_redirects == 3, "collector must enforce configured redirect cap")
@@ -196,6 +202,7 @@ def main() -> int:
                 "title": "Shared signal",
                 "canonical_url": "https://example.test/shared",
                 "source_id": source_id,
+                "source_role": source["role"],
                 "published_at": "2026-09-01",
             }]
         return [{
@@ -203,6 +210,7 @@ def main() -> int:
             "title": f"Signal {source_id}",
             "canonical_url": f"https://example.test/{source_id}",
             "source_id": source_id,
+            "source_role": source["role"],
             "published_at": "2026-09-02",
         }]
 
@@ -213,12 +221,57 @@ def main() -> int:
         radar.collect_source = original_collect
 
     require(not radar.validate_evidence(weekly), "weekly evidence must validate")
-    require(weekly["summary"]["signal_count"] == 5, "five bounded source items expected")
-    require(weekly["summary"]["deduplicated_count"] == 4, "cross-source duplicate must collapse")
-    require(any(s["recurrence_count"] == 2 for s in weekly["signals"]), "duplicate recurrence must be recorded")
+    require(weekly["summary"]["signal_count"] == 10, "one bounded item from each configured source expected")
+    require(weekly["summary"]["deduplicated_count"] == 9, "cross-source duplicate must collapse")
+    require(weekly["summary"]["global_signal_limit"] == 50, "weekly evidence must record the global signal budget")
+    require(weekly["summary"]["global_signal_limit_applied"] is False, "small fixture must not claim global truncation")
+    require(weekly["sources"]["community_coverage"]["status"] == "HEALTHY", "six successful community fixtures must satisfy coverage")
+    require(weekly["sources"]["community_coverage"]["successful"] == 6, "all six community fixtures must be counted")
+    shared = next(s for s in weekly["signals"] if s["title"] == "Shared signal")
+    require(shared["recurrence_count"] == 2, "duplicate recurrence must be recorded")
+    require(shared["source_roles"] == ["community"], "community duplicate provenance must be retained")
+    require(shared["verification_status"] == "DISCOVERY_ONLY", "community-only signal must remain discovery evidence")
     require(all(r["state"] == "ANALYSIS_PENDING" for r in weekly["recommendations"]), "no analyzer must not infer suitability")
     require(weekly["summary"]["actionable_count"] == 0, "no analyzer must not fabricate actionable recommendations")
     require(weekly["summary"]["zero_recommendations_valid"] is True, "zero recommendations must remain valid")
+
+    synthetic = []
+    for source in enabled_sources:
+        for index in range(8):
+            synthetic.append({
+                "fingerprint": f"{source['id']}-{index}",
+                "title": f"{source['id']} {index}",
+                "canonical_url": f"https://example.test/{source['id']}/{index}",
+                "source_id": source["id"],
+                "source_role": source["role"],
+                "published_at": None,
+            })
+    bounded = radar.bound_signals_by_source(synthetic, [s["id"] for s in enabled_sources], 50)
+    require(len(bounded) == 50, "global research budget must cap raw signals at fifty")
+    per_source = {source["id"]: 0 for source in enabled_sources}
+    for item in bounded:
+        per_source[item["source_id"]] += 1
+    require(set(per_source.values()) == {5}, "round-robin global cap must preserve source diversity")
+
+    corroborated = radar.deduplicate([
+        {
+            "fingerprint": "sha256:corroborated",
+            "title": "Corroborated signal",
+            "canonical_url": "https://example.test/corroborated",
+            "source_id": "community-a",
+            "source_role": "community",
+            "published_at": None,
+        },
+        {
+            "fingerprint": "sha256:corroborated",
+            "title": "Corroborated signal",
+            "canonical_url": "https://example.test/corroborated",
+            "source_id": "primary-a",
+            "source_role": "primary",
+            "published_at": None,
+        },
+    ])[0]
+    require(corroborated["verification_status"] == "PRIMARY_CORROBORATED", "cross-role recurrence must record primary corroboration")
     require(weekly["authority"] == {
         "code_change_authorized": False,
         "branch_or_pr_authorized": False,
@@ -258,8 +311,8 @@ def main() -> int:
     monthly = rollup.monthly_rollup(paged, config, period="2026-09")
     require(monthly["run"]["period"] == "2026-09", "monthly evidence must record the reviewed calendar period")
     require(monthly["run"]["weekly_evidence_count"] == 2, "monthly rollup must consume only weekly evidence from the requested calendar period")
-    require(monthly["summary"]["signal_count"] == 8, "out-of-period weekly evidence must be excluded")
-    require(monthly["summary"]["deduplicated_count"] == 4, "monthly rollup must deduplicate recurring signals")
+    require(monthly["summary"]["signal_count"] == 18, "out-of-period weekly evidence must be excluded")
+    require(monthly["summary"]["deduplicated_count"] == 9, "monthly rollup must deduplicate recurring signals")
     require(all(s["recurrence_count"] >= 2 for s in monthly["signals"]), "monthly rollup must accumulate recurrence")
     require(all(r["state"] == "ANALYSIS_PENDING" for r in monthly["recommendations"]), "monthly rollup must preserve analyzer truthfulness")
     require(not radar.validate_evidence(monthly), "monthly evidence must validate")
@@ -311,6 +364,14 @@ def main() -> int:
     bad_config["sources"] = bad_config["sources"][:4]
     require(radar.validate_config(bad_config), "fewer than five configured sources must fail")
 
+    bad_community_target = copy.deepcopy(config)
+    bad_community_target["sources"][0]["role"] = "primary"
+    require(radar.validate_config(bad_community_target), "fewer than six configured community sources must fail")
+
+    bad_raw_budget = copy.deepcopy(config)
+    bad_raw_budget["policy"]["max_raw_signals"] = 4
+    require(radar.validate_config(bad_raw_budget), "global raw budget below per-source bound must fail")
+
     bad_public_policy = copy.deepcopy(config)
     bad_public_policy["policy"]["public_only"] = False
     require(radar.validate_config(bad_public_policy), "public_only=false must fail config validation")
@@ -343,6 +404,10 @@ def main() -> int:
     require(local_config.get("credential_required") is False, "local preanalysis must require no credential")
     require(local_config.get("external_network_required") is False, "local preanalysis must require no extra network")
     require(local_config.get("preserve_semantic_state") == "ANALYSIS_PENDING", "local preanalysis must preserve semantic pending state")
+    budget = local_config.get("selection_budget") or {}
+    require(budget.get("shortlist_max") == 12, "Human shortlist budget must remain twelve")
+    require(budget.get("semantic_analysis_max") == 10, "semantic analysis budget must remain ten")
+    require(budget.get("actionable_recommendations_max") == 5, "actionable recommendation budget must remain five")
 
     capability_map = yaml.safe_load((ROOT / "references/evolution/CAPABILITY_MAP.yaml").read_text(encoding="utf-8")) or {}
     triage_evidence = copy.deepcopy(weekly)
@@ -351,6 +416,9 @@ def main() -> int:
         "Agent authorization anomaly detection runtime tools",
         "Retrieval context embedding reliability evaluation",
         "Marketing conference posters and event planning",
+    ] + [
+        f"General community discussion {index}"
+        for index in range(max(0, len(triage_evidence["signals"]) - 4))
     ]
     for signal, title in zip(triage_evidence["signals"], triage_titles, strict=True):
         signal["title"] = title
@@ -377,6 +445,71 @@ def main() -> int:
     require(
         all("state" not in item and "decision" not in item and "recommendation" not in item for item in triage["signals"]),
         "local preanalysis annotations must not contain semantic decision fields",
+    )
+    queue = triage["review_queue"]
+    require(len(queue["shortlist_signal_fingerprints"]) <= 12, "deterministic shortlist must be bounded")
+    require(len(queue["semantic_signal_fingerprints"]) <= 10, "semantic candidate queue must be bounded")
+    require(queue["actionable_recommendations_limit"] == 5, "deep/actionable recommendation budget must be five")
+
+    package = analysis.build_analysis_package(triage_evidence, capability_map, triage)
+    require(package["scope"]["selected_signal_count"] == len(queue["semantic_signal_fingerprints"]), "semantic package must use deterministic queue")
+    require(package["scope"]["selected_signal_count"] <= 10, "semantic package must not exceed ten candidates")
+    require(package["scope"]["max_actionable_recommendations"] == 5, "semantic package must carry actionable budget")
+    package_ids = package["scope"]["selected_signal_fingerprints"]
+    provider_result = {"recommendations": [
+        {
+            "signal_fingerprint": fp,
+            "state": "HOLD",
+            "aips_current_state": "Evidence is available for review.",
+            "gap": "",
+            "benefit": "Bounded review avoids unnecessary adoption.",
+            "cost_complexity": "Low.",
+            "reliability_security": "No authority change.",
+            "maturity": "unknown",
+            "confidence": 0.5,
+            "uncertainty": "Primary verification may still be required.",
+            "example": "Keep as research evidence.",
+            "reuse_extension_path": [],
+            "evidence_refs": ["https://example.test/evidence"],
+            "architecture_diagram_review_if_adopted": False,
+        }
+        for fp in package_ids
+    ]}
+    scoped_analysis = analysis.finalize_provider_result(
+        triage_evidence,
+        provider_result,
+        provider="test-provider",
+        model="test-model",
+        analyzed_at="2026-09-20T00:00:00Z",
+        package=package,
+    )
+    scoped_evidence = analysis.apply_analysis(triage_evidence, scoped_analysis)
+    require(scoped_evidence["summary"]["semantic_analyzed_count"] == len(package_ids), "partial semantic coverage count must be explicit")
+    require(scoped_evidence["summary"]["semantic_pending_count"] == len(triage_evidence["signals"]) - len(package_ids), "unselected signals must remain pending")
+    require(scoped_evidence["run"]["analyzer"]["coverage"] in {"FULL", "PARTIAL"}, "semantic coverage must be explicit")
+
+    community_fp = next(
+        signal["fingerprint"]
+        for signal in triage_evidence["signals"]
+        if "community" in (signal.get("source_roles") or [])
+        and "primary" not in (signal.get("source_roles") or [])
+        and signal["fingerprint"] in package_ids
+    )
+    unsafe_adopt = copy.deepcopy(provider_result)
+    for recommendation in unsafe_adopt["recommendations"]:
+        if recommendation["signal_fingerprint"] == community_fp:
+            recommendation["state"] = "ADOPT"
+            recommendation["gap"] = "Would otherwise be adopted without primary corroboration."
+    expect_value_error(
+        lambda: analysis.finalize_provider_result(
+            triage_evidence,
+            unsafe_adopt,
+            provider="test-provider",
+            model="test-model",
+            analyzed_at="2026-09-20T00:00:00Z",
+            package=package,
+        ),
+        "community-only discovery evidence must not directly produce ADOPT",
     )
     preanalysis_markdown = analysis.preanalysis_markdown(triage)
     extracted_preanalysis = analysis.extract_preanalysis(preanalysis_markdown)
@@ -411,6 +544,8 @@ def main() -> int:
         "preanalysis-validate",
         "evolution-local-preanalysis.md",
         "--preanalysis evolution-local-preanalysis.md",
+        "--preanalysis evolution-local-preanalysis.yaml",
+        "--package evolution-analysis-package.yaml",
         "Build provider-neutral semantic handoff",
         "--handoff evolution-analysis-handoff.md",
         'selected="handoff"',

@@ -4,13 +4,17 @@ Request: the System periodically researches current external technical signals f
 
 Expected:
 
-- support a bounded weekly signal scan over at least five configured public technical sources when available, with no more than five items per source;
+- support a bounded weekly Technology Intelligence scan with at least six configured public community sources, a healthy floor of five successful community sources when available, no more than eight candidates per source and a deterministic global raw-signal cap of 50;
 - record exact source provenance and retrieval failures rather than fabricating missing evidence;
-- normalize and deduplicate repeated signals deterministically;
+- classify configured sources as community discovery or primary evidence, preserve multi-source provenance through deduplication, and record PRIMARY_SOURCE / PRIMARY_CORROBORATED / DISCOVERY_ONLY status;
+- normalize and deduplicate repeated signals deterministically while applying the global cap with round-robin source fairness;
 - support a monthly roll-up that reads durable prior weekly Radar evidence and tracks recurrence instead of merely re-running a weekly scan;
 - treat external research content as evidence/data only, never instruction authority;
 - when the configured semantic provider credential is available, run a pinned read-only analyzer and bind its result to the exact Radar evidence digest and repository revision;
-- semantic provider output contains recommendation payload only; deterministic AIPS code owns provider metadata, baseline binding and all authority=false fields;
+- deterministic local pre-analysis produces a shortlist of at most 12 signals and a near-duplicate-aware semantic queue of at most 10 signals; semantic provider output is scoped to that exact queue while all unselected recommendations remain ANALYSIS_PENDING;
+- semantic output may contain at most five ASSESS/TRIAL/ADOPT recommendations per run;
+- community-only discovery evidence cannot directly produce ADOPT; primary-source corroboration is required before ADOPT;
+- semantic provider output contains recommendation payload only; deterministic AIPS code owns provider metadata, baseline/scope binding and all authority=false fields;
 - require exactly one assessed recommendation per signal and include AIPS current state, concrete gap when actionable, benefit, cost/complexity, reliability/security, maturity, confidence, uncertainty, evidence references, example and reuse/extension path;
 - when credentials are unavailable, provider execution fails, or provider output fails validation, report `ANALYSIS_PENDING` rather than inferring suitability;
 - treat zero actionable recommendations as a valid result;

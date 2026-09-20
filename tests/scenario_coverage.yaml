@@ -1122,3 +1122,19 @@ scenarios:
       - tests/validation/evolution_radar_contracts.py
       - orchestration/EVOLUTION_RADAR.md
       - docs/human/EVOLUTION_RADAR.md
+
+  - id: "152"
+    path: tests/scenarios/152-technology-intelligence-expansion.md
+    coverage: lifecycle
+    evidence:
+      - config/evolution-sources.yaml
+      - config/evolution-analyzer.yaml
+      - scripts/evolution_radar.py
+      - scripts/evolution_analysis.py
+      - scripts/evolution_radar_rollup.py
+      - .github/workflows/evolution-radar.yml
+      - tests/evidence/evolution_radar_lifecycle.py
+      - tests/validation/evolution_radar_contracts.py
+      - orchestration/EVOLUTION_RADAR.md
+      - docs/human/EVOLUTION_RADAR.md
+

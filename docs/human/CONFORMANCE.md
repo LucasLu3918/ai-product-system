@@ -1056,3 +1056,12 @@ Scenario 151 驗證 quarterly Radar 只聚合上一季三個月份的有效 mont
 
 目前 Scenario Conformance baseline 為 **151 / 151 automated**：24 deterministic、73 lifecycle、54 agent_eval、0 manual、0 uncovered。
 
+
+
+## Scenario 152 — Technology Intelligence Expansion
+
+Scenario 152 使用 Evolution Radar lifecycle evidence 驗證多社群研究擴充仍然 bounded 且受治理：至少 6 個 configured community sources、5 個成功來源健康門檻、每來源最多 8 筆、全域 raw signals 最多 50，並以 round-robin 保留來源多樣性。
+
+Deterministic pre-analysis 進一步把 Human shortlist 限制為 12、semantic queue 限制為 10、actionable semantic recommendations 限制為 5；community-only evidence 不得直接產生 ADOPT，未進 semantic queue 的 signals 保持 ANALYSIS_PENDING。
+
+目前 Scenario Conformance baseline 為 **152 / 152 automated**：24 deterministic、74 lifecycle、54 agent_eval、0 manual、0 uncovered。

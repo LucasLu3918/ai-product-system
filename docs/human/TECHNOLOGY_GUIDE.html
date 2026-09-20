@@ -111,4 +111,12 @@
 <div class="note"><strong>Authority boundary：</strong>不需要外部 Agent/provider key、不新增 source network collection、不自動 ADOPT／改碼／開 implementation PR／merge／release。</div>
 </section>
 
+
+<section class="card s12" id="technology-intelligence-expansion">
+<h2>49. Technology Intelligence Expansion（技術情報擴充）</h2>
+<p>Weekly Evolution Radar 將研究廣度擴為多社群 + primary evidence 雙軌：6 個 community sources 作為 discovery pool，至少 5 個成功時為健康狀態；每來源最多 8 筆，全域最多 50 個 raw signals。</p>
+<table><tr><th>階段</th><th>上限</th><th>目的</th></tr><tr><td>Raw signals</td><td>50</td><td>廣泛發現，不讓單一來源壟斷</td></tr><tr><td>Human shortlist</td><td>12</td><td>deterministic review priority</td></tr><tr><td>Semantic candidates</td><td>10</td><td>控制 provider/token 成本；near-duplicate 不重複佔位</td></tr><tr><td>Actionable recommendations</td><td>5</td><td>限制 ASSESS / TRIAL / ADOPT 噪音</td></tr></table>
+<p>Signal 會保存 <code>source_ids</code> / <code>source_roles</code>：community-only = <code>DISCOVERY_ONLY</code>、primary-only = <code>PRIMARY_SOURCE</code>、兩者同時出現 = <code>PRIMARY_CORROBORATED</code>。</p>
+<div class="note"><strong>Evidence before adoption：</strong>community/forum 訊號可以觸發研究或 Trial，但沒有 primary-source corroboration 時 deterministic validator 不允許直接 <code>ADOPT</code>。未進 semantic queue 的 signal 繼續維持 <code>ANALYSIS_PENDING</code>。</div>
+</section>
 </body></html>
