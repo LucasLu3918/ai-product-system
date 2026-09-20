@@ -215,3 +215,8 @@ Repository Health / Architecture Drift is read-only validation evidence. It may 
 
 Quarterly Evolution Radar review is aggregation-only. It consumes durable monthly Issue evidence and MUST NOT initiate another public-source collection, provider/model execution, Trial workspace mutation or formal implementation branch. Its output remains evidence-only with protected-operation authority false.
 
+
+
+## Technology Intelligence boundary
+
+Evolution Radar v0.43 expands research discovery and bounded semantic selection only. Community collection, deterministic pre-analysis, scoped semantic analysis and primary-corroboration checks do not create an execution boundary and cannot mutate a workspace. Controlled Trial isolation continues to start only after an explicit Human TRIAL Decision and retains the existing worktree, path, diff, validation and publication restrictions.

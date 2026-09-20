@@ -6,7 +6,7 @@ Evolution Radar 是 AIPS 的**研究、語意分析與建議層**，目的在於
 
 ## Weekly Signal Scan
 
-GitHub Actions 每週執行 bounded scan：從 `config/evolution-sources.yaml` 讀取至少 5 個公開來源，每來源最多 5 筆；記錄來源、URL、日期與失敗來源；正規化 URL／標題、去重、建立 machine-readable evidence。若 repository 已安全配置 `OPENAI_API_KEY`，排程會以 pinned `openai/codex-action` 執行 read-only semantic analysis；沒有 credential、provider 執行失敗或輸出驗證失敗時，仍誠實保持 `ANALYSIS_PENDING`。最後才發布 `Evolution Radar [weekly] ...` GitHub Issue。
+GitHub Actions 每週執行 bounded Technology Intelligence scan：設定至少 6 個 community discovery sources，健康門檻為至少 5 個 community sources 成功提供 evidence；另保留 GitHub / Cloudflare / Google Developers / Hugging Face 等 primary/vendor sources。每來源最多 8 筆、全域 raw signal 最多 50 筆，global cap 以 deterministic round-robin 套用，避免前面的來源壟斷預算。系統記錄來源角色、URL、日期、失敗來源與 multi-source provenance，正規化／去重後建立 machine-readable evidence。
 
 來源失敗會被記錄，不會推測補齊；0 個 actionable recommendation 是合法結果。
 
@@ -82,7 +82,7 @@ Radar evidence / recommendation
 
 ## 手動執行
 
-`evolution-radar` workflow 支援 `weekly` / `monthly`；`evolution-decision` workflow 用來記錄 Human Candidate Decision。
+`evolution-radar` workflow 支援 `weekly` / `monthly` / `quarterly`；`evolution-decision` workflow 用來記錄 Human Candidate Decision。
 
 ## 文件同步
 
@@ -133,7 +133,6 @@ Human 仍可不經 Trial 直接做 ADOPT，但這種情況不會被標記為「T
 
 ## 目前仍不包含
 
-- Quarterly Evolution Review；
 - Trial PASS 後自動 Adopt；
 - 自動建立正式 implementation PR；
 - 自動 merge；
@@ -354,3 +353,19 @@ Evolution Radar 現在會在每季第一天建立上一季的決定性檢視。�
 
 季度 artifact 會綁定 `YYYY-QN`、該季三個月份、實際納入的 monthly evidence 數量，並依 signal fingerprint 累積 recurrence。為了避免把月份中的語意結論當成新的季度結論，quarterly recommendation 會重新保持 `ANALYSIS_PENDING`；它只提供 Human review evidence，不會自動 ADOPT、修改程式、建立 implementation PR、merge 或 release。
 
+
+
+## v0.43 Technology Intelligence Expansion
+
+Weekly Radar 現在採用 **50 → 12 → 10 → 5** 的 bounded funnel：
+
+1. 最多 50 個 raw signals：每來源最多 8 筆，並以 round-robin 保留來源多樣性。
+2. 最多 12 個 Human shortlist：由 credential-free deterministic pre-analysis 排序。
+3. 最多 10 個 semantic candidates：near-duplicate group 優先只佔一個 semantic slot。
+4. 最多 5 個 actionable semantic recommendations：`ASSESS / TRIAL / ADOPT` 合計不得超過五個。
+
+來源分成兩種角色：`community` 用於技術社群/論壇 discovery；`primary` 用於專案、供應商與官方技術 evidence。Exact fingerprint 去重會保留 `source_ids` / `source_roles`。只有 community evidence 時標記 `DISCOVERY_ONLY`；primary evidence 為 `PRIMARY_SOURCE`；同一 signal 同時被 community 與 primary 來源觀察到時為 `PRIMARY_CORROBORATED`。
+
+**論壇熱門度不是採用依據。** Semantic validator 會拒絕 explicit community-only signal 直接產生 `ADOPT`；必須先有 primary-source corroboration。沒有進入 semantic queue 的 signals 繼續保持 `ANALYSIS_PENDING`，不會因為預算限制被假裝分析完成。
+
+這個擴充不改變 Human Authority：Radar 仍只有 evidence / recommendation authority，沒有 implementation、PR、merge、release 或 publication authority。

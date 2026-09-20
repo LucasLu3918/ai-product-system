@@ -10,7 +10,7 @@ Human overview: `docs/human/EVOLUTION_RADAR_OVERVIEW.html`.
 
 ### Weekly Signal Scan
 
-Collect a bounded set of recent high-signal items from configured public technical sources. Use at least five configured sources when available; collect at most five items per source; record provenance/failures; normalize and deduplicate; zero recommendations is valid.
+Collect a bounded set of recent high-signal items from configured public technical sources. Configure at least six community discovery sources, treat five successful community sources as the healthy weekly floor, retain separate primary/vendor evidence sources, collect at most eight items per source, and apply a deterministic round-robin global cap of 50 raw signals. Record source roles/provenance/failures; normalize and deduplicate; zero recommendations is valid.
 
 ### Monthly Deep Review
 
@@ -306,3 +306,22 @@ The deterministic rollup binds the quarter and its three calendar months, aggreg
 
 This lane requires no external Agent/provider credential, introduces no additional source-network collection, and grants no code-change, implementation-PR, merge, release or publication authority.
 
+
+
+## Technology Intelligence Expansion
+
+Weekly discovery uses two source roles: `community` for technical-community discovery evidence and `primary` for direct vendor/project evidence. Deduplication MUST preserve `source_ids`, `source_roles` and verification status. A signal is `DISCOVERY_ONLY` when only community evidence exists, `PRIMARY_SOURCE` when primary evidence exists alone, and `PRIMARY_CORROBORATED` when both roles support the exact fingerprint.
+
+The research funnel is deterministic and bounded:
+
+~~~text
+per-source candidates <= 8
+→ round-robin global raw signals <= 50
+→ deterministic Human shortlist <= 12
+→ near-duplicate-aware semantic queue <= 10
+→ actionable semantic recommendations <= 5
+~~~
+
+Signals outside the semantic queue remain `ANALYSIS_PENDING`. Partial semantic analysis is explicitly reported as PARTIAL coverage and is applied only to the selected fingerprints. A semantic provider MUST NOT produce `ADOPT` for a signal whose explicit provenance contains `community` but no `primary` role. Forum/community popularity is discovery evidence, never sufficient adoption evidence.
+
+Source failures are durable evidence. Falling below the healthy community floor produces `DEGRADED` coverage but MUST NOT fabricate missing signals or silently substitute unconfigured sources.
