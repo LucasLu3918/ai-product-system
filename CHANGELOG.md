@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.35.0
+
+### Optional External Provider Credential Policy
+
+- Reclassify external Agent/provider credentials as optional capability inputs rather than baseline AIPS prerequisites.
+- Keep the trusted-main Gemini live provider-session verifier/workflow available as an opt-in enhancement, but change missing `GEMINI_API_KEY` behavior from a blocking credential state to truthful `SKIPPED_NOT_CONFIGURED` / `NOT_CONFIGURED_BY_POLICY`.
+- When no credential is configured, report `provider_verification_enabled=false` and `required_for_release=false`; skip provider-specific dependency installation, Gemini CLI provider verification, real provider/model inference and exact-provider candidate assertion.
+- Preserve truth boundaries: `live_provider_session_verified=false` and `provider_model_execution_verified=false` remain false until real provider evidence exists. No fake-response/runtime evidence is promoted to provider verification.
+- Preserve the already verified credential-free Gemini CLI runtime path from v0.34.0: real CLI binary, built-in tools, extension loading and AfterTool capture remain independent of provider credentials.
+- Do not introduce replacement authentication. OAuth, Vertex AI credentials, Google Service Account, GitHub OIDC / Workload Identity Federation and other external login flows remain disabled unless a later Human Decision explicitly adopts them.
+- Keep the provider workflow off `pull_request`, maintain `contents: read`, never persist credential values, and retain exact-SHA/provider PASS requirements when a credential is explicitly configured.
+- Record the Human provider-credential policy in `ISSUE_79_PROVIDER_CREDENTIAL_POLICY_DECISION.yaml` and update durable provider-session truth to `NOT_CONFIGURED_BY_POLICY`.
+- Add Scenario 144 to deterministically lock the optional-credential contract and raise Scenario Conformance to 144/144 automated: 23 deterministic + 67 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- PR #106 exact head `af21622ba76ecba2dce4408dbdad0b63c4cb419c` passed validate Run #1110; it was squash-merged as `b50f3c64e8548e173f867bea6ae069892c6169bd`; protected-main validate Run #1111 succeeded.
+- Gemini provider workflow Run #2 on `b50f3c64e8548e173f867bea6ae069892c6169bd` succeeded through the disabled path with `credential_present=false`, `provider_verification_enabled=false`, `required_for_release=false`, and live provider/model verification false.
+- PR #107 exact final head `a3d395505dc5899ae464b008989dedbf59150016` passed validate Run #1114; it was squash-merged as `c8c5d5ea90adc35322c63583d7e033e5581c7c54`; protected-main validate Run #1115 succeeded.
+- Roles remain 12 and Skills remain 25.
+- Constitution impact: NO. Protected Human Authority, merge/release/publication authority, runtime enforcement and automatic remediation boundaries remain unchanged.
+- Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
+
 ## 0.34.0
 
 ### Gemini CLI Exact-Candidate Real-Runtime Verification
