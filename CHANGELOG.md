@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.41.0
+
+### Repository Health Scheduled Maintenance Observation
+
+- Add a dedicated credential-free `.github/workflows/repository-health.yml` maintenance lane with weekly Monday 10:30 Asia/Taipei scheduling and manual dispatch.
+- Audit the exact checked-out default-branch revision and always retain `repository-health-report.json` as a 30-day GitHub Actions artifact plus a concise Job Summary.
+- Keep PASS observational only: no drift Issue is created when the deterministic report passes.
+- On `DRIFT_DETECTED`, build a Human-review Issue from bound drift evidence, deduplicate open notifications by deterministic evidence fingerprint, and keep the workflow visibly failed until the drift is reviewed.
+- Preserve detector truth boundaries: no `OPENAI_API_KEY`, `GEMINI_API_KEY`, or other external Agent/provider credential is required to compute Repository Health.
+- Preserve authority boundaries: workflow permissions are `contents: read` plus `issues: write` for notification only; no automatic remediation, repository-content write, implementation PR, merge, release, or publication authority.
+- Bind the maintenance workflow into the Repository Health config, explicit Architecture Surface Inventory, Human/Agent maintenance documentation and validation contracts.
+- Add Scenario 150 and raise Scenario Conformance to 150/150 automated: 24 deterministic + 72 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- Initial feature head `2f9016d7c3bd80b0bb1bd8014a21d12695c1358d` correctly failed validate Run #1143 because Documentation Consistency required Technology Guide plus Human/Agent Conformance synchronization.
+- Corrected feature final head `3685f21564a0fb537c69cb033fd5973951da4c5c` passed exact-head validate Run #1144.
+- PR #119 was merged to main as `c2679f9d8d8d0725f28d8a0a771f4fdf61e08e72`; protected-main validate Run #1145 succeeded.
+- No new Role or Skill. Constitution impact: NO.
+- Release model remains `VERSION + CHANGELOG + protected-main validation`; no GitHub Release object or tag is introduced.
+
 ## 0.40.0
 
 ### Repository Health Architecture Surface Inventory + CI Evidence
