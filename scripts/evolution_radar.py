@@ -444,8 +444,8 @@ def validate_evidence(doc: dict[str, Any]) -> list[str]:
     if doc.get("version") != 1:
         errors.append("version must be 1")
     mode = (doc.get("run") or {}).get("mode")
-    if mode not in {"weekly", "monthly"}:
-        errors.append("run.mode must be weekly or monthly")
+    if mode not in {"weekly", "monthly", "quarterly"}:
+        errors.append("run.mode must be weekly, monthly or quarterly")
     analyzer = (doc.get("run") or {}).get("analyzer") or {}
     if analyzer.get("status") not in {"available", "unavailable"}:
         errors.append("run.analyzer.status must be available or unavailable")

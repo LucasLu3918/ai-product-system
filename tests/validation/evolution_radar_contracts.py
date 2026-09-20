@@ -111,9 +111,26 @@ if workflow_path.exists():
         "scripts/evolution_analysis.py handoff",
         "--handoff evolution-analysis-handoff.md",
         "selected=\"handoff\"",
+        "quarterly",
+        "0 2 1 1,4,7,10 *",
+        "quarterly-rollup",
     ):
         if contract not in workflow_text:
             errors.append(f"Evolution Radar workflow missing provider-neutral contract: {contract}")
+
+rollup_script = ROOT / "scripts/evolution_radar_rollup.py"
+if rollup_script.exists():
+    rollup_text = rollup_script.read_text(encoding="utf-8")
+    for contract in (
+        "def quarterly_rollup(",
+        "def quarter_months(",
+        'mode": "quarterly"',
+        "monthly_evidence_count",
+        "months_reviewed",
+        'state": "ANALYSIS_PENDING"',
+    ):
+        if contract not in rollup_text:
+            errors.append(f"Evolution Radar quarterly deterministic review contract missing: {contract}")
 
 analysis_script = ROOT / "scripts/evolution_analysis.py"
 if analysis_script.exists():

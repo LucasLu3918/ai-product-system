@@ -144,6 +144,71 @@ def monthly_rollup(
     }
 
 
+
+def quarter_months(period: str) -> list[str]:
+    if not (len(period) == 7 and period[:4].isdigit() and period[4:6] == "-Q" and period[6] in "1234"):
+        raise ValueError("period must be YYYY-QN")
+    year = int(period[:4])
+    quarter = int(period[6])
+    start = 1 + (quarter - 1) * 3
+    return [f"{year:04d}-{month:02d}" for month in range(start, start + 3)]
+
+
+def quarterly_rollup(
+    issues: list[dict[str, Any]],
+    config: dict[str, Any],
+    *,
+    period: str,
+) -> dict[str, Any]:
+    errors = validate_config(config)
+    if errors:
+        raise ValueError("; ".join(errors))
+    months = quarter_months(period)
+
+    monthly_docs: list[dict[str, Any]] = []
+    for issue in issues:
+        if not str(issue.get("title") or "").startswith("Evolution Radar [monthly]"):
+            continue
+        doc = extract_evidence(str(issue.get("body") or ""))
+        run = (doc or {}).get("run") or {}
+        if doc and run.get("mode") == "monthly" and run.get("period") in months:
+            monthly_docs.append(doc)
+
+    signals = aggregate_signals(monthly_docs)
+    recommendations = pending_recommendations(signals)
+    configured = [s["id"] for s in config.get("sources") or [] if s.get("enabled", True)]
+    attempted = sorted({x for d in monthly_docs for x in ((d.get("sources") or {}).get("attempted") or [])})
+    failures = [x for d in monthly_docs for x in ((d.get("sources") or {}).get("failures") or [])]
+    return {
+        "version": 1,
+        "run": {
+            "mode": "quarterly",
+            "generated_at": None,
+            "repository_revision": None,
+            "period": period,
+            "months_reviewed": months,
+            "monthly_evidence_count": len(monthly_docs),
+            "analyzer": {"status": "unavailable", "provider": None, "model": None},
+        },
+        "sources": {"configured": configured, "attempted": attempted, "failures": failures},
+        "signals": signals,
+        "recommendations": recommendations,
+        "summary": {
+            "signal_count": sum(int((d.get("summary") or {}).get("signal_count") or 0) for d in monthly_docs),
+            "deduplicated_count": len(signals),
+            "recommendation_count": len(recommendations),
+            "actionable_count": 0,
+            "zero_recommendations_valid": True,
+        },
+        "authority": {
+            "code_change_authorized": False,
+            "branch_or_pr_authorized": False,
+            "merge_authorized": False,
+            "release_authorized": False,
+            "human_decision_required": True,
+        },
+    }
+
 def issue_markdown(doc: dict[str, Any], handoff_text: str | None = None, preanalysis_text: str | None = None) -> str:
     summary = doc.get("summary") or {}
     sources = doc.get("sources") or {}
@@ -161,6 +226,11 @@ def issue_markdown(doc: dict[str, Any], handoff_text: str | None = None, preanal
         if run.get("period"):
             lines.append(f"- Review period: {run.get('period')}")
         lines.append(f"- Weekly evidence bundles reviewed: {run.get('weekly_evidence_count', 0)}")
+    if mode == "quarterly":
+        if run.get("period"):
+            lines.append(f"- Review quarter: {run.get('period')}")
+        lines.append(f"- Monthly evidence bundles reviewed: {run.get('monthly_evidence_count', 0)}")
+        lines.append(f"- Calendar months reviewed: {', '.join(run.get('months_reviewed') or [])}")
     lines += [
         "- Semantic assessment: `ANALYSIS_PENDING` until a validated analyzer result is bound",
         "",
@@ -190,6 +260,11 @@ def main() -> int:
     rollup.add_argument("--config", required=True)
     rollup.add_argument("--period")
     rollup.add_argument("--output", required=True)
+    quarterly = sub.add_parser("quarterly-rollup")
+    quarterly.add_argument("--issues-json", required=True)
+    quarterly.add_argument("--config", required=True)
+    quarterly.add_argument("--period", required=True)
+    quarterly.add_argument("--output", required=True)
     issue = sub.add_parser("issue-body")
     issue.add_argument("evidence")
     issue.add_argument("--handoff")
@@ -202,6 +277,14 @@ def main() -> int:
         issues = flatten_issue_pages(raw_issues)
         config = yaml.safe_load(Path(args.config).read_text(encoding="utf-8")) or {}
         doc = monthly_rollup(issues, config, period=args.period)
+        Path(args.output).write_text(yaml.safe_dump(doc, sort_keys=False, allow_unicode=True), encoding="utf-8")
+        return 0
+
+    if args.command == "quarterly-rollup":
+        raw_issues = json.loads(Path(args.issues_json).read_text(encoding="utf-8"))
+        issues = flatten_issue_pages(raw_issues)
+        config = yaml.safe_load(Path(args.config).read_text(encoding="utf-8")) or {}
+        doc = quarterly_rollup(issues, config, period=args.period)
         Path(args.output).write_text(yaml.safe_dump(doc, sort_keys=False, allow_unicode=True), encoding="utf-8")
         return 0
 

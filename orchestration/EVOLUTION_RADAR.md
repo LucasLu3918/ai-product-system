@@ -16,7 +16,7 @@ Collect a bounded set of recent high-signal items from configured public technic
 
 Review durable weekly evidence for the previous calendar month, aggregate recurrence, distinguish repeated popularity from material novelty, and compare against current AIPS before recommending action.
 
-Quarterly Evolution Review remains outside current scope.
+Quarterly Evolution Review is a deterministic credential-free rollup over durable monthly evidence.
 
 ## Candidate states
 
@@ -156,7 +156,6 @@ Relevant implementation changes must keep `docs/human/EVOLUTION_RADAR.md`, `docs
 
 Still not automatic:
 
-- Quarterly Evolution Review;
 - automatic adoption after a Trial PASS;
 - formal implementation PR creation;
 - merge;
@@ -298,3 +297,12 @@ The artifact is content-deterministic and bound to the exact evidence digest, re
 ## Capability Map repository-health reconciliation
 
 The Evolution Capability Map includes integration-gate and repository-health-architecture-drift. Repository Health verifies source-controlled architecture consistency but does not mutate Radar semantic state, recommendation state, Human decisions or implementation authority.
+
+## Quarterly Deterministic Review
+
+Quarterly Review reuses durable monthly Radar evidence and does not perform a second external source collection. On the first day of January, April, July and October, the scheduled workflow reviews the previous calendar quarter.
+
+The deterministic rollup binds the quarter and its three calendar months, aggregates recurrence by signal fingerprint, records the number of valid monthly evidence bundles and emits a new Human-review Issue. Monthly semantic recommendation states are not promoted: quarterly recommendations return to `ANALYSIS_PENDING` until a validated semantic result is separately bound.
+
+This lane requires no external Agent/provider credential, introduces no additional source-network collection, and grants no code-change, implementation-PR, merge, release or publication authority.
+

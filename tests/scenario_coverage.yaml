@@ -1110,3 +1110,15 @@ scenarios:
       - tests/validation/repository_health_contracts.py
       - orchestration/REPOSITORY_HEALTH.md
       - docs/human/MAINTENANCE.md
+
+  - id: "151"
+    path: tests/scenarios/151-evolution-radar-quarterly-deterministic-review.md
+    coverage: lifecycle
+    evidence:
+      - scripts/evolution_radar.py
+      - scripts/evolution_radar_rollup.py
+      - .github/workflows/evolution-radar.yml
+      - tests/evidence/evolution_radar_lifecycle.py
+      - tests/validation/evolution_radar_contracts.py
+      - orchestration/EVOLUTION_RADAR.md
+      - docs/human/EVOLUTION_RADAR.md

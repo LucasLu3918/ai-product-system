@@ -1049,3 +1049,10 @@ Scenario 149 把 Repository Health 的「重大架構 surface」改成顯式、�
 Scenario 150 驗證獨立的 Repository Health maintenance workflow：每週／手動執行、保存 deterministic JSON evidence、PASS 不建立 Issue、DRIFT_DETECTED 依 evidence fingerprint 去重通知並維持 workflow failure。此流程只有 Detect + Evidence + Human Review，沒有 contents-write、自動修復、implementation PR、merge 或 release authority。
 
 目前 Scenario Conformance baseline 為 150 / 150 automated：24 deterministic、72 lifecycle、54 agent_eval、0 manual、0 uncovered。
+
+## Scenario 151 — Evolution Radar 季度決定性檢視
+
+Scenario 151 驗證 quarterly Radar 只聚合上一季三個月份的有效 monthly durable evidence，不重新抓取外部來源。Quarterly artifact 必須綁定 quarter/months、累積 recurrence，並把 recommendation 維持 `ANALYSIS_PENDING`，不得把 monthly semantic state 自動提升成季度採用結論。
+
+目前 Scenario Conformance baseline 為 **151 / 151 automated**：24 deterministic、73 lifecycle、54 agent_eval、0 manual、0 uncovered。
+

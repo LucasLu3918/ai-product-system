@@ -482,3 +482,12 @@ Current automated inventory after Scenario 149:
 Scenario 150 covers the dedicated Repository Health maintenance workflow. Weekly/manual observation must retain deterministic JSON evidence, publish a Job Summary, create no Issue on PASS, deduplicate DRIFT_DETECTED notification by evidence fingerprint, and leave drift visible as workflow failure. The lane remains Detect + Evidence + Human Review only with no contents-write, remediation, implementation-PR, merge or release authority.
 
 Released Scenario Conformance baseline: 150 / 150 automated = 24 deterministic + 72 lifecycle + 54 agent_eval; manual 0; uncovered 0.
+
+## Scenario 151 — Evolution Radar quarterly deterministic review
+
+Scenario 151 is lifecycle-covered by `tests/evidence/evolution_radar_lifecycle.py`. It proves that quarterly Radar review consumes only valid monthly durable evidence for the requested calendar quarter, binds the exact three months, accumulates recurrence deterministically, and resets quarterly recommendations to `ANALYSIS_PENDING` rather than promoting monthly semantic states.
+
+The quarterly lane performs no additional source collection and requires no external Agent/provider credential. Protected-operation authority remains false.
+
+Released Scenario Conformance baseline: 151 / 151 automated = 24 deterministic + 73 lifecycle + 54 agent_eval; manual 0; uncovered 0.
+

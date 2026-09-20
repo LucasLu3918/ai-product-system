@@ -104,4 +104,11 @@
   <h2>Repository Health 定期維護觀測</h2>
   <p><code>.github/workflows/repository-health.yml</code> 會每週與手動執行決定性的 Repository Health audit，保存 JSON artifact 與 Job Summary。只有偵測到 drift 時才依 evidence fingerprint 建立去重 Issue，並讓 workflow 維持失敗狀態供 Human review；它不會自動修改程式碼、建立 implementation PR、merge 或 release，也不需要外部 Agent/provider key。</p>
 </section>
+<section class="card s12" id="evolution-quarterly-deterministic-review">
+<h2>48. Evolution Radar Quarterly Deterministic Review</h2>
+<p>Scenario 151 新增 credential-free 季度聚合層：排程在每年 1／4／7／10 月第一天，只讀取上一季已存在的 monthly durable evidence，不重新執行外部來源抓取。</p>
+<p>季度結果綁定 <code>YYYY-QN</code> 與三個月份，依 signal fingerprint 累積 recurrence；monthly semantic state 不會被直接提升，quarterly recommendations 一律重新維持 <code>ANALYSIS_PENDING</code>，等待獨立驗證的 semantic result。</p>
+<div class="note"><strong>Authority boundary：</strong>不需要外部 Agent/provider key、不新增 source network collection、不自動 ADOPT／改碼／開 implementation PR／merge／release。</div>
+</section>
+
 </body></html>
