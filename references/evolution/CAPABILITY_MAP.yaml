@@ -27,5 +27,5 @@ capabilities:
   - {id: external-credential-dependency-guard, name_en: External Credential Dependency Guard, name_zh: 外部憑證依賴防護, docs: [orchestration/EXTERNAL_CREDENTIAL_DEPENDENCY_GUARD.md, orchestration/SECRET_HANDLING.md, docs/human/SECURITY_ASSURANCE.md]}
   - {id: evolution-local-deterministic-preanalysis, name_en: Evolution Local Deterministic Pre-analysis, name_zh: 演化雷達本機決定性預分析, docs: [orchestration/EVOLUTION_RADAR.md, docs/human/EVOLUTION_RADAR.md, docs/human/EVOLUTION_RADAR_OVERVIEW.html]}
 
-- {id: integration-gate, name_en: Exact-Candidate Integration Gate, name_zh: 精確候選整合閘門, docs: [orchestration/INTEGRATION_GATE.md, docs/human/ARCHITECTURE_OVERVIEW.md]}
+  - {id: integration-gate, name_en: Exact-Candidate Integration Gate, name_zh: 精確候選整合閘門, docs: [orchestration/INTEGRATION_GATE.md, docs/human/ARCHITECTURE_OVERVIEW.md]}
   - {id: repository-health-architecture-drift, name_en: Repository Health / Architecture Drift, name_zh: 儲存庫健康與架構漂移偵測, docs: [orchestration/REPOSITORY_HEALTH.md, docs/ARCHITECTURE.md, docs/human/MAINTENANCE.md]}

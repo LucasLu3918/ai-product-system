@@ -1064,7 +1064,7 @@ scenarios:
       - references/evolution/CAPABILITY_MAP.yaml
       - tests/validate_repository.py
 
-- id: "147"
+  - id: "147"
     path: tests/scenarios/147-repository-health-architecture-drift.md
     coverage: lifecycle
     evidence:
