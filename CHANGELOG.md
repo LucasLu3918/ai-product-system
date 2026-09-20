@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.39.0
+
+### Repository Health Deterministic Evidence Binding
+
+- Extend the credential-free Repository Health / Architecture Drift detector with a complete deterministic input manifest for the repository surfaces it actually evaluates.
+- Bind every existing input file by SHA-256 while keeping missing bound inputs explicit instead of silently omitting them.
+- Add truthful Git workspace state to Repository Health evidence: `EXACT_REVISION`, `DIRTY_WORKTREE`, or `NO_GIT`.
+- Keep dirty workspace state as evidence metadata rather than architecture drift by itself; architecture findings remain tied to configured deterministic contracts.
+- Add a reproducible evidence fingerprint derived from repository revision, workspace state, bound input manifest, and drift findings so equivalent evidence can be compared without semantic inference.
+- Preserve the existing Repository Health detector and Scenario Conformance semantics rather than introducing another checker or evidence system.
+- Require no `OPENAI_API_KEY`, `GEMINI_API_KEY`, other external Agent/provider credential, or external network request.
+- Preserve Detect + Evidence + Human Review only: no automatic remediation, code-change, branch/PR, merge, release, publication, runtime-enforcement, or credential-acquisition authority.
+- Add Scenario 148 and raise Scenario Conformance to 148/148 automated: 24 deterministic + 70 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- Feature PR #115 final head `f9ae095dc9f6953be8cab7b711fdd89059c1145e` passed exact-head validate Run #1134.
+- PR #115 was merged to main as `4bb2168a0a8250eabe4d41afc5240ac9461551b6`; protected-main validate Run #1135 succeeded.
+- Roles remain 12 and Skills remain 25.
+- Constitution impact: NO. Protected Human Authority and existing merge/release/publication boundaries remain unchanged.
+- Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
+
 ## 0.38.0
 
 ### Repository Health / Architecture Drift Deterministic Detection
