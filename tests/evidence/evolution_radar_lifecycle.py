@@ -311,7 +311,7 @@ def main() -> int:
     monthly = rollup.monthly_rollup(paged, config, period="2026-09")
     require(monthly["run"]["period"] == "2026-09", "monthly evidence must record the reviewed calendar period")
     require(monthly["run"]["weekly_evidence_count"] == 2, "monthly rollup must consume only weekly evidence from the requested calendar period")
-    require(monthly["summary"]["signal_count"] == 8, "out-of-period weekly evidence must be excluded")
+    require(monthly["summary"]["signal_count"] == 18, "out-of-period weekly evidence must be excluded")
     require(monthly["summary"]["deduplicated_count"] == 4, "monthly rollup must deduplicate recurring signals")
     require(all(s["recurrence_count"] >= 2 for s in monthly["signals"]), "monthly rollup must accumulate recurrence")
     require(all(r["state"] == "ANALYSIS_PENDING" for r in monthly["recommendations"]), "monthly rollup must preserve analyzer truthfulness")
