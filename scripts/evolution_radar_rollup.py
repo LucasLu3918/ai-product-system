@@ -10,7 +10,7 @@ from typing import Any
 
 import yaml
 
-from evolution_radar import validate_config, validate_evidence
+from evolution_radar import evidence_quality_metadata, validate_config, validate_evidence
 
 EVIDENCE_START = "<!-- AIPS_EVOLUTION_EVIDENCE_START -->"
 EVIDENCE_END = "<!-- AIPS_EVOLUTION_EVIDENCE_END -->"
@@ -70,11 +70,36 @@ def aggregate_signals(docs: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 item["duplicate_of"] = None
                 item["source_ids"] = sorted(set(str(x) for x in source_ids if x))
                 item["source_roles"] = sorted(set(str(x) for x in source_roles if x))
+                provenance = signal.get("source_provenance") or [
+                    {"source_id": sid, "role": str(signal.get("source_role") or source_roles[0] if source_roles else "legacy")}
+                    for sid in source_ids
+                ]
+                item["source_provenance"] = [
+                    {"source_id": str(value.get("source_id") or ""), "role": str(value.get("role") or "legacy")}
+                    for value in provenance
+                    if isinstance(value, dict) and str(value.get("source_id") or "")
+                ]
                 seen[fp] = item
             else:
                 seen[fp]["recurrence_count"] += int(signal.get("recurrence_count") or 1)
                 seen[fp]["source_ids"] = sorted(set(seen[fp].get("source_ids") or []) | set(str(x) for x in source_ids if x))
                 seen[fp]["source_roles"] = sorted(set(seen[fp].get("source_roles") or []) | set(str(x) for x in source_roles if x))
+                existing_provenance = {
+                    (str(value.get("source_id") or ""), str(value.get("role") or "legacy"))
+                    for value in (seen[fp].get("source_provenance") or [])
+                    if isinstance(value, dict) and str(value.get("source_id") or "")
+                }
+                incoming_provenance = signal.get("source_provenance") or [
+                    {"source_id": sid, "role": str(signal.get("source_role") or source_roles[0] if source_roles else "legacy")}
+                    for sid in source_ids
+                ]
+                for value in incoming_provenance:
+                    if isinstance(value, dict) and str(value.get("source_id") or ""):
+                        existing_provenance.add((str(value["source_id"]), str(value.get("role") or "legacy")))
+                seen[fp]["source_provenance"] = [
+                    {"source_id": source_id, "role": role}
+                    for source_id, role in sorted(existing_provenance)
+                ]
 
     for item in seen.values():
         roles = set(item.get("source_roles") or ["legacy"])
@@ -86,6 +111,15 @@ def aggregate_signals(docs: list[dict[str, Any]]) -> list[dict[str, Any]]:
             item["verification_status"] = "DISCOVERY_ONLY"
         else:
             item["verification_status"] = "LEGACY_UNVERIFIED"
+        provenance = item.get("source_provenance") or [
+            {"source_id": sid, "role": next(iter(roles), "legacy")}
+            for sid in item.get("source_ids") or []
+        ]
+        item["source_provenance"] = sorted(
+            provenance,
+            key=lambda value: (str(value.get("source_id") or ""), str(value.get("role") or "")),
+        )
+        item.update(evidence_quality_metadata(item["source_provenance"]))
     return list(seen.values())
 
 def pending_recommendations(signals: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -149,6 +183,7 @@ def monthly_rollup(
         "recommendations": recommendations,
         "summary": {
             "signal_count": sum(len(d.get("signals") or []) for d in weekly_docs),
+            "adopt_minimum_evidence_level": int((config.get("policy") or {}).get("evidence_quality", {}).get("adopt_minimum_level", 2)),
             "deduplicated_count": len(signals),
             "recommendation_count": len(recommendations),
             "actionable_count": 0,
@@ -215,6 +250,7 @@ def quarterly_rollup(
         "recommendations": recommendations,
         "summary": {
             "signal_count": sum(int((d.get("summary") or {}).get("signal_count") or 0) for d in monthly_docs),
+            "adopt_minimum_evidence_level": int((config.get("policy") or {}).get("evidence_quality", {}).get("adopt_minimum_level", 2)),
             "deduplicated_count": len(signals),
             "recommendation_count": len(recommendations),
             "actionable_count": 0,
