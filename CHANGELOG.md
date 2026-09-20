@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.37.0
+
+### Evolution Radar Local Deterministic Pre-analysis
+
+- Add a credential-free deterministic first-pass Evolution Radar triage lane before any optional semantic provider.
+- Extend `scripts/evolution_analysis.py` with source-controlled local preanalysis that uses only already-collected signal titles/metadata, recurrence evidence, `config/evolution-analyzer.yaml`, and the current Capability Map.
+- Add deterministic topic-category hints, exact existing-capability hints, and bounded token/Jaccard near-duplicate title clustering.
+- Add HIGH / MEDIUM / LOW Human review priority derived only from declared rule weights, capability matches, and recurrence metadata. Review priority is reading order only; it is not a COVERED/HOLD/ASSESS/TRIAL/ADOPT recommendation.
+- Preserve semantic truth boundaries: `semantic_suitability_inferred=false`, `recommendation_state_mutated=false`, and all semantic recommendations remain `ANALYSIS_PENDING` until a separately validated semantic analyzer result is bound.
+- Require no `OPENAI_API_KEY`, `GEMINI_API_KEY`, or other external Agent/provider credential, and perform no additional network request beyond the existing Radar evidence collection step.
+- Bind every preanalysis artifact to the exact repository revision, evidence digest, local-preanalysis config digest, and Capability Map digest.
+- Embed the deterministic preanalysis artifact into the Human review Issue alongside the existing provider-neutral semantic-analysis handoff.
+- Add executable lifecycle evidence proving identical inputs produce identical output, near-duplicate clustering is deterministic, capability hints reference only registered capabilities, tampered semantic-suitability claims are rejected, and credential-required local configuration fails validation.
+- Add Scenario 146 and raise Scenario Conformance to 146/146 automated: 24 deterministic + 68 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- Initial exact-head Run #1123 correctly rejected an unquoted YAML `on` stopword that PyYAML parsed as boolean; the configuration was corrected rather than weakening validation.
+- Feature PR #111 exact final head `630df595e5e979b74ca793e1d1eccfb14eeaf699` passed exact-head validate Run #1124.
+- Feature exact-head changed-files hash: `f20945a9668eeaad41cabca4f6b44fe420b96ae171858138b126480daa6b6160`; Core Matrix hash: `56804b920e106af9bcfeaebcc2a5c6628c9cda2837138ca5840b152895c5f258`; candidate fingerprint: `cbe0da59d9cd35faebc6ae24c8fb63718be77ec106a3118e425cdda7dd6646af`.
+- PR #111 was squash-merged to main as `68bc930233a9d6b61c50d78b6b002cd0d9b2584c`; protected-main validate Run #1125 succeeded.
+- Roles remain 12 and Skills remain 25.
+- Constitution impact: NO. Protected Human Authority, merge/release/publication authority, runtime enforcement, automatic remediation, and credential policy remain unchanged.
+- Real Gemini provider/model verification remains optional and unexecuted; this release adds no replacement authentication flow.
+- Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
+
 ## 0.36.0
 
 ### External Credential Dependency Guard
