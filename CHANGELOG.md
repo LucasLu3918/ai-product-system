@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.44.0
+
+### Evolution Evidence Quality & Primary-source Corroboration
+
+- Add deterministic 0–4 evidence-quality levels derived from exact multi-source provenance.
+- Distinguish single-community discovery, multi-community recurrence, primary evidence, primary+community corroboration, and multi-primary corroboration.
+- Require evidence level >= 2 before a semantic provider may emit advisory ADOPT.
+- Preserve evidence level, strength, primary/community source counts, and exact provenance through weekly, monthly, and quarterly evidence.
+- Add a bounded evidence-quality bonus to credential-free deterministic pre-analysis without turning evidence strength into a suitability decision.
+- Prevent semantic providers from inventing or upgrading deterministic evidence metadata.
+- Synchronize Human/Agent Evolution Radar and Technology Guide documentation.
+- Add Scenario 153 and raise Scenario Conformance to 153/153 automated.
+- Initial validation correctly exposed a stale ADOPT fixture using level-0 evidence plus required documentation synchronization; both were corrected without weakening the evidence floor.
+- Feature PR #125 exact final head `002a3215b7c5f503524da48d4a8d909181eff9e2` passed validate Run #1163.
+- PR #125 was squash-merged to main as `58dcc4a82a2c5438e390fe1dc7668f00cfccc620`; protected-main validate Run #1164 succeeded.
+- No new Role or Skill. Constitution impact: NO.
+- Release model remains `VERSION + CHANGELOG + protected-main validation`; no GitHub Release object or tag is introduced.
+
 ## 0.43.0
 
 ### Technology Intelligence Expansion
