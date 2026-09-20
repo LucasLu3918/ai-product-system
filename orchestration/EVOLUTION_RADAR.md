@@ -272,3 +272,25 @@ External Agent/provider credential references are now centrally inventoried by `
 Evolution Radar remains provider-neutral when no external semantic credential is configured. The deterministic research/evidence package and handoff continue without a provider key; missing optional credentials cannot become baseline/release blockers.
 
 The guard also prevents new credential consumers from bypassing review or exposing secrets to pull-request code.
+
+## Deterministic local pre-analysis
+
+After raw weekly/monthly evidence is validated, AIPS runs a credential-free deterministic pre-analysis before any optional semantic provider.
+
+The pre-analysis may only use already-collected signal title/metadata, source-controlled local rules, recurrence metadata and the current Capability Map. It performs no additional external network request.
+
+Allowed output:
+
+- deterministic category hints;
+- existing-capability hints;
+- bounded title-token near-duplicate clusters;
+- HIGH / MEDIUM / LOW Human review priority.
+
+Forbidden interpretation:
+
+- review priority is not suitability;
+- no COVERED / HOLD / ASSESS / TRIAL / ADOPT state may be inferred;
+- semantic recommendation state remains `ANALYSIS_PENDING`;
+- no Human Decision or implementation/publication authority is created.
+
+The artifact is content-deterministic and bound to the exact evidence digest, repository revision, local-preanalysis configuration digest and Capability Map digest. Semantic analysis remains a separate optional layer.

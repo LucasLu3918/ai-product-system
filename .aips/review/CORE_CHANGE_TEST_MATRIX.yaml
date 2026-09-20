@@ -1,68 +1,54 @@
 version: 1
 candidate:
-  base_sha: fa341d69f5c6c501350168af30ac46b36703b606
-  changed_files_hash: 08b6c8d087c4b4bdabaabc5d6241d9156520a1738f5d3d53e6778ee5b57a00ea
+  base_sha: 7cf7d36b47ae196a896c8ac8f93c6eab0383824f
+  changed_files_hash: f20945a9668eeaad41cabca4f6b44fe420b96ae171858138b126480daa6b6160
 change:
-  id: external-credential-dependency-guard
-  summary: Add a deterministic repository-wide guard so external Agent/provider API keys remain optional, non-release-blocking dependencies, while narrowing secret exposure to explicit credential-dependent lanes.
+  id: evolution-local-deterministic-preanalysis
+  summary: Add a credential-free deterministic first-pass Evolution Radar triage lane for near-duplicate grouping, topic/capability hints, and Human review priority without inferring semantic suitability.
   boundary:
-    - external-credential-policy
-    - secret-handling
-    - github-actions
-    - retrieval-trial
     - evolution-radar
-    - repository-validation
-    - conformance
+    - deterministic-preanalysis
+    - human-review-evidence
+    - provider-neutrality
+    - scenario-conformance
     - documentation
 matrix:
-  - boundary: external-credential-policy
-    reason: New repository-wide registry and deterministic audit must fail on undeclared credentials/consumers and preserve credential-free baseline/release behavior.
+  - boundary: deterministic-preanalysis
+    reason: The local lane must be reproducible, credential-free, network-free, bound to exact evidence/config/capability inputs, and incapable of emitting semantic adoption states.
     checks:
-      static_lint: {applicable: true, evidence: "external credential guard script/config are imported by repository validation"}
-      unit: {applicable: true, evidence: "lifecycle evidence covers undeclared credential, PR exposure, and required-baseline rejection"}
-      integration: {applicable: true, evidence: "repository validation runs the guard against the full current repository"}
-      contract: {applicable: true, evidence: "Scenario 145 and external_credential_guard_contracts enforce optional credential registry semantics"}
-      e2e: {applicable: false, na_reason: "The guard intentionally does not read real secret values or call external providers"}
-      security: {applicable: true, evidence: "external secrets cannot be exposed to pull-request workflows and credential values are never read"}
-      migration_recovery: {applicable: true, evidence: "existing GEMINI_API_KEY and OPENAI_API_KEY consumers are explicitly inventoried; undeclared future consumers fail closed"}
-      cli_harness: {applicable: false, na_reason: "No Harness runtime routing behavior changes"}
-      docs_schema: {applicable: true, evidence: "Secret Handling, Security Assurance, Evolution Radar, Technology Guide, Capability Map and Conformance docs are synchronized"}
-  - boundary: retrieval-trial-secret-exposure
-    reason: The local/default Retrieval semantic Trial must not receive an optional remote provider secret.
+      static_lint: {applicable: true, evidence: "evolution_analysis.py and config/evolution-analyzer.yaml are compiled/contract-checked by repository validation"}
+      unit: {applicable: true, evidence: "Evolution Radar lifecycle validates rule configuration, deterministic repeated output, tamper rejection, and semantic-state preservation"}
+      integration: {applicable: true, evidence: "weekly/monthly Radar evidence flows through local preanalysis before optional semantic analysis"}
+      contract: {applicable: true, evidence: "Scenario 146 requires semantic_suitability_inferred=false, recommendation_state_mutated=false, no credential and no extra network"}
+      e2e: {applicable: true, evidence: "lifecycle evidence builds preanalysis, round-trips durable markdown, and embeds it into the Human review Issue"}
+      security: {applicable: true, evidence: "preanalysis reads only collected evidence, committed rules and Capability Map; it has no provider credential or additional network path"}
+      migration_recovery: {applicable: true, evidence: "provider-neutral handoff and optional semantic analyzer remain unchanged as the next analysis layer"}
+      cli_harness: {applicable: false, na_reason: "No Runtime/Harness execution path changes"}
+      docs_schema: {applicable: true, evidence: "Evolution Radar Human/Agent docs, overview, Technology Guide and Conformance are synchronized"}
+  - boundary: human-review-priority
+    reason: HIGH/MEDIUM/LOW is only a deterministic reading-order hint and must never be interpreted as COVERED/HOLD/ASSESS/TRIAL/ADOPT or Human approval.
     checks:
-      static_lint: {applicable: true, evidence: "workflow source is inspected by the credential guard"}
-      unit: {applicable: false, na_reason: "Behavior is GitHub Actions wiring rather than a standalone unit"}
-      integration: {applicable: true, evidence: "repository validation verifies the exact workflow exposure condition"}
-      contract: {applicable: true, evidence: "OPENAI_API_KEY injection is limited to explicit remote provider step"}
-      e2e: {applicable: false, na_reason: "No remote provider credential is configured or required for this change"}
-      security: {applicable: true, evidence: "local/default step has no OPENAI_API_KEY environment exposure"}
-      migration_recovery: {applicable: true, evidence: "remote Trial path remains available when explicitly selected and configured"}
-      cli_harness: {applicable: false, na_reason: "No CLI/Harness contract changes"}
-      docs_schema: {applicable: true, evidence: "Scenario 145 and Technology Guide record the narrowed exposure"}
-  - boundary: gemini-optional-provider-disabled-path
-    reason: All non-live GEMINI_API_KEY behavior should be executable evidence even though real provider verification remains intentionally unverified.
+      static_lint: {applicable: true, evidence: "preanalysis annotations reject state/decision/recommendation fields"}
+      unit: {applicable: true, evidence: "tampered semantic_suitability_inferred=true evidence is rejected"}
+      integration: {applicable: true, evidence: "Human review Issue carries both deterministic preanalysis and separate provider-neutral semantic handoff"}
+      contract: {applicable: true, evidence: "semantic recommendation remains ANALYSIS_PENDING through the local-preanalysis lifecycle"}
+      e2e: {applicable: true, evidence: "same evidence/config/capability inputs produce byte-equivalent data structures before serialization"}
+      security: {applicable: true, evidence: "all Human/branch/PR/merge/release/publication authority flags remain false"}
+      migration_recovery: {applicable: true, evidence: "removing/altering local rules cannot silently convert preanalysis into semantic decisions because validation binds mode and preserved state"}
+      cli_harness: {applicable: false, na_reason: "No CLI/Harness permission surface changes"}
+      docs_schema: {applicable: true, evidence: "docs explicitly define priority as Human review ordering rather than adoption scoring"}
+  - boundary: near-duplicate-and-capability-hints
+    reason: Local heuristics must stay explainable and reference only existing source-controlled capability IDs.
     checks:
-      static_lint: {applicable: true, evidence: "provider verifier contract compiles and rejects legacy blocking semantics"}
-      unit: {applicable: true, evidence: "repository validation executes verifier without GEMINI_API_KEY and asserts SKIPPED_NOT_CONFIGURED output"}
-      integration: {applicable: true, evidence: "existing protected-main workflow remains the optional integration lane"}
-      contract: {applicable: true, evidence: "no-key path asserts provider_verification_enabled=false and required_for_release=false"}
-      e2e: {applicable: false, na_reason: "Real GEMINI_API_KEY provider connection is explicitly excluded by current Human policy"}
-      security: {applicable: true, evidence: "no credential value is used in the no-key path"}
-      migration_recovery: {applicable: true, evidence: "real provider path remains dormant and unchanged for future explicit configuration"}
-      cli_harness: {applicable: false, na_reason: "Credential-free Gemini runtime verification remains unchanged"}
-      docs_schema: {applicable: true, evidence: "stale BLOCKED/PENDING provider documentation is reconciled across Human and Agent docs"}
-  - boundary: evolution-radar-provider-neutrality
-    reason: Capability-map and credential-policy changes must preserve Evolution Radar research/handoff operation without an external semantic provider key.
-    checks:
-      static_lint: {applicable: true, evidence: "existing analyzer config still defaults to provider-neutral handoff when credentials are unavailable"}
-      unit: {applicable: false, na_reason: "No semantic provider implementation is added"}
-      integration: {applicable: true, evidence: "documentation sync requires Human/Agent Evolution Radar surfaces to update together"}
-      contract: {applicable: true, evidence: "external credential registry inventories Evolution Radar OPENAI_API_KEY consumers as optional"}
-      e2e: {applicable: false, na_reason: "No external provider call is required or authorized"}
-      security: {applicable: true, evidence: "missing provider key cannot block evidence collection or expand authority"}
-      migration_recovery: {applicable: true, evidence: "provider-neutral handoff remains the credential-free fallback"}
-      cli_harness: {applicable: false, na_reason: "No Harness behavior changes"}
-      docs_schema: {applicable: true, evidence: "EVOLUTION_RADAR Human/Agent docs and overview are synchronized"}
+      static_lint: {applicable: true, evidence: "configured category capability_ids are validated against CAPABILITY_MAP.yaml"}
+      unit: {applicable: true, evidence: "fixture titles prove deterministic token/Jaccard clustering and declared capability matching"}
+      integration: {applicable: true, evidence: "preanalysis baseline binds the Capability Map digest and local config digest"}
+      contract: {applicable: true, evidence: "unknown capability IDs and invalid thresholds fail validation"}
+      e2e: {applicable: false, na_reason: "No external semantic or provider execution is required for deterministic title heuristics"}
+      security: {applicable: true, evidence: "no raw provider payload, secret, private reasoning or external content fetch is added"}
+      migration_recovery: {applicable: true, evidence: "Capability Map changes invalidate prior preanalysis bindings through digest mismatch"}
+      cli_harness: {applicable: false, na_reason: "No runtime adapter behavior changes"}
+      docs_schema: {applicable: true, evidence: "Scenario 146 and Evolution Radar docs explain the bounded heuristic semantics"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

@@ -1051,3 +1051,15 @@ scenarios:
       - tests/validation/external_credential_guard_contracts.py
       - orchestration/EXTERNAL_CREDENTIAL_DEPENDENCY_GUARD.md
       - tests/validate_repository.py
+
+  - id: "146"
+    path: tests/scenarios/146-evolution-radar-local-deterministic-preanalysis.md
+    coverage: lifecycle
+    evidence:
+      - scripts/evolution_analysis.py
+      - config/evolution-analyzer.yaml
+      - .github/workflows/evolution-radar.yml
+      - tests/evidence/evolution_radar_lifecycle.py
+      - tests/validation/evolution_radar_contracts.py
+      - references/evolution/CAPABILITY_MAP.yaml
+      - tests/validate_repository.py

@@ -988,3 +988,27 @@ Scenario 145 把「外部 Agent / Provider Key 不得變成 AIPS baseline / rele
 - PASS 不授權 Human approval、merge、release、publication 或 credential creation。
 
 目前 Scenario inventory 為 **145**：24 deterministic + 67 lifecycle + 54 agent_eval，**145 / 145 automated、0 manual、0 uncovered**。
+
+## Scenario 146 — Evolution Radar Local Deterministic Pre-analysis
+
+Scenario 146 將 Evolution Radar 的第一層 triage 做成完全 credential-free 的 deterministic lifecycle。
+
+每次 weekly / monthly evidence 完成後，AIPS 會先用 source-controlled 規則分析「既有 title + evidence metadata」：
+
+- topic category hints；
+- 既有 AIPS Capability Map hints；
+- recurrence bonus；
+- title token Jaccard near-duplicate cluster；
+- HIGH / MEDIUM / LOW Human review priority。
+
+這個 priority 只是**閱讀順序**，不是 COVERED / HOLD / ASSESS / TRIAL / ADOPT 判斷。Local pre-analysis 必須維持：
+
+- `semantic_suitability_inferred=false`；
+- `recommendation_state_mutated=false`；
+- semantic recommendation = `ANALYSIS_PENDING`；
+- credential required = false；
+- additional external network = false。
+
+Lifecycle evidence 會重播相同輸入兩次並要求 artifact 完全一致，也驗證 near-duplicate、Capability Map references、tamper detection 與 Human review Issue embedding。
+
+目前 Scenario inventory 為 **146**：24 deterministic + 68 lifecycle + 54 agent_eval，**146 / 146 automated、0 manual、0 uncovered**。

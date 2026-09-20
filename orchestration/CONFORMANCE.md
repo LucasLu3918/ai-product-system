@@ -409,3 +409,31 @@ Current automated inventory after Scenario 145:
 - manual: 0
 - uncovered: 0
 - automated: 145 / 145
+
+## Scenario 146 — Evolution Radar local deterministic pre-analysis
+
+Scenario 146 is lifecycle-covered by `tests/evidence/evolution_radar_lifecycle.py`.
+
+It proves that Evolution Radar can produce a deterministic, credential-free first-pass review queue from already-collected title/metadata evidence and the current Capability Map.
+
+The output may contain category hints, capability hints, recurrence evidence, bounded near-duplicate clusters and HIGH/MEDIUM/LOW Human review priority. These fields are triage metadata only and MUST NOT be interpreted as semantic suitability or adoption state.
+
+Required truth:
+
+- `semantic_suitability_inferred=false`;
+- `recommendation_state_mutated=false`;
+- semantic recommendations remain `ANALYSIS_PENDING`;
+- no external provider credential;
+- no additional external network call;
+- identical inputs produce identical artifact content;
+- artifact is bound to exact repository revision, evidence digest, preanalysis-config digest and Capability Map digest;
+- all Human/implementation/merge/release/publication authority remains false.
+
+Current automated inventory after Scenario 146:
+
+- deterministic: 24
+- lifecycle: 68
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 146 / 146

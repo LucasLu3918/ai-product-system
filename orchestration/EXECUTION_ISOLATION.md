@@ -200,3 +200,9 @@ No OAuth, Vertex AI, OIDC/WIF, or other replacement authentication is enabled by
 The dependency guard never resolves or reads credential values. It inspects repository source/configuration references only.
 
 A credential-free/default execution lane must not inherit an external provider secret merely because that secret exists in the repository secret store. Secret injection remains scoped to the explicit credential-dependent step or workflow branch, and pull-request code must not receive external provider credentials.
+
+## Evolution Radar local pre-analysis isolation
+
+The deterministic pre-analysis is a read-only evidence transform. It does not create a Trial worktree, invoke an Agent provider, mutate project source, or perform any additional network access.
+
+Its inputs are bounded to committed configuration/Capability Map plus the already-collected Radar evidence. Output may be published into the Human review Issue as advisory triage metadata, but it grants no code-write, branch/PR, merge, release, publication, Human-decision, runtime-enforcement, or remediation authority.
