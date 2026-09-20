@@ -369,3 +369,10 @@ The following MUST remain false:
 - code-change / PR / merge / release authority.
 
 Effectiveness flags inform Human source-policy review only. They do not change `config/evolution-sources.yaml`, do not create implementation branches, and do not alter Protected Human Authority.
+
+
+## Historical Radar Issue reconciliation
+
+A stale historical Radar Issue may be closed only after a durable reconciliation binds material candidates to current truth: terminal COVERED/HOLD outcomes, bounded ADOPT evidence, or explicit DEFERRED state.
+
+Issue #79 is reconciled in `references/evolution/ISSUE_79_LIFECYCLE_RECONCILIATION.yaml`. Its semantic-intent candidate remains DEFERRED with no Trial authority. Future positive progression MUST start from fresh current-main evidence and a new explicit Human Decision; a closed stale Issue cannot provide positive-progression authority.
