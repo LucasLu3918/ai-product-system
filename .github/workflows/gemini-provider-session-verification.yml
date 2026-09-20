@@ -39,25 +39,25 @@ jobs:
             echo "present=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Record blocked evidence when credential is missing
+      - name: Record optional provider verification disabled state
         if: steps.credential.outputs.present != 'true'
         shell: bash
         run: |
-          set +e
           python scripts/gemini_provider_session_verification.py             --extension harness/adapters/gemini-cli             --output gemini-provider-session-verification.json
-          status=$?
-          set -e
-          test "$status" -eq 2
           python - <<'PY'
           import json
           from pathlib import Path
           doc = json.loads(Path("gemini-provider-session-verification.json").read_text())
-          assert doc["status"] == "BLOCKED_MISSING_CREDENTIAL"
+          assert doc["status"] == "SKIPPED_NOT_CONFIGURED"
+          assert doc["provider_verification_enabled"] is False
+          assert doc["required_for_release"] is False
           assert doc["live_provider_session_verified"] is False
           assert doc["provider_model_execution_verified"] is False
           PY
           echo "## Gemini provider-session verification" >> "$GITHUB_STEP_SUMMARY"
-          echo "- status: BLOCKED_MISSING_CREDENTIAL" >> "$GITHUB_STEP_SUMMARY"
+          echo "- status: SKIPPED_NOT_CONFIGURED" >> "$GITHUB_STEP_SUMMARY"
+          echo "- provider_verification_enabled: false" >> "$GITHUB_STEP_SUMMARY"
+          echo "- required_for_release: false" >> "$GITHUB_STEP_SUMMARY"
           echo "- live_provider_session_verified: false" >> "$GITHUB_STEP_SUMMARY"
           echo "- provider_model_execution_verified: false" >> "$GITHUB_STEP_SUMMARY"
 
@@ -83,6 +83,8 @@ jobs:
           from pathlib import Path
           doc = json.loads(Path("gemini-provider-session-verification.json").read_text())
           assert doc["status"] == "PASS"
+          assert doc["provider_verification_enabled"] is True
+          assert doc["required_for_release"] is False
           assert doc["candidate_sha"]
           assert doc["live_provider_session_verified"] is True
           assert doc["provider_model_execution_verified"] is True

@@ -294,3 +294,11 @@ Repository maintainer 已明確批准下一個 bounded TRIAL：使用 protected 
 
 只有 trusted protected-main secret-backed workflow 真正執行 provider/model request + real tool + real capture hook 成功後，才能進下一個 evidence/release gate。
 
+<!-- AIPS_PROVIDER_CREDENTIAL_POLICY_V1 -->
+## Optional External Agent / Provider Credential Policy
+
+External Agent/provider credentials are not required for normal AIPS operation. Credential-dependent capabilities are disabled by default and activate only when the corresponding credential is explicitly configured.
+
+For Gemini live provider-session verification, an absent `GEMINI_API_KEY` now means `SKIPPED_NOT_CONFIGURED`, not a blocked or failed system state. The verified Gemini CLI runtime, built-in tool execution, AfterTool capture, deterministic validation, and other credential-free AIPS paths remain available.
+
+This policy does not introduce OAuth, Vertex AI, GitHub OIDC / Workload Identity Federation, or another login/authentication path. Live provider/model verification remains false until real evidence exists, but it is not a release prerequisite.
