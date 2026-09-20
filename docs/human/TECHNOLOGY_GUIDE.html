@@ -54,4 +54,10 @@
 <div class="note warn"><strong>Credential boundary：</strong>GitHub Actions secret 只能在 verifier 已先進入 protected main 後，由另一個最小 trusted-main workflow 注入；secret value 不得寫入 workspace evidence、canonical event、artifact、log 或 committed YAML。</div>
 <p>此階段仍維持 <code>live_provider_session_verified=false</code>、<code>provider_model_execution_verified=false</code>。只有後續 secret-backed protected-main workflow 實際成功，才有 evidence 可以改變這兩個狀態。</p>
 </section>
+<section class="card s12" id="gemini-provider-session-workflow">
+<h2>42. Trusted-Main Gemini Provider Session Workflow</h2>
+<p>Provider verifier 先進入 protected main 後，才允許另一個最小 GitHub Actions workflow 在 <strong>push to main / manual dispatch</strong> 上引用 <code>secrets.GEMINI_API_KEY</code>。Pull Request event 不在 workflow trigger 內，因此未合併的程式碼無法取得 provider secret。</p>
+<p>Workflow 先檢查 secret 是否存在，但不輸出值。若不存在，執行 verifier 的 fail-closed missing-credential path，產生 <code>BLOCKED_MISSING_CREDENTIAL</code> artifact 並保持 provider/model verification=false；若存在，才安裝固定 Gemini CLI v0.60.0 並執行 real provider/model + read_file + AfterTool capture verification。</p>
+<div class="note warn"><strong>Truth boundary：</strong>workflow 本身存在不代表 provider 已驗證。只有 trusted-main secret-backed run 的 verifier result 為 PASS，才能更新 committed provider truth。</div>
+</section>
 </body></html>
