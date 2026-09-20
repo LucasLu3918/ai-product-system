@@ -972,3 +972,19 @@ Scenario 144 將外部 Agent / Provider credential 的新政策鎖成 determinis
 - optional credential 缺失不阻擋 unrelated validation、merge 或 release。
 
 目前 Scenario inventory 為 **144**：23 deterministic + 67 lifecycle + 54 agent_eval，**144 / 144 automated、0 manual、0 uncovered**。
+
+## Scenario 145 — External Credential Dependency Guard
+
+Scenario 145 把「外部 Agent / Provider Key 不得變成 AIPS baseline / release 必要條件」提升成 deterministic repository contract。
+
+驗證內容：
+
+- workflow / config / script 中出現的外部 credential 必須全部登記在 `config/external-credentials.yaml`；
+- 新增未登記 Key 或未 allowlist consumer 會直接讓 repository validation 失敗；
+- `GEMINI_API_KEY`、`OPENAI_API_KEY` 都固定為 optional，`required_for_baseline=false`、`required_for_release=false`；
+- credential-consuming workflow 不得在 `pull_request` / `pull_request_target` surface 取得 external secret；
+- Retrieval semantic Trial 的 default local path 不再取得 `OPENAI_API_KEY`，只有明確選 `remote` 的 step 才注入；
+- Guard 只掃 source/config，不讀 secret value，也不執行 provider call；
+- PASS 不授權 Human approval、merge、release、publication 或 credential creation。
+
+目前 Scenario inventory 為 **145**：24 deterministic + 67 lifecycle + 54 agent_eval，**145 / 145 automated、0 manual、0 uncovered**。

@@ -19,7 +19,6 @@ jobs:
     env:
       AIPS_RETRIEVAL_EMBEDDING_PROVIDER: ${{ vars.AIPS_RETRIEVAL_EMBEDDING_PROVIDER }}
       AIPS_RETRIEVAL_EMBEDDING_MODEL: ${{ vars.AIPS_RETRIEVAL_EMBEDDING_MODEL }}
-      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
       AIPS_RUN_EMBEDDING_TRIAL: "1"
       AIPS_EMBEDDING_TRIAL_OUTPUT: ${{ github.workspace }}/retrieval-embedding-trial.json
     steps:
@@ -30,8 +29,17 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m pip install -r requirements.txt -r requirements-visual.txt -r requirements-semantic-trial.txt
-      - name: Run synthetic-only embedding retrieval Trial
+      - name: Run synthetic-only embedding retrieval Trial (local/default)
+        if: ${{ vars.AIPS_RETRIEVAL_EMBEDDING_PROVIDER != 'remote' }}
         env:
+          SENTENCE_TRANSFORMERS_HOME: ${{ runner.temp }}/aips-semantic-model-cache
+          HF_HUB_DISABLE_TELEMETRY: "1"
+          TOKENIZERS_PARALLELISM: "false"
+        run: python tests/evidence/retrieval_quality_evaluation_lifecycle.py
+      - name: Run synthetic-only embedding retrieval Trial (remote optional)
+        if: ${{ vars.AIPS_RETRIEVAL_EMBEDDING_PROVIDER == 'remote' }}
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           SENTENCE_TRANSFORMERS_HOME: ${{ runner.temp }}/aips-semantic-model-cache
           HF_HUB_DISABLE_TELEMETRY: "1"
           TOKENIZERS_PARALLELISM: "false"

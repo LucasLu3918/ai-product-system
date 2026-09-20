@@ -186,7 +186,7 @@ Live provider verification uses the already-verified Gemini CLI runtime path, bu
 
 A bounded provider-session Trial MUST run only after its verification infrastructure is trusted on protected main. Unmerged PR code must not receive the provider credential. Temporary HOME/workspace and capture sink remain disposable, and only metadata evidence may persist.
 
-A missing secure credential context leaves the provider-session state PENDING/BLOCKED. It must not be downgraded to fake-response evidence or treated as provider verification.
+A missing optional provider credential records `SKIPPED_NOT_CONFIGURED` / `NOT_CONFIGURED_BY_POLICY`. It must not be downgraded to fake-response provider evidence, treated as provider verification, or used to block unrelated baseline/release work.
 
 <!-- AIPS_PROVIDER_CREDENTIAL_POLICY_V1 -->
 ## Optional External Credential Boundary
@@ -194,3 +194,9 @@ A missing secure credential context leaves the provider-session state PENDING/BL
 External Agent/provider credentials are not baseline execution requirements. A credential-dependent lane must remain disabled until the exact credential is explicitly configured. An absent optional credential is a normal `SKIPPED_NOT_CONFIGURED` state and must not expand authority, trigger alternate login flows, or block unrelated deterministic/runtime work.
 
 No OAuth, Vertex AI, OIDC/WIF, or other replacement authentication is enabled by this policy.
+
+## External Credential Dependency Guard isolation
+
+The dependency guard never resolves or reads credential values. It inspects repository source/configuration references only.
+
+A credential-free/default execution lane must not inherit an external provider secret merely because that secret exists in the repository secret store. Secret injection remains scoped to the explicit credential-dependent step or workflow branch, and pull-request code must not receive external provider credentials.

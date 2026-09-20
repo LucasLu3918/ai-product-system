@@ -24,4 +24,4 @@ capabilities:
   - {id: agent-observable-event-trial-evidence, name_en: Observable-Event Integration Trial Evidence, name_zh: 可觀測事件整合實驗證據, docs: [orchestration/AGENT_ANOMALY_EVALUATION.md, orchestration/EVOLUTION_RADAR.md, docs/human/EVOLUTION_RADAR.md]}
   - {id: gemini-cli-observable-event-capture-trial, name_en: Gemini CLI Observable-Event Capture Trial, name_zh: Gemini CLI 可觀測事件捕捉實驗, docs: [harness/adapters/gemini-cli/GEMINI.md, orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md, docs/human/EVOLUTION_RADAR.md]}
   - {id: gemini-cli-real-runtime-verification, name_en: Gemini CLI Real-Runtime Verification, name_zh: Gemini CLI 真實執行階段驗證, docs: [orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md, harness/adapters/gemini-cli/GEMINI.md, docs/human/HARNESS.md]}
-
+  - {id: external-credential-dependency-guard, name_en: External Credential Dependency Guard, name_zh: 外部憑證依賴防護, docs: [orchestration/EXTERNAL_CREDENTIAL_DEPENDENCY_GUARD.md, orchestration/SECRET_HANDLING.md, docs/human/SECURITY_ASSURANCE.md]}

@@ -385,3 +385,27 @@ Current automated inventory after Scenario 144:
 - manual: 0
 - uncovered: 0
 - automated: 144 / 144
+
+## Scenario 145 — External Credential Dependency Guard
+
+Scenario 145 is deterministically covered by `tests/evidence/external_credential_guard_lifecycle.py` and `scripts/external_credential_guard.py`.
+
+It proves:
+
+- executable/configuration references to external Agent/provider credentials are centrally declared;
+- undeclared credentials and undeclared consumers fail repository validation;
+- `GEMINI_API_KEY` and `OPENAI_API_KEY` remain optional and cannot become baseline/release requirements;
+- workflows consuming external credentials cannot expose them to pull-request code;
+- credential-free default lanes do not receive optional provider secrets;
+- the Retrieval semantic Trial injects `OPENAI_API_KEY` only in the explicit remote step;
+- the guard never reads credential values or calls a provider;
+- PASS grants no protected authority.
+
+Current automated inventory after Scenario 145:
+
+- deterministic: 24
+- lifecycle: 67
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 145 / 145

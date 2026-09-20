@@ -246,7 +246,7 @@ The repository maintainer has authorized a bounded provider-session TRIAL, but t
 - unmerged pull-request code MUST NOT receive `GEMINI_API_KEY`;
 - the secret may only be consumed from a trusted protected-main CI secret context;
 - committed evidence stores only boolean/source metadata, never the value;
-- missing credential or unavailable secure execution remains PENDING/BLOCKED;
+- missing optional credential is `SKIPPED_NOT_CONFIGURED` / `NOT_CONFIGURED_BY_POLICY`, not a release blocker;
 - provider verification cannot grant runtime enforcement, remediation, merge, release or publication authority.
 
 Until trusted-main provider execution succeeds, `live_provider_session_verified` and `provider_model_execution_verified` remain false.
@@ -264,3 +264,11 @@ External provider credentials are optional capability inputs, not AIPS platform 
 - alternate authentication: do not introduce OAuth, Vertex AI, OIDC/WIF, or another login flow unless a later Human Decision explicitly authorizes it.
 
 Gemini runtime verification and observable-event capture remain independent of live provider/model verification.
+
+## External Credential Dependency Guard
+
+External Agent/provider credential references are now centrally inventoried by `config/external-credentials.yaml` and audited by `scripts/external_credential_guard.py`.
+
+Evolution Radar remains provider-neutral when no external semantic credential is configured. The deterministic research/evidence package and handoff continue without a provider key; missing optional credentials cannot become baseline/release blockers.
+
+The guard also prevents new credential consumers from bypassing review or exposing secrets to pull-request code.

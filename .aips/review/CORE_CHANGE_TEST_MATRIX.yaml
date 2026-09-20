@@ -1,24 +1,68 @@
 version: 1
 candidate:
-  base_sha: 54d4b5a4f388d0f77c6e43bb4ec02c176504cf9e
-  changed_files_hash: a10ff874f83df4b67c6f57b98b430193d21d817bf945ddc9328b7299b64f602e
+  base_sha: fa341d69f5c6c501350168af30ac46b36703b606
+  changed_files_hash: 08b6c8d087c4b4bdabaabc5d6241d9156520a1738f5d3d53e6778ee5b57a00ea
 change:
-  id: optional-provider-credential-policy
-  summary: Make external Agent/provider credentials opt-in enhancements so missing credentials skip provider-specific verification without blocking normal AIPS operation or release.
-  boundary: [provider-credentials, github-actions, gemini-provider-session, governance, documentation]
+  id: external-credential-dependency-guard
+  summary: Add a deterministic repository-wide guard so external Agent/provider API keys remain optional, non-release-blocking dependencies, while narrowing secret exposure to explicit credential-dependent lanes.
+  boundary:
+    - external-credential-policy
+    - secret-handling
+    - github-actions
+    - retrieval-trial
+    - evolution-radar
+    - repository-validation
+    - conformance
+    - documentation
 matrix:
-  - boundary: optional-provider-credentials
-    reason: Credential-dependent capabilities must stay disabled unless explicitly configured, while preserving truthful verification state and secret isolation.
+  - boundary: external-credential-policy
+    reason: New repository-wide registry and deterministic audit must fail on undeclared credentials/consumers and preserve credential-free baseline/release behavior.
     checks:
-      static_lint: {applicable: true, evidence: "repository validation imports updated Gemini verifier/workflow contracts"}
-      unit: {applicable: true, evidence: "contracts require SKIPPED_NOT_CONFIGURED and reject alternative auth/blocking tokens"}
-      integration: {applicable: true, evidence: "trusted-main workflow runs credential-free disabled path without installing or invoking live provider/model verification"}
-      contract: {applicable: true, evidence: "missing credential is non-blocking SKIPPED_NOT_CONFIGURED; present credential retains exact-SHA real-provider PASS requirements"}
-      e2e: {applicable: false, na_reason: "No live provider credential is configured by current Human policy"}
-      security: {applicable: true, evidence: "no pull_request secret exposure; no OAuth/Vertex/OIDC replacement authentication introduced"}
-      migration_recovery: {applicable: true, evidence: "existing v0.34 Gemini runtime/capture verification remains valid and unchanged"}
-      cli_harness: {applicable: true, evidence: "credential-free runtime/capture path remains separate from optional live provider verification"}
-      docs_schema: {applicable: true, evidence: "Human and Agent evolution/execution docs record optional credential semantics and non-blocking release behavior"}
+      static_lint: {applicable: true, evidence: "external credential guard script/config are imported by repository validation"}
+      unit: {applicable: true, evidence: "lifecycle evidence covers undeclared credential, PR exposure, and required-baseline rejection"}
+      integration: {applicable: true, evidence: "repository validation runs the guard against the full current repository"}
+      contract: {applicable: true, evidence: "Scenario 145 and external_credential_guard_contracts enforce optional credential registry semantics"}
+      e2e: {applicable: false, na_reason: "The guard intentionally does not read real secret values or call external providers"}
+      security: {applicable: true, evidence: "external secrets cannot be exposed to pull-request workflows and credential values are never read"}
+      migration_recovery: {applicable: true, evidence: "existing GEMINI_API_KEY and OPENAI_API_KEY consumers are explicitly inventoried; undeclared future consumers fail closed"}
+      cli_harness: {applicable: false, na_reason: "No Harness runtime routing behavior changes"}
+      docs_schema: {applicable: true, evidence: "Secret Handling, Security Assurance, Evolution Radar, Technology Guide, Capability Map and Conformance docs are synchronized"}
+  - boundary: retrieval-trial-secret-exposure
+    reason: The local/default Retrieval semantic Trial must not receive an optional remote provider secret.
+    checks:
+      static_lint: {applicable: true, evidence: "workflow source is inspected by the credential guard"}
+      unit: {applicable: false, na_reason: "Behavior is GitHub Actions wiring rather than a standalone unit"}
+      integration: {applicable: true, evidence: "repository validation verifies the exact workflow exposure condition"}
+      contract: {applicable: true, evidence: "OPENAI_API_KEY injection is limited to explicit remote provider step"}
+      e2e: {applicable: false, na_reason: "No remote provider credential is configured or required for this change"}
+      security: {applicable: true, evidence: "local/default step has no OPENAI_API_KEY environment exposure"}
+      migration_recovery: {applicable: true, evidence: "remote Trial path remains available when explicitly selected and configured"}
+      cli_harness: {applicable: false, na_reason: "No CLI/Harness contract changes"}
+      docs_schema: {applicable: true, evidence: "Scenario 145 and Technology Guide record the narrowed exposure"}
+  - boundary: gemini-optional-provider-disabled-path
+    reason: All non-live GEMINI_API_KEY behavior should be executable evidence even though real provider verification remains intentionally unverified.
+    checks:
+      static_lint: {applicable: true, evidence: "provider verifier contract compiles and rejects legacy blocking semantics"}
+      unit: {applicable: true, evidence: "repository validation executes verifier without GEMINI_API_KEY and asserts SKIPPED_NOT_CONFIGURED output"}
+      integration: {applicable: true, evidence: "existing protected-main workflow remains the optional integration lane"}
+      contract: {applicable: true, evidence: "no-key path asserts provider_verification_enabled=false and required_for_release=false"}
+      e2e: {applicable: false, na_reason: "Real GEMINI_API_KEY provider connection is explicitly excluded by current Human policy"}
+      security: {applicable: true, evidence: "no credential value is used in the no-key path"}
+      migration_recovery: {applicable: true, evidence: "real provider path remains dormant and unchanged for future explicit configuration"}
+      cli_harness: {applicable: false, na_reason: "Credential-free Gemini runtime verification remains unchanged"}
+      docs_schema: {applicable: true, evidence: "stale BLOCKED/PENDING provider documentation is reconciled across Human and Agent docs"}
+  - boundary: evolution-radar-provider-neutrality
+    reason: Capability-map and credential-policy changes must preserve Evolution Radar research/handoff operation without an external semantic provider key.
+    checks:
+      static_lint: {applicable: true, evidence: "existing analyzer config still defaults to provider-neutral handoff when credentials are unavailable"}
+      unit: {applicable: false, na_reason: "No semantic provider implementation is added"}
+      integration: {applicable: true, evidence: "documentation sync requires Human/Agent Evolution Radar surfaces to update together"}
+      contract: {applicable: true, evidence: "external credential registry inventories Evolution Radar OPENAI_API_KEY consumers as optional"}
+      e2e: {applicable: false, na_reason: "No external provider call is required or authorized"}
+      security: {applicable: true, evidence: "missing provider key cannot block evidence collection or expand authority"}
+      migration_recovery: {applicable: true, evidence: "provider-neutral handoff remains the credential-free fallback"}
+      cli_harness: {applicable: false, na_reason: "No Harness behavior changes"}
+      docs_schema: {applicable: true, evidence: "EVOLUTION_RADAR Human/Agent docs and overview are synchronized"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

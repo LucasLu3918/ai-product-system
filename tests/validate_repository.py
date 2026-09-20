@@ -57,6 +57,7 @@ from validation import branch_hygiene_contracts as branch_hygiene_contracts  # n
 from validation import resource_authorization_contracts as resource_authorization_contracts  # noqa: F401\nfrom validation import agent_anomaly_evaluation_contracts as agent_anomaly_evaluation_contracts  # noqa: F401\nfrom validation import agent_observable_event_trial_contracts as agent_observable_event_trial_contracts  # noqa: F401\nfrom validation import gemini_observable_event_capture_contracts as gemini_observable_event_capture_contracts  # noqa: F401
 from validation import gemini_runtime_verification_contracts as gemini_runtime_verification_contracts  # noqa: F401\nfrom validation import gemini_provider_session_verification_contracts as gemini_provider_session_verification_contracts  # noqa: F401
 from validation import gemini_provider_session_workflow_contracts as gemini_provider_session_workflow_contracts  # noqa: F401
+from validation import external_credential_guard_contracts as external_credential_guard_contracts  # noqa: F401
 
 errors = static_contracts.errors
 

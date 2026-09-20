@@ -65,7 +65,9 @@ Before an authenticated call:
 4. verify logs/errors redact sensitive data;
 5. only then execute the authenticated integration.
 
-If credentials are unavailable, mark the operation BLOCKED. Do not solve missing credentials by hard-coding them.
+If the requested capability explicitly requires a credential for that operation and no credential-free path exists, mark that specific operation BLOCKED.
+
+If the credential is declared optional, use the capability's truthful non-PASS state (for example `SKIPPED_NOT_CONFIGURED`, `ANALYSIS_PENDING`, or `TRIAL_PENDING`) and do not block unrelated baseline validation or release. Do not solve missing credentials by hard-coding them.
 
 ## Secret leakage review
 
@@ -100,6 +102,21 @@ For Gemini live-provider verification:
 
 - `GEMINI_API_KEY` may be consumed only from a protected GitHub Actions secret context after the verification infrastructure is trusted;
 - the value must not be written to workspace `.env`, extension settings, logs, canonical event sink, artifacts or committed evidence;
-- missing or unavailable credentials keep provider verification PENDING/BLOCKED and cannot be interpreted as PASS;
+- missing `GEMINI_API_KEY` records `SKIPPED_NOT_CONFIGURED`; it cannot be interpreted as PASS and does not block unrelated baseline/release validation;
 - provider-session verification grants no runtime enforcement, remediation, merge, release or publication authority.
 
+
+
+## External Credential Dependency Guard
+
+AIPS maintains `config/external-credentials.yaml` as the deterministic registry for external Agent/provider credentials.
+
+`scripts/external_credential_guard.py` scans executable/configuration surfaces and blocks validation when:
+
+- an external credential is referenced but not declared;
+- a new consumer is not allowlisted;
+- an external credential becomes required for baseline or release;
+- a credential-consuming workflow exposes the secret to pull-request code;
+- a credential-free default path exposes a secret outside its explicit credential-dependent branch.
+
+The guard reads source/configuration only. It does not read secret values, create credentials, contact providers, or grant protected authority.
