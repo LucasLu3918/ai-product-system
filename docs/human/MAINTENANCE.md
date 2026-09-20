@@ -306,3 +306,15 @@ Do not let the Scheduler make semantic scope decisions, and do not let Integrati
 ## Branch lifecycle hygiene
 
 Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanup. Persistent operational branches are preserved; ephemeral branches become deletion candidates only after deterministic integration into `main`; unclassified branches are preserved by default. Integration recognition is conservative and squash-aware: direct ancestry is checked first, then per-commit patch equivalence, then a clean synthetic `git merge-tree --write-tree` whose result must be identical to the target tree. This catches multi-commit branches that were squash-merged without granting deletion authority. The policy is `report_only`: branch deletion remains an explicit maintenance action outside this classifier. In CI, `.github/workflows/branch-hygiene.yml` performs a full remote-ref fetch and runs `scripts/branch_hygiene.py --remote origin`, so scheduled/manual reports inspect the repository branch set rather than only the checkout's local branch. The workflow has `contents: read` only and publishes candidates to the GitHub Job Summary; it never deletes or rewrites refs.
+
+## Repository Health / Architecture Drift consistency
+
+Repository-wide architecture consistency is checked by scripts/repository_health.py using config/repository-health.yaml. The detailed contract is orchestration/REPOSITORY_HEALTH.md.
+
+It reuses the Capability Map, Scenario Conformance and Integration Gate. Review registered canonical targets, configured guard/gate surfaces, tests/scenario_coverage.yaml evidence, and .github/workflows/validate.yml plus config/integration-gate.yaml wiring.
+
+Run:
+
+    python scripts/repository_health.py audit --config config/repository-health.yaml
+
+PASS is consistency evidence only. Repository Health is Detect + Evidence + Human Review and has no automatic remediation, code-change, PR, merge, release or publication authority.

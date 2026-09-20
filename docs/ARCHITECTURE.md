@@ -735,3 +735,19 @@ flowchart LR
 ~~~
 
 The new paths add fail-closed evidence and handoff behavior beneath existing topology; they do not add a Role, Skill, autonomous approval gate, merge authority or release authority.
+
+## Repository health / architecture drift
+
+~~~mermaid
+flowchart LR
+    CM[Capability Map] --> RH[Deterministic Repository Health]
+    CS[Configured core surfaces] --> RH
+    SC[Scenario Conformance] --> RH
+    DOC[Canonical documentation bindings] --> RH
+    IG[Integration Gate + validate workflow] --> RH
+    RH -->|all contracts hold| PASS[PASS evidence]
+    RH -->|drift found| DRIFT[DRIFT_DETECTED]
+    DRIFT --> HUMAN[Human review]
+~~~
+
+Repository Health is credential-free consistency evidence over existing truths. It calls Scenario Conformance and verifies Integration Gate wiring; it does not create a second Change Impact system or repair drift automatically.
