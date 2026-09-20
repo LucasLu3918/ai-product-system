@@ -35,11 +35,27 @@ def validate_config(config: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     if config.get("version") != 1:
         errors.append("trial config version must be 1")
+    selection = config.get("selection") or {}
+    if selection.get("default") != "auto":
+        errors.append("trial selection.default must be auto")
+    if selection.get("fallback") != "handoff":
+        errors.append("trial selection.fallback must be handoff")
+    if selection.get("allowed") != ["auto", "openai-codex-action", "handoff"]:
+        errors.append("trial selection.allowed must contain auto/openai-codex-action/handoff")
     execution = config.get("execution") or {}
     if execution.get("isolation_mode") != "worktree":
         errors.append("trial isolation_mode must be worktree")
     if execution.get("permission_profile") != ":workspace":
         errors.append("trial permission_profile must be :workspace")
+    handoff = config.get("handoff") or {}
+    if handoff.get("enabled") is not True:
+        errors.append("trial handoff must be enabled")
+    if handoff.get("state") != "TRIAL_HANDOFF_READY":
+        errors.append("trial handoff state must be TRIAL_HANDOFF_READY")
+    if handoff.get("credential_required") is not False:
+        errors.append("trial handoff must not require a provider credential")
+    if handoff.get("deterministic_validation_required") is not True:
+        errors.append("trial handoff must require deterministic validation")
     limits = config.get("limits") or {}
     for key in ("max_changed_files", "max_diff_lines"):
         value = limits.get(key)
@@ -108,6 +124,121 @@ def build_plan(
         "human_adoption_decision_required": True,
     }
     return core
+
+
+def build_handoff(plan: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
+    config_errors = validate_config(config)
+    if config_errors:
+        raise ValueError("invalid trial config: " + "; ".join(config_errors))
+    trial = dict(plan.get("trial") or {})
+    if not trial or plan.get("trial_fingerprint") is None:
+        raise ValueError("trial handoff requires a valid trial plan")
+    handoff_cfg = config["handoff"]
+    payload = {
+        "version": 1,
+        "state": "TRIAL_HANDOFF_READY",
+        "binding": {
+            "trial_fingerprint": plan["trial_fingerprint"],
+            "baseline_repository_revision": trial.get("baseline_repository_revision"),
+            "decision_fingerprint": trial.get("decision_fingerprint"),
+        },
+        "trial": trial,
+        "execution_contract": {
+            "provider_neutral": True,
+            "credential_required": False,
+            "prompt_path": handoff_cfg["prompt_path"],
+            "isolation_required": True,
+            "required_isolation_mode": trial.get("isolation_mode"),
+            "validation_command": str((config.get("validation") or {}).get("command") or ""),
+            "deterministic_validation_required": True,
+            "external_executor_may_claim_pass": False,
+        },
+        "authority": {
+            "trial_execution_authorized": True,
+            "code_publication_authorized": False,
+            "remote_branch_or_pr_authorized": False,
+            "merge_authorized": False,
+            "release_authorized": False,
+            "human_adoption_decision_required": True,
+        },
+    }
+    payload["handoff_fingerprint"] = canonical_digest({
+        "state": payload["state"],
+        "binding": payload["binding"],
+        "trial": payload["trial"],
+        "execution_contract": payload["execution_contract"],
+    })
+    return payload
+
+
+def validate_handoff(doc: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    if doc.get("version") != 1 or doc.get("state") != "TRIAL_HANDOFF_READY":
+        errors.append("trial handoff must be version 1 TRIAL_HANDOFF_READY")
+    binding = doc.get("binding") or {}
+    trial = doc.get("trial") or {}
+    execution = doc.get("execution_contract") or {}
+    if binding.get("trial_fingerprint") is None or binding.get("decision_fingerprint") != trial.get("decision_fingerprint"):
+        errors.append("trial handoff binding mismatch")
+    if binding.get("baseline_repository_revision") != trial.get("baseline_repository_revision"):
+        errors.append("trial handoff baseline mismatch")
+    if execution.get("provider_neutral") is not True or execution.get("credential_required") is not False:
+        errors.append("trial handoff must remain provider-neutral and credential-free")
+    if execution.get("isolation_required") is not True or execution.get("required_isolation_mode") != "worktree":
+        errors.append("trial handoff must preserve worktree isolation requirement")
+    if execution.get("deterministic_validation_required") is not True:
+        errors.append("trial handoff must require deterministic validation")
+    if execution.get("external_executor_may_claim_pass") is not False:
+        errors.append("external executor must not be allowed to self-assert PASS")
+    authority = doc.get("authority") or {}
+    for key in ("code_publication_authorized", "remote_branch_or_pr_authorized", "merge_authorized", "release_authorized"):
+        if authority.get(key) is not False:
+            errors.append(f"handoff authority.{key} must be false")
+    if authority.get("human_adoption_decision_required") is not True:
+        errors.append("trial handoff must preserve Human adoption decision")
+    expected = canonical_digest({
+        "state": doc.get("state"),
+        "binding": binding,
+        "trial": trial,
+        "execution_contract": execution,
+    })
+    if doc.get("handoff_fingerprint") != expected:
+        errors.append("handoff_fingerprint mismatch")
+    return errors
+
+
+def handoff_markdown(doc: dict[str, Any]) -> str:
+    errors = validate_handoff(doc)
+    if errors:
+        raise ValueError("invalid trial handoff: " + "; ".join(errors))
+    trial = doc["trial"]
+    execution = doc["execution_contract"]
+    return "\n".join([
+        f"## Controlled Trial Handoff — {trial.get('candidate_id')}",
+        "",
+        "- State: **TRIAL_HANDOFF_READY**",
+        f"- Baseline: `{trial.get('baseline_repository_revision')}`",
+        f"- Trial fingerprint: `{doc['binding'].get('trial_fingerprint')}`",
+        f"- Handoff fingerprint: `{doc.get('handoff_fingerprint')}`",
+        f"- Approved scope: {trial.get('approved_scope')}",
+        f"- Required isolation: `{execution.get('required_isolation_mode')}`",
+        f"- Deterministic validation: `{execution.get('validation_command')}`",
+        "",
+        "A Human-selected compatible Agent may execute this exact bounded Trial contract. "
+        "The external executor cannot self-assert PASS. PASS/FAIL remains valid only after "
+        "AIPS deterministic scope/diff/validation evidence is produced.",
+        "",
+        "**Approved paths**",
+        "",
+        *[f"- `{path}`" for path in trial.get("approved_paths") or []],
+        "",
+        "<!-- AIPS_EVOLUTION_TRIAL_HANDOFF_START -->",
+        "```yaml",
+        yaml.safe_dump(doc, sort_keys=False, allow_unicode=True).rstrip(),
+        "```",
+        "<!-- AIPS_EVOLUTION_TRIAL_HANDOFF_END -->",
+        "",
+    ])
 
 
 def _status_paths(worktree: Path) -> list[str]:
@@ -375,6 +506,18 @@ def main() -> int:
     plan.add_argument("--current-revision", required=True)
     plan.add_argument("--output", required=True)
 
+    handoff = sub.add_parser("handoff")
+    handoff.add_argument("--plan", required=True)
+    handoff.add_argument("--config", required=True)
+    handoff.add_argument("--output", required=True)
+
+    handoff_validate = sub.add_parser("handoff-validate")
+    handoff_validate.add_argument("handoff_file")
+
+    handoff_render = sub.add_parser("handoff-markdown")
+    handoff_render.add_argument("handoff_file")
+    handoff_render.add_argument("--output", required=True)
+
     evaluate_cmd = sub.add_parser("evaluate")
     evaluate_cmd.add_argument("--plan", required=True)
     evaluate_cmd.add_argument("--config", required=True)
@@ -407,6 +550,20 @@ def main() -> int:
             yaml.safe_dump(doc, sort_keys=False, allow_unicode=True),
             encoding="utf-8",
         )
+        return 0
+    if args.command == "handoff":
+        doc = build_handoff(load_yaml(args.plan), load_yaml(args.config))
+        errors = validate_handoff(doc)
+        if errors:
+            raise ValueError("generated invalid trial handoff: " + "; ".join(errors))
+        Path(args.output).write_text(yaml.safe_dump(doc, sort_keys=False, allow_unicode=True), encoding="utf-8")
+        return 0
+    if args.command == "handoff-validate":
+        errors = validate_handoff(load_yaml(args.handoff_file))
+        print(json.dumps({"valid": not errors, "errors": errors}, indent=2))
+        return 0 if not errors else 1
+    if args.command == "handoff-markdown":
+        Path(args.output).write_text(handoff_markdown(load_yaml(args.handoff_file)), encoding="utf-8")
         return 0
     if args.command == "evaluate":
         doc = evaluate(
