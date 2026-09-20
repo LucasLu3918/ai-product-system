@@ -1,24 +1,24 @@
 version: 1
 candidate:
-  base_sha: 75db6fc7adf67862e1948882a290e79c922f7e85
-  changed_files_hash: 70a51a63c7c4d051f69d8e588afceb20a8b78d2bdf3304e498b84968f5f1bbf0
+  base_sha: 4de28479a72c884533b31f00a1e6ff761203b6a1
+  changed_files_hash: 0dc28a7f0f854633f19ca8fdb79b2bfbf03fe453f43d00cbd0c11afb3695bcf4
 change:
-  id: v0.35.0-gemini-provider-session-governance-gate
-  summary: Record the Human-approved Gemini live-provider Trial and secret-isolation contract without claiming provider verification before a trusted-main workflow runs.
-  boundary: [gemini-cli-provider-verification, secret-handling, evolution-trial, documentation]
+  id: v0.35.0-gemini-provider-session-verifier
+  summary: Add the trusted provider-session verifier and deterministic secret-safety contracts without injecting any credential in pull-request CI.
+  boundary: [gemini-provider-verifier, secret-handling, validation]
 matrix:
-  - boundary: gemini-provider-session-governance
-    reason: Provider credentials must never be exposed to unmerged candidate code or persisted evidence.
+  - boundary: gemini-provider-verifier
+    reason: The verifier must be trusted on protected main before any GitHub secret is wired to it.
     checks:
-      static_lint: {applicable: true, evidence: "repository validator and YAML/document contracts"}
-      unit: {applicable: true, evidence: "Decision/result truth is pending until secure provider workflow exists"}
-      integration: {applicable: false, na_reason: "This candidate intentionally does not execute or inject provider credentials"}
-      contract: {applicable: true, evidence: "Human TRIAL Decision binds credential source and forbids credential persistence"}
-      e2e: {applicable: false, na_reason: "Provider session remains pending secure trusted-main execution"}
-      security: {applicable: true, evidence: "No secret-bearing workflow or secret value is introduced by this candidate"}
-      migration_recovery: {applicable: false, na_reason: "Governance/evidence change only"}
+      static_lint: {applicable: true, evidence: "ruff-critical + py_compile contract"}
+      unit: {applicable: true, evidence: "static provider verifier secret-safety contract"}
+      integration: {applicable: false, na_reason: "No provider credential is injected by this PR"}
+      contract: {applicable: true, evidence: "No fake responses; blocked state on missing credential; no credential print/persistence tokens"}
+      e2e: {applicable: false, na_reason: "Live provider execution belongs to the later trusted-main workflow"}
+      security: {applicable: true, evidence: "Verifier contains redaction/leakage checks and receives no PR secret"}
+      migration_recovery: {applicable: false, na_reason: "No project/runtime migration"}
       cli_harness: {applicable: false, na_reason: "Existing Scenario 143 runtime path is unchanged"}
-      docs_schema: {applicable: true, evidence: "Technology Guide, Evolution Radar, Execution Isolation, Harness Protocol, Human Harness, Gemini adapter and Secret Handling docs synchronized"}
+      docs_schema: {applicable: true, evidence: "Technology Guide documents the trusted-main verifier boundary, missing-credential blocked state, and no-PR-secret rule"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
