@@ -5,6 +5,14 @@ policy:
   target_community_sources: 6
   max_items_per_source: 8
   max_raw_signals: 50
+  evidence_quality:
+    adopt_minimum_level: 2
+    levels:
+      discovery_only: 0
+      multi_community: 1
+      primary_source: 2
+      primary_corroborated: 3
+      multi_primary_corroborated: 4
   public_only: true
   credentials_in_repository: false
   max_response_bytes: 2097152

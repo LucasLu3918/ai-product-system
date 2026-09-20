@@ -220,3 +220,8 @@ Quarterly Evolution Radar review is aggregation-only. It consumes durable monthl
 ## Technology Intelligence boundary
 
 Evolution Radar v0.43 expands research discovery and bounded semantic selection only. Community collection, deterministic pre-analysis, scoped semantic analysis and primary-corroboration checks do not create an execution boundary and cannot mutate a workspace. Controlled Trial isolation continues to start only after an explicit Human TRIAL Decision and retains the existing worktree, path, diff, validation and publication restrictions.
+
+
+## Evolution evidence-quality boundary
+
+Evidence-quality classification is a read-only deterministic transform over collected source provenance. It does not create or select an execution workspace, and it does not authorize a Controlled Trial. A higher evidence level may make a signal eligible for advisory semantic `ADOPT`, but any actual mutation still requires the existing Human Decision and Execution Isolation contracts. Semantic providers cannot upgrade evidence metadata to obtain broader execution authority.

@@ -1138,3 +1138,16 @@ scenarios:
       - orchestration/EVOLUTION_RADAR.md
       - docs/human/EVOLUTION_RADAR.md
 
+  - id: "153"
+    path: tests/scenarios/153-evolution-evidence-quality-primary-corroboration.md
+    coverage: lifecycle
+    evidence:
+      - config/evolution-sources.yaml
+      - scripts/evolution_radar.py
+      - scripts/evolution_radar_rollup.py
+      - scripts/evolution_analysis.py
+      - tests/evidence/evolution_radar_lifecycle.py
+      - tests/validation/evolution_radar_contracts.py
+      - orchestration/EVOLUTION_RADAR.md
+      - docs/human/EVOLUTION_RADAR.md
+

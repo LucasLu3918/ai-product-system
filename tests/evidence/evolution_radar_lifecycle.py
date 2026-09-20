@@ -225,12 +225,15 @@ def main() -> int:
     require(weekly["summary"]["deduplicated_count"] == 9, "cross-source duplicate must collapse")
     require(weekly["summary"]["global_signal_limit"] == 50, "weekly evidence must record the global signal budget")
     require(weekly["summary"]["global_signal_limit_applied"] is False, "small fixture must not claim global truncation")
+    require(weekly["summary"]["adopt_minimum_evidence_level"] == 2, "ADOPT evidence floor must remain level two")
     require(weekly["sources"]["community_coverage"]["status"] == "HEALTHY", "six successful community fixtures must satisfy coverage")
     require(weekly["sources"]["community_coverage"]["successful"] == 6, "all six community fixtures must be counted")
     shared = next(s for s in weekly["signals"] if s["title"] == "Shared signal")
     require(shared["recurrence_count"] == 2, "duplicate recurrence must be recorded")
     require(shared["source_roles"] == ["community"], "community duplicate provenance must be retained")
     require(shared["verification_status"] == "DISCOVERY_ONLY", "community-only signal must remain discovery evidence")
+    require(shared["evidence_level"] == 1 and shared["evidence_strength"] == "LOW", "multi-community discovery must be level one")
+    require(shared["community_source_count"] == 2 and shared["primary_source_count"] == 0, "community provenance counts must be explicit")
     require(all(r["state"] == "ANALYSIS_PENDING" for r in weekly["recommendations"]), "no analyzer must not infer suitability")
     require(weekly["summary"]["actionable_count"] == 0, "no analyzer must not fabricate actionable recommendations")
     require(weekly["summary"]["zero_recommendations_valid"] is True, "zero recommendations must remain valid")
@@ -272,6 +275,28 @@ def main() -> int:
         },
     ])[0]
     require(corroborated["verification_status"] == "PRIMARY_CORROBORATED", "cross-role recurrence must record primary corroboration")
+    require(corroborated["evidence_level"] == 3 and corroborated["evidence_strength"] == "HIGH", "community plus primary evidence must be level three")
+    require(corroborated["primary_source_count"] == 1 and corroborated["community_source_count"] == 1, "corroborated provenance counts must be deterministic")
+
+    multi_primary = radar.deduplicate([
+        {
+            "fingerprint": "sha256:multi-primary",
+            "title": "Multi primary signal",
+            "canonical_url": "https://example.test/multi-primary",
+            "source_id": "primary-a",
+            "source_role": "primary",
+            "published_at": None,
+        },
+        {
+            "fingerprint": "sha256:multi-primary",
+            "title": "Multi primary signal",
+            "canonical_url": "https://example.test/multi-primary",
+            "source_id": "primary-b",
+            "source_role": "primary",
+            "published_at": None,
+        },
+    ])[0]
+    require(multi_primary["evidence_level"] == 4 and multi_primary["evidence_strength"] == "VERY_HIGH", "multiple primary sources must reach level four")
     require(weekly["authority"] == {
         "code_change_authorized": False,
         "branch_or_pr_authorized": False,
@@ -372,6 +397,10 @@ def main() -> int:
     bad_raw_budget["policy"]["max_raw_signals"] = 4
     require(radar.validate_config(bad_raw_budget), "global raw budget below per-source bound must fail")
 
+    bad_quality = copy.deepcopy(config)
+    bad_quality["policy"]["evidence_quality"]["adopt_minimum_level"] = 0
+    require(radar.validate_config(bad_quality), "ADOPT evidence floor below primary evidence must fail")
+
     bad_public_policy = copy.deepcopy(config)
     bad_public_policy["policy"]["public_only"] = False
     require(radar.validate_config(bad_public_policy), "public_only=false must fail config validation")
@@ -408,6 +437,7 @@ def main() -> int:
     require(budget.get("shortlist_max") == 12, "Human shortlist budget must remain twelve")
     require(budget.get("semantic_analysis_max") == 10, "semantic analysis budget must remain ten")
     require(budget.get("actionable_recommendations_max") == 5, "actionable recommendation budget must remain five")
+    require((local_config.get("review_priority") or {}).get("evidence_bonus_max") == 2, "evidence quality bonus must remain bounded")
 
     capability_map = yaml.safe_load((ROOT / "references/evolution/CAPABILITY_MAP.yaml").read_text(encoding="utf-8")) or {}
     triage_evidence = copy.deepcopy(weekly)
@@ -455,6 +485,8 @@ def main() -> int:
     require(package["scope"]["selected_signal_count"] == len(queue["semantic_signal_fingerprints"]), "semantic package must use deterministic queue")
     require(package["scope"]["selected_signal_count"] <= 10, "semantic package must not exceed ten candidates")
     require(package["scope"]["max_actionable_recommendations"] == 5, "semantic package must carry actionable budget")
+    require(package["instructions"]["minimum_adopt_evidence_level"] == 2, "semantic package must expose deterministic ADOPT evidence floor")
+    require(package["instructions"]["evidence_quality_is_deterministic_metadata"] is True, "provider must not own evidence quality")
     package_ids = package["scope"]["selected_signal_fingerprints"]
     provider_result = {"recommendations": [
         {
@@ -509,7 +541,31 @@ def main() -> int:
             analyzed_at="2026-09-20T00:00:00Z",
             package=package,
         ),
-        "community-only discovery evidence must not directly produce ADOPT",
+        "evidence below the deterministic floor must not directly produce ADOPT",
+    )
+
+    primary_fp = next(
+        signal["fingerprint"]
+        for signal in triage_evidence["signals"]
+        if signal.get("evidence_level") == 2
+        and signal["fingerprint"] in package_ids
+    )
+    safe_adopt = copy.deepcopy(provider_result)
+    for recommendation in safe_adopt["recommendations"]:
+        if recommendation["signal_fingerprint"] == primary_fp:
+            recommendation["state"] = "ADOPT"
+            recommendation["gap"] = "Primary evidence supports formal Human review."
+    safe_analysis = analysis.finalize_provider_result(
+        triage_evidence,
+        safe_adopt,
+        provider="test-provider",
+        model="test-model",
+        analyzed_at="2026-09-20T00:00:00Z",
+        package=package,
+    )
+    require(
+        any(item["state"] == "ADOPT" for item in safe_analysis["recommendations"]),
+        "primary-source level two evidence may produce advisory ADOPT",
     )
     preanalysis_markdown = analysis.preanalysis_markdown(triage)
     extracted_preanalysis = analysis.extract_preanalysis(preanalysis_markdown)

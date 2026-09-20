@@ -324,6 +324,18 @@ def validate_config(doc: dict[str, Any]) -> list[str]:
         errors.append("max_items_per_source must be between 1 and 25")
     if max_raw_signals < maximum or max_raw_signals > 250:
         errors.append("max_raw_signals must be between max_items_per_source and 250")
+    quality = policy.get("evidence_quality") or {}
+    expected_levels = {
+        "discovery_only": 0,
+        "multi_community": 1,
+        "primary_source": 2,
+        "primary_corroborated": 3,
+        "multi_primary_corroborated": 4,
+    }
+    if quality.get("adopt_minimum_level") != 2:
+        errors.append("evidence_quality.adopt_minimum_level must be 2")
+    if quality.get("levels") != expected_levels:
+        errors.append("evidence_quality.levels must match the deterministic 0-4 contract")
     if max_response_bytes < 1024 or max_response_bytes > 10 * 1024 * 1024:
         errors.append("max_response_bytes must be between 1024 and 10485760")
     if max_redirects < 0 or max_redirects > 10:
@@ -366,6 +378,34 @@ def validate_config(doc: dict[str, Any]) -> list[str]:
             errors.append(f"source {source_id} json source requires item_url_template")
     return errors
 
+def evidence_quality_metadata(provenance: list[dict[str, str]]) -> dict[str, Any]:
+    normalized = sorted(
+        {
+            (str(item.get("source_id") or ""), str(item.get("role") or "legacy"))
+            for item in provenance
+            if str(item.get("source_id") or "")
+        }
+    )
+    primary = sorted(source_id for source_id, role in normalized if role == "primary")
+    community = sorted(source_id for source_id, role in normalized if role == "community")
+    if len(primary) >= 2:
+        level, strength = 4, "VERY_HIGH"
+    elif primary and community:
+        level, strength = 3, "HIGH"
+    elif primary:
+        level, strength = 2, "MEDIUM"
+    elif len(community) >= 2:
+        level, strength = 1, "LOW"
+    else:
+        level, strength = 0, "DISCOVERY"
+    return {
+        "evidence_level": level,
+        "evidence_strength": strength,
+        "primary_source_count": len(primary),
+        "community_source_count": len(community),
+    }
+
+
 def deduplicate(signals: list[dict[str, Any]]) -> list[dict[str, Any]]:
     seen: dict[str, dict[str, Any]] = {}
     for signal in signals:
@@ -378,6 +418,9 @@ def deduplicate(signals: list[dict[str, Any]]) -> list[dict[str, Any]]:
             item["duplicate_of"] = None
             item["source_ids"] = [source_id] if source_id else []
             item["source_roles"] = [source_role]
+            item["source_provenance"] = (
+                [{"source_id": source_id, "role": source_role}] if source_id else []
+            )
             seen[fp] = item
         else:
             seen[fp]["recurrence_count"] += 1
@@ -385,10 +428,18 @@ def deduplicate(signals: list[dict[str, Any]]) -> list[dict[str, Any]]:
                 seen[fp]["source_ids"].append(source_id)
             if source_role not in seen[fp]["source_roles"]:
                 seen[fp]["source_roles"].append(source_role)
+            provenance = seen[fp].setdefault("source_provenance", [])
+            candidate = {"source_id": source_id, "role": source_role}
+            if source_id and candidate not in provenance:
+                provenance.append(candidate)
 
     for item in seen.values():
         item["source_ids"] = sorted(item["source_ids"])
         item["source_roles"] = sorted(item["source_roles"])
+        item["source_provenance"] = sorted(
+            item.get("source_provenance") or [],
+            key=lambda value: (str(value.get("source_id") or ""), str(value.get("role") or "")),
+        )
         roles = set(item["source_roles"])
         if "primary" in roles and "community" in roles:
             item["verification_status"] = "PRIMARY_CORROBORATED"
@@ -398,6 +449,7 @@ def deduplicate(signals: list[dict[str, Any]]) -> list[dict[str, Any]]:
             item["verification_status"] = "DISCOVERY_ONLY"
         else:
             item["verification_status"] = "LEGACY_UNVERIFIED"
+        item.update(evidence_quality_metadata(item["source_provenance"]))
     return list(seen.values())
 
 
@@ -518,6 +570,7 @@ def build_evidence(config: dict[str, Any], *, mode: str, timeout: float = 8.0) -
             "signal_count": len(bounded),
             "global_signal_limit": max_raw_signals,
             "global_signal_limit_applied": len(collected) > len(bounded),
+            "adopt_minimum_evidence_level": int(policy["evidence_quality"]["adopt_minimum_level"]),
             "deduplicated_count": len(unique),
             "recommendation_count": len(recommendations),
             "actionable_count": 0,
@@ -581,6 +634,27 @@ def validate_evidence(doc: dict[str, Any]) -> list[str]:
         verification = signal.get("verification_status")
         if verification is not None and verification not in allowed_verification:
             errors.append("signal verification_status is invalid")
+        provenance = signal.get("source_provenance")
+        if provenance is not None:
+            if not isinstance(provenance, list) or not provenance:
+                errors.append("signal source_provenance must be a non-empty list when present")
+            elif any(
+                not isinstance(item, dict)
+                or not str(item.get("source_id") or "")
+                or item.get("role") not in allowed_roles
+                for item in provenance
+            ):
+                errors.append("signal source_provenance entries must bind source_id and valid role")
+        level = signal.get("evidence_level")
+        strength = signal.get("evidence_strength")
+        if level is not None and (not isinstance(level, int) or isinstance(level, bool) or not 0 <= level <= 4):
+            errors.append("signal evidence_level must be an integer from 0 to 4")
+        if strength is not None and strength not in {"DISCOVERY", "LOW", "MEDIUM", "HIGH", "VERY_HIGH"}:
+            errors.append("signal evidence_strength is invalid")
+        for key in ("primary_source_count", "community_source_count"):
+            value = signal.get(key)
+            if value is not None and (not isinstance(value, int) or isinstance(value, bool) or value < 0):
+                errors.append(f"signal {key} must be a non-negative integer")
 
     recs = doc.get("recommendations") or []
     signal_set = set(fingerprints)
@@ -602,6 +676,9 @@ def validate_evidence(doc: dict[str, Any]) -> list[str]:
         errors.append("summary.deduplicated_count must match signals")
     if summary.get("recommendation_count") != len(recs):
         errors.append("summary.recommendation_count must match recommendations")
+    adopt_minimum = summary.get("adopt_minimum_evidence_level")
+    if adopt_minimum is not None and adopt_minimum != 2:
+        errors.append("summary.adopt_minimum_evidence_level must remain 2")
     if summary.get("zero_recommendations_valid") is not True:
         errors.append("zero recommendations must remain valid")
     return errors

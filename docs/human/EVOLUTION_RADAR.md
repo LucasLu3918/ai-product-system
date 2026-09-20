@@ -369,3 +369,18 @@ Weekly Radar 現在採用 **50 → 12 → 10 → 5** 的 bounded funnel：
 **論壇熱門度不是採用依據。** Semantic validator 會拒絕 explicit community-only signal 直接產生 `ADOPT`；必須先有 primary-source corroboration。沒有進入 semantic queue 的 signals 繼續保持 `ANALYSIS_PENDING`，不會因為預算限制被假裝分析完成。
 
 這個擴充不改變 Human Authority：Radar 仍只有 evidence / recommendation authority，沒有 implementation、PR、merge、release 或 publication authority。
+
+
+## v0.44 Evidence Quality & Primary-source Corroboration
+
+Evolution Radar 現在把「被看到」和「可以被採用」分開處理。Deterministic evidence quality 會依來源 provenance 計算 0–4 級強度：
+
+- Level 0：單一 community discovery；
+- Level 1：多個 community recurrence，但沒有 primary evidence；
+- Level 2：至少一個 primary/vendor source；
+- Level 3：primary + community corroboration；
+- Level 4：多個 independent primary sources。
+
+`ADOPT` 的 deterministic 最低門檻為 Level 2。Semantic provider 只能解讀既有 evidence，不能自行提高 evidence level、捏造 primary source 或把論壇熱門度當成驗證。Evidence level 只會提供有限的 pre-analysis priority bonus，不會直接產生 `COVERED / HOLD / ASSESS / TRIAL / ADOPT`。
+
+Monthly / Quarterly rollup 會保留 evidence level、primary/community source counts 與 exact multi-source provenance。這仍然是 evidence/recommendation layer；Human Decision、Controlled Trial、implementation、PR、merge、release 與 publication authority 全部不變。

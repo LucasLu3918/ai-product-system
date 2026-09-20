@@ -86,7 +86,7 @@ def validate_local_preanalysis_config(analyzer_config: dict[str, Any], capabilit
         errors.append("review priority thresholds must be integers")
     elif high <= medium or medium < 1:
         errors.append("review priority thresholds must satisfy high > medium >= 1")
-    for key in ("recurrence_bonus_max", "capability_bonus_max"):
+    for key in ("recurrence_bonus_max", "capability_bonus_max", "evidence_bonus_max"):
         value = priority.get(key)
         if not isinstance(value, int) or isinstance(value, bool) or value < 0:
             errors.append(f"review_priority.{key} must be a non-negative integer")
@@ -263,7 +263,9 @@ def build_local_preanalysis(
         recurrence_count = int(signal.get("recurrence_count") or 1)
         recurrence_bonus = min(max(recurrence_count - 1, 0), int(priority["recurrence_bonus_max"]))
         capability_bonus = min(len(matched_capabilities), int(priority["capability_bonus_max"]))
-        score = category_score + recurrence_bonus + capability_bonus
+        evidence_level = int(signal.get("evidence_level") or 0)
+        evidence_bonus = min(evidence_level, int(priority["evidence_bonus_max"]))
+        score = category_score + recurrence_bonus + capability_bonus + evidence_bonus
         if score >= int(priority["high_min_score"]):
             review_priority = "HIGH"
         elif score >= int(priority["medium_min_score"]):
@@ -280,6 +282,10 @@ def build_local_preanalysis(
             "source_id": str(signal.get("source_id") or ""),
             "source_roles": list(signal.get("source_roles") or ([signal.get("source_role")] if signal.get("source_role") else ["legacy"])),
             "verification_status": str(signal.get("verification_status") or "LEGACY_UNVERIFIED"),
+            "evidence_level": int(signal.get("evidence_level") or 0),
+            "evidence_strength": str(signal.get("evidence_strength") or "DISCOVERY"),
+            "primary_source_count": int(signal.get("primary_source_count") or 0),
+            "community_source_count": int(signal.get("community_source_count") or 0),
             "recurrence_count": recurrence_count,
             "category_ids": sorted(matched_categories),
             "matched_terms": sorted(matched_terms),
@@ -368,6 +374,11 @@ def validate_local_preanalysis(
             errors.append(f"preanalysis execution.{key} must be {value!r}")
 
     evidence_ids = [str(item.get("fingerprint")) for item in evidence.get("signals") or []]
+    evidence_by_id = {
+        str(item.get("fingerprint")): item
+        for item in evidence.get("signals") or []
+        if isinstance(item, dict)
+    }
     annotations = preanalysis.get("signals")
     if not isinstance(annotations, list):
         errors.append("preanalysis signals must be a list")
@@ -413,6 +424,15 @@ def validate_local_preanalysis(
         roles = item.get("source_roles")
         if not isinstance(roles, list) or not roles:
             errors.append("preanalysis source_roles must be a non-empty list")
+        bound_signal = evidence_by_id.get(str(item.get("signal_fingerprint"))) or {}
+        for key, default in (
+            ("evidence_level", 0),
+            ("evidence_strength", "DISCOVERY"),
+            ("primary_source_count", 0),
+            ("community_source_count", 0),
+        ):
+            if item.get(key) != bound_signal.get(key, default):
+                errors.append(f"preanalysis {key} must match deterministic evidence metadata")
         group = item.get("near_duplicate_group")
         count = item.get("near_duplicate_count")
         if group is not None:
@@ -495,7 +515,8 @@ def preanalysis_markdown(preanalysis: dict[str, Any]) -> str:
         lines.append(
             f"- **{item.get('review_priority')} / {item.get('review_score')} / {semantic_marker}** — "
             f"{item.get('title')} · categories: {categories} · capability hints: {capabilities} "
-            f"· verification: {item.get('verification_status')}"
+            f"· verification: {item.get('verification_status')} "
+            f"· evidence: L{item.get('evidence_level', 0)}/{item.get('evidence_strength', 'DISCOVERY')}"
         )
     lines += [
         "",
@@ -563,6 +584,8 @@ def build_analysis_package(
             "prefer_reuse_extension_over_new_abstraction": True,
             "do_not_invent_missing_evidence": True,
             "community_discovery_requires_primary_corroboration_for_adopt": True,
+            "minimum_adopt_evidence_level": int((evidence.get("summary") or {}).get("adopt_minimum_evidence_level") or 2),
+            "evidence_quality_is_deterministic_metadata": True,
             "max_actionable_recommendations": actionable_limit,
         },
         "baseline": {
@@ -728,9 +751,13 @@ def validate_analysis(evidence: dict[str, Any], analysis: dict[str, Any]) -> lis
 
         if state == "ADOPT":
             signal = signal_by_id.get(str(recommendation.get("signal_fingerprint"))) or {}
-            roles = set(signal.get("source_roles") or ([signal.get("source_role")] if signal.get("source_role") else []))
-            if "community" in roles and "primary" not in roles:
-                errors.append("community discovery signal requires primary-source corroboration before ADOPT")
+            minimum_level = int((evidence.get("summary") or {}).get("adopt_minimum_evidence_level") or 2)
+            evidence_level = int(signal.get("evidence_level") or 0)
+            if evidence_level < minimum_level:
+                errors.append(
+                    f"ADOPT requires deterministic evidence level >= {minimum_level}; "
+                    f"signal has level {evidence_level}"
+                )
 
     if isinstance(max_actionable, int) and actionable_count > max_actionable:
         errors.append("analysis exceeds scoped actionable recommendation budget")
