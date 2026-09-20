@@ -1,0 +1,25 @@
+version: 1
+assessment_id: issue-79-gemini-real-runtime-verification-baseline
+baseline:
+  repository_revision: dac529ed2c385081547c3c3de4820f7a80b97101
+  version: 0.33.0
+  issue: 79
+  signal_fingerprint: sha256:7da9fc0c0ad89a0c7d0315aa2a5f4aa7ceb9842149a969a84708ce382c3082b3
+  prior_trial_fingerprint: sha256:298d35758ab9f73372d74544072adbba1d6e20f02f2259f549c98022ae10d8cb
+current_state: IMPLEMENTATION_TRIAL_PASS
+runtime_candidate:
+  id: gemini-cli
+  pinned_version: 0.60.0
+  verification_mode: bundled_real_cli_with_fake_model_responses
+  provider_auth_required: false
+recommendation:
+  next_step: exact_candidate_real_runtime_execution_verification
+authority:
+  human_decision_recorded: false
+  verification_authorized: false
+  live_provider_session_authorized: false
+  runtime_enforcement_authorized: false
+  automatic_remediation_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  publication_authorized: false

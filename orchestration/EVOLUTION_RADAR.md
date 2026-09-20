@@ -229,3 +229,11 @@ CI validates current official AfterTool-shaped inputs, sanitizer projection, eve
 
 Because CI does not execute an actual Gemini CLI process, the result is intentionally `HUMAN_REVIEW_RUNTIME_EXECUTION_VERIFICATION`, not full live-capture verification.
 
+## Gemini CLI exact-candidate runtime verification
+
+The next gate after Scenario 142 uses a real pinned Gemini CLI binary rather than fixture-only hook invocation.
+
+The official `--fake-responses` interface supplies deterministic model turns, while the actual CLI, built-in tool executors, extension loader and AfterTool hook execute normally. The exact-head workflow must succeed before runtime-specific capture verification can be considered true.
+
+Provider/model API verification remains explicitly false and is a separate future decision.
+

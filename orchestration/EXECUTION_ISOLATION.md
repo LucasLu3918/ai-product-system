@@ -166,3 +166,17 @@ The capture lane is isolated from normal project state by default:
 
 If a later verification executes a real Gemini CLI binary, that verification must use an exact candidate and an isolated disposable project/workspace. A successful hook invocation still does not authorize production persistence or broader tool matchers.
 
+## Gemini CLI exact-candidate runtime verification isolation
+
+Scenario 143 executes a pinned Gemini CLI binary only inside the GitHub Actions runner's temporary HOME and workspace. The verifier links the exact-candidate Gemini extension through the same `~/.gemini/extensions` discovery path used by the runtime, but the test workspace contains only synthetic verification files.
+
+The runtime workflow:
+
+- checks out the exact pull-request head SHA;
+- uses deterministic fake model responses and no provider credential material;
+- performs real built-in `read_file`, `write_file`, and `replace` operations only inside a temporary workspace;
+- writes observable-event evidence only to a temporary sink;
+- keeps runtime enforcement, remediation, merge, release, publication and Human-approval authority false.
+
+Gemini extension hook wrappers resolve their physical source path before locating the repository so symlink-based extension loading cannot redirect hook execution toward the temporary HOME.
+

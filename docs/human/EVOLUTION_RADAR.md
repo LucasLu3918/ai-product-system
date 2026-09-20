@@ -258,3 +258,23 @@ Trial result：
 
 因此目前狀態是 **implementation contract PASS / live runtime verification pending**，不是 production-ready live capture。
 
+## Issue #79 — Gemini CLI Real-Runtime Verification（Scenario 143）
+
+v0.33.0 已完成 source-level Gemini AfterTool implementation Trial；Scenario 143 再往前一步，使用固定官方 Gemini CLI v0.60.0 執行真正的 bundled CLI、真正的 built-in file tools 與真正的 AIPS extension hook。
+
+這次刻意不使用 Gemini API key。官方 `--fake-responses` 只替代 model inference，其他 runtime/tool/hook path 都由 real CLI 執行。
+
+因此本 Trial 若 exact-head workflow 通過，可把 Gemini CLI runtime-specific 狀態提升為：
+
+- `live_runtime_execution_verified=true`
+- `live_capture_verified=true`
+
+但仍必須明確保留：
+
+- `live_provider_session_verified=false`
+- `provider_model_execution_verified=false`
+- `runtime_enforced=false`
+- `automatic_remediation=false`
+
+也就是「已驗證真實 CLI capture path」，不是「已驗證真實 Gemini provider/model session」。
+

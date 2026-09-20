@@ -72,3 +72,16 @@ Hook 不保存 `tool_input`、`tool_response`、prompt、response、private reas
 
 目前 CI 驗證的是官方 `AfterTool` input contract 與 extension wiring，尚未執行真實 Gemini CLI binary，所以仍為 `live_capture_verified=false`。
 
+## Gemini CLI 真實執行階段驗證
+
+Scenario 143 不再只 replay AfterTool-shaped JSON，而是由 CI 安裝固定的官方 Gemini CLI v0.60.0，link AIPS extension，讓 bundled CLI 真的執行 `read_file`、`write_file`、`replace`。
+
+為了保持 deterministic 且不需要 Gemini API credential，model response 使用 Gemini CLI 官方 `--fake-responses` 測試介面。這仍是 **real CLI / real tool / real hook**，但不是 live provider inference。
+
+Extension manifest 也正式宣告：
+
+- `AIPS_OBSERVABLE_EVENT_CAPTURE`
+- `AIPS_OBSERVABLE_EVENT_CAPTURE_SINK`
+
+讓 Gemini CLI 的 extension environment sanitization 能合法傳遞這兩個非祕密控制值。
+
