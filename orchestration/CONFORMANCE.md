@@ -475,3 +475,10 @@ Current automated inventory after Scenario 149:
 - manual: 0
 - uncovered: 0
 - automated: 149 / 149
+
+
+## Scenario 150 — Scheduled Repository Health maintenance
+
+Scenario 150 covers the dedicated Repository Health maintenance workflow. Weekly/manual observation must retain deterministic JSON evidence, publish a Job Summary, create no Issue on PASS, deduplicate DRIFT_DETECTED notification by evidence fingerprint, and leave drift visible as workflow failure. The lane remains Detect + Evidence + Human Review only with no contents-write, remediation, implementation-PR, merge or release authority.
+
+Released Scenario Conformance baseline: 150 / 150 automated = 24 deterministic + 72 lifecycle + 54 agent_eval; manual 0; uncovered 0.

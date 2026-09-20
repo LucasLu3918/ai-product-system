@@ -1042,3 +1042,10 @@ Scenario 149 把 Repository Health 的「重大架構 surface」改成顯式、�
 `.github/workflows/validate.yml` 同時會產生 `repository-health-report.json` 並上傳為短期 CI artifact，供 exact-candidate review；artifact 只是 evidence，不具修復、PR、merge、release 或 publication authority。
 
 目前 Scenario inventory 為 **149**：24 deterministic + 71 lifecycle + 54 agent_eval，**149 / 149 automated、0 manual、0 uncovered**。
+
+
+## Scenario 150 — Repository Health 定期維護觀測
+
+Scenario 150 驗證獨立的 Repository Health maintenance workflow：每週／手動執行、保存 deterministic JSON evidence、PASS 不建立 Issue、DRIFT_DETECTED 依 evidence fingerprint 去重通知並維持 workflow failure。此流程只有 Detect + Evidence + Human Review，沒有 contents-write、自動修復、implementation PR、merge 或 release authority。
+
+目前 Scenario Conformance baseline 為 150 / 150 automated：24 deterministic、72 lifecycle、54 agent_eval、0 manual、0 uncovered。
