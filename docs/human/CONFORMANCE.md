@@ -1065,3 +1065,21 @@ Scenario 152 使用 Evolution Radar lifecycle evidence 驗證多社群研究擴�
 Deterministic pre-analysis 進一步把 Human shortlist 限制為 12、semantic queue 限制為 10、actionable semantic recommendations 限制為 5；community-only evidence 不得直接產生 ADOPT，未進 semantic queue 的 signals 保持 ANALYSIS_PENDING。
 
 目前 Scenario Conformance baseline 為 **152 / 152 automated**：24 deterministic、74 lifecycle、54 agent_eval、0 manual、0 uncovered。
+
+## Scenario 153 — Evolution Evidence Quality and Primary Corroboration
+
+Scenario 153 extends Technology Intelligence with a deterministic evidence-quality contract. Exact source provenance is converted into level 0–4 evidence strength without model inference: single-community discovery = 0, multi-community recurrence = 1, primary source = 2, primary + community = 3, and multiple primary sources = 4.
+
+The minimum advisory ADOPT evidence level is 2. Semantic providers can assess only the evidence metadata produced by deterministic code; they cannot raise evidence strength. Monthly and quarterly rollups preserve the same provenance/quality semantics, and local pre-analysis may use only a bounded evidence-priority bonus.
+
+Current automated inventory after Scenario 153:
+
+- deterministic: 24
+- lifecycle: 75
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 153 / 153
+
+Evidence strength is advisory input only and grants no Human-decision, implementation, PR, merge, release or publication authority.
+
