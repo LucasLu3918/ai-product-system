@@ -55,3 +55,20 @@ v0.11 將「Context 是否能在每個 Turn 載入」與「是否能在 Tool 執
 - Gemini CLI：Extension 使用 BeforeAgent + BeforeTool；驗證成功時可回報 `TOOL_GUARDED`。
 
 第一階段只攔截 Git publication 類操作。Guard 只驗證 Approval Record，不取代 Human 決策。
+
+## Gemini CLI AfterTool 可觀測事件 Trial
+
+Gemini CLI adapter 現在多了一個 **opt-in** 的 `AfterTool` capture hook，作為 Scenario 142 的 runtime-specific Trial。
+
+目前只監看：
+
+- `read_file`
+- `write_file`
+- `replace`
+
+而且預設關閉。只有同時設定 `AIPS_OBSERVABLE_EVENT_CAPTURE=1` 與明確的系統暫存路徑 sink 才會寫入 canonical metadata。
+
+Hook 不保存 `tool_input`、`tool_response`、prompt、response、private reasoning 或 secret；capture 錯誤只降低 evidence completeness，不會 deny 或改寫 Gemini CLI 原本的 tool result。需要注意：Gemini CLI 的 hook 機制是同步等待，因此這不是「零 latency blocking」；Trial 明確記錄 `synchronous_hook=true` / `latency_path=synchronous`。未啟用 capture 時 shell wrapper 直接 allow，不啟 Python。
+
+目前 CI 驗證的是官方 `AfterTool` input contract 與 extension wiring，尚未執行真實 Gemini CLI binary，所以仍為 `live_capture_verified=false`。
+

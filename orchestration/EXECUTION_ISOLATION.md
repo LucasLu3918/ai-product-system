@@ -151,3 +151,18 @@ Scenario 141 creates no Trial worktree and runs no live capture hook. It binds a
 
 Any future implementation of `AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md` that mutates a runtime adapter or installs a runtime hook returns to the normal Execution Isolation rules: explicit Change Boundary, isolated writer where applicable, exact-candidate validation and no publication authority derived from the adoption artifact.
 
+## Gemini CLI AfterTool capture Trial isolation
+
+Scenario 142 installs a source-controlled `AfterTool` hook into the existing Gemini CLI extension, but it does not create a writable Agent Trial workspace.
+
+The capture lane is isolated from normal project state by default:
+
+- capture is disabled unless explicitly enabled;
+- the sink must be an absolute path below the system temporary directory;
+- raw Gemini hook input is never persisted;
+- the bounded sink is owner-only and size-limited;
+- capture degradation does not change or block the original tool result;
+- no commit, branch, publication or runtime-remediation authority is derived from captured evidence.
+
+If a later verification executes a real Gemini CLI binary, that verification must use an exact candidate and an isolated disposable project/workspace. A successful hook invocation still does not authorize production persistence or broader tool matchers.
+

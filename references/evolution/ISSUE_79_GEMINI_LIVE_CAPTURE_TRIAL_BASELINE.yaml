@@ -1,0 +1,30 @@
+version: 1
+assessment_id: issue-79-gemini-live-capture-trial-baseline
+baseline:
+  repository_revision: e00c4c28b7d8a7e4a925d57c5c6613413d8be48d
+  version: 0.32.0
+  issue: 79
+  signal_fingerprint: sha256:7da9fc0c0ad89a0c7d0315aa2a5f4aa7ceb9842149a969a84708ce382c3082b3
+  signal_title: Agent Anomaly Detection, now in Private Preview on the Gemini Enterprise Agent Platform
+  adoption_fingerprint: sha256:1263e376a83926de458605f758b718fa6c7e0e3771d2ae19e6b53434f826ef89
+current_state: ADOPTED_DIRECTION
+runtime_candidate:
+  id: gemini-cli
+  reason: Existing AIPS Gemini CLI extension already uses native hooks and TOOL_GUARDED governance; current official Gemini CLI hook documentation defines AfterTool with tool_name, tool_input and tool_response.
+  hook_event: AfterTool
+  tool_scope: [read_file, write_file, replace]
+  live_runtime_execution_verified: false
+recommendation:
+  state: ADOPT
+  next_step: bounded_gemini_after_tool_implementation_trial
+  scope: Wire an opt-in, metadata-only Gemini CLI AfterTool capture hook and validate it against the official hook input contract without claiming real Gemini CLI execution in CI.
+authority:
+  human_decision_recorded: false
+  trial_authorized: false
+  live_runtime_capture_authorized: false
+  runtime_enforcement_authorized: false
+  automatic_remediation_authorized: false
+  code_change_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  publication_authorized: false

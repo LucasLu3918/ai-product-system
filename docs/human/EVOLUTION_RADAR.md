@@ -231,3 +231,30 @@ runtime adapter
 - Live observable-event capture：**ADOPTED DESIGN DIRECTION / NOT IMPLEMENTED**；
 - Semantic intent governance：仍為 ASSESS。
 
+## Issue #79 — Gemini CLI Runtime-Specific Capture Trial（Scenario 142）
+
+在 v0.32.0 採用 live-capture 設計方向後，第一個 runtime-specific Trial 選擇 Gemini CLI。
+
+選擇原因：
+
+- AIPS 已經有 Gemini CLI extension；
+- 已有 `BeforeAgent` / `BeforeTool` native hooks；
+- Gemini CLI 官方目前提供 `AfterTool` event，可在 tool execution 後收到 tool name/input/response；
+- 不需要新增 Role、Skill 或第二套 runtime framework。
+
+本 Trial 將 `AfterTool` capture 真正接入 extension，但預設 disabled，且只 capture file-tool metadata。Raw `tool_input` / `tool_response` 只存在 hook process memory，不會寫入 canonical event 或 sink。
+
+Trial result：
+
+- PASS；
+- 6/6 supported events captured；
+- unexpected loss 0；
+- leakage 0；
+- Resource Authorization monotonic；
+- anomaly evaluator reused；
+- real Gemini binary execution 尚未驗證。
+
+官方文件也確認 Gemini CLI 會同步等待 matching hook 完成；因此本 Trial 不把 `decision=allow` 誤寫成 asynchronous/non-blocking。它是 **non-enforcing but synchronous**，enabled overhead 受 CI 上限約束，disabled path 則直接由 shell allow、不啟 Python。
+
+因此目前狀態是 **implementation contract PASS / live runtime verification pending**，不是 production-ready live capture。
+

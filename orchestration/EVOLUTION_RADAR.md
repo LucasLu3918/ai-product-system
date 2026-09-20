@@ -217,3 +217,15 @@ This path does not weaken the normal stale-baseline rule. It creates a new curre
 
 For Issue #79, the Human ADOPT scope is design-only. The System Improvement Review adopts the future opt-in metadata-only POST_EXECUTION capture direction and defers all live runtime implementation to a separate later Trial.
 
+## Gemini CLI runtime-specific capture Trial
+
+After the v0.32 design-direction ADOPT, Scenario 142 selects one concrete runtime instead of broadening all adapters.
+
+Gemini CLI is selected because the existing AIPS harness already uses its native extension/hook mechanism. The Trial adds a bounded `AfterTool` hook for file tools only.
+
+The hook is opt-in and evidence-only. It always allows the original tool result to continue. When enabled, it projects safe metadata to an explicit system-temporary JSONL sink. Raw hook input is not persisted.
+
+CI validates current official AfterTool-shaped inputs, sanitizer projection, event-loss/degradation behavior, Resource Authorization monotonicity and bounded process overhead.
+
+Because CI does not execute an actual Gemini CLI process, the result is intentionally `HUMAN_REVIEW_RUNTIME_EXECUTION_VERIFICATION`, not full live-capture verification.
+

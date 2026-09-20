@@ -1007,4 +1007,15 @@ scenarios:
       - references/evolution/ISSUE_79_AGENT_ANOMALY_SYSTEM_IMPROVEMENT_REVIEW.yaml
       - orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md
       - tests/validate_repository.py
+  - id: "142"
+    path: tests/scenarios/142-gemini-cli-live-capture-implementation-trial.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/gemini_observable_event_capture_lifecycle.py
+      - scripts/gemini_observable_event_capture.py
+      - config/gemini-observable-event-capture.yaml
+      - harness/adapters/gemini-cli/hooks/hooks.json
+      - harness/adapters/gemini-cli/hooks/aips-observable-event-capture.sh
+      - references/evolution/ISSUE_79_GEMINI_LIVE_CAPTURE_TRIAL_RESULT.yaml
+      - tests/validate_repository.py
 
