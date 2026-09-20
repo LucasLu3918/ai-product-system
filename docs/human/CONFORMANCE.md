@@ -902,3 +902,36 @@ System Improvement Review 結論為 `SUITABLE_WITH_BOUNDS`：未來最小實作�
 
 目前 Scenario inventory 為 **141**：22 deterministic + 65 lifecycle + 54 agent_eval，**141 / 141 automated、0 manual、0 uncovered**。
 
+## Scenario 142 — Gemini CLI AfterTool Live-Capture Implementation Trial
+
+Scenario 142 選擇 **Gemini CLI** 作為第一個 concrete runtime，因為目前 AIPS 已有 Gemini CLI extension 與 native hook integration，不另外建立 runtime framework。
+
+本 Trial 新增真正的 `AfterTool` hook wiring，但 capture 預設仍為 disabled，只在顯式設定：
+
+~~~bash
+AIPS_OBSERVABLE_EVENT_CAPTURE=1
+AIPS_OBSERVABLE_EVENT_CAPTURE_SINK=/tmp/aips-gemini-events.jsonl
+~~~
+
+時啟動。
+
+v1 scope 僅涵蓋 `read_file|write_file|replace`，因此可以對 `network_used=false` 做誠實、deterministic 的 metadata mapping，不處理 shell / MCP / network tools。
+
+Bounded fixture evidence：
+
+- supported cases：6；
+- captured：6；
+- unexpected event loss：0；
+- degraded / skipped cases：4；
+- secret/private/raw leakage：0；
+- raw payload persisted：false；
+- capture subprocess overhead：CI 動態量測，8 samples，p95 必須 ≤ 1500 ms；repo 不提交會誤導的固定 runtime 數字。
+
+Hook 永遠回傳 `decision=allow`，因此 capture failure 不會 deny 或改寫原 tool result，也不具 enforcement/remediation authority。不過 Gemini CLI 官方 hook execution 是同步的，所以 Trial 明確區分「無 flow-control authority」與「有同步 latency path」：`critical_path=false` 只指 authorization/result enforcement，並另外記錄 `synchronous_hook=true` / `latency_path=synchronous`。
+
+CI 只驗證官方 AfterTool-shaped contract 與 source-controlled hook wiring；沒有執行真實 Gemini CLI binary，所以目前仍：
+
+`live_runtime_execution_verified=false`、`live_capture_verified=false`。
+
+目前 Scenario inventory 為 **142**：22 deterministic + 66 lifecycle + 54 agent_eval，**142 / 142 automated、0 manual、0 uncovered**。
+

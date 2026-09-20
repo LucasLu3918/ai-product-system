@@ -49,3 +49,23 @@ Remove only AIPS managed blocks/hooks/extensions. Preserve modified managed cont
 For substantial multi-step engineering work, a Runtime may resume from AIPS run checkpoints rather than replaying conversation history.
 
 Resume state never bypasses current Turn Context, Project Intelligence freshness, Change Impact, approval, security or verification rules. Revision drift makes the checkpoint STALE until affected evidence is refreshed.
+
+## Optional post-execution evidence hooks
+
+A runtime adapter may add a post-execution evidence hook only when the runtime exposes a native lifecycle point and the hook can remain narrower than the execution authority path.
+
+Scenario 142 adds the first implementation for Gemini CLI `AfterTool` with these invariants:
+
+- disabled by default;
+- bounded matcher scope (`read_file|write_file|replace`);
+- metadata-only structural projection;
+- explicit system-temporary sink;
+- no raw tool input/response persistence;
+- non-enforcing `decision=allow`; Gemini CLI still waits synchronously for the AfterTool command to return;
+- explicit truth that `critical_path=false` refers only to authorization/result-flow enforcement, while `synchronous_hook=true` / `latency_path=synchronous`; 
+- disabled fast path returns allow in the shell wrapper without launching Python;
+- capture failure degrades observability only;
+- no Resource Authorization widening, remediation or publication authority.
+
+Runtime-native contract verification and actual runtime execution verification are distinct. Source-controlled CI may verify hook schema/wiring while `live_runtime_execution_verified=false`; only an exact-candidate real-runtime Trial may promote that runtime-specific verification state.
+

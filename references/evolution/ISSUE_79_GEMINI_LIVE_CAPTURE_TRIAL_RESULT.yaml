@@ -1,0 +1,50 @@
+version: 1
+trial_id: issue-79-gemini-cli-after-tool-live-capture-v1
+baseline_repository_revision: e00c4c28b7d8a7e4a925d57c5c6613413d8be48d
+decision_fingerprint: sha256:8ea0332944037a89cc005b45b0d2cdc0eef5ffba405b4bd36e9ae9ecbb3d5e04
+runtime: gemini-cli
+adapter_id: gemini-cli-after-tool-v1
+hook_event: AfterTool
+hook_contract_verified: true
+extension_after_tool_wired: true
+enabled_by_default: false
+supported_tools: [read_file, write_file, replace]
+supported_case_count: 6
+captured_supported_cases: 6
+unexpected_event_loss: 0
+expected_degraded_cases: 4
+secret_private_raw_leakage: 0
+raw_payload_persisted: false
+resource_authorization_monotonic: true
+anomaly_evaluator_reused: true
+overhead:
+  measurement_mode: dynamic_ci_subprocess_assertion
+  sample_count: 8
+  max_allowed_ms: 1500
+  exact_measurement_committed: false
+runtime_verification:
+  official_after_tool_contract_verified: true
+  live_runtime_binary_required_for_full_verification: true
+  live_runtime_execution_verified: false
+  live_capture_verified: false
+status: PASS
+recommendation: HUMAN_REVIEW_RUNTIME_EXECUTION_VERIFICATION
+trial_fingerprint: sha256:298d35758ab9f73372d74544072adbba1d6e20f02f2259f549c98022ae10d8cb
+enforcement:
+  mode: POST_EXECUTION_EVIDENCE
+  runtime_enforced: false
+  critical_path: false
+  critical_path_semantics: authorization_or_result_enforcement_only
+  synchronous_hook: true
+  latency_path: synchronous
+  result_flow_control_authorized: false
+  automatic_remediation: false
+authority:
+  human_adoption_decision_required: true
+  live_runtime_capture_authorized: false
+  runtime_enforcement_authorized: false
+  automatic_remediation_authorized: false
+  human_approval_granted: false
+  merge_authorized: false
+  release_authorized: false
+  publication_authorized: false

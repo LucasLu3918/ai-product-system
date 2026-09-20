@@ -48,7 +48,7 @@ Future configuration MUST default to disabled.
 enabled: false
 mode: POST_EXECUTION_EVIDENCE
 runtime_enforced: false
-critical_path: false
+critical_path: false  # authorization/result-enforcement semantics only
 automatic_remediation: false
 ~~~
 
@@ -69,7 +69,7 @@ Raw payload persistence is not part of the adopted design.
 
 ## Failure and backpressure semantics
 
-The capture lane remains outside the critical execution path.
+The preferred capture lane remains outside authorization/result enforcement. Runtime lifecycle APIs may still be synchronous from a latency perspective; an implementation MUST state this explicitly instead of using `critical_path=false` to imply asynchronous execution.
 
 A future implementation must use bounded buffering and must surface degraded observability truthfully when events cannot be captured or processed. Capture/evaluator failure must not rewrite the observed tool result and must not silently claim complete evidence.
 
@@ -100,3 +100,56 @@ That later scope must not include semantic intent governance or automatic remedi
 ## Architecture diagram impact
 
 Current-state architecture diagrams are intentionally unchanged because this release does not add a live runtime path. This document is the future-state design diagram until a verified runtime implementation exists.
+
+## First runtime-specific implementation Trial — Gemini CLI
+
+Scenario 142 selects Gemini CLI as the first implementation target.
+
+The extension now contains a native `AfterTool` hook wired only to:
+
+- `read_file`;
+- `write_file`;
+- `replace`.
+
+The limited matcher is deliberate. These file tools allow the v1 event contract to state `network_used=false` without parsing tool arguments or inferring shell/network behavior.
+
+### Opt-in activation
+
+Capture remains disabled by default. A bounded verification run must explicitly provide both:
+
+~~~bash
+AIPS_OBSERVABLE_EVENT_CAPTURE=1
+AIPS_OBSERVABLE_EVENT_CAPTURE_SINK=/tmp/aips-gemini-events.jsonl
+~~~
+
+The sink must be absolute and stay below the system temporary directory. The file is size-bounded and created with owner-only permissions.
+
+### Projection boundary
+
+Gemini CLI AfterTool input may include `tool_input` and `tool_response`. The capture implementation deliberately does not serialize either object. It derives only:
+
+- deterministic event id from session/timestamp/tool identity;
+- observed timestamp;
+- runtime / adapter ids;
+- fixed subject;
+- resource id + operation from the allowlisted tool map;
+- SUCCESS / FAILED from presence of `tool_response.error`;
+- `network_used=false` for the bounded file-tool scope.
+
+This structural projection prevents raw tool arguments, response text, private reasoning and secret-like values from entering the event sink.
+
+### Failure semantics
+
+Capture is non-enforcing but **synchronous**. Gemini CLI waits for AfterTool hooks to finish. The hook always returns `decision=allow`, so missing sink, malformed metadata, unsupported tool or full bounded sink degrades evidence only and must not deny or rewrite the original tool result. The disabled shell path returns allow without starting Python; enabled-hook overhead is bounded and measured in CI. For this Trial, `critical_path=false` refers only to authorization/result-enforcement semantics, while `synchronous_hook=true` and `latency_path=synchronous` state the latency truth.
+
+### Verification truth
+
+Source-controlled CI verifies the official AfterTool-shaped contract and extension wiring, but does not run a real Gemini CLI binary. Therefore this Trial keeps:
+
+~~~yaml
+live_runtime_execution_verified: false
+live_capture_verified: false
+~~~
+
+The next gate is a real-runtime execution verification on an exact candidate. Only that later evidence may change these flags for Gemini CLI.
+

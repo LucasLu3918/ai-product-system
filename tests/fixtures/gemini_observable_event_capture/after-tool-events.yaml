@@ -1,0 +1,112 @@
+version: 1
+trial_id: issue-79-gemini-cli-after-tool-live-capture-v1
+cases:
+  - id: read-success
+    expect: CAPTURED
+    payload:
+      session_id: session-a
+      transcript_path: /tmp/transcript-a.json
+      cwd: /tmp/project
+      hook_event_name: AfterTool
+      timestamp: "2026-09-20T02:00:01Z"
+      tool_name: read_file
+      tool_input: {file_path: src/app.py}
+      tool_response: {llmContent: "file content", returnDisplay: "ok"}
+  - id: write-success-secret-input
+    expect: CAPTURED
+    forbidden_marker: super-secret-value
+    payload:
+      session_id: session-b
+      transcript_path: /tmp/transcript-b.json
+      cwd: /tmp/project
+      hook_event_name: AfterTool
+      timestamp: "2026-09-20T02:00:02Z"
+      tool_name: write_file
+      tool_input: {file_path: src/app.py, content: "api_key=super-secret-value", private_reasoning: "never persist me"}
+      tool_response: {llmContent: "wrote secret-like content", returnDisplay: "ok"}
+  - id: replace-success
+    expect: CAPTURED
+    payload:
+      session_id: session-c
+      transcript_path: /tmp/transcript-c.json
+      cwd: /tmp/project
+      hook_event_name: AfterTool
+      timestamp: "2026-09-20T02:00:03Z"
+      tool_name: replace
+      tool_input: {file_path: src/app.py, old_string: old, new_string: new}
+      tool_response: {llmContent: "replaced", returnDisplay: "ok"}
+  - id: read-failure
+    expect: CAPTURED
+    payload:
+      session_id: session-d
+      transcript_path: /tmp/transcript-d.json
+      cwd: /tmp/project
+      hook_event_name: AfterTool
+      timestamp: "2026-09-20T02:00:04Z"
+      tool_name: read_file
+      tool_input: {file_path: missing.txt}
+      tool_response: {error: "not found", llmContent: "failure"}
+  - id: write-failure
+    expect: CAPTURED
+    payload:
+      session_id: session-e
+      transcript_path: /tmp/transcript-e.json
+      cwd: /tmp/project
+      hook_event_name: AfterTool
+      timestamp: "2026-09-20T02:00:05Z"
+      tool_name: write_file
+      tool_input: {file_path: readonly.txt, content: value}
+      tool_response: {error: "permission denied"}
+  - id: replace-failure
+    expect: CAPTURED
+    payload:
+      session_id: session-f
+      transcript_path: /tmp/transcript-f.json
+      cwd: /tmp/project
+      hook_event_name: AfterTool
+      timestamp: "2026-09-20T02:00:06Z"
+      tool_name: replace
+      tool_input: {file_path: src/app.py, old_string: absent, new_string: new}
+      tool_response: {error: "old string not found"}
+  - id: unsupported-shell
+    expect: SKIPPED_UNSUPPORTED
+    payload:
+      session_id: session-g
+      transcript_path: /tmp/transcript-g.json
+      cwd: /tmp/project
+      hook_event_name: AfterTool
+      timestamp: "2026-09-20T02:00:07Z"
+      tool_name: run_shell_command
+      tool_input: {command: curl example.invalid}
+      tool_response: {llmContent: "ignored by v1 capture scope"}
+  - id: wrong-hook-event
+    expect: DEGRADED
+    payload:
+      session_id: session-h
+      transcript_path: /tmp/transcript-h.json
+      cwd: /tmp/project
+      hook_event_name: BeforeTool
+      timestamp: "2026-09-20T02:00:08Z"
+      tool_name: read_file
+      tool_input: {file_path: src/app.py}
+      tool_response: {llmContent: "not an AfterTool event"}
+  - id: missing-timestamp
+    expect: DEGRADED
+    payload:
+      session_id: session-i
+      transcript_path: /tmp/transcript-i.json
+      cwd: /tmp/project
+      hook_event_name: AfterTool
+      tool_name: read_file
+      tool_input: {file_path: src/app.py}
+      tool_response: {llmContent: "missing timestamp"}
+  - id: missing-response
+    expect: DEGRADED
+    payload:
+      session_id: session-j
+      transcript_path: /tmp/transcript-j.json
+      cwd: /tmp/project
+      hook_event_name: AfterTool
+      timestamp: "2026-09-20T02:00:10Z"
+      tool_name: read_file
+      tool_input: {file_path: src/app.py}

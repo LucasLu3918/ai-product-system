@@ -1,0 +1,25 @@
+version: 1
+default_effect: DENY
+subject:
+  id: gemini-cli-agent
+  role: runtime-adapter
+grants:
+  - id: gemini-cli-read-file
+    kind: runtime_tool
+    selector: read_file
+    operations: [read]
+    constraints:
+      change_boundary_required: false
+      network_allowed: false
+  - id: gemini-cli-write-file
+    kind: runtime_tool
+    selector: write_file|replace
+    operations: [update]
+    constraints:
+      change_boundary_required: false
+      network_allowed: false
+authority:
+  human_approval_granted: false
+  merge_authorized: false
+  release_authorized: false
+  protected_operation_authorized: false

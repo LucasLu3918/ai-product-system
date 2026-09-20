@@ -1,0 +1,33 @@
+version: 1
+decision:
+  candidate_id: EVO-7DA9FC0C0AD8
+  signal_fingerprint: sha256:7da9fc0c0ad89a0c7d0315aa2a5f4aa7ceb9842149a969a84708ce382c3082b3
+  signal_title: Agent Anomaly Detection, now in Private Preview on the Gemini Enterprise Agent Platform
+  evidence_digest: sha256:45f46df1770c18d3fcd7eaa833e93492a9e7dc610555de9346e5aec05be0cda9
+  baseline_repository_revision: e00c4c28b7d8a7e4a925d57c5c6613413d8be48d
+  baseline_status: CURRENT
+  recommendation_state: ADOPT
+  decision: TRIAL
+  approved_scope: Bounded Gemini CLI AfterTool implementation Trial for read_file/write_file/replace using opt-in metadata-only POST_EXECUTION capture to an explicit ephemeral sink; no default-on capture, production persistence, runtime enforcement, semantic intent governance, or automatic remediation.
+  approved_paths:
+    - harness/adapters/gemini-cli/**
+    - scripts/gemini_observable_event_capture.py
+    - config/gemini-observable-event-capture.yaml
+    - tests/**
+    - references/evolution/**
+    - orchestration/**
+    - docs/human/**
+    - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
+  reason: The repository maintainer explicitly authorized implementing the recommended next step. The Trial is limited to one concrete runtime adapter and must remain opt-in, metadata-only, POST_EXECUTION, non-blocking, and non-remediating.
+  human_override: false
+  decided_by: repository maintainer LucasLu3918
+  decided_at: "2026-09-20T10:29:00+08:00"
+  next_action: controlled_trial_execution
+decision_fingerprint: sha256:8ea0332944037a89cc005b45b0d2cdc0eef5ffba405b4bd36e9ae9ecbb3d5e04
+authority:
+  human_decision_recorded: true
+  code_change_authorized: false
+  branch_or_pr_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  normal_system_gates_required: true

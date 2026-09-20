@@ -26,6 +26,20 @@
           }
         ]
       }
+    ],
+    "AfterTool": [
+      {
+        "matcher": "read_file|write_file|replace",
+        "hooks": [
+          {
+            "name": "aips-observable-event-capture",
+            "type": "command",
+            "command": "\"${extensionPath}${/}hooks${/}aips-observable-event-capture.sh\"",
+            "timeout": 2000,
+            "description": "Opt-in metadata-only AIPS observable-event capture after supported file tools"
+          }
+        ]
+      }
     ]
   }
 }

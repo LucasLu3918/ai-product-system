@@ -315,3 +315,30 @@ Current automated inventory:
 - uncovered: 0
 - automated: 141 / 141
 
+## Scenario 142 — Gemini CLI AfterTool capture Trial
+
+Scenario 142 is lifecycle-covered by `tests/evidence/gemini_observable_event_capture_lifecycle.py`.
+
+It proves the first runtime-specific capture implementation can:
+
+- wire the existing Gemini CLI extension to native `AfterTool`;
+- stay disabled by default;
+- restrict v1 matching to `read_file|write_file|replace`;
+- project only canonical metadata;
+- never persist raw `tool_input` / `tool_response`, private reasoning or secret-like values;
+- capture 6/6 supported fixtures with zero unexpected event loss;
+- degrade/skip malformed or unsupported input without changing tool execution;
+- stay monotonic with Resource Authorization and reuse the existing anomaly evaluator;
+- assert bounded subprocess overhead in CI.
+
+The source-controlled Trial does not execute a real Gemini CLI binary. Therefore both `live_runtime_execution_verified` and `live_capture_verified` remain false.
+
+Current automated inventory:
+
+- deterministic: 22
+- lifecycle: 66
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 142 / 142
+

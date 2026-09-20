@@ -1,0 +1,45 @@
+version: 1
+runtime: gemini-cli
+adapter_id: gemini-cli-after-tool-v1
+hook_event: AfterTool
+enabled_by_default: false
+enable_env: AIPS_OBSERVABLE_EVENT_CAPTURE
+sink_env: AIPS_OBSERVABLE_EVENT_CAPTURE_SINK
+sink_policy: explicit_temp_file_only
+max_sink_bytes: 65536
+subject: gemini-cli-agent
+mode: POST_EXECUTION_EVIDENCE
+supported_tools:
+  read_file:
+    resource_id: gemini-cli-read-file
+    operation: read
+    network_used: false
+  write_file:
+    resource_id: gemini-cli-write-file
+    operation: update
+    network_used: false
+  replace:
+    resource_id: gemini-cli-write-file
+    operation: update
+    network_used: false
+verification:
+  official_after_tool_contract_verified: true
+  official_contract_checked_at: "2026-09-20"
+  live_runtime_execution_verified: false
+  live_capture_verified: false
+enforcement:
+  runtime_enforced: false
+  critical_path: false
+  critical_path_semantics: authorization_or_result_enforcement_only
+  synchronous_hook: true
+  latency_path: synchronous
+  result_flow_control_authorized: false
+  automatic_remediation: false
+authority:
+  live_runtime_capture_authorized: false
+  runtime_enforcement_authorized: false
+  automatic_remediation_authorized: false
+  human_approval_granted: false
+  merge_authorized: false
+  release_authorized: false
+  publication_authorized: false
