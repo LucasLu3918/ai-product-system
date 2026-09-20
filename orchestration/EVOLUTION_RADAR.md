@@ -294,3 +294,7 @@ Forbidden interpretation:
 - no Human Decision or implementation/publication authority is created.
 
 The artifact is content-deterministic and bound to the exact evidence digest, repository revision, local-preanalysis configuration digest and Capability Map digest. Semantic analysis remains a separate optional layer.
+
+## Capability Map repository-health reconciliation
+
+The Evolution Capability Map includes integration-gate and repository-health-architecture-drift. Repository Health verifies source-controlled architecture consistency but does not mutate Radar semantic state, recommendation state, Human decisions or implementation authority.

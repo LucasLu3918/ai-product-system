@@ -206,3 +206,7 @@ A credential-free/default execution lane must not inherit an external provider s
 The deterministic pre-analysis is a read-only evidence transform. It does not create a Trial worktree, invoke an Agent provider, mutate project source, or perform any additional network access.
 
 Its inputs are bounded to committed configuration/Capability Map plus the already-collected Radar evidence. Output may be published into the Human review Issue as advisory triage metadata, but it grants no code-write, branch/PR, merge, release, publication, Human-decision, runtime-enforcement, or remediation authority.
+
+## Repository Health interaction
+
+Repository Health / Architecture Drift is read-only validation evidence. It may inspect source-controlled files and invoke Scenario Conformance, but it creates no execution workspace, claims no writer boundary, performs no remediation, and grants no runtime, code-change, PR, merge, release or publication authority.
