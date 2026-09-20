@@ -1029,7 +1029,7 @@ scenarios:
       - harness/adapters/gemini-cli/gemini-extension.json
       - tests/validate_repository.py
 
-- id: "144"
+  - id: "144"
     path: tests/scenarios/144-optional-external-provider-credentials.md
     coverage: deterministic
     evidence:
