@@ -33,6 +33,11 @@
 <p><code>scripts/repository_health.py</code> performs credential-free deterministic repository consistency checks using <code>config/repository-health.yaml</code>.</p>
 <p>It reuses the Capability Map, Scenario Conformance, documentation references and Integration Gate wiring. Output is evidence only: <code>PASS</code> or <code>DRIFT_DETECTED</code>; there is no automatic remediation, merge, release, publication or credential authority.</p>
 </section>
+<section id="repository-health-evidence-binding">
+<h2>Repository Health Evidence Binding</h2>
+<p>Repository Health 現在會把 Capability targets、core surfaces、documentation bindings、Scenario inputs/evidence references 與 validation contract files 組成 sorted input manifest，對存在的檔案記錄 SHA-256，並產生 manifest digest 與 evidence fingerprint。</p>
+<p>Git workspace 會明確標示 <code>EXACT_REVISION</code>、<code>DIRTY_WORKTREE</code> 或 <code>NO_GIT</code>。Dirty workspace 不會被誤稱為 exact-revision reproducible，也不會因此自動修檔或取得 merge/release authority。</p>
+</section>
 </main>
 <section id="v027-governance-hardening">
 <h2>v0.27 Governance Hardening</h2>

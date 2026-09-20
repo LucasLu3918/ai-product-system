@@ -443,3 +443,18 @@ Current automated inventory after Scenario 146:
 Repository Health / Architecture Drift invokes this existing Scenario Conformance checker for scenario_evidence_drift. This file, tests/scenario_coverage.yaml and scripts/scenario_conformance.py remain the canonical Scenario evidence model; Repository Health must not reimplement or reinterpret Scenario coverage semantics.
 
 Scenario 147 is lifecycle-covered by tests/evidence/repository_health_lifecycle.py. The current v0.38 target is 147 automated Scenarios: 24 deterministic + 69 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+
+## Scenario 148 — Repository Health evidence binding
+
+Scenario 148 is lifecycle-covered by `tests/evidence/repository_health_lifecycle.py`. It proves that Repository Health binds all configured audit inputs in a sorted content-digested manifest, exposes missing bound files explicitly, and derives a deterministic evidence fingerprint from repository revision, workspace status, dirty paths, manifest digest and drift output.
+
+Clean Git workspaces report `EXACT_REVISION` and `revision_reproducible=true`. Dirty Git workspaces report `DIRTY_WORKTREE` and `revision_reproducible=false`; non-Git workspaces report `NO_GIT`. Dirty state alone is evidence metadata rather than architecture drift, so the audit does not silently mutate files or reinterpret PASS/DRIFT semantics.
+
+Current automated inventory after Scenario 148:
+
+- deterministic: 24
+- lifecycle: 70
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 148 / 148

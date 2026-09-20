@@ -19,7 +19,7 @@ Run:
 
     python scripts/repository_health.py audit --config config/repository-health.yaml
 
-The v1 detector reports missing_capability_targets, orphan_capability_surfaces, stale_documentation_links, scenario_evidence_drift, and workflow_contract_drift. Its report binds the exact digests of config/repository-health.yaml, references/evolution/CAPABILITY_MAP.yaml, and tests/scenario_coverage.yaml plus the current repository revision when Git is available.
+The v1 detector reports missing_capability_targets, orphan_capability_surfaces, stale_documentation_links, scenario_evidence_drift, and workflow_contract_drift.
 
 ## Baseline reconciliation
 
@@ -34,3 +34,37 @@ The detector uses explicit source-controlled surfaces and bounded guard/gate dis
 Status is PASS or DRIFT_DETECTED. PASS means only that configured consistency contracts hold. Version 1 is Detect + Evidence + Human Review only and performs no remediation.
 
 Every report keeps credential_required=false, external_network_required=false, automatic_remediation_performed=false and every automatic-remediation, code-change, branch/PR, merge, release and publication authority field false. Repository Health evidence cannot authorize protected operations or credential acquisition.
+
+## Complete evidence binding
+
+Repository Health builds a deterministic input manifest for every configured file that can affect the audit:
+
+- the Repository Health config itself;
+- Capability Map plus canonical capability documentation targets;
+- configured core capability surfaces and bounded discovered guard/gate files;
+- documentation binding sources and required targets;
+- the Scenario registry, Scenario inventory, Scenario checker and non-external evidence references;
+- Integration Gate / repository-validation contract files.
+
+Each existing entry records a SHA-256 digest; missing bound files remain explicit with `exists=false` and `digest=null`. The sorted manifest has its own digest.
+
+The report then computes an evidence fingerprint over repository revision, workspace binding state, dirty paths, manifest digest and drift result. This is evidence identity only; it does not create approval authority.
+
+## Dirty-worktree truth
+
+A clean Git checkout reports:
+
+- `status=EXACT_REVISION`;
+- `revision_reproducible=true`.
+
+A Git checkout with staged, unstaged or untracked files reports:
+
+- `status=DIRTY_WORKTREE`;
+- `revision_reproducible=false`;
+- the exact sorted dirty paths.
+
+A non-Git workspace reports `NO_GIT` rather than inventing a revision.
+
+Dirty state is not architecture drift by itself. The audit may still be `PASS` when configured consistency contracts hold, but the evidence cannot be described as exact-revision reproducible. Restoring identical inputs restores the same deterministic manifest/fingerprint.
+
+The source-controlled policy is `evidence_binding.manifest=complete` and `dirty_workspace=report_non_reproducible`.
