@@ -159,6 +159,7 @@ jobs:
         run: >-
           python scripts/evolution_analysis.py package
           --evidence evolution-radar.yaml
+          --preanalysis evolution-local-preanalysis.yaml
           --capabilities references/evolution/CAPABILITY_MAP.yaml
           --output evolution-analysis-package.yaml
 
@@ -230,7 +231,7 @@ jobs:
         run: |
           analyzed_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           model="${AIPS_EVOLUTION_MODEL:-provider-default}"
-          python scripts/evolution_analysis.py finalize             --evidence evolution-radar.yaml             --result evolution-analysis-result.json             --provider openai-codex-action             --model "$model"             --analyzed-at "$analyzed_at"             --output evolution-analysis.yaml
+          python scripts/evolution_analysis.py finalize             --evidence evolution-radar.yaml             --package evolution-analysis-package.yaml             --result evolution-analysis-result.json             --provider openai-codex-action             --model "$model"             --analyzed-at "$analyzed_at"             --output evolution-analysis.yaml
           python scripts/evolution_analysis.py apply             --evidence evolution-radar.yaml             --analysis evolution-analysis.yaml             --output evolution-radar-analyzed.yaml
           mv evolution-radar-analyzed.yaml evolution-radar.yaml
 

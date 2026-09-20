@@ -58,15 +58,35 @@ def aggregate_signals(docs: list[dict[str, Any]]) -> list[dict[str, Any]]:
             fp = signal.get("fingerprint")
             if not fp:
                 continue
+            source_id = str(signal.get("source_id") or "")
+            source_ids = list(signal.get("source_ids") or ([source_id] if source_id else []))
+            source_roles = list(
+                signal.get("source_roles")
+                or ([signal.get("source_role")] if signal.get("source_role") else ["legacy"])
+            )
             if fp not in seen:
                 item = dict(signal)
                 item["recurrence_count"] = int(item.get("recurrence_count") or 1)
                 item["duplicate_of"] = None
+                item["source_ids"] = sorted(set(str(x) for x in source_ids if x))
+                item["source_roles"] = sorted(set(str(x) for x in source_roles if x))
                 seen[fp] = item
             else:
                 seen[fp]["recurrence_count"] += int(signal.get("recurrence_count") or 1)
-    return list(seen.values())
+                seen[fp]["source_ids"] = sorted(set(seen[fp].get("source_ids") or []) | set(str(x) for x in source_ids if x))
+                seen[fp]["source_roles"] = sorted(set(seen[fp].get("source_roles") or []) | set(str(x) for x in source_roles if x))
 
+    for item in seen.values():
+        roles = set(item.get("source_roles") or ["legacy"])
+        if "primary" in roles and "community" in roles:
+            item["verification_status"] = "PRIMARY_CORROBORATED"
+        elif "primary" in roles:
+            item["verification_status"] = "PRIMARY_SOURCE"
+        elif "community" in roles:
+            item["verification_status"] = "DISCOVERY_ONLY"
+        else:
+            item["verification_status"] = "LEGACY_UNVERIFIED"
+    return list(seen.values())
 
 def pending_recommendations(signals: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return [
@@ -222,6 +242,17 @@ def issue_markdown(doc: dict[str, Any], handoff_text: str | None = None, preanal
         f"- Actionable recommendations: {summary.get('actionable_count', 0)}",
         f"- Source failures: {len(sources.get('failures') or [])}",
     ]
+    coverage = sources.get("community_coverage") or {}
+    if coverage:
+        lines.append(
+            f"- Community coverage: {coverage.get('successful', 0)}/{coverage.get('target', 0)} "
+            f"(required {coverage.get('required', 0)}) — {coverage.get('status')}"
+        )
+    if "global_signal_limit" in summary:
+        lines.append(
+            f"- Weekly raw signal budget: {summary.get('signal_count', 0)}/{summary.get('global_signal_limit', 0)} "
+            f"(collected before cap: {summary.get('collected_before_global_limit', 0)})"
+        )
     if mode == "monthly":
         if run.get("period"):
             lines.append(f"- Review period: {run.get('period')}")

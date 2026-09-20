@@ -256,6 +256,7 @@ def collect_source(
 ) -> list[dict[str, Any]]:
     kind = source.get("kind")
     url = source.get("url")
+    role = str(source.get("role") or "legacy")
     fetch_options = {
         "max_response_bytes": max_response_bytes,
         "max_redirects": max_redirects,
@@ -288,10 +289,10 @@ def collect_source(
             "title": title,
             "canonical_url": url_value,
             "source_id": source["id"],
+            "source_role": role,
             "published_at": item.get("published_at"),
         })
     return out
-
 
 def _policy_int(policy: dict[str, Any], key: str, default: int, errors: list[str]) -> int:
     try:
@@ -306,14 +307,23 @@ def validate_config(doc: dict[str, Any]) -> list[str]:
     policy = doc.get("policy") or {}
     sources = [s for s in (doc.get("sources") or []) if s.get("enabled", True)]
     minimum = _policy_int(policy, "minimum_sources_when_available", 5, errors)
-    maximum = _policy_int(policy, "max_items_per_source", 5, errors)
+    minimum_community = _policy_int(policy, "minimum_community_sources_when_available", 5, errors)
+    target_community = _policy_int(policy, "target_community_sources", 6, errors)
+    maximum = _policy_int(policy, "max_items_per_source", 8, errors)
+    max_raw_signals = _policy_int(policy, "max_raw_signals", 50, errors)
     max_response_bytes = _policy_int(policy, "max_response_bytes", DEFAULT_MAX_RESPONSE_BYTES, errors)
     max_redirects = _policy_int(policy, "max_redirects", DEFAULT_MAX_REDIRECTS, errors)
 
     if minimum < 1:
         errors.append("minimum_sources_when_available must be >= 1")
+    if minimum_community < 1:
+        errors.append("minimum_community_sources_when_available must be >= 1")
+    if target_community < minimum_community:
+        errors.append("target_community_sources must be >= minimum_community_sources_when_available")
     if maximum < 1 or maximum > 25:
         errors.append("max_items_per_source must be between 1 and 25")
+    if max_raw_signals < maximum or max_raw_signals > 250:
+        errors.append("max_raw_signals must be between max_items_per_source and 250")
     if max_response_bytes < 1024 or max_response_bytes > 10 * 1024 * 1024:
         errors.append("max_response_bytes must be between 1024 and 10485760")
     if max_redirects < 0 or max_redirects > 10:
@@ -329,8 +339,19 @@ def validate_config(doc: dict[str, Any]) -> list[str]:
     if len(sources) < minimum:
         errors.append(f"configured enabled sources {len(sources)} is below minimum {minimum}")
 
+    communities = [s for s in sources if s.get("role") == "community"]
+    if len(communities) < target_community:
+        errors.append(
+            f"configured community sources {len(communities)} is below target {target_community}"
+        )
+
     for source in sources:
         source_id = source.get("id")
+        role = source.get("role")
+        if role not in {"community", "primary"}:
+            errors.append(f"source {source_id} role must be community or primary")
+        if "best_effort" in source and not isinstance(source.get("best_effort"), bool):
+            errors.append(f"source {source_id} best_effort must be boolean")
         for field in ("url", "item_url_template"):
             value = source.get(field)
             if value is None:
@@ -345,20 +366,66 @@ def validate_config(doc: dict[str, Any]) -> list[str]:
             errors.append(f"source {source_id} json source requires item_url_template")
     return errors
 
-
 def deduplicate(signals: list[dict[str, Any]]) -> list[dict[str, Any]]:
     seen: dict[str, dict[str, Any]] = {}
     for signal in signals:
         fp = signal["fingerprint"]
+        source_id = str(signal.get("source_id") or "")
+        source_role = str(signal.get("source_role") or "legacy")
         if fp not in seen:
             item = dict(signal)
             item["recurrence_count"] = 1
             item["duplicate_of"] = None
+            item["source_ids"] = [source_id] if source_id else []
+            item["source_roles"] = [source_role]
             seen[fp] = item
         else:
             seen[fp]["recurrence_count"] += 1
+            if source_id and source_id not in seen[fp]["source_ids"]:
+                seen[fp]["source_ids"].append(source_id)
+            if source_role not in seen[fp]["source_roles"]:
+                seen[fp]["source_roles"].append(source_role)
+
+    for item in seen.values():
+        item["source_ids"] = sorted(item["source_ids"])
+        item["source_roles"] = sorted(item["source_roles"])
+        roles = set(item["source_roles"])
+        if "primary" in roles and "community" in roles:
+            item["verification_status"] = "PRIMARY_CORROBORATED"
+        elif "primary" in roles:
+            item["verification_status"] = "PRIMARY_SOURCE"
+        elif "community" in roles:
+            item["verification_status"] = "DISCOVERY_ONLY"
+        else:
+            item["verification_status"] = "LEGACY_UNVERIFIED"
     return list(seen.values())
 
+
+def bound_signals_by_source(
+    signals: list[dict[str, Any]],
+    source_order: list[str],
+    max_total: int,
+) -> list[dict[str, Any]]:
+    """Apply a deterministic global cap without letting early sources monopolize the budget."""
+    buckets: dict[str, list[dict[str, Any]]] = {source_id: [] for source_id in source_order}
+    for signal in signals:
+        buckets.setdefault(str(signal.get("source_id") or ""), []).append(signal)
+
+    bounded: list[dict[str, Any]] = []
+    index = 0
+    while len(bounded) < max_total:
+        progressed = False
+        for source_id in source_order:
+            bucket = buckets.get(source_id) or []
+            if index < len(bucket):
+                bounded.append(bucket[index])
+                progressed = True
+                if len(bounded) >= max_total:
+                    break
+        if not progressed:
+            break
+        index += 1
+    return bounded
 
 def build_evidence(config: dict[str, Any], *, mode: str, timeout: float = 8.0) -> dict[str, Any]:
     if mode not in {"weekly", "monthly"}:
@@ -369,28 +436,42 @@ def build_evidence(config: dict[str, Any], *, mode: str, timeout: float = 8.0) -
 
     policy = config["policy"]
     maximum = int(policy["max_items_per_source"])
+    max_raw_signals = int(policy["max_raw_signals"])
+    minimum_community = int(policy["minimum_community_sources_when_available"])
+    target_community = int(policy["target_community_sources"])
     max_response_bytes = int(policy["max_response_bytes"])
     max_redirects = int(policy["max_redirects"])
     enabled = [s for s in config["sources"] if s.get("enabled", True)]
+    source_order = [str(s["id"]) for s in enabled]
     attempted: list[str] = []
+    successful: list[str] = []
+    successful_community: list[str] = []
     failures: list[dict[str, str]] = []
     collected: list[dict[str, Any]] = []
-    for source in enabled:
-        attempted.append(source["id"])
-        try:
-            collected.extend(
-                collect_source(
-                    source,
-                    maximum,
-                    timeout,
-                    max_response_bytes=max_response_bytes,
-                    max_redirects=max_redirects,
-                )
-            )
-        except (OSError, ValueError, ET.ParseError, json.JSONDecodeError, http.client.HTTPException) as exc:
-            failures.append({"source_id": source["id"], "error": type(exc).__name__})
 
-    unique = deduplicate(collected)
+    for source in enabled:
+        source_id = str(source["id"])
+        attempted.append(source_id)
+        try:
+            items = collect_source(
+                source,
+                maximum,
+                timeout,
+                max_response_bytes=max_response_bytes,
+                max_redirects=max_redirects,
+            )
+            if not items:
+                failures.append({"source_id": source_id, "error": "EmptySource"})
+                continue
+            successful.append(source_id)
+            if source.get("role") == "community":
+                successful_community.append(source_id)
+            collected.extend(items)
+        except (OSError, ValueError, ET.ParseError, json.JSONDecodeError, http.client.HTTPException) as exc:
+            failures.append({"source_id": source_id, "error": type(exc).__name__})
+
+    bounded = bound_signals_by_source(collected, source_order, max_raw_signals)
+    unique = deduplicate(bounded)
     recommendations = [
         {
             "signal_fingerprint": signal["fingerprint"],
@@ -407,6 +488,12 @@ def build_evidence(config: dict[str, Any], *, mode: str, timeout: float = 8.0) -
         }
         for signal in unique
     ]
+    community_coverage = {
+        "required": minimum_community,
+        "target": target_community,
+        "successful": len(successful_community),
+        "status": "HEALTHY" if len(successful_community) >= minimum_community else "DEGRADED",
+    }
     return {
         "version": 1,
         "run": {
@@ -416,14 +503,21 @@ def build_evidence(config: dict[str, Any], *, mode: str, timeout: float = 8.0) -
             "analyzer": {"status": "unavailable", "provider": None, "model": None},
         },
         "sources": {
-            "configured": [s["id"] for s in enabled],
+            "configured": source_order,
+            "roles": {str(s["id"]): str(s.get("role") or "legacy") for s in enabled},
             "attempted": attempted,
+            "successful": successful,
+            "successful_community": successful_community,
+            "community_coverage": community_coverage,
             "failures": failures,
         },
         "signals": unique,
         "recommendations": recommendations,
         "summary": {
-            "signal_count": len(collected),
+            "collected_before_global_limit": len(collected),
+            "signal_count": len(bounded),
+            "global_signal_limit": max_raw_signals,
+            "global_signal_limit_applied": len(collected) > len(bounded),
             "deduplicated_count": len(unique),
             "recommendation_count": len(recommendations),
             "actionable_count": 0,
@@ -437,7 +531,6 @@ def build_evidence(config: dict[str, Any], *, mode: str, timeout: float = 8.0) -
             "human_decision_required": True,
         },
     }
-
 
 def validate_evidence(doc: dict[str, Any]) -> list[str]:
     errors: list[str] = []
@@ -454,15 +547,41 @@ def validate_evidence(doc: dict[str, Any]) -> list[str]:
     attempted = sources.get("attempted") or []
     if not configured or set(attempted) - set(configured):
         errors.append("attempted sources must be configured")
+    successful = sources.get("successful")
+    if successful is not None and set(successful) - set(attempted):
+        errors.append("successful sources must be attempted")
+    successful_community = sources.get("successful_community")
+    if successful_community is not None and set(successful_community) - set(successful or []):
+        errors.append("successful community sources must be successful sources")
+    coverage = sources.get("community_coverage")
+    if coverage is not None:
+        if coverage.get("status") not in {"HEALTHY", "DEGRADED"}:
+            errors.append("community coverage status must be HEALTHY or DEGRADED")
+        for key in ("required", "target", "successful"):
+            if not isinstance(coverage.get(key), int) or isinstance(coverage.get(key), bool) or coverage.get(key) < 0:
+                errors.append(f"community coverage {key} must be a non-negative integer")
+        if isinstance(coverage.get("required"), int) and isinstance(coverage.get("target"), int) and coverage["target"] < coverage["required"]:
+            errors.append("community coverage target must be >= required")
+
     signals = doc.get("signals") or []
     fingerprints = [s.get("fingerprint") for s in signals]
     if len(fingerprints) != len(set(fingerprints)) or any(not fp for fp in fingerprints):
         errors.append("signals must have unique non-empty fingerprints")
+    allowed_roles = {"community", "primary", "legacy"}
+    allowed_verification = {"DISCOVERY_ONLY", "PRIMARY_SOURCE", "PRIMARY_CORROBORATED", "LEGACY_UNVERIFIED"}
     for signal in signals:
         if not signal.get("title") or not signal.get("canonical_url") or not signal.get("source_id"):
             errors.append("each signal requires title, canonical_url and source_id")
         if signal.get("recurrence_count", 0) < 1:
             errors.append("signal recurrence_count must be >= 1")
+        roles = signal.get("source_roles")
+        if roles is not None:
+            if not isinstance(roles, list) or not roles or not set(roles).issubset(allowed_roles):
+                errors.append("signal source_roles must contain only community/primary/legacy")
+        verification = signal.get("verification_status")
+        if verification is not None and verification not in allowed_verification:
+            errors.append("signal verification_status is invalid")
+
     recs = doc.get("recommendations") or []
     signal_set = set(fingerprints)
     for rec in recs:
@@ -486,7 +605,6 @@ def validate_evidence(doc: dict[str, Any]) -> list[str]:
     if summary.get("zero_recommendations_valid") is not True:
         errors.append("zero recommendations must remain valid")
     return errors
-
 
 def main() -> int:
     parser = argparse.ArgumentParser()

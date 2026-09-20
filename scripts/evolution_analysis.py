@@ -91,6 +91,23 @@ def validate_local_preanalysis_config(analyzer_config: dict[str, Any], capabilit
         if not isinstance(value, int) or isinstance(value, bool) or value < 0:
             errors.append(f"review_priority.{key} must be a non-negative integer")
 
+    budget = local.get("selection_budget") or {}
+    shortlist_max = budget.get("shortlist_max")
+    semantic_max = budget.get("semantic_analysis_max")
+    actionable_max = budget.get("actionable_recommendations_max")
+    for key, value in (
+        ("shortlist_max", shortlist_max),
+        ("semantic_analysis_max", semantic_max),
+        ("actionable_recommendations_max", actionable_max),
+    ):
+        if not isinstance(value, int) or isinstance(value, bool) or value < 1 or value > 50:
+            errors.append(f"selection_budget.{key} must be an integer from 1 to 50")
+    if all(isinstance(v, int) and not isinstance(v, bool) for v in (shortlist_max, semantic_max, actionable_max)):
+        if semantic_max > shortlist_max:
+            errors.append("selection_budget.semantic_analysis_max must be <= shortlist_max")
+        if actionable_max > semantic_max:
+            errors.append("selection_budget.actionable_recommendations_max must be <= semantic_analysis_max")
+
     stopwords = local.get("stopwords")
     if not isinstance(stopwords, list) or not all(isinstance(x, str) and x.strip() for x in stopwords):
         errors.append("local_preanalysis.stopwords must be a string list")
@@ -134,7 +151,6 @@ def validate_local_preanalysis_config(analyzer_config: dict[str, Any], capabilit
                 errors.append(f"{category_id or '<unknown>'}: unknown capability ids: {', '.join(missing)}")
     return errors
 
-
 def _near_duplicate_membership(signals: list[dict[str, Any]], local: dict[str, Any]) -> dict[str, tuple[str | None, int]]:
     near = local.get("near_duplicate") or {}
     if near.get("enabled") is not True or len(signals) < 2:
@@ -174,6 +190,33 @@ def _near_duplicate_membership(signals: list[dict[str, Any]], local: dict[str, A
         for index in indexes:
             membership[str(signals[index]["fingerprint"])] = (group_id, len(indexes))
     return membership
+
+
+def _build_review_queue(annotations: list[dict[str, Any]], local: dict[str, Any]) -> dict[str, Any]:
+    budget = local["selection_budget"]
+    ranked = sorted(
+        annotations,
+        key=lambda item: (-int(item.get("review_score") or 0), str(item.get("signal_fingerprint") or "")),
+    )
+    shortlist = ranked[: int(budget["shortlist_max"])]
+    semantic: list[str] = []
+    seen_groups: set[str] = set()
+    for item in shortlist:
+        group = item.get("near_duplicate_group")
+        if group and str(group) in seen_groups:
+            continue
+        if group:
+            seen_groups.add(str(group))
+        semantic.append(str(item["signal_fingerprint"]))
+        if len(semantic) >= int(budget["semantic_analysis_max"]):
+            break
+    return {
+        "shortlist_limit": int(budget["shortlist_max"]),
+        "semantic_analysis_limit": int(budget["semantic_analysis_max"]),
+        "actionable_recommendations_limit": int(budget["actionable_recommendations_max"]),
+        "shortlist_signal_fingerprints": [str(item["signal_fingerprint"]) for item in shortlist],
+        "semantic_signal_fingerprints": semantic,
+    }
 
 
 def build_local_preanalysis(
@@ -235,6 +278,8 @@ def build_local_preanalysis(
             "signal_fingerprint": fingerprint,
             "title": str(signal.get("title") or ""),
             "source_id": str(signal.get("source_id") or ""),
+            "source_roles": list(signal.get("source_roles") or ([signal.get("source_role")] if signal.get("source_role") else ["legacy"])),
+            "verification_status": str(signal.get("verification_status") or "LEGACY_UNVERIFIED"),
             "recurrence_count": recurrence_count,
             "category_ids": sorted(matched_categories),
             "matched_terms": sorted(matched_terms),
@@ -246,6 +291,7 @@ def build_local_preanalysis(
         })
 
     near_groups = len({item["near_duplicate_group"] for item in annotations if item["near_duplicate_group"] is not None})
+    review_queue = _build_review_queue(annotations, local)
     return {
         "version": 1,
         "mode": "DETERMINISTIC_PREANALYSIS",
@@ -268,7 +314,11 @@ def build_local_preanalysis(
             "priority_counts": priority_counts,
             "category_counts": category_counts,
             "near_duplicate_groups": near_groups,
+            "shortlist_count": len(review_queue["shortlist_signal_fingerprints"]),
+            "semantic_candidate_count": len(review_queue["semantic_signal_fingerprints"]),
+            "actionable_recommendations_limit": review_queue["actionable_recommendations_limit"],
         },
+        "review_queue": review_queue,
         "signals": annotations,
         "authority": {
             "advisory_only": True,
@@ -280,7 +330,6 @@ def build_local_preanalysis(
             "publication_authorized": False,
         },
     }
-
 
 def validate_local_preanalysis(
     evidence: dict[str, Any],
@@ -361,6 +410,9 @@ def validate_local_preanalysis(
         terms = item.get("matched_terms")
         if not isinstance(terms, list) or not all(isinstance(x, str) for x in terms):
             errors.append("preanalysis matched_terms must be a string list")
+        roles = item.get("source_roles")
+        if not isinstance(roles, list) or not roles:
+            errors.append("preanalysis source_roles must be a non-empty list")
         group = item.get("near_duplicate_group")
         count = item.get("near_duplicate_count")
         if group is not None:
@@ -373,6 +425,16 @@ def validate_local_preanalysis(
         elif count != 1:
             errors.append("non-grouped signal must report near_duplicate_count=1")
 
+    expected_queue = _build_review_queue(annotations, local) if annotations else {
+        "shortlist_limit": int((local.get("selection_budget") or {}).get("shortlist_max") or 0),
+        "semantic_analysis_limit": int((local.get("selection_budget") or {}).get("semantic_analysis_max") or 0),
+        "actionable_recommendations_limit": int((local.get("selection_budget") or {}).get("actionable_recommendations_max") or 0),
+        "shortlist_signal_fingerprints": [],
+        "semantic_signal_fingerprints": [],
+    }
+    if preanalysis.get("review_queue") != expected_queue:
+        errors.append("preanalysis review_queue must match deterministic ranked selection")
+
     summary = preanalysis.get("summary") or {}
     if summary.get("signal_count") != len(annotations):
         errors.append("preanalysis summary signal_count mismatch")
@@ -382,6 +444,12 @@ def validate_local_preanalysis(
         errors.append("preanalysis summary category_counts mismatch")
     if summary.get("near_duplicate_groups") != len(near_groups):
         errors.append("preanalysis summary near_duplicate_groups mismatch")
+    if summary.get("shortlist_count") != len(expected_queue["shortlist_signal_fingerprints"]):
+        errors.append("preanalysis summary shortlist_count mismatch")
+    if summary.get("semantic_candidate_count") != len(expected_queue["semantic_signal_fingerprints"]):
+        errors.append("preanalysis summary semantic_candidate_count mismatch")
+    if summary.get("actionable_recommendations_limit") != expected_queue["actionable_recommendations_limit"]:
+        errors.append("preanalysis summary actionable_recommendations_limit mismatch")
 
     authority = preanalysis.get("authority") or {}
     if authority.get("advisory_only") is not True:
@@ -391,14 +459,18 @@ def validate_local_preanalysis(
             errors.append(f"preanalysis authority.{key} must be false")
     return errors
 
-
 def preanalysis_markdown(preanalysis: dict[str, Any]) -> str:
     summary = preanalysis.get("summary") or {}
     counts = summary.get("priority_counts") or {}
-    ranked = sorted(
-        [item for item in preanalysis.get("signals") or [] if isinstance(item, dict)],
-        key=lambda item: (-int(item.get("review_score") or 0), str(item.get("signal_fingerprint") or "")),
-    )
+    queue = preanalysis.get("review_queue") or {}
+    by_id = {
+        str(item.get("signal_fingerprint")): item
+        for item in preanalysis.get("signals") or []
+        if isinstance(item, dict)
+    }
+    shortlist = [
+        by_id[fp] for fp in queue.get("shortlist_signal_fingerprints") or [] if fp in by_id
+    ]
     lines = [
         "## Evolution Radar — Deterministic Local Pre-analysis",
         "",
@@ -408,16 +480,22 @@ def preanalysis_markdown(preanalysis: dict[str, Any]) -> str:
         f"- MEDIUM review priority: {counts.get('MEDIUM', 0)}",
         f"- LOW review priority: {counts.get('LOW', 0)}",
         f"- Near-duplicate title groups: {summary.get('near_duplicate_groups', 0)}",
-        "- Semantic recommendation state remains: ANALYSIS_PENDING",
+        f"- Shortlist: {summary.get('shortlist_count', 0)} / {queue.get('shortlist_limit', 0)}",
+        f"- Semantic candidates: {summary.get('semantic_candidate_count', 0)} / {queue.get('semantic_analysis_limit', 0)}",
+        f"- Actionable semantic recommendation budget: {queue.get('actionable_recommendations_limit', 0)}",
+        "- Semantic recommendation state remains: ANALYSIS_PENDING until validated semantic output is applied.",
         "",
         "Top review queue:",
     ]
-    for item in ranked[:12]:
+    semantic_ids = set(queue.get("semantic_signal_fingerprints") or [])
+    for item in shortlist:
         categories = ", ".join(item.get("category_ids") or []) or "unclassified"
         capabilities = ", ".join(item.get("capability_ids") or []) or "none"
+        semantic_marker = "semantic" if item.get("signal_fingerprint") in semantic_ids else "review-only"
         lines.append(
-            f"- **{item.get('review_priority')} / {item.get('review_score')}** — "
-            f"{item.get('title')} · categories: {categories} · capability hints: {capabilities}"
+            f"- **{item.get('review_priority')} / {item.get('review_score')} / {semantic_marker}** — "
+            f"{item.get('title')} · categories: {categories} · capability hints: {capabilities} "
+            f"· verification: {item.get('verification_status')}"
         )
     lines += [
         "",
@@ -429,7 +507,6 @@ def preanalysis_markdown(preanalysis: dict[str, Any]) -> str:
         "",
     ]
     return "\n".join(lines)
-
 
 def extract_preanalysis(text: str) -> dict[str, Any] | None:
     if PREANALYSIS_START not in text or PREANALYSIS_END not in text:
@@ -446,12 +523,36 @@ def extract_preanalysis(text: str) -> dict[str, Any] | None:
     return value if isinstance(value, dict) else None
 
 
-def build_analysis_package(evidence: dict[str, Any], capability_map: dict[str, Any]) -> dict[str, Any]:
+def build_analysis_package(
+    evidence: dict[str, Any],
+    capability_map: dict[str, Any],
+    preanalysis: dict[str, Any] | None = None,
+) -> dict[str, Any]:
     errors = validate_evidence(evidence)
     if errors:
         raise ValueError("invalid evidence: " + "; ".join(errors))
     if capability_map.get("version") != 1 or not isinstance(capability_map.get("capabilities"), list):
         raise ValueError("capability map must be version 1 with a capabilities list")
+
+    all_signals = copy.deepcopy(evidence.get("signals") or [])
+    if preanalysis is not None:
+        baseline = preanalysis.get("baseline") or {}
+        if baseline.get("evidence_digest") != evidence_digest(evidence):
+            raise ValueError("preanalysis evidence digest does not match evidence")
+        queue = preanalysis.get("review_queue") or {}
+        selected_ids = [str(x) for x in queue.get("semantic_signal_fingerprints") or []]
+        actionable_limit = int(queue.get("actionable_recommendations_limit") or 0)
+        selection_mode = "deterministic_preanalysis_rank"
+    else:
+        selected_ids = [str(item.get("fingerprint")) for item in all_signals]
+        actionable_limit = len(selected_ids)
+        selection_mode = "all_evidence_signals"
+
+    signal_by_id = {str(item.get("fingerprint")): item for item in all_signals}
+    if len(selected_ids) != len(set(selected_ids)) or any(fp not in signal_by_id for fp in selected_ids):
+        raise ValueError("semantic selection must be a unique subset of evidence signals")
+    selected_signals = [copy.deepcopy(signal_by_id[fp]) for fp in selected_ids]
+
     return {
         "version": 1,
         "instructions": {
@@ -461,13 +562,22 @@ def build_analysis_package(evidence: dict[str, Any], capability_map: dict[str, A
             "states": sorted(ASSESSABLE_STATES),
             "prefer_reuse_extension_over_new_abstraction": True,
             "do_not_invent_missing_evidence": True,
+            "community_discovery_requires_primary_corroboration_for_adopt": True,
+            "max_actionable_recommendations": actionable_limit,
         },
         "baseline": {
             "repository_revision": (evidence.get("run") or {}).get("repository_revision"),
             "evidence_digest": evidence_digest(evidence),
         },
+        "scope": {
+            "selection_mode": selection_mode,
+            "evidence_signal_count": len(all_signals),
+            "selected_signal_count": len(selected_ids),
+            "selected_signal_fingerprints": selected_ids,
+            "max_actionable_recommendations": actionable_limit,
+        },
         "capability_map": capability_map,
-        "signals": copy.deepcopy(evidence.get("signals") or []),
+        "signals": selected_signals,
         "required_output_fields": [
             "signal_fingerprint",
             "state",
@@ -486,7 +596,6 @@ def build_analysis_package(evidence: dict[str, Any], capability_map: dict[str, A
         ],
     }
 
-
 def finalize_provider_result(
     evidence: dict[str, Any],
     provider_result: dict[str, Any],
@@ -494,10 +603,32 @@ def finalize_provider_result(
     provider: str,
     model: str,
     analyzed_at: str,
+    package: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     recommendations = provider_result.get("recommendations")
     if not isinstance(recommendations, list):
         raise ValueError("provider result must contain recommendations list")
+
+    if package is not None:
+        baseline = package.get("baseline") or {}
+        if baseline.get("repository_revision") != (evidence.get("run") or {}).get("repository_revision"):
+            raise ValueError("analysis package repository revision does not match evidence")
+        if baseline.get("evidence_digest") != evidence_digest(evidence):
+            raise ValueError("analysis package evidence digest does not match evidence")
+        scope = copy.deepcopy(package.get("scope") or {})
+        package_ids = [str(item.get("fingerprint")) for item in package.get("signals") or []]
+        if package_ids != [str(x) for x in scope.get("selected_signal_fingerprints") or []]:
+            raise ValueError("analysis package scope does not match package signals")
+    else:
+        selected = [str(item.get("fingerprint")) for item in evidence.get("signals") or []]
+        scope = {
+            "selection_mode": "all_evidence_signals",
+            "evidence_signal_count": len(selected),
+            "selected_signal_count": len(selected),
+            "selected_signal_fingerprints": selected,
+            "max_actionable_recommendations": len(selected),
+        }
+
     analysis = {
         "version": 1,
         "analysis": {
@@ -509,6 +640,7 @@ def finalize_provider_result(
             "repository_revision": (evidence.get("run") or {}).get("repository_revision"),
             "evidence_digest": evidence_digest(evidence),
         },
+        "scope": scope,
         "recommendations": copy.deepcopy(recommendations),
         "authority": {
             "advisory_only": True,
@@ -522,7 +654,6 @@ def finalize_provider_result(
     if errors:
         raise ValueError("provider result did not satisfy analysis contract: " + "; ".join(errors))
     return analysis
-
 
 def validate_analysis(evidence: dict[str, Any], analysis: dict[str, Any]) -> list[str]:
     errors = validate_evidence(evidence)
@@ -542,17 +673,35 @@ def validate_analysis(evidence: dict[str, Any], analysis: dict[str, Any]) -> lis
     if baseline.get("evidence_digest") != evidence_digest(evidence):
         errors.append("analysis baseline evidence_digest does not match evidence")
 
-    signal_ids = {item.get("fingerprint") for item in evidence.get("signals") or []}
+    signal_by_id = {str(item.get("fingerprint")): item for item in evidence.get("signals") or []}
+    scope = analysis.get("scope") or {}
+    selected_ids = [str(x) for x in scope.get("selected_signal_fingerprints") or []]
+    if scope.get("selection_mode") not in {"all_evidence_signals", "deterministic_preanalysis_rank"}:
+        errors.append("analysis scope selection_mode is invalid")
+    if scope.get("evidence_signal_count") != len(signal_by_id):
+        errors.append("analysis scope evidence_signal_count mismatch")
+    if scope.get("selected_signal_count") != len(selected_ids):
+        errors.append("analysis scope selected_signal_count mismatch")
+    if len(selected_ids) != len(set(selected_ids)) or any(fp not in signal_by_id for fp in selected_ids):
+        errors.append("analysis scope must select a unique subset of evidence signals")
+    max_actionable = scope.get("max_actionable_recommendations")
+    if not isinstance(max_actionable, int) or isinstance(max_actionable, bool) or max_actionable < 0 or max_actionable > len(selected_ids):
+        errors.append("analysis scope max_actionable_recommendations is invalid")
+
     recommendations = analysis.get("recommendations") or []
-    recommendation_ids = [item.get("signal_fingerprint") for item in recommendations]
-    if set(recommendation_ids) != signal_ids or len(recommendation_ids) != len(signal_ids):
-        errors.append("analysis must provide exactly one recommendation for every evidence signal")
+    recommendation_ids = [str(item.get("signal_fingerprint")) for item in recommendations]
+    if recommendation_ids != selected_ids:
+        errors.append("analysis must provide exactly one recommendation in deterministic selected-signal order")
     if len(recommendation_ids) != len(set(recommendation_ids)):
         errors.append("analysis recommendations must not contain duplicate signal fingerprints")
 
+    actionable_count = 0
     for recommendation in recommendations:
-        if recommendation.get("state") not in ASSESSABLE_STATES:
+        state = recommendation.get("state")
+        if state not in ASSESSABLE_STATES:
             errors.append("analysis recommendation has invalid state")
+        if state in ACTIONABLE_STATES:
+            actionable_count += 1
         for field in (
             "aips_current_state",
             "benefit",
@@ -564,7 +713,7 @@ def validate_analysis(evidence: dict[str, Any], analysis: dict[str, Any]) -> lis
         ):
             if not str(recommendation.get(field) or "").strip():
                 errors.append(f"analysis recommendation missing {field}")
-        if recommendation.get("state") in ACTIONABLE_STATES and not str(recommendation.get("gap") or "").strip():
+        if state in ACTIONABLE_STATES and not str(recommendation.get("gap") or "").strip():
             errors.append("actionable analysis recommendation requires a concrete gap")
         confidence = recommendation.get("confidence")
         if not isinstance(confidence, (int, float)) or isinstance(confidence, bool) or not 0 <= confidence <= 1:
@@ -577,6 +726,15 @@ def validate_analysis(evidence: dict[str, Any], analysis: dict[str, Any]) -> lis
         if not isinstance(recommendation.get("architecture_diagram_review_if_adopted"), bool):
             errors.append("analysis recommendation architecture_diagram_review_if_adopted must be boolean")
 
+        if state == "ADOPT":
+            signal = signal_by_id.get(str(recommendation.get("signal_fingerprint"))) or {}
+            roles = set(signal.get("source_roles") or ([signal.get("source_role")] if signal.get("source_role") else ["legacy"]))
+            if "primary" not in roles:
+                errors.append("community/legacy discovery signal requires primary-source corroboration before ADOPT")
+
+    if isinstance(max_actionable, int) and actionable_count > max_actionable:
+        errors.append("analysis exceeds scoped actionable recommendation budget")
+
     authority = analysis.get("authority") or {}
     if authority.get("advisory_only") is not True:
         errors.append("analysis.authority.advisory_only must be true")
@@ -585,7 +743,6 @@ def validate_analysis(evidence: dict[str, Any], analysis: dict[str, Any]) -> lis
             errors.append(f"analysis.authority.{key} must be false")
     return errors
 
-
 def apply_analysis(evidence: dict[str, Any], analysis: dict[str, Any]) -> dict[str, Any]:
     errors = validate_analysis(evidence, analysis)
     if errors:
@@ -593,15 +750,32 @@ def apply_analysis(evidence: dict[str, Any], analysis: dict[str, Any]) -> dict[s
 
     output = copy.deepcopy(evidence)
     meta = analysis["analysis"]
+    scope = analysis.get("scope") or {}
+    selected_ids = [str(x) for x in scope.get("selected_signal_fingerprints") or []]
     output["run"]["analyzer"] = {
         "status": "available",
         "provider": meta["provider"],
         "model": meta["model"],
         "analyzed_at": meta["analyzed_at"],
         "analysis_digest": canonical_digest(analysis),
+        "coverage": "FULL" if len(selected_ids) == len(output.get("signals") or []) else "PARTIAL",
+        "analyzed_signal_count": len(selected_ids),
+        "evidence_signal_count": len(output.get("signals") or []),
     }
-    output["recommendations"] = copy.deepcopy(analysis["recommendations"])
+
+    existing = {
+        str(item.get("signal_fingerprint")): copy.deepcopy(item)
+        for item in output.get("recommendations") or []
+    }
+    for recommendation in analysis["recommendations"]:
+        existing[str(recommendation["signal_fingerprint"])] = copy.deepcopy(recommendation)
+    output["recommendations"] = [
+        existing[str(signal["fingerprint"])]
+        for signal in output.get("signals") or []
+    ]
     output["summary"]["recommendation_count"] = len(output["recommendations"])
+    output["summary"]["semantic_analyzed_count"] = len(selected_ids)
+    output["summary"]["semantic_pending_count"] = len(output["recommendations"]) - len(selected_ids)
     output["summary"]["actionable_count"] = sum(
         1 for item in output["recommendations"] if item.get("state") in ACTIONABLE_STATES
     )
@@ -611,7 +785,6 @@ def apply_analysis(evidence: dict[str, Any], analysis: dict[str, Any]) -> dict[s
         raise ValueError("analysis produced invalid evidence: " + "; ".join(errors))
     return output
 
-
 def handoff_markdown(
     package: dict[str, Any],
     *,
@@ -620,6 +793,7 @@ def handoff_markdown(
     capability_map_path: str,
 ) -> str:
     baseline = package.get("baseline") or {}
+    scope = package.get("scope") or {}
     package_digest = canonical_digest(package)
     return "\n".join(
         [
@@ -631,28 +805,32 @@ def handoff_markdown(
             f"- Repository revision: `{baseline.get('repository_revision')}`",
             f"- Evidence digest: `{baseline.get('evidence_digest')}`",
             f"- Analysis package digest: `{package_digest}`",
+            f"- Evidence signals: {scope.get('evidence_signal_count', 0)}",
+            f"- Bounded semantic candidates: {scope.get('selected_signal_count', 0)}",
+            f"- Actionable recommendation budget: {scope.get('max_actionable_recommendations', 0)}",
             f"- Capability map: `{capability_map_path}`",
             f"- Analyzer prompt: `{prompt_path}`",
             f"- Result schema: `{schema_path}`",
             "",
-            "A Human-selected connected Agent, local model, or other provider may analyze the exact evidence from this Issue.",
-            "Reconstruct the package at the recorded repository revision, return JSON matching the result schema, then bind it deterministically:",
+            "A Human-selected connected Agent, local model, or other provider may analyze only the deterministically selected semantic queue.",
+            "Community-only discovery evidence may not directly produce ADOPT without primary-source corroboration.",
+            "Reconstruct the exact bounded package at the recorded repository revision, return JSON matching the result schema, then bind it deterministically:",
             "",
             "~~~bash",
-            "python scripts/evolution_analysis.py package --evidence evolution-radar.yaml --capabilities "
-            + capability_map_path
-            + " --output evolution-analysis-package.yaml",
-            "python scripts/evolution_analysis.py finalize --evidence evolution-radar.yaml --result evolution-analysis-result.json "
-            "--provider <provider-id> --model <model-id> --output evolution-analysis.yaml",
+            "python scripts/evolution_analysis.py preanalyze --evidence evolution-radar.yaml --config config/evolution-analyzer.yaml "
+            "--capabilities " + capability_map_path + " --output evolution-local-preanalysis.yaml",
+            "python scripts/evolution_analysis.py package --evidence evolution-radar.yaml --preanalysis evolution-local-preanalysis.yaml "
+            "--capabilities " + capability_map_path + " --output evolution-analysis-package.yaml",
+            "python scripts/evolution_analysis.py finalize --evidence evolution-radar.yaml --package evolution-analysis-package.yaml "
+            "--result evolution-analysis-result.json --provider <provider-id> --model <model-id> --output evolution-analysis.yaml",
             "python scripts/evolution_analysis.py apply --evidence evolution-radar.yaml --analysis evolution-analysis.yaml "
             "--output evolution-radar-analyzed.yaml",
             "~~~",
             "",
-            "The deterministic finalize/apply steps verify exact evidence/repository binding and keep every authority field false.",
+            "The deterministic finalize/apply steps verify exact evidence/repository/scope binding and keep every authority field false.",
             "",
         ]
     )
-
 
 def analysis_markdown(analysis: dict[str, Any]) -> str:
     return "\n".join(
@@ -715,6 +893,7 @@ def main() -> int:
 
     package = sub.add_parser("package")
     package.add_argument("--evidence", required=True)
+    package.add_argument("--preanalysis")
     package.add_argument("--capabilities", required=True)
     package.add_argument("--output", required=True)
 
@@ -727,6 +906,7 @@ def main() -> int:
 
     finalize = sub.add_parser("finalize")
     finalize.add_argument("--evidence", required=True)
+    finalize.add_argument("--package")
     finalize.add_argument("--result", required=True)
     finalize.add_argument("--provider", required=True)
     finalize.add_argument("--model", default="provider-default")
@@ -778,8 +958,9 @@ def main() -> int:
     if args.command == "package":
         evidence = load_mapping(args.evidence)
         capabilities = load_mapping(args.capabilities)
+        preanalysis = load_mapping(args.preanalysis) if args.preanalysis else None
         Path(args.output).write_text(
-            yaml.safe_dump(build_analysis_package(evidence, capabilities), sort_keys=False, allow_unicode=True),
+            yaml.safe_dump(build_analysis_package(evidence, capabilities, preanalysis), sort_keys=False, allow_unicode=True),
             encoding="utf-8",
         )
         return 0
@@ -800,12 +981,14 @@ def main() -> int:
     if args.command == "finalize":
         evidence = load_mapping(args.evidence)
         raw_result = json.loads(Path(args.result).read_text(encoding="utf-8"))
+        package_doc = load_mapping(args.package) if args.package else None
         analysis = finalize_provider_result(
             evidence,
             raw_result,
             provider=args.provider,
             model=args.model or "provider-default",
             analyzed_at=args.analyzed_at or utc_now(),
+            package=package_doc,
         )
         Path(args.output).write_text(
             yaml.safe_dump(analysis, sort_keys=False, allow_unicode=True),

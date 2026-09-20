@@ -1,35 +1,74 @@
 version: 1
 policy:
   minimum_sources_when_available: 5
-  max_items_per_source: 5
+  minimum_community_sources_when_available: 5
+  target_community_sources: 6
+  max_items_per_source: 8
+  max_raw_signals: 50
   public_only: true
   credentials_in_repository: false
   max_response_bytes: 2097152
   max_redirects: 3
 sources:
+  - id: hacker-news
+    name: Hacker News
+    role: community
+    kind: json
+    url: https://hacker-news.firebaseio.com/v0/topstories.json
+    item_url_template: https://hacker-news.firebaseio.com/v0/item/{id}.json
+    enabled: true
+  - id: lobsters
+    name: Lobsters
+    role: community
+    kind: rss
+    url: https://lobste.rs/rss
+    enabled: true
+  - id: dev-community
+    name: DEV Community
+    role: community
+    kind: rss
+    url: https://dev.to/feed
+    enabled: true
+  - id: stack-overflow
+    name: Stack Overflow
+    role: community
+    kind: rss
+    url: https://stackoverflow.com/feeds
+    enabled: true
+  - id: software-engineering-stackexchange
+    name: Software Engineering Stack Exchange
+    role: community
+    kind: rss
+    url: https://softwareengineering.stackexchange.com/feeds
+    enabled: true
+  - id: reddit-programming
+    name: Reddit r/programming
+    role: community
+    kind: rss
+    url: https://www.reddit.com/r/programming/.rss
+    best_effort: true
+    enabled: true
   - id: github-blog
     name: GitHub Blog
+    role: primary
     kind: rss
     url: https://github.blog/feed/
     enabled: true
   - id: cloudflare-blog
     name: Cloudflare Blog
+    role: primary
     kind: rss
     url: https://blog.cloudflare.com/rss/
     enabled: true
   - id: google-developers-blog
     name: Google Developers Blog
+    role: primary
     kind: rss
     url: https://developers.googleblog.com/feeds/posts/default
     enabled: true
   - id: hugging-face-blog
     name: Hugging Face Blog
+    role: primary
     kind: rss
     url: https://huggingface.co/blog/feed.xml
-    enabled: true
-  - id: hacker-news
-    name: Hacker News
-    kind: json
-    url: https://hacker-news.firebaseio.com/v0/topstories.json
-    item_url_template: https://hacker-news.firebaseio.com/v0/item/{id}.json
     enabled: true
