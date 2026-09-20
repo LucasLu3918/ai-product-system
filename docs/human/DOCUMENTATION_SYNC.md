@@ -100,3 +100,14 @@ Deterministic validator 能保證：
 ## Resource Authorization documentation mapping
 
 Resource-scoped authorization extends the existing Execution Profile and security/governance path. Changes to its evaluator, schema/template or Execution Profile binding must update Human Architecture/User guidance, Agent Execution Isolation/Orchestrator guidance and the Technology Guide in the same diff. This mapping documents enforcement truth explicitly: deterministic authorization is pre-execution evidence unless a verified runtime pre-tool guard consumes it.
+
+
+## Evolution Effectiveness documentation mapping
+
+The `evolution-radar` documentation-sync rule now also watches:
+
+- `scripts/evolution_effectiveness.py`
+- `config/evolution-effectiveness.yaml`
+- `.github/workflows/evolution-effectiveness.yml`
+
+Any behavioral change to the metrics/feedback loop must review the same Evolution Radar Human/Agent documentation and the Technology Guide. This prevents source-yield or review-flag semantics from changing silently without matching authority documentation.

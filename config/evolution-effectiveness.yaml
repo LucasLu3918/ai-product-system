@@ -1,0 +1,21 @@
+version: 1
+cohort:
+  mode: monthly
+  evidence_modes: [weekly]
+metrics:
+  actionable_states: [ASSESS, TRIAL, ADOPT]
+review_flags:
+  minimum_source_runs: 2
+  minimum_source_signals: 8
+  low_shortlist_yield_basis_points_below: 500
+  high_failure_rate_basis_points_above: 2500
+  zero_actionable_semantic_minimum: 5
+authority:
+  automatic_source_weight_changes: false
+  automatic_source_enable_disable: false
+  automatic_config_mutation: false
+  code_change_authorized: false
+  branch_or_pr_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  human_review_required_for_source_changes: true

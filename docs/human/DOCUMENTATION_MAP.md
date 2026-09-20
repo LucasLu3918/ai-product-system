@@ -74,3 +74,16 @@ Human Docs 使用繁體中文並在首次出現時保留重要英文術語；Age
 ## Resource Authorization navigation
 
 Resource-scoped authorization is documented through `ARCHITECTURE_OVERVIEW.md` and `USER_GUIDE.md` for Human readers, with canonical Agent behavior in `orchestration/RESOURCE_AUTHORIZATION.md`. It is an Execution Profile/Governance extension, not a new Role or Skill.
+
+
+## Evolution Effectiveness navigation
+
+Monthly research-effectiveness metrics are part of Evolution Radar rather than a separate product surface:
+
+- Human behavior and interpretation: [Evolution Radar](EVOLUTION_RADAR.md)
+- Human visual flow: [Evolution Radar Overview](EVOLUTION_RADAR_OVERVIEW.html)
+- Technical glossary/details: [Technology Guide](TECHNOLOGY_GUIDE.html)
+- Agent contract: `../../orchestration/EVOLUTION_RADAR.md`
+- Policy: `../../config/evolution-effectiveness.yaml`
+
+Review flags are maintenance evidence for Human source-policy decisions; they are not automatic source tuning.

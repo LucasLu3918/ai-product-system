@@ -399,3 +399,21 @@ auto
 `TRIAL_HANDOFF_READY` 不需要任何 model/provider credential，並綁定 baseline SHA、Human Decision fingerprint、Trial fingerprint、approved scope、approved paths、forbidden paths、changed-file/diff limits、worktree isolation 與 repository validation command。它可交給 Human 選擇的 compatible Agent 執行，但 external executor **不能自行宣告 PASS**；真正 PASS/FAIL 仍必須由 AIPS deterministic scope/diff/validation evidence 產生。
 
 因此沒有 `OPENAI_API_KEY` 不再等於 Trial 本身失敗；只有在實際選定 Codex executor 後 isolation/execution/validation 失敗，才會產生 fail-closed BLOCKED result。Human Adoption Decision 仍是後續必要步驟。
+
+
+## v0.46 Evolution Effectiveness Metrics & Feedback Loop
+
+AIPS 現在會在每月第 2 天，於 monthly Radar 之後建立上一個 calendar month 的 deterministic effectiveness snapshot。它只讀取 durable weekly Radar Issue 與其 comments，不重新抓論壇、不呼叫 semantic provider，也不需要 `OPENAI_API_KEY`、`GEMINI_API_KEY` 或其他外部 Agent credential。
+
+報告會量測：
+
+- raw / unique signal observations 與 duplicate rate；
+- Human shortlist 與 semantic candidate 數量；
+- semantic recommendation state 與 actionable `ASSESS / TRIAL / ADOPT` 數量；
+- Human Decision、`TRIAL_HANDOFF_READY`、Trial PASS/FAIL/BLOCKED、Trial→ADOPT binding；
+- 各來源的 collected / shortlist / semantic / actionable / Trial / PASS / adoption contribution；
+- shortlist yield、semantic yield、actionable conversion、Trial conversion、adoption conversion 與 failure rate（以 deterministic basis points 表示）。
+
+只有在來源已有足夠 observation 時，系統才會產生 `REVIEW_LOW_SHORTLIST_YIELD`、`REVIEW_HIGH_FAILURE_RATE` 或 `REVIEW_ZERO_ACTIONABLE_AFTER_SEMANTIC`。這些都是 **Human review flags**，不是自動調權重或停用來源的指令。
+
+Workflow 只使用 `contents: read + issues: write`：同一月份的 Effectiveness Issue 會 deterministic update；沒有 review flag 時會標記 completed/closed，有 flag 時會保持或 reopen，方便 Human 檢視。任何 source weight、enable/disable、replacement 或 config mutation 仍必須走正常 Human-governed change。

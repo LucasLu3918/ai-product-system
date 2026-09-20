@@ -20,13 +20,16 @@ rules:
       - scripts/evolution_decision.py
       - scripts/evolution_trial.py
       - scripts/evolution_adoption.py
+      - scripts/evolution_effectiveness.py
       - config/evolution-sources.yaml
       - config/evolution-analyzer.yaml
       - config/evolution-trial.yaml
+      - config/evolution-effectiveness.yaml
       - references/evolution/**
       - templates/evolution/**
       - .github/workflows/evolution-radar.yml
       - .github/workflows/evolution-decision.yml
+      - .github/workflows/evolution-effectiveness.yml
     human_docs:
       - docs/human/EVOLUTION_RADAR.md
       - docs/human/EVOLUTION_RADAR_OVERVIEW.html

@@ -330,3 +330,16 @@ PASS is consistency evidence only. Repository Health is Detect + Evidence + Huma
 - 此流程沒有 `contents: write`，不會自動修改程式碼、建立 implementation PR、merge、release 或自動修復 drift。
 
 這個排程是 maintenance observation，不是新的治理 authority。正式變更仍走既有 System Self-Improvement、validation、PR、merge 與 release 流程。
+
+
+## Evolution Effectiveness monthly maintenance
+
+`.github/workflows/evolution-effectiveness.yml` runs monthly on day 2 after the normal monthly Radar review. It reads durable Radar Issues/comments and writes a bounded `Evolution Effectiveness [monthly] YYYY-MM` Issue.
+
+- no review flags → the metrics Issue is reconciled and closed as completed;
+- one or more deterministic review flags → the metrics Issue stays/reopens for Human review;
+- the workflow uses only `contents: read` and `issues: write`;
+- no external Agent/provider credential is required;
+- no source weight, enable/disable state, source URL or repository config is changed automatically.
+
+This is observational maintenance evidence. Any actual source-policy adjustment remains a normal reviewed repository change.

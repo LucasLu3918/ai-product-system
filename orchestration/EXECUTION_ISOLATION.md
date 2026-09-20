@@ -232,3 +232,10 @@ Evidence-quality classification is a read-only deterministic transform over coll
 `TRIAL_HANDOFF_READY` does not weaken the isolation contract. It records that execution has been handed to a Human-selected compatible provider; it does not create a shared-workspace fallback and it is not a PASS/BLOCKED Trial result.
 
 The external executor is required to honor the exact `worktree` isolation requirement, approved path patterns, forbidden paths and change limits from the bound Trial Plan. Any eventual Trial claim must return to AIPS deterministic diff/commit/repository validation before PASS/FAIL evidence can be accepted. An external provider cannot widen the Change Boundary or gain publication credentials through the handoff.
+
+
+## Evolution Effectiveness isolation boundary
+
+Effectiveness analysis is a read-only deterministic evidence aggregation over already-published Evolution Radar Issues and comments. It creates no Trial worktree, invokes no execution provider, and mutates no repository source.
+
+The scheduled workflow may create/update/close/reopen its own GitHub effectiveness Issue using `issues: write`, but has only `contents: read`. Review flags cannot reweight, enable, disable or replace sources and cannot authorize a Trial, code change, PR, merge or release.
