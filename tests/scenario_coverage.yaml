@@ -1076,7 +1076,7 @@ scenarios:
       - references/evolution/CAPABILITY_MAP.yaml
       - tests/validate_repository.py
 
-- id: "148"
+  - id: "148"
     path: tests/scenarios/148-repository-health-evidence-binding.md
     coverage: lifecycle
     evidence:
