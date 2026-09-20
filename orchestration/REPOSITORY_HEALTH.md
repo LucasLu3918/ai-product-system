@@ -86,3 +86,12 @@ The source-controlled policy is `evidence_binding.manifest=complete` and `dirty_
 ## CI evidence artifact
 
 The required `.github/workflows/validate.yml` job emits `repository-health-report.json` from the exact checked-out candidate and uploads it as a short-retention GitHub Actions artifact. Artifact publication does not change Repository Health execution semantics: the audit itself remains credential-free, performs no external provider call and has no automatic-remediation or protected-operation authority.
+
+
+## Scheduled maintenance observation
+
+`.github/workflows/repository-health.yml` runs a credential-free Repository Health audit on a weekly schedule and on manual dispatch. It checks out the exact default-branch revision, emits `repository-health-report.json`, uploads the report as a short-retention Actions artifact, and writes a concise Job Summary.
+
+A PASS run produces evidence only. A `DRIFT_DETECTED` run creates at most one open GitHub Issue per deterministic evidence fingerprint, then fails the workflow so the drift is visible in Actions. Duplicate notification suppression is fingerprint-based and does not mutate Repository Health truth.
+
+The scheduled workflow may use the GitHub control plane to publish its artifact, summary and drift Issue, but the detector itself still reports `external_network_required=false`: no external Agent/provider call is required to compute the audit. The workflow has no contents-write permission and cannot modify repository files, create implementation branches/PRs, merge, release or remediate findings.

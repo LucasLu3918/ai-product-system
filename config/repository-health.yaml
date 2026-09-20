@@ -14,9 +14,9 @@ surface_discovery:
   ignore: []
 documentation_bindings:
   - source: orchestration/REPOSITORY_HEALTH.md
-    required_references: [config/repository-health.yaml, config/architecture-surfaces.yaml, scripts/repository_health.py, references/evolution/CAPABILITY_MAP.yaml, scripts/scenario_conformance.py, config/integration-gate.yaml]
+    required_references: [config/repository-health.yaml, config/architecture-surfaces.yaml, scripts/repository_health.py, references/evolution/CAPABILITY_MAP.yaml, scripts/scenario_conformance.py, config/integration-gate.yaml, .github/workflows/repository-health.yml]
   - source: docs/human/MAINTENANCE.md
-    required_references: [orchestration/REPOSITORY_HEALTH.md, config/architecture-surfaces.yaml, scripts/repository_health.py]
+    required_references: [orchestration/REPOSITORY_HEALTH.md, config/architecture-surfaces.yaml, scripts/repository_health.py, .github/workflows/repository-health.yml]
 contract_files:
   - path: .github/workflows/validate.yml
     required_strings: [scripts/integration_gate.py, config/integration-gate.yaml, scripts/repository_health.py, repository-health-report.json, "actions/upload-artifact@", "repository:", "needs: janitor"]
@@ -24,3 +24,5 @@ contract_files:
     required_strings: ["id: repository-validation", tests/validate_repository.py, 'paths: ["**"]']
   - path: tests/validate_repository.py
     required_strings: ["from validation import conformance_isolation", "from validation import repository_health_contracts"]
+  - path: .github/workflows/repository-health.yml
+    required_strings: ["schedule:", "workflow_dispatch:", "issues: write", scripts/repository_health.py, repository-health-report.json, "actions/upload-artifact@", "gh issue create", "Repository Health Drift", "automatic_remediation_authorized"]

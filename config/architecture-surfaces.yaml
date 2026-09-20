@@ -162,6 +162,7 @@ surfaces:
       - orchestration/REPOSITORY_HEALTH.md
       - docs/ARCHITECTURE.md
       - docs/human/MAINTENANCE.md
+      - .github/workflows/repository-health.yml
     canonical_docs:
       - orchestration/REPOSITORY_HEALTH.md
       - docs/ARCHITECTURE.md

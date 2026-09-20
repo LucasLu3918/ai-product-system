@@ -15,6 +15,8 @@ required = (
     ROOT / "tests/scenarios/147-repository-health-architecture-drift.md",
     ROOT / "tests/scenarios/148-repository-health-evidence-binding.md",
     ROOT / "tests/scenarios/149-repository-health-architecture-surface-inventory.md",
+    ROOT / "tests/scenarios/150-repository-health-scheduled-maintenance.md",
+    ROOT / ".github/workflows/repository-health.yml",
 )
 for path in required:
     if not path.exists():
@@ -276,3 +278,32 @@ if workflow.exists():
                 "validate workflow missing Repository Health CI evidence "
                 f"contract: {required_text}"
             )
+
+
+maintenance_workflow = ROOT / ".github/workflows/repository-health.yml"
+if maintenance_workflow.exists():
+    maintenance_text = maintenance_workflow.read_text(encoding="utf-8")
+    for required_text in (
+        'cron: "30 2 * * 1"',
+        "workflow_dispatch:",
+        "contents: read",
+        "issues: write",
+        "scripts/repository_health.py audit",
+        "repository-health-report.json",
+        "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "Repository Health Drift",
+        "gh issue create",
+        "automatic_remediation_authorized",
+        "code_change_authorized",
+        "merge_authorized",
+        "release_authorized",
+    ):
+        if required_text not in maintenance_text:
+            errors.append(
+                "repository-health maintenance workflow missing contract: "
+                f"{required_text}"
+            )
+    if "contents: write" in maintenance_text:
+        errors.append(
+            "repository-health maintenance workflow must not have contents: write"
+        )

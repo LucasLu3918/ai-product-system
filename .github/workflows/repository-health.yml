@@ -1,0 +1,146 @@
+name: repository-health
+
+on:
+  schedule:
+    - cron: "30 2 * * 1"  # Monday 10:30 Asia/Taipei
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ github.sha }}
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - run: python -m pip install -r requirements.txt -r requirements-validation.txt
+
+      - name: Run deterministic Repository Health audit
+        id: audit
+        shell: bash
+        run: |
+          set +e
+          python scripts/repository_health.py audit \
+            --config config/repository-health.yaml \
+            --format json > repository-health-report.json
+          code=$?
+          set -e
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+
+      - name: Read bound evidence identity
+        id: evidence
+        shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          from pathlib import Path
+          report = json.loads(Path("repository-health-report.json").read_text(encoding="utf-8"))
+          fingerprint = str((report.get("evidence_binding") or {}).get("evidence_fingerprint") or "")
+          print(f"status={report.get('status', 'UNKNOWN')}")
+          print(f"fingerprint={fingerprint}")
+          print(f"short_fingerprint={fingerprint.removeprefix('sha256:')[:12]}")
+          PY
+
+      - name: Publish Job Summary
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          report = json.loads(Path("repository-health-report.json").read_text(encoding="utf-8"))
+          drift = report.get("drift") or {}
+          findings = sum(len(v or []) for v in drift.values())
+          binding = report.get("evidence_binding") or {}
+          authority = report.get("authority") or {}
+          with Path(os.environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as out:
+              out.write("# Repository Health Maintenance\n\n")
+              out.write(f"- status: **{report.get('status')}**\n")
+              out.write(f"- revision: `{report.get('repository_revision')}`\n")
+              out.write(f"- fingerprint: `{binding.get('evidence_fingerprint')}`\n")
+              out.write(f"- findings: **{findings}**\n")
+              out.write(f"- automatic_remediation_authorized: **{authority.get('automatic_remediation_authorized')}**\n")
+              out.write(f"- code_change_authorized: **{authority.get('code_change_authorized')}**\n")
+              out.write(f"- merge_authorized: **{authority.get('merge_authorized')}**\n")
+              out.write(f"- release_authorized: **{authority.get('release_authorized')}**\n")
+          PY
+
+      - name: Upload Repository Health evidence
+        if: ${{ always() && hashFiles('repository-health-report.json') != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: repository-health-maintenance-${{ github.run_id }}-${{ github.run_attempt }}
+          path: repository-health-report.json
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Build drift notification
+        if: steps.evidence.outputs.status != 'PASS'
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path("repository-health-report.json").read_text(encoding="utf-8"))
+          binding = report.get("evidence_binding") or {}
+          fingerprint = binding.get("evidence_fingerprint")
+          lines = [
+              f"<!-- aips-repository-health:{fingerprint} -->",
+              "## Repository Health Drift",
+              "",
+              f"- repository revision: `{report.get('repository_revision')}`",
+              f"- evidence fingerprint: `{fingerprint}`",
+              f"- input manifest digest: `{binding.get('input_manifest_digest')}`",
+              "- authority: Detect + Evidence + Human Review only",
+              "- automatic remediation: **not authorized**",
+              "",
+              "### Findings",
+          ]
+          for key, values in (report.get("drift") or {}).items():
+              if values:
+                  lines.append(f"\n#### {key}")
+                  lines.extend(f"- {value}" for value in values)
+          Path("repository-health-issue.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+          PY
+
+      - name: Publish deduplicated drift Issue
+        if: steps.evidence.outputs.status != 'PASS'
+        shell: bash
+        env:
+          FINGERPRINT: ${{ steps.evidence.outputs.fingerprint }}
+          SHORT_FINGERPRINT: ${{ steps.evidence.outputs.short_fingerprint }}
+        run: |
+          existing="$(gh issue list \
+            --state open \
+            --search "$SHORT_FINGERPRINT in:body" \
+            --limit 1 \
+            --json number \
+            --jq '.[0].number // empty')"
+          if [[ -z "$existing" ]]; then
+            gh issue create \
+              --title "Repository Health Drift [$SHORT_FINGERPRINT]" \
+              --body-file repository-health-issue.md
+          else
+            echo "Existing drift Issue #$existing already represents $FINGERPRINT"
+          fi
+
+      - name: Enforce visible drift state
+        if: ${{ always() }}
+        shell: bash
+        env:
+          AUDIT_EXIT: ${{ steps.audit.outputs.exit_code }}
+          STATUS: ${{ steps.evidence.outputs.status }}
+        run: |
+          test "$AUDIT_EXIT" = "0"
+          test "$STATUS" = "PASS"
