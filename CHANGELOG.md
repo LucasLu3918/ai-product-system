@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.34.0
+
+### Gemini CLI Exact-Candidate Real-Runtime Verification
+
+- Add Scenario 143 and a dedicated `gemini-runtime-verification` GitHub Actions workflow that pins official Gemini CLI v0.60.0 and executes the actual bundled CLI binary on the exact pull-request head.
+- Use Gemini CLI's official `--fake-responses` interface only for deterministic model turns; the real CLI, built-in `read_file`, `write_file`, `replace` tools, extension loader, and AIPS `AfterTool` hook execute normally.
+- Verify real workspace mutation for `write_file` and `replace`, plus 3/3 expected canonical observable events, zero unexpected event loss, zero raw/private/secret leakage, and no sink when capture is disabled.
+- Enable Gemini CLI `experimental.extensionConfig` and pass the non-secret capture controls through the isolated workspace `.env`, matching the official extension-settings path instead of relying on parent-process environment inheritance.
+- Fix a real Gemini extension integration defect: all Gemini hook wrappers now resolve their physical source path before locating the AIPS repository, so symlink-based extension loading under `~/.gemini/extensions` cannot redirect hook execution toward HOME.
+- Keep the runtime truth split explicit: `live_runtime_execution_verified=true` and Gemini runtime-specific `live_capture_verified=true`, while `fake_model_responses_used=true`, `credential_material_present=false`, `live_provider_session_verified=false`, and `provider_model_execution_verified=false`.
+- Preserve non-enforcement semantics: `runtime_enforced=false`, `result_flow_control_authorized=false`, `automatic_remediation=false`; the Gemini AfterTool hook remains synchronous from a latency perspective.
+- Durable verification evidence records pre-finalization probe Run #10: Gemini CLI 0.60.0, 3 captured events, zero event loss/leakage, disabled sink absent, enabled invocation max 2268.651 ms, disabled invocation 2001.305 ms. Final exact-head Run #11 reverified the finalized evidence candidate successfully.
+- Feature PR #101 exact final head `1f6cd76926c89b5a61365c7851bcdbb02bf9a8e7` passed dedicated real-runtime Run #11 and core-change validate Run #1087 with changed-files hash `ec5a10d0786a659e3045c1dac0a4d203f6a2b97d94546a3d16c31774b4f553d1`, Matrix hash `3bd83dc8a6025d0d04d2e691299ce426e3d1394af6b372b53775e0ac986cbd58`, candidate fingerprint `96a99a7279354d6655282be49a8c8c586ae70418055476ef6e7a05f951b1a7ef`, no blockers and preserved Human authority.
+- PR #101 was squash-merged to main as `c04b1d17ebe264af5fb33228270ef9a3bce4a72a`; protected-main validate Run #1088 succeeded with Scenarios 143/143 automated.
+- Roles remain 12 and Skills remain 25.
+- Constitution impact: NO. Protected Human Authority, deterministic Resource Authorization, merge/release/publication authority and safety boundaries remain unchanged.
+- The next optional gate is separately authorized live-provider-session verification; v0.34.0 does not infer or require that approval.
+- Release model remains unchanged: no GitHub Release object or tag is introduced; release truth remains `VERSION + CHANGELOG + protected-main validation`.
+
 ## 0.33.0
 
 ### Gemini CLI AfterTool Capture Implementation Trial
