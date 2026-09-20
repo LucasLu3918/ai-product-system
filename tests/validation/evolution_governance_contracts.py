@@ -163,6 +163,18 @@ try:
     if plan['authority']['code_publication_authorized'] is not False:
         errors.append('Controlled Trial plan must not grant publication authority')
 
+    handoff_doc = trial.build_handoff(plan, trial_config)
+    if trial.validate_handoff(handoff_doc):
+        errors.append('Generated provider-neutral Trial handoff did not validate')
+    if handoff_doc['state'] != 'TRIAL_HANDOFF_READY':
+        errors.append('Missing provider credential fallback must be TRIAL_HANDOFF_READY')
+    if handoff_doc['execution_contract']['credential_required'] is not False:
+        errors.append('Provider-neutral Trial handoff must not require a model credential')
+    if handoff_doc['execution_contract']['external_executor_may_claim_pass'] is not False:
+        errors.append('External Trial executor must not self-assert PASS')
+    if handoff_doc['authority']['merge_authorized'] is not False:
+        errors.append('Trial handoff must not grant merge authority')
+
     pass_result = {
         'version': 1,
         'trial': dict(plan['trial']),
@@ -261,6 +273,11 @@ if decision_workflow.exists():
         'workflow_dispatch:',
         'approved_paths:',
         'trial_fingerprint:',
+        'trial_provider:',
+        'Resolve trial provider',
+        'TRIAL_HANDOFF_READY',
+        'evolution_trial.py handoff',
+        'evolution_trial.py handoff-validate',
         'persist-credentials: false',
         'execution_isolation.py create',
         'permission-profile: ":workspace"',
