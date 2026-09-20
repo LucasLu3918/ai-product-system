@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.42.0
+
+### Evolution Radar Quarterly Deterministic Review
+
+- Add a credential-free deterministic Quarterly Review mode to Evolution Radar.
+- Schedule quarterly review on the first day of January, April, July and October, reviewing the previous calendar quarter.
+- Reuse durable monthly Evolution Radar evidence only; quarterly review performs no second public-source collection.
+- Bind the exact `YYYY-QN` review period, its three calendar months and the number of valid monthly evidence bundles consumed.
+- Aggregate recurrence deterministically by signal fingerprint while keeping the existing source provenance/failure evidence.
+- Reset quarterly recommendation state to `ANALYSIS_PENDING` rather than promoting monthly semantic states into a new quarterly suitability or adoption conclusion.
+- Preserve provider-neutral operation: no `OPENAI_API_KEY`, `GEMINI_API_KEY` or other external Agent/provider credential is required for the quarterly rollup.
+- Preserve Protected Human Authority: no automatic ADOPT, code mutation, implementation PR creation, merge, release or publication authority.
+- Add Scenario 151 and raise Scenario Conformance to 151/151 automated: 24 deterministic + 73 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- Feature PR #121 exact head `0b4b567da8db8fe313c2e10f22f14c8b6a962882` passed validate Run #1148.
+- PR #121 was merged to main as `e38d124b219bd048c843eeac6a4d0ec69b6c035a`; protected-main validate Run #1149 succeeded.
+- No new Role or Skill. Constitution impact: NO.
+- Release model remains `VERSION + CHANGELOG + protected-main validation`; no GitHub Release object or tag is introduced.
+
 ## 0.41.0
 
 ### Repository Health Scheduled Maintenance Observation
