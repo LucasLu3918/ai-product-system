@@ -384,3 +384,18 @@ Evolution Radar 現在把「被看到」和「可以被採用」分開處理。D
 `ADOPT` 的 deterministic 最低門檻為 Level 2。Semantic provider 只能解讀既有 evidence，不能自行提高 evidence level、捏造 primary source 或把論壇熱門度當成驗證。Evidence level 只會提供有限的 pre-analysis priority bonus，不會直接產生 `COVERED / HOLD / ASSESS / TRIAL / ADOPT`。
 
 Monthly / Quarterly rollup 會保留 evidence level、primary/community source counts 與 exact multi-source provenance。這仍然是 evidence/recommendation layer；Human Decision、Controlled Trial、implementation、PR、merge、release 與 publication authority 全部不變。
+
+
+## v0.45 Provider-neutral Controlled Trial Handoff
+
+Human 選擇 `TRIAL` 後，AIPS 現在先建立同一份 exact Trial Plan，再解析 execution provider：
+
+~~~text
+auto
+├─ OPENAI_API_KEY available → pinned openai-codex-action
+└─ credential unavailable → TRIAL_HANDOFF_READY
+~~~
+
+`TRIAL_HANDOFF_READY` 不需要任何 model/provider credential，並綁定 baseline SHA、Human Decision fingerprint、Trial fingerprint、approved scope、approved paths、forbidden paths、changed-file/diff limits、worktree isolation 與 repository validation command。它可交給 Human 選擇的 compatible Agent 執行，但 external executor **不能自行宣告 PASS**；真正 PASS/FAIL 仍必須由 AIPS deterministic scope/diff/validation evidence 產生。
+
+因此沒有 `OPENAI_API_KEY` 不再等於 Trial 本身失敗；只有在實際選定 Codex executor 後 isolation/execution/validation 失敗，才會產生 fail-closed BLOCKED result。Human Adoption Decision 仍是後續必要步驟。
