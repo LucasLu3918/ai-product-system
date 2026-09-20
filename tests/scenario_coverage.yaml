@@ -1164,3 +1164,16 @@ scenarios:
       - orchestration/EXECUTION_ISOLATION.md
       - docs/human/EVOLUTION_RADAR.md
 
+
+  - id: "155"
+    path: tests/scenarios/155-evolution-effectiveness-feedback-loop.md
+    coverage: lifecycle
+    evidence:
+      - config/evolution-effectiveness.yaml
+      - scripts/evolution_effectiveness.py
+      - .github/workflows/evolution-effectiveness.yml
+      - tests/evidence/evolution_effectiveness_lifecycle.py
+      - tests/validation/evolution_effectiveness_contracts.py
+      - orchestration/EVOLUTION_RADAR.md
+      - docs/human/EVOLUTION_RADAR.md
+
