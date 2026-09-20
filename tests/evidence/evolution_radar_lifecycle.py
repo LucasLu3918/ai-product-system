@@ -271,6 +271,42 @@ def main() -> int:
     else:
         raise AssertionError("invalid monthly period format must fail closed")
 
+
+    monthly_july = copy.deepcopy(monthly)
+    monthly_july["run"]["period"] = "2026-07"
+    monthly_august = copy.deepcopy(monthly)
+    monthly_august["run"]["period"] = "2026-08"
+    monthly_september = copy.deepcopy(monthly)
+    monthly_september["run"]["period"] = "2026-09"
+    monthly_april = copy.deepcopy(monthly)
+    monthly_april["run"]["period"] = "2026-04"
+    quarterly_issues = [
+        {"title": "Evolution Radar [monthly] 2026-08-01", "created_at": "2026-08-01T01:35:00Z", "body": rollup.issue_markdown(monthly_july)},
+        {"title": "Evolution Radar [monthly] 2026-09-01", "created_at": "2026-09-01T01:35:00Z", "body": rollup.issue_markdown(monthly_august)},
+        {"title": "Evolution Radar [monthly] 2026-10-01", "created_at": "2026-10-01T01:35:00Z", "body": rollup.issue_markdown(monthly_september)},
+        {"title": "Evolution Radar [monthly] 2026-05-01", "created_at": "2026-05-01T01:35:00Z", "body": rollup.issue_markdown(monthly_april)},
+        {"title": "Evolution Radar [monthly] malformed", "created_at": "2026-09-15T01:35:00Z", "body": "no evidence"},
+    ]
+    quarterly = rollup.quarterly_rollup(quarterly_issues, config, period="2026-Q3")
+    require(quarterly["run"]["period"] == "2026-Q3", "quarterly evidence must record the reviewed quarter")
+    require(quarterly["run"]["months_reviewed"] == ["2026-07", "2026-08", "2026-09"], "quarterly review must bind the exact calendar months")
+    require(quarterly["run"]["monthly_evidence_count"] == 3, "quarterly rollup must consume only monthly evidence from the requested quarter")
+    require(quarterly["summary"]["deduplicated_count"] == monthly["summary"]["deduplicated_count"], "quarterly rollup must deterministically deduplicate recurring signals")
+    require(all(s["recurrence_count"] >= 6 for s in quarterly["signals"]), "quarterly rollup must accumulate recurrence across monthly evidence")
+    require(all(r["state"] == "ANALYSIS_PENDING" for r in quarterly["recommendations"]), "quarterly rollup must not promote monthly semantic states")
+    require(quarterly["summary"]["actionable_count"] == 0, "quarterly deterministic review must not manufacture actionable recommendations")
+    require(not radar.validate_evidence(quarterly), "quarterly evidence must validate")
+    quarterly_body = rollup.issue_markdown(quarterly)
+    require("Review quarter: 2026-Q3" in quarterly_body, "quarterly Human review issue must expose the bound quarter")
+    require("Monthly evidence bundles reviewed: 3" in quarterly_body, "quarterly Human review issue must expose evidence count")
+
+    try:
+        rollup.quarterly_rollup(quarterly_issues, config, period="2026-Q5")
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("invalid quarterly period format must fail closed")
+
     bad_config = copy.deepcopy(config)
     bad_config["sources"] = bad_config["sources"][:4]
     require(radar.validate_config(bad_config), "fewer than five configured sources must fail")

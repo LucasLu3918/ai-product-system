@@ -210,3 +210,8 @@ Its inputs are bounded to committed configuration/Capability Map plus the alread
 ## Repository Health interaction
 
 Repository Health / Architecture Drift is read-only validation evidence. It may inspect source-controlled files and invoke Scenario Conformance, but it creates no execution workspace, claims no writer boundary, performs no remediation, and grants no runtime, code-change, PR, merge, release or publication authority.
+
+## Evolution Radar quarterly review isolation
+
+Quarterly Evolution Radar review is aggregation-only. It consumes durable monthly Issue evidence and MUST NOT initiate another public-source collection, provider/model execution, Trial workspace mutation or formal implementation branch. Its output remains evidence-only with protected-operation authority false.
+

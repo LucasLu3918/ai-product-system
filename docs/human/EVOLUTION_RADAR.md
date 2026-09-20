@@ -347,3 +347,10 @@ Provider-neutral handoff 與 optional semantic analyzer 仍保留在下一層；
 ### Capability Map repository-health reconciliation
 
 The Capability Map explicitly includes the existing Integration Gate and deterministic Repository Health / Architecture Drift capability so Evolution comparison stays aligned with source-controlled architecture. Repository Health is separate credential-free consistency evidence and does not change Radar recommendation semantics or Human decision authority.
+
+## 季度決定性檢視（Quarterly Deterministic Review）
+
+Evolution Radar 現在會在每季第一天建立上一季的決定性檢視。季度層**不重新抓取外部論壇／來源**，而是只讀取已經發布並可驗證的 monthly durable evidence，因此不增加新的來源網路請求，也不需要 `OPENAI_API_KEY`、`GEMINI_API_KEY` 或其他 Agent/provider credential。
+
+季度 artifact 會綁定 `YYYY-QN`、該季三個月份、實際納入的 monthly evidence 數量，並依 signal fingerprint 累積 recurrence。為了避免把月份中的語意結論當成新的季度結論，quarterly recommendation 會重新保持 `ANALYSIS_PENDING`；它只提供 Human review evidence，不會自動 ADOPT、修改程式、建立 implementation PR、merge 或 release。
+

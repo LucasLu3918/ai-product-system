@@ -4,6 +4,7 @@ on:
   schedule:
     - cron: "0 1 * * 1"   # weekly Monday 09:00 Asia/Taipei
     - cron: "30 1 1 * *"  # monthly day 1 09:30 Asia/Taipei
+    - cron: "0 2 1 1,4,7,10 *"  # quarterly day 1 10:00 Asia/Taipei
   workflow_dispatch:
     inputs:
       mode:
@@ -14,6 +15,7 @@ on:
         options:
           - weekly
           - monthly
+          - quarterly
       semantic_provider:
         description: Optional scheduled semantic provider; handoff requires no model API credential
         required: true
@@ -46,6 +48,8 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             echo "value=${{ inputs.mode }}" >> "$GITHUB_OUTPUT"
+          elif [[ "${{ github.event.schedule }}" == "0 2 1 1,4,7,10 *" ]]; then
+            echo "value=quarterly" >> "$GITHUB_OUTPUT"
           elif [[ "${{ github.event.schedule }}" == "30 1 1 * *" ]]; then
             echo "value=monthly" >> "$GITHUB_OUTPUT"
           else
@@ -57,27 +61,41 @@ jobs:
         run: python scripts/evolution_radar.py collect --mode weekly --output evolution-radar.yaml
 
       - name: Load prior weekly evidence
-        if: steps.mode.outputs.value == 'monthly'
+        if: steps.mode.outputs.value == 'monthly' || steps.mode.outputs.value == 'quarterly'
         shell: bash
         run: >-
           gh api --paginate --slurp
           "repos/${GITHUB_REPOSITORY}/issues?state=all&per_page=100"
           > evolution-radar-issues-pages.json
 
-      - name: Resolve previous calendar month
-        if: steps.mode.outputs.value == 'monthly'
+      - name: Resolve review period
+        if: steps.mode.outputs.value == 'monthly' || steps.mode.outputs.value == 'quarterly'
         id: period
         shell: bash
+        env:
+          RADAR_MODE: ${{ steps.mode.outputs.value }}
         run: |
           period="$(python - <<'PY'
           from datetime import datetime, timezone
+          import os
+
           now = datetime.now(timezone.utc)
-          year = now.year
-          month = now.month - 1
-          if month == 0:
-              year -= 1
-              month = 12
-          print(f"{year:04d}-{month:02d}")
+          mode = os.environ["RADAR_MODE"]
+          if mode == "monthly":
+              year = now.year
+              month = now.month - 1
+              if month == 0:
+                  year -= 1
+                  month = 12
+              print(f"{year:04d}-{month:02d}")
+          else:
+              current_quarter = (now.month - 1) // 3 + 1
+              quarter = current_quarter - 1
+              year = now.year
+              if quarter == 0:
+                  year -= 1
+                  quarter = 4
+              print(f"{year:04d}-Q{quarter}")
           PY
           )"
           echo "value=$period" >> "$GITHUB_OUTPUT"
@@ -86,6 +104,15 @@ jobs:
         if: steps.mode.outputs.value == 'monthly'
         run: >-
           python scripts/evolution_radar_rollup.py monthly-rollup
+          --issues-json evolution-radar-issues-pages.json
+          --config config/evolution-sources.yaml
+          --period "${{ steps.period.outputs.value }}"
+          --output evolution-radar.yaml
+
+      - name: Build quarterly rollup
+        if: steps.mode.outputs.value == 'quarterly'
+        run: >-
+          python scripts/evolution_radar_rollup.py quarterly-rollup
           --issues-json evolution-radar-issues-pages.json
           --config config/evolution-sources.yaml
           --period "${{ steps.period.outputs.value }}"

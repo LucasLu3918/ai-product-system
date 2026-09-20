@@ -74,4 +74,10 @@ Human chooses: REJECT / HOLD / ASSESS / TRIAL / ADOPT</pre></section>
 </section>
 <section class="card s12" id="external-credential-dependency-guard"><h2>Scenario 145 — External Credential Dependency Guard</h2><p>AIPS 以 source-controlled registry + deterministic audit 管理外部 Agent/provider credential dependency。未登記 Key/consumer、baseline/release 必要化、pull-request secret exposure 都會 BLOCK repository validation。</p><p>Evolution Radar 沒有 external semantic credential 時仍照常產生 research evidence 與 provider-neutral handoff；Retrieval local/default lane 不取得 OPENAI_API_KEY。</p></section>
 <section class="card s12" id="local-deterministic-preanalysis"><h2>Scenario 146 — Deterministic Local Pre-analysis</h2><p>每次 Radar evidence 完成後，AIPS 先用本機 deterministic 規則整理 Human review queue，不需要任何外部 Agent/API Key，也不做額外 network request。</p><table><tr><th>輸出</th><th>意義</th></tr><tr><td>Category hints</td><td>由 title keyword rule 可重現分類</td></tr><tr><td>Capability hints</td><td>只指向既有 Capability Map ID</td></tr><tr><td>Near-duplicate cluster</td><td>token Jaccard + minimum shared terms</td></tr><tr><td>HIGH / MEDIUM / LOW</td><td>Human review priority，不是 adoption/suitability 分數</td></tr></table><div class="note warn"><strong>Truth boundary：</strong><code>semantic_suitability_inferred=false</code>、<code>recommendation_state_mutated=false</code>，所有 semantic recommendation 保持 <code>ANALYSIS_PENDING</code>。相同 evidence/config/capability input 必須產生相同 artifact。</div></section>
+<section class="card s12" id="evolution-quarterly-review">
+<h2>Evolution Radar 季度決定性檢視</h2>
+<p>季度層每年 1／4／7／10 月第一天檢視上一季，只聚合既有 monthly durable evidence，不重新抓取外部來源。它綁定季度與三個月份、累積 signal recurrence，並把季度 recommendation 保持為 <code>ANALYSIS_PENDING</code>，避免 deterministic rollup 冒充新的語意採用判斷。</p>
+<p>此流程不需要外部 Agent/provider key、不新增來源 network collection，也沒有自動改碼、implementation PR、merge、release 或 publication authority。</p>
+</section>
+
 </body></html>
