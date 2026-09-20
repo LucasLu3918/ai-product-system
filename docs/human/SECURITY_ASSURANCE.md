@@ -207,6 +207,8 @@ Security review verifies:
 - logs/traces/error paths redact sensitive headers/fields;
 - secret scanning evidence exists where practical.
 
-If credentials required for an API call are unavailable, the operation is BLOCKED. Never substitute hard-coded credentials.
+若目前要求的操作明確需要 credential，且沒有 credential-free 路徑，該操作為 BLOCKED。若 credential 被宣告為 optional，則必須使用該能力定義的 `SKIPPED_NOT_CONFIGURED` / `ANALYSIS_PENDING` / `TRIAL_PENDING` 等非 PASS 狀態，且不得因此阻擋無關的 baseline validation 或 release。永遠不得以 hard-coded credential 取代缺失的 secret。
+
+AIPS 另外使用 External Credential Dependency Guard（`config/external-credentials.yaml` + `scripts/external_credential_guard.py`）確保外部 Agent/provider Key 不會被新增成 baseline/release 必要條件，也不會暴露給 pull-request code。
 
 For SAL 3–4 or production credentials, an active exposed credential is release-blocking until containment and required rotation/revocation are complete.

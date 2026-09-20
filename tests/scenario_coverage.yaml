@@ -1040,3 +1040,14 @@ scenarios:
       - references/evolution/ISSUE_79_PROVIDER_CREDENTIAL_POLICY_DECISION.yaml
       - references/evolution/ISSUE_79_GEMINI_PROVIDER_SESSION_RESULT.yaml
       - tests/validate_repository.py
+
+- id: "145"
+    path: tests/scenarios/145-external-credential-dependency-guard.md
+    coverage: deterministic
+    evidence:
+      - config/external-credentials.yaml
+      - scripts/external_credential_guard.py
+      - tests/evidence/external_credential_guard_lifecycle.py
+      - tests/validation/external_credential_guard_contracts.py
+      - orchestration/EXTERNAL_CREDENTIAL_DEPENDENCY_GUARD.md
+      - tests/validate_repository.py
