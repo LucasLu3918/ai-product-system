@@ -116,3 +116,8 @@ docs_workflow = (ROOT / ".github/workflows/docs-site.yml").read_text(encoding="u
 for marker in ("pages_configured", "SKIPPED_NOT_CONFIGURED", "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/pages"):
     if marker not in docs_workflow:
         errors.append(f"docs-site workflow missing truthful Pages preflight contract: {marker}")
+
+placement_config = yaml.safe_load((ROOT / "config/documentation-placement.yaml").read_text(encoding="utf-8")) or {}
+placement_rule_ids = {item.get("id") for item in placement_config.get("placement_rules") or []}
+if "documentation-governance" not in placement_rule_ids:
+    errors.append("documentation placement must map documentation-governance sources to canonical Human topics")

@@ -113,6 +113,21 @@ placement_rules:
       docs/human/EVOLUTION_RADAR_OVERVIEW.md: [Signal Collection, Deterministic Pre-analysis, Semantic Analysis, Human Decision, Controlled Trial, Trial → Adoption, Effectiveness Feedback]
       docs/human/TECHNOLOGY_GUIDE.md: [Evolution & Maintenance]
 
+  - id: documentation-governance
+    triggers:
+      - scripts/documentation_sync.py
+      - scripts/documentation_audience.py
+      - config/documentation-sync.yaml
+      - config/documentation-audience.yaml
+      - orchestration/DOCUMENTATION_SYNC.md
+      - tests/validation/documentation_sync_contracts.py
+      - tests/validation/documentation_audience_contracts.py
+      - tests/validation/documentation_placement_contracts.py
+    placements:
+      docs/human/DOCUMENTATION_SYNC.md: [文件角色, Current-behavior placement contract, Deterministic protection]
+      docs/human/DOCUMENTATION_MAP.md: [文件角色, 文件一致性]
+      docs/human/TECHNOLOGY_GUIDE.md: [Documentation Platform]
+
   - id: documentation-platform
     triggers: [docs/human/.vitepress/**, package.json, .github/workflows/docs-site.yml, scripts/documentation_placement.py, config/documentation-placement.yaml]
     placements:
