@@ -23,3 +23,4 @@ scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 status: READY
+# validation-binding: core-change label observed before exact-head run
