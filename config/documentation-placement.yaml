@@ -1,34 +1,65 @@
-version: 1
+version: 2
 policy:
   current_behavior_is_topic_oriented: true
   release_history_target: CHANGELOG.md
   verification_history_target: docs/human/CONFORMANCE.md
   legacy_html_append_forbidden: true
+  all_added_lines_must_match_canonical_placement: true
+  new_topics_require_contract_update: true
 
 current_behavior_docs:
   docs/human/GETTING_STARTED.md:
-    required_h2: [安裝 AIPS, 驗證安裝, 開始工作, 更新, 解除安裝]
+    strict_h2: true
+    required_h2: [安裝 AIPS, 驗證安裝, 開始工作, Existing Project, 更新, 解除安裝]
   docs/human/INSTALLATION.md:
-    required_h2: [macOS / Linux, Windows, 驗證, Runtime integration, 更新, 解除安裝]
+    strict_h2: true
+    required_h2: [macOS / Linux, Windows, 驗證, Runtime integration, 更新, 解除安裝, 會保留什麼, 相容入口]
   docs/human/HARNESS.md:
+    strict_h2: true
     required_h2: [Integration model, Native Runtime Adapters, MCP Interoperability, Capability truth, Progressive disclosure, Ownership 與解除]
   docs/human/USER_GUIDE.md:
-    required_h2: [工作模式與基本流程, 建立大型產品, Existing Project, Global Harness 與 MCP, Deterministic Scheduler, Execution Isolation 與 Runtime Resource, Security, Quality 與 Review, Git Publication 與 Release, Documentation]
+    strict_h2: true
+    required_h2:
+      - 工作模式與基本流程
+      - 建立大型產品
+      - Existing Project
+      - Creative Direction、Style 與 Brand
+      - 需求釐清與 Planning
+      - Global Harness 與 MCP
+      - Roles、Skills 與重用
+      - Deterministic Automation
+      - Deterministic Scheduler
+      - Execution Isolation 與 Runtime Resource
+      - Visual Polish 與 Product Consistency
+      - Security
+      - Quality 與 Review
+      - Logging、Observability 與 Operations
+      - Checkpoint / Resume
+      - Project Intelligence
+      - Git Publication 與 Release
+      - Evolution Radar
+      - Documentation
   docs/human/PROJECT_INTELLIGENCE.md:
     required_h2: [第一次 Existing Project, Change Impact, Retrieval Intelligence：即時按需檢索]
   docs/human/SECURITY_ASSURANCE.md:
     required_h2: [Core model, Assurance levels, Release Security Gate]
   docs/human/ARCHITECTURE_OVERVIEW.md:
-    required_h2: [Runtime 與接入層, Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Deterministic Execution, Security 與 Governance, Documentation Architecture, Official Docs Site]
+    strict_h2: true
+    required_h2: [Runtime 與接入層, Project Intelligence 與 Retrieval, Project Identity 與 Persistence, Planning 與 Product Delivery, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval, Evolution Radar, Documentation Architecture, Official Docs Site]
   docs/human/EVOLUTION_RADAR.md:
-    required_h2: [Weekly Signal Scan, Evidence Quality, Deterministic Pre-analysis, Semantic Analysis, Human Decision Binding, Controlled Trial, Trial → ADOPT, Verification History]
+    strict_h2: true
+    required_h2: [Weekly Signal Scan, Evidence Quality, Deterministic Pre-analysis, Semantic Analysis, Human Decision Binding, Controlled Trial, Trial → ADOPT, Optional Provider Credentials, Effectiveness Feedback, Current Boundaries, Verification History]
   docs/human/EVOLUTION_RADAR_OVERVIEW.md:
-    required_h2: [Signal Collection, Deterministic Pre-analysis, Semantic Analysis, Human Decision, Controlled Trial, Trial → Adoption, Verification History]
+    strict_h2: true
+    required_h2: [Signal Collection, Deterministic Pre-analysis, Semantic Analysis, Human Decision, Controlled Trial, Trial → Adoption, Provider Credentials, Effectiveness Feedback, Verification History]
   docs/human/TECHNOLOGY_GUIDE.md:
+    strict_h2: true
     required_h2: [Runtime & Integration, Project Understanding, Execution, Security & Governance, Quality & Verification, Product Delivery, Evolution & Maintenance, Documentation Platform]
   docs/human/DOCUMENTATION_SYNC.md:
+    strict_h2: true
     required_h2: [文件角色, Current-behavior placement contract, Official Docs Site, Deterministic protection]
   docs/human/DOCUMENTATION_MAP.md:
+    strict_h2: true
     required_h2: [Official Docs Site, 文件角色, Agent / machine canonical 文件, 文件一致性]
   docs/human/MAINTENANCE.md:
     required_h2: [Documentation Impact Gate, Architecture Diagram Impact Check, Release checklist]
@@ -41,7 +72,7 @@ placement_rules:
   - id: installation
     triggers: [scripts/install.sh, scripts/install.ps1, scripts/uninstall.ps1, scripts/bootstrap.sh, scripts/uninstall.sh, bin/aips]
     placements:
-      docs/human/INSTALLATION.md: [macOS / Linux, Windows, 驗證, Runtime integration, 更新, 解除安裝, 相容入口]
+      docs/human/INSTALLATION.md: [macOS / Linux, Windows, 驗證, Runtime integration, 更新, 解除安裝, 會保留什麼, 相容入口]
       docs/human/GETTING_STARTED.md: [安裝 AIPS, 驗證安裝, 更新, 解除安裝]
 
   - id: harness
