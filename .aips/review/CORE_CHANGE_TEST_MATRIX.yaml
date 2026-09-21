@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 7f47c34cee4fa9c3d3f56bd263ffa626ffa9f7c7
-  changed_files_hash: ef43d733807ca4d869826a6be037cb339499bdbb3e204717997aba62240a441f
+  changed_files_hash: a835027c416f6d52f61d2d8b498526af61862f07642ab09845f88a03739661ce
 change:
   id: parallel-runtime-resource-isolation
   summary: Extend existing worktree isolation with atomic TCP port leases and deterministic runtime request propagation.
