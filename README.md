@@ -13,6 +13,9 @@ cd ai-product-system
 aips doctor
 ~~~
 
+v0.52 起，支援 MCP 的 IDE / Agent Host 也可以透過本機 `aips mcp serve` 直接取得 AIPS Roles / Skills / Orchestration 與 deterministic helpers；MCP 是通用接入層，原本 native Adapter 仍保留用來提供可驗證的 Turn Hook / Tool Guard。
+
+需要 Client 設定範例時使用 `aips mcp config --client cursor|codex|generic`；AIPS 不會自動改寫第三方 Client 設定。
 安裝完成後可檢查 Global Harness：
 
 ~~~bash

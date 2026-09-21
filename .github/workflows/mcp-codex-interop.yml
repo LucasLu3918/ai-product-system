@@ -1,0 +1,59 @@
+name: mcp-codex-interop
+
+on:
+  pull_request:
+    paths:
+      - "scripts/mcp_server.py"
+      - "bin/aips"
+      - "requirements.txt"
+      - "harness/MCP_GATEWAY.md"
+      - "tests/evidence/mcp_interoperability_lifecycle.py"
+      - "tests/validation/mcp_interoperability_contracts.py"
+      - ".github/workflows/mcp-codex-interop.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  codex-mcp-interop:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install AIPS dependencies
+        run: python -m pip install -r requirements.txt -r requirements-validation.txt
+
+      - name: Execute real stdio MCP protocol lifecycle
+        env:
+          AIPS_MCP_WORKSPACE: ${{ github.workspace }}
+        run: python tests/evidence/mcp_interoperability_lifecycle.py
+
+      - name: Install pinned Codex CLI
+        run: |
+          npm install --global @openai/codex@0.155.1
+          codex --version | grep -F "0.155.1"
+
+      - name: Register and discover AIPS through Codex MCP configuration
+        shell: bash
+        run: |
+          export HOME="$RUNNER_TEMP/aips-codex-home"
+          mkdir -p "$HOME"
+          codex mcp add aips -- "$GITHUB_WORKSPACE/bin/aips" mcp serve
+          codex mcp list | tee codex-mcp-list.txt
+          grep -F "aips" codex-mcp-list.txt
+          python scripts/mcp_server.py config --client codex > codex-aips-mcp-config.json
+          grep -F '"automatic_change": false' codex-aips-mcp-config.json
+
+      - name: Assert exact candidate identity
+        shell: bash
+        env:
+          AIPS_EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$AIPS_EXPECTED_HEAD_SHA"

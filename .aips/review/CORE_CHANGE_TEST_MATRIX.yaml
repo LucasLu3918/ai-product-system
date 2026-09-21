@@ -1,36 +1,36 @@
 version: 1
 candidate:
-  base_sha: 7f47c34cee4fa9c3d3f56bd263ffa626ffa9f7c7
-  changed_files_hash: a835027c416f6d52f61d2d8b498526af61862f07642ab09845f88a03739661ce
+  base_sha: b550ceeb086a3ee4ca12a3166e10a93019c820ac
+  changed_files_hash: 3452321ad833a9b53d653e8c85e99f6a7cf24394719e029d5637bf2a12780af5
 change:
-  id: parallel-runtime-resource-isolation
-  summary: Extend existing worktree isolation with atomic TCP port leases and deterministic runtime request propagation.
-  boundary: [execution-isolation, deterministic-scheduler, scenario-conformance, architecture-documentation]
+  id: mcp-interoperability-gateway
+  summary: Extend the existing turn-aware Global Harness with a local stdio MCP access plane over canonical AIPS Roles, Skills, protocols and deterministic helpers while retaining native adapters for enforcement and adding no Capability ID.
+  boundary: [harness-runtime, deterministic-scheduler, scenario-conformance, architecture-documentation, installation-lifecycle]
 matrix:
-  - boundary: execution-isolation
-    reason: Parallel worktrees need collision-resistant host TCP resource ownership without weakening dirty-worktree or Human authority rules.
+  - boundary: harness-runtime
+    reason: A new cross-host access plane changes how compatible clients discover AIPS context and tools.
     checks:
-      static_lint: {applicable: true, evidence: "repository validation compiles execution_isolation.py and runtime lifecycle evidence"}
-      unit: {applicable: true, evidence: "lifecycle checks stable leases, occupied preferred fallback, env manifest, release and reconcile"}
-      integration: {applicable: true, evidence: "lifecycle creates real Git worktrees and concurrent allocator processes against one repository registry"}
-      contract: {applicable: true, evidence: "Scenario 161 + Execution Isolation protocol + Task Graph runtime schema"}
-      e2e: {applicable: true, evidence: "PR exact-head Janitor repository validation"}
-      security: {applicable: true, evidence: "no process killing, no authority expansion, external config only, dirty worktree preserved"}
-      migration_recovery: {applicable: true, evidence: "existing v2 records/task graphs remain readable; runtime-reconcile handles non-ACTIVE orphan leases"}
-      cli_harness: {applicable: true, evidence: "aips isolation routes new runtime lifecycle subcommands"}
-      docs_schema: {applicable: true, evidence: "Human/Agent architecture, user, technology, scheduler and conformance docs synchronized"}
+      static_lint: {applicable: true, evidence: "repository ruff plus Python compile contracts"}
+      unit: {applicable: true, evidence: "MCP contract validator checks capability/authority/source boundaries"}
+      integration: {applicable: true, evidence: "official MCP Client launches the exact stdio server and exercises Tools/Resources/Prompts"}
+      contract: {applicable: true, evidence: "Scenario 162 + MCP_GATEWAY + Harness/Adapter contracts"}
+      e2e: {applicable: true, evidence: "mcp-codex-interop exact-head workflow registers/lists AIPS in pinned Codex CLI"}
+      security: {applicable: true, evidence: "workspace confinement, no provider credential, no protected-operation tools, ADVISORY truth"}
+      migration_recovery: {applicable: false, na_reason: "additive optional access plane; native adapters and existing CLI remain valid"}
+      cli_harness: {applicable: true, evidence: "aips mcp serve/inspect/config and install/doctor dependency checks"}
+      docs_schema: {applicable: true, evidence: "Agent/Human Harness + architecture + technology documentation synchronized"}
   - boundary: deterministic-scheduler
-    reason: Runtime requirements must be validated and propagated deterministically without moving OS allocation into the Scheduler.
+    reason: MCP exposes the existing scheduler without moving semantic planning or OS resource allocation into MCP.
     checks:
-      static_lint: {applicable: true, evidence: "ruff + mypy scheduler checks"}
-      unit: {applicable: true, evidence: "scheduler lifecycle covers valid TCP metadata and invalid UDP rejection"}
-      integration: {applicable: true, evidence: "dispatch emits runtime_requests consumed by Execution Isolation contract"}
-      contract: {applicable: true, evidence: "Task Graph template/schema document runtime ports"}
-      e2e: {applicable: true, evidence: "PR exact-head Janitor validation"}
-      security: {applicable: true, evidence: "scheduler cannot widen Change Boundary or allocate host resources"}
-      migration_recovery: {applicable: false, na_reason: "runtime metadata is optional and additive"}
-      cli_harness: {applicable: true, evidence: "existing aips scheduler route unchanged"}
-      docs_schema: {applicable: true, evidence: "Scheduler/Orchestrator/User Guide synchronized"}
+      static_lint: {applicable: true, evidence: "repository validation compiles both server and scheduler"}
+      unit: {applicable: true, evidence: "Scenario 162 dispatches a deterministic two-task graph through MCP"}
+      integration: {applicable: true, evidence: "real MCP call delegates to deterministic_scheduler.schedule"}
+      contract: {applicable: true, evidence: "MCP tool explicitly cannot invent tasks or grant authority"}
+      e2e: {applicable: true, evidence: "exact-head MCP lifecycle through stdio"}
+      security: {applicable: true, evidence: "scheduler response authority flags remain false"}
+      migration_recovery: {applicable: false, na_reason: "scheduler graph/state schema is unchanged"}
+      cli_harness: {applicable: false, na_reason: "existing aips scheduler route is unchanged"}
+      docs_schema: {applicable: true, evidence: "MCP Gateway protocol documents delegation boundary"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

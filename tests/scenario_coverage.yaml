@@ -1233,3 +1233,14 @@ scenarios:
       - tests/validation/conformance_isolation.py
       - orchestration/EXECUTION_ISOLATION.md
       - orchestration/DETERMINISTIC_SCHEDULER.md
+
+  - id: "162"
+    path: tests/scenarios/162-mcp-interoperability-gateway.md
+    coverage: lifecycle
+    evidence:
+      - scripts/mcp_server.py
+      - harness/MCP_GATEWAY.md
+      - tests/evidence/mcp_interoperability_lifecycle.py
+      - tests/validation/mcp_interoperability_contracts.py
+      - .github/workflows/mcp-codex-interop.yml
+      - tests/validate_repository.py

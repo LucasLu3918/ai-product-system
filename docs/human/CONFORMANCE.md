@@ -1203,3 +1203,18 @@ Current automated inventory after Scenario 161:
 - manual: 0
 - uncovered: 0
 - automated: 161 / 161
+
+## Scenario 162 — MCP 互通閘道
+
+Scenario 162 以官方 MCP Python Client 真正啟動 AIPS 的本機 stdio server，驗證 MCP 2026-07-28、Tools / Resources / Resource Templates / Prompts、Role/Skill 單一真實來源、Scheduler delegation、workspace 路徑隔離，以及 MCP-only 必須誠實回報 `ADVISORY`。
+
+另外的 exact-candidate workflow 會安裝固定版 Codex CLI 0.155.1，以 `codex mcp add` / `codex mcp list` 驗證真實 Host 註冊路徑；不執行 provider inference，也不需要外部 Agent API Key。
+
+目前 Scenario inventory：
+
+- deterministic：24
+- lifecycle：84
+- agent_eval：54
+- manual：0
+- uncovered：0
+- automated：**162 / 162**

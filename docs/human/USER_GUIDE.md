@@ -1007,3 +1007,21 @@ aips isolation runtime-release --project /path/to/project --id frontend-a --port
 ~~~
 
 `runtime-reconcile` 只清除已無 ACTIVE AIPS isolation owner 的 orphan lease，不會把「目前沒有 process bind」誤判成 stale，因為 Agent 可能正在 lease 與 server start 之間。
+
+## 使用 MCP 建立大型產品
+
+例如在 Cursor 等 MCP Host 中要求「使用 AIPS 設計並實作大型購物網站」，新的接入流程是：
+
+~~~text
+Host
+→ AIPS MCP：取得 compact Context / Role-Skill catalogs / Product Delivery protocols
+→ Host Model：完成需求、架構、DDD/CA、Security 等語意規劃
+→ Human Planning Gate
+→ AIPS deterministic Scheduler
+→ Execution Isolation + Runtime Port Lease
+→ 平行實作 / TDD / Security Review / Quality Review
+→ Janitor / LOCAL_COMPLETE
+→ 只有 Human 明確要求時才進 Production Enablement
+~~~
+
+與原本 native Adapter 方式相比，中間的 AIPS 產品流程不變；改變的是最前面的「Host 如何取得 AIPS 能力」。MCP-compatible Host 可共用標準入口，若該 Runtime 另有 AIPS native adapter，則再疊加 TURN_NATIVE / TOOL_GUARDED 能力。

@@ -562,3 +562,14 @@ For long-lived Governance Audit evidence, use config/governance-audit-retention.
 - legal hold overrides time thresholds;
 - REVIEW_DUE never authorizes deletion or compaction;
 - no secret/private key, source absolute path or new Agent/provider credential is persisted or required.
+
+## MCP Interoperability Gateway
+
+MCP-compatible hosts may use `harness/MCP_GATEWAY.md` and `aips mcp serve` as a portable local stdio access plane.
+
+- MCP Resources expose canonical Role / Skill / selected orchestration sources on demand.
+- MCP Prompts assemble reusable review/planning context; the host model still performs semantic reasoning.
+- MCP Tools expose bounded deterministic/read-only AIPS helpers and cannot create Human, publish, merge, release or production authority.
+- MCP-only integration is governance `ADVISORY`; it cannot claim interception of host-native shell/file/git tools.
+- Runtime-native adapters remain authoritative for verified TURN_NATIVE / TOOL_GUARDED behavior.
+- v0.52 does not add a provider/model call, external credential requirement, remote MCP service or automatic client-config mutation.
