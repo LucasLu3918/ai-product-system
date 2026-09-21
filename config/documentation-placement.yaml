@@ -57,10 +57,10 @@ current_behavior_docs:
     required_h2: [Runtime & Integration, Project Understanding, Execution, Security & Governance, Quality & Verification, Product Delivery, Evolution & Maintenance, Documentation Platform]
   docs/human/DOCUMENTATION_SYNC.md:
     strict_h2: true
-    required_h2: [文件角色, Current-behavior placement contract, Official Docs Site, Deterministic protection]
+    required_h2: [文件角色, Current-behavior placement contract, Official Docs Site, Technology Guide, 文件互相導向, Deterministic protection]
   docs/human/DOCUMENTATION_MAP.md:
     strict_h2: true
-    required_h2: [Official Docs Site, 文件角色, Agent / machine canonical 文件, 文件一致性]
+    required_h2: [Official Docs Site, 文件角色, Agent / machine canonical 文件, Shared canonical 文件, 文件一致性]
   docs/human/MAINTENANCE.md:
     required_h2: [Documentation Impact Gate, Architecture Diagram Impact Check, Release checklist]
 

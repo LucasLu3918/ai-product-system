@@ -43,7 +43,9 @@ aips harness status
 aips mcp inspect
 ~~~
 
-doctor 會檢查 system checkout、Python environment、CLI、Harness 與 MCP availability。
+安裝流程本身會執行 **installation integrity validation**：確認必要 runtime dependency、核心 source contract 與 Human documentation placement 可用；它不會在一般使用者電腦重跑需要 Playwright/browser 等開發工具的完整 repository CI suite。
+
+`aips doctor` 會檢查 system checkout、Python environment、CLI、Harness 與 MCP availability。Maintainer 若要執行完整 repository validation，使用 `aips validate`；正式 PR / main 仍以 GitHub Actions 的 Janitor / repository checks 為準。
 
 ## Runtime integration
 

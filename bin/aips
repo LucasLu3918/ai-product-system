@@ -707,6 +707,21 @@ validate_repo() {
   "$py" "$SYSTEM_DIR/tests/validate_repository.py"
 }
 
+validate_installation() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+
+  "$py" -c 'import yaml, mcp' >/dev/null 2>&1 || die "AIPS runtime dependencies are incomplete."
+
+  if ! PYTHONPATH="$SYSTEM_DIR" "$py" -c 'from tests.validation import static_contracts as s; import sys; [print(f"- {item}") for item in s.errors]; sys.exit(1 if s.errors else 0)'; then
+    die "AIPS installation integrity validation failed."
+  fi
+
+  "$py" "$SYSTEM_DIR/scripts/documentation_placement.py" >/dev/null ||
+    die "AIPS Human documentation placement validation failed."
+}
+
 install_cli() {
   require_cmd git
   require_cmd python3
@@ -717,7 +732,7 @@ install_cli() {
     python3 -m venv "$SYSTEM_DIR/.venv"
   fi
 
-  say "Installing validator dependencies..."
+  say "Installing AIPS runtime dependencies..."
   "$SYSTEM_DIR/.venv/bin/python" -m pip install --disable-pip-version-check -q -r "$SYSTEM_DIR/requirements.txt"
 
   mkdir -p "$BIN_HOME" "$CONFIG_HOME"
@@ -737,7 +752,7 @@ install_cli() {
   ln -s "$SYSTEM_DIR/bin/aips" "$BIN_HOME/aips" 2>/dev/null || true
   printf '%s\n' "$SYSTEM_DIR" > "$CONFIG_HOME/system-dir"
 
-  validate_repo
+  validate_installation
   harness_install
 
   say
