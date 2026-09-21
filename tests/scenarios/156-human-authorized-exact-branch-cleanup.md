@@ -11,6 +11,7 @@ AIPS MAY delete integrated ephemeral remote branches only when an explicit Human
 - require an exact cleanup manifest with `explicit_user_request`, `exact_manifest_only`, and `one_time=true`;
 - bind every approved deletion to branch name, full expected SHA, and merged-PR evidence;
 - preflight the complete batch before any deletion;
+- accept either local deterministic integration proof or revalidated GitHub merged-PR evidence whose merged state, exact head SHA/ref, and base ref match the manifest;
 - block the entire batch if any present ref moved, is not EPHEMERAL, or is not deterministically integrated into `main`;
 - treat already-absent approved refs as idempotent `ALREADY_ABSENT`;
 - allow deletion only from the protected-main push cleanup job;
