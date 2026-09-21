@@ -25,6 +25,7 @@ surfaces:
     validation_paths:
       - tests/evidence/harness_runtime_lifecycle.py
       - tests/evidence/resource_authorization_lifecycle.py
+      - tests/evidence/runtime_port_isolation_lifecycle.py
 
   - id: project-intelligence
     capabilities:

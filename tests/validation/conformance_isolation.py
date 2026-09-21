@@ -32,8 +32,8 @@ if conformance_helper.exists():
             errors.append("Scenario conformance total/registered count must match scenario inventory")
         if cov.get("uncovered") != 0:
             errors.append("Released scenario conformance registry must have no uncovered entries")
-        if cov.get("manual") != 0 or cov.get("agent_eval") != 54 or cov.get("lifecycle") != 82 or cov.get("deterministic") != 24 or cov.get("automated") != 160:
-            errors.append("current baseline must report manual=0, deterministic=24, lifecycle=82, agent_eval=54 and automated=160")
+        if cov.get("manual") != 0 or cov.get("agent_eval") != 54 or cov.get("lifecycle") != 83 or cov.get("deterministic") != 24 or cov.get("automated") != 161:
+            errors.append("current baseline must report manual=0, deterministic=24, lifecycle=83, agent_eval=54 and automated=161")
 
     with tempfile.TemporaryDirectory() as tmp:
         temp = Path(tmp)
@@ -392,6 +392,34 @@ else:
         result = subprocess.run([sys.executable, str(legacy_harness_migration_evidence)], capture_output=True, text=True)
         if result.returncode != 0:
             errors.append(f"Legacy Harness migration lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
+
+
+# v0.51 parallel runtime port isolation
+runtime_port_evidence = ROOT / "tests/evidence/runtime_port_isolation_lifecycle.py"
+runtime_port_scenario = ROOT / "tests/scenarios/161-parallel-runtime-port-isolation.md"
+for required in (runtime_port_evidence, runtime_port_scenario):
+    if not required.exists():
+        errors.append(f"Missing v0.51 runtime-port isolation artifact: {required.relative_to(ROOT)}")
+if runtime_port_evidence.exists():
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(runtime_port_evidence)], capture_output=True, text=True)
+    if compiled.returncode != 0:
+        errors.append(f"Runtime-port isolation lifecycle syntax failed: {compiled.stderr.strip()}")
+    else:
+        result = subprocess.run([sys.executable, str(runtime_port_evidence)], capture_output=True, text=True, timeout=180)
+        if result.returncode != 0:
+            errors.append(f"Runtime-port isolation lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}")
+if isolation_helper.exists():
+    isolation_text = isolation_helper.read_text(encoding="utf-8")
+    for required_text in (
+        "runtime-lease",
+        "runtime-reallocate",
+        "runtime-release",
+        "runtime-reconcile",
+        "AIPS_PORT",
+        "runtime port registry lock timeout",
+    ):
+        if required_text not in isolation_text:
+            errors.append(f"execution_isolation.py missing v0.51 runtime-port contract: {required_text}")
 
 reconciled_contracts = {
     "011": (

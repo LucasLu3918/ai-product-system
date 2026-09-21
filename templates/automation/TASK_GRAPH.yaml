@@ -3,17 +3,23 @@ plan_id: null
 base_revision: null
 max_parallel: 1
 tasks: []
-# - id: orders-api
+# - id: frontend
 #   order: 10
-#   objective: change one approved module boundary
+#   objective: change one approved module boundary and run an isolated dev server
 #   dependencies: []
 #   read_only: false
-#   change_boundary: [services/orders]
-#   read_set: [services/orders/**, tests/orders/**]
-#   write_set: [services/orders/**, tests/orders/**]
-#   role: backend-engineer
+#   change_boundary: [apps/frontend]
+#   read_set: [apps/frontend/**, tests/frontend/**]
+#   write_set: [apps/frontend/**, tests/frontend/**]
+#   role: frontend-engineer
 #   skills: []
 #   isolation:
 #     mode: worktree
 #     required: true
+#     runtime:
+#       ports:
+#         - id: dev
+#           protocol: tcp
+#           preferred: 3000
+#           expose_as: [PORT]
 #   validation_profile: project-default

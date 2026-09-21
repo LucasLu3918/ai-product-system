@@ -797,3 +797,19 @@ flowchart LR
 ~~~
 
 The catalog is a provenance/discovery layer over v0.49 bundles, not a new trust anchor. Bundle verification with an independently retained anchor remains authoritative evidence verification. The retention helper deliberately has no automatic delete/compact command.
+
+
+## Parallel runtime resource isolation
+
+~~~mermaid
+flowchart LR
+    TG[Structured Task Graph] --> DS[Deterministic Scheduler]
+    DS -->|dispatch + runtime request| WT[AIPS Worktree Isolation]
+    WT --> L[Repository-scoped Port Lease]
+    L --> P[Host TCP Bind Probe]
+    P --> E[Runtime Environment Manifest]
+    E --> A[Agent Dev/Test Server]
+    L --> R[Runtime Release / Bounded Reallocation]
+~~~
+
+Worktree state and runtime resource state share the existing Execution Isolation ownership boundary but have independent lifecycles. The Scheduler validates and propagates requests; `execution_isolation.py` performs atomic lease allocation. The registry is external AIPS state, not project source. Clean workspace removal releases leases, while dirty workspace preservation does not prevent an explicit runtime release.

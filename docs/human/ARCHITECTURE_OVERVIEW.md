@@ -343,3 +343,20 @@ The lane does not edit code, authorize PRs, merge, release or publish. Project I
 v0.49 將既有治理稽核鏈延伸成可離線移交的 evidence bundle：exact Git revision、AUDIT.jsonl、MANIFEST、驗證/部署 evidence digests、checkpoint public keys 與 ANCHOR。這仍屬於既有 Governance + Evidence surface，因此沒有新增平行治理子系統或 approval gate。
 
 若要偵測整包 bundle 被重新製作或尾端被替換，`ANCHOR.json` 必須另行保存/分發，或使用已獨立信任的 Ed25519 signed checkpoint；bundle 內自己的 anchor 不是外部 trust source。
+
+
+## v0.51 平行 Runtime Resource Isolation
+
+~~~text
+Task Graph
+→ Deterministic Scheduler
+→ AIPS worktree
+→ repository-scoped atomic TCP port lease
+→ host availability probe
+→ AIPS_PORT / AIPS_PORT_<ID> / explicit aliases
+→ dev server / test server
+~~~
+
+這補上 worktree 只能隔離檔案、無法隔離 localhost runtime resource 的缺口。Port allocation 先以 task/isolation identity 產生穩定候選順序，再依當下主機實際可用性選擇，因此「決策順序可重現」，但不宣稱不同電腦一定取得相同數字。
+
+Runtime lease 可獨立釋放；dirty worktree 仍照原規則保留。若外部程序在 availability probe 後搶走 port，可用 bounded `runtime-reallocate` 換下一個候選。v0.51 只處理 TCP port，未引入 Docker network、DB schema、Redis namespace、GPU lease 或新的 Role/Skill/Gate。

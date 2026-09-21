@@ -65,8 +65,12 @@ Usage:
   aips conformance agent-eval consistency --case <yaml> --results-dir <dir> [--min-repetitions <n>] [--min-pass-rate <0..1>] [--format yaml|json]
 
   aips isolation resolve --mode shared|worktree|sandbox [--project <path>] [--format yaml|json]
-  aips isolation create --id <id> --boundary <id> [--mode worktree|sandbox] [--project <path>] [--ref <ref>]
+  aips isolation create --id <id> --boundary <id> [--mode worktree|sandbox] [--project <path>] [--ref <ref>] [--port <id>] [--preferred <port>] [--expose <ENV>]
   aips isolation status --id <id> [--project <path>] [--format yaml|json]
+  aips isolation runtime-lease --id <id> --port <id> [--preferred <port>] [--expose <ENV>] [--project <path>]
+  aips isolation runtime-reallocate --id <id> --port <id> [--project <path>]
+  aips isolation runtime-release --id <id> [--port <id>] [--project <path>]
+  aips isolation runtime-reconcile [--project <path>]
   aips isolation remove --id <id> [--project <path>] [--format yaml|json]
 
   aips scheduler --graph <yaml> [--state <yaml>] [--format yaml|json]
@@ -945,7 +949,7 @@ case "${1:-help}" in
     ;;
   isolation)
     sub="${2:-}"
-    [ -n "$sub" ] || die "Usage: aips isolation <resolve|create|status|remove> ..."
+    [ -n "$sub" ] || die "Usage: aips isolation <resolve|create|status|runtime-lease|runtime-reallocate|runtime-release|runtime-reconcile|remove> ..."
     shift 2 || true
     isolation_cmd "$sub" "$@"
     ;;

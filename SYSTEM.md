@@ -26,6 +26,7 @@ Agent Session / User Request
 → Role + Skill Resolution
 → Execution Profile / bounded Subagents when useful
 → Execution Isolation Resolution (shared / worktree / verified sandbox)
+→ Runtime Resource Lease Resolution when parallel tasks need host ports
 → Model + Tool Routing
 → Deterministic Automation when suitable
 → Execute
@@ -453,7 +454,7 @@ Execution isolation is an Execution Profile capability, not a new Role, Skill or
 - one ACTIVE writer owns a Change Boundary by default, including across AIPS-managed worktrees;
 - cleanup removes only AIPS-owned, clean managed worktrees and preserves dirty worktrees plus the managed branch.
 
-Use `orchestration/EXECUTION_ISOLATION.md` and `scripts/execution_isolation.py`. Isolation never bypasses governance, Change Impact, test or approval requirements.
+Use `orchestration/EXECUTION_ISOLATION.md` and `scripts/execution_isolation.py`. Worktree isolation may also own repository-scoped TCP port leases and emit a runtime environment manifest for parallel dev/test servers. Port leases use atomic AIPS registry coordination plus host availability probes; they never bypass governance, Change Impact, Resource Authorization, test or approval requirements.
 
 ## Deterministic Scheduler
 

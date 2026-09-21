@@ -120,6 +120,68 @@ def main() -> int:
         assert proc.returncode == 2
         assert "read_only task must not declare write_set" in proc.stdout
 
+    runtime_graph = {
+        "version": 1,
+        "plan_id": "runtime-ports",
+        "max_parallel": 2,
+        "tasks": [
+            {
+                "id": "frontend-a",
+                "dependencies": [],
+                "change_boundary": ["apps/a"],
+                "isolation": {
+                    "mode": "worktree",
+                    "required": True,
+                    "runtime": {
+                        "ports": [
+                            {"id": "dev", "protocol": "tcp", "preferred": 3000, "expose_as": ["PORT"]}
+                        ]
+                    },
+                },
+            },
+            {
+                "id": "frontend-b",
+                "dependencies": [],
+                "change_boundary": ["apps/b"],
+                "isolation": {
+                    "mode": "worktree",
+                    "required": True,
+                    "runtime": {
+                        "ports": [
+                            {"id": "dev", "protocol": "tcp", "preferred": 3000, "expose_as": ["PORT"]}
+                        ]
+                    },
+                },
+            },
+        ],
+    }
+    rc_runtime, runtime_decision = run(runtime_graph, {"plan_id": "runtime-ports", "tasks": {}})
+    assert rc_runtime == 0
+    assert runtime_decision["dispatch"] == ["frontend-a", "frontend-b"]
+    assert runtime_decision["runtime_requests"]["frontend-a"]["ports"][0]["id"] == "dev"
+    assert runtime_decision["runtime_requests"]["frontend-a"]["ports"][0]["expose_as"] == ["PORT"]
+
+    invalid_runtime = {
+        "version": 1,
+        "plan_id": "invalid-runtime",
+        "max_parallel": 1,
+        "tasks": [
+            {
+                "id": "frontend",
+                "dependencies": [],
+                "change_boundary": ["apps/frontend"],
+                "isolation": {"runtime": {"ports": [{"id": "dev", "protocol": "udp"}]}},
+            }
+        ],
+    }
+    with tempfile.TemporaryDirectory() as td:
+        tmp = Path(td)
+        p = tmp / "graph.yaml"
+        p.write_text(yaml.safe_dump(invalid_runtime), encoding="utf-8")
+        proc = subprocess.run(["python3", str(SCRIPT), "--graph", str(p)], text=True, capture_output=True)
+        assert proc.returncode == 2
+        assert "only tcp runtime ports are supported" in proc.stdout
+
     print("deterministic scheduler lifecycle: PASS")
     return 0
 

@@ -3,13 +3,16 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
+import hashlib
 import json
 import os
 from pathlib import Path
 import re
+import socket
 import subprocess
 import sys
 import tempfile
+import time
 from typing import Any
 
 import yaml
@@ -21,6 +24,12 @@ from aips_identity import (
 )
 
 ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
+ENV_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+DEFAULT_PORT_START = 31000
+DEFAULT_PORT_END = 31999
+DEFAULT_MAX_ATTEMPTS = 128
+LOCK_TIMEOUT_SECONDS = 5.0
+LOCK_STALE_SECONDS = 30.0
 
 
 def now() -> str:
@@ -52,6 +61,18 @@ def worktree_dir(root: Path) -> Path:
     return config_home() / "worktrees" / repository_identity(root)["repository_id"]
 
 
+def runtime_dir(root: Path) -> Path:
+    return config_home() / "runtime" / repository_identity(root)["repository_id"]
+
+
+def port_registry_path(root: Path) -> Path:
+    return runtime_dir(root) / "ports.yaml"
+
+
+def port_lock_path(root: Path) -> Path:
+    return runtime_dir(root) / ".ports.lock"
+
+
 def atomic_yaml(path: Path, data: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, name = tempfile.mkstemp(prefix=path.name + ".", dir=path.parent)
@@ -74,6 +95,60 @@ def validate_id(value: str, label: str) -> str:
     if not ID_RE.fullmatch(value):
         raise ValueError(f"{label} must match {ID_RE.pattern}")
     return value
+
+
+def validate_env(value: str) -> str:
+    if not ENV_RE.fullmatch(value):
+        raise ValueError(f"environment variable must match {ENV_RE.pattern}")
+    return value
+
+
+def validate_port(value: int, label: str) -> int:
+    if value < 1024 or value > 65535:
+        raise ValueError(f"{label} must be between 1024 and 65535")
+    return value
+
+
+def validate_port_range(start: int, end: int) -> tuple[int, int]:
+    validate_port(start, "port-start")
+    validate_port(end, "port-end")
+    if start > end:
+        raise ValueError("port-start must be <= port-end")
+    return start, end
+
+
+class RuntimeRegistryLock:
+    def __init__(self, path: Path) -> None:
+        self.path = path
+        self.acquired = False
+
+    def __enter__(self) -> RuntimeRegistryLock:
+        self.path.parent.mkdir(parents=True, exist_ok=True)
+        deadline = time.monotonic() + LOCK_TIMEOUT_SECONDS
+        while True:
+            try:
+                os.mkdir(self.path)
+                self.acquired = True
+                return self
+            except FileExistsError:
+                try:
+                    age = time.time() - self.path.stat().st_mtime
+                    if age >= LOCK_STALE_SECONDS:
+                        self.path.rmdir()
+                        continue
+                except (FileNotFoundError, OSError):
+                    pass
+                if time.monotonic() >= deadline:
+                    raise RuntimeError("runtime port registry lock timeout")
+                time.sleep(0.05)
+
+    def __exit__(self, exc_type: Any, exc: Any, tb: Any) -> None:
+        if self.acquired:
+            try:
+                self.path.rmdir()
+            except FileNotFoundError:
+                pass
+            self.acquired = False
 
 
 def worktree_supported(root: Path) -> bool:
@@ -195,7 +270,7 @@ def create_worktree(args: argparse.Namespace) -> dict[str, Any]:
     target_ident = repository_identity(target)
     base_revision = run_git(target, "rev-parse", "HEAD")
     record = {
-        "version": 2,
+        "version": 3,
         "id": isolation_id,
         "mode": "worktree",
         "status": "ACTIVE",
@@ -210,6 +285,11 @@ def create_worktree(args: argparse.Namespace) -> dict[str, Any]:
         "branch": branch,
         "base_ref": base_ref,
         "base_revision": base_revision.stdout.strip() if base_revision.returncode == 0 else None,
+        "runtime": {
+            "environment_id": isolation_id,
+            "ports": {},
+            "environment": {"AIPS_ISOLATION_ID": isolation_id},
+        },
         "created_at": now(),
         "updated_at": now(),
     }
@@ -224,7 +304,317 @@ def create_worktree(args: argparse.Namespace) -> dict[str, Any]:
         "path": str(target),
         "branch": branch,
         "record": str(record_path),
+        "runtime": record["runtime"],
     }
+
+
+def record_for(root: Path, isolation_id: str) -> tuple[Path, dict[str, Any]]:
+    isolation_id = validate_id(isolation_id, "id")
+    matches: list[tuple[Path, dict[str, Any]]] = []
+    for path in _record_paths(root):
+        doc = load_yaml(path)
+        if doc.get("id") == isolation_id:
+            matches.append((path, doc))
+    if not matches:
+        raise RuntimeError(f"isolation record not found: {isolation_id}")
+    if len(matches) > 1:
+        raise RuntimeError(f"multiple AIPS isolation records found for id: {isolation_id}")
+    return matches[0]
+
+
+def _load_port_registry(root: Path) -> dict[str, Any]:
+    path = port_registry_path(root)
+    if not path.exists():
+        return {"version": 1, "leases": []}
+    doc = load_yaml(path)
+    if doc.get("version") != 1 or not isinstance(doc.get("leases"), list):
+        raise RuntimeError("invalid runtime port registry")
+    return doc
+
+
+def _write_port_registry(root: Path, leases: list[dict[str, Any]]) -> None:
+    ordered = sorted(
+        leases,
+        key=lambda item: (
+            int(item.get("port") or 0),
+            str(item.get("isolation_id") or ""),
+            str(item.get("resource_id") or ""),
+        ),
+    )
+    atomic_yaml(port_registry_path(root), {"version": 1, "leases": ordered})
+
+
+def _env_key(resource_id: str) -> str:
+    return re.sub(r"[^A-Za-z0-9]", "_", resource_id).upper()
+
+
+def _runtime_environment(isolation_id: str, leases: list[dict[str, Any]]) -> dict[str, str]:
+    env: dict[str, str] = {"AIPS_ISOLATION_ID": isolation_id}
+    ordered = sorted(leases, key=lambda item: str(item["resource_id"]))
+    for lease in ordered:
+        resource_id = str(lease["resource_id"])
+        value = str(lease["port"])
+        env[f"AIPS_PORT_{_env_key(resource_id)}"] = value
+        for name in lease.get("expose_as") or []:
+            env[str(name)] = value
+    if len(ordered) == 1:
+        env["AIPS_PORT"] = str(ordered[0]["port"])
+    return env
+
+
+def _runtime_snapshot(isolation_id: str, leases: list[dict[str, Any]]) -> dict[str, Any]:
+    mine = sorted(
+        [item for item in leases if item.get("isolation_id") == isolation_id],
+        key=lambda item: str(item["resource_id"]),
+    )
+    ports = {
+        str(item["resource_id"]): {
+            "protocol": "tcp",
+            "port": int(item["port"]),
+            "status": "LEASED",
+            "preferred": item.get("preferred"),
+            "expose_as": list(item.get("expose_as") or []),
+        }
+        for item in mine
+    }
+    return {
+        "environment_id": isolation_id,
+        "ports": ports,
+        "environment": _runtime_environment(isolation_id, mine),
+    }
+
+
+def _sync_runtime_record(root: Path, isolation_id: str, leases: list[dict[str, Any]]) -> None:
+    path, record = record_for(root, isolation_id)
+    record["version"] = max(int(record.get("version") or 1), 3)
+    record["runtime"] = _runtime_snapshot(isolation_id, leases)
+    record["updated_at"] = now()
+    atomic_yaml(path, record)
+
+
+def _port_available(port: int) -> bool:
+    probes: list[tuple[int, tuple[Any, ...]]] = [
+        (socket.AF_INET, ("0.0.0.0", port)),
+    ]
+    if socket.has_ipv6:
+        probes.append((socket.AF_INET6, ("::", port, 0, 0)))
+    for family, address in probes:
+        sock = socket.socket(family, socket.SOCK_STREAM)
+        try:
+            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 0)
+            sock.bind(address)
+        except OSError:
+            return False
+        finally:
+            sock.close()
+    return True
+
+
+def _candidate_ports(
+    repository_id: str,
+    isolation_id: str,
+    resource_id: str,
+    start: int,
+    end: int,
+    preferred: int | None,
+) -> list[int]:
+    result: list[int] = []
+    if preferred is not None:
+        result.append(preferred)
+    span = end - start + 1
+    seed = int(
+        hashlib.sha256(f"{repository_id}:{isolation_id}:{resource_id}".encode("utf-8")).hexdigest(),
+        16,
+    ) % span
+    for offset in range(span):
+        candidate = start + ((seed + offset) % span)
+        if candidate not in result:
+            result.append(candidate)
+    return result
+
+
+def _assert_active_record(root: Path, isolation_id: str) -> dict[str, Any]:
+    _, record = record_for(root, isolation_id)
+    if record.get("ownership") != "aips" or record.get("status") != "ACTIVE":
+        raise RuntimeError("runtime resources require an ACTIVE AIPS-owned isolation")
+    return record
+
+
+def _lease_port(
+    root: Path,
+    isolation_id: str,
+    resource_id: str,
+    *,
+    preferred: int | None,
+    expose_as: list[str],
+    port_start: int,
+    port_end: int,
+    max_attempts: int,
+    reallocate: bool,
+) -> dict[str, Any]:
+    isolation_id = validate_id(isolation_id, "id")
+    resource_id = validate_id(resource_id, "port")
+    expose = sorted({validate_env(item) for item in expose_as})
+    validate_port_range(port_start, port_end)
+    if preferred is not None:
+        validate_port(preferred, "preferred")
+    if max_attempts < 1:
+        raise ValueError("max-attempts must be >= 1")
+    _assert_active_record(root, isolation_id)
+    repo_id = repository_identity(root)["repository_id"]
+
+    with RuntimeRegistryLock(port_lock_path(root)):
+        registry = _load_port_registry(root)
+        leases = list(registry["leases"])
+        existing = next(
+            (
+                item
+                for item in leases
+                if item.get("isolation_id") == isolation_id and item.get("resource_id") == resource_id
+            ),
+            None,
+        )
+        if existing is not None and not reallocate:
+            existing["expose_as"] = sorted(set(existing.get("expose_as") or []) | set(expose))
+            _write_port_registry(root, leases)
+            _sync_runtime_record(root, isolation_id, leases)
+            return {
+                "status": "LEASED",
+                "id": isolation_id,
+                "resource_id": resource_id,
+                "port": int(existing["port"]),
+                "protocol": "tcp",
+                "reused": True,
+                "runtime": _runtime_snapshot(isolation_id, leases),
+            }
+
+        excluded: set[int] = set()
+        if existing is not None:
+            excluded.add(int(existing["port"]))
+            leases.remove(existing)
+        used = {int(item["port"]) for item in leases}
+        selected: int | None = None
+        attempts = 0
+        for candidate in _candidate_ports(repo_id, isolation_id, resource_id, port_start, port_end, preferred):
+            if candidate in excluded or candidate in used:
+                continue
+            attempts += 1
+            if attempts > max_attempts:
+                break
+            if not _port_available(candidate):
+                continue
+            selected = candidate
+            break
+        if selected is None:
+            raise RuntimeError("no available TCP port found within bounded allocation attempts")
+
+        lease = {
+            "port": selected,
+            "protocol": "tcp",
+            "repository_id": repo_id,
+            "isolation_id": isolation_id,
+            "resource_id": resource_id,
+            "preferred": preferred,
+            "expose_as": expose,
+            "allocated_at": now(),
+        }
+        leases.append(lease)
+        _write_port_registry(root, leases)
+        _sync_runtime_record(root, isolation_id, leases)
+        return {
+            "status": "LEASED",
+            "id": isolation_id,
+            "resource_id": resource_id,
+            "port": selected,
+            "protocol": "tcp",
+            "reused": False,
+            "reallocated_from": int(existing["port"]) if existing is not None else None,
+            "attempts": attempts,
+            "runtime": _runtime_snapshot(isolation_id, leases),
+        }
+
+
+def runtime_lease(args: argparse.Namespace, *, reallocate: bool = False) -> dict[str, Any]:
+    root = project_root(Path(args.project))
+    return _lease_port(
+        root,
+        args.id,
+        args.port,
+        preferred=args.preferred,
+        expose_as=list(args.expose or []),
+        port_start=args.port_start,
+        port_end=args.port_end,
+        max_attempts=args.max_attempts,
+        reallocate=reallocate,
+    )
+
+
+def _release_leases(root: Path, isolation_id: str, resource_id: str | None = None) -> dict[str, Any]:
+    isolation_id = validate_id(isolation_id, "id")
+    if resource_id is not None:
+        resource_id = validate_id(resource_id, "port")
+    with RuntimeRegistryLock(port_lock_path(root)):
+        registry = _load_port_registry(root)
+        before = list(registry["leases"])
+        released = [
+            item
+            for item in before
+            if item.get("isolation_id") == isolation_id
+            and (resource_id is None or item.get("resource_id") == resource_id)
+        ]
+        remaining = [item for item in before if item not in released]
+        _write_port_registry(root, remaining)
+        try:
+            _sync_runtime_record(root, isolation_id, remaining)
+        except RuntimeError:
+            pass
+        return {
+            "status": "RELEASED",
+            "id": isolation_id,
+            "resource_id": resource_id,
+            "released": [
+                {"resource_id": item.get("resource_id"), "port": int(item["port"])}
+                for item in released
+            ],
+            "runtime": _runtime_snapshot(isolation_id, remaining),
+        }
+
+
+def runtime_release(args: argparse.Namespace) -> dict[str, Any]:
+    root = project_root(Path(args.project))
+    record_for(root, args.id)
+    return _release_leases(root, args.id, args.port)
+
+
+def runtime_reconcile(args: argparse.Namespace) -> dict[str, Any]:
+    root = project_root(Path(args.project))
+    with RuntimeRegistryLock(port_lock_path(root)):
+        registry = _load_port_registry(root)
+        active_ids = {str(item["id"]) for item in active_records(root)}
+        stale = [
+            item
+            for item in registry["leases"]
+            if str(item.get("isolation_id") or "") not in active_ids
+        ]
+        remaining = [item for item in registry["leases"] if item not in stale]
+        _write_port_registry(root, remaining)
+        for isolation_id in active_ids:
+            try:
+                _sync_runtime_record(root, isolation_id, remaining)
+            except RuntimeError:
+                pass
+        return {
+            "status": "RECONCILED",
+            "released": [
+                {
+                    "isolation_id": item.get("isolation_id"),
+                    "resource_id": item.get("resource_id"),
+                    "port": int(item["port"]),
+                }
+                for item in stale
+            ],
+            "active_lease_count": len(remaining),
+        }
 
 
 def create_isolation(args: argparse.Namespace) -> dict[str, Any]:
@@ -240,21 +630,21 @@ def create_isolation(args: argparse.Namespace) -> dict[str, Any]:
             "reason": "no verified sandbox provider is registered",
             "requires_provider": True,
         }
-    return create_worktree(args)
-
-
-def record_for(root: Path, isolation_id: str) -> tuple[Path, dict[str, Any]]:
-    isolation_id = validate_id(isolation_id, "id")
-    matches: list[tuple[Path, dict[str, Any]]] = []
-    for path in _record_paths(root):
-        doc = load_yaml(path)
-        if doc.get("id") == isolation_id:
-            matches.append((path, doc))
-    if not matches:
-        raise RuntimeError(f"isolation record not found: {isolation_id}")
-    if len(matches) > 1:
-        raise RuntimeError(f"multiple AIPS isolation records found for id: {isolation_id}")
-    return matches[0]
+    data = create_worktree(args)
+    if args.port:
+        lease = _lease_port(
+            project_root(Path(args.project)),
+            args.id,
+            args.port,
+            preferred=args.preferred,
+            expose_as=list(args.expose or []),
+            port_start=args.port_start,
+            port_end=args.port_end,
+            max_attempts=args.max_attempts,
+            reallocate=False,
+        )
+        data["runtime"] = lease["runtime"]
+    return data
 
 
 def status_isolation(args: argparse.Namespace) -> dict[str, Any]:
@@ -276,6 +666,7 @@ def status_isolation(args: argparse.Namespace) -> dict[str, Any]:
             current_workspace_id = repository_identity(target)["workspace_id"]
         except Exception:
             current_workspace_id = None
+    registry = _load_port_registry(root)
     return {
         "status": record.get("status"),
         "mode": record.get("mode"),
@@ -288,6 +679,7 @@ def status_isolation(args: argparse.Namespace) -> dict[str, Any]:
         "exists": exists,
         "clean": clean,
         "revision": revision,
+        "runtime": _runtime_snapshot(str(record.get("id")), list(registry["leases"])),
         "record": str(path),
     }
 
@@ -331,17 +723,19 @@ def remove_isolation(args: argparse.Namespace) -> tuple[dict[str, Any], int]:
                 "id": record.get("id"),
                 "path": str(target),
                 "reason": "worktree has uncommitted changes; cleanup preserved it",
+                "runtime_preserved": True,
             }, 2)
         removed = run_git(root, "worktree", "remove", str(target))
         if removed.returncode != 0:
             raise RuntimeError((removed.stderr or removed.stdout).strip() or "git worktree remove failed")
 
-    record["version"] = max(int(record.get("version") or 1), 2)
+    record["version"] = max(int(record.get("version") or 1), 3)
     record["repository_id"] = repository_identity(root)["repository_id"]
     record["status"] = "REMOVED"
     record["removed_at"] = now()
     record["updated_at"] = now()
     atomic_yaml(path, record)
+    runtime = _release_leases(root, str(record.get("id")))
     return ({
         "status": "REMOVED",
         "mode": "worktree",
@@ -349,6 +743,8 @@ def remove_isolation(args: argparse.Namespace) -> tuple[dict[str, Any], int]:
         "path": str(target),
         "branch": record.get("branch"),
         "branch_preserved": True,
+        "runtime": runtime["runtime"],
+        "released_runtime": runtime["released"],
         "record": str(path),
     }, 0)
 
@@ -365,6 +761,15 @@ def add_common(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
 
+def add_port_options(parser: argparse.ArgumentParser, *, require_port: bool) -> None:
+    parser.add_argument("--port", required=require_port)
+    parser.add_argument("--preferred", type=int)
+    parser.add_argument("--expose", action="append", default=[])
+    parser.add_argument("--port-start", type=int, default=DEFAULT_PORT_START)
+    parser.add_argument("--port-end", type=int, default=DEFAULT_PORT_END)
+    parser.add_argument("--max-attempts", type=int, default=DEFAULT_MAX_ATTEMPTS)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="AIPS execution isolation helper")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -379,6 +784,7 @@ def main() -> int:
     create.add_argument("--id", required=True)
     create.add_argument("--boundary", required=True)
     create.add_argument("--ref")
+    add_port_options(create, require_port=False)
 
     status = sub.add_parser("status")
     add_common(status)
@@ -387,6 +793,24 @@ def main() -> int:
     remove = sub.add_parser("remove")
     add_common(remove)
     remove.add_argument("--id", required=True)
+
+    lease = sub.add_parser("runtime-lease")
+    add_common(lease)
+    lease.add_argument("--id", required=True)
+    add_port_options(lease, require_port=True)
+
+    reallocate = sub.add_parser("runtime-reallocate")
+    add_common(reallocate)
+    reallocate.add_argument("--id", required=True)
+    add_port_options(reallocate, require_port=True)
+
+    release = sub.add_parser("runtime-release")
+    add_common(release)
+    release.add_argument("--id", required=True)
+    release.add_argument("--port")
+
+    reconcile = sub.add_parser("runtime-reconcile")
+    add_common(reconcile)
 
     args = parser.parse_args()
     exit_code = 0
@@ -399,8 +823,16 @@ def main() -> int:
                 exit_code = 2
         elif args.command == "status":
             data = status_isolation(args)
-        else:
+        elif args.command == "remove":
             data, exit_code = remove_isolation(args)
+        elif args.command == "runtime-lease":
+            data = runtime_lease(args)
+        elif args.command == "runtime-reallocate":
+            data = runtime_lease(args, reallocate=True)
+        elif args.command == "runtime-release":
+            data = runtime_release(args)
+        else:
+            data = runtime_reconcile(args)
     except (RuntimeError, OSError, ValueError) as exc:
         print("ERROR: " + str(exc), file=sys.stderr)
         return 2

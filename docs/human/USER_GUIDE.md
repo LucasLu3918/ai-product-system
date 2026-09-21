@@ -964,3 +964,46 @@ aips authorization check --profile RESOURCE_AUTHORIZATION_PROFILE.yaml --resourc
 ~~~
 
 Profile 預設 DENY，只能約束一般 read/search/create/update/execute；它不能取代 Git Publish Approval、Human Approval 或 destructive safety challenge。沒有 verified runtime pre-tool guard 時，結果只代表 pre-execution evidence，不宣稱工具層已被強制攔截。
+
+
+## v0.51 平行任務 Port / Runtime Environment 隔離
+
+Git worktree 能隔離檔案與 branch，但兩個 Agent 同時啟動 dev server 時仍可能搶同一個 localhost port。AIPS 現在可讓每個 AIPS-managed isolation 持有自己的 TCP port lease：
+
+~~~bash
+aips isolation create --project /path/to/project \
+  --id frontend-a --boundary apps-a \
+  --port dev --preferred 3000 --expose PORT
+~~~
+
+輸出會包含 runtime environment，例如：
+
+~~~yaml
+runtime:
+  ports:
+    dev:
+      protocol: tcp
+      port: 31427
+      status: LEASED
+  environment:
+    AIPS_ISOLATION_ID: frontend-a
+    AIPS_PORT: "31427"
+    AIPS_PORT_DEV: "31427"
+    PORT: "31427"
+~~~
+
+另一個 Agent 會取得不同 lease。AIPS 使用 repository-scoped atomic registry 防止自己的平行程序重複配號，並在登記前做 host bind availability probe，因此已被 Docker、Node 或其他程序占用的 port 會跳過。
+
+如果 dev server 啟動時仍因外部程序的競爭發生 `EADDRINUSE`，可執行 bounded reallocation：
+
+~~~bash
+aips isolation runtime-reallocate --project /path/to/project --id frontend-a --port dev
+~~~
+
+Runtime lease 與 worktree cleanup 是兩個生命週期。即使 worktree 因未提交修改而禁止刪除，停止 server 後仍可以：
+
+~~~bash
+aips isolation runtime-release --project /path/to/project --id frontend-a --port dev
+~~~
+
+`runtime-reconcile` 只清除已無 ACTIVE AIPS isolation owner 的 orphan lease，不會把「目前沒有 process bind」誤判成 stale，因為 Agent 可能正在 lease 與 server start 之間。
