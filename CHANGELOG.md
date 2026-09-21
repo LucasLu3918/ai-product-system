@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.52.0
+
+### MCP Interoperability Gateway
+
+- Extend the existing Turn-Aware Global Harness with a portable local-stdio MCP access plane; native Codex / Claude Code / Gemini CLI adapters remain separate and continue to provide runtime-specific context/enforcement capabilities where verified.
+- Use the official MCP Python SDK v2 and MCP protocol revision 2026-07-28 rather than implementing custom JSON-RPC or a parallel protocol stack.
+- Expose canonical AIPS Roles, Skills and selected orchestration protocols through MCP Resources with progressive disclosure; Role/Skill bodies remain single-source-of-truth files under `roles/` and `skills/`.
+- Add reusable MCP Prompts for security review, architecture review, code review and delivery planning. The host model performs semantic reasoning; the MCP server does not invoke a second LLM/provider.
+- Add bounded deterministic/read-only MCP Tools for system info, canonical project identity, compact Harness context, explicit Role/Skill bundle validation and existing Deterministic Scheduler delegation.
+- Constrain project-oriented MCP tools to `AIPS_MCP_WORKSPACE`, reject paths outside the workspace and keep allowlisted protocol resources separate from arbitrary repository file access.
+- Report MCP-only governance truth as `ADVISORY`; the gateway does not claim TURN_NATIVE, TOOL_GUARDED, host-native shell/file/git interception, Human approval, Git publish, merge, release or production authority.
+- Keep v0.52 credential-free and local-only: no remote MCP service, OAuth server, hosted AIPS control plane, external Agent API Key or provider/model execution is required.
+- Add `aips mcp serve`, `aips mcp inspect` and review-only `aips mcp config --client cursor|codex|generic`; AIPS does not silently mutate third-party client-owned MCP configuration.
+- Add Scenario 162 and raise Scenario Conformance to 162/162 automated: 24 deterministic + 84 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- PR #142 final head `c87a42d652c16468e1d7d3ad9d6ddc4ef8b62957` passed Core Change Validate Run #1209 with `matrix_required=true` and exact changed-files hash `3452321ad833a9b53d653e8c85e99f6a7cf24394719e029d5637bf2a12780af5`.
+- The exact PR head also passed MCP/Codex interoperability Run #3 using the real local stdio MCP protocol session and pinned Codex CLI 0.155.1 registration/discovery without provider inference.
+- PR #142 was squash-merged to main as `53ba44ff6dcdb775fd319e2f670dae43270f0e83`; protected-main Validate Run #1210 succeeded.
+- No new Role, Skill or Approval Gate. Human authority, merge/release authority and Constitution semantics remain unchanged. Constitution impact: NO.
+- Release model remains `VERSION + CHANGELOG + protected-main validation`; no GitHub Release object or tag is introduced.
+
 ## 0.51.0
 
 ### Parallel Runtime Resource Isolation
