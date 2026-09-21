@@ -86,3 +86,27 @@ External Intelligence 被視為使用者累積的工作資料，因此預設 Uni
 安裝／刷新 Harness 時，Claude Code 在可安全修改 settings.json 的情況下會加入 AIPS-owned `PreToolUse` Bash guard；Gemini Extension 會註冊 `BeforeTool` guard。Uninstall 只移除 AIPS 自己的 hook。
 
 `aips harness status` 會分開顯示 context capability 與 governance enforcement，避免把「能看到規範」誤認成「能技術阻擋」。
+
+## MCP 接入
+
+AIPS 安裝後會一起安裝官方 MCP Python SDK v2，因此本機可直接執行：
+
+~~~bash
+aips mcp inspect
+aips mcp serve
+~~~
+
+v0.52 **不自動修改第三方 MCP Client 設定**。要接 Cursor / Codex 等 Client，先取得 review-only 範例：
+
+~~~bash
+aips mcp config --client cursor
+aips mcp config --client codex
+~~~
+
+確認後再由你加入該 Client 自己的設定。這樣 AIPS Uninstall 不需要猜哪些第三方設定仍屬於使用者。
+
+### MCP 解除
+
+若曾手動把 `aips mcp serve` 註冊到 Cursor / Codex / 其他 Host，先從該 Host 移除那筆 AIPS MCP registration；接著正常執行 `aips uninstall` 即可移除 AIPS CLI / Harness-owned integrations。
+
+v0.52 不會自動刪除 client-owned MCP config；既有 User instructions、Skills、Project source、Project Intelligence 仍依原本 preservation policy 保留。

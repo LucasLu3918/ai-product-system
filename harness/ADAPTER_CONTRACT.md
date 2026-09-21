@@ -40,3 +40,12 @@ Structured settings integrations add/remove only an AIPS namespaced hook entry a
 ## Adapter responsibilities
 
 Adapters detect, integrate, verify and uninstall. They never implement Product/Security/Quality reasoning, preload the whole AIPS repository, replace user Skills, or hide capability limitations.
+
+## MCP access-plane relationship
+
+MCP interoperability is parallel to this Runtime Adapter contract.
+
+- MCP provides portable AIPS Resources / Prompts / deterministic Tools to compatible hosts.
+- A runtime-native Adapter is still required when AIPS needs verified per-turn injection, pre-tool interception or stronger runtime enforcement.
+- Never promote MCP-only access from ADVISORY to TOOL_GUARDED merely because the client can call AIPS tools.
+- Adapters and MCP read the same canonical Role / Skill / orchestration sources; neither may duplicate those bodies.

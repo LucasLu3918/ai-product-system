@@ -85,3 +85,10 @@ After Scenario 143, Gemini CLI may truthfully report runtime-specific `live_capt
 
 Provider credentials must not be injected into unmerged PR code. A secure provider-session verification may only persist redacted/boolean evidence and must preserve the existing non-enforcing AfterTool semantics.
 
+## MCP interoperability access plane
+
+Use `harness/MCP_GATEWAY.md` when a compatible host can connect through MCP.
+
+MCP is a standard access plane, not a native-adapter replacement. Resources provide progressive disclosure over canonical AIPS sources; Prompts provide reusable host-model context; Tools expose bounded deterministic helpers. MCP-only clients report governance enforcement as ADVISORY because the server cannot generally intercept host-native tools. Existing Runtime adapters remain responsible for verified TURN_NATIVE / TOOL_GUARDED behavior.
+
+The v0.52 gateway is local stdio, provider-neutral and credential-free. It does not silently register itself into client-owned configuration.

@@ -813,3 +813,23 @@ flowchart LR
 ~~~
 
 Worktree state and runtime resource state share the existing Execution Isolation ownership boundary but have independent lifecycles. The Scheduler validates and propagates requests; `execution_isolation.py` performs atomic lease allocation. The registry is external AIPS state, not project source. Clean workspace removal releases leases, while dirty workspace preservation does not prevent an explicit runtime release.
+
+## MCP interoperability access plane
+
+~~~mermaid
+flowchart LR
+    CORE[AIPS Core / canonical sources]
+    CORE --> MCP[MCP Interoperability Gateway]
+    MCP --> RES[Resources: Roles / Skills / selected protocols]
+    MCP --> PR[Prompts: reusable host-model context]
+    MCP --> TOOLS[Tools: bounded deterministic helpers]
+    RES --> HOST[MCP-compatible Host]
+    PR --> HOST
+    TOOLS --> HOST
+    CORE --> NATIVE[Runtime-native Harness Adapters]
+    NATIVE --> HOOKS[Turn hooks / pre-tool guards]
+    HOOKS --> HOST
+    HOST --> MODEL[Host model semantic reasoning]
+~~~
+
+The MCP plane is portable and ADVISORY; native adapters remain a separate enhancement plane for verified TURN_NATIVE / TOOL_GUARDED behavior. v0.52 is local stdio only and performs no provider/model call inside the server.

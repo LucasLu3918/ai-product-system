@@ -42,6 +42,10 @@ Usage:
   aips harness doctor
   aips harness resolve [--runtime <id>] [--cwd <path>] [--project <path>] [--format yaml|json]
 
+  aips mcp serve
+  aips mcp inspect
+  aips mcp config [--client cursor|codex|generic]
+
   aips intelligence bootstrap [--project <path>]
   aips intelligence status [--project <path>]
   aips intelligence context --runtime <id> [--project <path>] [--prompt <text>]
@@ -534,6 +538,13 @@ integration_gate_cmd() {
   "$py" "$SYSTEM_DIR/scripts/integration_gate.py" "$@"
 }
 
+mcp_cmd() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/mcp_server.py" "$@"
+}
+
 identity_cmd() {
   local py
   py="$(python_bin)"
@@ -737,6 +748,7 @@ install_cli() {
     say '  export PATH="$HOME/.local/bin:$PATH"'
   fi
   say "Run: aips doctor"
+  say "MCP gateway: aips mcp inspect"
 }
 
 uninstall_cli() {
@@ -869,6 +881,11 @@ doctor() {
   command -v git >/dev/null 2>&1 && say "git: OK" || warn "git: missing"
   command -v python3 >/dev/null 2>&1 && say "python3: OK" || warn "python3: missing"
   [ -x "$SYSTEM_DIR/.venv/bin/python" ] && say "venv: OK" || warn "venv: not installed (run aips install)"
+  if "$(python_bin)" -c 'import mcp' >/dev/null 2>&1 && [ -f "$SYSTEM_DIR/scripts/mcp_server.py" ]; then
+    say "MCP gateway: AVAILABLE (stdio, ADVISORY)"
+  else
+    warn "MCP gateway dependency/server missing; run aips install."
+  fi
 
   if [ -n "$(git_in_system status --porcelain 2>/dev/null || true)" ]; then
     warn "System repo has local changes; automatic preflight update will stop."
@@ -917,6 +934,21 @@ case "${1:-help}" in
         ;;
       *)
         die "Unknown harness command: $sub"
+        ;;
+    esac
+    ;;
+  mcp)
+    sub="${2:-inspect}"
+    shift 2 || true
+    case "$sub" in
+      serve|inspect)
+        mcp_cmd "$sub" "$@"
+        ;;
+      config)
+        mcp_cmd config "$@"
+        ;;
+      *)
+        die "Unknown mcp command: $sub"
         ;;
     esac
     ;;

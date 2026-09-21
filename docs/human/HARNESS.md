@@ -91,3 +91,51 @@ v0.34.0 已驗證真實 Gemini CLI / tool / extension hook，但 provider infere
 
 Human 已批准 bounded live-provider Trial，但目前 durable state 仍是 `PENDING_SECURE_PROVIDER_WORKFLOW`。只有受保護 main 上的 secret-backed verification 成功後，才可把 `live_provider_session_verified` 或 `provider_model_execution_verified` 設為 true。
 
+## MCP 互通閘道
+
+v0.52 將 Global Harness 拆成兩個互補接入平面：
+
+~~~text
+MCP-compatible Host
+→ AIPS MCP（通用標準接入）
+→ Resources / Prompts / deterministic Tools
+
+有原生 Hook 的 Runtime
+→ AIPS Native Adapter（能力補強）
+→ TURN_NATIVE / PreTool Guard / TOOL_GUARDED
+~~~
+
+因此 Cursor、Copilot、Amp 或其他 MCP Host 不必先等 AIPS 為它們複製一整套 Role/Skill adapter，就能取得標準 AIPS 能力；但 MCP 本身不會因此取得 Host-native tool interception。
+
+### 啟動與檢查
+
+~~~bash
+aips mcp inspect
+aips mcp serve
+~~~
+
+`serve` 使用本機 stdio；MCP Server 不呼叫另一個 LLM，也不需要 OPENAI_API_KEY / GEMINI_API_KEY。
+
+### Resources
+
+先列 compact catalog，再按需讀取 `aips://roles/{role_id}`、`aips://skills/{skill_id}` 與 allowlisted `aips://protocol/{protocol_id}`。Role / Skill 仍只有一份真實來源，不會複製成 MCP 專用版本。
+
+### Prompts 與 Tools
+
+第一版 Prompts 包含 `security_review`、`architecture_review`、`code_review`、`delivery_plan`；真正的語意推理仍由 Host Model 執行。Tools 只暴露 bounded deterministic/read-only helper：`aips_system_info`、`aips_project_identity`、`aips_harness_context`、`aips_role_skill_bundle`、`aips_schedule`。
+
+專案工具只允許 `AIPS_MCP_WORKSPACE` 範圍內路徑；`aips_role_skill_bundle` 只驗證明確給定的 ID，不假裝做語意選角。
+
+### Client 設定
+
+~~~bash
+aips mcp config --client cursor
+aips mcp config --client codex
+aips mcp config --client generic
+~~~
+
+這些指令只輸出建議設定，不會偷偷修改 Cursor / Codex / 其他客戶端的設定檔。
+
+### Governance truth
+
+MCP-only 時 context access = `MCP_STANDARD`、governance enforcement = `ADVISORY`。MCP 一般不能攔截 Host 自己直接執行的 shell/file/git tool，因此 Claude/Gemini 等既有可驗證 native hooks 仍有獨立價值。

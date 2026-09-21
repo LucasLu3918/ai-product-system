@@ -645,3 +645,18 @@ Current automated inventory after Scenario 161:
 - manual: 0
 - uncovered: 0
 - automated: 161 / 161
+
+## Scenario 162 — MCP Interoperability Gateway
+
+Scenario 162 lifecycle evidence executes the real local stdio MCP server with the official MCP Python Client. It verifies negotiated protocol 2026-07-28, Tools / Resources / Resource Templates / Prompts, canonical Role/Skill reads, deterministic Scheduler delegation, workspace path confinement and explicit ADVISORY authority metadata.
+
+The MCP gateway does not execute a provider model and cannot intercept host-native tools. Existing native adapters remain separate. A dedicated exact-candidate workflow also installs pinned Codex CLI 0.155.1 and verifies AIPS MCP registration/discovery without provider inference.
+
+Current automated inventory after Scenario 162:
+
+- deterministic: 24
+- lifecycle: 84
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 162 / 162

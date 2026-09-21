@@ -360,3 +360,21 @@ Task Graph
 這補上 worktree 只能隔離檔案、無法隔離 localhost runtime resource 的缺口。Port allocation 先以 task/isolation identity 產生穩定候選順序，再依當下主機實際可用性選擇，因此「決策順序可重現」，但不宣稱不同電腦一定取得相同數字。
 
 Runtime lease 可獨立釋放；dirty worktree 仍照原規則保留。若外部程序在 availability probe 後搶走 port，可用 bounded `runtime-reallocate` 換下一個候選。v0.51 只處理 TCP port，未引入 Docker network、DB schema、Redis namespace、GPU lease 或新的 Role/Skill/Gate。
+
+## 14. MCP Interoperability Gateway
+
+v0.52 新增 MCP（Model Context Protocol）互通閘道，但**不取代**原本 Codex / Claude Code / Gemini CLI 的 native Adapter。
+
+~~~text
+AIPS Core
+├─ MCP Access Plane
+│  ├─ Resources → Roles / Skills / selected Orchestration
+│  ├─ Prompts   → Security / Architecture / Code Review / Delivery Plan
+│  └─ Tools     → Identity / Context / explicit Role-Skill bundle / Scheduler
+└─ Native Adapter Plane
+   └─ Turn Hook / PreTool Guard / runtime-specific verification
+~~~
+
+只有 MCP 連線時，Governance Enforcement 誠實維持 `ADVISORY`；MCP Server 無法假裝攔截 Host 自己的 shell、file 或 git tools。需要 `TURN_NATIVE` / `TOOL_GUARDED` 時仍由可驗證的 native Adapter 負責。
+
+第一版只有本機 stdio，不架設遠端 AIPS Server、不導入 OAuth、不在 MCP Server 內再呼叫 LLM，也不需要任何外部 Agent API Key。Role / Skill 仍從既有 canonical index 按需載入，因此維持 Progressive Disclosure。

@@ -7,23 +7,28 @@ surfaces:
   - id: harness-runtime
     capabilities:
       - turn-aware-global-harness
+      - mcp-interoperability-gateway
       - execution-isolation
       - resource-authorization
       - gemini-cli-observable-event-capture-trial
       - gemini-cli-real-runtime-verification
     required_paths:
       - harness/HARNESS_PROTOCOL.md
+      - harness/MCP_GATEWAY.md
       - scripts/harness_resolve.py
+      - scripts/mcp_server.py
       - orchestration/EXECUTION_ISOLATION.md
       - orchestration/RESOURCE_AUTHORIZATION.md
       - orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md
     canonical_docs:
       - harness/HARNESS_PROTOCOL.md
+      - harness/MCP_GATEWAY.md
       - orchestration/EXECUTION_ISOLATION.md
       - orchestration/RESOURCE_AUTHORIZATION.md
       - orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md
     validation_paths:
       - tests/evidence/harness_runtime_lifecycle.py
+      - tests/evidence/mcp_interoperability_lifecycle.py
       - tests/evidence/resource_authorization_lifecycle.py
       - tests/evidence/runtime_port_isolation_lifecycle.py
 
