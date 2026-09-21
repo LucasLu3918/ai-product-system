@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: fa8dafb0a2cd8922d03d79f6d5f68698d520e8fc
-  changed_files_hash: 4cc193c66308fb633547dbb256e72d842c429df5ffcbb9d126d33cb67a33bc78
+  changed_files_hash: 64bed582f30245a8d8a77d1ec744a142ac4b8d0ad8b8b80e7cf908862491e690
 change:
   id: governance-audit-retention-verification-policy
   summary: Add deterministic audit-bundle catalog, provenance discovery, checkpoint key-rotation accounting, and advisory retention planning without deletion authority.
