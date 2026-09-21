@@ -47,7 +47,7 @@ if script.exists():
     if compiled.returncode != 0:
         errors.append(f"branch hygiene syntax failed: {compiled.stderr.strip()}")
     text = script.read_text(encoding="utf-8")
-    for token in ("--remote", "refs/remotes", "--apply-cleanup", "exact_manifest_only", "cleanup preflight blocked", '"branch_deletion_authorized": False'):
+    for token in ("--remote", "refs/remotes", "--apply-cleanup", "--github-repository", "GITHUB_MERGED_PR_EXACT_HEAD", "exact_manifest_only", "cleanup preflight blocked", '"branch_deletion_authorized": False'):
         if token not in text:
             errors.append(f"branch hygiene remote/report-only contract missing: {token}")
 
@@ -66,6 +66,9 @@ if workflow.exists():
         "github.ref == 'refs/heads/main'",
         "contents: write",
         "--apply-cleanup config/branch-cleanup-manifest.yaml",
+        "--github-repository",
+        "GH_TOKEN:",
+        "github.token",
         "authorization_scope",
         "exact_manifest_only",
     ):
