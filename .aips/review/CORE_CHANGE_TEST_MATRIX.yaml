@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 49f3bdf5014228001d037f07bd7ef46fd55f78c8
-  changed_files_hash: af705f9b6c3b7b2f057c70402973cccc1c64e51d1dfb436b60dfe7a50dd8f70c
+  changed_files_hash: 9a7ee5bcb164f83621a5c4f531aed5f03fed5c1356853261f2f7da9ba2adf178
 change:
   id: verifiable-governance-audit-chain
   summary: Extend Enforceable Governance with credential-free tamper-evident chaining plus optional HMAC and Ed25519 checkpoints.
@@ -18,7 +18,7 @@ matrix:
       security: {applicable: true, evidence: "tamper/reorder/anchored-tail-truncation/wrong-key negative paths and secret non-persistence"}
       migration_recovery: {applicable: false, na_reason: "new additive JSONL evidence; no migration"}
       cli_harness: {applicable: false, na_reason: "no runtime adapter/hook behavior change"}
-      docs_schema: {applicable: true, evidence: "Governance/Security/Release/Architecture docs synchronized"}
+      docs_schema: {applicable: true, evidence: "Governance/Security/Release/Architecture/Scenario Conformance docs synchronized"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

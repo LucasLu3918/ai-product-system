@@ -142,12 +142,12 @@ def verify_events(events: list[dict[str, Any]], *, hmac_secrets: dict[str, str] 
         if auth.get("status") == "AUTHENTICATED":
             authenticated_events += 1
             key_id = str(auth.get("key_id") or "")
-            secret = hmac_secrets.get(key_id)
-            if secret is None:
+            hmac_material = hmac_secrets.get(key_id)
+            if hmac_material is None:
                 if require_authenticated_verification:
                     errors.append(f"event {expected_sequence} HMAC key unavailable: {key_id}")
             else:
-                expected_mac = hmac_value(secret, expected_chain, expected_sequence, key_id)
+                expected_mac = hmac_value(hmac_material, expected_chain, expected_sequence, key_id)
                 if not hmac.compare_digest(str(auth.get("mac") or ""), expected_mac):
                     errors.append(f"event {expected_sequence} HMAC mismatch")
                 else:
@@ -216,11 +216,11 @@ def append_event(ledger: Path, raw_event: dict[str, Any], *, hmac_key_env: str |
     env_name = hmac_key_env or DEFAULT_HMAC_ENV
     key_id = (hmac_key_id or "").strip()
     if key_id:
-        secret = os.environ.get(env_name)
-        if secret is None:
+        hmac_material = os.environ.get(env_name)
+        if hmac_material is None:
             raise ValueError(f"HMAC secret environment variable is not configured: {env_name}")
         integrity["authentication"] = {"algorithm": HMAC_ALG, "status": "AUTHENTICATED", "key_id": key_id,
-                                       "mac": hmac_value(secret, current_chain_hash, sequence, key_id)}
+                                       "mac": hmac_value(hmac_material, current_chain_hash, sequence, key_id)}
     if checkpoint_private_key is not None:
         if checkpoint_public_key is None:
             raise ValueError("checkpoint_public_key is required with checkpoint_private_key")
@@ -241,10 +241,10 @@ def parse_key_bindings(values: list[str]) -> dict[str, str]:
     for value in values:
         if "=" not in value:
             raise ValueError("key binding must be KEY_ID=ENV_NAME")
-        key_id, env_name = value.split("=", 1); secret = os.environ.get(env_name)
-        if secret is None:
+        key_id, env_name = value.split("=", 1); hmac_material = os.environ.get(env_name)
+        if hmac_material is None:
             raise ValueError(f"environment variable not configured: {env_name}")
-        result[key_id] = secret
+        result[key_id] = hmac_material
     return result
 
 def parse_public_keys(values: list[str]) -> dict[str, Path]:

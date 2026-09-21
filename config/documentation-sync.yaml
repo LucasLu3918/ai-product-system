@@ -97,8 +97,3 @@ rules:
     triggers: [scripts/scenario_conformance.py, scripts/agent_eval.py, templates/conformance/**, tests/scenario_coverage.yaml]
     human_docs: [docs/human/CONFORMANCE.md]
     agent_docs: [orchestration/CONFORMANCE.md]
-
-  - id: governance-audit
-    triggers: [scripts/governance_audit.py, templates/governance/AUDIT_EVENT.yaml, orchestration/GOVERNANCE_AUDIT.md, core/GOVERNANCE.md, docs/human/SECURITY_ASSURANCE.md, orchestration/RELEASE_READINESS.md]
-    human_docs: [docs/human/SECURITY_ASSURANCE.md, docs/human/ARCHITECTURE_OVERVIEW.md]
-    agent_docs: [core/GOVERNANCE.md, orchestration/GOVERNANCE_AUDIT.md, orchestration/RELEASE_READINESS.md]

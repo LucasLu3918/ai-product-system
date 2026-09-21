@@ -1137,3 +1137,19 @@ Current automated inventory after Scenario 157:
 - manual: 0
 - uncovered: 0
 - automated: 157 / 157
+
+
+## Scenario 158 — Verifiable Governance Audit Chain
+
+Scenario 158 adds deterministic lifecycle evidence for long-lived AIPS governance auditability. Approval, security review, release and production boundary events can be canonicalized into a SHA-256 event hash and previous-chain binding. Editing or reordering evidence fails verification; suffix truncation is detectable when the auditor supplies a previously retained expected chain head/event count or an equivalent external checkpoint anchor.
+
+HMAC-SHA256 authentication and Ed25519 signed checkpoints are optional secure-runtime layers. Their secrets/private keys are not baseline credentials and must not be persisted in Git, prompts, audit events or Actions artifacts. The audit ledger is evidence only and cannot create Human approval, merge, release, publication or production authority.
+
+Current automated inventory after Scenario 158:
+
+- deterministic: 24
+- lifecycle: 80
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 158 / 158
