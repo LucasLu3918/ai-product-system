@@ -138,3 +138,25 @@ for n in range(101, 106):
     if len(matches) != 1:
         errors.append(f"Expected exactly one Scenario {n:03d}, found {len(matches)}")
 
+
+
+# v0.48 verifiable governance audit-chain contract
+audit_protocol = ROOT / "orchestration/GOVERNANCE_AUDIT.md"
+audit_template = ROOT / "templates/governance/AUDIT_EVENT.yaml"
+audit_helper = ROOT / "scripts/governance_audit.py"
+audit_evidence = ROOT / "tests/evidence/governance_audit_lifecycle.py"
+for required in (audit_protocol, audit_template, audit_helper, audit_evidence):
+    if not required.exists():
+        errors.append(f"Missing v0.48 governance audit artifact: {required.relative_to(ROOT)}")
+if audit_helper.exists():
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(audit_helper)], capture_output=True, text=True)
+    if compiled.returncode != 0:
+        errors.append(f"governance_audit.py syntax failed: {compiled.stderr.strip()}")
+if audit_evidence.exists():
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(audit_evidence)], capture_output=True, text=True)
+    if compiled.returncode != 0:
+        errors.append(f"governance audit lifecycle syntax failed: {compiled.stderr.strip()}")
+    else:
+        result = subprocess.run([sys.executable, str(audit_evidence)], capture_output=True, text=True, timeout=180)
+        if result.returncode != 0:
+            errors.append(f"Governance audit lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}")

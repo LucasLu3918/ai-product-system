@@ -266,6 +266,28 @@ flowchart TD
 The Constitution is the highest internal authority. Prefer lower-layer changes whenever they solve the problem.
 
 
+## Verifiable Governance Audit Chain
+
+~~~mermaid
+flowchart LR
+    H[Human Approval] --> AR[Approval Record + scope fingerprint]
+    SR[Security Review] --> EV[Governance Audit Event]
+    AR --> G[Existing Governance Guard]
+    G --> A[Protected Action]
+    A --> EV
+    RR[Release Readiness] --> EV
+    PD[Production Deploy / Verify] --> EV
+    EV --> EH[Canonical SHA-256 event hash]
+    EH --> CH[previous chain hash + event hash]
+    CH --> HH[SHA-256 chain hash]
+    HH --> HM[Optional HMAC-SHA256]
+    HH --> CP[Optional Ed25519 signed checkpoint]
+    HM --> OFF[Offline verification]
+    CP --> OFF
+~~~
+
+This extends the existing Governance + Evidence surface and adds no approval gate. Hash-only verification is credential-free; HMAC is shared-secret runtime authentication; asymmetric checkpoints provide a public-key-verifiable long-term anchor.
+
 ## Creative direction and brand reuse
 
 ~~~mermaid

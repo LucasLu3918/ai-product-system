@@ -1199,3 +1199,8 @@ scenarios:
       - tests/validation/evolution_governance_contracts.py
       - orchestration/EVOLUTION_RADAR.md
       - docs/human/EVOLUTION_RADAR.md
+
+  - id: "158"
+    path: tests/scenarios/158-verifiable-governance-audit-chain.md
+    coverage: lifecycle
+    evidence: [tests/evidence/governance_audit_lifecycle.py, scripts/governance_audit.py, tests/validate_repository.py]

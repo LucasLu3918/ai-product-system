@@ -132,3 +132,17 @@ When machine-verifiable approval is used:
 - runtime enforcement may tighten an operation but never grants Human approval.
 
 Governance enforcement capability is independent from context injection capability.
+
+
+## Verifiable Governance Audit Evidence
+
+For long-lived auditability, governance-boundary events may be written to the tamper-evident ledger in orchestration/GOVERNANCE_AUDIT.md after existing Approval/Security/Release authority is evaluated.
+
+~~~text
+Human Approval / Security Decision / Release Gate
+→ existing enforcement
+→ protected action
+→ verifiable audit event
+~~~
+
+Audit events never create approval authority. Baseline integrity uses deterministic SHA-256 event and chain hashes without credentials. Secure runtimes may add HMAC-SHA256 authentication and Ed25519 signed checkpoints. Secret/private key material stays outside Git, prompts, state and artifacts. Existing authenticated/signed history must verify before append.

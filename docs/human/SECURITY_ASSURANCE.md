@@ -212,3 +212,15 @@ Security review verifies:
 AIPS 另外使用 External Credential Dependency Guard（`config/external-credentials.yaml` + `scripts/external_credential_guard.py`）確保外部 Agent/provider Key 不會被新增成 baseline/release 必要條件，也不會暴露給 pull-request code。
 
 For SAL 3–4 or production credentials, an active exposed credential is release-blocking until containment and required rotation/revocation are complete.
+
+
+## 可驗證治理稽核證據
+
+高風險流程可使用 orchestration/GOVERNANCE_AUDIT.md，把 Approval、Security Review、Release Readiness、Production Promotion / Verification 等關鍵事件綁定 exact candidate 與 evidence digest。
+
+- SAL 0–1：通常不要求。
+- SAL 2：protected publish / release 可使用 credential-free SHA-256 hash chain。
+- SAL 3：auditability 屬於 affected boundary 時，應保存 approval + security + release chain evidence。
+- SAL 4：production-relevant governance evidence 應使用 authenticated events 與定期 asymmetric signed checkpoint；等效替代控制需有治理紀錄。
+
+AIPS baseline 不因此要求 HMAC key、signing key 或外部 Agent/provider credential。HMAC secret 與 signing private key 必須來自安全 Runtime Source，不得寫入 Git、Prompt、log、ledger 或 Actions artifact。

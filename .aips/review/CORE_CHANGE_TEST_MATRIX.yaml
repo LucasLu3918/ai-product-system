@@ -1,41 +1,24 @@
 version: 1
 candidate:
-  base_sha: 3758a8b5c52df01fc433b5f7e309945b68a07e6e
-  changed_files_hash: 2ee46231a748858b2988ba875972a79364254ffd4c7ea0a1a6b36df11978a116
+  base_sha: 49f3bdf5014228001d037f07bd7ef46fd55f78c8
+  changed_files_hash: af705f9b6c3b7b2f057c70402973cccc1c64e51d1dfb436b60dfe7a50dd8f70c
 change:
-  id: repository-health-architecture-surface-inventory
-  summary: Add explicit deterministic architecture-surface accounting and exact-candidate Repository Health CI evidence without external provider credentials or remediation authority.
-  boundary:
-    - repository-health
-    - architecture-surface-inventory
-    - scenario-conformance
-    - validation-workflow
-    - documentation
+  id: verifiable-governance-audit-chain
+  summary: Extend Enforceable Governance with credential-free tamper-evident chaining plus optional HMAC and Ed25519 checkpoints.
+  boundary: [governance-audit-evidence, security-assurance, release-readiness, scenario-conformance, architecture-documentation]
 matrix:
-  - boundary: architecture-surface-inventory
-    reason: Every Capability Map entry must be accounted for exactly once and bound to concrete repository, documentation and validation surfaces.
+  - boundary: governance-audit-evidence
+    reason: Integrity/authentication evidence must fail on tamper while preserving Human authority.
     checks:
-      static_lint: {applicable: true, evidence: "repository validation compiles and contract-checks repository_health.py"}
-      unit: {applicable: true, evidence: "Repository Health lifecycle exercises unclassified capability, missing path and unbound validation negative paths"}
-      integration: {applicable: true, evidence: "Repository Health reuses Capability Map, Scenario Conformance and tests/validate_repository.py bindings"}
-      contract: {applicable: true, evidence: "Scenario 149 locks complete capability accounting and validation binding semantics"}
-      e2e: {applicable: true, evidence: "validate workflow executes the exact candidate, emits repository-health-report.json and uploads it as an artifact"}
-      security: {applicable: true, evidence: "audit remains credential-free, read-only and provider-network-free; artifact upload grants no authority"}
-      migration_recovery: {applicable: false, na_reason: "No persisted user/project data or schema migration is changed"}
-      cli_harness: {applicable: false, na_reason: "No CLI or Runtime Adapter behavior changes"}
-      docs_schema: {applicable: true, evidence: "Repository Health, Maintenance, Architecture, Conformance and Technology Guide docs are synchronized"}
-  - boundary: validation-workflow
-    reason: The required validate workflow changes and must preserve the existing Integration Gate and repository aggregate contract.
-    checks:
-      static_lint: {applicable: true, evidence: "existing workflow/static validation enforces immutable action SHA pinning and syntax contracts"}
-      unit: {applicable: false, na_reason: "Workflow wiring is integration-level behavior"}
-      integration: {applicable: true, evidence: "Integration Gate exact-candidate run remains the first required janitor gate"}
-      contract: {applicable: true, evidence: "repository-health config requires the report command, report filename, upload action and required repository aggregate strings"}
-      e2e: {applicable: true, evidence: "PR CI must complete janitor plus required repository aggregate on the exact head"}
-      security: {applicable: true, evidence: "workflow permissions remain contents: read and upload-artifact is pinned to the existing repository-approved SHA"}
-      migration_recovery: {applicable: false, na_reason: "No deployment or persistence migration"}
-      cli_harness: {applicable: false, na_reason: "No CLI/Harness interface changes"}
-      docs_schema: {applicable: true, evidence: "Maintenance and Repository Health docs describe artifact semantics and authority boundary"}
+      static_lint: {applicable: true, evidence: "repository validation compiles audit implementation"}
+      unit: {applicable: true, evidence: "lifecycle covers hash/HMAC/signature primitives"}
+      integration: {applicable: true, evidence: "multi-event append + verify lifecycle"}
+      contract: {applicable: true, evidence: "Scenario 158 + event template + protocol"}
+      e2e: {applicable: true, evidence: "PR exact-head Janitor repository validation"}
+      security: {applicable: true, evidence: "tamper/reorder/anchored-tail-truncation/wrong-key negative paths and secret non-persistence"}
+      migration_recovery: {applicable: false, na_reason: "new additive JSONL evidence; no migration"}
+      cli_harness: {applicable: false, na_reason: "no runtime adapter/hook behavior change"}
+      docs_schema: {applicable: true, evidence: "Governance/Security/Release/Architecture docs synchronized"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
