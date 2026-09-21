@@ -71,6 +71,9 @@ branches:
   - branch: "feature/v0.46.0-evolution-effectiveness-feedback"
     expected_sha: 80d51851bd0c2074b79939a6cf1f7ee141e96aea
     merged_pr: 129
+  - branch: "feature/v0.47.0-controlled-branch-cleanup"
+    expected_sha: 0fbc9b6131ce8ccd1dff297775c945e03ed6faf5
+    merged_pr: 131
   - branch: "release/v0.16.6"
     expected_sha: 5543ed9e3be5bd75522043ecdeba2c632a336cc8
     merged_pr: 27

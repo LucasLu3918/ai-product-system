@@ -353,7 +353,7 @@ This is observational maintenance evidence. Any actual source-policy adjustment 
 
 - branch 仍存在且 SHA 沒有漂移；
 - lifecycle 是 `EPHEMERAL`；
-- branch 已 deterministic integrated into `main`；
+- branch 已由 local Git integration proof，或 GitHub merged PR 的 exact head SHA/ref/base 證據，確認整合進 `main`；
 - manifest authorization 是 `explicit_user_request + exact_manifest_only + one_time`。
 
-任何一筆失敗都會在第一個 delete 前 block 整批。Persistent、unclassified、pending 或 manifest 外 branch 一律不刪。Scheduled/manual hygiene report 仍只有 `contents: read`；只有 protected-main cleanup job 在這份 exact manifest 範圍內取得 `contents: write`。
+若使用 GitHub merged-PR fallback，workflow 會重新讀取該 PR，確認 `merged_at`、head SHA、head ref 與 base ref 全部符合 manifest。任何一筆失敗都會在第一個 delete 前 block 整批。Persistent、unclassified、pending 或 manifest 外 branch 一律不刪。Scheduled/manual hygiene report 仍只有 `contents: read`；只有 protected-main cleanup job 在這份 exact manifest 範圍內取得 `contents: write`。

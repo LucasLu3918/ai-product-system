@@ -103,12 +103,15 @@ jobs:
         run: git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
 
       - name: Apply exact Human-authorized cleanup manifest
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: >-
           python scripts/branch_hygiene.py
           --config config/branch-lifecycle.yaml
           --target main
           --remote origin
           --apply-cleanup config/branch-cleanup-manifest.yaml
+          --github-repository "$GITHUB_REPOSITORY"
           > branch-cleanup-result.yaml
 
       - name: Publish cleanup result
