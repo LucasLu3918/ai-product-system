@@ -224,3 +224,14 @@ For SAL 3–4 or production credentials, an active exposed credential is release
 - SAL 4：production-relevant governance evidence 應使用 authenticated events 與定期 asymmetric signed checkpoint；等效替代控制需有治理紀錄。
 
 AIPS baseline 不因此要求 HMAC key、signing key 或外部 Agent/provider credential。HMAC secret 與 signing private key 必須來自安全 Runtime Source，不得寫入 Git、Prompt、log、ledger 或 Actions artifact。
+
+
+## 可攜式 Governance Audit Bundle
+
+當 SAL 3–4 或長期稽核需求需要把治理證據交給不同維護者、離線媒體或事後稽核者時，可將既有 Governance Audit Chain 匯出成 portable bundle。
+
+Bundle 應綁定 exact Git revision、ledger event count / chain head、所選驗證或部署證據的 SHA-256，以及 checkpoint public key fingerprint。HMAC secret 與 signing private key 永遠不得被打包。
+
+高保證情境應將 `ANCHOR.json` 與 bundle 分離保存或分發；只把 anchor 放在 bundle 內，無法單獨證明整包資料沒有被攻擊者重新製作。若 ledger 含 Ed25519 checkpoint，建立 bundle 時必須先以對應 public key 驗證成功。
+
+Portable bundle 是 Security / Governance evidence，不是新的核准機制。

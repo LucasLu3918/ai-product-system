@@ -282,11 +282,13 @@ flowchart LR
     CH --> HH[SHA-256 chain hash]
     HH --> HM[Optional HMAC-SHA256]
     HH --> CP[Optional Ed25519 signed checkpoint]
-    HM --> OFF[Offline verification]
-    CP --> OFF
+    HM --> B[Portable Audit Bundle]
+    CP --> B
+    B --> AN[Independent ANCHOR.json retention]
+    AN --> OFF[Offline verification]
 ~~~
 
-This extends the existing Governance + Evidence surface and adds no approval gate. Hash-only verification is credential-free; HMAC is shared-secret runtime authentication; asymmetric checkpoints provide a public-key-verifiable long-term anchor.
+This extends the existing Governance + Evidence surface and adds no approval gate. Hash-only verification is credential-free; HMAC is shared-secret runtime authentication; asymmetric checkpoints provide a public-key-verifiable long-term anchor. The portable bundle binds the exact repository revision, ledger, evidence digests and public keys; its exported ANCHOR should be retained independently when wholesale bundle replacement must be detectable.
 
 ## Creative direction and brand reuse
 

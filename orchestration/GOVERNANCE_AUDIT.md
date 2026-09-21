@@ -55,3 +55,48 @@ Verify always checks sequence, event hashes and chain hashes. Supplied HMAC/publ
 The chain proves consistency of recorded evidence, not absolute wall-clock truth. A chain file by itself also cannot prove that its final suffix was not removed; retain/distribute a known chain head + event count or equivalent signed checkpoint anchor when truncation resistance is required. High-value events should bind durable anchors such as Git commit SHA, merged PR identity, Actions run/evidence digest or deployment identity.
 
 Audit evidence is downstream of Human authority. A ledger event containing APPROVED never authorizes an action.
+
+
+## Portable Governance Audit Bundle
+
+When evidence must survive outside the original runner/chat/repository context, use the existing helper rather than inventing a second audit system.
+
+~~~text
+verified AUDIT.jsonl
++ exact repository revision
++ selected validation / release / deployment evidence files
++ checkpoint public keys
+→ bundle-create
+→ MANIFEST.json + AUDIT.jsonl + evidence/* + public-keys/* + ANCHOR.json
+→ distribute/store ANCHOR.json independently when truncation/resubmission resistance is required
+→ bundle-verify --anchor <retained-anchor>
+~~~
+
+Rules:
+
+- bundle creation first verifies the ledger; signed checkpoint history fails closed if its public key is unavailable or invalid;
+- HMAC material can be supplied to authenticate history during creation/verification but is never copied into the bundle;
+- evidence inputs are explicit `NAME=PATH` files and are copied by digest; source absolute paths are not persisted;
+- `repository_revision` must bind the exact Git candidate being audited;
+- `MANIFEST.json` binds the ledger SHA-256, event count, chain head, evidence SHA-256, public-key SHA-256/fingerprint and authority=false declarations;
+- `ANCHOR.json` binds repository revision + event count + chain head + MANIFEST digest;
+- the bundle's internal anchor detects accidental/local mismatch but is not independent trust. Retain/distribute the exported anchor separately, or rely on an independently trusted signed checkpoint, to resist wholesale bundle replacement;
+- the format is directory-based and credential-free so it can be copied to offline media without requiring GitHub, a model provider, blockchain or timestamp service.
+
+Example:
+
+~~~bash
+python scripts/governance_audit.py bundle-create \
+  --ledger AUDIT.jsonl \
+  --output audit-bundle \
+  --repository-revision <exact-git-sha> \
+  --evidence validation=integration-gate-report.yaml \
+  --checkpoint-public-key release-key=release-public.pem \
+  --anchor-output retained/ANCHOR.json
+
+python scripts/governance_audit.py bundle-verify \
+  --bundle audit-bundle \
+  --anchor retained/ANCHOR.json
+~~~
+
+Bundle evidence never grants approval, merge, release, publication or production authority.

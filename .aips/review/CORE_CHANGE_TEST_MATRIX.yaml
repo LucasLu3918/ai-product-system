@@ -1,24 +1,24 @@
 version: 1
 candidate:
-  base_sha: 49f3bdf5014228001d037f07bd7ef46fd55f78c8
-  changed_files_hash: 9a7ee5bcb164f83621a5c4f531aed5f03fed5c1356853261f2f7da9ba2adf178
+  base_sha: 812f4ec66ddfb3b2d6d4dc1fd6cbe0d2fce47fb4
+  changed_files_hash: 3b4b0813f19ac53ebda958efd7afc78c04ebdf87199fcce7b0caaf569db9188f
 change:
-  id: verifiable-governance-audit-chain
-  summary: Extend Enforceable Governance with credential-free tamper-evident chaining plus optional HMAC and Ed25519 checkpoints.
+  id: portable-governance-audit-bundle
+  summary: Extend the existing Verifiable Governance Audit Chain with deterministic offline-transfer bundles and independently distributable anchors.
   boundary: [governance-audit-evidence, security-assurance, release-readiness, scenario-conformance, architecture-documentation]
 matrix:
   - boundary: governance-audit-evidence
-    reason: Integrity/authentication evidence must fail on tamper while preserving Human authority.
+    reason: Portable evidence must preserve exact ledger/anchor/evidence/key integrity without expanding authority.
     checks:
-      static_lint: {applicable: true, evidence: "repository validation compiles audit implementation"}
-      unit: {applicable: true, evidence: "lifecycle covers hash/HMAC/signature primitives"}
-      integration: {applicable: true, evidence: "multi-event append + verify lifecycle"}
-      contract: {applicable: true, evidence: "Scenario 158 + event template + protocol"}
+      static_lint: {applicable: true, evidence: "repository validation compiles the extended audit helper"}
+      unit: {applicable: true, evidence: "existing hash/HMAC/checkpoint primitives remain lifecycle-covered"}
+      integration: {applicable: true, evidence: "bundle-create consumes a verified ledger and bundle-verify re-verifies all copied evidence"}
+      contract: {applicable: true, evidence: "Scenario 159 + Governance Audit protocol + validator contract"}
       e2e: {applicable: true, evidence: "PR exact-head Janitor repository validation"}
-      security: {applicable: true, evidence: "tamper/reorder/anchored-tail-truncation/wrong-key negative paths and secret non-persistence"}
-      migration_recovery: {applicable: false, na_reason: "new additive JSONL evidence; no migration"}
-      cli_harness: {applicable: false, na_reason: "no runtime adapter/hook behavior change"}
-      docs_schema: {applicable: true, evidence: "Governance/Security/Release/Architecture/Scenario Conformance docs synchronized"}
+      security: {applicable: true, evidence: "tampered evidence/ledger/public-key/anchor negative paths; no HMAC or private-key persistence"}
+      migration_recovery: {applicable: false, na_reason: "additive bundle format; v0.48 ledgers remain valid"}
+      cli_harness: {applicable: false, na_reason: "no runtime adapter or hook behavior change"}
+      docs_schema: {applicable: true, evidence: "Governance/Security/Release/Architecture/Conformance/Technology docs synchronized"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

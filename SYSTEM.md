@@ -441,6 +441,7 @@ Use orchestration/GOVERNANCE_AUDIT.md when durable auditability is required acro
 - HMAC-SHA256 and Ed25519 checkpoints are optional secure-runtime layers, not baseline provider credentials;
 - authenticated/signed existing history must verify before append;
 - audit evidence remains downstream of Human authority.
+- use the portable bundle mode when exact ledger anchors, public keys and evidence digests must be transferred to an offline/later auditor; independently retain the exported ANCHOR when truncation/resubmission resistance matters.
 
 ## Execution Isolation
 
