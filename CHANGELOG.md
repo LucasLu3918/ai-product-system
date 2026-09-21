@@ -1,5 +1,27 @@
 # Changelog
 
+## 0.53.0
+
+### Human Documentation Architecture, Official Docs Site & Installation UX
+
+- Reorganize Human current-behavior documentation around stable topics instead of release-by-release append streams; version history remains in `CHANGELOG.md` and Scenario/evidence history remains in `docs/human/CONFORMANCE.md`.
+- Add `config/documentation-placement.yaml` and deterministic `scripts/documentation_placement.py` enforcement: current-behavior documents require one H1, reject release/scenario-style H2 append sections, reject duplicate numeric headings, bind subsystem changes to allowed canonical topics, and fail closed when a new behavior-bearing source has no placement rule.
+- Remove the one-time documentation-structure migration bypass after migration completion. Future Human Docs updates must place changed lines inside approved canonical sections or explicitly add a genuine new topic to the placement contract.
+- Convert Technology Guide and Evolution Radar overview from append-oriented standalone HTML sources to canonical Markdown rendered by the docs platform; legacy HTML remains compatibility-only and cannot accumulate new feature sections.
+- Add an official VitePress Human Docs Site using `docs/human/` as the single canonical source, with sidebar navigation, local search and page outline; renderer output is not committed as a second source of truth.
+- Add GitHub Actions Docs Site build on pull requests and main. When GitHub Pages repository configuration is absent, build succeeds and deployment is truthfully reported as `SKIPPED_NOT_CONFIGURED`; enabling Pages remains an explicit repository setting.
+- Modernize public installation UX so README / Getting Started no longer require users to learn `mkdir`, `cd`, `git clone` or `bootstrap.sh` as the normal path.
+- Add managed macOS/Linux `install.sh`, Windows PowerShell `install.ps1` with truthful WSL handoff, and Windows uninstall launcher contract. `bootstrap.sh` remains only a backward-compatible entrypoint.
+- Standardize user-facing lifecycle vocabulary on Install / Update / Uninstall while reusing the existing `aips install`, `aips update`, `aips uninstall` core lifecycle rather than duplicating installer logic.
+- Add exact CI coverage for Ubuntu installation lifecycle, macOS shell entrypoint, Windows PowerShell/WSL contract and Docs Site build.
+- Add Scenario 163 and raise Scenario Conformance to 163/163 automated: 24 deterministic + 85 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- PR #144 final head `fb2ae5b857a2b4d1e7be148c422d35bbe91c8b08` changed 45 files and passed Core Change Validate Run #1221, Docs Site Run #9, Installation Entrypoints Run #9 and MCP/Codex interoperability Run #10. Core Change Matrix exact changed-files hash: `be602da74c2f5c80e0644a05776e5d9483d57cc3841065bd139ff0991ffed765`.
+- PR #144 was squash-merged to main as `422a00f4ed755fd48dd4473cd641522e966aae42`; protected-main Validate Run #1222 succeeded.
+- Follow-up PR #145 final head `e44c3d6fb92bf858ac6417fbe97cfa8c92e7daa7` reconciled canonical placement ownership and truthful Pages readiness; exact-head Validate Run #1226 and Docs Site Run #14 succeeded.
+- PR #145 was squash-merged to main as `2a33b4e8d5fc6089a55c2e4df0cdbdd34ddb12fb`; protected-main Validate Run #1227 and Docs Site Run #15 succeeded. Pages deployment is currently skipped when repository Pages is not configured, while the VitePress build remains green.
+- No new Role, Skill or Approval Gate. Human authority, code merge/release authority and product production authority remain unchanged. Constitution impact: NO.
+- Release model remains `VERSION + CHANGELOG + protected-main validation`; no GitHub Release object or tag is introduced.
+
 ## 0.52.0
 
 ### MCP Interoperability Gateway
