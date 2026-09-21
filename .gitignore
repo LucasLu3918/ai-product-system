@@ -7,3 +7,8 @@ Thumbs.db
 # Python runtime/cache artifacts
 __pycache__/
 *.py[cod]
+
+# VitePress build output
+docs/human/.vitepress/dist/
+docs/human/.vitepress/cache/
+node_modules/

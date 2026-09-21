@@ -146,7 +146,10 @@ surfaces:
       - human-documentation-namespace
     required_paths:
       - scripts/documentation_sync.py
+      - scripts/documentation_placement.py
       - config/documentation-sync.yaml
+      - config/documentation-placement.yaml
+      - docs/human/.vitepress/config.mts
       - orchestration/DOCUMENTATION_SYNC.md
       - docs/human/DOCUMENTATION_SYNC.md
     canonical_docs:
@@ -154,6 +157,7 @@ surfaces:
       - docs/human/DOCUMENTATION_SYNC.md
     validation_paths:
       - tests/validation/documentation_sync_contracts.py
+      - tests/validation/documentation_placement_contracts.py
 
   - id: integration-gate
     capabilities:

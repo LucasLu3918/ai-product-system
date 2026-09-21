@@ -1,111 +1,75 @@
 # AI Product System
 
-AI Product System（AIPS）是一套可安裝、可解除的跨 Agent 軟體工程 Harness。安裝後，支援的 AI Agent Runtime 會先載入最小 AIPS Bootstrap，再依任務決定是否進入 AIPS 的規劃、實作、審核與交付流程。
+AI Product System（AIPS）是一套跨 Agent 的 Software Engineering Harness。它把 Roles、Skills、Project Intelligence、deterministic orchestration、security / quality governance 與 MCP interoperability 組合成可重用的工程系統。
 
-## 5 分鐘開始
+## Install
+
+### macOS / Linux
 
 ~~~bash
-mkdir -p ~/Developer
-cd ~/Developer
-gh repo clone LucasLu3918/ai-product-system
-cd ai-product-system
-./scripts/bootstrap.sh
-aips doctor
+curl -fsSL https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh | bash
 ~~~
 
-v0.52 起，支援 MCP 的 IDE / Agent Host 也可以透過本機 `aips mcp serve` 直接取得 AIPS Roles / Skills / Orchestration 與 deterministic helpers；MCP 是通用接入層，原本 native Adapter 仍保留用來提供可驗證的 Turn Hook / Tool Guard。
+### Windows
 
-需要 Client 設定範例時使用 `aips mcp config --client cursor|codex|generic`；AIPS 不會自動改寫第三方 Client 設定。
-安裝完成後可檢查 Global Harness：
+正式支援路徑為 **Windows + WSL**。在 PowerShell 執行：
+
+~~~powershell
+irm https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.ps1 | iex
+~~~
+
+安裝後在 WSL terminal 使用 AIPS。
+
+### Verify
+
+~~~bash
+aips doctor
+aips mcp inspect
+~~~
+
+不需要先建立資料夾、cd 或手動 git clone；installer 會管理 AIPS system checkout。
+
+## Start using AIPS
+
+安裝完成後，直接使用原本的 Codex、Claude Code、Gemini CLI，或把 AIPS MCP Server 接到支援 MCP 的 Host。
 
 ~~~bash
 aips harness status
-aips harness doctor
+aips mcp inspect
 ~~~
 
-AIPS 不會取代你原本的 AGENTS.md、CLAUDE.md、GEMINI.md 或自訂 Skills。v0.9 對需要共用 instruction file 的 Runtime 使用可逆的 AIPS Managed Block，只管理自己的 BEGIN/END 區段；Claude/Gemini 在 Runtime 支援且可驗證時使用 native per-turn hook。
+AIPS 不取代既有 AGENTS.md、CLAUDE.md、GEMINI.md 或 custom Skills；只管理自己的可逆 integration。
 
-專案可以直接用 Ephemeral Mode 工作。即使不 Attach，AIPS 也能把可重用的 Project Intelligence 存在自己的 External Cache，而不在專案裡建立 `.ai/`。只有要把 State/Intelligence 放進專案本身時才需 Attach：
+## Update
 
 ~~~bash
-aips attach /path/to/project
+aips update
 ~~~
 
-舊的 aips init <project> 仍保留相容性。
-
-每次要修改專案前，先執行系統更新預檢（System Update Preflight）：
+Existing Project mutation 前可使用：
 
 ~~~bash
 aips preflight /path/to/project
 ~~~
 
-安裝完成後，日常使用不需要再手動貼「使用 ai-product-system」或先執行 AIPS 指令。直接開 Codex / Claude Code / Gemini CLI 對談即可；Adapter 會依能力以 TURN_NATIVE 或 CONTEXT_ALWAYS 讓每次工程任務取得目前 AIPS / Runtime / Project Context。
-
-需要確認某次 Session / Project 解析結果時：
-
-~~~bash
-aips harness resolve --cwd "$PWD"
-~~~
-
-## 你可以用它做什麼？
-
-- 安裝後自動接入支援的 Codex / Claude Code / Gemini CLI Runtime（安全可逆時）
-- 完整產品從需求、品質規劃、Local Complete 到可選的 Production Enablement（End-to-End Product Delivery）
-- 新產品規劃與可重現規劃包（Reproducible Planning Package）
-- 既有程式修改與獨立審核（Independent Review）
-- 風險比例式資安審核（Risk-Proportional Security Assurance）
-- 網站、Banner、主視覺、社群圖等創意方向（Creative Direction）
-- 品牌基礎與品牌導引（Brand System）
-- 效能、成本、交付與 Incident 等工作模式（Work Modes）
-- Q1/Q2/Q3 風險比例式品質規劃（Quality Planning）
-- 專案智慧（Project Intelligence）：第一次理解既有專案後保存 Architecture / Data Flow / Modules / Conventions / Impact Graph，供不同 Agent 重用
-- V1/V2 視覺一致性修復（Visual Consistency Repair）
-- 依風險與複雜度選擇最低足夠模型（Minimum Sufficient Intelligence）
-- 能用固定規則處理的資料，優先交給確定性自動化（Deterministic Automation）
-
-## 文件入口
-
-### 一般使用者
-
-1. [快速上手](docs/human/GETTING_STARTED.md)
-2. [完整使用指南](docs/human/USER_GUIDE.md)
-3. [安裝與解除](docs/human/INSTALLATION.md)
-4. [Global Harness 與 Agent Adapter](docs/human/HARNESS.md)
-5. [Project Intelligence](docs/human/PROJECT_INTELLIGENCE.md)
-6. [系統架構總覽](docs/human/ARCHITECTURE_OVERVIEW.md)
-7. [Security Policy](SECURITY.md)
-
-### AI Agent
-
-1. `AGENTS.md`
-2. `SYSTEM.md`
-3. 只載入本次需要的 `orchestration/`、Role 與 Skill
-
-完整文件用途請看 [文件導覽](docs/human/DOCUMENTATION_MAP.md)。
-
-## 核心原則
-
-- 不把未知當成事實。
-- 重大或核心修改先規劃、再確認、才實作。
-- 新增 Role / Skill / Capability 前先搜尋並重用既有能力。
-- 視覺設計先理解使用者素材、品牌與 Reference，不直接猜風格。
-- 高風險功能使用更嚴格的資安與可靠性審核；Key/Token/Password 只從安全 Runtime Source 取得，不寫入程式、Prompt、Log 或 Intelligence。
-- 可用 Shell / 簡單程式確定產生的資料，先程式化再交回 AI。
-- Large/Core Change 依實際影響範圍建立 Test Matrix，所有適用測試通過才可完成/發布。
-- Git 遠端發布前先列出修改檔案、驗證結果與 Atomic Commit 計畫。
-- Human Docs 與 Agent Docs 分流，但流程異動時必須同步更新。
-
-
-## 最短解除方式
+## Uninstall
 
 ~~~bash
 aips uninstall
 ~~~
 
-或：
+預設保留使用者 instructions、Skills、Project source、Project .ai/ 與 External Project Intelligence。
 
-~~~bash
-./scripts/uninstall.sh
-~~~
+## Documentation
 
-解除會移除 AIPS-owned Harness Adapter 與 CLI；不會刪除使用者既有 Agent instructions、custom Skills、專案原始碼或 Project `.ai/` Workspace。External Project Intelligence 預設也會保留；只有明確加 `--remove-cache` 才刪除。完整說明請看 docs/human/INSTALLATION.md。
+正式 Human Documentation source 位於 docs/human/，並由 VitePress 建置為 Official Docs Site。
+
+- [開始使用](docs/human/GETTING_STARTED.md)
+- [安裝與解除](docs/human/INSTALLATION.md)
+- [使用指南](docs/human/USER_GUIDE.md)
+- [Global Harness / MCP](docs/human/HARNESS.md)
+- [系統架構](docs/human/ARCHITECTURE_OVERVIEW.md)
+- [Technology Guide](docs/human/TECHNOLOGY_GUIDE.md)
+- [文件導覽](docs/human/DOCUMENTATION_MAP.md)
+
+Release history 放在 CHANGELOG.md；Scenario / verification history 放在 docs/human/CONFORMANCE.md，不混入 current-behavior 使用文件。

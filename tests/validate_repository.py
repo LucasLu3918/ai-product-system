@@ -48,14 +48,19 @@ from validation import evolution_radar_contracts as evolution_radar_contracts  #
 from validation import evolution_governance_contracts as evolution_governance_contracts  # noqa: F401
 from validation import documentation_sync_contracts as documentation_sync_contracts  # noqa: F401
 from validation import documentation_audience_contracts as documentation_audience_contracts  # noqa: F401
+from validation import documentation_placement_contracts as documentation_placement_contracts  # noqa: F401
 from validation import governance_resume as governance_resume  # noqa: F401
 from validation import conformance_isolation as conformance_isolation  # noqa: F401
 from validation import retrieval_embedding_trial_contracts as retrieval_embedding_trial_contracts  # noqa: F401
 from validation import syntax_contracts as syntax_contracts  # noqa: F401
 from validation import scheduler_gate_contracts as scheduler_gate_contracts  # noqa: F401
 from validation import branch_hygiene_contracts as branch_hygiene_contracts  # noqa: F401
-from validation import resource_authorization_contracts as resource_authorization_contracts  # noqa: F401\nfrom validation import agent_anomaly_evaluation_contracts as agent_anomaly_evaluation_contracts  # noqa: F401\nfrom validation import agent_observable_event_trial_contracts as agent_observable_event_trial_contracts  # noqa: F401\nfrom validation import gemini_observable_event_capture_contracts as gemini_observable_event_capture_contracts  # noqa: F401
-from validation import gemini_runtime_verification_contracts as gemini_runtime_verification_contracts  # noqa: F401\nfrom validation import gemini_provider_session_verification_contracts as gemini_provider_session_verification_contracts  # noqa: F401
+from validation import resource_authorization_contracts as resource_authorization_contracts  # noqa: F401
+from validation import agent_anomaly_evaluation_contracts as agent_anomaly_evaluation_contracts  # noqa: F401
+from validation import agent_observable_event_trial_contracts as agent_observable_event_trial_contracts  # noqa: F401
+from validation import gemini_observable_event_capture_contracts as gemini_observable_event_capture_contracts  # noqa: F401
+from validation import gemini_runtime_verification_contracts as gemini_runtime_verification_contracts  # noqa: F401
+from validation import gemini_provider_session_verification_contracts as gemini_provider_session_verification_contracts  # noqa: F401
 from validation import gemini_provider_session_workflow_contracts as gemini_provider_session_workflow_contracts  # noqa: F401
 from validation import external_credential_guard_contracts as external_credential_guard_contracts  # noqa: F401
 from validation import repository_health_contracts as repository_health_contracts  # noqa: F401

@@ -10,6 +10,8 @@ required = (
     ROOT / 'scripts/documentation_sync.py',
     ROOT / 'orchestration/DOCUMENTATION_SYNC.md',
     ROOT / 'docs/human/DOCUMENTATION_SYNC.md',
+    ROOT / 'docs/human/TECHNOLOGY_GUIDE.md',
+    ROOT / 'docs/human/EVOLUTION_RADAR_OVERVIEW.md',
     ROOT / 'docs/human/TECHNOLOGY_GUIDE.html',
     ROOT / 'docs/human/EVOLUTION_RADAR_OVERVIEW.html',
 )
@@ -30,7 +32,7 @@ if script.exists():
             errors.append(f'Documentation sync config: {error}')
         missing = docs_sync.evaluate_changes(['scripts/evolution_decision.py'], config)
         for expected in (
-            'docs/human/TECHNOLOGY_GUIDE.html',
+            'docs/human/TECHNOLOGY_GUIDE.md',
             'docs/human/EVOLUTION_RADAR.md',
             'orchestration/EVOLUTION_RADAR.md',
         ):
@@ -39,10 +41,10 @@ if script.exists():
         complete = [
             'scripts/evolution_decision.py',
             'docs/human/EVOLUTION_RADAR.md',
-            'docs/human/EVOLUTION_RADAR_OVERVIEW.html',
+            'docs/human/EVOLUTION_RADAR_OVERVIEW.md',
             'orchestration/EVOLUTION_RADAR.md',
             'orchestration/EXECUTION_ISOLATION.md',
-            'docs/human/TECHNOLOGY_GUIDE.html',
+            'docs/human/TECHNOLOGY_GUIDE.md',
         ]
         if docs_sync.evaluate_changes(complete, config):
             errors.append('Documentation sync rejected a complete Evolution documentation update')

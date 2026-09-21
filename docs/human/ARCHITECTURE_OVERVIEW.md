@@ -1,380 +1,93 @@
 # 系統架構總覽
 
+AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前架構**；版本歷史放 CHANGELOG，Scenario 證據歷史放 Conformance。
+
 ![AI Product System 架構總覽](assets/system-overview.svg)
 
-目前 AIPS 架構由 Turn-Aware Global Harness、Project Intelligence + Retrieval Intelligence / Quality Evaluation、Change Impact Guard、Enforceable Governance + Verifiable Governance Audit Chain / Portable Audit Bundle / Retention Catalog、Durable Run State、Scenario Conformance、Execution Isolation、Evolution Radar maintenance plane 與 Documentation Consistency Contract 組成。
-
-完整技術與中英文專有名詞可由 [`TECHNOLOGY_GUIDE.html`](TECHNOLOGY_GUIDE.html) 閱讀；Evolution Radar 的 Human 圖解流程見 [`EVOLUTION_RADAR_OVERVIEW.html`](EVOLUTION_RADAR_OVERVIEW.html)。
-
-## 1. Turn-Aware Global Harness
-
-![AIPS Global Harness](assets/harness-overview.svg)
+## Runtime 與接入層
 
 ~~~text
 User Prompt
-→ Runtime-native integration
-→ Compact Turn Context
-→ Runtime/User Rules + Project Rules + Relevant Intelligence + AIPS Protocol
-→ Agent Planning
+→ MCP Access Plane 或 Runtime-native Adapter
+→ Compact AIPS Context
+→ Host Agent semantic reasoning
+→ deterministic AIPS helpers / governed execution
 ~~~
 
-Codex 以 CONTEXT_ALWAYS 為目標；Claude Code / Gemini CLI 在 native Hook 可驗證時提供 TURN_NATIVE。
+MCP 提供 portability；native adapters 提供可驗證的 runtime hook / guard。兩者共用 canonical Roles、Skills、Orchestration 與 Project Intelligence。
 
-## Just-in-Time Retrieval Intelligence
+## Project Intelligence 與 Retrieval
 
-Project Intelligence 現在分成兩個互補層次：穩定的 Architecture / Source Registry / Impact Graph / Overrides，以及可重建的即時 Retrieval cache。Agent 每次工作先依任務查詢 code、symbols、tests、Impact Graph 與 Git history，再經 ranking 與 token budget 只帶入必要 evidence。Retrieval cache 不具有治理 authority，缺少 optional semantic provider 時會退回 deterministic/local lanes 與既有 Project Intelligence。
+Existing Project 第一次需要廣泛理解或修改時，先 read-only bootstrap，再建立 Architecture / Data Flow / Modules / Contracts / Tests / Security / Operations 等 stable Intelligence。
 
-## Retrieval Quality Evaluation
+後續 Turn 以 Just-in-Time Retrieval 取得 task-relevant code、symbols、tests、Impact Graph 與 Git history；retrieval cache 可重建，不取得治理 authority。
 
-Retrieval Intelligence 的下一步採「Measure before dependency」。AIPS 以 repository-specific suite 比較 v0.20-style static topic baseline 與目前 local hybrid retrieval，量測 Precision@K、Recall@K、MRR、history recall、irrelevant context 與 token 使用量；latency 只做觀察值。Report 只提供 evidence，不能自行啟用 embedding、改 ranking 或選擇 Sourcegraph/LSP。是否增加新 retrieval technology 仍由 Human 依量測缺口決策。
-
-### Structural Retrieval（已採用）
-
-Cross-file call chain candidate 已通過 full corpus Trial 並取得 Human Adoption Decision。現在正常 Retrieval Intelligence 預設啟用 bounded exact-identifier two-hop relation graph：用 lexical index 找 bridge、用 indexed symbol table 解 target definition / related test，並以 hard limits 約束 traversal。它不新增 parser/LSP dependency；`--no-structural` 只作 debug / regression opt-out，Scenario 130 仍保留 explicit OFF/ON Trial replay。
-
-### Semantic Alias Expansion Candidate Trial（HOLD）
-
-AIPS 已完成 dependency-free software-engineering alias expansion Trial。它沒有啟用 Embedding，semantic provider 仍維持 `NOT_CONFIGURED`。完整 corpus 顯示 required regressions、registration recall regression，而且 `synonym-access-rotation` 沒有改善，因此 Trial 結論為 **FAIL / HOLD**，alias lane 不進正常 Turn Context。下一個 semantic retrieval 候選若要研究，需另做 Human-reviewed Trial。
-
-### Remote Embedding Retrieval Trial Readiness
-
-Scenario 133 準備 materially different 的真實 embedding 候選，但只允許 synthetic fixture 送往 provider。正常 PR/main CI 與 Turn Context 不呼叫 embedding；專用 Trial branch / manual dispatch 才能執行。缺 credential 回 `TRIAL_PENDING`、provider failure 回 `TRIAL_BLOCKED`，PASS 也仍需 Human Adoption Decision。
-
-### Provider-Neutral Local-First Embedding Trial
-
-Scenario 134 把真正 embedding quality evidence 的預設路徑改成 runner-local。Dedicated Trial 使用 pinned `sentence-transformers` 與 pinned `BAAI/bge-small-en-v1.5` revision，在 GitHub Actions runner 內產生 vectors；model artifact 可由外部下載，但 query / synthetic source 不送往 embedding provider。原有 OpenAI-compatible adapter 保留為 optional comparison path，只有顯式選擇 remote 才需要 `OPENAI_API_KEY`。Normal Retrieval / Turn Context 仍不啟用 embedding，PASS 仍停在 Human Adoption Decision。
-
-## 2. Project Intelligence
-
-![Project Intelligence](assets/project-intelligence-overview.svg)
-
-第一次 Existing Project 需要廣泛理解或修改時，先 Read-only Bootstrap，再完成 Architecture / Data Flow / Modules / Contracts / DB / Events / Consumers / Conventions / Tests / Security / Operations 的 semantic enrichment，最後才 READY。
-
-後續 Turn 只讀 relevant Intelligence；watched source 真正受影響時才 Targeted Refresh。
-
-## 3. Canonical Project Identity + EPHEMERAL / ATTACHED
+## Project Identity 與 Persistence
 
 ~~~text
-Repository lineage
-→ repository_id
-   ├─ main worktree    → workspace_id A
-   ├─ feature worktree → workspace_id B
-   └─ AIPS worktree    → workspace_id C
+repository_id
+├─ main workspace      → workspace_id A
+├─ feature workspace   → workspace_id B
+└─ AIPS worktree       → workspace_id C
 ~~~
 
-Project Intelligence 與 Run State 使用 workspace_id；Execution Isolation 的 Single Writer coordination 使用 repository_id + Change Boundary。
+EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才使用 project-local .ai/。
 
-EPHEMERAL 不在 Project 建立 .ai/，Intelligence / Runs 可存在 AIPS External Cache；ATTACHED 使用 .ai/intelligence/ + .ai/runs/。Attach/Detach 會 validated migrate/sync。
+## Planning 與 Product Delivery
 
-## 4. Existing Project Mutation
+大型產品先形成 Planning Package，再經 Human review 進入 implementation planning。產品生命週期維持：
 
 ~~~text
-Current Prompt
-→ Relevant Intelligence
-→ Change Boundary
-→ IMPACT_GRAPH
-→ CHANGE_IMPACT
-→ Preserve Valid Native Conventions
-→ Implementation
-→ Tests / Review
-→ Actual Diff vs Declared Impact
-→ Targeted Intelligence Refresh
+Plan
+→ Local implementation
+→ Tests / Security / Review
+→ LOCAL_COMPLETE
+→ optional Production Enablement
+→ PRODUCTION_VERIFIED
 ~~~
 
-## 5. Quality-aware Product Delivery
+Production、Git publication、merge 與 release authority 不因 Automation 或 MCP 而自動取得。
 
-![完整產品交付流程](assets/product-delivery-overview.svg)
+## Deterministic Execution
 
-完整產品交付主生命週期維持 LOCAL_COMPLETE → optional Production Enablement → PRODUCTION_VERIFIED。
+Semantic planning 與 deterministic execution 分離：
 
-## 6. Installation Lifecycle
+- Deterministic Scheduler：依 Task Graph 決定可重現 dispatch。
+- Execution Isolation：shared / worktree / verified sandbox。
+- Runtime Resource Isolation：為 parallel worktree 協調 bounded TCP port lease。
+- Integration Gate / Janitor：在 candidate merge 前執行適用 lint / type / test / repository validation。
 
-![安裝與專案生命週期](assets/system-lifecycle.svg)
+## Security 與 Governance
 
-Uninstall 只移除 AIPS-owned Managed Blocks / Hooks / Extensions / CLI。User instructions、Skills、Project source、.ai/ 與 External Project Intelligence 預設保留。
+Security Assurance Level（SAL）依產品 baseline 與 change impact 決定 review 強度。高價值 business logic、authorization、financial integrity 等 protected boundary 使用更嚴格 evidence。
 
-## 7. Architecture Diagram Impact
+Human Approval 維持最高決策權；machine-readable approval binding、resource authorization、audit chain / portable bundle / retention catalog 都只驗證與保存 authority evidence，不創造新的 authority。
 
-架構文件描述目前系統狀態；版本歷史與各版影響範圍集中在 CHANGELOG / Release Notes。Large/Core Change 仍必須在 Documentation Impact Gate 中判斷 Mermaid 與 Human SVG 是否受影響。
+## Scenario Conformance 與 Agent Eval
 
-## 8. Enforceable Governance
+Scenario registry 明確標示 deterministic、lifecycle、agent_eval 或 manual evidence。需要 semantic judgment 的測試保存 observable result，不保存 private chain-of-thought。
+
+## Evolution Radar
+
+Evolution Radar 位於 maintenance plane：收集 public technical evidence、deterministic pre-analysis、provider-neutral semantic handoff、Human Decision、bounded Trial。Radar recommendations 不會自動修改 code、開 implementation PR、merge 或 release。
+
+## Documentation Architecture
 
 ~~~text
-Human Approval
-→ machine-readable Approval Record
-→ canonical scope fingerprint
-→ Runtime pre-tool guard（若該 Runtime 可驗證）
-→ match: allow
-→ mismatch/missing: APPROVAL_STALE / block
+docs/human/*.md
+→ canonical Human source
+→ VitePress renderer
+→ Official Docs Site
+
+CHANGELOG
+→ version history
+
+CONFORMANCE
+→ verification history
 ~~~
 
-Context capability 與 Governance Enforcement 分開呈現。這不增加新的 Approval Gate，也不把批准權交給 Agent。
+Standalone HTML 不再是新增功能的 canonical target。Current behavior 必須更新到 topic-oriented canonical section；CI 會檢查 Human Docs heading structure 與 change placement。
 
+## Official Docs Site
 
-## 8A. Verifiable Governance Audit Chain
-
-~~~text
-Human Approval / Security Review / Release Readiness
-→ existing authority + enforcement
-→ protected action
-→ canonical audit event
-→ SHA-256 event hash + previous-chain binding
-→ optional HMAC authentication
-→ optional Ed25519 signed checkpoint
-→ offline verification
-~~~
-
-這一層解決「半年後如何驗證流程紀錄沒有被無痕改寫」，不是新增批准權。沒有 Key 時仍可驗證 deterministic hash chain；高保證環境可另外提供 HMAC 與 public-key-verifiable checkpoint。Secret/private key 不進 Git、Prompt、ledger 或 Actions artifact。
-
-## 8B. Governance Audit Retention Catalog
-
-~~~text
-Portable Audit Bundles + independently retained anchors
-→ deterministic Catalog
-→ find by release / deployment / revision / chain head / key id
-→ Retention Policy + explicit as-of date
-→ KEEP_FULL / HOLD_FULL / REVIEW_DUE
-→ Human review only
-~~~
-
-Catalog 解決「多個 release / deployment 之後，哪一份 bundle 才對應這個 revision？」的 provenance discovery 問題。Key rotation 使用不同 key ID；同一 key ID 若出現不同 public-key fingerprint 會 fail closed。
-
-Retention 到期不等於刪除。系統只產生 REVIEW_DUE 與 minimal digest record，沒有 delete/compact command；legal hold 優先。設定中的保存天數只是 AIPS operational default，不代表法律保存期限。
-
-## 9. Durable Run State
-
-~~~text
-material step
-→ CHECKPOINT.yaml + EVENTS.jsonl
-→ interrupted / new Agent session
-→ compare recorded workspace fingerprint with current identity / HEAD / branch / dirty state
-→ CURRENT: resume from checkpoint
-→ STALE: refresh/revalidate before continuation
-~~~
-
-這個機制沿用既有 Workspace State；不導入新的 workflow framework，也不把對話逐字稿當成持久狀態。
-
-## 10. Scenario Conformance
-
-~~~text
-Scenario specification
-→ coverage registry
-→ evidence type
-→ deterministic conformance check
-→ coverage report
-~~~
-
-AIPS 不再用「Scenario 檔案存在」推論 automated coverage。Legacy Scenario 沒有明確一對一 evidence 時會誠實維持 manual。需要 Agent 語意判斷的 Scenario 使用 provider-neutral Agent Eval：只保存 observable response，Case fingerprint 改變時舊 Result 會失效，不保存 Chain-of-Thought。
-
-## 11. Execution Isolation
-
-~~~text
-Execution Profile
-→ shared
-   → 使用既有 workspace
-   → isolated=false
-
-→ worktree
-   → 真正的 Git worktree
-   → AIPS external ownership record
-   → 同一 Change Boundary 單一 ACTIVE writer
-
-→ sandbox
-   → 需要可驗證 provider
-   → 沒有 provider 時 UNSUPPORTED / BLOCKED
-~~~
-
-AIPS 不會用 temp directory 假裝成 sandbox。Worktree cleanup 只處理 AIPS-owned managed path；若存在未提交修改會停止並保留 workspace。Clean worktree 可移除，但其 branch 預設保留，避免隱性刪除已提交成果。
-
-## 12. Evolution Radar Maintenance Plane
-
-~~~text
-Scheduled / Manual Radar Trigger
-→ bounded public source collection
-→ provenance + normalization + deduplication
-→ weekly evidence Issue
-→ monthly recurrence roll-up
-→ reliable semantic analyzer available?
-   ├─ no  → ANALYSIS_PENDING
-   └─ yes → evidence-digest + repository-revision bound analysis
-              ↓
-          advisory recommendation
-              ↓
-          Human Decision Binding
-          REJECT / HOLD / ASSESS / TRIAL / ADOPT
-              ↓
-          normal System Self-Improvement / Core / Git Publish gates
-~~~
-
-Evolution Radar 位於 maintenance plane，不在一般 Agent Turn 的 runtime hot path。Radar / Decision workflow 維持 `contents: read` + `issues: write`，沒有 remote code-write、implementation PR、merge 或 release authority。Scheduled analyzer 使用 read-only permission profile；Human-approved Trial 只在 ephemeral AIPS-managed worktree 取得 workspace mutation 能力，checkout credentials 不持久化。
-
-Semantic Analysis 是 provider-neutral contract：可靠 analyzer 必須把判斷綁定 exact evidence digest + repository revision；沒有可靠 analyzer 就保持 `ANALYSIS_PENDING`。Human Decision 進一步綁定 candidate、evidence、baseline revision、scope、actor/time 與 decision fingerprint。當 baseline 已 STALE，正向的 ASSESS / TRIAL / ADOPT 必須 fail closed。
-
-`TRIAL` 的 next action 是 `controlled_trial_execution`：Human 必須提供 approved scope + approved paths，系統建立 worktree 執行 bounded experiment，之後以 forbidden-path / path-scope / diff-size / no-commit / repository validation 產生 Trial Report。Trial PASS 仍不會自動 Adopt；若 Human 之後選擇 ADOPT，可把 exact PASS Trial fingerprint 綁到新的 ADOPT Decision，確認 candidate / signal / baseline 一致後才 handoff 到 System Self-Improvement Review。
-
-## 13. Documentation Consistency Contract
-
-~~~text
-Behavior-bearing technical change
-→ Git changed files
-→ config/documentation-sync.yaml
-→ mapped Human Docs + Agent Docs
-→ Technology Guide review
-→ repository validation
-   ├─ complete → continue
-   └─ missing  → FAIL
-~~~
-
-`orchestration/DOCUMENTATION_SYNC.md` 定義 Agent/Maintainer contract；`docs/human/DOCUMENTATION_SYNC.md` 提供 Human 說明。Validator 透過 `scripts/documentation_sync.py` 檢查 changed-path mapping，確保設定範圍內的程式、協定、模板、設定或 workflow 異動時，對應 Human / Agent 文件與 `docs/human/TECHNOLOGY_GUIDE.html` 一起進入同一個 change。`scripts/documentation_audience.py` 另確保 Human-only permanent docs 位於 `docs/human/`，`docs/` root 只保留 allowlisted shared canonical docs。
-
-這是既有 Documentation Impact Gate 的 deterministic enforcement，不新增 Human Approval Gate。Deterministic check 能證明文件有被同步 review/update，但 prose 是否語意正確仍由 Author / Reviewer 負責。
-
-## 14. Human Technology Guide
-
-[`TECHNOLOGY_GUIDE.html`](TECHNOLOGY_GUIDE.html) 是 Human 一頁式技術總覽，以中英文整理 AIPS 的主要技術、架構概念、用途、可用情境與關聯文件。它本身受 Documentation Consistency Contract 維護，因此後續新增或修改設定範圍內的技術實作時，CI 會要求同一 change 重新 review/update 這份總覽。
-
-Retrieval Quality Evaluation 新增的是 Project Intelligence 的 evidence feedback loop，不改變 Runtime Harness、Product Delivery、Installation 或 Evolution Radar topology；因此 detailed Mermaid 與本 Human overview 已同步，既有高階 SVG 不需要新增節點。
-
-
-## 15. Human Documentation Namespace
-
-~~~text
-Repository root conventions
-├─ README.md / CHANGELOG.md / SECURITY.md
-├─ docs/
-│  ├─ ARCHITECTURE.md        ← shared Human + Agent canonical source
-│  └─ human/
-│     ├─ Documentation Map
-│     ├─ User / Install / Harness guides
-│     ├─ Architecture Overview + assets
-│     ├─ Evolution Radar guides
-│     └─ Technology Guide
-├─ orchestration/            ← Agent canonical protocols
-├─ harness/                  ← Runtime contracts
-└─ config / templates        ← machine contracts
-~~~
-
-永久 Human-only 文件由 `config/documentation-audience.yaml` 管理。若獨立 Human report 必須持久存在其他位置，需在 `standalone_human_documents` 明確登記並使用 `HUMAN_` prefix；不建立平行 `docs/agent/`，避免第二份 Agent canonical source。
-
-
-## 16. Deterministic Scheduler（決定性排程器）
-
-~~~text
-Human-approved scope
-→ LLM Planner / Orchestrator 一次完成語意規劃
-→ Structured Task Graph
-→ Deterministic Scheduler
-   → dependency readiness
-   → stable order
-   → max_parallel
-   → Change Boundary lock
-→ 各自的 worktree writer
-~~~
-
-Scheduler 不是 Agent/Role，也不做架構判斷。相同 Task Graph + task state 會得到相同 dispatch 與 fingerprint。若 dependency 失敗、狀態 stale、boundary 重疊或 graph 無效，就明確 BLOCKED/defer，不會再耗 LLM token「猜下一步」。
-
-這個機制沿用既有 Execution Isolation、Single Writer、Run Resume，不建立第二套 workspace/state 系統。
-
-## 17. Integration Gate / Janitor（整合候選看門人）
-
-~~~text
-exact base SHA + head SHA
-→ changed files/hash
-→ Validation Profile hash
-→ Core Change Test Matrix hash（適用時）
-→ candidate fingerprint
-→ lint / type / test / security / repository checks
-→ PASS / FAIL / BLOCKED
-~~~
-
-Janitor 的正式契約名稱是 Integration Gate。它只做 deterministic validation，不是新的 Human Approval Gate。Candidate、base、validation profile 或 test matrix 任何一項改變，舊 PASS 都不再代表新候選。
-
-GitHub CI 保留既有 required check 名稱 `repository`：先執行 `janitor`，只有 Janitor success 時 `repository` aggregate 才能 success，因此不必先改 branch protection 也能把新的 gate 變成 merge 前強制條件。
-
-## v0.27 Reliability Hardening
-
-三個既有流程增加 fail-closed 保護：
-
-1. Evolution Radar：optional scheduled provider → provider-neutral semantic handoff；沒有 API key 仍能把 exact evidence 交給 Human-selected Agent / local model。
-2. Deterministic Scheduler：writable/未明示 read-only 的 task 必須有 Change Boundary；只有 explicit read-only task 可以沒有 writer lock。
-3. Integration/Janitor Gate：PR 驗證前 fresh-fetch target branch，declared base 與 current base tip 不一致直接 BLOCKED。
-
-這些能力都延伸既有 Research / Execution Isolation / Integration Gate，不新增 Role、Skill 或 Approval Authority。
-
-## 18. v0.27 Governance Hardening
-
-~~~text
-PR candidate
-→ change class: standard | large | core
-→ Large/Core or governance-core surface?
-   ├─ no  → Core Change Test Matrix optional
-   └─ yes → exact candidate-bound Matrix required
-→ Janitor checks
-→ repository compatibility aggregate
-~~~
-
-Integration Gate now enforces the existing Core Change Test Matrix conditionally. Known governance-core surfaces fail closed even if a PR label is missing. Branch hygiene remains read-only/report-only: persistent operational branches are preserved and only integrated ephemeral branches are reported as deletion candidates. CI also avoids rerunning focused Scheduler/Integration Gate lifecycle evidence inside repository validation when the active profile already executed it; standalone repository validation remains complete.
-
-
-## 19. Resource-Scoped Agent Authorization
-
-~~~text
-Execution Profile
-→ Resource Authorization Profile (default DENY)
-→ subject + resource + ordinary operation
-→ constraints / Change Boundary
-→ deterministic ALLOW or DENY evidence
-→ Runtime execution only when applicable gates also allow
-~~~
-
-AIPS 現在能把「Agent 能做什麼」從粗粒度 read/write 描述收斂成明確 resource grant。未宣告資源、未宣告 operation、或要求 Change Boundary 卻缺少 boundary 時一律 DENY。
-
-這是 pre-execution evidence，不會假裝所有 Runtime 都能硬攔工具呼叫；只有已驗證的 pre-tool guard 才能進一步消費此 evidence。Profile 不授權 merge、release、publication、administration、destructive deletion 或 Human approval。
-
-## Repository Health and architecture drift
-
-AIPS has a deterministic Repository Health lane that checks declared capabilities, canonical documentation targets, Scenario evidence and Integration Gate wiring against repository reality. It runs without external Agent credentials or network calls and reports PASS or DRIFT_DETECTED for Human review.
-
-The lane does not edit code, authorize PRs, merge, release or publish. Project Intelligence, Change Impact, Scenario Conformance, Documentation Consistency, Integration Gate and External Credential Dependency Guard remain authoritative for their own concerns.
-
-
-## Portable Governance Audit Bundle
-
-v0.49 將既有治理稽核鏈延伸成可離線移交的 evidence bundle：exact Git revision、AUDIT.jsonl、MANIFEST、驗證/部署 evidence digests、checkpoint public keys 與 ANCHOR。這仍屬於既有 Governance + Evidence surface，因此沒有新增平行治理子系統或 approval gate。
-
-若要偵測整包 bundle 被重新製作或尾端被替換，`ANCHOR.json` 必須另行保存/分發，或使用已獨立信任的 Ed25519 signed checkpoint；bundle 內自己的 anchor 不是外部 trust source。
-
-
-## v0.51 平行 Runtime Resource Isolation
-
-~~~text
-Task Graph
-→ Deterministic Scheduler
-→ AIPS worktree
-→ repository-scoped atomic TCP port lease
-→ host availability probe
-→ AIPS_PORT / AIPS_PORT_<ID> / explicit aliases
-→ dev server / test server
-~~~
-
-這補上 worktree 只能隔離檔案、無法隔離 localhost runtime resource 的缺口。Port allocation 先以 task/isolation identity 產生穩定候選順序，再依當下主機實際可用性選擇，因此「決策順序可重現」，但不宣稱不同電腦一定取得相同數字。
-
-Runtime lease 可獨立釋放；dirty worktree 仍照原規則保留。若外部程序在 availability probe 後搶走 port，可用 bounded `runtime-reallocate` 換下一個候選。v0.51 只處理 TCP port，未引入 Docker network、DB schema、Redis namespace、GPU lease 或新的 Role/Skill/Gate。
-
-## 14. MCP Interoperability Gateway
-
-v0.52 新增 MCP（Model Context Protocol）互通閘道，但**不取代**原本 Codex / Claude Code / Gemini CLI 的 native Adapter。
-
-~~~text
-AIPS Core
-├─ MCP Access Plane
-│  ├─ Resources → Roles / Skills / selected Orchestration
-│  ├─ Prompts   → Security / Architecture / Code Review / Delivery Plan
-│  └─ Tools     → Identity / Context / explicit Role-Skill bundle / Scheduler
-└─ Native Adapter Plane
-   └─ Turn Hook / PreTool Guard / runtime-specific verification
-~~~
-
-只有 MCP 連線時，Governance Enforcement 誠實維持 `ADVISORY`；MCP Server 無法假裝攔截 Host 自己的 shell、file 或 git tools。需要 `TURN_NATIVE` / `TOOL_GUARDED` 時仍由可驗證的 native Adapter 負責。
-
-第一版只有本機 stdio，不架設遠端 AIPS Server、不導入 OAuth、不在 MCP Server 內再呼叫 LLM，也不需要任何外部 Agent API Key。Role / Skill 仍從既有 canonical index 按需載入，因此維持 Progressive Disclosure。
+VitePress 只渲染 Human documentation。Agent canonical protocols 仍留在 SYSTEM.md、orchestration/、roles/、skills/，不因網站而複製。

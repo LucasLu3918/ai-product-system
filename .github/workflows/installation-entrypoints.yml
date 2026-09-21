@@ -1,0 +1,61 @@
+name: installation-entrypoints
+
+on:
+  pull_request:
+    paths:
+      - "scripts/install.sh"
+      - "scripts/install.ps1"
+      - "scripts/uninstall.ps1"
+      - "scripts/bootstrap.sh"
+      - "scripts/uninstall.sh"
+      - "bin/aips"
+      - "docs/human/INSTALLATION.md"
+      - ".github/workflows/installation-entrypoints.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  unix:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { fetch-depth: 0 }
+      - run: bash -n scripts/install.sh scripts/bootstrap.sh scripts/uninstall.sh
+      - run: bash scripts/install.sh --dry-run
+
+  linux-lifecycle:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with: { fetch-depth: 0 }
+      - shell: bash
+        run: |
+          export HOME="$RUNNER_TEMP/aips-home"
+          export AIPS_INSTALL_DIR="$RUNNER_TEMP/aips-system"
+          mkdir -p "$HOME"
+          AIPS_INSTALL_SOURCE="$GITHUB_WORKSPACE" bash scripts/install.sh
+          export PATH="$HOME/.local/bin:$PATH"
+          aips doctor
+          aips mcp inspect
+          aips uninstall --remove-venv
+
+  windows-contract:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - shell: pwsh
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile("$PWD/scripts/install.ps1", [ref]$tokens, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) { throw ($errors | Out-String) }
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile("$PWD/scripts/uninstall.ps1", [ref]$tokens, [ref]$errors) | Out-Null
+          if ($errors.Count -gt 0) { throw ($errors | Out-String) }
+          ./scripts/install.ps1 -DryRun

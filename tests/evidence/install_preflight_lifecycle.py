@@ -320,7 +320,8 @@ def cli_collision_contract() -> None:
         owned_result = cli(system, ["install"], env_owned)
         require(owned_result.returncode == 0, f"Exact AIPS symlink should be reusable: {owned_result.stdout} {owned_result.stderr}")
         require(owned.is_symlink() and owned.resolve() == (system / "bin" / "aips").resolve(), "Owned CLI symlink was not preserved")
-        require(Path(env_owned["AIPS_VALIDATION_MARKER"]).exists(), "Owned symlink reuse must continue through repository validation")
+        require((Path(env_owned["XDG_CONFIG_HOME"]) / "aips" / "system-dir").exists(), "Owned symlink reuse must record the installed system")
+        require((Path(env_owned["XDG_CONFIG_HOME"]) / "aips" / "harness" / "installation.yaml").exists(), "Owned symlink reuse must continue through installation integrity and Harness registration")
 
 
 def main() -> int:

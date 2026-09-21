@@ -44,8 +44,19 @@ SECRET_PATTERNS = (
     re.compile(r"gh[pousr]_[A-Za-z0-9]{20,}"),
     re.compile(r"AKIA[0-9A-Z]{16}"),
     re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"),
-    re.compile(r"(?i)(?:password|api[_-]?key|secret|token)\\s*[:=]\\s*[^\\s,;]{8,}"),
+    re.compile(r"(?i)(?:password|api[_-]?key|secret|token)\s*[:=]\s*[^\s,;]{8,}"),
 )
+
+PRIVATE_REASONING_KEYS = {
+    "analysis",
+    "chain_of_thought",
+    "chain-of-thought",
+    "cot",
+    "private_reasoning",
+    "reasoning_trace",
+    "scratchpad",
+    "thoughts",
+}
 
 
 class EvaluationError(ValueError):
@@ -75,6 +86,20 @@ def forbidden_paths(value: Any, prefix: str = "") -> list[str]:
     elif isinstance(value, list):
         for index, child in enumerate(value):
             found.extend(forbidden_paths(child, f"{prefix}[{index}]"))
+    return found
+
+
+def private_reasoning_paths(value: Any, prefix: str = "") -> list[str]:
+    found: list[str] = []
+    if isinstance(value, dict):
+        for key, child in value.items():
+            path = f"{prefix}.{key}" if prefix else str(key)
+            if str(key).strip().lower() in PRIVATE_REASONING_KEYS:
+                found.append(path)
+            found.extend(private_reasoning_paths(child, path))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            found.extend(private_reasoning_paths(child, f"{prefix}[{index}]"))
     return found
 
 

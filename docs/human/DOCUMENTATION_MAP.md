@@ -1,89 +1,47 @@
 # 文件導覽
 
-AIPS 將文件依主要讀者分流，避免 Human 說明與 Agent canonical contract 混在同一入口。
+Human Docs 依使用目的組織，而不是依版本號堆疊。
 
-## Human-only 文件
+## Official Docs Site
 
-永久 Human-only 文件統一放在 `docs/human/`。若某份獨立 Human report 因工具或產物需求必須持久放在其他位置，必須在 `config/documentation-audience.yaml` 明確登記，且檔名使用 `HUMAN_` prefix。
+docs/human/ 是 canonical Human source，也是 VitePress site root。首頁為 index.md，網站提供 sidebar、local search 與 page outline。
 
-| 文件 | 用途 |
-|---|---|
-| `README.md` | Repository 第一入口、最短安裝/解除；屬 GitHub 慣例例外 |
-| `docs/human/GETTING_STARTED.md` | 安裝一次後如何直接使用 Agent |
-| `docs/human/INSTALLATION.md` | Install / Adapter / Cache / Attach / Uninstall |
-| `docs/human/USER_GUIDE.md` | 完整工作方式 |
-| `docs/human/HARNESS.md` | Turn-Aware Harness、Runtime Capability、Context Composition |
-| `docs/human/PROJECT_INTELLIGENCE.md` | Existing Project 初始化、Review、Overrides、Freshness、Retrieval Intelligence / Quality Evaluation / Structural Retrieval / Semantic Trials / Provider-Neutral Local-First Trial / Remote Optional Operator Handoff、Change Impact |
-| `docs/human/CONFORMANCE.md` | Scenario Conformance、coverage 與 evidence |
-| `docs/human/EVOLUTION_RADAR.md` | Weekly/Monthly research、Semantic Analysis、Human Decision、Controlled Trial |
-| `docs/human/EVOLUTION_RADAR_OVERVIEW.html` | Evolution Radar 一頁完整圖解 |
-| `docs/human/TECHNOLOGY_GUIDE.html` | AIPS 技術總覽、中英文專有名詞與可用情境 |
-| `docs/human/DOCUMENTATION_SYNC.md` | Documentation Consistency + Audience Placement |
-| `docs/human/SECURITY_ASSURANCE.md` | SAL、Secret/Credential Safety、Security Release evidence |
-| `docs/human/ARCHITECTURE_OVERVIEW.md` | 人類架構總覽與圖示 |
-| `docs/human/MAINTENANCE.md` | Maintainer 維護、Diagram Impact、Release 維護 |
-| `docs/human/DOCUMENTATION_MAP.md` | 本文件 |
+## 文件角色
 
-Human-only 圖示資產放在 `docs/human/assets/`。
+### 開始使用
+
+- GETTING_STARTED.md：最短成功路徑。
+- INSTALLATION.md：Install / Update / Uninstall。
+- USER_GUIDE.md：目前產品使用方式。
+
+### Agent 整合與核心概念
+
+- HARNESS.md：native adapters + MCP。
+- PROJECT_INTELLIGENCE.md：Project understanding / retrieval。
+- SECURITY_ASSURANCE.md：SAL / security evidence。
+
+### 架構與技術
+
+- ARCHITECTURE_OVERVIEW.md：目前 architecture。
+- TECHNOLOGY_GUIDE.md：目前 technical choices。
+- EVOLUTION_RADAR.md / EVOLUTION_RADAR_OVERVIEW.md：maintenance plane。
+
+### Reference / Maintainers
+
+- CONFORMANCE.md：Scenario / verification history。
+- MAINTENANCE.md：system maintainer workflow。
+- DOCUMENTATION_SYNC.md：文件 consistency / placement contract。
 
 ## Agent / machine canonical 文件
 
-| 位置 | 主要讀者 | 用途 |
-|---|---|---|
-| `AGENTS.md` | Agent | 最小 Bootloader |
-| `SYSTEM.md` | Agent | System Router |
-| `harness/HARNESS_PROTOCOL.md` | Agent / Maintainer | Global/Turn Harness contract |
-| `harness/ADAPTER_CONTRACT.md` | Maintainer / Agent | Runtime capability / managed integration |
-| `orchestration/*` | Agent / Maintainer | Execution contract、governance、routing、lifecycle |
-| `roles/*` / `skills/*` | Agent | Responsibility / leaf expertise |
-| `templates/*` | Agent / machine | Machine-validatable artifact contracts |
-| `config/*` | Maintainer / machine | Deterministic policy/configuration |
-| `references/*` | Agent / machine | Capability/reference registries |
+Agent 由 AGENTS.md / SYSTEM.md 進入，按需讀取 orchestration/、roles/、skills/。Official Docs Site 不複製這些 protocol 成第二份 Human source。
 
 ## Shared canonical 文件
 
-`docs/ARCHITECTURE.md` 同時供 Maintainer 與 Agent 使用，保存 detailed Mermaid architecture，因此保留在 `docs/` shared canonical root，不搬進 Human-only namespace。
-
-Repository root 的 `README.md`、`CHANGELOG.md`、`SECURITY.md` 與 compatibility pointer `USER_GUIDE.md` 屬明確例外。
+docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGELOG.md 是 release history。
 
 ## 文件一致性
 
-`config/documentation-sync.yaml` + `scripts/documentation_sync.py` 會將 behavior-bearing changed paths 映射到必須在同一 change review/update 的 Human / Agent docs。
+Behavior-bearing change 先由 Documentation Sync 判斷 required docs，再由 Documentation Placement 驗證 current-behavior 內容更新在 canonical section，而不是附加在尾端。
 
-`config/documentation-audience.yaml` + `scripts/documentation_audience.py` 另外確保：
-
-- Human-only permanent docs 位於 `docs/human/`；
-- `docs/` root 只保留 allowlisted shared canonical docs；
-- active contracts 不再引用舊的 `docs/<human-file>` 路徑；
-- standalone Human artifact 必須明確登記，並使用 `HUMAN_` prefix convention。
-
-詳細說明見 [文件一致性契約](DOCUMENTATION_SYNC.md)。
-
-Human Docs 使用繁體中文並在首次出現時保留重要英文術語；Agent Docs 以精簡英文為主。Large/Core Change 必須同時評估 Human Docs、Agent Docs 與 Architecture Diagram Impact。
-
-
-## Deterministic execution / merge validation
-
-- Human 架構入口：`ARCHITECTURE_OVERVIEW.md`
-- Human 操作入口：`USER_GUIDE.md`
-- Agent Scheduler protocol：`../../orchestration/DETERMINISTIC_SCHEDULER.md`
-- Agent Integration Gate protocol：`../../orchestration/INTEGRATION_GATE.md`
-- Shared detailed architecture：`../ARCHITECTURE.md`
-
-
-## Resource Authorization navigation
-
-Resource-scoped authorization is documented through `ARCHITECTURE_OVERVIEW.md` and `USER_GUIDE.md` for Human readers, with canonical Agent behavior in `orchestration/RESOURCE_AUTHORIZATION.md`. It is an Execution Profile/Governance extension, not a new Role or Skill.
-
-
-## Evolution Effectiveness navigation
-
-Monthly research-effectiveness metrics are part of Evolution Radar rather than a separate product surface:
-
-- Human behavior and interpretation: [Evolution Radar](EVOLUTION_RADAR.md)
-- Human visual flow: [Evolution Radar Overview](EVOLUTION_RADAR_OVERVIEW.html)
-- Technical glossary/details: [Technology Guide](TECHNOLOGY_GUIDE.html)
-- Agent contract: `../../orchestration/EVOLUTION_RADAR.md`
-- Policy: `../../config/evolution-effectiveness.yaml`
-
-Review flags are maintenance evidence for Human source-policy decisions; they are not automatic source tuning.
+Legacy TECHNOLOGY_GUIDE.html / EVOLUTION_RADAR_OVERVIEW.html 僅供舊連結相容。

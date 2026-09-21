@@ -660,3 +660,16 @@ Current automated inventory after Scenario 162:
 - manual: 0
 - uncovered: 0
 - automated: 162 / 162
+
+## Scenario 163 — Human Documentation Site & Canonical Placement
+
+Lifecycle evidence validates the topic-oriented Human documentation placement contract, VitePress site source/build boundary, managed Unix installer, truthful Windows WSL launcher, backward-compatible bootstrap wrapper, and install/doctor/uninstall lifecycle.
+
+Current automated inventory after Scenario 163:
+
+- deterministic: 24
+- lifecycle: 85
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 163 / 163
