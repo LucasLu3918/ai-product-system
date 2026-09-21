@@ -56,7 +56,9 @@ surfaces:
       - external-credential-dependency-guard
     required_paths:
       - scripts/governance_guard.py
+      - scripts/governance_audit.py
       - core/GOVERNANCE.md
+      - orchestration/GOVERNANCE_AUDIT.md
       - orchestration/DETERMINISTIC_AUTOMATION.md
       - docs/human/SECURITY_ASSURANCE.md
       - orchestration/SECRET_HANDLING.md
@@ -70,6 +72,7 @@ surfaces:
       - orchestration/EXTERNAL_CREDENTIAL_DEPENDENCY_GUARD.md
     validation_paths:
       - tests/evidence/governance_command_guard.py
+      - tests/evidence/governance_audit_lifecycle.py
       - tests/evidence/external_credential_guard_lifecycle.py
 
   - id: scenario-conformance

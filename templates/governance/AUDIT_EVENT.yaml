@@ -1,0 +1,19 @@
+version: 1
+event_id: null
+event_type: null
+occurred_at: null
+actor: {type: null, id: null}
+authority: {source: null, approval_id: null}
+binding:
+  proposal_fingerprint: null
+  approval_scope_fingerprint: null
+  candidate_commit: null
+  branch: null
+  operation: null
+  result: null
+  files: []
+  boundaries: []
+  evidence_digests: []
+metadata: {correlation_id: null, notes: null}
+# sequence and integrity are computed by scripts/governance_audit.py.
+# Never place an HMAC secret or signing private key here.

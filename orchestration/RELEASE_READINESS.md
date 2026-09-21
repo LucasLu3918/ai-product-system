@@ -35,7 +35,7 @@ Assess only applicable items:
 - staging verified when applicable;
 - structured logs + health check available;
 - required metrics/traces/dashboards/alerts available;
-- required audit logging available;
+- required audit logging available;\n- when governance auditability is required by the affected SAL/change boundary, bind the exact candidate into the verifiable Governance Audit Chain;
 - deployment/runbook/rollback documentation;
 - unresolved blockers.
 

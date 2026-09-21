@@ -2,7 +2,7 @@
 
 ![AI Product System 架構總覽](assets/system-overview.svg)
 
-目前 AIPS 架構由 Turn-Aware Global Harness、Project Intelligence + Retrieval Intelligence / Quality Evaluation、Change Impact Guard、Enforceable Governance、Durable Run State、Scenario Conformance、Execution Isolation、Evolution Radar maintenance plane 與 Documentation Consistency Contract 組成。
+目前 AIPS 架構由 Turn-Aware Global Harness、Project Intelligence + Retrieval Intelligence / Quality Evaluation、Change Impact Guard、Enforceable Governance + Verifiable Governance Audit Chain、Durable Run State、Scenario Conformance、Execution Isolation、Evolution Radar maintenance plane 與 Documentation Consistency Contract 組成。
 
 完整技術與中英文專有名詞可由 [`TECHNOLOGY_GUIDE.html`](TECHNOLOGY_GUIDE.html) 閱讀；Evolution Radar 的 Human 圖解流程見 [`EVOLUTION_RADAR_OVERVIEW.html`](EVOLUTION_RADAR_OVERVIEW.html)。
 
@@ -109,6 +109,22 @@ Human Approval
 ~~~
 
 Context capability 與 Governance Enforcement 分開呈現。這不增加新的 Approval Gate，也不把批准權交給 Agent。
+
+
+## 8A. Verifiable Governance Audit Chain
+
+~~~text
+Human Approval / Security Review / Release Readiness
+→ existing authority + enforcement
+→ protected action
+→ canonical audit event
+→ SHA-256 event hash + previous-chain binding
+→ optional HMAC authentication
+→ optional Ed25519 signed checkpoint
+→ offline verification
+~~~
+
+這一層解決「半年後如何驗證流程紀錄沒有被無痕改寫」，不是新增批准權。沒有 Key 時仍可驗證 deterministic hash chain；高保證環境可另外提供 HMAC 與 public-key-verifiable checkpoint。Secret/private key 不進 Git、Prompt、ledger 或 Actions artifact。
 
 ## 9. Durable Run State
 

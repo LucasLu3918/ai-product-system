@@ -430,6 +430,18 @@ Rules:
 - structured routing explanations record outcomes/reasons only, never private chain-of-thought;
 - v0.11 protects Git publication first; broader destructive-operation interception remains deferred.
 
+
+## Verifiable Governance Audit Chain
+
+Use orchestration/GOVERNANCE_AUDIT.md when durable auditability is required across approval, security, publication, release or production boundaries.
+
+- extend existing Enforceable Governance; do not create a parallel approval gate;
+- record observable governance events only, never private reasoning, prompts or credentials;
+- SHA-256 event + chain hashes are credential-free baseline evidence;
+- HMAC-SHA256 and Ed25519 checkpoints are optional secure-runtime layers, not baseline provider credentials;
+- authenticated/signed existing history must verify before append;
+- audit evidence remains downstream of Human authority.
+
 ## Execution Isolation
 
 Execution isolation is an Execution Profile capability, not a new Role, Skill or approval gate.
