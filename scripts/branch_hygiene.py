@@ -5,6 +5,8 @@ from __future__ import annotations
 
 import argparse
 import fnmatch
+import json
+import os
 import re
 import subprocess
 from pathlib import Path
@@ -108,6 +110,35 @@ def build_report(config: dict[str, Any], target: str, remote: str | None) -> dic
     }
 
 
+def github_pr_integrated(row: dict[str, Any], *, repository: str, target: str) -> bool:
+    pr_number = row.get("merged_pr")
+    expected = str(row.get("expected_sha") or "")
+    branch = str(row.get("branch") or "")
+    if not isinstance(pr_number, int) or pr_number < 1:
+        return False
+    env = dict(os.environ)
+    proc = subprocess.run(
+        ["gh", "api", f"repos/{repository}/pulls/{pr_number}"],
+        text=True,
+        capture_output=True,
+        env=env,
+    )
+    if proc.returncode != 0:
+        raise BranchHygieneError(
+            proc.stderr.strip() or f"failed to verify merged PR #{pr_number} for {branch}"
+        )
+    try:
+        payload = json.loads(proc.stdout)
+    except json.JSONDecodeError as exc:
+        raise BranchHygieneError(f"invalid GitHub PR evidence for #{pr_number}: {exc}") from exc
+    return bool(
+        payload.get("merged_at")
+        and (payload.get("head") or {}).get("sha") == expected
+        and (payload.get("head") or {}).get("ref") == branch
+        and (payload.get("base") or {}).get("ref") == target
+    )
+
+
 def validate_cleanup_manifest(doc: dict[str, Any]) -> None:
     if doc.get("version") != 1:
         raise BranchHygieneError("cleanup manifest version must be 1")
@@ -136,7 +167,14 @@ def validate_cleanup_manifest(doc: dict[str, Any]) -> None:
         seen.add(name)
 
 
-def apply_cleanup(config: dict[str, Any], manifest: dict[str, Any], *, target: str, remote: str) -> dict[str, Any]:
+def apply_cleanup(
+    config: dict[str, Any],
+    manifest: dict[str, Any],
+    *,
+    target: str,
+    remote: str,
+    github_repository: str | None = None,
+) -> dict[str, Any]:
     validate_cleanup_manifest(manifest)
     target_ref, refs = branch_refs(target, remote)
     ref_map = dict(refs)
@@ -157,10 +195,21 @@ def apply_cleanup(config: dict[str, Any], manifest: dict[str, Any], *, target: s
         if current != expected:
             blockers.append(f"{name}: ref moved from approved SHA {expected} to {current}")
             continue
-        if not integrated(ref, target_ref):
-            blockers.append(f"{name}: branch is not deterministically integrated into {target}")
+        local_integrated = integrated(ref, target_ref)
+        pr_integrated = False
+        if not local_integrated and github_repository:
+            pr_integrated = github_pr_integrated(row, repository=github_repository, target=target)
+        if not (local_integrated or pr_integrated):
+            blockers.append(
+                f"{name}: no integration proof; local Git integration failed and exact merged-PR evidence was unavailable or mismatched"
+            )
             continue
-        preflight.append({"branch": name, "expected_sha": expected, "status": "READY"})
+        preflight.append({
+            "branch": name,
+            "expected_sha": expected,
+            "status": "READY",
+            "integration_proof": "LOCAL_GIT" if local_integrated else "GITHUB_MERGED_PR_EXACT_HEAD",
+        })
 
     if blockers:
         raise BranchHygieneError("cleanup preflight blocked: " + "; ".join(blockers))
@@ -202,6 +251,10 @@ def main() -> int:
     parser.add_argument("--target")
     parser.add_argument("--remote", help="Classify refs/remotes/<remote>; required for approved cleanup.")
     parser.add_argument("--apply-cleanup", type=Path, help="Apply one exact Human-authorized cleanup manifest.")
+    parser.add_argument(
+        "--github-repository",
+        help="Optional owner/repo used to verify exact merged-PR evidence when local squash integration is no longer reproducible.",
+    )
     args = parser.parse_args()
 
     try:
@@ -211,7 +264,13 @@ def main() -> int:
             if not args.remote:
                 raise BranchHygieneError("--apply-cleanup requires --remote")
             manifest = load_yaml(args.apply_cleanup)
-            payload = apply_cleanup(config, manifest, target=target, remote=args.remote)
+            payload = apply_cleanup(
+                config,
+                manifest,
+                target=target,
+                remote=args.remote,
+                github_repository=args.github_repository,
+            )
         else:
             payload = build_report(config, target, args.remote)
     except (OSError, yaml.YAMLError, BranchHygieneError) as exc:
