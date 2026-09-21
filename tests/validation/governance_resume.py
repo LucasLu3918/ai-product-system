@@ -160,3 +160,33 @@ if audit_evidence.exists():
         result = subprocess.run([sys.executable, str(audit_evidence)], capture_output=True, text=True, timeout=180)
         if result.returncode != 0:
             errors.append(f"Governance audit lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}")
+
+
+# v0.49 portable governance audit bundle contract
+audit_bundle_scenario = ROOT / "tests/scenarios/159-portable-governance-audit-bundle.md"
+if not audit_bundle_scenario.exists():
+    errors.append("Missing v0.49 portable governance audit bundle scenario")
+if audit_helper.exists():
+    audit_text = audit_helper.read_text(encoding="utf-8")
+    for required_text in (
+        "bundle-create",
+        "bundle-verify",
+        "MANIFEST.json",
+        "ANCHOR.json",
+        "repository_revision",
+        "manifest_sha256",
+        "require_checkpoint_verification=True",
+    ):
+        if required_text not in audit_text:
+            errors.append(f"governance_audit.py missing portable bundle contract: {required_text}")
+if audit_evidence.exists():
+    evidence_text = audit_evidence.read_text(encoding="utf-8")
+    for required_text in (
+        "bundle-create",
+        "bundle-verify",
+        "tampered bundle evidence must fail",
+        "bundled tail truncation must fail",
+        "tampered bundled public key must fail",
+    ):
+        if required_text not in evidence_text:
+            errors.append(f"governance audit lifecycle missing bundle evidence: {required_text}")

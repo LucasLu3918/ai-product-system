@@ -2,7 +2,7 @@
 
 ![AI Product System 架構總覽](assets/system-overview.svg)
 
-目前 AIPS 架構由 Turn-Aware Global Harness、Project Intelligence + Retrieval Intelligence / Quality Evaluation、Change Impact Guard、Enforceable Governance + Verifiable Governance Audit Chain、Durable Run State、Scenario Conformance、Execution Isolation、Evolution Radar maintenance plane 與 Documentation Consistency Contract 組成。
+目前 AIPS 架構由 Turn-Aware Global Harness、Project Intelligence + Retrieval Intelligence / Quality Evaluation、Change Impact Guard、Enforceable Governance + Verifiable Governance Audit Chain / Portable Audit Bundle、Durable Run State、Scenario Conformance、Execution Isolation、Evolution Radar maintenance plane 與 Documentation Consistency Contract 組成。
 
 完整技術與中英文專有名詞可由 [`TECHNOLOGY_GUIDE.html`](TECHNOLOGY_GUIDE.html) 閱讀；Evolution Radar 的 Human 圖解流程見 [`EVOLUTION_RADAR_OVERVIEW.html`](EVOLUTION_RADAR_OVERVIEW.html)。
 
@@ -321,3 +321,10 @@ AIPS 現在能把「Agent 能做什麼」從粗粒度 read/write 描述收斂成
 AIPS has a deterministic Repository Health lane that checks declared capabilities, canonical documentation targets, Scenario evidence and Integration Gate wiring against repository reality. It runs without external Agent credentials or network calls and reports PASS or DRIFT_DETECTED for Human review.
 
 The lane does not edit code, authorize PRs, merge, release or publish. Project Intelligence, Change Impact, Scenario Conformance, Documentation Consistency, Integration Gate and External Credential Dependency Guard remain authoritative for their own concerns.
+
+
+## Portable Governance Audit Bundle
+
+v0.49 將既有治理稽核鏈延伸成可離線移交的 evidence bundle：exact Git revision、AUDIT.jsonl、MANIFEST、驗證/部署 evidence digests、checkpoint public keys 與 ANCHOR。這仍屬於既有 Governance + Evidence surface，因此沒有新增平行治理子系統或 approval gate。
+
+若要偵測整包 bundle 被重新製作或尾端被替換，`ANCHOR.json` 必須另行保存/分發，或使用已獨立信任的 Ed25519 signed checkpoint；bundle 內自己的 anchor 不是外部 trust source。

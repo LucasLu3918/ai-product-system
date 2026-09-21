@@ -52,6 +52,32 @@ def main() -> int:
         require(run("verify","--ledger",str(hledger),"--hmac","key-q3=TEST_AUDIT_KEY","--require-auth-verification",env=env).returncode==0,"HMAC verify failed")
         require("local-test-secret-do-not-persist" not in hledger.read_text(), "secret leaked")
         require(run("verify","--ledger",str(hledger),"--hmac","key-q3=WRONG",env={"WRONG":"wrong"}).returncode!=0,"wrong HMAC must fail")
+        evidence=root/"validation-report.json"; evidence.write_text('{"status":"PASS","run":1187}\n',encoding="utf-8")
+        bundle=root/"bundle"; external_anchor=root/"retained-anchor.json"
+        made=run("bundle-create","--ledger",str(ledger),"--output",str(bundle),
+                 "--repository-revision","b"*40,"--evidence",f"validation={evidence}",
+                 "--anchor-output",str(external_anchor))
+        require(made.returncode==0,f"bundle create failed: {made.stdout} {made.stderr}")
+        checked=run("bundle-verify","--bundle",str(bundle),"--anchor",str(external_anchor))
+        require(checked.returncode==0,"external-anchor bundle verify failed")
+        manifest_text=(bundle/"MANIFEST.json").read_text(encoding="utf-8")
+        require(str(root) not in manifest_text,"bundle manifest leaked source absolute path")
+        require("local-test-secret-do-not-persist" not in manifest_text,"bundle manifest leaked HMAC material")
+        bundled_evidence=bundle/"evidence"/"validation"
+        original_evidence=bundled_evidence.read_bytes(); bundled_evidence.write_text("tampered\n",encoding="utf-8")
+        require(run("bundle-verify","--bundle",str(bundle),"--anchor",str(external_anchor)).returncode!=0,
+                "tampered bundle evidence must fail")
+        bundled_evidence.write_bytes(original_evidence)
+        bundled_ledger=bundle/"AUDIT.jsonl"; original_ledger=bundled_ledger.read_bytes()
+        bundled_ledger.write_text(bundled_ledger.read_text(encoding="utf-8").splitlines()[0]+"\n",encoding="utf-8")
+        require(run("bundle-verify","--bundle",str(bundle),"--anchor",str(external_anchor)).returncode!=0,
+                "bundled tail truncation must fail against retained anchor/manifest")
+        bundled_ledger.write_bytes(original_ledger)
+        original_anchor=external_anchor.read_bytes(); anchor_doc=json.loads(original_anchor.decode("utf-8")); anchor_doc["events"]=999
+        external_anchor.write_text(json.dumps(anchor_doc),encoding="utf-8")
+        require(run("bundle-verify","--bundle",str(bundle),"--anchor",str(external_anchor)).returncode!=0,
+                "tampered external anchor must fail")
+        external_anchor.write_bytes(original_anchor)
         if shutil.which("openssl"):
             private=root/"private.pem"; public=root/"public.pem"
             subprocess.run(["openssl","genpkey","-algorithm","ED25519","-out",str(private)],check=True,timeout=15)
@@ -65,6 +91,16 @@ def main() -> int:
             subprocess.run(["openssl","genpkey","-algorithm","ED25519","-out",str(other)],check=True,timeout=15)
             subprocess.run(["openssl","pkey","-in",str(other),"-pubout","-out",str(otherpub)],check=True,timeout=15)
             require(run("verify","--ledger",str(signed),"--checkpoint-public-key",f"checkpoint-q3={otherpub}").returncode!=0,"wrong public key must fail")
+            signed_bundle=root/"signed-bundle"; signed_anchor=root/"signed-anchor.json"
+            require(run("bundle-create","--ledger",str(signed),"--output",str(signed_bundle),
+                        "--repository-revision","c"*40,"--checkpoint-public-key",f"checkpoint-q3={public}",
+                        "--anchor-output",str(signed_anchor)).returncode==0,"signed bundle create failed")
+            require(run("bundle-verify","--bundle",str(signed_bundle),"--anchor",str(signed_anchor)).returncode==0,
+                    "signed bundle offline verify failed")
+            require(not any(p.name=="private.pem" for p in signed_bundle.rglob("*")),"private signing key must not be bundled")
+            bundled_pub=signed_bundle/"public-keys"/"checkpoint-q3.pem"; bundled_pub.write_bytes(otherpub.read_bytes())
+            require(run("bundle-verify","--bundle",str(signed_bundle),"--anchor",str(signed_anchor)).returncode!=0,
+                    "tampered bundled public key must fail")
     print("governance audit lifecycle PASS"); return 0
 
 if __name__ == "__main__": raise SystemExit(main())

@@ -1153,3 +1153,19 @@ Current automated inventory after Scenario 158:
 - manual: 0
 - uncovered: 0
 - automated: 158 / 158
+
+
+## Scenario 159 — Portable Governance Audit Bundle
+
+Scenario 159 validates offline transfer of v0.48 governance evidence without introducing a remote audit service. A deterministic bundle binds the exact repository revision, AUDIT.jsonl digest/event count/chain head, selected evidence digests and checkpoint public-key fingerprints. An exported ANCHOR binds that manifest and can be retained independently to detect later truncation or replacement.
+
+Signed histories must verify with their public key before bundle creation. HMAC material and signing private keys are never persisted. Bundle verification detects tampered ledger/evidence/public key/anchor and missing files. The bundle remains evidence only and grants no approval, merge, release, publication or production authority.
+
+Current automated inventory after Scenario 159:
+
+- deterministic: 24
+- lifecycle: 81
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 159 / 159

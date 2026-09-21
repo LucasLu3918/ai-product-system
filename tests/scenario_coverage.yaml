@@ -1204,3 +1204,9 @@ scenarios:
     path: tests/scenarios/158-verifiable-governance-audit-chain.md
     coverage: lifecycle
     evidence: [tests/evidence/governance_audit_lifecycle.py, scripts/governance_audit.py, tests/validate_repository.py]
+
+
+  - id: "159"
+    path: tests/scenarios/159-portable-governance-audit-bundle.md
+    coverage: lifecycle
+    evidence: [tests/evidence/governance_audit_lifecycle.py, scripts/governance_audit.py, tests/validate_repository.py]
