@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
+import re
 from typing import Any
 
 import yaml
@@ -17,6 +18,53 @@ ALLOWED_STATUS = {"PENDING", "RUNNING", "COMPLETE", *TERMINAL_FAILURE}
 
 class SchedulerError(ValueError):
     pass
+
+
+ENV_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+RESOURCE_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
+
+
+def normalize_runtime(isolation: dict[str, Any], task_id: str) -> dict[str, Any]:
+    runtime = isolation.get("runtime") or {}
+    if not isinstance(runtime, dict):
+        raise SchedulerError(f"task {task_id}: isolation.runtime must be a mapping")
+    ports = runtime.get("ports") or []
+    if not isinstance(ports, list):
+        raise SchedulerError(f"task {task_id}: isolation.runtime.ports must be a list")
+    normalized: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for item in ports:
+        if not isinstance(item, dict):
+            raise SchedulerError(f"task {task_id}: each runtime port must be a mapping")
+        resource_id = item.get("id")
+        if not isinstance(resource_id, str) or not RESOURCE_ID_RE.fullmatch(resource_id):
+            raise SchedulerError(f"task {task_id}: runtime port id is invalid")
+        if resource_id in seen:
+            raise SchedulerError(f"task {task_id}: duplicate runtime port id {resource_id}")
+        seen.add(resource_id)
+        protocol = item.get("protocol", "tcp")
+        if protocol != "tcp":
+            raise SchedulerError(f"task {task_id}: only tcp runtime ports are supported")
+        preferred = item.get("preferred")
+        if preferred is not None and (not isinstance(preferred, int) or preferred < 1024 or preferred > 65535):
+            raise SchedulerError(f"task {task_id}: runtime preferred port must be 1024..65535")
+        expose_as = item.get("expose_as") or []
+        if isinstance(expose_as, str):
+            expose_as = [expose_as]
+        if not isinstance(expose_as, list) or not all(isinstance(x, str) and ENV_RE.fullmatch(x) for x in expose_as):
+            raise SchedulerError(f"task {task_id}: runtime expose_as must contain environment variable names")
+        normalized.append(
+            {
+                "id": resource_id,
+                "protocol": "tcp",
+                "preferred": preferred,
+                "expose_as": sorted(set(expose_as)),
+            }
+        )
+    result: dict[str, Any] = {}
+    if normalized:
+        result["ports"] = normalized
+    return result
 
 
 def load_yaml(path: Path) -> dict[str, Any]:
@@ -87,6 +135,9 @@ def validate_graph(graph: dict[str, Any]) -> dict[str, dict[str, Any]]:
             raise SchedulerError(f"task {task_id}: isolation must be a mapping")
         if read_only and isolation.get("writable") is True:
             raise SchedulerError(f"task {task_id}: read_only task cannot declare writable isolation")
+        isolation = dict(isolation)
+        isolation["runtime"] = normalize_runtime(isolation, task_id)
+        item["isolation"] = isolation
         deps = item.get("dependencies") or []
         if not isinstance(deps, list) or not all(isinstance(x, str) for x in deps):
             raise SchedulerError(f"task {task_id}: dependencies must be a list of ids")
@@ -203,6 +254,11 @@ def schedule(graph: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
         "max_parallel": max_parallel,
         "running": sorted(running),
         "dispatch": dispatch,
+        "runtime_requests": {
+            task_id: by_id[task_id]["isolation"]["runtime"]
+            for task_id in dispatch
+            if by_id[task_id]["isolation"].get("runtime")
+        },
         "deferred": dict(sorted(deferred.items())),
         "blocked": dict(sorted(blocked.items())),
         "complete": sorted(task_id for task_id, status in statuses.items() if status == "COMPLETE"),

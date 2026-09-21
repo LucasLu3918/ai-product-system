@@ -16,4 +16,10 @@ tasks:
     isolation:
       mode: worktree
       required: true
+      runtime:
+        ports:
+          - id: dev
+            protocol: tcp
+            preferred: 3000
+            expose_as: [PORT]
     validation_profile: default
