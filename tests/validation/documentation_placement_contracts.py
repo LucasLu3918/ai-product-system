@@ -49,8 +49,8 @@ if config_path.exists():
             errors.append(f"documentation placement policy must enable {key}")
 
     migration_bases = policy.get("one_time_structure_migration_bases") or []
-    if migration_bases != ["04824395029b272800b58679e7fa307693fb8690"]:
-        errors.append("v0.53 must bind the one-time Human-doc structure migration to the exact v0.52 main SHA")
+    if migration_bases:
+        errors.append("Human-doc structure migration is complete; future documentation placement must not retain bypass bases")
 
     strict_docs = {
         path
@@ -96,3 +96,8 @@ placement_text = script.read_text(encoding="utf-8") if script.exists() else ""
 for marker in ("git_base_resolves", "one_time_structure_migration_bases", "if base and git_base_resolves(base)"):
     if marker not in placement_text:
         errors.append(f"documentation placement helper missing migration/install-copy safety contract: {marker}")
+
+docs_workflow = (ROOT / ".github/workflows/docs-site.yml").read_text(encoding="utf-8")
+for marker in ("pages_configured", "SKIPPED_NOT_CONFIGURED", "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/pages"):
+    if marker not in docs_workflow:
+        errors.append(f"docs-site workflow missing truthful Pages preflight contract: {marker}")

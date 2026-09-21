@@ -10,4 +10,5 @@ Expected:
 - Windows documentation truthfully uses a PowerShell launcher into WSL and does not claim native Windows runtime;
 - bootstrap.sh remains backward-compatible only;
 - pull requests build the docs site; only main can deploy the Pages artifact;
+- an unconfigured repository Pages setting is reported as SKIPPED_NOT_CONFIGURED rather than a false docs build failure, and no one-time placement bypass remains after the migration;
 - no new Role, Skill, Approval Gate, model/provider credential or product production authority is introduced.

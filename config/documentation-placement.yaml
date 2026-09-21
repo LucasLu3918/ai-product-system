@@ -6,10 +6,8 @@ policy:
   legacy_html_append_forbidden: true
   all_added_lines_must_match_canonical_placement: true
   new_topics_require_contract_update: true
-  # One-time v0.53 source migration from append-oriented Human docs to strict topic-oriented docs.
-  # Static H1/H2/version/legacy-HTML contracts still run. Remove this base after v0.53 merges.
-  one_time_structure_migration_bases:
-    - 04824395029b272800b58679e7fa307693fb8690
+  # v0.53 migration is complete. Future diffs have no placement bypass.
+  one_time_structure_migration_bases: []
 
 current_behavior_docs:
   docs/human/GETTING_STARTED.md:

@@ -37,7 +37,9 @@ config/documentation-placement.yaml 定義 current-behavior 文件的 canonical 
 
 docs/human/ 同時是 Official Docs Site 的 source；VitePress 只是 renderer。Website build output 不提交為 canonical content。
 
-PR 會 build site；main 才具有 Pages deploy path。Docs deployment 不取得 code merge、release 或 product production authority。
+PR 會 build site；main 才具有 Pages deploy path。Workflow 會先讀取 repository Pages 狀態：已設定才 upload/deploy，未設定則明確記錄 `SKIPPED_NOT_CONFIGURED`。啟用 hosting 的一次性 repository 設定是 Settings → Pages → Build and deployment → Source = GitHub Actions。
+
+Docs deployment 不取得 code merge、release 或 product production authority。
 
 ## Technology Guide
 

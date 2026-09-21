@@ -6,6 +6,8 @@ Human Docs 依使用目的組織，而不是依版本號堆疊。
 
 docs/human/ 是 canonical Human source，也是 VitePress site root。首頁為 index.md，網站提供 sidebar、local search 與 page outline。
 
+Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時，deployment 會以 `SKIPPED_NOT_CONFIGURED` 誠實略過。啟用 Source = GitHub Actions 後，main push 會自動部署同一份 build artifact。
+
 ## 文件角色
 
 ### 開始使用
