@@ -1,0 +1,14 @@
+version: 1
+bundle_id: null
+subject:
+  type: release
+  id: null
+sal: 2
+retained_on: null
+legal_hold: false
+bundle_path: null
+anchor_path: null
+
+# bundle_path / anchor_path are input locations only.
+# The generated catalog never persists source absolute paths.
+# anchor_path is required from the policy's configured SAL threshold upward.

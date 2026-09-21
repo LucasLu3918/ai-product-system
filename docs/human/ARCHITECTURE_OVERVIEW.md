@@ -2,7 +2,7 @@
 
 ![AI Product System 架構總覽](assets/system-overview.svg)
 
-目前 AIPS 架構由 Turn-Aware Global Harness、Project Intelligence + Retrieval Intelligence / Quality Evaluation、Change Impact Guard、Enforceable Governance + Verifiable Governance Audit Chain / Portable Audit Bundle、Durable Run State、Scenario Conformance、Execution Isolation、Evolution Radar maintenance plane 與 Documentation Consistency Contract 組成。
+目前 AIPS 架構由 Turn-Aware Global Harness、Project Intelligence + Retrieval Intelligence / Quality Evaluation、Change Impact Guard、Enforceable Governance + Verifiable Governance Audit Chain / Portable Audit Bundle / Retention Catalog、Durable Run State、Scenario Conformance、Execution Isolation、Evolution Radar maintenance plane 與 Documentation Consistency Contract 組成。
 
 完整技術與中英文專有名詞可由 [`TECHNOLOGY_GUIDE.html`](TECHNOLOGY_GUIDE.html) 閱讀；Evolution Radar 的 Human 圖解流程見 [`EVOLUTION_RADAR_OVERVIEW.html`](EVOLUTION_RADAR_OVERVIEW.html)。
 
@@ -125,6 +125,21 @@ Human Approval / Security Review / Release Readiness
 ~~~
 
 這一層解決「半年後如何驗證流程紀錄沒有被無痕改寫」，不是新增批准權。沒有 Key 時仍可驗證 deterministic hash chain；高保證環境可另外提供 HMAC 與 public-key-verifiable checkpoint。Secret/private key 不進 Git、Prompt、ledger 或 Actions artifact。
+
+## 8B. Governance Audit Retention Catalog
+
+~~~text
+Portable Audit Bundles + independently retained anchors
+→ deterministic Catalog
+→ find by release / deployment / revision / chain head / key id
+→ Retention Policy + explicit as-of date
+→ KEEP_FULL / HOLD_FULL / REVIEW_DUE
+→ Human review only
+~~~
+
+Catalog 解決「多個 release / deployment 之後，哪一份 bundle 才對應這個 revision？」的 provenance discovery 問題。Key rotation 使用不同 key ID；同一 key ID 若出現不同 public-key fingerprint 會 fail closed。
+
+Retention 到期不等於刪除。系統只產生 REVIEW_DUE 與 minimal digest record，沒有 delete/compact command；legal hold 優先。設定中的保存天數只是 AIPS operational default，不代表法律保存期限。
 
 ## 9. Durable Run State
 

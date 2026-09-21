@@ -100,3 +100,38 @@ python scripts/governance_audit.py bundle-verify \
 ~~~
 
 Bundle evidence never grants approval, merge, release, publication or production authority.
+
+
+## Governance Audit Catalog and Retention
+
+v0.50 adds a deterministic catalog over existing v0.49 bundles. It does not replace bundle verification.
+
+~~~text
+verified portable bundles + retained anchors
+→ catalog-build
+→ CATALOG.json
+   - subject / bundle id
+   - exact repository revision
+   - event count / chain head
+   - manifest + anchor digests
+   - evidence digests
+   - checkpoint key ids + fingerprints
+→ catalog-find
+→ auditor locates exact bundle
+→ bundle-verify with retained external anchor
+~~~
+
+Checkpoint key rotation is represented by distinct key IDs. Reusing the same key ID with a different public-key fingerprint is a fail-closed catalog error. The catalog therefore preserves which releases/deployments depended on which verification keys without acquiring key-rotation authority.
+
+Retention is governed by config/governance-audit-retention.yaml. Its durations are operational defaults, not legal/regulatory requirements.
+
+~~~text
+catalog + retention policy + explicit as-of date
+→ retention-plan
+→ KEEP_FULL | HOLD_FULL | REVIEW_DUE
+→ optional minimal digest record for Human review
+~~~
+
+REVIEW_DUE never means delete. The helper has no delete or compact command. Every plan emits automatic_delete=false and deletion_authorized=false. Legal hold always wins.
+
+For SAL 2+ the default policy requires an independently supplied anchor at catalog registration. SAL 4 requires at least one verified signed checkpoint. Public-key retention remains part of the audit evidence lifecycle so old signed checkpoints can still be verified after key rotation.

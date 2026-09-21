@@ -235,3 +235,14 @@ Bundle 應綁定 exact Git revision、ledger event count / chain head、所選�
 高保證情境應將 `ANCHOR.json` 與 bundle 分離保存或分發；只把 anchor 放在 bundle 內，無法單獨證明整包資料沒有被攻擊者重新製作。若 ledger 含 Ed25519 checkpoint，建立 bundle 時必須先以對應 public key 驗證成功。
 
 Portable bundle 是 Security / Governance evidence，不是新的核准機制。
+
+
+## Governance Audit Retention / Key Rotation
+
+Portable Audit Bundles may be registered in a deterministic catalog so auditors can locate evidence by release/deployment subject, repository revision, chain head or checkpoint key ID.
+
+The default retention durations in config/governance-audit-retention.yaml are AIPS operational defaults only; they are not legal or regulatory retention requirements. Project, contractual, legal-hold and jurisdiction-specific obligations may require longer retention.
+
+SAL 2+ default registration requires an independently retained anchor. SAL 4 requires signed checkpoint evidence. Reusing one checkpoint key ID with a different public-key fingerprint is treated as a verification failure; rotation should use a new key ID while preserving the old public key/fingerprint long enough to verify historical checkpoints.
+
+The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.

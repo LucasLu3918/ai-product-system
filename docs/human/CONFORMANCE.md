@@ -1169,3 +1169,21 @@ Current automated inventory after Scenario 159:
 - manual: 0
 - uncovered: 0
 - automated: 159 / 159
+
+
+## Scenario 160 — Governance Audit Retention & Verification Policy
+
+Scenario 160 adds deterministic provenance discovery and evidence-lifecycle review over existing portable Governance Audit Bundles. Catalog registration first verifies each bundle, records exact repository revision / chain head / manifest + anchor digests / evidence digests, and maintains a checkpoint key registry.
+
+A checkpoint key ID may appear across multiple bundles only with the same public-key fingerprint; key rotation uses a distinct key ID. SAL 2+ operational defaults require an external retained anchor and SAL 4 registration requires signed checkpoint evidence.
+
+Retention is advisory only. Expired full-bundle thresholds produce REVIEW_DUE plus a minimal digest record for Human review; the helper has no delete/compact operation, automatic_delete=false and deletion_authorized=false. Legal hold overrides time-based review. The configured day counts are operational defaults, not legal or regulatory retention requirements.
+
+Current automated inventory after Scenario 160:
+
+- deterministic: 24
+- lifecycle: 82
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 160 / 160

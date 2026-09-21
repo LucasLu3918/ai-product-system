@@ -1,22 +1,22 @@
 version: 1
 candidate:
-  base_sha: 812f4ec66ddfb3b2d6d4dc1fd6cbe0d2fce47fb4
-  changed_files_hash: 3b4b0813f19ac53ebda958efd7afc78c04ebdf87199fcce7b0caaf569db9188f
+  base_sha: fa8dafb0a2cd8922d03d79f6d5f68698d520e8fc
+  changed_files_hash: 4cc193c66308fb633547dbb256e72d842c429df5ffcbb9d126d33cb67a33bc78
 change:
-  id: portable-governance-audit-bundle
-  summary: Extend the existing Verifiable Governance Audit Chain with deterministic offline-transfer bundles and independently distributable anchors.
+  id: governance-audit-retention-verification-policy
+  summary: Add deterministic audit-bundle catalog, provenance discovery, checkpoint key-rotation accounting, and advisory retention planning without deletion authority.
   boundary: [governance-audit-evidence, security-assurance, release-readiness, scenario-conformance, architecture-documentation]
 matrix:
   - boundary: governance-audit-evidence
-    reason: Portable evidence must preserve exact ledger/anchor/evidence/key integrity without expanding authority.
+    reason: Catalog and retention evidence must preserve bundle/anchor/key provenance and fail closed without becoming a destructive retention engine.
     checks:
-      static_lint: {applicable: true, evidence: "repository validation compiles the extended audit helper"}
-      unit: {applicable: true, evidence: "existing hash/HMAC/checkpoint primitives remain lifecycle-covered"}
-      integration: {applicable: true, evidence: "bundle-create consumes a verified ledger and bundle-verify re-verifies all copied evidence"}
-      contract: {applicable: true, evidence: "Scenario 159 + Governance Audit protocol + validator contract"}
+      static_lint: {applicable: true, evidence: "repository validation compiles governance_audit_retention.py"}
+      unit: {applicable: true, evidence: "lifecycle covers catalog fingerprint, lookup, retention states and key registry"}
+      integration: {applicable: true, evidence: "catalog-build verifies v0.49 bundles and external anchors before registration"}
+      contract: {applicable: true, evidence: "Scenario 160 + policy config + catalog-entry template + Governance Audit protocol"}
       e2e: {applicable: true, evidence: "PR exact-head Janitor repository validation"}
-      security: {applicable: true, evidence: "tampered evidence/ledger/public-key/anchor negative paths; no HMAC or private-key persistence"}
-      migration_recovery: {applicable: false, na_reason: "additive bundle format; v0.48 ledgers remain valid"}
+      security: {applicable: true, evidence: "catalog tamper and checkpoint key-id fingerprint mismatch fail; no automatic deletion or credential persistence"}
+      migration_recovery: {applicable: false, na_reason: "additive catalog/policy; existing ledgers and bundles remain valid"}
       cli_harness: {applicable: false, na_reason: "no runtime adapter or hook behavior change"}
       docs_schema: {applicable: true, evidence: "Governance/Security/Release/Architecture/Conformance/Technology docs synchronized"}
 scope_recomputed_after_expansion: true

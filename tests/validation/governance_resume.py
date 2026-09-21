@@ -190,3 +190,41 @@ if audit_evidence.exists():
     ):
         if required_text not in evidence_text:
             errors.append(f"governance audit lifecycle missing bundle evidence: {required_text}")
+
+
+# v0.50 governance audit retention / verification contract
+audit_retention_policy = ROOT / "config/governance-audit-retention.yaml"
+audit_retention_helper = ROOT / "scripts/governance_audit_retention.py"
+audit_catalog_template = ROOT / "templates/governance/AUDIT_CATALOG_ENTRY.yaml"
+audit_retention_scenario = ROOT / "tests/scenarios/160-governance-audit-retention-policy.md"
+audit_retention_evidence = ROOT / "tests/evidence/governance_audit_retention_lifecycle.py"
+for required in (audit_retention_policy, audit_retention_helper, audit_catalog_template, audit_retention_scenario, audit_retention_evidence):
+    if not required.exists():
+        errors.append(f"Missing v0.50 governance audit retention artifact: {required.relative_to(ROOT)}")
+if audit_retention_helper.exists():
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(audit_retention_helper)], capture_output=True, text=True)
+    if compiled.returncode != 0:
+        errors.append(f"governance_audit_retention.py syntax failed: {compiled.stderr.strip()}")
+    helper_text = audit_retention_helper.read_text(encoding="utf-8")
+    for required_text in (
+        "catalog-build",
+        "catalog-verify",
+        "catalog-find",
+        "retention-plan",
+        "checkpoint key id fingerprint changed",
+        "deletion_authorized",
+        "HUMAN_REVIEW_FOR_COMPACTION",
+    ):
+        if required_text not in helper_text:
+            errors.append(f"governance_audit_retention.py missing v0.50 contract: {required_text}")
+if audit_retention_policy.exists():
+    policy_doc = yaml.safe_load(audit_retention_policy.read_text(encoding="utf-8")) or {}
+    authority = policy_doc.get("authority") or {}
+    if policy_doc.get("mode") != "advisory_only":
+        errors.append("Governance audit retention policy must be advisory_only")
+    if authority.get("automatic_delete") is not False or authority.get("deletion_authorized") is not False:
+        errors.append("Governance audit retention policy must not authorize deletion")
+if audit_retention_evidence.exists():
+    result = subprocess.run([sys.executable, str(audit_retention_evidence)], capture_output=True, text=True, timeout=240)
+    if result.returncode != 0:
+        errors.append(f"Governance audit retention lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}")

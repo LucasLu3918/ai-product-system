@@ -146,3 +146,10 @@ Human Approval / Security Decision / Release Gate
 ~~~
 
 Audit events never create approval authority. Baseline integrity uses deterministic SHA-256 event and chain hashes without credentials. Secure runtimes may add HMAC-SHA256 authentication and Ed25519 signed checkpoints. Secret/private key material stays outside Git, prompts, state and artifacts. Existing authenticated/signed history must verify before append.
+
+
+## Governance Audit Retention Authority
+
+Governance Audit retention is evidence lifecycle management, not destructive authority. The deterministic retention policy may classify evidence as KEEP_FULL, HOLD_FULL or REVIEW_DUE and may generate a minimal digest record, but it must keep automatic_delete=false and deletion_authorized=false.
+
+A time threshold never authorizes deletion or compaction. Legal hold overrides time-based review. Any future destructive action requires a separate Human-authorized scope and applicable legal/security review.
