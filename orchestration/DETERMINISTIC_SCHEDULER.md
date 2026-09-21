@@ -95,3 +95,24 @@ This rule prevents missing planning metadata from becoming an unlocked writer. T
 ## Validation de-duplication boundary
 
 The repository validator may skip the focused Scheduler/Integration Gate lifecycle only when `AIPS_PROFILE_LIFECYCLE_ALREADY_EXECUTED=1` is injected by the deterministic Validation Profile after those checks already ran. Standalone repository validation must execute the lifecycle evidence normally.
+
+
+## Runtime resource requests
+
+Task Graph isolation metadata may declare bounded TCP port needs:
+
+~~~yaml
+isolation:
+  mode: worktree
+  required: true
+  runtime:
+    ports:
+      - id: dev
+        protocol: tcp
+        preferred: 3000
+        expose_as: [PORT]
+~~~
+
+The Scheduler validates this structure and includes runtime requirements only for tasks in the current deterministic `dispatch` as `runtime_requests`. It does **not** select host ports or probe sockets. The Orchestrator hands each dispatched request to the existing Execution Isolation lifecycle, where the repository-scoped lease registry and host availability checks live.
+
+Only `tcp` is supported in v0.51. Port IDs must be stable resource IDs, `preferred` is optional and non-authoritative, and `expose_as` accepts environment-variable names only.

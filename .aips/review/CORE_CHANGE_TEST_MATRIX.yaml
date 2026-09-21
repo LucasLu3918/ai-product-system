@@ -1,26 +1,37 @@
 version: 1
 candidate:
-  base_sha: fa8dafb0a2cd8922d03d79f6d5f68698d520e8fc
-  changed_files_hash: 64bed582f30245a8d8a77d1ec744a142ac4b8d0ad8b8b80e7cf908862491e690
+  base_sha: 7f47c34cee4fa9c3d3f56bd263ffa626ffa9f7c7
+  changed_files_hash: ef43d733807ca4d869826a6be037cb339499bdbb3e204717997aba62240a441f
 change:
-  id: governance-audit-retention-verification-policy
-  summary: Add deterministic audit-bundle catalog, provenance discovery, checkpoint key-rotation accounting, and advisory retention planning without deletion authority.
-  boundary: [governance-audit-evidence, security-assurance, release-readiness, scenario-conformance, architecture-documentation]
+  id: parallel-runtime-resource-isolation
+  summary: Extend existing worktree isolation with atomic TCP port leases and deterministic runtime request propagation.
+  boundary: [execution-isolation, deterministic-scheduler, scenario-conformance, architecture-documentation]
 matrix:
-  - boundary: governance-audit-evidence
-    reason: Catalog and retention evidence must preserve bundle/anchor/key provenance and fail closed without becoming a destructive retention engine.
+  - boundary: execution-isolation
+    reason: Parallel worktrees need collision-resistant host TCP resource ownership without weakening dirty-worktree or Human authority rules.
     checks:
-      static_lint: {applicable: true, evidence: "repository validation compiles governance_audit_retention.py"}
-      unit: {applicable: true, evidence: "lifecycle covers catalog fingerprint, lookup, retention states and key registry"}
-      integration: {applicable: true, evidence: "catalog-build verifies v0.49 bundles and external anchors before registration"}
-      contract: {applicable: true, evidence: "Scenario 160 + policy config + catalog-entry template + Governance Audit protocol"}
+      static_lint: {applicable: true, evidence: "repository validation compiles execution_isolation.py and runtime lifecycle evidence"}
+      unit: {applicable: true, evidence: "lifecycle checks stable leases, occupied preferred fallback, env manifest, release and reconcile"}
+      integration: {applicable: true, evidence: "lifecycle creates real Git worktrees and concurrent allocator processes against one repository registry"}
+      contract: {applicable: true, evidence: "Scenario 161 + Execution Isolation protocol + Task Graph runtime schema"}
       e2e: {applicable: true, evidence: "PR exact-head Janitor repository validation"}
-      security: {applicable: true, evidence: "catalog tamper and checkpoint key-id fingerprint mismatch fail; no automatic deletion or credential persistence"}
-      migration_recovery: {applicable: false, na_reason: "additive catalog/policy; existing ledgers and bundles remain valid"}
-      cli_harness: {applicable: false, na_reason: "no runtime adapter or hook behavior change"}
-      docs_schema: {applicable: true, evidence: "Governance/Security/Release/Architecture/Conformance/Technology docs synchronized"}
+      security: {applicable: true, evidence: "no process killing, no authority expansion, external config only, dirty worktree preserved"}
+      migration_recovery: {applicable: true, evidence: "existing v2 records/task graphs remain readable; runtime-reconcile handles non-ACTIVE orphan leases"}
+      cli_harness: {applicable: true, evidence: "aips isolation routes new runtime lifecycle subcommands"}
+      docs_schema: {applicable: true, evidence: "Human/Agent architecture, user, technology, scheduler and conformance docs synchronized"}
+  - boundary: deterministic-scheduler
+    reason: Runtime requirements must be validated and propagated deterministically without moving OS allocation into the Scheduler.
+    checks:
+      static_lint: {applicable: true, evidence: "ruff + mypy scheduler checks"}
+      unit: {applicable: true, evidence: "scheduler lifecycle covers valid TCP metadata and invalid UDP rejection"}
+      integration: {applicable: true, evidence: "dispatch emits runtime_requests consumed by Execution Isolation contract"}
+      contract: {applicable: true, evidence: "Task Graph template/schema document runtime ports"}
+      e2e: {applicable: true, evidence: "PR exact-head Janitor validation"}
+      security: {applicable: true, evidence: "scheduler cannot widen Change Boundary or allocate host resources"}
+      migration_recovery: {applicable: false, na_reason: "runtime metadata is optional and additive"}
+      cli_harness: {applicable: true, evidence: "existing aips scheduler route unchanged"}
+      docs_schema: {applicable: true, evidence: "Scheduler/Orchestrator/User Guide synchronized"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 status: READY
-# validation-binding: core-change label observed before exact-head run

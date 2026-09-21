@@ -629,3 +629,19 @@ Current automated inventory after Scenario 160:
 - manual: 0
 - uncovered: 0
 - automated: 160 / 160
+
+
+## Scenario 161 — Parallel Runtime Port Isolation
+
+Scenario 161 validates runtime-resource isolation for parallel AIPS-managed worktrees. Repository-scoped atomic lease coordination prevents duplicate AIPS port assignments, occupied host ports are skipped, Task Graph runtime requirements remain deterministic metadata, and the resulting environment manifest provides canonical AIPS port variables plus explicit aliases such as PORT.
+
+Runtime resources have an independent lifecycle: a dirty worktree remains preserved while a stopped server lease can be released; clean isolation removal releases remaining leases; orphaned leases whose isolation is no longer ACTIVE can be reconciled. Bounded reallocation excludes the failed port for address-in-use recovery. v0.51 supports TCP only and grants no additional network, merge, release, publication or Human authority.
+
+Current automated inventory after Scenario 161:
+
+- deterministic: 24
+- lifecycle: 83
+- agent_eval: 54
+- manual: 0
+- uncovered: 0
+- automated: 161 / 161

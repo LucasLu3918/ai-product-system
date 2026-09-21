@@ -244,3 +244,46 @@ The scheduled workflow may create/update/close/reopen its own GitHub effectivene
 ## Historical Evolution Issue reconciliation boundary
 
 Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. It creates no execution workspace, Trial authorization, runtime hook, enforcement path or remediation authority. Any deferred candidate that later becomes active must re-enter the normal current-baseline Human Decision + Controlled Trial + Execution Isolation flow.
+
+
+## Parallel runtime resource isolation
+
+A worktree separates Git/filesystem state, but parallel tasks can still collide on host runtime resources such as a development-server TCP port. Runtime Resource Lease extends the existing Execution Isolation ownership lifecycle; it is not a second isolation subsystem.
+
+~~~text
+scheduled task
+→ AIPS-owned worktree
+→ runtime port request
+→ repository-scoped atomic lease registry
+→ host bind availability probe
+→ runtime environment manifest
+→ Agent/dev server
+~~~
+
+The v0.51 contract supports TCP ports only.
+
+- leases live under the external AIPS config root at `runtime/<repository-id>/ports.yaml`, never in project source;
+- allocation is serialized by an atomic directory lock so concurrent AIPS processes cannot commit the same lease;
+- candidate order is deterministic from repository/isolation/resource identity, while actual allocation also respects current host availability;
+- `preferred` is a hint, not a guaranteed port;
+- the canonical environment is `AIPS_PORT_<RESOURCE>`; when one port is leased, `AIPS_PORT` is also emitted;
+- project/runtime adapters may request explicit aliases such as `PORT` through `--expose PORT` / Task Graph `expose_as`;
+- the availability probe checks the host immediately before the lease is recorded, but no userspace pre-check can eliminate all TOCTOU races with non-AIPS processes;
+- if startup still reports an address-in-use error, `runtime-reallocate` excludes the previous lease and performs a bounded retry;
+- runtime release is independent from worktree cleanup, so a dirty worktree may remain preserved while its stopped server port is released;
+- normal clean `isolation remove` also releases that isolation's runtime leases;
+- `runtime-reconcile` removes only leases whose AIPS isolation record is no longer ACTIVE. It never guesses that an ACTIVE-but-idle lease is stale.
+
+CLI:
+
+~~~bash
+aips isolation create --project /repo --id frontend-a --boundary apps-a \
+  --port dev --preferred 3000 --expose PORT
+
+aips isolation runtime-lease --project /repo --id frontend-b --port dev --expose PORT
+aips isolation runtime-reallocate --project /repo --id frontend-b --port dev
+aips isolation runtime-release --project /repo --id frontend-b --port dev
+aips isolation runtime-reconcile --project /repo
+~~~
+
+A lease is coordination evidence, not authority. It does not authorize network access, publication, destructive operations, a wider Change Boundary, or bypass Resource Authorization.

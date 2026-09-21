@@ -1220,3 +1220,16 @@ scenarios:
       - templates/governance/AUDIT_CATALOG_ENTRY.yaml
       - tests/evidence/governance_audit_retention_lifecycle.py
       - tests/validate_repository.py
+
+
+  - id: "161"
+    path: tests/scenarios/161-parallel-runtime-port-isolation.md
+    coverage: lifecycle
+    evidence:
+      - scripts/execution_isolation.py
+      - scripts/deterministic_scheduler.py
+      - tests/evidence/runtime_port_isolation_lifecycle.py
+      - tests/evidence/deterministic_scheduler_lifecycle.py
+      - tests/validation/conformance_isolation.py
+      - orchestration/EXECUTION_ISOLATION.md
+      - orchestration/DETERMINISTIC_SCHEDULER.md
