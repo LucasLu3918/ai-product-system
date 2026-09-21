@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.49.0
+
+### Portable Governance Audit Bundle
+
+- Extend the v0.48 Verifiable Governance Audit Chain with deterministic `bundle-create` / `bundle-verify` commands in the existing `scripts/governance_audit.py`; no parallel audit subsystem is introduced.
+- Produce a portable directory bundle containing `AUDIT.jsonl`, `MANIFEST.json`, optional evidence files, checkpoint public keys and `ANCHOR.json`.
+- Bind the exact repository revision, ledger SHA-256, event count, chain head, evidence-file SHA-256, public-key SHA-256/fingerprint and authority=false declarations.
+- Support an independently exported anchor that binds repository revision + event count + chain head + MANIFEST digest; document that the bundle's internal anchor alone is not an independent trust source.
+- Require recorded Ed25519 checkpoint history to verify against supplied public keys before bundle creation; HMAC authentication can be verified when runtime material is supplied but HMAC material is never persisted.
+- Exclude signing private keys, HMAC material, source absolute paths, prompts and private reasoning from bundle evidence.
+- Keep the baseline flow credential-free and network-free; no blockchain, remote timestamp service, central audit server or external Agent/provider credential is required.
+- Add tamper tests for bundled evidence, ledger tail truncation, external anchor mutation and bundled public-key replacement.
+- Add Scenario 159 and raise Scenario Conformance to 159/159 automated: 24 deterministic + 81 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- PR #136 final head `1bc85418eeefb5434623c50796dfb6cf2eb94cb2` passed Core Change Validate Run #1189 with `matrix_required=true` and was squash-merged to main as `8433250d8ab7d51f132dba1e2abc6e368feb616f`; protected-main Validate Run #1190 succeeded.
+- Initial Run #1188 passed functional validation but its pull-request event snapshot preceded the Core Change label, so it was not used as the merge-authorizing Matrix evidence; an empty-tree binding commit retriggered exact Core Change validation without changing the diff.
+- Human authority, merge/release authority and Constitution semantics remain unchanged. Constitution impact: NO.
+- Release model remains `VERSION + CHANGELOG + protected-main validation`; no GitHub Release object or tag is introduced.
+
 ## 0.48.0
 
 ### Verifiable Governance Audit Chain
