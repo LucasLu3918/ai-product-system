@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 04824395029b272800b58679e7fa307693fb8690
-  changed_files_hash: 3a2ba6cebf7d0ced2404c95f072fda4e573264fe2a9102f53e8d73e2ef3075f8
+  changed_files_hash: a09aed0cee3d79b5c6153433d1f7aa5380fb9c40596b11feb6aee5f4ea9a9f21
 change:
   id: human-docs-site-installation-ux
   summary: Reorganize Human current-behavior documentation by topic, add a VitePress official docs renderer, modernize managed install/uninstall entrypoints, and enforce deterministic documentation placement so new features cannot be appended as release-style notes.
@@ -10,6 +10,7 @@ change:
     - installation-lifecycle
     - harness-documentation
     - repository-ci
+    - validation-reliability
 matrix:
   - boundary: documentation-architecture
     reason: Human documentation source structure, rendering, navigation and placement enforcement change.
@@ -47,6 +48,18 @@ matrix:
       migration_recovery: {applicable: false, na_reason: "workflows are additive and removable without persisted product data"}
       cli_harness: {applicable: false, na_reason: "CI registration does not change runtime CLI contract"}
       docs_schema: {applicable: true, evidence: "workflow triggers are documented in Official Docs Site / Installation sections"}
+  - boundary: validation-reliability
+    reason: Re-enabling previously malformed validator imports exposed latent anomaly-evidence defects that must stay fail-closed rather than being hidden again.
+    checks:
+      static_lint: {applicable: true, evidence: "agent anomaly helper compiles and repository validation imports are normalized"}
+      unit: {applicable: true, evidence: "private-reasoning path detection and secret-like value detection execute through existing lifecycle fixtures"}
+      integration: {applicable: true, evidence: "agent anomaly evaluation and observable-event trial lifecycle validators run under repository-validation"}
+      contract: {applicable: true, evidence: "existing Scenario 139/140 safety contracts remain unchanged and are actually executed"}
+      e2e: {applicable: false, na_reason: "offline deterministic validation helper; runtime capture behavior is unchanged"}
+      security: {applicable: true, evidence: "secret regex and private-reasoning rejection are restored fail-closed"}
+      migration_recovery: {applicable: false, na_reason: "no persisted schema or runtime state changes"}
+      cli_harness: {applicable: false, na_reason: "no user-facing CLI route changes"}
+      docs_schema: {applicable: false, na_reason: "latent validator defect fix does not alter documented behavior"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
