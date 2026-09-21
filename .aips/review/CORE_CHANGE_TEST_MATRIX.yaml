@@ -1,36 +1,52 @@
 version: 1
 candidate:
-  base_sha: b550ceeb086a3ee4ca12a3166e10a93019c820ac
-  changed_files_hash: 3452321ad833a9b53d653e8c85e99f6a7cf24394719e029d5637bf2a12780af5
+  base_sha: 04824395029b272800b58679e7fa307693fb8690
+  changed_files_hash: ccf043e0a83a965f84f2e9e39049f4796376132ee6ca74cb6d1416e8578b6b95
 change:
-  id: mcp-interoperability-gateway
-  summary: Extend the existing turn-aware Global Harness with a local stdio MCP access plane over canonical AIPS Roles, Skills, protocols and deterministic helpers while retaining native adapters for enforcement and adding no Capability ID.
-  boundary: [harness-runtime, deterministic-scheduler, scenario-conformance, architecture-documentation, installation-lifecycle]
+  id: human-docs-site-installation-ux
+  summary: Reorganize Human current-behavior documentation by topic, add a VitePress official docs renderer, modernize managed install/uninstall entrypoints, and enforce deterministic documentation placement so new features cannot be appended as release-style notes.
+  boundary:
+    - documentation-architecture
+    - installation-lifecycle
+    - harness-documentation
+    - repository-ci
 matrix:
-  - boundary: harness-runtime
-    reason: A new cross-host access plane changes how compatible clients discover AIPS context and tools.
+  - boundary: documentation-architecture
+    reason: Human documentation source structure, rendering, navigation and placement enforcement change.
     checks:
-      static_lint: {applicable: true, evidence: "repository ruff plus Python compile contracts"}
-      unit: {applicable: true, evidence: "MCP contract validator checks capability/authority/source boundaries"}
-      integration: {applicable: true, evidence: "official MCP Client launches the exact stdio server and exercises Tools/Resources/Prompts"}
-      contract: {applicable: true, evidence: "Scenario 162 + MCP_GATEWAY + Harness/Adapter contracts"}
-      e2e: {applicable: true, evidence: "mcp-codex-interop exact-head workflow registers/lists AIPS in pinned Codex CLI"}
-      security: {applicable: true, evidence: "workspace confinement, no provider credential, no protected-operation tools, ADVISORY truth"}
-      migration_recovery: {applicable: false, na_reason: "additive optional access plane; native adapters and existing CLI remain valid"}
-      cli_harness: {applicable: true, evidence: "aips mcp serve/inspect/config and install/doctor dependency checks"}
-      docs_schema: {applicable: true, evidence: "Agent/Human Harness + architecture + technology documentation synchronized"}
-  - boundary: deterministic-scheduler
-    reason: MCP exposes the existing scheduler without moving semantic planning or OS resource allocation into MCP.
+      static_lint: {applicable: true, evidence: "repository validator compiles and executes documentation placement contracts"}
+      unit: {applicable: true, evidence: "documentation placement static audit checks H1/H2 hierarchy, forbidden version/scenario headings and compatibility HTML stubs"}
+      integration: {applicable: true, evidence: "VitePress build renders docs/human canonical Markdown sources"}
+      contract: {applicable: true, evidence: "config/documentation-placement.yaml binds current-behavior topics and per-subsystem canonical placements"}
+      e2e: {applicable: true, evidence: "docs-site workflow builds the exact PR candidate; main deployment is isolated to GitHub Pages"}
+      security: {applicable: true, evidence: "docs workflow uses contents:read for build; Pages deployment has only pages/id-token permissions and no code publication authority"}
+      migration_recovery: {applicable: true, evidence: "legacy standalone HTML becomes compatibility stub while canonical Markdown paths are added; raw Markdown remains usable without VitePress"}
+      cli_harness: {applicable: false, na_reason: "docs renderer does not alter runtime Harness semantics"}
+      docs_schema: {applicable: true, evidence: "Human Docs, Documentation Sync, Audience Map, Architecture Surface and Scenario 163 updated"}
+  - boundary: installation-lifecycle
+    reason: Public installation changes from manual clone/cd/bootstrap instructions to managed Install/Update/Uninstall entrypoints.
     checks:
-      static_lint: {applicable: true, evidence: "repository validation compiles both server and scheduler"}
-      unit: {applicable: true, evidence: "Scenario 162 dispatches a deterministic two-task graph through MCP"}
-      integration: {applicable: true, evidence: "real MCP call delegates to deterministic_scheduler.schedule"}
-      contract: {applicable: true, evidence: "MCP tool explicitly cannot invent tasks or grant authority"}
-      e2e: {applicable: true, evidence: "exact-head MCP lifecycle through stdio"}
-      security: {applicable: true, evidence: "scheduler response authority flags remain false"}
-      migration_recovery: {applicable: false, na_reason: "scheduler graph/state schema is unchanged"}
-      cli_harness: {applicable: false, na_reason: "existing aips scheduler route is unchanged"}
-      docs_schema: {applicable: true, evidence: "MCP Gateway protocol documents delegation boundary"}
+      static_lint: {applicable: true, evidence: "bash syntax and PowerShell parser checks"}
+      unit: {applicable: true, evidence: "installer dry-run validates managed path and supported Windows WSL contract"}
+      integration: {applicable: true, evidence: "Linux CI installs from a local source checkout, runs doctor/MCP inspect, then uninstalls"}
+      contract: {applicable: true, evidence: "README/Installation/Getting Started use install/uninstall terminology; bootstrap remains compatibility wrapper"}
+      e2e: {applicable: true, evidence: "ubuntu lifecycle plus macOS shell validation plus windows-latest PowerShell contract workflow"}
+      security: {applicable: true, evidence: "existing non-AIPS install path and dirty managed checkout fail closed; third-party client settings remain user-owned"}
+      migration_recovery: {applicable: true, evidence: "bootstrap.sh and uninstall.sh remain backward-compatible recovery entrypoints"}
+      cli_harness: {applicable: true, evidence: "managed checkout delegates to existing bin/aips install/uninstall lifecycle"}
+      docs_schema: {applicable: true, evidence: "Installation and Getting Started document macOS/Linux/Windows+WSL truthfully"}
+  - boundary: repository-ci
+    reason: New documentation and installation workflows execute on pull requests and main.
+    checks:
+      static_lint: {applicable: true, evidence: "workflow contracts are repository validated"}
+      unit: {applicable: false, na_reason: "workflow behavior is covered by exact Actions execution"}
+      integration: {applicable: true, evidence: "PR workflow executions are exact-head checks"}
+      contract: {applicable: true, evidence: "docs build is independent from code merge authority and Pages deploy is main-only"}
+      e2e: {applicable: true, evidence: "GitHub Actions verifies docs build and installation entrypoints"}
+      security: {applicable: true, evidence: "minimal workflow permissions; no external Agent/provider credential"}
+      migration_recovery: {applicable: false, na_reason: "workflows are additive and removable without persisted product data"}
+      cli_harness: {applicable: false, na_reason: "CI registration does not change runtime CLI contract"}
+      docs_schema: {applicable: true, evidence: "workflow triggers are documented in Official Docs Site / Installation sections"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
