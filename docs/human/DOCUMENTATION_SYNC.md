@@ -28,6 +28,8 @@ config/documentation-placement.yaml 定義 current-behavior 文件的 canonical 
 - 禁止以 vX.Y / Scenario N 當 current-behavior H2；
 - 禁止 duplicate numeric H2；
 - behavior-bearing source change 必須真的修改對應 Human doc；
+- 所有會觸發 Technology Guide 的 behavior-bearing source 都必須命中一條 placement rule；沒有 mapping 就 fail closed；
+- 每條 subsystem placement rule 也必須限制 Technology Guide 應更新的 canonical domain；
 - changed lines 必須落在該 subsystem 的 allowed canonical section；
 - legacy standalone HTML 不得再累加新 section。
 

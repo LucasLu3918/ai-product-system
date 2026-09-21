@@ -93,9 +93,24 @@ for topic in (
         errors.append(f"USER_GUIDE lost current AIPS capability explanation: {topic}")
 
 placement_text = script.read_text(encoding="utf-8") if script.exists() else ""
-for marker in ("git_base_resolves", "one_time_structure_migration_bases", "if base and git_base_resolves(base)"):
+for marker in (
+    "git_base_resolves",
+    "one_time_structure_migration_bases",
+    "if base and git_base_resolves(base)",
+    "behavior_trigger_patterns",
+    "behavior-bearing source has no canonical documentation placement rule",
+):
     if marker not in placement_text:
         errors.append(f"documentation placement helper missing migration/install-copy safety contract: {marker}")
+
+if config_path.exists():
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
+    for rule in config.get("placement_rules") or []:
+        placements = rule.get("placements") or {}
+        if "docs/human/TECHNOLOGY_GUIDE.md" not in placements:
+            errors.append(
+                f"documentation placement rule {rule.get('id')} must constrain Technology Guide placement"
+            )
 
 docs_workflow = (ROOT / ".github/workflows/docs-site.yml").read_text(encoding="utf-8")
 for marker in ("pages_configured", "SKIPPED_NOT_CONFIGURED", "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/pages"):
