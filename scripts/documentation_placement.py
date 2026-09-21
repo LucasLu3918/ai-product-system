@@ -95,7 +95,7 @@ def static_errors(config: dict[str, Any]) -> list[str]:
 
 def git_base_resolves(base: str) -> bool:
     proc = subprocess.run(
-        ["git", "rev-parse", "--verify", "--quiet", f"{base}^{commit}"],
+        ["git", "rev-parse", "--verify", "--quiet", f"{base}^{{commit}}"],
         cwd=ROOT,
         capture_output=True,
         text=True,
