@@ -1244,3 +1244,13 @@ scenarios:
       - tests/validation/mcp_interoperability_contracts.py
       - .github/workflows/mcp-codex-interop.yml
       - tests/validate_repository.py
+  - id: "163"
+    path: tests/scenarios/163-human-docs-site-installation-ux.md
+    coverage: lifecycle
+    evidence:
+      - scripts/documentation_placement.py
+      - config/documentation-placement.yaml
+      - .github/workflows/docs-site.yml
+      - .github/workflows/installation-entrypoints.yml
+      - tests/validation/documentation_placement_contracts.py
+      - tests/validate_repository.py

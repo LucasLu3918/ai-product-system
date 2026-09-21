@@ -143,9 +143,11 @@ surfaces:
   - id: documentation-consistency
     capabilities:
       - documentation-consistency
+      - documentation-site
       - human-documentation-namespace
     required_paths:
       - scripts/documentation_sync.py
+      - scripts/documentation_placement.py
       - config/documentation-sync.yaml
       - orchestration/DOCUMENTATION_SYNC.md
       - docs/human/DOCUMENTATION_SYNC.md

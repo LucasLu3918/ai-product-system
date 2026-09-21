@@ -1218,3 +1218,18 @@ Scenario 162 以官方 MCP Python Client 真正啟動 AIPS 的本機 stdio serve
 - manual：0
 - uncovered：0
 - automated：**162 / 162**
+
+## Scenario 163 — Human Documentation Site & Canonical Placement
+
+Scenario 163 驗證 docs/human 是唯一 Human canonical source，VitePress 只負責 render/search/navigation；current-behavior 文件禁止 vX.Y / Scenario-style append headings，並用 deterministic placement mapping 驗證 subsystem change 是否真正修改對應 topic section。
+
+Installation evidence 同時驗證 macOS/Linux managed installer、Windows WSL PowerShell launcher contract、bootstrap compatibility 與 Linux install/doctor/uninstall lifecycle。
+
+目前 Scenario inventory：
+
+- deterministic：24
+- lifecycle：85
+- agent_eval：54
+- manual：0
+- uncovered：0
+- automated：**163 / 163**

@@ -10,6 +10,7 @@ repository_root_exceptions:
   - SECURITY.md
   - USER_GUIDE.md
 human_documents:
+  - docs/human/index.md
   - docs/human/GETTING_STARTED.md
   - docs/human/USER_GUIDE.md
   - docs/human/INSTALLATION.md
@@ -17,7 +18,9 @@ human_documents:
   - docs/human/PROJECT_INTELLIGENCE.md
   - docs/human/CONFORMANCE.md
   - docs/human/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR_OVERVIEW.md
   - docs/human/EVOLUTION_RADAR_OVERVIEW.html
+  - docs/human/TECHNOLOGY_GUIDE.md
   - docs/human/TECHNOLOGY_GUIDE.html
   - docs/human/DOCUMENTATION_SYNC.md
   - docs/human/SECURITY_ASSURANCE.md

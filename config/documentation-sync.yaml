@@ -1,7 +1,7 @@
 version: 1
 technology_guide:
   enabled: true
-  path: docs/human/TECHNOLOGY_GUIDE.html
+  path: docs/human/TECHNOLOGY_GUIDE.md
   triggers:
     - harness/**
     - orchestration/**
@@ -32,7 +32,7 @@ rules:
       - .github/workflows/evolution-effectiveness.yml
     human_docs:
       - docs/human/EVOLUTION_RADAR.md
-      - docs/human/EVOLUTION_RADAR_OVERVIEW.html
+      - docs/human/EVOLUTION_RADAR_OVERVIEW.md
     agent_docs:
       - orchestration/EVOLUTION_RADAR.md
       - orchestration/EXECUTION_ISOLATION.md
@@ -97,3 +97,17 @@ rules:
     triggers: [scripts/scenario_conformance.py, scripts/agent_eval.py, templates/conformance/**, tests/scenario_coverage.yaml]
     human_docs: [docs/human/CONFORMANCE.md]
     agent_docs: [orchestration/CONFORMANCE.md]
+
+  - id: documentation-platform
+    triggers:
+      - docs/human/.vitepress/**
+      - package.json
+      - .github/workflows/docs-site.yml
+      - scripts/documentation_placement.py
+      - config/documentation-placement.yaml
+    human_docs:
+      - docs/human/ARCHITECTURE_OVERVIEW.md
+      - docs/human/DOCUMENTATION_SYNC.md
+      - docs/human/DOCUMENTATION_MAP.md
+    agent_docs:
+      - orchestration/DOCUMENTATION_SYNC.md

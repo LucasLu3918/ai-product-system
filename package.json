@@ -1,0 +1,12 @@
+{
+  "name": "ai-product-system-docs",
+  "private": true,
+  "scripts": {
+    "docs:dev": "vitepress dev docs/human",
+    "docs:build": "vitepress build docs/human",
+    "docs:preview": "vitepress preview docs/human"
+  },
+  "devDependencies": {
+    "vitepress": "1.6.4"
+  }
+}

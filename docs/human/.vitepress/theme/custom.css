@@ -1,0 +1,4 @@
+:root { --vp-layout-max-width: 1440px; }
+.VPDoc .content-container { max-width: 900px !important; }
+.vp-doc h2 { margin-top: 2.5rem; }
+.vp-doc table { width: 100%; }

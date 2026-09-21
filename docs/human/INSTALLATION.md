@@ -1,112 +1,107 @@
-# 安裝與解除
+# 安裝、更新與解除
 
-AIPS v0.9 的安裝目標是：安裝一次，之後正常開 Agent 使用，不需要每次先執行 AIPS 指令。
+AIPS 的 public lifecycle terminology 統一使用 **Install / Update / Uninstall**。bootstrap.sh 只保留為 backward-compatible wrapper，不再是新使用者文件的主要入口。
 
-![AIPS 安裝與生命週期](assets/system-lifecycle.svg)
-
-## 安裝
+## macOS / Linux
 
 ~~~bash
-mkdir -p ~/Developer
-cd ~/Developer
-gh repo clone LucasLu3918/ai-product-system
-cd ai-product-system
-./scripts/bootstrap.sh
+curl -fsSL https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh | bash
 ~~~
 
-安裝會 Validate AIPS、建立 CLI、偵測 Runtime、安裝/刷新可逆 Integration 並記錄 Ownership。
+Installer 會自行管理 AIPS system checkout、Python virtual environment、CLI 與可安全安裝的 Runtime integrations。使用者不需要先建立目錄、cd 或手動 git clone。
 
-## Codex
+預設 managed system path：
 
-若 `~/.codex/AGENTS.md` 已存在，AIPS 不取代它，只加入自己的 AIPS Managed Block。Capability 預期為 `CONTEXT_ALWAYS`。
+~~~text
+$XDG_DATA_HOME/aips/system
+或
+~/.local/share/aips/system
+~~~
 
-## Claude Code
+可用 AIPS_INSTALL_DIR 覆寫。
 
-保留既有 `~/.claude/CLAUDE.md`，加入 AIPS Managed Block；在 `~/.claude/settings.json` 可安全解析時加入 AIPS `UserPromptSubmit` Hook。成功時 `TURN_NATIVE`，Hook 不可用但 block 可用時降為 `CONTEXT_ALWAYS`。
+## Windows
 
-## Gemini CLI
+目前正式支援 **Windows + WSL**，不宣稱 native PowerShell runtime 已完成。
 
-使用 `aips-global-harness` Extension + `BeforeAgent` Hook；驗證成功時為 `TURN_NATIVE`。
+在 PowerShell：
 
-實際狀態：
+~~~powershell
+irm https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.ps1 | iex
+~~~
+
+PowerShell launcher 會把安裝交給 WSL 內相同的 Linux installer，因此核心 install lifecycle 只有一份。安裝後請在 WSL terminal 執行 AIPS。
+
+> Windows native PowerShell / CMD runtime 若未來實作，必須另有真實 lifecycle evidence 後才可標記為 supported。
+
+## 驗證
 
 ~~~bash
+aips version
+aips doctor
 aips harness status
-aips harness doctor
+aips mcp inspect
 ~~~
 
-## EPHEMERAL
+doctor 會檢查 system checkout、Python environment、CLI、Harness 與 MCP availability。
 
-沒有 `.ai/`。AIPS 不修改 Project Workspace；Project Intelligence 可存在 `~/.config/aips/projects/<project-id>/intelligence/`。
+## Runtime integration
 
-## ATTACHED
+Native Runtime Adapter 與 MCP 是兩個互補平面：
+
+- Codex / Claude Code / Gemini CLI：依可驗證能力安裝 AIPS-owned integration。
+- MCP-compatible Host：可使用 aips mcp serve。
+- MCP-only governance enforcement 仍為 ADVISORY；native pre-tool hook 才能提供已驗證的 stronger enforcement。
+
+細節放在 [Global Harness 與 MCP](HARNESS.md)，不在 Installation 頁重複 implementation 細節。
+
+## 更新
 
 ~~~bash
-aips attach /project
+aips update
 ~~~
 
-External Intelligence 會 validated migrate 到 `.ai/intelligence/`。Detach 會先 sync Intelligence 回 External Cache，再封存 `.ai/`。
+AIPS 只在 managed system checkout clean、history 可 fast-forward 時自動更新；major version 變更仍需要顯式處理。
 
-## Update / Preflight
+Existing Project mutation 前：
 
-`aips preflight /project` 只更新 AIPS System，不更新 Product Git branch。v0.9 Harness refresh 只更新 AIPS-managed block/hook/extension。
+~~~bash
+aips preflight /path/to/project
+~~~
 
-## Uninstall
+## 解除安裝
 
 ~~~bash
 aips uninstall
 ~~~
 
-移除 AIPS CLI、Managed Blocks、Claude Hook、Gemini Extension 與 Harness ownership/config。
-
-預設保留 User instructions、Skills、Project source、Project `.ai/`、External Project Intelligence、AIPS repo 與 `.venv`。
-
-只有明確：
+選配：
 
 ~~~bash
 aips uninstall --remove-cache
-~~~
-
-才移除 External Project Intelligence。要一起移除 `.venv`：
-
-~~~bash
 aips uninstall --remove-cache --remove-venv
 ~~~
 
-## Modified Managed Block
+Windows + WSL 可從 WSL terminal 執行相同 aips uninstall；repository 亦保留 scripts/uninstall.ps1 作 recovery wrapper。
 
-如果使用者改過 AIPS Managed Block，Uninstall 會保留並報 Conflict，不會誤刪可能已屬於使用者的新內容。
+## 會保留什麼
 
-## Project Intelligence
+預設不刪除：
 
-External Intelligence 被視為使用者累積的工作資料，因此預設 Uninstall 保留。Project-local `.ai/intelligence/` 也不會因 AIPS Uninstall 被刪除。
+- 使用者原本的 Agent instructions；
+- custom Skills；
+- Project source；
+- Project .ai/ workspace；
+- External Project Intelligence；
+- third-party MCP client-owned configuration。
 
-## v0.11 Governance Guard
+若 client 曾手動註冊 aips mcp serve，需在該 client 自己移除 registration；AIPS 不猜測或刪除 client-owned settings。
 
-安裝／刷新 Harness 時，Claude Code 在可安全修改 settings.json 的情況下會加入 AIPS-owned `PreToolUse` Bash guard；Gemini Extension 會註冊 `BeforeTool` guard。Uninstall 只移除 AIPS 自己的 hook。
-
-`aips harness status` 會分開顯示 context capability 與 governance enforcement，避免把「能看到規範」誤認成「能技術阻擋」。
-
-## MCP 接入
-
-AIPS 安裝後會一起安裝官方 MCP Python SDK v2，因此本機可直接執行：
-
-~~~bash
-aips mcp inspect
-aips mcp serve
-~~~
-
-v0.52 **不自動修改第三方 MCP Client 設定**。要接 Cursor / Codex 等 Client，先取得 review-only 範例：
+## 相容入口
 
 ~~~bash
-aips mcp config --client cursor
-aips mcp config --client codex
+./scripts/bootstrap.sh
+./scripts/uninstall.sh
 ~~~
 
-確認後再由你加入該 Client 自己的設定。這樣 AIPS Uninstall 不需要猜哪些第三方設定仍屬於使用者。
-
-### MCP 解除
-
-若曾手動把 `aips mcp serve` 註冊到 Cursor / Codex / 其他 Host，先從該 Host 移除那筆 AIPS MCP registration；接著正常執行 `aips uninstall` 即可移除 AIPS CLI / Harness-owned integrations。
-
-v0.52 不會自動刪除 client-owned MCP config；既有 User instructions、Skills、Project source、Project Intelligence 仍依原本 preservation policy 保留。
+這些只保留給既有 checkout / recovery。新文件與新使用者一律使用 Install / Uninstall terminology。

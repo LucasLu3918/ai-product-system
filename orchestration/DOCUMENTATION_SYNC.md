@@ -85,3 +85,10 @@ The `resource-authorization` rule binds the deterministic evaluator, Resource Au
 ## Evolution Effectiveness mapping
 
 The `evolution-radar` mapping includes the deterministic effectiveness script, policy config and monthly GitHub workflow. Changes to metric definitions, thresholds, source review flags, Issue publication behavior or authority fields must synchronize the canonical Evolution Radar / Execution Isolation Human and Agent docs plus the Technology Guide.
+
+
+## Human documentation placement
+
+Current-behavior Human docs are topic-oriented, not release-note streams. config/documentation-placement.yaml maps behavior surfaces to allowed Human H2 sections. scripts/documentation_placement.py checks heading integrity and, when a diff base is available, verifies changed lines land inside allowed canonical sections.
+
+Do not satisfy documentation impact by appending a version/scenario note at the end of USER_GUIDE, ARCHITECTURE_OVERVIEW, HARNESS, INSTALLATION, TECHNOLOGY_GUIDE, or EVOLUTION_RADAR_OVERVIEW. Release history belongs in CHANGELOG; verification history belongs in CONFORMANCE.
