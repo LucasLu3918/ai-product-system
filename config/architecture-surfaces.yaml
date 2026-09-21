@@ -66,7 +66,6 @@ surfaces:
       - orchestration/EXTERNAL_CREDENTIAL_DEPENDENCY_GUARD.md
     canonical_docs:
       - core/GOVERNANCE.md
-      - orchestration/GOVERNANCE_AUDIT.md
       - orchestration/DETERMINISTIC_AUTOMATION.md
       - docs/human/SECURITY_ASSURANCE.md
       - orchestration/SECRET_HANDLING.md

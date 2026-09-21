@@ -144,7 +144,7 @@ def verify_events(events: list[dict[str, Any]], *, hmac_secrets: dict[str, str] 
             key_id = str(auth.get("key_id") or "")
             secret = hmac_secrets.get(key_id)
             if secret is None:
-                if require_hmac_keys:
+                if require_authenticated_verification:
                     errors.append(f"event {expected_sequence} HMAC key unavailable: {key_id}")
             else:
                 expected_mac = hmac_value(secret, expected_chain, expected_sequence, key_id)
@@ -162,7 +162,7 @@ def verify_events(events: list[dict[str, Any]], *, hmac_secrets: dict[str, str] 
             key_id = str(checkpoint.get("key_id") or "")
             key_path = checkpoint_public_keys.get(key_id)
             if key_path is None:
-                if require_checkpoint_keys:
+                if require_checkpoint_verification:
                     errors.append(f"event {expected_sequence} checkpoint public key unavailable: {key_id}")
             elif checkpoint.get("public_key_fingerprint") != public_key_fingerprint(key_path):
                 errors.append(f"event {expected_sequence} checkpoint public key fingerprint mismatch")
