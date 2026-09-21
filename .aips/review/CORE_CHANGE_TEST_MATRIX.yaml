@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 04824395029b272800b58679e7fa307693fb8690
-  changed_files_hash: ccf043e0a83a965f84f2e9e39049f4796376132ee6ca74cb6d1416e8578b6b95
+  changed_files_hash: 3a2ba6cebf7d0ced2404c95f072fda4e573264fe2a9102f53e8d73e2ef3075f8
 change:
   id: human-docs-site-installation-ux
   summary: Reorganize Human current-behavior documentation by topic, add a VitePress official docs renderer, modernize managed install/uninstall entrypoints, and enforce deterministic documentation placement so new features cannot be appended as release-style notes.
