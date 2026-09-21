@@ -28,6 +28,8 @@ config/documentation-placement.yaml 定義 current-behavior 文件的 canonical 
 - 禁止以 vX.Y / Scenario N 當 current-behavior H2；
 - 禁止 duplicate numeric H2；
 - behavior-bearing source change 必須真的修改對應 Human doc；
+- 所有會觸發 Technology Guide 的 behavior-bearing source 都必須命中一條 placement rule；沒有 mapping 就 fail closed；
+- 每條 subsystem placement rule 也必須限制 Technology Guide 應更新的 canonical domain；
 - changed lines 必須落在該 subsystem 的 allowed canonical section；
 - legacy standalone HTML 不得再累加新 section。
 
@@ -37,7 +39,9 @@ config/documentation-placement.yaml 定義 current-behavior 文件的 canonical 
 
 docs/human/ 同時是 Official Docs Site 的 source；VitePress 只是 renderer。Website build output 不提交為 canonical content。
 
-PR 會 build site；main 才具有 Pages deploy path。Docs deployment 不取得 code merge、release 或 product production authority。
+PR 會 build site；main 才具有 Pages deploy path。Workflow 會先讀取 repository Pages 狀態：已設定才 upload/deploy，未設定則明確記錄 `SKIPPED_NOT_CONFIGURED`。啟用 hosting 的一次性 repository 設定是 Settings → Pages → Build and deployment → Source = GitHub Actions。
+
+Docs deployment 不取得 code merge、release 或 product production authority。
 
 ## Technology Guide
 

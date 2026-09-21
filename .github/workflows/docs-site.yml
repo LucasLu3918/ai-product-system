@@ -23,6 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      pages: read
+    outputs:
+      pages_configured: ${{ steps.pages-state.outputs.configured }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -32,13 +35,43 @@ jobs:
           node-version: "24"
       - run: npm install --no-audit --no-fund --ignore-scripts
       - run: npm run docs:build
-      - if: github.event_name != 'pull_request'
+
+      - id: pages-state
+        if: github.event_name != 'pull_request'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          response="$RUNNER_TEMP/pages-site.json"
+          status="$(curl -sS -o "$response" -w '%{http_code}' \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/pages")"
+          case "$status" in
+            200)
+              echo "configured=true" >> "$GITHUB_OUTPUT"
+              echo "Official Docs Site deployment: CONFIGURED" >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            404)
+              echo "configured=false" >> "$GITHUB_OUTPUT"
+              echo "Official Docs Site deployment: SKIPPED_NOT_CONFIGURED" >> "$GITHUB_STEP_SUMMARY"
+              echo "Enable Settings → Pages → Build and deployment → Source = GitHub Actions once; the docs build itself passed." >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            *)
+              echo "::error::Unable to determine GitHub Pages state (HTTP $status)."
+              cat "$response" || true
+              exit 1
+              ;;
+          esac
+
+      - if: github.event_name != 'pull_request' && steps.pages-state.outputs.configured == 'true'
         uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
         with:
           path: docs/human/.vitepress/dist
 
   deploy:
-    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && needs.build.outputs.pages_configured == 'true'
     needs: build
     runs-on: ubuntu-latest
     permissions:

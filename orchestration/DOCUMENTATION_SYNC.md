@@ -13,7 +13,7 @@ This contract does not create a new Human Approval Gate. It strengthens the exis
 Canonical configuration: `config/documentation-sync.yaml`.
 Validator: `scripts/documentation_sync.py`.
 Human explanation: `docs/human/DOCUMENTATION_SYNC.md`.
-Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.html`.
+Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
@@ -29,9 +29,9 @@ Project Intelligence documentation mapping includes the stable intelligence impl
 
 ## Technology Guide rule
 
-`docs/human/TECHNOLOGY_GUIDE.html` is a maintained Human inventory of important AIPS techniques and terms. A configured technical change requires the guide to be updated in the same diff, even when the update only clarifies that the technology inventory is unchanged and records the reviewed behavior.
+`docs/human/TECHNOLOGY_GUIDE.md` is the maintained Human inventory of current AIPS techniques and terms. A configured technical change requires the guide to be updated in the same diff, and Documentation Placement additionally requires changed lines to land in the owning canonical topic instead of an append-only tail section.
 
-This deliberately favors documentation freshness over minimizing documentation diffs.
+Release history belongs in `CHANGELOG.md`; Scenario / verification history belongs in `docs/human/CONFORMANCE.md`. Legacy standalone HTML is compatibility-only.
 
 ## Validation behavior
 
@@ -89,6 +89,10 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
-Current-behavior Human docs are topic-oriented, not release-note streams. config/documentation-placement.yaml maps behavior surfaces to allowed Human H2 sections. scripts/documentation_placement.py checks heading integrity and, when a diff base is available, verifies changed lines land inside allowed canonical sections.
+Current-behavior Human docs are topic-oriented, not release-note streams. `config/documentation-placement.yaml` maps behavior surfaces to allowed Human H2 sections. `scripts/documentation_placement.py` checks heading integrity and, when a diff base is available, verifies changed lines land inside allowed canonical sections.
+
+Every behavior-bearing source that falls on the broad Technology Guide sync surface MUST also match a semantic placement rule. Unmapped new sources fail closed until maintainers assign the change to an existing canonical topic or deliberately add a new topic to the placement contract. This prevents future features from bypassing information architecture by merely appending prose at the end.
 
 Do not satisfy documentation impact by appending a version/scenario note at the end of USER_GUIDE, ARCHITECTURE_OVERVIEW, HARNESS, INSTALLATION, TECHNOLOGY_GUIDE, or EVOLUTION_RADAR_OVERVIEW. Release history belongs in CHANGELOG; verification history belongs in CONFORMANCE.
+
+`docs/human/` is also the VitePress source root. VitePress is a renderer only; it does not create a second canonical copy. PR/main can always validate the static build. GitHub Pages hosting is a separate repository setting: when not configured, deployment reports `SKIPPED_NOT_CONFIGURED` instead of misreporting a documentation build failure.

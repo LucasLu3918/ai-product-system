@@ -49,8 +49,8 @@ if config_path.exists():
             errors.append(f"documentation placement policy must enable {key}")
 
     migration_bases = policy.get("one_time_structure_migration_bases") or []
-    if migration_bases != ["04824395029b272800b58679e7fa307693fb8690"]:
-        errors.append("v0.53 must bind the one-time Human-doc structure migration to the exact v0.52 main SHA")
+    if migration_bases:
+        errors.append("Human-doc structure migration is complete; future documentation placement must not retain bypass bases")
 
     strict_docs = {
         path
@@ -93,6 +93,31 @@ for topic in (
         errors.append(f"USER_GUIDE lost current AIPS capability explanation: {topic}")
 
 placement_text = script.read_text(encoding="utf-8") if script.exists() else ""
-for marker in ("git_base_resolves", "one_time_structure_migration_bases", "if base and git_base_resolves(base)"):
+for marker in (
+    "git_base_resolves",
+    "one_time_structure_migration_bases",
+    "if base and git_base_resolves(base)",
+    "behavior_trigger_patterns",
+    "behavior-bearing source has no canonical documentation placement rule",
+):
     if marker not in placement_text:
         errors.append(f"documentation placement helper missing migration/install-copy safety contract: {marker}")
+
+if config_path.exists():
+    config = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
+    for rule in config.get("placement_rules") or []:
+        placements = rule.get("placements") or {}
+        if "docs/human/TECHNOLOGY_GUIDE.md" not in placements:
+            errors.append(
+                f"documentation placement rule {rule.get('id')} must constrain Technology Guide placement"
+            )
+
+docs_workflow = (ROOT / ".github/workflows/docs-site.yml").read_text(encoding="utf-8")
+for marker in ("pages_configured", "SKIPPED_NOT_CONFIGURED", "$GITHUB_API_URL/repos/$GITHUB_REPOSITORY/pages"):
+    if marker not in docs_workflow:
+        errors.append(f"docs-site workflow missing truthful Pages preflight contract: {marker}")
+
+placement_config = yaml.safe_load((ROOT / "config/documentation-placement.yaml").read_text(encoding="utf-8")) or {}
+placement_rule_ids = {item.get("id") for item in placement_config.get("placement_rules") or []}
+if "documentation-governance" not in placement_rule_ids:
+    errors.append("documentation placement must map documentation-governance sources to canonical Human topics")

@@ -12,6 +12,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "config" / "documentation-placement.yaml"
+SYNC_CONFIG = ROOT / "config" / "documentation-sync.yaml"
 H2 = re.compile(r"^##\s+(.+?)\s*$")
 H1 = re.compile(r"^#\s+(.+?)\s*$")
 VERSION_HEADING = re.compile(r"^##+\s+(?:v?\d+\.\d+|Scenario\s+\d+)", re.I)
@@ -143,6 +144,15 @@ def matches_any(path: str, patterns: list[str]) -> bool:
     return any(fnmatch.fnmatch(path, pattern) for pattern in patterns)
 
 
+def behavior_trigger_patterns() -> list[str]:
+    data = yaml.safe_load(SYNC_CONFIG.read_text(encoding="utf-8")) or {}
+    guide = data.get("technology_guide") or {}
+    patterns = guide.get("triggers") or []
+    if not isinstance(patterns, list) or not all(isinstance(item, str) and item for item in patterns):
+        raise RuntimeError("documentation-sync technology_guide.triggers must be a list of glob strings")
+    return patterns
+
+
 def line_has_content(lines: list[str], number: int) -> bool:
     return 1 <= number <= len(lines) and bool(lines[number - 1].strip())
 
@@ -153,8 +163,23 @@ def placement_errors(config: dict[str, Any], base: str) -> list[str]:
         return []
     files = changed_files(base)
     errors: list[str] = []
+    rules = config.get("placement_rules") or []
 
-    for rule in config.get("placement_rules") or []:
+    # Documentation Sync intentionally has a broad Technology Guide trigger surface.
+    # Every behavior-bearing source on that surface must also map to a semantic
+    # placement rule. This makes a new capability fail closed until maintainers say
+    # which existing topic owns it (or deliberately add a new canonical topic).
+    behavior_patterns = behavior_trigger_patterns()
+    for path in files:
+        if not matches_any(path, behavior_patterns):
+            continue
+        if not any(matches_any(path, rule.get("triggers") or []) for rule in rules):
+            errors.append(
+                f"{path}: behavior-bearing source has no canonical documentation placement rule; "
+                "map it in config/documentation-placement.yaml before updating Human docs"
+            )
+
+    for rule in rules:
         if not any(matches_any(path, rule.get("triggers") or []) for path in files):
             continue
 
