@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.48.0
+
+### Verifiable Governance Audit Chain
+
+- Extend the existing Enforceable Governance evidence surface with a deterministic tamper-evident JSONL audit ledger; no new Approval Gate, Role, Skill, or Capability ID is introduced.
+- Canonicalize governance-boundary events and bind them with SHA-256 event hashes plus previous-chain hashes so edits, reordering, and interior deletion are detectable.
+- Add externally anchored `expected_chain_head` / event-count verification so suffix truncation can be detected when an auditor retains an independent anchor or equivalent signed checkpoint.
+- Add optional HMAC-SHA256 runtime authentication and optional Ed25519 signed checkpoints; baseline hash-chain verification remains credential-free and requires no external Agent/provider key.
+- Keep HMAC secrets and signing private keys outside Git, prompts, audit events, run state, and Actions artifacts; authenticated/signed existing history must verify before append.
+- Integrate the audit contract with Security Assurance / SAL guidance, Release Readiness, Architecture Surface accounting, Human architecture/security documentation, and the Technology Guide.
+- Add Scenario 158 and raise Scenario Conformance to 158/158 automated: 24 deterministic + 80 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- PR #134 exact final head `4aad25f6a18ec465f387393ee7444c2bdbdf247f` passed Validate Run #1184 and was squash-merged to main as `71c61b137631768206a1c4e541b023b596379d7a`; protected-main Validate Run #1185 succeeded.
+- Earlier PR runs #1182 and #1183 correctly caught lint, Architecture Surface, Documentation Consistency, and secret-scanner issues; all were reconciled within the approved v0.48.0 scope before the final green candidate.
+- Human authority, merge/release authority, and Constitution semantics remain unchanged. Constitution impact: NO.
+- Release model remains `VERSION + CHANGELOG + protected-main validation`; no GitHub Release object or tag is introduced.
+
 ## 0.47.0
 
 ### Controlled Maintenance Reconciliation
