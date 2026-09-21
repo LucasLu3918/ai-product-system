@@ -1210,3 +1210,13 @@ scenarios:
     path: tests/scenarios/159-portable-governance-audit-bundle.md
     coverage: lifecycle
     evidence: [tests/evidence/governance_audit_lifecycle.py, scripts/governance_audit.py, tests/validate_repository.py]
+
+  - id: "160"
+    path: tests/scenarios/160-governance-audit-retention-policy.md
+    coverage: lifecycle
+    evidence:
+      - config/governance-audit-retention.yaml
+      - scripts/governance_audit_retention.py
+      - templates/governance/AUDIT_CATALOG_ENTRY.yaml
+      - tests/evidence/governance_audit_retention_lifecycle.py
+      - tests/validate_repository.py

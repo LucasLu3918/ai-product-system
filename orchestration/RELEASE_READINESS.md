@@ -36,7 +36,7 @@ Assess only applicable items:
 - structured logs + health check available;
 - required metrics/traces/dashboards/alerts available;
 - required audit logging available;\n- when governance auditability is required by the affected SAL/change boundary, bind the exact candidate into the verifiable Governance Audit Chain;
-- when long-lived/offline audit transfer is required, export a portable Governance Audit Bundle containing the exact candidate revision, retained chain anchor, applicable evidence digests and checkpoint public keys;
+- when long-lived/offline audit transfer is required, export a portable Governance Audit Bundle containing the exact candidate revision, retained chain anchor, applicable evidence digests and checkpoint public keys;\n- when audit evidence must remain discoverable across releases/deployments, register the verified bundle in the Governance Audit Catalog and evaluate the advisory retention policy;
 - deployment/runbook/rollback documentation;
 - unresolved blockers.
 
@@ -65,3 +65,8 @@ After production promotion:
 5. verify required SLO/business indicators when available;
 6. rollback/roll-forward on failed verification;
 7. persist PRODUCTION_VERIFIED state only after applicable checks pass.
+
+
+## Audit retention readiness
+
+A release gate may require proof that its audit bundle is registered and discoverable, but catalog/retention evidence cannot make an otherwise NOT_READY or BLOCKED release READY. A retention REVIEW_DUE state also does not authorize evidence deletion; any destructive action requires separate Human authority.

@@ -1,0 +1,39 @@
+version: 1
+policy_id: aips-governance-audit-retention-v1
+mode: advisory_only
+legal_compliance_claim: false
+
+authority:
+  automatic_delete: false
+  deletion_authorized: false
+  compaction_authorized: false
+  human_review_required: true
+
+requirements:
+  external_anchor_from_sal: 2
+  checkpoint_from_sal: 4
+  preserve_minimal_digest: true
+
+# Operational defaults only. They are not legal/regulatory retention requirements.
+# null means no automatic time-based expiry is proposed by this policy.
+levels:
+  "0":
+    full_bundle_days: 30
+    minimal_record_days: 365
+    checkpoint_public_key_days: 365
+  "1":
+    full_bundle_days: 90
+    minimal_record_days: 730
+    checkpoint_public_key_days: 730
+  "2":
+    full_bundle_days: 365
+    minimal_record_days: 1825
+    checkpoint_public_key_days: 1825
+  "3":
+    full_bundle_days: 1095
+    minimal_record_days: null
+    checkpoint_public_key_days: null
+  "4":
+    full_bundle_days: 2555
+    minimal_record_days: null
+    checkpoint_public_key_days: null

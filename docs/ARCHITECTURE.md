@@ -776,3 +776,24 @@ flowchart LR
 ~~~
 
 Repository Health is credential-free consistency evidence over existing truths. The explicit Architecture Surface Inventory classifies every Capability Map entry into a major subsystem and binds repository paths, canonical docs and validation evidence. It calls Scenario Conformance, verifies Integration Gate wiring, and emits an exact-candidate CI evidence artifact; it does not create a second Change Impact system or repair drift automatically.
+
+
+## Governance Audit Retention and Verification Policy
+
+~~~mermaid
+flowchart LR
+    B[Verified Audit Bundles] --> C[Deterministic Audit Catalog]
+    A[Independent Anchors] --> C
+    C --> F[Find by revision / subject / chain / key id]
+    C --> K[Checkpoint Key Registry]
+    P[Retention Policy + as-of date] --> R[Retention Plan]
+    C --> R
+    R --> KEEP[KEEP_FULL]
+    R --> HOLD[HOLD_FULL]
+    R --> REVIEW[REVIEW_DUE]
+    REVIEW --> M[Minimal Digest Record]
+    M --> H[Human Review]
+    H --> X[Separate destructive authority if ever approved]
+~~~
+
+The catalog is a provenance/discovery layer over v0.49 bundles, not a new trust anchor. Bundle verification with an independently retained anchor remains authoritative evidence verification. The retention helper deliberately has no automatic delete/compact command.

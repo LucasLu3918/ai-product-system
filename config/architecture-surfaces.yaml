@@ -57,6 +57,9 @@ surfaces:
     required_paths:
       - scripts/governance_guard.py
       - scripts/governance_audit.py
+      - scripts/governance_audit_retention.py
+      - config/governance-audit-retention.yaml
+      - templates/governance/AUDIT_CATALOG_ENTRY.yaml
       - core/GOVERNANCE.md
       - orchestration/GOVERNANCE_AUDIT.md
       - orchestration/DETERMINISTIC_AUTOMATION.md
@@ -73,6 +76,7 @@ surfaces:
     validation_paths:
       - tests/evidence/governance_command_guard.py
       - tests/evidence/governance_audit_lifecycle.py
+      - tests/evidence/governance_audit_retention_lifecycle.py
       - tests/evidence/external_credential_guard_lifecycle.py
 
   - id: scenario-conformance

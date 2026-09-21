@@ -547,3 +547,17 @@ AIPS extends existing components rather than adding new authority layers:
 - Integration/Janitor Gate can bind a freshly fetched target-branch tip and blocks stale PR bases before running candidate checks.
 
 These are validation/research/execution hardening rules only. Protected Human Authority, Git Publish Approval, merge authority and release authority remain unchanged.
+
+
+## Governance Audit Retention / Verification
+
+For long-lived Governance Audit evidence, use config/governance-audit-retention.yaml and scripts/governance_audit_retention.py.
+
+- catalog registration verifies an existing v0.49 bundle before indexing it;
+- SAL thresholds can require an independently retained anchor and signed checkpoint evidence;
+- checkpoint key rotation uses distinct key IDs; one key ID with a changed fingerprint fails closed;
+- catalog-find supports deterministic provenance discovery without a remote database;
+- retention-plan is advisory only and uses an explicit as-of date;
+- legal hold overrides time thresholds;
+- REVIEW_DUE never authorizes deletion or compaction;
+- no secret/private key, source absolute path or new Agent/provider credential is persisted or required.
