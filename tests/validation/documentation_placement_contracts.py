@@ -48,6 +48,10 @@ if config_path.exists():
         if policy.get(key) is not True:
             errors.append(f"documentation placement policy must enable {key}")
 
+    migration_bases = policy.get("one_time_structure_migration_bases") or []
+    if migration_bases != ["04824395029b272800b58679e7fa307693fb8690"]:
+        errors.append("v0.53 must bind the one-time Human-doc structure migration to the exact v0.52 main SHA")
+
     strict_docs = {
         path
         for path, spec in (config.get("current_behavior_docs") or {}).items()
@@ -87,3 +91,8 @@ for topic in (
 ):
     if topic not in user_guide:
         errors.append(f"USER_GUIDE lost current AIPS capability explanation: {topic}")
+
+placement_text = script.read_text(encoding="utf-8") if script.exists() else ""
+for marker in ("git_base_resolves", "one_time_structure_migration_bases", "if base and git_base_resolves(base)"):
+    if marker not in placement_text:
+        errors.append(f"documentation placement helper missing migration/install-copy safety contract: {marker}")

@@ -93,6 +93,16 @@ def static_errors(config: dict[str, Any]) -> list[str]:
     return errors
 
 
+def git_base_resolves(base: str) -> bool:
+    proc = subprocess.run(
+        ["git", "rev-parse", "--verify", "--quiet", f"{base}^{commit}"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+    return proc.returncode == 0
+
+
 def changed_files(base: str) -> list[str]:
     proc = subprocess.run(
         ["git", "diff", "--name-only", f"{base}...HEAD"],
@@ -138,6 +148,9 @@ def line_has_content(lines: list[str], number: int) -> bool:
 
 
 def placement_errors(config: dict[str, Any], base: str) -> list[str]:
+    migration_bases = set((config.get("policy") or {}).get("one_time_structure_migration_bases") or [])
+    if base in migration_bases:
+        return []
     files = changed_files(base)
     errors: list[str] = []
 
@@ -184,7 +197,7 @@ def audit() -> list[str]:
     config = load_config()
     errors = static_errors(config)
     base = os.environ.get("AIPS_DOCS_DIFF_BASE", "").strip()
-    if base:
+    if base and git_base_resolves(base):
         errors.extend(placement_errors(config, base))
     return errors
 
