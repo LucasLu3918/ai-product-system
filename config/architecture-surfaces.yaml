@@ -7,7 +7,6 @@ surfaces:
   - id: harness-runtime
     capabilities:
       - turn-aware-global-harness
-      - mcp-interoperability-gateway
       - execution-isolation
       - resource-authorization
       - gemini-cli-observable-event-capture-trial

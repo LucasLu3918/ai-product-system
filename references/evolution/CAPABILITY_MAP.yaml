@@ -29,4 +29,3 @@ capabilities:
 
   - {id: integration-gate, name_en: Exact-Candidate Integration Gate, name_zh: 精確候選整合閘門, docs: [orchestration/INTEGRATION_GATE.md, docs/human/ARCHITECTURE_OVERVIEW.md]}
   - {id: repository-health-architecture-drift, name_en: Repository Health / Architecture Drift, name_zh: 儲存庫健康與架構漂移偵測, docs: [orchestration/REPOSITORY_HEALTH.md, docs/ARCHITECTURE.md, docs/human/MAINTENANCE.md]}
-  - {id: mcp-interoperability-gateway, name_en: MCP Interoperability Gateway, name_zh: MCP 互通閘道, docs: [harness/MCP_GATEWAY.md, harness/HARNESS_PROTOCOL.md, docs/human/HARNESS.md]}

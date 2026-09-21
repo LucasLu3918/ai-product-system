@@ -1,10 +1,10 @@
 version: 1
 candidate:
   base_sha: b550ceeb086a3ee4ca12a3166e10a93019c820ac
-  changed_files_hash: 985b9e0756115bf33840e034e3365e719b5462abccfbd1970fa221157c1b3070
+  changed_files_hash: 3452321ad833a9b53d653e8c85e99f6a7cf24394719e029d5637bf2a12780af5
 change:
   id: mcp-interoperability-gateway
-  summary: Add a local stdio MCP access plane over canonical AIPS Roles, Skills, protocols and deterministic helpers while retaining native adapters for enforcement.
+  summary: Extend the existing turn-aware Global Harness with a local stdio MCP access plane over canonical AIPS Roles, Skills, protocols and deterministic helpers while retaining native adapters for enforcement and adding no Capability ID.
   boundary: [harness-runtime, deterministic-scheduler, scenario-conformance, architecture-documentation, installation-lifecycle]
 matrix:
   - boundary: harness-runtime

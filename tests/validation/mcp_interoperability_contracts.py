@@ -59,12 +59,12 @@ if "mcp-interoperability" in adapter_registry:
     errors.append("MCP access plane must not be misrepresented as a runtime-native adapter")
 
 capability_map = (ROOT / "references/evolution/CAPABILITY_MAP.yaml").read_text(encoding="utf-8")
-if "id: mcp-interoperability-gateway" not in capability_map:
-    errors.append("Capability Map missing mcp-interoperability-gateway")
+if "id: mcp-interoperability-gateway" in capability_map:
+    errors.append("MCP gateway must reuse turn-aware-global-harness instead of adding a Capability ID")
 
 surfaces = (ROOT / "config/architecture-surfaces.yaml").read_text(encoding="utf-8")
-if "mcp-interoperability-gateway" not in surfaces or "tests/evidence/mcp_interoperability_lifecycle.py" not in surfaces:
-    errors.append("Architecture surface inventory missing MCP gateway validation binding")
+if "harness/MCP_GATEWAY.md" not in surfaces or "scripts/mcp_server.py" not in surfaces or "tests/evidence/mcp_interoperability_lifecycle.py" not in surfaces:
+    errors.append("Harness runtime architecture surface missing MCP gateway path/validation binding")
 
 workflow_path = ROOT / ".github/workflows/mcp-codex-interop.yml"
 workflow = workflow_path.read_text(encoding="utf-8") if workflow_path.exists() else ""
