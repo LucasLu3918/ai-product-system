@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.47.0
+
+### Controlled Maintenance Reconciliation
+
+- Add a Human-authorized one-time exact branch-cleanup manifest while keeping ordinary Branch Hygiene classification/reporting read-only.
+- Bind every approved cleanup target to an exact branch name, expected head SHA, and merged PR evidence; preserve persistent, unclassified, pending, moved, and unproven branches.
+- Preflight the complete cleanup batch before the first deletion so any mismatched target blocks the batch without partial cleanup.
+- Preserve local Git integration proof as the primary path and add a GitHub merged-PR exact-head fallback for historical squash-merged branches whose integration can no longer be reconstructed from current-main patch/merge-tree history.
+- Revalidate merged-PR fallback evidence at runtime: merged state, exact head SHA, exact head ref, and base=main must all match the approved manifest.
+- Initial protected-main Branch Hygiene Run #2 failed before deleting any branch because local-only integration proof produced false negatives for historical squash merges; no partial deletion occurred.
+- Fix PR #132 corrected the proof model without relaxing exact branch/SHA authority; exact-head Validate Run #1178 succeeded and protected-main Validate Run #1179 succeeded after merge.
+- Branch Hygiene Run #3 completed successfully and removed exactly 60 approved merged branches, reducing the remote branch inventory from 100 to 40 while preserving unproven and persistent branches.
+- Add durable lifecycle reconciliation for historical Evolution Radar Issue #79: covered capabilities remain COVERED, anomaly evidence remains ADOPTED_WITH_BOUNDS, provider/model verification remains unclaimed, and semantic-intent governance remains DEFERRED.
+- Close Issue #79 as completed only after durable current-main reconciliation; any future semantic-intent progression requires fresh current-main evidence plus a new explicit Human Decision.
+- Add Scenarios 156–157 and raise Scenario Conformance to 157/157 automated: 24 deterministic + 79 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- Feature PR #131 exact head `0fbc9b6131ce8ccd1dff297775c945e03ed6faf5` passed Validate Run #1176 and merged to main as `a21cc1912c081403f1855a5e5e038ea035c48f3a`; protected-main Validate Run #1177 succeeded.
+- Fix PR #132 exact head `42b4c9c360e0c0b9621997081219ada8ccbd1ac2` passed Validate Run #1178 and merged to main as `9781871cabc6a5ba1c7a3c218ca9cfefd7572d5a`; protected-main Validate Run #1179 succeeded.
+- No new Role or Skill. Constitution impact: NO.
+- Release model remains `VERSION + CHANGELOG + protected-main validation`; no GitHub Release object or tag is introduced.
+
 ## 0.46.0
 
 ### Evolution Effectiveness Metrics & Feedback Loop
