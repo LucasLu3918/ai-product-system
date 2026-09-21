@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.50.0
+
+### Governance Audit Retention & Verification Policy
+
+- Add a deterministic Governance Audit Catalog over existing v0.49 portable audit bundles; no parallel audit subsystem is introduced.
+- Verify bundles and retained external anchors before catalog registration, then index exact bundle identity, subject, repository revision, event count, chain head, manifest/anchor digests, evidence digests, and checkpoint public-key fingerprints.
+- Add deterministic provenance discovery so auditors can locate the correct bundle by bundle id, subject, repository revision, chain head, or checkpoint key id.
+- Preserve checkpoint key-rotation evidence: reuse of one key id with a changed fingerprint fails closed, while rotation to a distinct key id remains auditable without granting key-management authority.
+- Add advisory-only retention planning with KEEP_FULL, HOLD_FULL, and REVIEW_DUE states plus deterministic minimal digest records for Human review.
+- Legal hold overrides time-based review. The helper exposes no delete/compact command and always keeps automatic_delete=false and deletion_authorized=false.
+- Treat configured retention durations as operational defaults only, not legal/regulatory retention requirements. SAL 2+ defaults require an independently retained anchor and SAL 4 registration requires signed checkpoint evidence.
+- Keep the baseline credential-free; no external Agent/provider credential, new Role, Skill, Capability ID, Approval Gate, merge authority, release authority, or production authority is introduced.
+- Add Scenario 160 and raise Scenario Conformance to 160/160 automated: 24 deterministic + 82 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- PR #138 final head `02efecddbba4a93ee64e8a96daaccce2b3f73110` passed Core Change Validate Run #1196 with `matrix_required=true` and exact changed-files hash `64bed582f30245a8d8a77d1ec744a142ac4b8d0ad8b8b80e7cf908862491e690`.
+- PR #138 was squash-merged to main as `f2797885e498dc4f1cba405a4c89fb67cdc9edb1`; protected-main Validate Run #1197 succeeded.
+- Human authority and Constitution semantics remain unchanged. Constitution impact: NO.
+- Release model remains `VERSION + CHANGELOG + protected-main validation`; no GitHub Release object or tag is introduced.
+
 ## 0.49.0
 
 ### Portable Governance Audit Bundle
