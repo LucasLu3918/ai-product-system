@@ -39,7 +39,9 @@ fi
 if [ ! -d "$INSTALL_DIR/.git" ]; then
   if [ -n "$SOURCE_CHECKOUT" ]; then
     [ -d "$SOURCE_CHECKOUT/.git" ] || { echo "ERROR: source checkout is not a Git repository: $SOURCE_CHECKOUT" >&2; exit 1; }
-    git clone --quiet --local --branch "$DEFAULT_BRANCH" "$SOURCE_CHECKOUT" "$INSTALL_DIR"
+    source_head="$(git -C "$SOURCE_CHECKOUT" rev-parse HEAD)"
+    git clone --quiet --local --no-checkout "$SOURCE_CHECKOUT" "$INSTALL_DIR"
+    git -C "$INSTALL_DIR" checkout --quiet -B "$DEFAULT_BRANCH" "$source_head"
   else
     git clone --quiet --filter=blob:none --single-branch --branch "$DEFAULT_BRANCH" "$REPO_URL" "$INSTALL_DIR"
   fi
