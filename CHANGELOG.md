@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.51.0
+
+### Parallel Runtime Resource Isolation
+
+- Extend the existing Execution Isolation lifecycle with repository-scoped atomic TCP port leases for parallel AIPS-managed worktrees; no separate Port Manager, Role, Skill, Capability ID or Approval Gate is introduced.
+- Store runtime lease state outside project source under the AIPS external config namespace and serialize cross-process allocation so concurrent AIPS agents cannot commit the same port lease.
+- Use deterministic candidate ordering from repository/isolation/resource identity while treating current host port occupancy as an explicit runtime input; a preferred port is a hint, not a guaranteed number.
+- Probe host TCP bind availability before recording a lease and support bounded `runtime-reallocate` recovery when an external process wins a post-probe address-in-use race.
+- Emit canonical runtime variables `AIPS_PORT_<RESOURCE>` and `AIPS_PORT` when unambiguous, plus only explicitly requested aliases such as `PORT`.
+- Add `runtime-lease`, `runtime-reallocate`, `runtime-release` and `runtime-reconcile`; clean isolation removal releases remaining leases, while runtime release remains independent from dirty-worktree preservation.
+- Reconcile only orphaned leases whose AIPS isolation is no longer ACTIVE; an ACTIVE-but-idle lease is not guessed stale.
+- Extend Task Graph runtime metadata and Deterministic Scheduler validation/dispatch handoff. Scheduler validates and propagates runtime requests but does not allocate host resources.
+- Limit v0.51 to TCP port coordination; Docker networks, database/schema namespaces, Redis indexes, GPU/resource quotas, process lifecycle management and external provider credentials remain out of scope.
+- Add Scenario 161 and raise Scenario Conformance to 161/161 automated: 24 deterministic + 83 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- PR #140 final head `45c30d88b26e97e48d9358d0463c1687254c00eb` passed Core Change Validate Run #1203 with `matrix_required=true` and exact changed-files hash `a835027c416f6d52f61d2d8b498526af61862f07642ab09845f88a03739661ce`.
+- PR #140 was squash-merged to main as `c16537a2711b4272de871d4eeb88a2975c7c29a3`; protected-main Validate Run #1204 succeeded.
+- Initial Validate Run #1202 correctly blocked release because deterministic-execution documentation sync required `orchestration/INTEGRATION_GATE.md`; the documentation contract and Core Change Matrix binding were reconciled before the final green candidate.
+- Human authority, merge/release authority and Constitution semantics remain unchanged. Constitution impact: NO.
+- Release model remains `VERSION + CHANGELOG + protected-main validation`; no GitHub Release object or tag is introduced.
+
 ## 0.50.0
 
 ### Governance Audit Retention & Verification Policy
