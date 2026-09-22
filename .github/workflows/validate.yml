@@ -22,6 +22,8 @@ jobs:
       AIPS_GATE_BASE: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event_name == 'push' && github.event.before || format('{0}^', github.sha) }}
       AIPS_GATE_BASE_TIP: ${{ github.event_name == 'pull_request' && format('origin/{0}', github.event.pull_request.base.ref) || '' }}
       AIPS_GATE_HEAD: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      AIPS_GATE_REPORT: ${{ runner.temp }}/integration-gate-report.yaml
+      AIPS_HEALTH_REPORT: ${{ runner.temp }}/repository-health-report.json
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -71,7 +73,7 @@ jobs:
             "${base_tip_args[@]}" \
             "${matrix_args[@]}" \
             --omit-output-tail \
-            --output integration-gate-report.yaml
+            --output "$AIPS_GATE_REPORT"
       - name: Integration Gate evidence summary
         if: ${{ always() }}
         shell: bash
@@ -80,14 +82,15 @@ jobs:
         run: |
           if [[ "$AIPS_GATE_OUTCOME" == "skipped" ]]; then
             echo "Integration Gate: NOT_RUN (earlier step prevented execution)." >> "$GITHUB_STEP_SUMMARY"
-          elif [[ ! -s integration-gate-report.yaml ]]; then
+          elif [[ ! -s "$AIPS_GATE_REPORT" ]]; then
             echo "Integration Gate: REPORT_UNAVAILABLE (step outcome: ${AIPS_GATE_OUTCOME:-unknown})." >> "$GITHUB_STEP_SUMMARY"
           else
             python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import os
           import yaml
           from pathlib import Path
 
-          report = yaml.safe_load(Path("integration-gate-report.yaml").read_text(encoding="utf-8")) or {}
+          report = yaml.safe_load(Path(os.environ["AIPS_GATE_REPORT"]).read_text(encoding="utf-8")) or {}
           candidate = report.get("candidate") or {}
           print(f"Integration Gate: {report.get('status', 'REPORT_UNAVAILABLE')}")
           print(f"Candidate: {candidate.get('head_sha', 'unknown')}")
@@ -98,12 +101,12 @@ jobs:
           PY
           fi
       - name: Upload Integration Gate evidence
-        if: ${{ always() && hashFiles('integration-gate-report.yaml') != '' }}
+        if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: integration-gate-${{ github.run_id }}-${{ github.run_attempt }}
-          path: integration-gate-report.yaml
-          if-no-files-found: error
+          path: ${{ env.AIPS_GATE_REPORT }}
+          if-no-files-found: ignore
           retention-days: 14
       - name: Repository Health evidence
         if: ${{ always() }}
@@ -111,14 +114,14 @@ jobs:
         run: |
           python scripts/repository_health.py audit \
             --config config/repository-health.yaml \
-            --format json > repository-health-report.json
+            --format json > "$AIPS_HEALTH_REPORT"
       - name: Upload Repository Health evidence
-        if: ${{ always() && hashFiles('repository-health-report.json') != '' }}
+        if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: repository-health-${{ github.run_id }}-${{ github.run_attempt }}
-          path: repository-health-report.json
-          if-no-files-found: error
+          path: ${{ env.AIPS_HEALTH_REPORT }}
+          if-no-files-found: ignore
           retention-days: 14
 
   repository:
