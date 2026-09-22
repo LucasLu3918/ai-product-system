@@ -31,6 +31,7 @@ try {
 不需要先手動 clone repository 或切換到 AIPS 目錄。
 
 安裝器不會自動改寫 shell profile；若終端機找不到 `aips`，請依 [安裝排查](INSTALLATION.md#常見問題與排查) 將實際 CLI 路徑加入 `PATH`。
+在同一個 terminal 尚未更新 `PATH` 時，可直接使用安裝器顯示的絕對路徑執行 `doctor` 與 `harness status`。
 
 ## 驗證安裝
 

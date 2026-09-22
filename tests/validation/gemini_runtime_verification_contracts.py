@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 import subprocess
+import sys
 
 from .static_contracts import ROOT, errors, load_yaml
 
@@ -23,7 +24,7 @@ if MANIFEST.exists():
             errors.append(f"Gemini extension manifest must declare {name} for runtime sanitization")
 
 if SCRIPT.exists():
-    compiled = subprocess.run(["python", "-m", "py_compile", str(SCRIPT)], cwd=ROOT, capture_output=True, text=True)
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(SCRIPT)], cwd=ROOT, capture_output=True, text=True)
     if compiled.returncode != 0:
         errors.append(f"Gemini real-runtime verifier syntax failed: {compiled.stderr.strip()}")
 
@@ -73,4 +74,3 @@ if SCRIPT.exists():
     ):
         if token not in verifier_text:
             errors.append(f"Gemini real-runtime verifier missing official extension-settings evidence: {token}")
-

@@ -149,7 +149,7 @@ def main() -> int:
             sys.executable, str(PI), "context", "--project", str(project),
             "--runtime", "claude-code", "--prompt", "Explain the API error contract.", "--format", "json",
         ], env)
-        require(str(authoritative) in ((ctx.get("context") or {}).get("project_native") or []), "promoted source must enter authoritative project context")
+        require(str(authoritative.resolve()) in ((ctx.get("context") or {}).get("project_native") or []), "promoted source must enter authoritative project context")
 
     print("project_intelligence_promotion_lifecycle evidence: PASS")
     return 0

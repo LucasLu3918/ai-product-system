@@ -89,12 +89,13 @@ def make_env(base: Path, marker: Path, *, bin_home: Path | None = None) -> dict[
         p.write_text("#!/usr/bin/env bash\nexit 1\n", encoding="utf-8")
         p.chmod(0o755)
     env = dict(os.environ)
+    python_bin = str(Path(sys.executable).resolve().parent)
     env.update({
         "HOME": str(home),
         "XDG_CONFIG_HOME": str(config),
         "AIPS_BIN_HOME": str(bin_home or (base / "bin-home")),
         "AIPS_VALIDATION_MARKER": str(marker),
-        "PATH": f"{fake_bin}:{env.get('PATH', '')}",
+        "PATH": f"{python_bin}:{fake_bin}:{env.get('PATH', '')}",
     })
     return env
 
@@ -319,6 +320,14 @@ def cli_collision_contract() -> None:
         env_owned = make_env(base / "owned-runtime", base / "owned-validation.log", bin_home=owned_home)
         owned_result = cli(system, ["install"], env_owned)
         require(owned_result.returncode == 0, f"Exact AIPS symlink should be reusable: {owned_result.stdout} {owned_result.stderr}")
+        require(
+            f'Until PATH is updated, run: "{owned}" doctor' in owned_result.stdout,
+            "Install must print an absolute doctor command when AIPS_BIN_HOME is not on PATH",
+        )
+        require(
+            f'Until PATH is updated, run: "{owned}" harness status' in owned_result.stdout,
+            "Install must print an absolute Harness status command when AIPS_BIN_HOME is not on PATH",
+        )
         require(owned.is_symlink() and owned.resolve() == (system / "bin" / "aips").resolve(), "Owned CLI symlink was not preserved")
         require((Path(env_owned["XDG_CONFIG_HOME"]) / "aips" / "system-dir").exists(), "Owned symlink reuse must record the installed system")
         require((Path(env_owned["XDG_CONFIG_HOME"]) / "aips" / "harness" / "installation.yaml").exists(), "Owned symlink reuse must continue through installation integrity and Harness registration")
