@@ -17,6 +17,8 @@ AIPS 的 public lifecycle terminology 統一使用 **Install / Update / Uninstal
 
 Installer 會自行管理 AIPS system checkout、Python virtual environment、CLI 與可安全安裝的 Runtime integrations。使用者不需要先建立目錄、cd 或手動 git clone。
 
+AIPS runtime 需要 Python 3.10 以上。Installer 會依序選擇可用的相容 Python；需要指定解譯器時可設定 `AIPS_PYTHON=/path/to/python3`。若既有 AIPS-owned `.venv` 使用較舊版本，install／update／preflight 在修復依賴時會用相容 Python 重建該環境。
+
 預設 managed system path：
 
 ~~~text
