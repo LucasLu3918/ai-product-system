@@ -35,6 +35,8 @@ config/documentation-placement.yaml 定義 current-behavior 文件的 canonical 
 - changed lines 必須落在該 subsystem 的 allowed canonical section；
 - legacy standalone HTML 不得再累加新 section。
 
+安裝、Harness 與 CI gate 的變更也必須在對應的 task-oriented Human 文件與 canonical 技術／架構區段留下可驗證說明。
+
 若新 capability 沒有適合 section，應先設計新的 topic section並更新 placement config，而不是直接 append。
 
 ## Official Docs Site

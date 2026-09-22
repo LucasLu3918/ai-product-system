@@ -78,6 +78,8 @@ The `deterministic-execution` rule binds Scheduler / Integration Gate implementa
 
 This keeps the runtime implementation, exact-candidate CI behavior and authority boundaries synchronized when future changes touch scheduling or Janitor behavior.
 
+Installer and Harness runtime-path changes follow the same contract: update the mapped Human installation and integration guidance together with this Agent-facing synchronization record.
+
 
 ## Resource authorization mapping
 

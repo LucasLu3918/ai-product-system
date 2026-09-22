@@ -30,6 +30,8 @@ try {
 
 不需要先手動 clone repository 或切換到 AIPS 目錄。
 
+安裝器不會自動改寫 shell profile；若終端機找不到 `aips`，請依 [安裝排查](INSTALLATION.md#常見問題與排查) 將實際 CLI 路徑加入 `PATH`。
+
 ## 驗證安裝
 
 ~~~bash

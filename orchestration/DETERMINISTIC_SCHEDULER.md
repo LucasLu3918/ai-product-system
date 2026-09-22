@@ -74,6 +74,8 @@ Direct helper:
 python scripts/deterministic_scheduler.py --graph TASK_GRAPH.yaml --state STATE.yaml
 ~~~
 
+CI 會在合併前以 exact candidate 執行 Integration Gate；required aggregate 只有在 Gate 成功時才可通過。
+
 Output includes graph/state/decision SHA-256 fingerprints for reproducibility.
 
 CI integration evidence is written to the runner temporary directory and uploaded after validation. Scheduler and repository checks therefore inspect the unchanged checkout revision instead of treating generated reports as dirty inputs.

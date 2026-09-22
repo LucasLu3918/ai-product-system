@@ -88,6 +88,44 @@ def helper_contract() -> None:
         require("manually edited" in target.read_text(encoding="utf-8"), "modified managed block was not preserved")
 
 
+def codex_path_fallback_contract() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        home = base / "home"
+        config = base / "config"
+        bin_home = base / "bin-home"
+        codex_app = base / "ChatGPT.app" / "Contents" / "Resources" / "codex"
+        home.mkdir()
+        codex_app.parent.mkdir(parents=True)
+        make_runtime(codex_app.parent, "codex")
+
+        env = dict(os.environ)
+        env.update({
+            "HOME": str(home),
+            "XDG_CONFIG_HOME": str(config),
+            "AIPS_BIN_HOME": str(bin_home),
+            "CODEX_CLI_PATH": str(codex_app),
+            "PATH": "/usr/bin:/bin:/usr/sbin:/sbin",
+        })
+
+        installed = subprocess.run(
+            ["bash", str(CLI), "harness", "install"],
+            env=env,
+            capture_output=True,
+            text=True,
+        )
+        require(installed.returncode == 0, f"Codex path fallback install failed: {installed.stdout} {installed.stderr}")
+
+        state = config / "aips" / "harness" / "adapters" / "codex.yaml"
+        data = load_yaml(state)
+        require(data.get("status") == "AUTOMATIC", "Codex path fallback must report AUTOMATIC")
+        require(data.get("capability") == "CONTEXT_ALWAYS", "Codex path fallback must preserve CONTEXT_ALWAYS")
+        require(
+            (home / ".codex" / "AGENTS.md").is_file(),
+            "Codex path fallback must compose the global managed instruction",
+        )
+
+
 def harness_contract() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
@@ -176,6 +214,7 @@ def harness_contract() -> None:
 
 def main() -> int:
     helper_contract()
+    codex_path_fallback_contract()
     harness_contract()
     print("adapter_composition evidence: PASS")
     return 0

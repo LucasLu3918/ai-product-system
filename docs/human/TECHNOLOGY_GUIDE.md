@@ -36,6 +36,8 @@ Existing Project mutation 前先宣告 Change Boundary，實作後再把 actual 
 
 ## Execution
 
+Runtime adapter 偵測會優先使用命令列，再使用明確的 runtime path fallback；安裝器不會因找不到 shell `PATH` 就改寫使用者 profile。CLI 路徑與 managed block 狀態由 `aips doctor`、`aips harness status` 與 `aips harness doctor` 分別驗證。
+
 ### Deterministic Automation
 
 可用固定規則完成的工作優先交給 Shell / Python / existing tooling，再把 compact structured evidence交給 model。
