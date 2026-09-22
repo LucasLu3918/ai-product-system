@@ -138,6 +138,42 @@ python_bin() {
   fi
 }
 
+compatible_python_bin() {
+  local candidate path
+  for candidate in "${AIPS_PYTHON:-}" python3.13 python3.12 python3.11 python3.10 python3; do
+    [ -n "$candidate" ] || continue
+    path="$(command -v "$candidate" 2>/dev/null || true)"
+    [ -n "$path" ] || continue
+    if "$path" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 10) else 1)' >/dev/null 2>&1; then
+      printf '%s\n' "$path"
+      return 0
+    fi
+  done
+  return 1
+}
+
+venv_python_compatible() {
+  [ -x "$SYSTEM_DIR/.venv/bin/python" ] &&
+    "$SYSTEM_DIR/.venv/bin/python" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 10) else 1)' >/dev/null 2>&1
+}
+
+ensure_compatible_venv() {
+  local creator
+  creator="$(compatible_python_bin || true)"
+  [ -n "$creator" ] || die "AIPS requires Python 3.10 or newer. Set AIPS_PYTHON to a compatible interpreter."
+  if venv_python_compatible; then
+    return 0
+  fi
+  if [ -d "$SYSTEM_DIR/.venv" ]; then
+    warn "AIPS virtual environment uses an unsupported Python; recreating it with $creator."
+    rm -rf "$SYSTEM_DIR/.venv"
+  else
+    say "Creating Python virtual environment with $creator..."
+  fi
+  "$creator" -m venv "$SYSTEM_DIR/.venv" || die "AIPS virtual environment creation failed."
+  venv_python_compatible || die "AIPS virtual environment requires Python 3.10 or newer."
+}
+
 runtime_dependencies_available() {
   local py
   py="$(python_bin)"
@@ -145,8 +181,8 @@ runtime_dependencies_available() {
 }
 
 install_runtime_dependencies() {
+  ensure_compatible_venv
   local py="$SYSTEM_DIR/.venv/bin/python"
-  [ -x "$py" ] || die "AIPS virtual environment is missing. Run: $SYSTEM_DIR/bin/aips install"
   "$py" -m pip install --disable-pip-version-check -q -r "$SYSTEM_DIR/requirements.txt" ||
     die "AIPS runtime dependency installation failed."
   "$py" -c 'import yaml, mcp' >/dev/null 2>&1 ||
@@ -787,13 +823,7 @@ validate_installation() {
 
 install_cli() {
   require_cmd git
-  require_cmd python3
   [ -d "$SYSTEM_DIR/.git" ] || die "Run install from a cloned ai-product-system repository."
-
-  if [ ! -d "$SYSTEM_DIR/.venv" ]; then
-    say "Creating Python virtual environment..."
-    python3 -m venv "$SYSTEM_DIR/.venv"
-  fi
 
   say "Installing AIPS runtime dependencies..."
   install_runtime_dependencies

@@ -306,6 +306,45 @@ os.execv({sys.executable!r}, [{sys.executable!r}] + sys.argv[1:])
     py.chmod(0o755)
 
 
+def make_incompatible_fake_venv(system: Path) -> None:
+    py = system / ".venv" / "bin" / "python"
+    py.parent.mkdir(parents=True)
+    py.write_text("#!/usr/bin/env bash\nexit 1\n", encoding="utf-8")
+    py.chmod(0o755)
+
+
+def make_fake_python_creator(base: Path, marker: Path) -> Path:
+    creator = base / "python3-compatible"
+    runtime_body = f"""#!{sys.executable}
+import os
+from pathlib import Path
+import sys
+marker = Path({str(marker)!r})
+if len(sys.argv) >= 3 and sys.argv[1:3] == ["-m", "pip"]:
+    marker.write_text("installed\\n", encoding="utf-8")
+    raise SystemExit(0)
+if len(sys.argv) >= 3 and sys.argv[1] == "-c" and ("sys.version_info" in sys.argv[2] or "import yaml, mcp" in sys.argv[2]):
+    raise SystemExit(0)
+os.execv({sys.executable!r}, [{sys.executable!r}] + sys.argv[1:])
+"""
+    creator_body = f"""#!{sys.executable}
+from pathlib import Path
+import sys
+if len(sys.argv) >= 3 and sys.argv[1:3] == ["-m", "venv"]:
+    py = Path(sys.argv[3]) / "bin" / "python"
+    py.parent.mkdir(parents=True, exist_ok=True)
+    py.write_text({runtime_body!r}, encoding="utf-8")
+    py.chmod(0o755)
+    raise SystemExit(0)
+if len(sys.argv) >= 3 and sys.argv[1] == "-c" and "sys.version_info" in sys.argv[2]:
+    raise SystemExit(0)
+raise SystemExit(1)
+"""
+    creator.write_text(creator_body, encoding="utf-8")
+    creator.chmod(0o755)
+    return creator
+
+
 def runtime_dependency_health_contract() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp)
@@ -332,6 +371,27 @@ def runtime_dependency_health_contract() -> None:
         healthy = cli(system, ["doctor"], env)
         require(healthy.returncode == 0, f"Doctor must pass after dependency repair: {healthy.stdout} {healthy.stderr}")
         require("runtime dependencies: OK (PyYAML, MCP)" in healthy.stdout, "Doctor must report healthy runtime dependencies")
+
+
+def runtime_python_compatibility_contract() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        system, _ = system_fixture(base, "python-compatibility")
+        make_incompatible_fake_venv(system)
+        dependency_marker = base / "dependencies-installed"
+        creator = make_fake_python_creator(base, dependency_marker)
+        env = make_env(base / "runtime", base / "validation.log")
+        env["AIPS_PYTHON"] = str(creator)
+        config_home = Path(env["XDG_CONFIG_HOME"]) / "aips"
+        config_home.mkdir(parents=True, exist_ok=True)
+        (config_home / "system-dir").write_text(str(system) + "\n", encoding="utf-8")
+
+        repaired = cli(system, ["update"], env)
+        require(repaired.returncode == 0, f"Unsupported managed Python repair failed: {repaired.stdout} {repaired.stderr}")
+        require("unsupported Python" in repaired.stderr, "Repair must explain why the managed virtual environment is recreated")
+        require(dependency_marker.exists(), "Recreated managed virtual environment must install runtime dependencies")
+        venv = system / ".venv" / "bin" / "python"
+        require(venv.exists(), "Recreated managed virtual environment Python is missing")
 
 
 def cli_collision_contract() -> None:
@@ -388,6 +448,7 @@ def main() -> int:
     major_version_gate()
     cli_collision_contract()
     runtime_dependency_health_contract()
+    runtime_python_compatibility_contract()
     print("install_preflight_lifecycle evidence: PASS")
     return 0
 
