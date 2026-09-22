@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: c41b7c29ccf81b512c604f40b27f1dac55093ac6
-  changed_files_hash: 791af72c81dccc8d080e6258d9947f482a2232c1ad02ae2945cf4ce995d660d2
+  changed_files_hash: 804e4ecdf5f3cebac02d130ff0119a26ae2fc312e478ea0ea79845149e706b0a
 change:
   id: installer-intelligence-ci-hardening
   summary: Harden installer download failure handling, preserve arbitrary Git paths across intelligence indexes, keep CI gate evidence bounded and auditable, and rebind this matrix to the exact PR candidate.
