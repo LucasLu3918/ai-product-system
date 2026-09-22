@@ -23,6 +23,17 @@ def event(path: Path, event_type: str, occurred_at: str, result: str) -> None:
 def require(condition: bool, message: str) -> None:
     if not condition: raise AssertionError(message)
 
+def openssl_supports_ed25519() -> bool:
+    binary = shutil.which("openssl")
+    if not binary:
+        return False
+    try:
+        result = subprocess.run([binary, "list", "-public-key-algorithms"], capture_output=True,
+                                text=True, timeout=15, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return result.returncode == 0 and "ED25519" in result.stdout.upper()
+
 def main() -> int:
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp); first = root/"first.json"; second = root/"second.json"; third = root/"third.json"
@@ -78,7 +89,7 @@ def main() -> int:
         require(run("bundle-verify","--bundle",str(bundle),"--anchor",str(external_anchor)).returncode!=0,
                 "tampered external anchor must fail")
         external_anchor.write_bytes(original_anchor)
-        if shutil.which("openssl"):
+        if openssl_supports_ed25519():
             private=root/"private.pem"; public=root/"public.pem"
             subprocess.run(["openssl","genpkey","-algorithm","ED25519","-out",str(private)],check=True,timeout=15)
             subprocess.run(["openssl","pkey","-in",str(private),"-pubout","-out",str(public)],check=True,timeout=15)
