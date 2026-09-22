@@ -8,6 +8,8 @@
 
 AIPS 將 Runtime/User instructions、Project rules、Project Intelligence 與 AIPS protocol 組合成 bounded context。不同 Runtime 使用各自可驗證的 integration strategy。
 
+Runtime adapter 偵測會優先使用命令列，再使用明確的 runtime path fallback；安裝器不會因找不到 shell `PATH` 就改寫使用者 profile。CLI 路徑與 managed block 狀態由 `aips doctor`、`aips harness status` 與 `aips harness doctor` 分別驗證。
+
 ### MCP Interoperability Gateway
 
 MCP 提供 local stdio portable access plane，公開 Resources / Prompts / deterministic Tools。Host model 負責 semantic reasoning；MCP Server 不再呼叫第二個 LLM。

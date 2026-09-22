@@ -71,6 +71,56 @@ Native Runtime Adapter 與 MCP 是兩個互補平面：
 
 細節放在 [Global Harness 與 MCP](HARNESS.md)，不在 Installation 頁重複 implementation 細節。
 
+## 常見問題與排查
+
+### `aips: command not found`
+
+Installer 會建立 `~/.local/bin/aips`（或 `AIPS_BIN_HOME` 指定的路徑），但不會自動改寫使用者的 shell profile。這是刻意保留的環境安全邊界。
+
+先確認 CLI 存在，再把實際安裝路徑加入目前 shell：
+
+~~~bash
+ls -l ~/.local/bin/aips
+export PATH="$HOME/.local/bin:$PATH"
+aips doctor
+~~~
+
+若要永久生效，將相同的 `export PATH=...` 加入使用中的 `~/.zprofile`、`~/.zshrc` 或 `~/.bashrc`，然後開啟新的 terminal。若使用 `AIPS_BIN_HOME`，請把該值加入 `PATH`，不要照抄 `~/.local/bin`。
+
+### `aips harness status` 顯示 `codex: NOT_DETECTED`
+
+這通常表示安裝當下找不到 Codex CLI 的命令路徑；不代表 AIPS 核心 checkout、MCP 或 Python environment 安裝失敗。Codex 已安裝後重新執行：
+
+~~~bash
+aips harness install
+aips harness status
+~~~
+
+macOS 的 ChatGPT app 內建 Codex 路徑會自動偵測。若 Codex 安裝在自訂位置，可在該次命令指定：
+
+~~~bash
+CODEX_CLI_PATH="/path/to/codex" aips harness install
+~~~
+
+成功時應看到 `codex: AUTOMATIC capability=CONTEXT_ALWAYS`。`enforcement=ADVISORY` 是 Codex adapter 的誠實能力標示，表示它提供持久指示，不攔截 Host 的每一個原生工具呼叫。
+
+### Harness 已安裝但狀態仍是 `NOT_DETECTED`
+
+先檢查目前使用的命令與設定，再重新安裝 adapter：
+
+~~~bash
+command -v codex
+aips doctor
+aips harness install
+aips harness doctor
+~~~
+
+若 `command -v codex` 沒有輸出，使用上面的 `CODEX_CLI_PATH`；若 CLI 已在桌面應用程式內而沒有獨立 shell 命令，AIPS 仍可使用可驗證的 app 內建路徑完成 Codex managed block。
+
+### `aips harness status` 顯示 `Harness: active` 但沒有自動載入？
+
+`Harness: active` 只代表 AIPS Global Harness ownership manifest 存在；每個 runtime 的 adapter 狀態要個別看。只有 `codex: AUTOMATIC` 且 capability 為 `CONTEXT_ALWAYS`，才代表 Codex 全域 managed instruction 已完成。完成後請開啟新的 Codex 工作階段，讓新的全域指示鏈載入。
+
 ## 更新
 
 ~~~bash

@@ -15,7 +15,7 @@ current_behavior_docs:
     required_h2: [安裝 AIPS, 驗證安裝, 開始工作, Existing Project, 更新, 解除安裝]
   docs/human/INSTALLATION.md:
     strict_h2: true
-    required_h2: [macOS / Linux, Windows, 驗證, Runtime integration, 更新, 解除安裝, 會保留什麼, 相容入口]
+    required_h2: [macOS / Linux, Windows, 驗證, Runtime integration, 常見問題與排查, 更新, 解除安裝, 會保留什麼, 相容入口]
   docs/human/HARNESS.md:
     strict_h2: true
     required_h2: [Integration model, Native Runtime Adapters, MCP Interoperability, Capability truth, Progressive disclosure, Ownership 與解除]

@@ -272,7 +272,7 @@ install_codex_adapter() {
   local codex_home="${CODEX_HOME:-$HOME/.codex}"
   local target="$codex_home/AGENTS.md" py
   py="$(python_bin)"
-  if ! command -v codex >/dev/null 2>&1; then
+  if ! codex_runtime_available; then
     write_adapter_state "codex" "NOT_DETECTED" "managed_global_instruction_block" "" "UNSUPPORTED"
     return 0
   fi
@@ -283,6 +283,22 @@ install_codex_adapter() {
     write_adapter_state "codex" "CONFLICT" "managed_global_instruction_block" "$target" "MANUAL"
     warn "Codex AIPS managed block could not be updated safely; existing content was preserved."
   fi
+}
+
+codex_runtime_available() {
+  command -v codex >/dev/null 2>&1 && return 0
+
+  local candidate
+  for candidate in \
+    "${CODEX_CLI_PATH:-}" \
+    "${AIPS_CODEX_CLI_PATH:-}" \
+    "/Applications/ChatGPT.app/Contents/Resources/codex"; do
+    if [ -n "$candidate" ] && [ -x "$candidate" ]; then
+      return 0
+    fi
+  done
+
+  return 1
 }
 
 install_claude_adapter() {
@@ -759,8 +775,10 @@ install_cli() {
   say "Installed: $BIN_HOME/aips"
   if [[ ":$PATH:" != *":$BIN_HOME:"* ]]; then
     warn "$BIN_HOME is not currently in PATH."
-    say "Add this to your shell profile:"
-    say '  export PATH="$HOME/.local/bin:$PATH"'
+    say "Add this to your shell profile, then open a new terminal:"
+    say "  export PATH=\"$BIN_HOME:\$PATH\""
+    say "For this terminal only:"
+    say "  export PATH=\"$BIN_HOME:\$PATH\""
   fi
   say "Run: aips doctor"
   say "MCP gateway: aips mcp inspect"
