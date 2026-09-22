@@ -1,10 +1,10 @@
 version: 1
 candidate:
-  base_sha: 04824395029b272800b58679e7fa307693fb8690
-  changed_files_hash: be602da74c2f5c80e0644a05776e5d9483d57cc3841065bd139ff0991ffed765
+  base_sha: c41b7c29ccf81b512c604f40b27f1dac55093ac6
+  changed_files_hash: 24b11a5c36cb29daad4aad18ce89e9cba800e1a090c7b88ee87ea4959d975373
 change:
-  id: human-docs-site-installation-ux
-  summary: Reorganize Human current-behavior documentation by topic, add a VitePress official docs renderer, modernize managed install/uninstall entrypoints, and enforce deterministic documentation placement so new features cannot be appended as release-style notes.
+  id: installer-intelligence-ci-hardening
+  summary: Harden installer download failure handling, preserve arbitrary Git paths across intelligence indexes, and keep CI gate evidence bounded and auditable.
   boundary:
     - documentation-architecture
     - installation-lifecycle
