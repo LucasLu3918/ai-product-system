@@ -74,7 +74,7 @@ placement_rules:
   - id: installation
     triggers: [scripts/install.sh, scripts/install.ps1, scripts/uninstall.ps1, scripts/bootstrap.sh, scripts/uninstall.sh, bin/aips]
     placements:
-      docs/human/INSTALLATION.md: [macOS / Linux, Windows, 驗證, Runtime integration, 更新, 解除安裝, 會保留什麼, 相容入口]
+      docs/human/INSTALLATION.md: [macOS / Linux, Windows, 驗證, Runtime integration, 常見問題與排查, 更新, 解除安裝, 會保留什麼, 相容入口]
       docs/human/GETTING_STARTED.md: [安裝 AIPS, 驗證安裝, 更新, 解除安裝]
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution]
 

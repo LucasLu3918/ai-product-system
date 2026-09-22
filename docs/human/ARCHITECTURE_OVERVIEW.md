@@ -59,6 +59,8 @@ Semantic planning 與 deterministic execution 分離：
 
 Validation evidence 與 source checkout 分離保存。Gate 報告和 Repository Health 報告使用 runner 暫存路徑，完成後才上傳 artifact，讓 repository validation 看到的仍是 exact clean revision。
 
+受保護分支會以 exact candidate 的 Gate 結果作為 `repository` aggregate 的合併前條件。
+
 ## Security 與 Governance
 
 Security Assurance Level（SAL）依產品 baseline 與 change impact 決定 review 強度。高價值 business logic、authorization、financial integrity 等 protected boundary 使用更嚴格 evidence。

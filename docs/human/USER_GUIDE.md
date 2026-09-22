@@ -150,6 +150,8 @@ Parallel task 必須先證明可安全並行；同一 change boundary 的 compet
 
 PR 驗證會把 Gate 與 Repository Health 報告放在 CI runner 的暫存位置，完成後再上傳 artifact。這讓驗證不會因產生報告檔而把 checkout 判定成 dirty，合併前看到的證據仍對應同一個 commit。
 
+受保護分支的 `repository` required check 必須在 exact PR candidate 的 Integration Gate 成功後才會通過。
+
 ## Execution Isolation 與 Runtime Resource
 
 Mutation 可依需要使用 shared workspace、AIPS-owned Git worktree 或 verified sandbox。沒有可驗證 sandbox provider 時，不把一般 temp directory 宣稱成 sandbox。
