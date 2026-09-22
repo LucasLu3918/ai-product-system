@@ -36,7 +36,7 @@ Existing Project mutation 前先宣告 Change Boundary，實作後再把 actual 
 
 ## Execution
 
-Runtime adapter 偵測會優先使用命令列，再使用明確的 runtime path fallback；安裝器不會因找不到 shell `PATH` 就改寫使用者 profile。CLI 路徑與 managed block 狀態由 `aips doctor`、`aips harness status` 與 `aips harness doctor` 分別驗證。
+Runtime adapter 偵測會優先使用命令列，再使用明確的 runtime path fallback；安裝器不會因找不到 shell `PATH` 就改寫使用者 profile。若 CLI 目錄尚未在 `PATH`，安裝器會提供絕對路徑指令；CLI 路徑與 managed block 狀態由 `aips doctor`、`aips harness status` 與 `aips harness doctor` 分別驗證。
 
 ### Deterministic Automation
 
