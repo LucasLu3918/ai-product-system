@@ -89,7 +89,7 @@ def make_env(base: Path, marker: Path, *, bin_home: Path | None = None) -> dict[
         p.write_text("#!/usr/bin/env bash\nexit 1\n", encoding="utf-8")
         p.chmod(0o755)
     env = dict(os.environ)
-    python_bin = str(Path(sys.executable).resolve().parent)
+    python_bin = str(Path(sys.executable).parent)
     env.update({
         "HOME": str(home),
         "XDG_CONFIG_HOME": str(config),
@@ -153,6 +153,7 @@ def preflight_and_project_lifecycle() -> None:
         require(first.returncode == 0, f"clean main preflight failed: {first.stdout} {first.stderr}")
         require("Project mode: EPHEMERAL" in first.stdout, "Preflight must report EPHEMERAL without .ai")
         require(not (project / ".ai").exists(), "Preflight must not auto-attach an EPHEMERAL project")
+        require(not (system / ".venv").exists(), "Plain source preflight must not create a managed virtual environment")
         require(marker.exists(), "Preflight must validate the system")
         require(git(project, "rev-parse", "HEAD").stdout.strip() == product_head, "Preflight must not pull target product repository")
         require((project / "app.txt").read_text(encoding="utf-8") == product_text, "Preflight changed target product source")
@@ -285,6 +286,54 @@ os.execv({sys.executable!r}, [{sys.executable!r}] + sys.argv[1:])
     py.chmod(0o755)
 
 
+def make_repairing_fake_venv(system: Path, marker: Path) -> None:
+    py = system / ".venv" / "bin" / "python"
+    py.parent.mkdir(parents=True)
+    body = f"""#!{sys.executable}
+import os
+from pathlib import Path
+import sys
+marker = Path({str(marker)!r})
+if len(sys.argv) >= 3 and sys.argv[1:3] == ["-m", "pip"]:
+    marker.parent.mkdir(parents=True, exist_ok=True)
+    marker.write_text("repaired\\n", encoding="utf-8")
+    raise SystemExit(0)
+if len(sys.argv) >= 3 and sys.argv[1] == "-c" and "import yaml, mcp" in sys.argv[2] and not marker.exists():
+    raise SystemExit(1)
+os.execv({sys.executable!r}, [{sys.executable!r}] + sys.argv[1:])
+"""
+    py.write_text(body, encoding="utf-8")
+    py.chmod(0o755)
+
+
+def runtime_dependency_health_contract() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        system, _ = system_fixture(base, "dependency-health")
+        marker = base / "dependency-repaired"
+        make_repairing_fake_venv(system, marker)
+        env = make_env(base / "runtime", base / "validation.log")
+
+        unhealthy = cli(system, ["doctor"], env)
+        require(unhealthy.returncode != 0, "Doctor must fail when required runtime dependencies are incomplete")
+        require(
+            "runtime dependencies: INCOMPLETE" in unhealthy.stderr,
+            "Doctor must identify incomplete PyYAML/MCP runtime dependencies",
+        )
+
+        config_home = Path(env["XDG_CONFIG_HOME"]) / "aips"
+        config_home.mkdir(parents=True, exist_ok=True)
+        (config_home / "system-dir").write_text(str(system) + "\n", encoding="utf-8")
+        repaired = cli(system, ["update"], env)
+        require(repaired.returncode == 0, f"Managed update dependency repair failed: {repaired.stdout} {repaired.stderr}")
+        require(marker.exists(), "Managed update must reinstall missing runtime dependencies")
+        require("AIPS runtime dependencies: repaired" in repaired.stdout, "Managed update must report dependency repair")
+
+        healthy = cli(system, ["doctor"], env)
+        require(healthy.returncode == 0, f"Doctor must pass after dependency repair: {healthy.stdout} {healthy.stderr}")
+        require("runtime dependencies: OK (PyYAML, MCP)" in healthy.stdout, "Doctor must report healthy runtime dependencies")
+
+
 def cli_collision_contract() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp)
@@ -338,6 +387,7 @@ def main() -> int:
     divergence_gate()
     major_version_gate()
     cli_collision_contract()
+    runtime_dependency_health_contract()
     print("install_preflight_lifecycle evidence: PASS")
     return 0
 

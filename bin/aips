@@ -138,6 +138,36 @@ python_bin() {
   fi
 }
 
+runtime_dependencies_available() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] && "$py" -c 'import yaml, mcp' >/dev/null 2>&1
+}
+
+install_runtime_dependencies() {
+  local py="$SYSTEM_DIR/.venv/bin/python"
+  [ -x "$py" ] || die "AIPS virtual environment is missing. Run: $SYSTEM_DIR/bin/aips install"
+  "$py" -m pip install --disable-pip-version-check -q -r "$SYSTEM_DIR/requirements.txt" ||
+    die "AIPS runtime dependency installation failed."
+  "$py" -c 'import yaml, mcp' >/dev/null 2>&1 ||
+    die "AIPS runtime dependencies are incomplete after installation."
+}
+
+repair_runtime_dependencies_if_installed() {
+  local recorded="" recorded_canonical="" system_canonical=""
+  [ -f "$CONFIG_HOME/system-dir" ] && recorded="$(cat "$CONFIG_HOME/system-dir" 2>/dev/null || true)"
+  [ -n "$recorded" ] && recorded_canonical="$(canonical_path "$recorded" || true)"
+  system_canonical="$(canonical_path "$SYSTEM_DIR" || true)"
+  [ -n "$recorded_canonical" ] && [ "$recorded_canonical" = "$system_canonical" ] || return 0
+  if runtime_dependencies_available; then
+    say "AIPS runtime dependencies: OK"
+    return 0
+  fi
+  warn "AIPS runtime dependencies are incomplete; repairing the managed environment."
+  install_runtime_dependencies
+  say "AIPS runtime dependencies: repaired"
+}
+
 adapter_state_file() {
   printf '%s/%s.yaml\n' "$ADAPTER_STATE_HOME" "$1"
 }
@@ -766,7 +796,7 @@ install_cli() {
   fi
 
   say "Installing AIPS runtime dependencies..."
-  "$SYSTEM_DIR/.venv/bin/python" -m pip install --disable-pip-version-check -q -r "$SYSTEM_DIR/requirements.txt"
+  install_runtime_dependencies
 
   mkdir -p "$BIN_HOME" "$CONFIG_HOME"
 
@@ -888,6 +918,8 @@ update_system() {
     say "System updated: $local_version -> $(current_version)"
     say "Commit: $after"
   fi
+
+  repair_runtime_dependencies_if_installed
 }
 
 preflight_after_update() {
@@ -929,19 +961,27 @@ preflight() {
 }
 
 doctor() {
+  local failed="false"
   say "AI Product System doctor"
   say "System dir: $SYSTEM_DIR"
   say "Version: $(current_version 2>/dev/null || echo unknown)"
   say "Commit: $(current_commit 2>/dev/null || echo unknown)"
   say "Branch: $(git_in_system branch --show-current 2>/dev/null || echo unknown)"
 
-  command -v git >/dev/null 2>&1 && say "git: OK" || warn "git: missing"
-  command -v python3 >/dev/null 2>&1 && say "python3: OK" || warn "python3: missing"
-  [ -x "$SYSTEM_DIR/.venv/bin/python" ] && say "venv: OK" || warn "venv: not installed (run aips install)"
-  if "$(python_bin)" -c 'import mcp' >/dev/null 2>&1 && [ -f "$SYSTEM_DIR/scripts/mcp_server.py" ]; then
+  command -v git >/dev/null 2>&1 && say "git: OK" || { warn "git: missing"; failed="true"; }
+  command -v python3 >/dev/null 2>&1 && say "python3: OK" || { warn "python3: missing"; failed="true"; }
+  [ -x "$SYSTEM_DIR/.venv/bin/python" ] && say "venv: OK" || { warn "venv: not installed (run aips install)"; failed="true"; }
+  if runtime_dependencies_available; then
+    say "runtime dependencies: OK (PyYAML, MCP)"
+  else
+    warn "runtime dependencies: INCOMPLETE (PyYAML and MCP are required; run $SYSTEM_DIR/bin/aips install)"
+    failed="true"
+  fi
+  if runtime_dependencies_available && [ -f "$SYSTEM_DIR/scripts/mcp_server.py" ]; then
     say "MCP gateway: AVAILABLE (stdio, ADVISORY)"
   else
     warn "MCP gateway dependency/server missing; run aips install."
+    failed="true"
   fi
 
   if [ -n "$(git_in_system status --porcelain 2>/dev/null || true)" ]; then
@@ -958,7 +998,10 @@ doctor() {
 
   if ! harness_doctor; then
     warn "Harness doctor reported issues."
+    failed="true"
   fi
+
+  [ "$failed" = "false" ]
 }
 
 case "${1:-help}" in
