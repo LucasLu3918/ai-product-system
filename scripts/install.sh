@@ -6,10 +6,20 @@ DEFAULT_BRANCH="${AIPS_INSTALL_BRANCH:-main}"
 INSTALL_DIR="${AIPS_INSTALL_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aips/system}"
 SOURCE_CHECKOUT="${AIPS_INSTALL_SOURCE:-}"
 DRY_RUN=false
+CLI_ARGS=()
+SHELL_INTEGRATION="auto"
 
 while [ "$#" -gt 0 ]; do
   case "$1" in
     --dry-run) DRY_RUN=true ;;
+    --configure-shell)
+      CLI_ARGS+=("$1")
+      SHELL_INTEGRATION="configure"
+      ;;
+    --no-configure-shell)
+      CLI_ARGS+=("$1")
+      SHELL_INTEGRATION="skip"
+      ;;
     --source-checkout)
       shift
       [ "$#" -gt 0 ] || { echo "ERROR: --source-checkout requires a path" >&2; exit 2; }
@@ -25,7 +35,7 @@ require git
 require python3
 
 if [ "$DRY_RUN" = true ]; then
-  printf "AIPS install plan\nrepository=%s\nbranch=%s\ninstall_dir=%s\n" "$REPO_URL" "$DEFAULT_BRANCH" "$INSTALL_DIR"
+  printf "AIPS install plan\nrepository=%s\nbranch=%s\ninstall_dir=%s\nshell_integration=%s\n" "$REPO_URL" "$DEFAULT_BRANCH" "$INSTALL_DIR" "$SHELL_INTEGRATION"
   [ -n "$SOURCE_CHECKOUT" ] && printf "source_checkout=%s\n" "$SOURCE_CHECKOUT"
   exit 0
 fi
@@ -52,4 +62,4 @@ else
   git -C "$INSTALL_DIR" merge --ff-only --quiet "origin/$DEFAULT_BRANCH"
 fi
 
-exec "$INSTALL_DIR/bin/aips" install
+exec "$INSTALL_DIR/bin/aips" install "${CLI_ARGS[@]}"

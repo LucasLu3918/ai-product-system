@@ -11,7 +11,7 @@ macOS / Linux：
   trap 'rm -f "$installer"' EXIT
   curl -fsSL --output "$installer" https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh
   test -s "$installer"
-  bash "$installer"
+  bash "$installer" --configure-shell
 )
 ~~~
 
@@ -32,8 +32,7 @@ try {
 
 AIPS runtime 需要 Python 3.10 以上；若系統同時安裝多個 Python，可用 `AIPS_PYTHON=/path/to/python3` 指定建立受管理 virtual environment 的版本。
 
-安裝器不會自動改寫 shell profile；若終端機找不到 `aips`，請依 [安裝排查](INSTALLATION.md#常見問題與排查) 將實際 CLI 路徑加入 `PATH`。
-在同一個 terminal 尚未更新 `PATH` 時，可直接使用安裝器顯示的絕對路徑執行 `doctor` 與 `harness status`。
+`--configure-shell` 會為 zsh 或 bash 寫入具有 AIPS ownership 標記的 `PATH` 區塊；若要自行管理 shell profile，改用 `--no-configure-shell`。安裝後尚未重開 terminal 時，可直接使用安裝器顯示的絕對路徑，或依 [安裝排查](INSTALLATION.md#常見問題與排查) 操作。
 
 ## 驗證安裝
 
@@ -85,4 +84,4 @@ aips preflight /path/to/project
 aips uninstall
 ~~~
 
-預設保留 User instructions、Skills、Project source、Project .ai/ 與 External Project Intelligence。
+預設會移除未遭修改且不影響共用 CLI 目錄的 AIPS-owned shell block。User instructions、Skills、Project source、Project .ai/ 與 External Project Intelligence 仍會保留。

@@ -13,9 +13,11 @@ AI Product System（AIPS）是一套跨 Agent 的 Software Engineering Harness�
   trap 'rm -f "$installer"' EXIT
   curl -fsSL --output "$installer" https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh
   test -s "$installer"
-  bash "$installer"
+  bash "$installer" --configure-shell
 )
 ~~~
+
+`--configure-shell` 會為 zsh 或 bash 寫入具有 AIPS ownership 標記的 `PATH` 區塊；解除安裝可安全辨識並移除。若要自行管理 shell profile，改用 `--no-configure-shell`。
 
 ### Windows
 
@@ -72,7 +74,7 @@ aips preflight /path/to/project
 aips uninstall
 ~~~
 
-預設保留使用者 instructions、Skills、Project source、Project .ai/ 與 External Project Intelligence。
+預設移除 AIPS-owned shell integration；若 CLI 目錄仍有其他工具則保留 PATH 設定並提示。使用者 instructions、Skills、Project source、Project .ai/ 與 External Project Intelligence 仍會保留。
 
 ## Documentation
 

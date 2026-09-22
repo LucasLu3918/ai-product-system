@@ -440,6 +440,98 @@ def cli_collision_contract() -> None:
         require(owned.is_symlink() and owned.resolve() == (system / "bin" / "aips").resolve(), "Owned CLI symlink was not preserved")
         require((Path(env_owned["XDG_CONFIG_HOME"]) / "aips" / "system-dir").exists(), "Owned symlink reuse must record the installed system")
         require((Path(env_owned["XDG_CONFIG_HOME"]) / "aips" / "harness" / "installation.yaml").exists(), "Owned symlink reuse must continue through installation integrity and Harness registration")
+        require(not (Path(env_owned["HOME"]) / ".zprofile").exists(), "Non-interactive install without --configure-shell must not modify a shell profile")
+
+
+def shell_integration_lifecycle() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        system, _ = system_fixture(base, "shell-integration")
+        make_fake_venv(system)
+        env = make_env(base / "runtime", base / "validation.log")
+        env["SHELL"] = "/bin/zsh"
+        env["PATH"] = f"{env['AIPS_BIN_HOME']}:{env['PATH']}"
+        profile = Path(env["HOME"]) / ".zprofile"
+        profile.write_text("# user setting\nexport USER_SETTING=preserved\n", encoding="utf-8")
+        profile.chmod(0o640)
+
+        configure_plan = run(["bash", str(system / "scripts" / "install.sh"), "--dry-run", "--configure-shell"], env=env)
+        require(configure_plan.returncode == 0 and "shell_integration=configure" in configure_plan.stdout, "Download installer must accept and report --configure-shell")
+        skip_plan = run(["bash", str(system / "scripts" / "install.sh"), "--dry-run", "--no-configure-shell"], env=env)
+        require(skip_plan.returncode == 0 and "shell_integration=skip" in skip_plan.stdout, "Download installer must accept and report --no-configure-shell")
+
+        installed = cli(system, ["install", "--configure-shell"], env)
+        require(installed.returncode == 0, f"Managed shell install failed: {installed.stdout} {installed.stderr}")
+        text = profile.read_text(encoding="utf-8")
+        require(text.count("# >>> AIPS managed PATH >>>") == 1, "Managed shell block must be installed exactly once")
+        require("Shell integration installed" in installed.stdout, "Explicit --configure-shell must persist integration even when the current process PATH already includes BIN_HOME")
+        require("export USER_SETTING=preserved" in text, "Managed shell install must preserve user profile content")
+        require(profile.stat().st_mode & 0o777 == 0o640, "Managed shell install must preserve profile permissions")
+        status = cli(system, ["shell", "status"], env)
+        require(status.returncode == 0 and "Shell integration: MANAGED" in status.stdout, "Shell status must report exact managed ownership")
+        doctor = cli(system, ["doctor"], env)
+        require("Shell integration: MANAGED" in doctor.stdout, "Doctor must report managed shell integration")
+        require("CLI discoverability: OK" in doctor.stdout, "Doctor must report current-process CLI discoverability independently")
+
+        repeated = cli(system, ["shell", "install"], env)
+        require(repeated.returncode == 0, f"Repeated shell install failed: {repeated.stdout} {repeated.stderr}")
+        require(profile.read_text(encoding="utf-8").count("# >>> AIPS managed PATH >>>") == 1, "Repeated shell install must be idempotent")
+
+        bin_home = Path(env["AIPS_BIN_HOME"])
+        other = bin_home / "other-tool"
+        other.write_text("#!/usr/bin/env bash\n", encoding="utf-8")
+        preserved = cli(system, ["uninstall"], env)
+        require(preserved.returncode == 0, f"Default uninstall with shared bin failed: {preserved.stdout} {preserved.stderr}")
+        require("Preserving shell PATH integration" in preserved.stderr, "Default uninstall must explain shared BIN_HOME preservation")
+        require("# >>> AIPS managed PATH >>>" in profile.read_text(encoding="utf-8"), "Default uninstall must preserve PATH integration for a shared BIN_HOME")
+
+        removed = cli(system, ["shell", "uninstall"], env)
+        require(removed.returncode == 0, f"Explicit shell uninstall failed: {removed.stdout} {removed.stderr}")
+        text = profile.read_text(encoding="utf-8")
+        require("# >>> AIPS managed PATH >>>" not in text, "Explicit shell uninstall must remove the exact owned block")
+        require("export USER_SETTING=preserved" in text, "Explicit shell uninstall must preserve user profile content")
+        require(profile.stat().st_mode & 0o777 == 0o640, "Managed shell uninstall must preserve profile permissions")
+
+        reinstalled = cli(system, ["shell", "install"], env)
+        require(reinstalled.returncode == 0, "Shell integration reinstall must succeed")
+        profile.write_text(profile.read_text(encoding="utf-8").replace("# Added by AIPS.", "# User changed AIPS block."), encoding="utf-8")
+        conflict = cli(system, ["shell", "uninstall"], env)
+        require(conflict.returncode != 0 and "modified; preserving it" in conflict.stderr, "Modified managed block must be preserved with a conflict")
+        require("# User changed AIPS block." in profile.read_text(encoding="utf-8"), "Modified managed block was unexpectedly removed")
+
+        duplicate_base = base / "duplicate"
+        duplicate_env = make_env(duplicate_base, duplicate_base / "validation.log")
+        duplicate_env["SHELL"] = "/bin/zsh"
+        duplicate_profile = Path(duplicate_env["HOME"]) / ".zprofile"
+        duplicate_install = cli(system, ["shell", "install"], duplicate_env)
+        require(duplicate_install.returncode == 0, "Duplicate-block fixture install failed")
+        block = duplicate_profile.read_text(encoding="utf-8")
+        duplicate_profile.write_text(block + "\n" + block, encoding="utf-8")
+        duplicate_remove = cli(system, ["shell", "uninstall"], duplicate_env)
+        require(duplicate_remove.returncode != 0 and "Multiple AIPS shell blocks" in duplicate_remove.stderr, "Multiple managed blocks must require manual review")
+        require(duplicate_profile.read_text(encoding="utf-8").count("# >>> AIPS managed PATH >>>") == 2, "Multiple managed blocks must be preserved")
+
+        bash_base = base / "bash-profile"
+        bash_env = make_env(bash_base, bash_base / "validation.log")
+        bash_env["SHELL"] = "/bin/bash"
+        bash_install = cli(system, ["shell", "install"], bash_env)
+        require(bash_install.returncode == 0, f"bash shell integration failed: {bash_install.stdout} {bash_install.stderr}")
+        bash_profile_name = ".bash_profile" if sys.platform == "darwin" else ".bashrc"
+        require((Path(bash_env["HOME"]) / bash_profile_name).is_file(), "Shell integration must select the platform-appropriate bash profile")
+
+        custom_base = base / "custom path"
+        custom_env = make_env(custom_base, custom_base / "validation.log")
+        custom_env["SHELL"] = "/bin/zsh"
+        custom_profile = Path(custom_env["HOME"]) / ".zprofile"
+        custom = cli(system, ["shell", "install"], custom_env)
+        require(custom.returncode == 0, f"Custom path shell install failed: {custom.stdout} {custom.stderr}")
+        profile_shell = shutil.which("zsh") or shutil.which("bash")
+        require(profile_shell is not None, "A compatible shell is required to validate the managed profile block")
+        shell_check = run(
+            [profile_shell, "-c", f"source {str(custom_profile)!r}; case :$PATH: in *:\"$AIPS_BIN_HOME\":*) exit 0;; *) exit 1;; esac"],
+            env=custom_env,
+        )
+        require(shell_check.returncode == 0, "Managed profile block must support spaces in AIPS_BIN_HOME")
 
 
 def main() -> int:
@@ -449,6 +541,7 @@ def main() -> int:
     cli_collision_contract()
     runtime_dependency_health_contract()
     runtime_python_compatibility_contract()
+    shell_integration_lifecycle()
     print("install_preflight_lifecycle evidence: PASS")
     return 0
 

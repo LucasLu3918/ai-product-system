@@ -57,6 +57,7 @@ def main() -> int:
     assert readme == bash_install_snippet(ROOT / "docs/human/INSTALLATION.md")
     assert readme == bash_install_snippet(ROOT / "docs/human/GETTING_STARTED.md")
     ps = (ROOT / "scripts/install.ps1").read_text(encoding="utf-8")
+    assert 'bash "$installer" --configure-shell' in ps, "WSL launcher must persist AIPS CLI discoverability"
     wsl_match = re.search(r"\$installerScript = @'\n(.*?)\n'@", ps, re.S)
     assert wsl_match, "missing WSL download script"
     wsl_script = wsl_match.group(1).replace("__INSTALLER_URL__", "'https://example.invalid/install.sh'")

@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.54.0
+
+### Managed Shell PATH Integration
+
+- Add explicit `--configure-shell` and `--no-configure-shell` install modes plus an interactive prompt when a terminal is available.
+- Add `aips shell install`, `aips shell status` and `aips shell uninstall` for zsh/bash profile integration with idempotent AIPS-owned markers and recorded ownership metadata.
+- Make uninstall remove only exact, unmodified AIPS-owned profile content; preserve modified blocks and shared CLI-directory PATH entries unless the user explicitly requests `--remove-shell-integration`.
+- Extend `aips doctor` to report CLI discoverability separately from symlink health and show managed, unmanaged, modified, missing or unconfigured shell integration state.
+- Add lifecycle evidence for profile preservation, repeat installs, shared CLI directories, modified-block conflicts, paths containing spaces and installer flag parsing.
+- Update macOS/Linux and Windows + WSL install entrypoints plus troubleshooting guidance. No Role, Skill, approval gate, runtime adapter authority or Constitution semantics change. Architecture diagrams are unaffected because runtime/Harness topology does not change.
+
 ## 0.53.0
 
 ### Human Documentation Architecture, Official Docs Site & Installation UX
