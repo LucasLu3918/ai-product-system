@@ -146,8 +146,8 @@ def material_instruction_conflict_surface(base: Path, env: dict[str, str]) -> No
     ], env)
     runtime_native = (read_ctx.get("context") or {}).get("runtime_native", [])
     project_native = (read_ctx.get("context") or {}).get("project_native", [])
-    require(str(project / "AGENTS.md") in runtime_native, "runtime-native AGENTS source must be preserved")
-    require(str(project / "docs" / "ADR-001.md") in project_native, "official ADR source must be preserved")
+    require(str((project / "AGENTS.md").resolve()) in runtime_native, "runtime-native AGENTS source must be preserved")
+    require(str((project / "docs" / "ADR-001.md").resolve()) in project_native, "official ADR source must be preserved")
     resolution = read_ctx.get("instruction_resolution") or {}
     require(resolution.get("authoritative_sources_preserved") is True, "authoritative sources must be preserved")
     require(resolution.get("derived_intelligence_governing") is False, "derived Intelligence must be non-governing")

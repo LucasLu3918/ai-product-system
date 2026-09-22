@@ -21,6 +21,23 @@ resolve_source() {
   cd -P "$(dirname "$source")" >/dev/null 2>&1 && pwd
 }
 
+canonical_path() {
+  local source="$1"
+  while [ -h "$source" ]; do
+    local dir target
+    dir="$(cd -P "$(dirname "$source")" >/dev/null 2>&1 && pwd)" || return 1
+    target="$(readlink "$source")" || return 1
+    if [[ "$target" != /* ]]; then
+      source="$dir/$target"
+    else
+      source="$target"
+    fi
+  done
+  local dir
+  dir="$(cd -P "$(dirname "$source")" >/dev/null 2>&1 && pwd)" || return 1
+  printf '%s/%s\n' "$dir" "$(basename "$source")"
+}
+
 SCRIPT_DIR="$(resolve_source)"
 SYSTEM_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
@@ -755,9 +772,10 @@ install_cli() {
 
   if [ -e "$BIN_HOME/aips" ] || [ -L "$BIN_HOME/aips" ]; then
     if [ -L "$BIN_HOME/aips" ]; then
-      local existing_target
-      existing_target="$(readlink "$BIN_HOME/aips" || true)"
-      if [ "$existing_target" != "$SYSTEM_DIR/bin/aips" ]; then
+      local existing_target expected_target
+      existing_target="$(canonical_path "$BIN_HOME/aips" || true)"
+      expected_target="$(canonical_path "$SYSTEM_DIR/bin/aips" || true)"
+      if [ -z "$existing_target" ] || [ "$existing_target" != "$expected_target" ]; then
         die "CLI path already exists and is not owned by this AIPS installation: $BIN_HOME/aips"
       fi
     else
@@ -779,9 +797,15 @@ install_cli() {
     say "  export PATH=\"$BIN_HOME:\$PATH\""
     say "For this terminal only:"
     say "  export PATH=\"$BIN_HOME:\$PATH\""
+    say "Until PATH is updated, run: \"$BIN_HOME/aips\" doctor"
+    say "Until PATH is updated, run: \"$BIN_HOME/aips\" harness status"
+  else
+    say "Run: aips doctor"
+    say "MCP gateway: aips mcp inspect"
   fi
-  say "Run: aips doctor"
-  say "MCP gateway: aips mcp inspect"
+  if [[ ":$PATH:" != *":$BIN_HOME:"* ]]; then
+    say "MCP gateway: \"$BIN_HOME/aips\" mcp inspect"
+  fi
 }
 
 uninstall_cli() {

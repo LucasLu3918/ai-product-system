@@ -85,6 +85,13 @@ export PATH="$HOME/.local/bin:$PATH"
 aips doctor
 ~~~
 
+安裝完成但尚未重開 terminal 時，Installer 也會顯示可直接執行的絕對路徑。使用自訂 `AIPS_BIN_HOME` 時，請使用該目錄下的 `aips` 路徑：
+
+~~~bash
+"$HOME/.local/bin/aips" doctor
+"$HOME/.local/bin/aips" harness status
+~~~
+
 若要永久生效，將相同的 `export PATH=...` 加入使用中的 `~/.zprofile`、`~/.zshrc` 或 `~/.bashrc`，然後開啟新的 terminal。若使用 `AIPS_BIN_HOME`，請把該值加入 `PATH`，不要照抄 `~/.local/bin`。
 
 ### `aips harness status` 顯示 `codex: NOT_DETECTED`
