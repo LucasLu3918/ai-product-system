@@ -35,6 +35,8 @@ Release history belongs in `CHANGELOG.md`; Scenario / verification history belon
 
 ## Validation behavior
 
+Validation workflows keep generated Gate and Repository Health reports outside the checkout until the validation steps finish. Artifact upload preserves evidence without making generated files part of the documentation or revision binding.
+
 `documentation_sync.py`:
 
 1. validates `config/documentation-sync.yaml`;
