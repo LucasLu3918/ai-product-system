@@ -126,7 +126,7 @@ def matrix_fingerprint(
     return canonical_hash(matrix), matrix
 
 
-def run_check(item: dict[str, Any]) -> dict[str, Any]:
+def run_check(item: dict[str, Any], *, omit_output_tail: bool = False) -> dict[str, Any]:
     if not item["applies"]:
         return {"id": item["id"], "category": item.get("category"), "status": "SKIPPED", "reason": "path_filter"}
     timeout = item.get("timeout_seconds", 600)
@@ -139,26 +139,33 @@ def run_check(item: dict[str, Any]) -> dict[str, Any]:
         proc = subprocess.run(item["argv"], text=True, capture_output=True, timeout=timeout, env=check_env)
         duration_ms = int((time.monotonic() - started) * 1000)
         output = (proc.stdout + proc.stderr).strip()
-        return {
+        result = {
             "id": item["id"],
             "category": item.get("category"),
             "required": bool(item.get("required", True)),
             "status": "PASS" if proc.returncode == 0 else "FAIL",
             "exit_code": proc.returncode,
             "duration_ms": duration_ms,
-            "output_tail": output[-4000:],
         }
+        if omit_output_tail:
+            result["output_sha256"] = hashlib.sha256(output.encode("utf-8", errors="replace")).hexdigest()
+        else:
+            result["output_tail"] = output[-4000:]
+        return result
     except subprocess.TimeoutExpired as exc:
         duration_ms = int((time.monotonic() - started) * 1000)
-        return {
+        result = {
             "id": item["id"],
             "category": item.get("category"),
             "required": bool(item.get("required", True)),
             "status": "FAIL",
             "exit_code": None,
             "duration_ms": duration_ms,
-            "output_tail": f"timeout after {timeout}s: {exc}",
+            "reason": "timeout",
         }
+        if not omit_output_tail:
+            result["output_tail"] = f"timeout after {timeout}s: {exc}"
+        return result
 
 
 def main() -> int:
@@ -171,6 +178,7 @@ def main() -> int:
     parser.add_argument("--matrix", type=Path)
     parser.add_argument("--output", type=Path)
     parser.add_argument("--format", choices=("yaml", "json"), default="yaml")
+    parser.add_argument("--omit-output-tail", action="store_true", help="Omit check output from the report and stdout")
     args = parser.parse_args()
 
     try:
@@ -206,7 +214,7 @@ def main() -> int:
             "matrix_hash": matrix_hash,
         }
         candidate_fingerprint = canonical_hash(candidate)
-        results = [run_check(item) for item in checks]
+        results = [run_check(item, omit_output_tail=args.omit_output_tail) for item in checks]
         failures = [r["id"] for r in results if r.get("status") == "FAIL" and r.get("required", True)]
         report = {
             "version": 1,

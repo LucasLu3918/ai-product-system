@@ -8,7 +8,17 @@ if ($DryRun) {
   Write-Output "AIPS is installed inside the selected WSL distribution."
   exit 0
 }
-$escaped = $InstallerUrl.Replace("'","'\\''")
-wsl.exe bash -lc "command -v curl >/dev/null && curl -fsSL '$escaped' | bash"
+$escaped = "'" + $InstallerUrl.Replace("'", "'\''") + "'"
+$installerScript = @'
+set -euo pipefail
+command -v curl >/dev/null
+installer="$(mktemp)"
+trap 'rm -f -- "$installer"' EXIT
+curl -fsSL --output "$installer" __INSTALLER_URL__
+test -s "$installer"
+bash "$installer"
+'@
+$installerScript = $installerScript.Replace("__INSTALLER_URL__", $escaped)
+wsl.exe bash -lc $installerScript
 if ($LASTEXITCODE -ne 0) { throw "AIPS installation inside WSL failed." }
 Write-Output "AIPS installed inside WSL. Open your WSL terminal and run: aips doctor"

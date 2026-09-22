@@ -14,10 +14,11 @@ from typing import Any, Iterable
 
 import yaml
 
+from git_paths import GitPathsError, run_git_nul_output, run_git_paths
 from aips_identity import config_home as canonical_config_home
 from aips_identity import repository_identity as canonical_repository_identity
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 DEFAULT_TOKEN_BUDGET = 6000
 DEFAULT_RESULT_LIMIT = 12
 MAX_FILE_BYTES = 1_000_000
@@ -151,10 +152,9 @@ def is_indexable(rel_path: str) -> bool:
 
 
 def tracked_and_untracked_files(root: Path) -> list[str]:
-    raw = run_git(root, ["ls-files", "--cached", "--others", "--exclude-standard"]) or ""
+    paths = run_git_paths(root, ["ls-files", "--cached", "--others", "--exclude-standard", "-z", "--"])
     result: list[str] = []
-    for value in raw.splitlines():
-        value = value.strip()
+    for value in paths:
         if not value or not is_indexable(value):
             continue
         path = root / value
@@ -170,12 +170,11 @@ def tracked_and_untracked_files(root: Path) -> list[str]:
 def dirty_paths(root: Path) -> list[str]:
     result: set[str] = set()
     for args in (
-        ["diff", "--name-only"],
-        ["diff", "--cached", "--name-only"],
-        ["ls-files", "--others", "--exclude-standard"],
+        ["diff", "--name-only", "-z", "--"],
+        ["diff", "--cached", "--name-only", "-z", "--"],
+        ["ls-files", "--others", "--exclude-standard", "-z", "--"],
     ):
-        raw = run_git(root, args) or ""
-        result.update(line.strip() for line in raw.splitlines() if line.strip())
+        result.update(run_git_paths(root, args))
     return sorted(result)
 
 
@@ -330,10 +329,10 @@ def metadata_set(conn: sqlite3.Connection, key: str, value: str) -> None:
 def changed_paths_between(root: Path, old_head: str | None, new_head: str | None) -> set[str] | None:
     if not old_head or not new_head or old_head == new_head:
         return set()
-    raw = run_git(root, ["diff", "--name-only", f"{old_head}..{new_head}"])
-    if raw is None:
+    try:
+        return set(run_git_paths(root, ["diff", "--name-only", "-z", f"{old_head}..{new_head}", "--"]))
+    except GitPathsError:
         return None
-    return {line.strip() for line in raw.splitlines() if line.strip()}
 
 
 def replace_file_index(conn: sqlite3.Connection, root: Path, rel_path: str, fts_available: bool) -> bool:
@@ -394,29 +393,40 @@ def replace_file_index(conn: sqlite3.Connection, root: Path, rel_path: str, fts_
 
 
 def refresh_commits(conn: sqlite3.Connection, root: Path) -> None:
-    raw = run_git(
+    raw = run_git_nul_output(
         root,
         [
-            "log", f"-n{MAX_HISTORY}",
+            "log", "-z", f"-n{MAX_HISTORY}",
             "--date=iso-strict",
-            "--pretty=format:%x1e%H%x1f%aI%x1f%s%x1f%b",
+            "--pretty=format:%x1e%H%x1f%aI%x1f%s%x1f%b%x00",
             "--name-only",
         ],
-    ) or ""
-    conn.execute("DELETE FROM commits")
-    for record in raw.split("\x1e"):
-        record = record.strip()
+    )
+    records = []
+    for record in raw.split(b"\x1e"):
         if not record:
             continue
-        lines = record.splitlines()
-        header = lines[0].split("\x1f", 3)
-        if len(header) < 4:
-            continue
-        commit_sha, authored_at, subject, body = header
-        paths = [line.strip() for line in lines[1:] if line.strip() and not is_secret_path(line.strip())]
+        fields = record.split(b"\0")
+        header = fields[0].split(b"\x1f", 3)
+        if len(header) != 4:
+            raise GitPathsError("git_history_invalid_header")
+        commit_sha, authored_at, subject, body = [part.decode("utf-8", errors="replace") for part in header]
+        paths = []
+        for part in fields[1:]:
+            if not part:
+                continue
+            # Git emits one separator newline before the first path.
+            if not paths and part.startswith(b"\n"):
+                part = part[1:]
+            path = os.fsdecode(part)
+            if path and not is_secret_path(path):
+                paths.append(path)
+        records.append((commit_sha, redact_text(subject), redact_text(body), json.dumps(paths, ensure_ascii=True), authored_at))
+    conn.execute("DELETE FROM commits")
+    for commit_sha, subject, body, paths, authored_at in records:
         conn.execute(
             "INSERT OR REPLACE INTO commits(sha, subject, body, paths, authored_at) VALUES (?, ?, ?, ?, ?)",
-            (commit_sha, redact_text(subject), redact_text(body), "\n".join(paths), authored_at),
+            (commit_sha, subject, body, paths, authored_at),
         )
 
 
@@ -547,7 +557,15 @@ def index_status(root: Path, store: Path) -> dict[str, Any]:
         return {"status": "INVALID", "index": str(db_path), "metadata": str(path)}
     repo = doc.get("repository") or {}
     head = run_git(root, ["rev-parse", "HEAD"]) or "unknown"
-    dirty = dirty_fingerprint(root)
+    try:
+        dirty = dirty_fingerprint(root)
+    except GitPathsError as exc:
+        return {
+            "status": "UNKNOWN", "reasons": [str(exc)],
+            "index": str(db_path), "metadata": str(path),
+            "providers": doc.get("providers") or {},
+            "coverage": doc.get("coverage") or {},
+        }
     reasons: list[str] = []
     if str((doc.get("schema") or {}).get("version")) != str(SCHEMA_VERSION):
         reasons.append("retrieval_schema_changed")
@@ -967,7 +985,8 @@ def history_candidates(conn: sqlite3.Connection, root: Path, terms: list[str], l
     ranked: list[tuple[int, int, int, sqlite3.Row]] = []
     for row in conn.execute("SELECT sha, subject, body, paths, authored_at FROM commits").fetchall():
         message = f"{row['subject']} {row['body']}".lower()
-        path_text = str(row["paths"]).lower()
+        paths = json.loads(str(row["paths"]))
+        path_text = " ".join(paths).lower()
         message_overlap = sum(1 for term in terms if term in message)
         path_overlap = sum(1 for term in terms if term in path_text)
         if message_overlap or path_overlap:
@@ -985,10 +1004,7 @@ def history_candidates(conn: sqlite3.Connection, root: Path, terms: list[str], l
 
     results: list[dict[str, Any]] = []
     for _, message_overlap, path_overlap, row in ranked[:limit]:
-        safe_paths = [
-            path for path in str(row["paths"]).splitlines()
-            if path and is_indexable(path) and not is_secret_path(path)
-        ]
+        safe_paths = [path for path in json.loads(str(row["paths"])) if path and is_indexable(path) and not is_secret_path(path)]
         if safe_paths:
             diff = run_git(root, ["show", "--format=", "--unified=6", str(row["sha"]), "--", *safe_paths]) or ""
         else:

@@ -66,7 +66,7 @@ PR/main candidate
 
 Use `templates/review/INTEGRATION_GATE_REPORT.yaml`.
 
-The report stores only bounded command output tails plus fingerprints/status. It must not persist secrets or private model reasoning.
+Local reports may store bounded command output tails plus fingerprints/status. CI uses `--omit-output-tail` so uploaded reports and workflow summaries contain check IDs, status, exit codes and output hashes without command output. A missing report is shown as `REPORT_UNAVAILABLE`; a skipped Gate is `NOT_RUN`. Neither state is PASS. Reports must not persist secrets or private model reasoning.
 
 PASS means deterministic validation evidence is green. It does **not** authorize merge, publication, release, scope expansion or risk acceptance.
 

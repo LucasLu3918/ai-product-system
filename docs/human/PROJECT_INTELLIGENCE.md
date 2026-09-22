@@ -24,7 +24,7 @@ Read-only Discovery 先建立 PARTIAL，再由 Agent 針對 Architecture、Data 
 ~~~yaml
 readiness: READY | PARTIAL | BLOCKED
 review: UNREVIEWED | REVIEWED | CHANGES_REQUESTED
-freshness: CURRENT | STALE
+freshness: CURRENT | STALE | UNKNOWN
 ~~~
 
 ## Human Review HTML
@@ -34,6 +34,8 @@ ATTACHED 位於 `.ai/intelligence/reviews/PROJECT_INTELLIGENCE_REVIEW.html`；EP
 ## Freshness
 
 不是任何 Commit 都全量 STALE。AIPS 比較 relevant Source Hash、watched paths、HEAD diff、dirty paths、Branch/Worktree 與 Schema，只 Targeted Refresh 受影響 Topic。
+
+Git 路徑以 NUL 分隔讀取，完整變更集合用於新鮮度判斷；畫面清單可截斷並標示總數。若 Git 掃描失敗、逾時或超過輸出上限，狀態為 `UNKNOWN`，變更工作須先排除原因，不能當成 `CURRENT`。
 
 ## Attach / Detach
 

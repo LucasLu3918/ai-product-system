@@ -7,7 +7,14 @@ AI Product System（AIPS）是一套跨 Agent 的 Software Engineering Harness�
 ### macOS / Linux
 
 ~~~bash
-curl -fsSL https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh | bash
+(
+  set -e
+  installer="$(mktemp)"
+  trap 'rm -f "$installer"' EXIT
+  curl -fsSL --output "$installer" https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh
+  test -s "$installer"
+  bash "$installer"
+)
 ~~~
 
 ### Windows
@@ -15,7 +22,14 @@ curl -fsSL https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/
 正式支援路徑為 **Windows + WSL**。在 PowerShell 執行：
 
 ~~~powershell
-irm https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.ps1 | iex
+$installer = Join-Path ([IO.Path]::GetTempPath()) ("aips-install-" + [guid]::NewGuid().ToString("N") + ".ps1")
+try {
+  Invoke-WebRequest -Uri https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.ps1 -OutFile $installer -ErrorAction Stop
+  if (!(Test-Path -LiteralPath $installer) -or (Get-Item -LiteralPath $installer).Length -eq 0) { throw "AIPS installer download was empty." }
+  Invoke-Expression ([IO.File]::ReadAllText($installer))
+} finally {
+  Remove-Item -LiteralPath $installer -ErrorAction SilentlyContinue
+}
 ~~~
 
 安裝後在 WSL terminal 使用 AIPS。

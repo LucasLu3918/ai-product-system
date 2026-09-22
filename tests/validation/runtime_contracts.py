@@ -37,6 +37,14 @@ else:
             errors.append(f"Intelligence context lifecycle evidence failed: {focused.stdout.strip()} {focused.stderr.strip()}")
 
 install_preflight_evidence = ROOT / "tests/evidence/install_preflight_lifecycle.py"
+install_download_evidence = ROOT / "tests/evidence/install_download_lifecycle.py"
+if not install_download_evidence.exists():
+    errors.append("Missing install download lifecycle evidence")
+else:
+    focused = subprocess.run([sys.executable, str(install_download_evidence)], capture_output=True, text=True)
+    if focused.returncode != 0:
+        errors.append(f"Install download lifecycle evidence failed: {focused.stdout.strip()} {focused.stderr.strip()}")
+
 if not install_preflight_evidence.exists():
     errors.append("Missing install/preflight lifecycle evidence")
 else:
@@ -395,4 +403,3 @@ with tempfile.TemporaryDirectory() as tmp:
             errors.append("Secret checker output missing expected redacted finding metadata")
     except Exception:
         errors.append("Secret checker did not emit valid JSON evidence")
-

@@ -5,13 +5,27 @@
 macOS / Linux：
 
 ~~~bash
-curl -fsSL https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh | bash
+(
+  set -e
+  installer="$(mktemp)"
+  trap 'rm -f "$installer"' EXIT
+  curl -fsSL --output "$installer" https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh
+  test -s "$installer"
+  bash "$installer"
+)
 ~~~
 
 Windows 使用支援的 WSL 路徑，在 PowerShell 執行：
 
 ~~~powershell
-irm https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.ps1 | iex
+$installer = Join-Path ([IO.Path]::GetTempPath()) ("aips-install-" + [guid]::NewGuid().ToString("N") + ".ps1")
+try {
+  Invoke-WebRequest -Uri https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.ps1 -OutFile $installer -ErrorAction Stop
+  if (!(Test-Path -LiteralPath $installer) -or (Get-Item -LiteralPath $installer).Length -eq 0) { throw "AIPS installer download was empty." }
+  Invoke-Expression ([IO.File]::ReadAllText($installer))
+} finally {
+  Remove-Item -LiteralPath $installer -ErrorAction SilentlyContinue
+}
 ~~~
 
 不需要先手動 clone repository 或切換到 AIPS 目錄。

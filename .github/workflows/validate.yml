@@ -52,6 +52,7 @@ jobs:
           esac
           echo "value=$value" >> "$GITHUB_OUTPUT"
       - name: deterministic integration gate
+        id: gate
         shell: bash
         run: |
           base_tip_args=()
@@ -69,7 +70,41 @@ jobs:
             --change-class "${{ steps.change_class.outputs.value }}" \
             "${base_tip_args[@]}" \
             "${matrix_args[@]}" \
+            --omit-output-tail \
             --output integration-gate-report.yaml
+      - name: Integration Gate evidence summary
+        if: ${{ always() }}
+        shell: bash
+        env:
+          AIPS_GATE_OUTCOME: ${{ steps.gate.outcome }}
+        run: |
+          if [[ "$AIPS_GATE_OUTCOME" == "skipped" ]]; then
+            echo "Integration Gate: NOT_RUN (earlier step prevented execution)." >> "$GITHUB_STEP_SUMMARY"
+          elif [[ ! -s integration-gate-report.yaml ]]; then
+            echo "Integration Gate: REPORT_UNAVAILABLE (step outcome: ${AIPS_GATE_OUTCOME:-unknown})." >> "$GITHUB_STEP_SUMMARY"
+          else
+            python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import yaml
+          from pathlib import Path
+
+          report = yaml.safe_load(Path("integration-gate-report.yaml").read_text(encoding="utf-8")) or {}
+          candidate = report.get("candidate") or {}
+          print(f"Integration Gate: {report.get('status', 'REPORT_UNAVAILABLE')}")
+          print(f"Candidate: {candidate.get('head_sha', 'unknown')}")
+          print(f"Fingerprint: {report.get('candidate_fingerprint', 'unknown')}")
+          for check in report.get("checks") or []:
+              print(f"- {check.get('id', 'unknown')}: {check.get('status', 'unknown')} "
+                    f"(exit={check.get('exit_code', 'n/a')}, reason={check.get('reason', 'n/a')})")
+          PY
+          fi
+      - name: Upload Integration Gate evidence
+        if: ${{ always() && hashFiles('integration-gate-report.yaml') != '' }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: integration-gate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: integration-gate-report.yaml
+          if-no-files-found: error
+          retention-days: 14
       - name: Repository Health evidence
         if: ${{ always() }}
         shell: bash

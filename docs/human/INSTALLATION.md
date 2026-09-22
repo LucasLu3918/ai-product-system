@@ -5,7 +5,14 @@ AIPS 的 public lifecycle terminology 統一使用 **Install / Update / Uninstal
 ## macOS / Linux
 
 ~~~bash
-curl -fsSL https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh | bash
+(
+  set -e
+  installer="$(mktemp)"
+  trap 'rm -f "$installer"' EXIT
+  curl -fsSL --output "$installer" https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh
+  test -s "$installer"
+  bash "$installer"
+)
 ~~~
 
 Installer 會自行管理 AIPS system checkout、Python virtual environment、CLI 與可安全安裝的 Runtime integrations。使用者不需要先建立目錄、cd 或手動 git clone。
@@ -27,7 +34,14 @@ $XDG_DATA_HOME/aips/system
 在 PowerShell：
 
 ~~~powershell
-irm https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.ps1 | iex
+$installer = Join-Path ([IO.Path]::GetTempPath()) ("aips-install-" + [guid]::NewGuid().ToString("N") + ".ps1")
+try {
+  Invoke-WebRequest -Uri https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.ps1 -OutFile $installer -ErrorAction Stop
+  if (!(Test-Path -LiteralPath $installer) -or (Get-Item -LiteralPath $installer).Length -eq 0) { throw "AIPS installer download was empty." }
+  Invoke-Expression ([IO.File]::ReadAllText($installer))
+} finally {
+  Remove-Item -LiteralPath $installer -ErrorAction SilentlyContinue
+}
 ~~~
 
 PowerShell launcher 會把安裝交給 WSL 內相同的 Linux installer，因此核心 install lifecycle 只有一份。安裝後請在 WSL terminal 執行 AIPS。

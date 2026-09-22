@@ -19,6 +19,7 @@ from typing import Any, Iterator
 
 import yaml
 
+from git_paths import GitPathsError, run_git_paths
 from aips_identity import (
     config_home as canonical_config_home,
     project_root as canonical_project_root,
@@ -223,8 +224,8 @@ def safe_walk(root: Path, max_files: int = 8000) -> list[Path]:
     }
     result: list[Path] = []
     for base, dirs, files in os.walk(root):
-        dirs[:] = [d for d in dirs if d not in ignored and not d.startswith(".ai.detached-")]
-        for name in files:
+        dirs[:] = sorted(d for d in dirs if d not in ignored and not d.startswith(".ai.detached-"))
+        for name in sorted(files):
             if is_secret_filename(name):
                 continue
             p = Path(base) / name
@@ -365,7 +366,13 @@ def initial_intelligence(root: Path, pid: str, ident: dict[str, str], old_knowle
             "branch": branch,
         },
         "state": {"readiness": "PARTIAL", "review": "UNREVIEWED", "freshness": "CURRENT"},
-        "verified": {"git_head": head, "dirty_paths": dirty_paths, "verified_at": utc_now()},
+        "verified": {
+            "git_head": head,
+            "dirty_paths": dirty_paths[:500],
+            "dirty_path_count": len(dirty_paths),
+            "dirty_paths_truncated": len(dirty_paths) > 500,
+            "verified_at": utc_now(),
+        },
         "architecture": {"summary": None, "confidence": None, "source": None},
         "coverage": {
             "required_topics": list(REQUIRED_SEMANTIC_TOPICS),
@@ -442,24 +449,22 @@ def bootstrap(root: Path) -> dict[str, Any]:
 
 
 def git_dirty_paths(root: Path) -> list[str]:
-    """Return staged, unstaged and untracked paths without parsing porcelain columns."""
+    """Return complete staged, unstaged and untracked path sets."""
     result: set[str] = set()
     for args in (
-        ["diff", "--name-only"],
-        ["diff", "--cached", "--name-only"],
-        ["ls-files", "--others", "--exclude-standard"],
+        ["diff", "--name-only", "-z", "--"],
+        ["diff", "--cached", "--name-only", "-z", "--"],
+        ["ls-files", "--others", "--exclude-standard", "-z", "--"],
     ):
-        raw = run_git(root, args)
-        if raw:
-            result.update(p for p in raw.splitlines() if p)
-    return sorted(result)[:1000]
+        result.update(run_git_paths(root, args))
+    return sorted(result)
 
 
 def changed_paths_between(root: Path, old_head: str, new_head: str) -> list[str] | None:
-    raw = run_git(root, ["diff", "--name-only", f"{old_head}..{new_head}"])
-    if raw is None:
+    try:
+        return run_git_paths(root, ["diff", "--name-only", "-z", f"{old_head}..{new_head}", "--"])
+    except GitPathsError:
         return None
-    return [p for p in raw.splitlines() if p]
 
 
 def topic_watch_map(intel: dict[str, Any]) -> dict[str, list[str]]:
@@ -550,7 +555,20 @@ def freshness(root: Path) -> dict[str, Any]:
             if relevant_count == 0:
                 observations.append(f"git_head_changed_unrelated:{old_head[:8]}->{current_head[:8]}")
 
-    dirty_paths = git_dirty_paths(root)
+    try:
+        dirty_paths = git_dirty_paths(root)
+    except GitPathsError as exc:
+        reasons.append(str(exc))
+        affected_topics.add("unknown")
+        return {
+            "status": "UNKNOWN", "mode": mode, "project_id": pid,
+            "reasons": sorted(set(reasons)),
+            "observations": sorted(set(observations)),
+            "affected_topics": sorted(affected_topics),
+            "dirty_paths": [],
+            "dirty_path_scan": {"total_count": None, "examined_count": 0, "truncated": True},
+            "dirty_paths_display_truncated": False,
+        }
     for path in dirty_paths:
         matched, topics = relevant_change(path, source_paths, watches)
         if matched:
@@ -566,6 +584,12 @@ def freshness(root: Path) -> dict[str, Any]:
         "observations": sorted(set(observations)),
         "affected_topics": sorted(affected_topics),
         "dirty_paths": dirty_paths[:500],
+        "dirty_path_scan": {
+            "total_count": len(dirty_paths),
+            "examined_count": len(dirty_paths),
+            "truncated": False,
+        },
+        "dirty_paths_display_truncated": len(dirty_paths) > 500,
     }
 
 
@@ -1035,6 +1059,8 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             fail_closed_reasons.append("intelligence_missing")
         if fr["status"] == "STALE":
             fail_closed_reasons.append("intelligence_stale")
+        if fr["status"] == "UNKNOWN":
+            fail_closed_reasons.append("intelligence_freshness_unknown")
         if readiness != "READY":
             fail_closed_reasons.append(f"intelligence_readiness_{readiness.lower()}")
         if authority_conflicts:
@@ -1090,6 +1116,8 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             "reasons": fr.get("reasons", []),
             "observations": fr.get("observations", []),
             "affected_topics": fr.get("affected_topics", []),
+            "dirty_path_scan": fr.get("dirty_path_scan"),
+            "dirty_paths_display_truncated": fr.get("dirty_paths_display_truncated"),
         },
         "requirements": {
             "initialize_intelligence": initialize,
@@ -1180,9 +1208,12 @@ def finalize(root: Path) -> dict[str, Any]:
         project = intel.setdefault("project", {})
         project["worktree_identity"] = ident["worktree_id"]
         project["branch"] = run_git(root, ["branch", "--show-current"])
+        dirty_paths = git_dirty_paths(root)
         intel["verified"] = {
             "git_head": run_git(root, ["rev-parse", "HEAD"]),
-            "dirty_paths": git_dirty_paths(root),
+            "dirty_paths": dirty_paths[:500],
+            "dirty_path_count": len(dirty_paths),
+            "dirty_paths_truncated": len(dirty_paths) > 500,
             "verified_at": utc_now(),
         }
         atomic_yaml(ip, intel)
