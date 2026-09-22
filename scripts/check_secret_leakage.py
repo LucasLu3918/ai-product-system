@@ -71,7 +71,7 @@ def iter_files(root: Path, explicit: list[str]) -> Iterable[Path]:
                 yield p
         return
     for base, dirs, files in os.walk(root):
-        dirs[:] = [d for d in dirs if d not in SKIP_DIRS]
+        dirs[:] = [d for d in dirs if d not in SKIP_DIRS and not d.startswith(".venv.")]
         for name in files:
             p = Path(base) / name
             if p.suffix.lower() in BINARY_EXT:
