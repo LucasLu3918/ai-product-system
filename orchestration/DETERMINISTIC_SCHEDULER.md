@@ -76,6 +76,8 @@ python scripts/deterministic_scheduler.py --graph TASK_GRAPH.yaml --state STATE.
 
 Output includes graph/state/decision SHA-256 fingerprints for reproducibility.
 
+CI integration evidence is written to the runner temporary directory and uploaded after validation. Scheduler and repository checks therefore inspect the unchanged checkout revision instead of treating generated reports as dirty inputs.
+
 ## Failure behavior
 
 Invalid graph, unknown dependency, cycle, invalid state or plan mismatch is `SCHEDULER BLOCKED`.

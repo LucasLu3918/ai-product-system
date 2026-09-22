@@ -30,6 +30,8 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 20. Implement inside the approved Change Boundary using valid project-native conventions.
 21. For UI work, run applicable V1/V2 Visual Consistency Repair.
 22. Run required tests/security/quality/review. Before merge/publication of the exact integration candidate, run `orchestration/INTEGRATION_GATE.md` with the project Validation Profile and applicable Core Change Test Matrix; FAIL/BLOCKED evidence stops the candidate.
+
+The validation workflow keeps Gate and Repository Health evidence in the CI runner temporary directory until checks finish, then uploads those files as artifacts. This preserves exact-revision evidence for the repository validator.
 23. Compare actual diff/contract effects against declared Change Impact; unexpected material impact requires review and possibly scope reapproval.
 24. Refresh only affected Intelligence/Impact Graph topics; preserve user Overrides and canonical authoritative pointers.
 25. Regenerate Project Intelligence Review HTML only when initial bootstrap or material Intelligence/Override changes warrant it.

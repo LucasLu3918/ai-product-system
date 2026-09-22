@@ -57,6 +57,8 @@ Semantic planning 與 deterministic execution 分離：
 - Runtime Resource Isolation：為 parallel worktree 協調 bounded TCP port lease。
 - Integration Gate / Janitor：在 candidate merge 前執行適用 lint / type / test / repository validation。
 
+Validation evidence 與 source checkout 分離保存。Gate 報告和 Repository Health 報告使用 runner 暫存路徑，完成後才上傳 artifact，讓 repository validation 看到的仍是 exact clean revision。
+
 ## Security 與 Governance
 
 Security Assurance Level（SAL）依產品 baseline 與 change impact 決定 review 強度。高價值 business logic、authorization、financial integrity 等 protected boundary 使用更嚴格 evidence。
