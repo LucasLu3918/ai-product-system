@@ -113,6 +113,14 @@ else:
             errors.append(f"Retrieval Quality Evaluation lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
 
 # v0.21 Retrieval Intelligence lifecycle
+git_path_integrity_evidence = ROOT / "tests/evidence/git_path_integrity_lifecycle.py"
+if not git_path_integrity_evidence.exists():
+    errors.append("Missing Git path integrity lifecycle evidence")
+else:
+    result = subprocess.run([sys.executable, str(git_path_integrity_evidence)], capture_output=True, text=True)
+    if result.returncode != 0:
+        errors.append(f"Git path integrity lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
+
 retrieval_intelligence_evidence = ROOT / "tests/evidence/retrieval_intelligence_lifecycle.py"
 if not retrieval_intelligence_evidence.exists():
     errors.append("Missing v0.21 Retrieval Intelligence lifecycle evidence")

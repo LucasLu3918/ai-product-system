@@ -55,6 +55,11 @@ instruction_resolution:
 freshness:
   status: UNKNOWN
   reasons: []
+  dirty_path_scan:
+    total_count: null
+    examined_count: 0
+    truncated: true
+  dirty_paths_display_truncated: false
 
 requirements:
   initialize_intelligence: false

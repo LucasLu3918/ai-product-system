@@ -52,7 +52,10 @@ jobs:
           esac
           echo "value=$value" >> "$GITHUB_OUTPUT"
       - name: deterministic integration gate
+        id: gate
         shell: bash
+        env:
+          AIPS_GATE_REPORT: ${{ runner.temp }}/integration-gate-report.yaml
         run: |
           base_tip_args=()
           matrix_args=()
@@ -69,21 +72,59 @@ jobs:
             --change-class "${{ steps.change_class.outputs.value }}" \
             "${base_tip_args[@]}" \
             "${matrix_args[@]}" \
-            --output integration-gate-report.yaml
+            --omit-output-tail \
+            --output "$AIPS_GATE_REPORT"
+      - name: Integration Gate evidence summary
+        if: ${{ always() }}
+        shell: bash
+        env:
+          AIPS_GATE_OUTCOME: ${{ steps.gate.outcome }}
+          AIPS_GATE_REPORT: ${{ runner.temp }}/integration-gate-report.yaml
+        run: |
+          if [[ "$AIPS_GATE_OUTCOME" == "skipped" ]]; then
+            echo "Integration Gate: NOT_RUN (earlier step prevented execution)." >> "$GITHUB_STEP_SUMMARY"
+          elif [[ ! -s "$AIPS_GATE_REPORT" ]]; then
+            echo "Integration Gate: REPORT_UNAVAILABLE (step outcome: ${AIPS_GATE_OUTCOME:-unknown})." >> "$GITHUB_STEP_SUMMARY"
+          else
+            python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import os
+          import yaml
+          from pathlib import Path
+
+          report = yaml.safe_load(Path(os.environ["AIPS_GATE_REPORT"]).read_text(encoding="utf-8")) or {}
+          candidate = report.get("candidate") or {}
+          print(f"Integration Gate: {report.get('status', 'REPORT_UNAVAILABLE')}")
+          print(f"Candidate: {candidate.get('head_sha', 'unknown')}")
+          print(f"Fingerprint: {report.get('candidate_fingerprint', 'unknown')}")
+          for check in report.get("checks") or []:
+              print(f"- {check.get('id', 'unknown')}: {check.get('status', 'unknown')} "
+                    f"(exit={check.get('exit_code', 'n/a')}, reason={check.get('reason', 'n/a')})")
+          PY
+          fi
+      - name: Upload Integration Gate evidence
+        if: ${{ always() }}
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: integration-gate-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/integration-gate-report.yaml
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Repository Health evidence
         if: ${{ always() }}
         shell: bash
+        env:
+          AIPS_HEALTH_REPORT: ${{ runner.temp }}/repository-health-report.json
         run: |
           python scripts/repository_health.py audit \
             --config config/repository-health.yaml \
-            --format json > repository-health-report.json
+            --format json > "$AIPS_HEALTH_REPORT"
       - name: Upload Repository Health evidence
-        if: ${{ always() && hashFiles('repository-health-report.json') != '' }}
+        if: ${{ always() }}
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: repository-health-${{ github.run_id }}-${{ github.run_attempt }}
-          path: repository-health-report.json
-          if-no-files-found: error
+          path: ${{ runner.temp }}/repository-health-report.json
+          if-no-files-found: ignore
           retention-days: 14
 
   repository:

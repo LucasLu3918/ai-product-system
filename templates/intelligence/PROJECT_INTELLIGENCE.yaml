@@ -20,6 +20,8 @@ state:
 verified:
   git_head: null
   dirty_paths: []
+  dirty_path_count: null
+  dirty_paths_truncated: false
   verified_at: null
 
 architecture:

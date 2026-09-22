@@ -67,6 +67,27 @@ def main() -> int:
         assert payload["candidate"]["matrix_required"] is False
         assert payload["candidate"]["change_class"] == "standard"
 
+        sensitive_profile = dict(profile)
+        sensitive_profile["checks"] = [{
+            "id": "failing-secret-output", "category": "test", "required": True,
+            "argv": ["python3", "-c", "print('token=fixture-secret'); raise SystemExit(1)"],
+        }]
+        sensitive_path = repo / "sensitive-profile.yaml"
+        sensitive_path.write_text(yaml.safe_dump(sensitive_profile), encoding="utf-8")
+        safe_report = repo / "safe-report.json"
+        safe = subprocess.run(
+            ["python3", str(SCRIPT), "--profile", str(sensitive_path),
+             "--base", base, "--head", head, "--omit-output-tail",
+             "--output", str(safe_report), "--format", "json"],
+            cwd=repo, text=True, capture_output=True,
+        )
+        assert safe.returncode == 1, safe.stdout + safe.stderr
+        assert "fixture-secret" not in safe.stdout + safe_report.read_text(encoding="utf-8")
+        safe_check = json.loads(safe_report.read_text(encoding="utf-8"))["checks"][0]
+        assert safe_check["status"] == "FAIL"
+        assert "output_tail" not in safe_check
+        assert len(safe_check["output_sha256"]) == 64
+
         conditional = dict(profile)
         conditional["matrix_required_paths"] = ["app.py"]
         conditional_path = repo / "conditional.yaml"

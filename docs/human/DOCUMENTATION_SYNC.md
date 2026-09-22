@@ -20,6 +20,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+CI validation evidence is stored in the runner temporary directory until checks finish, then uploaded as artifacts. The report location does not become a repository documentation source or alter the exact revision being validated.
+
 新功能不允許再使用「不知道放哪裡，所以在文件最後加一段 vX.Y 說明」的模式。
 
 config/documentation-placement.yaml 定義 current-behavior 文件的 canonical H2 sections 與 subsystem → allowed placement mapping。scripts/documentation_placement.py 在 CI 檢查：

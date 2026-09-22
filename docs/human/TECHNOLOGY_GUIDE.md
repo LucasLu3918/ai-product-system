@@ -56,6 +56,8 @@ Parallel worktree 可取得 repository-scoped TCP port lease；跨 process alloc
 
 Merge candidate 依 change class 與 actual diff 執行 lint、type、test、repository validation 與 Core Change Matrix。
 
+CI 會把 Integration Gate 與 Repository Health 證據寫入 runner 的暫存目錄，再上傳為 artifact；驗證期間不會把報告檔寫入 checkout，避免證據輸出改變工作樹而誤判為不可重現。
+
 ## Security & Governance
 
 ### Security Assurance Level

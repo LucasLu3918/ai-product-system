@@ -54,7 +54,7 @@ def system_fixture(base: Path, name: str) -> tuple[Path, Path]:
     shutil.copytree(
         ROOT,
         system,
-        ignore=shutil.ignore_patterns(".git", ".venv", "__pycache__", "*.pyc"),
+        ignore=shutil.ignore_patterns(".git", ".venv", ".venv.*", "__pycache__", "*.pyc"),
     )
     sentinel_validator(system)
     git(system, "init", "-q")

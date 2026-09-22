@@ -59,10 +59,11 @@ Keep these independent:
 ~~~yaml
 readiness: READY | PARTIAL | BLOCKED
 review: UNREVIEWED | REVIEWED | CHANGES_REQUESTED
-freshness: CURRENT | STALE
+freshness: CURRENT | STALE | UNKNOWN
 ~~~
 
 A project may be technically READY/CURRENT while human review remains UNREVIEWED.
+Git filename discovery uses NUL-delimited paths. Freshness examines the complete dirty-path set; only the returned display list is shortened. If the Git path scan fails, times out or reaches its output limit, freshness is UNKNOWN and mutation context fails closed rather than claiming CURRENT.
 
 Human review blocks work only when a material unresolved interpretation affects the current change.
 

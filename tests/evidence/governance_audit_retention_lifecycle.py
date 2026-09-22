@@ -28,6 +28,17 @@ def require(condition: bool, message: str) -> None:
     if not condition:
         raise AssertionError(message)
 
+def openssl_supports_ed25519() -> bool:
+    binary = shutil.which("openssl")
+    if not binary:
+        return False
+    try:
+        result = subprocess.run([binary, "list", "-public-key-algorithms"], capture_output=True,
+                                text=True, timeout=15, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return result.returncode == 0 and "ED25519" in result.stdout.upper()
+
 
 def event(path: Path, event_type: str, occurred_at: str) -> None:
     path.write_text(json.dumps({
@@ -107,7 +118,7 @@ def main() -> int:
 
         entries = [old_desc, hold_desc]
         signed_descriptors: list[Path] = []
-        if shutil.which("openssl"):
+        if openssl_supports_ed25519():
             key1 = root / "key1.pem"; pub1 = root / "key1.pub.pem"
             key2 = root / "key2.pem"; pub2 = root / "key2.pub.pem"
             subprocess.run(["openssl", "genpkey", "-algorithm", "ED25519", "-out", str(key1)], check=True, timeout=15)

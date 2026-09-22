@@ -148,6 +148,8 @@ LLM 負責 semantic planning；Scheduler 只接受已形成的 Task Graph，依 
 
 Parallel task 必須先證明可安全並行；同一 change boundary 的 competing writer 不因想提高速度就被放行。
 
+PR 驗證會把 Gate 與 Repository Health 報告放在 CI runner 的暫存位置，完成後再上傳 artifact。這讓驗證不會因產生報告檔而把 checkout 判定成 dirty，合併前看到的證據仍對應同一個 commit。
+
 ## Execution Isolation 與 Runtime Resource
 
 Mutation 可依需要使用 shared workspace、AIPS-owned Git worktree 或 verified sandbox。沒有可驗證 sandbox provider 時，不把一般 temp directory 宣稱成 sandbox。
