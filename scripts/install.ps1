@@ -5,6 +5,7 @@ if (-not (Get-Command "wsl.exe" -ErrorAction SilentlyContinue)) { throw "WSL is 
 if ($DryRun) {
   Write-Output "AIPS Windows installation mode: WSL"
   Write-Output "installer=$InstallerUrl"
+  Write-Output "shell_integration=configure"
   Write-Output "AIPS is installed inside the selected WSL distribution."
   exit 0
 }
@@ -16,7 +17,7 @@ installer="$(mktemp)"
 trap 'rm -f -- "$installer"' EXIT
 curl -fsSL --output "$installer" __INSTALLER_URL__
 test -s "$installer"
-bash "$installer"
+bash "$installer" --configure-shell
 '@
 $installerScript = $installerScript.Replace("__INSTALLER_URL__", $escaped)
 wsl.exe bash -lc $installerScript

@@ -11,11 +11,11 @@ AIPS 的 public lifecycle terminology 統一使用 **Install / Update / Uninstal
   trap 'rm -f "$installer"' EXIT
   curl -fsSL --output "$installer" https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh
   test -s "$installer"
-  bash "$installer"
+  bash "$installer" --configure-shell
 )
 ~~~
 
-Installer 會自行管理 AIPS system checkout、Python virtual environment、CLI 與可安全安裝的 Runtime integrations。使用者不需要先建立目錄、cd 或手動 git clone。
+Installer 會自行管理 AIPS system checkout、Python virtual environment、CLI 與可安全安裝的 Runtime integrations。`--configure-shell` 會在 zsh／bash profile 寫入可辨識、可逆的 AIPS-owned `PATH` 區塊；使用者不需要先建立目錄、cd 或手動 git clone。若要自行管理 profile，使用 `--no-configure-shell`。
 
 AIPS runtime 需要 Python 3.10 以上。Installer 會依序選擇可用的相容 Python；需要指定解譯器時可設定 `AIPS_PYTHON=/path/to/python3`。若既有 AIPS-owned `.venv` 使用較舊版本，install／update／preflight 在修復依賴時會用相容 Python 重建該環境。
 
@@ -77,7 +77,17 @@ Native Runtime Adapter 與 MCP 是兩個互補平面：
 
 ### `aips: command not found`
 
-Installer 會建立 `~/.local/bin/aips`（或 `AIPS_BIN_HOME` 指定的路徑），但不會自動改寫使用者的 shell profile。這是刻意保留的環境安全邊界。
+Installer 會建立 `~/.local/bin/aips`（或 `AIPS_BIN_HOME` 指定的路徑）。官方安裝命令使用 `--configure-shell`，為 zsh 的 `~/.zprofile` 或 bash 的適用 profile 加入 AIPS-owned block。未提供選項的互動式安裝會詢問；非互動式安裝只顯示操作提示，不會等待輸入。
+
+可檢查或管理 shell integration：
+
+~~~bash
+"$HOME/.local/bin/aips" shell status
+"$HOME/.local/bin/aips" shell install
+"$HOME/.local/bin/aips" shell uninstall
+~~~
+
+重複執行 `shell install` 不會重複加入區塊。若 managed block 被修改，AIPS 會保留內容並回報 conflict；不會猜測或覆寫使用者調整。
 
 先確認 CLI 存在，再把實際安裝路徑加入目前 shell：
 
@@ -94,7 +104,7 @@ aips doctor
 "$HOME/.local/bin/aips" harness status
 ~~~
 
-若要永久生效，將相同的 `export PATH=...` 加入使用中的 `~/.zprofile`、`~/.zshrc` 或 `~/.bashrc`，然後開啟新的 terminal。若使用 `AIPS_BIN_HOME`，請把該值加入 `PATH`，不要照抄 `~/.local/bin`。
+若選擇手動管理，將相同的 `export PATH=...` 加入使用中的 `~/.zprofile`、`~/.zshrc` 或 `~/.bashrc`，然後開啟新的 terminal。若使用 `AIPS_BIN_HOME`，請把該值加入 `PATH`，不要照抄 `~/.local/bin`。
 
 ### `aips harness status` 顯示 `codex: NOT_DETECTED`
 
@@ -155,7 +165,10 @@ aips uninstall
 ~~~bash
 aips uninstall --remove-cache
 aips uninstall --remove-cache --remove-venv
+aips uninstall --remove-shell-integration
 ~~~
+
+預設解除安裝會移除 AIPS CLI symlink，再移除未遭修改的 AIPS-owned shell block。若 CLI 目錄仍含其他工具，PATH block 會保留，避免讓其他命令失去可發現性；確定要移除時使用 `--remove-shell-integration`。使用者自行建立的 PATH 設定不在 AIPS ownership 內，不會被刪除。
 
 Windows + WSL 可從 WSL terminal 執行相同 aips uninstall；repository 亦保留 scripts/uninstall.ps1 作 recovery wrapper。
 
