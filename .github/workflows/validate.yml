@@ -72,7 +72,6 @@ jobs:
             --change-class "${{ steps.change_class.outputs.value }}" \
             "${base_tip_args[@]}" \
             "${matrix_args[@]}" \
-            --omit-output-tail \
             --output "$AIPS_GATE_REPORT"
       - name: Integration Gate evidence summary
         if: ${{ always() }}
