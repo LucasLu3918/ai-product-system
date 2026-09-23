@@ -8,6 +8,12 @@ policy:
     no_uncovered: true
 
 scenarios:
+  - id: "167"
+    path: tests/scenarios/167-trajectory-quality-gate.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/trajectory_quality_gate_lifecycle.py
+      - scripts/trajectory_eval.py
   - id: "001"
     path: tests/scenarios/001-product-creation.md
     coverage: agent_eval

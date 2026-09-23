@@ -112,7 +112,7 @@ rules:
       - orchestration/EXECUTION_ISOLATION.md
       - orchestration/ORCHESTRATOR.md
   - id: scenario-conformance
-    triggers: [scripts/scenario_conformance.py, scripts/agent_eval.py, templates/conformance/**, tests/scenario_coverage.yaml]
+    triggers: [scripts/scenario_conformance.py, scripts/agent_eval.py, scripts/trajectory_eval.py, orchestration/TRAJECTORY_EVAL.md, templates/conformance/**, tests/scenario_coverage.yaml]
     human_docs: [docs/human/CONFORMANCE.md]
     agent_docs: [orchestration/CONFORMANCE.md]
 

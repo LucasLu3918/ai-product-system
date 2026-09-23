@@ -1274,3 +1274,16 @@ Scenario 166 驗證 Temporal Project Intelligence 的 Git revision 查詢、supe
 - manual：0
 - uncovered：0
 - automated：**166 / 166**
+
+## Scenario 167 — Eval-as-CI Trajectory Quality Gate
+
+Scenario 167 驗證 provider-neutral observable trajectory 的 fingerprint、deterministic duplicate-read 判定、task-class budget deviation、critical violation `BLOCK`、private reasoning / secret rejection，以及 shadow mode 不得授予 Git Publish 權限。它重用既有 Scenario Conformance 與 Agent Eval privacy contract；LLM Judge 維持 optional evidence-only，Human Authority 仍是最高決策者。
+
+目前 Scenario inventory：
+
+- deterministic：25
+- lifecycle：88
+- agent_eval：54
+- manual：0
+- uncovered：0
+- automated：**167 / 167**

@@ -1,0 +1,31 @@
+version: 1
+run:
+  run_id: ""
+  task_class: small_fix
+  scenario_id: ""
+  provider: ""
+  model: ""
+  runtime: ""
+budgets:
+  small_fix:
+    tool_calls: 10
+    file_reads: 6
+    retries: 1
+thresholds:
+  duplicate_warning: 0.20
+  duplicate_degraded: 0.35
+  duplicate_failure: 0.50
+events:
+  - seq: 1
+    kind: read
+    action: read_file
+    resource:
+      id: ""
+      revision: ""
+      range: ""
+    outcome: PASS
+    mutation: false
+    retry: false
+    purpose_change: false
+    duration_ms: 0
+    tokens: 0

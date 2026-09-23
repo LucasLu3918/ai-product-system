@@ -141,6 +141,7 @@ required_files = [
     "templates/core-change-proposal.md", "templates/git-publish-proposal.md",
     "templates/capability-reuse-review.md",
     "templates/review/REVIEW_REPORT.md", "templates/review/CORE_CHANGE_TEST_MATRIX.yaml",
+    "templates/review/TRAJECTORY_TRACE.yaml", "templates/review/TRAJECTORY_EVIDENCE.yaml",
     "templates/knowledge/KNOWLEDGE_TOPIC.md",
     "templates/creative/CREATIVE_BRIEF.md", "templates/creative/REFERENCE_BOARD.md",
     "templates/creative/VISUAL_REVIEW.md",
@@ -154,8 +155,8 @@ required_files = [
     "scripts/check_release_readiness.py", "scripts/harness_resolve.py",
     "scripts/project_intelligence.py", "scripts/retrieval_intelligence.py", "scripts/retrieval_evaluation.py", "scripts/structural_retrieval_trial.py", "scripts/retrieval_embedding_trial.py", "scripts/retrieval_embedding_trial_summary.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py",
     "scripts/aips_identity.py", "scripts/execution_isolation.py",
-    "scripts/agent_eval.py", "scripts/check_secret_leakage.py", "scripts/visual_profile.py",
-    "tests/evidence/governance_command_guard.py", "tests/evidence/visual_profile_lifecycle.py",
+    "scripts/agent_eval.py", "scripts/trajectory_eval.py", "scripts/check_secret_leakage.py", "scripts/visual_profile.py",
+    "tests/evidence/governance_command_guard.py", "tests/evidence/trajectory_quality_gate_lifecycle.py", "tests/evidence/visual_profile_lifecycle.py",
     "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml", ".github/workflows/retrieval-semantic-trial.yml",
     ".github/dependabot.yml", "SECURITY.md",
 ]
@@ -599,4 +600,3 @@ for helper in ("scripts/harness_resolve.py", "scripts/project_intelligence.py", 
         compiled = subprocess.run([sys.executable, "-m", "py_compile", str(helper_path)], capture_output=True, text=True)
         if compiled.returncode != 0:
             errors.append(f"{helper} syntax failed: {compiled.stderr.strip()}")
-
