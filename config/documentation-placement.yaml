@@ -118,7 +118,7 @@ placement_rules:
     triggers: [scripts/deterministic_scheduler.py, scripts/integration_gate.py, scripts/publish_preflight.py, scripts/repository_preflight.py, scripts/execution_isolation.py, scripts/run_state.py, .github/workflows/validate.yml, .github/workflows/installation-entrypoints.yml, orchestration/INTEGRATION_GATE.md, orchestration/DETERMINISTIC_SCHEDULER.md, orchestration/ORCHESTRATOR.md]
     placements:
       docs/human/USER_GUIDE.md: [Deterministic Scheduler, Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release]
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Deterministic Execution]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Deterministic Execution, Scenario Conformance 與 Agent Eval]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification]
       orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior]
       orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight, Change-class handoff to Integration Gate]
@@ -156,6 +156,4 @@ placement_rules:
   - id: trajectory-evaluation
     triggers: [scripts/trajectory_eval.py, orchestration/TRAJECTORY_EVAL.md, templates/review/TRAJECTORY_TRACE.yaml, templates/review/TRAJECTORY_EVIDENCE.yaml, tests/evidence/trajectory_quality_gate_lifecycle.py, tests/scenarios/167-trajectory-quality-gate.md]
     placements:
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Scenario Conformance 與 Agent Eval]
-      docs/human/CONFORMANCE.md: [Scenario 167 — Eval-as-CI Trajectory Quality Gate]
       docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency]
