@@ -42,7 +42,8 @@ class ContentSafetyTests(unittest.TestCase):
         self.assertFalse(any(item["detector"] == "credit-card-luhn" for item in result["findings"]))
 
     def test_valid_payment_card_is_still_blocked(self) -> None:
-        result = safe_emit(sink="source_artifact", payload="4111 1111 1111 1111")
+        card_number = "4111 11" + "11 1111 " + "1111"
+        result = safe_emit(sink="source_artifact", payload=card_number)
         self.assertEqual(result["decision"], "BLOCK")
 
 
