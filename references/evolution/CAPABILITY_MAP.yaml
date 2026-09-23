@@ -1,7 +1,7 @@
 version: 1
 purpose: Compact current-AIPS capability index for Evolution Radar semantic comparison; canonical behavior remains in referenced protocols.
 capabilities:
-  - {id: turn-aware-global-harness, name_en: Turn-Aware Global Harness, name_zh: 回合感知全域代理框架, docs: [harness/HARNESS_PROTOCOL.md, orchestration/TURN_HARNESS.md, docs/human/HARNESS.md]}
+  - {id: turn-aware-global-harness, name_en: Turn-Aware Global Harness, name_zh: 回合感知全域代理框架, docs: [harness/HARNESS_PROTOCOL.md, orchestration/TURN_HARNESS.md, docs/human/HARNESS.md, harness/PORTABLE_COMMANDS.md]}
   - {id: project-intelligence, name_en: Project Intelligence, name_zh: 專案智慧, docs: [orchestration/PROJECT_INTELLIGENCE.md, docs/human/PROJECT_INTELLIGENCE.md]}
   - {id: canonical-project-identity, name_en: Canonical Project Identity, name_zh: 標準專案身分識別, docs: [orchestration/PROJECT_IDENTITY.md]}
   - {id: change-impact-guard, name_en: Change Impact Guard, name_zh: 變更影響防護, docs: [orchestration/CHANGE_IMPACT.md]}

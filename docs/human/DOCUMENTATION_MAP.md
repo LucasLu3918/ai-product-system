@@ -46,6 +46,8 @@ docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGEL
 
 ## 文件一致性
 
+Portable Command 行為變更需同步 Harness、Architecture Overview、Technology Guide、Installation／Getting Started 與維護文件的既有 topic；不得以生成 projection 取代 canonical documentation。
+`harness/commands/REGISTRY.yaml` 定義 Portable Command ID、Host renderer 與 authority boundary；`harness/PORTABLE_COMMANDS.md` 是其人類可讀說明。
 Workflow and integration-gate behavior is documented in the canonical Human guides and corresponding orchestration documents. Generated CI reports remain artifacts and are not treated as source documentation.
 
 Behavior-bearing change 先由 Documentation Sync 判斷 required docs，再由 Documentation Placement 驗證 current-behavior 內容更新在 canonical section，而不是附加在尾端。任何落在 Technology Guide 廣域 trigger surface、但尚未映射到 placement rule 的新 source 會直接 fail closed；maintainer 必須先決定它屬於既有 topic，或明確新增新的 canonical topic。

@@ -1,0 +1,105 @@
+version: 1
+canonical_namespace: aips
+renderer_families:
+  - markdown-command
+  - markdown-skill
+  - generic
+commands:
+  - id: aips.constitution
+    version: 1
+    purpose: apply-and-check-protected-constitution
+    canonical_sources:
+      - core/CONSTITUTION.md
+    inputs: [objective, workspace]
+    outputs: [constraint-report]
+    gates: [constitutional-amendment-gate]
+    authority:
+      human_approval: false
+      git_publish: false
+      merge: false
+      release: false
+      production: false
+    side_effects: []
+    invocation:
+      slash: [/aips.constitution, /aips-constitution]
+      skill: [$aips-constitution]
+  - id: aips.plan
+    version: 1
+    purpose: reproducible-product-planning
+    canonical_sources:
+      - SYSTEM.md
+      - orchestration/PLANNING_PACKAGE.md
+      - orchestration/QUALITY_PLANNING.md
+    inputs: [objective, workspace]
+    outputs: [planning-package]
+    gates: [planning-gate-1, planning-gate-2]
+    authority:
+      human_approval: false
+      git_publish: false
+      merge: false
+      release: false
+      production: false
+    side_effects: [workspace_write]
+    invocation:
+      slash: [/aips.plan, /aips-plan]
+      skill: [$aips-plan]
+  - id: aips.impact
+    version: 1
+    purpose: existing-project-change-impact
+    canonical_sources:
+      - orchestration/CHANGE_IMPACT.md
+      - SYSTEM.md
+    inputs: [objective, workspace, changed_paths]
+    outputs: [change-impact]
+    gates: [change-impact-gate]
+    authority:
+      human_approval: false
+      git_publish: false
+      merge: false
+      release: false
+      production: false
+    side_effects: [workspace_read]
+    invocation:
+      slash: [/aips.impact, /aips-impact]
+      skill: [$aips-impact]
+hosts:
+  codex:
+    renderer: markdown-skill
+    mode: global-native-or-mcp
+    capability: CONTEXT_ALWAYS
+    placement: ~/.config/aips/commands/projections/codex
+  claude:
+    renderer: markdown-skill
+    mode: global-native-or-mcp
+    capability: CONTEXT_ALWAYS
+    placement: ~/.config/aips/commands/projections/claude
+  gemini:
+    renderer: markdown-command
+    mode: project-projection-or-mcp
+    capability: SESSION_ONLY
+    placement: ~/.config/aips/commands/projections/gemini
+  cursor:
+    renderer: markdown-command
+    mode: project-projection-or-mcp
+    capability: MCP_STANDARD
+    placement: ~/.config/aips/commands/projections/cursor
+  windsurf:
+    renderer: markdown-command
+    mode: project-projection-or-mcp
+    capability: MCP_STANDARD
+    placement: ~/.config/aips/commands/projections/windsurf
+  copilot:
+    renderer: generic
+    mode: mcp-or-generic
+    capability: MCP_STANDARD
+    placement: ~/.config/aips/commands/projections/copilot
+  amp:
+    renderer: generic
+    mode: mcp-or-generic
+    capability: MCP_STANDARD
+    placement: ~/.config/aips/commands/projections/amp
+  generic:
+    renderer: generic
+    mode: mcp-or-manual
+    capability: MCP_STANDARD
+    placement: ~/.config/aips/commands/projections/generic

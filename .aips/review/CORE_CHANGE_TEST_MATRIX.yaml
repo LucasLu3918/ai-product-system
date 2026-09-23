@@ -1,15 +1,16 @@
 version: 1
 candidate:
-  base_sha: 242b0e2380399409d16e75d5784864b3494db576
-  changed_files_hash: 2cac82f5617c4c52efca1212b81868e359a269596d7a939314e5b3a55e1b9cf1
+  base_sha: 5267514e2dc45713d5128475e35f5c7ae4960693
+  changed_files_hash: 5fae2200fd38f438a79ae1d392ad8146d40a1bc6239d5db30be92c2645344bd1
 change:
-  id: ci-parity-publication-preflight
-  summary: Unify local and CI publication candidate resolution, fail fast on documentation or environment blockers, and safely reconcile equivalent post-squash state.
+  id: portable-command-core
+  summary: Add canonical Portable Command registry, shared renderer, advisory MCP projection and managed CLI lifecycle for three governance commands.
   boundary:
-    - publication-preflight
-    - project-intelligence-refresh
+    - portable-command-registry
+    - workflow-rendering
+    - managed-projection-lifecycle
+    - mcp-and-cli-contracts
     - documentation-governance
-    - repository-ci
 matrix:
   - boundary: publication-preflight
     reason: A new shared CLI and CI entrypoint controls exact-candidate resolution and validation ordering.

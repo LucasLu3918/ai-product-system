@@ -15,6 +15,7 @@ import deterministic_scheduler
 import yaml
 from mcp.server import MCPServer
 from mcp.types import ToolAnnotations
+from portable_commands import load_registry, render_command
 
 ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL_VERSION = "2026-07-28"
@@ -470,6 +471,26 @@ def aips_workflow_context(workflow: str, objective: str) -> dict[str, Any]:
 
 
 @mcp.tool(annotations=READ_ONLY_TOOL)
+def aips_portable_command(command_id: str, host: str = "generic", objective: str = "") -> dict[str, Any]:
+    """Render a canonical Portable Command without writing a host projection."""
+    try:
+        registry = load_registry()
+        content = render_command(command_id, host, objective)
+    except (OSError, ValueError, yaml.YAMLError) as exc:
+        return {"status": "BLOCKED", "reason": str(exc), "authority": dict(AUTHORITY)}
+    command = next(item for item in registry["commands"] if item["id"] == command_id)
+    return {
+        "status": "READY",
+        "command_id": command_id,
+        "host": host,
+        "content": content,
+        "canonical_sources": command["canonical_sources"],
+        "authority": dict(AUTHORITY),
+        "side_effects": command["side_effects"],
+    }
+
+
+@mcp.tool(annotations=READ_ONLY_TOOL)
 def aips_schedule(graph: dict[str, Any], state: dict[str, Any] | None = None) -> dict[str, Any]:
     """Run the existing deterministic AIPS scheduler; this cannot invent tasks or grant authority."""
     try:
@@ -495,6 +516,7 @@ def inspect_payload() -> dict[str, Any]:
             "aips_capability_catalog",
             "aips_capability_read",
             "aips_workflow_context",
+            "aips_portable_command",
             "aips_schedule",
         ],
         "resources": {

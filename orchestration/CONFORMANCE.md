@@ -688,7 +688,6 @@ Current automated inventory after Scenario 164:
 - manual: 0
 - uncovered: 0
 - automated: 164 / 164
-
 ## Scenario 165 — CI-Parity Publication Preflight
 
 Scenario 165 proves that local publication validation and GitHub Actions share one exact-candidate resolver for base/head, change class, canonical Core Change Test Matrix and documentation diff base. Fast documentation/diff checks run before the expensive Integration Gate; unavailable localhost/browser prerequisites are reported as `ENVIRONMENT_BLOCKED`.

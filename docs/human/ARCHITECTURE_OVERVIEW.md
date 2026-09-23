@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+Portable Commands 以 Canonical ID（例如 `aips.plan`）將同一治理工作流渲染為 Slash Command、Skill 或 generic MCP bootstrap；它是 advisory access plane，不取代 Runtime-native Adapter 的 turn hook 或 pre-tool guard。
+
 ~~~text
 User Prompt
 → MCP Access Plane 或 Runtime-native Adapter
@@ -52,6 +54,8 @@ Production、Git publication、merge 與 release authority 不因 Automation 或
 
 ## Deterministic Execution
 
+`aips commands render` 僅預覽，`install`／`upgrade` 只管理 AIPS-owned projection；ownership digest 會偵測使用者修改並保留衝突檔案。
+
 Semantic planning 與 deterministic execution 分離：
 
 - Deterministic Scheduler：依 Task Graph 決定可重現 dispatch。
@@ -80,7 +84,6 @@ Scenario registry 明確標示 deterministic、lifecycle、agent_eval 或 manual
 Evolution Radar 位於 maintenance plane：收集 public technical evidence、deterministic pre-analysis、provider-neutral semantic handoff、Human Decision、bounded Trial。Radar recommendations 不會自動修改 code、開 implementation PR、merge 或 release。
 
 ## Documentation Architecture
-
 ~~~text
 docs/human/*.md
 → canonical Human source

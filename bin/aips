@@ -74,6 +74,14 @@ Usage:
   aips mcp inspect
   aips mcp config [--client cursor|windsurf|copilot|amp|codex|generic]
 
+  aips commands list
+  aips commands inspect [<command-id>]
+  aips commands render <command-id> [--host <host>]
+  aips commands install [<command-id>] --host <host>
+  aips commands status
+  aips commands upgrade [<command-id>] --host <host>
+  aips commands uninstall [--host <host>|--all]
+
   aips intelligence bootstrap [--project <path>]
   aips intelligence status [--project <path>]
   aips intelligence refresh [--project <path>]
@@ -670,6 +678,13 @@ mcp_cmd() {
   py="$(python_bin)"
   [ -n "$py" ] || die "python3 is required."
   "$py" "$SYSTEM_DIR/scripts/mcp_server.py" "$@"
+}
+
+portable_commands_cmd() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/portable_commands.py" "$@"
 }
 
 identity_cmd() {
@@ -1385,6 +1400,10 @@ case "${1:-help}" in
         die "Unknown mcp command: $sub"
         ;;
     esac
+    ;;
+  commands)
+    shift
+    portable_commands_cmd "$@"
     ;;
   intelligence)
     sub="${2:-status}"

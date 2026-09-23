@@ -18,7 +18,7 @@ current_behavior_docs:
     required_h2: [macOS / Linux, Windows, 驗證, Runtime integration, 常見問題與排查, 更新, 解除安裝, 會保留什麼, 相容入口]
   docs/human/HARNESS.md:
     strict_h2: true
-    required_h2: [Integration model, Native Runtime Adapters, MCP Interoperability, Capability truth, Progressive disclosure, Ownership 與解除]
+    required_h2: [Integration model, Native Runtime Adapters, MCP Interoperability, Portable Commands, Capability truth, Progressive disclosure, Ownership 與解除]
   docs/human/USER_GUIDE.md:
     strict_h2: true
     required_h2:
@@ -79,9 +79,9 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification]
 
   - id: harness
-    triggers: [harness/**, scripts/harness_resolve.py, scripts/mcp_server.py, scripts/manage_runtime_adapter.py, orchestration/CONFORMANCE.md]
+    triggers: [harness/**, scripts/harness_resolve.py, scripts/mcp_server.py, scripts/portable_commands.py, orchestration/CONFORMANCE.md, orchestration/EXECUTION_ISOLATION.md]
     placements:
-      docs/human/HARNESS.md: [Integration model, Native Runtime Adapters, MCP Interoperability, Capability truth, Progressive disclosure, Ownership 與解除]
+      docs/human/HARNESS.md: [Integration model, Native Runtime Adapters, MCP Interoperability, Portable Commands, Capability truth, Progressive disclosure, Ownership 與解除]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Project Intelligence 與 Retrieval, Deterministic Execution]
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification]
 
@@ -124,11 +124,11 @@ placement_rules:
       orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight, Change-class handoff to Integration Gate]
 
   - id: evolution
-    triggers: [scripts/evolution_*.py, config/evolution-*.yaml, references/evolution/**, .github/workflows/evolution-*.yml]
+    triggers: [scripts/evolution_*.py, config/evolution-*.yaml, references/evolution/**, .github/workflows/evolution-*.yml, orchestration/EVOLUTION_RADAR.md]
     placements:
       docs/human/EVOLUTION_RADAR.md: [Weekly Signal Scan, Evidence Quality, Deterministic Pre-analysis, Semantic Analysis, Human Decision Binding, Controlled Trial, Trial → ADOPT, Effectiveness Feedback, Current Boundaries]
       docs/human/EVOLUTION_RADAR_OVERVIEW.md: [Signal Collection, Deterministic Pre-analysis, Semantic Analysis, Human Decision, Controlled Trial, Trial → Adoption, Effectiveness Feedback]
-      docs/human/TECHNOLOGY_GUIDE.md: [Evolution & Maintenance]
+      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification, Evolution & Maintenance]
 
   - id: documentation-governance
     triggers:
@@ -143,7 +143,7 @@ placement_rules:
     placements:
       docs/human/DOCUMENTATION_SYNC.md: [文件角色, Current-behavior placement contract, Official Docs Site, Deterministic protection]
       docs/human/DOCUMENTATION_MAP.md: [Official Docs Site, 文件角色, 文件一致性]
-      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Documentation Platform, Execution, Quality & Verification]
+      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Documentation Platform, Execution, Quality & Verification, Evolution & Maintenance]
 
   - id: documentation-platform
     triggers: [docs/human/.vitepress/**, package.json, .github/workflows/docs-site.yml, scripts/documentation_placement.py, config/documentation-placement.yaml]
