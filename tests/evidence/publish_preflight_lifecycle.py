@@ -57,7 +57,7 @@ def main() -> int:
     ):
         assert contract in source
     browser_source = (ROOT / "scripts/browser_runtime.py").read_text(encoding="utf-8")
-    for contract in ("BROWSER_LAUNCH_FAILED", "--user-data-dir=", "AIPS_BROWSER_PROVIDER"):
+    for contract in ("BROWSER_LAUNCH_FAILED", "sync_playwright", "AIPS_BROWSER_PROVIDER"):
         assert contract in browser_source
 
     print("PUBLISH PREFLIGHT LIFECYCLE PASSED")

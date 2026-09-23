@@ -6,10 +6,8 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
-import tempfile
 from pathlib import Path
 from typing import Any
-
 
 SYSTEM_BROWSER_CANDIDATES = (
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
@@ -73,9 +71,18 @@ def probe_browser(path: str | None, *, provider: str, timeout: float = 10.0) -> 
     if not binary.is_file() or not os.access(binary, os.X_OK):
         return {"status": "BROWSER_NOT_EXECUTABLE", "provider": provider, "path": path}
 
-    version = subprocess.run(
-        [path, "--version"], capture_output=True, text=True, timeout=timeout, check=False
-    )
+    try:
+        version = subprocess.run(
+            [path, "--version"], capture_output=True, text=True, timeout=timeout, check=False
+        )
+    except subprocess.TimeoutExpired as exc:
+        return {
+            "status": "BROWSER_VERSION_TIMEOUT",
+            "provider": provider,
+            "path": path,
+            "timeout_seconds": timeout,
+            "stderr": str(exc)[-1000:],
+        }
     if version.returncode != 0:
         return {
             "status": "BROWSER_VERSION_FAILED",
@@ -85,43 +92,54 @@ def probe_browser(path: str | None, *, provider: str, timeout: float = 10.0) -> 
             "stderr": (version.stderr or version.stdout).strip()[-1000:],
         }
 
-    with tempfile.TemporaryDirectory(prefix="aips-browser-probe-") as profile:
-        command = [
-            path,
-            "--headless=new",
-            "--no-sandbox",
-            "--disable-dev-shm-usage",
-            "--no-first-run",
-            "--no-default-browser-check",
-            f"--user-data-dir={profile}",
-            "--dump-dom",
+    try:
+        from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return {
+            "status": "BROWSER_PROBE_DEPENDENCY_MISSING",
+            "provider": provider,
+            "path": path,
+        }
+
+    launch_args = ["--no-sandbox", "--disable-dev-shm-usage", "--no-first-run", "--no-default-browser-check"]
+    playwright = sync_playwright().start()
+    browser = None
+    try:
+        browser = playwright.chromium.launch(
+            executable_path=path,
+            headless=True,
+            args=launch_args,
+            timeout=int(timeout * 1000),
+        )
+        page = browser.new_page()
+        page.goto(
             "data:text/html,<title>aips-browser-probe</title><body>ok</body>",
-        ]
-        try:
-            launch = subprocess.run(command, capture_output=True, text=True, timeout=timeout, check=False)
-        except subprocess.TimeoutExpired as exc:
-            return {
-                "status": "BROWSER_LAUNCH_TIMEOUT",
-                "provider": provider,
-                "path": path,
-                "timeout_seconds": timeout,
-                "stderr": str(exc)[-1000:],
-            }
-    if launch.returncode != 0:
+            wait_until="domcontentloaded",
+            timeout=int(timeout * 1000),
+        )
+        page.title()
+    except PlaywrightTimeoutError as exc:
+        return {
+            "status": "BROWSER_LAUNCH_TIMEOUT",
+            "provider": provider,
+            "path": path,
+            "timeout_seconds": timeout,
+            "stderr": str(exc)[-1000:],
+        }
+    except Exception as exc:  # noqa: BLE001 - normalize browser-specific startup failures
         return {
             "status": "BROWSER_LAUNCH_FAILED",
             "provider": provider,
             "path": path,
-            "exit_code": launch.returncode,
             "version": (version.stdout or version.stderr).strip()[-300:],
-            "stderr": (launch.stderr or launch.stdout).strip()[-1000:],
+            "stderr": str(exc)[-1000:],
         }
-    return {
-        "status": "READY",
-        "provider": provider,
-        "path": path,
-        "version": (version.stdout or version.stderr).strip()[-300:],
-    }
+    finally:
+        if browser is not None:
+            browser.close()
+        playwright.stop()
+    return {"status": "READY", "provider": provider, "path": path, "version": (version.stdout or version.stderr).strip()[-300:]}
 
 
 def playwright_launch_kwargs(playwright: Any) -> tuple[dict[str, Any], str]:
