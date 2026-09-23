@@ -52,6 +52,8 @@ PowerShell launcher 會把安裝交給 WSL 內相同的 Linux installer，因此
 
 ## 驗證
 
+安裝後可用 `aips trajectory evaluate --trace <trace.yaml> --mode shadow` 驗證 trajectory evidence CLI；此命令不需要外部 provider API key。
+
 ~~~bash
 aips version
 aips doctor

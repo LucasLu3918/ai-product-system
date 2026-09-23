@@ -51,6 +51,8 @@ aips commands list
 
 ## 開始工作
 
+需要檢視 Agent 執行路徑時，可使用 `aips trajectory evaluate --trace <trace.yaml> --mode shadow`；這只產生 observable evidence，不會授予 Git Publish 權限。
+
 平常直接開啟你的 Agent / IDE。AIPS 會依 Runtime 能力使用 native adapter 或 MCP access plane。
 
 ~~~text

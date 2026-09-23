@@ -58,6 +58,8 @@ Prefer focused evidence under `tests/evidence/` when this makes one-to-one trace
 
 ## Agent Eval admission
 
+Trajectory Quality Gate 重用 Agent Eval 的 observable-only privacy contract。Trajectory evidence 可被 Scenario registry 綁定為 lifecycle evidence；不得保存 chain-of-thought，也不得把評估結果視為 publication authority。
+
 For `agent_eval`, load `orchestration/AGENT_EVAL.md`.
 
 Registry evidence must include both a concrete `tests/agent_eval/cases/*` Case and a `tests/agent_eval/results/*` recorded Result. Repository validation must run the deterministic scorer and reject stale fingerprints, missing/orphan results, private reasoning fields, secret-like values and rubric failures.
