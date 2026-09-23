@@ -34,6 +34,6 @@ if creative_lifecycle.exists():
         errors.append("Creative render lifecycle timed out after 45 seconds")
     else:
         if focused.returncode != 0:
-            errors.append(
-                f"Creative render lifecycle failed: {focused.stdout.strip()} {focused.stderr.strip()}"
-            )
+            output = f"{focused.stdout.strip()} {focused.stderr.strip()}"
+            if "ENVIRONMENT_BLOCKED:" not in output:
+                errors.append(f"Creative render lifecycle failed: {output}")

@@ -36,6 +36,8 @@ Every system change must assess downstream documentation and behavior before com
 
 If an item is not affected, mark it N/A during change review rather than editing it unnecessarily.
 
+Publication preflight must run against an exact, clean candidate. It verifies recursive documentation impact, placement rules, candidate head/base and Core Matrix binding before the expensive Integration Gate; a dirty workspace or stale candidate is blocked rather than silently treated as the PR revision.
+
 ## Architecture Diagram Impact Check
 
 Every Large/Core Change must explicitly assess architecture-diagram impact as part of the existing Documentation Impact Gate. This is not a new approval gate.
@@ -263,6 +265,8 @@ When Execution Isolation behavior changes, review together:
 
 Portable Command 變更必須同時驗證 Registry、renderer、CLI lifecycle、MCP read-only facade、ownership conflict 與相關 canonical documentation；版本更新不得把 Host-native capability 誤標為已驗證。
 本機與 GitHub 必須透過 `scripts/publish_preflight.py` 共用 base/head、change class、canonical matrix 與 diff-aware documentation base。發布提案前先執行 `aips publish plan`，確認 protected branch 路由與 PR label；未帶 `AIPS_DOCS_DIFF_BASE` 的一般 validation 不得宣稱為 CI-parity 證據。
+
+Browser evidence 同樣必須先通過 version 與 isolated-profile headless smoke probe；系統 Chrome 啟動層失敗應標記為 environment blocker，不得誤報成產品回歸。
 
 When public repository hardening changes, review together:
 

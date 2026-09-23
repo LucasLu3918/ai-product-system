@@ -16,6 +16,11 @@ from typing import Any
 
 import yaml
 
+try:
+    from browser_runtime import discover_browser, probe_browser
+except ModuleNotFoundError:  # imported as a repository module by lifecycle evidence
+    from scripts.browser_runtime import discover_browser, probe_browser
+
 ROOT = Path(__file__).resolve().parents[1]
 CANONICAL_MATRIX = ROOT / ".aips/review/CORE_CHANGE_TEST_MATRIX.yaml"
 
@@ -42,6 +47,13 @@ def git_success(*args: str) -> bool:
 def changed_files(base: str, head: str) -> list[str]:
     out = git("diff", "--name-only", f"{base}...{head}")
     return sorted(item for item in out.splitlines() if item)
+
+
+def canonical_hash(value: Any) -> str:
+    payload = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    import hashlib
+
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
 def matches(paths: list[str], patterns: list[str]) -> bool:
@@ -115,19 +127,14 @@ def environment_status() -> dict[str, Any]:
     except OSError as exc:
         localhost = "BLOCKED"
         blockers.append(f"localhost_bind:{exc.__class__.__name__}")
-    chrome = os.environ.get("CHROME_BIN")
-    mac_chrome = Path("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome")
-    browser = (
-        chrome if chrome and Path(chrome).is_file()
-        else str(mac_chrome) if mac_chrome.is_file()
-        else shutil.which("google-chrome") or shutil.which("chromium")
-    )
-    if not browser:
-        blockers.append("browser:NOT_FOUND")
+    selection = discover_browser()
+    browser_probe = probe_browser(selection.get("path"), provider=str(selection["provider"]))
+    if browser_probe["status"] != "READY":
+        blockers.append(f"browser:{browser_probe['status']}")
     return {
         "status": "READY" if not blockers else "ENVIRONMENT_BLOCKED",
         "localhost": localhost,
-        "browser": browser,
+        "browser": browser_probe,
         "blockers": blockers,
     }
 
@@ -165,12 +172,30 @@ def build_plan(args: argparse.Namespace) -> dict[str, Any]:
         blockers.append("documentation impact is incomplete")
     if git("status", "--porcelain"):
         blockers.append("working tree is dirty; commit the exact candidate before publication preflight")
+    if resolve_commit("HEAD") != head:
+        blockers.append("current checkout does not match the exact candidate head")
+    if args.base_tip and resolve_commit(args.base_tip) != base:
+        blockers.append("candidate base is stale relative to base-tip")
+    matrix_binding: dict[str, Any] = {}
+    if required and matrix_ok:
+        matrix_binding = yaml.safe_load(matrix.read_text(encoding="utf-8")) or {}
+        binding = matrix_binding.get("candidate") or {}
+        actual_hash = canonical_hash(files)
+        if binding.get("base_sha") != base:
+            blockers.append("Core Change Test Matrix base_sha does not match candidate")
+        if binding.get("changed_files_hash") != actual_hash:
+            blockers.append("Core Change Test Matrix changed_files_hash does not match candidate")
     return {
         "version": 1,
         "candidate": {"base": base, "head": head, "changed_files": files},
         "change_class": change_class,
         "change_class_warning": warning,
-        "matrix": {"required": required, "path": str(matrix), "canonical": matrix_ok},
+        "matrix": {
+            "required": required,
+            "path": str(matrix),
+            "canonical": matrix_ok,
+            "changed_files_hash": canonical_hash(files),
+        },
         "documentation": docs,
         "environment": environment_status(),
         "remote": remote_policy(args.branch, args.offline),

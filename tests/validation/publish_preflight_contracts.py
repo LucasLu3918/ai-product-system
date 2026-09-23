@@ -7,6 +7,7 @@ from .static_contracts import ROOT, errors
 
 required = (
     "scripts/publish_preflight.py",
+    "scripts/browser_runtime.py",
     "scripts/repository_preflight.py",
     "tests/evidence/publish_preflight_lifecycle.py",
     "tests/scenarios/165-ci-parity-publication-preflight.md",

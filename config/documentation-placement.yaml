@@ -86,7 +86,7 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification]
 
   - id: publication-preflight
-    triggers: [scripts/publish_preflight.py, scripts/repository_preflight.py, config/integration-gate.yaml, orchestration/CORE_CHANGE_TESTING.md, tests/evidence/publish_preflight_lifecycle.py, tests/validation/publish_preflight_contracts.py]
+    triggers: [scripts/publish_preflight.py, scripts/browser_runtime.py, scripts/repository_preflight.py, config/integration-gate.yaml, orchestration/CORE_CHANGE_TESTING.md, tests/evidence/publish_preflight_lifecycle.py, tests/validation/publish_preflight_contracts.py]
     placements:
       docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency, Deterministic Scheduler / Integration Gate consistency]
       docs/human/USER_GUIDE.md: [Quality 與 Review, Git Publication 與 Release]

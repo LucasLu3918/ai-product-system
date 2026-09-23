@@ -94,6 +94,8 @@ exact base/head candidate
 
 A stale candidate, missing required matrix, unresolved blocker, failed required command or unreconciled actual diff blocks the candidate.
 
+Before publication, run the shared preflight from a clean candidate worktree. It must resolve the same base/head and change class that CI will use, verify recursive documentation placement, and reject a stale Core Matrix or browser launch prerequisite before expensive lifecycle checks.
+
 Integration Gate PASS is evidence only. It never supplies Human approval, merge authority, publication authority, architecture approval or risk acceptance.
 
 ## Conditional CI enforcement
