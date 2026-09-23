@@ -143,9 +143,14 @@ def probe_browser(path: str | None, *, provider: str, timeout: float = 10.0) -> 
 
 
 def playwright_launch_kwargs(playwright: Any) -> tuple[dict[str, Any], str]:
-    selection = discover_browser()
-    if selection["provider"] == "managed":
-        return {"headless": True}, "playwright-managed"
+    requested = provider_request()
+    if requested in {"auto", "managed"}:
+        managed_path = Path(playwright.chromium.executable_path)
+        if managed_path.is_file():
+            return {"headless": True}, "playwright-managed"
+        if requested == "managed":
+            raise RuntimeError("Managed Playwright Chromium is not installed")
+    selection = discover_browser("system")
     path = selection.get("path")
     if not path:
         raise RuntimeError("No system Chrome/Chromium binary available for rendered visual evidence")
