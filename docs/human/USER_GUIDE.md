@@ -228,6 +228,17 @@ Production verification 應使用 observable evidence，不以「workflow 已執
 
 舊聊天內容不是 authoritative run state；若 workspace fingerprint 已變，先 refresh / revalidate 再接續。
 
+### Parallel Run Dashboard
+
+Use the read-only dashboard to inspect all known runs for the current repository, including runs in parallel worktrees:
+
+```bash
+aips run list --project .
+aips run dashboard --project .
+```
+
+The dashboard is an observation surface. It shows workflow state, gate, last activity and workspace health, but it cannot approve, retry, cancel, merge or publish. `ACTIVE` means the last checkpoint reported an active workflow; it does not prove that an Agent process is still live. The local server binds only to `127.0.0.1`.
+
 ## Project Intelligence
 
 Stable Intelligence 保存 Architecture、Data Flow、Modules、Contracts、Conventions、Testing、Security、Operations、Source Registry 與 Impact Graph。

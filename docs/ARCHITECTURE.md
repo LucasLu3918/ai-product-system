@@ -43,6 +43,20 @@ flowchart TD
 
 The synchronous Turn Hook resolves identity/freshness plus bounded evidence from an already available Retrieval Index. Whole-project bootstrap, initial index construction, semantic enrichment, impact-graph rebuilding and HTML generation stay outside the hook latency path. Retrieval cache state is non-canonical and degrades truthfully to stable Project Intelligence when unavailable.
 
+## Parallel run observation flow
+
+~~~mermaid
+flowchart LR
+    CP[CHECKPOINT.yaml] --> RP[Read-only Run Projection]
+    EV[EVENTS.jsonl] --> RP
+    SCH[Scheduler / Isolation / Gate facts] --> RP
+    RP --> CLI[aips run list / inspect]
+    RP --> API[localhost read-only API]
+    API --> UI[Parallel Run Dashboard]
+~~~
+
+The projection is an operational read model, not a new canonical state machine. Repository-scoped aggregation joins main and parallel worktree runs while preserving existing workspace fingerprints, approval authority and Resume behavior.
+
 ### Temporal Project Intelligence
 
 ~~~mermaid

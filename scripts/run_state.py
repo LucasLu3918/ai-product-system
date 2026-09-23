@@ -121,7 +121,7 @@ def checkpoint(args) -> dict:
         "clean": snap.get("clean"),
     }
     doc = {
-        "version": 2,
+        "version": 3,
         "run_id": args.run_id,
         "protocol": args.protocol or old.get("protocol"),
         "status": args.status,
@@ -130,6 +130,16 @@ def checkpoint(args) -> dict:
         "waiting_for": args.waiting_for or [],
         "resume_from": args.resume_from or args.step,
         "evidence": [safe_text(x) for x in (args.evidence or [])],
+        "execution": {
+            "task_id": args.task_id,
+            "role": args.role,
+            "runtime": args.runtime,
+            "isolation_id": args.isolation_id,
+        },
+        "gate": {
+            "id": args.gate_id,
+            "status": args.gate_status,
+        },
         # Legacy compatibility for existing consumers.
         "project": {"root": str(root), "mode": mode, "revision": snap.get("revision")},
         "workspace": workspace,
@@ -254,6 +264,8 @@ def main() -> int:
     cp.add_argument("--status", choices=["ACTIVE","WAITING","BLOCKED","COMPLETE"], default="ACTIVE")
     cp.add_argument("--completed-step", action="append"); cp.add_argument("--waiting-for", action="append")
     cp.add_argument("--resume-from"); cp.add_argument("--evidence", action="append")
+    cp.add_argument("--task-id"); cp.add_argument("--role"); cp.add_argument("--runtime"); cp.add_argument("--isolation-id")
+    cp.add_argument("--gate-id"); cp.add_argument("--gate-status")
     cp.add_argument("--format", choices=["yaml","json"], default="yaml")
     ev = sub.add_parser("event")
     ev.add_argument("--project", default=os.getcwd()); ev.add_argument("--run-id", required=True)

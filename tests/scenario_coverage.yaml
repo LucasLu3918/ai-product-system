@@ -1329,3 +1329,13 @@ scenarios:
       - scripts/content_safety.py
       - config/content-safety.yaml
       - tests/test_content_safety.py
+  - id: "173"
+    path: tests/scenarios/173-parallel-run-dashboard.md
+    coverage: lifecycle
+    evidence:
+      - scripts/run_projection.py
+      - scripts/run_dashboard.py
+      - scripts/run_state.py
+      - tests/evidence/run_dashboard_lifecycle.py
+      - tests/test_run_projection.py
+      - orchestration/RUN_DASHBOARD.md

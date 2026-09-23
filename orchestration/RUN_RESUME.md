@@ -59,6 +59,10 @@ The fingerprint hashes product workspace state; AIPS-owned `.ai/` state is exclu
 
 Resume status does not bypass Requirement, Change Impact, Approval, Security, Test, Review or Release gates.
 
+## Dashboard boundary
+
+The Parallel Run Dashboard is a read-only projection over this protocol. It may aggregate runs by `repository_id` across workspaces, but it must not become a second state source or state machine. Its API cannot approve, mutate, merge, publish, retry or cancel a run. `ACTIVE` remains the last-known workflow state; process liveness requires a separate future heartbeat/lease contract.
+
 ## Checkpoint timing
 
 Checkpoint after material transitions such as:

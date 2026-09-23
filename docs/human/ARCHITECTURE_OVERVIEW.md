@@ -56,6 +56,10 @@ Production、Git publication、merge 與 release authority 不因 Automation 或
 
 ## Deterministic Execution
 
+### Parallel Run Dashboard
+
+`scripts/run_projection.py` is a read-only projection over canonical checkpoint, event, scheduler/isolation and gate facts. CLI and browser consumers share the projection; the dashboard never becomes a second state machine or authority surface. Repository-scoped aggregation allows a maintainer to observe parallel worktrees while preserving existing workspace fingerprints and Resume semantics.
+
 `aips commands render` 僅預覽，`install`／`upgrade` 只管理 AIPS-owned projection；ownership digest 會偵測使用者修改並保留衝突檔案。
 
 Semantic planning 與 deterministic execution 分離：

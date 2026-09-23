@@ -1,4 +1,4 @@
-version: 2
+version: 3
 run_id: null
 protocol: null
 status: ACTIVE # ACTIVE | WAITING | BLOCKED | COMPLETE
@@ -7,6 +7,14 @@ completed_steps: []
 waiting_for: []
 resume_from: null
 evidence: []
+execution:
+  task_id: null
+  role: null
+  runtime: null
+  isolation_id: null
+gate:
+  id: null
+  status: null
 project: # legacy compatibility
   root: null
   mode: EPHEMERAL # EPHEMERAL | ATTACHED

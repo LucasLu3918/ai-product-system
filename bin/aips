@@ -99,6 +99,9 @@ Usage:
   aips run event --run-id <id> --event <name> [--project <path>]
   aips run resume --run-id <id> [--project <path>]
   aips run status --run-id <id> [--project <path>]
+  aips run list [--project <path>]
+  aips run inspect --run-id <id> [--project <path>]
+  aips run dashboard [--project <path>] [--open]
 
   aips conformance check [--format yaml|json]
   aips conformance report [--format yaml|json]
@@ -616,6 +619,33 @@ run_state_cmd() {
   py="$(python_bin)"
   [ -n "$py" ] || die "python3 is required."
   "$py" "$SYSTEM_DIR/scripts/run_state.py" "$@"
+}
+
+run_projection_cmd() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/run_projection.py" "$@"
+}
+
+run_dashboard_cmd() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  local project="."
+  local open_browser=0
+  local args=()
+  while [ "$#" -gt 0 ]; do
+    case "$1" in
+      --project) project="$2"; shift 2; args+=(--project "$project") ;;
+      --open) open_browser=1; args+=(--open); shift ;;
+      *) args+=("$1"); shift ;;
+    esac
+  done
+  "$py" "$SYSTEM_DIR/scripts/run_dashboard.py" "${args[@]}" &
+  local pid=$!
+  trap 'kill "$pid" 2>/dev/null || true' EXIT INT TERM
+  wait "$pid"
 }
 
 conformance_cmd() {
@@ -1421,7 +1451,17 @@ case "${1:-help}" in
   run)
     sub="${2:-status}"
     shift 2 || true
-    run_state_cmd "$sub" "$@"
+    case "$sub" in
+      list|inspect)
+        run_projection_cmd "$sub" "$@"
+        ;;
+      dashboard)
+        run_dashboard_cmd "$@"
+        ;;
+      *)
+        run_state_cmd "$sub" "$@"
+        ;;
+    esac
     ;;
   conformance)
     sub="${2:-report}"

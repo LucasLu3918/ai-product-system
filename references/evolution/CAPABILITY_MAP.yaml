@@ -6,7 +6,7 @@ capabilities:
   - {id: canonical-project-identity, name_en: Canonical Project Identity, name_zh: 標準專案身分識別, docs: [orchestration/PROJECT_IDENTITY.md]}
   - {id: change-impact-guard, name_en: Change Impact Guard, name_zh: 變更影響防護, docs: [orchestration/CHANGE_IMPACT.md]}
   - {id: enforceable-governance, name_en: Enforceable Governance, name_zh: 可執行治理, docs: [core/GOVERNANCE.md, orchestration/SYSTEM_SELF_IMPROVEMENT.md]}
-  - {id: durable-run-state, name_en: Durable Run State, name_zh: 可持久化執行狀態, docs: [orchestration/RUN_RESUME.md, orchestration/WORKSPACE_STATE.md]}
+  - {id: durable-run-state, name_en: Durable Run State, name_zh: 可持久化執行狀態, docs: [orchestration/RUN_RESUME.md, orchestration/RUN_DASHBOARD.md, orchestration/WORKSPACE_STATE.md]}
   - {id: scenario-conformance, name_en: Scenario Conformance, name_zh: 情境符合性驗證, docs: [orchestration/CONFORMANCE.md, docs/human/CONFORMANCE.md, orchestration/TRAJECTORY_EVAL.md]}
   - {id: agent-eval, name_en: Agent Evaluation, name_zh: 代理評估, docs: [orchestration/AGENT_EVAL.md, orchestration/TRAJECTORY_EVAL.md]}
   - {id: execution-isolation, name_en: Execution Isolation, name_zh: 執行隔離, docs: [orchestration/EXECUTION_ISOLATION.md]}
