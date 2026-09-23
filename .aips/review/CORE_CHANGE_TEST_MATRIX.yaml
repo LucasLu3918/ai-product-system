@@ -2,7 +2,7 @@ version: 1
 
 candidate:
   base_sha: 7052227725342a338b76006e7934a0e9ee60ca86
-  changed_files_hash: sha256:017bd075668f49e88cbc4dba76cfff8f5dffda31279cf914664c1a5a2d65fc94
+  changed_files_hash: 017bd075668f49e88cbc4dba76cfff8f5dffda31279cf914664c1a5a2d65fc94
 
 change:
   id: parallel-run-dashboard
