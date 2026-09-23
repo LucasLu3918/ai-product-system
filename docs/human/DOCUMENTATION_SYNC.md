@@ -40,6 +40,8 @@ Placement contract 本身新增 trigger 或 ownership 時，必須同步更新 D
 
 安裝、Harness 與 CI gate 的變更也必須在對應的 task-oriented Human 文件與 canonical 技術／架構區段留下可驗證說明。
 
+Temporal Project Intelligence 屬於 Project Intelligence 的既有 canonical topic：變更 temporal assertion schema、Git revision 查詢、validity/supersession 判定或 provenance 行為時，至少同步 Project Intelligence、Technology Guide、對應 Agent protocol 與 Conformance evidence；不得另建平行的時間軸文件。
+
 若新 capability 沒有適合 section，應先設計新的 topic section並更新 placement config，而不是直接 append。
 
 ## Official Docs Site
@@ -53,6 +55,8 @@ Docs deployment 不取得 code merge、release 或 product production authority�
 ## Technology Guide
 
 Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backward-compatible link stub。
+
+Temporal 查詢的有效歷史以可驗證 Git revision 與 assertion provenance 為準；無法驗證的歷史只可呈現為 UNKNOWN，不得被 current/as-of/between/why 查詢當成已確認事實。
 
 ## 文件互相導向
 

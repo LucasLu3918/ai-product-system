@@ -28,6 +28,8 @@ The mapping is explicit and deterministic. Do not guess from file names during v
 
 Project Intelligence documentation mapping includes the stable intelligence implementation, rebuildable Retrieval Intelligence implementation, Retrieval Quality Evaluation harness, Structural Retrieval trial/adoption harness and provider-neutral local-first embedding Trial / optional remote operator-summary surfaces, including the dedicated semantic Trial dependency, so changes to indexing/ranking/context assembly/evaluation metrics, structural retrieval behavior or embedding Trial provider/privacy/operator-handoff contracts require the Human Project Intelligence guide, Agent protocol and Technology Guide to be reviewed together.
 
+The same Project Intelligence mapping covers revision-aware Temporal Project Intelligence: changes to assertion validity intervals, supersession links, Git revision ancestry, current/as-of/between/why query semantics or provenance must synchronize the Human Project Intelligence guide, Technology Guide, Agent protocol and Conformance evidence. Unverifiable historical state remains UNKNOWN and is never promoted to a verified historical result.
+
 ## Technology Guide rule
 
 `docs/human/TECHNOLOGY_GUIDE.md` is the maintained Human inventory of current AIPS techniques and terms. A configured technical change requires the guide to be updated in the same diff, and Documentation Placement additionally requires changed lines to land in the owning canonical topic instead of an append-only tail section.
@@ -101,6 +103,8 @@ Current-behavior Human docs are topic-oriented, not release-note streams. `confi
 Every behavior-bearing source that falls on the broad Technology Guide sync surface MUST also match a semantic placement rule. Unmapped new sources fail closed until maintainers assign the change to an existing canonical topic or deliberately add a new topic to the placement contract. This prevents future features from bypassing information architecture by merely appending prose at the end.
 
 When a Scenario changes Runtime or MCP behavior, `orchestration/CONFORMANCE.md` is owned by the harness placement rule. A placement-contract update that assigns this ownership must synchronize the existing Runtime sections in Architecture Overview and Technology Guide plus the Human Documentation Sync and Map; it does not create a new product topic.
+
+Temporal Project Intelligence evidence is recorded in the existing Project Intelligence / conformance surfaces, including Scenario 166 and its lifecycle evidence; it does not introduce a separate documentation namespace or approval path.
 
 Do not satisfy documentation impact by appending a version/scenario note at the end of USER_GUIDE, ARCHITECTURE_OVERVIEW, HARNESS, INSTALLATION, TECHNOLOGY_GUIDE, or EVOLUTION_RADAR_OVERVIEW. Release history belongs in CHANGELOG; verification history belongs in CONFORMANCE.
 
