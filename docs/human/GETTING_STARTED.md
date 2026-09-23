@@ -43,6 +43,8 @@ aips harness status
 aips mcp inspect
 ~~~
 
+若要連接 MCP Host，可先用 `aips mcp config --client cursor|windsurf|copilot|amp|codex|generic` 檢視 review-only JSON；AIPS 不會自動修改 Host 設定。
+
 ## 開始工作
 
 平常直接開啟你的 Agent / IDE。AIPS 會依 Runtime 能力使用 native adapter 或 MCP access plane。

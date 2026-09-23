@@ -49,3 +49,5 @@ docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGEL
 Workflow and integration-gate behavior is documented in the canonical Human guides and corresponding orchestration documents. Generated CI reports remain artifacts and are not treated as source documentation.
 
 Behavior-bearing change 先由 Documentation Sync 判斷 required docs，再由 Documentation Placement 驗證 current-behavior 內容更新在 canonical section，而不是附加在尾端。任何落在 Technology Guide 廣域 trigger surface、但尚未映射到 placement rule 的新 source 會直接 fail closed；maintainer 必須先決定它屬於既有 topic，或明確新增新的 canonical topic。
+
+`orchestration/CONFORMANCE.md` 的 Scenario／Harness 行為由 harness placement rule 管理；變更時必須同步 Harness、Architecture Overview 與 Technology Guide 的既有主題，而不是建立第二份 current-behavior 說明。

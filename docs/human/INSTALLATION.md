@@ -68,8 +68,10 @@ aips mcp inspect
 Native Runtime Adapter 與 MCP 是兩個互補平面：
 
 - Codex / Claude Code / Gemini CLI：依可驗證能力安裝 AIPS-owned integration。
-- MCP-compatible Host：可使用 aips mcp serve。
+- MCP-compatible Host：可使用 `aips mcp serve`；以 `aips mcp config --client cursor|windsurf|copilot|amp|codex|generic` 產生 review-only 設定。
 - MCP-only governance enforcement 仍為 ADVISORY；native pre-tool hook 才能提供已驗證的 stronger enforcement。
+
+產生設定只會輸出 JSON，不會寫入或覆蓋第三方 client-owned configuration；使用者確認後再依 Host 文件安裝設定。
 
 細節放在 [Global Harness 與 MCP](HARNESS.md)，不在 Installation 頁重複 implementation 細節。
 
