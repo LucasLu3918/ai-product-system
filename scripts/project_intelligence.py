@@ -52,6 +52,14 @@ from retrieval_intelligence import (
 from retrieval_intelligence import (
     query_repository as retrieval_query_repository,
 )
+from temporal_intelligence import (
+    active_assertions as temporal_active_assertions,
+    between as temporal_between,
+    load_temporal,
+    temporal_digest,
+    validate_document as validate_temporal_document,
+    why as temporal_why,
+)
 
 SCHEMA_VERSION = 1
 
@@ -442,6 +450,16 @@ def bootstrap(root: Path) -> dict[str, Any]:
         atomic_yaml(store / "PROJECT_INTELLIGENCE.yaml", intel)
         atomic_yaml(store / "SOURCE_REGISTRY.yaml", registry)
         atomic_yaml(store / "IMPACT_GRAPH.yaml", seed_impact_graph(inv))
+        atomic_yaml(store / "TEMPORAL_ASSERTIONS.yaml", {
+            "schema": {"version": 1},
+            "assertions": [],
+            "semantics": {
+                "primary_time_axis": "git_revision_ancestry",
+                "valid_time": "project_revision_interval",
+                "observed_time": "aips_observation_metadata",
+                "unknown_history_policy": "never_infer",
+            },
+        })
         atomic_yaml(store / "DISCOVERY.yaml", {
             "version": 1,
             "generated_at": utc_now(),
@@ -1327,6 +1345,33 @@ def impact_init(root: Path, prompt: str, change_id: str | None) -> dict[str, Any
     return {"change_id": change_id, "path": str(path), "mode": mode, "status": "DRAFT"}
 
 
+def temporal_query(root: Path, store: Path, mode: str, revision: str | None,
+                   base: str | None, head: str | None, assertion_id: str | None) -> dict[str, Any]:
+    doc = load_temporal(store)
+    errors = validate_temporal_document(doc)
+    if errors:
+        raise RuntimeError("invalid temporal assertions: " + "; ".join(errors))
+    if mode == "current":
+        result = temporal_active_assertions(root, doc)
+    elif mode == "as-of":
+        if not revision:
+            raise RuntimeError("--revision is required for --mode as-of")
+        result = temporal_active_assertions(root, doc, revision)
+    elif mode == "between":
+        if not base or not head:
+            raise RuntimeError("--base and --head are required for --mode between")
+        result = temporal_between(root, doc, base, head)
+    elif mode == "why":
+        if not assertion_id:
+            raise RuntimeError("--assertion is required for --mode why")
+        result = temporal_why(doc, assertion_id)
+    else:
+        raise RuntimeError(f"unsupported temporal mode: {mode}")
+    result["canonical"] = str(store / "TEMPORAL_ASSERTIONS.yaml")
+    result["digest"] = temporal_digest(doc)
+    return result
+
+
 def validated_copytree(src: Path, dst: Path) -> None:
     if not (src / "PROJECT_INTELLIGENCE.yaml").is_file():
         raise RuntimeError(f"Source Intelligence is invalid: {src}")
@@ -1503,6 +1548,15 @@ def main() -> int:
     p.add_argument("--change-id")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
+    p = sub.add_parser("temporal")
+    p.add_argument("--project", default=os.getcwd())
+    p.add_argument("--mode", choices=["current", "as-of", "between", "why"], default="current")
+    p.add_argument("--revision")
+    p.add_argument("--base")
+    p.add_argument("--head")
+    p.add_argument("--assertion")
+    p.add_argument("--format", choices=["yaml", "json"], default="yaml")
+
     p = sub.add_parser("index")
     p.add_argument("--project", default=os.getcwd())
     p.add_argument("--force", action="store_true")
@@ -1544,6 +1598,9 @@ def main() -> int:
             result = promotion_apply(root, args.topic, args.target, args.approval_id)
         elif args.command == "impact-init":
             result = impact_init(root, args.prompt, args.change_id)
+        elif args.command == "temporal":
+            store, _, _ = intelligence_store(root, create=True)
+            result = temporal_query(root, store, args.mode, args.revision, args.base, args.head, args.assertion)
         elif args.command == "index":
             store, _, _ = intelligence_store(root, create=True)
             if not (store / "PROJECT_INTELLIGENCE.yaml").exists():

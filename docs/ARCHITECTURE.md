@@ -43,6 +43,27 @@ flowchart TD
 
 The synchronous Turn Hook resolves identity/freshness plus bounded evidence from an already available Retrieval Index. Whole-project bootstrap, initial index construction, semantic enrichment, impact-graph rebuilding and HTML generation stay outside the hook latency path. Retrieval cache state is non-canonical and degrades truthfully to stable Project Intelligence when unavailable.
 
+### Temporal Project Intelligence
+
+~~~mermaid
+flowchart LR
+    SRC[ADR / Contracts / Code / Docs] --> REG[SOURCE_REGISTRY]
+    REG --> TA[TEMPORAL_ASSERTIONS.yaml]
+    REG --> IG[IMPACT_GRAPH v2]
+    TA --> PI[Temporal Project Intelligence]
+    IG --> PI
+    PI --> CUR[Current Materialized View]
+    PI --> HIST[CURRENT / AS_OF / BETWEEN / WHY]
+    TA --> IDX[Rebuildable SQLite projection]
+    IG --> IDX
+    IDX --> JIT[JIT Context Retrieval]
+    CUR --> JIT
+    HIST --> CI[Revision-aware Change Impact]
+    JIT --> CI
+~~~
+
+Temporal validity is determined by Git ancestry, not timestamps. Valid time and observed time remain distinct so late historical discovery is represented honestly. Unknown history is never inferred, and the SQLite projection never becomes a source of truth.
+
 ## Retrieval quality evaluation
 
 ~~~mermaid

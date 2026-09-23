@@ -65,6 +65,8 @@ Maintainer 的發布前入口為 `aips docs impact` 與 `aips publish plan|prefl
 
 `aips doctor` 會檢查 system checkout、Python environment、必要的 PyYAML／MCP runtime dependencies、CLI、Harness 與 MCP availability；必要依賴不完整時會回傳失敗並提示重新執行 `aips install`。`aips update` 與 `aips preflight` 會在 managed installation 缺少必要依賴時自動依 `requirements.txt` 修復。Maintainer 若要執行完整 repository validation，使用 `aips validate`；正式 PR / main 仍以 GitHub Actions 的 Janitor / repository checks 為準。
 
+Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需要額外安裝 Neo4j、外部資料庫或 provider credential。
+
 ## Runtime integration
 
 安裝後可使用 `aips commands list` 檢視 Portable Command Registry；`aips commands render` 只預覽，`aips commands install --host <id>` 才建立 AIPS-owned projection。這些 projection 不會自動修改 Client-owned MCP 設定，也不提供 Runtime-native enforcement。

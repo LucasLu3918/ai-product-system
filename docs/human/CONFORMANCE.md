@@ -1243,11 +1243,10 @@ Scenario 164 驗證只支援 MCP Tools 的 Host 仍能透過唯讀 catalog／rea
 目前 Scenario inventory：
 
 - deterministic：24
-- lifecycle：86
+- lifecycle：87
 - agent_eval：54
 - manual：0
 - uncovered：0
-- automated：**164 / 164**
 ## Scenario 165 — CI-Parity Publication Preflight
 
 Scenario 165 驗證本機與 GitHub Actions 共用同一個 exact-candidate resolver，統一解析 base/head、PR label change class、canonical Core Change Test Matrix 與文件 diff base。快速 diff／文件檢查會先執行；localhost 或 browser 能力不足會明確標為 `ENVIRONMENT_BLOCKED`。
@@ -1262,3 +1261,16 @@ Lifecycle evidence 同時驗證 Git-ignored metadata、遞迴文件影響、安�
 - manual：0
 - uncovered：0
 - automated：**165 / 165**
+
+## Scenario 166 — Temporal Project Intelligence
+
+Scenario 166 驗證 Temporal Project Intelligence 的 Git revision 查詢、supersession、unknown-history fail-closed 行為，以及 canonical YAML 到 rebuildable SQLite projection 的設計。Current Snapshot 維持一般任務的快速路徑；歷史查詢只在明確要求時載入。
+
+目前 Scenario inventory：
+
+- deterministic：25
+- lifecycle：87
+- agent_eval：54
+- manual：0
+- uncovered：0
+- automated：**166 / 166**

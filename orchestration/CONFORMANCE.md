@@ -702,3 +702,5 @@ Current automated inventory after Scenario 165:
 - manual: 0
 - uncovered: 0
 - automated: 165 / 165
+
+Scenario 166 extends the Project Intelligence conformance surface with revision-aware temporal assertions and deterministic `current`, `as-of`, `between` and `why` queries. Its lifecycle evidence verifies validity intervals, supersession, provenance and fail-closed UNKNOWN handling without introducing a second documentation or authority model.

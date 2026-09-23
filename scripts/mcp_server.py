@@ -516,7 +516,7 @@ def inspect_payload() -> dict[str, Any]:
             "aips_capability_catalog",
             "aips_capability_read",
             "aips_workflow_context",
-            "aips_portable_command",
+             "aips_portable_command",
             "aips_schedule",
         ],
         "resources": {

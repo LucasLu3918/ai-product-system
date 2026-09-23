@@ -1,65 +1,94 @@
 version: 1
+
 candidate:
-  base_sha: 5267514e2dc45713d5128475e35f5c7ae4960693
-  changed_files_hash: 5fae2200fd38f438a79ae1d392ad8146d40a1bc6239d5db30be92c2645344bd1
+  base_sha: 8b13e1b8cfbbcc761b0766caa5007fc6f7af3e40
+  changed_files_hash: d614a1f1d17da0cf695030f5095bdbadf66d490468901a5ef13148dd7b882475
+
 change:
-  id: portable-command-core
-  summary: Add canonical Portable Command registry, shared renderer, advisory MCP projection and managed CLI lifecycle for three governance commands.
+  id: temporal-project-intelligence
+  summary: Add revision-aware temporal assertions, temporal Impact Graph projection, deterministic temporal queries, safe unknown-history migration and Change Impact integration on top of the synchronized main baseline.
   boundary:
-    - portable-command-registry
-    - workflow-rendering
-    - managed-projection-lifecycle
-    - mcp-and-cli-contracts
-    - documentation-governance
+    - temporal-canonical-schema
+    - git-revision-resolver
+    - retrieval-sqlite-projection
+    - change-impact-and-context
+    - documentation-architecture
+    - validation-and-migration
+
 matrix:
-  - boundary: publication-preflight
-    reason: A new shared CLI and CI entrypoint controls exact-candidate resolution and validation ordering.
+  - boundary: temporal-canonical-schema
+    reason: New canonical assertion ledger and IMPACT_GRAPH v2 validity/provenance fields.
     checks:
-      static_lint: {applicable: true, evidence: "Ruff critical/import/async checks and Python compileall pass for changed scripts and tests"}
-      unit: {applicable: true, evidence: "tests/evidence/publish_preflight_lifecycle.py covers change class, recursive docs impact, matrix rules and environment states"}
-      integration: {applicable: true, evidence: "scripts/publish_preflight.py delegates the fast repository preflight and existing Integration Gate with the same resolved base/head"}
-      contract: {applicable: true, evidence: "tests/validation/publish_preflight_contracts.py and scheduler_gate_contracts.py bind CLI, workflow and resolver contracts"}
-      e2e: {applicable: true, evidence: "exact-candidate local Integration Gate plus protected GitHub Actions Validate are required before merge"}
-      security: {applicable: true, evidence: "remote policy is read-only; preflight grants no push, merge, reset, release or production authority"}
-      migration_recovery: {applicable: true, evidence: "post-merge apply requires clean target branch and identical trees, and creates a backup branch before reset"}
-      cli_harness: {applicable: true, evidence: "bin/aips exposes publish plan, preflight and post-merge plus docs impact without changing Harness authority"}
-      docs_schema: {applicable: true, evidence: "publication behavior is bound through documentation sync, placement, architecture and Scenario 165"}
-  - boundary: project-intelligence-refresh
-    reason: Equivalent-tree squash reconciliation may refresh only revision metadata while semantic changes remain fail-closed.
+      static_lint: {applicable: true, evidence: "Python compilation and YAML parsing"}
+      unit: {applicable: true, evidence: "Temporal schema, interval and supersession tests"}
+      integration: {applicable: true, evidence: "CLI temporal query smoke tests"}
+      contract: {applicable: true, evidence: "Canonical template and backward-compatible v1 graph contract"}
+      e2e: {applicable: false, na_reason: "No external service or browser flow is changed"}
+      security: {applicable: true, evidence: "No secret persistence; malformed input fails closed"}
+      migration_recovery: {applicable: true, evidence: "Unknown history remains UNKNOWN and canonical YAML can rebuild projections"}
+      cli_harness: {applicable: true, evidence: "aips intelligence temporal CURRENT/AS_OF/BETWEEN/WHY commands"}
+      docs_schema: {applicable: true, evidence: "Temporal protocol and template documentation"}
+  - boundary: git-revision-resolver
+    reason: Historical state depends on deterministic Git ancestry rather than timestamps.
     checks:
-      static_lint: {applicable: true, evidence: "scripts/project_intelligence.py compiles and passes focused Ruff checks"}
-      unit: {applicable: true, evidence: "refresh checks cleanliness and old/current tree object equality before metadata update"}
-      integration: {applicable: true, evidence: "publish post-merge can invoke the canonical Project Intelligence refresh command after safe reconciliation"}
-      contract: {applicable: true, evidence: "static contracts require REFRESHED_EQUIVALENT_TREE and SEMANTIC_REFRESH_REQUIRED outcomes"}
-      e2e: {applicable: false, na_reason: "external intelligence metadata is workspace-local and semantic refresh stays an explicit follow-up"}
-      security: {applicable: true, evidence: "refresh reads Git objects and writes only existing external Project Intelligence metadata"}
-      migration_recovery: {applicable: true, evidence: "non-equivalent trees return SEMANTIC_REFRESH_REQUIRED without rewriting topic content"}
-      cli_harness: {applicable: true, evidence: "aips intelligence refresh is routed through the existing intelligence CLI"}
-      docs_schema: {applicable: true, evidence: "Human and agent Project Intelligence documentation describes equivalent-tree refresh limits"}
-  - boundary: documentation-governance
-    reason: Fast publication validation depends on recursive sync/placement impact and ignored-file-safe audience inspection.
+      static_lint: {applicable: true, evidence: "Python compilation"}
+      unit: {applicable: true, evidence: "Replacement and branch ancestry tests"}
+      integration: {applicable: true, evidence: "Temporary Git repository lifecycle"}
+      contract: {applicable: true, evidence: "CURRENT/AS_OF/BETWEEN/WHY result contract"}
+      e2e: {applicable: false, na_reason: "Repository-local deterministic resolver"}
+      security: {applicable: false, na_reason: "No authorization or credential boundary"}
+      migration_recovery: {applicable: true, evidence: "Unknown revision and unknown-history negative paths"}
+      cli_harness: {applicable: true, evidence: "Temporal CLI argument validation"}
+      docs_schema: {applicable: true, evidence: "Revision semantics documented"}
+  - boundary: retrieval-sqlite-projection
+    reason: Temporal assertions and supersession links are projected into rebuildable SQLite.
     checks:
-      static_lint: {applicable: true, evidence: "documentation YAML parses and repository validator passes all static contracts"}
-      unit: {applicable: true, evidence: "documentation audience regression creates an ignored .DS_Store and verifies it is skipped"}
-      integration: {applicable: true, evidence: "repository_preflight runs diff, sync, placement and audience checks against an explicit base"}
-      contract: {applicable: true, evidence: "documentation sync and placement rules map every changed behavior surface to canonical topics"}
-      e2e: {applicable: true, evidence: "full repository validation passes with AIPS_DOCS_DIFF_BASE bound to the candidate base"}
-      security: {applicable: false, na_reason: "no secret, credential or authorization boundary changes"}
-      migration_recovery: {applicable: false, na_reason: "no persisted documentation schema migration"}
-      cli_harness: {applicable: true, evidence: "aips docs impact exposes the same recursive resolver used by publication preflight"}
-      docs_schema: {applicable: true, evidence: "placement, audience, Technology Guide and Human/agent documentation contracts pass"}
-  - boundary: repository-ci
-    reason: GitHub Validate now calls the same publication preflight used locally and repository health verifies that wiring.
+      static_lint: {applicable: true, evidence: "Python compilation"}
+      unit: {applicable: true, evidence: "Projection count and digest assertions"}
+      integration: {applicable: true, evidence: "Retrieval lifecycle with temporary config/cache"}
+      contract: {applicable: true, evidence: "SQLite remains non-canonical and metadata reports temporal provider"}
+      e2e: {applicable: false, na_reason: "No external deployment path"}
+      security: {applicable: true, evidence: "Existing retrieval secret-path exclusion remains enabled"}
+      migration_recovery: {applicable: true, evidence: "Force index rebuild recreates temporal tables"}
+      cli_harness: {applicable: true, evidence: "aips intelligence index"}
+      docs_schema: {applicable: true, evidence: "Architecture and Retrieval documentation"}
+  - boundary: change-impact-and-context
+    reason: Historical Change Impact must use the active temporal graph and current snapshot remains fast default.
     checks:
-      static_lint: {applicable: true, evidence: "workflow strings and integration profile are checked by repository static contracts"}
-      unit: {applicable: false, na_reason: "workflow execution is covered by exact-candidate GitHub Actions rather than a separate unit harness"}
-      integration: {applicable: true, evidence: "local full repository validator passes outside the sandbox with localhost and Chrome lifecycle support"}
-      contract: {applicable: true, evidence: "config/architecture-surfaces.yaml and config/repository-health.yaml bind shared preflight paths and evidence"}
-      e2e: {applicable: true, evidence: "PR Validate and protected-main Validate must both succeed before completion"}
-      security: {applicable: true, evidence: "workflow remains contents:read and offline during candidate validation"}
-      migration_recovery: {applicable: false, na_reason: "workflow wiring is source-controlled and rollback is a normal code revert"}
-      cli_harness: {applicable: true, evidence: "local and CI execute the same Python entrypoint and canonical matrix path"}
-      docs_schema: {applicable: true, evidence: "Architecture, Maintenance, Integration Gate and Scheduler documentation describe shared resolution"}
+      static_lint: {applicable: true, evidence: "Documentation and Python validation"}
+      unit: {applicable: true, evidence: "Historical Change Impact acceptance scenario"}
+      integration: {applicable: true, evidence: "Existing Project Intelligence and Retrieval lifecycle tests"}
+      contract: {applicable: true, evidence: "CHANGE_IMPACT and PROJECT_INTELLIGENCE protocols"}
+      e2e: {applicable: false, na_reason: "No user-facing web product"}
+      security: {applicable: true, evidence: "No authority or secret semantics changed"}
+      migration_recovery: {applicable: false, na_reason: "Impact artifact is derived and rebuildable"}
+      cli_harness: {applicable: true, evidence: "Existing impact-init and temporal CLI contracts"}
+      docs_schema: {applicable: true, evidence: "Architecture diagrams and human overview updated"}
+  - boundary: documentation-architecture
+    reason: New canonical temporal flow changes system and human architecture documentation.
+    checks:
+      static_lint: {applicable: true, evidence: "Repository documentation validators"}
+      unit: {applicable: false, na_reason: "Documentation behavior is covered by placement/sync contracts"}
+      integration: {applicable: true, evidence: "Documentation placement and sync validation"}
+      contract: {applicable: true, evidence: "Canonical orchestration and human documentation sections"}
+      e2e: {applicable: true, evidence: "Docs site build where available"}
+      security: {applicable: false, na_reason: "No new credential or protected operation"}
+      migration_recovery: {applicable: false, na_reason: "Documentation-only compatibility is additive"}
+      cli_harness: {applicable: false, na_reason: "No runtime command implementation in this boundary"}
+      docs_schema: {applicable: true, evidence: "Architecture diagrams, scenario registry and protocol docs"}
+  - boundary: validation-and-migration
+    reason: New lifecycle tests verify fail-closed validation and safe historical migration semantics.
+    checks:
+      static_lint: {applicable: true, evidence: "Python compilation"}
+      unit: {applicable: true, evidence: "tests/test_temporal_intelligence.py"}
+      integration: {applicable: true, evidence: "tests/evidence/temporal_intelligence_lifecycle.py"}
+      contract: {applicable: true, evidence: "Scenario 166 registry binding"}
+      e2e: {applicable: false, na_reason: "No external runtime"}
+      security: {applicable: true, evidence: "No secret values are persisted"}
+      migration_recovery: {applicable: true, evidence: "Unknown history, malformed interval and rebuild cases"}
+      cli_harness: {applicable: true, evidence: "Project Intelligence CLI smoke tests"}
+      docs_schema: {applicable: true, evidence: "Scenario and acceptance documentation"}
+
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

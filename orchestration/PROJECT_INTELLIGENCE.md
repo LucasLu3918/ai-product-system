@@ -607,3 +607,20 @@ Regenerate Human Review HTML when:
 - an Intelligence schema migration changes represented information.
 
 Ordinary narrow fixes with no Intelligence change do not require HTML regeneration.
+
+## Temporal Project Intelligence
+
+Project Intelligence may include `TEMPORAL_ASSERTIONS.yaml` as its canonical temporal assertion ledger. It records facts and architecture decisions with explicit provenance, supersession and history quality. Git revision ancestry is the authoritative validity axis; wall-clock timestamps are observation metadata only.
+
+The current materialized view remains the default path. Historical work uses bounded, just-in-time queries:
+
+~~~text
+CURRENT
+AS_OF <revision>
+BETWEEN <base> <head>
+WHY <assertion>
+~~~
+
+Use `aips intelligence temporal --project <path> --mode as-of --revision <sha>` for a deterministic historical query. `UNKNOWN` history must remain unknown; migration and reconstruction MUST NOT invent a validity start revision. `VERIFIED`, `INFERRED`, `PARTIAL` and `UNKNOWN` history quality must remain visible in output.
+
+`IMPACT_GRAPH.yaml` v2 may add optional revision validity and provenance to nodes or edges while v1 data remains readable. Retrieval SQLite may project temporal assertions, supersession links and ancestry cache, but it is rebuildable and never canonical.

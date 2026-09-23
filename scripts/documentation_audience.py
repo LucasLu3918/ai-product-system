@@ -99,7 +99,7 @@ def validate_layout(root: Path, config: dict[str, Any]) -> list[str]:
                 cwd=root,
                 capture_output=True,
             )
-            if ignored.returncode == 0:
+            if child.is_file() and child.name in {".DS_Store", "Thumbs.db", "desktop.ini"} or ignored.returncode == 0:
                 continue
             if child.is_dir() and rel == "docs/human":
                 continue

@@ -1,0 +1,30 @@
+schema:
+  version: 1
+
+assertions: []
+# - id: payment-routing-service-a
+#   subject: payment
+#   predicate: routes_through
+#   object: service-a
+#   classification: FACT
+#   authority:
+#     type: adr
+#     source_id: ADR-012
+#   validity:
+#     from_revision: abc123
+#     to_revision_exclusive: def456
+#   observation:
+#     first_observed_revision: current-head
+#     observed_at: 2026-01-01T00:00:00Z
+#   provenance:
+#     source: docs/adr/ADR-012.md
+#     source_hash: sha256:...
+#   supersedes: []
+#   superseded_by: null
+#   history_quality: VERIFIED
+
+semantics:
+  primary_time_axis: git_revision_ancestry
+  valid_time: project_revision_interval
+  observed_time: aips_observation_metadata
+  unknown_history_policy: never_infer

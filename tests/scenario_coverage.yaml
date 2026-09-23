@@ -1276,3 +1276,13 @@ scenarios:
       - tests/evidence/publish_preflight_lifecycle.py
       - tests/validation/publish_preflight_contracts.py
       - tests/validate_repository.py
+  - id: "166"
+    path: tests/scenarios/166-temporal-project-intelligence.md
+    coverage: deterministic
+    evidence:
+      - scripts/temporal_intelligence.py
+      - scripts/project_intelligence.py
+      - scripts/retrieval_intelligence.py
+      - templates/intelligence/TEMPORAL_ASSERTIONS.yaml
+      - tests/evidence/temporal_intelligence_lifecycle.py
+      - tests/test_temporal_intelligence.py

@@ -48,6 +48,8 @@ Review-only config 支援 Cursor、Windsurf、GitHub Copilot CLI、Amp、Codex �
 
 MCP Server 不呼叫第二個 LLM，也不取得 Human approval、Git publish、merge、release、production 或 host-native tool interception authority。
 
+Temporal Project Intelligence 的 historical query 由既有 deterministic CLI／Project Intelligence layer 提供；MCP 與 Runtime adapter 只傳遞 bounded context，不新增 Temporal Role、Gate 或 host-native authority。
+
 ## Capability truth
 
 - AUTOMATIC：integration 安裝狀態。

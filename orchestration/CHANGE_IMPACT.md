@@ -98,3 +98,17 @@ If actual material impact falls outside the declared Change Boundary:
 Update reusable `IMPACT_GRAPH.yaml` only when the change reveals/stably changes cross-component relationships.
 
 A one-off run artifact does not automatically become permanent Intelligence.
+
+## Temporal Change Impact
+
+When a change depends on architecture evolution, resolve the temporal state before traversing the graph:
+
+~~~text
+target revision or merge-base/HEAD
+→ active temporal assertions
+→ temporal-filtered Impact Graph
+→ Change Boundary
+→ CHANGE_IMPACT.yaml
+~~~
+
+Historical Change Impact MUST NOT use a rule whose `from_revision` is not an ancestor of the target revision. Assertions with unknown historical starts may be used for current-state context only and must be reported as `PARTIAL` or `UNKNOWN`. Between two revisions, report added, ended, superseded and conflicting assertions rather than silently selecting a winner.

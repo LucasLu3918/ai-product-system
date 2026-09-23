@@ -17,8 +17,9 @@ import yaml
 from git_paths import GitPathsError, run_git_nul_output, run_git_paths
 from aips_identity import config_home as canonical_config_home
 from aips_identity import repository_identity as canonical_repository_identity
+from temporal_intelligence import load_temporal, temporal_digest, validate_document as validate_temporal_document
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 DEFAULT_TOKEN_BUDGET = 6000
 DEFAULT_RESULT_LIMIT = 12
 MAX_FILE_BYTES = 1_000_000
@@ -304,6 +305,29 @@ def open_db(path: Path) -> tuple[sqlite3.Connection, bool]:
             key TEXT PRIMARY KEY,
             value TEXT NOT NULL
         );
+        CREATE TABLE IF NOT EXISTS temporal_assertions (
+            id TEXT PRIMARY KEY,
+            subject TEXT NOT NULL,
+            predicate TEXT NOT NULL,
+            object TEXT NOT NULL,
+            from_revision TEXT,
+            to_revision_exclusive TEXT,
+            history_quality TEXT NOT NULL,
+            payload TEXT NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_temporal_subject_predicate
+            ON temporal_assertions(subject, predicate);
+        CREATE TABLE IF NOT EXISTS temporal_supersession (
+            assertion_id TEXT NOT NULL,
+            supersedes_id TEXT NOT NULL,
+            PRIMARY KEY(assertion_id, supersedes_id)
+        );
+        CREATE TABLE IF NOT EXISTS revision_ancestry_cache (
+            ancestor TEXT NOT NULL,
+            descendant TEXT NOT NULL,
+            is_ancestor INTEGER NOT NULL,
+            PRIMARY KEY(ancestor, descendant)
+        );
         """
     )
     fts_available = True
@@ -430,6 +454,49 @@ def refresh_commits(conn: sqlite3.Connection, root: Path) -> None:
         )
 
 
+def refresh_temporal(conn: sqlite3.Connection, store: Path) -> dict[str, Any]:
+    """Project canonical temporal YAML into rebuildable query tables."""
+    doc = load_temporal(store)
+    errors = validate_temporal_document(doc)
+    if errors:
+        raise ValueError("invalid temporal assertions: " + "; ".join(errors))
+    conn.execute("DELETE FROM temporal_supersession")
+    conn.execute("DELETE FROM temporal_assertions")
+    count = 0
+    links = 0
+    for assertion in doc.get("assertions") or []:
+        validity = assertion.get("validity") or {}
+        assertion_id = str(assertion.get("id"))
+        conn.execute(
+            """INSERT INTO temporal_assertions
+               (id, subject, predicate, object, from_revision, to_revision_exclusive, history_quality, payload)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+            (
+                assertion_id,
+                str(assertion.get("subject")),
+                str(assertion.get("predicate")),
+                str(assertion.get("object")),
+                None if str(validity.get("from_revision")).upper() == "UNKNOWN" else validity.get("from_revision"),
+                None if str(validity.get("to_revision_exclusive")).upper() in {"NONE", "NULL", "UNKNOWN"} else validity.get("to_revision_exclusive"),
+                str(assertion.get("history_quality") or "UNKNOWN").upper(),
+                json.dumps(assertion, ensure_ascii=False, sort_keys=True),
+            ),
+        )
+        count += 1
+        supersedes = assertion.get("supersedes") or []
+        if isinstance(supersedes, str):
+            supersedes = [supersedes]
+        for target in supersedes:
+            conn.execute(
+                "INSERT INTO temporal_supersession(assertion_id, supersedes_id) VALUES (?, ?)",
+                (assertion_id, str(target)),
+            )
+            links += 1
+    digest = temporal_digest(doc)
+    metadata_set(conn, "temporal_digest", digest)
+    return {"assertions": count, "supersession_links": links, "digest": digest}
+
+
 def count_table(conn: sqlite3.Connection, table: str) -> int:
     return int(conn.execute(f"SELECT COUNT(*) AS n FROM {table}").fetchone()["n"])
 
@@ -485,6 +552,8 @@ def index_repository(root: Path, store: Path, force: bool = False) -> dict[str, 
         if full or old_head != new_head:
             refresh_commits(conn, root)
 
+        temporal = refresh_temporal(conn, store)
+
         metadata_set(conn, "schema_version", str(SCHEMA_VERSION))
         metadata_set(conn, "git_head", new_head)
         metadata_set(conn, "dirty_fingerprint", dirty_fingerprint(root))
@@ -510,6 +579,11 @@ def index_repository(root: Path, store: Path, force: bool = False) -> dict[str, 
                 "symbols": "language-aware-regex",
                 "graph": "project-intelligence-impact-graph",
                 "history": "git",
+                "temporal": {
+                    "status": "READY",
+                    "provider": "revision-aware-yaml",
+                    "canonical": "TEMPORAL_ASSERTIONS.yaml",
+                },
                 "structural": {
                     "status": "READY",
                     "provider": "builtin-exact-identifier-two-hop",
@@ -528,6 +602,8 @@ def index_repository(root: Path, store: Path, force: bool = False) -> dict[str, 
                 "chunks": count_table(conn, "chunks"),
                 "symbols": count_table(conn, "symbols"),
                 "commits": count_table(conn, "commits"),
+                "temporal_assertions": count_table(conn, "temporal_assertions"),
+                "temporal_supersession_links": count_table(conn, "temporal_supersession"),
             },
         }
         write_metadata_file(store, doc)
@@ -540,6 +616,7 @@ def index_repository(root: Path, store: Path, force: bool = False) -> dict[str, 
             "index": str(db_path),
             "metadata": str(metadata_path(store)),
             "coverage": doc["coverage"],
+            "temporal": temporal,
             "providers": doc["providers"],
         }
     finally:
