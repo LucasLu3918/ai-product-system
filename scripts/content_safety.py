@@ -24,7 +24,10 @@ ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "config/content-safety.yaml"
 EMAIL_RE = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.I)
 PHONE_RE = re.compile(r"(?<!\d)(?:\+886[- ]?|0)9\d{2}[- ]?\d{3}[- ]?\d{3}(?!\d)")
-CARD_RE = re.compile(r"(?<!\d)(?:\d[ -]?){13,19}(?!\d)")
+# Do not treat the numeric prefix of a hexadecimal Git SHA as a payment card.
+# A card candidate must be delimited from hexadecimal characters as well as
+# decimal digits; real card numbers in prose remain unchanged.
+CARD_RE = re.compile(r"(?<![0-9A-Fa-f])(?:\d[ -]?){13,19}(?![0-9A-Fa-f])")
 TAIWAN_ID_RE = re.compile(r"(?<![A-Z0-9])[A-Z][12]\d{8}(?![A-Z0-9])", re.I)
 INJECTION_RE = re.compile(
     r"(?ix)\b(?:ignore|disregard|override|bypass)\b.{0,80}\b(?:previous|prior|system|developer|instructions?)\b"

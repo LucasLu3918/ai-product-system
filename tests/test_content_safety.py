@@ -30,3 +30,11 @@ def test_untrusted_injection_is_signal_and_provenance_is_preserved() -> None:
     )
     assert any(item["type"] == "INJECTION_SIGNAL" for item in result["findings"])
     assert any(item["type"] == "UNTRUSTED_CONTENT" for item in result["findings"])
+
+
+def test_hexadecimal_sha_prefix_is_not_card_pii() -> None:
+    result = safe_emit(
+        sink="candidate_diff",
+        payload="base_sha: 7052227725342a338b76006e7934a0e9ee60ca86",
+    )
+    assert not any(item["detector"] == "credit-card-luhn" for item in result["findings"])

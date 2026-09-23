@@ -43,6 +43,8 @@ The canonical sink manifest is `config/content-safety.yaml`. Any new persistence
 
 ## Security invariants
 
+Operational dashboard output follows the same sink-aware boundary: only a sanitized allowlist may cross into the localhost observation surface, with no prompts, reasoning, secrets or mutation authority.
+
 - No raw secret or private reasoning is emitted in findings, audit records or observable events.
 - Sanitize precedes hash and persistence.
 - Public or durable sink policy cannot silently redact a blocked secret.

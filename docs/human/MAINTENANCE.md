@@ -216,6 +216,8 @@ Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverif
 
 ## Durable Run State consistency
 
+The Parallel Run Dashboard reads canonical checkpoints and related evidence through one sanitized projection. Keep it observational: approval, retry, cancellation, merge and publication remain outside the dashboard.
+
 When durable run state changes, review together:
 
 - PROJECT_IDENTITY + RUN_RESUME;

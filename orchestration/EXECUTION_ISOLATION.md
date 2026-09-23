@@ -251,6 +251,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+The read-only dashboard aggregates known workspaces by repository identity and reports workspace health without changing ownership, isolation mode or writer boundaries.
+
 A worktree separates Git/filesystem state, but parallel tasks can still collide on host runtime resources such as a development-server TCP port. Runtime Resource Lease extends the existing Execution Isolation ownership lifecycle; it is not a second isolation subsystem.
 
 ~~~text

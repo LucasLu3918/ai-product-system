@@ -46,14 +46,20 @@ surfaces:
       - orchestration/PROJECT_IDENTITY.md
       - orchestration/CHANGE_IMPACT.md
       - orchestration/RUN_RESUME.md
+      - orchestration/RUN_DASHBOARD.md
+      - scripts/run_state.py
+      - scripts/run_projection.py
+      - scripts/run_dashboard.py
     canonical_docs:
       - orchestration/PROJECT_INTELLIGENCE.md
       - orchestration/PROJECT_IDENTITY.md
       - orchestration/CHANGE_IMPACT.md
       - orchestration/RUN_RESUME.md
+      - orchestration/RUN_DASHBOARD.md
     validation_paths:
       - tests/evidence/project_intelligence_lifecycle.py
       - tests/evidence/identity_resume_isolation.py
+      - tests/evidence/run_dashboard_lifecycle.py
 
   - id: governance-security
     capabilities:

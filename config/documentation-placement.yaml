@@ -76,7 +76,7 @@ placement_rules:
     triggers: [scripts/install.sh, scripts/install.ps1, scripts/uninstall.ps1, scripts/bootstrap.sh, scripts/uninstall.sh, bin/aips]
     placements:
       docs/human/INSTALLATION.md: [macOS / Linux, Windows, 驗證, Runtime integration, 常見問題與排查, 更新, 解除安裝, 會保留什麼, 相容入口]
-      docs/human/GETTING_STARTED.md: [安裝 AIPS, 驗證安裝, 更新, 解除安裝]
+      docs/human/GETTING_STARTED.md: [安裝 AIPS, 驗證安裝, Existing Project, 更新, 解除安裝]
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification]
 
   - id: harness
@@ -105,7 +105,7 @@ placement_rules:
   - id: repository-health
     triggers: [scripts/repository_health.py, config/architecture-surfaces.yaml, config/repository-health.yaml, orchestration/REPOSITORY_HEALTH.md]
     placements:
-      docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency, Deterministic Scheduler / Integration Gate consistency]
+      docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency, Deterministic Scheduler / Integration Gate consistency, Durable Run State consistency]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification]
 
   - id: security
@@ -118,22 +118,37 @@ placement_rules:
   - id: deterministic-execution
     triggers: [scripts/deterministic_scheduler.py, scripts/integration_gate.py, scripts/publish_preflight.py, scripts/repository_preflight.py, scripts/execution_isolation.py, scripts/run_state.py, .github/workflows/validate.yml, .github/workflows/installation-entrypoints.yml, orchestration/INTEGRATION_GATE.md, orchestration/DETERMINISTIC_SCHEDULER.md, orchestration/ORCHESTRATOR.md]
     placements:
-      docs/human/USER_GUIDE.md: [Deterministic Scheduler, Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release, Runtime Content Safety Boundary]
+      docs/human/USER_GUIDE.md: [Deterministic Scheduler, Execution Isolation 與 Runtime Resource, Checkpoint / Resume, Quality 與 Review, Git Publication 與 Release, Runtime Content Safety Boundary]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Runtime Content Safety Boundary]
       orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior, Runtime Content Safety Boundary]
-      orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight, Change-class handoff to Integration Gate, Runtime Content Safety Boundary]
+      orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight, Checkpoint and resume, Change-class handoff to Integration Gate, Runtime Content Safety Boundary]
 
   - id: content-safety
     triggers: [config/content-safety.yaml, scripts/content_safety.py, scripts/gemini_observable_event_capture.py, orchestration/CONTENT_SAFETY_BOUNDARY.md]
     placements:
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime Content Safety Boundary]
-      docs/human/TECHNOLOGY_GUIDE.md: [Runtime Content Safety Boundary]
-      docs/human/USER_GUIDE.md: [Runtime Content Safety Boundary]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution, Runtime Content Safety Boundary]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Runtime Content Safety Boundary]
+      docs/human/USER_GUIDE.md: [Checkpoint / Resume, Runtime Content Safety Boundary]
       docs/human/PROJECT_INTELLIGENCE.md: [Runtime Content Safety Boundary]
       docs/human/SECURITY_ASSURANCE.md: [Runtime Content Safety Boundary]
-      docs/human/MAINTENANCE.md: [Runtime Content Safety Boundary]
+      docs/human/MAINTENANCE.md: [Durable Run State consistency, Runtime Content Safety Boundary]
       orchestration/CONTENT_SAFETY_BOUNDARY.md: [Purpose, Contract, Detection boundaries, Sink policy, Runtime truthfulness, Delivery stages, Security invariants]
+
+  - id: parallel-run-dashboard
+    triggers: [scripts/run_dashboard.py, scripts/run_projection.py, scripts/run_state.py, templates/workspace/RUN_CHECKPOINT.yaml, orchestration/RUN_DASHBOARD.md, orchestration/RUN_RESUME.md]
+    placements:
+      docs/human/GETTING_STARTED.md: [Existing Project]
+      docs/human/INSTALLATION.md: [Runtime integration]
+      docs/human/MAINTENANCE.md: [Durable Run State consistency]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution]
+      docs/human/USER_GUIDE.md: [Checkpoint / Resume]
+      orchestration/CONFORMANCE.md: [Runtime Content Safety Scenarios]
+      orchestration/DETERMINISTIC_SCHEDULER.md: [CLI]
+      orchestration/EVOLUTION_RADAR.md: [Documentation consistency]
+      orchestration/EXECUTION_ISOLATION.md: [Parallel runtime resource isolation]
+      orchestration/ORCHESTRATOR.md: [Checkpoint and resume]
 
   - id: evolution
     triggers: [scripts/evolution_*.py, config/evolution-*.yaml, references/evolution/**, .github/workflows/evolution-*.yml, orchestration/EVOLUTION_RADAR.md]
