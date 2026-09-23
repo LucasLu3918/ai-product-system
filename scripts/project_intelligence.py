@@ -4,38 +4,53 @@ from __future__ import annotations
 import argparse
 import contextlib
 import datetime as dt
-from fnmatch import fnmatch
 import hashlib
 import html
 import json
 import os
-from pathlib import Path
 import re
 import shutil
 import subprocess
 import sys
 import tempfile
+from fnmatch import fnmatch
+from pathlib import Path
 from typing import Any, Iterator
 
 import yaml
-
-from git_paths import GitPathsError, run_git_paths
 from aips_identity import (
     config_home as canonical_config_home,
+)
+from aips_identity import (
     project_root as canonical_project_root,
+)
+from aips_identity import (
     repository_identity as canonical_repository_identity,
+)
+from git_paths import GitPathsError, run_git_paths
+from retrieval_evaluation import (
+    evaluate_suite as retrieval_evaluate_suite,
+)
+from retrieval_evaluation import (
+    load_suite as retrieval_load_suite,
+)
+from retrieval_evaluation import (
+    write_report as retrieval_write_report,
 )
 from retrieval_intelligence import (
     DEFAULT_RESULT_LIMIT as RETRIEVAL_DEFAULT_RESULT_LIMIT,
-    DEFAULT_TOKEN_BUDGET as RETRIEVAL_DEFAULT_TOKEN_BUDGET,
-    index_repository as retrieval_index_repository,
-    index_status as retrieval_index_status,
-    query_repository as retrieval_query_repository,
 )
-from retrieval_evaluation import (
-    evaluate_suite as retrieval_evaluate_suite,
-    load_suite as retrieval_load_suite,
-    write_report as retrieval_write_report,
+from retrieval_intelligence import (
+    DEFAULT_TOKEN_BUDGET as RETRIEVAL_DEFAULT_TOKEN_BUDGET,
+)
+from retrieval_intelligence import (
+    index_repository as retrieval_index_repository,
+)
+from retrieval_intelligence import (
+    index_status as retrieval_index_status,
+)
+from retrieval_intelligence import (
+    query_repository as retrieval_query_repository,
 )
 from temporal_intelligence import (
     active_assertions as temporal_active_assertions,
@@ -1245,6 +1260,64 @@ def finalize(root: Path) -> dict[str, Any]:
     }
 
 
+def refresh(root: Path) -> dict[str, Any]:
+    """Refresh revision metadata only when the committed tree is unchanged."""
+    store, mode, pid = intelligence_store(root)
+    ip = store / "PROJECT_INTELLIGENCE.yaml"
+    if not ip.exists():
+        raise RuntimeError("Project Intelligence is not initialized")
+    dirty_paths = git_dirty_paths(root)
+    if dirty_paths:
+        return {
+            "project_id": pid,
+            "mode": mode,
+            "status": "BLOCKED",
+            "reason": "working_tree_dirty",
+            "dirty_paths": dirty_paths[:500],
+        }
+    with writer_lock(store):
+        intel = load_yaml(ip, {})
+        old_head = str((intel.get("verified") or {}).get("git_head") or "")
+        current_head = run_git(root, ["rev-parse", "HEAD"])
+        if not old_head:
+            raise RuntimeError("Project Intelligence has no verified git_head")
+        try:
+            old_tree = run_git(root, ["rev-parse", f"{old_head}^{{tree}}"])
+            current_tree = run_git(root, ["rev-parse", "HEAD^{tree}"])
+        except RuntimeError:
+            return {"project_id": pid, "mode": mode, "status": "BLOCKED", "reason": "verified_revision_unavailable"}
+        if old_tree != current_tree:
+            report = freshness(root)
+            return {
+                "project_id": pid,
+                "mode": mode,
+                "status": "SEMANTIC_REFRESH_REQUIRED",
+                "affected_topics": report.get("affected_topics") or [],
+                "reasons": report.get("reasons") or [],
+            }
+        ident = repository_identity(root)
+        intel.setdefault("project", {})["worktree_identity"] = ident["worktree_id"]
+        intel["project"]["branch"] = run_git(root, ["branch", "--show-current"])
+        intel.setdefault("state", {})["freshness"] = "CURRENT"
+        intel["verified"] = {
+            "git_head": current_head,
+            "dirty_paths": [],
+            "dirty_path_count": 0,
+            "dirty_paths_truncated": False,
+            "verified_at": utc_now(),
+        }
+        atomic_yaml(ip, intel)
+    review = render_review(root)
+    return {
+        "project_id": pid,
+        "mode": mode,
+        "status": "REFRESHED_EQUIVALENT_TREE",
+        "old_head": old_head,
+        "current_head": current_head,
+        "review_html": str(review),
+    }
+
+
 def impact_path(root: Path, change_id: str) -> Path:
     store, mode, pid = intelligence_store(root, create=True)
     if mode == "ATTACHED":
@@ -1444,7 +1517,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="AIPS Project Intelligence deterministic helper")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    for name in ("bootstrap", "status", "render", "finalize", "migrate-attached", "sync-external", "reconcile-overrides"):
+    for name in ("bootstrap", "status", "render", "finalize", "refresh", "migrate-attached", "sync-external", "reconcile-overrides"):
         p = sub.add_parser(name)
         p.add_argument("--project", default=os.getcwd())
         p.add_argument("--format", choices=["yaml", "json"], default="yaml")
@@ -1515,6 +1588,8 @@ def main() -> int:
             result = {"review": str(render_review(root))}
         elif args.command == "finalize":
             result = finalize(root)
+        elif args.command == "refresh":
+            result = refresh(root)
         elif args.command == "context":
             result = context_manifest(root, args.runtime, args.prompt, args.explain, args.component)
         elif args.command == "promotion-plan":

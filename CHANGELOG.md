@@ -1,5 +1,26 @@
 # Changelog
 
+ ## 0.57.0
+
+### Portable Governance Command Core
+
+- Add a canonical Portable Command Registry for `aips.constitution`, `aips.plan` and `aips.impact`, with host-aware Markdown and generic renderers.
+- Add `aips commands` list, inspect, render, install, status, upgrade and uninstall lifecycle commands with ownership metadata and conflict preservation.
+- Reuse the same renderer from the MCP gateway through the read-only `aips_portable_command` tool; Portable Commands remain advisory and do not grant runtime enforcement or protected-operation authority.
+- Add focused contract coverage for registry validation, projection lifecycle and modified-file conflict detection.
+- Document Portable Command architecture and bind it to the existing Turn-Aware Global Harness surface; no new Role, Skill, Capability ID, approval authority or Constitution change.
+
+## 0.56.0
+
+### CI-Parity Publication Preflight
+
+- Add one shared publication resolver for local and GitHub validation so base/head, PR-label change class, canonical Core Change Test Matrix and documentation diff base cannot silently diverge.
+- Run fast diff, documentation sync, canonical placement and audience checks before the expensive Integration Gate lifecycle; report missing localhost/browser capabilities as `ENVIRONMENT_BLOCKED` instead of a product failure.
+- Make documentation impact recursive across placement and synchronization requirements, and ignore Git-ignored metadata such as `.DS_Store` during audience validation.
+- Add safe post-squash reconciliation: apply only on the target branch with a clean, tree-equivalent checkout, create a backup branch first, and optionally refresh Project Intelligence metadata.
+- Add Project Intelligence `refresh`, which updates revision metadata only when the prior and current tree objects are equivalent; semantic changes remain `SEMANTIC_REFRESH_REQUIRED`.
+- Add architecture, repository-health, static-contract and lifecycle coverage plus Scenario 165. Scenario Conformance is now 165/165 automated: 24 deterministic + 87 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- No new Role, Skill, Capability ID, approval authority, merge authority, release authority or production authority. Constitution impact: NO.
 ## 0.55.0
 
 ### MCP Tool-Only Host Compatibility

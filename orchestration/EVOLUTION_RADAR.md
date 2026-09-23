@@ -201,6 +201,7 @@ A separate Human Adoption Decision is still required before System Improvement R
 
 ## Current-baseline committed Trial → Human ADOPT
 
+Portable Command Core 延伸既有 Turn-Aware Global Harness，採用的是低權限 renderer／projection 層；不新增 Capability ID，Host-native integration 仍需個別證據後才能升級。
 Scenario 141 extends the existing adoption abstraction for the case where Trial evidence has been committed/released and the original Radar revision is necessarily stale.
 
 `evolution_adoption.py bind-committed` binds four exact inputs:

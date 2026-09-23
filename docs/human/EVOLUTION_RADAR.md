@@ -40,6 +40,7 @@ Monthly / quarterly roll-up 量測 collected → shortlist → semantic → acti
 
 ## Current Boundaries
 
+Portable Commands 是既有 Turn-Aware Global Harness 的低權限投影，不是新的 Capability ID，也不會自行升級 Runtime enforcement、Human approval 或 Git authority。新增 Host integration 仍須先經能力驗證與相容性證據。
 Evolution Radar 不做：
 
 - 自動修改 AIPS code；

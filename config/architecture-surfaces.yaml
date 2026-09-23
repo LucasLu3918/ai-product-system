@@ -14,8 +14,11 @@ surfaces:
     required_paths:
       - harness/HARNESS_PROTOCOL.md
       - harness/MCP_GATEWAY.md
+      - harness/PORTABLE_COMMANDS.md
+      - harness/commands/REGISTRY.yaml
       - scripts/harness_resolve.py
       - scripts/mcp_server.py
+      - scripts/portable_commands.py
       - orchestration/EXECUTION_ISOLATION.md
       - orchestration/RESOURCE_AUTHORIZATION.md
       - orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md
@@ -24,6 +27,7 @@ surfaces:
       - orchestration/EXECUTION_ISOLATION.md
       - orchestration/RESOURCE_AUTHORIZATION.md
       - orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md
+      - harness/PORTABLE_COMMANDS.md
     validation_paths:
       - tests/evidence/harness_runtime_lifecycle.py
       - tests/evidence/mcp_interoperability_lifecycle.py
@@ -164,6 +168,8 @@ surfaces:
       - integration-gate
     required_paths:
       - scripts/integration_gate.py
+      - scripts/publish_preflight.py
+      - scripts/repository_preflight.py
       - config/integration-gate.yaml
       - orchestration/INTEGRATION_GATE.md
       - .github/workflows/validate.yml
@@ -171,6 +177,8 @@ surfaces:
       - orchestration/INTEGRATION_GATE.md
     validation_paths:
       - tests/evidence/integration_gate_lifecycle.py
+      - tests/evidence/publish_preflight_lifecycle.py
+      - tests/validation/publish_preflight_contracts.py
 
   - id: repository-health
     capabilities:

@@ -20,6 +20,7 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Portable Command Registry、CLI lifecycle 與 MCP renderer 的 current behavior 由 Harness topic 說明；Host placement 未經官方能力驗證時，文件只能宣稱 AIPS-managed projection、MCP 或 generic fallback。
 CI validation evidence is stored in the runner temporary directory until checks finish, then uploaded as artifacts. The report location does not become a repository documentation source or alter the exact revision being validated.
 
 新功能不允許再使用「不知道放哪裡，所以在文件最後加一段 vX.Y 說明」的模式。
@@ -60,3 +61,5 @@ Getting Started / Installation / User Guide 以 task-oriented方式導覽；Arch
 ## Deterministic protection
 
 Documentation Sync 驗證「哪些文件必須一起改」；Documentation Placement 驗證「改動是否落到正確 topic section」。兩者都通過才代表文件同步完成。
+
+`aips docs impact --base <ref> --head <ref>` 會在發布前列出遞迴 sync requirement 與合法 placement section。Publication preflight 一律帶入明確 diff base；Git-ignored local metadata 不屬於 repository 文件候選。

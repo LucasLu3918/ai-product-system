@@ -1,12 +1,12 @@
 version: 1
 
 candidate:
-  base_sha: 42c838c7408cc4d026d654c4398af1f911c7c96b
-  changed_files_hash: 335a933cf13120b0b7ba9213e188c7c742acd2b207c0d5cbdb0475ac565bcee5
+  base_sha: 8b13e1b8cfbbcc761b0766caa5007fc6f7af3e40
+  changed_files_hash: 986eb74cddc9e14e4b249013c4ee08900d9d8635fa7f1878b608532a399cba7d
 
 change:
   id: temporal-project-intelligence
-  summary: Add revision-aware temporal assertions, temporal Impact Graph projection, deterministic temporal queries, safe unknown-history migration and Change Impact integration.
+  summary: Add revision-aware temporal assertions, temporal Impact Graph projection, deterministic temporal queries, safe unknown-history migration and Change Impact integration on top of the synchronized main baseline.
   boundary:
     - temporal-canonical-schema
     - git-revision-resolver

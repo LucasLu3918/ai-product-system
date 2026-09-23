@@ -19,7 +19,7 @@ documentation_bindings:
     required_references: [orchestration/REPOSITORY_HEALTH.md, config/architecture-surfaces.yaml, scripts/repository_health.py, .github/workflows/repository-health.yml]
 contract_files:
   - path: .github/workflows/validate.yml
-    required_strings: [scripts/integration_gate.py, config/integration-gate.yaml, scripts/repository_health.py, repository-health-report.json, "actions/upload-artifact@", "repository:", "needs: janitor"]
+    required_strings: [scripts/publish_preflight.py, config/integration-gate.yaml, scripts/repository_health.py, repository-health-report.json, "actions/upload-artifact@", "repository:", "needs: janitor"]
   - path: config/integration-gate.yaml
     required_strings: ["id: repository-validation", tests/validate_repository.py, 'paths: ["**"]']
   - path: tests/validate_repository.py

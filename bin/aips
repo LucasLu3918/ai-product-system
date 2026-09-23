@@ -74,8 +74,17 @@ Usage:
   aips mcp inspect
   aips mcp config [--client cursor|windsurf|copilot|amp|codex|generic]
 
+  aips commands list
+  aips commands inspect [<command-id>]
+  aips commands render <command-id> [--host <host>]
+  aips commands install [<command-id>] --host <host>
+  aips commands status
+  aips commands upgrade [<command-id>] --host <host>
+  aips commands uninstall [--host <host>|--all]
+
   aips intelligence bootstrap [--project <path>]
   aips intelligence status [--project <path>]
+  aips intelligence refresh [--project <path>]
   aips intelligence context --runtime <id> [--project <path>] [--prompt <text>]
   aips intelligence index [--project <path>] [--force]
   aips intelligence retrieve --prompt <text> [--project <path>] [--token-budget <n>] [--limit <n>] [--no-structural]
@@ -109,6 +118,8 @@ Usage:
   aips scheduler --graph <yaml> [--state <yaml>] [--format yaml|json]
   aips integration-gate --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>]
   aips janitor --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>]
+  aips publish plan|preflight|post-merge [publish-preflight options]
+  aips docs impact --base <ref> [--head <ref>] [--format yaml|json]
 
   aips identity [--project <path>] [--format yaml|json]
 
@@ -649,11 +660,32 @@ integration_gate_cmd() {
   "$py" "$SYSTEM_DIR/scripts/integration_gate.py" "$@"
 }
 
+publish_preflight_cmd() {
+  local action="${1:-plan}"
+  shift || true
+  [ "$action" != "preflight" ] || action="run"
+  "$(python_bin)" "$SYSTEM_DIR/scripts/publish_preflight.py" "$action" "$@"
+}
+
+docs_cmd() {
+  local action="${1:-}"
+  shift || true
+  [ "$action" = "impact" ] || die "Usage: aips docs impact --base <ref> [--head <ref>]"
+  "$(python_bin)" "$SYSTEM_DIR/scripts/publish_preflight.py" docs-impact "$@"
+}
+
 mcp_cmd() {
   local py
   py="$(python_bin)"
   [ -n "$py" ] || die "python3 is required."
   "$py" "$SYSTEM_DIR/scripts/mcp_server.py" "$@"
+}
+
+portable_commands_cmd() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/portable_commands.py" "$@"
 }
 
 identity_cmd() {
@@ -1370,6 +1402,10 @@ case "${1:-help}" in
         ;;
     esac
     ;;
+  commands)
+    shift
+    portable_commands_cmd "$@"
+    ;;
   intelligence)
     sub="${2:-status}"
     shift 2 || true
@@ -1410,6 +1446,14 @@ case "${1:-help}" in
   integration-gate|janitor)
     shift
     integration_gate_cmd "$@"
+    ;;
+  publish)
+    shift
+    publish_preflight_cmd "$@"
+    ;;
+  docs)
+    shift
+    docs_cmd "$@"
     ;;
   identity)
     shift

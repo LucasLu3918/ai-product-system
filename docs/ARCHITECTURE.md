@@ -721,14 +721,15 @@ flowchart TD
     L --> C[Deferred / Blocked Task]
     A --> IC[Exact Integration Candidate]
     B --> IC
-    IC --> FP[base/head + diff + profile + matrix fingerprint]
+    IC --> PP[Publication Preflight: base/head + class + docs + environment]
+    PP --> FP[diff + profile + canonical matrix fingerprint]
     FP --> J[Integration / Janitor Gate]
     J -->|PASS| R[required repository aggregate]
     J -->|FAIL / BLOCKED| S[Stop candidate]
     R --> M[Human/GitHub merge flow]
 ~~~
 
-Planning remains semantic and Human-governed. Scheduling only evaluates the frozen task graph/state with stable ordering, parallel capacity and canonical Change Boundary locks. Integration Gate checks exact-candidate deterministic evidence; it cannot reinterpret failures or authorize merge/release.
+Planning remains semantic and Human-governed. Scheduling only evaluates the frozen task graph/state with stable ordering, parallel capacity and canonical Change Boundary locks. Publication Preflight gives local and CI the same exact-candidate inputs and stops early on documentation/environment blockers; Integration Gate validates the resulting candidate evidence. Neither layer can reinterpret failures or authorize publication, merge or release.
 
 The existing single-writer rule remains authoritative per Change Boundary. Independent approved boundaries may run concurrently in separate worktrees; overlapping ancestor/descendant boundaries serialize.
 

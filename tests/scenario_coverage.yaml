@@ -1264,6 +1264,18 @@ scenarios:
       - tests/evidence/mcp_interoperability_lifecycle.py
       - tests/validation/mcp_interoperability_contracts.py
       - tests/validate_repository.py
+  - id: "165"
+    path: tests/scenarios/165-ci-parity-publication-preflight.md
+    coverage: lifecycle
+    evidence:
+      - scripts/publish_preflight.py
+      - scripts/repository_preflight.py
+      - scripts/documentation_audience.py
+      - scripts/project_intelligence.py
+      - .github/workflows/validate.yml
+      - tests/evidence/publish_preflight_lifecycle.py
+      - tests/validation/publish_preflight_contracts.py
+      - tests/validate_repository.py
   - id: "166"
     path: tests/scenarios/166-temporal-project-intelligence.md
     coverage: deterministic

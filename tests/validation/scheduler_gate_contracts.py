@@ -19,6 +19,7 @@ REQUIRED = (
     "requirements-validation.txt",
     "tests/evidence/deterministic_scheduler_lifecycle.py",
     "tests/evidence/integration_gate_lifecycle.py",
+    "tests/evidence/publish_preflight_lifecycle.py",
     "tests/scenarios/135-deterministic-multi-agent-scheduler.md",
     "tests/scenarios/136-exact-candidate-integration-gate.md",
 )
@@ -57,7 +58,7 @@ for phrase in (
     "repository:\n    needs: janitor",
     "needs.janitor.result",
     "requirements-validation.txt",
-    "scripts/integration_gate.py",
+    "scripts/publish_preflight.py",
     "github.event.pull_request.head.sha",
     "AIPS_GATE_BASE_TIP",
     "Refresh pull request base tip",

@@ -17,6 +17,7 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+Portable Command Registry、CLI 與 MCP renderer 屬 Harness current behavior；同步 Human 文件時沿用既有 Harness、Architecture、Installation、Maintenance 與 Technology topic，不建立第二套文件樹。
 When a configured behavior-bearing source path changes, the same change MUST update the mapped documentation surfaces:
 
 - Human docs explain behavior, workflows, terminology and operational use in Traditional Chinese;
@@ -45,6 +46,8 @@ Validation workflows keep generated Gate and Repository Health reports outside t
 4. requires every mapped Human and Agent document in the same change;
 5. requires the Technology Guide when a configured technical path changed;
 6. fails repository validation if a required documentation surface is missing from the diff.
+
+Publication candidates run `scripts/repository_preflight.py` with an explicit base before the full lifecycle suite. `aips docs impact` computes the recursive sync and placement requirements up front. Git-ignored local metadata is excluded from audience-layout classification, while unignored unknown entries remain failures.
 
 CI sets `AIPS_DOCS_DIFF_BASE` from the GitHub event base revision. Local validation without a known base still validates the contract/configuration, while focused checks may pass `--base-ref` or `--files` explicitly.
 

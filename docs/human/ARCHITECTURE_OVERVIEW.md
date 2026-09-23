@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+Portable Commands 以 Canonical ID（例如 `aips.plan`）將同一治理工作流渲染為 Slash Command、Skill 或 generic MCP bootstrap；它是 advisory access plane，不取代 Runtime-native Adapter 的 turn hook 或 pre-tool guard。
+
 ~~~text
 User Prompt
 → MCP Access Plane 或 Runtime-native Adapter
@@ -17,6 +19,8 @@ User Prompt
 MCP 提供 portability；native adapters 提供可驗證的 runtime hook / guard。兩者共用 canonical Roles、Skills、Orchestration 與 Project Intelligence。完整 MCP Host 使用 Resources／Prompts／Tools；tool-only Host 透過唯讀 capability/workflow Tools 取得同一 canonical context。新 Host 只有在需要 MCP 無法提供的 verified hook／guard／event source 時才新增 native adapter。
 
 ## Project Intelligence 與 Retrieval
+
+Squash merge 後的 revision refresh 只有在舊／新 Git tree 完全一致時可自動更新 metadata；tree 不同時維持 semantic refresh required，避免把內容變更誤標為 CURRENT。
 
 Existing Project 第一次需要廣泛理解或修改時，先 read-only bootstrap，再建立 Architecture / Data Flow / Modules / Contracts / Tests / Security / Operations 等 stable Intelligence。
 
@@ -52,6 +56,8 @@ Production、Git publication、merge 與 release authority 不因 Automation 或
 
 ## Deterministic Execution
 
+`aips commands render` 僅預覽，`install`／`upgrade` 只管理 AIPS-owned projection；ownership digest 會偵測使用者修改並保留衝突檔案。
+
 Semantic planning 與 deterministic execution 分離：
 
 - Deterministic Scheduler：依 Task Graph 決定可重現 dispatch。
@@ -62,6 +68,8 @@ Semantic planning 與 deterministic execution 分離：
 Validation evidence 與 source checkout 分離保存。Gate 報告和 Repository Health 報告使用 runner 暫存路徑，完成後才上傳 artifact，讓 repository validation 看到的仍是 exact clean revision。
 
 受保護分支會以 exact candidate 的 Gate 結果作為 `repository` aggregate 的合併前條件。
+
+Local 與 GitHub 透過 Publication Preflight 解析同一 base/head、PR-label change class、canonical matrix 與文件 diff base。快速 repository preflight 先攔截文件與 schema drift，再執行昂貴 lifecycle。
 
 ## Security 與 Governance
 
@@ -78,7 +86,6 @@ Scenario registry 明確標示 deterministic、lifecycle、agent_eval 或 manual
 Evolution Radar 位於 maintenance plane：收集 public technical evidence、deterministic pre-analysis、provider-neutral semantic handoff、Human Decision、bounded Trial。Radar recommendations 不會自動修改 code、開 implementation PR、merge 或 release。
 
 ## Documentation Architecture
-
 ~~~text
 docs/human/*.md
 → canonical Human source
