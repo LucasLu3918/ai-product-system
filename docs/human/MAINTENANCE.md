@@ -259,6 +259,7 @@ When Execution Isolation behavior changes, review together:
 
 ## Public repository / CI consistency
 
+Portable Command 變更必須同時驗證 Registry、renderer、CLI lifecycle、MCP read-only facade、ownership conflict 與相關 canonical documentation；版本更新不得把 Host-native capability 誤標為已驗證。
 本機與 GitHub 必須透過 `scripts/publish_preflight.py` 共用 base/head、change class、canonical matrix 與 diff-aware documentation base。發布提案前先執行 `aips publish plan`，確認 protected branch 路由與 PR label；未帶 `AIPS_DOCS_DIFF_BASE` 的一般 validation 不得宣稱為 CI-parity 證據。
 
 When public repository hardening changes, review together:
@@ -276,6 +277,7 @@ When public repository hardening changes, review together:
 
 ## Validation architecture consistency
 
+Portable Command contract 位於 `tests/validation/portable_commands_contracts.py`，涵蓋 registry、projection install、status 與修改檔案 conflict；它不授予 merge 或 release authority。
 `tests/validate_repository.py` is the stable CI/user entrypoint. Internal validation is modular:
 
 - `tests/validation/static_contracts.py` — schemas, indexes, documentation and static repository contracts;

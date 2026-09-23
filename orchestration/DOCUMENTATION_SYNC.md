@@ -17,6 +17,7 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+Portable Command Registry、CLI 與 MCP renderer 屬 Harness current behavior；同步 Human 文件時沿用既有 Harness、Architecture、Installation、Maintenance 與 Technology topic，不建立第二套文件樹。
 When a configured behavior-bearing source path changes, the same change MUST update the mapped documentation surfaces:
 
 - Human docs explain behavior, workflows, terminology and operational use in Traditional Chinese;

@@ -4,6 +4,7 @@
 
 ## Runtime & Integration
 
+Portable Commands 共用 Canonical Registry 與 renderer，透過 Markdown 或 generic MCP 形式適配 Host；Native Adapter 與 Portable Command 保持責任分離。
 ### Turn-Aware Global Harness
 
 AIPS 將 Runtime/User instructions、Project rules、Project Intelligence 與 AIPS protocol 組合成 bounded context。不同 Runtime 使用各自可驗證的 integration strategy。
@@ -38,6 +39,7 @@ Existing Project mutation 前先宣告 Change Boundary，實作後再把 actual 
 
 ## Execution
 
+`aips commands install` 使用 ownership manifest、source digest 與 generated digest 管理 projection；偵測到使用者修改時以 `CONFLICT` fail closed。
 Runtime adapter 偵測會優先使用命令列，再使用明確的 runtime path fallback。Shell `PATH` 整合採 explicit opt-in：互動式安裝詢問，`--configure-shell` 明確啟用，`--no-configure-shell` 明確略過；AIPS 以 ownership-marked block 與外部 metadata 實作冪等安裝及保守解除。CLI link、discoverability、shell integration、必要 Python runtime dependencies 與 Harness managed block 狀態由 `aips doctor`、`aips shell status`、`aips harness status` 與 `aips harness doctor` 分別驗證。Managed installation 會選擇 Python 3.10+（可由 `AIPS_PYTHON` 指定），並在 update／preflight 時只於依賴缺漏或既有 AIPS-owned `.venv` 解譯器過舊時修復；plain source checkout 不會隱式建立 `.venv`。
 
 ### Deterministic Automation
@@ -88,6 +90,7 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+驗證重點包括語義一致性、read-only authority、registry schema、CLI lifecycle、drift detection 與 modified-file preservation。
 ### Scenario Conformance
 
 Scenario registry 將 evidence 分成 deterministic、lifecycle、agent_eval、manual，不用「檔案存在」冒充 automated coverage。

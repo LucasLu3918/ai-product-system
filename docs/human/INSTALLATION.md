@@ -67,6 +67,7 @@ Maintainer 的發布前入口為 `aips docs impact` 與 `aips publish plan|prefl
 
 ## Runtime integration
 
+安裝後可使用 `aips commands list` 檢視 Portable Command Registry；`aips commands render` 只預覽，`aips commands install --host <id>` 才建立 AIPS-owned projection。這些 projection 不會自動修改 Client-owned MCP 設定，也不提供 Runtime-native enforcement。
 Native Runtime Adapter 與 MCP 是兩個互補平面：
 
 - Codex / Claude Code / Gemini CLI：依可驗證能力安裝 AIPS-owned integration。

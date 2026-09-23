@@ -57,6 +57,7 @@ Dirty worktrees are preserved and reported BLOCKED. AIPS never force-removes the
 
 ## CLI
 
+Portable Command projections 位於 AIPS-managed commands scope，透過 ownership manifest 與 digest 進行安全更新；使用者修改的 projection 不會被 uninstall 或 upgrade 覆寫。
 ~~~bash
 aips isolation resolve --project /path/to/project --mode shared
 aips isolation resolve --project /path/to/project --mode worktree
