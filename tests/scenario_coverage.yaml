@@ -1292,3 +1292,40 @@ scenarios:
       - templates/intelligence/TEMPORAL_ASSERTIONS.yaml
       - tests/evidence/temporal_intelligence_lifecycle.py
       - tests/test_temporal_intelligence.py
+  - id: "168"
+    path: tests/scenarios/168-runtime-content-safety-kernel.md
+    coverage: lifecycle
+    evidence:
+      - scripts/content_safety.py
+      - scripts/check_secret_leakage.py
+      - config/content-safety.yaml
+      - orchestration/CONTENT_SAFETY_BOUNDARY.md
+      - tests/test_content_safety.py
+  - id: "169"
+    path: tests/scenarios/169-runtime-content-safety-publication.md
+    coverage: lifecycle
+    evidence:
+      - scripts/governance_guard.py
+      - scripts/publish_preflight.py
+      - tests/test_content_safety.py
+  - id: "170"
+    path: tests/scenarios/170-runtime-content-safety-provenance.md
+    coverage: lifecycle
+    evidence:
+      - scripts/content_safety.py
+      - orchestration/CONTENT_SAFETY_BOUNDARY.md
+      - tests/test_content_safety.py
+  - id: "171"
+    path: tests/scenarios/171-runtime-content-safety-coverage.md
+    coverage: deterministic
+    evidence:
+      - config/content-safety.yaml
+      - config/integration-gate.yaml
+      - scripts/publish_preflight.py
+  - id: "172"
+    path: tests/scenarios/172-runtime-content-safety-failure-policy.md
+    coverage: lifecycle
+    evidence:
+      - scripts/content_safety.py
+      - config/content-safety.yaml
+      - tests/test_content_safety.py

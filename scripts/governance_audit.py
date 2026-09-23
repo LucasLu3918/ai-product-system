@@ -5,6 +5,11 @@ from pathlib import Path
 from typing import Any
 import yaml
 
+try:
+    from content_safety import safe_emit
+except ModuleNotFoundError:  # imported as a repository module
+    from scripts.content_safety import safe_emit
+
 ZERO_HASH = "sha256:" + ("0" * 64)
 HMAC_ALG = "HMAC-SHA256"
 CHECKPOINT_ALG = "Ed25519"
@@ -194,6 +199,10 @@ def append_event(ledger: Path, raw_event: dict[str, Any], *, hmac_key_env: str |
                  verification_public_keys: dict[str, Path] | None = None,
                  verification_expected_chain_head: str | None = None,
                  verification_expected_events: int | None = None) -> dict[str, Any]:
+    safety = safe_emit(sink="governance_audit", payload=raw_event)
+    if safety["decision"] == "BLOCK":
+        raise ValueError("content safety blocked governance audit event")
+    raw_event = safety["safe_payload"]
     existing = read_ledger(ledger)
     if existing or verification_expected_chain_head is not None or verification_expected_events is not None:
         verification = verify_events(existing, hmac_secrets=verification_hmac_secrets,

@@ -5,7 +5,17 @@ from pathlib import Path
 from typing import Any
 import yaml
 
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT / "scripts") not in sys.path:
+    sys.path.insert(0, str(ROOT / "scripts"))
+
+try:
+    from content_safety import safe_emit
+except ModuleNotFoundError:  # imported as a repository module
+    from scripts.content_safety import safe_emit
+
 PROTECTED = ("git_push", "git_tag", "gh_pr_create", "gh_release_create")
+CONTENT_SENSITIVE = ("git_commit", "git_push", "git_tag", "gh_pr_create", "gh_release_create")
 SET_LIKE_KEYS = {"files", "boundaries", "operations"}
 ASSIGNMENT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
 CONTROL_TOKENS = {";", ";;", "&", "&&", "|", "||"}
@@ -193,6 +203,8 @@ def _direct_operations(tokens: list[str]) -> list[str]:
             return []
         if args[0] == "push":
             return ["git_push"]
+        if args[0] == "commit":
+            return ["git_commit"]
         if args[0] == "tag":
             return ["git_tag"]
         return []
@@ -232,13 +244,34 @@ def hook(runtime: str) -> int:
         return 0
 
     cwd = Path(str(payload.get("cwd") or os.getcwd())).resolve()
+    for operation in operations:
+        if operation in CONTENT_SENSITIVE:
+            sink = {
+                "git_commit": "git_commit",
+                "git_push": "source_artifact",
+                "git_tag": "source_artifact",
+                "gh_pr_create": "github_pr",
+                "gh_release_create": "release_notes",
+            }[operation]
+            safety = safe_emit(sink=sink, payload={"command": command})
+            if safety["decision"] == "BLOCK":
+                reason = "content safety blocked " + operation
+                if runtime == "claude-code":
+                    print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": "AIPS blocked: " + reason}}))
+                else:
+                    print(json.dumps({"decision": "deny", "reason": "AIPS blocked: " + reason}))
+                return 0
     path = approval_path(cwd)
     ok = False
     reason = "no active AIPS Approval Record"
-    if path and path.exists():
+    approval_operations = [operation for operation in operations if operation in PROTECTED]
+    if not approval_operations:
+        ok = True
+        reason = "content safety passed; no publish approval required"
+    elif path and path.exists():
         try:
             failures = []
-            for operation in operations:
+            for operation in approval_operations:
                 valid, op_reason, _ = verify_record(path, operation, cwd)
                 if not valid:
                     failures.append(f"{operation}: {op_reason}")

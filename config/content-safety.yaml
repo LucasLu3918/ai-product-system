@@ -1,0 +1,68 @@
+version: 1
+boundary: AIPS Runtime Content Safety Boundary
+default_failure_mode: BLOCK_FOR_DURABLE_SINKS
+sinks:
+  default:
+    owner: aips
+    enforcement: ENFORCED
+    policies:
+      SECRET: {action: REDACT, confidence: 0.99}
+      PII: {action: REDACT, confidence: 0.90}
+      INJECTION_SIGNAL: {action: REVIEW, confidence: 0.60}
+      UNTRUSTED_CONTENT: {action: REVIEW, confidence: 1.0}
+  runtime_log:
+    owner: aips
+    enforcement: ENFORCED
+    policies:
+      SECRET: {action: REDACT, confidence: 0.99}
+      PII: {action: REDACT, confidence: 0.90}
+      INJECTION_SIGNAL: {action: REVIEW, confidence: 0.60}
+  governance_audit:
+    owner: aips
+    enforcement: ENFORCED
+    policies:
+      SECRET: {action: REDACT, confidence: 0.99}
+      PII: {action: REDACT, confidence: 0.90}
+      INJECTION_SIGNAL: {action: REDACT, confidence: 0.60}
+  observable_event:
+    owner: aips
+    enforcement: ENFORCED
+    policies:
+      SECRET: {action: REDACT, confidence: 0.99}
+      PII: {action: REDACT, confidence: 0.90}
+      INJECTION_SIGNAL: {action: REDACT, confidence: 0.60}
+  temporary_evidence:
+    owner: aips
+    enforcement: ENFORCED
+    policies:
+      SECRET: {action: REDACT, confidence: 0.99}
+      PII: {action: REDACT, confidence: 0.90}
+      INJECTION_SIGNAL: {action: REVIEW, confidence: 0.60}
+  git_commit:
+    owner: host
+    enforcement: RUNTIME_DEPENDENT
+    policies:
+      SECRET: {action: BLOCK, confidence: 0.99}
+      PII: {action: BLOCK, confidence: 0.90}
+      INJECTION_SIGNAL: {action: BLOCK, confidence: 0.60}
+  github_pr:
+    owner: host
+    enforcement: RUNTIME_DEPENDENT
+    policies:
+      SECRET: {action: BLOCK, confidence: 0.99}
+      PII: {action: BLOCK, confidence: 0.90}
+      INJECTION_SIGNAL: {action: BLOCK, confidence: 0.60}
+  release_notes:
+    owner: host
+    enforcement: RUNTIME_DEPENDENT
+    policies:
+      SECRET: {action: BLOCK, confidence: 0.99}
+      PII: {action: BLOCK, confidence: 0.90}
+      INJECTION_SIGNAL: {action: BLOCK, confidence: 0.60}
+  source_artifact:
+    owner: aips
+    enforcement: ENFORCED
+    policies:
+      SECRET: {action: BLOCK, confidence: 0.99}
+      PII: {action: BLOCK, confidence: 0.90}
+      INJECTION_SIGNAL: {action: REVIEW, confidence: 0.60}

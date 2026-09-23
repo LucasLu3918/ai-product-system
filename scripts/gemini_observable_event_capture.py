@@ -14,6 +14,11 @@ from typing import Any
 
 import yaml
 
+try:
+    from content_safety import safe_emit
+except ModuleNotFoundError:  # imported as a repository module
+    from scripts.content_safety import safe_emit
+
 
 class CaptureError(ValueError):
     pass
@@ -134,6 +139,10 @@ def _resolve_sink(path_text: str) -> Path:
 
 
 def persist_event(event: dict[str, Any], sink_text: str, max_bytes: int) -> None:
+    safety = safe_emit(sink="observable_event", payload=event)
+    if safety["decision"] == "BLOCK":
+        raise CaptureError("content safety blocked observable event")
+    event = safety["safe_payload"]
     sink = _resolve_sink(sink_text)
     sink.parent.mkdir(parents=True, exist_ok=True)
     rendered = json.dumps(event, sort_keys=True, separators=(",", ":"), ensure_ascii=False) + "\n"

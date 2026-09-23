@@ -98,13 +98,13 @@ def add_finding(findings: list[dict], path: Path, root: Path, line: int, detecto
     })
 
 
-def scan_file(path: Path, root: Path, findings: list[dict]) -> None:
-    try:
-        text = path.read_text(encoding="utf-8")
-    except (UnicodeDecodeError, OSError):
-        return
+def scan_text(text: str, location: str = "<payload>") -> list[dict]:
+    """Scan one in-memory payload without ever returning the detected value."""
+    findings: list[dict] = []
+    root = Path(".").resolve()
+    path = Path(location)
     if "AIPS-SECRET-SCAN-IGNORE-FILE" in text:
-        return
+        return findings
     for line_no, line in enumerate(text.splitlines(), start=1):
         if "AIPS-SECRET-SCAN-IGNORE-LINE" in line:
             continue
@@ -118,6 +118,15 @@ def scan_file(path: Path, root: Path, findings: list[dict]) -> None:
             if len(value) < 20 or entropy(value) < 3.25:
                 continue
             add_finding(findings, path, root, line_no, "generic-secret-assignment", value)
+    return findings
+
+
+def scan_file(path: Path, root: Path, findings: list[dict]) -> None:
+    try:
+        text = path.read_text(encoding="utf-8")
+    except (UnicodeDecodeError, OSError):
+        return
+    findings.extend(scan_text(text, str(path)))
 
 
 def main() -> int:
