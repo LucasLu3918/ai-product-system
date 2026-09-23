@@ -128,7 +128,7 @@ placement_rules:
     placements:
       docs/human/DOCUMENTATION_SYNC.md: [文件角色, Current-behavior placement contract, Official Docs Site, Deterministic protection]
       docs/human/DOCUMENTATION_MAP.md: [Official Docs Site, 文件角色, 文件一致性]
-      docs/human/TECHNOLOGY_GUIDE.md: [Documentation Platform, Execution]
+      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Documentation Platform, Execution]
 
   - id: documentation-platform
     triggers: [docs/human/.vitepress/**, package.json, .github/workflows/docs-site.yml, scripts/documentation_placement.py, config/documentation-placement.yaml]
