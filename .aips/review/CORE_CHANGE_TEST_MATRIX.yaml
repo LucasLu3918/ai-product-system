@@ -2,7 +2,7 @@ version: 1
 
 candidate:
   base_sha: e6213aa0334f3ef8f8f20dda7d0157d14c18189c
-  changed_files_hash: 7f11c2cc5a91100c5a37741a66e1b1223214a5645ed56a0ee24bf06d4564e678
+  changed_files_hash: 43a22a250ca462b1527b619aa016403fc78f3fadb65d09329eceec709d2e80d6
 
 change:
   id: candidate-browser-preflight-hardening
