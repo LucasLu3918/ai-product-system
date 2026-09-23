@@ -282,8 +282,6 @@ Scenario 134 不改 production Retrieval / Turn Context。Local Trial PASS 也�
 ## Identity namespace
 
 Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL storage is workspace-scoped by canonical `workspace_id`; repository-wide writer coordination belongs to the isolation layer and uses `repository_id`.
-## Content Safety and Project Intelligence
-
 ## Runtime Content Safety Boundary
 
 Project Intelligence outputs are AIPS-owned durable content and must pass the Runtime Content Safety Boundary before persistence. Secret findings remain fingerprint-only and never include the detected value.
