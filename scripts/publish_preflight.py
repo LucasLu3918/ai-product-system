@@ -16,12 +16,15 @@ from typing import Any
 
 import yaml
 
+ROOT = Path(__file__).resolve().parents[1]
+
 try:
     from browser_runtime import discover_browser, probe_browser
 except ModuleNotFoundError:  # imported as a repository module by lifecycle evidence
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
     from scripts.browser_runtime import discover_browser, probe_browser
 
-ROOT = Path(__file__).resolve().parents[1]
 CANONICAL_MATRIX = ROOT / ".aips/review/CORE_CHANGE_TEST_MATRIX.yaml"
 
 
