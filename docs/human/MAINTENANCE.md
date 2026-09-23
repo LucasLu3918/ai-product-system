@@ -259,6 +259,8 @@ When Execution Isolation behavior changes, review together:
 
 ## Public repository / CI consistency
 
+本機與 GitHub 必須透過 `scripts/publish_preflight.py` 共用 base/head、change class、canonical matrix 與 diff-aware documentation base。發布提案前先執行 `aips publish plan`，確認 protected branch 路由與 PR label；未帶 `AIPS_DOCS_DIFF_BASE` 的一般 validation 不得宣稱為 CI-parity 證據。
+
 When public repository hardening changes, review together:
 
 - .github/workflows/validate.yml;
@@ -285,6 +287,8 @@ When public repository hardening changes, review together:
 
 Keep the top-level validator as an aggregator. New substantial validation belongs in the narrowest existing module or a focused evidence runner rather than expanding the entrypoint back into a monolith.
 
+`scripts/repository_preflight.py` 先跑快速文件／schema／diff 檢查；通過後才進入完整 lifecycle。環境缺少 localhost bind 或 browser 時回報 `ENVIRONMENT_BLOCKED`，不混稱產品測試失敗。
+
 
 
 ## Deterministic Scheduler / Integration Gate consistency
@@ -300,6 +304,8 @@ When deterministic scheduling or merge-candidate validation changes, review toge
 - `.github/workflows/validate.yml` required `repository` aggregate compatibility;
 - Scenario 135–136 lifecycle evidence and coverage registry;
 - Human Architecture Overview / User Guide / Technology Guide.
+
+Large/Core candidate 使用唯一 canonical `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`；版本化矩陣可保留作歷史，但不能取代 CI 實際讀取路徑。
 
 Do not let the Scheduler make semantic scope decisions, and do not let Integration Gate PASS create merge/release authority.
 

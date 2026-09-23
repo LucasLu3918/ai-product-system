@@ -76,11 +76,15 @@ python scripts/deterministic_scheduler.py --graph TASK_GRAPH.yaml --state STATE.
 
 CI 會在合併前以 exact candidate 執行 Integration Gate；required aggregate 只有在 Gate 成功時才可通過。
 
+本機 `aips publish preflight` 與 CI 都先經過 `scripts/publish_preflight.py`，共用 base/head、change class、canonical matrix 與文件 diff base，再委派既有 Integration Gate。此入口只消除解析差異，不把 publication 或 merge authority 交給 Scheduler。
+
 Output includes graph/state/decision SHA-256 fingerprints for reproducibility.
 
 CI integration evidence is written to the runner temporary directory and uploaded after validation. Scheduler and repository checks therefore inspect the unchanged checkout revision instead of treating generated reports as dirty inputs.
 
 ## Failure behavior
+
+若 localhost bind 或 browser prerequisite 不可用，publication preflight 會在昂貴 lifecycle 前回報 `ENVIRONMENT_BLOCKED`；這是執行環境阻擋，不得記錄為產品測試失敗。
 
 Invalid graph, unknown dependency, cycle, invalid state or plan mismatch is `SCHEDULER BLOCKED`.
 

@@ -10,7 +10,7 @@ A green subset does not prove a core change is safe when an affected boundary ha
 
 ## Impact-derived Test Matrix
 
-Before implementation, create or update templates/review/CORE_CHANGE_TEST_MATRIX.yaml.
+Before implementation, start from `templates/review/CORE_CHANGE_TEST_MATRIX.yaml` and maintain the active candidate at `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`.
 
 Assess each materially affected boundary against applicable evidence:
 
@@ -97,3 +97,5 @@ Integration Gate PASS is evidence only. It never supplies Human approval, merge 
 ## Conditional CI enforcement
 
 AIPS CI resolves `standard | large | core` from explicit PR change-class labels. Large/Core candidates require the bound Core Change Test Matrix. Standard changes remain Matrix-optional unless a narrow Validation Profile path rule identifies a governance-core surface. Do not use broad rules such as all `scripts/**` or all `config/**` merely to force Matrix usage.
+
+`aips publish plan` reports label/matrix mismatches before publication. `aips publish preflight` runs the same resolver as CI; a green validation performed with a different change class or matrix path is not CI-parity evidence.

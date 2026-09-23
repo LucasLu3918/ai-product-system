@@ -62,6 +62,8 @@ Merge candidate 依 change class 與 actual diff 執行 lint、type、test、rep
 
 CI 會把 Integration Gate 與 Repository Health 證據寫入 runner 的暫存目錄，再上傳為 artifact；驗證期間不會把報告檔寫入 checkout，避免證據輸出改變工作樹而誤判為不可重現。
 
+Publication Preflight 是 Local／CI 共用的 candidate resolver，並在完整 Gate 前執行 diff-aware repository preflight。Change class 來自明確參數或 PR labels；Large/Core 只接受 canonical Matrix path。遠端保護查詢與 environment probe 只產生 evidence，不取得 publication authority。
+
 ## Security & Governance
 
 ### Security Assurance Level
@@ -97,6 +99,8 @@ Scenario registry 將 evidence 分成 deterministic、lifecycle、agent_eval、m
 ### Repository Health
 
 Architecture Surface、documentation mapping、validation contract 與 drift evidence用 deterministic audit 檢查。
+
+Documentation audience 掃描忽略 Git 已明確忽略的本機 metadata；未被忽略的未知 docs-root entry 仍 fail closed。
 
 ## Product Delivery
 

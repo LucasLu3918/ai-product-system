@@ -246,6 +246,10 @@ local implementation
 
 Agent、MCP、CI workflow 或 external analyzer 不能因為具有執行能力就自行取得上述 authority。
 
+發布前先以 `aips docs impact --base origin/main --head HEAD` 檢查遞迴文件影響，再用 `aips publish preflight --base origin/main --head HEAD --change-class <standard|large|core> --output <report>` 執行與 CI 相同的 exact-candidate resolver。Large/Core PR 必須同步套用對應 label，並使用 `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`。受保護 `main` 由 `publish plan` 直接規劃 Pull Request，不先嘗試直推。
+
+Squash merge 後可執行 `aips publish post-merge --fetch --apply --refresh-intelligence`。只有工作樹乾淨且 local／remote tree object 完全相同時，才會先建立 backup branch 再對齊；內容不同一律停止。
+
 Release model 與版本歷史以 repository 的 current policy / CHANGELOG 為準。
 
 ## Evolution Radar

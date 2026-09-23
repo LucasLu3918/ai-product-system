@@ -58,7 +58,7 @@ Repository Health builds a deterministic input manifest for every configured fil
 - configured core capability surfaces and bounded discovered guard/gate files;
 - documentation binding sources and required targets;
 - the Scenario registry, Scenario inventory, Scenario checker and non-external evidence references;
-- Integration Gate / repository-validation contract files.
+- shared Publication Preflight、Integration Gate 與 repository-validation contract files；GitHub workflow 必須呼叫 `scripts/publish_preflight.py`，再由其委派 `scripts/integration_gate.py`。
 
 Each existing entry records a SHA-256 digest; missing bound files remain explicit with `exists=false` and `digest=null`. The sorted manifest has its own digest.
 
