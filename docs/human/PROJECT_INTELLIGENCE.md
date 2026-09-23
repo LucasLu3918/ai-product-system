@@ -88,6 +88,8 @@ Semantic/Embedding Provider 是可選擴充，不是必要依賴。沒有設定�
 
 實際 index DB 放在 AIPS cache，屬於可刪除、可重建資料；`RETRIEVAL_INDEX.yaml` 只記錄版本、workspace、revision、provider 與 coverage，不會取代 repository code 或 Project Intelligence 成為 Source of Truth。
 
+Temporal Project Intelligence 另外以 `TEMPORAL_ASSERTIONS.yaml` 保存具 provenance、observed metadata 與 supersession 的架構事實。Git revision ancestry 是有效期間的權威時間軸；一般工作仍走 Current Snapshot，只有歷史、backport、release branch 或 evolution 問題才使用 `CURRENT`、`AS_OF`、`BETWEEN`、`WHY` temporal query。未知歷史維持 `UNKNOWN`，不由 migration 猜測。
+
 每個結果會保留 path + line（或 commit）、content hash、Git HEAD / dirty fingerprint，並先排除 credential / secret path、限制最大 Context Token。
 
 ## Retrieval Quality Evaluation：先量測，再決定下一項技術

@@ -82,6 +82,8 @@ Existing Project mutation 前建議：
 aips preflight /path/to/project
 ~~~
 
+需要查詢歷史架構時，可使用 `aips intelligence temporal --mode as-of --revision <sha>`；一般任務不需要載入完整 temporal history。
+
 `aips update` 與 `aips preflight` 會檢查 managed installation 的必要 Python dependencies，只有缺漏時才依 `requirements.txt` 修復；直接從一般 source checkout 執行時不會隱式建立 `.venv`。
 
 ## 解除安裝
