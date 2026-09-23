@@ -259,6 +259,8 @@ When Execution Isolation behavior changes, review together:
 
 ## Public repository / CI consistency
 
+`aips trajectory evaluate` 與 Scenario 167 是 Eval-as-CI 的 deterministic evidence；更新 trajectory schema、policy 或 publish wiring 時，必須同步執行 Integration Gate、Repository validation 與文件 impact closure。
+
 Portable Command 變更必須同時驗證 Registry、renderer、CLI lifecycle、MCP read-only facade、ownership conflict 與相關 canonical documentation；版本更新不得把 Host-native capability 誤標為已驗證。
 本機與 GitHub 必須透過 `scripts/publish_preflight.py` 共用 base/head、change class、canonical matrix 與 diff-aware documentation base。發布提案前先執行 `aips publish plan`，確認 protected branch 路由與 PR label；未帶 `AIPS_DOCS_DIFF_BASE` 的一般 validation 不得宣稱為 CI-parity 證據。
 

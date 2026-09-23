@@ -275,6 +275,8 @@ The guard also prevents new credential consumers from bypassing review or exposi
 
 ## Deterministic local pre-analysis
 
+Eval-as-CI trajectory evidence 可提供 deterministic local pre-analysis 的 Agent 行為訊號；它不會自行建立演進候選，也不會繞過 Human Decision、Controlled Trial 或既有 authority boundary。
+
 After raw weekly/monthly evidence is validated, AIPS runs a credential-free deterministic pre-analysis before any optional semantic provider.
 
 The pre-analysis may only use already-collected signal title/metadata, source-controlled local rules, recurrence metadata and the current Capability Map. It performs no additional external network request.

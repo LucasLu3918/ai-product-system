@@ -64,6 +64,8 @@ PR/main candidate
 
 ## Report
 
+Core candidates may include `trajectory-quality-gate-lifecycle`. Its PASS proves deterministic trajectory evidence and privacy-safe evaluation only; the report must retain `human_authority_preserved: true` and cannot authorize merge, release or publication.
+
 Use `templates/review/INTEGRATION_GATE_REPORT.yaml`.
 
 Local reports may store bounded command output tails plus fingerprints/status. CI uses `--omit-output-tail` so uploaded reports and workflow summaries contain check IDs, status, exit codes and output hashes without command output. A missing report is shown as `REPORT_UNAVAILABLE`; a skipped Gate is `NOT_RUN`. Neither state is PASS. Reports must not persist secrets or private model reasoning.
