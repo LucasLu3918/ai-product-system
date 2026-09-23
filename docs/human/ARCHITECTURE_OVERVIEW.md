@@ -14,7 +14,7 @@ User Prompt
 → deterministic AIPS helpers / governed execution
 ~~~
 
-MCP 提供 portability；native adapters 提供可驗證的 runtime hook / guard。兩者共用 canonical Roles、Skills、Orchestration 與 Project Intelligence。
+MCP 提供 portability；native adapters 提供可驗證的 runtime hook / guard。兩者共用 canonical Roles、Skills、Orchestration 與 Project Intelligence。完整 MCP Host 使用 Resources／Prompts／Tools；tool-only Host 透過唯讀 capability/workflow Tools 取得同一 canonical context。新 Host 只有在需要 MCP 無法提供的 verified hook／guard／event source 時才新增 native adapter。
 
 ## Project Intelligence 與 Retrieval
 

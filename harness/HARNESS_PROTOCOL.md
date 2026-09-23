@@ -89,6 +89,8 @@ Provider credentials must not be injected into unmerged PR code. A secure provid
 
 Use `harness/MCP_GATEWAY.md` when a compatible host can connect through MCP.
 
-MCP is a standard access plane, not a native-adapter replacement. Resources provide progressive disclosure over canonical AIPS sources; Prompts provide reusable host-model context; Tools expose bounded deterministic helpers. MCP-only clients report governance enforcement as ADVISORY because the server cannot generally intercept host-native tools. Existing Runtime adapters remain responsible for verified TURN_NATIVE / TOOL_GUARDED behavior.
+MCP is a standard access plane, not a native-adapter replacement. Resources provide progressive disclosure over canonical AIPS sources; Prompts provide reusable host-model context; Tools expose bounded deterministic helpers. Tool-only Hosts use the read-only capability catalog/read/workflow Tools over the same canonical sources. MCP-only clients report governance enforcement as ADVISORY because the server cannot generally intercept host-native tools. Existing Runtime adapters remain responsible for verified TURN_NATIVE / TOOL_GUARDED behavior.
 
-The v0.52 gateway is local stdio, provider-neutral and credential-free. It does not silently register itself into client-owned configuration.
+For a new MCP-compatible Host, start with the MCP access plane. Add a runtime-native adapter only after a verified per-turn hook, pre-tool guard or runtime-specific event source demonstrates an enforcement/evidence requirement that MCP cannot satisfy.
+
+The gateway is local stdio, provider-neutral and credential-free. It emits review-only Cursor, Windsurf, GitHub Copilot CLI, Amp, Codex and generic configuration payloads, and does not silently register itself into client-owned configuration.

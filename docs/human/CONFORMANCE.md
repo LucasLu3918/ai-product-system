@@ -1233,3 +1233,18 @@ Installation evidence 同時驗證 macOS/Linux managed installer、Windows WSL P
 - manual：0
 - uncovered：0
 - automated：**163 / 163**
+
+## Scenario 164 — MCP Tool-Only Host Compatibility
+
+Scenario 164 驗證只支援 MCP Tools 的 Host 仍能透過唯讀 catalog／read／workflow Tools 取得 canonical Roles、Skills、allowlisted protocols 與 Security／Architecture／Code Review、Delivery Plan context，不複製 registry，也不在 Server 內執行第二個模型。
+
+官方 MCP Python Client lifecycle 同時驗證 tool annotations、錯誤 ID fail-closed、workspace confinement、protected authority 維持 false，以及 Cursor／Windsurf／GitHub Copilot CLI／Amp／Codex／generic review-only JSON。MCP 仍為 `ADVISORY`，native adapters 維持獨立。
+
+目前 Scenario inventory：
+
+- deterministic：24
+- lifecycle：86
+- agent_eval：54
+- manual：0
+- uncovered：0
+- automated：**164 / 164**

@@ -6,15 +6,15 @@ from __future__ import annotations
 import argparse
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 from typing import Any
 
+import deterministic_scheduler
 import yaml
 from mcp.server import MCPServer
-
-import deterministic_scheduler
+from mcp.types import ToolAnnotations
 
 ROOT = Path(__file__).resolve().parents[1]
 PROTOCOL_VERSION = "2026-07-28"
@@ -46,6 +46,79 @@ PROTOCOL_RESOURCES = {
     "secret-handling": "orchestration/SECRET_HANDLING.md",
     "release-readiness": "orchestration/RELEASE_READINESS.md",
     "multi-review": "orchestration/MULTI_REVIEW.md",
+}
+WORKFLOWS = {
+    "security-review": {
+        "role": "security-engineer",
+        "skills": ["secure-design", "threat-modeling", "authorization-security", "security-testing"],
+        "protocols": ["change-impact", "secret-handling"],
+    },
+    "architecture-review": {
+        "role": "software-architect",
+        "skills": ["clean-architecture", "domain-driven-design"],
+        "protocols": ["change-impact", "multi-review"],
+    },
+    "code-review": {
+        "role": "quality-reviewer",
+        "skills": ["code-review", "tdd"],
+        "protocols": ["change-impact", "multi-review"],
+    },
+    "delivery-plan": {
+        "role": "delivery-planner",
+        "skills": ["delivery-planning", "requirements-definition"],
+        "protocols": ["planning-package", "product-delivery", "quality-planning"],
+    },
+}
+READ_ONLY_TOOL = ToolAnnotations(
+    read_only_hint=True,
+    destructive_hint=False,
+    idempotent_hint=True,
+    open_world_hint=False,
+)
+HOST_COMPATIBILITY = {
+    "cursor": {
+        "surface": "editor-and-cli",
+        "transport": "stdio",
+        "tool_only_facade_available": True,
+        "native_guard_included": False,
+        "verification": "official-config-contract-and-mcp-protocol",
+    },
+    "windsurf": {
+        "surface": "cascade",
+        "transport": "stdio",
+        "tool_only_facade_available": True,
+        "native_guard_included": False,
+        "verification": "official-config-contract-and-mcp-protocol",
+    },
+    "copilot": {
+        "surface": "github-copilot-cli",
+        "transport": "stdio",
+        "tool_only_facade_available": True,
+        "native_guard_included": False,
+        "verification": "official-config-contract-and-mcp-protocol",
+        "limitation": "hosted-agent-and-code-review-surfaces-are-tool-only",
+    },
+    "amp": {
+        "surface": "cli",
+        "transport": "stdio",
+        "tool_only_facade_available": True,
+        "native_guard_included": False,
+        "verification": "official-config-contract-and-mcp-protocol",
+    },
+    "codex": {
+        "surface": "cli",
+        "transport": "stdio",
+        "tool_only_facade_available": True,
+        "native_guard_included": False,
+        "verification": "pinned-cli-registration-and-mcp-protocol",
+    },
+    "generic": {
+        "surface": "mcp-host",
+        "transport": "stdio",
+        "tool_only_facade_available": True,
+        "native_guard_included": False,
+        "verification": "mcp-protocol",
+    },
 }
 
 
@@ -83,6 +156,19 @@ def _skill_path(skill_id: str) -> Path:
     if not isinstance(item, dict):
         raise ValueError(f"unknown AIPS skill: {skill_id}")
     return _canonical_file("skills/" + str(item["path"]))
+
+
+def _capability_path(kind: str, capability_id: str) -> tuple[Path, str]:
+    if kind == "role":
+        return _role_path(capability_id), f"aips://roles/{capability_id}"
+    if kind == "skill":
+        return _skill_path(capability_id), f"aips://skills/{capability_id}"
+    if kind == "protocol":
+        relative = PROTOCOL_RESOURCES.get(capability_id)
+        if relative is None:
+            raise ValueError(f"unknown AIPS protocol: {capability_id}")
+        return _canonical_file(relative), f"aips://protocol/{capability_id}"
+    raise ValueError("kind must be role, skill, or protocol")
 
 
 def _workspace_root() -> Path:
@@ -152,6 +238,19 @@ def _prompt_text(name: str, objective: str, role: str, skills: list[str], protoc
     )
 
 
+def _workflow_text(name: str, objective: str) -> str:
+    workflow = WORKFLOWS.get(name)
+    if workflow is None:
+        raise ValueError(f"unknown AIPS workflow: {name}")
+    return _prompt_text(
+        name,
+        objective,
+        str(workflow["role"]),
+        list(workflow["skills"]),
+        list(workflow["protocols"]),
+    )
+
+
 mcp = MCPServer("AIPS", instructions=SERVER_INSTRUCTIONS)
 
 
@@ -197,52 +296,28 @@ def protocol_resource(protocol_id: str) -> str:
 @mcp.prompt()
 def security_review(objective: str) -> str:
     """Prepare a host-model security review using canonical AIPS security context."""
-    return _prompt_text(
-        "security-review",
-        objective,
-        "security-engineer",
-        ["secure-design", "threat-modeling", "authorization-security", "security-testing"],
-        ["change-impact", "secret-handling"],
-    )
+    return _workflow_text("security-review", objective)
 
 
 @mcp.prompt()
 def architecture_review(objective: str) -> str:
     """Prepare a host-model architecture review using canonical AIPS architecture context."""
-    return _prompt_text(
-        "architecture-review",
-        objective,
-        "software-architect",
-        ["clean-architecture", "domain-driven-design"],
-        ["change-impact", "multi-review"],
-    )
+    return _workflow_text("architecture-review", objective)
 
 
 @mcp.prompt()
 def code_review(objective: str) -> str:
     """Prepare a host-model code review using canonical AIPS quality context."""
-    return _prompt_text(
-        "code-review",
-        objective,
-        "quality-reviewer",
-        ["code-review", "tdd"],
-        ["change-impact", "multi-review"],
-    )
+    return _workflow_text("code-review", objective)
 
 
 @mcp.prompt()
 def delivery_plan(objective: str) -> str:
     """Prepare a host-model delivery plan using canonical AIPS planning context."""
-    return _prompt_text(
-        "delivery-plan",
-        objective,
-        "delivery-planner",
-        ["delivery-planning", "requirements-definition"],
-        ["planning-package", "product-delivery", "quality-planning"],
-    )
+    return _workflow_text("delivery-plan", objective)
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY_TOOL)
 def aips_system_info() -> dict[str, Any]:
     """Return AIPS/MCP identity and explicit authority boundaries."""
     return {
@@ -260,7 +335,7 @@ def aips_system_info() -> dict[str, Any]:
     }
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY_TOOL)
 def aips_project_identity(project: str = ".") -> dict[str, Any]:
     """Resolve canonical project/workspace identity inside the configured MCP workspace."""
     path, error = _resolve_project(project)
@@ -271,7 +346,7 @@ def aips_project_identity(project: str = ".") -> dict[str, Any]:
     return value
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY_TOOL)
 def aips_harness_context(project: str = ".") -> dict[str, Any]:
     """Resolve compact AIPS project context for an MCP host without claiming native hooks."""
     path, error = _resolve_project(project)
@@ -302,7 +377,7 @@ def aips_harness_context(project: str = ".") -> dict[str, Any]:
     return value
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY_TOOL)
 def aips_role_skill_bundle(role_ids: list[str], skill_ids: list[str], objective: str = "") -> dict[str, Any]:
     """Validate explicit Role/Skill ids and return resource URIs; no semantic selection is performed."""
     unknown_roles = sorted({item for item in role_ids if item not in ROLE_INDEX})
@@ -326,7 +401,75 @@ def aips_role_skill_bundle(role_ids: list[str], skill_ids: list[str], objective:
     }
 
 
-@mcp.tool()
+@mcp.tool(annotations=READ_ONLY_TOOL)
+def aips_capability_catalog(kind: str) -> dict[str, Any]:
+    """List canonical AIPS role, skill, or allowlisted protocol metadata for tool-only MCP hosts."""
+    if kind == "role":
+        items = ROLE_INDEX
+    elif kind == "skill":
+        items = SKILL_INDEX
+    elif kind == "protocol":
+        items = {item: {"path": path} for item, path in PROTOCOL_RESOURCES.items()}
+    else:
+        return {
+            "status": "BLOCKED",
+            "reason": "kind must be role, skill, or protocol",
+            "authority": dict(AUTHORITY),
+        }
+    return {
+        "status": "READY",
+        "kind": kind,
+        "items": items,
+        "semantic_selection_performed": False,
+        "authority": dict(AUTHORITY),
+    }
+
+
+@mcp.tool(annotations=READ_ONLY_TOOL)
+def aips_capability_read(kind: str, capability_id: str) -> dict[str, Any]:
+    """Read one canonical Role, Skill, or allowlisted protocol for a tool-only MCP host."""
+    try:
+        path, uri = _capability_path(kind, capability_id)
+    except ValueError as exc:
+        return {"status": "BLOCKED", "reason": str(exc), "authority": dict(AUTHORITY)}
+    return {
+        "status": "READY",
+        "kind": kind,
+        "id": capability_id,
+        "uri": uri,
+        "content": path.read_text(encoding="utf-8"),
+        "authority": dict(AUTHORITY),
+    }
+
+
+@mcp.tool(annotations=READ_ONLY_TOOL)
+def aips_workflow_context(workflow: str, objective: str) -> dict[str, Any]:
+    """Render an AIPS review/planning workflow for hosts that do not expose MCP Prompts."""
+    item = WORKFLOWS.get(workflow)
+    if item is None:
+        return {
+            "status": "BLOCKED",
+            "reason": f"unknown AIPS workflow: {workflow}",
+            "available_workflows": sorted(WORKFLOWS),
+            "authority": dict(AUTHORITY),
+        }
+    resources = [
+        f"aips://roles/{item['role']}",
+        *[f"aips://skills/{value}" for value in item["skills"]],
+        *[f"aips://protocol/{value}" for value in item["protocols"]],
+    ]
+    return {
+        "status": "READY",
+        "workflow": workflow,
+        "objective": objective,
+        "resources": resources,
+        "prompt": _workflow_text(workflow, objective),
+        "semantic_reasoning_location": "host_model",
+        "authority": dict(AUTHORITY),
+    }
+
+
+@mcp.tool(annotations=READ_ONLY_TOOL)
 def aips_schedule(graph: dict[str, Any], state: dict[str, Any] | None = None) -> dict[str, Any]:
     """Run the existing deterministic AIPS scheduler; this cannot invent tasks or grant authority."""
     try:
@@ -349,6 +492,9 @@ def inspect_payload() -> dict[str, Any]:
             "aips_project_identity",
             "aips_harness_context",
             "aips_role_skill_bundle",
+            "aips_capability_catalog",
+            "aips_capability_read",
+            "aips_workflow_context",
             "aips_schedule",
         ],
         "resources": {
@@ -364,6 +510,14 @@ def inspect_payload() -> dict[str, Any]:
             ],
         },
         "prompts": ["security_review", "architecture_review", "code_review", "delivery_plan"],
+        "tool_only_compatibility": {
+            "catalog": "aips_capability_catalog",
+            "read": "aips_capability_read",
+            "workflows": "aips_workflow_context",
+            "all_tools_read_only": True,
+        },
+        "clients": list(HOST_COMPATIBILITY),
+        "client_compatibility": HOST_COMPATIBILITY,
         "client_registration_managed": False,
         "external_provider_credential_required": False,
         "authority": dict(AUTHORITY),
@@ -388,6 +542,66 @@ def config_payload(client: str) -> dict[str, Any]:
             },
             "note": "Review and add this entry to the client-owned MCP configuration; AIPS does not modify it automatically.",
         }
+    if client == "windsurf":
+        return {
+            "client": "windsurf",
+            "automatic_change": False,
+            "config_path": "~/.codeium/windsurf/mcp_config.json",
+            "config": {
+                "mcpServers": {
+                    "aips": {
+                        "command": aips,
+                        "args": ["mcp", "serve"],
+                        "env": {"AIPS_MCP_WORKSPACE": "/absolute/project/workspace"},
+                    }
+                }
+            },
+            "note": "Review the absolute workspace path before adding this entry. MCP remains ADVISORY; use verified Windsurf hooks separately when native pre-tool enforcement is required.",
+        }
+    if client == "copilot":
+        return {
+            "client": "copilot",
+            "surface": "github-copilot-cli",
+            "automatic_change": False,
+            "config_path": ".github/mcp.json or .mcp.json",
+            "config": {
+                "mcpServers": {
+                    "aips": {
+                        "type": "stdio",
+                        "command": aips,
+                        "args": ["mcp", "serve"],
+                        "env": {"AIPS_MCP_WORKSPACE": "/absolute/project/workspace"},
+                        "tools": [
+                            "aips_system_info",
+                            "aips_project_identity",
+                            "aips_harness_context",
+                            "aips_role_skill_bundle",
+                            "aips_capability_catalog",
+                            "aips_capability_read",
+                            "aips_workflow_context",
+                            "aips_schedule",
+                        ],
+                    }
+                }
+            },
+            "note": "This local stdio payload targets GitHub Copilot CLI. Copilot cloud/code-review surfaces are tool-only and require an environment where the AIPS command and workspace path exist.",
+        }
+    if client == "amp":
+        return {
+            "client": "amp",
+            "automatic_change": False,
+            "config_path": ".amp/settings.json or ~/.config/amp/settings.json",
+            "config": {
+                "amp.mcpServers": {
+                    "aips": {
+                        "command": aips,
+                        "args": ["mcp", "serve"],
+                        "env": {"AIPS_MCP_WORKSPACE": "/absolute/project/workspace"},
+                    }
+                }
+            },
+            "note": "Review the absolute workspace path before adding this entry. Workspace MCP servers require Amp approval before execution.",
+        }
     if client == "codex":
         return {
             "client": "codex",
@@ -411,7 +625,11 @@ def main() -> int:
     sub.add_parser("serve")
     sub.add_parser("inspect")
     config = sub.add_parser("config")
-    config.add_argument("--client", choices=["cursor", "codex", "generic"], default="generic")
+    config.add_argument(
+        "--client",
+        choices=["cursor", "windsurf", "copilot", "amp", "codex", "generic"],
+        default="generic",
+    )
     args = parser.parse_args()
 
     if args.command == "serve":

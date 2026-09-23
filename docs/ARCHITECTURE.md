@@ -822,7 +822,7 @@ flowchart LR
     CORE --> MCP[MCP Interoperability Gateway]
     MCP --> RES[Resources: Roles / Skills / selected protocols]
     MCP --> PR[Prompts: reusable host-model context]
-    MCP --> TOOLS[Tools: bounded deterministic helpers]
+    MCP --> TOOLS[Tools: deterministic helpers + tool-only capability access]
     RES --> HOST[MCP-compatible Host]
     PR --> HOST
     TOOLS --> HOST
@@ -832,4 +832,4 @@ flowchart LR
     HOST --> MODEL[Host model semantic reasoning]
 ~~~
 
-The MCP plane is portable and ADVISORY; native adapters remain a separate enhancement plane for verified TURN_NATIVE / TOOL_GUARDED behavior. v0.52 is local stdio only and performs no provider/model call inside the server.
+The MCP plane is portable and ADVISORY; full MCP hosts use Resources / Prompts / Tools, while tool-only hosts use read-only catalog/read/workflow Tools over the same canonical sources. Native adapters remain a separate enhancement plane for verified TURN_NATIVE / TOOL_GUARDED behavior. The gateway is local stdio only and performs no provider/model call inside the server.

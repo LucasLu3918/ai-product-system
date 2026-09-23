@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.55.0
+
+### MCP Tool-Only Host Compatibility
+
+- Extend the existing MCP access plane with additive read-only Tools for canonical Role / Skill / allowlisted protocol catalog and reads, plus Security Review / Architecture Review / Code Review / Delivery Plan context rendering for hosts that do not expose MCP Resources or Prompts.
+- Preserve canonical files and the existing Resources / Prompts surface; the tool-only facade performs no semantic selection and invokes no provider model.
+- Mark every AIPS MCP Tool read-only, non-destructive, idempotent and closed-world so compatible review hosts can safely distinguish the gateway's side-effect-free contract.
+- Add deterministic review-only configuration output for Windsurf, GitHub Copilot CLI and Amp alongside Cursor, Codex and generic stdio clients. AIPS still never mutates client-owned settings.
+- Document the integration policy: use MCP as the default portable ADVISORY plane; add a runtime-native adapter only when a verified turn hook, pre-tool guard or runtime-specific event source is required.
+- Keep local stdio, `AIPS_MCP_WORKSPACE` confinement, false protected-operation authority, credential-free operation and all existing native adapters unchanged.
+- Add Scenario 164 and raise Scenario Conformance to 164/164 automated: 24 deterministic + 86 lifecycle + 54 agent_eval, 0 manual, 0 uncovered.
+- No new Role, Skill, Capability ID or Approval Gate. Constitution impact: NO.
+
 ## 0.54.0
 
 ### Managed Shell PATH Integration

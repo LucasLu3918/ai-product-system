@@ -72,7 +72,7 @@ Usage:
 
   aips mcp serve
   aips mcp inspect
-  aips mcp config [--client cursor|codex|generic]
+  aips mcp config [--client cursor|windsurf|copilot|amp|codex|generic]
 
   aips intelligence bootstrap [--project <path>]
   aips intelligence status [--project <path>]

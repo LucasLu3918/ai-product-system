@@ -1254,3 +1254,13 @@ scenarios:
       - .github/workflows/installation-entrypoints.yml
       - tests/validation/documentation_placement_contracts.py
       - tests/validate_repository.py
+  - id: "164"
+    path: tests/scenarios/164-mcp-tool-only-host-compatibility.md
+    coverage: lifecycle
+    evidence:
+      - scripts/mcp_server.py
+      - bin/aips
+      - harness/MCP_GATEWAY.md
+      - tests/evidence/mcp_interoperability_lifecycle.py
+      - tests/validation/mcp_interoperability_contracts.py
+      - tests/validate_repository.py
