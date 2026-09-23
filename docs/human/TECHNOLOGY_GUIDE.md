@@ -36,9 +36,9 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 
 Existing Project mutation 前先宣告 Change Boundary，實作後再把 actual diff 與 declared impact 對帳。
 
-Temporal Change Impact 可依 Git revision 還原當時有效的 assertion 與 Impact Graph edge；canonical YAML 保留真實來源，SQLite 只作可重建的 query projection。這延伸現有 Project Intelligence，不引入外部 Graph Database。
-
 ## Execution
+
+Temporal Change Impact 可依 Git revision 還原當時有效的 assertion 與 Impact Graph edge；canonical YAML 保留真實來源，SQLite 只作可重建的 query projection。這延伸現有 Project Intelligence，不引入外部 Graph Database。
 
 Portable Command projections use ownership and digest checks to preserve user edits; the same Canonical Registry and renderer serve CLI and MCP without granting protected-operation authority.
 

@@ -95,7 +95,7 @@ placement_rules:
       orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior]
 
   - id: project-intelligence
-    triggers: [scripts/project_intelligence.py, scripts/retrieval_intelligence.py, scripts/turn_context_hook.py, scripts/git_paths.py, scripts/check_secret_leakage.py, orchestration/PROJECT_INTELLIGENCE.md, templates/intelligence/**]
+    triggers: [scripts/project_intelligence.py, scripts/retrieval_intelligence.py, scripts/temporal_intelligence.py, scripts/turn_context_hook.py, scripts/git_paths.py, scripts/check_secret_leakage.py, orchestration/PROJECT_INTELLIGENCE.md, orchestration/CHANGE_IMPACT.md, templates/intelligence/**]
     placements:
       docs/human/PROJECT_INTELLIGENCE.md: [第一次 Existing Project, 不重複正式文件, 四份核心 Machine-readable 檔, 三軸狀態, Human Review HTML, Freshness, Attach / Detach, Change Impact, Preserve Valid Native Conventions, Sensitive Data, Monorepo, Retrieval Intelligence：即時按需檢索, Retrieval Quality Evaluation：先量測，再決定下一項技術, Structural Retrieval：已採用的跨檔關係檢索, Semantic Alias Expansion Candidate Trial：HOLD, Remote Embedding Retrieval Trial Readiness（Scenario 133）, Provider-Neutral Local-First Embedding Trial（Scenario 134）, Debug, Identity namespace]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Deterministic Execution]
