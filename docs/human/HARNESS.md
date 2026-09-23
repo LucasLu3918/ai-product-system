@@ -67,3 +67,16 @@ MCP Server 不呼叫第二個 LLM，也不取得 Human approval、Git publish、
 AIPS 只修改自己可辨識、可逆的 Managed Block / Hook / Extension。若內容被使用者修改到無法安全識別，uninstall 會保留並回報 conflict，不會暴力刪除。
 
 Client-owned MCP config 不由 AIPS 自動寫入或刪除。
+
+## Portable Commands
+
+Portable Commands 將同一個 Canonical ID（例如 `aips.plan`）渲染成 Slash Command、Skill 或 generic MCP bootstrap。Registry 位於 `harness/commands/REGISTRY.yaml`，CLI 可檢視、預覽與管理 AIPS-owned projections：
+
+~~~bash
+aips commands list
+aips commands render aips.plan --host cursor
+aips commands install --host cursor
+aips commands status
+~~~
+
+這些 projections 是薄包裝，不取代 Constitution、System 或 orchestration canonical sources，也不提供 Runtime-native enforcement、Git publish、merge、release、production 或 Human approval authority。使用者修改過的 projection 會保留並回報 `CONFLICT`。

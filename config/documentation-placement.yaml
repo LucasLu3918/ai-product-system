@@ -18,7 +18,7 @@ current_behavior_docs:
     required_h2: [macOS / Linux, Windows, 驗證, Runtime integration, 常見問題與排查, 更新, 解除安裝, 會保留什麼, 相容入口]
   docs/human/HARNESS.md:
     strict_h2: true
-    required_h2: [Integration model, Native Runtime Adapters, MCP Interoperability, Capability truth, Progressive disclosure, Ownership 與解除]
+    required_h2: [Integration model, Native Runtime Adapters, MCP Interoperability, Portable Commands, Capability truth, Progressive disclosure, Ownership 與解除]
   docs/human/USER_GUIDE.md:
     strict_h2: true
     required_h2:
@@ -79,9 +79,9 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification]
 
   - id: harness
-    triggers: [harness/**, scripts/harness_resolve.py, scripts/mcp_server.py, scripts/manage_runtime_adapter.py, orchestration/CONFORMANCE.md]
+    triggers: [harness/**, scripts/harness_resolve.py, scripts/mcp_server.py, scripts/portable_commands.py, orchestration/CONFORMANCE.md]
     placements:
-      docs/human/HARNESS.md: [Integration model, Native Runtime Adapters, MCP Interoperability, Capability truth, Progressive disclosure, Ownership 與解除]
+      docs/human/HARNESS.md: [Integration model, Native Runtime Adapters, MCP Interoperability, Portable Commands, Capability truth, Progressive disclosure, Ownership 與解除]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Project Intelligence 與 Retrieval, Deterministic Execution]
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification]
 

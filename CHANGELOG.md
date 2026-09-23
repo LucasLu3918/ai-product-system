@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.57.0
+
+### Portable Governance Command Core
+
+- Add a canonical Portable Command Registry for `aips.constitution`, `aips.plan` and `aips.impact`, with host-aware Markdown and generic renderers.
+- Add `aips commands` list, inspect, render, install, status, upgrade and uninstall lifecycle commands with ownership metadata and conflict preservation.
+- Reuse the same renderer from the MCP gateway through the read-only `aips_portable_command` tool; Portable Commands remain advisory and do not grant runtime enforcement or protected-operation authority.
+- Add focused contract coverage for registry validation, projection lifecycle and modified-file conflict detection.
+- Document Portable Command architecture and bind it to the existing Turn-Aware Global Harness surface; no new Role, Skill, Capability ID, approval authority or Constitution change.
+
 ## 0.56.0
 
 ### CI-Parity Publication Preflight
