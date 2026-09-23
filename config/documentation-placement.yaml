@@ -121,7 +121,7 @@ placement_rules:
       docs/human/USER_GUIDE.md: [Deterministic Scheduler, Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release, Runtime Content Safety Boundary]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Runtime Content Safety Boundary]
-      orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior]
+      orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior, Runtime Content Safety Boundary]
       orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight, Change-class handoff to Integration Gate, Runtime Content Safety Boundary]
 
   - id: content-safety
@@ -155,15 +155,15 @@ placement_rules:
     placements:
       docs/human/DOCUMENTATION_SYNC.md: [文件角色, Current-behavior placement contract, Official Docs Site, Technology Guide, Deterministic protection]
       docs/human/DOCUMENTATION_MAP.md: [Official Docs Site, 文件角色, Agent / machine canonical 文件, 文件一致性]
-      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Documentation Platform, Execution, Quality & Verification, Evolution & Maintenance]
+      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Documentation Platform, Execution, Quality & Verification, Evolution & Maintenance, Runtime Content Safety Boundary]
 
   - id: documentation-platform
     triggers: [docs/human/.vitepress/**, package.json, .github/workflows/docs-site.yml, scripts/documentation_placement.py, config/documentation-placement.yaml]
     placements:
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Project Intelligence 與 Retrieval, Documentation Architecture, Official Docs Site, Deterministic Execution, Scenario Conformance 與 Agent Eval]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Project Intelligence 與 Retrieval, Documentation Architecture, Official Docs Site, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
       docs/human/DOCUMENTATION_SYNC.md: [Current-behavior placement contract, Official Docs Site, Technology Guide, Deterministic protection]
       docs/human/DOCUMENTATION_MAP.md: [Official Docs Site, 文件角色, Agent / machine canonical 文件, 文件一致性]
-      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Documentation Platform, Execution, Quality & Verification]
+      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Documentation Platform, Execution, Quality & Verification, Runtime Content Safety Boundary]
 
   - id: trajectory-evaluation
     triggers: [scripts/trajectory_eval.py, orchestration/TRAJECTORY_EVAL.md, templates/review/TRAJECTORY_TRACE.yaml, templates/review/TRAJECTORY_EVIDENCE.yaml, tests/evidence/trajectory_quality_gate_lifecycle.py, tests/scenarios/167-trajectory-quality-gate.md]
