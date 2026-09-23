@@ -97,6 +97,8 @@ Current-behavior Human docs are topic-oriented, not release-note streams. `confi
 
 Every behavior-bearing source that falls on the broad Technology Guide sync surface MUST also match a semantic placement rule. Unmapped new sources fail closed until maintainers assign the change to an existing canonical topic or deliberately add a new topic to the placement contract. This prevents future features from bypassing information architecture by merely appending prose at the end.
 
+When a Scenario changes Runtime or MCP behavior, `orchestration/CONFORMANCE.md` is owned by the harness placement rule. A placement-contract update that assigns this ownership must synchronize the existing Runtime sections in Architecture Overview and Technology Guide plus the Human Documentation Sync and Map; it does not create a new product topic.
+
 Do not satisfy documentation impact by appending a version/scenario note at the end of USER_GUIDE, ARCHITECTURE_OVERVIEW, HARNESS, INSTALLATION, TECHNOLOGY_GUIDE, or EVOLUTION_RADAR_OVERVIEW. Release history belongs in CHANGELOG; verification history belongs in CONFORMANCE.
 
 `docs/human/` is also the VitePress source root. VitePress is a renderer only; it does not create a second canonical copy. PR/main can always validate the static build. GitHub Pages hosting is a separate repository setting: when not configured, deployment reports `SKIPPED_NOT_CONFIGURED` instead of misreporting a documentation build failure.

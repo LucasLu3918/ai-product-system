@@ -2,7 +2,7 @@ version: 1
 
 candidate:
   base_sha: baef3125a2f45e6d1da7b6e78c442471b59d178b
-  changed_files_hash: 95ca3422f95c72c42ee42e707153130c7e02104f9c120abc9d91029d175e3ce9
+  changed_files_hash: 16956cda032deb7d0c26d05a68948e6f820cdb5a27e7a17ef9fbacc56e48ca7c
 
 change:
   id: mcp-host-compatibility
