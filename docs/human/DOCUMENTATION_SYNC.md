@@ -56,6 +56,8 @@ Docs deployment 不取得 code merge、release 或 product production authority�
 
 ## Technology Guide
 
+Trajectory evaluator、trace template 或 Scenario evidence 的變更，必須同步更新 `docs/human/TECHNOLOGY_GUIDE.md` 的 Quality & Verification 說明與對應的 placement/Conformance bindings。
+
 Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backward-compatible link stub。
 
 ## 文件互相導向
