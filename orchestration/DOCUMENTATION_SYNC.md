@@ -81,6 +81,8 @@ Do not create a parallel `docs/agent/` tree. Existing `orchestration/`, `harness
 
 ## Deterministic execution mapping
 
+The Parallel Run Dashboard is registered as a read-only projection surface. Its implementation, checkpoint contract, orchestration protocol and Human guidance must remain synchronized without introducing a second state source or authority path.
+
 The `deterministic-execution` rule binds Scheduler / Integration Gate implementation, Task Graph / Validation Profile contracts, validation dependencies and the GitHub validation workflow to their Human architecture/user guidance and Agent orchestration protocols.
 
 The publication-preflight mapping also covers candidate cleanliness, exact head/base binding, recursive documentation closure, Core Matrix changed-file hashes and browser smoke probes. A system-browser launch crash is classified as an environment blocker and must not be reported as a product regression.
