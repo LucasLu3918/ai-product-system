@@ -36,7 +36,15 @@ aips mcp inspect
 aips mcp serve
 ~~~
 
-MCP Resources 以 progressive disclosure 提供 Roles、Skills 與 selected orchestration；Prompts 組合 review/planning context；Tools 只暴露 bounded deterministic helpers。
+MCP Resources 以 progressive disclosure 提供 Roles、Skills 與 selected orchestration；Prompts 組合 review/planning context；Tools 只暴露 bounded deterministic helpers。若 Host 只支援 Tools，可透過 `aips_capability_catalog`、`aips_capability_read`、`aips_workflow_context` 取得同一份 canonical 內容，不複製 Role／Skill registry，也不在 Server 內呼叫第二個模型。
+
+所有 AIPS MCP Tools 都是無副作用操作，並宣告 read-only、non-destructive、idempotent、closed-world hints。這是目前 gateway 的契約描述，不等於 Host native tool guard。
+
+新 Host 預設先使用 MCP。只有當該 Runtime 提供可驗證的 per-turn hook、pre-tool guard 或 runtime-specific event source，而且需求無法由 MCP 滿足時，才增加 native adapter；不能只因新增一個 Host 名稱就複製 adapter。
+
+Review-only config 支援 Cursor、Windsurf、GitHub Copilot CLI、Amp、Codex 與 generic stdio。GitHub-hosted Copilot agent／code review 僅能使用 Tools，且執行環境必須真的能啟動 AIPS command；本機絕對路徑不能假裝成 hosted deployment。
+
+`aips mcp inspect` 會輸出 machine-readable Host 相容性矩陣，區分 official config contract、MCP protocol、pinned CLI registration 與尚未執行的第三方 GUI。設定格式與協定驗證不能被表述成 GUI 實機驗證，也不包含 native guard。
 
 MCP Server 不呼叫第二個 LLM，也不取得 Human approval、Git publish、merge、release、production 或 host-native tool interception authority。
 

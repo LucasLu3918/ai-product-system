@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from pathlib import Path
+import json
+import subprocess
 import sys
 import tempfile
+from pathlib import Path
 
 import anyio
 from mcp import Client, StdioServerParameters
@@ -39,9 +41,20 @@ async def exercise() -> None:
             "aips_project_identity",
             "aips_harness_context",
             "aips_role_skill_bundle",
+            "aips_capability_catalog",
+            "aips_capability_read",
+            "aips_workflow_context",
             "aips_schedule",
         }
         assert required_tools <= tool_names, tool_names
+        for item in tools.tools:
+            if item.name in required_tools:
+                assert item.annotations is not None, item.name
+                annotations = item.annotations.model_dump(by_alias=True)
+                assert annotations["readOnlyHint"] is True, item.name
+                assert annotations["destructiveHint"] is False, item.name
+                assert annotations["idempotentHint"] is True, item.name
+                assert annotations["openWorldHint"] is False, item.name
 
         resources = await client.list_resources()
         resource_uris = {str(item.uri) for item in resources.resources}
@@ -91,6 +104,32 @@ async def exercise() -> None:
         assert bundle["status"] == "READY"
         assert bundle["semantic_selection_performed"] is False
 
+        catalog = structured(await client.call_tool("aips_capability_catalog", {"kind": "role"}))
+        assert catalog["status"] == "READY"
+        assert "security-engineer" in catalog["items"]
+        assert catalog["semantic_selection_performed"] is False
+
+        capability = structured(
+            await client.call_tool(
+                "aips_capability_read",
+                {"kind": "skill", "capability_id": "threat-modeling"},
+            )
+        )
+        assert capability["status"] == "READY"
+        assert capability["uri"] == "aips://skills/threat-modeling"
+        assert "threat" in capability["content"].lower()
+
+        workflow = structured(
+            await client.call_tool(
+                "aips_workflow_context",
+                {"workflow": "security-review", "objective": "Review checkout authorization"},
+            )
+        )
+        assert workflow["status"] == "READY"
+        assert "aips://roles/security-engineer" in workflow["resources"]
+        assert "grants no Git publish" in workflow["prompt"]
+        assert workflow["semantic_reasoning_location"] == "host_model"
+
         blocked_bundle = structured(
             await client.call_tool(
                 "aips_role_skill_bundle",
@@ -98,6 +137,22 @@ async def exercise() -> None:
             )
         )
         assert blocked_bundle["status"] == "BLOCKED"
+
+        blocked_capability = structured(
+            await client.call_tool(
+                "aips_capability_read",
+                {"kind": "skill", "capability_id": "../secrets"},
+            )
+        )
+        assert blocked_capability["status"] == "BLOCKED"
+
+        blocked_workflow = structured(
+            await client.call_tool(
+                "aips_workflow_context",
+                {"workflow": "unknown", "objective": "escape"},
+            )
+        )
+        assert blocked_workflow["status"] == "BLOCKED"
 
         graph = {
             "version": 1,
@@ -126,6 +181,46 @@ async def exercise() -> None:
             assert "outside AIPS_MCP_WORKSPACE" in escaped["reason"]
 
 
+
+def exercise_cli() -> None:
+    inspect = subprocess.run(
+        [sys.executable, str(SERVER), "inspect"], capture_output=True, text=True, check=True
+    )
+    inspected = json.loads(inspect.stdout)
+    assert inspected["tool_only_compatibility"]["all_tools_read_only"] is True
+    assert inspected["clients"] == ["cursor", "windsurf", "copilot", "amp", "codex", "generic"]
+    assert set(inspected["client_compatibility"]) == set(inspected["clients"])
+    assert inspected["client_compatibility"]["copilot"]["limitation"] == "hosted-agent-and-code-review-surfaces-are-tool-only"
+    assert all(
+        item["tool_only_facade_available"] is True
+        and item["native_guard_included"] is False
+        for item in inspected["client_compatibility"].values()
+    )
+
+    for client_name in inspected["clients"]:
+        configured = subprocess.run(
+            [sys.executable, str(SERVER), "config", "--client", client_name],
+            capture_output=True,
+            text=True,
+            check=True,
+        )
+        payload = json.loads(configured.stdout)
+        assert payload["client"] == client_name
+        assert payload["automatic_change"] is False
+    copilot = json.loads(
+        subprocess.run(
+            [sys.executable, str(SERVER), "config", "--client", "copilot"],
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout
+    )
+    copilot_tools = copilot["config"]["mcpServers"]["aips"]["tools"]
+    assert "aips_capability_read" in copilot_tools
+    assert "aips_workflow_context" in copilot_tools
+
+
 if __name__ == "__main__":
     anyio.run(exercise)
+    exercise_cli()
     print("MCP INTEROPERABILITY LIFECYCLE PASSED")

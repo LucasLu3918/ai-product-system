@@ -1,4 +1,3 @@
-from pathlib import Path
 import subprocess
 import sys
 
@@ -24,6 +23,7 @@ if server.exists():
     text = server.read_text(encoding="utf-8")
     for marker in (
         "from mcp.server import MCPServer",
+        "from mcp.types import ToolAnnotations",
         'PROTOCOL_VERSION = "2026-07-28"',
         "mcp.run()",
         "aips://catalog/roles",
@@ -33,7 +33,15 @@ if server.exists():
         "aips_project_identity",
         "aips_harness_context",
         "aips_role_skill_bundle",
+        "aips_capability_catalog",
+        "aips_capability_read",
+        "aips_workflow_context",
         "aips_schedule",
+        "HOST_COMPATIBILITY",
+        "client_compatibility",
+        "read_only_hint=True",
+        "destructive_hint=False",
+        "open_world_hint=False",
         "client_registration_managed",
         "host_native_tool_enforcement",
         "semantic_selection_performed",
@@ -50,7 +58,13 @@ if "mcp>=2.0.0,<3" not in requirements:
     errors.append("requirements.txt must pin MCP Python SDK to stable v2 major")
 
 cli = (ROOT / "bin/aips").read_text(encoding="utf-8")
-for marker in ("aips mcp serve", "aips mcp inspect", "mcp_cmd()", "mcp)"):
+for marker in (
+    "aips mcp serve",
+    "aips mcp inspect",
+    "cursor|windsurf|copilot|amp|codex|generic",
+    "mcp_cmd()",
+    "mcp)",
+):
     if marker not in cli:
         errors.append(f"bin/aips missing MCP CLI contract: {marker}")
 
@@ -74,6 +88,24 @@ for marker in ("@openai/codex@0.155.1", "codex mcp add", "codex mcp list", "mcp_
 for forbidden in ("OPENAI_API_KEY", "GEMINI_API_KEY", "secrets."):
     if forbidden in workflow:
         errors.append(f"MCP/Codex interoperability workflow must be credential-free: {forbidden}")
+
+for client in ("cursor", "windsurf", "copilot", "amp", "codex", "generic"):
+    result = subprocess.run(
+        [sys.executable, str(server), "config", "--client", client],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        errors.append(f"MCP client configuration failed for {client}: {result.stderr.strip()}")
+        continue
+    try:
+        payload = __import__("json").loads(result.stdout)
+    except ValueError as exc:
+        errors.append(f"MCP client configuration is not JSON for {client}: {exc}")
+        continue
+    if payload.get("client") != client or payload.get("automatic_change") is not False:
+        errors.append(f"MCP client configuration boundary mismatch for {client}")
 
 evidence = ROOT / "tests/evidence/mcp_interoperability_lifecycle.py"
 if evidence.exists():

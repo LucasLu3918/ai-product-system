@@ -18,9 +18,30 @@ Native Runtime Adapter (when available)
 
 MCP access and native adapter enforcement are separate capabilities. A host that only connects through MCP is ADVISORY. Do not report TURN_NATIVE, TOOL_GUARDED or ENFORCED unless a separately verified runtime-native integration provides it.
 
+## Host capability compatibility
+
+Full MCP hosts may use Resources, Prompts and Tools directly. Tool-only hosts use `aips_capability_catalog`, `aips_capability_read` and `aips_workflow_context` to obtain the same canonical Role / Skill / allowlisted protocol and review/planning context without creating a copied registry or a second reasoning engine.
+
+Every AIPS MCP Tool is side-effect-free and declares read-only, non-destructive, idempotent and closed-world hints. These annotations describe the current AIPS gateway contract; they do not grant authority or make an untrusted third-party server safe.
+
+Use MCP as the default integration for a new compatible Host. Add a runtime-native adapter only when the Host exposes a verifiable per-turn hook, pre-tool guard or runtime-specific event source that MCP cannot provide. A Host name alone does not justify another adapter.
+
+`aips mcp inspect` returns the machine-readable compatibility matrix. Current validation scope is:
+
+| Client | Surface | Validation | Native guard included |
+|---|---|---|---|
+| Cursor | Editor / CLI, local stdio | official config contract + MCP protocol | no |
+| Windsurf | Cascade, local stdio | official config contract + MCP protocol | no |
+| GitHub Copilot | CLI local stdio; hosted agent/code review are tool-only | official config contract + MCP protocol | no |
+| Amp | CLI local stdio | official config contract + MCP protocol | no |
+| Codex | CLI local stdio | pinned CLI registration + MCP protocol | no |
+| Generic | local stdio MCP Host | MCP protocol | no |
+
+Config/protocol validation is not a claim that an unavailable third-party GUI binary was executed. Every row remains ADVISORY unless a separate native integration is verified.
+
 ## Transport
 
-v0.52 supports local stdio only:
+The current gateway supports local stdio only:
 
 ~~~bash
 aips mcp serve
@@ -53,11 +74,16 @@ MCP cannot generally intercept a host's own shell/file/git tools. Verified nativ
 ~~~bash
 aips mcp inspect
 aips mcp config --client cursor
+aips mcp config --client windsurf
+aips mcp config --client copilot
+aips mcp config --client amp
 aips mcp config --client codex
 aips mcp config --client generic
 ~~~
 
-Configuration output is review-only. v0.52 never silently edits client-owned MCP configuration.
+Configuration output is review-only. AIPS never silently edits client-owned MCP configuration.
+
+`copilot` targets GitHub Copilot CLI local stdio configuration. GitHub-hosted Copilot agent/code-review environments are tool-only and can use AIPS only when that environment can execute the configured AIPS command and resolve the declared workspace. Do not present a local absolute path as a hosted deployment.
 
 ## Verification
 

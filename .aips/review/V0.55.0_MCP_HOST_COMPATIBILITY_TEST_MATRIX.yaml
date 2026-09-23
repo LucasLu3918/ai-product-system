@@ -1,0 +1,82 @@
+version: 1
+
+candidate:
+  base_sha: baef3125a2f45e6d1da7b6e78c442471b59d178b
+  changed_files_hash: 53b8442a0cf3cb805ba09578e53fa762b33f965cea2f6f69bef7b09e58350a6a
+
+change:
+  id: mcp-host-compatibility
+  summary: Add tool-only capability access and review-only configuration for additional MCP hosts.
+  boundary:
+    - MCP tool/resource/prompt public contract
+    - AIPS MCP CLI configuration output
+    - host capability and native-adapter selection guidance
+    - Scenario Conformance and synchronized documentation
+
+matrix:
+  - boundary: mcp-public-contract
+    reason: Tool-only hosts need canonical Role, Skill, protocol, and workflow access without weakening authority boundaries.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: git diff --check and repository Python/static contracts passed.
+      unit:
+        applicable: false
+        na_reason: The gateway is exercised through its public stdio protocol rather than internal function mocks.
+      integration:
+        applicable: true
+        evidence: .venv/bin/python tests/evidence/mcp_interoperability_lifecycle.py passed against the real stdio server.
+      contract:
+        applicable: true
+        evidence: Lifecycle and static contracts passed for annotations, catalog/read/workflow, authority, and negative ids.
+      e2e:
+        applicable: true
+        evidence: Official MCP Python Client discovered and called the exact local subprocess successfully.
+      security:
+        applicable: true
+        evidence: Workspace escape, canonical allowlist, false-authority, and read-only annotation checks passed.
+      migration_recovery:
+        applicable: false
+        na_reason: Additive protocol surface with no persistence or migration.
+      cli_harness:
+        applicable: true
+        evidence: aips mcp inspect/config and full repository lifecycle validation passed.
+      docs_schema:
+        applicable: true
+        evidence: Full repository validation passed documentation sync/placement and Scenario 164 Conformance.
+  - boundary: host-config-output
+    reason: Cursor, Windsurf, GitHub Copilot CLI, Amp, Codex, and generic clients use different review-only configuration shapes.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: Shell/Python repository validation and git diff --check passed.
+      unit:
+        applicable: true
+        evidence: Lifecycle parsed and asserted deterministic JSON for all six client selectors.
+      integration:
+        applicable: true
+        evidence: Generated commands and workspace metadata were reconciled with the real stdio lifecycle.
+      contract:
+        applicable: true
+        evidence: Exact supported-client matrix and automatic_change=false contracts passed.
+      e2e:
+        applicable: false
+        na_reason: Cursor, Windsurf, Copilot, and Amp binaries are not installed on this host; exact format and protocol behavior are verified without claiming GUI execution.
+      security:
+        applicable: true
+        evidence: Review-only configuration and protected-authority checks passed.
+      migration_recovery:
+        applicable: false
+        na_reason: Existing cursor/codex/generic output remains additive and backward compatible.
+      cli_harness:
+        applicable: true
+        evidence: aips mcp config output passed for cursor, windsurf, copilot, amp, codex, and generic.
+      docs_schema:
+        applicable: true
+        evidence: Full repository documentation sync, placement, and audience validation passed.
+
+scope_recomputed_after_expansion: true
+actual_diff_reconciled: true
+
+blockers: []
+status: READY

@@ -10,7 +10,9 @@ AIPS 將 Runtime/User instructions、Project rules、Project Intelligence 與 AI
 
 ### MCP Interoperability Gateway
 
-MCP 提供 local stdio portable access plane，公開 Resources / Prompts / deterministic Tools。Host model 負責 semantic reasoning；MCP Server 不再呼叫第二個 LLM。
+MCP 提供 local stdio portable access plane，公開 Resources / Prompts / deterministic Tools。Tool-only Hosts 另以 read-only catalog/read/workflow Tools 取得相同 canonical capability context；所有 Tools 都宣告 non-destructive、idempotent、closed-world hints。Host model 負責 semantic reasoning；MCP Server 不呼叫第二個 LLM。
+
+Cursor、Windsurf、GitHub Copilot CLI、Amp、Codex 與 generic 設定只產生 review-only payload。MCP 是新 Host 的預設接入；只有 verified per-turn hook、pre-tool guard 或 runtime-specific event source 需求才擴充 native adapter。
 
 ### Progressive Disclosure
 
