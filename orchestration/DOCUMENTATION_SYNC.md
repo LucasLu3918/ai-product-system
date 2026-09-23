@@ -83,6 +83,8 @@ Do not create a parallel `docs/agent/` tree. Existing `orchestration/`, `harness
 
 The `deterministic-execution` rule binds Scheduler / Integration Gate implementation, Task Graph / Validation Profile contracts, validation dependencies and the GitHub validation workflow to their Human architecture/user guidance and Agent orchestration protocols.
 
+The publication-preflight mapping also covers candidate cleanliness, exact head/base binding, recursive documentation closure, Core Matrix changed-file hashes and browser smoke probes. A system-browser launch crash is classified as an environment blocker and must not be reported as a product regression.
+
 This keeps the runtime implementation, exact-candidate CI behavior and authority boundaries synchronized when future changes touch scheduling or Janitor behavior.
 
 Installer and Harness runtime-path changes follow the same contract: update the mapped Human installation and integration guidance together with this Agent-facing synchronization record.

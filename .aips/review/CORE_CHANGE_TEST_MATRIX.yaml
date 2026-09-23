@@ -1,119 +1,67 @@
 version: 1
 
 candidate:
-  base_sha: ebc8310d22205540aa1b23848fdc5836e15b0e07
-  changed_files_hash: e4284bc23ea0267f0c6ef9f5f9230f00b5a47cb23b66cb97639e1287a4517ef2
+  base_sha: e6213aa0334f3ef8f8f20dda7d0157d14c18189c
+  changed_files_hash: 43a22a250ca462b1527b619aa016403fc78f3fadb65d09329eceec709d2e80d6
 
 change:
-  id: eval-as-ci-trajectory-quality-gate
-  summary: Deliver the synchronized temporal intelligence and Eval-as-CI trajectory quality gate candidate on top of the main baseline, with deterministic evidence, privacy boundaries, documentation and exact-candidate validation.
+  id: candidate-browser-preflight-hardening
+  summary: Harden exact-candidate publication preflight and classify browser startup failures as environment blockers while preferring managed Chromium for visual evidence.
   boundary:
-    - temporal-canonical-schema
-    - git-revision-resolver
-    - retrieval-sqlite-projection
-    - change-impact-and-context
-    - documentation-architecture
-    - validation-and-migration
-    - trajectory-trace-and-deterministic-evaluation
-    - scenario-and-publish-evidence
+    - exact-candidate-and-matrix-binding
+    - documentation-impact-and-placement
+    - browser-discovery-and-smoke-probe
+    - visual-and-creative-lifecycle
 
 matrix:
-  - boundary: temporal-canonical-schema
-    reason: New canonical assertion ledger and IMPACT_GRAPH v2 validity/provenance fields.
+  - boundary: exact-candidate-and-matrix-binding
+    reason: Publication preflight must reject dirty worktrees, stale base tips, mismatched HEADs and stale changed-files hashes before lifecycle checks.
     checks:
-      static_lint: {applicable: true, evidence: "Python compilation and YAML parsing"}
-      unit: {applicable: true, evidence: "Temporal schema, interval and supersession tests"}
-      integration: {applicable: true, evidence: "CLI temporal query smoke tests"}
-      contract: {applicable: true, evidence: "Canonical template and backward-compatible v1 graph contract"}
-      e2e: {applicable: false, na_reason: "No external service or browser flow is changed"}
-      security: {applicable: true, evidence: "No secret persistence; malformed input fails closed"}
-      migration_recovery: {applicable: true, evidence: "Unknown history remains UNKNOWN and canonical YAML can rebuild projections"}
-      cli_harness: {applicable: true, evidence: "aips intelligence temporal CURRENT/AS_OF/BETWEEN/WHY commands"}
-      docs_schema: {applicable: true, evidence: "Temporal protocol and template documentation"}
-  - boundary: git-revision-resolver
-    reason: Historical state depends on deterministic Git ancestry rather than timestamps.
+      static_lint: {applicable: true, evidence: "Python compilation and Ruff critical checks"}
+      unit: {applicable: true, evidence: "Publication preflight lifecycle"}
+      integration: {applicable: true, evidence: "Exact-candidate Integration Gate"}
+      contract: {applicable: true, evidence: "Integration Gate candidate and matrix binding"}
+      e2e: {applicable: false, na_reason: "No product browser flow is changed by candidate binding"}
+      security: {applicable: true, evidence: "No authority is granted by preflight evidence"}
+      migration_recovery: {applicable: false, na_reason: "No persisted data migration"}
+      cli_harness: {applicable: true, evidence: "publish preflight plan/run CLI"}
+      docs_schema: {applicable: true, evidence: "Candidate and publication protocol documentation"}
+  - boundary: documentation-impact-and-placement
+    reason: Documentation config and publication behavior must close recursive sync and canonical placement before the expensive Gate.
     checks:
-      static_lint: {applicable: true, evidence: "Python compilation"}
-      unit: {applicable: true, evidence: "Replacement and branch ancestry tests"}
-      integration: {applicable: true, evidence: "Temporary Git repository lifecycle"}
-      contract: {applicable: true, evidence: "CURRENT/AS_OF/BETWEEN/WHY result contract"}
-      e2e: {applicable: false, na_reason: "Repository-local deterministic resolver"}
-      security: {applicable: false, na_reason: "No authorization or credential boundary"}
-      migration_recovery: {applicable: true, evidence: "Unknown revision and unknown-history negative paths"}
-      cli_harness: {applicable: true, evidence: "Temporal CLI argument validation"}
-      docs_schema: {applicable: true, evidence: "Revision semantics documented"}
-  - boundary: retrieval-sqlite-projection
-    reason: Temporal assertions and supersession links are projected into rebuildable SQLite.
-    checks:
-      static_lint: {applicable: true, evidence: "Python compilation"}
-      unit: {applicable: true, evidence: "Projection count and digest assertions"}
-      integration: {applicable: true, evidence: "Retrieval lifecycle with temporary config/cache"}
-      contract: {applicable: true, evidence: "SQLite remains non-canonical and metadata reports temporal provider"}
-      e2e: {applicable: false, na_reason: "No external deployment path"}
-      security: {applicable: true, evidence: "Existing retrieval secret-path exclusion remains enabled"}
-      migration_recovery: {applicable: true, evidence: "Force index rebuild recreates temporal tables"}
-      cli_harness: {applicable: true, evidence: "aips intelligence index"}
-      docs_schema: {applicable: true, evidence: "Architecture and Retrieval documentation"}
-  - boundary: change-impact-and-context
-    reason: Historical Change Impact must use the active temporal graph and current snapshot remains fast default.
-    checks:
-      static_lint: {applicable: true, evidence: "Documentation and Python validation"}
-      unit: {applicable: true, evidence: "Historical Change Impact acceptance scenario"}
-      integration: {applicable: true, evidence: "Existing Project Intelligence and Retrieval lifecycle tests"}
-      contract: {applicable: true, evidence: "CHANGE_IMPACT and PROJECT_INTELLIGENCE protocols"}
-      e2e: {applicable: false, na_reason: "No user-facing web product"}
-      security: {applicable: true, evidence: "No authority or secret semantics changed"}
-      migration_recovery: {applicable: false, na_reason: "Impact artifact is derived and rebuildable"}
-      cli_harness: {applicable: true, evidence: "Existing impact-init and temporal CLI contracts"}
-      docs_schema: {applicable: true, evidence: "Architecture diagrams and human overview updated"}
-  - boundary: documentation-architecture
-    reason: New canonical temporal flow changes system and human architecture documentation.
-    checks:
-      static_lint: {applicable: true, evidence: "Repository documentation validators"}
-      unit: {applicable: false, na_reason: "Documentation behavior is covered by placement/sync contracts"}
-      integration: {applicable: true, evidence: "Documentation placement and sync validation"}
-      contract: {applicable: true, evidence: "Canonical orchestration and human documentation sections"}
+      static_lint: {applicable: true, evidence: "Documentation sync and placement contracts"}
+      unit: {applicable: false, na_reason: "Contract validators cover deterministic documentation behavior"}
+      integration: {applicable: true, evidence: "Repository preflight documentation closure"}
+      contract: {applicable: true, evidence: "Documentation Map, Sync and Agent protocol updates"}
       e2e: {applicable: true, evidence: "Docs site build where available"}
-      security: {applicable: false, na_reason: "No new credential or protected operation"}
-      migration_recovery: {applicable: false, na_reason: "Documentation-only compatibility is additive"}
-      cli_harness: {applicable: false, na_reason: "No runtime command implementation in this boundary"}
-      docs_schema: {applicable: true, evidence: "Architecture diagrams, scenario registry and protocol docs"}
-  - boundary: validation-and-migration
-    reason: New lifecycle tests verify fail-closed validation and safe historical migration semantics.
+      security: {applicable: false, na_reason: "No credential boundary"}
+      migration_recovery: {applicable: false, na_reason: "Additive documentation contract"}
+      cli_harness: {applicable: true, evidence: "aips docs impact and publish preflight"}
+      docs_schema: {applicable: true, evidence: "Canonical placement configuration"}
+  - boundary: browser-discovery-and-smoke-probe
+    reason: System Chrome can abort in macOS HIServices/LaunchServices before a page exists; existence checks are insufficient.
     checks:
-      static_lint: {applicable: true, evidence: "Python compilation"}
-      unit: {applicable: true, evidence: "tests/test_temporal_intelligence.py"}
-      integration: {applicable: true, evidence: "tests/evidence/temporal_intelligence_lifecycle.py"}
-      contract: {applicable: true, evidence: "Scenario 166 registry binding"}
-      e2e: {applicable: false, na_reason: "No external runtime"}
-      security: {applicable: true, evidence: "No secret values are persisted"}
-      migration_recovery: {applicable: true, evidence: "Unknown history, malformed interval and rebuild cases"}
-      cli_harness: {applicable: true, evidence: "Project Intelligence CLI smoke tests"}
-      docs_schema: {applicable: true, evidence: "Scenario and acceptance documentation"}
-  - boundary: trajectory-trace-and-deterministic-evaluation
-    reason: Observable Agent trajectory analysis introduces a provider-neutral trace contract, deterministic duplicate/retry/budget rules and privacy-safe evidence.
+      static_lint: {applicable: true, evidence: "Python compilation and Ruff critical checks"}
+      unit: {applicable: true, evidence: "Missing-browser and launch-failure classification assertions"}
+      integration: {applicable: true, evidence: "Version and isolated-profile headless smoke probe"}
+      contract: {applicable: true, evidence: "READY and ENVIRONMENT_BLOCKED result contract"}
+      e2e: {applicable: true, evidence: "Visual lifecycle when browser prerequisite is READY"}
+      security: {applicable: true, evidence: "Temporary browser profile and no persisted credentials"}
+      migration_recovery: {applicable: false, na_reason: "No persisted browser state"}
+      cli_harness: {applicable: true, evidence: "publish preflight environment report"}
+      docs_schema: {applicable: true, evidence: "Browser provider and environment blocker documentation"}
+  - boundary: visual-and-creative-lifecycle
+    reason: Visual and creative evidence must share browser provider selection and distinguish environment failure from product regression.
     checks:
-      static_lint: {applicable: true, evidence: "Python compilation, Ruff and mypy for trajectory evaluator"}
-      unit: {applicable: true, evidence: "Deterministic duplicate-read, budget and gate assertions"}
-      integration: {applicable: true, evidence: "Trajectory lifecycle evidence and aips trajectory CLI"}
-      contract: {applicable: true, evidence: "Trajectory protocol and reusable trace/evidence templates"}
-      e2e: {applicable: false, na_reason: "No external service or browser flow is changed"}
-      security: {applicable: true, evidence: "Private reasoning and secret-like values fail closed"}
-      migration_recovery: {applicable: false, na_reason: "Trace evidence is additive and provider-neutral"}
-      cli_harness: {applicable: true, evidence: "aips trajectory evaluate/report"}
-      docs_schema: {applicable: true, evidence: "Trajectory protocol, human overview and scenario documentation"}
-  - boundary: scenario-and-publish-evidence
-    reason: Scenario Conformance and Integration Gate must account for trajectory evidence without granting machine publication authority.
-    checks:
-      static_lint: {applicable: true, evidence: "Repository validation and exact candidate Gate"}
-      unit: {applicable: true, evidence: "Scenario 167 lifecycle evidence"}
-      integration: {applicable: true, evidence: "Integration Gate trajectory check"}
-      contract: {applicable: true, evidence: "Scenario registry, Architecture Surface and Capability Map bindings"}
-      e2e: {applicable: false, na_reason: "No external product UI is changed"}
-      security: {applicable: true, evidence: "Human authority and publish_authorized=false assertions"}
-      migration_recovery: {applicable: false, na_reason: "Evidence is rebuildable"}
-      cli_harness: {applicable: true, evidence: "aips trajectory CLI lifecycle"}
-      docs_schema: {applicable: true, evidence: "Conformance and architecture documentation"}
+      static_lint: {applicable: true, evidence: "Lifecycle syntax and critical Ruff checks"}
+      unit: {applicable: true, evidence: "Visual and creative contract validators"}
+      integration: {applicable: true, evidence: "Rendered lifecycle evidence when browser is available"}
+      contract: {applicable: true, evidence: "ENVIRONMENT_BLOCKED lifecycle classification"}
+      e2e: {applicable: true, evidence: "Playwright managed Chromium or explicit system browser"}
+      security: {applicable: false, na_reason: "No protected operation or credential flow"}
+      migration_recovery: {applicable: false, na_reason: "Evidence artifacts are temporary"}
+      cli_harness: {applicable: false, na_reason: "No new CLI command"}
+      docs_schema: {applicable: true, evidence: "Visual evidence provider documentation"}
 
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true

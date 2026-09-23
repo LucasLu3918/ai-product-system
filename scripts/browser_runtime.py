@@ -1,0 +1,157 @@
+#!/usr/bin/env python3
+"""Deterministic browser discovery and launch probes for visual evidence."""
+
+from __future__ import annotations
+
+import os
+import shutil
+import subprocess
+from pathlib import Path
+from typing import Any
+
+SYSTEM_BROWSER_CANDIDATES = (
+    "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+    "/Applications/Chromium.app/Contents/MacOS/Chromium",
+)
+
+
+def provider_request() -> str:
+    value = os.environ.get("AIPS_BROWSER_PROVIDER", "auto").strip().lower()
+    if value not in {"auto", "managed", "system"}:
+        raise ValueError("AIPS_BROWSER_PROVIDER must be auto, managed, or system")
+    return value
+
+
+def managed_browser_binary() -> str | None:
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return None
+    playwright = sync_playwright().start()
+    try:
+        path = Path(playwright.chromium.executable_path)
+        return str(path) if path.is_file() else None
+    finally:
+        playwright.stop()
+
+
+def system_browser_binary() -> str | None:
+    candidates = (
+        os.environ.get("CHROME_BIN"),
+        shutil.which("google-chrome"),
+        shutil.which("google-chrome-stable"),
+        shutil.which("chromium"),
+        shutil.which("chromium-browser"),
+        *SYSTEM_BROWSER_CANDIDATES,
+        os.environ.get("PROGRAMFILES", "") + r"\\Google\\Chrome\\Application\\chrome.exe",
+        os.environ.get("PROGRAMFILES(X86)", "") + r"\\Google\\Chrome\\Application\\chrome.exe",
+    )
+    for candidate in candidates:
+        if candidate and Path(candidate).is_file():
+            return str(candidate)
+    return None
+
+
+def discover_browser(provider: str | None = None) -> dict[str, Any]:
+    requested = provider or provider_request()
+    if requested in {"auto", "managed"}:
+        managed = managed_browser_binary()
+        if managed:
+            return {"provider": "managed", "path": managed, "requested": requested}
+        if requested == "managed":
+            return {"provider": "managed", "path": None, "requested": requested}
+    system = system_browser_binary()
+    return {"provider": "system", "path": system, "requested": requested}
+
+
+def probe_browser(path: str | None, *, provider: str, timeout: float = 10.0) -> dict[str, Any]:
+    if not path:
+        return {"status": "BROWSER_NOT_FOUND", "provider": provider, "path": None}
+    binary = Path(path)
+    if not binary.is_file() or not os.access(binary, os.X_OK):
+        return {"status": "BROWSER_NOT_EXECUTABLE", "provider": provider, "path": path}
+
+    try:
+        version = subprocess.run(
+            [path, "--version"], capture_output=True, text=True, timeout=timeout, check=False
+        )
+    except subprocess.TimeoutExpired as exc:
+        return {
+            "status": "BROWSER_VERSION_TIMEOUT",
+            "provider": provider,
+            "path": path,
+            "timeout_seconds": timeout,
+            "stderr": str(exc)[-1000:],
+        }
+    if version.returncode != 0:
+        return {
+            "status": "BROWSER_VERSION_FAILED",
+            "provider": provider,
+            "path": path,
+            "exit_code": version.returncode,
+            "stderr": (version.stderr or version.stdout).strip()[-1000:],
+        }
+
+    try:
+        from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return {
+            "status": "BROWSER_PROBE_DEPENDENCY_MISSING",
+            "provider": provider,
+            "path": path,
+        }
+
+    launch_args = ["--no-sandbox", "--disable-dev-shm-usage", "--no-first-run", "--no-default-browser-check"]
+    playwright = sync_playwright().start()
+    browser = None
+    try:
+        browser = playwright.chromium.launch(
+            executable_path=path,
+            headless=True,
+            args=launch_args,
+            timeout=int(timeout * 1000),
+        )
+        page = browser.new_page()
+        page.goto(
+            "data:text/html,<title>aips-browser-probe</title><body>ok</body>",
+            wait_until="domcontentloaded",
+            timeout=int(timeout * 1000),
+        )
+        page.title()
+    except PlaywrightTimeoutError as exc:
+        return {
+            "status": "BROWSER_LAUNCH_TIMEOUT",
+            "provider": provider,
+            "path": path,
+            "timeout_seconds": timeout,
+            "stderr": str(exc)[-1000:],
+        }
+    except Exception as exc:  # noqa: BLE001 - normalize browser-specific startup failures
+        return {
+            "status": "BROWSER_LAUNCH_FAILED",
+            "provider": provider,
+            "path": path,
+            "version": (version.stdout or version.stderr).strip()[-300:],
+            "stderr": str(exc)[-1000:],
+        }
+    finally:
+        if browser is not None:
+            browser.close()
+        playwright.stop()
+    return {"status": "READY", "provider": provider, "path": path, "version": (version.stdout or version.stderr).strip()[-300:]}
+
+
+def playwright_launch_kwargs(playwright: Any) -> tuple[dict[str, Any], str]:
+    requested = provider_request()
+    if requested in {"auto", "managed"}:
+        managed_path = Path(playwright.chromium.executable_path)
+        if managed_path.is_file():
+            return {"headless": True}, "playwright-managed"
+        if requested == "managed":
+            raise RuntimeError("Managed Playwright Chromium is not installed")
+    selection = discover_browser("system")
+    path = selection.get("path")
+    if not path:
+        raise RuntimeError("No system Chrome/Chromium binary available for rendered visual evidence")
+    return {"executable_path": path, "headless": True}, f"system-{Path(path).name}"

@@ -5,20 +5,36 @@ import base64
 import hashlib
 import importlib.util
 import json
-import os
-from pathlib import Path
-import shutil
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
 
 import yaml
 from playwright.sync_api import sync_playwright
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from scripts.browser_runtime import (
+    discover_browser,
+    playwright_launch_kwargs,
+    probe_browser,
+)
 
 
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise AssertionError(message)
+
+
+def browser_precondition() -> bool:
+    selection = discover_browser()
+    probe = probe_browser(selection.get("path"), provider=str(selection["provider"]))
+    if probe["status"] != "READY":
+        print(f"ENVIRONMENT_BLOCKED: {json.dumps(probe, ensure_ascii=False)}")
+        return False
+    return True
 
 
 def sha256_file(path: Path) -> str:
@@ -31,24 +47,6 @@ def load_helper(path: Path):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
-
-
-def browser_binary() -> str:
-    candidates = [
-        os.environ.get("CHROME_BIN"),
-        shutil.which("google-chrome"),
-        shutil.which("google-chrome-stable"),
-        shutil.which("chromium"),
-        shutil.which("chromium-browser"),
-        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-        "/Applications/Chromium.app/Contents/MacOS/Chromium",
-        os.environ.get("PROGRAMFILES", "") + r"\\Google\\Chrome\\Application\\chrome.exe",
-        os.environ.get("PROGRAMFILES(X86)", "") + r"\\Google\\Chrome\\Application\\chrome.exe",
-    ]
-    for value in candidates:
-        if value and Path(value).is_file():
-            return str(value)
-    raise AssertionError("No system Chrome/Chromium binary available for creative render evidence")
 
 
 def box_inside(inner: dict, outer: dict, tolerance: float = 1.0) -> bool:
@@ -109,6 +107,8 @@ def render_capture(page, html: str, screenshot: Path, width: int, height: int) -
 
 
 def main() -> int:
+    if not browser_precondition():
+        return 2
     root = Path(__file__).resolve().parents[2]
     helper_path = root / "scripts" / "creative_evidence.py"
     agent_eval = root / "scripts" / "agent_eval.py"
@@ -257,7 +257,9 @@ p{{max-width:560px;font-size:18px;line-height:1.5;margin:0 0 30px}}
         desktop_shot = evidence_dir / "banner-desktop.png"
         mobile_shot = evidence_dir / "banner-mobile.png"
         with sync_playwright() as p:
-            browser = p.chromium.launch(executable_path=browser_binary(), headless=True, args=["--no-sandbox", "--disable-dev-shm-usage"])
+            launch_kwargs, _provider = playwright_launch_kwargs(p)
+            launch_kwargs["args"] = ["--no-sandbox", "--disable-dev-shm-usage"]
+            browser = p.chromium.launch(**launch_kwargs)
             page = browser.new_page()
             desktop_state = render_capture(page, banner_html, desktop_shot, 1440, 640)
             mobile_state = render_capture(page, banner_html, mobile_shot, 390, 640)

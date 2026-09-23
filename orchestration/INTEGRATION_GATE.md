@@ -76,6 +76,8 @@ PASS means deterministic validation evidence is green. It does **not** authorize
 
 Local maintainers and GitHub Actions MUST enter the Gate through `scripts/publish_preflight.py` for publication candidates. The shared resolver binds the same base/head, PR-label change class, canonical `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`, `AIPS_DOCS_DIFF_BASE` and fast repository preflight before expensive lifecycle checks.
 
+The preflight also requires a clean exact candidate checkout and validates the Matrix changed-files hash before the Gate starts. Browser-dependent evidence uses a versioned Playwright managed browser when available; a failed isolated launch probe is `ENVIRONMENT_BLOCKED`, not a product regression.
+
 For pull-request validation, the caller should provide `--base-tip <fresh-target-ref>` after freshly fetching the target branch.
 
 The Gate resolves both the declared base and current target tip. If they differ, the candidate is BLOCKED before validation commands execute:

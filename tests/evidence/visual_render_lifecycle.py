@@ -2,21 +2,37 @@
 from __future__ import annotations
 
 import json
-import os
+from datetime import datetime, timezone
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 import tempfile
-from datetime import datetime, timezone
 
 import yaml
 from playwright.sync_api import sync_playwright
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+from scripts.browser_runtime import (
+    discover_browser,
+    playwright_launch_kwargs,
+    probe_browser,
+)
 
 
 def require(condition: bool, message: str) -> None:
     if not condition:
         raise AssertionError(message)
+
+
+def browser_precondition() -> bool:
+    selection = discover_browser()
+    probe = probe_browser(selection.get("path"), provider=str(selection["provider"]))
+    if probe["status"] != "READY":
+        print(f"ENVIRONMENT_BLOCKED: {json.dumps(probe, ensure_ascii=False)}")
+        return False
+    return True
 
 
 def run(args: list[str], cwd: Path | None = None) -> subprocess.CompletedProcess[str]:
@@ -27,24 +43,6 @@ def git(project: Path, *args: str) -> str:
     result = run(["git", *args], cwd=project)
     require(result.returncode == 0, result.stderr or result.stdout)
     return result.stdout.strip()
-
-
-def browser_binary() -> str:
-    candidates = [
-        os.environ.get("CHROME_BIN"),
-        shutil.which("google-chrome"),
-        shutil.which("google-chrome-stable"),
-        shutil.which("chromium"),
-        shutil.which("chromium-browser"),
-        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
-        "/Applications/Chromium.app/Contents/MacOS/Chromium",
-        os.environ.get("PROGRAMFILES", "") + r"\\Google\\Chrome\\Application\\chrome.exe",
-        os.environ.get("PROGRAMFILES(X86)", "") + r"\\Google\\Chrome\\Application\\chrome.exe",
-    ]
-    for candidate in candidates:
-        if candidate and Path(candidate).exists():
-            return candidate
-    raise AssertionError("No Chrome/Chromium binary available for rendered visual evidence")
 
 
 HTML = """<!doctype html>
@@ -173,6 +171,8 @@ def rendered_markup(title: str, css: str) -> str:
 
 
 def main() -> int:
+    if not browser_precondition():
+        return 2
     root = Path(__file__).resolve().parents[2]
     helper = root / "scripts" / "visual_evidence.py"
     require(helper.exists(), f"visual evidence helper missing: {helper}")
@@ -210,11 +210,10 @@ def main() -> int:
 
         captures_before: list[dict] = []
         captures_after: list[dict] = []
-        binary = browser_binary()
-        provider = f"playwright-system-{Path(binary).name}"
-
         with sync_playwright() as p:
-            browser = p.chromium.launch(executable_path=binary, headless=True, args=["--no-sandbox", "--disable-dev-shm-usage"])
+            launch_kwargs, provider = playwright_launch_kwargs(p)
+            launch_kwargs["args"] = ["--no-sandbox", "--disable-dev-shm-usage"]
+            browser = p.chromium.launch(**launch_kwargs)
             page = browser.new_page(viewport={"width": 1280, "height": 800})
             page.set_content(rendered_markup("Dashboard", BEFORE_CSS))
             before_metrics = family_metrics(page)

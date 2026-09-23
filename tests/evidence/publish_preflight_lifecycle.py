@@ -41,16 +41,24 @@ def main() -> int:
     environment = publish.environment_status()
     assert environment["status"] in {"READY", "ENVIRONMENT_BLOCKED"}
     assert isinstance(environment["blockers"], list)
+    missing_browser = publish.probe_browser(None, provider="managed")
+    assert missing_browser["status"] == "BROWSER_NOT_FOUND"
+    assert missing_browser["provider"] == "managed"
 
     source = (ROOT / "scripts/publish_preflight.py").read_text(encoding="utf-8")
     for contract in (
         "AIPS_DOCS_DIFF_BASE",
         "CORE_CHANGE_TEST_MATRIX.yaml",
         "ENVIRONMENT_BLOCKED",
+        "probe_browser",
+        "changed_files_hash",
         "RESET_EQUIVALENT_TREE",
         "refresh-intelligence",
     ):
         assert contract in source
+    browser_source = (ROOT / "scripts/browser_runtime.py").read_text(encoding="utf-8")
+    for contract in ("BROWSER_LAUNCH_FAILED", "sync_playwright", "AIPS_BROWSER_PROVIDER"):
+        assert contract in browser_source
 
     print("PUBLISH PREFLIGHT LIFECYCLE PASSED")
     return 0

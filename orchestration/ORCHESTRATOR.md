@@ -34,6 +34,8 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 The validation workflow keeps Gate and Repository Health evidence in the CI runner temporary directory until checks finish, then uploads those files as artifacts. This preserves exact-revision evidence for the repository validator.
 
 Protected `main` publication must wait for the exact PR candidate's required `repository` aggregate to pass.
+
+For a candidate built in a shared workspace, first snapshot the intended head and validate it in a clean worktree. Unrelated dirty changes must remain outside the candidate; a changed-files hash or Matrix computed before the final commit is invalid after scope changes.
 23. Compare actual diff/contract effects against declared Change Impact; unexpected material impact requires review and possibly scope reapproval.
 24. Refresh only affected Intelligence/Impact Graph topics; preserve user Overrides and canonical authoritative pointers.
 25. Regenerate Project Intelligence Review HTML only when initial bootstrap or material Intelligence/Override changes warrant it.

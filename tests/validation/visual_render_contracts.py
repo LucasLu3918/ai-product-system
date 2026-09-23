@@ -25,6 +25,6 @@ if visual_render_evidence.exists():
             text=True,
         )
         if focused.returncode != 0:
-            errors.append(
-                f"Visual render lifecycle evidence failed: {focused.stdout.strip()} {focused.stderr.strip()}"
-            )
+            output = f"{focused.stdout.strip()} {focused.stderr.strip()}"
+            if "ENVIRONMENT_BLOCKED:" not in output:
+                errors.append(f"Visual render lifecycle evidence failed: {output}")

@@ -68,6 +68,8 @@ CI 會把 Integration Gate 與 Repository Health 證據寫入 runner 的暫存�
 
 Publication Preflight 是 Local／CI 共用的 candidate resolver，並在完整 Gate 前執行 diff-aware repository preflight。Change class 來自明確參數或 PR labels；Large/Core 只接受 canonical Matrix path。遠端保護查詢與 environment probe 只產生 evidence，不取得 publication authority。
 
+Browser runtime 以 Playwright managed Chromium 為首選，system Chrome 透過 `AIPS_BROWSER_PROVIDER=system` 明確選用或作 auto fallback。Preflight 會執行 version 與 isolated-profile headless smoke probe；binary 存在但無法啟動時，結果是 `ENVIRONMENT_BLOCKED` 而非產品測試失敗。
+
 ## Security & Governance
 
 ### Security Assurance Level

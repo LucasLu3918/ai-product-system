@@ -214,6 +214,8 @@ Quality Planning 依風險選擇最低足夠驗證。Implementation 完成後執
 
 Core change 以 actual diff 重新對帳 Test Matrix，不能只依原始計畫宣稱完成。
 
+Visual evidence 預設優先使用 Playwright managed Chromium；系統 Chrome 只有在 `AIPS_BROWSER_PROVIDER=system` 或 managed browser 不可用時使用。Publication preflight 會先執行 browser smoke probe，啟動失敗會標記為 `ENVIRONMENT_BLOCKED`，不誤判成頁面測試失敗。
+
 ## Logging、Observability 與 Operations
 
 正式產品依風險規劃 logs、metrics、health / smoke、alerts、runbook 與 rollback。Observability 的目的不是大量產生 log，而是讓重要 failure mode 可被定位與復原。
@@ -249,6 +251,8 @@ local implementation
 Agent、MCP、CI workflow 或 external analyzer 不能因為具有執行能力就自行取得上述 authority。
 
 發布前先以 `aips docs impact --base origin/main --head HEAD` 檢查遞迴文件影響，再用 `aips publish preflight --base origin/main --head HEAD --change-class <standard|large|core> --output <report>` 執行與 CI 相同的 exact-candidate resolver。Large/Core PR 必須同步套用對應 label，並使用 `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`。受保護 `main` 由 `publish plan` 直接規劃 Pull Request，不先嘗試直推。
+
+若本機工作樹包含其他未提交變更，先建立乾淨 worktree 驗證候選；不要讓 unrelated diff 改變 changed-files hash 或 Repository Health 結果。
 
 Squash merge 後可執行 `aips publish post-merge --fetch --apply --refresh-intelligence`。只有工作樹乾淨且 local／remote tree object 完全相同時，才會先建立 backup branch 再對齊；內容不同一律停止。
 
