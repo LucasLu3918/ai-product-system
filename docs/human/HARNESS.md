@@ -52,6 +52,8 @@ Temporal Project Intelligence 的 historical query 由既有 deterministic CLI�
 
 ## Capability truth
 
+Trajectory Quality Gate 是 provider-neutral capability。Harness 可提供 observable events，但不應傳遞 private reasoning、secret 或 credential；評估結果仍由既有 Scenario Conformance 與 Human Authority 流程處理。
+
 - AUTOMATIC：integration 安裝狀態。
 - CONTEXT_ALWAYS：persistent instruction 每個工程 Turn 都要求取得 AIPS context。
 - TURN_NATIVE：Runtime 有可驗證 per-turn native hook。

@@ -84,6 +84,8 @@ CI integration evidence is written to the runner temporary directory and uploade
 
 ## Failure behavior
 
+Trajectory Quality Gate 可記錄 scheduler/tool execution 的 observable events，但不改變 scheduler 的 authority。必要 invariant 或 authorization 失敗應形成 evidence，並由上層 Integration/Publish Gate 依 policy 處理。
+
 若 localhost bind 或 browser prerequisite 不可用，publication preflight 會在昂貴 lifecycle 前回報 `ENVIRONMENT_BLOCKED`；這是執行環境阻擋，不得記錄為產品測試失敗。
 
 Invalid graph, unknown dependency, cycle, invalid state or plan mismatch is `SCHEDULER BLOCKED`.

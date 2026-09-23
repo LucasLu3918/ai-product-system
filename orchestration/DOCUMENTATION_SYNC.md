@@ -32,6 +32,8 @@ The same Project Intelligence mapping covers revision-aware Temporal Project Int
 
 ## Technology Guide rule
 
+新增 trajectory evaluator、trace template 或 Scenario evidence 時，必須同步更新 Trajectory Quality Gate protocol、Human Quality & Verification 說明，以及必要的 Scenario / Architecture Surface bindings。
+
 `docs/human/TECHNOLOGY_GUIDE.md` is the maintained Human inventory of current AIPS techniques and terms. A configured technical change requires the guide to be updated in the same diff, and Documentation Placement additionally requires changed lines to land in the owning canonical topic instead of an append-only tail section.
 
 Release history belongs in `CHANGELOG.md`; Scenario / verification history belongs in `docs/human/CONFORMANCE.md`. Legacy standalone HTML is compatibility-only.

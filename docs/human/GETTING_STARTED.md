@@ -44,6 +44,8 @@ aips mcp inspect
 aips commands list
 ~~~
 
+需要檢視 Agent 執行路徑時，可使用 `aips trajectory evaluate --trace <trace.yaml> --mode shadow`；這只產生 observable evidence，不會授予 Git Publish 權限。
+
 維護 repository 時，使用 `aips docs impact --base origin/main` 與 `aips publish plan --base origin/main` 先確認 CI-parity requirements；這些命令不會自行 merge 或發布。
 
 若要連接 MCP Host，可先用 `aips mcp config --client cursor|windsurf|copilot|amp|codex|generic` 檢視 review-only JSON；AIPS 不會自動修改 Host 設定。

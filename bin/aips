@@ -632,6 +632,13 @@ agent_eval_cmd() {
   "$py" "$SYSTEM_DIR/scripts/agent_eval.py" "$@"
 }
 
+trajectory_eval_cmd() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/trajectory_eval.py" "$@"
+}
+
 resource_authorization_cmd() {
   local py
   py="$(python_bin)"
@@ -1426,6 +1433,11 @@ case "${1:-help}" in
       shift 2 || true
       conformance_cmd "$sub" "$@"
     fi
+    ;;
+  trajectory)
+    action="${2:-evaluate}"
+    shift 2 || true
+    trajectory_eval_cmd "$action" "$@"
     ;;
   authorization)
     sub="${2:-}"

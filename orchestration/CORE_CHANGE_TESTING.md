@@ -52,6 +52,8 @@ A Large/Core Change is not complete when:
 
 ## Evidence
 
+Eval-as-CI Core Change 必須涵蓋 trace schema、deterministic trajectory rules、privacy rejection、Scenario contract、Evidence Bundle 與 shadow-mode publish boundary；LLM Judge 的非確定性只能作為 evidence，不可取代 deterministic hard constraints。
+
 Prefer deterministic evidence and exact commands/results.
 
 For system/Harness/CLI changes, include executable lifecycle tests rather than documentation-only validation.

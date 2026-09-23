@@ -94,15 +94,19 @@ surfaces:
     required_paths:
       - scripts/scenario_conformance.py
       - scripts/agent_eval.py
+      - scripts/trajectory_eval.py
       - tests/scenario_coverage.yaml
       - orchestration/CONFORMANCE.md
       - orchestration/AGENT_EVAL.md
+      - orchestration/TRAJECTORY_EVAL.md
     canonical_docs:
       - orchestration/CONFORMANCE.md
       - orchestration/AGENT_EVAL.md
+      - orchestration/TRAJECTORY_EVAL.md
     validation_paths:
       - scripts/scenario_conformance.py
       - tests/evidence/agent_eval_framework.py
+      - tests/evidence/trajectory_quality_gate_lifecycle.py
 
   - id: product-delivery
     capabilities:

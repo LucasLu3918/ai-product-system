@@ -210,6 +210,8 @@ Its inputs are bounded to committed configuration/Capability Map plus the alread
 
 ## Repository Health interaction
 
+Trajectory traces 與 evidence bundle 應在既有 execution boundary 內產生；評估器為 post-execution evidence，不建立新的 writer boundary、不執行自動 remediation，也不授予 publication authority。
+
 Repository Health / Architecture Drift is read-only validation evidence. It may inspect source-controlled files and invoke Scenario Conformance, but it creates no execution workspace, claims no writer boundary, performs no remediation, and grants no runtime, code-change, PR, merge, release or publication authority.
 
 ## Evolution Radar quarterly review isolation
