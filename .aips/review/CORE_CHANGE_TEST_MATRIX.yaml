@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 5267514e2dc45713d5128475e35f5c7ae4960693
-  changed_files_hash: f31cdd198afb5f711aaddaa239a0b585aad76f4f4d8c8fa8d46b9c0279d3fa53
+  changed_files_hash: 5fae2200fd38f438a79ae1d392ad8146d40a1bc6239d5db30be92c2645344bd1
 change:
   id: portable-command-core
   summary: Add canonical Portable Command registry, shared renderer, advisory MCP projection and managed CLI lifecycle for three governance commands.
