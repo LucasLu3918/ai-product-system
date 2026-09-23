@@ -72,6 +72,8 @@ PASS means deterministic validation evidence is green. It does **not** authorize
 
 ## PR base freshness
 
+Local maintainers and GitHub Actions MUST enter the Gate through `scripts/publish_preflight.py` for publication candidates. The shared resolver binds the same base/head, PR-label change class, canonical `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`, `AIPS_DOCS_DIFF_BASE` and fast repository preflight before expensive lifecycle checks.
+
 For pull-request validation, the caller should provide `--base-tip <fresh-target-ref>` after freshly fetching the target branch.
 
 The Gate resolves both the declared base and current target tip. If they differ, the candidate is BLOCKED before validation commands execute:
@@ -90,6 +92,8 @@ When provided, `base_tip_sha` is included in candidate evidence/fingerprinting. 
 Validation Profiles may declare `matrix_required_change_classes` plus a narrow `matrix_required_paths` safety net. Standard changes are Matrix-optional by default; `aips:large-change` and `aips:core-change` resolve to required Matrix evidence. Known governance-core Integration Gate surfaces may also require the Matrix when labels are absent.
 
 When required, the Matrix must bind the exact base SHA and deterministic changed-files hash, be reconciled to the actual diff, contain no blockers and have executable status. PASS remains evidence only.
+
+Versioned review matrices may preserve history, but CI consumes only the canonical matrix path. A required matrix at any other path is a blocked publication candidate.
 
 
 ## v0.51 runtime-resource isolation interaction

@@ -37,6 +37,8 @@ ATTACHED 位於 `.ai/intelligence/reviews/PROJECT_INTELLIGENCE_REVIEW.html`；EP
 
 Git 路徑以 NUL 分隔讀取，完整變更集合用於新鮮度判斷；畫面清單可截斷並標示總數。若 Git 掃描失敗、逾時或超過輸出上限，狀態為 `UNKNOWN`，變更工作須先排除原因，不能當成 `CURRENT`。
 
+`aips intelligence refresh` 只處理 squash／rebase 後的 equivalent-tree revision reconciliation：工作樹必須乾淨，且舊／新 tree object 完全相同。內容不同時回報 `SEMANTIC_REFRESH_REQUIRED`，不覆寫 topics。
+
 ## Attach / Detach
 
 Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Detach 先 validated sync 回 External Cache，再封存 `.ai/`。

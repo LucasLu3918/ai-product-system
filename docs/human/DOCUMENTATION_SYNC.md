@@ -60,3 +60,5 @@ Getting Started / Installation / User Guide 以 task-oriented方式導覽；Arch
 ## Deterministic protection
 
 Documentation Sync 驗證「哪些文件必須一起改」；Documentation Placement 驗證「改動是否落到正確 topic section」。兩者都通過才代表文件同步完成。
+
+`aips docs impact --base <ref> --head <ref>` 會在發布前列出遞迴 sync requirement 與合法 placement section。Publication preflight 一律帶入明確 diff base；Git-ignored local metadata 不屬於 repository 文件候選。

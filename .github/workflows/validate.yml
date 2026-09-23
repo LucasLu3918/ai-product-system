@@ -56,22 +56,21 @@ jobs:
         shell: bash
         env:
           AIPS_GATE_REPORT: ${{ runner.temp }}/integration-gate-report.yaml
+          PR_LABELS: ${{ github.event_name == 'pull_request' && join(github.event.pull_request.labels.*.name, ',') || '' }}
         run: |
           base_tip_args=()
-          matrix_args=()
           if [[ -n "$AIPS_GATE_BASE_TIP" ]]; then
             base_tip_args=(--base-tip "$AIPS_GATE_BASE_TIP")
           fi
-          if [[ -f .aips/review/CORE_CHANGE_TEST_MATRIX.yaml ]]; then
-            matrix_args=(--matrix .aips/review/CORE_CHANGE_TEST_MATRIX.yaml)
-          fi
-          python scripts/integration_gate.py \
-            --profile config/integration-gate.yaml \
+          python scripts/publish_preflight.py run \
             --base "$AIPS_GATE_BASE" \
             --head "$AIPS_GATE_HEAD" \
+            --profile config/integration-gate.yaml \
+            --matrix .aips/review/CORE_CHANGE_TEST_MATRIX.yaml \
             --change-class "${{ steps.change_class.outputs.value }}" \
+            --labels "$PR_LABELS" \
+            --offline \
             "${base_tip_args[@]}" \
-            "${matrix_args[@]}" \
             --output "$AIPS_GATE_REPORT"
       - name: Integration Gate evidence summary
         if: ${{ always() }}

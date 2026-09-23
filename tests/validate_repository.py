@@ -66,6 +66,7 @@ from validation import external_credential_guard_contracts as external_credentia
 from validation import repository_health_contracts as repository_health_contracts  # noqa: F401
 from validation import mcp_interoperability_contracts as mcp_interoperability_contracts  # noqa: F401
 from validation import evolution_effectiveness_contracts as evolution_effectiveness_contracts  # noqa: F401
+from validation import publish_preflight_contracts as publish_preflight_contracts  # noqa: F401
 
 errors = static_contracts.errors
 

@@ -148,6 +148,8 @@ Track relevant evidence:
 
 Targeted refresh only affected topics.
 
+`aips intelligence refresh` is a narrow revision-only operation for an equivalent Git tree after squash/rebase reconciliation. It requires a clean worktree and identical old/current tree objects. A changed tree returns `SEMANTIC_REFRESH_REQUIRED`; it never rewrites semantic topics automatically.
+
 AIPS schema upgrade order:
 
 ~~~text
