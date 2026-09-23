@@ -32,6 +32,8 @@ External provider credential 永遠是 optional enhancement，不得變成普通
 
 ## Effectiveness Feedback
 
+The read-only Parallel Run Dashboard is an observation surface for parallel workflow state; it does not create an Evolution decision or merge authority.
+
 Agent trajectory evidence 可回饋至後續 regression scenario，但不具備自動修改、merge、release 或 publication authority。
 
 Monthly / quarterly roll-up量測 collected → shortlist → semantic → actionable → Trial → PASS → ADOPT funnel 與 duplicate / failure evidence；指標只產生 Human-review flag，不自動改 source weight 或系統設定。

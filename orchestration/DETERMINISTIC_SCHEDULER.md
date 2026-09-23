@@ -64,6 +64,8 @@ The scheduler is stateless between invocations. Durable workflow state remains o
 
 ## CLI
 
+`aips run list`, `aips run inspect` and `aips run dashboard` consume the same read-only run projection. They observe scheduler-related state but do not alter scheduler authority.
+
 ~~~bash
 aips scheduler --graph TASK_GRAPH.yaml --state STATE.yaml --format yaml
 ~~~

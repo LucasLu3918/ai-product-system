@@ -708,4 +708,6 @@ Current automated inventory after Scenario 165:
 Scenario 166 extends the Project Intelligence conformance surface with revision-aware temporal assertions and deterministic `current`, `as-of`, `between` and `why` queries. Its lifecycle evidence verifies validity intervals, supersession, provenance and fail-closed UNKNOWN handling without introducing a second documentation or authority model.
 ## Runtime Content Safety Scenarios
 
+Scenario 173 verifies that the Parallel Run Dashboard presents sanitized, read-only run projections across parallel workspaces without exposing prompts, reasoning, secrets or mutation authority.
+
 The content safety contract is exercised by scenarios 168–172 and the `tests/test_content_safety.py` lifecycle. New sinks, detectors or failure-mode changes require matching deterministic evidence.

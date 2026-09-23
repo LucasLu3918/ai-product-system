@@ -1289,4 +1289,6 @@ Scenario 167 驗證 provider-neutral observable trajectory 的 fingerprint、det
 - automated：**167 / 167**
 ## Runtime Content Safety Conformance
 
+The read-only Parallel Run Dashboard is covered by Scenario 173 and exposes only sanitized run projection evidence; it does not add publication or control authority.
+
 Scenarios 168–172 cover the Runtime Content Safety Boundary, including redaction, durable-sink blocking, provenance, coverage registration and failure policy. Findings must never contain detected raw values.

@@ -36,6 +36,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+Operational observations from the read-only Parallel Run Dashboard may inform review, but never become automatic adoption or publication decisions.
+
 Monthly / quarterly roll-up 量測 collected → shortlist → semantic → actionable → Trial → PASS → ADOPT、duplicate rate 與 failure evidence。Low-yield / high-failure 只產生 Human-review flags，不自動調整 source weights 或 enable/disable settings。
 
 ## Current Boundaries
