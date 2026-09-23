@@ -157,4 +157,4 @@ placement_rules:
     triggers: [scripts/trajectory_eval.py, orchestration/TRAJECTORY_EVAL.md, templates/review/TRAJECTORY_TRACE.yaml, templates/review/TRAJECTORY_EVIDENCE.yaml, tests/evidence/trajectory_quality_gate_lifecycle.py, tests/scenarios/167-trajectory-quality-gate.md]
     placements:
       docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency]
-      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification]
