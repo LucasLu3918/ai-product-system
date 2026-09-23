@@ -20,6 +20,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Runtime Content Safety Boundary 的 behavior-bearing source 由 `config/documentation-placement.yaml` 的 `content-safety` rule 綁定到 Architecture Overview、Technology Guide、User Guide、Security Assurance、Maintenance 與 `orchestration/CONTENT_SAFETY_BOUNDARY.md`。新增 sink 或 detector 時，必須同步更新其 canonical placement 與 conformance scenario。
+
 Portable Command Registry、CLI lifecycle 與 MCP renderer 的 current behavior 由 Harness topic 說明；Host placement 未經官方能力驗證時，文件只能宣稱 AIPS-managed projection、MCP 或 generic fallback。
 CI validation evidence is stored in the runner temporary directory until checks finish, then uploaded as artifacts. The report location does not become a repository documentation source or alter the exact revision being validated.
 

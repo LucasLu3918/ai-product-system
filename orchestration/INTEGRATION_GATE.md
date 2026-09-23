@@ -103,3 +103,6 @@ Versioned review matrices may preserve history, but CI consumes only the canonic
 ## v0.51 runtime-resource isolation interaction
 
 Parallel Runtime Port Isolation does not change Integration Gate authority or candidate semantics. Runtime port lifecycle evidence is executed by repository validation for the exact candidate, while Scheduler-focused validation continues to check deterministic Task Graph metadata. A port lease is ephemeral execution coordination evidence and is not included as a merge/release authorization token.
+## Content Safety Gate
+
+The Integration Gate runs the content-safety lifecycle for affected candidates and requires the canonical sink manifest. Durable/public content safety failures are blocking; diagnostic redaction remains a safe degraded path.

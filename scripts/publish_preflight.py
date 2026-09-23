@@ -17,6 +17,13 @@ from typing import Any
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT / "scripts") not in sys.path:
+    sys.path.insert(0, str(ROOT / "scripts"))
+
+try:
+    from content_safety import safe_emit
+except ModuleNotFoundError:  # imported as a repository module
+    from scripts.content_safety import safe_emit
 
 try:
     from browser_runtime import discover_browser, probe_browser
@@ -158,6 +165,30 @@ def remote_policy(branch: str, offline: bool) -> dict[str, Any]:
     return {"status": "UNAVAILABLE", "reason": proc.stderr.strip() or "protection query failed"}
 
 
+def content_safety_plan(args: argparse.Namespace, base: str, head: str) -> dict[str, Any]:
+    checks: list[dict[str, Any]] = []
+
+    def check(sink: str, payload: Any, label: str) -> None:
+        result = safe_emit(sink=sink, payload=payload)
+        checks.append({"label": label, "sink": sink, "decision": result["decision"], "findings": result["findings"]})
+
+    check("git_commit", git("log", "-1", "--format=%B", head), "commit_message")
+    diff = git("diff", "--no-ext-diff", "--unified=0", base, head)
+    check("source_artifact", diff, "candidate_diff")
+    if args.commit_message:
+        check("git_commit", args.commit_message, "explicit_commit_message")
+    if args.body:
+        check("github_pr", args.body, "explicit_body")
+    if args.body_file:
+        body_path = Path(args.body_file).expanduser().resolve()
+        if not body_path.is_file():
+            checks.append({"label": "body_file", "sink": "github_pr", "decision": "BLOCK", "findings": [], "reason": "body file does not exist"})
+        else:
+            check("github_pr", body_path.read_text(encoding="utf-8"), "body_file")
+    blockers = [f"content safety blocked {item['label']}" for item in checks if item["decision"] == "BLOCK"]
+    return {"status": "BLOCKED" if blockers else "PASS", "checks": checks, "blockers": blockers}
+
+
 def build_plan(args: argparse.Namespace) -> dict[str, Any]:
     base = resolve_commit(args.base)
     head = resolve_commit(args.head)
@@ -179,6 +210,8 @@ def build_plan(args: argparse.Namespace) -> dict[str, Any]:
         blockers.append("current checkout does not match the exact candidate head")
     if args.base_tip and resolve_commit(args.base_tip) != base:
         blockers.append("candidate base is stale relative to base-tip")
+    safety = content_safety_plan(args, base, head)
+    blockers.extend(safety["blockers"])
     matrix_binding: dict[str, Any] = {}
     if required and matrix_ok:
         matrix_binding = yaml.safe_load(matrix.read_text(encoding="utf-8")) or {}
@@ -202,6 +235,7 @@ def build_plan(args: argparse.Namespace) -> dict[str, Any]:
         "documentation": docs,
         "environment": environment_status(),
         "remote": remote_policy(args.branch, args.offline),
+        "content_safety": safety,
         "blockers": blockers,
         "status": "READY" if not blockers else "BLOCKED",
     }
@@ -313,6 +347,9 @@ def common(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--matrix")
     parser.add_argument("--branch", default="main")
     parser.add_argument("--offline", action="store_true")
+    parser.add_argument("--commit-message")
+    parser.add_argument("--body")
+    parser.add_argument("--body-file")
     parser.add_argument("--format", choices=("yaml", "json"), default="yaml")
 
 

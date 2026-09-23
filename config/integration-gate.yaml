@@ -88,3 +88,18 @@ checks:
       AIPS_PROFILE_LIFECYCLE_ALREADY_EXECUTED: "1"
     argv: [python3, tests/validate_repository.py]
     paths: ["**"]
+  - id: content-safety-lifecycle
+    category: security
+    required: true
+    timeout_seconds: 120
+    argv: [python3, tests/test_content_safety.py]
+    paths:
+      - scripts/content_safety.py
+      - scripts/check_secret_leakage.py
+      - scripts/governance_audit.py
+      - scripts/gemini_observable_event_capture.py
+      - scripts/governance_guard.py
+      - scripts/publish_preflight.py
+      - config/content-safety.yaml
+      - orchestration/CONTENT_SAFETY_BOUNDARY.md
+      - tests/test_content_safety.py

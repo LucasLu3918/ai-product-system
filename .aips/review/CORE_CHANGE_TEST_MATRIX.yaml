@@ -1,67 +1,80 @@
 version: 1
 
 candidate:
-  base_sha: e6213aa0334f3ef8f8f20dda7d0157d14c18189c
-  changed_files_hash: 43a22a250ca462b1527b619aa016403fc78f3fadb65d09329eceec709d2e80d6
+  base_sha: 75cc9491fd1bc073d14619d4141aaccc313fa877
+  changed_files_hash: fad2446524e6652e7baeef2d8ccedab19ea2ebd53202dda5b9b8acdd665c5f74
 
 change:
-  id: candidate-browser-preflight-hardening
-  summary: Harden exact-candidate publication preflight and classify browser startup failures as environment blockers while preferring managed Chromium for visual evidence.
+  id: runtime-content-safety-boundary
+  summary: Add the sink-aware Runtime Content Safety Boundary, integrate it with AIPS persistence and publication paths, and preserve truthful runtime capability reporting.
   boundary:
-    - exact-candidate-and-matrix-binding
-    - documentation-impact-and-placement
-    - browser-discovery-and-smoke-probe
-    - visual-and-creative-lifecycle
+    - content-safety-kernel-and-detectors
+    - aips-persistence-sinks
+    - runtime-and-publication-guards
+    - provenance-and-runtime-capability
+    - documentation-and-scenario-conformance
 
 matrix:
-  - boundary: exact-candidate-and-matrix-binding
-    reason: Publication preflight must reject dirty worktrees, stale base tips, mismatched HEADs and stale changed-files hashes before lifecycle checks.
+  - boundary: content-safety-kernel-and-detectors
+    reason: Shared deterministic secret, PII and injection-signal detection must never emit raw findings and must produce sink-aware decisions.
     checks:
       static_lint: {applicable: true, evidence: "Python compilation and Ruff critical checks"}
-      unit: {applicable: true, evidence: "Publication preflight lifecycle"}
-      integration: {applicable: true, evidence: "Exact-candidate Integration Gate"}
-      contract: {applicable: true, evidence: "Integration Gate candidate and matrix binding"}
-      e2e: {applicable: false, na_reason: "No product browser flow is changed by candidate binding"}
-      security: {applicable: true, evidence: "No authority is granted by preflight evidence"}
+      unit: {applicable: true, evidence: "tests/test_content_safety.py"}
+      integration: {applicable: true, evidence: "content-safety lifecycle Integration Gate check"}
+      contract: {applicable: true, evidence: "SafeFinding and sink policy contract"}
+      e2e: {applicable: false, na_reason: "No product browser flow is changed"}
+      security: {applicable: true, evidence: "secret safety, redaction and durable-sink blocking"}
       migration_recovery: {applicable: false, na_reason: "No persisted data migration"}
-      cli_harness: {applicable: true, evidence: "publish preflight plan/run CLI"}
-      docs_schema: {applicable: true, evidence: "Candidate and publication protocol documentation"}
-  - boundary: documentation-impact-and-placement
-    reason: Documentation config and publication behavior must close recursive sync and canonical placement before the expensive Gate.
+      cli_harness: {applicable: true, evidence: "content_safety.py scan CLI"}
+      docs_schema: {applicable: true, evidence: "CONTENT_SAFETY_BOUNDARY.md and YAML policy"}
+  - boundary: aips-persistence-sinks
+    reason: Audit and observable event data must be sanitized before hashing, chaining or persistence.
     checks:
       static_lint: {applicable: true, evidence: "Documentation sync and placement contracts"}
-      unit: {applicable: false, na_reason: "Contract validators cover deterministic documentation behavior"}
-      integration: {applicable: true, evidence: "Repository preflight documentation closure"}
-      contract: {applicable: true, evidence: "Documentation Map, Sync and Agent protocol updates"}
-      e2e: {applicable: true, evidence: "Docs site build where available"}
-      security: {applicable: false, na_reason: "No credential boundary"}
-      migration_recovery: {applicable: false, na_reason: "Additive documentation contract"}
-      cli_harness: {applicable: true, evidence: "aips docs impact and publish preflight"}
-      docs_schema: {applicable: true, evidence: "Canonical placement configuration"}
-  - boundary: browser-discovery-and-smoke-probe
-    reason: System Chrome can abort in macOS HIServices/LaunchServices before a page exists; existence checks are insufficient.
+      unit: {applicable: true, evidence: "governance audit and observable event lifecycle tests"}
+      integration: {applicable: true, evidence: "sanitize → hash → persist lifecycle"}
+      contract: {applicable: true, evidence: "audit/event bounded payload contract"}
+      e2e: {applicable: false, na_reason: "No browser flow is changed"}
+      security: {applicable: true, evidence: "no raw secret in audit/event evidence"}
+      migration_recovery: {applicable: false, na_reason: "Existing ledger format remains compatible"}
+      cli_harness: {applicable: true, evidence: "audit and Gemini hook lifecycle"}
+      docs_schema: {applicable: true, evidence: "runtime boundary protocol"}
+  - boundary: runtime-and-publication-guards
+    reason: Commit, push, PR, release and indirect body/message paths need content checks without conflating content safety and publish approval.
     checks:
       static_lint: {applicable: true, evidence: "Python compilation and Ruff critical checks"}
-      unit: {applicable: true, evidence: "Missing-browser and launch-failure classification assertions"}
-      integration: {applicable: true, evidence: "Version and isolated-profile headless smoke probe"}
-      contract: {applicable: true, evidence: "READY and ENVIRONMENT_BLOCKED result contract"}
-      e2e: {applicable: true, evidence: "Visual lifecycle when browser prerequisite is READY"}
-      security: {applicable: true, evidence: "Temporary browser profile and no persisted credentials"}
-      migration_recovery: {applicable: false, na_reason: "No persisted browser state"}
-      cli_harness: {applicable: true, evidence: "publish preflight environment report"}
-      docs_schema: {applicable: true, evidence: "Browser provider and environment blocker documentation"}
-  - boundary: visual-and-creative-lifecycle
-    reason: Visual and creative evidence must share browser provider selection and distinguish environment failure from product regression.
+      unit: {applicable: true, evidence: "governance command guard and publication preflight lifecycle"}
+      integration: {applicable: true, evidence: "exact-candidate publication resolver"}
+      contract: {applicable: true, evidence: "git commit content-only guard and publication approval separation"}
+      e2e: {applicable: false, na_reason: "No product browser flow is changed"}
+      security: {applicable: true, evidence: "durable/public sinks fail closed"}
+      migration_recovery: {applicable: false, na_reason: "No persisted data migration"}
+      cli_harness: {applicable: true, evidence: "governance_guard and publish_preflight CLI"}
+      docs_schema: {applicable: true, evidence: "publication boundary documentation"}
+  - boundary: provenance-and-runtime-capability
+    reason: Untrusted content and native-hook capability must remain explicit and truthful.
     checks:
       static_lint: {applicable: true, evidence: "Lifecycle syntax and critical Ruff checks"}
-      unit: {applicable: true, evidence: "Visual and creative contract validators"}
-      integration: {applicable: true, evidence: "Rendered lifecycle evidence when browser is available"}
-      contract: {applicable: true, evidence: "ENVIRONMENT_BLOCKED lifecycle classification"}
-      e2e: {applicable: true, evidence: "Playwright managed Chromium or explicit system browser"}
-      security: {applicable: false, na_reason: "No protected operation or credential flow"}
-      migration_recovery: {applicable: false, na_reason: "Evidence artifacts are temporary"}
-      cli_harness: {applicable: false, na_reason: "No new CLI command"}
-      docs_schema: {applicable: true, evidence: "Visual evidence provider documentation"}
+      unit: {applicable: true, evidence: "provenance and injection signal tests"}
+      integration: {applicable: true, evidence: "native hook capability guard"}
+      contract: {applicable: true, evidence: "ENFORCED / TOOL_GUARDED / ADVISORY matrix"}
+      e2e: {applicable: false, na_reason: "No product browser flow is changed"}
+      security: {applicable: true, evidence: "injection cannot bypass human approval"}
+      migration_recovery: {applicable: false, na_reason: "No persisted data migration"}
+      cli_harness: {applicable: true, evidence: "runtime guard hook"}
+      docs_schema: {applicable: true, evidence: "provenance protocol"}
+  - boundary: documentation-and-scenario-conformance
+    reason: The security contract, sink manifest and scenario registry must stay complete and discoverable.
+    checks:
+      static_lint: {applicable: true, evidence: "documentation placement and static contracts"}
+      unit: {applicable: true, evidence: "scenario conformance check"}
+      integration: {applicable: true, evidence: "repository validation"}
+      contract: {applicable: true, evidence: "scenario coverage registry"}
+      e2e: {applicable: false, na_reason: "No product browser flow is changed"}
+      security: {applicable: true, evidence: "security assurance documentation"}
+      migration_recovery: {applicable: false, na_reason: "Additive documentation and tests"}
+      cli_harness: {applicable: true, evidence: "publish preflight documentation impact"}
+      docs_schema: {applicable: true, evidence: "canonical boundary protocol and config"}
 
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true

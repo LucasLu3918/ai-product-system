@@ -103,3 +103,6 @@ Integration Gate PASS is evidence only. It never supplies Human approval, merge 
 AIPS CI resolves `standard | large | core` from explicit PR change-class labels. Large/Core candidates require the bound Core Change Test Matrix. Standard changes remain Matrix-optional unless a narrow Validation Profile path rule identifies a governance-core surface. Do not use broad rules such as all `scripts/**` or all `config/**` merely to force Matrix usage.
 
 `aips publish plan` reports label/matrix mismatches before publication. `aips publish preflight` runs the same resolver as CI; a green validation performed with a different change class or matrix path is not CI-parity evidence.
+## Content Safety Core Change Evidence
+
+Runtime Content Safety Boundary changes require detector, sink, publication, provenance and documentation evidence. The active Core Change Matrix must bind the exact candidate changed-file set and include security negative paths.

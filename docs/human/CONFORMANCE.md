@@ -1287,3 +1287,6 @@ Scenario 167 驗證 provider-neutral observable trajectory 的 fingerprint、det
 - manual：0
 - uncovered：0
 - automated：**167 / 167**
+## Runtime Content Safety Conformance
+
+Scenarios 168–172 cover the Runtime Content Safety Boundary, including redaction, durable-sink blocking, provenance, coverage registration and failure policy. Findings must never contain detected raw values.

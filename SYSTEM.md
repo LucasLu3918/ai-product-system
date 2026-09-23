@@ -16,6 +16,7 @@ Agent Session / User Request
 → Project State
 → Runtime-native + Project Instruction Resolution
 → Project Intelligence readiness/freshness
+→ Runtime Content Safety Boundary for persistence/publication sinks
 → Initial read-only bootstrap or targeted refresh when required
 → Change Impact Guard before existing-project mutation
 → Risk / Assurance + Quality Classification
