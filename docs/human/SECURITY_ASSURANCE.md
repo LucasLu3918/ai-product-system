@@ -248,4 +248,6 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
 
+## Runtime Content Safety Boundary
+
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.

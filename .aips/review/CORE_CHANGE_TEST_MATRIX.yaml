@@ -2,7 +2,7 @@ version: 1
 
 candidate:
   base_sha: 75cc9491fd1bc073d14619d4141aaccc313fa877
-  changed_files_hash: 88c8b810957fbd3b09413d76b7d59ba9fd975b2dbf267b35324301e8a90b9ae8
+  changed_files_hash: cc77734d111bd87d3caf719e16fd04b8249de1ddba4e5c0c0a6f03699fc70a12
 
 change:
   id: runtime-content-safety-boundary

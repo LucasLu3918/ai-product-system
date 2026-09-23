@@ -130,4 +130,6 @@ The Scheduler validates this structure and includes runtime requirements only fo
 Only `tcp` is supported in v0.51. Port IDs must be stable resource IDs, `preferred` is optional and non-authoritative, and `expose_as` accepts environment-variable names only.
 ## Content Safety in Deterministic Execution
 
+## Runtime Content Safety Boundary
+
 Content safety decisions used by deterministic execution and publication preflight must be provider-neutral and reproducible. Optional semantic classifiers may emit advisory signals only and cannot be the sole release decision.

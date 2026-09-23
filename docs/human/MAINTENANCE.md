@@ -373,4 +373,6 @@ This is observational maintenance evidence. Any actual source-policy adjustment 
 若使用 GitHub merged-PR fallback，workflow 會重新讀取該 PR，確認 `merged_at`、head SHA、head ref 與 base ref 全部符合 manifest。任何一筆失敗都會在第一個 delete 前 block 整批。Persistent、unclassified、pending 或 manifest 外 branch 一律不刪。Scheduled/manual hygiene report 仍只有 `contents: read`；只有 protected-main cleanup job 在這份 exact manifest 範圍內取得 `contents: write`。
 ## Content Safety Maintenance
 
+## Runtime Content Safety Boundary
+
 Register every new persistence or publication sink in `config/content-safety.yaml`. Preserve the `sanitize → hash → persist` ordering for audit data and update scenarios when detector or sink policy behavior changes.

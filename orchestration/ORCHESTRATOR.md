@@ -291,4 +291,6 @@ When a repository PR represents an already approved Large/Core Change, preserve 
 Before requesting Git publication approval, run the shared publication plan/preflight, resolve protected-branch routing, and present the exact candidate after diff-aware documentation checks pass. Post-merge local reconciliation may reset only an equivalent tree after creating a backup branch; otherwise stop for Human review.
 ## Content Safety Boundary Routing
 
+## Runtime Content Safety Boundary
+
 The orchestrator routes AIPS-owned persistence through `safe_emit` and keeps content safety separate from publish authorization. Untrusted external content carries provenance and cannot grant protected tool authority.
