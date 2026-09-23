@@ -50,12 +50,15 @@ def main() -> int:
         "AIPS_DOCS_DIFF_BASE",
         "CORE_CHANGE_TEST_MATRIX.yaml",
         "ENVIRONMENT_BLOCKED",
-        "BROWSER_LAUNCH_FAILED",
-        "changed_files_hash does not match candidate",
+        "probe_browser",
+        "changed_files_hash",
         "RESET_EQUIVALENT_TREE",
         "refresh-intelligence",
     ):
         assert contract in source
+    browser_source = (ROOT / "scripts/browser_runtime.py").read_text(encoding="utf-8")
+    for contract in ("BROWSER_LAUNCH_FAILED", "--user-data-dir=", "AIPS_BROWSER_PROVIDER"):
+        assert contract in browser_source
 
     print("PUBLISH PREFLIGHT LIFECYCLE PASSED")
     return 0
