@@ -84,6 +84,7 @@ Usage:
   aips intelligence promotion-plan --topic <name> [--project <path>]
   aips intelligence promotion-apply --topic <name> --target <path> --approval-id <id> [--project <path>]
   aips intelligence render [--project <path>]
+  aips intelligence temporal --mode <current|as-of|between|why> [--project <path>] [--revision <sha>] [--base <sha> --head <sha>] [--assertion <id>]
 
   aips run checkpoint --run-id <id> --step <step> [--project <path>]
   aips run event --run-id <id> --event <name> [--project <path>]

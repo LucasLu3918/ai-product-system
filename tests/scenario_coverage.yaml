@@ -1264,3 +1264,13 @@ scenarios:
       - tests/evidence/mcp_interoperability_lifecycle.py
       - tests/validation/mcp_interoperability_contracts.py
       - tests/validate_repository.py
+  - id: "166"
+    path: tests/scenarios/166-temporal-project-intelligence.md
+    coverage: deterministic
+    evidence:
+      - scripts/temporal_intelligence.py
+      - scripts/project_intelligence.py
+      - scripts/retrieval_intelligence.py
+      - templates/intelligence/TEMPORAL_ASSERTIONS.yaml
+      - tests/evidence/temporal_intelligence_lifecycle.py
+      - tests/test_temporal_intelligence.py

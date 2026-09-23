@@ -1,4 +1,4 @@
-version: 1
+version: 2
 
 nodes: {}
 # order_api:
@@ -9,6 +9,12 @@ edges: []
 # - from: order_api
 #   to: order_service
 #   relation: calls
+#   id: edge-order-api-service
+#   validity:
+#     from_revision: abc123
+#     to_revision_exclusive: null
+#   provenance:
+#     source_id: ADR-001
 
 coverage:
   api: null

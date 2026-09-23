@@ -93,6 +93,8 @@ def validate_layout(root: Path, config: dict[str, Any]) -> list[str]:
     if docs_root.is_dir():
         for child in docs_root.iterdir():
             rel = child.relative_to(root).as_posix()
+            if child.is_file() and child.name in {".DS_Store", "Thumbs.db", "desktop.ini"}:
+                continue
             if child.is_dir() and rel == "docs/human":
                 continue
             if child.is_file() and rel in shared:
