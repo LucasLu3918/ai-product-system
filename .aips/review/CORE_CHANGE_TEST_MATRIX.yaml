@@ -1,80 +1,80 @@
 version: 1
 
 candidate:
-  base_sha: 75cc9491fd1bc073d14619d4141aaccc313fa877
-  changed_files_hash: fad2446524e6652e7baeef2d8ccedab19ea2ebd53202dda5b9b8acdd665c5f74
+  base_sha: 7052227725342a338b76006e7934a0e9ee60ca86
+  changed_files_hash: sha256:017bd075668f49e88cbc4dba76cfff8f5dffda31279cf914664c1a5a2d65fc94
 
 change:
-  id: runtime-content-safety-boundary
-  summary: Add the sink-aware Runtime Content Safety Boundary, integrate it with AIPS persistence and publication paths, and preserve truthful runtime capability reporting.
+  id: parallel-run-dashboard
+  summary: Add a repository-scoped read-only Run Projection and localhost dashboard while preserving canonical Run State, approval authority and Resume behavior.
   boundary:
-    - content-safety-kernel-and-detectors
-    - aips-persistence-sinks
-    - runtime-and-publication-guards
-    - provenance-and-runtime-capability
+    - durable-run-state-and-checkpoint-v3
+    - repository-scoped-workspace-projection
+    - cli-and-local-dashboard-observation
+    - read-only-security-boundary
     - documentation-and-scenario-conformance
 
 matrix:
-  - boundary: content-safety-kernel-and-detectors
-    reason: Shared deterministic secret, PII and injection-signal detection must never emit raw findings and must produce sink-aware decisions.
+  - boundary: durable-run-state-and-checkpoint-v3
+    reason: Checkpoint v3 adds optional execution and gate observability metadata while retaining v1/v2 readers and Resume semantics.
     checks:
-      static_lint: {applicable: true, evidence: "Python compilation and Ruff critical checks"}
-      unit: {applicable: true, evidence: "tests/test_content_safety.py"}
-      integration: {applicable: true, evidence: "content-safety lifecycle Integration Gate check"}
-      contract: {applicable: true, evidence: "SafeFinding and sink policy contract"}
-      e2e: {applicable: false, na_reason: "No product browser flow is changed"}
-      security: {applicable: true, evidence: "secret safety, redaction and durable-sink blocking"}
-      migration_recovery: {applicable: false, na_reason: "No persisted data migration"}
-      cli_harness: {applicable: true, evidence: "content_safety.py scan CLI"}
-      docs_schema: {applicable: true, evidence: "CONTENT_SAFETY_BOUNDARY.md and YAML policy"}
-  - boundary: aips-persistence-sinks
-    reason: Audit and observable event data must be sanitized before hashing, chaining or persistence.
+      static_lint: {applicable: true, evidence: "py_compile and Ruff critical checks"}
+      unit: {applicable: true, evidence: "tests/test_run_projection.py"}
+      integration: {applicable: true, evidence: "tests/validate_repository.py governance resume"}
+      contract: {applicable: true, evidence: "RUN_CHECKPOINT.yaml and run_state CLI"}
+      e2e: {applicable: false, na_reason: "No product browser flow is required for checkpoint persistence"}
+      security: {applicable: true, evidence: "bounded/redacted event contract"}
+      migration_recovery: {applicable: true, evidence: "legacy v1/v2 projection and truncated JSONL tests"}
+      cli_harness: {applicable: true, evidence: "aips run checkpoint/status/list/inspect"}
+      docs_schema: {applicable: true, evidence: "RUN_RESUME.md and RUN_DASHBOARD.md"}
+  - boundary: repository-scoped-workspace-projection
+    reason: Parallel worktrees and EPHEMERAL/ATTACHED stores must normalize into one deterministic repository view with CURRENT/STALE/MISSING health.
     checks:
-      static_lint: {applicable: true, evidence: "Documentation sync and placement contracts"}
-      unit: {applicable: true, evidence: "governance audit and observable event lifecycle tests"}
-      integration: {applicable: true, evidence: "sanitize → hash → persist lifecycle"}
-      contract: {applicable: true, evidence: "audit/event bounded payload contract"}
-      e2e: {applicable: false, na_reason: "No browser flow is changed"}
-      security: {applicable: true, evidence: "no raw secret in audit/event evidence"}
-      migration_recovery: {applicable: false, na_reason: "Existing ledger format remains compatible"}
-      cli_harness: {applicable: true, evidence: "audit and Gemini hook lifecycle"}
-      docs_schema: {applicable: true, evidence: "runtime boundary protocol"}
-  - boundary: runtime-and-publication-guards
-    reason: Commit, push, PR, release and indirect body/message paths need content checks without conflating content safety and publish approval.
+      static_lint: {applicable: true, evidence: "Ruff critical checks"}
+      unit: {applicable: true, evidence: "tests/test_run_projection.py"}
+      integration: {applicable: true, evidence: "tests/evidence/run_dashboard_lifecycle.py"}
+      contract: {applicable: true, evidence: "stable projection JSON and snapshot fingerprint"}
+      e2e: {applicable: false, na_reason: "Browser presentation is validated by API contract and lifecycle evidence"}
+      security: {applicable: true, evidence: "whitelist fields omit raw paths and payloads"}
+      migration_recovery: {applicable: true, evidence: "missing workspace and malformed JSONL recovery"}
+      cli_harness: {applicable: true, evidence: "aips run list/inspect"}
+      docs_schema: {applicable: true, evidence: "Scenario 173 and architecture bindings"}
+  - boundary: cli-and-local-dashboard-observation
+    reason: CLI and localhost HTTP consumers must share the projection without adding a control plane or dependency chain.
     checks:
-      static_lint: {applicable: true, evidence: "Python compilation and Ruff critical checks"}
-      unit: {applicable: true, evidence: "governance command guard and publication preflight lifecycle"}
-      integration: {applicable: true, evidence: "exact-candidate publication resolver"}
-      contract: {applicable: true, evidence: "git commit content-only guard and publication approval separation"}
-      e2e: {applicable: false, na_reason: "No product browser flow is changed"}
-      security: {applicable: true, evidence: "durable/public sinks fail closed"}
-      migration_recovery: {applicable: false, na_reason: "No persisted data migration"}
-      cli_harness: {applicable: true, evidence: "governance_guard and publish_preflight CLI"}
-      docs_schema: {applicable: true, evidence: "publication boundary documentation"}
-  - boundary: provenance-and-runtime-capability
-    reason: Untrusted content and native-hook capability must remain explicit and truthful.
+      static_lint: {applicable: true, evidence: "bash -n and Ruff critical checks"}
+      unit: {applicable: true, evidence: "projection and lifecycle tests"}
+      integration: {applicable: true, evidence: "full repository validation"}
+      contract: {applicable: true, evidence: "GET /api/v1/runs and /healthz"}
+      e2e: {applicable: false, na_reason: "No remote browser product flow; server is localhost observation only"}
+      security: {applicable: true, evidence: "loopback-only, no-store, no CORS, no mutation endpoints"}
+      migration_recovery: {applicable: false, na_reason: "No persistent API migration"}
+      cli_harness: {applicable: true, evidence: "aips run dashboard"}
+      docs_schema: {applicable: true, evidence: "human and agent dashboard documentation"}
+  - boundary: read-only-security-boundary
+    reason: Runtime information crosses into a browser and must exclude prompts, reasoning, secrets, raw output and mutation authority.
     checks:
-      static_lint: {applicable: true, evidence: "Lifecycle syntax and critical Ruff checks"}
-      unit: {applicable: true, evidence: "provenance and injection signal tests"}
-      integration: {applicable: true, evidence: "native hook capability guard"}
-      contract: {applicable: true, evidence: "ENFORCED / TOOL_GUARDED / ADVISORY matrix"}
-      e2e: {applicable: false, na_reason: "No product browser flow is changed"}
-      security: {applicable: true, evidence: "injection cannot bypass human approval"}
-      migration_recovery: {applicable: false, na_reason: "No persisted data migration"}
-      cli_harness: {applicable: true, evidence: "runtime guard hook"}
-      docs_schema: {applicable: true, evidence: "provenance protocol"}
+      static_lint: {applicable: true, evidence: "Ruff critical checks"}
+      unit: {applicable: true, evidence: "API whitelist lifecycle assertions"}
+      integration: {applicable: true, evidence: "content safety and repository validation"}
+      contract: {applicable: true, evidence: "projection whitelist contract"}
+      e2e: {applicable: false, na_reason: "No authenticated remote UI is introduced"}
+      security: {applicable: true, evidence: "content safety lifecycle and no mutation routes"}
+      migration_recovery: {applicable: false, na_reason: "No persisted security schema migration"}
+      cli_harness: {applicable: true, evidence: "localhost dashboard CLI"}
+      docs_schema: {applicable: true, evidence: "RUN_DASHBOARD.md security contract"}
   - boundary: documentation-and-scenario-conformance
-    reason: The security contract, sink manifest and scenario registry must stay complete and discoverable.
+    reason: Architecture, capability map, user guidance and Scenario 173 must remain discoverable and consistent.
     checks:
       static_lint: {applicable: true, evidence: "documentation placement and static contracts"}
-      unit: {applicable: true, evidence: "scenario conformance check"}
-      integration: {applicable: true, evidence: "repository validation"}
-      contract: {applicable: true, evidence: "scenario coverage registry"}
-      e2e: {applicable: false, na_reason: "No product browser flow is changed"}
-      security: {applicable: true, evidence: "security assurance documentation"}
-      migration_recovery: {applicable: false, na_reason: "Additive documentation and tests"}
-      cli_harness: {applicable: true, evidence: "publish preflight documentation impact"}
-      docs_schema: {applicable: true, evidence: "canonical boundary protocol and config"}
+      unit: {applicable: true, evidence: "scenario registry validation"}
+      integration: {applicable: true, evidence: "tests/validate_repository.py"}
+      contract: {applicable: true, evidence: "architecture surface and capability bindings"}
+      e2e: {applicable: false, na_reason: "Documentation-only boundaries do not require browser E2E"}
+      security: {applicable: true, evidence: "security and read-only boundary documentation"}
+      migration_recovery: {applicable: false, na_reason: "Additive documentation and scenario evidence"}
+      cli_harness: {applicable: true, evidence: "repository validation entrypoint"}
+      docs_schema: {applicable: true, evidence: "canonical docs and scenario registry"}
 
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
