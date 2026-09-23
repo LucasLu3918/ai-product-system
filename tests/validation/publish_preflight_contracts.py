@@ -19,10 +19,10 @@ for rel in required:
 cli = (ROOT / "bin/aips").read_text(encoding="utf-8")
 workflow = (ROOT / ".github/workflows/validate.yml").read_text(encoding="utf-8")
 intelligence = (ROOT / "scripts/project_intelligence.py").read_text(encoding="utf-8")
-for phrase in ("publish plan|preflight|post-merge", "publish_preflight_cmd", "aips docs impact"):
+for phrase in ("publish preview|plan|preflight|matrix-sync|post-merge", "publish_preflight_cmd", "aips docs impact"):
     if phrase not in cli:
         errors.append(f"bin/aips missing publication preflight contract: {phrase}")
-for phrase in ("scripts/publish_preflight.py run", "--labels \"$PR_LABELS\"", "AIPS_GATE_BASE_TIP"):
+for phrase in ("scripts/publish_preflight.py run", "--labels \"$PR_LABELS\"", "AIPS_GATE_BASE_TIP", "unlabeled"):
     if phrase not in workflow:
         errors.append(f"validate workflow missing shared publication resolver: {phrase}")
 for phrase in ("def refresh(root:", "REFRESHED_EQUIVALENT_TREE", "SEMANTIC_REFRESH_REQUIRED"):

@@ -8,7 +8,9 @@ import fnmatch
 import hashlib
 import json
 import os
+import re
 import subprocess
+import sys
 import time
 from pathlib import Path
 from typing import Any
@@ -77,6 +79,9 @@ def profile_checks(profile: dict[str, Any], files: list[str]) -> list[dict[str, 
             raise GateError(f"check {check_id}: env must be a string mapping")
         applies = not files or any(any(fnmatch.fnmatch(path, pattern) for pattern in paths) for path in files)
         enriched = dict(item)
+        expected_tests = item.get("expected_test_count")
+        if expected_tests is not None and (not isinstance(expected_tests, int) or expected_tests < 1):
+            raise GateError(f"check {check_id}: expected_test_count must be a positive integer")
         enriched["applies"] = applies
         enriched["env"] = env
         checks.append(enriched)
@@ -134,19 +139,34 @@ def run_check(item: dict[str, Any], *, omit_output_tail: bool = False) -> dict[s
         raise GateError(f"check {item['id']}: timeout_seconds must be >= 1")
     check_env = dict(os.environ)
     check_env.update(item.get("env") or {})
+    argv = list(item["argv"])
+    if Path(argv[0]).name in {"python", "python3"}:
+        argv[0] = sys.executable
     started = time.monotonic()
     try:
-        proc = subprocess.run(item["argv"], text=True, capture_output=True, timeout=timeout, env=check_env)
+        proc = subprocess.run(argv, text=True, capture_output=True, timeout=timeout, env=check_env)
         duration_ms = int((time.monotonic() - started) * 1000)
         output = (proc.stdout + proc.stderr).strip()
+        expected_tests = item.get("expected_test_count")
+        test_count_error = None
+        if expected_tests is not None:
+            matches = re.findall(r"\bRan\s+(\d+)\s+tests?\b", output)
+            if not matches:
+                test_count_error = "expected_test_count_missing_from_runner_output"
+            elif int(matches[-1]) != expected_tests:
+                test_count_error = f"expected_{expected_tests}_tests_collected_got_{matches[-1]}"
+        passed = proc.returncode == 0 and test_count_error is None
         result = {
             "id": item["id"],
             "category": item.get("category"),
             "required": bool(item.get("required", True)),
-            "status": "PASS" if proc.returncode == 0 else "FAIL",
+            "status": "PASS" if passed else "FAIL",
             "exit_code": proc.returncode,
             "duration_ms": duration_ms,
         }
+        if test_count_error:
+            result["reason"] = test_count_error
+            result["tests_expected"] = expected_tests
         if omit_output_tail:
             result["output_sha256"] = hashlib.sha256(output.encode("utf-8", errors="replace")).hexdigest()
         else:

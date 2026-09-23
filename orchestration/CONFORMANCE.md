@@ -692,6 +692,8 @@ Current automated inventory after Scenario 164:
 - automated: 164 / 164
 ## Scenario 165 — CI-Parity Publication Preflight
 
+Scenario 165 lifecycle evidence also proves pre-commit working-tree closure, rule attribution, safe Core Matrix rebinding, expected test-count enforcement and label-event validation triggers.
+
 Scenario 165 proves that local publication validation and GitHub Actions share one exact-candidate resolver for base/head, change class, canonical Core Change Test Matrix and documentation diff base. Fast documentation/diff checks run before the expensive Integration Gate; unavailable localhost/browser prerequisites are reported as `ENVIRONMENT_BLOCKED`.
 
 Lifecycle evidence also covers ignored local metadata, recursive documentation impact, safe tree-equivalent post-squash reconciliation and fail-closed Project Intelligence revision refresh. Publication, destructive reconciliation and merge authority remain Human-controlled.

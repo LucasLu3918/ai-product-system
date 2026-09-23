@@ -104,6 +104,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+Publication Preflight includes a working-tree preview and reports each closure path with its responsible placement or sync rule. This keeps the review actionable while both validators continue to enforce their existing contracts.
+
 Runtime Content Safety Boundary 是跨 Security、Deterministic Execution 與 Publication 的正式 topic。其 behavior-bearing source 必須在 documentation placement registry 登錄，並由 Human docs、protocol 與 scenarios 保持一致。
 
 Current-behavior Human docs are topic-oriented, not release-note streams. `config/documentation-placement.yaml` maps behavior surfaces to allowed Human H2 sections. `scripts/documentation_placement.py` checks heading integrity and, when a diff base is available, verifies changed lines land inside allowed canonical sections.

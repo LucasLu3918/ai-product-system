@@ -7,6 +7,7 @@ import argparse
 import fnmatch
 import json
 import os
+import re
 import shutil
 import socket
 import subprocess
@@ -59,6 +60,12 @@ def changed_files(base: str, head: str) -> list[str]:
     return sorted(item for item in out.splitlines() if item)
 
 
+def worktree_changed_files(base: str) -> list[str]:
+    tracked = git("diff", "--name-only", base, "--")
+    untracked = git("ls-files", "--others", "--exclude-standard")
+    return sorted({item for item in (*tracked.splitlines(), *untracked.splitlines()) if item})
+
+
 def canonical_hash(value: Any) -> str:
     payload = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
     import hashlib
@@ -90,6 +97,7 @@ def documentation_impact(files: list[str]) -> dict[str, Any]:
     placement = yaml.safe_load((ROOT / "config/documentation-placement.yaml").read_text(encoding="utf-8")) or {}
     closure = set(files)
     triggered: dict[str, dict[str, Any]] = {}
+    required_by: dict[str, set[str]] = {}
     placement_hits = []
     for rule in placement.get("placement_rules") or []:
         patterns = [str(item) for item in rule.get("triggers") or []]
@@ -97,7 +105,10 @@ def documentation_impact(files: list[str]) -> dict[str, Any]:
             continue
         placements = rule.get("placements") or {}
         placement_hits.append({"id": rule.get("id"), "placements": placements})
-        closure.update(str(path) for path in placements)
+        for path in placements:
+            target = str(path)
+            required_by.setdefault(target, set()).add(f"placement:{rule.get('id')}")
+            closure.add(target)
     changed = True
     while changed:
         changed = False
@@ -105,15 +116,19 @@ def documentation_impact(files: list[str]) -> dict[str, Any]:
         technology = sync.get("technology_guide") or {}
         if matches(current, [str(item) for item in technology.get("triggers") or []]):
             target = str(technology.get("path") or "")
-            if target and target not in closure:
-                closure.add(target)
-                changed = True
+            if target:
+                required_by.setdefault(target, set()).add("technology-guide")
+                if target not in closure:
+                    closure.add(target)
+                    changed = True
         for rule in sync.get("rules") or []:
             patterns = [str(item) for item in rule.get("triggers") or []]
             if not matches(current, patterns):
                 continue
             required = [str(item) for item in (rule.get("human_docs") or []) + (rule.get("agent_docs") or [])]
             triggered.setdefault(str(rule.get("id")), {"required": required})
+            for path in required:
+                required_by.setdefault(path, set()).add(f"sync:{rule.get('id')}")
             before = len(closure)
             closure.update(required)
             changed = changed or len(closure) != before
@@ -122,6 +137,7 @@ def documentation_impact(files: list[str]) -> dict[str, Any]:
         "changed_files": files,
         "triggered_rules": triggered,
         "required_additions": required,
+        "required_by": {path: sorted(required_by.get(path, set())) for path in required},
         "complete": not required,
         "placement_rules": placement_hits,
     }
@@ -129,6 +145,7 @@ def documentation_impact(files: list[str]) -> dict[str, Any]:
 
 def environment_status() -> dict[str, Any]:
     blockers: list[str] = []
+    diagnostics: list[dict[str, str]] = []
     try:
         probe = socket.socket()
         probe.bind(("127.0.0.1", 0))
@@ -136,16 +153,129 @@ def environment_status() -> dict[str, Any]:
         localhost = "READY"
     except OSError as exc:
         localhost = "BLOCKED"
-        blockers.append(f"localhost_bind:{exc.__class__.__name__}")
+        blocker = f"localhost_bind:{exc.__class__.__name__}"
+        blockers.append(blocker)
+        diagnostics.append({
+            "check": "localhost_bind",
+            "status": "BLOCKED",
+            "detail": exc.__class__.__name__,
+            "next_step": "Run in an environment that permits loopback socket binding; rerun `aips publish environment` to verify.",
+        })
     selection = discover_browser()
     browser_probe = probe_browser(selection.get("path"), provider=str(selection["provider"]))
     if browser_probe["status"] != "READY":
         blockers.append(f"browser:{browser_probe['status']}")
+        if browser_probe["status"] == "BROWSER_NOT_FOUND":
+            next_step = "Install Playwright Chromium with `python -m playwright install chromium`, or configure a supported Chrome/Chromium binary."
+        elif browser_probe["status"] == "BROWSER_PROBE_DEPENDENCY_MISSING":
+            next_step = "Install project validation dependencies, then rerun `aips publish environment`."
+        else:
+            next_step = "Inspect the browser probe stderr and retry with the managed Playwright browser; classify launch permission failures as environment blockers."
+        diagnostics.append({
+            "check": "browser_probe",
+            "status": str(browser_probe["status"]),
+            "detail": str(browser_probe.get("stderr") or browser_probe.get("path") or "browser unavailable"),
+            "next_step": next_step,
+        })
     return {
         "status": "READY" if not blockers else "ENVIRONMENT_BLOCKED",
         "localhost": localhost,
         "browser": browser_probe,
         "blockers": blockers,
+        "diagnostics": diagnostics,
+    }
+
+
+def preview_candidate(args: argparse.Namespace) -> dict[str, Any]:
+    base = resolve_commit(args.base)
+    head = resolve_commit(args.head)
+    files = worktree_changed_files(base)
+    change_class, warning = resolve_change_class(args.change_class, args.labels)
+    profile = yaml.safe_load(Path(args.profile).read_text(encoding="utf-8")) or {}
+    required = matrix_required(profile, files, change_class)
+    matrix_path = Path(args.matrix).resolve() if args.matrix else CANONICAL_MATRIX.resolve()
+    if required and matrix_path == CANONICAL_MATRIX.resolve():
+        files = sorted(set(files) | {str(CANONICAL_MATRIX.relative_to(ROOT))})
+    docs = documentation_impact(files)
+    matrix_hash = canonical_hash(files)
+    binding: dict[str, Any] = {"required": required, "path": str(matrix_path), "changed_files_hash": matrix_hash}
+    if required and matrix_path.is_file():
+        matrix = yaml.safe_load(matrix_path.read_text(encoding="utf-8")) or {}
+        candidate = matrix.get("candidate") or {}
+        binding.update({
+            "base_matches": candidate.get("base_sha") == base,
+            "hash_matches": candidate.get("changed_files_hash") == matrix_hash,
+            "bound_base": candidate.get("base_sha"),
+            "bound_hash": candidate.get("changed_files_hash"),
+        })
+    else:
+        binding["base_matches"] = not required
+        binding["hash_matches"] = not required
+    pending = list(docs["required_additions"])
+    if required and not matrix_path.is_file():
+        pending.append("canonical Core Change Test Matrix is missing")
+    if required and (not binding.get("base_matches") or not binding.get("hash_matches")):
+        pending.append("Core Change Test Matrix binding needs synchronization")
+    return {
+        "version": 1,
+        "status": "READY_FOR_GATE" if not pending else "NEEDS_WORK",
+        "preview": True,
+        "candidate": {"base": base, "head": head, "working_tree_included": True, "changed_files": files},
+        "change_class": change_class,
+        "change_class_warning": warning,
+        "documentation": docs,
+        "matrix": binding,
+        "pending": pending,
+        "note": "Preview includes committed, staged, unstaged and untracked paths; final Integration Gate still requires a clean committed candidate.",
+    }
+
+
+def sync_matrix_binding(base_ref: str, head_ref: str, matrix_path: Path) -> dict[str, Any]:
+    base = resolve_commit(base_ref)
+    head = resolve_commit(head_ref)
+    matrix_path = matrix_path.resolve()
+    if matrix_path != CANONICAL_MATRIX.resolve():
+        raise PreflightError("matrix sync only writes the canonical Core Change Test Matrix")
+    files = sorted(set(worktree_changed_files(base)) | {str(CANONICAL_MATRIX.relative_to(ROOT))})
+    digest = canonical_hash(files)
+    original_text = matrix_path.read_text(encoding="utf-8")
+    text = original_text
+    data = yaml.safe_load(text) or {}
+    if not isinstance(data.get("candidate"), dict):
+        raise PreflightError("canonical Core Change Test Matrix requires a candidate mapping")
+    replacements = {"base_sha": base, "changed_files_hash": digest}
+    for key, value in replacements.items():
+        pattern = rf"(?m)^(  {re.escape(key)}:\s*).+$"
+        text, count = re.subn(pattern, lambda match: match.group(1) + value, text, count=1)
+        if count != 1:
+            raise PreflightError(f"canonical Core Change Test Matrix must contain exactly one top-level candidate.{key}")
+    changed = text != original_text
+    if changed:
+        text, _ = re.subn(r"(?m)^actual_diff_reconciled:\s*(?:true|false)\s*$", "actual_diff_reconciled: false", text, count=1)
+        text, _ = re.subn(r"(?m)^status:\s*(?:READY|APPROVED|PASS)\s*$", "status: DRAFT", text, count=1)
+        blockers = data.get("blockers") or []
+        if not isinstance(blockers, list):
+            raise PreflightError("Core Change Test Matrix blockers must be a list")
+        reminder = "candidate binding refreshed; review scope and evidence before marking READY"
+        if reminder not in blockers:
+            empty = re.compile(r"(?m)^blockers:\s*\[\s*\]\s*$")
+            populated = re.compile(r"(?m)^blockers:\n((?:[ \t]*-[^\n]*\n)+)")
+            if empty.search(text):
+                text = empty.sub(f"blockers:\n  - {reminder}", text, count=1)
+            elif populated.search(text):
+                text = populated.sub(lambda match: match.group(0) + f"  - {reminder}\n", text, count=1)
+            else:
+                raise PreflightError("matrix binding changed; unable to safely add a review blocker")
+    if changed:
+        matrix_path.write_text(text, encoding="utf-8")
+    return {
+        "status": "BOUND_NEEDS_REVIEW" if changed else "UNCHANGED",
+        "base_sha": base,
+        "head_sha": head,
+        "changed_files": files,
+        "changed_files_hash": digest,
+        "requires_review": changed,
+        "path": str(matrix_path),
     }
 
 
@@ -358,6 +488,8 @@ def main() -> int:
     subs = parser.add_subparsers(dest="command", required=True)
     plan = subs.add_parser("plan")
     common(plan)
+    preview = subs.add_parser("preview")
+    common(preview)
     run = subs.add_parser("run")
     common(run)
     run.add_argument("--output", required=True)
@@ -365,6 +497,11 @@ def main() -> int:
     docs.add_argument("--base", required=True)
     docs.add_argument("--head", default="HEAD")
     docs.add_argument("--format", choices=("yaml", "json"), default="yaml")
+    matrix_sync = subs.add_parser("matrix-sync")
+    matrix_sync.add_argument("--base", required=True)
+    matrix_sync.add_argument("--head", default="HEAD")
+    matrix_sync.add_argument("--matrix", type=Path, default=CANONICAL_MATRIX)
+    matrix_sync.add_argument("--format", choices=("yaml", "json"), default="yaml")
     env = subs.add_parser("environment")
     env.add_argument("--format", choices=("yaml", "json"), default="yaml")
     post = subs.add_parser("post-merge")
@@ -392,6 +529,14 @@ def main() -> int:
             result = build_plan(args)
             emit(result, args.format)
             return 0 if result["status"] == "READY" else 1
+        if args.command == "preview":
+            result = preview_candidate(args)
+            emit(result, args.format)
+            return 0
+        if args.command == "matrix-sync":
+            result = sync_matrix_binding(args.base, args.head, args.matrix)
+            emit(result, args.format)
+            return 0
         return run_candidate(args)
     except (OSError, ValueError, PreflightError) as exc:
         print(f"PUBLISH PREFLIGHT ERROR: {exc}", file=sys.stderr)

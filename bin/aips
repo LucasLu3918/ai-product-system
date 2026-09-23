@@ -121,7 +121,7 @@ Usage:
   aips scheduler --graph <yaml> [--state <yaml>] [--format yaml|json]
   aips integration-gate --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>]
   aips janitor --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>]
-  aips publish plan|preflight|post-merge [publish-preflight options]
+  aips publish preview|plan|preflight|matrix-sync|post-merge [publish-preflight options]
   aips docs impact --base <ref> [--head <ref>] [--format yaml|json]
 
   aips identity [--project <path>] [--format yaml|json]
@@ -694,14 +694,19 @@ integration_gate_cmd() {
   local py
   py="$(python_bin)"
   [ -n "$py" ] || die "python3 is required."
-  "$py" "$SYSTEM_DIR/scripts/integration_gate.py" "$@"
+  "$py" -c 'import yaml' >/dev/null 2>&1 || die "The selected Python environment lacks PyYAML. Run aips doctor or install the repository requirements before validation."
+  PATH="$(dirname "$py"):$PATH" "$py" "$SYSTEM_DIR/scripts/integration_gate.py" "$@"
 }
 
 publish_preflight_cmd() {
   local action="${1:-plan}"
+  local py
   shift || true
   [ "$action" != "preflight" ] || action="run"
-  "$(python_bin)" "$SYSTEM_DIR/scripts/publish_preflight.py" "$action" "$@"
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" -c 'import yaml' >/dev/null 2>&1 || die "The selected Python environment lacks PyYAML. Run aips doctor or install the repository requirements before validation."
+  PATH="$(dirname "$py"):$PATH" "$py" "$SYSTEM_DIR/scripts/publish_preflight.py" "$action" "$@"
 }
 
 docs_cmd() {

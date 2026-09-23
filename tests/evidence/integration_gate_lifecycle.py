@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 import subprocess
 import tempfile
@@ -11,6 +12,14 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "integration_gate.py"
+
+
+def load_gate():
+    spec = importlib.util.spec_from_file_location("integration_gate", SCRIPT)
+    assert spec and spec.loader
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
 
 
 def git(cwd: Path, *args: str) -> str:
@@ -24,6 +33,28 @@ def canonical_hash(value: object) -> str:
 
 
 def main() -> int:
+    gate = load_gate()
+    valid_count = gate.run_check({
+        "id": "test-count-valid", "category": "test", "applies": True,
+        "argv": ["python3", "-c", "print('Ran 5 tests in 0.01s')"],
+        "expected_test_count": 5,
+    })
+    assert valid_count["status"] == "PASS"
+    empty_count = gate.run_check({
+        "id": "test-count-empty", "category": "test", "applies": True,
+        "argv": ["python3", "-c", "print('Ran 0 tests in 0.01s')"],
+        "expected_test_count": 5,
+    })
+    assert empty_count["status"] == "FAIL"
+    assert empty_count["reason"] == "expected_5_tests_collected_got_0"
+    unreported_count = gate.run_check({
+        "id": "test-count-unreported", "category": "test", "applies": True,
+        "argv": ["python3", "-c", "print('command exited successfully')"],
+        "expected_test_count": 5,
+    })
+    assert unreported_count["status"] == "FAIL"
+    assert unreported_count["reason"] == "expected_test_count_missing_from_runner_output"
+
     with tempfile.TemporaryDirectory() as td:
         repo = Path(td) / "repo"
         repo.mkdir()

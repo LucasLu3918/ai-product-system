@@ -2,6 +2,12 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+import tempfile
+from argparse import Namespace
+from unittest.mock import Mock
+from unittest.mock import patch
+
+import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -24,11 +30,12 @@ def main() -> int:
 
     impact = publish.documentation_impact(["bin/aips"])
     for required in (
-        "docs/human/INSTALLATION.md",
-        "docs/human/GETTING_STARTED.md",
+        "docs/human/USER_GUIDE.md",
         "docs/human/TECHNOLOGY_GUIDE.md",
     ):
         assert required in impact["required_additions"]
+    assert "docs/human/INSTALLATION.md" not in impact["required_additions"]
+    assert "docs/human/GETTING_STARTED.md" not in impact["required_additions"]
     assert not impact["complete"]
 
     complete_files = ["bin/aips", *impact["required_additions"]]
@@ -38,9 +45,54 @@ def main() -> int:
     assert publish.matrix_required(profile, ["docs/README.md"], "core")
     assert not publish.matrix_required(profile, ["docs/README.md"], "standard")
 
+    with patch.object(publish, "resolve_commit", side_effect=["base-sha", "head-sha"]), patch.object(
+        publish, "worktree_changed_files", return_value=["bin/aips", "untracked-note.md"]
+    ):
+        preview = publish.preview_candidate(Namespace(
+            base="main", head="HEAD", change_class="core", labels="aips:core-change",
+            profile=ROOT / "config/integration-gate.yaml", matrix=None,
+        ))
+    assert preview["preview"] is True
+    assert preview["candidate"]["changed_files"] == [
+        ".aips/review/CORE_CHANGE_TEST_MATRIX.yaml", "bin/aips", "untracked-note.md"
+    ]
+    assert preview["matrix"]["required"] is True
+    assert "placement:publication-cli" in preview["documentation"]["required_by"]["docs/human/USER_GUIDE.md"]
+
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        matrix_path = root / ".aips" / "review" / "CORE_CHANGE_TEST_MATRIX.yaml"
+        matrix_path.parent.mkdir(parents=True)
+        matrix_path.write_text(
+            "version: 1\ncandidate:\n  base_sha: old\n  changed_files_hash: old\nactual_diff_reconciled: true\nblockers: []\nstatus: READY\n",
+            encoding="utf-8",
+        )
+        with patch.object(publish, "ROOT", root), patch.object(publish, "CANONICAL_MATRIX", matrix_path), patch.object(
+            publish, "resolve_commit", side_effect=["base-sha", "head-sha"]
+        ), patch.object(publish, "worktree_changed_files", return_value=["src/feature.py"]):
+            synced = publish.sync_matrix_binding("main", "HEAD", matrix_path)
+        bound = yaml.safe_load(matrix_path.read_text(encoding="utf-8"))
+        assert synced["changed_files"] == [".aips/review/CORE_CHANGE_TEST_MATRIX.yaml", "src/feature.py"]
+        assert bound["candidate"]["base_sha"] == "base-sha"
+        assert bound["candidate"]["changed_files_hash"] == publish.canonical_hash(synced["changed_files"])
+        assert bound["status"] == "DRAFT"
+        assert bound["actual_diff_reconciled"] is False
+        assert bound["blockers"]
+
     environment = publish.environment_status()
     assert environment["status"] in {"READY", "ENVIRONMENT_BLOCKED"}
     assert isinstance(environment["blockers"], list)
+    assert isinstance(environment["diagnostics"], list)
+    denied_socket = Mock()
+    denied_socket.bind.side_effect = PermissionError("sandbox denied bind")
+    denied_browser = {"status": "BROWSER_LAUNCH_FAILED", "provider": "system", "path": "/browser", "stderr": "launch denied"}
+    with patch.object(publish.socket, "socket", return_value=denied_socket), patch.object(
+        publish, "discover_browser", return_value={"provider": "system", "path": "/browser"}
+    ), patch.object(publish, "probe_browser", return_value=denied_browser):
+        blocked_environment = publish.environment_status()
+    assert blocked_environment["status"] == "ENVIRONMENT_BLOCKED"
+    assert {item["check"] for item in blocked_environment["diagnostics"]} == {"localhost_bind", "browser_probe"}
+    assert all(item["next_step"] for item in blocked_environment["diagnostics"])
     missing_browser = publish.probe_browser(None, provider="managed")
     assert missing_browser["status"] == "BROWSER_NOT_FOUND"
     assert missing_browser["provider"] == "managed"

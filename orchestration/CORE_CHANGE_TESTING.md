@@ -80,6 +80,8 @@ Material mismatch requires additional testing or explicit scope correction befor
 
 ## Integration Gate enforcement
 
+Use `aips publish preview --base <base> --change-class <class>` before committing to include staged, unstaged and untracked paths in recursive documentation and matrix-binding previews. `aips publish matrix-sync --base <base>` refreshes only the canonical matrix base/hash fields; boundary, evidence, blockers and readiness remain subject to review before the Gate can accept the matrix.
+
 Before merge/publication of an integration candidate, use `orchestration/INTEGRATION_GATE.md`.
 
 For Large/Core changes, the existing Impact-derived Test Matrix remains authoritative for applicability. The Integration Gate may require the matrix and binds:

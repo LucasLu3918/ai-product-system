@@ -1278,6 +1278,12 @@ scenarios:
       - scripts/repository_preflight.py
       - scripts/documentation_audience.py
       - scripts/project_intelligence.py
+      - scripts/integration_gate.py
+      - config/integration-gate.yaml
+      - .github/workflows/validate.yml
+      - tests/evidence/integration_gate_lifecycle.py
+      - tests/evidence/publish_preflight_lifecycle.py
+      - tests/validation/publish_preflight_contracts.py
       - .github/workflows/validate.yml
       - tests/evidence/publish_preflight_lifecycle.py
       - tests/validation/publish_preflight_contracts.py

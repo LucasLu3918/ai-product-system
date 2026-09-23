@@ -286,6 +286,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+Before commit, use the publication preview to inspect the complete working-tree file set, recursive documentation requirements and matrix hash. Synchronize only the canonical matrix binding after the scope is complete, then review the invalidated matrix evidence before Gate execution.
+
 Eval-as-CI is a Core Change capability. The Orchestrator must route it through the Core Change Test Matrix, reuse existing Agent Eval / Scenario Conformance contracts, start trajectory evaluation in shadow mode, and preserve Human authority over Git Publish.
 
 When a repository PR represents an already approved Large/Core Change, preserve that classification into deterministic CI with `aips:large-change` or `aips:core-change`. Integration Gate uses the change class only to select evidence requirements; it does not create semantic classification or approval authority.
