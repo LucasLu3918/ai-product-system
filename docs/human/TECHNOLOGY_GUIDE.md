@@ -62,6 +62,10 @@ Parallel worktree 可取得 repository-scoped TCP port lease；跨 process alloc
 
 ### Integration Gate / Janitor
 
+The Gate can require an expected unittest count for commands whose success output includes the collected-test summary; absent or mismatched counts fail the check.
+
+`aips publish preview` includes untracked and uncommitted paths in documentation and Core Matrix planning. `aips publish matrix-sync` updates the candidate binding and returns the matrix to DRAFT for review.
+
 Merge candidate 依 change class 與 actual diff 執行 lint、type、test、repository validation 與 Core Change Matrix。
 
 CI 會把 Integration Gate 與 Repository Health 證據寫入 runner 的暫存目錄，再上傳為 artifact；驗證期間不會把報告檔寫入 checkout，避免證據輸出改變工作樹而誤判為不可重現。

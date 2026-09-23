@@ -46,6 +46,12 @@ for category in ("lint", "type", "test"):
         errors.append(f"integration gate profile missing required category: {category}")
 if not any(isinstance(item, dict) and item.get("id") == "repository-validation" for item in (profile.get("checks") or [])):
     errors.append("integration gate profile must include repository-validation")
+content_safety_check = next(
+    (item for item in (profile.get("checks") or []) if isinstance(item, dict) and item.get("id") == "content-safety-lifecycle"),
+    None,
+)
+if not content_safety_check or content_safety_check.get("expected_test_count") != 5:
+    errors.append("content-safety-lifecycle must assert that all five tests were collected")
 
 cli = (ROOT / "bin/aips").read_text(encoding="utf-8")
 for phrase in ("aips scheduler --graph", "aips integration-gate --profile", "integration-gate|janitor)", "scripts/deterministic_scheduler.py", "scripts/integration_gate.py"):
@@ -67,6 +73,8 @@ for phrase in (
     "--change-class",
     "aips:large-change",
     "aips:core-change",
+    "labeled",
+    "unlabeled",
 ):
     if phrase not in workflow:
         errors.append(f"validate workflow missing Integration Gate contract: {phrase}")

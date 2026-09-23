@@ -92,6 +92,7 @@ checks:
     category: security
     required: true
     timeout_seconds: 120
+    expected_test_count: 5
     argv: [python3, tests/test_content_safety.py]
     paths:
       - scripts/content_safety.py

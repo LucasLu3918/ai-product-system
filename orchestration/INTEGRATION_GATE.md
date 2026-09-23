@@ -24,6 +24,8 @@ Changing code, base revision, Validation Profile or required Test Matrix changes
 
 ## Validation Profile
 
+Checks may declare `expected_test_count` when a command reports a standard unittest summary. The Gate fails if the expected count is absent or different, preventing a successful no-op command from being treated as test evidence.
+
 Use `templates/automation/VALIDATION_PROFILE.yaml`.
 
 Each project declares native validation as argv arrays, never arbitrary model judgment:
@@ -63,6 +65,8 @@ PR/main candidate
 ~~~
 
 ## Report
+
+Validation checks may declare `expected_test_count`; the Gate requires the standard unittest summary to report that exact number. This prevents zero-test commands from producing a false PASS.
 
 Core candidates may include `trajectory-quality-gate-lifecycle`. Its PASS proves deterministic trajectory evidence and privacy-safe evaluation only; the report must retain `human_authority_preserved: true` and cannot authorize merge, release or publication.
 
