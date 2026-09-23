@@ -50,4 +50,6 @@ Workflow and integration-gate behavior is documented in the canonical Human guid
 
 Behavior-bearing change 先由 Documentation Sync 判斷 required docs，再由 Documentation Placement 驗證 current-behavior 內容更新在 canonical section，而不是附加在尾端。任何落在 Technology Guide 廣域 trigger surface、但尚未映射到 placement rule 的新 source 會直接 fail closed；maintainer 必須先決定它屬於既有 topic，或明確新增新的 canonical topic。
 
+Publication Preflight 由 Maintenance、User Guide、Architecture Overview 與 Technology Guide 的既有 CI／execution topics 說明；Agent contract 位於 Integration Gate、Core Change Testing 與 Orchestrator，不建立平行文件樹。
+
 `orchestration/CONFORMANCE.md` 的 Runtime／MCP Scenario 行為由 harness placement rule 管理；變更時同步既有 Harness、Runtime Architecture 與 Runtime Technology 主題，不建立第二套 current-behavior 分類。

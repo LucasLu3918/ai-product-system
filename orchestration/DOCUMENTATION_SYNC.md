@@ -46,6 +46,8 @@ Validation workflows keep generated Gate and Repository Health reports outside t
 5. requires the Technology Guide when a configured technical path changed;
 6. fails repository validation if a required documentation surface is missing from the diff.
 
+Publication candidates run `scripts/repository_preflight.py` with an explicit base before the full lifecycle suite. `aips docs impact` computes the recursive sync and placement requirements up front. Git-ignored local metadata is excluded from audience-layout classification, while unignored unknown entries remain failures.
+
 CI sets `AIPS_DOCS_DIFF_BASE` from the GitHub event base revision. Local validation without a known base still validates the contract/configuration, while focused checks may pass `--base-ref` or `--files` explicitly.
 
 ## Scope discipline

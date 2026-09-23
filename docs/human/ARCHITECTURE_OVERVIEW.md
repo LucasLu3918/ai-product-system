@@ -18,6 +18,8 @@ MCP 提供 portability；native adapters 提供可驗證的 runtime hook / guard
 
 ## Project Intelligence 與 Retrieval
 
+Squash merge 後的 revision refresh 只有在舊／新 Git tree 完全一致時可自動更新 metadata；tree 不同時維持 semantic refresh required，避免把內容變更誤標為 CURRENT。
+
 Existing Project 第一次需要廣泛理解或修改時，先 read-only bootstrap，再建立 Architecture / Data Flow / Modules / Contracts / Tests / Security / Operations 等 stable Intelligence。
 
 後續 Turn 以 Just-in-Time Retrieval 取得 task-relevant code、symbols、tests、Impact Graph 與 Git history；retrieval cache 可重建，不取得治理 authority。
@@ -60,6 +62,8 @@ Semantic planning 與 deterministic execution 分離：
 Validation evidence 與 source checkout 分離保存。Gate 報告和 Repository Health 報告使用 runner 暫存路徑，完成後才上傳 artifact，讓 repository validation 看到的仍是 exact clean revision。
 
 受保護分支會以 exact candidate 的 Gate 結果作為 `repository` aggregate 的合併前條件。
+
+Local 與 GitHub 透過 Publication Preflight 解析同一 base/head、PR-label change class、canonical matrix 與文件 diff base。快速 repository preflight 先攔截文件與 schema drift，再執行昂貴 lifecycle。
 
 ## Security 與 Governance
 

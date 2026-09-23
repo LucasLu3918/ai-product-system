@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import subprocess
 from pathlib import Path
 from typing import Any
 
@@ -93,6 +94,13 @@ def validate_layout(root: Path, config: dict[str, Any]) -> list[str]:
     if docs_root.is_dir():
         for child in docs_root.iterdir():
             rel = child.relative_to(root).as_posix()
+            ignored = subprocess.run(
+                ["git", "check-ignore", "--quiet", "--", rel],
+                cwd=root,
+                capture_output=True,
+            )
+            if ignored.returncode == 0:
+                continue
             if child.is_dir() and rel == "docs/human":
                 continue
             if child.is_file() and rel in shared:

@@ -79,6 +79,24 @@ rules:
       - orchestration/DETERMINISTIC_SCHEDULER.md
       - orchestration/INTEGRATION_GATE.md
       - orchestration/ORCHESTRATOR.md
+  - id: publication-preflight
+    triggers:
+      - scripts/publish_preflight.py
+      - scripts/repository_preflight.py
+      - .github/workflows/validate.yml
+      - config/integration-gate.yaml
+      - tests/evidence/publish_preflight_lifecycle.py
+      - tests/validation/publish_preflight_contracts.py
+    human_docs:
+      - docs/human/MAINTENANCE.md
+      - docs/human/USER_GUIDE.md
+      - docs/human/ARCHITECTURE_OVERVIEW.md
+      - docs/human/TECHNOLOGY_GUIDE.md
+    agent_docs:
+      - orchestration/INTEGRATION_GATE.md
+      - orchestration/CORE_CHANGE_TESTING.md
+      - orchestration/ORCHESTRATOR.md
+      - orchestration/DETERMINISTIC_SCHEDULER.md
   - id: resource-authorization
     triggers:
       - scripts/resource_authorization.py

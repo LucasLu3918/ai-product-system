@@ -43,6 +43,8 @@ aips harness status
 aips mcp inspect
 ~~~
 
+維護 repository 時，使用 `aips docs impact --base origin/main` 與 `aips publish plan --base origin/main` 先確認 CI-parity requirements；這些命令不會自行 merge 或發布。
+
 若要連接 MCP Host，可先用 `aips mcp config --client cursor|windsurf|copilot|amp|codex|generic` 檢視 review-only JSON；AIPS 不會自動修改 Host 設定。
 
 ## 開始工作

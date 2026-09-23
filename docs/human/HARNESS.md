@@ -56,6 +56,8 @@ MCP Server 不呼叫第二個 LLM，也不取得 Human approval、Git publish、
 - TOOL_GUARDED：Runtime 有可驗證 pre-tool guard。
 - ADVISORY：規範可見，但不能宣稱技術攔截所有 Host native tools。
 
+`aips publish preflight` 是 repository publication／CI consistency 層，不是 MCP 或 native Harness capability；它不提升上述治理強度，也不取得 push、merge 或 release authority。
+
 ## Progressive disclosure
 
 同步路徑只解析 identity、freshness、indexes 與 relevant pointers；重型 Project bootstrap、site build、semantic enrichment 不放進 hot path。

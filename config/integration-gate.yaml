@@ -6,6 +6,8 @@ matrix_required_paths:
   # Narrow fail-closed safety net for governance-core Integration Gate surfaces.
   # Ordinary changes remain matrix-optional unless classified large/core.
   - scripts/integration_gate.py
+  - scripts/publish_preflight.py
+  - scripts/repository_preflight.py
   - config/integration-gate.yaml
   - .github/workflows/validate.yml
   - orchestration/CORE_CHANGE_TESTING.md
@@ -28,6 +30,8 @@ checks:
     paths:
       - scripts/deterministic_scheduler.py
       - scripts/integration_gate.py
+      - scripts/publish_preflight.py
+      - scripts/repository_preflight.py
       - orchestration/DETERMINISTIC_SCHEDULER.md
       - orchestration/INTEGRATION_GATE.md
       - orchestration/schemas/task-graph.yaml
