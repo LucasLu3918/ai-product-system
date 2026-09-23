@@ -47,10 +47,10 @@ aips commands list
 維護 repository 時，使用 `aips docs impact --base origin/main` 與 `aips publish plan --base origin/main` 先確認 CI-parity requirements；這些命令不會自行 merge 或發布。
 
 若要連接 MCP Host，可先用 `aips mcp config --client cursor|windsurf|copilot|amp|codex|generic` 檢視 review-only JSON；AIPS 不會自動修改 Host 設定。
+需要跨 Host 使用治理工作流時，可先預覽或安裝 Portable Command projection：`aips commands render aips.plan --host cursor`、`aips commands install --host cursor`。生成檔案由 AIPS ownership 管理，使用者修改後會保留並回報衝突。
 
 ## 開始工作
 
-需要跨 Host 使用治理工作流時，可先預覽或安裝 Portable Command projection：`aips commands render aips.plan --host cursor`、`aips commands install --host cursor`。生成檔案由 AIPS ownership 管理，使用者修改後會保留並回報衝突。
 平常直接開啟你的 Agent / IDE。AIPS 會依 Runtime 能力使用 native adapter 或 MCP access plane。
 
 ~~~text

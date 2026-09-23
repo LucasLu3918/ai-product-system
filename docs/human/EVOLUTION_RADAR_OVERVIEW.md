@@ -36,5 +36,4 @@ Monthly / quarterly roll-up量測 collected → shortlist → semantic → actio
 
 ## Verification History
 
-Portable Command Core 的採用沿用既有 Harness capability；Registry、renderer、ownership conflict 與 MCP read-only contract 均以 repository validation 驗證，Host-native integration 維持後續候選。
 Scenario-by-scenario 的演進與數值證據放在 [Scenario Conformance](CONFORMANCE.md)，不再把每個版本/Scenario追加到本頁尾端。

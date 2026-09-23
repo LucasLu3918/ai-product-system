@@ -84,8 +84,6 @@ Scenario registry 明確標示 deterministic、lifecycle、agent_eval 或 manual
 Evolution Radar 位於 maintenance plane：收集 public technical evidence、deterministic pre-analysis、provider-neutral semantic handoff、Human Decision、bounded Trial。Radar recommendations 不會自動修改 code、開 implementation PR、merge 或 release。
 
 ## Documentation Architecture
-
-Portable Command 的 Registry 與 renderer 位於 Harness 架構面；生成 projection 是薄包裝，Canonical source 仍由 Constitution、System 與 orchestration 文件提供。
 ~~~text
 docs/human/*.md
 → canonical Human source
