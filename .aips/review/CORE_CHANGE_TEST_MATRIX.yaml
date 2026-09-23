@@ -2,7 +2,7 @@ version: 1
 
 candidate:
   base_sha: 8b13e1b8cfbbcc761b0766caa5007fc6f7af3e40
-  changed_files_hash: 986eb74cddc9e14e4b249013c4ee08900d9d8635fa7f1878b608532a399cba7d
+  changed_files_hash: c4696818828866ba2e1ecd510820b3cac2f7da3463ff541b3e1dcf95bbf7caf5
 
 change:
   id: temporal-project-intelligence
