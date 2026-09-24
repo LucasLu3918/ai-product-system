@@ -1,0 +1,26 @@
+version: 1
+
+# Optional Planning Package artifact. EARS structures applicable functional
+# requirements; non-functional requirements use measurable targets instead.
+requirements:
+  - id: FR-001
+    kind: functional # functional | non_functional
+    ears_pattern: event_driven # five base patterns, or complex (While + When)
+    statement: "When <trigger>, the <system> shall <observable response>."
+    source: "<user request, policy, or accepted decision>"
+    acceptance_criteria:
+      - id: AC-001
+        observable_result: "<specific result and boundary conditions>"
+        verification_method: "<test, inspection, analysis, or demonstration>"
+        evidence_refs: [] # planned paths are not pass evidence
+
+  - id: NFR-001
+    kind: non_functional
+    ears_pattern: null
+    statement: "<measurable target, units, and operating conditions>"
+    source: "<user request, policy, or accepted decision>"
+    acceptance_criteria:
+      - id: AC-002
+        observable_result: "<target and acceptance threshold>"
+        verification_method: "<benchmark, analysis, inspection, or other method>"
+        evidence_refs: []

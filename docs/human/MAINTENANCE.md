@@ -131,7 +131,7 @@ When end-to-end delivery behavior changes, verify together:
 
 When these behaviors change, review together:
 
-- Requirement clarification → SYSTEM / ORCHESTRATOR / IMPLEMENTATION_GOAL / Human Guide / scenarios.
+- Requirement clarification → SYSTEM / ORCHESTRATOR / IMPLEMENTATION_GOAL / Planning Package requirements registry and validator / Human Guide / scenarios.
 - External context resolution → connector-first protocol / provenance template / Human Guide / scenarios.
 - Visual polish → Product Designer / Frontend Engineer / visual-quality-review / Design Work Mode / screenshots/state scenarios.
 - Multi-perspective review → Quality Reviewer / code-review / Model Routing / Review templates / lesson persistence.

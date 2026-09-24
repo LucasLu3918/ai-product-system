@@ -42,6 +42,8 @@ Content safety 的 machine canonical 文件為 `config/content-safety.yaml`、`s
 
 `orchestration/TRAJECTORY_EVAL.md`、`templates/review/TRAJECTORY_TRACE.yaml` 與 `templates/review/TRAJECTORY_EVIDENCE.yaml` 是 Eval-as-CI trajectory contract 的 canonical machine-facing 文件。
 
+`orchestration/REQUIREMENT_CLARIFICATION.md` 和 `orchestration/PLANNING_PACKAGE.md` 定義需求澄清與規劃規則；`templates/planning-package/REQUIREMENTS.yaml` 與 `scripts/requirements_traceability.py` 定義可選需求追溯資料及其結構檢查。EARS 語義判讀仍由需求審查負責。
+
 Agent 由 AGENTS.md / SYSTEM.md 進入，按需讀取 orchestration/、roles/、skills/。Official Docs Site 不複製這些 protocol 成第二份 Human source。
 
 ## Shared canonical 文件

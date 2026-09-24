@@ -1293,4 +1293,17 @@ Scenario 167 驗證 provider-neutral observable trajectory 的 fingerprint、det
 
 The read-only Parallel Run Dashboard is covered by Scenario 173 and exposes only sanitized run projection evidence; it does not add publication or control authority.
 
+## Scenario 174 — EARS Requirement Traceability
+
+Deterministic evidence validates the optional Planning Package requirements registry: supported EARS pattern labels, unique requirement/acceptance IDs, non-empty acceptance outcomes and verification methods, and valid evidence-reference lists. It does not judge whether natural-language statements are semantically complete or claim that referenced checks ran.
+
+目前 Scenario inventory：
+
+- deterministic：27
+- lifecycle：93
+- agent_eval：54
+- manual：0
+- uncovered：0
+- automated：**174 / 174**
+
 Scenarios 168–172 cover the Runtime Content Safety Boundary, including redaction, durable-sink blocking, provenance, coverage registration and failure policy. Findings must never contain detected raw values.

@@ -43,6 +43,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 大型產品先形成 Planning Package，再經 Human review 進入 implementation planning。產品生命週期維持：
 
+Planning 階段可用 EARS 整理適合的功能需求，並透過可選的需求登錄檔連結需求、驗收條件與驗證方法；格式檢查與語義審查、執行證據各司其職。
+
 ~~~text
 Plan
 → Local implementation

@@ -1345,3 +1345,10 @@ scenarios:
       - tests/evidence/run_dashboard_lifecycle.py
       - tests/test_run_projection.py
       - orchestration/RUN_DASHBOARD.md
+  - id: "174"
+    path: tests/scenarios/174-ears-requirement-traceability.md
+    coverage: deterministic
+    evidence:
+      - templates/planning-package/REQUIREMENTS.yaml
+      - scripts/requirements_traceability.py
+      - tests/validation/ears_requirement_contracts.py

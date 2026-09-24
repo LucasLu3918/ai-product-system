@@ -713,3 +713,9 @@ Scenario 166 extends the Project Intelligence conformance surface with revision-
 Scenario 173 verifies that the Parallel Run Dashboard presents sanitized, read-only run projections across parallel workspaces without exposing prompts, reasoning, secrets or mutation authority.
 
 The content safety contract is exercised by scenarios 168–172 and the `tests/test_content_safety.py` lifecycle. New sinks, detectors or failure-mode changes require matching deterministic evidence.
+
+## Scenario 174 — EARS Requirement Traceability
+
+Scenario 174 is deterministic coverage for the optional Planning Package requirements registry. `tests/validation/ears_requirement_contracts.py` exercises valid functional/non-functional records plus invalid EARS labels, duplicate IDs, missing acceptance criteria and missing verification methods. This validates the record shape and trace links; it does not infer natural-language semantics or upgrade evidence references into passing test results.
+
+Current automated inventory: 27 deterministic + 93 lifecycle + 54 agent_eval = 174 / 174; manual 0; uncovered 0.
