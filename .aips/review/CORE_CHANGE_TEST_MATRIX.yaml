@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: da31b06489c154eb3e0755e2235c5f8c76811e46
-  changed_files_hash: c60deb32e44786871c9519624d077caad82519df6632b65bde3265436deec636
+  changed_files_hash: 842f74c046a1ee3dadaee906934aff1fd406d2ed0a12e7c767ebada58ed51dcf
 change:
   id: verified-sandbox-provider
   summary: Add a provider-neutral, fail-closed sandbox capability resolver and synthetic-only E2B verification lane; project-source adapter awaits explicit data-scope authorization.
