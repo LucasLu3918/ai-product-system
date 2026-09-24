@@ -10,7 +10,8 @@ input:
 rubric:
   equals:
     response.status: IMPACT_ANALYSIS_REQUIRED
-    response.implementation_allowed_before_ready_impact: false
+    response.implementation_allowed_before_implementation_approved: false
+    response.ready_requires_post_implementation_reconciliation: true
     response.diff_reconciliation_required: true
     response.scope_reapproval_if_materially_expanded: true
   contains:
@@ -19,6 +20,7 @@ rubric:
       - define_change_boundary
       - assess_change_impact_before_mutation
       - persist_change_impact_artifact
+      - approve_scope_before_implementation
       - implement_within_declared_boundary
       - compare_actual_diff_to_declared_impact
       - refresh_affected_intelligence
@@ -35,7 +37,7 @@ rubric:
       - documentation_contracts
   excludes:
     response.actions:
-      - mutate_before_impact_ready
+      - mutate_before_scope_approval
       - ignore_unexpected_material_impact
   set_equals: {}
   nonempty:

@@ -224,7 +224,7 @@ Rules:
 - keep Impact Graph machine-readable;
 - generate HTML deterministically as a review view only;
 - store human additions/exceptions/exclusions in PROJECT_OVERRIDES.yaml;
-- before mutation, create/resolve Change Impact and compare actual diff against declared impact;
+- before mutation, create/resolve Change Impact and record approved scope as `IMPLEMENTATION_APPROVED`; only mark it `READY` after post-implementation diff and Impact Graph reconciliation evidence;
 - Project Intelligence never replaces current security/reliability verification.
 
 Existing `.ai/knowledge/` is migration input only; new reusable conclusions are written to Project Intelligence.

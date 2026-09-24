@@ -47,7 +47,7 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 CI、publication preflight 與 documentation trigger policy 的變更，應一併預覽遞迴文件閉包，並以最終差異重新綁定 Core Change Test Matrix。
 
-Mutation 前建立 CHANGE_IMPACT，涵蓋 Input / Output / Data / Events / Consumers / Security / Invariants / Compatibility / Tests；實作後以 Actual Diff 回頭核對。
+Mutation 前建立 CHANGE_IMPACT，涵蓋 Input / Output / Data / Events / Consumers / Security / Invariants / Compatibility / Tests，完成範圍審查並記錄使用者授權後進入 `IMPLEMENTATION_APPROVED`。這只允許依核准範圍實作。`READY` 僅能在實作後記錄 base/head、diff digest、Impact Graph 核對與證據，確認 Actual Diff 落在核准範圍後使用；未解影響不得標記 READY。
 
 ## Preserve Valid Native Conventions
 

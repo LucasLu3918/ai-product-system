@@ -32,6 +32,35 @@ context:
       provider: null
       required: false
     results: []
+  layers:
+    core:
+      canonical: false
+      derived: true
+      summary: null
+      source_pointers: []
+      source_digest: null
+      estimated_tokens: 0
+      target_tokens: 1600
+    recall:
+      topic_pointers: []
+      retrieval_status: INDEX_MISSING
+      estimated_tokens: 0
+      soft_budget_tokens: 4500
+      hard_budget_tokens: 6000
+      temporal_assertions: []
+    archive:
+      on_demand_only: true
+      source_pointers: []
+    task_freshness:
+      status: UNKNOWN
+      affected_selected_topics: []
+      store_freshness: UNKNOWN
+      irrelevance_proven: false
+    telemetry:
+      core_tokens: 0
+      recall_tokens: 0
+      total_estimated_tokens: 0
+      hard_budget_tokens: 7600
 
 
 component_resolution:

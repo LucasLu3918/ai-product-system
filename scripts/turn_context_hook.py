@@ -34,6 +34,10 @@ def compact_context(data: dict) -> str:
     project = data.get("project") or {}
     intelligence = data.get("intelligence") or {}
     fail = data.get("fail_policy") or {}
+    layers = ctx.get("layers") or {}
+    core = layers.get("core") or {}
+    recall = layers.get("recall") or {}
+    telemetry = layers.get("telemetry") or {}
     lines = [
         "AIPS TURN CONTEXT",
         f"project={project.get('root')} mode={project.get('mode')}",
@@ -43,8 +47,15 @@ def compact_context(data: dict) -> str:
         f"initialize_intelligence={req.get('initialize_intelligence')}",
         f"semantic_enrichment_required={req.get('semantic_enrichment_required')}",
         f"change_impact_required={req.get('change_impact_required')}",
+        f"task_freshness={(layers.get('task_freshness') or {}).get('status')}",
+        f"context_tokens_estimated={telemetry.get('total_estimated_tokens')} hard_budget={telemetry.get('hard_budget_tokens')}",
+        f"project_core_derived={core.get('canonical') is False} source_digest={core.get('source_digest')}",
         f"fail_policy={fail.get('mode')}",
     ]
+    if core.get("summary"):
+        lines.append("project_core_summary=" + str(core["summary"])[:6400])
+    if recall.get("temporal_assertions"):
+        lines.append("active_temporal_assertions=" + ",".join(str(item.get("id")) for item in recall["temporal_assertions"] if item.get("id"))[:1000])
     if req.get("targeted_refresh"):
         lines.append("targeted_refresh=" + ",".join(req["targeted_refresh"][:12]))
     if ctx.get("project_native"):

@@ -7,6 +7,7 @@ import datetime as dt
 import hashlib
 import html
 import json
+import math
 import os
 import re
 import shutil
@@ -43,6 +44,7 @@ from retrieval_intelligence import (
 from retrieval_intelligence import (
     DEFAULT_TOKEN_BUDGET as RETRIEVAL_DEFAULT_TOKEN_BUDGET,
 )
+from retrieval_intelligence import SECRET_VALUE_PATTERNS
 from retrieval_intelligence import (
     index_repository as retrieval_index_repository,
 )
@@ -52,6 +54,7 @@ from retrieval_intelligence import (
 from retrieval_intelligence import (
     query_repository as retrieval_query_repository,
 )
+from retrieval_intelligence import redact_text as redact_retrieval_text
 from temporal_intelligence import (
     active_assertions as temporal_active_assertions,
     between as temporal_between,
@@ -370,6 +373,151 @@ def classify_prompt(prompt: str) -> tuple[str, bool, list[str]]:
     if any(w in low for w in API_WORDS):
         return "api", mutation, ["architecture", "data-flow", "modules", "conventions"]
     return ("mutation" if mutation else "general"), mutation, topics
+
+
+def layered_context(root: Path, store: Path, intel: dict[str, Any], retrieval: dict[str, Any], selected: list[str], freshness_result: dict[str, Any]) -> dict[str, Any]:
+    """Build a deterministic, non-canonical project capsule and report layer budgets."""
+    architecture = intel.get("architecture") or {}
+    state = intel.get("state") or {}
+    registry = load_yaml(store / "SOURCE_REGISTRY.yaml", {"sources": []})
+    overrides = load_yaml(store / "PROJECT_OVERRIDES.yaml", {})
+    temporal = load_yaml(store / "TEMPORAL_ASSERTIONS.yaml", {"schema": {"version": 1}, "assertions": []})
+    temporal_snapshot = temporal_active_assertions(root, temporal)
+    temporal_active = temporal_snapshot.get("assertions", [])
+    sources = [str(item.get("path")) for item in (registry.get("sources") or []) if item.get("path")]
+    summary = str(architecture.get("summary") or "").strip()[:6400]
+    approved_override_facts: list[dict[str, str]] = []
+    for collection in ("approved_inferences", "additional_rules", "exceptions"):
+        for item in overrides.get(collection) or []:
+            if not isinstance(item, dict) or str(item.get("status", "APPROVED")).upper() not in {"APPROVED", "ACTIVE"}:
+                continue
+            approved_override_facts.append({key: redact_retrieval_text(str(item[key]))[:240] for key in ("id", "scope", "rule", "reason") if item.get(key)})
+    temporal_summary = [
+        {key: str(item[key])[:160] for key in ("id", "subject", "predicate", "object", "quality", "source") if item.get(key)}
+        for item in temporal_active[:40]
+    ]
+    capsule = {
+        "canonical": False,
+        "derived": True,
+        "summary": summary,
+        "summary_truncated": len(str(architecture.get("summary") or "").strip()) > 6400,
+        "summary_source": "PROJECT_INTELLIGENCE.yaml#/architecture (rebuild from canonical source)",
+        "override_source": str(store / "PROJECT_OVERRIDES.yaml"),
+        "readiness": state.get("readiness", "PARTIAL"),
+        "freshness": state.get("freshness", "UNKNOWN"),
+        "source_pointers": sources[:12],
+        "active_temporal_assertion_ids": [str(item.get("id")) for item in temporal_active if item.get("id")][:40],
+        "temporal_assertion_ids_truncated": len([item for item in temporal_active if item.get("id")]) > 40,
+        "approved_overrides": approved_override_facts[:24],
+        "approved_overrides_truncated": len(approved_override_facts) > 24,
+        "source_digest": sha(json.dumps({"architecture": architecture, "sources": sources, "temporal": temporal_active, "overrides": overrides}, sort_keys=True, ensure_ascii=False)),
+        "estimated_tokens": 0,
+        "target_tokens": 1600,
+    }
+    capsule["estimated_tokens"] = math.ceil(len(json.dumps({key: value for key, value in capsule.items() if key != "estimated_tokens"}, ensure_ascii=False)) / 4)
+    while capsule["estimated_tokens"] > capsule["target_tokens"] and (capsule["summary"] or capsule["approved_overrides"] or capsule["source_pointers"] or len(capsule["active_temporal_assertion_ids"]) > 40):
+        if capsule["summary"]:
+            capsule["summary_truncated"] = True
+            capsule["summary"] = capsule["summary"][: int(len(capsule["summary"]) * 0.8)]
+        elif capsule["approved_overrides"]:
+            capsule["approved_overrides_truncated"] = True
+            capsule["approved_overrides"].pop()
+        elif capsule["source_pointers"]:
+            capsule["source_pointers_truncated"] = True
+            capsule["source_pointers"].pop()
+        else:
+            capsule["temporal_assertion_ids_truncated"] = True
+            capsule["active_temporal_assertion_ids"].pop()
+        capsule["estimated_tokens"] = math.ceil(len(json.dumps({key: value for key, value in capsule.items() if key != "estimated_tokens"}, ensure_ascii=False)) / 4)
+    stale_topics = set()
+    affected = set(freshness_result.get("affected_topics") or [])
+    for topic_path in selected:
+        if topic_path not in [str(store / item.get("path")) for item in (intel.get("topics") or {}).values() if isinstance(item, dict) and item.get("path")]:
+            continue
+        name = Path(topic_path).stem
+        if name in affected or "unknown" in affected:
+            stale_topics.add(name)
+    retrieval_tokens = int(retrieval.get("estimated_tokens") or 0)
+    store_freshness = freshness_result.get("status", "UNKNOWN")
+    task_freshness = "UNKNOWN" if store_freshness == "UNKNOWN" else ("STALE" if stale_topics else "CURRENT")
+    return {
+        "core": capsule,
+        "recall": {"topic_pointers": selected, "retrieval_status": retrieval.get("status"), "estimated_tokens": retrieval_tokens + math.ceil(len(json.dumps(temporal_summary, ensure_ascii=False)) / 4), "retrieval_tokens": retrieval_tokens, "soft_budget_tokens": 4500, "hard_budget_tokens": 6000, "temporal_assertions": temporal_summary, "temporal_assertion_ids": [str(item.get("id")) for item in temporal_active if item.get("id")][:40], "temporal_source": str(store / "TEMPORAL_ASSERTIONS.yaml"), "truncated": bool(retrieval.get("truncated") or len(temporal_active) > len(temporal_summary))},
+        "archive": {"on_demand_only": True, "source_pointers": sources[:30]},
+        "task_freshness": {"status": task_freshness, "affected_selected_topics": sorted(stale_topics), "store_freshness": store_freshness, "irrelevance_proven": store_freshness != "UNKNOWN" and not stale_topics},
+        "telemetry": {"core_tokens": capsule["estimated_tokens"], "recall_tokens": retrieval_tokens + math.ceil(len(json.dumps(temporal_summary, ensure_ascii=False)) / 4), "total_estimated_tokens": capsule["estimated_tokens"] + retrieval_tokens + math.ceil(len(json.dumps(temporal_summary, ensure_ascii=False)) / 4), "hard_budget_tokens": 7600, "core_truncated": capsule["summary_truncated"], "recall_truncated": bool(retrieval.get("truncated") or len(temporal_active) > len(temporal_summary))},
+    }
+
+
+def context_audit(root: Path) -> dict[str, Any]:
+    store, mode, pid = intelligence_store(root)
+    intel = load_yaml(store / "PROJECT_INTELLIGENCE.yaml", {})
+    registry = load_yaml(store / "SOURCE_REGISTRY.yaml", {"sources": []})
+    overrides = load_yaml(store / "PROJECT_OVERRIDES.yaml", {})
+    temporal = load_yaml(store / "TEMPORAL_ASSERTIONS.yaml", {"schema": {"version": 1}, "assertions": []})
+    issues: list[dict[str, str]] = []
+    source_paths = {str(item.get("path")) for item in (registry.get("sources") or []) if item.get("path")}
+    for source in (registry.get("sources") or []):
+        path = str(source.get("path", ""))
+        if path and not (root / path).exists():
+            issues.append({"kind": "orphan_source_pointer", "path": path})
+        if path and (".env" in Path(path).name.lower() or Path(path).suffix.lower() in {".pem", ".key"}):
+            issues.append({"kind": "secret_like_source", "path": path})
+        if path and (root / path).is_file() and not is_secret_filename(Path(path).name):
+            try:
+                source_text = (root / path).read_text(encoding="utf-8", errors="replace")[:1_000_000]
+                if any(pattern.search(source_text) for pattern in SECRET_VALUE_PATTERNS):
+                    issues.append({"kind": "secret_like_value", "path": path})
+            except OSError:
+                issues.append({"kind": "unreadable_source", "path": path})
+        expected_hash = source.get("hash") or source.get("sha256") or source.get("content_hash")
+        if path and expected_hash and (root / path).is_file():
+            actual_hash = hashlib.sha256((root / path).read_bytes()).hexdigest()
+            expected_hash = str(expected_hash).removeprefix("sha256:")
+            if actual_hash != expected_hash:
+                issues.append({"kind": "stale_source_hash", "path": path})
+    paths = [str(item.get("path")) for item in (registry.get("sources") or []) if item.get("path")]
+    for path in sorted({p for p in paths if paths.count(p) > 1}):
+        issues.append({"kind": "duplicate_source_pointer", "path": path})
+    for name, topic in (intel.get("topics") or {}).items():
+        p = str(topic.get("path", "")) if isinstance(topic, dict) else ""
+        if p and not (store / p).exists():
+            issues.append({"kind": "missing_topic", "path": p})
+        if p and (store / p).is_file():
+            topic_text = (store / p).read_text(encoding="utf-8", errors="replace")[:1_000_000]
+            if any(pattern.search(topic_text) for pattern in SECRET_VALUE_PATTERNS):
+                issues.append({"kind": "secret_like_value", "path": p})
+    assertions = [item for item in (temporal.get("assertions") or []) if isinstance(item, dict)]
+    assertion_ids = {str(item.get("id")) for item in assertions if item.get("id")}
+    temporal_errors = validate_temporal_document(temporal)
+    if temporal_errors:
+        issues.append({"kind": "invalid_temporal_ledger", "path": "TEMPORAL_ASSERTIONS.yaml"})
+    for item in assertions:
+        provenance = item.get("provenance") or {}
+        source = str(provenance.get("source") or "")
+        expected = str(provenance.get("source_hash") or "").removeprefix("sha256:")
+        if not source or not expected:
+            issues.append({"kind": "missing_temporal_provenance", "path": str(item.get("id", "unknown"))})
+        elif (root / source).is_file() and file_hash(root / source) != expected:
+            issues.append({"kind": "stale_temporal_source_hash", "path": str(item.get("id", "unknown"))})
+    override_entries = [item for key in ("approved_inferences", "additional_rules", "exceptions", "excluded_inferences") for item in (overrides.get(key) or []) if isinstance(item, dict)]
+    for item in override_entries:
+        temporal_ref = item.get("temporal_assertion_id")
+        if temporal_ref and str(temporal_ref) not in assertion_ids:
+            issues.append({"kind": "missing_temporal_reference", "path": str(item.get("id", "unknown"))})
+        if not item.get("provenance") and not item.get("evidence") and not item.get("approval_id"):
+            issues.append({"kind": "missing_override_provenance", "path": str(item.get("id", "unknown"))})
+    current_temporal = temporal_active_assertions(root, temporal) if not temporal_errors else {"assertions": [], "excluded": [], "conflicts": []}
+    for item in current_temporal.get("excluded", []):
+        if item.get("reason"):
+            issues.append({"kind": "expired_or_inactive_temporal_fact", "path": str(item.get("id", "unknown"))})
+    for conflict in current_temporal.get("conflicts", []):
+        issues.append({"kind": "temporal_conflict", "path": str(conflict.get("subject", "unknown"))})
+    conflicts = active_authority_conflicts(store, intel, registry, None)
+    if conflicts:
+        issues.extend({"kind": "authority_conflict", "path": str(item.get("id") or item.get("scope") or "unknown")} for item in conflicts)
+    status = "REBUILD_REQUIRED" if any(item["kind"] in {"orphan_source_pointer", "missing_topic", "missing_temporal_reference", "secret_like_source", "secret_like_value", "stale_source_hash", "missing_temporal_provenance", "stale_temporal_source_hash", "missing_override_provenance", "invalid_temporal_ledger"} for item in issues) else ("WARN" if issues else "PASS")
+    return {"version": 1, "project_id": pid, "mode": mode, "status": status, "read_only": True, "issues": issues, "metrics": {"registered_sources": len(source_paths), "topics": len(intel.get("topics") or {}), "temporal_assertions": len(assertion_ids), "authority_conflicts": len(conflicts)}, "canonical_facts_modified": False}
 
 
 def initial_intelligence(root: Path, pid: str, ident: dict[str, str], old_knowledge: Path) -> dict[str, Any]:
@@ -1070,6 +1218,7 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
 
     component_resolution, component_paths = resolve_component_context(store, intel, component)
     selected = list(dict.fromkeys([*selected, *component_paths]))
+    layers = layered_context(root, store, intel, retrieval, selected, fr)
 
     project_native: list[str] = []
     runtime_visible: list[str] = []
@@ -1126,6 +1275,7 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             "optional_evidence": [str(store / "DISCOVERY.yaml")] if (store / "DISCOVERY.yaml").exists() else [],
             "retrieval": retrieval,
             "authority_conflicts": authority_conflicts,
+            "layers": layers,
         },
         "instruction_resolution": {
             "precedence": [
@@ -1339,10 +1489,44 @@ def impact_init(root: Path, prompt: str, change_id: str | None) -> dict[str, Any
         "tests": [], "observability": [], "documentation": [],
         "impact_graph": str(graph_path),
         "unknowns": ["Agent must resolve semantic impact before mutation."],
+        "scope_review": {"status": "PENDING", "approval_reference": None, "approved_at": None},
+        "reconciliation": {
+            "status": "PENDING", "base_revision": None, "head_revision": None,
+            "diff_digest": None, "impact_graph_reviewed": False, "evidence": [],
+        },
         "status": "DRAFT",
     }
     atomic_yaml(path, doc)
     return {"change_id": change_id, "path": str(path), "mode": mode, "status": "DRAFT"}
+
+
+def validate_impact_document(doc: dict[str, Any]) -> dict[str, Any]:
+    status = str(doc.get("status", "DRAFT")).upper()
+    errors: list[str] = []
+    if status not in {"DRAFT", "IMPLEMENTATION_APPROVED", "READY", "BLOCKED"}:
+        errors.append(f"unsupported status: {status}")
+    if status in {"IMPLEMENTATION_APPROVED", "READY"}:
+        scope = doc.get("scope_review") or {}
+        if scope.get("status") != "APPROVED" or not scope.get("approval_reference") or not scope.get("approved_at"):
+            errors.append("implementation requires approved scope with reference and timestamp")
+        if doc.get("unknowns"):
+            errors.append("unresolved unknowns prevent implementation approval")
+    if status == "READY":
+        reconcile = doc.get("reconciliation") or {}
+        required = ("base_revision", "head_revision", "diff_digest")
+        missing = [key for key in required if not reconcile.get(key)]
+        if reconcile.get("status") != "RECONCILED" or missing:
+            errors.append("READY requires reconciled status and base/head/diff digest" + (f" (missing: {', '.join(missing)})" if missing else ""))
+        if reconcile.get("impact_graph_reviewed") is not True or not reconcile.get("evidence"):
+            errors.append("READY requires Impact Graph review and reconciliation evidence")
+    return {"valid": not errors, "status": status, "errors": errors}
+
+
+def impact_validate(path: Path) -> dict[str, Any]:
+    doc = load_yaml(path, {})
+    result = validate_impact_document(doc)
+    result["path"] = str(path)
+    return result
 
 
 def temporal_query(root: Path, store: Path, mode: str, revision: str | None,
@@ -1548,6 +1732,15 @@ def main() -> int:
     p.add_argument("--change-id")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
+    p = sub.add_parser("context-audit")
+    p.add_argument("--project", default=os.getcwd())
+    p.add_argument("--format", choices=["yaml", "json"], default="yaml")
+
+    p = sub.add_parser("impact-validate")
+    p.add_argument("--project", default=os.getcwd())
+    p.add_argument("--path", required=True)
+    p.add_argument("--format", choices=["yaml", "json"], default="yaml")
+
     p = sub.add_parser("temporal")
     p.add_argument("--project", default=os.getcwd())
     p.add_argument("--mode", choices=["current", "as-of", "between", "why"], default="current")
@@ -1598,6 +1791,10 @@ def main() -> int:
             result = promotion_apply(root, args.topic, args.target, args.approval_id)
         elif args.command == "impact-init":
             result = impact_init(root, args.prompt, args.change_id)
+        elif args.command == "impact-validate":
+            result = impact_validate(Path(args.path))
+        elif args.command == "context-audit":
+            result = context_audit(root)
         elif args.command == "temporal":
             store, _, _ = intelligence_store(root, create=True)
             result = temporal_query(root, store, args.mode, args.revision, args.base, args.head, args.assertion)
@@ -1640,6 +1837,8 @@ def main() -> int:
         return 2
     output(result, args.format)
     if args.command == "evaluate" and result.get("status") == "FAIL":
+        return 1
+    if args.command == "impact-validate" and not result.get("valid"):
         return 1
     return 0
 
