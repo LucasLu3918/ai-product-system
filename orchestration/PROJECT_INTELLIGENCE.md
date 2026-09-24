@@ -237,6 +237,8 @@ Current task
 → optional evidence only when required
 ~~~
 
+The manifest exposes a deterministic L1 Project Core capsule (`canonical: false`, `derived: true`) with source digest and pointers; it is rebuilt from Architecture, approved overrides and active revision-aware temporal assertions. L2 Recall points to selected topics and bounded local retrieval; L3 Archive keeps original sources and history on demand. Missing derived data falls back to canonical pointers. Task freshness may be `CURRENT` only when the scan is known and no selected topic is affected; mutation authorization still fails closed on globally stale or unknown Intelligence. `aips intelligence context-audit` is read-only and reports rebuild/warning conditions without editing canonical facts.
+
 ## Retrieval Intelligence
 
 Project Intelligence is the stable understanding and authority/provenance layer. Retrieval Intelligence is a rebuildable, non-canonical cache used to assemble just-in-time repository evidence for the current task.
@@ -564,7 +566,7 @@ Use:
 aips intelligence impact-init --project /path/to/project --prompt "<task>"
 ~~~
 
-The generated draft must be semantically completed before mutation when impact is material.
+The generated DRAFT must be semantically completed and scope-authorized before material mutation. `IMPLEMENTATION_APPROVED` represents that user-approved boundary only; `READY` is reserved for post-implementation base/head, diff digest, Impact Graph review and evidence. Validate with `aips intelligence impact-validate --path <artifact>`; incomplete states fail closed.
 
 ## Attach / detach migration
 

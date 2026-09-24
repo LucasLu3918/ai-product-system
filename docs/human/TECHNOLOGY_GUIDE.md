@@ -24,6 +24,8 @@ Role、Skill、Protocol 與 Project evidence 只在 task relevant 時載入，�
 
 Stable semantic cache 保存 Architecture、Data Flow、Modules、Contracts、Tests、Security、Operations、Source Registry 與 Impact Graph。
 
+每回合使用 bounded layered context：衍生的 Project Core capsule、task-relevant Recall 與按需 Archive pointers。Capsule 帶 source digest 且不是 canonical truth；缺少時回退到來源指標。唯讀 `aips intelligence context-audit` 可檢查 stale hash、孤兒指標、秘密路徑及 authority conflicts。
+
 ### Canonical Project Identity
 
 Repository lineage 與 workspace identity 分離，確保 main、feature worktree 與 AIPS-managed worktree 的 durable state 不互相誤用。
@@ -34,7 +36,7 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 
 ### Change Impact Guard
 
-Existing Project mutation 前先宣告 Change Boundary，實作後再把 actual diff 與 declared impact 對帳。
+Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
 

@@ -75,7 +75,11 @@ EPHEMERAL:
 ~/.config/aips/projects/<project-id>/changes/<change-id>.yaml
 ~~~
 
-`aips intelligence impact-init` may create the DRAFT deterministically. The Agent must fill semantic impact and set READY before implementation when the affected change requires it.
+`aips intelligence impact-init` creates a DRAFT. Resolve semantic impact, required dimensions, graph scope and unknowns, then record the user's scope authorization as `scope_review.status: APPROVED`, including an approval reference and timestamp. This permits implementation only; it does not assert that the eventual diff or graph has been reconciled. The workflow state may advance to `IMPLEMENTATION_APPROVED` before implementation.
+
+`READY` is reserved for the post-implementation state. It requires a reconciliation record containing base/head revisions, a digest of the reviewed diff, explicit Impact Graph review, and evidence that actual changed files/contracts were compared with the declared boundary. Unresolved or newly discovered material impact keeps the artifact out of READY and requires impact review; material boundary expansion also requires scope reapproval. Never use `READY` as a pre-implementation approval state.
+
+Run `aips intelligence impact-validate --path <CHANGE_IMPACT.yaml>` before treating an artifact as implementation-approved or READY. Validation fails closed when either the user-authorized scope record or the post-diff reconciliation evidence is incomplete.
 
 ## Diff reconciliation
 

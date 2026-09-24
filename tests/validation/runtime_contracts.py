@@ -36,6 +36,14 @@ else:
         if focused.returncode != 0:
             errors.append(f"Intelligence context lifecycle evidence failed: {focused.stdout.strip()} {focused.stderr.strip()}")
 
+layered_memory_evidence = ROOT / "tests/evidence/layered_context_memory_lifecycle.py"
+if not layered_memory_evidence.exists():
+    errors.append("Missing layered context memory lifecycle evidence")
+else:
+    focused = subprocess.run([sys.executable, str(layered_memory_evidence)], capture_output=True, text=True)
+    if focused.returncode != 0:
+        errors.append(f"Layered context memory lifecycle evidence failed: {focused.stdout.strip()} {focused.stderr.strip()}")
+
 install_preflight_evidence = ROOT / "tests/evidence/install_preflight_lifecycle.py"
 install_download_evidence = ROOT / "tests/evidence/install_download_lifecycle.py"
 if not install_download_evidence.exists():

@@ -23,4 +23,15 @@ observability: []
 documentation: []
 
 unknowns: []
-status: DRAFT # DRAFT | READY | BLOCKED
+scope_review:
+  status: PENDING # PENDING | APPROVED
+  approval_reference: null
+  approved_at: null
+reconciliation:
+  status: PENDING # PENDING | RECONCILED
+  base_revision: null
+  head_revision: null
+  diff_digest: null
+  impact_graph_reviewed: false
+  evidence: []
+status: DRAFT # DRAFT | IMPLEMENTATION_APPROVED | READY | BLOCKED

@@ -1,7 +1,7 @@
 version: 1
 case_id: 084-change-impact-before-mutation
 scenario_id: "084"
-case_fingerprint: sha256:cfb2be0850e8f57bd536b5f88cc75a426e0475276b9f4018dd97a8685d6f295c
+case_fingerprint: sha256:052ed1fed181a1b84350a433ff492b385e8c2c49e02879dd19d2555089301ecc
 execution:
   provider: openai
   model: GPT-5.6 Sol
@@ -9,7 +9,8 @@ execution:
   executed_at: "2026-09-17"
 response:
   status: IMPACT_ANALYSIS_REQUIRED
-  implementation_allowed_before_ready_impact: false
+  implementation_allowed_before_implementation_approved: false
+  ready_requires_post_implementation_reconciliation: true
   diff_reconciliation_required: true
   scope_reapproval_if_materially_expanded: true
   actions:
@@ -17,6 +18,7 @@ response:
     - define_change_boundary
     - assess_change_impact_before_mutation
     - persist_change_impact_artifact
+    - approve_scope_before_implementation
     - implement_within_declared_boundary
     - compare_actual_diff_to_declared_impact
     - refresh_affected_intelligence
@@ -31,4 +33,4 @@ response:
     - tests
     - observability
     - documentation_contracts
-  summary: Resolve and persist the semantic Change Impact before editing, implement only inside the declared boundary, then reconcile the real diff and reapprove if material scope expanded.
+  summary: Resolve and authorize the semantic Change Impact boundary before editing; use IMPLEMENTATION_APPROVED to begin scoped work, then mark READY only after diff and graph reconciliation evidence.
