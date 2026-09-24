@@ -64,6 +64,8 @@ Trajectory Quality Gate 是 provider-neutral capability。Harness 可提供 obse
 
 `aips publish preflight` 是 repository publication／CI consistency 層，不是 MCP 或 native Harness capability；它不提升上述治理強度，也不取得 push、merge 或 release authority。
 
+`aips isolation resolve --mode auto` is an execution-isolation resolver exposed through the existing CLI. It selects worktree for ordinary risk and requires verified sandbox capability for high/critical or untrusted execution; this is not a new Runtime adapter capability. The initial E2B registry stays disabled and its optional smoke workflow does not receive project source.
+
 Runtime Content Safety Boundary 只在 AIPS-owned sink 或已驗證 native hook 上宣稱強制能力；MCP-only 或 unsupported host tools 維持 ADVISORY。安全掃描不會取得 Host-native tool interception 或 Human Authority。
 
 ## Progressive disclosure
