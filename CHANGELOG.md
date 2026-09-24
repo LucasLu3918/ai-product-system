@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.58.0
+
+### Structured Requirement Traceability
+
+- Add optional EARS guidance for functional requirements while preserving READY / NEEDS_CLARIFICATION / BLOCKED and allowing narrative and non-functional requirements to keep their appropriate forms.
+- Add an optional Planning Package `REQUIREMENTS.yaml` registry that links stable requirement IDs to acceptance criteria, verification methods and evidence references.
+- Add a deterministic structure checker for EARS pattern labels and sentence forms, identifier uniqueness and required acceptance fields; it does not assess natural-language semantics or claim evidence has passed.
+- Add Scenario 174 and synchronize Agent/Human guidance, documentation placement and sync contracts. No Constitution, approval authority, Scenario Conformance semantics, or existing project migration changes.
+
  ## 0.57.0
 
 ### Portable Governance Command Core

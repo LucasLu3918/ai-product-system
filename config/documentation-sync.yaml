@@ -117,6 +117,30 @@ rules:
     human_docs: [docs/human/CONFORMANCE.md]
     agent_docs: [orchestration/CONFORMANCE.md]
 
+  - id: requirement-planning
+    triggers:
+      - orchestration/REQUIREMENT_CLARIFICATION.md
+      - orchestration/PLANNING_PACKAGE.md
+      - templates/requirements/IMPLEMENTATION_GOAL.yaml
+      - templates/planning-package/PRODUCT_PLAN.md
+      - templates/planning-package/REQUIREMENTS.yaml
+      - scripts/requirements_traceability.py
+      - tests/validation/ears_requirement_contracts.py
+      - tests/scenarios/174-ears-requirement-traceability.md
+      - tests/scenario_coverage.yaml
+      - tests/validation/conformance_isolation.py
+      - tests/validate_repository.py
+      - orchestration/DOCUMENTATION_SYNC.md
+    human_docs:
+      - docs/human/USER_GUIDE.md
+      - docs/human/TECHNOLOGY_GUIDE.md
+      - docs/human/CONFORMANCE.md
+    agent_docs:
+      - orchestration/REQUIREMENT_CLARIFICATION.md
+      - orchestration/PLANNING_PACKAGE.md
+      - orchestration/CONFORMANCE.md
+      - orchestration/DOCUMENTATION_SYNC.md
+
   - id: documentation-platform
     triggers:
       - docs/human/.vitepress/**

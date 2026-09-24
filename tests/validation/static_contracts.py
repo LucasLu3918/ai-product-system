@@ -156,6 +156,7 @@ required_files = [
     "scripts/project_intelligence.py", "scripts/retrieval_intelligence.py", "scripts/retrieval_evaluation.py", "scripts/structural_retrieval_trial.py", "scripts/retrieval_embedding_trial.py", "scripts/retrieval_embedding_trial_summary.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py",
     "scripts/aips_identity.py", "scripts/execution_isolation.py",
     "scripts/agent_eval.py", "scripts/trajectory_eval.py", "scripts/check_secret_leakage.py", "scripts/content_safety.py", "scripts/visual_profile.py",
+    "scripts/requirements_traceability.py",
     "config/content-safety.yaml", "orchestration/CONTENT_SAFETY_BOUNDARY.md",
     "tests/evidence/governance_command_guard.py", "tests/evidence/trajectory_quality_gate_lifecycle.py", "tests/evidence/visual_profile_lifecycle.py",
     "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml", ".github/workflows/retrieval-semantic-trial.yml",
@@ -176,6 +177,7 @@ planning_templates = [
     "templates/planning-package/API_SPEC.md",
     "templates/planning-package/IMPLEMENTATION_PLAN.md",
     "templates/planning-package/DECISIONS_ASSUMPTIONS.md",
+    "templates/planning-package/REQUIREMENTS.yaml",
 ]
 for rel in required_files + planning_templates + security_templates:
     if not (ROOT / rel).exists():
@@ -460,6 +462,8 @@ implementation_goal = load_yaml(ROOT / "templates/requirements/IMPLEMENTATION_GO
 for key in ("status", "objective", "expected_output", "scope", "success_criteria", "blocking_unknowns"):
     if key not in implementation_goal:
         errors.append(f"IMPLEMENTATION_GOAL.yaml missing top-level key: {key}")
+if not isinstance(implementation_goal.get("requirement_traceability", []), list):
+    errors.append("IMPLEMENTATION_GOAL.yaml requirement_traceability must remain an optional list")
 
 external_source = load_yaml(ROOT / "templates/context/EXTERNAL_SOURCE.yaml") or {}
 for key in ("source", "resolution", "task", "provenance", "fallback"):
@@ -595,7 +599,7 @@ for rel, keys in {
         if key not in doc:
             errors.append(f"{rel} missing top-level key: {key}")
 
-for helper in ("scripts/harness_resolve.py", "scripts/project_intelligence.py", "scripts/retrieval_intelligence.py", "scripts/retrieval_evaluation.py", "scripts/structural_retrieval_trial.py", "scripts/retrieval_embedding_trial.py", "scripts/retrieval_embedding_trial_summary.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py"):
+for helper in ("scripts/harness_resolve.py", "scripts/project_intelligence.py", "scripts/retrieval_intelligence.py", "scripts/retrieval_evaluation.py", "scripts/structural_retrieval_trial.py", "scripts/retrieval_embedding_trial.py", "scripts/retrieval_embedding_trial_summary.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py", "scripts/requirements_traceability.py"):
     helper_path = ROOT / helper
     if helper_path.exists():
         compiled = subprocess.run([sys.executable, "-m", "py_compile", str(helper_path)], capture_output=True, text=True)

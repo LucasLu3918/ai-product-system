@@ -103,6 +103,8 @@ Brand System 可涵蓋 Brand Intent、Audience / Positioning、Purpose / Mission
 - implementation readiness；
 - assumptions / decisions。
 
+對已釐清的功能行為，可使用 EARS 句型整理觸發條件、適用狀態、系統與可觀察回應。依情況選用恆常、事件、狀態、選配功能或異常行為句型；非功能需求保留量化目標和驗證方法，不必硬套 EARS。需要跨需求追溯時，可在 Planning Package 加入 `REQUIREMENTS.yaml`，把需求 ID 連到驗收條件與驗證方式。句型或 evidence 路徑都不代表測試已執行或通過。
+
 Planning 核准後，再整理 Initial Implementation Items + Recommended Flow；Large/Core change 在 implementation 前需 Proposal-first 範圍與 Architecture Diagram Impact Check。
 
 ## Global Harness 與 MCP

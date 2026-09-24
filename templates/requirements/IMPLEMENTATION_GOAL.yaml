@@ -21,6 +21,10 @@ constraints: []
 
 success_criteria: []
 
+# Optional structured traceability for goals with multiple requirements.
+# See templates/planning-package/REQUIREMENTS.yaml for the package-level shape.
+requirement_traceability: []
+
 professional_defaults: []
 
 blocking_unknowns: []
