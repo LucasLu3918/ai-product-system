@@ -57,6 +57,8 @@ Dirty worktrees are preserved and reported BLOCKED. AIPS never force-removes the
 
 ## CLI
 
+Lifecycle validator 子程序使用 `sys.executable`，避免呼叫主機上未安裝或缺少相依套件的泛用 `python` / `python3` 命令。
+
 Portable Command projections 位於 AIPS-managed commands scope，透過 ownership manifest 與 digest 進行安全更新；使用者修改的 projection 不會被 uninstall 或 upgrade 覆寫。
 ~~~bash
 aips isolation resolve --project /path/to/project --mode shared

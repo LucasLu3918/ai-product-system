@@ -93,7 +93,7 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification, Runtime Content Safety Boundary]
 
   - id: publication-preflight
-    triggers: [scripts/publish_preflight.py, scripts/browser_runtime.py, scripts/repository_preflight.py, scripts/integration_gate.py, config/integration-gate.yaml, .github/workflows/validate.yml, orchestration/CORE_CHANGE_TESTING.md, tests/evidence/integration_gate_lifecycle.py, tests/evidence/publish_preflight_lifecycle.py, tests/validation/publish_preflight_contracts.py]
+    triggers: [scripts/publish_preflight.py, scripts/browser_runtime.py, scripts/repository_preflight.py, scripts/integration_gate.py, config/integration-gate.yaml, config/git-publication.yaml, .github/workflows/validate.yml, .github/workflows/branch-hygiene.yml, .github/workflows/gemini-provider-session-verification.yml, .github/workflows/gemini-runtime-verification.yml, .github/workflows/mcp-codex-interop.yml, .github/workflows/repository-health.yml, .github/workflows/retrieval-semantic-trial.yml, orchestration/CORE_CHANGE_TESTING.md, tests/evidence/integration_gate_lifecycle.py, tests/evidence/publish_preflight_lifecycle.py, tests/validation/publish_preflight_contracts.py]
     placements:
       docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency, Deterministic Scheduler / Integration Gate consistency]
       docs/human/USER_GUIDE.md: [Quality 與 Review, Git Publication 與 Release]
@@ -186,19 +186,18 @@ placement_rules:
       - templates/planning-package/PRODUCT_PLAN.md
       - templates/planning-package/REQUIREMENTS.yaml
       - scripts/requirements_traceability.py
-      - tests/validation/ears_requirement_contracts.py
       - tests/scenarios/174-ears-requirement-traceability.md
       - tests/scenario_coverage.yaml
       - tests/validation/conformance_isolation.py
       - tests/validate_repository.py
       - orchestration/DOCUMENTATION_SYNC.md
     placements:
-      docs/human/USER_GUIDE.md: [需求釐清與 Planning]
+      docs/human/USER_GUIDE.md: [需求釐清與 Planning, Quality 與 Review]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Quality & Verification]
       docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability]
 
   - id: scenario-conformance
-    triggers: [orchestration/CONFORMANCE.md, tests/scenario_coverage.yaml, tests/validation/conformance_isolation.py]
+    triggers: [orchestration/CONFORMANCE.md, tests/scenario_coverage.yaml, tests/validation/conformance_isolation.py, tests/validation/ears_requirement_contracts.py]
     placements:
       docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Quality & Verification]

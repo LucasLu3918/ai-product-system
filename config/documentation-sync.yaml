@@ -113,7 +113,7 @@ rules:
       - orchestration/EXECUTION_ISOLATION.md
       - orchestration/ORCHESTRATOR.md
   - id: scenario-conformance
-    triggers: [scripts/scenario_conformance.py, scripts/agent_eval.py, scripts/trajectory_eval.py, orchestration/TRAJECTORY_EVAL.md, templates/conformance/**, tests/scenario_coverage.yaml]
+    triggers: [scripts/scenario_conformance.py, scripts/agent_eval.py, scripts/trajectory_eval.py, orchestration/TRAJECTORY_EVAL.md, templates/conformance/**, tests/scenario_coverage.yaml, tests/validation/ears_requirement_contracts.py]
     human_docs: [docs/human/CONFORMANCE.md]
     agent_docs: [orchestration/CONFORMANCE.md]
 
@@ -125,7 +125,6 @@ rules:
       - templates/planning-package/PRODUCT_PLAN.md
       - templates/planning-package/REQUIREMENTS.yaml
       - scripts/requirements_traceability.py
-      - tests/validation/ears_requirement_contracts.py
       - tests/scenarios/174-ears-requirement-traceability.md
       - tests/scenario_coverage.yaml
       - tests/validation/conformance_isolation.py

@@ -15,7 +15,7 @@ permissions:
 
 jobs:
   synthetic-embedding-trial:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     env:
       AIPS_RETRIEVAL_EMBEDDING_PROVIDER: ${{ vars.AIPS_RETRIEVAL_EMBEDDING_PROVIDER }}
       AIPS_RETRIEVAL_EMBEDDING_MODEL: ${{ vars.AIPS_RETRIEVAL_EMBEDDING_MODEL }}

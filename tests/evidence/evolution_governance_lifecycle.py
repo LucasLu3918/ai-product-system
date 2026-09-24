@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import copy
+import shlex
 from pathlib import Path
 import subprocess
 import sys
@@ -137,7 +138,7 @@ def main() -> int:
         )
         config = yaml.safe_load((ROOT / 'config/evolution-trial.yaml').read_text(encoding='utf-8')) or {}
         config = copy.deepcopy(config)
-        config['validation']['command'] = "python -c 'import sys; sys.exit(0)'"
+        config['validation']['command'] = shlex.join([sys.executable, "-c", "import sys; sys.exit(0)"])
         plan = trial.build_plan(human, config, current_revision=revision)
 
         (root / 'prototype').mkdir()

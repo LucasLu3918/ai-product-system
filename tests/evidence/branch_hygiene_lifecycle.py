@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -93,7 +94,7 @@ deletion:
         )
 
         local = subprocess.run(
-            ["python3", str(SCRIPT), "--config", str(config), "--target", "main"],
+            [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main"],
             cwd=repo, text=True, capture_output=True,
         )
         assert local.returncode == 0, local.stdout + local.stderr
@@ -106,7 +107,7 @@ deletion:
         git(repo, "fetch", "-q", "origin", "+refs/heads/*:refs/remotes/origin/*")
 
         remote_run = subprocess.run(
-            ["python3", str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin"],
+            [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin"],
             cwd=repo, text=True, capture_output=True,
         )
         assert remote_run.returncode == 0, remote_run.stdout + remote_run.stderr
@@ -130,7 +131,7 @@ deletion:
             ],
         }, sort_keys=False), encoding="utf-8")
         blocked = subprocess.run(
-            ["python3", str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin",
+            [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin",
              "--apply-cleanup", str(blocked_manifest)],
             cwd=repo, text=True, capture_output=True,
         )
@@ -179,7 +180,7 @@ raise SystemExit(1)
             ],
         }, sort_keys=False), encoding="utf-8")
         cleanup = subprocess.run(
-            ["python3", str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin",
+            [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin",
              "--apply-cleanup", str(cleanup_manifest), "--github-repository", "owner/repo"],
             cwd=repo, text=True, capture_output=True, env=cleanup_env,
         )

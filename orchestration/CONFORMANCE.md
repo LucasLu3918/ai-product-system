@@ -1,5 +1,7 @@
 # Scenario Conformance
 
+EARS validator 測試契約的文件影響限於本 Conformance 規範與對應的人類 Conformance / Technology Guide；需求追蹤實作、規劃範本、scenario registry 或本規範本身改動時，仍按 Requirement Planning 的完整文件閉包更新。
+
 ## Purpose
 
 Make AIPS behavioral regression coverage measurable without conflating specification count with executable evidence.

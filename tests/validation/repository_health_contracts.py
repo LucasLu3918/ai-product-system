@@ -271,7 +271,7 @@ if workflow.exists():
     for required_text in (
         "scripts/repository_health.py audit",
         "repository-health-report.json",
-        "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
     ):
         if required_text not in workflow_text:
             errors.append(
@@ -290,7 +290,7 @@ if maintenance_workflow.exists():
         "issues: write",
         "scripts/repository_health.py audit",
         "repository-health-report.json",
-        "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a",
         "Repository Health Drift",
         "gh issue create",
         "automatic_remediation_authorized",

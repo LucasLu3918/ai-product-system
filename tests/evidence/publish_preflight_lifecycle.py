@@ -41,6 +41,34 @@ def main() -> int:
     complete_files = ["bin/aips", *impact["required_additions"]]
     assert publish.documentation_impact(complete_files)["complete"]
 
+    test_impact = publish.documentation_impact(["tests/validation/ears_requirement_contracts.py"])
+    assert set(test_impact["required_additions"]) == {
+        "docs/human/CONFORMANCE.md",
+        "docs/human/TECHNOLOGY_GUIDE.md",
+        "orchestration/CONFORMANCE.md",
+    }
+    source_impact = publish.documentation_impact(["scripts/requirements_traceability.py"])
+    assert "orchestration/REQUIREMENT_CLARIFICATION.md" in source_impact["required_additions"]
+    assert "orchestration/PLANNING_PACKAGE.md" in source_impact["required_additions"]
+    assert not source_impact["complete"]
+
+    commits = "a" * 40 + "\n" + "b" * 40
+    rejected_email = "private.address" + chr(64) + "example.com"
+    def fake_git(*args: str) -> str:
+        if args[:2] == ("rev-list", "--reverse"):
+            return commits
+        if args[:2] == ("show", "-s"):
+            if args[-1].startswith("a"):
+                return "123+codex" + chr(64) + "users.noreply.github.com\x00noreply" + chr(64) + "github.com"
+            return rejected_email + "\x00noreply" + chr(64) + "github.com"
+        raise AssertionError(args)
+
+    with patch.object(publish, "git", side_effect=fake_git):
+        identity = publish.commit_identity_plan("base", "head")
+    assert identity["status"] == "BLOCKED"
+    assert identity["findings"] == [{"commit": "b" * 12, "field": "author", "reason": "email_not_approved"}]
+    assert rejected_email not in repr(identity)
+
     profile = {"matrix_required_change_classes": ["large", "core"], "matrix_required_paths": []}
     assert publish.matrix_required(profile, ["docs/README.md"], "core")
     assert not publish.matrix_required(profile, ["docs/README.md"], "standard")

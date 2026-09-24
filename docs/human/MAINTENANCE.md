@@ -268,6 +268,12 @@ Before committing, `aips publish preview --base <base> --change-class <class>` r
 Portable Command 變更必須同時驗證 Registry、renderer、CLI lifecycle、MCP read-only facade、ownership conflict 與相關 canonical documentation；版本更新不得把 Host-native capability 誤標為已驗證。
 本機與 GitHub 必須透過 `scripts/publish_preflight.py` 共用 base/head、change class、canonical matrix 與 diff-aware documentation base。發布提案前先執行 `aips publish plan`，確認 protected branch 路由與 PR label；未帶 `AIPS_DOCS_DIFF_BASE` 的一般 validation 不得宣稱為 CI-parity 證據。
 
+公開 PR 的每個新 commit 都要使用 GitHub noreply author 與 committer 身分，並避免在 commit message、Co-authored-by trailer 與差異內容寫入個人資料。先在 GitHub **Settings → Emails** 開啟 **Keep my email addresses private**，讓 GitHub 網頁/API 合併使用 noreply；再從同頁複製 GitHub 提供的 noreply 位址，執行 `git config --local user.email "<noreply 位址>"`。以 `git log -1 --format='%ae%n%ce'` 確認本機 author/committer；不要把實際位址貼進 issue、PR 描述或驗證輸出。發布 preflight 會檢查候選範圍內的所有 commit message 與身份欄位。
+
+PR 建議使用 GitHub merge commit 合併，避免 squash 產生未受本機檢查的 co-author trailer；確認帳號已啟用 email privacy 後，執行 `gh pr merge <PR 編號> --merge`。GitHub 不接受 `--author-email` 指定 noreply 的 merge commit author；啟用 email privacy 後由 GitHub 自動選用 noreply。維護者可在 GitHub repository **Settings → General → Pull Requests** 關閉 **Allow squash merging**，讓設定與發布政策一致。若政策尚未設定，合併前須確認選擇 **Create a merge commit**。
+
+Validation workflow 先執行快速文件影響檢查，再安裝完整驗證相依套件與 Playwright。測試契約檔 `tests/validation/ears_requirement_contracts.py` 僅要求 Scenario Conformance 文件閉包；修改需求規劃功能、範本或 canonical requirement 文件仍會觸發完整 Requirement Planning 文件閉包。GitHub Actions runner 固定 Ubuntu 24.04，artifact action 固定至官方 v7.0.1 完整 SHA；升級前須確認 runner image 與 action Node runtime 支援狀態。
+
 Browser evidence 同樣必須先通過 version 與 isolated-profile headless smoke probe；系統 Chrome 啟動層失敗應標記為 environment blocker，不得誤報成產品回歸。
 
 Publication preflight must run against an exact, clean candidate. It verifies recursive documentation impact, placement rules, candidate head/base and Core Matrix binding before the expensive Integration Gate; a dirty workspace or stale candidate is blocked rather than silently treated as the PR revision.

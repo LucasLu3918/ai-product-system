@@ -58,6 +58,8 @@ Production、Git publication、merge 與 release authority 不因 Automation 或
 
 ## Deterministic Execution
 
+Publication preflight checks candidate commit content and GitHub noreply identity before validation, then uses the same base/head and documentation closure as CI.
+
 Publication Preflight provides a read-only working-tree preview with rule-by-rule documentation closure, and a matrix-binding command that invalidates prior readiness whenever the candidate base or changed-file hash changes.
 
 ### Parallel Run Dashboard
@@ -88,6 +90,8 @@ Security Assurance Level（SAL）依產品 baseline 與 change impact 決定 rev
 Human Approval 維持最高決策權；machine-readable approval binding、resource authorization、audit chain / portable bundle / retention catalog 都只驗證與保存 authority evidence，不創造新的 authority。
 
 ## Scenario Conformance 與 Agent Eval
+
+EARS validator contract-only changes use the Scenario Conformance documentation closure; changes to requirement planning behavior, templates, or canonical requirements retain the full planning closure.
 
 Scenario registry 明確標示 deterministic、lifecycle、agent_eval 或 manual evidence。需要 semantic judgment 的測試保存 observable result，不保存 private chain-of-thought。
 

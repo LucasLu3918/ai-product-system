@@ -1,0 +1,10 @@
+version: 1
+identity:
+  allowed_email_patterns:
+    - '^(?:[0-9]+\+)?[A-Za-z0-9-]+\x40users\.noreply\.github\.com$'
+    - '^noreply\x40github\.com$'
+  report_values: false
+merge:
+  recommended_method: merge
+  squash_allowed: false
+  rationale: GitHub-generated squash messages can add co-author email trailers that the git_commit PII policy must block.
