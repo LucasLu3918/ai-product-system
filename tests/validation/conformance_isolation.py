@@ -258,6 +258,98 @@ if isolation_helper.exists():
             sandbox_doc = json.loads(sandbox.stdout)
             if sandbox_doc.get("status") != "UNSUPPORTED" or sandbox_doc.get("isolated") is not False:
                 errors.append("Sandbox must report UNSUPPORTED without a verified provider")
+            if sandbox_doc.get("provider") is not None:
+                errors.append("Sandbox must not select a provider without external verification")
+
+        auto_normal = subprocess.run([
+            sys.executable, str(isolation_helper), "resolve",
+            "--project", str(project), "--mode", "auto", "--risk", "normal", "--format", "json",
+        ], env=env, capture_output=True, text=True)
+        if auto_normal.returncode != 0 or json.loads(auto_normal.stdout).get("mode") != "worktree":
+            errors.append(f"Auto isolation should choose worktree for normal risk: {auto_normal.stdout.strip()} {auto_normal.stderr.strip()}")
+        auto_high = subprocess.run([
+            sys.executable, str(isolation_helper), "resolve",
+            "--project", str(project), "--mode", "auto", "--risk", "high", "--format", "json",
+        ], env=env, capture_output=True, text=True)
+        if auto_high.returncode != 0:
+            errors.append(f"High-risk auto isolation resolution should report its state: {auto_high.stdout.strip()} {auto_high.stderr.strip()}")
+        else:
+            auto_high_doc = json.loads(auto_high.stdout)
+            if auto_high_doc.get("mode") != "sandbox" or auto_high_doc.get("status") != "UNSUPPORTED":
+                errors.append("High-risk auto isolation must require sandbox and never downgrade")
+
+        # Provider selection requires a current registry-bound record with every observed control.
+        sys.path.insert(0, str(ROOT / "scripts"))
+        import sandbox_providers  # noqa: E402
+        original_registry = sandbox_providers.REGISTRY
+        registry = base / "sandbox-providers.yaml"
+        registry.write_text(yaml.safe_dump({
+            "providers": {
+                "test-provider": {
+                    "enabled": True,
+                    "integration_status": "AVAILABLE",
+                    "runtime_class": "microvm",
+                    "assurance": {"isolation_class": "microvm"},
+                    "data_classes": ["public"],
+                    "verification": {"max_age_hours": 24},
+                },
+            },
+        }), encoding="utf-8")
+        sandbox_providers.REGISTRY = registry
+        verification = sandbox_providers.verification_path(project)
+        verification.parent.mkdir(parents=True, exist_ok=True)
+        record = {
+            "status": "VERIFIED",
+            "provider": "test-provider",
+            "verified_at": __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat().replace("+00:00", "Z"),
+            "registry_digest": sandbox_providers.registry_digest(),
+            "observed_controls": {name: True for name in ("create", "execute", "network_deny", "ephemeral", "destroy", "host_fixture_unchanged")},
+        }
+        verification.write_text(json.dumps(record), encoding="utf-8")
+        verified = sandbox_providers.resolve(project)
+        if verified.get("status") != "AVAILABLE" or verified.get("provider") != "test-provider":
+            errors.append(f"Current complete provider verification should resolve AVAILABLE: {verified}")
+        record["verified_at"] = "2000-01-01T00:00:00Z"
+        verification.write_text(json.dumps(record), encoding="utf-8")
+        stale = sandbox_providers.resolve(project)
+        if stale.get("status") != "BLOCKED":
+            errors.append("Expired provider verification must be BLOCKED")
+        record["verified_at"] = __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat().replace("+00:00", "Z")
+        record["registry_digest"] = "sha256:stale-registry"
+        verification.write_text(json.dumps(record), encoding="utf-8")
+        mismatched = sandbox_providers.resolve(project)
+        if mismatched.get("status") != "BLOCKED":
+            errors.append("Verification from a different provider registry digest must be BLOCKED")
+        record["registry_digest"] = sandbox_providers.registry_digest()
+        restricted = sandbox_providers.resolve(project, data_class="restricted")
+        if restricted.get("status") != "BLOCKED":
+            errors.append("Provider must block data classes outside its registry policy")
+        record["observed_controls"]["network_deny"] = False
+        verification.write_text(json.dumps(record), encoding="utf-8")
+        unsafe = sandbox_providers.resolve(project)
+        if unsafe.get("status") != "BLOCKED":
+            errors.append("Provider must fail closed when an observed security control fails")
+        sandbox_providers.REGISTRY = original_registry
+        verification_script = ROOT / "scripts/e2b_sandbox_verification.py"
+        verification_receipt = base / "e2b-verification.json"
+        skip_env = dict(env)
+        skip_env.pop("E2B_API_KEY", None)
+        skipped = subprocess.run([
+            sys.executable, str(verification_script), "--output", str(verification_receipt),
+            "--check-artifact-path", "results/output.txt",
+        ], env=skip_env, capture_output=True, text=True)
+        if skipped.returncode != 0 or not verification_receipt.exists():
+            errors.append(f"E2B verifier without credentials must emit a skip receipt: {skipped.stdout.strip()} {skipped.stderr.strip()}")
+        else:
+            skip_doc = json.loads(verification_receipt.read_text(encoding="utf-8"))
+            if skip_doc.get("status") != "SKIPPED_NOT_CONFIGURED" or skip_doc.get("live_provider_verified") is not False:
+                errors.append("E2B missing-credential receipt must not claim live verification")
+        unsafe_artifact_path = subprocess.run([
+            sys.executable, str(verification_script), "--output", str(verification_receipt),
+            "--check-artifact-path", "../outside.txt",
+        ], env=skip_env, capture_output=True, text=True)
+        if unsafe_artifact_path.returncode == 0:
+            errors.append("E2B verifier must reject artifact paths that escape their collection root")
         if (config / "aips" / "worktrees").exists():
             errors.append("Isolation resolve must not create a fake sandbox/worktree directory")
 

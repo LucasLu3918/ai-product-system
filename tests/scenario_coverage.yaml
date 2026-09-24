@@ -752,6 +752,8 @@ scenarios:
     coverage: deterministic
     evidence:
       - scripts/execution_isolation.py
+      - scripts/sandbox_providers.py
+      - tests/validation/conformance_isolation.py
       - tests/validate_repository.py
   - id: "112"
     path: tests/scenarios/112-worktree-lifecycle.md
@@ -770,6 +772,10 @@ scenarios:
     coverage: deterministic
     evidence:
       - scripts/execution_isolation.py
+      - scripts/sandbox_providers.py
+      - scripts/e2b_sandbox_verification.py
+      - .github/workflows/e2b-sandbox-verification.yml
+      - tests/validation/conformance_isolation.py
       - tests/validate_repository.py
   - id: "115"
     path: tests/scenarios/115-single-writer-boundary.md

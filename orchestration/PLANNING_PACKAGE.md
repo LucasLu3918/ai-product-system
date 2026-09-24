@@ -41,6 +41,8 @@ Genuinely non-applicable artifacts/dimensions are marked N/A with a reason.
 
 需求規劃 validator 契約以 EARS 情境對應驗收證據；該測試檔單獨變更只需 Scenario Conformance 文件閉包，規劃行為、模板及 canonical requirements 仍需完整規劃閉包。
 
+If a plan includes external execution, record the requested minimum isolation and data class in the Execution Profile. Provider verification status is evidence, not permission to transfer a source payload; source scope and destination must be authorized before staging.
+
 Before architecture is locked:
 
 1. classify Q1/Q2/Q3 baseline;

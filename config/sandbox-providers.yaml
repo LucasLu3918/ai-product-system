@@ -1,0 +1,30 @@
+version: 1
+purpose: Provider-neutral sandbox capabilities and conservative policy defaults.
+defaults:
+  data_classes: [public]
+  network_egress: deny_all
+  host_mounts: none
+  guest_credentials: none
+  publication_authority: none
+  maximum_ttl_seconds: 900
+providers:
+  e2b:
+    enabled: false
+    integration_status: PENDING_DATA_SCOPE_AUTHORIZATION
+    runtime_class: microvm
+    assurance:
+      isolation_class: microvm
+      kernel_boundary: dedicated_guest
+      hardware_virtualization: provider_declared
+      ephemeral: provider_declared
+    controls:
+      host_mounts: none
+      network_egress: deny_all
+      guest_credentials: none
+      publication_authority: none
+      bounded_ttl: true
+    data_classes: [public]
+    verification:
+      status: NOT_VERIFIED
+      evidence: external_runtime_record
+      max_age_hours: 24

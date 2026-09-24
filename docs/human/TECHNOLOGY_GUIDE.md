@@ -58,7 +58,7 @@ Planning 與 Scheduling 分離。Scheduler 根據 Task Graph dependency / bounda
 
 ### Execution Isolation
 
-支援 shared、AIPS-owned Git worktree、verified sandbox。沒有可驗證 provider 時不把普通 temp directory 假裝成 sandbox。
+支援 shared、AIPS-owned Git worktree、verified sandbox。沒有可驗證 provider 時不把普通 temp directory 假裝成 sandbox。`aips isolation resolve --mode auto` 依風險選擇 worktree 或要求 sandbox；資料分類與最低隔離要求也參與 provider matching。E2B Python SDK 位於 optional `requirements-sandbox.txt`，目前只提供 synthetic smoke verifier，registry 預設停用且不接收專案檔案。
 
 ### Runtime Resource Isolation
 

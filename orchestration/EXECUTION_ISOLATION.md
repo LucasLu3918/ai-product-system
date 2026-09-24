@@ -6,7 +6,7 @@ Execution isolation is a capability of the existing Execution Profile. It is not
 
 - `shared` — use the existing project workspace. Available by default, but it is not an isolation boundary.
 - `worktree` — use a real Git worktree managed by AIPS. This is the default isolated writer workspace when Git worktree support is available.
-- `sandbox` — use a verified external sandbox provider. AIPS core does not emulate sandboxing with a temporary directory.
+- `sandbox` — use a verified external sandbox provider. AIPS core does not emulate sandboxing with a temporary directory. A provider is eligible only when a current registry-bound record proves the required observed controls.
 
 ## Resolution
 
@@ -16,9 +16,19 @@ Truthful capability reporting is mandatory:
 
 - shared → AVAILABLE, isolated=false;
 - worktree → AVAILABLE only when the target is a Git repository and `git worktree` is usable;
-- sandbox → UNSUPPORTED unless a verified provider integration exists.
+- sandbox → UNSUPPORTED when no provider is enabled; BLOCKED when an enabled provider lacks fresh matching verification or fails a required data/capability constraint; AVAILABLE only after a fresh matching verification.
 
 Unsupported isolation must become explicit BLOCKED/UNSUPPORTED state. Never silently downgrade a requested sandbox to shared or a temp directory.
+
+### Verified provider policy
+
+`config/sandbox-providers.yaml` is the provider-neutral capability registry. Provider statements about MicroVM and hardware virtualization are marked provider-declared; AIPS receipts separately record controls observed by the integration. Registry changes invalidate prior verification by digest. Verification expires after the configured age.
+
+Resolution accepts an explicit data class and minimum isolation class. The initial E2B candidate is disabled, accepts only `public` data, uses deny-all egress, has no host mounts, guest credentials or publication authority, and has a bounded TTL. `internal`, `confidential` and `restricted` data remain blocked until a policy-approved provider is configured. The `auto` resolver chooses worktree for ordinary risk and sandbox for high/critical risk or explicitly untrusted execution; it never falls back when sandbox is required but unavailable.
+
+The optional E2B smoke test handles synthetic content only and emits a bounded receipt. The protected-main `workflow_dispatch` requires explicit confirmation that the provider's prior written testing consent was obtained. PRs do not receive `E2B_API_KEY`; missing credentials report `SKIPPED_NOT_CONFIGURED`. Smoke-test success does not enable the registry or attest the provider's underlying hypervisor. General task-file staging/execution remains disabled pending explicit data-scope authorization and implementation of its adapter; the registry's `integration_status` must be `AVAILABLE` before resolution can report `AVAILABLE`.
+
+Guest artifacts must be treated as untrusted: validate relative paths and contents on the host, bind import to the source revision and Change Boundary, and run the existing Integration/Security Gate before Git operations. Sandbox capability grants no Git publication or deployment authority.
 
 ## Worktree ownership
 

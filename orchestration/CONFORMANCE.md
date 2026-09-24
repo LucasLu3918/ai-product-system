@@ -246,7 +246,7 @@ Scenario 138 is lifecycle-covered by `tests/evidence/resource_authorization_life
 
 It proves default-DENY behavior, explicit resource/operation grants, Change Boundary enforcement for mutation, rejection of undeclared/protected operations, secret-reference-only configuration and truthful `runtime_enforced=false` reporting.
 
-The capability extends the existing Execution Profile and Governance path; it does not introduce a Role, Skill or approval gate.
+The capability extends the existing Execution Profile and Governance path; it does not introduce a Role, Skill or approval gate. Its Isolation Profile may optionally carry `runtime_class`, `minimum_isolation`, `verification_status` and `data_class`; older profiles omit these fields without migration. Scenario 111/114 cover fail-closed risk/data resolution and the synthetic-only E2B verification lane; mock or skipped evidence is not live-provider verification.
 
 Current automated inventory after Scenario 138:
 

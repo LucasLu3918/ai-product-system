@@ -1,0 +1,2 @@
+# Optional controlled-trial dependency; excluded from the baseline installation.
+e2b==2.51.0

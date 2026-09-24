@@ -721,14 +721,15 @@ Workspace fingerprint excludes AIPS-owned `.ai/` state so checkpoint writes do n
 
 ~~~mermaid
 flowchart TD
-    P[Approved Change Boundary] --> R{Resolve mode}
+    P[Approved Change Boundary] --> R{Resolve mode + risk + data class}
     R -->|shared| SH[Current workspace · isolated=false]
     R -->|worktree| WT[git worktree + AIPS ownership record]
-    R -->|sandbox| SP{Verified provider?}
-    SP -->|yes| SB[Provider sandbox]
-    SP -->|no| B[UNSUPPORTED / BLOCKED]
+    R -->|sandbox / high risk / untrusted| SP{Enabled + fresh registry-bound evidence + data policy?}
+    SP -->|yes| SB[Provider sandbox · bounded · deny egress]
+    SP -->|no| B[UNSUPPORTED / BLOCKED · no downgrade]
     WT --> SW[repository_id + Change Boundary single writer]
-    SB --> SW
+    SB -. future task adapter .-> VAL[Host-side artifact validation]
+    VAL --> SW
     SH --> SW
     SW --> E[Execute under existing governance / impact / test rules]
     E --> C{Cleanup requested?}
