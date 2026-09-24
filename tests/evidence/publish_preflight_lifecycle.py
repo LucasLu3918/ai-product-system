@@ -75,6 +75,8 @@ def main() -> int:
 
     with patch.object(publish, "resolve_commit", side_effect=["base-sha", "head-sha"]), patch.object(
         publish, "worktree_changed_files", return_value=["bin/aips", "untracked-note.md"]
+    ), patch.object(publish, "preview_content_safety", return_value={"status": "PASS", "findings": [], "unscannable_count": 0, "blockers": []}), patch.object(
+        publish, "configured_identity_plan", return_value={"status": "PASS", "configured": True, "findings": [], "blockers": []}
     ):
         preview = publish.preview_candidate(Namespace(
             base="main", head="HEAD", change_class="core", labels="aips:core-change",
@@ -85,7 +87,25 @@ def main() -> int:
         ".aips/review/CORE_CHANGE_TEST_MATRIX.yaml", "bin/aips", "untracked-note.md"
     ]
     assert preview["matrix"]["required"] is True
+    assert preview["content_safety"]["status"] == "PASS" and preview["git_identity"]["status"] == "PASS"
     assert "placement:publication-cli" in preview["documentation"]["required_by"]["docs/human/USER_GUIDE.md"]
+
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        candidate = root / "untracked.txt"
+        private_email = "private.address" + "@" + "example.com"
+        candidate.write_text("contact " + private_email, encoding="utf-8")
+        with patch.object(publish, "ROOT", root), patch.object(publish, "git", return_value=""):
+            early_safety = publish.preview_content_safety("base-sha", ["untracked.txt"])
+        assert early_safety["status"] == "BLOCKED"
+        assert private_email not in repr(early_safety)
+    private_email = "private.address" + "@" + "example.com"
+    with patch.object(publish, "git", return_value=private_email):
+        early_identity = publish.configured_identity_plan()
+    assert early_identity["status"] == "BLOCKED" and private_email not in repr(early_identity)
+    with patch.object(publish, "git", return_value=""):
+        missing_identity = publish.configured_identity_plan()
+    assert missing_identity["findings"] == [{"reason": "git_email_not_configured"}]
 
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
@@ -134,6 +154,8 @@ def main() -> int:
         "changed_files_hash",
         "RESET_EQUIVALENT_TREE",
         "refresh-intelligence",
+        "preview_content_safety",
+        "configured_identity_plan",
     ):
         assert contract in source
     browser_source = (ROOT / "scripts/browser_runtime.py").read_text(encoding="utf-8")

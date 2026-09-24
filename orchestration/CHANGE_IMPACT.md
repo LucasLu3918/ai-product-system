@@ -14,9 +14,13 @@ Mutation request
 → Change Boundary
 → IMPACT_GRAPH traversal
 → CHANGE_IMPACT contract
+→ IMPLEMENTATION_APPROVED
 → implementation in valid project-native style
 → tests / verification
-→ actual diff vs declared impact
+→ actual Git base/head + binary diff digest + changed-file set vs declared impact
+→ `aips intelligence impact-validate --project <repo> --path <CHANGE_IMPACT.yaml>`
+   ├─ exact, clean, reconciled → READY
+   └─ mismatch / unverifiable → BLOCKED
 → unexpected impact?
    ├─ yes → review / fix / expand approved boundary when needed
    └─ no  → refresh affected Intelligence
@@ -77,9 +81,9 @@ EPHEMERAL:
 
 `aips intelligence impact-init` creates a DRAFT. Resolve semantic impact, required dimensions, graph scope and unknowns, then record the user's scope authorization as `scope_review.status: APPROVED`, including an approval reference and timestamp. This permits implementation only; it does not assert that the eventual diff or graph has been reconciled. The workflow state may advance to `IMPLEMENTATION_APPROVED` before implementation.
 
-`READY` is reserved for the post-implementation state. It requires a reconciliation record containing base/head revisions, a digest of the reviewed diff, explicit Impact Graph review, and evidence that actual changed files/contracts were compared with the declared boundary. Unresolved or newly discovered material impact keeps the artifact out of READY and requires impact review; material boundary expansion also requires scope reapproval. Never use `READY` as a pre-implementation approval state.
+`READY` is reserved for the post-implementation state. It requires full commit SHAs for base/head, a clean worktree, an ancestor relationship from base to head, `head_revision` equal to checked-out `HEAD`, `diff_digest` equal to `sha256:` plus the SHA-256 of `git diff --binary --no-ext-diff <base> <head> --`, and `reconciliation.changed_files` equal to the exact sorted Git path set. Every actual changed path must also appear in `change.target_paths`. Keep semantic Impact Graph review and human evidence explicit; a matching digest does not prove semantic completeness. Unresolved or newly discovered material impact keeps the artifact out of READY and requires impact review; material boundary expansion also requires scope reapproval. Never use `READY` as a pre-implementation approval state.
 
-Run `aips intelligence impact-validate --path <CHANGE_IMPACT.yaml>` before treating an artifact as implementation-approved or READY. Validation fails closed when either the user-authorized scope record or the post-diff reconciliation evidence is incomplete.
+Run `aips intelligence impact-validate --project <repo> --path <CHANGE_IMPACT.yaml>` before treating an artifact as implementation-approved or READY. Validation fails closed when either the user-authorized scope record or the post-diff Git reconciliation is missing, dirty, unverifiable or mismatched. DRAFT and IMPLEMENTATION_APPROVED validation does not require a Git diff.
 
 ## Diff reconciliation
 

@@ -1,95 +1,227 @@
 version: 1
-
 candidate:
-  base_sha: 4d7322d4b07750742447f324f958a1504b8ff5e0
-  changed_files_hash: c540d51e2a5912307a778e6c7d1444e33744e1802d489d8faabcf833c3e39694
-
+  base_sha: 704797c2032e96c312ba4bb3bcf0f0dde1115d65
+  changed_files_hash: 87f928e31bed3179997b4ec59892b00a69539778535166749efa3c23e2856bfd
 change:
-  id: layered-context-memory
-  summary: Add deterministic layered Project Intelligence context with a derived compact core capsule, bounded Recall and on-demand Archive pointers, task-scoped freshness telemetry, read-only context auditing, and a two-phase Change Impact approval/reconciliation lifecycle.
+  id: context-integrity-and-preflight-feedback
+  summary: Enforce truthful task freshness, safe budgeted Context output, Git-bound
+    Change Impact READY validation, actionable retrieval cache diagnostics, and early
+    publication checks.
   boundary:
-    - deterministic-layered-project-context-and-budget-telemetry
-    - task-scoped-freshness-with-global-mutation-fail-closed
-    - read-only-project-context-audit
-    - change-impact-implementation-approval-and-post-diff-readiness
-    - runtime-hook-and-manifest-compatibility
-    - scenario-documentation-and-evidence
-
+  - task-freshness-relevance-proof
+  - safe-assembled-context-budget
+  - git-bound-change-impact-ready-validation
+  - retrieval-index-diagnostics-and-source-fallback
+  - working-tree-publication-preview-safety-and-identity
+  - docs-scenarios-and-cli-compatibility
 matrix:
-  - boundary: deterministic-layered-project-context-and-budget-telemetry
-    reason: The runtime context contract gains derived Core, Recall and Archive layers, bounded token estimates, source provenance and temporal references.
-    checks:
-      static_lint: {applicable: true, evidence: "Python compilation and repository static contracts"}
-      unit: {applicable: true, evidence: "tests/evidence/layered_context_memory_lifecycle.py validates derived capsule, token limits, pointers and safe defaults"}
-      integration: {applicable: true, evidence: "tests/evidence/intelligence_context_lifecycle.py and full repository validation"}
-      contract: {applicable: true, evidence: "TURN_CONTEXT_MANIFEST schema and exact manifest lifecycle checks"}
-      e2e: {applicable: false, na_reason: "No user-facing product UI; runtime hook contract is verified directly"}
-      security: {applicable: true, evidence: "Canonical sources remain pointer-based; derived capsule marks canonical:false and preserves source digest"}
-      migration_recovery: {applicable: false, na_reason: "Existing Intelligence stores remain readable; missing derived capsule uses safe fallback and no canonical migration occurs"}
-      cli_harness: {applicable: true, evidence: "AIPS context hook and intelligence context command lifecycle validation"}
-      docs_schema: {applicable: true, evidence: "Manifest template and Project Intelligence docs validation"}
-  - boundary: task-scoped-freshness-with-global-mutation-fail-closed
-    reason: Freshness output gains selected-topic status while mutation authorization continues to use the existing global fail-closed state.
-    checks:
-      static_lint: {applicable: true, evidence: "Python compilation and static contracts"}
-      unit: {applicable: true, evidence: "Layered context lifecycle validates freshness fields and safe status"}
-      integration: {applicable: true, evidence: "Intelligence context lifecycle stale and unknown mutation checks"}
-      contract: {applicable: true, evidence: "Context manifest task_freshness shape"}
-      e2e: {applicable: false, na_reason: "No user-facing UI"}
-      security: {applicable: true, evidence: "Unknown freshness does not claim task irrelevance; global mutation remains fail-closed"}
-      migration_recovery: {applicable: false, na_reason: "No persistent state migration"}
-      cli_harness: {applicable: true, evidence: "Context command lifecycle validation"}
-      docs_schema: {applicable: true, evidence: "Human Project Intelligence guide"}
-  - boundary: read-only-project-context-audit
-    reason: A new audit CLI checks stale/missing pointers, hashes, temporal references, secrets and authority conflicts without changing canonical facts.
-    checks:
-      static_lint: {applicable: true, evidence: "Python compilation"}
-      unit: {applicable: true, evidence: "Layered context lifecycle verifies read-only and canonical facts unchanged"}
-      integration: {applicable: true, evidence: "Full repository validation executes lifecycle evidence"}
-      contract: {applicable: true, evidence: "Structured PASS/WARN/REBUILD_REQUIRED output"}
-      e2e: {applicable: false, na_reason: "CLI-only audit with deterministic structured output"}
-      security: {applicable: true, evidence: "Secret-like source paths/values are reported by path only; audit writes no facts"}
-      migration_recovery: {applicable: false, na_reason: "Read-only command does not migrate persisted state"}
-      cli_harness: {applicable: true, evidence: "aips intelligence context-audit command"}
-      docs_schema: {applicable: true, evidence: "Repository CLI/schema validation"}
-  - boundary: change-impact-implementation-approval-and-post-diff-readiness
-    reason: The prior pre-implementation READY cycle is replaced by separately validated implementation authorization and post-diff reconciliation.
-    checks:
-      static_lint: {applicable: true, evidence: "Python compilation and repository static contracts"}
-      unit: {applicable: true, evidence: "Layered lifecycle tests DRAFT, IMPLEMENTATION_APPROVED, and READY validation paths"}
-      integration: {applicable: true, evidence: "Full repository validation and Scenario 084"}
-      contract: {applicable: true, evidence: "CHANGE_IMPACT template plus impact-validate CLI"}
-      e2e: {applicable: false, na_reason: "Governance CLI lifecycle is exercised directly; no UI"}
-      security: {applicable: true, evidence: "READY fails closed without scope approval, resolved unknowns, diff digest, graph review and evidence"}
-      migration_recovery: {applicable: false, na_reason: "Backward-readable YAML lifecycle extension; no destructive migration"}
-      cli_harness: {applicable: true, evidence: "impact-init and impact-validate command lifecycle"}
-      docs_schema: {applicable: true, evidence: "Change Impact orchestration, System instructions and Scenario 084"}
-  - boundary: runtime-hook-and-manifest-compatibility
-    reason: Claude/Gemini compact context and Codex-compatible context manifest remain safe for existing consumers.
-    checks:
-      static_lint: {applicable: true, evidence: "Python syntax and static contracts"}
-      unit: {applicable: true, evidence: "turn_context_hook lifecycle contract checks"}
-      integration: {applicable: true, evidence: "Full runtime and harness validation"}
-      contract: {applicable: true, evidence: "TURN_CONTEXT_MANIFEST template compatibility"}
-      e2e: {applicable: false, na_reason: "No end-user visual/browser surface"}
-      security: {applicable: true, evidence: "Bounded compact output and provenance digest; canonical sources remain authoritative"}
-      migration_recovery: {applicable: false, na_reason: "No runtime state migration"}
-      cli_harness: {applicable: true, evidence: "Runtime hook and context CLI tests"}
-      docs_schema: {applicable: true, evidence: "Manifest contract and repository validation"}
-  - boundary: scenario-documentation-and-evidence
-    reason: The canonical lifecycle, eval fixture, tests and documentation must agree on the new two-phase status semantics.
-    checks:
-      static_lint: {applicable: true, evidence: "Scenario registry and documentation contracts"}
-      unit: {applicable: true, evidence: "Scenario 084 Agent Eval case/result scoring"}
-      integration: {applicable: true, evidence: "tests/validate_repository.py full repository gate"}
-      contract: {applicable: true, evidence: "54/54 Agent Eval cases pass and scenario coverage registry"}
-      e2e: {applicable: false, na_reason: "Documentation and governance evidence; no UI"}
-      security: {applicable: true, evidence: "Privacy-safe summaries, source pointers and path-only audit findings"}
-      migration_recovery: {applicable: false, na_reason: "No persistence schema migration"}
-      cli_harness: {applicable: true, evidence: "Repository validation entrypoint"}
-      docs_schema: {applicable: true, evidence: "System, orchestration, human guide and Scenario 084 contract"}
-
+- boundary: task-freshness-relevance-proof
+  reason: Task-level freshness and irrelevance proof must reflect current scan and
+    complete topic/source mapping.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Python compilation plus static contracts
+    unit:
+      applicable: true
+      evidence: tests/evidence/layered_context_memory_lifecycle.py freshness cases
+    integration:
+      applicable: true
+      evidence: tests/validate_repository.py and context lifecycle
+    contract:
+      applicable: true
+      evidence: context manifest freshness fields
+    e2e:
+      applicable: false
+      na_reason: No user-facing UI; manifest/hook CLI lifecycle is direct
+    security:
+      applicable: true
+      evidence: unknown/unmapped freshness remains stale and mutation fails closed
+    migration_recovery:
+      applicable: false
+      na_reason: No persistent schema migration
+    cli_harness:
+      applicable: true
+      evidence: context manifest lifecycle and runtime hook output
+    docs_schema:
+      applicable: true
+      evidence: Project Intelligence guide and architecture flow
+- boundary: safe-assembled-context-budget
+  reason: Core, temporal, retrieval and compact hook text must respect the estimated
+    layer and total limits with privacy-safe inline output.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Python compilation plus static contracts
+    unit:
+      applicable: true
+      evidence: oversized temporal
+      fake PII/secret and compact hook tests: null
+    integration:
+      applicable: true
+      evidence: project intelligence and runtime hook lifecycle
+    contract:
+      applicable: true
+      evidence: manifest telemetry and compact hook rendered_tokens
+    e2e:
+      applicable: false
+      na_reason: No user-facing UI
+    security:
+      applicable: true
+      evidence: Content Safety Boundary negative paths for Core
+      temporal and retrieval text: null
+    migration_recovery:
+      applicable: false
+      na_reason: Derived context is rebuilt from canonical data
+    cli_harness:
+      applicable: true
+      evidence: turn_context_hook lifecycle
+    docs_schema:
+      applicable: true
+      evidence: Project Intelligence docs and diagrams
+- boundary: git-bound-change-impact-ready-validation
+  reason: READY must be based on exact Git state and diff rather than presence-only
+    evidence.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Python compilation and repository validation
+    unit:
+      applicable: true
+      evidence: real temporary Git repo positive and forged digest/path/head negatives
+    integration:
+      applicable: true
+      evidence: project intelligence lifecycle and Scenario 084
+    contract:
+      applicable: true
+      evidence: CHANGE_IMPACT schema and impact-validate CLI
+    e2e:
+      applicable: false
+      na_reason: Governance CLI has no UI
+    security:
+      applicable: true
+      evidence: dirty or unverifiable Git state cannot become READY
+    migration_recovery:
+      applicable: true
+      evidence: legacy READY artifacts now require exact reconciliation; draft formats
+        remain readable
+    cli_harness:
+      applicable: true
+      evidence: aips intelligence impact-validate --help and CLI lifecycle
+    docs_schema:
+      applicable: true
+      evidence: Change Impact template
+      protocol: null
+      scenario and CLI help: null
+- boundary: retrieval-index-diagnostics-and-source-fallback
+  reason: Index open/rebuild failures must return structured remediation and retain
+    canonical source pointers.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Python compilation
+    unit:
+      applicable: true
+      evidence: SQLite open and permission failure lifecycle cases
+    integration:
+      applicable: true
+      evidence: context manifest failure fallback lifecycle
+    contract:
+      applicable: true
+      evidence: INDEX_UNAVAILABLE reason_code/remediation response
+    e2e:
+      applicable: false
+      na_reason: No user-facing UI
+    security:
+      applicable: true
+      evidence: diagnostics exclude cache paths and raw exception text
+    migration_recovery:
+      applicable: false
+      na_reason: Index cache is disposable and rebuilt in place
+    cli_harness:
+      applicable: true
+      evidence: direct index/retrieve helpers return structured failure and nonzero
+        CLI status
+    docs_schema:
+      applicable: true
+      evidence: Project Intelligence guide and maintenance map
+- boundary: working-tree-publication-preview-safety-and-identity
+  reason: Cheap content and configured identity findings should appear in preview
+    before expensive validation.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Python compilation
+    unit:
+      applicable: true
+      evidence: preview content-safety and identity negative cases
+    integration:
+      applicable: true
+      evidence: publish preflight lifecycle and repository validation
+    contract:
+      applicable: true
+      evidence: preview reports non-sensitive finding categories
+    e2e:
+      applicable: false
+      na_reason: No user-facing UI
+    security:
+      applicable: true
+      evidence: synthetic PII rejected without echoing value
+    migration_recovery:
+      applicable: false
+      na_reason: Read-only preview
+      no state migration: null
+    cli_harness:
+      applicable: true
+      evidence: publish preview lifecycle
+    docs_schema:
+      applicable: true
+      evidence: Core Change Testing and Human architecture overview
+- boundary: docs-scenarios-and-cli-compatibility
+  reason: Agent/human docs, flow diagram, SVG, CLI discoverability, scenario and matrix
+    must match behavior.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: repository health and documentation contracts
+    unit:
+      applicable: true
+      evidence: Scenario 084 lifecycle evidence
+    integration:
+      applicable: true
+      evidence: tests/validate_repository.py
+    contract:
+      applicable: true
+      evidence: scenario coverage and CLI help checks
+    e2e:
+      applicable: false
+      na_reason: No user-facing UI
+    security:
+      applicable: true
+      evidence: documented fail-closed/PII redaction behavior is exercised by negative
+        tests
+    migration_recovery:
+      applicable: false
+      na_reason: No documentation state migration
+    cli_harness:
+      applicable: true
+      evidence: public CLI route and compact runtime hook contract
+    docs_schema:
+      applicable: true
+      evidence: changed docs
+      SVG: null
+      templates and scenario registry validation: null
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 status: READY
+review_evidence:
+- 'PYTHONDONTWRITEBYTECODE=1 .venv/bin/python tests/evidence/layered_context_memory_lifecycle.py:
+  PASS'
+- 'PYTHONDONTWRITEBYTECODE=1 .venv/bin/python tests/evidence/publish_preflight_lifecycle.py:
+  PASS'
+- 'PYTHONDONTWRITEBYTECODE=1 .venv/bin/python tests/validate_repository.py: PASS (version
+  0.58.0; 12 roles; 25 skills; 174 scenarios)'
+- 'git diff --check: PASS'
+- 'bin/aips publish preview --base origin/main --change-class core: documentation
+  complete; content safety PASS; configured identity PASS'

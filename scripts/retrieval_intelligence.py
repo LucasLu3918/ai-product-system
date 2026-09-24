@@ -509,10 +509,41 @@ def write_metadata_file(store: Path, doc: dict[str, Any]) -> None:
     os.replace(temp, path)
 
 
+def index_unavailable(exc: BaseException, *, token_budget: int = 0, query: str | None = None) -> dict[str, Any]:
+    message = str(exc).lower()
+    if "unable to open database file" in message or "database or disk is full" in message:
+        code = "SQLITE_OPEN_FAILED"
+    elif isinstance(exc, PermissionError) or "permission denied" in message or "operation not permitted" in message:
+        code = "RETRIEVAL_CACHE_ACCESS_DENIED"
+    elif "database disk image is malformed" in message or "not a database" in message:
+        code = "SQLITE_DATABASE_INVALID"
+    else:
+        code = "RETRIEVAL_INDEX_UNAVAILABLE"
+    remediation = (
+        "Rebuild the disposable index with aips intelligence index --project <project> --force."
+        if code == "SQLITE_DATABASE_INVALID"
+        else "Check that the configured AIPS cache directory is accessible and writable, then rebuild with aips intelligence index --project <project> --force."
+    )
+    result: dict[str, Any] = {
+        "status": "INDEX_UNAVAILABLE",
+        "reason_code": code,
+        "remediation": remediation,
+        "results": [],
+        "token_budget": token_budget,
+        "estimated_tokens": 0,
+    }
+    if query is not None:
+        result["query"] = query
+    return result
+
+
 def index_repository(root: Path, store: Path, force: bool = False) -> dict[str, Any]:
     root = root.resolve()
     db_path = index_path(root)
-    conn, fts_available = open_db(db_path)
+    try:
+        conn, fts_available = open_db(db_path)
+    except (OSError, sqlite3.Error) as exc:
+        return index_unavailable(exc)
     try:
         old_schema = metadata_get(conn, "schema_version")
         old_head = metadata_get(conn, "git_head")
@@ -1140,6 +1171,8 @@ def query_repository(
         }
     if status_before["status"] in {"STALE", "INVALID"} and refresh:
         index_update = index_repository(root, store, force=status_before["status"] == "INVALID")
+        if index_update.get("status") == "INDEX_UNAVAILABLE":
+            return {**index_update, "query": query, "token_budget": token_budget}
 
     status_now = index_status(root, store)
     if status_now["status"] not in {"CURRENT"}:
@@ -1168,7 +1201,10 @@ def query_repository(
     if semantic_aliases:
         alias_terms, alias_telemetry = semantic_alias_expansion(terms)
     db_path = index_path(root)
-    conn, fts_available = open_db(db_path)
+    try:
+        conn, fts_available = open_db(db_path)
+    except (OSError, sqlite3.Error) as exc:
+        return index_unavailable(exc, token_budget=token_budget, query=query)
     try:
         symbol_map = symbol_boosts(conn, terms)
         exact_companion_keys = exact_symbol_companion_keys(conn, symbol_map)

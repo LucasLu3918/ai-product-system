@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import subprocess
 import sys
@@ -65,6 +66,10 @@ def compact_context(data: dict) -> str:
 
     retrieval = ctx.get("retrieval") or {}
     lines.append(f"retrieval_status={retrieval.get('status')}")
+    if retrieval.get("reason_code"):
+        lines.append(f"retrieval_error={retrieval.get('reason_code')}")
+    if retrieval.get("remediation"):
+        lines.append("retrieval_next_step=" + str(retrieval["remediation"])[:400])
     if req.get("retrieval_index_required"):
         lines.append("retrieval_index_required=True (Agent should run: aips intelligence index --project <project>)")
     retrieval_results = retrieval.get("results") or []
@@ -86,7 +91,55 @@ def compact_context(data: dict) -> str:
         "For existing-project mutation: satisfy Intelligence initialization/refresh/readiness, "
         "ensure Retrieval Intelligence when requested, resolve Change Impact, preserve valid native conventions, then implement."
     )
-    return "\n".join(lines)
+    hard_budget = max(1, int(telemetry.get("hard_budget_tokens") or 7600))
+    truncated = False
+
+    def estimate() -> int:
+        return math.ceil(len("\n".join(lines)) / 4)
+
+    while estimate() > hard_budget:
+        index = next((i for i in range(len(lines) - 1, -1, -1) if lines[i].startswith("    ")), None)
+        if index is not None:
+            lines.pop(index)
+            truncated = True
+            continue
+        index = next((i for i in range(len(lines) - 1, -1, -1) if lines[i].startswith("- ")), None)
+        if index is not None:
+            lines.pop(index)
+            truncated = True
+            continue
+        index = next((i for i in range(len(lines) - 1, -1, -1) if lines[i].startswith(("project_sources=", "intelligence_topics=", "targeted_refresh="))), None)
+        if index is not None:
+            key, _, value = lines[index].partition("=")
+            entries = value.split(",")
+            lines[index] = f"{key}=" + ",".join(entries[:4]) + f" (truncated:{max(0, len(entries) - 4)})"
+            if len(entries) <= 4:
+                lines.pop(index)
+            truncated = True
+            continue
+        summary_index = next((i for i, line in enumerate(lines) if line.startswith("project_core_summary=")), None)
+        if summary_index is not None and len(lines[summary_index]) > 80:
+            line = lines[summary_index]
+            lines[summary_index] = "project_core_summary=" + line[len("project_core_summary="): int(len(line) * 0.8)] + " [truncated]"
+            truncated = True
+            continue
+        if estimate() <= hard_budget:
+            break
+        raise ValueError("mandatory turn context fields exceed the configured hard budget")
+
+    rendered = "\n".join(lines)
+    rendered_tokens = math.ceil(len(rendered) / 4)
+    telemetry["rendered_tokens"] = rendered_tokens
+    telemetry["rendered_budget_tokens"] = hard_budget
+    telemetry["rendered_truncated"] = truncated
+    for index, line in enumerate(lines):
+        if line.startswith("context_tokens_estimated="):
+            lines[index] = f"context_tokens_estimated={rendered_tokens} hard_budget={hard_budget} truncated={truncated}"
+            break
+    rendered = "\n".join(lines)
+    if math.ceil(len(rendered) / 4) > hard_budget:
+        raise ValueError("rendered turn context exceeds the configured hard budget")
+    return rendered
 
 
 def main() -> int:

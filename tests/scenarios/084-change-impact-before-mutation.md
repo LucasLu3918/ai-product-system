@@ -10,6 +10,7 @@ Expected:
 - record user scope authorization and use IMPLEMENTATION_APPROVED to begin the approved work;
 - implement only within the declared boundary;
 - reconcile the actual diff against declared impact afterward;
-- mark READY only after recording base/head, reviewed diff digest, Impact Graph review and reconciliation evidence;
+- mark READY only after recording full base/head SHAs, confirming a clean checkout and head match, hashing the actual binary Git diff, recording its exact changed-file set, checking all changed paths against declared target_paths, and attaching Impact Graph review/evidence;
+- reject READY when a revision is unresolved, the digest/path set is forged or incomplete, HEAD differs, or the worktree is dirty;
 - if material impact expands beyond the declared/approved boundary, stop affected continuation, update impact, rerun required verification and obtain scope reapproval when required;
 - refresh affected Intelligence after the verified change.

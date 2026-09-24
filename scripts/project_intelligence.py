@@ -51,10 +51,12 @@ from retrieval_intelligence import (
 from retrieval_intelligence import (
     index_status as retrieval_index_status,
 )
+from retrieval_intelligence import index_unavailable as retrieval_index_unavailable
 from retrieval_intelligence import (
     query_repository as retrieval_query_repository,
 )
 from retrieval_intelligence import redact_text as redact_retrieval_text
+from content_safety import safe_emit as safe_context_emit
 from temporal_intelligence import (
     active_assertions as temporal_active_assertions,
     between as temporal_between,
@@ -85,6 +87,10 @@ CODE_EXT = {
 REQUIRED_SEMANTIC_TOPICS = (
     "architecture", "data-flow", "modules", "conventions", "testing", "security",
 )
+CONTEXT_CORE_HARD_BUDGET = 1600
+CONTEXT_RECALL_HARD_BUDGET = 6000
+CONTEXT_TEMPORAL_RESERVE = 1000
+CONTEXT_TOTAL_HARD_BUDGET = 7600
 OPTIONAL_SEMANTIC_TOPICS = ("operations",)
 MUTATION_WORDS = {
     "modify", "change", "fix", "implement", "add", "remove", "refactor", "update",
@@ -385,17 +391,32 @@ def layered_context(root: Path, store: Path, intel: dict[str, Any], retrieval: d
     temporal_snapshot = temporal_active_assertions(root, temporal)
     temporal_active = temporal_snapshot.get("assertions", [])
     sources = [str(item.get("path")) for item in (registry.get("sources") or []) if item.get("path")]
-    summary = str(architecture.get("summary") or "").strip()[:6400]
+    summary_source = str(architecture.get("summary") or "").strip()
+    summary_safe = safe_context_emit(sink="runtime_log", payload=summary_source).get("safe_payload")
+    summary = str(summary_safe or "").strip()[:6400]
     approved_override_facts: list[dict[str, str]] = []
     for collection in ("approved_inferences", "additional_rules", "exceptions"):
         for item in overrides.get(collection) or []:
             if not isinstance(item, dict) or str(item.get("status", "APPROVED")).upper() not in {"APPROVED", "ACTIVE"}:
                 continue
-            approved_override_facts.append({key: redact_retrieval_text(str(item[key]))[:240] for key in ("id", "scope", "rule", "reason") if item.get(key)})
+            safe_override = safe_context_emit(sink="runtime_log", payload={key: str(item[key]) for key in ("id", "scope", "rule", "reason") if item.get(key)}).get("safe_payload") or {}
+            approved_override_facts.append({key: str(value)[:240] for key, value in safe_override.items()})
     temporal_summary = [
-        {key: str(item[key])[:160] for key in ("id", "subject", "predicate", "object", "quality", "source") if item.get(key)}
+        safe_item
         for item in temporal_active[:40]
+        for safe_item in [safe_context_emit(sink="runtime_log", payload={key: str(item[key]) for key in ("id", "subject", "predicate", "object", "quality", "source") if item.get(key)}).get("safe_payload") or {}]
     ]
+    temporal_summary = [{key: str(value)[:120] for key, value in item.items()} for item in temporal_summary]
+    temporal_budget_tokens = CONTEXT_TEMPORAL_RESERVE
+    bounded_temporal: list[dict[str, str]] = []
+    temporal_truncated = len(temporal_active) > len(temporal_summary)
+    for item in temporal_summary:
+        candidate = [*bounded_temporal, item]
+        if math.ceil(len(json.dumps(candidate, ensure_ascii=False)) / 4) > temporal_budget_tokens:
+            temporal_truncated = True
+            break
+        bounded_temporal.append(item)
+    temporal_summary = bounded_temporal
     capsule = {
         "canonical": False,
         "derived": True,
@@ -404,15 +425,16 @@ def layered_context(root: Path, store: Path, intel: dict[str, Any], retrieval: d
         "summary_source": "PROJECT_INTELLIGENCE.yaml#/architecture (rebuild from canonical source)",
         "override_source": str(store / "PROJECT_OVERRIDES.yaml"),
         "readiness": state.get("readiness", "PARTIAL"),
-        "freshness": state.get("freshness", "UNKNOWN"),
+        "freshness": freshness_result.get("status", "UNKNOWN"),
         "source_pointers": sources[:12],
-        "active_temporal_assertion_ids": [str(item.get("id")) for item in temporal_active if item.get("id")][:40],
+        "source_pointers_truncated": len(sources) > 12,
+        "active_temporal_assertion_ids": [str(item.get("id"))[:120] for item in temporal_active if item.get("id")][:40],
         "temporal_assertion_ids_truncated": len([item for item in temporal_active if item.get("id")]) > 40,
         "approved_overrides": approved_override_facts[:24],
         "approved_overrides_truncated": len(approved_override_facts) > 24,
         "source_digest": sha(json.dumps({"architecture": architecture, "sources": sources, "temporal": temporal_active, "overrides": overrides}, sort_keys=True, ensure_ascii=False)),
         "estimated_tokens": 0,
-        "target_tokens": 1600,
+        "target_tokens": CONTEXT_CORE_HARD_BUDGET,
     }
     capsule["estimated_tokens"] = math.ceil(len(json.dumps({key: value for key, value in capsule.items() if key != "estimated_tokens"}, ensure_ascii=False)) / 4)
     while capsule["estimated_tokens"] > capsule["target_tokens"] and (capsule["summary"] or capsule["approved_overrides"] or capsule["source_pointers"] or len(capsule["active_temporal_assertion_ids"]) > 40):
@@ -431,6 +453,13 @@ def layered_context(root: Path, store: Path, intel: dict[str, Any], retrieval: d
         capsule["estimated_tokens"] = math.ceil(len(json.dumps({key: value for key, value in capsule.items() if key != "estimated_tokens"}, ensure_ascii=False)) / 4)
     stale_topics = set()
     affected = set(freshness_result.get("affected_topics") or [])
+    known_topic_paths = {
+        str(store / item.get("path")): name
+        for name, item in (intel.get("topics") or {}).items()
+        if isinstance(item, dict) and item.get("path")
+    }
+    selected_topics = {known_topic_paths[path] for path in selected if path in known_topic_paths}
+    selected_paths_mapped = bool(selected) and len(selected_topics) == len(selected)
     for topic_path in selected:
         if topic_path not in [str(store / item.get("path")) for item in (intel.get("topics") or {}).values() if isinstance(item, dict) and item.get("path")]:
             continue
@@ -438,14 +467,40 @@ def layered_context(root: Path, store: Path, intel: dict[str, Any], retrieval: d
         if name in affected or "unknown" in affected:
             stale_topics.add(name)
     retrieval_tokens = int(retrieval.get("estimated_tokens") or 0)
+    temporal_ids = [str(item.get("id"))[:120] for item in temporal_active if item.get("id")][:40]
+    recall_metadata = {
+        "topic_pointers": selected[:20],
+        "temporal_assertions": temporal_summary,
+        "temporal_assertion_ids": temporal_ids,
+        "temporal_source": str(store / "TEMPORAL_ASSERTIONS.yaml"),
+    }
+    recall_metadata_tokens = math.ceil(len(json.dumps(recall_metadata, ensure_ascii=False)) / 4)
     store_freshness = freshness_result.get("status", "UNKNOWN")
-    task_freshness = "UNKNOWN" if store_freshness == "UNKNOWN" else ("STALE" if stale_topics else "CURRENT")
+    reasons = freshness_result.get("reasons") or []
+    topic_only_reasons = bool(reasons) and all(
+        reason.startswith(("watched_committed_path_changed:", "dirty_watched_path:"))
+        for reason in reasons
+    )
+    affected_are_known_topics = bool(affected) and affected.issubset(set((intel.get("topics") or {}).keys()))
+    irrelevant_proven = (
+        store_freshness == "STALE"
+        and selected_paths_mapped
+        and topic_only_reasons
+        and affected_are_known_topics
+        and not (selected_topics & affected)
+    )
+    if store_freshness == "UNKNOWN":
+        task_freshness = "UNKNOWN"
+    elif store_freshness == "STALE" and not irrelevant_proven:
+        task_freshness = "STALE"
+    else:
+        task_freshness = "CURRENT"
     return {
         "core": capsule,
-        "recall": {"topic_pointers": selected, "retrieval_status": retrieval.get("status"), "estimated_tokens": retrieval_tokens + math.ceil(len(json.dumps(temporal_summary, ensure_ascii=False)) / 4), "retrieval_tokens": retrieval_tokens, "soft_budget_tokens": 4500, "hard_budget_tokens": 6000, "temporal_assertions": temporal_summary, "temporal_assertion_ids": [str(item.get("id")) for item in temporal_active if item.get("id")][:40], "temporal_source": str(store / "TEMPORAL_ASSERTIONS.yaml"), "truncated": bool(retrieval.get("truncated") or len(temporal_active) > len(temporal_summary))},
+        "recall": {"topic_pointers": selected[:20], "topic_pointers_truncated": len(selected) > 20, "retrieval_status": retrieval.get("status"), "estimated_tokens": retrieval_tokens + recall_metadata_tokens, "retrieval_tokens": retrieval_tokens, "metadata_tokens": recall_metadata_tokens, "soft_budget_tokens": 4500, "hard_budget_tokens": CONTEXT_RECALL_HARD_BUDGET, "temporal_budget_tokens": temporal_budget_tokens, "temporal_assertions": temporal_summary, "temporal_assertion_ids": temporal_ids, "temporal_source": str(store / "TEMPORAL_ASSERTIONS.yaml"), "truncated": bool(retrieval.get("truncated") or temporal_truncated or len(selected) > 20)},
         "archive": {"on_demand_only": True, "source_pointers": sources[:30]},
-        "task_freshness": {"status": task_freshness, "affected_selected_topics": sorted(stale_topics), "store_freshness": store_freshness, "irrelevance_proven": store_freshness != "UNKNOWN" and not stale_topics},
-        "telemetry": {"core_tokens": capsule["estimated_tokens"], "recall_tokens": retrieval_tokens + math.ceil(len(json.dumps(temporal_summary, ensure_ascii=False)) / 4), "total_estimated_tokens": capsule["estimated_tokens"] + retrieval_tokens + math.ceil(len(json.dumps(temporal_summary, ensure_ascii=False)) / 4), "hard_budget_tokens": 7600, "core_truncated": capsule["summary_truncated"], "recall_truncated": bool(retrieval.get("truncated") or len(temporal_active) > len(temporal_summary))},
+        "task_freshness": {"status": task_freshness, "affected_selected_topics": sorted(stale_topics), "selected_topics": sorted(selected_topics), "store_freshness": store_freshness, "irrelevance_proven": store_freshness == "CURRENT" or irrelevant_proven},
+        "telemetry": {"core_tokens": capsule["estimated_tokens"], "recall_tokens": retrieval_tokens + recall_metadata_tokens, "total_estimated_tokens": capsule["estimated_tokens"] + retrieval_tokens + recall_metadata_tokens, "hard_budget_tokens": CONTEXT_TOTAL_HARD_BUDGET, "core_truncated": capsule["summary_truncated"], "recall_truncated": bool(retrieval.get("truncated") or temporal_truncated or len(selected) > 20)},
     }
 
 
@@ -1110,7 +1165,10 @@ def resolve_component_context(store: Path, intel: dict[str, Any], component: str
     public: dict[str, Any] = {
         "requested": component,
         "resolved": False,
-        "system_summary": (intel.get("architecture") or {}).get("summary"),
+        "system_summary": safe_context_emit(
+            sink="runtime_log",
+            payload=str((intel.get("architecture") or {}).get("summary") or ""),
+        ).get("safe_payload"),
         "target": None,
         "shared_relationships": [],
         "excluded_components": [],
@@ -1163,6 +1221,14 @@ def resolve_component_context(store: Path, intel: dict[str, Any], component: str
     return public, list(dict.fromkeys(loaded_paths))
 
 
+def retrieval_failure_code(exc: BaseException) -> str:
+    return str(retrieval_index_unavailable(exc).get("reason_code"))
+
+
+def retrieval_failure_remediation(exc: BaseException) -> str:
+    return str(retrieval_index_unavailable(exc).get("remediation"))
+
+
 def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = False, component: str | None = None) -> dict[str, Any]:
     store, mode, pid = intelligence_store(root)
     category, mutation, desired_topics = classify_prompt(prompt)
@@ -1172,52 +1238,81 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
     state = intel.get("state") or {}
     authority_conflicts = active_authority_conflicts(store, intel, registry, runtime) if store.exists() else []
 
-    retrieval: dict[str, Any] = {
-        "status": "INDEX_MISSING",
-        "results": [],
-        "token_budget": RETRIEVAL_DEFAULT_TOKEN_BUDGET,
-        "estimated_tokens": 0,
-    }
-    retrieval_state = {"status": "MISSING"}
-    if store.exists() and (store / "PROJECT_INTELLIGENCE.yaml").exists():
-        try:
-            retrieval_state = retrieval_index_status(root, store)
-            if prompt and retrieval_state.get("status") in {"CURRENT", "STALE"}:
-                retrieval = retrieval_query_repository(
-                    root,
-                    store,
-                    prompt,
-                    token_budget=RETRIEVAL_DEFAULT_TOKEN_BUDGET,
-                    limit=RETRIEVAL_DEFAULT_RESULT_LIMIT,
-                    refresh=True,
-                )
-            else:
-                retrieval = {
-                    "status": "INDEX_MISSING" if retrieval_state.get("status") == "MISSING" else str(retrieval_state.get("status")),
-                    "index": retrieval_state,
-                    "results": [],
-                    "token_budget": RETRIEVAL_DEFAULT_TOKEN_BUDGET,
-                    "estimated_tokens": 0,
-                }
-        except Exception as exc:
-            retrieval = {
-                "status": "UNAVAILABLE",
-                "reason": str(exc),
-                "index": retrieval_state,
-                "results": [],
-                "token_budget": RETRIEVAL_DEFAULT_TOKEN_BUDGET,
-                "estimated_tokens": 0,
-            }
-
     available = intel.get("topics") or {}
     selected: list[str] = []
     for name in desired_topics:
         topic = available.get(name)
         if isinstance(topic, dict) and topic.get("path"):
             selected.append(str(store / topic["path"]))
-
     component_resolution, component_paths = resolve_component_context(store, intel, component)
     selected = list(dict.fromkeys([*selected, *component_paths]))
+    recall_preview = layered_context(root, store, intel, {"status": "NOT_QUERIED", "estimated_tokens": 0}, selected, fr)["recall"]
+    retrieval_budget = CONTEXT_RECALL_HARD_BUDGET - int(recall_preview.get("estimated_tokens") or 0)
+    retrieval_budget = max(0, min(RETRIEVAL_DEFAULT_TOKEN_BUDGET, retrieval_budget))
+
+    retrieval: dict[str, Any] = {
+        "status": "INDEX_MISSING",
+        "results": [],
+        "token_budget": retrieval_budget,
+        "estimated_tokens": 0,
+    }
+    retrieval_state = {"status": "MISSING"}
+    if store.exists() and (store / "PROJECT_INTELLIGENCE.yaml").exists():
+        try:
+            retrieval_state = retrieval_index_status(root, store)
+            if retrieval_budget < 256 and prompt:
+                retrieval = {
+                    "status": "SKIPPED_BUDGET",
+                    "reason_code": "RECALL_METADATA_EXHAUSTS_BUDGET",
+                    "results": [],
+                    "token_budget": retrieval_budget,
+                    "estimated_tokens": 0,
+                    "truncated": True,
+                }
+            elif prompt and retrieval_state.get("status") in {"CURRENT", "STALE"}:
+                retrieval = retrieval_query_repository(
+                    root,
+                    store,
+                    prompt,
+                    token_budget=retrieval_budget,
+                    limit=RETRIEVAL_DEFAULT_RESULT_LIMIT,
+                    refresh=True,
+                )
+                sanitized_results: list[dict[str, Any]] = []
+                sanitized_count = 0
+                for item in retrieval.get("results") or []:
+                    if not isinstance(item, dict):
+                        continue
+                    safety = safe_context_emit(sink="runtime_log", payload=item)
+                    safe_item = safety.get("safe_payload")
+                    if not isinstance(safe_item, dict):
+                        safe_item = {key: value for key, value in item.items() if key != "snippet"}
+                        if "snippet" in item:
+                            safe_item["snippet"] = "[OMITTED_BY_CONTENT_SAFETY]"
+                    if safety.get("decision") in {"REDACT", "REVIEW"}:
+                        sanitized_count += 1
+                    sanitized_results.append(safe_item)
+                retrieval["results"] = sanitized_results
+                retrieval["sanitized_results"] = sanitized_count
+            else:
+                retrieval = {
+                    "status": "INDEX_MISSING" if retrieval_state.get("status") == "MISSING" else str(retrieval_state.get("status")),
+                    "index": retrieval_state,
+                    "results": [],
+                    "token_budget": retrieval_budget,
+                    "estimated_tokens": 0,
+                }
+        except Exception as exc:
+            diagnostic = retrieval_index_unavailable(exc, token_budget=retrieval_budget)
+            retrieval = {
+                "status": "UNAVAILABLE",
+                "reason_code": diagnostic.get("reason_code"),
+                "remediation": diagnostic.get("remediation"),
+                "index": retrieval_state,
+                "results": [],
+                "token_budget": retrieval_budget,
+                "estimated_tokens": 0,
+            }
     layers = layered_context(root, store, intel, retrieval, selected, fr)
 
     project_native: list[str] = []
@@ -1500,7 +1595,7 @@ def impact_init(root: Path, prompt: str, change_id: str | None) -> dict[str, Any
     return {"change_id": change_id, "path": str(path), "mode": mode, "status": "DRAFT"}
 
 
-def validate_impact_document(doc: dict[str, Any]) -> dict[str, Any]:
+def validate_impact_document(doc: dict[str, Any], root: Path | None = None) -> dict[str, Any]:
     status = str(doc.get("status", "DRAFT")).upper()
     errors: list[str] = []
     if status not in {"DRAFT", "IMPLEMENTATION_APPROVED", "READY", "BLOCKED"}:
@@ -1519,12 +1614,70 @@ def validate_impact_document(doc: dict[str, Any]) -> dict[str, Any]:
             errors.append("READY requires reconciled status and base/head/diff digest" + (f" (missing: {', '.join(missing)})" if missing else ""))
         if reconcile.get("impact_graph_reviewed") is not True or not reconcile.get("evidence"):
             errors.append("READY requires Impact Graph review and reconciliation evidence")
+        change = doc.get("change") or {}
+        declared_paths = change.get("target_paths") or []
+        recorded_paths = reconcile.get("changed_files") or []
+        if not declared_paths:
+            errors.append("READY requires exact declared change.target_paths")
+        if not recorded_paths:
+            errors.append("READY requires reconciliation.changed_files from the reviewed diff")
+        if root is None:
+            errors.append("READY requires a project path for Git-bound reconciliation")
+        else:
+            errors.extend(validate_impact_git_reconciliation(root, reconcile, declared_paths, recorded_paths))
     return {"valid": not errors, "status": status, "errors": errors}
 
 
-def impact_validate(path: Path) -> dict[str, Any]:
+def validate_impact_git_reconciliation(root: Path, reconcile: dict[str, Any], declared_paths: list[Any], recorded_paths: list[Any]) -> list[str]:
+    errors: list[str] = []
+    root = project_root(root)
+    base = str(reconcile.get("base_revision") or "")
+    head = str(reconcile.get("head_revision") or "")
+    for label, revision in (("base", base), ("head", head)):
+        if not re.fullmatch(r"[0-9a-fA-F]{40}|[0-9a-fA-F]{64}", revision):
+            errors.append(f"{label}_revision must be a full Git commit SHA")
+            continue
+        resolved = run_git(root, ["rev-parse", "--verify", f"{revision}^{{commit}}"])
+        if not resolved or resolved.lower() != revision.lower():
+            errors.append(f"{label}_revision does not resolve to the exact commit")
+
+    current_head = run_git(root, ["rev-parse", "HEAD"])
+    if current_head and head and current_head.lower() != head.lower():
+        errors.append("head_revision does not match the checked-out HEAD")
+    if base and head and not any("revision" in error and "full Git" in error or "does not resolve" in error for error in errors):
+        ancestor = subprocess.run(["git", "-C", str(root), "merge-base", "--is-ancestor", base, head], capture_output=True, check=False)
+        if ancestor.returncode != 0:
+            errors.append("base_revision must be an ancestor of head_revision")
+    try:
+        dirty = git_dirty_paths(root)
+        if dirty:
+            errors.append("working tree must be clean so READY describes the exact committed diff")
+    except GitPathsError as exc:
+        errors.append(f"working-tree state is unverifiable: {exc}")
+
+    if base and head and not any("revision" in error and ("full Git" in error or "resolve" in error or "ancestor" in error) for error in errors):
+        diff = subprocess.run(["git", "-C", str(root), "diff", "--binary", "--no-ext-diff", base, head, "--"], capture_output=True, check=False)
+        names = subprocess.run(["git", "-C", str(root), "diff", "--name-only", "-z", base, head, "--"], capture_output=True, check=False)
+        if diff.returncode or names.returncode:
+            errors.append("actual Git diff could not be read")
+        else:
+            actual_digest = "sha256:" + hashlib.sha256(diff.stdout).hexdigest()
+            supplied_digest = str(reconcile.get("diff_digest") or "")
+            if supplied_digest.removeprefix("sha256:").lower() != actual_digest.removeprefix("sha256:"):
+                errors.append("diff_digest does not match the actual binary Git diff")
+            actual_paths = sorted(path.decode("utf-8", errors="surrogateescape") for path in names.stdout.split(b"\0") if path)
+            declared = sorted({str(path) for path in declared_paths})
+            recorded = sorted({str(path) for path in recorded_paths})
+            if recorded != actual_paths:
+                errors.append("reconciliation.changed_files does not match the actual changed-file set")
+            if not set(actual_paths).issubset(set(declared)):
+                errors.append("actual changed files exceed declared change.target_paths")
+    return errors
+
+
+def impact_validate(path: Path, root: Path | None = None) -> dict[str, Any]:
     doc = load_yaml(path, {})
-    result = validate_impact_document(doc)
+    result = validate_impact_document(doc, root)
     result["path"] = str(path)
     return result
 
@@ -1792,7 +1945,7 @@ def main() -> int:
         elif args.command == "impact-init":
             result = impact_init(root, args.prompt, args.change_id)
         elif args.command == "impact-validate":
-            result = impact_validate(Path(args.path))
+            result = impact_validate(Path(args.path), root)
         elif args.command == "context-audit":
             result = context_audit(root)
         elif args.command == "temporal":
@@ -1840,6 +1993,8 @@ def main() -> int:
         return 1
     if args.command == "impact-validate" and not result.get("valid"):
         return 1
+    if args.command in {"index", "retrieve"} and result.get("status") == "INDEX_UNAVAILABLE":
+        return 2
     return 0
 
 

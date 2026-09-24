@@ -3,6 +3,7 @@ version: 1
 change:
   id: null
   target: []
+  target_paths: [] # Exact repository-relative files allowed in the final diff.
   summary: null
 
 inputs: []
@@ -31,7 +32,8 @@ reconciliation:
   status: PENDING # PENDING | RECONCILED
   base_revision: null
   head_revision: null
-  diff_digest: null
+  diff_digest: null # sha256:<hex> of `git diff --binary --no-ext-diff <base> <head> --`.
+  changed_files: [] # Exact sorted repository-relative paths from the same diff.
   impact_graph_reviewed: false
   evidence: []
 status: DRAFT # DRAFT | IMPLEMENTATION_APPROVED | READY | BLOCKED

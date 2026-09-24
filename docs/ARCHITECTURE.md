@@ -624,8 +624,10 @@ flowchart TD
     T[Existing Project Task] --> S{Intelligence exists?}
     S -->|no| D[Read-only Breadth-first Discovery]
     S -->|yes| F{Freshness}
-    F -->|CURRENT| C[Load relevant topics]
-    F -->|STALE| TR[Targeted Refresh]
+    F -->|CURRENT| C[Load mapped relevant topics]
+    F -->|STALE| REL{Task irrelevance proven by complete topic/source mapping?}
+    REL -->|yes| C
+    REL -->|no / unknown| TR[Refresh affected topics; mutation stays closed]
     D --> SRC[SOURCE_REGISTRY: pointers / runtime visibility]
     SRC --> INV[Repo topology / manifests / entry points]
     INV --> SEM[Semantic Architecture / Data Flow / Modules / Conventions]
@@ -637,15 +639,23 @@ flowchart TD
     READY -->|yes| HTML[Generate Review HTML]
     HTML --> C
     TR --> C
-    C --> M{Mutation?}
-    M -->|yes| IMP[CHANGE_IMPACT]
+    C --> SAFE[Sanitize derived text + allocate Core / Recall budget]
+    SAFE --> RET{Retrieval index usable?}
+    RET -->|yes| BUD[Enforce Recall and total budget]
+    RET -->|no| PTR[Keep canonical source pointers + diagnostic]
+    BUD --> M{Mutation?}
+    PTR --> M
+    M -->|yes| IMP[CHANGE_IMPACT: scope approved]
     IMP --> X[Project-native implementation]
-    X --> DIFF[Actual Diff vs Declared Impact]
-    DIFF --> REF[Refresh affected Intelligence only]
+    X --> DIFF[Actual Git base/head + binary diff + changed files]
+    DIFF --> VALID{Exact, clean, declared diff?}
+    VALID -->|yes| READY2[READY + evidence]
+    VALID -->|no / unknown| BLOCK[BLOCKED; reconcile scope]
+    READY2 --> REF[Refresh affected Intelligence only]
     M -->|no| END[Use context]
 ~~~
 
-Canonical reusable state is PROJECT_INTELLIGENCE + SOURCE_REGISTRY + IMPACT_GRAPH + PROJECT_OVERRIDES. Generated HTML is a deterministic Human Review View, not another source of truth. Legacy .ai/knowledge/ is migration input only.
+Canonical reusable state is PROJECT_INTELLIGENCE + SOURCE_REGISTRY + IMPACT_GRAPH + PROJECT_OVERRIDES. Generated HTML is a deterministic Human Review View, not another source of truth. Core / Recall estimates enforce a 1,600 / 6,000 token split within a 7,600 total estimate. Retrieval failure keeps canonical source pointers and exposes a stable diagnostic code. Legacy .ai/knowledge/ is migration input only.
 
 ## Visual consistency repair
 

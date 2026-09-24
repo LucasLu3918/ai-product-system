@@ -39,6 +39,12 @@ Git 路徑以 NUL 分隔讀取，完整變更集合用於新鮮度判斷；畫�
 
 `aips intelligence refresh` 只處理 squash／rebase 後的 equivalent-tree revision reconciliation：工作樹必須乾淨，且舊／新 tree object 完全相同。內容不同時回報 `SEMANTIC_REFRESH_REQUIRED`，不覆寫 topics。
 
+任務層 freshness 只有在選取的 topic/component 路徑都能映射，且所有受影響 topic 都已知並與選取範圍不相交時，才可證明不相關。沒有選取 topic、source registry 改變、未知影響或路徑無法映射時，回報 `STALE`／`UNKNOWN`；mutation 仍依全域 freshness 封閉。
+
+Core capsule 目標上限為 1,600 tokens，Recall 為 6,000，組裝總估值為 7,600。組裝前先預留時序資料與 topic 指標所需空間，再把剩餘預算交給本機檢索；時序資料或檢索結果超量時會明確標示截斷。估值採 deterministic 字元估算，並非特定模型 tokenizer。Runtime hook 會再次量測最終文字輸出並裁切可選內容，保留 freshness、retrieval status 和來源摘要。
+
+Architecture 摘要、核准覆寫與時序文字在進入 Runtime Context 前共用 Runtime Content Safety Boundary。檢索索引不可用時回報穩定錯誤類別與修復指引，同時保留 canonical source pointers。
+
 ## Attach / Detach
 
 Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Detach 先 validated sync 回 External Cache，再封存 `.ai/`。
@@ -47,7 +53,7 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 CI、publication preflight 與 documentation trigger policy 的變更，應一併預覽遞迴文件閉包，並以最終差異重新綁定 Core Change Test Matrix。
 
-Mutation 前建立 CHANGE_IMPACT，涵蓋 Input / Output / Data / Events / Consumers / Security / Invariants / Compatibility / Tests，完成範圍審查並記錄使用者授權後進入 `IMPLEMENTATION_APPROVED`。這只允許依核准範圍實作。`READY` 僅能在實作後記錄 base/head、diff digest、Impact Graph 核對與證據，確認 Actual Diff 落在核准範圍後使用；未解影響不得標記 READY。
+Mutation 前建立 CHANGE_IMPACT，涵蓋 Input / Output / Data / Events / Consumers / Security / Invariants / Compatibility / Tests，完成範圍審查並記錄使用者授權後進入 `IMPLEMENTATION_APPROVED`。這只允許依核准範圍實作。`READY` 僅能在實作後記錄完整 base/head SHA、乾淨工作樹、binary diff SHA-256、精確變更檔案集合與 `target_paths`，並完成 Impact Graph 核對及證據。以 `aips intelligence impact-validate --project <repo> --path <artifact>` 驗證；digest、HEAD、路徑集合不吻合或不可驗證時拒絕 `READY`。未解影響不得標記 READY。
 
 ## Preserve Valid Native Conventions
 
