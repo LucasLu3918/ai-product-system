@@ -87,6 +87,7 @@ Usage:
   aips intelligence refresh [--project <path>]
   aips intelligence context --runtime <id> [--project <path>] [--prompt <text>]
   aips intelligence impact-init [--project <path>] [--prompt <text>] [--change-id <id>]
+  aips intelligence impact-traverse --seed <symbol> --risk-class <class> [--project <path>] [--seed-path <path>] [--direction callers|consumers]
   aips intelligence context-audit [--project <path>]
   aips intelligence impact-validate --project <path> --path <CHANGE_IMPACT.yaml>
   aips intelligence index [--project <path>] [--force]

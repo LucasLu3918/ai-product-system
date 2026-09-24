@@ -37,6 +37,8 @@ Genuinely non-applicable artifacts/dimensions are marked N/A with a reason.
 
 ## Quality and delivery planning
 
+既有專案的核心契約變更應在 Change Impact 中列出風險、traversal seed、候選 consumer 與不確定性；依風險設定有界檢查，並在驗收時核對 affected-but-unchanged 節點。Traversal 僅提供候選證據，不取代範圍核准、測試或 diff reconciliation。
+
 需求規劃 validator 契約以 EARS 情境對應驗收證據；該測試檔單獨變更只需 Scenario Conformance 文件閉包，規劃行為、模板及 canonical requirements 仍需完整規劃閉包。
 
 Before architecture is locked:

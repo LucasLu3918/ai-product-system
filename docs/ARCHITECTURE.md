@@ -27,8 +27,10 @@ flowchart TD
     DEG --> M{Existing-project mutation?}
     BUD --> M
     M -->|yes| CI[Change Impact Guard]
+    CI --> IMP[Risk-adaptive bounded caller / consumer traversal]
+    IMP --> REVIEW[Review changed and affected-but-unchanged nodes]
     M -->|no| ROUTE[AIPS Routing]
-    CI --> ROUTE
+    REVIEW --> ROUTE
     ROUTE --> ISO{Execution isolation}
     ISO -->|shared| X[Plan / Execute in current workspace]
     ISO -->|worktree| WT[Real AIPS-owned Git worktree]
@@ -646,7 +648,9 @@ flowchart TD
     BUD --> M{Mutation?}
     PTR --> M
     M -->|yes| IMP[CHANGE_IMPACT: scope approved]
-    IMP --> X[Project-native implementation]
+    IMP --> TR[Bounded caller / consumer traversal]
+    TR --> EV[Per-change evidence: paths / depth / unknowns / dispositions]
+    EV --> X[Project-native implementation]
     X --> DIFF[Actual Git base/head + binary diff + changed files]
     DIFF --> VALID{Exact, clean, declared diff?}
     VALID -->|yes| READY2[READY + evidence]
@@ -654,6 +658,8 @@ flowchart TD
     READY2 --> REF[Refresh affected Intelligence only]
     M -->|no| END[Use context]
 ~~~
+
+The impact flow combines three distinct layers: canonical `IMPACT_GRAPH.yaml` relationships, rebuildable local lexical code relations, and per-change traversal evidence. Caller and consumer directions use explicit depth/node/edge budgets. Lexical matches remain inferred; missing graph coverage, dynamic dispatch, stale indexes and truncation remain visible unknowns. Every affected path is reconciled against the exact diff and receives a review disposition before high-risk impact can be complete.
 
 Canonical reusable state is PROJECT_INTELLIGENCE + SOURCE_REGISTRY + IMPACT_GRAPH + PROJECT_OVERRIDES. Generated HTML is a deterministic Human Review View, not another source of truth. Core / Recall estimates enforce a 1,600 / 6,000 token split within a 7,600 total estimate. Retrieval failure keeps canonical source pointers and exposes a stable diagnostic code. Legacy .ai/knowledge/ is migration input only.
 

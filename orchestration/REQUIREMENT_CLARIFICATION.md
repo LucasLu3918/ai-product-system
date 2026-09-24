@@ -1,5 +1,7 @@
 # Progressive Requirement Clarification
 
+若需求會改變既有 API、共享型別、資料庫或事件契約，規劃應記錄已知 callers/consumers、風險分級與尚未解決的動態關係。bounded traversal 可提供候選路徑；它不能替代需求澄清或人工確認受影響行為。
+
 Use when a request is not yet specific enough for reliable implementation.
 
 ## Goal

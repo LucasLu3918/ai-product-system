@@ -1308,4 +1308,17 @@ Deterministic evidence validates the optional Planning Package requirements regi
 - uncovered：0
 - automated：**174 / 174**
 
+## Scenario 175 — Risk-adaptive bounded Change Impact
+
+Lifecycle evidence exercises bounded lexical caller/reference indexing, canonical architecture graph traversal, risk-specific depth and history policy, cycle handling, dynamic-dispatch unknowns, stale/truncated evidence, changed versus unchanged affected paths, and READY evidence validation. Lexical relations remain explicitly inferred; the traversal does not claim compiler-level resolution.
+
+目前 Scenario inventory：
+
+- deterministic：27
+- lifecycle：94
+- agent_eval：54
+- manual：0
+- uncovered：0
+- automated：**175 / 175**
+
 Scenarios 168–172 cover the Runtime Content Safety Boundary, including redaction, durable-sink blocking, provenance, coverage registration and failure policy. Findings must never contain detected raw values.
