@@ -91,6 +91,8 @@ EARS does not supply missing product decisions. A trigger such as “repeated fa
 
 When a Planning Package needs durable traceability, use the optional `templates/planning-package/REQUIREMENTS.yaml` registry. Give each requirement a stable ID, connect it to one or more acceptance criteria, and state the verification method. An evidence reference is a location or planned check; it is not proof that the check ran or passed. AIPS Scenario Conformance remains a separate registry of AIPS behavior and executable evidence.
 
+For automation, `python scripts/requirements_traceability.py <registry> --format json` emits `status: PASS` or `status: FAIL`; it exits zero only when structural validation passes and non-zero when it fails. This result covers registry structure, not requirement meaning or execution of the referenced verification.
+
 ## Guidance style
 
 Prefer:
