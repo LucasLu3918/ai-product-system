@@ -216,6 +216,10 @@ def preview_candidate(args: argparse.Namespace) -> dict[str, Any]:
         pending.append("canonical Core Change Test Matrix is missing")
     if required and (not binding.get("base_matches") or not binding.get("hash_matches")):
         pending.append("Core Change Test Matrix binding needs synchronization")
+    safety = preview_content_safety(base, files)
+    identity = configured_identity_plan()
+    pending.extend(safety["blockers"])
+    pending.extend(identity["blockers"])
     return {
         "version": 1,
         "status": "READY_FOR_GATE" if not pending else "NEEDS_WORK",
@@ -225,8 +229,55 @@ def preview_candidate(args: argparse.Namespace) -> dict[str, Any]:
         "change_class_warning": warning,
         "documentation": docs,
         "matrix": binding,
+        "content_safety": safety,
+        "git_identity": identity,
         "pending": pending,
         "note": "Preview includes committed, staged, unstaged and untracked paths; final Integration Gate still requires a clean committed candidate.",
+    }
+
+
+def preview_content_safety(base: str, files: list[str]) -> dict[str, Any]:
+    tracked_diff = git("diff", "--no-ext-diff", "--unified=0", base, "--")
+    untracked: dict[str, str] = {}
+    unscannable: list[str] = []
+    for relative in files:
+        path = (ROOT / relative).resolve()
+        if not path.is_relative_to(ROOT.resolve()) or not path.is_file():
+            continue
+        tracked = subprocess.run(["git", "ls-files", "--error-unmatch", "--", relative], cwd=ROOT, capture_output=True, text=True)
+        if tracked.returncode == 0:
+            continue
+        if path.stat().st_size > 1_000_000:
+            unscannable.append(relative)
+            continue
+        try:
+            untracked[relative] = path.read_text(encoding="utf-8", errors="strict")
+        except (OSError, UnicodeError):
+            unscannable.append(relative)
+    check = safe_emit(sink="source_artifact", payload={"tracked_diff": tracked_diff, "untracked_files": untracked})
+    blockers = []
+    if check["decision"] == "BLOCK":
+        blockers.append("early content-safety check blocked the working-tree candidate")
+    if unscannable:
+        blockers.append("early content-safety check could not scan one or more candidate files")
+    return {
+        "status": "BLOCKED" if blockers else "PASS",
+        "findings": [{"type": item["type"], "detector": item["detector"], "location": item["location"]} for item in check["findings"]],
+        "unscannable_count": len(unscannable),
+        "blockers": blockers,
+    }
+
+
+def configured_identity_plan() -> dict[str, Any]:
+    policy = yaml.safe_load((ROOT / "config/git-publication.yaml").read_text(encoding="utf-8")) or {}
+    patterns = [re.compile(str(item), re.IGNORECASE) for item in (policy.get("identity") or {}).get("allowed_email_patterns") or []]
+    email = git("config", "--get", "user.email", check=False).strip()
+    valid = bool(email) and any(pattern.fullmatch(email) for pattern in patterns)
+    return {
+        "status": "PASS" if valid else "BLOCKED",
+        "configured": bool(email),
+        "findings": [] if valid else [{"reason": "git_email_not_approved" if email else "git_email_not_configured"}],
+        "blockers": [] if valid else ["configured Git author email is not approved by publication policy"],
     }
 
 

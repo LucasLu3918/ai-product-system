@@ -98,6 +98,8 @@ Trajectory Quality Gate 可記錄 scheduler/tool execution 的 observable events
 
 Invalid graph, unknown dependency, cycle, invalid state or plan mismatch is `SCHEDULER BLOCKED`.
 
+Publication preview performs the bounded content-safety and configured Git identity checks before scheduling repository lifecycle validation; an unscannable candidate or disallowed identity is a deterministic preflight block.
+
 The Scheduler never falls back to LLM coordination to make a blocked graph look executable.
 
 ## Read-only declaration and fail-closed boundary

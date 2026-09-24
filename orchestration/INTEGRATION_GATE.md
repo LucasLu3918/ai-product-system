@@ -97,6 +97,8 @@ declared PR base SHA
 
 When provided, `base_tip_sha` is included in candidate evidence/fingerprinting. This complements the existing exact-head checkout check and Human/GitHub merge preflight.
 
+Core `READY` reconciliation is independently checked against Git: base must be an ancestor of current HEAD, the checkout must be clean and at the declared head, and the actual binary diff digest and changed path set must match the artifact and remain inside declared `target_paths`.
+
 ## Conditional Core Matrix enforcement
 
 Validation Profiles may declare `matrix_required_change_classes` plus a narrow `matrix_required_paths` safety net. Standard changes are Matrix-optional by default; `aips:large-change` and `aips:core-change` resolve to required Matrix evidence. Known governance-core Integration Gate surfaces may also require the Matrix when labels are absent.
@@ -112,3 +114,5 @@ Parallel Runtime Port Isolation does not change Integration Gate authority or ca
 ## Content Safety Gate
 
 The Integration Gate runs the content-safety lifecycle for affected candidates and requires the canonical sink manifest. Durable/public content safety failures are blocking; diagnostic redaction remains a safe degraded path.
+
+Publication preview scans the exact tracked diff and bounded untracked candidate files before expensive lifecycle validation. Unscannable inputs block preview; findings expose only detector type and source location. The same preview checks that configured commit email matches the repository's allowed identity policy.

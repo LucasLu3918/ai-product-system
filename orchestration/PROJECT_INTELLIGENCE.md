@@ -289,6 +289,10 @@ aips intelligence retrieve --project /path/to/project --prompt "<task>" --token-
 
 The Human normally does not need to run these commands. When the Turn Context reports `retrieval_index_required=true`, the Agent should build the index as an engineering preparation step. Missing/unavailable Retrieval Intelligence degrades to existing stable Project Intelligence; it does not silently claim semantic evidence and does not by itself change authority.
 
+Index open and query failures return a stable `INDEX_UNAVAILABLE` diagnostic with a reason code and remediation hint. Context assembly retains canonical source pointers and does not claim retrieval evidence when the cache cannot be read. Redaction is applied before retrieval snippets enter the emitted context.
+
+The bounded context budget is shared across Project Core, Recall and temporal assertions. Recall receives only the remaining budget after capsule and pointer metadata; temporal evidence is capped within its reserved share. Final runtime rendering enforces the same hard limit and drops optional evidence before truncating summaries.
+
 ## Retrieval Quality Evaluation
 
 Do not add a semantic provider, new parser/index dependency or ranking complexity merely because it is available. Measure the current retrieval layer first with a repository-specific evaluation suite.

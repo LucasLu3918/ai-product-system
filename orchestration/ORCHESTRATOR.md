@@ -46,6 +46,8 @@ For a candidate built in a shared workspace, first snapshot the intended head an
 
 ## System Update Preflight
 
+Resolve bounded Context before implementation: prove selected-path relevance, allocate Recall from the shared Core/Recall/temporal budget, preserve canonical source pointers on index failure, and apply runtime content safety before emitting derived or retrieved text.
+
 The orchestrator must not implement project mutations using an unverified stale local system.
 
 Use `aips preflight <project>`, which:

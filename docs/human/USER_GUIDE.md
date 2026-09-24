@@ -267,6 +267,8 @@ Agent、MCP、CI workflow 或 external analyzer 不能因為具有執行能力�
 
 提交前可執行 `aips publish preview --base origin/main --change-class <standard|large|core>`，預覽已提交、暫存、未暫存及未追蹤檔案的文件閉包與矩陣綁定；必須先處理 `pending` 項目。`aips publish matrix-sync --base origin/main` 只更新 canonical Core Matrix 的 base/hash，更新後仍需重新檢視範圍與證據，再把矩陣標記為 READY。發布前再以 `aips publish preflight --base origin/main --head HEAD --change-class <standard|large|core> --output <report>` 執行與 CI 相同的 exact-candidate resolver。Large/Core PR 必須同步套用對應 label，並使用 `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`。受保護 `main` 由 `publish plan` 直接規劃 Pull Request，不先嘗試直推。
 
+Preview 也會在昂貴驗證前檢查候選內容安全與允許的 Git email 身分；報告只提供命中類型與位置，不回顯敏感值。Context 則會先證明所選路徑與已知主題相關，並共同限制 Core、Recall 與 temporal evidence 的預算；Retrieval Index 無法開啟時提供穩定診斷與來源指標，不偽裝成已檢索成功。
+
 若本機工作樹包含其他未提交變更，先建立乾淨 worktree 驗證候選；不要讓 unrelated diff 改變 changed-files hash 或 Repository Health 結果。
 
 Squash merge 後可執行 `aips publish post-merge --fetch --apply --refresh-intelligence`。只有工作樹乾淨且 local／remote tree object 完全相同時，才會先建立 backup branch 再對齊；內容不同一律停止。
