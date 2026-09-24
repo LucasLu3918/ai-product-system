@@ -121,7 +121,7 @@ placement_rules:
   - id: repository-health
     triggers: [scripts/repository_health.py, config/architecture-surfaces.yaml, config/repository-health.yaml, orchestration/REPOSITORY_HEALTH.md]
     placements:
-      docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency, Deterministic Scheduler / Integration Gate consistency, Durable Run State consistency]
+      docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency, Deterministic Scheduler / Integration Gate consistency, Durable Run State consistency, Execution Isolation consistency]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification]
 
   - id: security
