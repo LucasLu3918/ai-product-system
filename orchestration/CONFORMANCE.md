@@ -716,6 +716,6 @@ The content safety contract is exercised by scenarios 168–172 and the `tests/t
 
 ## Scenario 174 — EARS Requirement Traceability
 
-Scenario 174 is deterministic coverage for the optional Planning Package requirements registry. `tests/validation/ears_requirement_contracts.py` exercises valid functional/non-functional records plus invalid EARS labels, duplicate IDs, missing acceptance criteria and missing verification methods. This validates the record shape and trace links; it does not infer natural-language semantics or upgrade evidence references into passing test results.
+Scenario 174 is deterministic coverage for the optional Planning Package requirements registry. `tests/validation/ears_requirement_contracts.py` exercises valid functional/non-functional records plus invalid EARS labels, duplicate IDs, missing acceptance criteria and missing verification methods. It also invokes the CLI to check JSON PASS/FAIL reports and zero/non-zero exit codes for valid/invalid input. This validates the record shape and trace links; it does not infer natural-language semantics or upgrade evidence references into passing test results.
 
 Current automated inventory: 27 deterministic + 93 lifecycle + 54 agent_eval = 174 / 174; manual 0; uncovered 0.

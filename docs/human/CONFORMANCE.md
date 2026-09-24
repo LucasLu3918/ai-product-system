@@ -1295,7 +1295,7 @@ The read-only Parallel Run Dashboard is covered by Scenario 173 and exposes only
 
 ## Scenario 174 — EARS Requirement Traceability
 
-Deterministic evidence validates the optional Planning Package requirements registry: supported EARS pattern labels, unique requirement/acceptance IDs, non-empty acceptance outcomes and verification methods, and valid evidence-reference lists. It does not judge whether natural-language statements are semantically complete or claim that referenced checks ran.
+Deterministic evidence validates the optional Planning Package requirements registry: supported EARS pattern labels, unique requirement/acceptance IDs, non-empty acceptance outcomes and verification methods, and valid evidence-reference lists. It also checks the CLI JSON PASS/FAIL output and corresponding zero/non-zero exit codes for valid and invalid registries. It does not judge whether natural-language statements are semantically complete or claim that referenced checks ran.
 
 目前 Scenario inventory：
 

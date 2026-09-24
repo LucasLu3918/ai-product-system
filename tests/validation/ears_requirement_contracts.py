@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import json
+import subprocess
 import sys
+import tempfile
 
 import yaml
 
@@ -78,6 +81,31 @@ sample = {
 }
 if validate(sample):
     errors.append("EARS registry must accept a bounded, traceable functional requirement")
+
+# Exercise the public command-line contract as used by repository tooling.
+with tempfile.TemporaryDirectory(prefix="aips-ears-cli-") as temp_dir:
+    registry_path = ROOT / temp_dir / "requirements.yaml"
+    cli = [sys.executable, str(ROOT / "scripts/requirements_traceability.py"), str(registry_path), "--format", "json"]
+
+    registry_path.write_text(yaml.safe_dump(template, sort_keys=False), encoding="utf-8")
+    valid_run = subprocess.run(cli, capture_output=True, text=True, check=False)
+    try:
+        valid_report = json.loads(valid_run.stdout)
+    except json.JSONDecodeError:
+        valid_report = {}
+    if valid_run.returncode != 0 or valid_report.get("status") != "PASS":
+        errors.append("requirements traceability CLI must report PASS and exit zero for a valid registry")
+
+    invalid_cli_registry = deepcopy(template)
+    invalid_cli_registry["requirements"][0]["statement"] = "The Account Service shall block sign-in after failures."
+    registry_path.write_text(yaml.safe_dump(invalid_cli_registry, sort_keys=False), encoding="utf-8")
+    invalid_run = subprocess.run(cli, capture_output=True, text=True, check=False)
+    try:
+        invalid_report = json.loads(invalid_run.stdout)
+    except json.JSONDecodeError:
+        invalid_report = {}
+    if invalid_run.returncode == 0 or invalid_report.get("status") != "FAIL":
+        errors.append("requirements traceability CLI must report FAIL and exit nonzero for an invalid EARS statement")
 
 if not template_path.is_file():
     errors.append("Missing Planning Package requirements template")
