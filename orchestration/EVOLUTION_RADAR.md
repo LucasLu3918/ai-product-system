@@ -31,6 +31,8 @@ Quarterly Evolution Review is a deterministic credential-free rollup over durabl
 
 ## Authority boundary
 
+GitHub Actions runner 與 action 升級須依官方 runtime 支援資訊固定及驗證版本，保持 immutable full-SHA pinning 與最小權限 workflow 設定。
+
 ~~~text
 Radar evidence
 → scheduled semantic analysis when provider is available

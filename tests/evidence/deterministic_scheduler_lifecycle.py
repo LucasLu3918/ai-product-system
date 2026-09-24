@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -20,7 +21,7 @@ def run(graph: dict, state: dict) -> tuple[int, dict]:
         graph_path.write_text(yaml.safe_dump(graph, sort_keys=False), encoding="utf-8")
         state_path.write_text(yaml.safe_dump(state, sort_keys=False), encoding="utf-8")
         proc = subprocess.run(
-            ["python3", str(SCRIPT), "--graph", str(graph_path), "--state", str(state_path), "--format", "json"],
+            [sys.executable, str(SCRIPT), "--graph", str(graph_path), "--state", str(state_path), "--format", "json"],
             text=True,
             capture_output=True,
         )
@@ -69,7 +70,7 @@ def main() -> int:
         tmp = Path(td)
         p = tmp / "graph.yaml"
         p.write_text(yaml.safe_dump(cyclic), encoding="utf-8")
-        proc = subprocess.run(["python3", str(SCRIPT), "--graph", str(p)], text=True, capture_output=True)
+        proc = subprocess.run([sys.executable, str(SCRIPT), "--graph", str(p)], text=True, capture_output=True)
         assert proc.returncode == 2
         assert "dependency cycle" in proc.stdout
 
@@ -86,7 +87,7 @@ def main() -> int:
         tmp = Path(td)
         p = tmp / "graph.yaml"
         p.write_text(yaml.safe_dump(writable_without_boundary), encoding="utf-8")
-        proc = subprocess.run(["python3", str(SCRIPT), "--graph", str(p)], text=True, capture_output=True)
+        proc = subprocess.run([sys.executable, str(SCRIPT), "--graph", str(p)], text=True, capture_output=True)
         assert proc.returncode == 2
         assert "requires non-empty change_boundary" in proc.stdout
 
@@ -116,7 +117,7 @@ def main() -> int:
         tmp = Path(td)
         p = tmp / "graph.yaml"
         p.write_text(yaml.safe_dump(invalid_read_only), encoding="utf-8")
-        proc = subprocess.run(["python3", str(SCRIPT), "--graph", str(p)], text=True, capture_output=True)
+        proc = subprocess.run([sys.executable, str(SCRIPT), "--graph", str(p)], text=True, capture_output=True)
         assert proc.returncode == 2
         assert "read_only task must not declare write_set" in proc.stdout
 
@@ -178,7 +179,7 @@ def main() -> int:
         tmp = Path(td)
         p = tmp / "graph.yaml"
         p.write_text(yaml.safe_dump(invalid_runtime), encoding="utf-8")
-        proc = subprocess.run(["python3", str(SCRIPT), "--graph", str(p)], text=True, capture_output=True)
+        proc = subprocess.run([sys.executable, str(SCRIPT), "--graph", str(p)], text=True, capture_output=True)
         assert proc.returncode == 2
         assert "only tcp runtime ports are supported" in proc.stdout
 

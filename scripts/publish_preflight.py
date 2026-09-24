@@ -302,7 +302,8 @@ def content_safety_plan(args: argparse.Namespace, base: str, head: str) -> dict[
         result = safe_emit(sink=sink, payload=payload)
         checks.append({"label": label, "sink": sink, "decision": result["decision"], "findings": result["findings"]})
 
-    check("git_commit", git("log", "-1", "--format=%B", head), "commit_message")
+    messages = git("log", "--format=%B", f"{base}..{head}")
+    check("git_commit", messages, "commit_messages")
     diff = git("diff", "--no-ext-diff", "--unified=0", base, head)
     check("source_artifact", diff, "candidate_diff")
     if args.commit_message:
@@ -317,6 +318,21 @@ def content_safety_plan(args: argparse.Namespace, base: str, head: str) -> dict[
             check("github_pr", body_path.read_text(encoding="utf-8"), "body_file")
     blockers = [f"content safety blocked {item['label']}" for item in checks if item["decision"] == "BLOCK"]
     return {"status": "BLOCKED" if blockers else "PASS", "checks": checks, "blockers": blockers}
+
+
+def commit_identity_plan(base: str, head: str) -> dict[str, Any]:
+    policy_path = ROOT / "config/git-publication.yaml"
+    policy = yaml.safe_load(policy_path.read_text(encoding="utf-8")) or {}
+    patterns = [re.compile(str(item), re.IGNORECASE) for item in (policy.get("identity") or {}).get("allowed_email_patterns") or []]
+    invalid: list[dict[str, str]] = []
+    commits = git("rev-list", "--reverse", f"{base}..{head}").splitlines()
+    for commit in commits:
+        fields = git("show", "-s", "--format=%ae%x00%ce", commit).split("\0")
+        for field, email in zip(("author", "committer"), fields):
+            if not email or not any(pattern.fullmatch(email) for pattern in patterns):
+                invalid.append({"commit": commit[:12], "field": field, "reason": "email_not_approved"})
+    blockers = ["candidate contains an author/committer identity outside the approved GitHub noreply formats"] if invalid else []
+    return {"status": "BLOCKED" if blockers else "PASS", "findings": invalid, "blockers": blockers}
 
 
 def build_plan(args: argparse.Namespace) -> dict[str, Any]:
@@ -342,6 +358,8 @@ def build_plan(args: argparse.Namespace) -> dict[str, Any]:
         blockers.append("candidate base is stale relative to base-tip")
     safety = content_safety_plan(args, base, head)
     blockers.extend(safety["blockers"])
+    identities = commit_identity_plan(base, head)
+    blockers.extend(identities["blockers"])
     matrix_binding: dict[str, Any] = {}
     if required and matrix_ok:
         matrix_binding = yaml.safe_load(matrix.read_text(encoding="utf-8")) or {}
@@ -366,6 +384,7 @@ def build_plan(args: argparse.Namespace) -> dict[str, Any]:
         "environment": environment_status(),
         "remote": remote_policy(args.branch, args.offline),
         "content_safety": safety,
+        "git_identity": identities,
         "blockers": blockers,
         "status": "READY" if not blockers else "BLOCKED",
     }
@@ -496,6 +515,7 @@ def main() -> int:
     docs = subs.add_parser("docs-impact")
     docs.add_argument("--base", required=True)
     docs.add_argument("--head", default="HEAD")
+    docs.add_argument("--require-complete", action="store_true")
     docs.add_argument("--format", choices=("yaml", "json"), default="yaml")
     matrix_sync = subs.add_parser("matrix-sync")
     matrix_sync.add_argument("--base", required=True)
@@ -515,8 +535,9 @@ def main() -> int:
     args = parser.parse_args()
     try:
         if args.command == "docs-impact":
-            emit(documentation_impact(changed_files(resolve_commit(args.base), resolve_commit(args.head))), args.format)
-            return 0
+            impact = documentation_impact(changed_files(resolve_commit(args.base), resolve_commit(args.head)))
+            emit(impact, args.format)
+            return 0 if impact["complete"] or not args.require_complete else 1
         if args.command == "environment":
             result = environment_status()
             emit(result, args.format)

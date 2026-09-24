@@ -5,6 +5,7 @@ import hashlib
 import importlib.util
 import json
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -36,20 +37,20 @@ def main() -> int:
     gate = load_gate()
     valid_count = gate.run_check({
         "id": "test-count-valid", "category": "test", "applies": True,
-        "argv": ["python3", "-c", "print('Ran 5 tests in 0.01s')"],
+        "argv": [sys.executable, "-c", "print('Ran 5 tests in 0.01s')"],
         "expected_test_count": 5,
     })
     assert valid_count["status"] == "PASS"
     empty_count = gate.run_check({
         "id": "test-count-empty", "category": "test", "applies": True,
-        "argv": ["python3", "-c", "print('Ran 0 tests in 0.01s')"],
+        "argv": [sys.executable, "-c", "print('Ran 0 tests in 0.01s')"],
         "expected_test_count": 5,
     })
     assert empty_count["status"] == "FAIL"
     assert empty_count["reason"] == "expected_5_tests_collected_got_0"
     unreported_count = gate.run_check({
         "id": "test-count-unreported", "category": "test", "applies": True,
-        "argv": ["python3", "-c", "print('command exited successfully')"],
+        "argv": [sys.executable, "-c", "print('command exited successfully')"],
         "expected_test_count": 5,
     })
     assert unreported_count["status"] == "FAIL"
@@ -77,8 +78,8 @@ def main() -> int:
             "matrix_required_change_classes": ["large", "core"],
             "matrix_required_paths": [],
             "checks": [
-                {"id": "syntax", "category": "lint", "required": True, "argv": ["python3", "-m", "py_compile", "app.py"]},
-                {"id": "env", "category": "test", "required": True, "env": {"AIPS_FIXTURE": "1"}, "argv": ["python3", "-c", "import os; assert os.environ['AIPS_FIXTURE'] == '1'"]},
+                {"id": "syntax", "category": "lint", "required": True, "argv": [sys.executable, "-m", "py_compile", "app.py"]},
+                {"id": "env", "category": "test", "required": True, "env": {"AIPS_FIXTURE": "1"}, "argv": [sys.executable, "-c", "import os; assert os.environ['AIPS_FIXTURE'] == '1'"]},
             ],
         }
         profile_path = repo / "profile.yaml"
@@ -87,7 +88,7 @@ def main() -> int:
 
         report = repo / "report.json"
         proc = subprocess.run(
-            ["python3", str(SCRIPT), "--profile", str(profile_path), "--base", base, "--head", head, "--base-tip", "base-tip", "--output", str(report), "--format", "json"],
+            [sys.executable, str(SCRIPT), "--profile", str(profile_path), "--base", base, "--head", head, "--base-tip", "base-tip", "--output", str(report), "--format", "json"],
             cwd=repo,
             text=True,
             capture_output=True,
@@ -101,13 +102,13 @@ def main() -> int:
         sensitive_profile = dict(profile)
         sensitive_profile["checks"] = [{
             "id": "failing-secret-output", "category": "test", "required": True,
-            "argv": ["python3", "-c", "print('token=fixture-secret'); raise SystemExit(1)"],
+            "argv": [sys.executable, "-c", "print('token=fixture-secret'); raise SystemExit(1)"],
         }]
         sensitive_path = repo / "sensitive-profile.yaml"
         sensitive_path.write_text(yaml.safe_dump(sensitive_profile), encoding="utf-8")
         safe_report = repo / "safe-report.json"
         safe = subprocess.run(
-            ["python3", str(SCRIPT), "--profile", str(sensitive_path),
+            [sys.executable, str(SCRIPT), "--profile", str(sensitive_path),
              "--base", base, "--head", head, "--omit-output-tail",
              "--output", str(safe_report), "--format", "json"],
             cwd=repo, text=True, capture_output=True,
@@ -124,7 +125,7 @@ def main() -> int:
         conditional_path = repo / "conditional.yaml"
         conditional_path.write_text(yaml.safe_dump(conditional, sort_keys=False), encoding="utf-8")
         missing = subprocess.run(
-            ["python3", str(SCRIPT), "--profile", str(conditional_path), "--base", base, "--head", head],
+            [sys.executable, str(SCRIPT), "--profile", str(conditional_path), "--base", base, "--head", head],
             cwd=repo,
             text=True,
             capture_output=True,
@@ -142,7 +143,7 @@ def main() -> int:
         matrix_path = repo / "matrix.yaml"
         matrix_path.write_text(yaml.safe_dump(matrix, sort_keys=False), encoding="utf-8")
         bound = subprocess.run(
-            ["python3", str(SCRIPT), "--profile", str(conditional_path), "--base", base, "--head", head, "--matrix", str(matrix_path)],
+            [sys.executable, str(SCRIPT), "--profile", str(conditional_path), "--base", base, "--head", head, "--matrix", str(matrix_path)],
             cwd=repo,
             text=True,
             capture_output=True,
@@ -153,7 +154,7 @@ def main() -> int:
         wrong["candidate"] = {"base_sha": base, "changed_files_hash": "wrong"}
         matrix_path.write_text(yaml.safe_dump(wrong, sort_keys=False), encoding="utf-8")
         stale_matrix = subprocess.run(
-            ["python3", str(SCRIPT), "--profile", str(conditional_path), "--base", base, "--head", head, "--matrix", str(matrix_path)],
+            [sys.executable, str(SCRIPT), "--profile", str(conditional_path), "--base", base, "--head", head, "--matrix", str(matrix_path)],
             cwd=repo,
             text=True,
             capture_output=True,
@@ -163,7 +164,7 @@ def main() -> int:
 
         git(repo, "branch", "-f", "base-tip", head)
         stale_base = subprocess.run(
-            ["python3", str(SCRIPT), "--profile", str(profile_path), "--base", base, "--head", head, "--base-tip", "base-tip"],
+            [sys.executable, str(SCRIPT), "--profile", str(profile_path), "--base", base, "--head", head, "--base-tip", "base-tip"],
             cwd=repo,
             text=True,
             capture_output=True,

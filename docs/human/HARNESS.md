@@ -68,6 +68,8 @@ Runtime Content Safety Boundary 只在 AIPS-owned sink 或已驗證 native hook 
 
 ## Progressive disclosure
 
+Repository mutation workflows resolve AIPS Turn Context before analysis, then use targeted intelligence refresh and Change Impact evidence before editing; commit-time publication gates additionally enforce public-repository identity and content-safety policy.
+
 同步路徑只解析 identity、freshness、indexes 與 relevant pointers；重型 Project bootstrap、site build、semantic enrichment 不放進 hot path。
 
 ## Ownership 與解除

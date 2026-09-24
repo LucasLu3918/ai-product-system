@@ -64,6 +64,8 @@ The scheduler is stateless between invocations. Durable workflow state remains o
 
 ## CLI
 
+Lifecycle subprocess 應以目前驗證器的 `sys.executable` 啟動，確保子程序沿用相同 Python runtime 與相依套件環境。
+
 Publication preview includes uncommitted paths; use its `required_by` mapping to identify the sync or placement rule behind each documentation requirement before entering the exact-candidate Integration Gate.
 
 `aips run list`, `aips run inspect` and `aips run dashboard` consume the same read-only run projection. They observe scheduler-related state but do not alter scheduler authority.

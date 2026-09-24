@@ -52,6 +52,8 @@ docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGEL
 
 ## 文件一致性
 
+文件影響以 `aips docs impact` 顯示的 trigger 與遞迴閉包為準；EARS validator 契約由 Scenario Conformance 維護，需求規劃功能則由 Requirement Planning 維護。
+
 Publication Preflight preview displays the recursive documentation closure and the rule responsible for each required document; canonical Human and Agent guidance remains in its existing topic sections.
 
 The read-only Parallel Run Dashboard is mapped across its implementation, orchestration and Human guidance documents; the projection remains observational and does not create a second authority surface.

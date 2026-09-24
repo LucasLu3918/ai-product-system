@@ -1,80 +1,80 @@
 version: 1
 
 candidate:
-  base_sha: 1c276d93cfe1f7008d2132ec0e1f7e9a539e10a8
-  changed_files_hash: 0bd8a0c31ab65b4f9a01062f1faa8834b9e2aec71a9fd180d8706ada00ab1b5b
+  base_sha: 0ca1aa5686d572731a2abf28482f054d089dec79
+  changed_files_hash: 9982c95fbf882a2ce449b58ce96e88430043840f391b5b05198153c32958e9a3
 
 change:
-  id: ci-retrospective-hardening
-  summary: Ensure declared tests execute, preview complete working-tree publication impact, safely bind Core Matrix evidence, rerun CI on classification changes and report actionable environment blockers.
+  id: publication-ci-and-docs-hardening
+  summary: Enforce privacy-safe commit publication, narrow EARS test-only documentation impact, make Python lifecycle subprocesses use the active interpreter, and stabilize Actions runtime and runner versions.
   boundary:
-    - test-execution-fidelity
-    - working-tree-publication-preview-and-document-closure
-    - exact-core-matrix-and-change-class-binding
-    - truthful-validation-environment-diagnostics
-    - documentation-and-scenario-conformance
+    - public-commit-identity-and-content-safety
+    - recursive-documentation-impact-and-fast-precheck
+    - python-lifecycle-runtime-consistency
+    - github-actions-runtime-and-runner
+    - documentation-and-release-procedure
 
 matrix:
-  - boundary: test-execution-fidelity
-    reason: Security and lifecycle checks must execute a known number of tests and fail when the runner collects none or reports no summary.
+  - boundary: public-commit-identity-and-content-safety
+    reason: Public commits must use approved GitHub noreply author and committer identities; every commit message in the candidate range must pass sink-aware content safety without exposing rejected values.
     checks:
-      static_lint: {applicable: true, evidence: "Ruff critical checks and Python compilation"}
-      unit: {applicable: true, evidence: "tests/test_content_safety.py executes five unittest cases"}
-      integration: {applicable: true, evidence: "tests/evidence/integration_gate_lifecycle.py tests expected-count enforcement"}
-      contract: {applicable: true, evidence: "config/integration-gate.yaml expected_test_count binding"}
-      e2e: {applicable: false, na_reason: "No browser product surface changes; repository lifecycle is exercised directly"}
-      security: {applicable: true, evidence: "secret, PII, SHA false-positive and valid-card cases"}
-      migration_recovery: {applicable: false, na_reason: "No persisted application schema changes"}
-      cli_harness: {applicable: true, evidence: "exact-candidate Integration Gate runner"}
-      docs_schema: {applicable: true, evidence: "Core Matrix profile contract and Scenario 165"}
-  - boundary: working-tree-publication-preview-and-document-closure
-    reason: Pre-commit planning must include committed, staged, unstaged and untracked paths and explain recursive documentation requirements.
+      static_lint: {applicable: true, evidence: "Python compilation and publish preflight contracts"}
+      unit: {applicable: true, evidence: "publish_preflight_lifecycle validates allowed and rejected identities without echoing email values"}
+      integration: {applicable: true, evidence: "Exact candidate publication preflight checks base..head commit range"}
+      contract: {applicable: true, evidence: "config/git-publication.yaml policy and commit message safety report"}
+      e2e: {applicable: false, na_reason: "No user-facing product flow"}
+      security: {applicable: true, evidence: "Rejected PII remains redacted; author, committer, and all candidate messages are checked"}
+      migration_recovery: {applicable: false, na_reason: "No persisted application data or schema change"}
+      cli_harness: {applicable: true, evidence: "aips publish preflight against exact base/head"}
+      docs_schema: {applicable: true, evidence: "Publication policy and manual GitHub merge procedure in canonical docs"}
+  - boundary: recursive-documentation-impact-and-fast-precheck
+    reason: EARS test contract-only changes require Scenario Conformance docs while feature, template, and canonical requirement changes retain full Requirement Planning closure; CI should fail before expensive browser installation when docs are incomplete.
     checks:
-      static_lint: {applicable: true, evidence: "Ruff and documentation placement"}
-      unit: {applicable: true, evidence: "tests/evidence/publish_preflight_lifecycle.py preview path/closure assertions"}
-      integration: {applicable: true, evidence: "Scenario 165 and repository preflight"}
-      contract: {applicable: true, evidence: "aips publish preview structured output and required_by mapping"}
-      e2e: {applicable: false, na_reason: "CLI preview has deterministic local contract evidence; no browser UI is involved"}
-      security: {applicable: true, evidence: "preview preserves sink-aware candidate safety and final exact-candidate Gate"}
-      migration_recovery: {applicable: false, na_reason: "No persistent data migration"}
-      cli_harness: {applicable: true, evidence: "aips publish preview CLI"}
-      docs_schema: {applicable: true, evidence: "documentation sync and placement closure"}
-  - boundary: exact-core-matrix-and-change-class-binding
-    reason: Core Matrix hashes and PR classification must remain bound to the actual candidate; rebinding invalidates prior readiness and label changes rerun CI.
+      static_lint: {applicable: true, evidence: "Documentation sync/placement validators"}
+      unit: {applicable: true, evidence: "publish_preflight_lifecycle asserts test-only and source-feature impact closures"}
+      integration: {applicable: true, evidence: "aips publish preview and full repository validation"}
+      contract: {applicable: true, evidence: "validate workflow requires complete docs-impact before full dependency installation"}
+      e2e: {applicable: false, na_reason: "No UI changes"}
+      security: {applicable: true, evidence: "Fail-closed docs closure remains authoritative in full publication preflight"}
+      migration_recovery: {applicable: false, na_reason: "No migration"}
+      cli_harness: {applicable: true, evidence: "aips docs impact --require-complete and publish preview"}
+      docs_schema: {applicable: true, evidence: "Recursive closure and scoped EARS documentation contract"}
+  - boundary: python-lifecycle-runtime-consistency
+    reason: Lifecycle subprocesses must use the same interpreter and dependencies as their parent validator to prevent environment-dependent command-not-found and missing-package failures.
     checks:
-      static_lint: {applicable: true, evidence: "Ruff critical checks and workflow contract validation"}
-      unit: {applicable: true, evidence: "matrix-sync idempotence and stale binding lifecycle tests"}
-      integration: {applicable: true, evidence: "exact base/head Integration Gate and PR label event workflow"}
-      contract: {applicable: true, evidence: "Core Matrix candidate base/hash and required status"}
-      e2e: {applicable: false, na_reason: "GitHub event wiring and resolver behavior are covered by workflow and lifecycle contracts"}
-      security: {applicable: true, evidence: "stale or unreviewed Matrix remains blocked"}
-      migration_recovery: {applicable: false, na_reason: "Review metadata format remains backward compatible"}
-      cli_harness: {applicable: true, evidence: "aips publish matrix-sync and validate workflow"}
-      docs_schema: {applicable: true, evidence: "Core Change Testing and publication guidance"}
-  - boundary: truthful-validation-environment-diagnostics
-    reason: Local Python dependency, localhost and browser constraints must return actionable environment evidence without misclassifying product failures.
+      static_lint: {applicable: true, evidence: "Python compilation"}
+      unit: {applicable: true, evidence: "Scheduler, branch-hygiene, evolution-governance, and integration-gate lifecycle tests"}
+      integration: {applicable: true, evidence: "Full tests/validate_repository.py passed"}
+      contract: {applicable: true, evidence: "Lifecycle runners reference sys.executable"}
+      e2e: {applicable: false, na_reason: "No product UI changes"}
+      security: {applicable: false, na_reason: "No security boundary change in lifecycle runners"}
+      migration_recovery: {applicable: false, na_reason: "No persisted state change"}
+      cli_harness: {applicable: true, evidence: "Tests execute through current environment interpreter"}
+      docs_schema: {applicable: true, evidence: "Execution isolation and deterministic scheduler guidance"}
+  - boundary: github-actions-runtime-and-runner
+    reason: Keep hosted runner image predictable and replace artifact action versions that rely on retired Node 20 with a pinned supported release.
     checks:
-      static_lint: {applicable: true, evidence: "Python compilation and shell syntax"}
-      unit: {applicable: true, evidence: "deterministic denied-socket and browser diagnostic lifecycle test"}
-      integration: {applicable: true, evidence: "publish preflight environment contract"}
-      contract: {applicable: true, evidence: "ENVIRONMENT_BLOCKED diagnostic shape and next_step fields"}
-      e2e: {applicable: false, na_reason: "No user-facing browser product changes"}
-      security: {applicable: true, evidence: "environment blockers remain separate from content-safety and authorization results"}
-      migration_recovery: {applicable: false, na_reason: "No persistent state change"}
-      cli_harness: {applicable: true, evidence: "aips doctor, publish environment and Python runtime selection"}
-      docs_schema: {applicable: true, evidence: "Maintenance and publication diagnostics guidance"}
-  - boundary: documentation-and-scenario-conformance
-    reason: Narrowed CLI/install placement, test-count behavior and preview/matrix contracts must remain discoverable in canonical topics and Scenario 165.
+      static_lint: {applicable: true, evidence: "Workflow YAML validation and repository health contracts"}
+      unit: {applicable: true, evidence: "repository_health_contracts validates immutable artifact action SHAs"}
+      integration: {applicable: true, evidence: "PR and main CI runs on pinned ubuntu-24.04"}
+      contract: {applicable: true, evidence: "All ubuntu-latest runner references replaced; macOS matrix retained"}
+      e2e: {applicable: false, na_reason: "No browser product flow change"}
+      security: {applicable: true, evidence: "Existing immutable action SHAs and least-privilege permissions preserved"}
+      migration_recovery: {applicable: false, na_reason: "No persistent schema change"}
+      cli_harness: {applicable: true, evidence: "GitHub Actions full validation and docs-site jobs"}
+      docs_schema: {applicable: true, evidence: "Runner/action maintenance guidance"}
+  - boundary: documentation-and-release-procedure
+    reason: Canonical human and agent docs must describe the new publication policy, EARS trigger ownership, and runtime handling consistently.
     checks:
-      static_lint: {applicable: true, evidence: "documentation sync, placement and audience validators"}
-      unit: {applicable: true, evidence: "Scenario registry and documentation contract checks"}
-      integration: {applicable: true, evidence: "tests/validate_repository.py"}
-      contract: {applicable: true, evidence: "canonical docs and scoped placement rules"}
-      e2e: {applicable: false, na_reason: "Documentation changes do not create a browser product flow"}
-      security: {applicable: true, evidence: "documentation preserves merge authority and fail-closed matrix readiness"}
-      migration_recovery: {applicable: false, na_reason: "No schema migration"}
-      cli_harness: {applicable: true, evidence: "repository validation entrypoint"}
-      docs_schema: {applicable: true, evidence: "Scenario 165 and Human/Agent documentation"}
+      static_lint: {applicable: true, evidence: "Documentation audience, sync, and placement validation"}
+      unit: {applicable: true, evidence: "Documentation contract validators"}
+      integration: {applicable: true, evidence: "Full repository validation and remote docs-site CI"}
+      contract: {applicable: true, evidence: "Documentation impact preview reports complete closure"}
+      e2e: {applicable: false, na_reason: "Documentation-only product surface"}
+      security: {applicable: true, evidence: "Public identity and merge procedure preserve PII policy"}
+      migration_recovery: {applicable: false, na_reason: "No migration"}
+      cli_harness: {applicable: true, evidence: "aips publish plan and preflight documented"}
+      docs_schema: {applicable: true, evidence: "Core Change Test Matrix and canonical documentation closure"}
 
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true

@@ -73,6 +73,8 @@ Use `templates/requirements/IMPLEMENTATION_GOAL.yaml` when persistence is useful
 
 ## Structured functional requirements (EARS)
 
+`tests/validation/ears_requirement_contracts.py` 的測試契約維護由 Scenario Conformance 文件規則涵蓋；EARS requirement format、Planning Package 範本與需求追蹤實作仍由本規範及完整 Requirement Planning 文件閉包涵蓋。
+
 When a clarified request contains functional behavior that will guide implementation or acceptance, consider recording atomic requirements with EARS (Easy Approach to Requirements Syntax). EARS is lightweight structure for natural-language requirements; it supplements progressive clarification and does not change READY / NEEDS_CLARIFICATION / BLOCKED.
 
 Choose the pattern that matches the behavior. Keep its canonical English keywords even when the requirement itself is written in another language:

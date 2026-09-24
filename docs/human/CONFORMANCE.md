@@ -1,5 +1,7 @@
 # Scenario Conformance
 
+EARS 需求語法的 validator 契約變更屬於 Scenario Conformance：測試契約更新時同步維護本文件、Technology Guide 與 `orchestration/CONFORMANCE.md`；修改需求追蹤實作、規劃範本或規範本身則遵守完整 Requirement Planning 文件閉包。
+
 AIPS v0.13 開始把「Acceptance Scenario 有幾份」與「有多少真的有可追溯測試證據」分開。
 
 ## Coverage 類型

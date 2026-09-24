@@ -102,6 +102,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Validation workflow 先執行輕量文件影響檢查，再安裝完整依賴與 Playwright；EARS validator-only 變更使用 Scenario Conformance 閉包，規劃功能與範本變更維持完整 Requirement Planning 閉包。
+
 Eval-as-CI / Trajectory Quality Gate 以 provider-neutral trace 產生 observable evidence。Deterministic violations 可形成 `BLOCK`，效率偏差形成 `WARN` 或 `DEGRADED`；shadow mode 不授予 Git Publish 權限，Human Authority 仍是最後決策者。
 
 ### Scenario Conformance

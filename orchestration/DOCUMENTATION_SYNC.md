@@ -57,6 +57,8 @@ CI sets `AIPS_DOCS_DIFF_BASE` from the GitHub event base revision. Local validat
 
 ## Scope discipline
 
+EARS requirement validator 測試契約屬於 Scenario Conformance trigger；功能實作、需求範本與 canonical planning 文件仍屬 Requirement Planning trigger，避免測試-only 修改擴張為無關文件改版。
+
 Do not edit unrelated documentation merely to satisfy the validator. If a mapping becomes systematically noisy or inaccurate, change the mapping through normal AIPS maintenance review rather than bypassing the check.
 
 The deterministic check proves that required documentation surfaces were reviewed in the same change. It cannot prove semantic correctness of prose. Semantic accuracy remains part of Author/Reviewer responsibility.

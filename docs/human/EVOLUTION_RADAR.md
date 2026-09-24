@@ -42,6 +42,8 @@ Monthly / quarterly roll-up 量測 collected → shortlist → semantic → acti
 
 ## Current Boundaries
 
+GitHub Actions workflows 使用固定 Ubuntu 24.04 runner；Node runtime 相容性依賴各 action 的官方版本支援，artifact action 使用完整 SHA pin 並需在升級時重新驗證。
+
 Trajectory Quality Gate 的 deterministic trace evidence 可作為 Agent 行為品質的觀測輸入，但不會自動產生演進採用決策；任何 provider 或 LLM Judge 建議仍須經 Human Decision 與既有受控 Trial 流程。
 
 Portable Commands 是既有 Turn-Aware Global Harness 的低權限投影，不是新的 Capability ID，也不會自行升級 Runtime enforcement、Human approval 或 Git authority。新增 Host integration 仍須先經能力驗證與相容性證據。

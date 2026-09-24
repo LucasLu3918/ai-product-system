@@ -542,6 +542,8 @@ The CLI commands are deterministic building blocks used by the Agent/Harness and
 
 ## Change-impact artifacts
 
+Documentation trigger、出版 preflight、workflow 或其測試契約變更時，先比對 working-tree impact preview，再將 Core Matrix 綁定至完成文件擴張後的候選差異。
+
 Project Intelligence provides the reusable graph. Per-change impact remains a run artifact rather than permanent project policy.
 
 Attached:

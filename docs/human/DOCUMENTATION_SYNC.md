@@ -20,6 +20,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+`tests/validation/ears_requirement_contracts.py` 對應 Scenario Conformance；只有測試契約改動時更新 Conformance 與 Technology Guide，需求追蹤程式、規劃範本或 canonical requirement 文件仍觸發完整 Requirement Planning 閉包。
+
 Publication Preflight preview reports each required document with the sync or placement rule that introduced it, so maintainers can locate the exact source of recursive documentation requirements.
 
 Parallel Run Dashboard implementation and orchestration references use the registered dashboard placement contract, with operational behavior kept in the canonical run-state and execution sections.
