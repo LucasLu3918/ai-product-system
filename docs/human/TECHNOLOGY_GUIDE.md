@@ -106,6 +106,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Change Impact traversal 使用本地可重建索引與 canonical Impact Graph，並以 depth/node/edge budgets 限制成本。動態關係、索引失效、圖涵蓋不足與截斷必須輸出為不確定狀態；不要把 lexical candidates 當成編譯器解析或完整性證明。
+
 Validation workflow 先執行輕量文件影響檢查，再安裝完整依賴與 Playwright；EARS validator-only 變更使用 Scenario Conformance 閉包，規劃功能與範本變更維持完整 Requirement Planning 閉包。
 
 Eval-as-CI / Trajectory Quality Gate 以 provider-neutral trace 產生 observable evidence。Deterministic violations 可形成 `BLOCK`，效率偏差形成 `WARN` 或 `DEGRADED`；shadow mode 不授予 Git Publish 權限，Human Authority 仍是最後決策者。

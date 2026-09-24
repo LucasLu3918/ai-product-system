@@ -120,3 +120,17 @@ target revision or merge-base/HEAD
 ~~~
 
 Historical Change Impact MUST NOT use a rule whose `from_revision` is not an ancestor of the target revision. Assertions with unknown historical starts may be used for current-state context only and must be reported as `PARTIAL` or `UNKNOWN`. Between two revisions, report added, ended, superseded and conflicting assertions rather than silently selecting a winner.
+
+## Risk-adaptive bounded traversal
+
+Use `aips intelligence impact-traverse` to find likely code callers and consumers before implementation. The command combines rebuildable lexical relationships from the local Retrieval Intelligence index with exact relationships in canonical `IMPACT_GRAPH.yaml`; lexical matches are candidates, not compiler-resolved references.
+
+Example: `aips intelligence impact-traverse --project . --seed get_products --seed-path src/api.py --risk-class api_contract --direction callers --direction consumers --max-depth 3 --max-nodes 100 --max-edges 250`. Repeat `--seed` alongside optional same-index `--seed-path`/`--seed-line`, and pass `--graph-seed` to identify an exact canonical Impact Graph node when symbol/path matching is ambiguous. Use `--changed-path` for each path in the implementation diff when recording node status.
+
+Risk policy is intentionally shallow for documentation/style-only changes and private leaves. Public signatures/return shapes, shared DTOs/libraries, API contracts, database or event schemas, security boundaries and payment paths require at least two caller hops (capped at four). Consumers are traversed in the requested direction. High-risk classes that require depth two or more require complete graph coverage and no unresolved relationships before READY.
+
+Traversal records its policy version, required/reached depth, visited nodes/edges, truncation, unresolved evidence, node dispositions and whether each affected path changed in the actual diff. Node and edge budgets are hard bounds; hitting one is reported as `TRUNCATED` and cannot establish completeness. Dynamic string dispatch, missing graph coverage, stale indexes and unmapped graph paths remain explicit unknowns. For high-risk changes, use bounded relevant Git history to resolve temporal or ownership uncertainty; do not scan history for low-risk leaves by default.
+
+Before READY, review each affected-but-unchanged node and record `reviewed_safe`, `requires_change` or `unknown`. Required changes must be in the approved target path set and match the actual diff. Unknown or incomplete evidence blocks high-risk READY. The exact diff digest and changed-path reconciliation remain mandatory; traversal evidence supplements rather than replaces semantic review.
+
+For a multi-perspective review, include the seeds, risk policy, budgets, index freshness, graph coverage, exact versus inferred edges, unresolved/truncated evidence and affected-but-unchanged dispositions. Reviewers assess whether the evidence supports the implementation and diff; traversal does not prove compiler-resolved completeness.

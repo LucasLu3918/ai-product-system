@@ -1,5 +1,7 @@
 # Documentation Consistency Contract
 
+Change Impact traversal 的使用與限制應在 Human Project Intelligence 指南、Technology Guide、架構概覽及本 orchestration 契約同步；Scenario 175 的 evidence 與 Conformance inventory 也必須保持一致。
+
 ## Purpose
 
 Keep Human-facing and Agent-facing documentation synchronized with behavior-bearing AIPS changes.

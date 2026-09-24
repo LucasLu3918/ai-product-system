@@ -187,19 +187,20 @@ placement_rules:
       - templates/planning-package/REQUIREMENTS.yaml
       - scripts/requirements_traceability.py
       - tests/scenarios/174-ears-requirement-traceability.md
+      - tests/scenarios/175-risk-adaptive-bounded-impact.md
       - tests/scenario_coverage.yaml
       - tests/validation/conformance_isolation.py
       - tests/validate_repository.py
       - orchestration/DOCUMENTATION_SYNC.md
     placements:
-      docs/human/USER_GUIDE.md: [需求釐清與 Planning, Quality 與 Review]
+      docs/human/USER_GUIDE.md: [需求釐清與 Planning, Quality 與 Review, Git Publication 與 Release]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Quality & Verification]
-      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability]
+      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact]
 
   - id: scenario-conformance
-    triggers: [orchestration/CONFORMANCE.md, tests/scenario_coverage.yaml, tests/validation/conformance_isolation.py, tests/validation/ears_requirement_contracts.py]
+    triggers: [orchestration/CONFORMANCE.md, tests/scenario_coverage.yaml, tests/validation/conformance_isolation.py, tests/validation/ears_requirement_contracts.py, tests/scenarios/175-risk-adaptive-bounded-impact.md]
     placements:
-      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability]
+      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Quality & Verification]
 
   - id: documentation-platform

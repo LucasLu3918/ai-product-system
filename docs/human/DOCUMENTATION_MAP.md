@@ -44,6 +44,8 @@ Content safety 的 machine canonical 文件為 `config/content-safety.yaml`、`s
 
 `orchestration/REQUIREMENT_CLARIFICATION.md` 和 `orchestration/PLANNING_PACKAGE.md` 定義需求澄清與規劃規則；`templates/planning-package/REQUIREMENTS.yaml` 與 `scripts/requirements_traceability.py` 定義可選需求追溯資料及其結構檢查，CLI 提供 JSON PASS/FAIL 與相應退出碼。EARS 語義判讀仍由需求審查負責。
 
+Risk-adaptive Change Impact 的 Human 說明位於 `PROJECT_INTELLIGENCE.md` 的 Change Impact topic；風險政策、命令、證據與 READY 契約以 `orchestration/CHANGE_IMPACT.md` 為 Agent canonical source。Scenario 175 維護 traversal lifecycle coverage。
+
 Agent 由 AGENTS.md / SYSTEM.md 進入，按需讀取 orchestration/、roles/、skills/。Official Docs Site 不複製這些 protocol 成第二份 Human source。
 
 ## Shared canonical 文件

@@ -19,7 +19,7 @@ from aips_identity import config_home as canonical_config_home
 from aips_identity import repository_identity as canonical_repository_identity
 from temporal_intelligence import load_temporal, temporal_digest, validate_document as validate_temporal_document
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 DEFAULT_TOKEN_BUDGET = 6000
 DEFAULT_RESULT_LIMIT = 12
 MAX_FILE_BYTES = 1_000_000
@@ -29,6 +29,10 @@ STRUCTURAL_MAX_BRIDGES = 120
 STRUCTURAL_MAX_IDENTIFIERS_PER_BRIDGE = 200
 STRUCTURAL_MAX_TARGET_DEFINITIONS = 200
 STRUCTURAL_MAX_TEST_CHUNKS = 500
+IMPACT_MAX_DEPTH = 4
+IMPACT_MAX_NODES = 100
+IMPACT_MAX_EDGES = 250
+IMPACT_MAX_RELATIONS_PER_FILE = 5000
 SEMANTIC_ALIAS_LIMIT = 32
 SEMANTIC_ALIAS_PATH = Path(__file__).resolve().parents[1] / "templates/intelligence/SEMANTIC_ALIASES.yaml"
 CHUNK_LINES = 100
@@ -72,6 +76,8 @@ SYMBOL_PATTERNS = {
     ".jsx": [("symbol", re.compile(r"^\s*(?:export\s+)?(?:async\s+)?(?:function|class)\s+([A-Za-z_$][A-Za-z0-9_$]*)"))],
     ".ts": [("symbol", re.compile(r"^\s*(?:export\s+)?(?:async\s+)?(?:function|class|interface|type)\s+([A-Za-z_$][A-Za-z0-9_$]*)"))],
     ".tsx": [("symbol", re.compile(r"^\s*(?:export\s+)?(?:async\s+)?(?:function|class|interface|type)\s+([A-Za-z_$][A-Za-z0-9_$]*)"))],
+    ".vue": [("symbol", re.compile(r"^\s*(?:export\s+)?(?:async\s+)?(?:function|class)\s+([A-Za-z_$][A-Za-z0-9_$]*)"))],
+    ".svelte": [("symbol", re.compile(r"^\s*(?:export\s+)?(?:async\s+)?(?:function|class)\s+([A-Za-z_$][A-Za-z0-9_$]*)"))],
     ".java": [("symbol", re.compile(r"^\s*(?:public|protected|private)?\s*(?:final\s+)?(?:class|interface|enum)\s+([A-Za-z_][A-Za-z0-9_]*)"))],
     ".cs": [("symbol", re.compile(r"^\s*(?:public|internal|protected|private)?\s*(?:sealed\s+|static\s+)?(?:class|interface|record|enum)\s+([A-Za-z_][A-Za-z0-9_]*)"))],
     ".php": [("symbol", re.compile(r"^\s*(?:final\s+|abstract\s+)?(?:class|interface|trait|function)\s+([A-Za-z_][A-Za-z0-9_]*)"))],
@@ -294,6 +300,18 @@ def open_db(path: Path) -> tuple[sqlite3.Connection, bool]:
         );
         CREATE INDEX IF NOT EXISTS idx_symbols_name ON symbols(name);
         CREATE INDEX IF NOT EXISTS idx_symbols_path ON symbols(path);
+        CREATE TABLE IF NOT EXISTS relations (
+            source_name TEXT NOT NULL,
+            source_path TEXT NOT NULL,
+            source_definition_line INTEGER NOT NULL,
+            target_name TEXT NOT NULL,
+            source_line INTEGER NOT NULL,
+            relation TEXT NOT NULL,
+            content_hash TEXT NOT NULL,
+            PRIMARY KEY(source_path, source_line, target_name, relation)
+        );
+        CREATE INDEX IF NOT EXISTS idx_relations_target ON relations(target_name, relation);
+        CREATE INDEX IF NOT EXISTS idx_relations_source ON relations(source_name, source_path);
         CREATE TABLE IF NOT EXISTS commits (
             sha TEXT PRIMARY KEY,
             subject TEXT NOT NULL,
@@ -361,6 +379,7 @@ def changed_paths_between(root: Path, old_head: str | None, new_head: str | None
 
 def replace_file_index(conn: sqlite3.Connection, root: Path, rel_path: str, fts_available: bool) -> bool:
     conn.execute("DELETE FROM symbols WHERE path = ?", (rel_path,))
+    conn.execute("DELETE FROM relations WHERE source_path = ?", (rel_path,))
     chunk_ids = [row["id"] for row in conn.execute("SELECT id FROM chunks WHERE path = ?", (rel_path,)).fetchall()]
     if fts_available:
         for chunk_id in chunk_ids:
@@ -413,7 +432,447 @@ def replace_file_index(conn: sqlite3.Connection, root: Path, rel_path: str, fts_
             "INSERT INTO symbols(name, kind, path, line, chunk_id) VALUES (?, ?, ?, ?, ?)",
             (name, kind, rel_path, line, chunk_id),
         )
+    for relation in extract_code_relations(rel_path, text):
+        conn.execute(
+            """INSERT OR REPLACE INTO relations(
+                source_name, source_path, source_definition_line, target_name,
+                source_line, relation, content_hash
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)""",
+            (
+                relation["source_name"], rel_path, relation["source_definition_line"],
+                relation["target_name"], relation["source_line"], relation["relation"],
+                file_hash,
+            ),
+        )
     return True
+
+
+_CALL_KEYWORDS = {
+    "if", "for", "while", "switch", "catch", "with", "function", "class",
+    "def", "async", "return", "new", "typeof", "sizeof", "nameof", "select",
+    "where", "when", "lock", "using", "import", "require", "assert", "print",
+}
+_CALL_PATTERN = re.compile(r"(?<![\w$])([A-Za-z_$][A-Za-z0-9_$]*)\s*\(")
+_REFERENCE_PATTERN = re.compile(r"(?<![\w$])([A-Za-z_$][A-Za-z0-9_$]*)(?![\w$])")
+
+
+def code_without_comments_or_strings(text: str) -> str:
+    """Mask comments and quoted strings while preserving line and column offsets."""
+    out = list(text)
+    i = 0
+    state = "code"
+    quote = ""
+    while i < len(text):
+        char = text[i]
+        nxt = text[i + 1] if i + 1 < len(text) else ""
+        if state == "line":
+            if char == "\n":
+                state = "code"
+            else:
+                out[i] = " "
+            i += 1
+            continue
+        if state == "block":
+            if char == "*" and nxt == "/":
+                out[i] = out[i + 1] = " "
+                i += 2
+                state = "code"
+                continue
+            if char != "\n":
+                out[i] = " "
+            i += 1
+            continue
+        if state == "string":
+            if char == "\\":
+                if char != "\n":
+                    out[i] = " "
+                if i + 1 < len(text):
+                    if text[i + 1] != "\n":
+                        out[i + 1] = " "
+                    i += 2
+                    continue
+            if text.startswith(quote, i):
+                for offset in range(len(quote)):
+                    if text[i + offset] != "\n":
+                        out[i + offset] = " "
+                i += len(quote)
+                state = "code"
+                continue
+            if char != "\n":
+                out[i] = " "
+            i += 1
+            continue
+
+        if char == "/" and nxt == "/":
+            out[i] = out[i + 1] = " "
+            i += 2
+            state = "line"
+            continue
+        if char == "/" and nxt == "*":
+            out[i] = out[i + 1] = " "
+            i += 2
+            state = "block"
+            continue
+        if char == "#" or (char == "-" and nxt == "-"):
+            out[i] = " "
+            if nxt == "-":
+                out[i + 1] = " "
+                i += 2
+            else:
+                i += 1
+            state = "line"
+            continue
+        if char in "'\"`":
+            quote = char * 3 if text.startswith(char * 3, i) else char
+            for offset in range(len(quote)):
+                if text[i + offset] != "\n":
+                    out[i + offset] = " "
+            i += len(quote)
+            state = "string"
+            continue
+        i += 1
+    return "".join(out)
+
+
+def extract_code_relations(rel_path: str, text: str) -> list[dict[str, Any]]:
+    """Extract bounded lexical call/reference candidates, never compiler semantics."""
+    ext = Path(rel_path).suffix.lower()
+    if ext not in SYMBOL_PATTERNS or is_secret_path(rel_path):
+        return []
+    definitions = extract_symbols(rel_path, text)
+    masked = code_without_comments_or_strings(text)
+    rows: list[dict[str, Any]] = []
+    lines = masked.splitlines()
+    for line_no, line in enumerate(lines, start=1):
+        owner_name = "@file"
+        owner_line = 0
+        for name, _kind, definition_line in definitions:
+            if definition_line > line_no:
+                break
+            owner_name, owner_line = name, definition_line
+        if owner_name != "@file" and any(
+            definition_line == line_no and name == owner_name
+            for name, _kind, definition_line in definitions
+        ):
+            continue
+        call_names = {
+            match.group(1) for match in _CALL_PATTERN.finditer(line)
+            if match.group(1).lower() not in _CALL_KEYWORDS
+        }
+        names = set(_REFERENCE_PATTERN.findall(line))
+        for name in sorted(names):
+            if name.lower() in _CALL_KEYWORDS:
+                continue
+            relation = "calls" if name in call_names else "references"
+            rows.append({
+                "source_name": owner_name,
+                "source_definition_line": owner_line,
+                "target_name": name,
+                "source_line": line_no,
+                "relation": relation,
+            })
+            if len(rows) >= IMPACT_MAX_RELATIONS_PER_FILE:
+                return rows
+    return rows
+
+
+def risk_adaptive_policy(risk_class: str) -> dict[str, Any]:
+    key = re.sub(r"[^a-z0-9]+", "_", str(risk_class).lower()).strip("_")
+    policies: dict[str, dict[str, Any]] = {
+        "docs_style_test": {"required_depth": 0, "max_depth": 0, "directions": [], "history_required": False},
+        "private_leaf": {"required_depth": 1, "max_depth": IMPACT_MAX_DEPTH, "directions": ["callers"], "history_required": False},
+        "function_signature": {"required_depth": 2, "max_depth": IMPACT_MAX_DEPTH, "directions": ["callers"], "history_required": True},
+        "return_shape": {"required_depth": 2, "max_depth": IMPACT_MAX_DEPTH, "directions": ["callers", "consumers"], "history_required": True},
+        "shared_dto": {"required_depth": 2, "max_depth": IMPACT_MAX_DEPTH, "directions": ["callers", "consumers"], "history_required": True},
+        "api_contract": {"required_depth": 2, "max_depth": IMPACT_MAX_DEPTH, "directions": ["callers", "consumers"], "history_required": True},
+        "db_schema": {"required_depth": 2, "max_depth": IMPACT_MAX_DEPTH, "directions": ["callers", "consumers"], "history_required": True},
+        "event_schema": {"required_depth": 2, "max_depth": IMPACT_MAX_DEPTH, "directions": ["callers", "consumers"], "history_required": True},
+        "shared_library": {"required_depth": 2, "max_depth": IMPACT_MAX_DEPTH, "directions": ["callers", "consumers"], "history_required": True},
+        "security_boundary": {"required_depth": 2, "max_depth": IMPACT_MAX_DEPTH, "directions": ["callers", "consumers"], "history_required": True},
+        "payment": {"required_depth": 2, "max_depth": IMPACT_MAX_DEPTH, "directions": ["callers", "consumers"], "history_required": True},
+    }
+    return {"risk_class": key, **policies[key]} if key in policies else {
+        "risk_class": key, "status": "UNKNOWN_RISK_CLASS", "required_depth": None,
+        "max_depth": IMPACT_MAX_DEPTH, "directions": ["callers", "consumers"],
+        "history_required": True,
+    }
+
+
+def traverse_change_impact(
+    root: Path,
+    store: Path,
+    seeds: list[dict[str, Any]],
+    risk_class: str,
+    directions: list[str] | None = None,
+    max_depth: int | None = None,
+    max_nodes: int = IMPACT_MAX_NODES,
+    max_edges: int = IMPACT_MAX_EDGES,
+    changed_paths: list[str] | None = None,
+) -> dict[str, Any]:
+    """Return bounded, lexical caller/consumer candidates with explicit uncertainty."""
+    policy = risk_adaptive_policy(risk_class)
+    requested_directions = list(dict.fromkeys(directions or policy["directions"]))
+    depth_limit = policy["max_depth"] if max_depth is None else max_depth
+    depth_limit = min(max(0, int(depth_limit)), IMPACT_MAX_DEPTH)
+    max_nodes = min(max(1, int(max_nodes)), IMPACT_MAX_NODES)
+    max_edges = min(max(1, int(max_edges)), IMPACT_MAX_EDGES)
+    report: dict[str, Any] = {
+        "policy_version": 1,
+        "policy": "risk-adaptive-bounded",
+        "risk_class": policy["risk_class"],
+        "status": "INCOMPLETE",
+        "seeds": seeds,
+        "directions": requested_directions,
+        "required_depth": {"callers": policy["required_depth"]},
+        "reached_depth": {direction: 0 for direction in requested_directions},
+        "max_depth": depth_limit,
+        "limits": {"nodes": max_nodes, "edges": max_edges, "depth": depth_limit},
+        "visited_nodes": 0,
+        "visited_edges": 0,
+        "truncated": False,
+        "stop_reason": None,
+        "nodes": [],
+        "paths": [],
+        "unresolved": [],
+        "history_evidence": [],
+        "evidence": [],
+        "resolution": {"exact": [], "inferred": [], "unresolved": []},
+    }
+    if policy.get("status"):
+        report["status"] = "INCOMPLETE"
+        report["stop_reason"] = "unknown_risk_class"
+        report["unresolved"].append({"kind": "risk_class", "value": policy["risk_class"]})
+        report["resolution"]["unresolved"].append(policy["risk_class"])
+        return report
+    if any(direction not in {"callers", "consumers"} for direction in requested_directions):
+        report["stop_reason"] = "invalid_direction"
+        report["unresolved"].append({"kind": "direction", "values": requested_directions})
+        return report
+    if depth_limit < int(policy["required_depth"]):
+        report["stop_reason"] = "depth_below_required_minimum"
+        report["truncated"] = True
+        return report
+
+    status = index_status(root, store)
+    if status.get("status") != "CURRENT":
+        report["status"] = "INCOMPLETE"
+        report["stop_reason"] = "retrieval_index_" + str(status.get("status", "unavailable")).lower()
+        report["index_status"] = status.get("status")
+        report["unresolved"].append({"kind": "retrieval_index", "status": status.get("status")})
+        report["resolution"]["unresolved"].append("retrieval_index")
+        return report
+
+    db_path = index_path(root)
+    try:
+        conn, _fts_available = open_db(db_path)
+    except (OSError, sqlite3.Error) as exc:
+        report["stop_reason"] = "retrieval_index_unavailable"
+        report["unresolved"].append({"kind": "retrieval_index", "status": "INDEX_UNAVAILABLE"})
+        report["resolution"]["unresolved"].append("retrieval_index")
+        return report
+
+    visited: dict[tuple[str, str, int], dict[str, Any]] = {}
+    frontier: list[dict[str, Any]] = []
+    edge_rows: list[dict[str, Any]] = []
+    changed_set = set(changed_paths or [])
+    try:
+        for seed in seeds:
+            name = str(seed.get("symbol") or seed.get("name") or "").strip()
+            if not name:
+                report["unresolved"].append({"kind": "seed", "reason": "empty_symbol"})
+                continue
+            seed_path = seed.get("path")
+            seed_line = seed.get("line")
+            if seed_path and not seed_line:
+                definitions = conn.execute(
+                    "SELECT line FROM symbols WHERE name = ? AND path = ? ORDER BY line LIMIT 2",
+                    (name, str(seed_path)),
+                ).fetchall()
+                if len(definitions) == 1:
+                    seed_line = int(definitions[0]["line"])
+                elif len(definitions) > 1:
+                    report["unresolved"].append({"kind": "ambiguous_seed_definition", "symbol": name, "path": str(seed_path), "candidate_count": len(definitions)})
+            node = {"symbol": name, "path": seed_path, "line": seed_line, "depth": 0, "kind": "seed"}
+            key = (name, str(node["path"] or ""), int(node["line"] or 0))
+            visited[key] = node
+            frontier.append(node)
+
+        if not frontier:
+            report["stop_reason"] = "no_valid_seeds"
+            return report
+
+        for seed in seeds:
+            name = str(seed.get("symbol") or seed.get("name") or "").strip()
+            if not name:
+                continue
+            for chunk in conn.execute(
+                "SELECT path, start_line, text FROM chunks WHERE instr(text, ?) > 0 LIMIT 20",
+                (name,),
+            ).fetchall():
+                snippet = str(chunk["text"])
+                if re.search(r"(?is)(resolve|dispatch|emit|subscribe|register|route|inject|handler)\s*[^\n]{0,100}[\"']" + re.escape(name) + r"[\"']", snippet):
+                    unknown = {"kind": "dynamic_relationship", "symbol": name, "path": str(chunk["path"]), "line": int(chunk["start_line"]), "resolution": "unresolved"}
+                    report["unresolved"].append(unknown)
+                    report["resolution"]["unresolved"].append(name)
+
+        for direction in requested_directions:
+            direction_frontier = list(frontier)
+            while direction_frontier:
+                current = direction_frontier.pop(0)
+                depth = int(current["depth"])
+                if depth >= depth_limit:
+                    if direction == "callers":
+                        more = conn.execute(
+                            "SELECT source_name, source_path, source_definition_line FROM relations "
+                            "WHERE target_name = ? AND relation = 'calls' LIMIT ?",
+                            (current["symbol"], max_nodes + 1),
+                        ).fetchall()
+                        unseen = any(
+                            (str(row["source_name"]), str(row["source_path"]), int(row["source_definition_line"])) not in visited
+                            for row in more
+                        )
+                    else:
+                        more = conn.execute(
+                            "SELECT target_name, source_path, source_definition_line FROM relations "
+                            "WHERE source_name = ? AND source_path = ? LIMIT ?",
+                            (current["symbol"], str(current.get("path") or ""), max_nodes + 1),
+                        ).fetchall()
+                        unseen = any(
+                            conn.execute("SELECT 1 FROM symbols WHERE name = ? LIMIT 1", (str(row["target_name"]),)).fetchone()
+                            for row in more
+                        )
+                    if unseen or len(more) > max_nodes:
+                        report["truncated"] = True
+                        report["stop_reason"] = "max_depth"
+                    continue
+                if direction == "callers":
+                    rows = conn.execute(
+                        "SELECT source_name, source_path, source_definition_line, target_name, source_line, relation "
+                        "FROM relations WHERE target_name = ? AND relation = 'calls' "
+                        "ORDER BY source_path, source_line LIMIT ?",
+                        (current["symbol"], max_edges - len(edge_rows) + 1),
+                    ).fetchall()
+                else:
+                    rows = conn.execute(
+                        "SELECT source_name, source_path, source_definition_line, target_name, source_line, relation "
+                        "FROM relations WHERE source_name = ? AND source_path = ? "
+                        "ORDER BY source_line LIMIT ?",
+                        (current["symbol"], str(current.get("path") or ""), max_edges - len(edge_rows) + 1),
+                    ).fetchall()
+                if len(rows) > max_edges - len(edge_rows):
+                    report["truncated"] = True
+                    report["stop_reason"] = "max_edges"
+                    rows = rows[: max(0, max_edges - len(edge_rows))]
+                definitions = conn.execute(
+                    "SELECT path, line FROM symbols WHERE name = ? ORDER BY path, line LIMIT 9",
+                    (current["symbol"],),
+                ).fetchall()
+                target_matches = [row for row in definitions if str(row["path"]) == str(current.get("path")) and (not current.get("line") or int(row["line"]) == int(current["line"]))]
+                if direction == "callers" and current.get("path") and definitions and not target_matches:
+                    continue
+                if direction == "callers" and len(definitions) > 1 and not current.get("path"):
+                    report["unresolved"].append({"kind": "ambiguous_seed_definition", "symbol": current["symbol"], "candidate_count": len(definitions)})
+                    report["resolution"]["unresolved"].append(current["symbol"])
+                for row in rows:
+                    if len(edge_rows) >= max_edges:
+                        report["truncated"] = True
+                        report["stop_reason"] = "max_edges"
+                        break
+                    source_name = str(row["source_name"])
+                    source_path = str(row["source_path"])
+                    source_definition_line = int(row["source_definition_line"])
+                    source_line = int(row["source_line"])
+                    if direction == "callers":
+                        next_name, next_path, next_line = source_name, source_path, source_definition_line
+                        from_ref = {"symbol": source_name, "path": source_path, "line": source_definition_line or None}
+                        to_ref = {"symbol": current["symbol"], "path": current.get("path"), "line": current.get("line")}
+                    else:
+                        next_name = str(row["target_name"])
+                        target_definitions = conn.execute(
+                            "SELECT path, line FROM symbols WHERE name = ? ORDER BY path, line LIMIT 9",
+                            (next_name,),
+                        ).fetchall()
+                        if not target_definitions:
+                            report["unresolved"].append({"kind": "unresolved_consumer_target", "symbol": next_name, "path": source_path, "line": source_line})
+                            report["resolution"]["unresolved"].append(next_name)
+                            continue
+                        if len(target_definitions) > 1:
+                            report["unresolved"].append({"kind": "ambiguous_consumer_target", "symbol": next_name, "candidate_count": len(target_definitions), "path": source_path, "line": source_line})
+                            report["resolution"]["unresolved"].append(next_name)
+                        next_path, next_line = str(target_definitions[0]["path"]), int(target_definitions[0]["line"])
+                        from_ref = {"symbol": source_name, "path": source_path, "line": source_definition_line or None}
+                        to_ref = {"symbol": next_name, "path": next_path, "line": next_line}
+                    node = {"symbol": next_name, "path": next_path, "line": next_line or None, "depth": depth + 1, "kind": "file_scope" if next_name == "@file" else ("caller" if direction == "callers" else "consumer")}
+                    key = (next_name, next_path, next_line)
+                    edge = {
+                        "from": from_ref,
+                        "to": to_ref,
+                        "relation": str(row["relation"]),
+                        "direction": direction,
+                        "source_path": source_path,
+                        "source_line": source_line,
+                        "resolution": "inferred",
+                    }
+                    if direction == "callers" and definitions and len(definitions) > 1:
+                        edge["resolution"] = "ambiguous"
+                        report["unresolved"].append({"kind": "ambiguous_target", "symbol": current["symbol"], "path": current.get("path"), "candidate_count": len(definitions), "evidence": {"path": source_path, "line": source_line}})
+                        report["resolution"]["unresolved"].append(current["symbol"])
+                    edge_rows.append(edge)
+                    if edge["resolution"] == "inferred":
+                        report["resolution"]["inferred"].append({"symbol": current["symbol"], "path": source_path, "line": source_line})
+                    if key not in visited:
+                        if len(visited) >= max_nodes:
+                            report["truncated"] = True
+                            report["stop_reason"] = "max_nodes"
+                            continue
+                        visited[key] = node
+                        direction_frontier.append(node)
+                    report["reached_depth"][direction] = max(report["reached_depth"][direction], depth + 1)
+                    if len(edge_rows) >= max_edges or len(visited) >= max_nodes:
+                        break
+                if report["truncated"] and report["stop_reason"] in {"max_edges", "max_nodes"}:
+                    direction_frontier.clear()
+                    break
+
+        nodes = list(visited.values())
+        for node in nodes:
+            path = str(node.get("path") or "")
+            if node.get("kind") == "seed":
+                continue
+            node["impact_status"] = "affected_and_changed" if path in changed_set else ("affected_but_unchanged" if changed_set else "affected_candidate")
+            node["disposition"] = "pending_review"
+            if path:
+                path_obj = root / path
+                if path_obj.is_file() and not is_secret_path(path):
+                    try:
+                        file_text = path_obj.read_text(encoding="utf-8", errors="replace")
+                        map_lines = [n for n, line in enumerate(file_text.splitlines(), start=1) if re.search(r"\.\s*map\s*\(", line)]
+                        if map_lines:
+                            node["consumer_hints"] = [{"kind": "map_call", "lines": map_lines[:10]}]
+                    except OSError:
+                        pass
+        report["nodes"] = sorted(nodes, key=lambda item: (int(item["depth"]), str(item.get("path") or ""), str(item["symbol"])))
+        report["visited_nodes"] = len(visited)
+        report["visited_edges"] = len(edge_rows)
+        report["paths"] = edge_rows
+        report["evidence"] = [{"path": edge["source_path"], "line": edge["source_line"], "relation": edge["relation"], "resolution": edge["resolution"]} for edge in edge_rows]
+
+        seeds_names = [str(seed.get("symbol") or seed.get("name") or "") for seed in seeds]
+        if policy["history_required"] or report["unresolved"]:
+            terms = sorted({name.lower() for name in seeds_names if name})
+            history = history_candidates(conn, root, terms, limit=5) if terms else []
+            report["history_evidence"] = [
+                {"commit": row["commit"], "subject": redact_text(str(row["subject"])), "authored_at": row["authored_at"], "paths": row["paths"], "reason": row["reason"]}
+                for row in history
+            ]
+
+        # COMPLETE describes exhaustion of the bounded indexed candidate graph, not compiler-grade repository semantics.
+        report["status"] = "TRUNCATED" if report["truncated"] else ("BOUNDED_WITH_UNKNOWNS" if report["unresolved"] else "COMPLETE")
+        if report["stop_reason"] is None:
+            report["stop_reason"] = "frontier_exhausted"
+        return report
+    finally:
+        conn.close()
 
 
 def refresh_commits(conn: sqlite3.Connection, root: Path) -> None:

@@ -5,6 +5,7 @@ change:
   target: []
   target_paths: [] # Exact repository-relative files allowed in the final diff.
   summary: null
+  risk_class: null # docs_style_test | private_leaf | function_signature | return_shape | shared_dto | api_contract | db_schema | event_schema | shared_library | security_boundary | payment
 
 inputs: []
 outputs: []
@@ -36,4 +37,5 @@ reconciliation:
   changed_files: [] # Exact sorted repository-relative paths from the same diff.
   impact_graph_reviewed: false
   evidence: []
+traversal: null # Versioned impact-traverse evidence: seeds, directions, depths, limits, findings, dispositions, unknowns and history.
 status: DRAFT # DRAFT | IMPLEMENTATION_APPROVED | READY | BLOCKED

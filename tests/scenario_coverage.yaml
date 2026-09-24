@@ -1352,3 +1352,11 @@ scenarios:
       - templates/planning-package/REQUIREMENTS.yaml
       - scripts/requirements_traceability.py
       - tests/validation/ears_requirement_contracts.py
+  - id: "175"
+    path: tests/scenarios/175-risk-adaptive-bounded-impact.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/change_impact_traversal_lifecycle.py
+      - tests/validation/change_impact_traversal_contracts.py
+      - scripts/retrieval_intelligence.py
+      - scripts/project_intelligence.py
