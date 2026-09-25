@@ -129,8 +129,8 @@ placement_rules:
     triggers: [scripts/governance_guard.py, scripts/resource_authorization.py, scripts/external_credential_guard.py, scripts/governance_audit.py, scripts/governance_audit_retention.py, scripts/check_secret_leakage.py, config/secret-scan.yaml, config/integration-gate.yaml, .github/workflows/validate.yml, orchestration/SECRET_HANDLING.md, orchestration/INTEGRATION_GATE.md, orchestration/RESOURCE_AUTHORIZATION.md, tests/evidence/secret_scan_publication_lifecycle.py]
     placements:
       docs/human/SECURITY_ASSURANCE.md: [Core model, Assurance levels, Release Security Gate, Secret and credential safety, Runtime Content Safety Boundary]
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Security 與 Governance, Runtime Content Safety Boundary]
-      docs/human/TECHNOLOGY_GUIDE.md: [Security & Governance, Runtime Content Safety Boundary]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Security 與 Governance, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
+      docs/human/TECHNOLOGY_GUIDE.md: [Security & Governance, Execution, Runtime Content Safety Boundary]
 
   - id: deterministic-execution
     triggers: [scripts/deterministic_scheduler.py, scripts/integration_gate.py, scripts/publish_preflight.py, scripts/repository_preflight.py, scripts/execution_isolation.py, scripts/run_state.py, .github/workflows/validate.yml, .github/workflows/installation-entrypoints.yml, orchestration/INTEGRATION_GATE.md, orchestration/DETERMINISTIC_SCHEDULER.md, orchestration/ORCHESTRATOR.md]
@@ -206,7 +206,7 @@ placement_rules:
     placements:
       docs/human/USER_GUIDE.md: [需求釐清與 Planning, Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification]
-      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Execution Isolation Conformance]
+      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Execution Isolation Conformance]
 
   - id: scenario-conformance
     triggers: [orchestration/CONFORMANCE.md, tests/scenario_coverage.yaml, tests/validation/conformance_isolation.py, tests/validation/ears_requirement_contracts.py, tests/scenarios/175-risk-adaptive-bounded-impact.md, tests/scenarios/176-mandatory-candidate-secret-scanning.md, tests/evidence/secret_scan_publication_lifecycle.py]
