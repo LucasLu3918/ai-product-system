@@ -272,6 +272,12 @@ Before committing, `aips publish preview --base <base> --change-class <class>` r
 Portable Command 變更必須同時驗證 Registry、renderer、CLI lifecycle、MCP read-only facade、ownership conflict 與相關 canonical documentation；版本更新不得把 Host-native capability 誤標為已驗證。
 本機與 GitHub 必須透過 `scripts/publish_preflight.py` 共用 base/head、change class、canonical matrix 與 diff-aware documentation base。發布提案前先執行 `aips publish plan`，確認 protected branch 路由與 PR label；未帶 `AIPS_DOCS_DIFF_BASE` 的一般 validation 不得宣稱為 CI-parity 證據。
 
+本地首次執行 Gate 前，以 Python 3.12 執行 `python3.12 bin/prepare-local-validation`。它在系統暫存目錄建立獨立 venv，安裝與 CI 相同的三份 requirements 和 Playwright Chromium，接著檢查 `ruff`、`mypy`、瀏覽器及 localhost；成功後先依輸出啟用 venv，再執行 `python scripts/publish_preflight.py plan/run`。生命週期測試也會從 `PATH` 選擇 Python，因此只指定單一命令的 venv Python 不足以維持 CI 相依環境。若輸出 `ENVIRONMENT_BLOCKED`，先依診斷修復執行環境，再判讀程式測試結果。可用 `--check-only` 重查既有 venv，不會安裝套件。
+
+建立已核准的 Large/Core PR 時，在 `gh pr create` 同一命令附上 `--label aips:large-change` 或 `--label aips:core-change`，讓首次 `opened` 事件即使用正確分類；後續標籤異動仍會觸發新的驗證，舊執行可能因 concurrency 設定取消。檢查最新同一候選 SHA 的 required aggregate，避免把被取代的執行判成測試失敗。
+
+若 Turn Context 回報 `INDEX_UNAVAILABLE`／`SQLITE_OPEN_FAILED`，先確認 `XDG_CACHE_HOME` 指向可寫的快取目錄，再執行 `aips intelligence index --project "$PWD" --force`。索引是可重建的快取；`SEMANTIC_REFRESH_REQUIRED` 則表示來源內容變更，仍需依 Project Intelligence 流程檢視受影響的語意主題。
+
 公開 PR 的每個新 commit 都要使用 GitHub noreply author 與 committer 身分，並避免在 commit message、Co-authored-by trailer 與差異內容寫入個人資料。先在 GitHub **Settings → Emails** 開啟 **Keep my email addresses private**，讓 GitHub 網頁/API 合併使用 noreply；再從同頁複製 GitHub 提供的 noreply 位址，執行 `git config --local user.email "<noreply 位址>"`。以 `git log -1 --format='%ae%n%ce'` 確認本機 author/committer；不要把實際位址貼進 issue、PR 描述或驗證輸出。發布 preflight 會檢查候選範圍內的所有 commit message 與身份欄位。
 
 PR 建議使用 GitHub merge commit 合併，避免 squash 產生未受本機檢查的 co-author trailer；確認帳號已啟用 email privacy 後，執行 `gh pr merge <PR 編號> --merge`。GitHub 不接受 `--author-email` 指定 noreply 的 merge commit author；啟用 email privacy 後由 GitHub 自動選用 noreply。維護者可在 GitHub repository **Settings → General → Pull Requests** 關閉 **Allow squash merging**，讓設定與發布政策一致。若政策尚未設定，合併前須確認選擇 **Create a merge commit**。
