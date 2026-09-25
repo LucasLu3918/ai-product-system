@@ -333,6 +333,8 @@ When deterministic scheduling or merge-candidate validation changes, review toge
 
 - `orchestration/DETERMINISTIC_SCHEDULER.md` + `scripts/deterministic_scheduler.py`;
 - `orchestration/INTEGRATION_GATE.md` + `scripts/integration_gate.py`;
+- `orchestration/MULTI_REVIEW.md`, review packet/evidence helpers, and Context Manifest / Task Graph review contracts;
+- `templates/review/REVIEW_REPORT.md` / evidence template and Integration Gate report contract;
 - Task Graph / Validation Profile / Integration Gate Report contracts;
 - Execution Isolation single-writer behavior and Run Resume semantics;
 - Core Change Test Matrix reuse and exact-candidate fingerprinting;

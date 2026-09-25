@@ -8,10 +8,17 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+import sys
 
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+if str(ROOT / "scripts") not in sys.path:
+    sys.path.insert(0, str(ROOT / "scripts"))
+from review_evidence import canonical_hash
+
 SCRIPT = ROOT / "scripts" / "integration_gate.py"
 
 
@@ -149,6 +156,85 @@ def main() -> int:
             capture_output=True,
         )
         assert bound.returncode == 0, bound.stdout + bound.stderr
+
+        review_disabled_matrix = {
+            **matrix,
+            "status": "PASS",
+            "review_evidence": {"required": False, "path": "unused.yaml"},
+        }
+        matrix_path.write_text(yaml.safe_dump(review_disabled_matrix, sort_keys=False), encoding="utf-8")
+        disabled_review = subprocess.run(
+            [sys.executable, str(SCRIPT), "--profile", str(conditional_path), "--base", base,
+             "--head", head, "--base-tip", "base-tip", "--matrix", str(matrix_path), "--format", "json"],
+            cwd=repo, text=True, capture_output=True,
+        )
+        assert disabled_review.returncode == 0, disabled_review.stdout + disabled_review.stderr
+        disabled_payload = json.loads(disabled_review.stdout)
+        assert disabled_payload["status"] == "PASS"
+        assert disabled_payload["review_evidence"]["status"] == "NOT_REQUIRED"
+
+        review_required_matrix = {
+            **matrix,
+            "status": "PASS",
+            "review_evidence": {"required": True, "path": "unused.yaml"},
+        }
+        matrix_path.write_text(yaml.safe_dump(review_required_matrix, sort_keys=False), encoding="utf-8")
+        evidence = {
+            "version": 1,
+            "mode": "INDEPENDENT_REVIEW",
+            "review_of_task": "implementation",
+            "candidate": {
+                "base_sha": base,
+                "head_sha": head,
+                "changed_files_hash": canonical_hash(["app.py"]),
+            },
+            "packet": {"fingerprint": "sha256:" + "a" * 64, "source_classes": ["diff"]},
+            "context_policy": {
+                "inheritance": "none", "packet_fingerprint": "sha256:" + "a" * 64,
+                "allowed_classes": ["diff"],
+                "denied_classes": ["implementation_transcript", "private_reasoning", "scratchpad", "raw_model_trace"],
+            },
+            "permissions": {"read_only": True, "write_set": []},
+            "implementer_execution_id": "impl-1",
+            "reviewer_execution_id": "review-1",
+            "runtime_attestation": {
+                "execution_identity": "VERIFIED", "context_isolation": "VERIFIED",
+                "read_only_authority": "VERIFIED", "runtime": "fixture",
+                "receipt_ref": "fixture://receipt", "receipt_sha256": "sha256:" + "b" * 64,
+                "issuer_key_id": "fixture-key", "signature_algorithm": "ed25519", "signature_b64": "AA==",
+                "packet_fingerprint": "sha256:" + "a" * 64,
+            },
+            "unresolved_blocking_findings": 0,
+        }
+        evidence_path = Path(td) / "review-evidence.yaml"
+        evidence_path.write_text(yaml.safe_dump(evidence, sort_keys=False), encoding="utf-8")
+        accepted = subprocess.run(
+            [sys.executable, str(SCRIPT), "--profile", str(conditional_path), "--base", base, "--head", head,
+             "--base-tip", "base-tip", "--matrix", str(matrix_path), "--review-evidence", str(evidence_path),
+             "--format", "json"], cwd=repo, text=True, capture_output=True,
+        )
+        assert accepted.returncode == 1, accepted.stdout + accepted.stderr
+        accepted_payload = json.loads(accepted.stdout)
+        assert accepted_payload["review_evidence"]["status"] == "UNVERIFIED"
+        assert accepted_payload["review_evidence"]["reason_codes"] == ["trusted_runtime_attestation_verifier_unavailable"]
+
+        missing_review = subprocess.run(
+            [sys.executable, str(SCRIPT), "--profile", str(conditional_path), "--base", base, "--head", head,
+             "--base-tip", "base-tip", "--matrix", str(matrix_path), "--format", "json"],
+            cwd=repo, text=True, capture_output=True,
+        )
+        assert missing_review.returncode == 1
+        assert "independent-review-evidence" in json.loads(missing_review.stdout)["blockers"]
+
+        stale_evidence = {**evidence, "candidate": {**evidence["candidate"], "head_sha": base}}
+        evidence_path.write_text(yaml.safe_dump(stale_evidence, sort_keys=False), encoding="utf-8")
+        rejected_review = subprocess.run(
+            [sys.executable, str(SCRIPT), "--profile", str(conditional_path), "--base", base, "--head", head,
+             "--base-tip", "base-tip", "--matrix", str(matrix_path), "--review-evidence", str(evidence_path),
+             "--format", "json"], cwd=repo, text=True, capture_output=True,
+        )
+        assert rejected_review.returncode == 1
+        assert json.loads(rejected_review.stdout)["review_evidence"]["status"] == "STALE"
 
         wrong = dict(matrix)
         wrong["candidate"] = {"base_sha": base, "changed_files_hash": "wrong"}

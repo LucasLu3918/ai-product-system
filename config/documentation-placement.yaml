@@ -110,7 +110,7 @@ placement_rules:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
       docs/human/SECURITY_ASSURANCE.md: [Secret and credential safety, Runtime Policy Enforcement]
-      orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior, Runtime Content Safety Boundary]
+      orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior, Read-only declaration and fail-closed boundary, Runtime Content Safety Boundary]
 
   - id: project-intelligence
     triggers: [scripts/project_intelligence.py, scripts/retrieval_intelligence.py, scripts/temporal_intelligence.py, scripts/turn_context_hook.py, scripts/git_paths.py, orchestration/PROJECT_INTELLIGENCE.md, orchestration/CHANGE_IMPACT.md, templates/intelligence/**]
@@ -130,7 +130,7 @@ placement_rules:
     placements:
       docs/human/SECURITY_ASSURANCE.md: [Core model, Assurance levels, Release Security Gate, Secret and credential safety, Runtime Content Safety Boundary, Runtime Policy Enforcement]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Security 與 Governance, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
-      docs/human/TECHNOLOGY_GUIDE.md: [Security & Governance, Execution, Runtime Content Safety Boundary, Security & Governance]
+      docs/human/TECHNOLOGY_GUIDE.md: [Security & Governance, Execution, Quality & Verification, Runtime Content Safety Boundary, Security & Governance]
 
   - id: deterministic-execution
     triggers: [scripts/deterministic_scheduler.py, scripts/integration_gate.py, scripts/publish_preflight.py, scripts/repository_preflight.py, scripts/execution_isolation.py, scripts/run_state.py, .github/workflows/validate.yml, .github/workflows/installation-entrypoints.yml, orchestration/INTEGRATION_GATE.md, orchestration/DETERMINISTIC_SCHEDULER.md, orchestration/ORCHESTRATOR.md]
@@ -138,7 +138,7 @@ placement_rules:
       docs/human/USER_GUIDE.md: [Deterministic Scheduler, Execution Isolation 與 Runtime Resource, Checkpoint / Resume, Quality 與 Review, Git Publication 與 Release, Runtime Content Safety Boundary]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Runtime Content Safety Boundary, Security & Governance]
-      orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior, Runtime Content Safety Boundary]
+      orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior, Read-only declaration and fail-closed boundary, Runtime Content Safety Boundary]
       orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight, Risk-Proportional Security Assurance, Checkpoint and resume, Change-class handoff to Integration Gate, Runtime Content Safety Boundary]
 
   - id: content-safety
@@ -227,3 +227,38 @@ placement_rules:
     placements:
       docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification]
+
+  - id: independent-review-isolation
+    triggers:
+      - scripts/review_packet.py
+      - scripts/review_evidence.py
+      - scripts/deterministic_scheduler.py
+      - scripts/integration_gate.py
+      - scripts/publish_preflight.py
+      - config/integration-gate.yaml
+      - orchestration/schemas/task-graph.yaml
+      - orchestration/schemas/context-manifest.yaml
+      - templates/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
+      - templates/review/INTEGRATION_GATE_REPORT.yaml
+      - templates/review/REVIEW_REPORT.md
+      - templates/automation/TASK_GRAPH.yaml
+      - orchestration/INTEGRATION_GATE.md
+      - orchestration/DETERMINISTIC_SCHEDULER.md
+      - orchestration/MULTI_REVIEW.md
+      - orchestration/CORE_CHANGE_TESTING.md
+      - orchestration/EXECUTION_ISOLATION.md
+      - orchestration/PLANNING_PACKAGE.md
+      - orchestration/REQUIREMENT_CLARIFICATION.md
+      - orchestration/DOCUMENTATION_SYNC.md
+      - tests/scenario_coverage.yaml
+      - tests/scenarios/178-independent-review-isolation.md
+      - tests/evidence/review_isolation_lifecycle.py
+      - tests/validation/review_isolation_contracts.py
+      - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
+    placements:
+      docs/human/USER_GUIDE.md: [Quality 與 Review, Deterministic Scheduler, Execution Isolation 與 Runtime Resource, 需求釐清與 Planning, Git Publication 與 Release]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance, Product Delivery]
+      docs/human/SECURITY_ASSURANCE.md: [Secret and credential safety, Runtime Policy Enforcement]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval]
+      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 177 — Runtime Policy Enforcement, Execution Isolation Conformance]
+      docs/human/MAINTENANCE.md: [Deterministic Scheduler / Integration Gate consistency]

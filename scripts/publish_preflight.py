@@ -586,6 +586,8 @@ def run_candidate(args: argparse.Namespace) -> int:
         "--change-class", plan["change_class"],
         "--output", args.output,
     ]
+    if args.review_evidence:
+        command.extend(["--review-evidence", args.review_evidence])
     if args.base_tip:
         command.extend(["--base-tip", args.base_tip])
     if plan["matrix"]["required"] or Path(plan["matrix"]["path"]).is_file():
@@ -601,6 +603,7 @@ def common(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--change-class", choices=("auto", "standard", "large", "core"), default="auto")
     parser.add_argument("--labels", default="")
     parser.add_argument("--matrix")
+    parser.add_argument("--review-evidence")
     parser.add_argument("--branch", default="main")
     parser.add_argument("--offline", action="store_true")
     parser.add_argument("--commit-message")

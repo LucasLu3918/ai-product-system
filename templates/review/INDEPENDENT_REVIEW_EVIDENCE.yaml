@@ -1,0 +1,44 @@
+version: 1
+mode: INDEPENDENT_REVIEW # SELF_CHECK | INDEPENDENT_REVIEW
+review_of_task: null
+implementer_execution_id: null
+reviewer_execution_id: null
+
+candidate:
+  base_sha: null
+  head_sha: null
+  changed_files_hash: null
+
+packet:
+  fingerprint: null
+  source_classes: []
+
+context_policy:
+  inheritance: none
+  packet_fingerprint: null
+  allowed_classes: []
+  denied_classes:
+    - implementation_transcript
+    - private_reasoning
+    - scratchpad
+    - raw_model_trace
+
+permissions:
+  read_only: true
+  write_set: []
+
+runtime_attestation:
+  runtime: null
+  execution_identity: UNVERIFIED # VERIFIED | UNVERIFIED | FAILED
+  context_isolation: UNVERIFIED
+  read_only_authority: UNVERIFIED
+  receipt_ref: null
+  receipt_sha256: null
+  issuer_key_id: null
+  signature_algorithm: ed25519
+  signature_b64: null
+  packet_fingerprint: null
+
+decision: PENDING # PASS | PASS_WITH_COMMENTS | REQUEST_CHANGES | BLOCK
+unresolved_blocking_findings: 0
+findings: []

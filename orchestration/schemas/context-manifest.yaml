@@ -67,8 +67,22 @@ model_requirement:
   tools: []
 
 review:
+  mode: SELF_CHECK # SELF_CHECK | INDEPENDENT_REVIEW
   independent: false
   roles: []
+  review_of_task: null
+  implementer_execution_id: null # runtime evidence; never inferred from role/model name
+  reviewer_execution_id: null
+  context_policy:
+    inheritance: none
+    allowed_classes: []
+    denied_classes:
+      - implementation_transcript
+      - private_reasoning
+      - scratchpad
+      - raw_model_trace
+  packet_fingerprint: null # sha256:<64 lowercase hex>
+  independence_status: UNVERIFIED # VERIFIED | UNVERIFIED | FAILED | STALE
 
 artifacts:
   required: []

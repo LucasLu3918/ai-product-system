@@ -84,6 +84,22 @@ Local reports may store bounded command output tails plus fingerprints/status. C
 
 PASS means deterministic validation evidence is green. It does **not** authorize merge, publication, release, scope expansion or risk acceptance.
 
+## Independent review evidence
+
+Independent-review packet, task and evidence support is implemented, but PR enforcement is currently disabled in the active Core Change Matrix (`review_evidence.required: false`). Keep it disabled until a trusted runtime-attestation verifier is configured. Enabling the matrix flag without that verifier intentionally blocks required review as `UNVERIFIED`.
+
+The Core Change Matrix may declare:
+
+~~~yaml
+review_evidence:
+  required: true
+  path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
+~~~
+
+When required, the Gate validates structured evidence for review mode, distinct execution IDs, signed runtime isolation attestation, allowlisted packet classes, read-only authority, unresolved blocking findings, and exact base/head/changed-files binding. An explicit `--review-evidence` path may supply an ephemeral runtime artifact; the report stores its content hash and never copies its absolute path. No trusted runtime-attestation verifier is currently connected, so reports remain `UNVERIFIED` until one is integrated; status strings or an unsigned receipt cannot prove isolation.
+
+`SELF_CHECK` cannot satisfy a required `INDEPENDENT_REVIEW`. Missing runtime proof is `UNVERIFIED`; known same-execution/inherited-context/write authority is `FAILED`; candidate mismatch is `STALE`. Any required status other than `VERIFIED` makes the Integration Gate fail. The Gate validates only the evidence contract; semantic code review remains the Reviewer's responsibility.
+
 ## PR base freshness
 
 Local maintainers and GitHub Actions MUST enter the Gate through `scripts/publish_preflight.py` for publication candidates. The shared resolver binds the same base/head, PR-label change class, canonical `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`, `AIPS_DOCS_DIFF_BASE` and fast repository preflight before expensive lifecycle checks.

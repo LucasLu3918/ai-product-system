@@ -36,11 +36,13 @@ checks:
     category: type
     required: true
     timeout_seconds: 120
-    argv: [python3, -m, mypy, --ignore-missing-imports, scripts/deterministic_scheduler.py, scripts/integration_gate.py]
+    argv: [python3, -m, mypy, --follow-imports, skip, --ignore-missing-imports, scripts/deterministic_scheduler.py, scripts/integration_gate.py, scripts/review_packet.py, scripts/review_evidence.py]
     paths:
       - scripts/deterministic_scheduler.py
       - scripts/integration_gate.py
       - scripts/publish_preflight.py
+      - scripts/review_packet.py
+      - scripts/review_evidence.py
       - scripts/repository_preflight.py
       - orchestration/DETERMINISTIC_SCHEDULER.md
       - orchestration/INTEGRATION_GATE.md
@@ -78,6 +80,20 @@ checks:
       - .github/workflows/validate.yml
       - tests/evidence/integration_gate_lifecycle.py
       - tests/scenarios/136-exact-candidate-integration-gate.md
+  - id: review-isolation-lifecycle
+    category: test
+    required: true
+    timeout_seconds: 120
+    argv: [python3, tests/evidence/review_isolation_lifecycle.py]
+    paths:
+      - scripts/review_packet.py
+      - scripts/review_evidence.py
+      - scripts/deterministic_scheduler.py
+      - orchestration/schemas/context-manifest.yaml
+      - orchestration/schemas/task-graph.yaml
+      - tests/evidence/review_isolation_lifecycle.py
+      - tests/validation/review_isolation_contracts.py
+      - tests/scenarios/178-independent-review-isolation.md
   - id: trajectory-quality-gate-lifecycle
     category: test
     required: true

@@ -32,8 +32,8 @@ if conformance_helper.exists():
             errors.append("Scenario conformance total/registered count must match scenario inventory")
         if cov.get("uncovered") != 0:
             errors.append("Released scenario conformance registry must have no uncovered entries")
-        if cov.get("manual") != 0 or cov.get("agent_eval") != 54 or cov.get("lifecycle") != 96 or cov.get("deterministic") != 27 or cov.get("automated") != 177:
-            errors.append("current baseline must report manual=0, deterministic=27, lifecycle=96, agent_eval=54 and automated=177")
+        if cov.get("manual") != 0 or cov.get("agent_eval") != 54 or cov.get("lifecycle") != 97 or cov.get("deterministic") != 27 or cov.get("automated") != 178:
+            errors.append("current baseline must report manual=0, deterministic=27, lifecycle=97, agent_eval=54 and automated=178")
 
     with tempfile.TemporaryDirectory() as tmp:
         temp = Path(tmp)
@@ -281,6 +281,9 @@ if isolation_helper.exists():
         # Provider selection requires a current registry-bound record with every observed control.
         sys.path.insert(0, str(ROOT / "scripts"))
         import sandbox_providers  # noqa: E402
+        # verification_path() reads the current process environment rather than the
+        # child-process env above, so keep its fixture inside this temporary root.
+        os.environ["XDG_CONFIG_HOME"] = str(config)
         original_registry = sandbox_providers.REGISTRY
         registry = base / "sandbox-providers.yaml"
         registry.write_text(yaml.safe_dump({

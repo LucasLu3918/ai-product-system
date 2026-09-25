@@ -70,6 +70,8 @@ Trajectory Quality Gate 是 provider-neutral capability。Harness 可提供 obse
 
 `aips isolation resolve --mode auto` is an execution-isolation resolver exposed through the existing CLI. It selects worktree for ordinary risk and requires verified sandbox capability for high/critical or untrusted execution; this is not a new Runtime adapter capability. The initial E2B registry stays disabled and its optional smoke workflow does not receive project source.
 
+Independent review uses the canonical Scheduler and Integration Gate contracts through the existing runtime surfaces. The capability is implemented but PR enforcement is currently disabled in the active Core Change Matrix. Harness does not provide reviewer attestation itself: without a trusted runtime verifier, explicitly required evidence remains `UNVERIFIED` and blocks the Gate.
+
 Runtime Content Safety Boundary 只在 AIPS-owned sink 或已驗證 native hook 上宣稱強制能力；MCP-only 或 unsupported host tools 維持 ADVISORY。安全掃描不會取得 Host-native tool interception 或 Human Authority。
 
 ## Progressive disclosure

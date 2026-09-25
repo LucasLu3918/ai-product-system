@@ -114,6 +114,8 @@ When one approved plan has multiple writer tasks, `orchestration/DETERMINISTIC_S
 
 This adds deterministic coordination; it does not create a second workspace ownership system.
 
+An `INDEPENDENT_REVIEW` task runs under a distinct execution identity with `read_only: true`, a bounded allowlisted packet, and no inherited implementation conversation, hidden reasoning, scratchpad, or raw trace. Its evidence binds the exact candidate and packet digest. The Scheduler and Integration Gate must preserve `UNVERIFIED` when a trusted runtime attestation verifier is unavailable; required review then blocks the Gate.
+
 ## Scheduler write-boundary hardening
 
 A Scheduler task is treated as potentially writable unless it explicitly declares `read_only: true`. A writable/unspecified task without a non-empty Change Boundary is `SCHEDULER BLOCKED` before dispatch.

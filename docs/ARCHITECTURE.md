@@ -777,7 +777,10 @@ flowchart TD
     L --> C[Deferred / Blocked Task]
     A --> IC[Exact Integration Candidate]
     B --> IC
-    IC --> PP[Publication Preflight: base/head + class + docs + environment]
+    IC --> RP[Allowlisted, Fingerprinted Review Packet]
+    RP --> RR[Fresh Read-only Reviewer Execution]
+    RR --> RE[Review Evidence + Author Fix / Targeted Re-review]
+    RE --> PP[Publication Preflight: base/head + class + docs + environment]
     PP --> FP[diff + profile + canonical matrix fingerprint]
     FP --> J[Integration / Janitor Gate]
     J -->|PASS| R[required repository aggregate]
@@ -786,6 +789,8 @@ flowchart TD
 ~~~
 
 Planning remains semantic and Human-governed. Scheduling only evaluates the frozen task graph/state with stable ordering, parallel capacity and canonical Change Boundary locks. Publication Preflight gives local and CI the same exact-candidate inputs and stops early on documentation/environment blockers; Integration Gate validates the resulting candidate evidence. Neither layer can reinterpret failures or authorize publication, merge or release.
+
+Independent review is distinct from self-check. The reviewer receives only an allowlisted, bounded packet bound to the exact base/head and changed-file set, runs without inherited implementer context, has read-only authority, and produces a structured report bound to that packet. Runtime identity/context/permission claims are `VERIFIED` only when runtime evidence attests them; unavailable attestation remains `UNVERIFIED` and blocks a required review. The deterministic Gate validates evidence and freshness, not semantic review quality or merge authority.
 
 The existing single-writer rule remains authoritative per Change Boundary. Independent approved boundaries may run concurrently in separate worktrees; overlapping ancestor/descendant boundaries serialize.
 

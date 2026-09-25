@@ -33,6 +33,8 @@ For complete products also persist/link the Quality Profile, normally:
 
 `docs/quality/QUALITY_PROFILE.yaml`
 
+When independent review is required, persist the review contract and evidence pointer with the planning/validation artifacts: reviewer task mode, read-only boundary, allowlisted packet provenance, exact candidate binding, and the runtime attestation verification status. Store only evidence needed to reproduce the decision; never copy implementation chat, hidden reasoning, scratchpads, or raw traces into the package. Missing trusted verification remains `UNVERIFIED` and is not waived by planning metadata.
+
 Genuinely non-applicable artifacts/dimensions are marked N/A with a reason.
 
 ## Quality and delivery planning

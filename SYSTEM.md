@@ -41,6 +41,8 @@ Agent Session / User Request
 → Persist State + System Provenance / targeted Intelligence refresh
 ```
 
+For required independent reviews, use a fresh read-only reviewer execution over an allowlisted, fingerprinted evidence packet. `SELF_CHECK` is not independent review; unavailable runtime evidence stays `UNVERIFIED` and cannot pass a required review.
+
 ## System Update Preflight
 
 Before any **mutating implementation session**, run:

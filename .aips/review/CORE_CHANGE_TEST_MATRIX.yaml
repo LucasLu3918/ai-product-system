@@ -1,144 +1,70 @@
 version: 1
 change:
-  id: validation-publish-readiness
-  summary: Fail early with actionable local publication diagnostics while preserving
-    exact-candidate Gate and human matrix review.
+  id: v0.62-independent-review-isolation
+  summary: Add truthful, deterministic isolation evidence for AIPS independent code review.
   boundary:
-  - local-validation-entry
-  - working-tree-documentation-placement
-  - core-matrix-and-pr-readiness
-  - documentation-and-conformance
+    - review-execution-contract
+    - review-packet-and-provenance
+    - integration-gate-candidate-binding
+    - review-docs-scenarios-release
 matrix:
-- boundary: local-validation-entry
-  reason: Actionable Python, dependency, temporary-path and browser readiness diagnostics.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: ruff-critical and Python syntax compilation
-    unit:
-      applicable: false
-      na_reason: Behavior is exercised through deterministic CLI and repository lifecycle
-        evidence.
-    integration:
-      applicable: true
-      evidence: tests/evidence/publish_preflight_lifecycle.py
-    contract:
-      applicable: true
-      evidence: tests/validation/publish_preflight_contracts.py; tests/validation/documentation_placement_contracts.py
-    e2e:
-      applicable: false
-      na_reason: No live provider or production mutation is required by this boundary.
-    security:
-      applicable: true
-      evidence: Mandatory candidate secret scan and publication content-safety check
-    migration_recovery:
-      applicable: false
-      na_reason: No persisted schema or state migration.
-    cli_harness:
-      applicable: true
-      evidence: bin/prepare-local-validation; aips publish preview/plan lifecycle
-    docs_schema:
-      applicable: true
-      evidence: documentation placement audit and repository preflight
-- boundary: working-tree-documentation-placement
-  reason: Pre-commit placement uses the same canonical H2 rules as committed preflight,
-    including untracked files.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: ruff-critical and Python syntax compilation
-    unit:
-      applicable: false
-      na_reason: Behavior is exercised through deterministic CLI and repository lifecycle
-        evidence.
-    integration:
-      applicable: true
-      evidence: tests/evidence/publish_preflight_lifecycle.py
-    contract:
-      applicable: true
-      evidence: tests/validation/publish_preflight_contracts.py; tests/validation/documentation_placement_contracts.py
-    e2e:
-      applicable: false
-      na_reason: No live provider or production mutation is required by this boundary.
-    security:
-      applicable: false
-      na_reason: Placement validation makes no authorization or secret-handling decision.
-    migration_recovery:
-      applicable: false
-      na_reason: No persisted schema or state migration.
-    cli_harness:
-      applicable: true
-      evidence: bin/prepare-local-validation; aips publish preview/plan lifecycle
-    docs_schema:
-      applicable: true
-      evidence: documentation placement audit and repository preflight
-- boundary: core-matrix-and-pr-readiness
-  reason: Matrix binding is diagnosed before commit and the initial PR create plan
-    carries its class label; CLI authentication errors are redacted.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: ruff-critical and Python syntax compilation
-    unit:
-      applicable: false
-      na_reason: Behavior is exercised through deterministic CLI and repository lifecycle
-        evidence.
-    integration:
-      applicable: true
-      evidence: tests/evidence/publish_preflight_lifecycle.py
-    contract:
-      applicable: true
-      evidence: tests/validation/publish_preflight_contracts.py; tests/validation/documentation_placement_contracts.py
-    e2e:
-      applicable: false
-      na_reason: No live provider or production mutation is required by this boundary.
-    security:
-      applicable: true
-      evidence: Mandatory candidate secret scan and publication content-safety check
-    migration_recovery:
-      applicable: false
-      na_reason: No persisted schema or state migration.
-    cli_harness:
-      applicable: true
-      evidence: bin/prepare-local-validation; aips publish preview/plan lifecycle
-    docs_schema:
-      applicable: true
-      evidence: documentation placement audit and repository preflight
-- boundary: documentation-and-conformance
-  reason: Human and agent guidance explains preview, final candidate, matrix review
-    and GitHub CLI recovery.
-  checks:
-    static_lint:
-      applicable: false
-      na_reason: Documentation has no Python lint boundary.
-    unit:
-      applicable: false
-      na_reason: Documentation is checked through repository contract validation.
-    integration:
-      applicable: true
-      evidence: tests/validate_repository.py and documentation sync lifecycle
-    contract:
-      applicable: true
-      evidence: tests/validation/publish_preflight_contracts.py; tests/validation/documentation_placement_contracts.py
-    e2e:
-      applicable: true
-      evidence: docs-site PR build and main deployment workflow
-    security:
-      applicable: false
-      na_reason: No security policy changed in documentation.
-    migration_recovery:
-      applicable: false
-      na_reason: No persisted schema or state migration.
-    cli_harness:
-      applicable: false
-      na_reason: Documentation itself does not add a command.
-    docs_schema:
-      applicable: true
-      evidence: documentation placement audit and repository preflight
+  - boundary: review-execution-contract
+    reason: Task and context contracts plus scheduler must distinguish self-check from isolated review and enforce read-only authority.
+    checks:
+      static_lint: {applicable: true, evidence: ruff and syntax validation}
+      unit: {applicable: true, evidence: tests/validation/review_isolation_contracts.py}
+      integration: {applicable: true, evidence: tests/evidence/review_isolation_lifecycle.py}
+      contract: {applicable: true, evidence: schema and context-manifest validation}
+      e2e: {applicable: false, na_reason: No live external model runtime is available in repository CI; absent runtime attestations must remain UNVERIFIED.}
+      security: {applicable: true, evidence: denied context classes, distinct execution IDs, and read-only enforcement negative paths}
+      migration_recovery: {applicable: false, na_reason: Contract additions are optional and do not alter persisted user data.}
+      cli_harness: {applicable: true, evidence: deterministic scheduler lifecycle validator}
+      docs_schema: {applicable: true, evidence: repository schema/docs validation}
+  - boundary: review-packet-and-provenance
+    reason: Review packet content and source provenance must be allowlisted, deterministic, bounded, and fingerprinted.
+    checks:
+      static_lint: {applicable: true, evidence: ruff and syntax validation}
+      unit: {applicable: true, evidence: packet and evidence validator contract cases}
+      integration: {applicable: true, evidence: review packet lifecycle with tampered and forbidden evidence}
+      contract: {applicable: true, evidence: packet manifest schema and fingerprint binding}
+      e2e: {applicable: false, na_reason: Packet generation is deterministic local file processing; no external runtime is invoked.}
+      security: {applicable: true, evidence: path traversal, secret-like, transcript, scratchpad, and raw-trace negative cases}
+      migration_recovery: {applicable: false, na_reason: No external persisted state migration.}
+      cli_harness: {applicable: true, evidence: review packet helper invocation}
+      docs_schema: {applicable: true, evidence: review packet/evidence YAML validation}
+  - boundary: integration-gate-candidate-binding
+    reason: Required independent-review evidence must match the exact base/head, file set and packet under review.
+    checks:
+      static_lint: {applicable: true, evidence: ruff and syntax validation}
+      unit: {applicable: true, evidence: integration gate review-evidence contract tests}
+      integration: {applicable: true, evidence: Integration Gate lifecycle PASS/UNVERIFIED/FAILED/STALE cases}
+      contract: {applicable: true, evidence: integration gate report schema and exact candidate binding}
+      e2e: {applicable: false, na_reason: Exact candidate validation is exercised by the existing deterministic Integration Gate lifecycle.}
+      security: {applicable: true, evidence: missing or stale evidence blocks required review; private reasoning fields rejected}
+      migration_recovery: {applicable: false, na_reason: Gate inputs are ephemeral validation artifacts.}
+      cli_harness: {applicable: true, evidence: publish preflight and Integration Gate lifecycle}
+      docs_schema: {applicable: true, evidence: Core Change Matrix and report structure validation}
+  - boundary: review-docs-scenarios-release
+    reason: Human and Agent documentation, architecture diagrams, version, changelog, and scenario coverage must represent the new review flow.
+    checks:
+      static_lint: {applicable: false, na_reason: This boundary contains documentation and release metadata.}
+      unit: {applicable: false, na_reason: Documentation is checked by repository contracts and conformance.}
+      integration: {applicable: true, evidence: repository validation and scenario conformance}
+      contract: {applicable: true, evidence: static contracts for documented review invariants}
+      e2e: {applicable: false, na_reason: No deployed user-facing runtime behavior changes.}
+      security: {applicable: true, evidence: privacy/content-safety static and lifecycle checks}
+      migration_recovery: {applicable: false, na_reason: No user data migration.}
+      cli_harness: {applicable: false, na_reason: No global runtime adapter or CLI installation lifecycle change.}
+      docs_schema: {applicable: true, evidence: documentation sync, placement, architecture, and scenario coverage validation}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: c6f53ef0e300c1e2485f42579c60aaa67265bef3
-  changed_files_hash: 84632b37476482f4ce90d84fb70ab670b3b8b88563e595dbed80cd18fdfca0b3
+  base_sha: c171a436a129e7f8cb3b03b6342b66d6c3b70f21
+  changed_files_hash: d48f5b121f49e4ec81d7b3b42d899d08f4de4c7cf5dd82cc838822eae91ad039
+review_evidence:
+  # Capability is implemented but currently disabled for PR enforcement.
+  # Set required: true only after a trusted runtime-attestation verifier is configured.
+  required: false
+  path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
 status: READY
