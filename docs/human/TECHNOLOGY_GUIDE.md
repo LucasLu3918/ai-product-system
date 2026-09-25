@@ -105,6 +105,8 @@ Agent mutation 只在 approved resource boundary 中有效；default deny 與 ev
 
 可驗證 native Runtime hooks 可以在 protected operation 前檢查 approval binding；MCP-only 不宣稱攔截 Host native tools。
 
+Runtime Policy Enforcement uses a versioned action envelope and deny-by-default policy. Claude/Gemini hooks are `TOOL_GUARDED` only for normalized actions they receive; Codex remains `ADVISORY`, and high-risk external egress additionally requires a verified sandbox boundary.
+
 ### Governance Audit Evidence
 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。

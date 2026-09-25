@@ -24,6 +24,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 - PROJECT_INTELLIGENCE.md：Project understanding / retrieval。
 - SECURITY_ASSURANCE.md：SAL / security evidence。
 
+Runtime action authorization is canonical in `config/runtime-policy.yaml`, `orchestration/schemas/runtime-action.yaml`, `scripts/runtime_policy.py` and `orchestration/RUNTIME_POLICY_ENFORCEMENT.md`; adapter limits and Scenario 177 evidence are documented in Harness, Security Assurance and Conformance.
+
 Secret handling guidance covers the built-in mandatory publication-candidate scan in the existing Git Publication and Security Assurance topics. Provider scanners are optional defense-in-depth, not baseline dependencies.
 
 ### 架構與技術
@@ -53,6 +55,7 @@ Agent 由 AGENTS.md / SYSTEM.md 進入，按需讀取 orchestration/、roles/、
 ## Shared canonical 文件
 
 docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGELOG.md 是 release history。
+
 
 ## 文件一致性
 

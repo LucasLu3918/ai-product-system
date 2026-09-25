@@ -1,60 +1,273 @@
 version: 1
-candidate:
-  base_sha: 5e0fd8d8acb6750d50778db5674d0ff0a8e4debc
-  changed_files_hash: 679b97ab263eaaa52f42abfc6369f992dc3d20a96da732264d03953760086c09
 change:
-  id: validation-preflight-impact-safety
-  summary: Fail early on repository drift, make local exact-candidate validation repeatable,
-    and preserve existing Change Impact evidence.
+  id: runtime-policy-enforcement
+  summary: Deterministic runtime action policy, verified hook enforcement, exact approval
+    binding, high-risk egress controls, and optional semantic tightening.
   boundary:
-  - ci-repository-preflight
-  - local-validation-entrypoint
-  - impact-init-evidence-safety
-  - documentation-and-compatibility
+  - action-envelope-and-policy-contract
+  - deterministic-policy-evaluator
+  - runtime-hook-enforcement-truthfulness
+  - runtime-approval-binding-and-digest
+  - high-risk-egress-and-sandbox
+  - sanitized-governance-audit
+  - optional-semantic-provider-monotonicity
+  - documentation-and-architecture
 matrix:
-- boundary: ci-repository-preflight
-  reason: Run the existing preflight after mandatory secret scanning and before expensive
-    CI setup.
-  checks: &id001
+- boundary: action-envelope-and-policy-contract
+  reason: New versioned runtime action input/output contracts.
+  checks:
     static_lint:
       applicable: true
-      evidence: workflow syntax, Python lint and diff checks
+      evidence: CI check ruff-critical; repository Python syntax compilation
     unit:
-      applicable: false
-      na_reason: documentation is checked by repository and placement validators
+      applicable: true
+      evidence: tests/test_runtime_policy.py
     integration:
       applicable: true
-      evidence: documentation closure and repository validation
+      evidence: tests/evidence/runtime_policy_lifecycle.py
     contract:
       applicable: true
-      evidence: human and agent guidance matches CI and CLI behavior
+      evidence: tests/validation/runtime_policy_contracts.py
     e2e:
       applicable: false
-      na_reason: no user-facing UI behavior changes
+      na_reason: Deterministic hook lifecycle evidence covers the supported interface
+        without a live model runtime.
     security:
       applicable: true
-      evidence: secret-scan ordering and evidence preservation described
+      evidence: tests/test_runtime_policy.py; mandatory candidate secret scan
     migration_recovery:
       applicable: false
-      na_reason: no schema migration
+      na_reason: No persisted action schema migration.
     cli_harness:
-      applicable: false
-      na_reason: no new CLI behavior in this boundary
+      applicable: true
+      evidence: bin/aips runtime-policy --help; tests/evidence/runtime_policy_lifecycle.py
     docs_schema:
       applicable: true
-      evidence: documentation closure, placement and Core Matrix validation
-- boundary: local-validation-entrypoint
-  reason: Use the existing Publication Preflight with a venv PATH and isolated test
-    configuration.
-  checks: *id001
-- boundary: impact-init-evidence-safety
-  reason: Prevent silent evidence loss and retain the old record on explicit reset.
-  checks: *id001
-- boundary: documentation-and-compatibility
-  reason: Keep user, agent and security documents aligned with changed CI and CLI
-    behavior.
-  checks: *id001
-scope_recomputed_after_expansion: false
+      evidence: scripts/documentation_placement.py; tests/validation/runtime_policy_contracts.py
+- boundary: deterministic-policy-evaluator
+  reason: New security decision logic and policy precedence.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: CI check ruff-critical; repository Python syntax compilation
+    unit:
+      applicable: true
+      evidence: tests/test_runtime_policy.py
+    integration:
+      applicable: true
+      evidence: tests/evidence/runtime_policy_lifecycle.py
+    contract:
+      applicable: true
+      evidence: tests/validation/runtime_policy_contracts.py
+    e2e:
+      applicable: false
+      na_reason: Provider-neutral deterministic lifecycle and native hook tests cover
+        this boundary.
+    security:
+      applicable: true
+      evidence: tests/test_runtime_policy.py; mandatory candidate secret scan
+    migration_recovery:
+      applicable: false
+      na_reason: No persistent policy database.
+    cli_harness:
+      applicable: true
+      evidence: bin/aips runtime-policy --help; tests/evidence/runtime_policy_lifecycle.py
+    docs_schema:
+      applicable: true
+      evidence: scripts/documentation_placement.py; tests/validation/runtime_policy_contracts.py
+- boundary: runtime-hook-enforcement-truthfulness
+  reason: Existing Claude/Gemini native pre-tool hooks gain policy decisions; unsupported
+    runtimes must not claim enforcement.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: CI check ruff-critical; repository Python syntax compilation
+    unit:
+      applicable: true
+      evidence: tests/test_runtime_policy.py
+    integration:
+      applicable: true
+      evidence: tests/evidence/runtime_policy_lifecycle.py
+    contract:
+      applicable: true
+      evidence: tests/validation/runtime_policy_contracts.py
+    e2e:
+      applicable: true
+      evidence: Synthetic hook and policy lifecycle evidence; no live provider credentials
+        are used
+    security:
+      applicable: true
+      evidence: tests/test_runtime_policy.py; mandatory candidate secret scan
+    migration_recovery:
+      applicable: false
+      na_reason: No runtime state migration; adapter composition regression is covered.
+    cli_harness:
+      applicable: true
+      evidence: bin/aips runtime-policy --help; tests/evidence/runtime_policy_lifecycle.py
+    docs_schema:
+      applicable: true
+      evidence: scripts/documentation_placement.py; tests/validation/runtime_policy_contracts.py
+- boundary: runtime-approval-binding-and-digest
+  reason: Existing Approval Record is extended with exact runtime action scope and
+    expiry checks.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: CI check ruff-critical; repository Python syntax compilation
+    unit:
+      applicable: true
+      evidence: tests/test_runtime_policy.py
+    integration:
+      applicable: true
+      evidence: tests/evidence/runtime_policy_lifecycle.py
+    contract:
+      applicable: true
+      evidence: tests/validation/runtime_policy_contracts.py
+    e2e:
+      applicable: false
+      na_reason: Deterministic approval-record lifecycle is sufficient.
+    security:
+      applicable: true
+      evidence: tests/test_runtime_policy.py; mandatory candidate secret scan
+    migration_recovery:
+      applicable: true
+      evidence: null
+    cli_harness:
+      applicable: true
+      evidence: bin/aips runtime-policy --help; tests/evidence/runtime_policy_lifecycle.py
+    docs_schema:
+      applicable: true
+      evidence: scripts/documentation_placement.py; tests/validation/runtime_policy_contracts.py
+- boundary: high-risk-egress-and-sandbox
+  reason: SAL3/4 external egress requires both policy and an enforceable network boundary.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: CI check ruff-critical; repository Python syntax compilation
+    unit:
+      applicable: true
+      evidence: tests/test_runtime_policy.py
+    integration:
+      applicable: true
+      evidence: tests/evidence/runtime_policy_lifecycle.py
+    contract:
+      applicable: true
+      evidence: tests/validation/runtime_policy_contracts.py
+    e2e:
+      applicable: true
+      evidence: Synthetic hook and policy lifecycle evidence; no live provider credentials
+        are used
+    security:
+      applicable: true
+      evidence: tests/test_runtime_policy.py; mandatory candidate secret scan
+    migration_recovery:
+      applicable: false
+      na_reason: Sandbox configuration remains optional and provider verification
+        remains explicit.
+    cli_harness:
+      applicable: true
+      evidence: bin/aips runtime-policy --help; tests/evidence/runtime_policy_lifecycle.py
+    docs_schema:
+      applicable: true
+      evidence: scripts/documentation_placement.py; tests/validation/runtime_policy_contracts.py
+- boundary: sanitized-governance-audit
+  reason: Critical runtime decisions may cross an existing durable audit sink.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: CI check ruff-critical; repository Python syntax compilation
+    unit:
+      applicable: true
+      evidence: tests/test_runtime_policy.py
+    integration:
+      applicable: true
+      evidence: tests/evidence/runtime_policy_lifecycle.py
+    contract:
+      applicable: true
+      evidence: tests/validation/runtime_policy_contracts.py
+    e2e:
+      applicable: false
+      na_reason: Existing audit lifecycle tests cover the append/verify contract.
+    security:
+      applicable: true
+      evidence: tests/test_runtime_policy.py; mandatory candidate secret scan
+    migration_recovery:
+      applicable: true
+      evidence: null
+    cli_harness:
+      applicable: true
+      evidence: bin/aips runtime-policy --help; tests/evidence/runtime_policy_lifecycle.py
+    docs_schema:
+      applicable: true
+      evidence: scripts/documentation_placement.py; tests/validation/runtime_policy_contracts.py
+- boundary: optional-semantic-provider-monotonicity
+  reason: Optional semantic signals must not widen deterministic authorization and
+    must degrade safely.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: CI check ruff-critical; repository Python syntax compilation
+    unit:
+      applicable: true
+      evidence: tests/test_runtime_policy.py
+    integration:
+      applicable: true
+      evidence: tests/evidence/runtime_policy_lifecycle.py
+    contract:
+      applicable: true
+      evidence: tests/validation/runtime_policy_contracts.py
+    e2e:
+      applicable: false
+      na_reason: No live provider or credential is in scope; synthetic provider fixtures
+        are used.
+    security:
+      applicable: true
+      evidence: tests/test_runtime_policy.py; mandatory candidate secret scan
+    migration_recovery:
+      applicable: false
+      na_reason: No external provider state is persisted.
+    cli_harness:
+      applicable: false
+      na_reason: The semantic provider remains optional and is not in the CLI authorization
+        path.
+    docs_schema:
+      applicable: true
+      evidence: scripts/documentation_placement.py; tests/validation/runtime_policy_contracts.py
+- boundary: documentation-and-architecture
+  reason: The runtime execution flow and security claims change.
+  checks:
+    static_lint:
+      applicable: false
+      na_reason: Documentation has no static code lint boundary.
+    unit:
+      applicable: false
+      na_reason: Documentation correctness is checked through repository validation
+        and scenario coverage.
+    integration:
+      applicable: true
+      evidence: tests/evidence/runtime_policy_lifecycle.py
+    contract:
+      applicable: true
+      evidence: tests/validation/runtime_policy_contracts.py
+    e2e:
+      applicable: false
+      na_reason: No UI product surface changed.
+    security:
+      applicable: true
+      evidence: tests/test_runtime_policy.py; mandatory candidate secret scan
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted documentation migration.
+    cli_harness:
+      applicable: true
+      evidence: bin/aips runtime-policy --help; tests/evidence/runtime_policy_lifecycle.py
+    docs_schema:
+      applicable: true
+      evidence: scripts/documentation_placement.py; tests/validation/runtime_policy_contracts.py
+scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
+candidate:
+  base_sha: dffff91008aedadbffd9f5337ca11add44015dfa
+  changed_files_hash: 5039b24d57c9cb46a44364b425bd85b03bdb7af9773ca7fa23d7d6067d7b0eaf
 status: READY

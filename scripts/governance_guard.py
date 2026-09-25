@@ -238,6 +238,53 @@ def hook(runtime: str) -> int:
     except Exception:
         payload = {}
     command = str((payload.get("tool_input") or {}).get("command") or "")
+    try:
+        from runtime_policy import action_from_hook, evaluate, load_policy
+
+        runtime_action = action_from_hook(payload, runtime)
+        if runtime_action is not None:
+            cwd_for_policy = Path(str(payload.get("cwd") or os.getcwd())).resolve()
+            policy_path = Path(os.environ.get("AIPS_RUNTIME_POLICY_PATH", str(ROOT / "config/runtime-policy.yaml"))).expanduser()
+            policy, policy_bytes = load_policy(policy_path)
+            cap = "TOOL_GUARDED" if runtime in {"claude-code", "gemini-cli"} else "ADVISORY"
+            decision = evaluate(runtime_action, policy, runtime_capability=cap, policy_bytes=policy_bytes,
+                                approval_path=approval_path(cwd_for_policy), project_root=cwd_for_policy)
+            event = decision.get("audit") or {}
+            ledger = os.environ.get("AIPS_GOVERNANCE_AUDIT_LEDGER")
+            if ledger:
+                try:
+                    from governance_audit import append_event
+                    from datetime import datetime, timezone
+                    append_event(Path(ledger), {
+                        "event_type": event.get("event_type", "RUNTIME_ACTION_BLOCKED"),
+                        "occurred_at": datetime.now(timezone.utc).isoformat(),
+                        "actor": {"type": "runtime", "id": runtime},
+                        "authority": {"source": "runtime_policy", "approval_id": None},
+                        "binding": {"proposal_fingerprint": event.get("policy_digest"),
+                                    "approval_scope_fingerprint": None, "candidate_commit": None,
+                                    "branch": None, "operation": "external_data_egress",
+                                    "result": decision.get("decision"), "files": [], "boundaries": [],
+                                    "evidence_digests": [event.get("action_digest")] if event.get("action_digest") else []},
+                        "metadata": {"correlation_id": None, "notes": "Runtime policy decision; action payload omitted."},
+                    })
+                except Exception:
+                    if decision.get("decision") == "ALLOW":
+                        decision["decision"] = "BLOCKED"
+                        decision["reason"] = "required governance audit append failed"
+            if decision.get("decision") != "ALLOW":
+                reason = "AIPS runtime policy " + str(decision.get("decision")) + ": " + str(decision.get("reason"))
+                if runtime == "claude-code":
+                    print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": reason}}))
+                else:
+                    print(json.dumps({"decision": "deny", "reason": reason}))
+                return 0
+    except Exception as exc:
+        reason = "AIPS runtime policy BLOCKED: policy evaluation failed (" + type(exc).__name__ + ")"
+        if runtime == "claude-code":
+            print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": reason}}))
+        else:
+            print(json.dumps({"decision": "deny", "reason": reason}))
+        return 0
     operations = operations_for(command)
     if not operations:
         print("{}")

@@ -23,6 +23,8 @@ Report this independently from context capability:
 
 Never infer TOOL_GUARDED/ENFORCED from documentation alone; use installed adapter state. A guard may tighten policy but never create Human approval.
 
+Where a verified native pre-tool hook is installed, it may call the provider-neutral Runtime Policy Evaluator using a trusted normalized action envelope. Missing/invalid policy or required action context fails closed for recognized protected actions. A hook's `TOOL_GUARDED` capability does not imply shell, child-process or network isolation; high-risk egress separately requires verified sandbox/network evidence.
+
 ## Managed composition
 
 When a shared instruction file is required, use an AIPS delimited managed block instead of owning the whole file. Existing user content remains unchanged outside the block.

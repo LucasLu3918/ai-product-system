@@ -25,9 +25,13 @@ AIPS Core
 
 可安全安裝時使用 UserPromptSubmit + PreToolUse；成功驗證後可提供 TURN_NATIVE / TOOL_GUARDED。
 
+Runtime Policy 可由 PreToolUse 對 hook 收到且可正規化的動作執行 deny-by-default 檢查；命令列分類不代表可攔截 child process 或網路 socket。
+
 ### Gemini CLI
 
 使用 AIPS extension 的 BeforeAgent / BeforeTool。Runtime-specific observable-event capture 仍是獨立、受限、可驗證的 capability。
+
+BeforeTool 可執行相同的受支援 Runtime Policy 檢查；Codex 與不支援的 generic runtime 不宣稱強制執行。
 
 ## MCP Interoperability
 

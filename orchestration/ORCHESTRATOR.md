@@ -80,6 +80,8 @@ For planning, establish Product Baseline SAL and Reliability Impact. For every m
 
 Critical risk floors override average scoring. High-value financial/stored-value boundaries are security boundaries, including payments, refunds, settlement, balances, points/credits/vouchers/coupons with economic value, redemption, transfer and withdrawal.
 
+At runtime, the action envelope carries destination, data classes, protected assets, Change Boundary and effective SAL into deterministic policy evaluation. SAL3/4 external egress requires exact approval plus independently verified sandbox networking; hooks alone do not cover indirect sockets.
+
 SAL 3–4 activates independent Security Engineer review as applicable. SAL 4 unresolved High/Critical findings block release.
 
 Do not run full-product SAL 4 review for a cosmetic change that does not touch a protected boundary.

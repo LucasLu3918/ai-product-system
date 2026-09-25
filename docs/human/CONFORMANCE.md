@@ -1339,3 +1339,16 @@ Lifecycle evidence checks exact final-tree and `base..head` history scanning, in
 - manual：0
 - uncovered：0
 - automated：**176 / 176**
+
+## Scenario 177 — Runtime Policy Enforcement
+
+Lifecycle and deterministic evidence check deny-by-default policy evaluation, exact action/policy-bound approvals, expiry and drift rejection, verified sandbox requirements, semantic signals that can only deny or escalate, and Claude/Gemini native hook responses. Direct shell-command classification does not claim to intercept scripts, child processes, SDKs or hidden sockets; Codex remains `ADVISORY`.
+
+目前 Scenario inventory：
+
+- deterministic：27
+- lifecycle：96
+- agent_eval：54
+- manual：0
+- uncovered：0
+- automated：**177 / 177**

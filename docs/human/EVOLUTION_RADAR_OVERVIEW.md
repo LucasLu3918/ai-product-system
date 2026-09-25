@@ -38,6 +38,8 @@ The read-only Parallel Run Dashboard is an observation surface for parallel work
 
 Agent trajectory evidence 可回饋至後續 regression scenario，但不具備自動修改、merge、release 或 publication authority。
 
+Runtime Policy Enforcement 不交由 Evolution Radar 語意分析授權；外部語意訊號只能收緊決定性決策，且 provider 仍屬 optional trial。
+
 Monthly / quarterly roll-up量測 collected → shortlist → semantic → actionable → Trial → PASS → ADOPT funnel 與 duplicate / failure evidence；指標只產生 Human-review flag，不自動改 source weight 或系統設定。
 Portable Command Core 的 Registry、renderer、ownership conflict 與 MCP read-only contract 沿用既有 Harness capability；Host-native integration 維持後續候選。
 

@@ -57,6 +57,7 @@ from validation import syntax_contracts as syntax_contracts  # noqa: F401
 from validation import scheduler_gate_contracts as scheduler_gate_contracts  # noqa: F401
 from validation import branch_hygiene_contracts as branch_hygiene_contracts  # noqa: F401
 from validation import resource_authorization_contracts as resource_authorization_contracts  # noqa: F401
+from validation import runtime_policy_contracts as runtime_policy_contracts  # noqa: F401
 from validation import agent_anomaly_evaluation_contracts as agent_anomaly_evaluation_contracts  # noqa: F401
 from validation import agent_observable_event_trial_contracts as agent_observable_event_trial_contracts  # noqa: F401
 from validation import gemini_observable_event_capture_contracts as gemini_observable_event_capture_contracts  # noqa: F401

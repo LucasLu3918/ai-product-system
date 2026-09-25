@@ -73,15 +73,15 @@ if script.exists():
                     "Repository Health architecture inventory must "
                     "contain 9 major surfaces"
                 )
-            if architecture.get("capability_count") != 27:
+            if architecture.get("capability_count") != 28:
                 errors.append(
                     "Repository Health architecture inventory must "
-                    "observe all 27 Capability Map entries"
+                    "observe all 28 Capability Map entries"
                 )
-            if architecture.get("capability_accounted") != 27:
+            if architecture.get("capability_accounted") != 28:
                 errors.append(
                     "Repository Health architecture inventory must "
-                    "classify all Capability Map entries"
+                    "classify all 28 Capability Map entries"
                 )
             if architecture.get("unclassified_capabilities"):
                 errors.append(

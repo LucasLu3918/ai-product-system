@@ -727,3 +727,9 @@ Current automated inventory: 27 deterministic + 93 lifecycle + 54 agent_eval = 1
 Scenario 175 is lifecycle coverage for rebuildable lexical relation indexing, bounded caller/consumer traversal across code and canonical architecture edges, risk-specific depth/history, explicit unknown and truncation states, seed-scoped graph coverage that preserves repository-wide partial status, changed/unchanged affected-node dispositions and READY evidence validation. It does not claim compiler-grade reference resolution.
 
 Current automated inventory: 27 deterministic + 95 lifecycle + 54 agent_eval = 176 / 176; manual 0; uncovered 0.
+
+## Scenario 177 — Runtime Policy Enforcement
+
+Scenario 177 is lifecycle coverage for deny-by-default action authorization, stable action and policy digests, exact expiring Approval Record binding, SAL-aware egress, fresh sandbox allowlist proof, semantic deny/escalate monotonicity, sanitized audit metadata and truthful Claude/Gemini native hook responses. It proves the hooks' observable boundary only; indirect child-process or SDK network access still requires OS/sandbox egress enforcement. Codex remains `ADVISORY`.
+
+Current automated inventory: 27 deterministic + 96 lifecycle + 54 agent_eval = 177 / 177; manual 0; uncovered 0.

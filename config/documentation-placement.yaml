@@ -83,34 +83,34 @@ placement_rules:
     triggers: [bin/aips]
     placements:
       docs/human/USER_GUIDE.md: [Execution Isolation 與 Runtime Resource, Git Publication 與 Release]
-      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
 
   - id: execution-isolation
     triggers: [scripts/execution_isolation.py, scripts/sandbox_providers.py, scripts/e2b_sandbox_verification.py, config/sandbox-providers.yaml, config/external-credentials.yaml, orchestration/schemas/execution-profile.yaml, requirements-sandbox.txt, .github/workflows/e2b-sandbox-verification.yml]
     placements:
       docs/human/USER_GUIDE.md: [Execution Isolation 與 Runtime Resource]
-      docs/human/TECHNOLOGY_GUIDE.md: [Execution]
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution]
-      docs/human/SECURITY_ASSURANCE.md: [External sandbox execution]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Security & Governance]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution, Security 與 Governance]
+      docs/human/SECURITY_ASSURANCE.md: [External sandbox execution, Runtime Policy Enforcement]
       docs/human/MAINTENANCE.md: [Execution Isolation consistency]
-      docs/human/CONFORMANCE.md: [Execution Isolation Conformance]
+      docs/human/CONFORMANCE.md: [Execution Isolation Conformance, Scenario 177 — Runtime Policy Enforcement]
 
   - id: harness
     triggers: [harness/**, scripts/harness_resolve.py, scripts/mcp_server.py, scripts/portable_commands.py, orchestration/EXECUTION_ISOLATION.md]
     placements:
       docs/human/HARNESS.md: [Integration model, Native Runtime Adapters, MCP Interoperability, Portable Commands, Capability truth, Progressive disclosure, Ownership 與解除]
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Project Intelligence 與 Retrieval, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
-      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification, Runtime Content Safety Boundary]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Project Intelligence 與 Retrieval, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
+      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification, Runtime Content Safety Boundary, Security & Governance]
 
   - id: publication-preflight
     triggers: [scripts/publish_preflight.py, scripts/browser_runtime.py, scripts/repository_preflight.py, scripts/integration_gate.py, scripts/check_secret_leakage.py, config/integration-gate.yaml, config/secret-scan.yaml, config/git-publication.yaml, .github/workflows/validate.yml, .github/workflows/branch-hygiene.yml, .github/workflows/gemini-provider-session-verification.yml, .github/workflows/gemini-runtime-verification.yml, .github/workflows/mcp-codex-interop.yml, .github/workflows/repository-health.yml, .github/workflows/retrieval-semantic-trial.yml, orchestration/CORE_CHANGE_TESTING.md, orchestration/SECRET_HANDLING.md, tests/evidence/integration_gate_lifecycle.py, tests/evidence/publish_preflight_lifecycle.py, tests/evidence/secret_scan_publication_lifecycle.py, tests/validation/publish_preflight_contracts.py, tests/scenarios/176-mandatory-candidate-secret-scanning.md]
     placements:
       docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency, Deterministic Scheduler / Integration Gate consistency, Execution Isolation consistency]
       docs/human/USER_GUIDE.md: [Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release]
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution, Scenario Conformance 與 Agent Eval]
-      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification]
-      docs/human/SECURITY_ASSURANCE.md: [Secret and credential safety]
-      orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
+      docs/human/SECURITY_ASSURANCE.md: [Secret and credential safety, Runtime Policy Enforcement]
+      orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior, Runtime Content Safety Boundary]
 
   - id: project-intelligence
     triggers: [scripts/project_intelligence.py, scripts/retrieval_intelligence.py, scripts/temporal_intelligence.py, scripts/turn_context_hook.py, scripts/git_paths.py, orchestration/PROJECT_INTELLIGENCE.md, orchestration/CHANGE_IMPACT.md, templates/intelligence/**]
@@ -123,23 +123,23 @@ placement_rules:
     triggers: [scripts/repository_health.py, config/architecture-surfaces.yaml, config/repository-health.yaml, orchestration/REPOSITORY_HEALTH.md]
     placements:
       docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency, Deterministic Scheduler / Integration Gate consistency, Durable Run State consistency, Execution Isolation consistency]
-      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
 
   - id: security
-    triggers: [scripts/governance_guard.py, scripts/resource_authorization.py, scripts/external_credential_guard.py, scripts/governance_audit.py, scripts/governance_audit_retention.py, scripts/check_secret_leakage.py, config/secret-scan.yaml, config/integration-gate.yaml, .github/workflows/validate.yml, orchestration/SECRET_HANDLING.md, orchestration/INTEGRATION_GATE.md, orchestration/RESOURCE_AUTHORIZATION.md, tests/evidence/secret_scan_publication_lifecycle.py]
+    triggers: [scripts/governance_guard.py, scripts/runtime_policy.py, scripts/semantic_guard.py, scripts/resource_authorization.py, scripts/external_credential_guard.py, scripts/governance_audit.py, scripts/governance_audit_retention.py, scripts/check_secret_leakage.py, config/runtime-policy.yaml, orchestration/schemas/runtime-action.yaml, config/secret-scan.yaml, config/integration-gate.yaml, .github/workflows/validate.yml, orchestration/SECRET_HANDLING.md, orchestration/INTEGRATION_GATE.md, orchestration/RESOURCE_AUTHORIZATION.md, orchestration/GOVERNANCE_AUDIT.md, orchestration/RUNTIME_POLICY_ENFORCEMENT.md, tests/evidence/runtime_policy_lifecycle.py, tests/test_runtime_policy.py, tests/validation/runtime_policy_contracts.py, tests/scenarios/177-runtime-policy-enforcement.md]
     placements:
-      docs/human/SECURITY_ASSURANCE.md: [Core model, Assurance levels, Release Security Gate, Secret and credential safety, Runtime Content Safety Boundary]
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Security 與 Governance, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
-      docs/human/TECHNOLOGY_GUIDE.md: [Security & Governance, Execution, Runtime Content Safety Boundary]
+      docs/human/SECURITY_ASSURANCE.md: [Core model, Assurance levels, Release Security Gate, Secret and credential safety, Runtime Content Safety Boundary, Runtime Policy Enforcement]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Security 與 Governance, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
+      docs/human/TECHNOLOGY_GUIDE.md: [Security & Governance, Execution, Runtime Content Safety Boundary, Security & Governance]
 
   - id: deterministic-execution
     triggers: [scripts/deterministic_scheduler.py, scripts/integration_gate.py, scripts/publish_preflight.py, scripts/repository_preflight.py, scripts/execution_isolation.py, scripts/run_state.py, .github/workflows/validate.yml, .github/workflows/installation-entrypoints.yml, orchestration/INTEGRATION_GATE.md, orchestration/DETERMINISTIC_SCHEDULER.md, orchestration/ORCHESTRATOR.md]
     placements:
       docs/human/USER_GUIDE.md: [Deterministic Scheduler, Execution Isolation 與 Runtime Resource, Checkpoint / Resume, Quality 與 Review, Git Publication 與 Release, Runtime Content Safety Boundary]
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
-      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Runtime Content Safety Boundary]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Runtime Content Safety Boundary, Security & Governance]
       orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior, Runtime Content Safety Boundary]
-      orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight, Checkpoint and resume, Change-class handoff to Integration Gate, Runtime Content Safety Boundary]
+      orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight, Risk-Proportional Security Assurance, Checkpoint and resume, Change-class handoff to Integration Gate, Runtime Content Safety Boundary]
 
   - id: content-safety
     triggers: [config/content-safety.yaml, scripts/content_safety.py, scripts/gemini_observable_event_capture.py, orchestration/CONTENT_SAFETY_BOUNDARY.md]
@@ -172,7 +172,7 @@ placement_rules:
     placements:
       docs/human/EVOLUTION_RADAR.md: [Weekly Signal Scan, Evidence Quality, Deterministic Pre-analysis, Semantic Analysis, Human Decision Binding, Controlled Trial, Trial → ADOPT, Effectiveness Feedback, Current Boundaries]
       docs/human/EVOLUTION_RADAR_OVERVIEW.md: [Signal Collection, Deterministic Pre-analysis, Semantic Analysis, Human Decision, Controlled Trial, Trial → Adoption, Effectiveness Feedback]
-      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification, Evolution & Maintenance]
+      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification, Evolution & Maintenance, Security & Governance]
 
   - id: documentation-governance
     triggers:
@@ -187,7 +187,7 @@ placement_rules:
     placements:
       docs/human/DOCUMENTATION_SYNC.md: [文件角色, Current-behavior placement contract, Official Docs Site, Technology Guide, Deterministic protection]
       docs/human/DOCUMENTATION_MAP.md: [Official Docs Site, 文件角色, Agent / machine canonical 文件, 文件一致性]
-      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Documentation Platform, Product Delivery, Execution, Quality & Verification, Evolution & Maintenance, Runtime Content Safety Boundary]
+      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Documentation Platform, Product Delivery, Execution, Quality & Verification, Evolution & Maintenance, Runtime Content Safety Boundary, Security & Governance]
 
   - id: requirement-planning
     triggers:
@@ -205,22 +205,22 @@ placement_rules:
       - orchestration/DOCUMENTATION_SYNC.md
     placements:
       docs/human/USER_GUIDE.md: [需求釐清與 Planning, Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release]
-      docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification]
-      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Execution Isolation Conformance]
+      docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification, Security & Governance]
+      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Execution Isolation Conformance]
 
   - id: scenario-conformance
     triggers: [orchestration/CONFORMANCE.md, tests/scenario_coverage.yaml, tests/validation/conformance_isolation.py, tests/validation/ears_requirement_contracts.py, tests/scenarios/175-risk-adaptive-bounded-impact.md, tests/scenarios/176-mandatory-candidate-secret-scanning.md, tests/evidence/secret_scan_publication_lifecycle.py]
     placements:
-      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Execution Isolation Conformance]
-      docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification]
+      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Execution Isolation Conformance]
+      docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification, Security & Governance]
 
   - id: documentation-platform
     triggers: [docs/human/.vitepress/**, package.json, .github/workflows/docs-site.yml, scripts/documentation_placement.py, config/documentation-placement.yaml]
     placements:
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Official Docs Site, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Official Docs Site, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
       docs/human/DOCUMENTATION_SYNC.md: [Current-behavior placement contract, Official Docs Site, Technology Guide, Deterministic protection]
       docs/human/DOCUMENTATION_MAP.md: [Official Docs Site, 文件角色, Agent / machine canonical 文件, 文件一致性]
-      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Documentation Platform, Product Delivery, Execution, Quality & Verification, Runtime Content Safety Boundary]
+      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Documentation Platform, Product Delivery, Execution, Quality & Verification, Runtime Content Safety Boundary, Security & Governance]
 
   - id: trajectory-evaluation
     triggers: [scripts/trajectory_eval.py, orchestration/TRAJECTORY_EVAL.md, templates/review/TRAJECTORY_TRACE.yaml, templates/review/TRAJECTORY_EVIDENCE.yaml, tests/evidence/trajectory_quality_gate_lifecycle.py, tests/scenarios/167-trajectory-quality-gate.md]

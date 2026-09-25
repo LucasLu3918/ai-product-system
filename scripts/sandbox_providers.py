@@ -81,3 +81,38 @@ def resolve(root: Path, *, data_class: str = "public", minimum_isolation: str = 
         "verification": candidates[0]["verification"] if candidates else None,
         "reason": "verified provider capability matched" if candidates else "; ".join(reasons) or "no provider registered",
     }
+
+
+def resolve_egress(root: Path, *, host: str | None, data_class: str) -> dict[str, Any]:
+    """Return proof only for a fresh provider receipt that observed host allowlisting."""
+    if not host:
+        return {"status": "BLOCKED", "reason": "external destination host is unknown"}
+    try:
+        config = yaml.safe_load(REGISTRY.read_text(encoding="utf-8")) or {}
+    except (OSError, yaml.YAMLError):
+        return {"status": "BLOCKED", "reason": "sandbox provider registry is unavailable"}
+    reasons = []
+    for provider, cfg in sorted((config.get("providers") or {}).items()):
+        if not cfg.get("enabled") or cfg.get("integration_status") != "AVAILABLE":
+            continue
+        if data_class not in cfg.get("data_classes", []):
+            reasons.append(f"{provider}: data class is not permitted")
+            continue
+        egress = ((cfg.get("controls") or {}).get("network_egress"))
+        if not isinstance(egress, dict) or egress.get("mode") != "allowlist" or host.lower() not in {str(x).lower() for x in egress.get("hosts", [])}:
+            reasons.append(f"{provider}: destination is not in a verified allowlist policy")
+            continue
+        valid, reason, record = _fresh_record(root, provider, cfg)
+        observed = (record or {}).get("observed_controls") or {}
+        if not valid or observed.get("network_allowlist") is not True:
+            reasons.append(f"{provider}: {reason if not valid else 'network allowlist control was not observed'}")
+            continue
+        return {
+            "status": "AVAILABLE",
+            "provider": provider,
+            "host": host.lower(),
+            "data_class": data_class,
+            "registry_digest": registry_digest(),
+            "verification_digest": hashlib.sha256(json.dumps(record, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
+        }
+    return {"status": "BLOCKED", "reason": "; ".join(reasons) or "no verified provider permits external egress"}

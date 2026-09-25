@@ -1,0 +1,17 @@
+version: 1
+default_effect: DENY
+subject:
+  id: runtime-policy-test
+grants:
+  - id: analytics-provider
+    kind: external_service
+    selector: analytics.example.com
+    operations: [execute]
+    constraints:
+      change_boundary_required: true
+      network_allowed: true
+authority:
+  human_approval_granted: false
+  merge_authorized: false
+  release_authorized: false
+  protected_operation_authorized: false

@@ -102,6 +102,8 @@ Classify Product Baseline SAL and Reliability Impact during planning.
 SAL 3–4 persist applicable security artifacts under planning/security. SAL4 economic-value features explicitly cover authorization, transaction/idempotency/replay/concurrency, audit/reconciliation and recovery.
 When scope changes Remote Git publication controls, define the mandatory candidate scan, redaction and history coverage as acceptance criteria; keep external scanner credentials optional unless separately approved.
 
+For runtime integrations that move data outside the project boundary, specify destination, data classes, protected assets, Change Boundary, minimum runtime enforcement, exact approval needs and the network isolation evidence expected at execution time.
+
 ## IMPLEMENTATION_PLAN.md
 
 Describe implementation readiness:

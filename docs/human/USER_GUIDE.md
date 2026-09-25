@@ -168,6 +168,10 @@ Mutation 可依需要使用 shared workspace、AIPS-owned Git worktree 或 verif
 
 Parallel worktree 需要 dev/test server 時，Runtime Resource Lease 會為 isolation 配置 bounded TCP port，避免多 Agent 固定使用同一 port。
 
+需要代理執行高風險外部動作時，Runtime Policy 會要求明確資料分類、目的地、Change Boundary 與有效核准；沒有驗證過的 sandbox 網路隔離時，動作會停止。
+
+需要代理執行高風險外部動作時，Runtime Policy 會要求明確資料分類、目的地、Change Boundary 與有效核准；沒有驗證過的 sandbox 網路隔離時，動作會停止。
+
 ~~~text
 Task
 → Worktree

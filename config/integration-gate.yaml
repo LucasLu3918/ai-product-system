@@ -112,6 +112,36 @@ checks:
       - config/content-safety.yaml
       - orchestration/CONTENT_SAFETY_BOUNDARY.md
       - tests/test_content_safety.py
+  - id: runtime-policy-lifecycle
+    category: security
+    required: true
+    timeout_seconds: 120
+    argv: [python3, tests/test_runtime_policy.py]
+    paths:
+      - scripts/runtime_policy.py
+      - scripts/semantic_guard.py
+      - scripts/sandbox_providers.py
+      - scripts/governance_guard.py
+      - config/runtime-policy.yaml
+      - orchestration/schemas/runtime-action.yaml
+      - orchestration/RUNTIME_POLICY_ENFORCEMENT.md
+      - tests/test_runtime_policy.py
+      - tests/fixtures/runtime_policy/resource-authorization.yaml
+      - tests/validation/runtime_policy_contracts.py
+      - tests/scenario_coverage.yaml
+      - tests/validate_repository.py
+  - id: runtime-policy-hook-lifecycle
+    category: security
+    required: true
+    timeout_seconds: 120
+    argv: [python3, tests/evidence/runtime_policy_lifecycle.py]
+    paths:
+      - scripts/governance_guard.py
+      - scripts/runtime_policy.py
+      - harness/adapters/claude-code/CLAUDE.md
+      - harness/adapters/gemini-cli/hooks/hooks.json
+      - tests/evidence/runtime_policy_lifecycle.py
+      - tests/scenarios/177-runtime-policy-enforcement.md
   - id: secret-scan-publication-lifecycle
     category: security
     required: true

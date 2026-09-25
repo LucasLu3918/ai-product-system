@@ -680,6 +680,13 @@ resource_authorization_cmd() {
   "$py" "$SYSTEM_DIR/scripts/resource_authorization.py" "$@"
 }
 
+runtime_policy_cmd() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/runtime_policy.py" "$@"
+}
+
 isolation_cmd() {
   local py
   py="$(python_bin)"
@@ -1493,6 +1500,12 @@ case "${1:-help}" in
     [ -n "$sub" ] || die "Usage: aips authorization <validate|check> ..."
     shift 2 || true
     resource_authorization_cmd "$sub" "$@"
+    ;;
+  runtime-policy)
+    sub="${2:-}"
+    [ -n "$sub" ] || die "Usage: aips runtime-policy evaluate --action ACTION.yaml [--policy POLICY.yaml]"
+    shift 2 || true
+    runtime_policy_cmd "$sub" "$@"
     ;;
   isolation)
     sub="${2:-}"
