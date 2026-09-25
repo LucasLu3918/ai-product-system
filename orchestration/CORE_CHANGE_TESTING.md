@@ -1,6 +1,6 @@
 # Core Change Testing
 
-發布治理、CI workflow、文件影響政策與 preflight validator 屬於 Core 變更。矩陣必須逐項涵蓋身份與訊息隱私、文件影響閉包、Actions runner/action 相容性、Python lifecycle 執行器及遠端 merge 後驗證，並綁定實際候選差異雜湊。
+發布治理、CI workflow、文件影響政策與 preflight validator 屬於 Core 變更。矩陣必須逐項涵蓋身份與訊息隱私、文件影響閉包、Actions runner/action 相容性、Python lifecycle 執行器及遠端 merge 後驗證，並綁定實際候選差異雜湊。CI 的快速 repository preflight 須在強制候選秘密掃描之後、完整依賴與 Chromium 安裝之前，且不可取代完整 Gate。
 
 Use for every Large/Core Change and whenever scope/risk suggests a fixed smoke suite is insufficient.
 

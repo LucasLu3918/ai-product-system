@@ -1,64 +1,59 @@
 version: 1
 candidate:
-  base_sha: 272696ea6cd8dac8f6d7800c69cfbaad871e813c
-  changed_files_hash: 718c749b251e06f55e40cc39859c0b65462059303cface2b3a4e6e7563ae227a
+  base_sha: 5e0fd8d8acb6750d50778db5674d0ff0a8e4debc
+  changed_files_hash: 679b97ab263eaaa52f42abfc6369f992dc3d20a96da732264d03953760086c09
 change:
-  id: mandatory-candidate-secret-scanning
-  summary: Require redacted credential-free secret scanning for the exact publication candidate and its complete base-to-head commit history.
+  id: validation-preflight-impact-safety
+  summary: Fail early on repository drift, make local exact-candidate validation repeatable,
+    and preserve existing Change Impact evidence.
   boundary:
-    - built-in-secret-scanner-and-central-policy
-    - integration-gate-candidate-binding
-    - local-publication-preflight-and-ci-fail-fast
-    - security-documentation-scenario-and-release-contract
+  - ci-repository-preflight
+  - local-validation-entrypoint
+  - impact-init-evidence-safety
+  - documentation-and-compatibility
 matrix:
-  - boundary: built-in-secret-scanner-and-central-policy
-    reason: Strict policy changes secret detection, exception handling, and fail-closed behavior.
-    checks:
-      static_lint: {applicable: true, evidence: repository lint and scanner syntax contracts}
-      unit: {applicable: true, evidence: redaction, lockfile detector policy, strict bypass and allowlist validation}
-      integration: {applicable: true, evidence: tests/evidence/secret_scan_publication_lifecycle.py}
-      contract: {applicable: true, evidence: scanner JSON status/finding/hash contract}
-      e2e: {applicable: false, na_reason: no user-facing UI or live secret provider}
-      security: {applicable: true, evidence: synthetic secret final-tree/history scans and raw-value absence assertions}
-      migration_recovery: {applicable: false, na_reason: no persistent data or schema migration; revert config/code to roll back}
-      cli_harness: {applicable: true, evidence: scanner CLI strict and candidate invocation through current Python runtime}
-      docs_schema: {applicable: true, evidence: central YAML policy validation and Scenario 176}
-  - boundary: integration-gate-candidate-binding
-    reason: The existing deterministic publication Gate must require the scan and invalidate stale evidence when any candidate/security input changes.
-    checks:
-      static_lint: {applicable: true, evidence: Integration Gate lint/type checks}
-      unit: {applicable: true, evidence: missing/non-required/narrow-path check rejection}
-      integration: {applicable: true, evidence: candidate fingerprint includes base/head/policy/scanner hashes}
-      contract: {applicable: true, evidence: Validation Profile and Integration Gate report contract}
-      e2e: {applicable: false, na_reason: no user-facing UI}
-      security: {applicable: true, evidence: required fail-closed exact-candidate scan}
-      migration_recovery: {applicable: false, na_reason: additive profile contract; candidates without scan now block by design}
-      cli_harness: {applicable: true, evidence: local publish-preflight and exact candidate Gate}
-      docs_schema: {applicable: true, evidence: Integration Gate and publication protocols}
-  - boundary: local-publication-preflight-and-ci-fail-fast
-    reason: Local and GitHub paths must run the same policy before expensive checks and preserve the existing required-check aggregate.
-    checks:
-      static_lint: {applicable: true, evidence: workflow and preflight syntax validation}
-      unit: {applicable: true, evidence: preflight failure/status report contract}
-      integration: {applicable: true, evidence: local exact-candidate preflight and GitHub workflow ordering}
-      contract: {applicable: true, evidence: existing repository required-check aggregate remains the sole required context}
-      e2e: {applicable: false, na_reason: no UI; workflow ordering and Gate are deterministically inspected}
-      security: {applicable: true, evidence: secret scan occurs before dependency/Playwright installation}
-      migration_recovery: {applicable: false, na_reason: no persisted release state}
-      cli_harness: {applicable: true, evidence: publish_preflight plan/run lifecycle}
-      docs_schema: {applicable: true, evidence: CI/user-facing publication instructions}
-  - boundary: security-documentation-scenario-and-release-contract
-    reason: Security, architecture, docs placement, scenario coverage, and version records must describe the enforced behavior.
-    checks:
-      static_lint: {applicable: true, evidence: documentation placement and scenario registry validation}
-      unit: {applicable: false, na_reason: behavior is covered by lifecycle and contract evidence}
-      integration: {applicable: true, evidence: repository validation checks documentation closure}
-      contract: {applicable: true, evidence: Scenario 176 registration and placement ownership}
-      e2e: {applicable: false, na_reason: no user-facing UI}
-      security: {applicable: true, evidence: secret handling and Security Assurance contract review}
-      migration_recovery: {applicable: false, na_reason: no data migration}
-      cli_harness: {applicable: false, na_reason: documentation and scenario registry only}
-      docs_schema: {applicable: true, evidence: canonical Human/Agent docs, architecture diagram, CHANGELOG and VERSION}
+- boundary: ci-repository-preflight
+  reason: Run the existing preflight after mandatory secret scanning and before expensive
+    CI setup.
+  checks: &id001
+    static_lint:
+      applicable: true
+      evidence: workflow syntax, Python lint and diff checks
+    unit:
+      applicable: false
+      na_reason: documentation is checked by repository and placement validators
+    integration:
+      applicable: true
+      evidence: documentation closure and repository validation
+    contract:
+      applicable: true
+      evidence: human and agent guidance matches CI and CLI behavior
+    e2e:
+      applicable: false
+      na_reason: no user-facing UI behavior changes
+    security:
+      applicable: true
+      evidence: secret-scan ordering and evidence preservation described
+    migration_recovery:
+      applicable: false
+      na_reason: no schema migration
+    cli_harness:
+      applicable: false
+      na_reason: no new CLI behavior in this boundary
+    docs_schema:
+      applicable: true
+      evidence: documentation closure, placement and Core Matrix validation
+- boundary: local-validation-entrypoint
+  reason: Use the existing Publication Preflight with a venv PATH and isolated test
+    configuration.
+  checks: *id001
+- boundary: impact-init-evidence-safety
+  reason: Prevent silent evidence loss and retain the old record on explicit reset.
+  checks: *id001
+- boundary: documentation-and-compatibility
+  reason: Keep user, agent and security documents aligned with changed CI and CLI
+    behavior.
+  checks: *id001
 scope_recomputed_after_expansion: false
 actual_diff_reconciled: true
 blockers: []

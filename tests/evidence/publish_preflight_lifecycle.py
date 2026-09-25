@@ -161,6 +161,18 @@ def main() -> int:
     browser_source = (ROOT / "scripts/browser_runtime.py").read_text(encoding="utf-8")
     for contract in ("BROWSER_LAUNCH_FAILED", "sync_playwright", "AIPS_BROWSER_PROVIDER"):
         assert contract in browser_source
+    workflow = (ROOT / ".github/workflows/validate.yml").read_text(encoding="utf-8")
+    ordered_steps = (
+        "Mandatory candidate secret scan (fail fast)",
+        "Repository preflight (fail fast)",
+        "python -m pip install -r requirements.txt",
+        "Install deterministic Playwright Chromium",
+        "deterministic integration gate",
+    )
+    positions = [workflow.index(step) for step in ordered_steps]
+    assert positions == sorted(positions), "CI must reject repository drift before expensive validation"
+    assert 'python scripts/repository_preflight.py' in workflow
+    assert '--base "$AIPS_GATE_BASE" --head "$AIPS_GATE_HEAD"' in workflow
 
     print("PUBLISH PREFLIGHT LIFECYCLE PASSED")
     return 0

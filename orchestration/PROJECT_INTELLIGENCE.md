@@ -529,6 +529,8 @@ After enrichment:
 aips intelligence finalize --project /path/to/project
 ~~~
 
+For an existing `impact-init` change ID, the CLI reports the existing record and stops. An intentional `--reset` first saves a timestamped sibling backup; prefer a new ID when the work represents a new change.
+
 `finalize` validates semantic coverage and moves readiness to `READY` only when required topics are sufficiently represented.
 
 Do not claim the project has been initialized merely from directory/file-name inventory.

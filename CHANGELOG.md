@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Run the existing repository preflight early in CI, after the mandatory candidate secret scan and before full validation dependencies and Chromium.
+- Add an exact-candidate `--run` path to the local validation helper, with an isolated temporary configuration directory.
+- Reject duplicate Change Impact initialization by default; explicit `--reset` saves the previous evidence as a timestamped backup.
+
 ## 0.61.0
 
 ### Mandatory Candidate Secret Scanning

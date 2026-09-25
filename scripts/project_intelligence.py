@@ -1574,7 +1574,7 @@ def impact_path(root: Path, change_id: str) -> Path:
     return store.parent / "changes" / f"{change_id}.yaml"
 
 
-def impact_init(root: Path, prompt: str, change_id: str | None) -> dict[str, Any]:
+def impact_init(root: Path, prompt: str, change_id: str | None, *, reset: bool = False) -> dict[str, Any]:
     store, mode, pid = intelligence_store(root, create=True)
     graph_path = store / "IMPACT_GRAPH.yaml"
     change_id = change_id or f"change-{sha(prompt)[:12]}"
@@ -1595,8 +1595,24 @@ def impact_init(root: Path, prompt: str, change_id: str | None) -> dict[str, Any
         },
         "status": "DRAFT",
     }
-    atomic_yaml(path, doc)
-    return {"change_id": change_id, "path": str(path), "mode": mode, "status": "DRAFT"}
+    backup: Path | None = None
+    with writer_lock(store):
+        if path.exists():
+            if not reset:
+                existing = load_yaml(path, {})
+                raise ValueError(
+                    f"Change Impact record already exists: {path} "
+                    f"(status: {existing.get('status', 'UNKNOWN')}); use a new --change-id or --reset"
+                )
+            stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+            backup = path.with_name(f"{path.stem}.backup-{stamp}.yaml")
+            with path.open("rb") as source, backup.open("xb") as target:
+                shutil.copyfileobj(source, target)
+        atomic_yaml(path, doc)
+    result = {"change_id": change_id, "path": str(path), "mode": mode, "status": "DRAFT"}
+    if backup is not None:
+        result["backup_path"] = str(backup)
+    return result
 
 
 def impact_traverse(
@@ -2187,6 +2203,7 @@ def main() -> int:
     p.add_argument("--project", default=os.getcwd())
     p.add_argument("--prompt", default="")
     p.add_argument("--change-id")
+    p.add_argument("--reset", action="store_true", help="Back up and replace an existing Change Impact record")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
     p = sub.add_parser("impact-traverse")
@@ -2262,7 +2279,7 @@ def main() -> int:
         elif args.command == "promotion-apply":
             result = promotion_apply(root, args.topic, args.target, args.approval_id)
         elif args.command == "impact-init":
-            result = impact_init(root, args.prompt, args.change_id)
+            result = impact_init(root, args.prompt, args.change_id, reset=args.reset)
         elif args.command == "impact-traverse":
             if len(args.seed_path) > len(args.seed) or len(args.seed_line) > len(args.seed):
                 raise ValueError("--seed-path and --seed-line entries must align with --seed entries")

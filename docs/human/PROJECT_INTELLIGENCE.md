@@ -291,6 +291,8 @@ Scenario 134 不改 production Retrieval / Turn Context。Local Trial PASS 也�
 
 一般使用不需執行；排錯可用 `aips intelligence status/render/finalize/impact-init/index/retrieve/evaluate`。
 
+`impact-init` 若遇到既有 change ID 會拒絕覆寫並顯示原紀錄位置與狀態。新的變更請用新 ID；確定要重新建立時才加 `--reset`，原 YAML 會先存成同目錄的時間戳備份，輸出會列出 `backup_path`。
+
 ## Identity namespace
 
 Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL storage is workspace-scoped by canonical `workspace_id`; repository-wide writer coordination belongs to the isolation layer and uses `repository_id`.
