@@ -61,7 +61,7 @@ actual_diff_reconciled: true
 blockers: []
 candidate:
   base_sha: c171a436a129e7f8cb3b03b6342b66d6c3b70f21
-  changed_files_hash: 896bc70ca0bfa72e266c662d03dcf5d8b0e48211c0dfa42e554746c3835560ed
+  changed_files_hash: d48f5b121f49e4ec81d7b3b42d899d08f4de4c7cf5dd82cc838822eae91ad039
 review_evidence:
   # Capability is implemented but currently disabled for PR enforcement.
   # Set required: true only after a trusted runtime-attestation verifier is configured.
