@@ -18,6 +18,12 @@ surfaces:
       - harness/commands/REGISTRY.yaml
       - scripts/harness_resolve.py
       - scripts/mcp_server.py
+      - scripts/execution_isolation.py
+      - scripts/sandbox_providers.py
+      - scripts/e2b_sandbox_verification.py
+      - config/sandbox-providers.yaml
+      - requirements-sandbox.txt
+      - .github/workflows/e2b-sandbox-verification.yml
       - scripts/portable_commands.py
       - orchestration/EXECUTION_ISOLATION.md
       - orchestration/RESOURCE_AUTHORIZATION.md
@@ -33,6 +39,7 @@ surfaces:
       - tests/evidence/mcp_interoperability_lifecycle.py
       - tests/evidence/resource_authorization_lifecycle.py
       - tests/evidence/runtime_port_isolation_lifecycle.py
+      - tests/validation/conformance_isolation.py
 
   - id: project-intelligence
     capabilities:
@@ -80,6 +87,8 @@ surfaces:
       - docs/human/SECURITY_ASSURANCE.md
       - orchestration/SECRET_HANDLING.md
       - scripts/external_credential_guard.py
+      - config/external-credentials.yaml
+      - .github/workflows/e2b-sandbox-verification.yml
       - orchestration/EXTERNAL_CREDENTIAL_DEPENDENCY_GUARD.md
     canonical_docs:
       - core/GOVERNANCE.md

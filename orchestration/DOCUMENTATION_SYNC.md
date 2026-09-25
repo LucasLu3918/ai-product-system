@@ -102,6 +102,8 @@ Installer and Harness runtime-path changes follow the same contract: update the 
 
 The `resource-authorization` rule binds the deterministic evaluator, Resource Authorization Profile schema/template and Execution Profile reference to Human Architecture/User guidance plus Agent Execution Isolation/Orchestrator protocols. Any behavior change must keep default-DENY semantics, protected-authority boundaries and runtime-enforcement truth synchronized across those surfaces.
 
+Execution Profile isolation fields now include optional minimum runtime class, provider verification state and data class. Changes must synchronize Execution Isolation, Orchestrator/Conformance guidance, User/Technology/Conformance docs and the sandbox provider registry. Source-transfer documentation must not imply authorization that is absent from the current policy.
+
 
 ## Evolution Effectiveness mapping
 

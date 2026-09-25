@@ -259,6 +259,8 @@ When Execution Isolation behavior changes, review together:
 - architecture docs/diagrams;
 - scenarios 111-120 and identity/isolation lifecycle evidence.
 
+The provider-neutral registry binds runtime class, data class, egress, mounts, credential scope, TTL and evidence freshness. A provider is available only when enabled, integration status is ready and fresh registry-bound verification passes. The initial E2B candidate remains disabled; its manual `main` smoke workflow uses only synthetic input and requires prior written provider-test consent.
+
 ## Public repository / CI consistency
 
 When publication preflight changes, keep the working-tree preview, content safety findings, configured Git identity checks and exact-candidate resolver aligned with CI.

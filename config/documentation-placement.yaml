@@ -45,7 +45,7 @@ current_behavior_docs:
   docs/human/PROJECT_INTELLIGENCE.md:
     required_h2: [第一次 Existing Project, Change Impact, Retrieval Intelligence：即時按需檢索, Runtime Content Safety Boundary]
   docs/human/SECURITY_ASSURANCE.md:
-    required_h2: [Core model, Assurance levels, Release Security Gate, Runtime Content Safety Boundary]
+    required_h2: [Core model, Assurance levels, External sandbox execution, Release Security Gate, Runtime Content Safety Boundary]
   docs/human/ARCHITECTURE_OVERVIEW.md:
     strict_h2: true
     required_h2: [Runtime 與接入層, Project Intelligence 與 Retrieval, Project Identity 與 Persistence, Planning 與 Product Delivery, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval, Evolution Radar, Documentation Architecture, Official Docs Site, Runtime Content Safety Boundary]
@@ -82,8 +82,18 @@ placement_rules:
   - id: publication-cli
     triggers: [bin/aips]
     placements:
-      docs/human/USER_GUIDE.md: [Git Publication 與 Release]
+      docs/human/USER_GUIDE.md: [Execution Isolation 與 Runtime Resource, Git Publication 與 Release]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification]
+
+  - id: execution-isolation
+    triggers: [scripts/execution_isolation.py, scripts/sandbox_providers.py, scripts/e2b_sandbox_verification.py, config/sandbox-providers.yaml, config/external-credentials.yaml, orchestration/schemas/execution-profile.yaml, requirements-sandbox.txt, .github/workflows/e2b-sandbox-verification.yml]
+    placements:
+      docs/human/USER_GUIDE.md: [Execution Isolation 與 Runtime Resource]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution]
+      docs/human/SECURITY_ASSURANCE.md: [External sandbox execution]
+      docs/human/MAINTENANCE.md: [Execution Isolation consistency]
+      docs/human/CONFORMANCE.md: [Execution Isolation Conformance]
 
   - id: harness
     triggers: [harness/**, scripts/harness_resolve.py, scripts/mcp_server.py, scripts/portable_commands.py, orchestration/EXECUTION_ISOLATION.md]
@@ -95,8 +105,8 @@ placement_rules:
   - id: publication-preflight
     triggers: [scripts/publish_preflight.py, scripts/browser_runtime.py, scripts/repository_preflight.py, scripts/integration_gate.py, config/integration-gate.yaml, config/git-publication.yaml, .github/workflows/validate.yml, .github/workflows/branch-hygiene.yml, .github/workflows/gemini-provider-session-verification.yml, .github/workflows/gemini-runtime-verification.yml, .github/workflows/mcp-codex-interop.yml, .github/workflows/repository-health.yml, .github/workflows/retrieval-semantic-trial.yml, orchestration/CORE_CHANGE_TESTING.md, tests/evidence/integration_gate_lifecycle.py, tests/evidence/publish_preflight_lifecycle.py, tests/validation/publish_preflight_contracts.py]
     placements:
-      docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency, Deterministic Scheduler / Integration Gate consistency]
-      docs/human/USER_GUIDE.md: [Quality 與 Review, Git Publication 與 Release]
+      docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency, Deterministic Scheduler / Integration Gate consistency, Execution Isolation consistency]
+      docs/human/USER_GUIDE.md: [Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution, Scenario Conformance 與 Agent Eval]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification]
       orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior]
@@ -111,7 +121,7 @@ placement_rules:
   - id: repository-health
     triggers: [scripts/repository_health.py, config/architecture-surfaces.yaml, config/repository-health.yaml, orchestration/REPOSITORY_HEALTH.md]
     placements:
-      docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency, Deterministic Scheduler / Integration Gate consistency, Durable Run State consistency]
+      docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency, Deterministic Scheduler / Integration Gate consistency, Durable Run State consistency, Execution Isolation consistency]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification]
 
   - id: security
@@ -193,15 +203,15 @@ placement_rules:
       - tests/validate_repository.py
       - orchestration/DOCUMENTATION_SYNC.md
     placements:
-      docs/human/USER_GUIDE.md: [需求釐清與 Planning, Quality 與 Review, Git Publication 與 Release]
-      docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Quality & Verification]
-      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact]
+      docs/human/USER_GUIDE.md: [需求釐清與 Planning, Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release]
+      docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification]
+      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Execution Isolation Conformance]
 
   - id: scenario-conformance
     triggers: [orchestration/CONFORMANCE.md, tests/scenario_coverage.yaml, tests/validation/conformance_isolation.py, tests/validation/ears_requirement_contracts.py, tests/scenarios/175-risk-adaptive-bounded-impact.md]
     placements:
-      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact]
-      docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Quality & Verification]
+      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Execution Isolation Conformance]
+      docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification]
 
   - id: documentation-platform
     triggers: [docs/human/.vitepress/**, package.json, .github/workflows/docs-site.yml, scripts/documentation_placement.py, config/documentation-placement.yaml]

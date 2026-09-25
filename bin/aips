@@ -113,7 +113,7 @@ Usage:
   aips conformance agent-eval report [--format yaml|json]
   aips conformance agent-eval consistency --case <yaml> --results-dir <dir> [--min-repetitions <n>] [--min-pass-rate <0..1>] [--format yaml|json]
 
-  aips isolation resolve --mode shared|worktree|sandbox [--project <path>] [--format yaml|json]
+  aips isolation resolve --mode auto|shared|worktree|sandbox [--risk normal|elevated|high|critical] [--untrusted-execution] [--data-class public|internal|confidential|restricted] [--project <path>] [--format yaml|json]
   aips isolation create --id <id> --boundary <id> [--mode worktree|sandbox] [--project <path>] [--ref <ref>] [--port <id>] [--preferred <port>] [--expose <ENV>]
   aips isolation status --id <id> [--project <path>] [--format yaml|json]
   aips isolation runtime-lease --id <id> --port <id> [--preferred <port>] [--expose <ENV>] [--project <path>]

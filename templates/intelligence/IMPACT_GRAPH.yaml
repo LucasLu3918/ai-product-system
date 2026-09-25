@@ -22,4 +22,14 @@ coverage:
   events: null
   consumers: null
 
+# Optional bounded reviews. A scope applies only when every traversed seed is
+# listed. It cannot change the repository-wide coverage declaration above.
+coverage_scopes: []
+# - id: execution-isolation-boundary
+#   seed_ids: [isolation_resolver]
+#   coverage: {api: complete, data: complete, events: complete, consumers: complete}
+#   evidence:
+#     - scripts/execution_isolation.py:204-251
+#     - tests/validation/conformance_isolation.py
+
 unknowns: []

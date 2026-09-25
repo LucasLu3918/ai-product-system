@@ -31,6 +31,10 @@ Coverage percentage 是工程 evidence 指標，不是系統品質分數，也�
 
 v0.14 新增 Scenario 111–115，全部都有直接 executable evidence：2 個 deterministic、3 個 lifecycle。若既有 001–095 不重新分類，release baseline 為 115 個 Scenario、95 manual、20 automated、0 uncovered。
 
+## Execution Isolation Conformance
+
+Scenario 111/114 覆蓋 risk/data-aware resolver：無啟用 provider 時為 `UNSUPPORTED`；啟用但證據過期、registry digest 不符或控制缺漏時為 `BLOCKED`；一般風險選 worktree，高風險不降級。E2B PR 驗證使用合成 canary；live workflow 僅能從 `main` 手動啟動，需確認 provider 事前書面測試同意，缺少 optional key 時回報 `SKIPPED_NOT_CONFIGURED`。
+
 ## v0.14.1 Legacy Scenario Reconciliation
 
 v0.14.1 重新核對 Scenario 001–095 與目前 canonical contracts，先修正規格漂移，再提升 automation evidence，避免把過時行為固定成自動化測試。

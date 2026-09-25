@@ -73,3 +73,5 @@ Publication Preflight 也管理 candidate head/base、changed-files hash、docum
 `orchestration/CONFORMANCE.md` 的 Runtime／MCP Scenario 行為由 harness placement rule 管理；變更時同步既有 Harness、Runtime Architecture 與 Runtime Technology 主題，不建立第二套 current-behavior 分類。
 
 Temporal Project Intelligence 的 Human 說明由 `PROJECT_INTELLIGENCE.md` 負責；其 current/as-of/between/why 查詢、Git revision provenance、validity interval 與 supersession 語義，必須與 Agent protocol、Technology Guide 及 Conformance evidence 一起維護。
+
+Execution Isolation provider changes map to Architecture Overview and Security Assurance, with usage in User Guide, optional dependency and runtime details in Technology Guide, verification history in Conformance, and canonical behavior in `orchestration/EXECUTION_ISOLATION.md` / `orchestration/ORCHESTRATOR.md`. The E2B registry stays disabled until source-transfer scope and adapter readiness are explicitly resolved.

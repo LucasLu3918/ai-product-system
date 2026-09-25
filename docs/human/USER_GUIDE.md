@@ -164,6 +164,8 @@ PR 驗證會把 Gate 與 Repository Health 報告放在 CI runner 的暫存位�
 
 Mutation 可依需要使用 shared workspace、AIPS-owned Git worktree 或 verified sandbox。沒有可驗證 sandbox provider 時，不把一般 temp directory 宣稱成 sandbox。
 
+高／critical 風險或明確不受信任的執行可用 `aips isolation resolve --mode auto --risk high --data-class public` 檢查最低隔離要求。一般風險會選 worktree；高風險需要已啟用、證據新鮮且資料政策相符的 sandbox。找不到時顯示 `UNSUPPORTED`/`BLOCKED`，不會自動降級。E2B 目前停用，僅有合成資料 smoke verifier。
+
 Parallel worktree 需要 dev/test server 時，Runtime Resource Lease 會為 isolation 配置 bounded TCP port，避免多 Agent 固定使用同一 port。
 
 ~~~text

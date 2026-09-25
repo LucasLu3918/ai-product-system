@@ -81,6 +81,8 @@ Semantic planning 與 deterministic execution 分離：
 - Runtime Resource Isolation：為 parallel worktree 協調 bounded TCP port lease。
 - Integration Gate / Janitor：在 candidate merge 前執行適用 lint / type / test / repository validation。
 
+Sandbox provider selection reads a provider-neutral capability registry and a fresh, registry-bound verification receipt. The first E2B candidate is disabled, limited to public synthetic data, deny-all egress, no host mounts or guest credentials, and no Git publication authority. High/critical risk or explicitly untrusted execution requires sandbox; resolution blocks when matching provider evidence or data policy is missing. Provider-declared MicroVM claims remain distinct from controls AIPS observes.
+
 Validation evidence 與 source checkout 分離保存。Gate 報告和 Repository Health 報告使用 runner 暫存路徑，完成後才上傳 artifact，讓 repository validation 看到的仍是 exact clean revision。
 
 受保護分支會以 exact candidate 的 Gate 結果作為 `repository` aggregate 的合併前條件。

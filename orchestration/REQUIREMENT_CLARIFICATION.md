@@ -106,3 +106,5 @@ Prefer:
 - examples the user can react to.
 
 Avoid asking non-expert users to choose low-level architecture, schema, spacing values or other professional details the system can derive safely.
+
+When a requested execution may leave the local host, clarify the permitted data class and minimum isolation before planning source transfer. Provider name, credentials or MicroVM claims alone do not authorize external data movement; when the data boundary is unknown, keep the plan synthetic-only or blocked.

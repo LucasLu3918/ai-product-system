@@ -83,3 +83,5 @@ Getting Started / Installation / User Guide 以 task-oriented方式導覽；Arch
 Documentation Sync 驗證「哪些文件必須一起改」；Documentation Placement 驗證「改動是否落到正確 topic section」。兩者都通過才代表文件同步完成。
 
 `aips docs impact --base <ref> --head <ref>` 會在發布前列出遞迴 sync requirement 與合法 placement section。Publication preflight 一律帶入明確 diff base；Git-ignored local metadata 不屬於 repository 文件候選。
+
+Execution Isolation 的 provider registry、resolver、optional E2B smoke workflow、profile schema 與其 tests/scenarios 由 `execution-isolation` sync rule 綁定到 Architecture Overview、Security Assurance、Technology Guide、User Guide、Conformance 與 canonical Agent protocols。資料外送 adapter 未取得明確範圍前，文件與 workflow 維持 synthetic-only。

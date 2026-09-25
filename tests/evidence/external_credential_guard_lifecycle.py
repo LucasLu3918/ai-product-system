@@ -19,7 +19,7 @@ current = guard.audit(ROOT, config)
 assert current["status"] == "PASS", current
 assert current["policy"]["external_credentials_required_for_baseline"] is False
 assert current["policy"]["external_credentials_required_for_release"] is False
-assert set(current["discovered_credentials"]) == {"GEMINI_API_KEY", "OPENAI_API_KEY"}
+assert set(current["discovered_credentials"]) == {"E2B_API_KEY", "GEMINI_API_KEY", "OPENAI_API_KEY"}
 assert current["authority"] == {
     "human_approval_granted": False,
     "merge_authorized": False,

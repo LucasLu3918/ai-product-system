@@ -142,6 +142,14 @@ Review cases such as:
 - duplicate message consumption;
 - audit gaps and repudiation.
 
+## External sandbox execution
+
+The initial E2B candidate is disabled by default and limited to synthetic or explicitly approved `public` data. Its optional API key is exposed only to a manual workflow on `main` after the operator confirms prior written provider consent. No provider key, Git publication credential or production credential is sent to the guest. The candidate uses deny-all egress, no host mounts, bounded lifetime and no publication authority.
+
+Provider documentation and AIPS-observed integration behavior are separate evidence. A smoke-test receipt checks creation, execution, denied public egress, TTL, destruction and an unchanged host fixture; it does not prove the provider's hypervisor implementation. Registry changes or expired evidence block selection. A sandbox result remains untrusted until host-side path/content validation and existing Integration/Security gates pass.
+
+`internal`, `confidential` and `restricted` data are blocked by the initial policy. Enabling another class requires a provider, region/BYOC, contractual data-handling review and explicit policy update. A successful smoke test alone does not make that policy change.
+
 ## Review phases
 
 ### Planning security review

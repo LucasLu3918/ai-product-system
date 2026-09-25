@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.60.0
+
+### Seed-scoped Impact Graph Coverage
+
+- Allow reviewed, evidence-backed coverage scopes to establish completeness only for matching architecture seeds while retaining repository-wide partial coverage.
+- Add lifecycle checks for matched and unmatched scopes; update Impact Graph and Change Impact guidance. No new authority or Constitution change.
+
+## 0.59.0
+
+### Verified Sandbox Provider Foundation
+
+- Add provider-neutral sandbox capability registry and fail-closed verification matching; `auto` selects worktree for ordinary risk and requires sandbox for high/critical or explicitly untrusted execution.
+- Add a disabled, public-data-only E2B candidate with no egress, host mounts, guest credentials or publication authority; verification evidence is freshness- and registry-digest-bound.
+- Add a synthetic-only E2B smoke verifier and a main-only manual workflow gated by explicit prior-written-consent confirmation; the optional provider key is never exposed to pull requests or required for baseline/release.
+- Extend Execution Isolation and Security Assurance documentation, credential policy, architecture inventory and Scenario 114 coverage. A successful smoke test does not activate the provider or attest its underlying hypervisor. Constitution impact: NO.
+
 ## 0.58.0
 
 ### Structured Requirement Traceability

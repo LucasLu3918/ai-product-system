@@ -58,8 +58,21 @@ rules:
     human_docs: [docs/human/PROJECT_INTELLIGENCE.md]
     agent_docs: [orchestration/PROJECT_INTELLIGENCE.md]
   - id: execution-isolation
-    triggers: [scripts/execution_isolation.py, orchestration/schemas/execution-profile.yaml]
-    human_docs: [docs/human/ARCHITECTURE_OVERVIEW.md]
+    triggers:
+      - scripts/execution_isolation.py
+      - scripts/sandbox_providers.py
+      - scripts/e2b_sandbox_verification.py
+      - orchestration/schemas/execution-profile.yaml
+      - config/sandbox-providers.yaml
+      - config/external-credentials.yaml
+      - requirements-sandbox.txt
+      - .github/workflows/e2b-sandbox-verification.yml
+      - tests/validation/conformance_isolation.py
+      - tests/scenarios/111-isolation-resolution.md
+      - tests/scenarios/114-sandbox-truthfulness.md
+    human_docs:
+      - docs/human/ARCHITECTURE_OVERVIEW.md
+      - docs/human/SECURITY_ASSURANCE.md
     agent_docs: [orchestration/EXECUTION_ISOLATION.md]
   - id: deterministic-execution
     triggers:

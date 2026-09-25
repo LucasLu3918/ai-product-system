@@ -100,6 +100,8 @@ Invalid graph, unknown dependency, cycle, invalid state or plan mismatch is `SCH
 
 Publication preview performs the bounded content-safety and configured Git identity checks before scheduling repository lifecycle validation; an unscannable candidate or disallowed identity is a deterministic preflight block.
 
+When the Execution Profile requires sandbox isolation, Scheduler dispatch must preserve its risk, minimum-isolation and data-class inputs and stop on `UNSUPPORTED`/`BLOCKED`. Worktree or shared execution is not a fallback for a task whose minimum isolation is sandbox. The E2B candidate remains disabled until its task adapter and data-transfer scope are approved.
+
 The Scheduler never falls back to LLM coordination to make a blocked graph look executable.
 
 ## Read-only declaration and fail-closed boundary

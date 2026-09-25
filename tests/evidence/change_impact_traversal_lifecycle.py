@@ -172,6 +172,62 @@ unknowns: []
         self.assertEqual(report["reached_depth"]["consumers"], 2)
         self.assertEqual({node["symbol"] for node in report["nodes"]}, {"products_event", "worker_a", "worker_b"})
 
+    def test_seed_scoped_coverage_does_not_upgrade_global_partial_coverage(self) -> None:
+        graph = {
+            "nodes": {"isolation_resolver": {"type": "module", "source": "scripts/execution_isolation.py"}},
+            "edges": [],
+            "coverage": {"api": "partial", "data": "partial", "events": "partial", "consumers": "unknown"},
+            "coverage_scopes": [{
+                "id": "execution-isolation-boundary",
+                "seed_ids": ["isolation_resolver"],
+                "coverage": {"api": "complete", "data": "complete", "events": "complete", "consumers": "complete"},
+                "evidence": ["scripts/execution_isolation.py:204-251", "tests/validation/conformance_isolation.py"],
+            }],
+        }
+        report = traverse_architecture_impact_graph(
+            graph, [{"symbol": "isolation_resolver"}], [], ["callers", "consumers"], 2, 10, 10, []
+        )
+        self.assertEqual(report["status"], "COMPLETE")
+        self.assertEqual(report["coverage_scope_ids"], ["execution-isolation-boundary"])
+        self.assertEqual(graph["coverage"]["consumers"], "unknown")
+
+    def test_seed_scoped_coverage_requires_matching_seeds_and_evidence(self) -> None:
+        graph = {
+            "nodes": {"other": {"type": "module", "source": "src/other.py"}},
+            "edges": [],
+            "coverage": {"api": "partial", "data": "partial", "events": "partial", "consumers": "unknown"},
+            "coverage_scopes": [{
+                "id": "unrelated",
+                "seed_ids": ["isolation_resolver"],
+                "coverage": {"api": "complete", "data": "complete", "events": "complete", "consumers": "complete"},
+                "evidence": ["tests/fixture.py"],
+            }],
+        }
+        report = traverse_architecture_impact_graph(
+            graph, [{"symbol": "other"}], [], ["consumers"], 1, 10, 10, []
+        )
+        self.assertEqual(report["status"], "BOUNDED_WITH_UNKNOWNS")
+        self.assertEqual(report["coverage_scope_ids"], [])
+        self.assertIn("architecture_graph_coverage", {item.get("kind") for item in report["unresolved"]})
+
+    def test_seed_scoped_coverage_rejects_malformed_evidence(self) -> None:
+        graph = {
+            "nodes": {"isolation_resolver": {"type": "module", "source": "scripts/execution_isolation.py"}},
+            "edges": [],
+            "coverage": {"api": "partial", "data": "partial", "events": "partial", "consumers": "unknown"},
+            "coverage_scopes": [{
+                "id": "malformed",
+                "seed_ids": ["isolation_resolver"],
+                "coverage": {"api": "complete", "data": "complete", "events": "complete", "consumers": "complete"},
+                "evidence": "tests/fixture.py",
+            }],
+        }
+        report = traverse_architecture_impact_graph(
+            graph, [{"symbol": "isolation_resolver"}], [], ["consumers"], 2, 10, 10, []
+        )
+        self.assertEqual(report["status"], "BOUNDED_WITH_UNKNOWNS")
+        self.assertEqual(report["coverage_scope_ids"], [])
+
     def test_code_consumer_direction_walks_outgoing_relations(self) -> None:
         report = traverse_change_impact(
             self.repo,

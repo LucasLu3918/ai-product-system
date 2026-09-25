@@ -55,6 +55,8 @@ CI、publication preflight 與 documentation trigger policy 的變更，應一�
 
 Mutation 前建立 CHANGE_IMPACT，涵蓋 Input / Output / Data / Events / Consumers / Security / Invariants / Compatibility / Tests，完成範圍審查並記錄使用者授權後進入 `IMPLEMENTATION_APPROVED`。這只允許依核准範圍實作。`READY` 僅能在實作後記錄完整 base/head SHA、乾淨工作樹、binary diff SHA-256、精確變更檔案集合與 `target_paths`，並完成 Impact Graph 核對及證據。以 `aips intelligence impact-validate --project <repo> --path <artifact>` 驗證；digest、HEAD、路徑集合不吻合或不可驗證時拒絕 `READY`。未解影響不得標記 READY。
 
+當全 repository 圖譜尚未完整，但某個明確架構邊界已依來源核對，可在 `IMPACT_GRAPH.yaml` 使用 `coverage_scopes` 記錄 seed、各維度覆蓋狀態與證據。它只適用於完全落在該範圍內的 seeds，不能把全域 partial coverage 改成 complete；seed 不相符或證據格式無效時仍維持 unknown。
+
 需要 traversal 時，先以 `aips intelligence impact-traverse --project <repo> --seed <symbol> --seed-path <path> --risk-class <class>` 找候選 callers/consumers。風險政策設定最低深度；node、edge 與 depth 都有上限。結果會區分實際修改與受影響但未修改的節點，後者必須記錄 `reviewed_safe`、`requires_change` 或 `unknown`。依賴注入、反射、動態 dispatch、圖涵蓋不足、索引過期與預算截斷都保留為不確定性；高風險 change 有 unresolved 或 truncated 證據時不得標記 traversal 完整。Lexical 關係是 inferred evidence，需人工核對。
 
 ## Preserve Valid Native Conventions

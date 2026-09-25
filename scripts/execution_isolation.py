@@ -22,6 +22,7 @@ from aips_identity import (
     project_root as canonical_project_root,
     repository_identity,
 )
+from sandbox_providers import resolve as resolve_sandbox_provider
 
 ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$")
 ENV_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
@@ -203,6 +204,11 @@ def active_records(root: Path) -> list[dict[str, Any]]:
 def resolve_mode(args: argparse.Namespace) -> dict[str, Any]:
     root = project_root(Path(args.project))
     ident = repository_identity(root)
+    requested_mode = args.mode
+    if requested_mode == "auto":
+        high_risk = getattr(args, "risk", "normal") in {"high", "critical"}
+        untrusted = bool(getattr(args, "untrusted_execution", False))
+        args.mode = "sandbox" if high_risk or untrusted else "worktree"
     base = {
         "project_root": str(root),
         "repository_id": ident["repository_id"],
@@ -212,6 +218,7 @@ def resolve_mode(args: argparse.Namespace) -> dict[str, Any]:
         return {
             **base,
             "mode": "shared",
+            "requested_mode": requested_mode,
             "status": "AVAILABLE",
             "isolated": False,
             "reason": "shared uses the existing project workspace and does not provide an isolation boundary",
@@ -221,16 +228,27 @@ def resolve_mode(args: argparse.Namespace) -> dict[str, Any]:
         return {
             **base,
             "mode": "worktree",
+            "requested_mode": requested_mode,
             "status": "AVAILABLE" if available else "UNSUPPORTED",
             "isolated": available,
             "reason": "git worktree is available" if available else "git worktree is unavailable for this repository/runtime",
         }
+    sandbox = resolve_sandbox_provider(
+        root,
+        data_class=getattr(args, "data_class", "public"),
+        minimum_isolation=getattr(args, "minimum_isolation", "microvm"),
+    )
+    registry = load_yaml(Path(__file__).resolve().parents[1] / "config" / "sandbox-providers.yaml")
+    has_enabled_provider = any(
+        item.get("enabled") for item in (registry.get("providers") or {}).values()
+    )
+    if not has_enabled_provider:
+        sandbox["status"] = "UNSUPPORTED"
+        sandbox["reason"] = "no sandbox provider is enabled in the provider registry"
     return {
         **base,
-        "mode": "sandbox",
-        "status": "UNSUPPORTED",
-        "isolated": False,
-        "reason": "no verified sandbox provider is registered; AIPS core does not emulate sandbox isolation with a temporary directory",
+        **sandbox,
+        "requested_mode": requested_mode,
         "requires_provider": True,
     }
 
@@ -621,13 +639,21 @@ def create_isolation(args: argparse.Namespace) -> dict[str, Any]:
     if args.mode == "sandbox":
         root = project_root(Path(args.project))
         ident = repository_identity(root)
+        capability = resolve_sandbox_provider(
+            root,
+            data_class=getattr(args, "data_class", "public"),
+            minimum_isolation=getattr(args, "minimum_isolation", "microvm"),
+        )
+        registry = load_yaml(Path(__file__).resolve().parents[1] / "config" / "sandbox-providers.yaml")
+        enabled = any(item.get("enabled") for item in (registry.get("providers") or {}).values())
         return {
             "status": "BLOCKED",
             "mode": "sandbox",
             "project_root": str(root),
             "repository_id": ident["repository_id"],
             "workspace_id": ident["workspace_id"],
-            "reason": "no verified sandbox provider is registered",
+            "reason": capability["reason"] if enabled else "no sandbox provider is enabled in the provider registry",
+            "provider": capability.get("provider"),
             "requires_provider": True,
         }
     data = create_worktree(args)
@@ -776,13 +802,19 @@ def main() -> int:
 
     resolve = sub.add_parser("resolve")
     add_common(resolve)
-    resolve.add_argument("--mode", choices=["shared", "worktree", "sandbox"], required=True)
+    resolve.add_argument("--mode", choices=["auto", "shared", "worktree", "sandbox"], required=True)
+    resolve.add_argument("--data-class", choices=["public", "internal", "confidential", "restricted"], default="public")
+    resolve.add_argument("--minimum-isolation", choices=["container", "vm", "microvm"], default="microvm")
+    resolve.add_argument("--risk", choices=["normal", "elevated", "high", "critical"], default="normal")
+    resolve.add_argument("--untrusted-execution", action="store_true")
 
     create = sub.add_parser("create")
     add_common(create)
     create.add_argument("--mode", choices=["worktree", "sandbox"], default="worktree")
     create.add_argument("--id", required=True)
     create.add_argument("--boundary", required=True)
+    create.add_argument("--data-class", choices=["public", "internal", "confidential", "restricted"], default="public")
+    create.add_argument("--minimum-isolation", choices=["container", "vm", "microvm"], default="microvm")
     create.add_argument("--ref")
     add_port_options(create, require_port=False)
 
@@ -819,7 +851,7 @@ def main() -> int:
             data = resolve_mode(args)
         elif args.command == "create":
             data = create_isolation(args)
-            if data.get("status") == "BLOCKED":
+            if data.get("status") in {"BLOCKED", "UNSUPPORTED"}:
                 exit_code = 2
         elif args.command == "status":
             data = status_isolation(args)

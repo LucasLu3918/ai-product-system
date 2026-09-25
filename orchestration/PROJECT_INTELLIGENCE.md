@@ -185,7 +185,7 @@ Readers continue using the last valid generation.
 
 The local SQLite Retrieval Intelligence index may contain rebuildable lexical caller/reference candidates. These are inferred structural evidence, not language-server or compiler truth. Index schema changes must be versioned and the index must be safely rebuildable from repository files.
 
-Impact traversal combines these candidates with exact canonical `IMPACT_GRAPH.yaml` edges. It supports caller and consumer directions, explicit depth/node/edge bounds, cycle protection, exact seed paths/lines, selective bounded history evidence and per-node dispositions. Results expose reached depth, coverage, truncation and unresolved relationships. Stale or incomplete indexes must not silently claim complete impact. See `orchestration/CHANGE_IMPACT.md` for risk policy and READY requirements.
+Impact traversal combines these candidates with exact canonical `IMPACT_GRAPH.yaml` edges. It supports caller and consumer directions, explicit depth/node/edge bounds, cycle protection, exact seed paths/lines, selective bounded history evidence and per-node dispositions. Results expose reached depth, coverage, truncation and unresolved relationships. Optional `coverage_scopes` may establish evidence-backed completeness only when every matched seed is listed; they never upgrade repository-wide coverage. Invalid or unmatched scopes fall back to global coverage. Stale or incomplete indexes must not silently claim complete impact. See `orchestration/CHANGE_IMPACT.md` for risk policy and READY requirements.
 
 ## Sensitive data
 

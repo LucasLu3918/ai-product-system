@@ -23,6 +23,10 @@ isolation:
   id: null
   boundary_id: null
   provider: null
+  runtime_class: null
+  minimum_isolation: container | vm | microvm
+  verification_status: VERIFIED | STALE | FAILED | UNKNOWN
+  data_class: public | internal | confidential | restricted
   resource: null
 authorization:
   profile: null

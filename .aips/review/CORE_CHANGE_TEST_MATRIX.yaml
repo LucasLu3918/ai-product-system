@@ -1,104 +1,104 @@
 version: 1
 candidate:
-  base_sha: 919bab5f7d0205573cac1ee7a1241a971efa548b
-  changed_files_hash: 6efc74db595c015443115282406ce7771b5a156c5602625649f6661270450669
+  base_sha: da31b06489c154eb3e0755e2235c5f8c76811e46
+  changed_files_hash: e486062193a51bd15ee390586ea13f780786e5010d14d76034574e9f9830d91e
 change:
-  id: risk-adaptive-bounded-impact
-  summary: Add local bounded multi-hop caller and consumer impact traversal with explicit evidence and truthful incomplete states.
+  id: verified-sandbox-provider
+  summary: Add a provider-neutral, fail-closed sandbox capability resolver and synthetic-only E2B verification lane; project-source adapter awaits explicit data-scope authorization.
   boundary:
-    - bounded-code-relation-index
-    - risk-adaptive-caller-consumer-traversal
-    - affected-but-unchanged-disposition
-    - explicit-unknown-truncation-and-history-evidence
-    - candidate-ground-truth-evaluation
-    - change-impact-ready-and-compatibility
-    - docs-scenarios-and-architecture
+    - sandbox-capability-contract-and-registry
+    - risk-and-data-aware-isolation-resolution
+    - synthetic-e2b-verification-and-credentials
+    - verification-evidence-and-verification-receipts
+    - security-and-failure-paths
+    - scenarios-docs-architecture-and-release
+    - seed-scoped-impact-graph-coverage
 matrix:
-  - boundary: bounded-code-relation-index
-    reason: Rebuildable symbol relations are the evidence source for caller traversal.
+  - boundary: sandbox-capability-contract-and-registry
+    reason: Runtime class, controls, and verification state determine truthful capability.
     checks:
-      static_lint: {applicable: true, evidence: Python compile and static contracts}
-      unit: {applicable: true, evidence: extraction boundaries, exact identifiers and secret exclusions}
-      integration: {applicable: true, evidence: force rebuild index against a temporary repository}
-      contract: {applicable: true, evidence: schema version and index metadata}
-      e2e: {applicable: false, na_reason: No UI}
-      security: {applicable: true, evidence: secret paths/content excluded from relation index}
-      migration_recovery: {applicable: true, evidence: old index upgrade or deterministic full rebuild}
-      cli_harness: {applicable: true, evidence: AIPS intelligence index/retrieve lifecycle}
-      docs_schema: {applicable: true, evidence: Project Intelligence docs}
-  - boundary: risk-adaptive-caller-consumer-traversal
-    reason: Risk class, direction, hop depth, cycle handling and budgets determine impact coverage.
+      static_lint: {applicable: true, evidence: repository validation and schema contracts}
+      unit: {applicable: true, evidence: class matching, missing/stale/invalid evidence and fail-closed cases}
+      integration: {applicable: true, evidence: resolve mode with registry and external evidence fixtures}
+      contract: {applicable: true, evidence: Execution Profile and provider registry schema}
+      e2e: {applicable: false, na_reason: No user interface}
+      security: {applicable: true, evidence: no downgrade, no temporary-directory sandbox claim}
+      migration_recovery: {applicable: true, evidence: existing profile compatibility; evidence expiry and reset}
+      cli_harness: {applicable: true, evidence: aips isolation resolve/create/status/remove}
+      docs_schema: {applicable: true, evidence: isolation docs and schema}
+  - boundary: risk-and-data-aware-isolation-resolution
+    reason: Risk/data policy selects minimum isolation and controls.
     checks:
-      static_lint: {applicable: true, evidence: Python compile and static contracts}
-      unit: {applicable: true, evidence: direct caller, caller's caller, leaf, fan-out and cycle cases}
-      integration: {applicable: true, evidence: synthetic multi-file repository traversal}
-      contract: {applicable: true, evidence: deterministic status, depth and stop-reason fields}
-      e2e: {applicable: false, na_reason: No UI}
-      security: {applicable: true, evidence: bounded resource use and unknown on unresolved critical edges}
-      migration_recovery: {applicable: false, na_reason: Run-local computation over disposable index}
-      cli_harness: {applicable: true, evidence: command/query output round-trip}
-      docs_schema: {applicable: true, evidence: traversal policy and examples}
-  - boundary: affected-but-unchanged-disposition
-    reason: Affected consumers may be outside the changed-file set and must get an explicit disposition.
+      static_lint: {applicable: true, evidence: repository validation}
+      unit: {applicable: true, evidence: risk classes, data classes and explicit overrides}
+      integration: {applicable: true, evidence: no provider, container mismatch and E2B candidate fixtures}
+      contract: {applicable: true, evidence: backward-compatible profile fields}
+      e2e: {applicable: false, na_reason: No user interface}
+      security: {applicable: true, evidence: confidential/restricted defaults and egress/credential boundaries}
+      migration_recovery: {applicable: true, evidence: old profile without new fields}
+      cli_harness: {applicable: true, evidence: resolver CLI output}
+      docs_schema: {applicable: true, evidence: risk/data policy docs}
+  - boundary: synthetic-e2b-verification-and-credentials
+    reason: The optional verifier uses synthetic canary content; project-file transfer awaits explicit scope authorization.
     checks:
-      static_lint: {applicable: true, evidence: Python compile}
-      unit: {applicable: true, evidence: API array-to-object with Vue map consumer}
-      integration: {applicable: true, evidence: adapter-safe and direct-consumer contrast fixtures}
-      contract: {applicable: true, evidence: changed/affected/disposition schema}
-      e2e: {applicable: false, na_reason: No UI}
-      security: {applicable: true, evidence: no automatic edit or readiness claim without review}
-      migration_recovery: {applicable: true, evidence: legacy artifact reads remain valid}
-      cli_harness: {applicable: true, evidence: impact artifact CLI validation}
-      docs_schema: {applicable: true, evidence: Change Impact template/docs}
-  - boundary: explicit-unknown-truncation-and-history-evidence
-    reason: Static relations are incomplete and resource limits must not produce false completeness.
+      static_lint: {applicable: true, evidence: compile and static checks}
+      unit: {applicable: true, evidence: no-key skip, path syntax and receipt contract}
+      integration: {applicable: true, evidence: synthetic canary smoke verifier contract}
+      contract: {applicable: true, evidence: optional SDK dependency and main-only workflow}
+      e2e: {applicable: false, na_reason: No user interface}
+      security: {applicable: true, evidence: no mounts/secrets, default deny egress, safe archive/artifact paths}
+      migration_recovery: {applicable: true, evidence: live cleanup runs in finally and records failure}
+      cli_harness: {applicable: true, evidence: optional dependency and credential-free CLI behavior}
+      docs_schema: {applicable: true, evidence: setup and controlled-trial guidance}
+  - boundary: verification-evidence-and-verification-receipts
+    reason: Provider availability requires fresh evidence distinct from provider claims.
     checks:
-      static_lint: {applicable: true, evidence: Python compile}
-      unit: {applicable: true, evidence: dynamic DI unknown, stale index, max depth/fan-out truncation}
-      integration: {applicable: true, evidence: candidate status for unresolved frontier}
-      contract: {applicable: true, evidence: exact/inferred/unresolved and history provenance}
-      e2e: {applicable: false, na_reason: No UI}
-      security: {applicable: true, evidence: high-risk unresolved/truncated cannot claim complete}
-      migration_recovery: {applicable: false, na_reason: Run-local evidence}
-      cli_harness: {applicable: true, evidence: stale-index degraded path}
-      docs_schema: {applicable: true, evidence: explicit completeness limits}
-  - boundary: candidate-ground-truth-evaluation
-    reason: Default adoption requires measurable benefit over existing retrieval and review behavior.
+      static_lint: {applicable: true, evidence: repository validation}
+      unit: {applicable: true, evidence: receipt redaction, digest binding and expiry}
+      integration: {applicable: true, evidence: external verification record matching}
+      contract: {applicable: true, evidence: evidence/receipt schema}
+      e2e: {applicable: false, na_reason: No user interface}
+      security: {applicable: true, evidence: secret values never persisted; workflow protected-main/manual}
+      migration_recovery: {applicable: true, evidence: missing/stale evidence remains blocked}
+      cli_harness: {applicable: true, evidence: verification state output}
+      docs_schema: {applicable: true, evidence: evidence semantics}
+  - boundary: security-and-failure-paths
+    reason: External execution changes process, network, credential and data boundaries.
     checks:
-      static_lint: {applicable: true, evidence: Evaluation schema contracts}
-      unit: {applicable: true, evidence: metric calculations and thresholds}
-      integration: {applicable: true, evidence: current vs candidate replay}
-      contract: {applicable: true, evidence: deterministic report fingerprint}
-      e2e: {applicable: false, na_reason: No user workflow UI}
-      security: {applicable: true, evidence: synthetic repo only; no source upload}
-      migration_recovery: {applicable: false, na_reason: Evaluation reports are disposable}
-      cli_harness: {applicable: true, evidence: trial/evaluation command lifecycle}
-      docs_schema: {applicable: true, evidence: case corpus and metric definitions}
-  - boundary: change-impact-ready-and-compatibility
-    reason: Existing READY diff checks must remain and consume impact evidence additively.
+      static_lint: {applicable: true, evidence: secret guard and repository validation}
+      unit: {applicable: true, evidence: no-key, denied egress, invalid source paths and fail-closed failures}
+      integration: {applicable: true, evidence: provider outage, TTL, partial lifecycle and destroy failure}
+      contract: {applicable: true, evidence: structured statuses and sanitized errors}
+      e2e: {applicable: false, na_reason: No user interface}
+      security: {applicable: true, evidence: explicit credential registry and PR secret isolation}
+      migration_recovery: {applicable: true, evidence: cleanup state and expired verification}
+      cli_harness: {applicable: true, evidence: structured isolation output}
+      docs_schema: {applicable: true, evidence: security guidance}
+  - boundary: scenarios-docs-architecture-and-release
+    reason: Workflow, diagrams and release metadata must match the implemented capability.
     checks:
-      static_lint: {applicable: true, evidence: Python compile and repository validation}
-      unit: {applicable: true, evidence: valid/invalid statuses, scope, truncation and legacy artifacts}
-      integration: {applicable: true, evidence: Scenario and real temporary Git reconciliation}
-      contract: {applicable: true, evidence: CHANGE_IMPACT schema and CLI output}
-      e2e: {applicable: false, na_reason: Governance CLI has no UI}
-      security: {applicable: true, evidence: unknown high-risk consumer fails closed}
-      migration_recovery: {applicable: true, evidence: old DRAFT/READY compatibility and rollback}
-      cli_harness: {applicable: true, evidence: impact-validate command lifecycle}
-      docs_schema: {applicable: true, evidence: template and protocol}
-  - boundary: docs-scenarios-and-architecture
-    reason: Agent and human workflow, diagrams and scenario coverage must match adopted behavior.
+      static_lint: {applicable: true, evidence: documentation/schema validators}
+      unit: {applicable: false, na_reason: Documentation-only portions}
+      integration: {applicable: true, evidence: scenario coverage and repository validation}
+      contract: {applicable: true, evidence: docs synchronization rules}
+      e2e: {applicable: false, na_reason: No user interface}
+      security: {applicable: true, evidence: no claim of AIPS hypervisor attestation}
+      migration_recovery: {applicable: false, na_reason: No persistent document migration}
+      cli_harness: {applicable: false, na_reason: Documentation-only portions}
+      docs_schema: {applicable: true, evidence: architecture diagrams, human and agent docs, changelog/version}
+  - boundary: seed-scoped-impact-graph-coverage
+    reason: High-risk impact review needs bounded complete caller evidence while preserving truthful repository-wide partial coverage.
     checks:
-      static_lint: {applicable: true, evidence: markdown/schema validators}
-      unit: {applicable: false, na_reason: Documentation only}
-      integration: {applicable: true, evidence: repository validation and scenario coverage}
-      contract: {applicable: true, evidence: doc contract assertions}
-      e2e: {applicable: false, na_reason: No UI}
-      security: {applicable: true, evidence: no claims of compiler-grade completeness}
-      migration_recovery: {applicable: false, na_reason: No persistent docs data}
-      cli_harness: {applicable: false, na_reason: Documentation only}
-      docs_schema: {applicable: true, evidence: documentation impact and diagram checks}
-scope_recomputed_after_expansion: false
+      static_lint: {applicable: true, evidence: repository validation and YAML schema contracts}
+      unit: {applicable: true, evidence: matching seeds select evidence-backed scopes; unmatched seeds remain unknown}
+      integration: {applicable: true, evidence: exact two-hop CLI/workflow caller traversal for sandbox resolver and verifier}
+      contract: {applicable: true, evidence: IMPACT_GRAPH coverage_scopes template contract}
+      e2e: {applicable: false, na_reason: No user interface}
+      security: {applicable: true, evidence: bounded scopes cannot alter repository-wide coverage claims}
+      migration_recovery: {applicable: true, evidence: absent coverage_scopes retains existing global coverage behavior}
+      cli_harness: {applicable: true, evidence: impact-traverse --graph-seed output}
+      docs_schema: {applicable: true, evidence: Change Impact guidance and Scenario 175}
+scope_recomputed_after_expansion: true
 blockers: []
 actual_diff_reconciled: true
 status: READY
