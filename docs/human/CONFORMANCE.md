@@ -1319,10 +1319,23 @@ Lifecycle evidence exercises bounded lexical caller/reference indexing, canonica
 目前 Scenario inventory：
 
 - deterministic：27
-- lifecycle：94
+- lifecycle：95
 - agent_eval：54
 - manual：0
 - uncovered：0
-- automated：**175 / 175**
+- automated：**176 / 176**
 
 Scenarios 168–172 cover the Runtime Content Safety Boundary, including redaction, durable-sink blocking, provenance, coverage registration and failure policy. Findings must never contain detected raw values.
+
+## Scenario 176 — Mandatory Candidate Secret Scanning
+
+Lifecycle evidence checks exact final-tree and `base..head` history scanning, including a secret added and later deleted; strict-mode inline bypass rejection; lockfile detector-aware filtering; redacted findings; fail-closed scan errors; and Integration Gate binding to candidate, policy and scanner hashes. A skipped or stale PASS cannot authorize publication.
+
+目前 Scenario inventory：
+
+- deterministic：27
+- lifecycle：95
+- agent_eval：54
+- manual：0
+- uncovered：0
+- automated：**176 / 176**

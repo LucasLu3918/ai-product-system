@@ -1,5 +1,10 @@
 version: 1
 profile_id: aips-repository
+candidate_secret_scan:
+  required: true
+  check_id: mandatory-candidate-secret-scan
+  scanner: scripts/check_secret_leakage.py
+  policy: config/secret-scan.yaml
 matrix_required: false
 matrix_required_change_classes: [large, core]
 matrix_required_paths:
@@ -7,8 +12,11 @@ matrix_required_paths:
   # Ordinary changes remain matrix-optional unless classified large/core.
   - scripts/integration_gate.py
   - scripts/publish_preflight.py
+  - scripts/check_secret_leakage.py
   - scripts/repository_preflight.py
   - config/integration-gate.yaml
+  - config/secret-scan.yaml
+  - orchestration/SECRET_HANDLING.md
   - .github/workflows/validate.yml
   - orchestration/CORE_CHANGE_TESTING.md
   - orchestration/INTEGRATION_GATE.md
@@ -104,3 +112,26 @@ checks:
       - config/content-safety.yaml
       - orchestration/CONTENT_SAFETY_BOUNDARY.md
       - tests/test_content_safety.py
+  - id: secret-scan-publication-lifecycle
+    category: security
+    required: true
+    timeout_seconds: 120
+    argv: [python3, tests/evidence/secret_scan_publication_lifecycle.py]
+    paths:
+      - scripts/check_secret_leakage.py
+      - scripts/integration_gate.py
+      - scripts/publish_preflight.py
+      - config/secret-scan.yaml
+      - config/integration-gate.yaml
+      - .github/workflows/validate.yml
+      - tests/evidence/secret_safety.py
+      - tests/evidence/secret_scan_publication_lifecycle.py
+      - orchestration/SECRET_HANDLING.md
+      - orchestration/INTEGRATION_GATE.md
+  - id: mandatory-candidate-secret-scan
+    category: security
+    required: true
+    candidate_context: true
+    timeout_seconds: 300
+    argv: [python3, scripts/check_secret_leakage.py, --root, ., --policy, config/secret-scan.yaml, --publication-candidate, --json]
+    paths: ["**"]

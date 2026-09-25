@@ -1,104 +1,65 @@
 version: 1
 candidate:
-  base_sha: da31b06489c154eb3e0755e2235c5f8c76811e46
-  changed_files_hash: e486062193a51bd15ee390586ea13f780786e5010d14d76034574e9f9830d91e
+  base_sha: 272696ea6cd8dac8f6d7800c69cfbaad871e813c
+  changed_files_hash: 718c749b251e06f55e40cc39859c0b65462059303cface2b3a4e6e7563ae227a
 change:
-  id: verified-sandbox-provider
-  summary: Add a provider-neutral, fail-closed sandbox capability resolver and synthetic-only E2B verification lane; project-source adapter awaits explicit data-scope authorization.
+  id: mandatory-candidate-secret-scanning
+  summary: Require redacted credential-free secret scanning for the exact publication candidate and its complete base-to-head commit history.
   boundary:
-    - sandbox-capability-contract-and-registry
-    - risk-and-data-aware-isolation-resolution
-    - synthetic-e2b-verification-and-credentials
-    - verification-evidence-and-verification-receipts
-    - security-and-failure-paths
-    - scenarios-docs-architecture-and-release
-    - seed-scoped-impact-graph-coverage
+    - built-in-secret-scanner-and-central-policy
+    - integration-gate-candidate-binding
+    - local-publication-preflight-and-ci-fail-fast
+    - security-documentation-scenario-and-release-contract
 matrix:
-  - boundary: sandbox-capability-contract-and-registry
-    reason: Runtime class, controls, and verification state determine truthful capability.
+  - boundary: built-in-secret-scanner-and-central-policy
+    reason: Strict policy changes secret detection, exception handling, and fail-closed behavior.
     checks:
-      static_lint: {applicable: true, evidence: repository validation and schema contracts}
-      unit: {applicable: true, evidence: class matching, missing/stale/invalid evidence and fail-closed cases}
-      integration: {applicable: true, evidence: resolve mode with registry and external evidence fixtures}
-      contract: {applicable: true, evidence: Execution Profile and provider registry schema}
-      e2e: {applicable: false, na_reason: No user interface}
-      security: {applicable: true, evidence: no downgrade, no temporary-directory sandbox claim}
-      migration_recovery: {applicable: true, evidence: existing profile compatibility; evidence expiry and reset}
-      cli_harness: {applicable: true, evidence: aips isolation resolve/create/status/remove}
-      docs_schema: {applicable: true, evidence: isolation docs and schema}
-  - boundary: risk-and-data-aware-isolation-resolution
-    reason: Risk/data policy selects minimum isolation and controls.
+      static_lint: {applicable: true, evidence: repository lint and scanner syntax contracts}
+      unit: {applicable: true, evidence: redaction, lockfile detector policy, strict bypass and allowlist validation}
+      integration: {applicable: true, evidence: tests/evidence/secret_scan_publication_lifecycle.py}
+      contract: {applicable: true, evidence: scanner JSON status/finding/hash contract}
+      e2e: {applicable: false, na_reason: no user-facing UI or live secret provider}
+      security: {applicable: true, evidence: synthetic secret final-tree/history scans and raw-value absence assertions}
+      migration_recovery: {applicable: false, na_reason: no persistent data or schema migration; revert config/code to roll back}
+      cli_harness: {applicable: true, evidence: scanner CLI strict and candidate invocation through current Python runtime}
+      docs_schema: {applicable: true, evidence: central YAML policy validation and Scenario 176}
+  - boundary: integration-gate-candidate-binding
+    reason: The existing deterministic publication Gate must require the scan and invalidate stale evidence when any candidate/security input changes.
     checks:
-      static_lint: {applicable: true, evidence: repository validation}
-      unit: {applicable: true, evidence: risk classes, data classes and explicit overrides}
-      integration: {applicable: true, evidence: no provider, container mismatch and E2B candidate fixtures}
-      contract: {applicable: true, evidence: backward-compatible profile fields}
-      e2e: {applicable: false, na_reason: No user interface}
-      security: {applicable: true, evidence: confidential/restricted defaults and egress/credential boundaries}
-      migration_recovery: {applicable: true, evidence: old profile without new fields}
-      cli_harness: {applicable: true, evidence: resolver CLI output}
-      docs_schema: {applicable: true, evidence: risk/data policy docs}
-  - boundary: synthetic-e2b-verification-and-credentials
-    reason: The optional verifier uses synthetic canary content; project-file transfer awaits explicit scope authorization.
+      static_lint: {applicable: true, evidence: Integration Gate lint/type checks}
+      unit: {applicable: true, evidence: missing/non-required/narrow-path check rejection}
+      integration: {applicable: true, evidence: candidate fingerprint includes base/head/policy/scanner hashes}
+      contract: {applicable: true, evidence: Validation Profile and Integration Gate report contract}
+      e2e: {applicable: false, na_reason: no user-facing UI}
+      security: {applicable: true, evidence: required fail-closed exact-candidate scan}
+      migration_recovery: {applicable: false, na_reason: additive profile contract; candidates without scan now block by design}
+      cli_harness: {applicable: true, evidence: local publish-preflight and exact candidate Gate}
+      docs_schema: {applicable: true, evidence: Integration Gate and publication protocols}
+  - boundary: local-publication-preflight-and-ci-fail-fast
+    reason: Local and GitHub paths must run the same policy before expensive checks and preserve the existing required-check aggregate.
     checks:
-      static_lint: {applicable: true, evidence: compile and static checks}
-      unit: {applicable: true, evidence: no-key skip, path syntax and receipt contract}
-      integration: {applicable: true, evidence: synthetic canary smoke verifier contract}
-      contract: {applicable: true, evidence: optional SDK dependency and main-only workflow}
-      e2e: {applicable: false, na_reason: No user interface}
-      security: {applicable: true, evidence: no mounts/secrets, default deny egress, safe archive/artifact paths}
-      migration_recovery: {applicable: true, evidence: live cleanup runs in finally and records failure}
-      cli_harness: {applicable: true, evidence: optional dependency and credential-free CLI behavior}
-      docs_schema: {applicable: true, evidence: setup and controlled-trial guidance}
-  - boundary: verification-evidence-and-verification-receipts
-    reason: Provider availability requires fresh evidence distinct from provider claims.
+      static_lint: {applicable: true, evidence: workflow and preflight syntax validation}
+      unit: {applicable: true, evidence: preflight failure/status report contract}
+      integration: {applicable: true, evidence: local exact-candidate preflight and GitHub workflow ordering}
+      contract: {applicable: true, evidence: existing repository required-check aggregate remains the sole required context}
+      e2e: {applicable: false, na_reason: no UI; workflow ordering and Gate are deterministically inspected}
+      security: {applicable: true, evidence: secret scan occurs before dependency/Playwright installation}
+      migration_recovery: {applicable: false, na_reason: no persisted release state}
+      cli_harness: {applicable: true, evidence: publish_preflight plan/run lifecycle}
+      docs_schema: {applicable: true, evidence: CI/user-facing publication instructions}
+  - boundary: security-documentation-scenario-and-release-contract
+    reason: Security, architecture, docs placement, scenario coverage, and version records must describe the enforced behavior.
     checks:
-      static_lint: {applicable: true, evidence: repository validation}
-      unit: {applicable: true, evidence: receipt redaction, digest binding and expiry}
-      integration: {applicable: true, evidence: external verification record matching}
-      contract: {applicable: true, evidence: evidence/receipt schema}
-      e2e: {applicable: false, na_reason: No user interface}
-      security: {applicable: true, evidence: secret values never persisted; workflow protected-main/manual}
-      migration_recovery: {applicable: true, evidence: missing/stale evidence remains blocked}
-      cli_harness: {applicable: true, evidence: verification state output}
-      docs_schema: {applicable: true, evidence: evidence semantics}
-  - boundary: security-and-failure-paths
-    reason: External execution changes process, network, credential and data boundaries.
-    checks:
-      static_lint: {applicable: true, evidence: secret guard and repository validation}
-      unit: {applicable: true, evidence: no-key, denied egress, invalid source paths and fail-closed failures}
-      integration: {applicable: true, evidence: provider outage, TTL, partial lifecycle and destroy failure}
-      contract: {applicable: true, evidence: structured statuses and sanitized errors}
-      e2e: {applicable: false, na_reason: No user interface}
-      security: {applicable: true, evidence: explicit credential registry and PR secret isolation}
-      migration_recovery: {applicable: true, evidence: cleanup state and expired verification}
-      cli_harness: {applicable: true, evidence: structured isolation output}
-      docs_schema: {applicable: true, evidence: security guidance}
-  - boundary: scenarios-docs-architecture-and-release
-    reason: Workflow, diagrams and release metadata must match the implemented capability.
-    checks:
-      static_lint: {applicable: true, evidence: documentation/schema validators}
-      unit: {applicable: false, na_reason: Documentation-only portions}
-      integration: {applicable: true, evidence: scenario coverage and repository validation}
-      contract: {applicable: true, evidence: docs synchronization rules}
-      e2e: {applicable: false, na_reason: No user interface}
-      security: {applicable: true, evidence: no claim of AIPS hypervisor attestation}
-      migration_recovery: {applicable: false, na_reason: No persistent document migration}
-      cli_harness: {applicable: false, na_reason: Documentation-only portions}
-      docs_schema: {applicable: true, evidence: architecture diagrams, human and agent docs, changelog/version}
-  - boundary: seed-scoped-impact-graph-coverage
-    reason: High-risk impact review needs bounded complete caller evidence while preserving truthful repository-wide partial coverage.
-    checks:
-      static_lint: {applicable: true, evidence: repository validation and YAML schema contracts}
-      unit: {applicable: true, evidence: matching seeds select evidence-backed scopes; unmatched seeds remain unknown}
-      integration: {applicable: true, evidence: exact two-hop CLI/workflow caller traversal for sandbox resolver and verifier}
-      contract: {applicable: true, evidence: IMPACT_GRAPH coverage_scopes template contract}
-      e2e: {applicable: false, na_reason: No user interface}
-      security: {applicable: true, evidence: bounded scopes cannot alter repository-wide coverage claims}
-      migration_recovery: {applicable: true, evidence: absent coverage_scopes retains existing global coverage behavior}
-      cli_harness: {applicable: true, evidence: impact-traverse --graph-seed output}
-      docs_schema: {applicable: true, evidence: Change Impact guidance and Scenario 175}
-scope_recomputed_after_expansion: true
-blockers: []
+      static_lint: {applicable: true, evidence: documentation placement and scenario registry validation}
+      unit: {applicable: false, na_reason: behavior is covered by lifecycle and contract evidence}
+      integration: {applicable: true, evidence: repository validation checks documentation closure}
+      contract: {applicable: true, evidence: Scenario 176 registration and placement ownership}
+      e2e: {applicable: false, na_reason: no user-facing UI}
+      security: {applicable: true, evidence: secret handling and Security Assurance contract review}
+      migration_recovery: {applicable: false, na_reason: no data migration}
+      cli_harness: {applicable: false, na_reason: documentation and scenario registry only}
+      docs_schema: {applicable: true, evidence: canonical Human/Agent docs, architecture diagram, CHANGELOG and VERSION}
+scope_recomputed_after_expansion: false
 actual_diff_reconciled: true
+blockers: []
 status: READY

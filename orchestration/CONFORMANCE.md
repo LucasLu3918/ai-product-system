@@ -726,4 +726,4 @@ Current automated inventory: 27 deterministic + 93 lifecycle + 54 agent_eval = 1
 
 Scenario 175 is lifecycle coverage for rebuildable lexical relation indexing, bounded caller/consumer traversal across code and canonical architecture edges, risk-specific depth/history, explicit unknown and truncation states, seed-scoped graph coverage that preserves repository-wide partial status, changed/unchanged affected-node dispositions and READY evidence validation. It does not claim compiler-grade reference resolution.
 
-Current automated inventory: 27 deterministic + 94 lifecycle + 54 agent_eval = 175 / 175; manual 0; uncovered 0.
+Current automated inventory: 27 deterministic + 95 lifecycle + 54 agent_eval = 176 / 176; manual 0; uncovered 0.

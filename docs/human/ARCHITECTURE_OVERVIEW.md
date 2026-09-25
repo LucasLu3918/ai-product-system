@@ -99,6 +99,8 @@ Human Approval 維持最高決策權；machine-readable approval binding、resou
 
 ## Scenario Conformance 與 Agent Eval
 
+Remote Git publication has a mandatory candidate secret scan inside the existing Publication Preflight and Integration Gate flow. It checks the final tree and all candidate commits, binds redacted evidence to the candidate, policy and scanner hashes, and blocks incomplete scans. It reuses the built-in scanner and adds no approval authority or required external service.
+
 EARS validator contract-only changes use the Scenario Conformance documentation closure; changes to requirement planning behavior, templates, or canonical requirements retain the full planning closure.
 
 Scenario registry 明確標示 deterministic、lifecycle、agent_eval 或 manual evidence。需要 semantic judgment 的測試保存 observable result，不保存 private chain-of-thought。

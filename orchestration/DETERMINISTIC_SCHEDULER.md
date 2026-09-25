@@ -81,6 +81,7 @@ python scripts/deterministic_scheduler.py --graph TASK_GRAPH.yaml --state STATE.
 ~~~
 
 CI 會在合併前以 exact candidate 執行 Integration Gate；required aggregate 只有在 Gate 成功時才可通過。
+Gate 的 mandatory candidate secret scan 會檢查 final tree 與 `base..head` 全部 commit，並在昂貴驗證依賴安裝前先行執行；它不改變既有 required aggregate 或 Human merge authority。
 
 本機 `aips publish preflight` 與 CI 都先經過 `scripts/publish_preflight.py`，共用 base/head、change class、canonical matrix 與文件 diff base，再委派既有 Integration Gate。此入口只消除解析差異，不把 publication 或 merge authority 交給 Scheduler。
 

@@ -213,7 +213,9 @@ Security review verifies:
 - no credential value is persisted in source, committed config, generated Intelligence/HTML, logs, fixtures, snapshots or review evidence;
 - runtime acquisition uses an approved secure source;
 - logs/traces/error paths redact sensitive headers/fields;
-- secret scanning evidence exists where practical.
+- secret scanning evidence exists where practical for general review; every Remote Git publication candidate also passes the mandatory credential-free exact-candidate scan.
+
+The built-in publication scan checks the final tree and all candidate commits from base to head, uses strict mode without inline bypass, and fails closed when the scan or history is incomplete. Its redacted report is bound to the scanner and policy hashes. External secret-scanning providers remain optional defense-in-depth.
 
 若目前要求的操作明確需要 credential，且沒有 credential-free 路徑，該操作為 BLOCKED。若 credential 被宣告為 optional，則必須使用該能力定義的 `SKIPPED_NOT_CONFIGURED` / `ANALYSIS_PENDING` / `TRIAL_PENDING` 等非 PASS 狀態，且不得因此阻擋無關的 baseline validation 或 release。永遠不得以 hard-coded credential 取代缺失的 secret。
 

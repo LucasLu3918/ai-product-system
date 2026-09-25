@@ -265,6 +265,8 @@ The provider-neutral registry binds runtime class, data class, egress, mounts, c
 
 When publication preflight changes, keep the working-tree preview, content safety findings, configured Git identity checks and exact-candidate resolver aligned with CI.
 
+Every publication candidate also runs the built-in strict secret scan before dependency installation in GitHub Actions and during local publication preflight. The Integration Gate repeats the scan as required candidate-bound evidence. Both use `config/secret-scan.yaml`, scan final content plus `base..head` history, ignore no inline bypass markers and fail closed on incomplete input. Keep the single `repository` required-check context; the Janitor aggregate continues to carry failures.
+
 Before committing, `aips publish preview --base <base> --change-class <class>` reports documentation closure with the rule responsible for each required file and checks the candidate Core Matrix binding. After reviewing the final change boundary, `aips publish matrix-sync --base <base>` can refresh the canonical matrix base/hash fields. This does not mark the matrix ready or reconciled.
 
 `aips trajectory evaluate` 與 Scenario 167 是 Eval-as-CI 的 deterministic evidence；更新 trajectory schema、policy 或 publish wiring 時，必須同步執行 Integration Gate、Repository validation 與文件 impact closure。

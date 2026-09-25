@@ -62,7 +62,7 @@ Trajectory Quality Gate 是 provider-neutral capability。Harness 可提供 obse
 - TOOL_GUARDED：Runtime 有可驗證 pre-tool guard。
 - ADVISORY：規範可見，但不能宣稱技術攔截所有 Host native tools。
 
-`aips publish preflight` 是 repository publication／CI consistency 層，不是 MCP 或 native Harness capability；它不提升上述治理強度，也不取得 push、merge 或 release authority。
+`aips publish preflight` 是 repository publication／CI consistency 層，不是 MCP 或 native Harness capability；它不提升上述治理強度，也不取得 push、merge 或 release authority。每個 Remote Git 候選仍必須通過 credential-free strict secret scan，涵蓋 final tree 與完整 `base..head` commit history；worktree 或 sandbox 隔離不能取代這項檢查。
 
 `aips isolation resolve --mode auto` is an execution-isolation resolver exposed through the existing CLI. It selects worktree for ordinary risk and requires verified sandbox capability for high/critical or untrusted execution; this is not a new Runtime adapter capability. The initial E2B registry stays disabled and its optional smoke workflow does not receive project source.
 

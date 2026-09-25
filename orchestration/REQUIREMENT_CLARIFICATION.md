@@ -33,6 +33,8 @@ Ask only when the answer can materially change:
 - irreversible/recovery behavior;
 - brand/visual direction when mismatch would be costly.
 
+For changes to Remote Git publication security, clarify and record candidate scope, final-tree/history coverage, fail-closed behavior and redaction as acceptance criteria; the built-in credential-free scan is the default baseline.
+
 ## Flow
 
 ~~~text

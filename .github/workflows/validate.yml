@@ -45,9 +45,6 @@ jobs:
             --head "$AIPS_GATE_HEAD" \
             --require-complete \
             --format json
-      - run: python -m pip install -r requirements.txt -r requirements-visual.txt -r requirements-validation.txt
-      - name: Install deterministic Playwright Chromium
-        run: python -m playwright install chromium
       - name: Refresh pull request base tip
         if: github.event_name == 'pull_request'
         shell: bash
@@ -56,6 +53,14 @@ jobs:
         run: >-
           git fetch --no-tags origin
           "+refs/heads/$AIPS_GATE_BASE_REF:refs/remotes/origin/$AIPS_GATE_BASE_REF"
+      - name: Mandatory candidate secret scan (fail fast)
+        run: >-
+          python scripts/check_secret_leakage.py --root .
+          --policy config/secret-scan.yaml --publication-candidate
+          --base "$AIPS_GATE_BASE" --head "$AIPS_GATE_HEAD" --json
+      - run: python -m pip install -r requirements.txt -r requirements-visual.txt -r requirements-validation.txt
+      - name: Install deterministic Playwright Chromium
+        run: python -m playwright install chromium
       - name: Resolve change class
         id: change_class
         shell: bash

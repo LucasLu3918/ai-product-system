@@ -34,6 +34,10 @@ def canonical_hash(value: Any) -> str:
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
+def file_hash(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
 def git(*args: str) -> str:
     proc = subprocess.run(["git", *args], text=True, capture_output=True)
     if proc.returncode != 0:
@@ -131,7 +135,10 @@ def matrix_fingerprint(
     return canonical_hash(matrix), matrix
 
 
-def run_check(item: dict[str, Any], *, omit_output_tail: bool = False) -> dict[str, Any]:
+def run_check(
+    item: dict[str, Any], *, omit_output_tail: bool = False,
+    candidate_env: dict[str, str] | None = None,
+) -> dict[str, Any]:
     if not item["applies"]:
         return {"id": item["id"], "category": item.get("category"), "status": "SKIPPED", "reason": "path_filter"}
     timeout = item.get("timeout_seconds", 600)
@@ -139,6 +146,8 @@ def run_check(item: dict[str, Any], *, omit_output_tail: bool = False) -> dict[s
         raise GateError(f"check {item['id']}: timeout_seconds must be >= 1")
     check_env = dict(os.environ)
     check_env.update(item.get("env") or {})
+    if item.get("candidate_context"):
+        check_env.update(candidate_env or {})
     argv = list(item["argv"])
     if Path(argv[0]).name in {"python", "python3"}:
         argv[0] = sys.executable
@@ -188,6 +197,52 @@ def run_check(item: dict[str, Any], *, omit_output_tail: bool = False) -> dict[s
         return result
 
 
+def candidate_secret_scan_binding(
+    profile: dict[str, Any], checks: list[dict[str, Any]], root: Path,
+) -> dict[str, str] | None:
+    spec = profile.get("candidate_secret_scan")
+    if spec is None:
+        return None
+    if not isinstance(spec, dict) or spec.get("required") is not True:
+        raise GateError("candidate_secret_scan must be a required mapping")
+    check_id = spec.get("check_id")
+    scanner = spec.get("scanner")
+    policy = spec.get("policy")
+    if not isinstance(check_id, str) or not check_id:
+        raise GateError("candidate_secret_scan requires check_id, scanner, and policy")
+    if not isinstance(scanner, str) or not scanner:
+        raise GateError("candidate_secret_scan requires check_id, scanner, and policy")
+    if not isinstance(policy, str) or not policy:
+        raise GateError("candidate_secret_scan requires check_id, scanner, and policy")
+    check = next((item for item in checks if item.get("id") == check_id), None)
+    if check is None or check.get("required") is not True or check.get("candidate_context") is not True:
+        raise GateError("mandatory candidate secret scan check is missing or not candidate-bound")
+    if "**" not in check.get("paths", []):
+        raise GateError("mandatory candidate secret scan must apply to all changed paths")
+    argv = check.get("argv") or []
+    if scanner not in argv or policy not in argv or "--publication-candidate" not in argv:
+        raise GateError("mandatory candidate secret scan command does not use the declared scanner in candidate mode")
+    try:
+        policy_index = argv.index("--policy")
+    except ValueError as exc:
+        raise GateError("mandatory candidate secret scan command must pass its declared policy") from exc
+    if policy_index + 1 >= len(argv) or argv[policy_index + 1] != policy:
+        raise GateError("mandatory candidate secret scan command policy does not match the declared policy")
+    scanner_path = (root / scanner).resolve()
+    policy_path = (root / policy).resolve()
+    if not scanner_path.is_relative_to(root.resolve()) or not policy_path.is_relative_to(root.resolve()):
+        raise GateError("secret scanner and policy must remain inside the repository")
+    if not scanner_path.is_file() or not policy_path.is_file():
+        raise GateError("secret scanner or policy is missing")
+    return {
+        "check_id": check_id,
+        "scanner_path": scanner,
+        "policy_path": policy,
+        "scanner_sha256": file_hash(scanner_path),
+        "policy_sha256": file_hash(policy_path),
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--profile", required=True, type=Path)
@@ -221,6 +276,8 @@ def main() -> int:
             changed_files_hash=files_hash,
         )
         checks = profile_checks(profile, files)
+        repository_root = Path(__file__).resolve().parents[1]
+        secret_scan = candidate_secret_scan_binding(profile, checks, repository_root)
         profile_hash = canonical_hash(profile)
         candidate = {
             "base_sha": base_sha,
@@ -233,8 +290,23 @@ def main() -> int:
             "matrix_required": matrix_required,
             "matrix_hash": matrix_hash,
         }
+        candidate_env = {
+            "AIPS_GATE_BASE_SHA": base_sha,
+            "AIPS_GATE_HEAD_SHA": head_sha,
+        }
+        if secret_scan:
+            candidate["secret_scan"] = {
+                "check_id": secret_scan["check_id"],
+                "scanner_sha256": secret_scan["scanner_sha256"],
+                "policy_sha256": secret_scan["policy_sha256"],
+            }
+            candidate_env["AIPS_SECRET_SCAN_SCANNER_SHA256"] = secret_scan["scanner_sha256"]
+            candidate_env["AIPS_SECRET_SCAN_POLICY_SHA256"] = secret_scan["policy_sha256"]
         candidate_fingerprint = canonical_hash(candidate)
-        results = [run_check(item, omit_output_tail=args.omit_output_tail) for item in checks]
+        results = [
+            run_check(item, omit_output_tail=args.omit_output_tail, candidate_env=candidate_env)
+            for item in checks
+        ]
         failures = [r["id"] for r in results if r.get("status") == "FAIL" and r.get("required", True)]
         report = {
             "version": 1,

@@ -80,6 +80,8 @@ Publication Preflight 是 Local／CI 共用的 candidate resolver，並在完整
 
 Browser runtime 以 Playwright managed Chromium 為首選，system Chrome 透過 `AIPS_BROWSER_PROVIDER=system` 明確選用或作 auto fallback。Preflight 會執行 version 與 isolated-profile headless smoke probe；binary 存在但無法啟動時，結果是 `ENVIRONMENT_BLOCKED` 而非產品測試失敗。
 
+Remote Git publication uses the built-in credential-free candidate scanner in strict mode. The Integration Gate binds the final-tree and commit-history scan to candidate, policy and scanner fingerprints; provider tools remain optional.
+
 ### Parallel Run Dashboard
 
 The first dashboard implementation uses Python stdlib HTTP, static HTML/CSS/Vanilla JavaScript and polling. It has no frontend dependency chain, database, WebSocket or mutation endpoint. API output is a whitelist and excludes prompts, reasoning, raw output, secrets and raw paths.
@@ -93,6 +95,7 @@ SAL 0–4 依 product baseline 與 current change boundary 決定 assurance 強�
 ### Secret Handling
 
 Credentials 只能來自安全 runtime source；不進 Git、Prompt、logs、Project Intelligence 或 ordinary evidence。
+
 
 ### Resource-Scoped Authorization
 

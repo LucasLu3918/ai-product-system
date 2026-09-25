@@ -386,6 +386,32 @@ def commit_identity_plan(base: str, head: str) -> dict[str, Any]:
     return {"status": "BLOCKED" if blockers else "PASS", "findings": invalid, "blockers": blockers}
 
 
+def secret_scan_plan(base: str, head: str) -> dict[str, Any]:
+    command = [
+        sys.executable,
+        str(ROOT / "scripts/check_secret_leakage.py"),
+        "--root", str(ROOT),
+        "--policy", str(ROOT / "config/secret-scan.yaml"),
+        "--publication-candidate",
+        "--base", base,
+        "--head", head,
+        "--json",
+    ]
+    result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
+    try:
+        report = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return {
+            "status": "BLOCKED",
+            "findings": [],
+            "blockers": ["mandatory candidate secret scan did not return a valid redacted report"],
+        }
+    if result.returncode != 0 or report.get("status") != "PASS":
+        status = "BLOCKED" if report.get("status") == "BLOCKED" or result.returncode == 2 else "FAIL"
+        return {**report, "status": status}
+    return report
+
+
 def build_plan(args: argparse.Namespace) -> dict[str, Any]:
     base = resolve_commit(args.base)
     head = resolve_commit(args.head)
@@ -409,6 +435,9 @@ def build_plan(args: argparse.Namespace) -> dict[str, Any]:
         blockers.append("candidate base is stale relative to base-tip")
     safety = content_safety_plan(args, base, head)
     blockers.extend(safety["blockers"])
+    secret_scan = secret_scan_plan(base, head)
+    if secret_scan["status"] != "PASS":
+        blockers.extend(secret_scan.get("blockers") or ["mandatory candidate secret scan failed"])
     identities = commit_identity_plan(base, head)
     blockers.extend(identities["blockers"])
     matrix_binding: dict[str, Any] = {}
@@ -435,6 +464,7 @@ def build_plan(args: argparse.Namespace) -> dict[str, Any]:
         "environment": environment_status(),
         "remote": remote_policy(args.branch, args.offline),
         "content_safety": safety,
+        "secret_scan": secret_scan,
         "git_identity": identities,
         "blockers": blockers,
         "status": "READY" if not blockers else "BLOCKED",
