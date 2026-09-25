@@ -143,3 +143,5 @@ Only `tcp` is supported in v0.51. Port IDs must be stable resource IDs, `preferr
 ## Runtime Content Safety Boundary
 
 Content safety decisions used by deterministic execution and publication preflight must be provider-neutral and reproducible. Optional semantic classifiers may emit advisory signals only and cannot be the sole release decision.
+
+Runtime action authorization is evaluated at the native tool boundary by Runtime Policy Enforcement; task dispatch metadata does not grant action approval or network-egress isolation.

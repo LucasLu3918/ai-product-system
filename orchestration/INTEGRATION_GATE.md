@@ -121,4 +121,6 @@ Parallel Runtime Port Isolation does not change Integration Gate authority or ca
 
 The Integration Gate runs the content-safety lifecycle for affected candidates and requires the canonical sink manifest. Durable/public content safety failures are blocking; diagnostic redaction remains a safe degraded path.
 
+Runtime Policy changes require deterministic evaluator and native-hook lifecycle checks plus the mandatory exact-candidate secret scan. Live external sandbox/provider credentials are not baseline gate dependencies; absent verification must continue to produce a blocking runtime decision.
+
 Publication preview scans the exact tracked diff and bounded untracked candidate files before expensive lifecycle validation. Unscannable inputs block preview; findings expose only detector type and source location. The same preview checks that configured commit email matches the repository's allowed identity policy.

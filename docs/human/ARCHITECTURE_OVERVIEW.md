@@ -80,6 +80,7 @@ Semantic planning 與 deterministic execution 分離：
 - Execution Isolation：shared / worktree / verified sandbox。
 - Runtime Resource Isolation：為 parallel worktree 協調 bounded TCP port lease。
 - Integration Gate / Janitor：在 candidate merge 前執行適用 lint / type / test / repository validation。
+- Runtime Policy Enforcement：在受支援的 native pre-tool hook 中，以 Resource Authorization、policy-as-code、精確核准與實際 enforcement 能力決定工具能否執行。
 
 Sandbox provider selection reads a provider-neutral capability registry and a fresh, registry-bound verification receipt. The first E2B candidate is disabled, limited to public synthetic data, deny-all egress, no host mounts or guest credentials, and no Git publication authority. High/critical risk or explicitly untrusted execution requires sandbox; resolution blocks when matching provider evidence or data policy is missing. Provider-declared MicroVM claims remain distinct from controls AIPS observes.
 
@@ -96,6 +97,8 @@ Browser evidence 也屬於 deterministic environment contract：candidate prefli
 Security Assurance Level（SAL）依產品 baseline 與 change impact 決定 review 強度。高價值 business logic、authorization、financial integrity 等 protected boundary 使用更嚴格 evidence。
 
 Human Approval 維持最高決策權；machine-readable approval binding、resource authorization、audit chain / portable bundle / retention catalog 都只驗證與保存 authority evidence，不創造新的 authority。
+
+Runtime Policy Enforcement 使用四種結果：`ALLOW`、`DENY`、`REQUIRE_APPROVAL`、`BLOCKED`。SAL3/4 外連需有核准範圍相符的 Approval Record、可攔截的 runtime hook，以及可驗證的 sandbox network allowlist。現行 E2B provider 仍 disabled、未驗證且 deny-all，因此目前高風險外連會 `BLOCKED`。Codex 維持 `ADVISORY`；shell hook 不代表子程序或網路隔離。
 
 ## Scenario Conformance 與 Agent Eval
 

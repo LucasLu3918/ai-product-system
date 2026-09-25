@@ -704,6 +704,29 @@ flowchart TD
 
 Context capability and governance enforcement are independent runtime dimensions. Native tool hooks only perform deterministic policy checks; semantic review remains in Orchestration.
 
+## Runtime Policy Enforcement
+
+~~~mermaid
+flowchart TD
+    T[Runtime tool request] --> N[Trusted adapter normalization]
+    N --> E[Runtime Action Envelope + action digest]
+    E --> RA[Resource Authorization · default DENY]
+    RA --> PDP[Deterministic Runtime Policy · deny-overrides]
+    PDP --> DEC{ALLOW / DENY / REQUIRE_APPROVAL / BLOCKED}
+    DEC -->|REQUIRE_APPROVAL| AR[Existing scope-bound Approval Record]
+    AR --> RE[Re-evaluate same action and policy digest]
+    DEC -->|high-risk egress| SB[Fresh verified sandbox network allowlist]
+    DEC -->|semantic signal| SG[Optional semantic tightening only]
+    SG --> PEP[Verified runtime PEP]
+    RE --> PEP
+    SB --> PEP
+    PEP -->|verified allow| X[Tool execution]
+    PEP -->|deny / missing capability| STOP[Block]
+    DEC --> AUD[Sanitized Governance Audit metadata]
+~~~
+
+The Runtime Policy evaluator is a PDP; native pre-tool hooks are PEPs only for supported calls. `TOOL_GUARDED` does not imply network isolation. A high-risk egress action remains BLOCKED until both the runtime hook and provider-observed sandbox allowlist are verified.
+
 ## Durable workflow resume
 
 ~~~mermaid

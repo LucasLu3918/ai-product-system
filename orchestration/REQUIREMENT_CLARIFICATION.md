@@ -81,6 +81,8 @@ Use `templates/requirements/IMPLEMENTATION_GOAL.yaml` when persistence is useful
 
 When a clarified request contains functional behavior that will guide implementation or acceptance, consider recording atomic requirements with EARS (Easy Approach to Requirements Syntax). EARS is lightweight structure for natural-language requirements; it supplements progressive clarification and does not change READY / NEEDS_CLARIFICATION / BLOCKED.
 
+For requirements involving external runtime actions, clarify the destination, data classes, protected assets and required security boundary; runtime policy can block unknown classifications or missing sandbox evidence instead of inferring authorization.
+
 Choose the pattern that matches the behavior. Keep its canonical English keywords even when the requirement itself is written in another language:
 
 | Pattern | Form | Use |

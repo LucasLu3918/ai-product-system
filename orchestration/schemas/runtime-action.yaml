@@ -1,0 +1,32 @@
+# Provider-neutral input contract for Runtime Policy Enforcement.
+version: 1
+actor:
+  task_id: required-string
+  runtime: codex | claude-code | gemini-cli | generic
+action:
+  tool: required-string
+  operation: required-string
+  arguments: object | array | scalar | null
+resource:
+  kind: repository_path | workspace | runtime_tool | connector | external_service
+  id: required-string
+destination:
+  host: hostname-or-null
+  trust: internal | approved_external | external | unknown
+context:
+  effective_sal: integer-0-to-4-or-null
+  change_boundary: required-string-or-null
+data:
+  classes: [public | internal | confidential | restricted]
+  protected_assets: [financial_state | personal_data | credential | other]
+authorization:
+  approval_id: string-or-null
+  resource_profile: project-relative-resource-authorization-profile-path
+credential_reference: string-or-null
+requirements:
+  minimum_enforcement: ADVISORY | TOOL_GUARDED | ENFORCED
+  sandbox_provider_id: string-or-null
+
+# The digest is computed over action.tool, action.operation, action.arguments,
+# resource, destination, context, data, credential_reference and requirements.
+# The approval_id is excluded to prevent a circular binding.

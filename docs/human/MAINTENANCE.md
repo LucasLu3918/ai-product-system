@@ -261,6 +261,10 @@ When Execution Isolation behavior changes, review together:
 
 The provider-neutral registry binds runtime class, data class, egress, mounts, credential scope, TTL and evidence freshness. A provider is available only when enabled, integration status is ready and fresh registry-bound verification passes. The initial E2B candidate remains disabled; its manual `main` smoke workflow uses only synthetic input and requires prior written provider-test consent.
 
+High-risk external runtime actions also require an exact, unexpired Approval Record and fresh verified network-egress enforcement. A hook alone is not a sandbox; missing provider proof blocks the action.
+
+High-risk external runtime actions also require an exact, unexpired Approval Record and fresh verified network-egress enforcement. A hook alone is not a sandbox; missing provider proof blocks the action.
+
 ## Public repository / CI consistency
 
 When publication preflight changes, keep the working-tree preview, content safety findings, configured Git identity checks and exact-candidate resolver aligned with CI.

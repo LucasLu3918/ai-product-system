@@ -57,6 +57,8 @@ A runtime with a verified pre-tool guard may consume this evidence as an additio
 
 Resource Authorization can tighten an operation but never widens Change Boundary, Execution Isolation, Role/Skill responsibility or Human authority.
 
+For supported runtime tool actions, Resource Authorization is one input to `orchestration/RUNTIME_POLICY_ENFORCEMENT.md`. It remains default-DENY evidence and is evaluated before policy ALLOW; an action cannot use a policy allow rule to bypass a missing resource grant.
+
 ## CLI
 
 ~~~bash

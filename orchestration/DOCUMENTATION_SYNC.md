@@ -104,6 +104,8 @@ The `resource-authorization` rule binds the deterministic evaluator, Resource Au
 
 Execution Profile isolation fields now include optional minimum runtime class, provider verification state and data class. Changes must synchronize Execution Isolation, Orchestrator/Conformance guidance, User/Technology/Conformance docs and the sandbox provider registry. Source-transfer documentation must not imply authorization that is absent from the current policy.
 
+Runtime Policy action schemas, deterministic decisions, hook capability claims and high-risk egress requirements are canonical in `orchestration/RUNTIME_POLICY_ENFORCEMENT.md`; synchronize them with Resource Authorization, Execution Isolation, Governance Audit, the adapter contract, Security Assurance, Harness and Scenario 177.
+
 
 ## Evolution Effectiveness mapping
 

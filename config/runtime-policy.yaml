@@ -1,0 +1,45 @@
+version: 1
+default_effect: DENY
+external_destination_allowlist: []
+semantic_provider:
+  enabled: false
+  provider: null
+rules:
+  - id: allow-low-risk-internal
+    priority: 100
+    when:
+      destination_trust: [internal]
+      effective_sal_lte: 2
+      data_class_any: [public, internal]
+    effect: ALLOW
+  - id: allow-low-risk-approved-external
+    priority: 100
+    when:
+      destination_trust: [approved_external]
+      effective_sal_lte: 2
+      data_class_any: [public]
+    effect: ALLOW
+  - id: secret-external-egress
+    priority: 1000
+    when:
+      destination_trust: [external, approved_external]
+      contains_secret: true
+    effect: DENY
+  - id: high-assurance-external-egress
+    priority: 900
+    when:
+      destination_trust: [external, approved_external]
+      effective_sal_gte: 3
+    effect: REQUIRE_APPROVAL
+    requirements:
+      minimum_enforcement: TOOL_GUARDED
+      sandbox_network_enforced: true
+  - id: restricted-external-egress
+    priority: 800
+    when:
+      destination_trust: [external, approved_external]
+      data_class_any: [confidential, restricted]
+    effect: REQUIRE_APPROVAL
+    requirements:
+      minimum_enforcement: TOOL_GUARDED
+      sandbox_network_enforced: true

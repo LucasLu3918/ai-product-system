@@ -177,6 +177,8 @@ When an optional scheduled provider is unavailable, recommendations remain truth
 
 Provider output still has no authority. `scripts/evolution_analysis.py finalize/apply` must validate exact evidence binding before any recommendation can move out of `ANALYSIS_PENDING`.
 
+Runtime Policy semantic signals use a separate monotonic contract: they may deny or request human approval, but may not grant runtime authorization or override deterministic policy decisions. Provider integration remains optional and outside the enforcement path by default.
+
 ## v0.29 current-main assessment baseline
 
 Semantic assessment MUST compare signals against the exact current-main Capability Map before claiming a gap. Resource-Scoped Agent Authorization is now a covered capability and is indexed in `references/evolution/CAPABILITY_MAP.yaml`.

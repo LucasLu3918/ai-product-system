@@ -1376,3 +1376,14 @@ scenarios:
       - tests/validation/change_impact_traversal_contracts.py
       - scripts/retrieval_intelligence.py
       - scripts/project_intelligence.py
+  - id: "177"
+    path: tests/scenarios/177-runtime-policy-enforcement.md
+    coverage: lifecycle
+    evidence:
+      - tests/test_runtime_policy.py
+      - tests/evidence/runtime_policy_lifecycle.py
+      - tests/validation/runtime_policy_contracts.py
+      - tests/validate_repository.py
+      - scripts/runtime_policy.py
+      - scripts/governance_guard.py
+      - config/runtime-policy.yaml

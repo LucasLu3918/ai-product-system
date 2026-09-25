@@ -28,7 +28,7 @@ HMAC is shared-secret authentication, not asymmetric non-repudiation. Signed che
 
 ## Event boundary
 
-Record governance boundary events, not model thoughts or every tool read. Typical events include HUMAN_APPROVAL_GRANTED, HUMAN_APPROVAL_REVOKED, APPROVAL_STALE, SECURITY_REVIEW_COMPLETED, SECURITY_RISK_ACCEPTED, VALIDATION_COMPLETED, GIT_PUBLISH_AUTHORIZED, GIT_PUBLISHED, PR_MERGED, RELEASE_READINESS_READY, RELEASE_READINESS_BLOCKED, PRODUCTION_DEPLOYED, PRODUCTION_VERIFIED, ROLLBACK_STARTED, ROLLBACK_COMPLETED and AUDIT_KEY_ROTATED.
+Record governance boundary events, not model thoughts or every tool read. Typical events include HUMAN_APPROVAL_GRANTED, HUMAN_APPROVAL_REVOKED, APPROVAL_STALE, SECURITY_REVIEW_COMPLETED, SECURITY_RISK_ACCEPTED, VALIDATION_COMPLETED, GIT_PUBLISH_AUTHORIZED, GIT_PUBLISHED, PR_MERGED, RUNTIME_ACTION_DENY, RUNTIME_ACTION_REQUIRE_APPROVAL, RUNTIME_ACTION_BLOCKED, RUNTIME_ACTION_ALLOW, RELEASE_READINESS_READY, RELEASE_READINESS_BLOCKED, PRODUCTION_DEPLOYED, PRODUCTION_VERIFIED, ROLLBACK_STARTED, ROLLBACK_COMPLETED and AUDIT_KEY_ROTATED. Runtime action events contain digests and bounded metadata only, never raw tool arguments or secrets.
 
 Events should bind exact approval IDs/fingerprints, candidate commits, operations, results and evidence digests when those values exist.
 
