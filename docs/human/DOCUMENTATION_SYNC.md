@@ -20,6 +20,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+提交前的 Publication Preview 會以工作樹為輸入檢查 H2 placement，包含已追蹤與未追蹤的新增內容；缺少 canonical H2 或內容落在不允許的段落時，診斷會列出允許的 H2。最終 Repository Preflight 仍驗證已提交的 diff。
+
 `tests/validation/ears_requirement_contracts.py` 對應 Scenario Conformance；只有測試契約改動時更新 Conformance 與 Technology Guide，需求追蹤程式、規劃範本或 canonical requirement 文件仍觸發完整 Requirement Planning 閉包。
 
 Publication Preflight preview reports each required document with the sync or placement rule that introduced it, so maintainers can locate the exact source of recursive documentation requirements.

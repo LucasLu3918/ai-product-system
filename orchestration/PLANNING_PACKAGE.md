@@ -134,6 +134,8 @@ After Gate 1, derive Initial Implementation Items + recommended order, identify 
 
 ## Reproducibility standard
 
+When publication tooling or documentation placement rules change, use `aips publish preview` before commit to identify the complete canonical document closure and Core Matrix binding; planning approval remains a separate human decision.
+
 Another competent Agent/team must be able to answer without hidden chat context:
 
 - what/why/who/scope;

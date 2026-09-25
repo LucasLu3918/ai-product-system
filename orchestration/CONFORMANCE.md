@@ -694,6 +694,8 @@ Current automated inventory after Scenario 164:
 - automated: 164 / 164
 ## Scenario 165 — CI-Parity Publication Preflight
 
+Preview MUST report working-tree documentation placement and actionable Core Matrix binding guidance before commit; final PASS remains bound to the clean committed candidate and its CI result.
+
 Scenario 165 lifecycle evidence also proves pre-commit working-tree closure, rule attribution, safe Core Matrix rebinding, expected test-count enforcement and label-event validation triggers.
 
 Scenario 165 proves that local publication validation and GitHub Actions share one exact-candidate resolver for base/head, change class, canonical Core Change Test Matrix and documentation diff base. Fast documentation/diff checks run before the expensive Integration Gate; unavailable localhost/browser prerequisites are reported as `ENVIRONMENT_BLOCKED`.

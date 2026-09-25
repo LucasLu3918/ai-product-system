@@ -103,6 +103,8 @@ For automation, `python scripts/requirements_traceability.py <registry> --format
 
 ## Guidance style
 
+For changes that affect requirement or publication documentation, use the working-tree publication preview to identify missing canonical documents and misplaced H2 content before commit; this diagnostic step does not replace requirement decisions.
+
 Prefer:
 - plain-language choices;
 - 2–4 concrete options;

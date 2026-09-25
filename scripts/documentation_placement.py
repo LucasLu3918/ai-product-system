@@ -91,6 +91,18 @@ def static_errors(config: dict[str, Any]) -> list[str]:
         path = ROOT / raw_path
         if path.is_file() and "<section" in path.read_text(encoding="utf-8").lower():
             errors.append(f"{raw_path}: legacy HTML must be a compatibility stub")
+    for rule in config.get("placement_rules") or []:
+        for raw_path, allowed in (rule.get("placements") or {}).items():
+            path = ROOT / raw_path
+            if not path.is_file():
+                continue
+            actual = {name for name, _ in h2_items(path.read_text(encoding="utf-8"))}
+            missing = sorted(set(allowed) - actual)
+            if missing:
+                errors.append(
+                    f"{rule.get('id')}: {raw_path} placement refers to missing H2 {missing}; "
+                    "use an existing ## heading or correct config/documentation-placement.yaml"
+                )
     return errors
 
 
@@ -116,9 +128,30 @@ def changed_files(base: str) -> list[str]:
     return [item for item in proc.stdout.splitlines() if item]
 
 
-def added_line_numbers(base: str, path: str) -> list[int]:
+def working_tree_changed_files(base: str) -> list[str]:
+    tracked = subprocess.run(
+        ["git", "diff", "--name-only", base, "--"],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    untracked = subprocess.run(
+        ["git", "ls-files", "--others", "--exclude-standard"],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    if tracked.returncode or untracked.returncode:
+        raise RuntimeError(tracked.stderr.strip() or untracked.stderr.strip() or "git working-tree scan failed")
+    return sorted(set(tracked.stdout.splitlines()) | set(untracked.stdout.splitlines()))
+
+
+def added_line_numbers(base: str, path: str, *, working_tree: bool = False) -> list[int]:
+    if working_tree:
+        tracked = subprocess.run(
+            ["git", "ls-files", "--error-unmatch", "--", path],
+            cwd=ROOT, capture_output=True,
+        )
+        if tracked.returncode:
+            return list(range(1, len((ROOT / path).read_text(encoding="utf-8").splitlines()) + 1))
     proc = subprocess.run(
-        ["git", "diff", "--unified=0", f"{base}...HEAD", "--", path],
+        ["git", "diff", "--unified=0", base if working_tree else f"{base}...HEAD", "--", path],
         cwd=ROOT,
         capture_output=True,
         text=True,
@@ -157,11 +190,11 @@ def line_has_content(lines: list[str], number: int) -> bool:
     return 1 <= number <= len(lines) and bool(lines[number - 1].strip())
 
 
-def placement_errors(config: dict[str, Any], base: str) -> list[str]:
+def placement_errors(config: dict[str, Any], base: str, *, working_tree: bool = False) -> list[str]:
     migration_bases = set((config.get("policy") or {}).get("one_time_structure_migration_bases") or [])
     if base in migration_bases:
         return []
-    files = changed_files(base)
+    files = working_tree_changed_files(base) if working_tree else changed_files(base)
     errors: list[str] = []
     rules = config.get("placement_rules") or []
 
@@ -188,19 +221,24 @@ def placement_errors(config: dict[str, Any], base: str) -> list[str]:
                 errors.append(f"{rule['id']}: required canonical Human doc was not changed: {doc}")
                 continue
 
+            if not (ROOT / doc).is_file():
+                errors.append(f"{rule['id']}: required canonical Human doc is missing: {doc}")
+                continue
+
             text = (ROOT / doc).read_text(encoding="utf-8")
             lines = text.splitlines()
             ranges = heading_ranges(text)
             missing = [name for name in allowed if name not in ranges]
             if missing:
                 errors.append(
-                    f"{rule['id']}: configured canonical sections missing from {doc}: {missing}"
+                    f"{rule['id']}: configured canonical H2 sections missing from {doc}: {missing}; "
+                    "use an existing ## heading or correct config/documentation-placement.yaml"
                 )
                 continue
 
             allowed_ranges = [ranges[name] for name in allowed]
             first_h2_line = min((start for start, _ in ranges.values()), default=len(lines) + 1)
-            added = [number for number in added_line_numbers(base, doc) if line_has_content(lines, number)]
+            added = [number for number in added_line_numbers(base, doc, working_tree=working_tree) if line_has_content(lines, number)]
             misplaced = [
                 number
                 for number in added
@@ -211,7 +249,7 @@ def placement_errors(config: dict[str, Any], base: str) -> list[str]:
                 preview = ", ".join(str(number) for number in misplaced[:12])
                 errors.append(
                     f"{rule['id']}: {doc} has added content outside allowed canonical sections "
-                    f"(lines {preview}); move the explanation into its topic section or update "
+                    f"(lines {preview}); allowed H2: {allowed}; move the explanation into its topic section or update "
                     "config/documentation-placement.yaml when introducing a genuine new topic"
                 )
 
@@ -225,6 +263,13 @@ def audit() -> list[str]:
     if base and git_base_resolves(base):
         errors.extend(placement_errors(config, base))
     return errors
+
+
+def audit_worktree(base: str) -> list[str]:
+    if not git_base_resolves(base):
+        raise RuntimeError(f"documentation placement base does not resolve: {base}")
+    config = load_config()
+    return static_errors(config) + placement_errors(config, base, working_tree=True)
 
 
 if __name__ == "__main__":

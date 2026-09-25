@@ -21,6 +21,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
+import documentation_placement  # noqa: E402
+
 try:
     from content_safety import safe_emit
 except ModuleNotFoundError:  # imported as a repository module
@@ -84,6 +86,15 @@ def resolve_change_class(explicit: str, labels: str) -> tuple[str, str | None]:
         return label_class, None
     warning = None if explicit == label_class or not labels else f"explicit {explicit} differs from labels ({label_class})"
     return explicit, warning
+
+
+def pr_creation_plan(change_class: str) -> dict[str, Any]:
+    label = {"core": "aips:core-change", "large": "aips:large-change"}.get(change_class)
+    return {
+        "required_label": label,
+        "gh_create_args": ["gh", "pr", "create", *(["--label", label] if label else [])],
+        "note": "Attach the change-class label in the initial PR create request so the opened run uses the intended gate.",
+    }
 
 
 def matrix_required(profile: dict[str, Any], files: list[str], change_class: str) -> bool:
@@ -197,6 +208,7 @@ def preview_candidate(args: argparse.Namespace) -> dict[str, Any]:
     if required and matrix_path == CANONICAL_MATRIX.resolve():
         files = sorted(set(files) | {str(CANONICAL_MATRIX.relative_to(ROOT))})
     docs = documentation_impact(files)
+    placement_errors = documentation_placement.audit_worktree(base)
     matrix_hash = canonical_hash(files)
     binding: dict[str, Any] = {"required": required, "path": str(matrix_path), "changed_files_hash": matrix_hash}
     if required and matrix_path.is_file():
@@ -215,7 +227,12 @@ def preview_candidate(args: argparse.Namespace) -> dict[str, Any]:
     if required and not matrix_path.is_file():
         pending.append("canonical Core Change Test Matrix is missing")
     if required and (not binding.get("base_matches") or not binding.get("hash_matches")):
-        pending.append("Core Change Test Matrix binding needs synchronization")
+        binding["next_step"] = (
+            f"Run `aips publish matrix-sync --base {base}`, then review the matrix scope and "
+            "evidence before marking it READY."
+        )
+        pending.append("Core Change Test Matrix binding needs synchronization: " + binding["next_step"])
+    pending.extend(f"Documentation placement: {item}" for item in placement_errors)
     safety = preview_content_safety(base, files)
     identity = configured_identity_plan()
     pending.extend(safety["blockers"])
@@ -228,7 +245,9 @@ def preview_candidate(args: argparse.Namespace) -> dict[str, Any]:
         "change_class": change_class,
         "change_class_warning": warning,
         "documentation": docs,
+        "documentation_placement": {"status": "PASS" if not placement_errors else "BLOCKED", "errors": placement_errors},
         "matrix": binding,
+        "pr_creation": pr_creation_plan(change_class),
         "content_safety": safety,
         "git_identity": identity,
         "pending": pending,
@@ -314,7 +333,10 @@ def sync_matrix_binding(base_ref: str, head_ref: str, matrix_path: Path) -> dict
             if empty.search(text):
                 text = empty.sub(f"blockers:\n  - {reminder}", text, count=1)
             elif populated.search(text):
-                text = populated.sub(lambda match: match.group(0) + f"  - {reminder}\n", text, count=1)
+                text = populated.sub(
+                    lambda match: match.group(0) + re.match(r"[ \t]*", match.group(1)).group(0) + f"- {reminder}\n",
+                    text, count=1,
+                )
             else:
                 raise PreflightError("matrix binding changed; unable to safely add a review blocker")
     if changed:
@@ -336,14 +358,17 @@ def remote_policy(branch: str, offline: bool) -> dict[str, Any]:
     gh = shutil.which("gh")
     remote = git("remote", "get-url", "origin", check=False)
     if not gh or "github.com" not in remote:
-        return {"status": "UNAVAILABLE", "reason": "GitHub CLI or GitHub origin unavailable"}
+        return {"status": "UNAVAILABLE", "reason": "GitHub CLI or GitHub origin unavailable", "next_step": "Install gh and configure a GitHub origin before publication."}
+    auth = subprocess.run([gh, "auth", "status", "-h", "github.com"], cwd=ROOT, capture_output=True, text=True)
+    if auth.returncode:
+        return {"status": "AUTH_REQUIRED", "reason": "GitHub CLI authentication is unavailable", "next_step": "Run `gh auth login -h github.com`, then rerun `gh auth status -h github.com`."}
     path = remote.removeprefix("git@github.com:").removeprefix("https://github.com/").removesuffix(".git")
     proc = subprocess.run([gh, "api", f"repos/{path}/branches/{branch}/protection"], cwd=ROOT, capture_output=True, text=True)
     if proc.returncode == 0:
         return {"status": "PROTECTED", "publication_route": "pull_request"}
     if "Branch not protected" in proc.stderr or "404" in proc.stderr:
         return {"status": "UNPROTECTED", "publication_route": "direct_or_pull_request"}
-    return {"status": "UNAVAILABLE", "reason": proc.stderr.strip() or "protection query failed"}
+    return {"status": "UNAVAILABLE", "reason": "branch protection query failed", "next_step": "Check GitHub CLI repository access and rerun publication plan."}
 
 
 def content_safety_plan(args: argparse.Namespace, base: str, head: str) -> dict[str, Any]:
@@ -454,6 +479,7 @@ def build_plan(args: argparse.Namespace) -> dict[str, Any]:
         "candidate": {"base": base, "head": head, "changed_files": files},
         "change_class": change_class,
         "change_class_warning": warning,
+        "pr_creation": pr_creation_plan(change_class),
         "matrix": {
             "required": required,
             "path": str(matrix),

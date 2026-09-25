@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import importlib.util
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 from argparse import Namespace
 from unittest.mock import Mock
@@ -72,11 +74,16 @@ def main() -> int:
     profile = {"matrix_required_change_classes": ["large", "core"], "matrix_required_paths": []}
     assert publish.matrix_required(profile, ["docs/README.md"], "core")
     assert not publish.matrix_required(profile, ["docs/README.md"], "standard")
+    assert publish.pr_creation_plan("core")["gh_create_args"] == ["gh", "pr", "create", "--label", "aips:core-change"]
+    assert publish.pr_creation_plan("large")["required_label"] == "aips:large-change"
+    assert publish.pr_creation_plan("standard")["required_label"] is None
 
     with patch.object(publish, "resolve_commit", side_effect=["base-sha", "head-sha"]), patch.object(
         publish, "worktree_changed_files", return_value=["bin/aips", "untracked-note.md"]
     ), patch.object(publish, "preview_content_safety", return_value={"status": "PASS", "findings": [], "unscannable_count": 0, "blockers": []}), patch.object(
         publish, "configured_identity_plan", return_value={"status": "PASS", "configured": True, "findings": [], "blockers": []}
+    ), patch.object(
+        publish.documentation_placement, "audit_worktree", return_value=["guide.md: outside allowed H2"]
     ):
         preview = publish.preview_candidate(Namespace(
             base="main", head="HEAD", change_class="core", labels="aips:core-change",
@@ -89,6 +96,60 @@ def main() -> int:
     assert preview["matrix"]["required"] is True
     assert preview["content_safety"]["status"] == "PASS" and preview["git_identity"]["status"] == "PASS"
     assert "placement:publication-cli" in preview["documentation"]["required_by"]["docs/human/USER_GUIDE.md"]
+    assert preview["documentation_placement"]["status"] == "BLOCKED"
+    assert "Documentation placement: guide.md: outside allowed H2" in preview["pending"]
+    assert preview["matrix"]["next_step"].startswith("Run `aips publish matrix-sync")
+    assert preview["pr_creation"]["required_label"] == "aips:core-change"
+
+    with patch.object(publish.shutil, "which", return_value="/usr/bin/gh"), patch.object(
+        publish, "git", return_value="https://github.com/owner/repo.git"
+    ), patch.object(publish.subprocess, "run", return_value=Mock(returncode=1, stderr="private error")):
+        auth = publish.remote_policy("main", False)
+    assert auth["status"] == "AUTH_REQUIRED"
+    assert "gh auth login" in auth["next_step"]
+    assert "private error" not in repr(auth)
+
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        (root / "config").mkdir()
+        (root / "docs").mkdir()
+        (root / "src.txt").write_text("before\n", encoding="utf-8")
+        (root / "docs/guide.md").write_text("# Guide\n## Allowed\nExisting\n## Other\nExisting\n", encoding="utf-8")
+        (root / "config/documentation-placement.yaml").write_text(yaml.safe_dump({
+            "current_behavior_docs": {"docs/guide.md": {"required_h2": ["Allowed", "Other"], "strict_h2": True}},
+            "placement_rules": [{"id": "sample", "triggers": ["src.txt"], "placements": {"docs/guide.md": ["Allowed"]}}],
+        }), encoding="utf-8")
+        (root / "config/documentation-sync.yaml").write_text(yaml.safe_dump({
+            "technology_guide": {"triggers": ["src.txt"]},
+        }), encoding="utf-8")
+        subprocess.run(["git", "init", "-q"], cwd=root, check=True)
+        subprocess.run(["git", "add", "."], cwd=root, check=True)
+        subprocess.run(["git", "-c", "user.name=Test", "-c", "user.email=noreply" + chr(64) + "github.com", "commit", "-qm", "base"], cwd=root, check=True)
+        (root / "src.txt").write_text("after\n", encoding="utf-8")
+        (root / "docs/guide.md").write_text("# Guide\n## Allowed\nExisting\n## Other\nExisting\nNew text\n", encoding="utf-8")
+        place = publish.documentation_placement
+        with patch.object(place, "ROOT", root), patch.object(place, "CONFIG", root / "config/documentation-placement.yaml"), patch.object(
+            place, "SYNC_CONFIG", root / "config/documentation-sync.yaml"
+        ):
+            failures = place.audit_worktree("HEAD")
+            assert any("allowed H2: ['Allowed']" in item for item in failures)
+            (root / "docs/guide.md").write_text("# Guide\n## Allowed\nExisting\nNew text\n## Other\nExisting\n", encoding="utf-8")
+            assert place.audit_worktree("HEAD") == []
+            (root / "new.txt").write_text("untracked\n", encoding="utf-8")
+            assert "new.txt" in place.working_tree_changed_files("HEAD")
+            invalid = place.load_config()
+            invalid["placement_rules"][0]["placements"]["docs/guide.md"] = ["Missing"]
+            assert any("missing H2" in item for item in place.static_errors(invalid))
+            (root / "docs/guide.md").unlink()
+            assert any("required canonical Human doc is missing" in item for item in place.placement_errors(place.load_config(), "HEAD", working_tree=True))
+
+    with tempfile.TemporaryDirectory() as td:
+        check = subprocess.run(
+            [sys.executable, str(ROOT / "bin/prepare-local-validation"), "--check-only", "--venv", str(Path(td) / "missing")],
+            cwd=ROOT, capture_output=True, text=True,
+        )
+        assert check.returncode == 2
+        assert "python3.12 bin/prepare-local-validation" in check.stderr
 
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
@@ -126,6 +187,18 @@ def main() -> int:
         assert bound["status"] == "DRAFT"
         assert bound["actual_diff_reconciled"] is False
         assert bound["blockers"]
+
+        matrix_path.write_text(
+            "version: 1\ncandidate:\n  base_sha: old\n  changed_files_hash: old\nactual_diff_reconciled: true\nblockers:\n- pending review\nstatus: READY\n",
+            encoding="utf-8",
+        )
+        with patch.object(publish, "ROOT", root), patch.object(publish, "CANONICAL_MATRIX", matrix_path), patch.object(
+            publish, "resolve_commit", side_effect=["base-sha", "head-sha"]
+        ), patch.object(publish, "worktree_changed_files", return_value=["src/feature.py"]):
+            publish.sync_matrix_binding("main", "HEAD", matrix_path)
+        populated = yaml.safe_load(matrix_path.read_text(encoding="utf-8"))
+        assert len(populated["blockers"]) == 2
+        assert populated["blockers"][0] == "pending review"
 
     environment = publish.environment_status()
     assert environment["status"] in {"READY", "ENVIRONMENT_BLOCKED"}

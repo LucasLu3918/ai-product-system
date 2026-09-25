@@ -62,6 +62,8 @@ Production、Git publication、merge 與 release authority 不因 Automation 或
 
 ## Deterministic Execution
 
+Publication Preview 在工作樹階段讀取文件位置契約與 Core Matrix 綁定，提供可修復診斷；正式 Integration Gate 仍只對已提交且乾淨的 exact candidate 作判定。
+
 Turn Context 以 Core、Recall 與 temporal evidence 共用的估算上限組裝資料，先證明任務路徑相關性，並在 Retrieval Index 不可用時保留來源指標及診斷；inline 文字經 Runtime Content Safety Boundary。最終輸出會再次受硬預算限制。
 
 Publication preview checks staged, unstaged and untracked candidate content plus configured Git email before validation; exact committed preflight still rechecks candidate commit content and author/committer identity against the same base/head and documentation closure as CI.

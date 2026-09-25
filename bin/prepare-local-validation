@@ -26,12 +26,21 @@ def run(command: list[str], *, phase: str) -> bool:
         result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
     except OSError:
         print(f"ENVIRONMENT_BLOCKED: could not start {phase}.", file=sys.stderr)
+        print(recovery_step(phase), file=sys.stderr)
         return False
     if result.returncode == 0:
         return True
     print(f"ENVIRONMENT_BLOCKED: {phase} exited with code {result.returncode}.", file=sys.stderr)
-    print("Inspect the environment and retry the preparation command.", file=sys.stderr)
+    print(recovery_step(phase), file=sys.stderr)
     return False
+
+
+def recovery_step(phase: str) -> str:
+    if phase == "validation dependencies":
+        return "Check package index access, then retry `python3.12 bin/prepare-local-validation`."
+    if phase == "Playwright Chromium":
+        return "Check browser download access, then retry `python3.12 bin/prepare-local-validation`."
+    return "Retry `python3.12 bin/prepare-local-validation` to install pinned validation dependencies."
 
 
 def main() -> int:
@@ -51,11 +60,26 @@ def main() -> int:
 
     if sys.version_info[:2] != (3, 12):
         print("ENVIRONMENT_BLOCKED: use Python 3.12 to match the validate workflow.", file=sys.stderr)
+        print("Run `python3.12 bin/prepare-local-validation` after installing Python 3.12.", file=sys.stderr)
         return 2
 
     target = args.venv.expanduser().resolve()
     if target == ROOT or ROOT in target.parents:
         print("ENVIRONMENT_BLOCKED: keep the validation venv outside the repository.", file=sys.stderr)
+        print("Choose a writable temporary directory with `--venv <path>`.", file=sys.stderr)
+        return 2
+
+    missing = [name for name in REQUIREMENTS if not (ROOT / name).is_file()]
+    if missing:
+        print(f"ENVIRONMENT_BLOCKED: missing validation requirements: {', '.join(missing)}.", file=sys.stderr)
+        return 2
+    try:
+        target.parent.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="aips-write-check-", dir=target.parent):
+            pass
+    except OSError:
+        print(f"ENVIRONMENT_BLOCKED: validation venv parent is not writable: {target.parent}", file=sys.stderr)
+        print("Choose a writable temporary directory with `--venv <path>`.", file=sys.stderr)
         return 2
 
     python = target / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
@@ -64,6 +88,7 @@ def main() -> int:
             venv.EnvBuilder(with_pip=True).create(target)
         except OSError:
             print("ENVIRONMENT_BLOCKED: could not create the validation venv.", file=sys.stderr)
+            print("Check free space and write permissions, or choose another `--venv <path>`.", file=sys.stderr)
             return 2
         install = [str(python), "-m", "pip", "install"]
         for requirement in REQUIREMENTS:
@@ -74,6 +99,7 @@ def main() -> int:
             return 2
     elif not python.is_file():
         print("ENVIRONMENT_BLOCKED: validation venv is missing; run without --check-only.", file=sys.stderr)
+        print("Run `python3.12 bin/prepare-local-validation` first.", file=sys.stderr)
         return 2
 
     for module in ("ruff", "mypy", "playwright"):
