@@ -115,6 +115,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Independent-review task, packet and evidence contracts are implemented as an opt-in capability. PR enforcement is currently disabled in the active Core Change Matrix because no trusted runtime-attestation verifier is connected; setting `review_evidence.required: true` without one remains fail-closed.
+
 Change Impact traversal 使用本地可重建索引與 canonical Impact Graph，並以 depth/node/edge budgets 限制成本。動態關係、索引失效、圖涵蓋不足與截斷必須輸出為不確定狀態；不要把 lexical candidates 當成編譯器解析或完整性證明。
 
 Validation workflow 先執行輕量文件影響檢查，再安裝完整依賴與 Playwright；EARS validator-only 變更使用 Scenario Conformance 閉包，規劃功能與範本變更維持完整 Requirement Planning 閉包。
@@ -134,6 +136,8 @@ Scenario registry 將 evidence 分成 deterministic、lifecycle、agent_eval、m
 Architecture Surface、documentation mapping、validation contract 與 drift evidence用 deterministic audit 檢查。
 
 Documentation audience 掃描忽略 Git 已明確忽略的本機 metadata；未被忽略的未知 docs-root entry 仍 fail closed。
+
+獨立程式碼審查以 `SELF_CHECK` 與 `INDEPENDENT_REVIEW` 分開建模。Scheduler 建立唯讀隔離任務；review packet 以 allowlist、大小／路徑限制和檔案指紋固定審查輸入。Evidence 必須綁定精確 base/head、packet 與不同 execution ID，並由可信 runtime attestation verifier 驗證。沒有可用 verifier 時維持 `UNVERIFIED`，必要審查在 Integration Gate fail closed；靜態結構檢查不能冒充簽章驗證或語意判斷。
 
 ## Product Delivery
 

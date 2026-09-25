@@ -118,6 +118,12 @@ Task Graphs now include explicit `read_only` intent.
 
 This rule prevents missing planning metadata from becoming an unlocked writer. The Scheduler blocks the graph instead of assuming an empty boundary is safe.
 
+### Review task contract
+
+An optional task `review` block declares `mode: SELF_CHECK | INDEPENDENT_REVIEW`, `review_of_task`, `required`, `context_inheritance`, and `allowed_context_classes`. A reviewer task is always `read_only: true`, has an empty `write_set`, and depends on the task it reviews. Independent review uses only allowlisted canonical evidence classes and requires `context_inheritance: none`.
+
+Execution IDs and runtime attestation are produced by the execution runtime and recorded in task state; they are not guessed from Role, model, prompt, or task labels. On completion, the Scheduler validates structured evidence. Same execution becomes `FAILED`; absent/unverifiable runtime evidence becomes `UNVERIFIED`; packet/candidate drift becomes `STALE`. A required review that does not meet its declared mode is not treated as COMPLETE for downstream dispatch. The Integration Gate separately checks the report against the exact candidate.
+
 ## Validation de-duplication boundary
 
 The repository validator may skip the focused Scheduler/Integration Gate lifecycle only when `AIPS_PROFILE_LIFECYCLE_ALREADY_EXECUTED=1` is injected by the deterministic Validation Profile after those checks already ran. Standalone repository validation must execute the lifecycle evidence normally.

@@ -8,8 +8,14 @@ candidate:
   changed_files_hash: null
   profile_hash: null
   matrix_hash: null
+  review_evidence_hash: null
 candidate_fingerprint: null
 checks: []
+review_evidence:
+  status: NOT_REQUIRED # VERIFIED | UNVERIFIED | FAILED | STALE | NOT_REQUIRED
+  reason_codes: []
+  evidence_path: null
+  evidence_sha256: null
 status: BLOCKED
 blockers: []
 authority:

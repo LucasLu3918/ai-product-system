@@ -266,8 +266,12 @@ AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned cont
 
 ## Runtime Policy Enforcement
 
+The independent-review isolation mechanism is present but not enabled as a default PR requirement. The active Core Change Matrix keeps `review_evidence.required: false` until a trusted runtime-attestation verifier is configured; explicitly required reviews still fail closed when that proof is unavailable.
+
 Before a supported tool action executes, Runtime Policy Enforcement checks the action envelope against Resource Authorization and the deterministic runtime policy. The result is `ALLOW`, `DENY`, `REQUIRE_APPROVAL` or `BLOCKED`; policy conflicts use deny-overrides. An approval binds the exact action and policy digests, destination, data labels, Change Boundary and expiry.
 
 SAL3/4 external egress also needs a verified native hook and a fresh provider receipt proving network allowlist enforcement. The current sandbox registry has no eligible verified egress provider, so these actions remain blocked. A pre-tool shell hook cannot observe every script, child process or SDK network call.
 
 An optional semantic provider may deny or escalate an otherwise allowed action. Its result is bound to the action digest and never overrides a deterministic denial or creates Human approval. NeMo Guardrails is not a required dependency or authorization engine.
+
+Independent review evidence is accepted only for the exact candidate and bounded review packet. The reviewer must have a distinct execution identity and read-only authority; implementation transcripts, hidden reasoning, scratchpads and raw traces are excluded. A trusted runtime attestation verifier must validate reviewer identity and execution claims. Until one is configured, evidence remains `UNVERIFIED` and any policy-required review blocks the Gate; a self-declared signature field is not proof.

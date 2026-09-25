@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from review_evidence import validate_report
 
 
 class GateError(ValueError):
@@ -251,6 +252,7 @@ def main() -> int:
     parser.add_argument("--base-tip")
     parser.add_argument("--change-class", choices=("standard", "large", "core"), default="standard")
     parser.add_argument("--matrix", type=Path)
+    parser.add_argument("--review-evidence", type=Path, help="Structured independent-review evidence artifact")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--format", choices=("yaml", "json"), default="yaml")
     parser.add_argument("--omit-output-tail", action="store_true", help="Omit check output from the report and stdout")
@@ -269,7 +271,7 @@ def main() -> int:
         files = changed_files(base_sha, head_sha)
         files_hash = canonical_hash(files)
         matrix_required = matrix_required_for_candidate(profile, files, args.change_class)
-        matrix_hash, _ = matrix_fingerprint(
+        matrix_hash, matrix = matrix_fingerprint(
             args.matrix,
             matrix_required,
             base_sha=base_sha,
@@ -290,6 +292,29 @@ def main() -> int:
             "matrix_required": matrix_required,
             "matrix_hash": matrix_hash,
         }
+        review_policy = (matrix or {}).get("review_evidence") or {}
+        if not isinstance(review_policy, dict):
+            raise GateError("matrix.review_evidence must be a mapping")
+        review_required = review_policy.get("required", False)
+        if not isinstance(review_required, bool):
+            raise GateError("matrix.review_evidence.required must be boolean")
+        review_path = args.review_evidence or review_policy.get("path")
+        review_result: dict[str, Any] = {"status": "NOT_REQUIRED", "reason_codes": []}
+        if review_required:
+            if not review_path:
+                review_result = {"status": "UNVERIFIED", "reason_codes": ["review_evidence_path_missing"]}
+            else:
+                review_result = validate_report(
+                    repository_root,
+                    Path(review_path),
+                    {
+                        "base_sha": base_sha,
+                        "head_sha": head_sha,
+                        "changed_files_hash": files_hash,
+                    },
+                    allow_external=args.review_evidence is not None,
+                )
+            candidate["review_evidence_hash"] = review_result.get("evidence_sha256")
         candidate_env = {
             "AIPS_GATE_BASE_SHA": base_sha,
             "AIPS_GATE_HEAD_SHA": head_sha,
@@ -308,12 +333,15 @@ def main() -> int:
             for item in checks
         ]
         failures = [r["id"] for r in results if r.get("status") == "FAIL" and r.get("required", True)]
+        if review_required and review_result.get("status") != "VERIFIED":
+            failures.append("independent-review-evidence")
         report = {
             "version": 1,
             "profile_id": profile.get("profile_id"),
             "candidate": candidate,
             "candidate_fingerprint": candidate_fingerprint,
             "checks": results,
+            "review_evidence": review_result,
             "status": "PASS" if not failures else "FAIL",
             "blockers": failures,
             "authority": {

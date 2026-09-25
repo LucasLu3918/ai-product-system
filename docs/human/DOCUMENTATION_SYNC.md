@@ -32,6 +32,8 @@ Parallel Run Dashboard implementation and orchestration references use the regis
 
 Runtime Content Safety Boundary 的 behavior-bearing source 由 `config/documentation-placement.yaml` 的 `content-safety` rule 綁定到 Architecture Overview、Technology Guide、User Guide、Security Assurance、Maintenance 與 `orchestration/CONTENT_SAFETY_BOUNDARY.md`。新增 sink 或 detector 時，必須同步更新其 canonical placement 與 conformance scenario。
 
+Independent review isolation is mapped by the `independent-review-isolation` rule to the task/context schemas, Scheduler, bounded review packet, Integration Gate evidence contract, scenario coverage and Human/Agent guidance. The mechanism is implemented but PR enforcement is disabled by default in the active matrix until trusted attestation is available. Keep exact candidate binding, read-only authority, context exclusions and verifier status consistent; structural evidence checks alone cannot mark a review verified.
+
 Portable Command Registry、CLI lifecycle 與 MCP renderer 的 current behavior 由 Harness topic 說明；Host placement 未經官方能力驗證時，文件只能宣稱 AIPS-managed projection、MCP 或 generic fallback。
 
 Requirement clarification 與 Planning Package 的變更由 requirement-planning placement rule 綁定至 User Guide 的需求釐清主題、Technology Guide 的 Product Delivery / Quality & Verification，以及對應的 Agent protocols。需求登錄檔和檢查器只驗證結構及 ID 關聯；CLI 可輸出 JSON PASS/FAIL 並以零／非零退出碼表示結構檢查結果，語義審查與實際測試仍屬其他流程。

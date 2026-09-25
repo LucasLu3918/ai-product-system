@@ -11,6 +11,13 @@ tasks: []
 #   change_boundary: [apps/frontend]
 #   read_set: [apps/frontend/**, tests/frontend/**]
 #   write_set: [apps/frontend/**, tests/frontend/**]
+#   review:
+#     mode: INDEPENDENT_REVIEW
+#     review_of_task: implementation
+#     required: true
+#     context_inheritance: none
+#     allowed_context_classes: [specification, acceptance_criteria, diff, test_result, architecture_decision, project_instruction]
+#   # Execution IDs and runtime attestation are recorded in run state, not the plan.
 #   role: frontend-engineer
 #   skills: []
 #   isolation:

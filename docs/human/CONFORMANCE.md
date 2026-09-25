@@ -1,5 +1,7 @@
 # Scenario Conformance
 
+Scenario 178 covers independent-review packet provenance, execution/context/permission evidence, stale-candidate rejection, and fail-closed scheduler/Integration Gate behavior. Its deterministic lifecycle fixtures test evidence contracts; they do not claim to attest a live model runtime.
+
 EARS 需求語法的 validator 契約變更屬於 Scenario Conformance：測試契約更新時同步維護本文件、Technology Guide 與 `orchestration/CONFORMANCE.md`；修改需求追蹤實作、規劃範本或規範本身則遵守完整 Requirement Planning 文件閉包。
 
 AIPS v0.13 開始把「Acceptance Scenario 有幾份」與「有多少真的有可追溯測試證據」分開。
@@ -34,6 +36,8 @@ v0.14 新增 Scenario 111–115，全部都有直接 executable evidence：2 個
 ## Execution Isolation Conformance
 
 Scenario 111/114 覆蓋 risk/data-aware resolver：無啟用 provider 時為 `UNSUPPORTED`；啟用但證據過期、registry digest 不符或控制缺漏時為 `BLOCKED`；一般風險選 worktree，高風險不降級。E2B PR 驗證使用合成 canary；live workflow 僅能從 `main` 手動啟動，需確認 provider 事前書面測試同意，缺少 optional key 時回報 `SKIPPED_NOT_CONFIGURED`。
+
+Scenario 178 validates the opt-in independent-review contract, including required-mode fail-closed behavior. The active repository matrix currently disables PR enforcement until a trusted runtime-attestation verifier is available; lifecycle fixtures do not claim live runtime attestation.
 
 ## v0.14.1 Legacy Scenario Reconciliation
 
@@ -1353,4 +1357,4 @@ Lifecycle and deterministic evidence check deny-by-default policy evaluation, ex
 - agent_eval：54
 - manual：0
 - uncovered：0
-- automated：**177 / 177**
+- automated：**178 / 178**

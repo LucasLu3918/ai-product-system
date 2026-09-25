@@ -734,4 +734,4 @@ Current automated inventory: 27 deterministic + 95 lifecycle + 54 agent_eval = 1
 
 Scenario 177 is lifecycle coverage for deny-by-default action authorization, stable action and policy digests, exact expiring Approval Record binding, SAL-aware egress, fresh sandbox allowlist proof, semantic deny/escalate monotonicity, sanitized audit metadata and truthful Claude/Gemini native hook responses. It proves the hooks' observable boundary only; indirect child-process or SDK network access still requires OS/sandbox egress enforcement. Codex remains `ADVISORY`.
 
-Current automated inventory: 27 deterministic + 96 lifecycle + 54 agent_eval = 177 / 177; manual 0; uncovered 0.
+Current automated inventory: 27 deterministic + 97 lifecycle + 54 agent_eval = 178 / 178; manual 0; uncovered 0.

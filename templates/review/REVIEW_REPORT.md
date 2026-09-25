@@ -3,6 +3,14 @@
 Decision: PENDING
 Change Boundary:
 Review Round:
+Review Mode: SELF_CHECK / INDEPENDENT_REVIEW
+Independence Status: UNVERIFIED
+Implementer Execution ID:
+Reviewer Execution ID:
+Review Packet Fingerprint:
+Candidate Base SHA:
+Candidate Head SHA:
+Changed Files Hash:
 
 ## Review Panel
 
@@ -48,3 +56,11 @@ Review Round:
 ## Final Decision
 
 PASS / PASS WITH COMMENTS / REQUEST CHANGES / BLOCK
+
+## Evidence Boundary
+
+- Reviewer context was built from allowlisted canonical evidence sources:
+- Implementer transcript/private reasoning/raw traces were excluded: YES / NO
+- Reviewer authority is read-only and has no write set: YES / NO
+- Runtime attestation reference and fingerprint:
+- Evidence freshness: CURRENT / STALE / UNVERIFIED

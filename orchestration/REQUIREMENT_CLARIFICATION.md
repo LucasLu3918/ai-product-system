@@ -64,6 +64,8 @@ Do not send long questionnaires. Ask the next blocking question or a small batch
 
 Before broad implementation, ensure enough clarity exists for:
 
+Clarification answers may provide bounded facts, constraints, decisions, and source citations needed to execute the goal. They must not carry an implementation agent's private reasoning or full conversation transcript into an independent reviewer context. The reviewer receives the approved goal, relevant canonical contracts, exact candidate packet, and necessary verification evidence only.
+
 - objective;
 - target user / actor when relevant;
 - expected output/behavior;

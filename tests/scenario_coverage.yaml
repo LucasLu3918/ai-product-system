@@ -1386,4 +1386,13 @@ scenarios:
       - tests/validate_repository.py
       - scripts/runtime_policy.py
       - scripts/governance_guard.py
+  - id: "178"
+    path: tests/scenarios/178-independent-review-isolation.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/review_isolation_lifecycle.py
+      - tests/evidence/integration_gate_lifecycle.py
+      - tests/validation/review_isolation_contracts.py
+      - scripts/review_packet.py
+      - scripts/review_evidence.py
       - config/runtime-policy.yaml

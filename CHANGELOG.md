@@ -6,6 +6,15 @@
 - Add an exact-candidate `--run` path to the local validation helper, with an isolated temporary configuration directory.
 - Reject duplicate Change Impact initialization by default; explicit `--reset` saves the previous evidence as a timestamped backup.
 
+## 0.62.0
+
+### Independent Review Isolation
+
+- Distinguish self-check from independent review and define an allowlisted, bounded, fingerprinted evidence packet with no inherited implementer context.
+- Add deterministic review evidence validation for distinct execution IDs, read-only permissions, signed runtime-attestation structure, and exact candidate/packet freshness; required unverified, failed, or stale evidence blocks scheduler progress and the Integration Gate. No trusted runtime-attestation verifier is connected yet, so self-declared receipts remain `UNVERIFIED`.
+- Extend Context Manifest, Task Graph, review report, documentation, architecture diagram and Scenario 178. Runtime attestation remains truthful: unavailable attestation is `UNVERIFIED`; no merge or release authority is added.
+- Keep independent-review PR enforcement disabled by default until a trusted runtime-attestation verifier is configured; the implemented mechanism remains opt-in and fail-closed when explicitly required.
+
 ## 0.61.0
 
 ### Mandatory Candidate Secret Scanning

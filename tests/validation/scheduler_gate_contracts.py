@@ -15,13 +15,17 @@ REQUIRED = (
     "templates/review/INTEGRATION_GATE_REPORT.yaml",
     "config/integration-gate.yaml",
     "scripts/deterministic_scheduler.py",
+    "scripts/review_packet.py",
+    "scripts/review_evidence.py",
     "scripts/integration_gate.py",
     "requirements-validation.txt",
     "tests/evidence/deterministic_scheduler_lifecycle.py",
     "tests/evidence/integration_gate_lifecycle.py",
+    "tests/evidence/review_isolation_lifecycle.py",
     "tests/evidence/publish_preflight_lifecycle.py",
     "tests/scenarios/135-deterministic-multi-agent-scheduler.md",
     "tests/scenarios/136-exact-candidate-integration-gate.md",
+    "tests/scenarios/178-independent-review-isolation.md",
 )
 for rel in REQUIRED:
     if not (ROOT / rel).exists():
@@ -93,6 +97,7 @@ if os.environ.get("AIPS_PROFILE_LIFECYCLE_ALREADY_EXECUTED") != "1":
     for evidence in (
         ROOT / "tests/evidence/deterministic_scheduler_lifecycle.py",
         ROOT / "tests/evidence/integration_gate_lifecycle.py",
+        ROOT / "tests/evidence/review_isolation_lifecycle.py",
     ):
         if evidence.exists():
             proc = subprocess.run([sys.executable, str(evidence)], cwd=ROOT, text=True, capture_output=True)

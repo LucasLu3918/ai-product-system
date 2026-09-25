@@ -11,6 +11,12 @@ tasks:
     change_boundary: []
     read_set: []
     write_set: []
+    review:
+      mode: SELF_CHECK # SELF_CHECK | INDEPENDENT_REVIEW
+      review_of_task: null
+      required: false
+      context_inheritance: none
+      allowed_context_classes: []
     role: null
     skills: []
     isolation:

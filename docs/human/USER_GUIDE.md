@@ -208,6 +208,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 
 ## Quality 與 Review
 
+獨立審查隔離機制已實作，但目前**未啟用為 PR 強制要求**；active Core Change Matrix 設為 `review_evidence.required: false`。待可信 runtime-attestation verifier 接通後，才可將矩陣設為 `true` 啟用。啟用後，沒有可信證據的必要審查會維持 `UNVERIFIED` 並阻擋 Gate。
+
 只修改 EARS validator 契約時，文件影響限於 Scenario Conformance 與 Technology Guide；若改動需求追蹤功能、Planning Package 範本或 canonical requirements，仍須更新完整 Requirement Planning 文件閉包。
 
 需要檢視 Agent 如何完成任務時，可使用 `aips trajectory evaluate --trace <trace.yaml> --mode shadow`。結果是 observable evidence；`BLOCK` 表示 deterministic risk，`WARN` 表示品質偏差，任何結果都不會自動授予 Git Publish 權限。
@@ -223,6 +225,10 @@ Quality Planning 依風險選擇最低足夠驗證。Implementation 完成後執
 - Repository Health / architecture consistency。
 
 Core change 以 actual diff 重新對帳 Test Matrix，不能只依原始計畫宣稱完成。
+
+`SELF_CHECK` 是實作者自己的驗證；`INDEPENDENT_REVIEW` 必須由不同執行身分，在唯讀、隔離的任務中審查精確候選版本。Review packet 只包含明確允許的候選差異、必要規格與驗證證據，並以 base/head、檔案清單和內容指紋綁定；不得傳入實作者對話、隱藏推理、scratchpad 或未列入 allowlist 的工作區內容。缺少可信 runtime attestation verifier、候選版本不符或執行身分重複時，結果是 `UNVERIFIED`，必要審查會阻擋 Integration Gate 與發布。
+
+Integration Gate 只檢查證據格式、來源、候選綁定與確定性政策，不替代語意審查，也不授予合併或發布權限。
 
 Visual evidence 預設優先使用 Playwright managed Chromium；系統 Chrome 只有在 `AIPS_BROWSER_PROVIDER=system` 或 managed browser 不可用時使用。Publication preflight 會先執行 browser smoke probe，啟動失敗會標記為 `ENVIRONMENT_BLOCKED`，不誤判成頁面測試失敗。
 

@@ -11,6 +11,8 @@ import re
 from typing import Any
 
 import yaml
+from review_packet import ALLOWED_SOURCE_CLASSES
+from review_evidence import evaluate_evidence
 
 TERMINAL_FAILURE = {"FAILED", "BLOCKED", "STALE", "CANCELLED"}
 ALLOWED_STATUS = {"PENDING", "RUNNING", "COMPLETE", *TERMINAL_FAILURE}
@@ -155,6 +157,34 @@ def validate_graph(graph: dict[str, Any]) -> dict[str, dict[str, Any]]:
             if dep == task_id:
                 raise SchedulerError(f"task {task_id}: self dependency")
 
+    for task_id, task in by_id.items():
+        review = task.get("review")
+        if review is None:
+            continue
+        if not isinstance(review, dict):
+            raise SchedulerError(f"task {task_id}: review must be a mapping")
+        mode = review.get("mode")
+        if mode not in {"SELF_CHECK", "INDEPENDENT_REVIEW"}:
+            raise SchedulerError(f"task {task_id}: review.mode must be SELF_CHECK or INDEPENDENT_REVIEW")
+        review_of = review.get("review_of_task")
+        if not isinstance(review_of, str) or review_of not in by_id or review_of == task_id:
+            raise SchedulerError(f"task {task_id}: review.review_of_task must name a different existing task")
+        if not task["read_only"] or task["write_set"] or task["isolation"].get("writable") is True:
+            raise SchedulerError(f"task {task_id}: reviewer must be read_only with no write_set or writable isolation")
+        allowed = review.get("allowed_context_classes") or []
+        if not isinstance(allowed, list) or any(
+            not isinstance(source_class, str) or source_class not in ALLOWED_SOURCE_CLASSES
+            for source_class in allowed
+        ):
+            raise SchedulerError(f"task {task_id}: review.allowed_context_classes contains a non-allowlisted class")
+        if len(allowed) != len(set(allowed)):
+            raise SchedulerError(f"task {task_id}: review.allowed_context_classes must not contain duplicates")
+        if mode == "INDEPENDENT_REVIEW":
+            if review_of not in task["dependencies"]:
+                raise SchedulerError(f"task {task_id}: independent reviewer must depend on review_of_task")
+            if review.get("context_inheritance") != "none":
+                raise SchedulerError(f"task {task_id}: independent reviewer requires context_inheritance: none")
+
     visiting: set[str] = set()
     visited: set[str] = set()
 
@@ -196,9 +226,62 @@ def normalize_state(graph: dict[str, Any], by_id: dict[str, dict[str, Any]], sta
     return result
 
 
+def validate_completed_reviews(
+    by_id: dict[str, dict[str, Any]], state: dict[str, Any]
+) -> tuple[dict[str, dict[str, Any]], set[str]]:
+    raw_tasks = state.get("tasks") or {}
+    review_results: dict[str, dict[str, Any]] = {}
+    required_blockers: set[str] = set()
+    for task_id, task in by_id.items():
+        review = task.get("review")
+        if not isinstance(review, dict):
+            continue
+        raw_review = raw_tasks.get(task_id)
+        review_state = raw_review if isinstance(raw_review, dict) else {}
+        status = review_state.get("status", raw_review if isinstance(raw_review, str) else "PENDING")
+        if status != "COMPLETE":
+            review_results[task_id] = {"status": "PENDING", "reason_codes": []}
+            continue
+
+        report = review_state.get("review_evidence")
+        if not isinstance(report, dict):
+            result = {"status": "UNVERIFIED", "reason_codes": ["review_evidence_missing"]}
+        elif report.get("mode") != review.get("mode") or report.get("review_of_task") != review.get("review_of_task"):
+            result = {"status": "FAILED", "reason_codes": ["review_task_binding_mismatch"]}
+        else:
+            reviewed_task_state = raw_tasks.get(str(review.get("review_of_task")))
+            reviewed_task_state = reviewed_task_state if isinstance(reviewed_task_state, dict) else {}
+            implementer_id = reviewed_task_state.get("execution_id")
+            reviewer_id = review_state.get("execution_id")
+            if not implementer_id or not reviewer_id:
+                result = {"status": "UNVERIFIED", "reason_codes": ["execution_identity_unavailable"]}
+            elif report.get("implementer_execution_id") != implementer_id or report.get("reviewer_execution_id") != reviewer_id:
+                result = {"status": "FAILED", "reason_codes": ["runtime_execution_binding_mismatch"]}
+            else:
+                candidate = reviewed_task_state.get("candidate")
+                expected = candidate if isinstance(candidate, dict) else None
+                try:
+                    result = evaluate_evidence(report, expected)
+                except ValueError:
+                    result = {"status": "FAILED", "reason_codes": ["invalid_review_evidence"]}
+                declared = set(review.get("allowed_context_classes") or [])
+                actual = set(((report.get("context_policy") or {}).get("allowed_classes") or []))
+                if actual != declared:
+                    result = {"status": "FAILED", "reason_codes": ["declared_context_classes_mismatch"]}
+
+        review_results[task_id] = result
+        expected_status = "SELF_CHECK" if review.get("mode") == "SELF_CHECK" else "VERIFIED"
+        if review.get("required", False) and result.get("status") != expected_status:
+            required_blockers.add(task_id)
+    return review_results, required_blockers
+
+
 def schedule(graph: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
     by_id = validate_graph(graph)
     statuses = normalize_state(graph, by_id, state)
+    review_statuses, blocked_reviews = validate_completed_reviews(by_id, state)
+    for task_id in blocked_reviews:
+        statuses[task_id] = "BLOCKED"
     max_parallel = graph.get("max_parallel", 1)
     if not isinstance(max_parallel, int) or max_parallel < 1:
         raise SchedulerError("max_parallel must be >= 1")
@@ -228,6 +311,13 @@ def schedule(graph: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
         if incomplete:
             blocked[task_id] = "waiting_dependency:" + ",".join(incomplete)
             continue
+        review = task.get("review")
+        if isinstance(review, dict) and review.get("mode") == "INDEPENDENT_REVIEW":
+            reviewed_state = (state.get("tasks") or {}).get(str(review.get("review_of_task")))
+            reviewed_state = reviewed_state if isinstance(reviewed_state, dict) else {}
+            if not isinstance(reviewed_state.get("execution_id"), str) or not reviewed_state["execution_id"].strip():
+                blocked[task_id] = "implementer_execution_id_unverified"
+                continue
         ready.append(task_id)
 
     ready.sort(key=lambda task_id: (by_id[task_id]["order"], task_id))
@@ -263,6 +353,7 @@ def schedule(graph: dict[str, Any], state: dict[str, Any]) -> dict[str, Any]:
         "blocked": dict(sorted(blocked.items())),
         "complete": sorted(task_id for task_id, status in statuses.items() if status == "COMPLETE"),
         "failed": sorted(task_id for task_id, status in statuses.items() if status in TERMINAL_FAILURE),
+        "review_statuses": {task_id: review_statuses[task_id] for task_id in sorted(review_statuses)},
     }
     result["decision_fingerprint"] = canonical_hash(result)
     return result
