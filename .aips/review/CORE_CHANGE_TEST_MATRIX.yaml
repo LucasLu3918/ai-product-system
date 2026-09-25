@@ -56,10 +56,9 @@ matrix:
       migration_recovery: {applicable: false, na_reason: No user data migration.}
       cli_harness: {applicable: false, na_reason: No global runtime adapter or CLI installation lifecycle change.}
       docs_schema: {applicable: true, evidence: documentation sync, placement, architecture, and scenario coverage validation}
-scope_recomputed_after_expansion: false
-actual_diff_reconciled: false
-blockers:
-  - candidate binding refreshed; review scope and evidence before marking READY
+scope_recomputed_after_expansion: true
+actual_diff_reconciled: true
+blockers: []
 candidate:
   base_sha: c171a436a129e7f8cb3b03b6342b66d6c3b70f21
   changed_files_hash: 896bc70ca0bfa72e266c662d03dcf5d8b0e48211c0dfa42e554746c3835560ed
@@ -68,4 +67,4 @@ review_evidence:
   # Set required: true only after a trusted runtime-attestation verifier is configured.
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
-status: DRAFT
+status: READY
