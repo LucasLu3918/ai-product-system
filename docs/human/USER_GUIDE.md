@@ -259,6 +259,8 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 
 ## Git Publication 與 Release
 
+建立 Large/Core PR 前，先用 `aips publish preview` 檢查未提交文件位置與 Matrix 綁定，再用 `aips publish plan` 確認 GitHub CLI 認證與首次 PR 分類標籤。首次 `gh pr create` 應同時帶入 `--label aips:large-change` 或 `--label aips:core-change`。
+
 Remote Git publication 前需有 current Human authorization 與適用 validation evidence。AIPS 會區分：
 
 ~~~text

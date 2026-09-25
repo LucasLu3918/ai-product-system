@@ -107,6 +107,8 @@ Core `READY` reconciliation is independently checked against Git: base must be a
 
 ## Conditional Core Matrix enforcement
 
+Preview may report a stale Core Matrix base/hash and suggest `aips publish matrix-sync --base <sha>` before commit. The sync operation marks the matrix DRAFT for review; the final Gate evaluates only an exact, clean committed candidate.
+
 Validation Profiles may declare `matrix_required_change_classes` plus a narrow `matrix_required_paths` safety net. Standard changes are Matrix-optional by default; `aips:large-change` and `aips:core-change` resolve to required Matrix evidence. Known governance-core Integration Gate surfaces may also require the Matrix when labels are absent.
 
 When required, the Matrix must bind the exact base SHA and deterministic changed-files hash, be reconciled to the actual diff, contain no blockers and have executable status. PASS remains evidence only.

@@ -292,6 +292,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+The publication plan records the change-class label for the initial PR create request. A missing or invalid GitHub CLI login is reported as `AUTH_REQUIRED` with a recovery command; credential output is never included.
+
 Before commit, use the publication preview to inspect the complete working-tree file set, recursive documentation requirements and matrix hash. Synchronize only the canonical matrix binding after the scope is complete, then review the invalidated matrix evidence before Gate execution.
 
 Eval-as-CI is a Core Change capability. The Orchestrator must route it through the Core Change Test Matrix, reuse existing Agent Eval / Scenario Conformance contracts, start trajectory evaluation in shadow mode, and preserve Human authority over Git Publish.

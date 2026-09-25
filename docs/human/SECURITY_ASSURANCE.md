@@ -206,6 +206,8 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 ## Secret and credential safety
 
+`aips publish plan` 對失效的 GitHub CLI 認證只回報 `AUTH_REQUIRED` 與重新登入步驟，不回傳 CLI stderr 或 token。PR 分類標籤應在首次建立時帶入，以便首次 CI 選用正確的驗證等級。
+
 Use `orchestration/SECRET_HANDLING.md` whenever code, tests, deployment or an external integration needs credentials.
 
 Security review verifies:

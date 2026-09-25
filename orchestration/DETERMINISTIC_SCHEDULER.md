@@ -64,6 +64,8 @@ The scheduler is stateless between invocations. Durable workflow state remains o
 
 ## CLI
 
+The local validation preparation entry reports actionable Python, dependency, writable-temp, localhost and browser diagnostics before exact-candidate Gate execution. Publication preview checks working-tree documentation placement and matrix binding before commit.
+
 Lifecycle subprocess 應以目前驗證器的 `sys.executable` 啟動，確保子程序沿用相同 Python runtime 與相依套件環境。
 
 Publication preview includes uncommitted paths; use its `required_by` mapping to identify the sync or placement rule behind each documentation requirement before entering the exact-candidate Integration Gate.

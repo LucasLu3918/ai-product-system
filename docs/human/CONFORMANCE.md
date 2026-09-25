@@ -1342,6 +1342,8 @@ Lifecycle evidence checks exact final-tree and `base..head` history scanning, in
 
 ## Scenario 177 — Runtime Policy Enforcement
 
+Runtime Policy 變更沿用 CI-Parity Publication Preflight：此情境的提交前預覽也涵蓋工作樹 H2 placement、Core Matrix 綁定修復提示、GitHub CLI 認證診斷與首次 PR 標籤；最終 PASS 仍須對同一已提交候選通過 Integration Gate。
+
 Lifecycle and deterministic evidence check deny-by-default policy evaluation, exact action/policy-bound approvals, expiry and drift rejection, verified sandbox requirements, semantic signals that can only deny or escalate, and Claude/Gemini native hook responses. Direct shell-command classification does not claim to intercept scripts, child processes, SDKs or hidden sockets; Codex remains `ADVISORY`.
 
 目前 Scenario inventory：

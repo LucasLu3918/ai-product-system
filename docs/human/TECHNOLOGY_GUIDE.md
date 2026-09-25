@@ -40,6 +40,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+本機驗證入口先確認 Python 3.12、requirements、venv 寫入位置、ruff、mypy、Playwright、localhost 與瀏覽器探測，失敗時給出對應修復命令。Publication Preview 可在 commit 前檢查工作樹文件 H2 placement 與 Matrix base/hash；正式 Gate 維持 exact-candidate 驗證。
+
 Core、Recall 與 temporal evidence 共用硬預算；Index 開啟或查詢失敗時提供穩定診斷與修復提示，並回退至 canonical source pointers。`READY` 對帳綁定 Git base/head、乾淨且位於 head 的工作樹、實際 binary diff digest、變更路徑與宣告範圍；僅填狀態或人工提供 digest 不構成證據。
 
 本地發布驗證可由 `bin/prepare-local-validation` 在 repository 外的暫存目錄準備 Python 3.12 venv、CI requirements 與 Chromium；`--check-only --run --base <sha> --head <sha>` 使用同一環境執行既有 `publish_preflight.py`，並把驗證設定放在暫存 `XDG_CONFIG_HOME`。檢索索引使用 `XDG_CACHE_HOME` 下可重建的 SQLite 快取，路徑不可寫時應修復快取設定並重建，不改寫 canonical Intelligence。

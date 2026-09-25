@@ -267,6 +267,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 
 ## Public repository / CI consistency
 
+提交前的 `aips publish preview --base <sha> --change-class <class>` 會檢查工作樹（含未追蹤檔）的文件 H2 placement、Core Matrix base/hash 綁定與 PR 首次建立所需標籤。若 CLI 認證失效，`aips publish plan` 回報 `AUTH_REQUIRED` 與重新登入步驟，不會輸出憑證內容；最終 Gate 仍以乾淨的已提交候選執行。
+
 When publication preflight changes, keep the working-tree preview, content safety findings, configured Git identity checks and exact-candidate resolver aligned with CI.
 
 Every publication candidate also runs the built-in strict secret scan before dependency installation in GitHub Actions and during local publication preflight. The Integration Gate repeats the scan as required candidate-bound evidence. Both use `config/secret-scan.yaml`, scan final content plus `base..head` history, ignore no inline bypass markers and fail closed on incomplete input. Keep the single `repository` required-check context; the Janitor aggregate continues to carry failures.

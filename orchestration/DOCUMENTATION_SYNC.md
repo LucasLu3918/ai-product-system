@@ -114,6 +114,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+The same canonical H2 placement contract applies to pre-commit working-tree preview and committed repository preflight. Preview includes tracked, staged, unstaged and untracked paths and identifies the allowed H2 for misplaced content.
+
 Publication Preflight includes a working-tree preview and reports each closure path with its responsible placement or sync rule. This keeps the review actionable while both validators continue to enforce their existing contracts.
 
 Runtime Content Safety Boundary 是跨 Security、Deterministic Execution 與 Publication 的正式 topic。其 behavior-bearing source 必須在 documentation placement registry 登錄，並由 Human docs、protocol 與 scenarios 保持一致。
