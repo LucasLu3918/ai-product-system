@@ -4,7 +4,7 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 ## Minimal algorithm
 
-發布前先執行快速 documentation-impact gate，再進入完整 Integration Gate；候選的每筆 commit message 與 author/committer identity 均需符合公開發布政策。
+發布前先執行快速 documentation-impact gate；CI 再依序執行強制候選秘密掃描與 repository preflight，才安裝完整驗證相依套件並進入 Integration Gate。候選的每筆 commit message 與 author/committer identity 均需符合公開發布政策。
 
 1. Resolve current runtime/project/turn context through the Global Harness when installed.
 2. If the request is unrelated to product/project/software work, continue normal conversation without heavy AIPS context.

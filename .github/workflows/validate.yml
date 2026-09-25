@@ -58,6 +58,10 @@ jobs:
           python scripts/check_secret_leakage.py --root .
           --policy config/secret-scan.yaml --publication-candidate
           --base "$AIPS_GATE_BASE" --head "$AIPS_GATE_HEAD" --json
+      - name: Repository preflight (fail fast)
+        run: >-
+          python scripts/repository_preflight.py
+          --base "$AIPS_GATE_BASE" --head "$AIPS_GATE_HEAD"
       - run: python -m pip install -r requirements.txt -r requirements-visual.txt -r requirements-validation.txt
       - name: Install deterministic Playwright Chromium
         run: python -m playwright install chromium

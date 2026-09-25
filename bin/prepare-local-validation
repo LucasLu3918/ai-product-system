@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import shlex
 import subprocess
 import sys
@@ -37,7 +38,16 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--venv", type=Path, default=DEFAULT_VENV)
     parser.add_argument("--check-only", action="store_true", help="Check an existing environment without installing packages")
+    parser.add_argument("--run", action="store_true", help="Run the exact-candidate Publication Preflight after environment checks")
+    parser.add_argument("--base", help="Candidate base revision; required with --run")
+    parser.add_argument("--head", default="HEAD", help="Candidate head revision")
+    parser.add_argument("--base-tip", help="Current target branch tip, when available")
+    parser.add_argument("--change-class", choices=("auto", "standard", "large", "core"), default="auto")
+    parser.add_argument("--labels", default="")
+    parser.add_argument("--output", type=Path, help="Integration Gate report path")
     args = parser.parse_args()
+    if args.run and not args.base:
+        parser.error("--base is required with --run")
 
     if sys.version_info[:2] != (3, 12):
         print("ENVIRONMENT_BLOCKED: use Python 3.12 to match the validate workflow.", file=sys.stderr)
@@ -92,7 +102,25 @@ def main() -> int:
         print(f"Activate this venv in PowerShell: {target / 'Scripts/Activate.ps1'}")
     else:
         print(f"Activate this venv: source {shlex.quote(str(target / 'bin/activate'))}")
-    print("Then run python scripts/publish_preflight.py plan/run with the exact candidate arguments.")
+    if args.run:
+        output = (args.output or target.parent / f"{target.name}-gate-report.yaml").expanduser().resolve()
+        command = [
+            str(python), str(ROOT / "scripts/publish_preflight.py"), "run",
+            "--base", args.base, "--head", args.head,
+            "--change-class", args.change_class, "--labels", args.labels,
+            "--matrix", str(ROOT / ".aips/review/CORE_CHANGE_TEST_MATRIX.yaml"),
+            "--offline", "--output", str(output),
+        ]
+        if args.base_tip:
+            command.extend(("--base-tip", args.base_tip))
+        with tempfile.TemporaryDirectory(prefix="aips-validation-config-") as config_home:
+            env = dict(os.environ)
+            env["XDG_CONFIG_HOME"] = config_home
+            env["PATH"] = str(python.parent) + os.pathsep + env.get("PATH", "")
+            result = subprocess.run(command, cwd=ROOT, env=env, check=False)
+        print(f"Integration Gate report: {output}")
+        return result.returncode
+    print("Then run with --check-only --run --base <revision> --head <revision> --change-class <class>.")
     return 0
 
 

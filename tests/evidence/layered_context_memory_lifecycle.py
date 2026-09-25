@@ -119,6 +119,20 @@ with tempfile.TemporaryDirectory() as directory:
     require(impact_doc["status"] == "DRAFT", "impact-init must start DRAFT")
     require(impact_doc["scope_review"]["status"] == "PENDING", "scope review must start pending")
     require(impact_doc["reconciliation"]["status"] == "PENDING", "reconciliation must start pending")
+    impact_path = Path(impact["path"])
+    preserved = {**impact_doc, "status": "IMPLEMENTATION_APPROVED"}
+    PI.atomic_yaml(impact_path, preserved)
+    original = impact_path.read_bytes()
+    try:
+        PI.impact_init(root, "duplicate request", "test-change")
+    except ValueError as exc:
+        require("already exists" in str(exc), "duplicate impact-init must explain the existing record")
+    else:
+        raise AssertionError("duplicate impact-init must fail closed")
+    require(impact_path.read_bytes() == original, "duplicate impact-init must preserve existing evidence")
+    reset = PI.impact_init(root, "reset request", "test-change", reset=True)
+    require(impact_path.read_bytes() != original, "explicit reset must create a new DRAFT")
+    require(Path(reset["backup_path"]).read_bytes() == original, "explicit reset must back up original evidence")
     bad_ready = {**impact_doc, "status": "READY", "unknowns": []}
     require(not PI.validate_impact_document(bad_ready)["valid"], "READY without reconciliation must fail closed")
     approved = {

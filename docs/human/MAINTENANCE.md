@@ -274,7 +274,7 @@ Before committing, `aips publish preview --base <base> --change-class <class>` r
 Portable Command 變更必須同時驗證 Registry、renderer、CLI lifecycle、MCP read-only facade、ownership conflict 與相關 canonical documentation；版本更新不得把 Host-native capability 誤標為已驗證。
 本機與 GitHub 必須透過 `scripts/publish_preflight.py` 共用 base/head、change class、canonical matrix 與 diff-aware documentation base。發布提案前先執行 `aips publish plan`，確認 protected branch 路由與 PR label；未帶 `AIPS_DOCS_DIFF_BASE` 的一般 validation 不得宣稱為 CI-parity 證據。
 
-本地首次執行 Gate 前，以 Python 3.12 執行 `python3.12 bin/prepare-local-validation`。它在系統暫存目錄建立獨立 venv，安裝與 CI 相同的三份 requirements 和 Playwright Chromium，接著檢查 `ruff`、`mypy`、瀏覽器及 localhost；成功後先依輸出啟用 venv，再執行 `python scripts/publish_preflight.py plan/run`。生命週期測試也會從 `PATH` 選擇 Python，因此只指定單一命令的 venv Python 不足以維持 CI 相依環境。若輸出 `ENVIRONMENT_BLOCKED`，先依診斷修復執行環境，再判讀程式測試結果。可用 `--check-only` 重查既有 venv，不會安裝套件。
+本地首次執行 Gate 前，以 Python 3.12 執行 `python3.12 bin/prepare-local-validation`。它在系統暫存目錄建立獨立 venv，安裝與 CI 相同的三份 requirements 和 Playwright Chromium，接著檢查 `ruff`、`mypy`、瀏覽器及 localhost。之後可執行 `python3.12 bin/prepare-local-validation --check-only --run --base <base-sha> --head <head-sha> --change-class core`，用既有環境執行 exact-candidate Publication Preflight 與 Gate；它會將 `PATH` 指向 venv，並以暫存 `XDG_CONFIG_HOME` 隔離測試設定。若輸出 `ENVIRONMENT_BLOCKED`，先依診斷修復執行環境，再判讀程式測試結果。`--check-only` 不安裝套件；Gate 報告路徑可用 `--output` 指定。
 
 建立已核准的 Large/Core PR 時，在 `gh pr create` 同一命令附上 `--label aips:large-change` 或 `--label aips:core-change`，讓首次 `opened` 事件即使用正確分類；後續標籤異動仍會觸發新的驗證，舊執行可能因 concurrency 設定取消。檢查最新同一候選 SHA 的 required aggregate，避免把被取代的執行判成測試失敗。
 
@@ -284,7 +284,7 @@ Portable Command 變更必須同時驗證 Registry、renderer、CLI lifecycle、
 
 PR 建議使用 GitHub merge commit 合併，避免 squash 產生未受本機檢查的 co-author trailer；確認帳號已啟用 email privacy 後，執行 `gh pr merge <PR 編號> --merge`。GitHub 不接受 `--author-email` 指定 noreply 的 merge commit author；啟用 email privacy 後由 GitHub 自動選用 noreply。維護者可在 GitHub repository **Settings → General → Pull Requests** 關閉 **Allow squash merging**，讓設定與發布政策一致。若政策尚未設定，合併前須確認選擇 **Create a merge commit**。
 
-Validation workflow 先執行快速文件影響檢查，再安裝完整驗證相依套件與 Playwright。測試契約檔 `tests/validation/ears_requirement_contracts.py` 僅要求 Scenario Conformance 文件閉包；修改需求規劃功能、範本或 canonical requirement 文件仍會觸發完整 Requirement Planning 文件閉包。GitHub Actions runner 固定 Ubuntu 24.04，artifact action 固定至官方 v7.0.1 完整 SHA；升級前須確認 runner image 與 action Node runtime 支援狀態。
+Validation workflow 先執行快速文件影響檢查與強制候選秘密掃描，再以同一 base/head 執行 `repository_preflight.py`；三者通過後才安裝完整驗證相依套件與 Playwright。測試契約檔 `tests/validation/ears_requirement_contracts.py` 僅要求 Scenario Conformance 文件閉包；修改需求規劃功能、範本或 canonical requirement 文件仍會觸發完整 Requirement Planning 文件閉包。GitHub Actions runner 固定 Ubuntu 24.04，artifact action 固定至官方 v7.0.1 完整 SHA；升級前須確認 runner image 與 action Node runtime 支援狀態。
 
 Browser evidence 同樣必須先通過 version 與 isolated-profile headless smoke probe；系統 Chrome 啟動層失敗應標記為 environment blocker，不得誤報成產品回歸。
 
