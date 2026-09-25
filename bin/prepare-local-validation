@@ -1,0 +1,100 @@
+#!/usr/bin/env python3
+"""Prepare the isolated Python environment used by local publication checks."""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import shlex
+import subprocess
+import sys
+import tempfile
+import venv
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+REQUIREMENTS = ("requirements.txt", "requirements-visual.txt", "requirements-validation.txt")
+DEFAULT_VENV = Path(tempfile.gettempdir()) / (
+    "aips-validation-" + hashlib.sha256(str(ROOT.resolve()).encode()).hexdigest()[:12]
+)
+
+
+def run(command: list[str], *, phase: str) -> bool:
+    try:
+        result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
+    except OSError:
+        print(f"ENVIRONMENT_BLOCKED: could not start {phase}.", file=sys.stderr)
+        return False
+    if result.returncode == 0:
+        return True
+    print(f"ENVIRONMENT_BLOCKED: {phase} exited with code {result.returncode}.", file=sys.stderr)
+    print("Inspect the environment and retry the preparation command.", file=sys.stderr)
+    return False
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--venv", type=Path, default=DEFAULT_VENV)
+    parser.add_argument("--check-only", action="store_true", help="Check an existing environment without installing packages")
+    args = parser.parse_args()
+
+    if sys.version_info[:2] != (3, 12):
+        print("ENVIRONMENT_BLOCKED: use Python 3.12 to match the validate workflow.", file=sys.stderr)
+        return 2
+
+    target = args.venv.expanduser().resolve()
+    if target == ROOT or ROOT in target.parents:
+        print("ENVIRONMENT_BLOCKED: keep the validation venv outside the repository.", file=sys.stderr)
+        return 2
+
+    python = target / ("Scripts/python.exe" if sys.platform == "win32" else "bin/python")
+    if not args.check_only:
+        try:
+            venv.EnvBuilder(with_pip=True).create(target)
+        except OSError:
+            print("ENVIRONMENT_BLOCKED: could not create the validation venv.", file=sys.stderr)
+            return 2
+        install = [str(python), "-m", "pip", "install"]
+        for requirement in REQUIREMENTS:
+            install.extend(("-r", str(ROOT / requirement)))
+        if not run(install, phase="validation dependencies"):
+            return 2
+        if not run([str(python), "-m", "playwright", "install", "chromium"], phase="Playwright Chromium"):
+            return 2
+    elif not python.is_file():
+        print("ENVIRONMENT_BLOCKED: validation venv is missing; run without --check-only.", file=sys.stderr)
+        return 2
+
+    for module in ("ruff", "mypy", "playwright"):
+        if not run([str(python), "-m", module, "--version"], phase=f"{module} availability"):
+            return 2
+
+    result = subprocess.run(
+        [str(python), str(ROOT / "scripts/publish_preflight.py"), "environment", "--format", "json"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+    try:
+        report = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        print("ENVIRONMENT_BLOCKED: publication environment check did not return JSON.", file=sys.stderr)
+        return 2
+    if result.returncode or report.get("status") != "READY":
+        print("ENVIRONMENT_BLOCKED: " + ", ".join(report.get("blockers") or ["unknown environment issue"]))
+        for diagnostic in report.get("diagnostics") or []:
+            print(diagnostic.get("next_step") or "Inspect the publication environment.")
+        return 2
+
+    print(f"READY: local validation environment at {target}")
+    if sys.platform == "win32":
+        print(f"Activate this venv in PowerShell: {target / 'Scripts/Activate.ps1'}")
+    else:
+        print(f"Activate this venv: source {shlex.quote(str(target / 'bin/activate'))}")
+    print("Then run python scripts/publish_preflight.py plan/run with the exact candidate arguments.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

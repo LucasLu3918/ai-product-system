@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.60.1
+
+### Local Validation Readiness
+
+- Add an isolated local preparation command for the CI validation dependencies and Chromium, with environment blockers reported separately from test failures.
+- Document PR change-class labels at creation time and recovery from an unavailable, rebuildable AIPS retrieval cache.
+- Register the helper in the existing documentation placement contract; no publication or merge authority changes.
+
 ## 0.60.0
 
 ### Seed-scoped Impact Graph Coverage
