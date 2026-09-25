@@ -291,7 +291,9 @@ flowchart TD
     CPA -->|yes| I[Implement]
     CORE -->|no| I
     I --> V[Tests / Review / Documentation Impact]
-    V --> GP[Git Publish Proposal]
+    V --> SCAN[Mandatory Candidate Secret Scan: final tree + base..head history]
+    SCAN -->|PASS, bound to candidate + policy + scanner hashes| GP[Git Publish Proposal]
+    SCAN -->|FAIL / incomplete| HOLD[Block publication]
     GP --> PA{User approves publication?}
     PA -->|no| HOLD[Hold remote publication]
     PA -->|yes| PUSH[Push / PR / Release]

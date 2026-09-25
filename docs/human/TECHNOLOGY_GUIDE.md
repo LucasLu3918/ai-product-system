@@ -94,6 +94,8 @@ SAL 0–4 依 product baseline 與 current change boundary 決定 assurance 強�
 
 Credentials 只能來自安全 runtime source；不進 Git、Prompt、logs、Project Intelligence 或 ordinary evidence。
 
+Remote Git publication uses the built-in credential-free candidate scanner in strict mode. The Integration Gate binds the final-tree and commit-history scan to candidate, policy and scanner fingerprints; provider tools remain optional.
+
 ### Resource-Scoped Authorization
 
 Agent mutation 只在 approved resource boundary 中有效；default deny 與 evidence binding 不等於 Human decision。

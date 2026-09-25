@@ -73,7 +73,13 @@ If the credential is declared optional, use the capability's truthful non-PASS s
 
 Security review inspects applicable changed source/config, generated artifacts, fixtures/snapshots, logs, deployment manifests, CI config and Project Intelligence/HTML.
 
-Use deterministic secret scanning where practical. Scanner output is evidence, not proof of absence.
+Use deterministic secret scanning for applicable security review. Scanner output is evidence, not proof of absence.
+
+Every Remote Git publication candidate MUST pass the built-in, credential-free scanner in strict publication mode. The scan covers the exact committed final tree and every commit in `base..head`, so deleting a value in a later commit does not erase its earlier exposure from the candidate history. No scan, a scanner error, invalid policy, expired exception, incomplete history or unreadable candidate text is BLOCKED.
+
+The canonical policy is `config/secret-scan.yaml`. Strict publication mode ignores no inline bypass markers. Exceptions require a centrally reviewed exact path, detector and SHA-256 fingerprint, a reason and an expiry; policy stores no secret value. Lockfiles disable only the generic assignment detector; provider-specific tokens, private keys and credential-bearing URLs remain detectable. External scanners such as Gitleaks or GitGuardian are optional defense-in-depth and are not baseline credentials or runtime requirements.
+
+The Integration Gate binds PASS evidence to the exact base/head, changed-file set, policy hash and scanner hash. A changed candidate, policy or scanner requires a new scan. Reports contain only finding locations, detector names and truncated fingerprints, never secret values. The scan adds no approval authority: the existing Human-controlled Git Publish Approval remains in force.
 
 Review both accidental secret values and unsafe handling patterns.
 

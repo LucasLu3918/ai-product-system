@@ -8,6 +8,16 @@ policy:
     no_uncovered: true
 
 scenarios:
+  - id: "176"
+    path: tests/scenarios/176-mandatory-candidate-secret-scanning.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/secret_scan_publication_lifecycle.py
+      - scripts/check_secret_leakage.py
+      - scripts/integration_gate.py
+      - scripts/publish_preflight.py
+      - config/secret-scan.yaml
+      - config/integration-gate.yaml
   - id: "167"
     path: tests/scenarios/167-trajectory-quality-gate.md
     coverage: lifecycle

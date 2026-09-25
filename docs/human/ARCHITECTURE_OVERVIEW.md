@@ -135,3 +135,5 @@ Documentation Placement 對 behavior-bearing source 採 fail-closed mapping：�
 ## Runtime Content Safety Boundary
 
 Before AIPS persists or publishes content, the sink-aware Runtime Content Safety Boundary applies deterministic secret/PII detection and records untrusted-content provenance. Diagnostic sinks redact; durable or public sinks block. This boundary complements, and does not replace, Human Authority and Git Publish Approval.
+
+Remote Git publication has a mandatory candidate secret scan inside the existing Publication Preflight and Integration Gate flow. It checks the final tree and all candidate commits, binds redacted evidence to the candidate, policy and scanner hashes, and blocks incomplete scans. It reuses the built-in scanner and adds no approval authority or required external service.

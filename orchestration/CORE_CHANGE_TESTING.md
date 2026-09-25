@@ -65,6 +65,7 @@ For API/contract/data changes, include producer/consumer compatibility where app
 For schema/persistence changes, include migration and recovery/rollback evidence where applicable.
 
 For security/credential changes, include secret leakage/redaction and relevant negative-path tests.
+Every Remote Git publication candidate also requires a credential-free strict scan of its final tree and complete `base..head` history; Core Change evidence must bind the exact scanner and policy inputs.
 
 ## Review
 

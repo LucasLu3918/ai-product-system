@@ -273,7 +273,7 @@ Rules:
 - do not ask the user to paste a secret into chat when a secure provider/connector/store can supply it;
 - authenticated integration begins only after secure acquisition, least privilege and redaction are verified;
 - unavailable credentials make the authenticated operation BLOCKED, never hard-coded;
-- Security Review uses deterministic secret scanning where practical and never repeats a discovered secret value.
+- Security Review uses deterministic secret scanning where practical and never repeats a discovered secret value. Every Remote Git publication candidate MUST pass the credential-free Mandatory Candidate Secret Scan for its exact final tree and base-to-head commit history; missing, failed or incomplete evidence blocks publication.
 
 ## Work mode
 

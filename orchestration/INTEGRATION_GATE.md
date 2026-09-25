@@ -24,6 +24,12 @@ The checked-out `HEAD` must equal the declared head SHA. A stale/mismatched chec
 
 Changing code, base revision, Validation Profile or required Test Matrix changes the candidate fingerprint and invalidates prior evidence.
 
+### Mandatory Candidate Secret Scan
+
+The AIPS repository Validation Profile requires `mandatory-candidate-secret-scan` on every publication candidate. The check reads the exact committed head tree and scans every commit reachable in `base..head`; a secret added and later removed still fails. A missing scanner/policy, non-required check, path filter narrower than `**`, incomplete history or scanner error blocks the Gate.
+
+The candidate fingerprint includes the scanner and policy SHA-256 hashes, along with base/head and changed-file evidence. Strict mode does not honor inline ignore markers. The built-in scan is credential-free; external scanners remain optional. A PASS proves only that the declared deterministic scan completed without findings for this candidate. It does not prove absence of all secrets or authorize publication, merge or release.
+
 ## Validation Profile
 
 Checks may declare `expected_test_count` when a command reports a standard unittest summary. The Gate fails if the expected count is absent or different, preventing a successful no-op command from being treated as test evidence.

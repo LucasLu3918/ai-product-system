@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.61.0
+
+### Mandatory Candidate Secret Scanning
+
+- Require the built-in credential-free scanner for every publication candidate, scanning the final tree and all commits in `base..head` with strict no-inline-bypass semantics.
+- Bind scanner and policy hashes to Integration Gate candidate evidence; fail closed on incomplete scans and run an early CI scan before dependency installation.
+- Keep provider scanners optional and preserve the existing `repository` required-check context and Human Git Publish Approval.
+
 ## 0.60.1
 
 ### Local Validation Readiness
