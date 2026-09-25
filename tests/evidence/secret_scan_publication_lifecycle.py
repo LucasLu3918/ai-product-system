@@ -96,6 +96,9 @@ def main() -> int:
         require(provider.returncode == 1, "lockfile provider token must still be detected")
         require(token not in provider.stdout and token not in provider.stderr, "lockfile report exposed the token")
 
+    scripts_dir = str(ROOT / "scripts")
+    if scripts_dir not in sys.path:
+        sys.path.insert(0, scripts_dir)
     spec = importlib.util.spec_from_file_location("aips_integration_gate", ROOT / "scripts/integration_gate.py")
     require(spec is not None and spec.loader is not None, "could not load Integration Gate contract")
     module = importlib.util.module_from_spec(spec)
