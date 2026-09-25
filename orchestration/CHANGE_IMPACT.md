@@ -107,6 +107,10 @@ Update reusable `IMPACT_GRAPH.yaml` only when the change reveals/stably changes 
 
 A one-off run artifact does not automatically become permanent Intelligence.
 
+### Seed-scoped coverage
+
+When repository-wide graph coverage is incomplete but a bounded architectural area has been reviewed, record an optional `coverage_scopes` entry with its exact `seed_ids`, per-dimension `coverage`, and source `evidence`. Traversal may use that entry only when every matched graph seed is included. This establishes completeness only for those seeds; it never upgrades the graph's repository-wide `coverage`. Missing evidence or an unmatched seed falls back to repository-wide coverage and remains unresolved when that coverage is partial.
+
 ## Temporal Change Impact
 
 When a change depends on architecture evolution, resolve the temporal state before traversing the graph:

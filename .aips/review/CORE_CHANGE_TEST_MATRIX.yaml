@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: da31b06489c154eb3e0755e2235c5f8c76811e46
-  changed_files_hash: 842f74c046a1ee3dadaee906934aff1fd406d2ed0a12e7c767ebada58ed51dcf
+  changed_files_hash: e486062193a51bd15ee390586ea13f780786e5010d14d76034574e9f9830d91e
 change:
   id: verified-sandbox-provider
   summary: Add a provider-neutral, fail-closed sandbox capability resolver and synthetic-only E2B verification lane; project-source adapter awaits explicit data-scope authorization.
@@ -12,6 +12,7 @@ change:
     - verification-evidence-and-verification-receipts
     - security-and-failure-paths
     - scenarios-docs-architecture-and-release
+    - seed-scoped-impact-graph-coverage
 matrix:
   - boundary: sandbox-capability-contract-and-registry
     reason: Runtime class, controls, and verification state determine truthful capability.
@@ -85,9 +86,19 @@ matrix:
       migration_recovery: {applicable: false, na_reason: No persistent document migration}
       cli_harness: {applicable: false, na_reason: Documentation-only portions}
       docs_schema: {applicable: true, evidence: architecture diagrams, human and agent docs, changelog/version}
-scope_recomputed_after_expansion: false
-blockers:
-  - Automatic approval review blocked upload of caller-selected local project files to E2B pending explicit data-scope and destination authorization.
-  - candidate binding refreshed; review scope and evidence before marking READY
-actual_diff_reconciled: false
-status: DRAFT
+  - boundary: seed-scoped-impact-graph-coverage
+    reason: High-risk impact review needs bounded complete caller evidence while preserving truthful repository-wide partial coverage.
+    checks:
+      static_lint: {applicable: true, evidence: repository validation and YAML schema contracts}
+      unit: {applicable: true, evidence: matching seeds select evidence-backed scopes; unmatched seeds remain unknown}
+      integration: {applicable: true, evidence: exact two-hop CLI/workflow caller traversal for sandbox resolver and verifier}
+      contract: {applicable: true, evidence: IMPACT_GRAPH coverage_scopes template contract}
+      e2e: {applicable: false, na_reason: No user interface}
+      security: {applicable: true, evidence: bounded scopes cannot alter repository-wide coverage claims}
+      migration_recovery: {applicable: true, evidence: absent coverage_scopes retains existing global coverage behavior}
+      cli_harness: {applicable: true, evidence: impact-traverse --graph-seed output}
+      docs_schema: {applicable: true, evidence: Change Impact guidance and Scenario 175}
+scope_recomputed_after_expansion: true
+blockers: []
+actual_diff_reconciled: true
+status: READY

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.60.0
+
+### Seed-scoped Impact Graph Coverage
+
+- Allow reviewed, evidence-backed coverage scopes to establish completeness only for matching architecture seeds while retaining repository-wide partial coverage.
+- Add lifecycle checks for matched and unmatched scopes; update Impact Graph and Change Impact guidance. No new authority or Constitution change.
+
 ## 0.59.0
 
 ### Verified Sandbox Provider Foundation

@@ -1699,6 +1699,7 @@ def traverse_architecture_impact_graph(
         "requested_seed_ids": sorted(requested),
         "directions": directions,
         "coverage": graph.get("coverage") or {},
+        "coverage_scope_ids": [],
         "visited_nodes": 0,
         "visited_edges": 0,
         "reached_depth": {direction: 0 for direction in directions},
@@ -1719,6 +1720,37 @@ def traverse_architecture_impact_graph(
     if "consumers" in directions:
         relevant_coverage_keys.update({"api", "data", "events", "consumers"})
     coverage = graph.get("coverage") or {}
+    scopes = graph.get("coverage_scopes") or []
+    matched_set = set(matched)
+    selected_scopes = []
+    for scope in scopes:
+        if not isinstance(scope, dict):
+            continue
+        seed_values = scope.get("seed_ids")
+        if not isinstance(seed_values, list) or not seed_values or any(not isinstance(item, str) or not item for item in seed_values):
+            continue
+        scope_seeds = set(seed_values)
+        if matched_set and matched_set.issubset(scope_seeds):
+            selected_scopes.append(scope)
+    # A reviewed, explicitly bounded scope can establish coverage for its own
+    # seeds without making a broader repository-wide coverage claim.
+    usable_scopes = [
+        scope for scope in selected_scopes
+        if isinstance(scope.get("id"), str) and scope.get("id")
+        and isinstance(scope.get("evidence"), list) and scope.get("evidence")
+        and all(isinstance(item, str) and item for item in scope["evidence"])
+        and isinstance(scope.get("coverage"), dict)
+    ]
+    if usable_scopes:
+        coverage = {
+            key: "complete" if all(
+                str((scope.get("coverage") or {}).get(key) or "unknown").lower()
+                in {"complete", "covered", "full", "ready"}
+                for scope in usable_scopes
+            ) else "unknown"
+            for key in relevant_coverage_keys
+        }
+        result["coverage_scope_ids"] = sorted(str(scope["id"]) for scope in usable_scopes)
     unknown_coverage = sorted(
         key for key in relevant_coverage_keys
         if str(coverage.get(key) or "unknown").lower() not in {"complete", "covered", "full", "ready"}
