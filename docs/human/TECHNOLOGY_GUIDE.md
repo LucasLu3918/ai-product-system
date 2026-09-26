@@ -115,6 +115,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+已處置的 Change Impact unknown 必須同時保留原始描述、處置決定、可驗證的 repo 內檔案或 traversal evidence，以及 Human review。Legacy string unknown、Open disposition、失效 digest 或不匹配的 seed scope 都維持 fail closed；seed-scoped evidence 不改變 repository-wide coverage。
+
 Independent-review task, packet and evidence contracts are implemented as an opt-in capability. PR enforcement is currently disabled in the active Core Change Matrix because no trusted runtime-attestation verifier is connected; setting `review_evidence.required: true` without one remains fail-closed.
 
 Change Impact traversal 使用本地可重建索引與 canonical Impact Graph，並以 depth/node/edge budgets 限制成本。動態關係、索引失效、圖涵蓋不足與截斷必須輸出為不確定狀態；不要把 lexical candidates 當成編譯器解析或完整性證明。

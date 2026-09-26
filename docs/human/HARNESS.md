@@ -56,6 +56,8 @@ Temporal Project Intelligence 的 historical query 由既有 deterministic CLI�
 
 ## Capability truth
 
+Runtime isolation behavior is reported only at the boundary supported by its registered evidence. Scenario Conformance inventory counts must be updated together with isolation lifecycle tests; registration does not prove that an unverified environment is isolated.
+
 Repository Integration Gate commands run under the selected AIPS Python runtime, and test checks can bind an expected collected-test count so a no-op subprocess cannot masquerade as lifecycle evidence.
 
 Trajectory Quality Gate 是 provider-neutral capability。Harness 可提供 observable events，但不應傳遞 private reasoning、secret 或 credential；評估結果仍由既有 Scenario Conformance 與 Human Authority 流程處理。

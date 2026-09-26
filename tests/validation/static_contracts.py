@@ -163,6 +163,8 @@ required_files = [
     "scripts/requirements_traceability.py",
     "config/content-safety.yaml", "orchestration/CONTENT_SAFETY_BOUNDARY.md",
     "tests/evidence/governance_command_guard.py", "tests/evidence/trajectory_quality_gate_lifecycle.py", "tests/evidence/visual_profile_lifecycle.py",
+    "tests/evidence/change_impact_resolution_lifecycle.py", "tests/validation/change_impact_resolution_contracts.py", "tests/validation/conformance_isolation.py",
+    "tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md",
     "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml", ".github/workflows/retrieval-semantic-trial.yml",
     ".github/dependabot.yml", "SECURITY.md",
 ]
@@ -584,7 +586,7 @@ for rel, keys in {
     "templates/intelligence/SOURCE_REGISTRY.yaml": ("sources", "runtime_visibility", "deduplication"),
     "templates/intelligence/IMPACT_GRAPH.yaml": ("nodes", "edges", "coverage", "unknowns"),
     "templates/intelligence/PROJECT_OVERRIDES.yaml": ("approved_inferences", "additional_rules", "exceptions", "excluded_inferences", "conflicts"),
-    "templates/intelligence/CHANGE_IMPACT.yaml": ("change", "inputs", "outputs", "data", "events", "consumers", "compatibility", "status"),
+    "templates/intelligence/CHANGE_IMPACT.yaml": ("change", "inputs", "outputs", "data", "events", "consumers", "compatibility", "unknowns", "scope_review", "status"),
     "templates/intelligence/TURN_CONTEXT_MANIFEST.yaml": ("runtime", "project", "task", "context", "freshness", "requirements", "fail_policy"),
 }.items():
     doc = load_yaml(ROOT / rel) or {}

@@ -1914,6 +1914,137 @@ def validate_traversal_evidence(doc: dict[str, Any], changed_files: list[str] | 
     return errors
 
 
+IMPACT_UNKNOWN_DISPOSITIONS = {"OPEN", "RESOLVED", "MITIGATED", "ACCEPTED_LIMITATION"}
+
+
+def _impact_evidence_digest(value: Any) -> str | None:
+    try:
+        encoded = json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False).encode("utf-8")
+    except (TypeError, ValueError):
+        return None
+    return "sha256:" + hashlib.sha256(encoded).hexdigest()
+
+
+def _validate_impact_unknown_evidence(evidence: Any, doc: dict[str, Any], root: Path | None) -> list[str]:
+    errors: list[str] = []
+    if not isinstance(evidence, list) or not evidence:
+        return ["closed unknown disposition requires a non-empty evidence list"]
+    for index, item in enumerate(evidence):
+        label = f"evidence[{index}]"
+        if not isinstance(item, dict):
+            errors.append(f"{label} must be a mapping")
+            continue
+        kind = item.get("kind")
+        if kind == "repository_file":
+            raw_path = item.get("path")
+            digest = item.get("sha256")
+            if not isinstance(raw_path, str) or not raw_path or Path(raw_path).is_absolute() or ".." in Path(raw_path).parts:
+                errors.append(f"{label} must use an in-root repository-relative file path")
+                continue
+            if not isinstance(digest, str) or not re.fullmatch(r"(?:sha256:)?[0-9a-fA-F]{64}", digest):
+                errors.append(f"{label} requires a SHA-256 digest")
+                continue
+            if root is None:
+                errors.append(f"{label} cannot be verified without a project root")
+                continue
+            try:
+                project = project_root(root).resolve(strict=True)
+                evidence_path = (project / raw_path).resolve(strict=True)
+                evidence_path.relative_to(project)
+                if not evidence_path.is_file():
+                    raise OSError("not a regular file")
+                actual = hashlib.sha256(evidence_path.read_bytes()).hexdigest()
+            except (OSError, RuntimeError, ValueError):
+                errors.append(f"{label} path is missing, unreadable, or outside the project root")
+                continue
+            if digest.removeprefix("sha256:").lower() != actual:
+                errors.append(f"{label} SHA-256 does not match the current file")
+        elif kind == "traversal":
+            traversal = doc.get("traversal")
+            digest = item.get("sha256")
+            if not isinstance(traversal, dict) or not isinstance(digest, str):
+                errors.append(f"{label} requires a recorded traversal and its SHA-256 digest")
+                continue
+            actual = _impact_evidence_digest(traversal)
+            if not actual or digest.removeprefix("sha256:").lower() != actual.removeprefix("sha256:"):
+                errors.append(f"{label} SHA-256 does not match the recorded traversal")
+                continue
+            if traversal.get("status") != "COMPLETE" or traversal.get("truncated") is True or traversal.get("unresolved"):
+                errors.append(f"{label} traversal must be complete, non-truncated, and unresolved-free")
+                continue
+            scope_id = item.get("scope_id")
+            graph = traversal.get("architecture_graph") or {}
+            if scope_id:
+                if graph.get("status") != "COMPLETE":
+                    errors.append(f"{label} scoped traversal graph must be complete")
+                if not isinstance(scope_id, str) or scope_id not in (graph.get("coverage_scope_ids") or []):
+                    errors.append(f"{label} scope_id is not present in the recorded traversal")
+            else:
+                coverage = graph.get("coverage") or {}
+                dimensions = ("api", "data", "events", "consumers")
+                if graph.get("status") != "COMPLETE" or any(
+                    str(coverage.get(key) or "unknown").lower() not in {"complete", "covered", "full", "ready"}
+                    for key in dimensions
+                ):
+                    errors.append(f"{label} requires complete repository-wide graph coverage or an explicit scope_id")
+        else:
+            errors.append(f"{label} has an unsupported evidence kind")
+    return errors
+
+
+def validate_impact_unknown_dispositions(doc: dict[str, Any], root: Path | None = None) -> list[str]:
+    """Fail closed unless every discovered unknown has an explicit reviewed disposition."""
+    unknowns = doc.get("unknowns")
+    if not isinstance(unknowns, list):
+        return ["unknowns must be a list"]
+    errors: list[str] = []
+    seen_ids: set[str] = set()
+    for index, item in enumerate(unknowns):
+        label = f"unknowns[{index}]"
+        if isinstance(item, str):
+            errors.append(f"legacy string unknown remains unresolved at {label}")
+            continue
+        if not isinstance(item, dict):
+            errors.append(f"{label} must be a legacy string or structured mapping")
+            continue
+        disposition = str(item.get("disposition") or "").upper()
+        if disposition not in IMPACT_UNKNOWN_DISPOSITIONS:
+            errors.append(f"{label} has an unsupported disposition")
+            continue
+        if not isinstance(item.get("id"), str) or not item["id"].strip():
+            errors.append(f"{label} requires a non-empty id")
+        elif item["id"] in seen_ids:
+            errors.append(f"{label} duplicates an existing unknown id")
+        else:
+            seen_ids.add(item["id"])
+        if not isinstance(item.get("description"), str) or not item["description"].strip():
+            errors.append(f"{label} requires a non-empty description")
+        if disposition == "OPEN":
+            errors.append(f"{label} remains open")
+            continue
+        if not isinstance(item.get("resolution"), str) or not item["resolution"].strip():
+            errors.append(f"{label} requires a substantive resolution")
+        errors.extend(f"{label}: {error}" for error in _validate_impact_unknown_evidence(item.get("evidence"), doc, root))
+        review = item.get("review")
+        if not isinstance(review, dict) or str(review.get("status") or "").upper() != "APPROVED":
+            errors.append(f"{label} requires explicit Human review with APPROVED status")
+        else:
+            if str(review.get("reviewer") or "").lower() != "human":
+                errors.append(f"{label} review must identify reviewer as human")
+            if not isinstance(review.get("approval_reference"), str) or not review["approval_reference"].strip():
+                errors.append(f"{label} review requires an approval_reference")
+            if not isinstance(review.get("reviewed_at"), str) or not review["reviewed_at"].strip():
+                errors.append(f"{label} review requires reviewed_at")
+            else:
+                try:
+                    reviewed_at = dt.datetime.fromisoformat(review["reviewed_at"].replace("Z", "+00:00"))
+                    if reviewed_at.tzinfo is None:
+                        raise ValueError("timezone is required")
+                except ValueError:
+                    errors.append(f"{label} review reviewed_at must be an ISO-8601 timestamp with timezone")
+    return errors
+
+
 def validate_impact_document(doc: dict[str, Any], root: Path | None = None) -> dict[str, Any]:
     status = str(doc.get("status", "DRAFT")).upper()
     errors: list[str] = []
@@ -1923,8 +2054,7 @@ def validate_impact_document(doc: dict[str, Any], root: Path | None = None) -> d
         scope = doc.get("scope_review") or {}
         if scope.get("status") != "APPROVED" or not scope.get("approval_reference") or not scope.get("approved_at"):
             errors.append("implementation requires approved scope with reference and timestamp")
-        if doc.get("unknowns"):
-            errors.append("unresolved unknowns prevent implementation approval")
+        errors.extend(validate_impact_unknown_dispositions(doc, root))
     if status == "READY":
         reconcile = doc.get("reconciliation") or {}
         required = ("base_revision", "head_revision", "diff_digest")

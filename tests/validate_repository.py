@@ -1,5 +1,7 @@
 import os
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 
 
@@ -70,6 +72,17 @@ from validation import repository_health_contracts as repository_health_contract
 from validation import mcp_interoperability_contracts as mcp_interoperability_contracts  # noqa: F401
 from validation import evolution_effectiveness_contracts as evolution_effectiveness_contracts  # noqa: F401
 from validation import publish_preflight_contracts as publish_preflight_contracts  # noqa: F401
+
+for evidence in (
+    Path(__file__).parent / "validation/change_impact_resolution_contracts.py",
+    Path(__file__).parent / "evidence/change_impact_resolution_lifecycle.py",
+):
+    result = subprocess.run([sys.executable, str(evidence)], cwd=Path(__file__).resolve().parents[1], capture_output=True, text=True)
+    if result.returncode:
+        print(f"VALIDATION FAILED: {evidence.relative_to(Path(__file__).resolve().parents[1])}")
+        print(result.stdout)
+        print(result.stderr)
+        raise SystemExit(result.returncode)
 
 errors = static_contracts.errors
 

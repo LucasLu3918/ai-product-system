@@ -24,7 +24,24 @@ tests: []
 observability: []
 documentation: []
 
-unknowns: []
+unknowns: [] # Legacy strings remain valid input but unresolved; approval requires every item to be a reviewed structured disposition.
+# Structured form:
+# - id: graph-coverage-outside-scope
+#   description: Repository-wide graph coverage is incomplete outside the reviewed seeds.
+#   disposition: ACCEPTED_LIMITATION # OPEN | RESOLVED | MITIGATED | ACCEPTED_LIMITATION
+#   resolution: Keep global coverage partial; rely only on the matching reviewed seed scope.
+#   evidence:
+#     - kind: repository_file
+#       path: tests/scenario.md
+#       sha256: sha256:<64 hex characters>
+#     - kind: traversal
+#       scope_id: reviewed-seed-scope
+#       sha256: sha256:<canonical JSON digest of the recorded traversal>
+#   review:
+#     status: APPROVED
+#     reviewer: human
+#     approval_reference: <explicit approval reference>
+#     reviewed_at: <ISO-8601 timestamp>
 scope_review:
   status: PENDING # PENDING | APPROVED
   approval_reference: null

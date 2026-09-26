@@ -1358,3 +1358,16 @@ Lifecycle and deterministic evidence check deny-by-default policy evaluation, ex
 - manual：0
 - uncovered：0
 - automated：**178 / 178**
+
+## Scenario 179 — Evidence-backed Change Impact Unknown Dispositions
+
+Lifecycle and contract evidence validate structured OPEN / RESOLVED / MITIGATED / ACCEPTED_LIMITATION entries, fail-closed legacy strings, required Human review, in-root current file SHA-256 evidence, traversal digest and seed-scope binding, and rejection of malformed, stale, truncated, or out-of-scope evidence. Existing exact READY diff reconciliation remains required, and scoped coverage does not upgrade global Impact Graph coverage.
+
+目前 Scenario inventory：
+
+- deterministic：27
+- lifecycle：98
+- agent_eval：54
+- manual：0
+- uncovered：0
+- automated：**179 / 179**
