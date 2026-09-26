@@ -1,70 +1,75 @@
 version: 1
+
 change:
-  id: v0.62-independent-review-isolation
-  summary: Add truthful, deterministic isolation evidence for AIPS independent code review.
+  id: evidence-backed-impact-unknown-dispositions
+  summary: Add evidence-backed Change Impact unknown dispositions while preserving fail-closed approval and exact READY reconciliation.
   boundary:
-    - review-execution-contract
-    - review-packet-and-provenance
-    - integration-gate-candidate-binding
-    - review-docs-scenarios-release
+    - Change Impact schema and legacy compatibility
+    - evidence and Human review validation
+    - scoped traversal disposition validation
+    - CLI/lifecycle and documentation contracts
+
 matrix:
-  - boundary: review-execution-contract
-    reason: Task and context contracts plus scheduler must distinguish self-check from isolated review and enforce read-only authority.
+  - boundary: change-impact-disposition-schema
+    reason: Structured disposition fields extend the canonical Change Impact contract.
     checks:
-      static_lint: {applicable: true, evidence: ruff and syntax validation}
-      unit: {applicable: true, evidence: tests/validation/review_isolation_contracts.py}
-      integration: {applicable: true, evidence: tests/evidence/review_isolation_lifecycle.py}
-      contract: {applicable: true, evidence: schema and context-manifest validation}
-      e2e: {applicable: false, na_reason: No live external model runtime is available in repository CI; absent runtime attestations must remain UNVERIFIED.}
-      security: {applicable: true, evidence: denied context classes, distinct execution IDs, and read-only enforcement negative paths}
-      migration_recovery: {applicable: false, na_reason: Contract additions are optional and do not alter persisted user data.}
-      cli_harness: {applicable: true, evidence: deterministic scheduler lifecycle validator}
-      docs_schema: {applicable: true, evidence: repository schema/docs validation}
-  - boundary: review-packet-and-provenance
-    reason: Review packet content and source provenance must be allowlisted, deterministic, bounded, and fingerprinted.
+      static_lint: {applicable: true, evidence: py_compile of changed Python modules passed.}
+      unit: {applicable: true, evidence: change_impact_resolution_contracts.py passed for all dispositions and rejection cases.}
+      integration: {applicable: true, evidence: change_impact_resolution_lifecycle.py passed three CLI lifecycle cases.}
+      contract: {applicable: true, evidence: static contract validates the canonical Change Impact template fields.}
+      e2e: {applicable: false, na_reason: Offline artifact contract has no external runtime.}
+      security: {applicable: true, evidence: tests reject stale hashes, out-of-root paths, invalid review, duplicate IDs and unsupported dispositions.}
+      migration_recovery: {applicable: true, evidence: legacy string unknowns remain blocking; no persisted data migration occurs.}
+      cli_harness: {applicable: true, evidence: impact-validate CLI accepts reviewed evidence and rejects legacy strings.}
+      docs_schema: {applicable: true, evidence: static template and documentation sync/placement contracts passed.}
+
+  - boundary: evidence-verification-and-legacy-fail-closed
+    reason: Closed dispositions must cite current in-root evidence; legacy strings and malformed or stale evidence must remain blocking.
     checks:
-      static_lint: {applicable: true, evidence: ruff and syntax validation}
-      unit: {applicable: true, evidence: packet and evidence validator contract cases}
-      integration: {applicable: true, evidence: review packet lifecycle with tampered and forbidden evidence}
-      contract: {applicable: true, evidence: packet manifest schema and fingerprint binding}
-      e2e: {applicable: false, na_reason: Packet generation is deterministic local file processing; no external runtime is invoked.}
-      security: {applicable: true, evidence: path traversal, secret-like, transcript, scratchpad, and raw-trace negative cases}
-      migration_recovery: {applicable: false, na_reason: No external persisted state migration.}
-      cli_harness: {applicable: true, evidence: review packet helper invocation}
-      docs_schema: {applicable: true, evidence: review packet/evidence YAML validation}
-  - boundary: integration-gate-candidate-binding
-    reason: Required independent-review evidence must match the exact base/head, file set and packet under review.
+      static_lint: {applicable: true, evidence: py_compile of changed Python modules passed.}
+      unit: {applicable: true, evidence: contract tests cover legacy, open, malformed, stale, out-of-root and symlink evidence.}
+      integration: {applicable: true, evidence: CLI lifecycle tests verify approved and rejected records.}
+      contract: {applicable: true, evidence: validator requires in-root current SHA-256 and Human approval metadata.}
+      e2e: {applicable: false, na_reason: Deterministic local artifact validation covers this boundary.}
+      security: {applicable: true, evidence: symlink escape, parent traversal, stale file hash, stale traversal digest and scope mismatch are rejected.}
+      migration_recovery: {applicable: true, evidence: old string entries are not migrated or treated as resolved.}
+      cli_harness: {applicable: true, evidence: impact-validate CLI is exercised through the repository entry point.}
+      docs_schema: {applicable: true, evidence: template, guidance, architecture, sync and placement contracts passed.}
+
+  - boundary: traversal-scope-and-final-reconciliation
+    reason: Scoped graph evidence must match recorded seeds without upgrading global coverage; READY must retain exact diff and node reconciliation.
     checks:
-      static_lint: {applicable: true, evidence: ruff and syntax validation}
-      unit: {applicable: true, evidence: integration gate review-evidence contract tests}
-      integration: {applicable: true, evidence: Integration Gate lifecycle PASS/UNVERIFIED/FAILED/STALE cases}
-      contract: {applicable: true, evidence: integration gate report schema and exact candidate binding}
-      e2e: {applicable: false, na_reason: Exact candidate validation is exercised by the existing deterministic Integration Gate lifecycle.}
-      security: {applicable: true, evidence: missing or stale evidence blocks required review; private reasoning fields rejected}
-      migration_recovery: {applicable: false, na_reason: Gate inputs are ephemeral validation artifacts.}
-      cli_harness: {applicable: true, evidence: publish preflight and Integration Gate lifecycle}
-      docs_schema: {applicable: true, evidence: Core Change Matrix and report structure validation}
-  - boundary: review-docs-scenarios-release
-    reason: Human and Agent documentation, architecture diagrams, version, changelog, and scenario coverage must represent the new review flow.
+      static_lint: {applicable: true, evidence: py_compile of changed Python modules passed.}
+      unit: {applicable: true, evidence: change_impact_traversal_lifecycle.py passed all 15 tests.}
+      integration: {applicable: true, evidence: traversal report and exact READY reconciliation lifecycle regressions passed.}
+      contract: {applicable: true, evidence: traversal contract and scoped coverage contract passed.}
+      e2e: {applicable: false, na_reason: Traversal behavior is validated with deterministic repository fixtures.}
+      security: {applicable: true, evidence: incomplete graph, scope mismatch, truncation and unresolved traversal evidence remain blocking.}
+      migration_recovery: {applicable: true, evidence: READY retains base/head digest and exact changed-file reconciliation.}
+      cli_harness: {applicable: true, evidence: impact-traverse CLI produced complete risk-adaptive evidence at two-hop depth.}
+      docs_schema: {applicable: true, evidence: Scenario 175 traversal documentation and existing contract passed.}
+
+  - boundary: documentation-scenario-and-repository-integration
+    reason: Agent/Human instructions, architecture flow, scenario registry, and validation entry points must stay synchronized.
     checks:
-      static_lint: {applicable: false, na_reason: This boundary contains documentation and release metadata.}
-      unit: {applicable: false, na_reason: Documentation is checked by repository contracts and conformance.}
-      integration: {applicable: true, evidence: repository validation and scenario conformance}
-      contract: {applicable: true, evidence: static contracts for documented review invariants}
-      e2e: {applicable: false, na_reason: No deployed user-facing runtime behavior changes.}
-      security: {applicable: true, evidence: privacy/content-safety static and lifecycle checks}
-      migration_recovery: {applicable: false, na_reason: No user data migration.}
-      cli_harness: {applicable: false, na_reason: No global runtime adapter or CLI installation lifecycle change.}
-      docs_schema: {applicable: true, evidence: documentation sync, placement, architecture, and scenario coverage validation}
+      static_lint: {applicable: true, evidence: changed Python modules compile and documentation placement passes.}
+      unit: {applicable: false, na_reason: No independent logic in documentation registry changes.}
+      integration: {applicable: true, evidence: Scenario Conformance reports 179 of 179 scenarios passing.}
+      contract: {applicable: true, evidence: static contracts plus documentation sync and placement contracts passed.}
+      e2e: {applicable: false, na_reason: Documentation and registry contracts are deterministic.}
+      security: {applicable: false, na_reason: No new execution or credential path.}
+      migration_recovery: {applicable: false, na_reason: No persistent data migration.}
+      cli_harness: {applicable: true, evidence: change impact CLI lifecycle suite passed.}
+      docs_schema: {applicable: true, evidence: Scenario 179 registration and current Conformance inventory validate.}
+
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: c171a436a129e7f8cb3b03b6342b66d6c3b70f21
-  changed_files_hash: d48f5b121f49e4ec81d7b3b42d899d08f4de4c7cf5dd82cc838822eae91ad039
+  base_sha: 1c350a7b214c45313fa2eda1b0631f00acd5c0e1
+  changed_files_hash: 55dfacc867232eb701a4a3bbb5f28cdd86749d0eb10e7df8149c05251e89784e
 review_evidence:
-  # Capability is implemented but currently disabled for PR enforcement.
-  # Set required: true only after a trusted runtime-attestation verifier is configured.
+  # Independent-review enforcement remains disabled until trusted runtime attestation is configured.
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
 status: READY

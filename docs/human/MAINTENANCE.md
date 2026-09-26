@@ -329,6 +329,8 @@ Keep the top-level validator as an aggregator. New substantial validation belong
 
 ## Deterministic Scheduler / Integration Gate consistency
 
+When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 27 deterministic, 98 lifecycle and 54 agent_eval scenarios (179 automated total).
+
 When deterministic scheduling or merge-candidate validation changes, review together:
 
 - `orchestration/DETERMINISTIC_SCHEDULER.md` + `scripts/deterministic_scheduler.py`;

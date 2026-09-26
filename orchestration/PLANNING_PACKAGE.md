@@ -41,6 +41,8 @@ Genuinely non-applicable artifacts/dimensions are marked N/A with a reason.
 
 既有專案的核心契約變更應在 Change Impact 中列出風險、traversal seed、候選 consumer 與不確定性；依風險設定有界檢查，並在驗收時核對 affected-but-unchanged 節點。Traversal 僅提供候選證據，不取代範圍核准、測試或 diff reconciliation。
 
+若以結構化處置關閉 unknown，計畫與驗收證據應保留原始描述、resolution、可驗證 evidence 與 Human review；只有完成 implementation 後的 exact diff reconciliation 才能將 Change Impact 標為 READY。
+
 需求規劃 validator 契約以 EARS 情境對應驗收證據；該測試檔單獨變更只需 Scenario Conformance 文件閉包，規劃行為、模板及 canonical requirements 仍需完整規劃閉包。
 
 If a plan includes external execution, record the requested minimum isolation and data class in the Execution Profile. Provider verification status is evidence, not permission to transfer a source payload; source scope and destination must be authorized before staging.

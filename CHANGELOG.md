@@ -5,6 +5,15 @@
 - Run the existing repository preflight early in CI, after the mandatory candidate secret scan and before full validation dependencies and Chromium.
 - Add an exact-candidate `--run` path to the local validation helper, with an isolated temporary configuration directory.
 - Reject duplicate Change Impact initialization by default; explicit `--reset` saves the previous evidence as a timestamped backup.
+- Preserve Change Impact unknowns as typed evidence-backed dispositions; legacy strings, stale/out-of-root evidence, incomplete traversal and missing Human review remain fail-closed.
+
+## 0.63.0
+
+### Evidence-backed Change Impact Unknown Dispositions
+
+- Add structured OPEN / RESOLVED / MITIGATED / ACCEPTED_LIMITATION records with deterministic file-hash and scoped-traversal evidence validation plus explicit Human review.
+- Preserve legacy string unknowns as unresolved and keep seed-scoped coverage separate from repository-wide Impact Graph coverage.
+- Add lifecycle, CLI, integrity, compatibility and Scenario 179 coverage while preserving exact READY diff reconciliation.
 
 ## 0.62.0
 

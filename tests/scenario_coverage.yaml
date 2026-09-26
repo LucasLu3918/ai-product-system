@@ -1396,3 +1396,11 @@ scenarios:
       - scripts/review_packet.py
       - scripts/review_evidence.py
       - config/runtime-policy.yaml
+  - id: "179"
+    path: tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/change_impact_resolution_lifecycle.py
+      - tests/validation/change_impact_resolution_contracts.py
+      - scripts/project_intelligence.py
+      - templates/intelligence/CHANGE_IMPACT.yaml

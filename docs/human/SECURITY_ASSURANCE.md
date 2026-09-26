@@ -100,6 +100,8 @@ The Security Engineer records the floor and rationale.
 
 ## Product baseline vs change impact
 
+Change Impact unknown dispositions are security-relevant evidence: closed records require current in-repository or complete scoped traversal evidence and explicit Human review. Legacy strings, stale hashes, out-of-root paths, incomplete traversals and mismatched scopes remain unresolved and fail closed.
+
 A high-risk product does not automatically require a deep SAL 4 review for every cosmetic change.
 
 Maintain:

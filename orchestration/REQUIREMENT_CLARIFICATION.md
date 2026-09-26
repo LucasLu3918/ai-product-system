@@ -62,6 +62,8 @@ Do not send long questionnaires. Ask the next blocking question or a small batch
 
 ## Implementation-ready goal
 
+For existing-project goals, preserve material uncertainty as explicit Change Impact unknowns. Do not translate an unresolved assumption into a closed disposition without verifiable evidence and explicit Human review.
+
 Before broad implementation, ensure enough clarity exists for:
 
 Clarification answers may provide bounded facts, constraints, decisions, and source citations needed to execute the goal. They must not carry an implementation agent's private reasoning or full conversation transcript into an independent reviewer context. The reviewer receives the approved goal, relevant canonical contracts, exact candidate packet, and necessary verification evidence only.

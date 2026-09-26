@@ -57,6 +57,10 @@ surfaces:
       - scripts/run_state.py
       - scripts/run_projection.py
       - scripts/run_dashboard.py
+      - tests/evidence/change_impact_resolution_lifecycle.py
+      - tests/validation/change_impact_resolution_contracts.py
+      - tests/validation/conformance_isolation.py
+      - tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md
     canonical_docs:
       - orchestration/PROJECT_INTELLIGENCE.md
       - orchestration/PROJECT_IDENTITY.md
@@ -65,6 +69,9 @@ surfaces:
       - orchestration/RUN_DASHBOARD.md
     validation_paths:
       - tests/evidence/project_intelligence_lifecycle.py
+      - tests/evidence/change_impact_resolution_lifecycle.py
+      - tests/validation/change_impact_resolution_contracts.py
+      - tests/validation/conformance_isolation.py
       - tests/evidence/identity_resume_isolation.py
       - tests/evidence/run_dashboard_lifecycle.py
 

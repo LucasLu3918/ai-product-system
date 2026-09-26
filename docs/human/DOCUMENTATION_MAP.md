@@ -24,6 +24,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 - PROJECT_INTELLIGENCE.md：Project understanding / retrieval。
 - SECURITY_ASSURANCE.md：SAL / security evidence。
 
+Change Impact unknown dispositions are defined in the Project Intelligence Human topic and the canonical Agent protocol; Scenario Conformance records their lifecycle and rejection evidence.
+
 Runtime action authorization is canonical in `config/runtime-policy.yaml`, `orchestration/schemas/runtime-action.yaml`, `scripts/runtime_policy.py` and `orchestration/RUNTIME_POLICY_ENFORCEMENT.md`; adapter limits and Scenario 177 evidence are documented in Harness, Security Assurance and Conformance.
 
 Secret handling guidance covers the built-in mandatory publication-candidate scan in the existing Git Publication and Security Assurance topics. Provider scanners are optional defense-in-depth, not baseline dependencies.
@@ -51,6 +53,8 @@ Independent review isolation is defined across `orchestration/MULTI_REVIEW.md`, 
 `orchestration/REQUIREMENT_CLARIFICATION.md` 和 `orchestration/PLANNING_PACKAGE.md` 定義需求澄清與規劃規則；`templates/planning-package/REQUIREMENTS.yaml` 與 `scripts/requirements_traceability.py` 定義可選需求追溯資料及其結構檢查，CLI 提供 JSON PASS/FAIL 與相應退出碼。EARS 語義判讀仍由需求審查負責。
 
 Risk-adaptive Change Impact 的 Human 說明位於 `PROJECT_INTELLIGENCE.md` 的 Change Impact topic；風險政策、命令、證據與 READY 契約以 `orchestration/CHANGE_IMPACT.md` 為 Agent canonical source。Scenario 175 維護 traversal lifecycle coverage。
+
+Structured unknown dispositions extend that same contract: repository-file evidence is hash-bound, traversal evidence is scope-bound, legacy unknown strings remain unresolved, and closure requires explicit Human review. Scenario 179 records the lifecycle evidence.
 
 Agent 由 AGENTS.md / SYSTEM.md 進入，按需讀取 orchestration/、roles/、skills/。Official Docs Site 不複製這些 protocol 成第二份 Human source。
 

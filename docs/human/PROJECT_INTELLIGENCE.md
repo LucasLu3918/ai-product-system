@@ -53,7 +53,9 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 CI、publication preflight 與 documentation trigger policy 的變更，應一併預覽遞迴文件閉包，並以最終差異重新綁定 Core Change Test Matrix。
 
-Mutation 前建立 CHANGE_IMPACT，涵蓋 Input / Output / Data / Events / Consumers / Security / Invariants / Compatibility / Tests，完成範圍審查並記錄使用者授權後進入 `IMPLEMENTATION_APPROVED`。這只允許依核准範圍實作。`READY` 僅能在實作後記錄完整 base/head SHA、乾淨工作樹、binary diff SHA-256、精確變更檔案集合與 `target_paths`，並完成 Impact Graph 核對及證據。以 `aips intelligence impact-validate --project <repo> --path <artifact>` 驗證；digest、HEAD、路徑集合不吻合或不可驗證時拒絕 `READY`。未解影響不得標記 READY。
+Mutation 前建立 CHANGE_IMPACT，涵蓋 Input / Output / Data / Events / Consumers / Security / Invariants / Compatibility / Tests，完成範圍審查並記錄使用者授權後進入 `IMPLEMENTATION_APPROVED`。`unknowns` 可保留舊字串格式，但舊字串仍視為未解並阻擋核准；新的結構化項目記錄 `id`、描述、`OPEN` / `RESOLVED` / `MITIGATED` / `ACCEPTED_LIMITATION`、處置說明、可驗證證據與 Human review。已處置項目必須提供仍有效且位於 repo 內的檔案 SHA-256 證據或符合相同 scope 的 traversal digest，以及 `reviewer: human`、核准參考與時間。`OPEN`、缺漏、過期、越界或 scope 不吻合時仍 fail closed。Seed-scoped traversal 只支援該範圍的判斷，不能把全域 graph coverage 改成 complete。
+
+這只允許依核准範圍實作。`READY` 僅能在實作後記錄完整 base/head SHA、乾淨工作樹、binary diff SHA-256、精確變更檔案集合與 `target_paths`，並完成 Impact Graph 核對及證據。以 `aips intelligence impact-validate --project <repo> --path <artifact>` 驗證；digest、HEAD、路徑集合不吻合或不可驗證時拒絕 `READY`。未解影響不得標記 READY。
 
 當全 repository 圖譜尚未完整，但某個明確架構邊界已依來源核對，可在 `IMPACT_GRAPH.yaml` 使用 `coverage_scopes` 記錄 seed、各維度覆蓋狀態與證據。它只適用於完全落在該範圍內的 seeds，不能把全域 partial coverage 改成 complete；seed 不相符或證據格式無效時仍維持 unknown。
 
