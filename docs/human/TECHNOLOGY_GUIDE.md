@@ -119,6 +119,10 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+### OpenTelemetry run export
+
+`aips telemetry record` appends bounded lifecycle metadata to existing run events. `aips telemetry export --output` builds a deterministic offline OTLP/HTTP JSON projection; `aips telemetry replay --config <yaml> --send` transmits only when the supplied config explicitly enables export. Remote endpoints require HTTPS and the optional authorization value comes from a host environment variable. Prompt, output, tool arguments, private reasoning and credentials are excluded. Unpaired lifecycle evidence is reported as `TELEMETRY_DEGRADED`; it does not alter AIPS execution or Gate results. GenAI fields follow the immutable snapshot recorded in `orchestration/schemas/telemetry-export.yaml`. Scenario 181 verifies this boundary and does not replace deterministic validation or review evidence.
+
 已處置的 Change Impact unknown 必須同時保留原始描述、處置決定、可驗證的 repo 內檔案或 traversal evidence，以及 Human review。Legacy string unknown、Open disposition、失效 digest 或不匹配的 seed scope 都維持 fail closed；seed-scoped evidence 不改變 repository-wide coverage。
 
 Independent-review task, packet and evidence contracts are implemented as an opt-in capability. PR enforcement is currently disabled in the active Core Change Matrix because no trusted runtime-attestation verifier is connected; setting `review_evidence.required: true` without one remains fail-closed.

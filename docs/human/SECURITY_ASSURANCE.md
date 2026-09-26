@@ -208,6 +208,8 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 ## Secret and credential safety
 
+OpenTelemetry authorization values are resolved from a named host environment variable only. They are not copied into run evidence, trace attributes or exporter errors.
+
 外部 Eval / Red-Team 匯入採 allowlist、大小/深度限制、來源 SHA-256 與 fingerprint；YAML alias、重複鍵、自訂標籤、程式碼 provider、未知欄位、secret-like 值與 private reasoning 都會 fail closed。Promptfoo / PyRIT 不列為 AIPS 執行相依套件，也不會由 AIPS 自動執行；外部結果不能取得發布權限。詳見 `orchestration/EVAL_INTEROPERABILITY.md`。
 
 `aips publish plan` 對失效的 GitHub CLI 認證只回報 `AUTH_REQUIRED` 與重新登入步驟，不回傳 CLI stderr 或 token。PR 分類標籤應在首次建立時帶入，以便首次 CI 選用正確的驗證等級。

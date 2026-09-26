@@ -44,6 +44,8 @@ Secret handling guidance covers the built-in mandatory publication-candidate sca
 
 ## Agent / machine canonical 文件
 
+`orchestration/TELEMETRY_EXPORT.md` 與 `orchestration/schemas/telemetry-export.yaml` 定義 optional OpenTelemetry trace projection、欄位 allowlist、端點與降級行為；Human 操作說明由 User Guide、Technology Guide 與 Telemetry Export topic 提供。
+
 `orchestration/EVAL_INTEROPERABILITY.md` 是外部 Promptfoo / PyRIT evidence 邊界、支援 subset、CLI、驗證與 Human finding promotion 的 machine canonical 文件。
 
 Content safety 的 machine canonical 文件為 `config/content-safety.yaml`、`scripts/content_safety.py` 與 `orchestration/CONTENT_SAFETY_BOUNDARY.md`；Human-facing placement 由本專案的 documentation placement contract 維護。

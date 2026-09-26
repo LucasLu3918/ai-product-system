@@ -2,6 +2,8 @@
 
 External producers and Human-confirmed finding promotion are defined by [Eval / Red-Team Interoperability](EVAL_INTEROPERABILITY.md). Imported runs stay advisory; only current canonical Case/Result evidence is eligible for deterministic regression scoring.
 
+Scenario 181 covers trace projection/export independently from Agent Eval. Telemetry spans and token counts are not evaluation scores or regression decisions.
+
 ## Purpose
 
 Provide truthful, provider-neutral evidence for Acceptance Scenarios whose contract depends on Agent semantic decisions rather than deterministic repository/runtime mechanics.

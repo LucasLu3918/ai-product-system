@@ -82,8 +82,16 @@ placement_rules:
   - id: publication-cli
     triggers: [bin/aips]
     placements:
-      docs/human/USER_GUIDE.md: [Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release]
+      docs/human/USER_GUIDE.md: [Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release, Logging、Observability 與 Operations, Checkpoint / Resume]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
+
+  - id: telemetry-export
+    triggers: [config/telemetry-export.yaml, orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md, orchestration/TELEMETRY_EXPORT.md, orchestration/schemas/telemetry-export.yaml, scripts/telemetry_export.py, scripts/telemetry_projection.py, scripts/telemetry_record.py]
+    placements:
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Scenario Conformance 與 Agent Eval]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
+      docs/human/USER_GUIDE.md: [Quality 與 Review]
+      docs/human/CONFORMANCE.md: [Scenario 181 — OpenTelemetry Telemetry Projection & Export]
 
   - id: execution-isolation
     triggers: [scripts/execution_isolation.py, scripts/sandbox_providers.py, scripts/e2b_sandbox_verification.py, config/sandbox-providers.yaml, config/external-credentials.yaml, orchestration/schemas/execution-profile.yaml, requirements-sandbox.txt, .github/workflows/e2b-sandbox-verification.yml]
@@ -162,7 +170,7 @@ placement_rules:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution]
       docs/human/USER_GUIDE.md: [Checkpoint / Resume]
-      orchestration/CONFORMANCE.md: [Runtime Content Safety Scenarios]
+      orchestration/CONFORMANCE.md: [Runtime Content Safety Scenarios, Scenario 181 — OpenTelemetry Telemetry Projection & Export]
       orchestration/DETERMINISTIC_SCHEDULER.md: [CLI]
       orchestration/EVOLUTION_RADAR.md: [Documentation consistency]
       orchestration/EXECUTION_ISOLATION.md: [Parallel runtime resource isolation]
@@ -208,14 +216,14 @@ placement_rules:
   - id: scenario-conformance
     triggers: [orchestration/CONFORMANCE.md, tests/scenario_coverage.yaml, tests/validation/conformance_isolation.py, tests/validation/ears_requirement_contracts.py, tests/scenarios/175-risk-adaptive-bounded-impact.md, tests/scenarios/176-mandatory-candidate-secret-scanning.md, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, tests/evidence/secret_scan_publication_lifecycle.py, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/180-external-eval-interoperability.md, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py, tests/validation/eval_interop_contracts.py, scripts/eval_interop.py, orchestration/EVAL_INTEROPERABILITY.md, orchestration/AGENT_EVAL.md]
     placements:
-      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Execution Isolation Conformance]
+      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Execution Isolation Conformance]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification, Security & Governance]
 
   - id: eval-interoperability
     triggers: [scripts/eval_interop.py, config/eval-profiles.yaml, config/integration-gate.yaml, orchestration/EVAL_INTEROPERABILITY.md, orchestration/AGENT_EVAL.md, orchestration/schemas/external-eval-evidence.yaml, orchestration/schemas/eval-profile.yaml, orchestration/schemas/red-team-finding.yaml, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py, tests/validation/eval_interop_contracts.py, tests/scenarios/180-external-eval-interoperability.md, tests/scenario_coverage.yaml]
     placements:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Scenario Conformance 與 Agent Eval]
-      docs/human/CONFORMANCE.md: [Scenario 180 — External Eval / Red-Team Interoperability]
+      docs/human/CONFORMANCE.md: [Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export]
       docs/human/SECURITY_ASSURANCE.md: [Secret and credential safety]
       docs/human/USER_GUIDE.md: [Quality 與 Review]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]

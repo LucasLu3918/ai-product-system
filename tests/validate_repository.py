@@ -73,12 +73,14 @@ from validation import mcp_interoperability_contracts as mcp_interoperability_co
 from validation import evolution_effectiveness_contracts as evolution_effectiveness_contracts  # noqa: F401
 from validation import publish_preflight_contracts as publish_preflight_contracts  # noqa: F401
 from validation import eval_interop_contracts as eval_interop_contracts  # noqa: F401
+from validation import telemetry_export_contracts as telemetry_export_contracts  # noqa: F401
 
 for evidence in (
     Path(__file__).parent / "validation/change_impact_resolution_contracts.py",
     Path(__file__).parent / "evidence/change_impact_resolution_lifecycle.py",
     Path(__file__).parent / "test_eval_interop.py",
     Path(__file__).parent / "evidence/eval_interop_lifecycle.py",
+    Path(__file__).parent / "evidence/telemetry_export_lifecycle.py",
 ):
     result = subprocess.run([sys.executable, str(evidence)], cwd=Path(__file__).resolve().parents[1], capture_output=True, text=True, check=False)
     if result.returncode:
@@ -89,6 +91,7 @@ for evidence in (
 
 errors = static_contracts.errors
 errors.extend(eval_interop_contracts.errors)
+errors.extend(telemetry_export_contracts.errors)
 
 if errors:
     print("VALIDATION FAILED")

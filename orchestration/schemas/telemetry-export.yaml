@@ -1,0 +1,75 @@
+version: 1
+name: aips-telemetry-export
+purpose: Allowlisted lifecycle metadata and deterministic OpenTelemetry projection from canonical AIPS run evidence.
+source_of_truth:
+  checkpoint: CHECKPOINT.yaml
+  events: EVENTS.jsonl
+  projection_is_canonical: false
+  replay_changes_run_state: false
+recording:
+  event_prefix: aips.telemetry
+  kinds:
+    phase:
+      names: [planning, implementation, review, validation]
+      actions: [started, completed]
+    gate:
+      names: [requirement, core_change, integration, security, janitor, publish]
+      actions: [started, waiting, resumed, completed]
+    model:
+      names: [chat, generate_content, text_completion, embeddings, execute_tool]
+      actions: [started, completed]
+    tool:
+      names: bounded_identifier
+      actions: [started, completed]
+  attributes:
+    required: [operation_id, name]
+    optional: [parent_operation_id, related_operation_id, provider, model, input_tokens, output_tokens, status]
+  constraints:
+    opaque_id_pattern: "^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$"
+    model_value_pattern: "^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,127}$"
+    max_event_bytes: 4096
+    max_events: 10000
+    max_source_bytes: 8388608
+    token_count_min: 0
+    token_count_max: 1000000000
+privacy:
+  allowed: [operation_id, parent_operation_id, related_operation_id, name, provider, model, input_tokens, output_tokens, status]
+  forbidden: [prompt, input_messages, output, response, tool_arguments, private_reasoning, chain_of_thought, credential, environment]
+  unknown_attributes: reject
+  raw_runtime_payload_persisted: false
+export:
+  default_enabled: false
+  transport: OTLP_HTTP_JSON
+  endpoint_policy: HTTPS_or_loopback_only
+  authorization:
+    source: host_environment_only
+    default_environment_variable: AIPS_OTLP_AUTHORIZATION
+    persisted: false
+  bounds:
+    config_bytes: 65536
+    payload_bytes: 8388608
+    timeout_seconds: [0.1, 10]
+  failure:
+    workflow_result_changed: false
+    gate_result_changed: false
+    report: TELEMETRY_DEGRADED
+  replay:
+    identifiers: deterministic_from_run_and_operation_ids
+    canonical_state_mutated: false
+mapping:
+  generic_namespace: aips.*
+  genai_profile: otel-genai-inference-v1
+  genai_repository: https://github.com/open-telemetry/semantic-conventions-genai
+  genai_revision: 0c87594975195608dc91b3f702e250a7b240c151
+  inference_attributes: [gen_ai.operation.name, gen_ai.provider.name, gen_ai.request.model, gen_ai.usage.input_tokens, gen_ai.usage.output_tokens]
+  content_capture: false
+  provider_or_usage_inferred: false
+review_isolation:
+  context_inherited: false
+  correlation: common_aips_run_id_and_optional_span_link
+  trace_context_forwarded_to_reviewer: false
+authority:
+  exporter_controls_workflow: false
+  telemetry_grants_approval: false
+  telemetry_grants_publication: false
+  telemetry_grants_merge: false

@@ -1386,3 +1386,16 @@ Lifecycle and contract evidence validate structured OPEN / RESOLVED / MITIGATED 
 - manual：0
 - uncovered：0
 - automated：**180 / 180**
+
+## Scenario 181 — OpenTelemetry Telemetry Projection & Export
+
+Lifecycle evidence checks append-only telemetry recording, allowlist and bounds, deterministic trace/span replay IDs, phase/Gate/model/tool pairing, Gate wait spans, independent-review links, exact pinned GenAI attributes, content/credential exclusion, loopback/HTTPS endpoint validation, disabled-by-default configuration, local OTLP receiver delivery and non-blocking export degradation.
+
+目前 Scenario inventory：
+
+- deterministic：27
+- lifecycle：100
+- agent_eval：54
+- manual：0
+- uncovered：0
+- automated：**181 / 181**
