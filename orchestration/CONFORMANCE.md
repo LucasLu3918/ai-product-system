@@ -700,7 +700,7 @@ Preview MUST report working-tree documentation placement and actionable Core Mat
 
 Scenario 165 lifecycle evidence also proves pre-commit working-tree closure, rule attribution, safe Core Matrix rebinding, expected test-count enforcement and label-event validation triggers.
 
-Scenario 165 proves that local publication validation and GitHub Actions share one exact-candidate resolver for base/head, change class, canonical Core Change Test Matrix and documentation diff base. Fast documentation/diff checks run before the expensive Integration Gate; unavailable localhost/browser prerequisites are reported as `ENVIRONMENT_BLOCKED`.
+Scenario 165 proves that local publication validation and GitHub Actions share one exact-candidate resolver for base/head, change class, canonical Core Change Test Matrix and documentation diff base. Fast documentation/diff checks run before the expensive Integration Gate; unavailable localhost, Python/Ruff or browser prerequisites are reported as `ENVIRONMENT_BLOCKED`. Local publication checks changed Markdown links and builds the documentation site when documentation paths change.
 
 Lifecycle evidence also covers ignored local metadata, recursive documentation impact, safe tree-equivalent post-squash reconciliation and fail-closed Project Intelligence revision refresh. Publication, destructive reconciliation and merge authority remain Human-controlled.
 

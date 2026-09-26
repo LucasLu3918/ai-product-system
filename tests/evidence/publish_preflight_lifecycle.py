@@ -76,6 +76,7 @@ def main() -> int:
     assert publish.matrix_required(profile, ["docs/README.md"], "core")
     assert not publish.matrix_required(profile, ["docs/README.md"], "standard")
     assert publish.pr_creation_plan("core")["gh_create_args"] == ["gh", "pr", "create", "--label", "aips:core-change"]
+    assert publish.pr_creation_plan("core")["label_timing"] == "initial_create_request"
     assert publish.pr_creation_plan("large")["required_label"] == "aips:large-change"
     assert publish.pr_creation_plan("standard")["required_label"] is None
 
@@ -248,6 +249,26 @@ def main() -> int:
 
     environment = publish.environment_status()
     assert environment["status"] in {"READY", "ENVIRONMENT_BLOCKED"}
+    assert "python" in environment and "python_modules" in environment
+
+    repo_spec = importlib.util.spec_from_file_location("repository_preflight", ROOT / "scripts/repository_preflight.py")
+    assert repo_spec and repo_spec.loader
+    repository_preflight = importlib.util.module_from_spec(repo_spec)
+    repo_spec.loader.exec_module(repository_preflight)
+    with tempfile.TemporaryDirectory() as td:
+        docs_root = Path(td)
+        (docs_root / "docs").mkdir()
+        (docs_root / "docs/guide.md").write_text(
+            "[valid](./target.md) [missing](./missing.md) [outside](../../outside.md)\n"
+            "```md\n[ignored](./not-a-real-link.md)\n```\n"
+            "[external](https://example.com/docs)\n",
+            encoding="utf-8",
+        )
+        (docs_root / "docs/target.md").write_text("# Target\n", encoding="utf-8")
+        link_errors = repository_preflight.check_markdown_links(docs_root, ["docs/guide.md"])
+        assert "docs/guide.md: local Markdown link target does not exist: ./missing.md" in link_errors
+        assert any("escapes the repository" in error for error in link_errors)
+        assert not any("not-a-real-link" in error for error in link_errors)
     assert isinstance(environment["blockers"], list)
     assert isinstance(environment["diagnostics"], list)
     denied_socket = Mock()
@@ -260,6 +281,13 @@ def main() -> int:
     assert blocked_environment["status"] == "ENVIRONMENT_BLOCKED"
     assert {item["check"] for item in blocked_environment["diagnostics"]} == {"localhost_bind", "browser_probe"}
     assert all(item["next_step"] for item in blocked_environment["diagnostics"])
+    assert "launch denied" not in repr(blocked_environment)
+    assert "/browser" not in repr(blocked_environment)
+    with patch.object(publish, "environment_status", return_value=blocked_environment), patch.object(
+        publish, "build_plan", side_effect=AssertionError("full plan must not run after an environment blocker")
+    ), patch.object(publish, "emit") as emitted:
+        assert publish.run_candidate(Namespace(format="json")) == 2
+        assert emitted.call_args.args[0]["status"] == "ENVIRONMENT_BLOCKED"
     missing_browser = publish.probe_browser(None, provider="managed")
     assert missing_browser["status"] == "BROWSER_NOT_FOUND"
     assert missing_browser["provider"] == "managed"

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.66.0
+
+- Add explicit `--project-root` routing and checkout identity to publication and Integration Gate diagnostics.
+- Check local Markdown links and build VitePress before the local publication Gate; report Python/Ruff/loopback/browser blockers before expensive candidate validation.
+- Explain how to resolve Change Impact traversal dispositions and retain change-class labels in the initial PR creation request.
+
 ## 0.65.0
 
 - Add disabled-by-default, provider-neutral OpenTelemetry trace projection and opt-in OTLP/HTTP JSON export with deterministic offline replay.

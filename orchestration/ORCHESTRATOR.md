@@ -292,6 +292,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+Publication-readiness changes include the selected checkout, local documentation/build checks, Gate environment preflight and initial PR classification label in the proposal and exact-candidate evidence.
+
 The publication plan records the change-class label for the initial PR create request. A missing or invalid GitHub CLI login is reported as `AUTH_REQUIRED` with a recovery command; credential output is never included.
 
 Before commit, use the publication preview to inspect the complete working-tree file set, recursive documentation requirements and matrix hash. Synchronize only the canonical matrix binding after the scope is complete, then review the invalidated matrix evidence before Gate execution.
