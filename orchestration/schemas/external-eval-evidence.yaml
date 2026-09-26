@@ -1,0 +1,28 @@
+schema: aips.external-eval-evidence.v1
+required:
+  - schema
+  - id
+  - source
+  - evidence_class
+  - status
+  - gate_eligibility
+  - fingerprint
+fields:
+  evidence_class: [external_observation, discovery]
+  status: [SIGNAL, REVIEW]
+  gate_eligibility: [ADVISORY_ONLY, CANONICAL_REGRESSION_REQUIRED]
+  fingerprint: sha256-of-canonical-json-with-fingerprint-field-omitted
+provenance:
+  promptfoo: [config_sha256, results_sha256, provider]
+  pyrit_bridge: [bridge_sha256, version]
+limits:
+  input_bytes: 1000000
+  items: 100
+  nesting_depth: 20
+  nodes: 10000
+security:
+  reject_duplicate_yaml_keys: true
+  reject_yaml_aliases_and_explicit_tags: true
+  reject_unknown_and_executable_fields: true
+  reject_secrets_and_private_reasoning: true
+  external_status_grants_release_authority: false

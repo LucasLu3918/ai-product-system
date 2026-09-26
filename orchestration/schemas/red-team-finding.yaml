@@ -1,0 +1,18 @@
+schema: aips.red-team-finding.v1
+required:
+  - version
+  - id
+  - state
+  - title
+  - minimal_reproduction
+  - review
+states: [DISCOVERED, REVIEW, CONFIRMED, REGRESSION]
+promotion:
+  requires_state: CONFIRMED
+  requires_review:
+    status: APPROVED
+    reviewer: human
+    fields: [approval_reference, reviewed_at]
+  output: canonical_agent_eval_case
+  deterministic_rubric_required: true
+  external_finding_hard_gate_eligible: false

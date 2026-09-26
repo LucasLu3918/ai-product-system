@@ -122,11 +122,20 @@ surfaces:
     required_paths:
       - scripts/scenario_conformance.py
       - scripts/agent_eval.py
+      - scripts/eval_interop.py
       - scripts/trajectory_eval.py
       - tests/scenario_coverage.yaml
+      - config/eval-profiles.yaml
+      - orchestration/EVAL_INTEROPERABILITY.md
+      - orchestration/schemas/external-eval-evidence.yaml
+      - orchestration/schemas/eval-profile.yaml
+      - orchestration/schemas/red-team-finding.yaml
       - orchestration/CONFORMANCE.md
       - orchestration/AGENT_EVAL.md
+      - orchestration/EVAL_INTEROPERABILITY.md
       - orchestration/TRAJECTORY_EVAL.md
+      - docs/ARCHITECTURE.md
+      - docs/human/assets/system-overview.svg
     canonical_docs:
       - orchestration/CONFORMANCE.md
       - orchestration/AGENT_EVAL.md
@@ -134,6 +143,9 @@ surfaces:
     validation_paths:
       - scripts/scenario_conformance.py
       - tests/evidence/agent_eval_framework.py
+      - tests/test_eval_interop.py
+      - tests/evidence/eval_interop_lifecycle.py
+      - tests/validation/eval_interop_contracts.py
       - tests/evidence/trajectory_quality_gate_lifecycle.py
 
   - id: product-delivery

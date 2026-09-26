@@ -208,6 +208,10 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 
 ## Quality 與 Review
 
+### 外部 Eval / Red-Team 互通
+
+可用 `aips eval` 匯出 Promptfoo 的 inline config、匯入 Promptfoo JSONL、匯入 PyRIT bridge，並驗證 evidence fingerprint。AIPS 不會執行外部工具設定；匯入結果只供檢視或訊號使用，不能直接通過或阻擋發布。需要把 finding 納入 regression 時，先由 Human 確認 finding 與最小重現案例，再輸出成 canonical Agent Eval Case，以 AIPS deterministic scorer 重新驗證。未設定外部 API key 也可執行全部本地驗證。
+
 Change Impact unknown 只有在保留原始描述、具備可驗證 repository-file 或完整 traversal evidence，並有明確 Human review 時才能關閉。Legacy string、失效 evidence 與 scope mismatch 仍會阻擋實作。Disposition evidence is reviewed separately from implementation approval; exact changed-file reconciliation remains mandatory before READY.
 
 獨立審查隔離機制已實作，但目前**未啟用為 PR 強制要求**；active Core Change Matrix 設為 `review_evidence.required: false`。待可信 runtime-attestation verifier 接通後，才可將矩陣設為 `true` 啟用。啟用後，沒有可信證據的必要審查會維持 `UNVERIFIED` 並阻擋 Gate。

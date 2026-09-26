@@ -1,0 +1,33 @@
+version: 1
+authority:
+  canonical_contract: AIPS Agent Eval Case and Result
+  hard_gate_eligible: verified_canonical_deterministic_regression_only
+  external_runs: advisory_only
+  llm_judge: review_or_signal
+  discovery_scan: review_or_signal
+profiles:
+  ordinary:
+    required: [applicable_deterministic_repository_tests]
+  prompt_system:
+    required: [canonical_agent_eval, deterministic_observable_response_scoring]
+  routing_tool_policy:
+    required: [agent_eval, trajectory_contract_tests, authorization_boundary_negatives]
+  rag:
+    required: [retrieval_quality_cases, citation_grounding_assertions, deterministic_regression]
+  mcp_tool_permissions:
+    required: [mcp_permission_cases, trajectory_evidence, deny_path_regression]
+  credential_sal34:
+    required: [security_secret_negative_tests, runtime_policy_cases, human_security_review]
+  provider_migration:
+    required: [provider_neutral_cases, result_provenance, repeatability_comparison]
+  release_candidate:
+    required: [full_deterministic_validation, verified_canonical_regressions, human_release_authority]
+deep_scan:
+  pyrit:
+    enabled_by_default: false
+    authority: advisory_only
+    requires_external_runtime: true
+  promptfoo:
+    enabled_by_default: false
+    authority: advisory_only
+    requires_external_runtime: true

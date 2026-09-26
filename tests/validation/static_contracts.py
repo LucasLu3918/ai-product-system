@@ -88,6 +88,14 @@ yaml_files = [
     "templates/workspace/SYSTEM.yaml",
     "templates/conformance/AGENT_EVAL_CASE.yaml",
     "templates/conformance/AGENT_EVAL_RESULT.yaml",
+    "orchestration/schemas/external-eval-evidence.yaml",
+    "orchestration/schemas/eval-profile.yaml",
+    "orchestration/schemas/red-team-finding.yaml",
+    "config/eval-profiles.yaml",
+    "tests/fixtures/eval_interop/promptfoo.config.yaml",
+    "tests/fixtures/eval_interop/pyrit.bridge.yaml",
+    "tests/fixtures/eval_interop/finding-confirmed.yaml",
+    "tests/fixtures/eval_interop/promptfoo.results.jsonl",
 ]
 for rel in yaml_files:
     p = ROOT / rel

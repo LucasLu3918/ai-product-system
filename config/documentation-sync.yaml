@@ -67,7 +67,6 @@ rules:
       - config/external-credentials.yaml
       - requirements-sandbox.txt
       - .github/workflows/e2b-sandbox-verification.yml
-      - tests/validation/conformance_isolation.py
       - tests/scenarios/111-isolation-resolution.md
       - tests/scenarios/114-sandbox-truthfulness.md
     human_docs:
@@ -126,9 +125,35 @@ rules:
       - orchestration/EXECUTION_ISOLATION.md
       - orchestration/ORCHESTRATOR.md
   - id: scenario-conformance
-    triggers: [scripts/scenario_conformance.py, scripts/agent_eval.py, scripts/trajectory_eval.py, orchestration/TRAJECTORY_EVAL.md, templates/conformance/**, tests/scenario_coverage.yaml, tests/validation/ears_requirement_contracts.py, tests/validation/conformance_isolation.py, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py]
+    triggers: [scripts/scenario_conformance.py, scripts/agent_eval.py, scripts/eval_interop.py, scripts/trajectory_eval.py, orchestration/TRAJECTORY_EVAL.md, orchestration/EVAL_INTEROPERABILITY.md, templates/conformance/**, tests/scenario_coverage.yaml, tests/validation/ears_requirement_contracts.py, tests/validation/conformance_isolation.py, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/180-external-eval-interoperability.md, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py]
     human_docs: [docs/human/CONFORMANCE.md]
     agent_docs: [orchestration/CONFORMANCE.md]
+
+  - id: eval-interoperability
+    triggers:
+      - scripts/eval_interop.py
+      - config/eval-profiles.yaml
+      - config/integration-gate.yaml
+      - orchestration/EVAL_INTEROPERABILITY.md
+      - orchestration/schemas/external-eval-evidence.yaml
+      - orchestration/schemas/eval-profile.yaml
+      - orchestration/schemas/red-team-finding.yaml
+      - tests/test_eval_interop.py
+      - tests/evidence/eval_interop_lifecycle.py
+      - tests/validation/eval_interop_contracts.py
+      - tests/scenarios/180-external-eval-interoperability.md
+      - tests/scenario_coverage.yaml
+    human_docs:
+      - docs/human/ARCHITECTURE_OVERVIEW.md
+      - docs/human/CONFORMANCE.md
+      - docs/human/SECURITY_ASSURANCE.md
+      - docs/human/USER_GUIDE.md
+      - docs/human/TECHNOLOGY_GUIDE.md
+      - docs/human/DOCUMENTATION_MAP.md
+    agent_docs:
+      - orchestration/EVAL_INTEROPERABILITY.md
+      - orchestration/AGENT_EVAL.md
+      - orchestration/CONFORMANCE.md
 
   - id: requirement-planning
     triggers:
@@ -139,10 +164,6 @@ rules:
       - templates/planning-package/REQUIREMENTS.yaml
       - scripts/requirements_traceability.py
       - tests/scenarios/174-ears-requirement-traceability.md
-      - tests/scenario_coverage.yaml
-      - tests/validation/conformance_isolation.py
-      - tests/validate_repository.py
-      - orchestration/DOCUMENTATION_SYNC.md
     human_docs:
       - docs/human/USER_GUIDE.md
       - docs/human/TECHNOLOGY_GUIDE.md

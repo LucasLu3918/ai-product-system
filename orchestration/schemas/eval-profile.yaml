@@ -1,0 +1,19 @@
+schema: aips.eval-profile-selection.v1
+required:
+  - profile
+  - requirements
+  - external_scans
+  - hard_gate_source
+  - human_authority_preserved
+profiles:
+  - ordinary
+  - prompt_system
+  - routing_tool_policy
+  - rag
+  - mcp_tool_permissions
+  - credential_sal34
+  - provider_migration
+  - release_candidate
+optional_advisory_producer:
+  - pyrit
+hard_gate_source: VERIFIED_CANONICAL_DETERMINISTIC_REGRESSION_ONLY

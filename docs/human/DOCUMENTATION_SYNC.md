@@ -24,6 +24,8 @@ SYSTEM.md / orchestration / roles / skills
 
 `tests/validation/ears_requirement_contracts.py` 對應 Scenario Conformance；只有測試契約改動時更新 Conformance 與 Technology Guide，需求追蹤程式、規劃範本或 canonical requirement 文件仍觸發完整 Requirement Planning 閉包。
 
+External Eval / Red-Team Interoperability 的來源由 `eval-interoperability` placement rule 綁定到 Architecture Overview、Conformance、Security Assurance、User Guide、Technology Guide 與 Documentation Map；`orchestration/EVAL_INTEROPERABILITY.md` 定義受限匯入、證據及人工確認流程，外部分數不直接成為 AIPS PASS/BLOCK。
+
 Publication Preflight preview reports each required document with the sync or placement rule that introduced it, so maintainers can locate the exact source of recursive documentation requirements.
 
 Mandatory Candidate Secret Scanning extends the existing publication-preflight and security topics. The built-in scanner and policy must stay aligned across local preflight, Integration Gate and the early CI fail-fast step; all paths use the same exact candidate and redacted evidence contract.
