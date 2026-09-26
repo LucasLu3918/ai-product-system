@@ -107,6 +107,9 @@ Usage:
   aips run inspect --run-id <id> [--project <path>]
   aips run dashboard [--project <path>] [--open]
 
+  aips telemetry record [bounded lifecycle options]
+  aips telemetry export|replay --run-id <id> --config <yaml> --send
+
   aips conformance check [--format yaml|json]
   aips conformance report [--format yaml|json]
   aips conformance agent-eval check [--format yaml|json]
@@ -636,6 +639,30 @@ run_projection_cmd() {
   py="$(python_bin)"
   [ -n "$py" ] || die "python3 is required."
   "$py" "$SYSTEM_DIR/scripts/run_projection.py" "$@"
+}
+
+telemetry_cmd() {
+  local py sub
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  sub="${1:-help}"
+  shift || true
+  case "$sub" in
+    help|-h|--help)
+      cat <<'EOF'
+Usage: aips telemetry <record|export|replay> [options]
+
+  record  Append bounded lifecycle metadata to an existing run event stream.
+  export  Create an offline OTLP/HTTP JSON projection or explicitly send it.
+  replay  Re-project the same run with deterministic trace and span IDs.
+
+Command-specific options: `aips telemetry <command> --help`.
+EOF
+      ;;
+    record) "$py" "$SYSTEM_DIR/scripts/telemetry_record.py" "$@" ;;
+    export|replay) "$py" "$SYSTEM_DIR/scripts/telemetry_export.py" "$sub" "$@" ;;
+    *) die "Unknown telemetry command: $sub" ;;
+  esac
 }
 
 run_dashboard_cmd() {
@@ -1491,6 +1518,10 @@ case "${1:-help}" in
         run_state_cmd "$sub" "$@"
         ;;
     esac
+    ;;
+  telemetry)
+    shift
+    telemetry_cmd "$@"
     ;;
   conformance)
     sub="${2:-report}"

@@ -208,6 +208,19 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 
 ## Quality 與 Review
 
+### OpenTelemetry run traces
+
+Record a lifecycle pair in the existing run event stream, then export or replay it:
+
+```bash
+aips telemetry record --project . --run-id RUN --kind phase --action started --operation-id plan-1 --name planning
+aips telemetry record --project . --run-id RUN --kind phase --action completed --operation-id plan-1 --name planning
+aips telemetry export --project . --run-id RUN --output /tmp/run-trace.json
+aips telemetry replay --project . --run-id RUN --config ./telemetry-export.yaml --send
+```
+
+The shipped export config is disabled. Transmission requires a private config with `enabled: true`; HTTPS is required except for loopback testing. Keep optional authorization in the host environment variable named by `authorization_env`. Recorded values are limited to lifecycle IDs, fixed operation names, verified provider/model IDs, token counts and outcomes. Export omits prompt/output content, arguments, private reasoning and credentials. Unpaired markers show `TELEMETRY_DEGRADED`; this does not block the workflow. See [Telemetry Export](../../orchestration/TELEMETRY_EXPORT.md) for field limits and replay behavior.
+
 ### 外部 Eval / Red-Team 互通
 
 可用 `aips eval` 匯出 Promptfoo 的 inline config、匯入 Promptfoo JSONL、匯入 PyRIT bridge，並驗證 evidence fingerprint。AIPS 不會執行外部工具設定；匯入結果只供檢視或訊號使用，不能直接通過或阻擋發布。需要把 finding 納入 regression 時，先由 Human 確認 finding 與最小重現案例，再輸出成 canonical Agent Eval Case，以 AIPS deterministic scorer 重新驗證。未設定外部 API key 也可執行全部本地驗證。

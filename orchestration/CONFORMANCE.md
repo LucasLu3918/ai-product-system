@@ -743,3 +743,9 @@ Current automated inventory: 27 deterministic + 98 lifecycle + 54 agent_eval = 1
 Lifecycle and contract evidence cover structured dispositions, explicit Human review, current in-root file hashes, canonical traversal digests and seed-scope binding. Legacy strings, malformed or stale evidence, incomplete traversal and scope mismatch remain blocking; exact READY diff reconciliation and repository-wide coverage semantics are unchanged.
 
 Current automated inventory: 27 deterministic + 98 lifecycle + 54 agent_eval = 179 / 179; manual 0; uncovered 0.
+
+## Scenario 181 — OpenTelemetry Telemetry Projection & Export
+
+Lifecycle evidence validates bounded existing-event extensions; deterministic OTLP projection/replay; exact pinned GenAI field names; duration spans only for complete timestamp pairs; Gate waiting intervals; independent-review correlation without inherited context; HTTPS/loopback policy; host-only credentials; content/secret rejection; local receiver behavior; and transport-failure degradation without changing AIPS execution results.
+
+Current automated inventory: 27 deterministic + 100 lifecycle + 54 agent_eval = 181 / 181; manual 0; uncovered 0.

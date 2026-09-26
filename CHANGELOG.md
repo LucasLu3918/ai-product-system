@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.65.0
+
+- Add disabled-by-default, provider-neutral OpenTelemetry trace projection and opt-in OTLP/HTTP JSON export with deterministic offline replay.
+- Keep run evidence canonical, capture only allowlisted lifecycle and observed GenAI metadata, preserve independent-review isolation, and degrade safely when export fails.
+- Pin the tested GenAI mapping snapshot and add Scenario 181 lifecycle, privacy, exporter, CLI, and documentation coverage.
+
 ## 0.64.0
 
 - Add offline-first Promptfoo/PyRIT Eval interoperability, fingerprint verification, risk profiles, and Human-confirmed finding-to-regression promotion.

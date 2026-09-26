@@ -80,6 +80,20 @@ flowchart LR
 
 Temporal validity is determined by Git ancestry, not timestamps. Valid time and observed time remain distinct so late historical discovery is represented honestly. Unknown history is never inferred, and the SQLite projection never becomes a source of truth.
 
+### OpenTelemetry run projection
+
+~~~mermaid
+flowchart LR
+    CP[CHECKPOINT.yaml] --> TP[Run Telemetry Projection]
+    EV[EVENTS.jsonl with allowlisted lifecycle markers] --> TP
+    TP --> SAN[Whitelist sanitizer + pinned mapping]
+    SAN --> HOST[Optional host-side OTLP/HTTP JSON exporter]
+    HOST --> OTLP[OTLP-compatible backend]
+    HOST -. failure .-> DEG[TELEMETRY_DEGRADED evidence only]
+~~~
+
+The telemetry projection is read-only with respect to canonical run state. Endpoint credentials stay on the host, runtime content is excluded, independent review uses correlation links only, and export failure cannot change workflow or Gate outcomes.
+
 ## Retrieval quality evaluation
 
 ~~~mermaid

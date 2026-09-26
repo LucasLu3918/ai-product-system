@@ -1,12 +1,14 @@
 version: 1
 change:
-  id: matrix-preview-ci-cancellation
-  summary: Align Core Matrix preview with Integration Gate, avoid false required-check
-    failures on canceled runs, and clarify local validation.
+  id: opentelemetry-telemetry-export
+  summary: Add privacy-safe OpenTelemetry trace projection and optional OTLP export/replay for AIPS run evidence.
   boundary:
   - matrix-readiness-preview-and-gate
   - canceled-workflow-required-aggregate
   - local-validation-guidance-and-documentation-closure
+  - durable-run-events-and-telemetry-recording
+  - telemetry-projection-and-otlp-export
+  - architecture-documentation-and-release
 matrix:
 - boundary: matrix-readiness-preview-and-gate
   reason: Preview previously accepted DRAFT, blocked or unreconciled Matrix state
@@ -117,12 +119,103 @@ matrix:
       applicable: true
       evidence: Maintenance, User Guide, Technology Guide, Architecture and Conformance
         docs close declared impact.
+- boundary: durable-run-events-and-telemetry-recording
+  reason: Extend append-only run evidence with a bounded telemetry allowlist and lifecycle CLI.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff passed on new telemetry modules and tests; Python compilation and complete repository validation passed.
+    unit:
+      applicable: true
+      evidence: telemetry_export_lifecycle.py passed allowlist, bounds, timestamps, pairing, and deterministic IDs.
+    integration:
+      applicable: true
+      evidence: telemetry_export_lifecycle.py passed recording-to-replay and loopback OTLP receiver integration.
+    contract:
+      applicable: true
+      evidence: telemetry_export_contracts.py passed; legacy event records remain valid and invalid telemetry fields reject.
+    e2e:
+      applicable: false
+      na_reason: No deployed service; the local receiver exercises the full exporter request path.
+    security:
+      applicable: true
+      evidence: Lifecycle rejected secret-like identifiers and content fields without persistence; strict candidate scan is required after commit.
+    migration_recovery:
+      applicable: true
+      evidence: Legacy event loading, deterministic replay, and non-mutating exporter failure checks passed.
+    cli_harness:
+      applicable: true
+      evidence: aips telemetry --help and telemetry lifecycle checks passed.
+    docs_schema:
+      applicable: true
+      evidence: Telemetry schema checks and complete repository validation passed.
+- boundary: telemetry-projection-and-otlp-export
+  reason: Add deterministic offline projection and explicit host-side OTLP/HTTP JSON delivery.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff and Python compilation passed for telemetry modules and lifecycle/contract tests.
+    unit:
+      applicable: true
+      evidence: Lifecycle checks passed stable IDs, nesting, links, allowlisted attributes, and incomplete evidence degradation.
+    integration:
+      applicable: true
+      evidence: Local receiver verified OTLP envelope, host authorization, server failure, and redirect rejection.
+    contract:
+      applicable: true
+      evidence: Contract checks passed against the pinned immutable GenAI mapping snapshot.
+    e2e:
+      applicable: false
+      na_reason: No remote observability backend is required for the provider-neutral exporter.
+    security:
+      applicable: true
+      evidence: Endpoint, credential, content exclusion, bounds, redaction, and redirect negative paths passed; strict repository source scan passed before commit.
+    migration_recovery:
+      applicable: true
+      evidence: Replay is deterministic and transport failures do not mutate canonical run evidence.
+    cli_harness:
+      applicable: true
+      evidence: Offline and explicit-send CLI lifecycle plus top-level telemetry help passed.
+    docs_schema:
+      applicable: true
+      evidence: Schema, pinned mapping, and exporter docs passed complete repository validation.
+- boundary: architecture-documentation-and-release
+  reason: Update canonical architecture, user guidance, conformance, and release metadata.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Complete repository validation passed documentation and release metadata contracts.
+    unit:
+      applicable: false
+      na_reason: Documentation and release metadata have no separate runtime behavior.
+    integration:
+      applicable: true
+      evidence: Exact-candidate publication preview and Integration Gate are required before remote merge.
+    contract:
+      applicable: true
+      evidence: Scenario 181 registry and documented CLI/config are checked by telemetry_export_contracts.py.
+    e2e:
+      applicable: false
+      na_reason: No deployment or hosted service is part of this change.
+    security:
+      applicable: true
+      evidence: Strict complete-candidate secret scan is required before publication.
+    migration_recovery:
+      applicable: false
+      na_reason: No durable schema migration; event field is additive.
+    cli_harness:
+      applicable: true
+      evidence: Local aips telemetry command routing and help checks passed.
+    docs_schema:
+      applicable: true
+      evidence: VERSION, CHANGELOG, diagrams, and canonical guidance pass complete repository validation.
+
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: e00933d35dcb2e778be812d8043e22ce3fad4861
-  changed_files_hash: 23190bae4ff221280bbcbc83832de0168de89ce04ef489550732d1c5d499db2f
+  base_sha: b734a3cd33ca883969ee186cadc0a01ca9b7102e
+  changed_files_hash: 56a7de509a3f9195bbf429e696ace3549891b68a442a4ccd45c465f3f2851902
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

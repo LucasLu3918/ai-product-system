@@ -161,3 +161,6 @@ The verification workflow pins Gemini CLI v0.60.0, links the real extension, exe
 
 This permits a runtime-specific `live_capture_verified=true` claim only when the exact candidate workflow succeeds. It does not prove a live provider/model API session and does not change enforcement or remediation authority.
 
+## OpenTelemetry projection integration
+
+Sanitized observable-event data may contribute to OpenTelemetry only after it has passed the existing canonical mapper and only for fields in `orchestration/schemas/telemetry-export.yaml`. The exporter is host-side and consumes persisted canonical evidence. No runtime hook receives OTLP credentials or trace context. Export degradation remains evidence-only and cannot change the runtime-observed result. Runtime-specific LLM/provider/token capture remains unverified until an exact adapter lifecycle test proves the source fields.

@@ -1412,3 +1412,13 @@ scenarios:
       - tests/test_eval_interop.py
       - tests/evidence/eval_interop_lifecycle.py
       - tests/validation/eval_interop_contracts.py
+  - id: "181"
+    path: tests/scenarios/181-opentelemetry-telemetry-export.md
+    coverage: lifecycle
+    evidence:
+      - scripts/telemetry_record.py
+      - scripts/telemetry_projection.py
+      - scripts/telemetry_export.py
+      - tests/evidence/telemetry_export_lifecycle.py
+      - tests/validation/telemetry_export_contracts.py
+      - orchestration/schemas/telemetry-export.yaml

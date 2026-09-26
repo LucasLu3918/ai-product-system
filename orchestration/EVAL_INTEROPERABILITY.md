@@ -4,6 +4,8 @@
 
 AIPS Agent Eval Case / Result remain canonical. Promptfoo and PyRIT are optional evidence producers behind `scripts/eval_interop.py`; their status, score, or discovery finding never becomes an Integration Gate result.
 
+Scenario 181 adds an independent operational telemetry lane; it does not change external-evaluation evidence, score interpretation or finding-promotion authority.
+
 ~~~text
 Promptfoo config + JSONL observations ─┐
 PyRIT v1 bridge observations ──────────┴→ bounded static parser → normalized, fingerprinted evidence

@@ -1,0 +1,6 @@
+version: 1
+enabled: false
+endpoint: http://127.0.0.1:4318
+authorization_env: AIPS_OTLP_AUTHORIZATION
+timeout_seconds: 3
+max_payload_bytes: 1048576
