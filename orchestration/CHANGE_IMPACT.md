@@ -89,6 +89,8 @@ An existing change ID is never silently reinitialized. Use a new `--change-id` f
 
 Run `aips intelligence impact-validate --project <repo> --path <CHANGE_IMPACT.yaml>` before treating an artifact as implementation-approved or READY. Validation fails closed when either the user-authorized scope record or the post-diff Git reconciliation is missing, dirty, unverifiable or mismatched. DRAFT and IMPLEMENTATION_APPROVED validation does not require a Git diff.
 
+When traversal validation reports `affected node lacks a final disposition`, inspect that node's callers and consumers and explicitly choose `reviewed_safe`, `requires_change` or `unknown`. Do not infer a disposition from the absence of a diff. `requires_change` must be included in the approved `target_paths`; high-risk `unknown` nodes remain blocking until the relationship is reviewed or the impact boundary is expanded. Rerun `aips intelligence impact-validate` after resolving each finding.
+
 ## Diff reconciliation
 
 After implementation compare:

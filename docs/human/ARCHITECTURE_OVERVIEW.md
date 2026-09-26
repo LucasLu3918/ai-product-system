@@ -116,6 +116,8 @@ The optional OpenTelemetry export uses the same canonical `CHECKPOINT.yaml` and 
 
 Change Impact unknown 可以記錄 evidence-backed disposition；Legacy string、失效或越界證據、未經 Human review 的處置及 incomplete traversal 仍維持阻擋。Scenario 179 驗證此契約，同時保留 exact READY diff reconciliation 與全域圖涵蓋狀態。
 
+Publication Preflight keeps checkout selection, changed-document link/build checks and Integration Gate environment diagnostics in the existing publication path; an explicit project root keeps the CLI, scripts, configuration and candidate on one checkout. These checks report readiness and do not grant publication or merge authority.
+
 Remote Git publication has a mandatory candidate secret scan inside the existing Publication Preflight and Integration Gate flow. It checks the final tree and all candidate commits, binds redacted evidence to the candidate, policy and scanner hashes, and blocks incomplete scans. CI then runs the same repository preflight before installing full dependencies and Chromium. It reuses the built-in scanner and adds no approval authority or required external service.
 
 EARS validator contract-only changes use the Scenario Conformance documentation closure; changes to requirement planning behavior, templates, or canonical requirements retain the full planning closure.

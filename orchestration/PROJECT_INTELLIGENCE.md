@@ -187,6 +187,8 @@ The local SQLite Retrieval Intelligence index may contain rebuildable lexical ca
 
 Impact traversal combines these candidates with exact canonical `IMPACT_GRAPH.yaml` edges. It supports caller and consumer directions, explicit depth/node/edge bounds, cycle protection, exact seed paths/lines, selective bounded history evidence and per-node dispositions. Results expose reached depth, coverage, truncation and unresolved relationships. Optional `coverage_scopes` may establish evidence-backed completeness only when every matched seed is listed; they never upgrade repository-wide coverage. Invalid or unmatched scopes fall back to global coverage. Stale or incomplete indexes must not silently claim complete impact. See `orchestration/CHANGE_IMPACT.md` for risk policy and READY requirements.
 
+Validation errors for missing dispositions state the affected node, allowed final values and the command to rerun. This improves repair guidance while leaving disposition selection explicit and high-risk unknowns blocking.
+
 ## Sensitive data
 
 Do not persist secret values or sensitive payload bodies in Intelligence or HTML.

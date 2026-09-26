@@ -9,6 +9,7 @@ change:
   - durable-run-events-and-telemetry-recording
   - telemetry-projection-and-otlp-export
   - architecture-documentation-and-release
+  - publication-readiness-preflight
 matrix:
 - boundary: matrix-readiness-preview-and-gate
   reason: Preview previously accepted DRAFT, blocked or unreconciled Matrix state
@@ -209,14 +210,45 @@ matrix:
     docs_schema:
       applicable: true
       evidence: VERSION, CHANGELOG, diagrams, and canonical guidance pass complete repository validation.
+- boundary: publication-readiness-preflight
+  reason: Make publication work against the explicitly selected checkout, detect local documentation/runtime blockers before the full Gate, and resolve traversal review findings without weakening approval semantics.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff and Python syntax checks cover the CLI, preflight scripts, Change Impact validation and focused lifecycle tests.
+    unit:
+      applicable: true
+      evidence: Focused tests cover explicit-root selection/reporting, environment preflight order, Markdown local-link classification and actionable final-disposition diagnostics.
+    integration:
+      applicable: true
+      evidence: Exact-candidate publish preflight runs repository checks, local VitePress build for documentation changes and the Integration Gate using one selected checkout.
+    contract:
+      applicable: true
+      evidence: CLI/report additive fields, required class-label creation arguments, safe remote-auth diagnostics and fail-closed Change Impact behavior are asserted by contracts.
+    e2e:
+      applicable: false
+      na_reason: There is no deployed service; repository lifecycle checks plus the remote PR CI run cover the publication path.
+    security:
+      applicable: true
+      evidence: Authentication stderr remains redacted, strict exact-candidate secret scanning remains required, and unknown Impact nodes are never auto-approved.
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted schema or external integration state is changed; only ignored retrieval-index metadata is rebuilt.
+    cli_harness:
+      applicable: true
+      evidence: Source CLI and installed CLI with --project-root are checked against the same explicit candidate root.
+    docs_schema:
+      applicable: true
+      evidence: User and maintainer guidance plus orchestration docs describe root selection, local docs/build checks, environment blockers, labels and Change Impact dispositions.
 
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: true
-blockers: []
+actual_diff_reconciled: false
+blockers:
+  - candidate binding refreshed; review scope and evidence before marking READY
 candidate:
-  base_sha: b734a3cd33ca883969ee186cadc0a01ca9b7102e
-  changed_files_hash: 56a7de509a3f9195bbf429e696ace3549891b68a442a4ccd45c465f3f2851902
+  base_sha: 59a400e07a450395eff01c60ccb1d5ff07d9c024
+  changed_files_hash: 3421f158745be0a676c268e150e3f1e41877faeb6173d6e59f1c6d41501eb153
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
-status: READY
+status: DRAFT

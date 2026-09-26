@@ -1900,7 +1900,12 @@ def validate_traversal_evidence(doc: dict[str, Any], changed_files: list[str] | 
         path = str(node.get("path") or "")
         disposition = node.get("disposition")
         if disposition not in {"reviewed_safe", "requires_change", "unknown"}:
-            errors.append(f"affected node lacks a final disposition: {path or node.get('symbol', 'unknown')}" )
+            errors.append(
+                "affected node lacks a final disposition: "
+                f"{path or node.get('symbol', 'unknown')}; after reviewing its callers/consumers, "
+                "set disposition to reviewed_safe, requires_change or unknown, then rerun "
+                "`aips intelligence impact-validate`"
+            )
             continue
         if disposition == "requires_change" and path and path not in declared_paths:
             errors.append(f"required affected path is outside approved target_paths: {path}")
@@ -1910,7 +1915,11 @@ def validate_traversal_evidence(doc: dict[str, Any], changed_files: list[str] | 
             if impact_status != expected:
                 errors.append(f"affected node status does not match the actual diff: {path or node.get('symbol', 'unknown')}")
         if disposition == "unknown" and high_risk:
-            errors.append(f"high-risk affected node remains unresolved: {path or node.get('symbol', 'unknown')}")
+            errors.append(
+                f"high-risk affected node remains unresolved: {path or node.get('symbol', 'unknown')}; "
+                "inspect the relationship and either expand target_paths for required changes, "
+                "record reviewed_safe with evidence, or resolve the traversal unknown before validation"
+            )
     return errors
 
 

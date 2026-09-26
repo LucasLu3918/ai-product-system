@@ -119,6 +119,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Publication Preflight reports the script root and Git root, checks Python/Ruff, loopback and browser readiness before expensive Gate work, and runs changed-Markdown link checks plus a VitePress build for documentation candidates. `--project-root <repo>` binds an installed CLI to another source checkout; all candidate calculations then run from that checkout.
+
 ### OpenTelemetry run export
 
 `aips telemetry record` appends bounded lifecycle metadata to existing run events. `aips telemetry export --output` builds a deterministic offline OTLP/HTTP JSON projection; `aips telemetry replay --config <yaml> --send` transmits only when the supplied config explicitly enables export. Remote endpoints require HTTPS and the optional authorization value comes from a host environment variable. Prompt, output, tool arguments, private reasoning and credentials are excluded. Unpaired lifecycle evidence is reported as `TELEMETRY_DEGRADED`; it does not alter AIPS execution or Gate results. GenAI fields follow the immutable snapshot recorded in `orchestration/schemas/telemetry-export.yaml`. Scenario 181 verifies this boundary and does not replace deterministic validation or review evidence.

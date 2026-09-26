@@ -46,9 +46,8 @@ if 'help|-h|--help)' not in cli or "Usage: aips telemetry" not in cli:
     errors.append("aips telemetry must expose command help")
 if "prompt" not in schema.get("privacy", {}).get("forbidden", []):
     errors.append("telemetry schema must explicitly forbid prompt capture")
-if not re.search(r"^## 0\.65\.0$", (ROOT / "CHANGELOG.md").read_text(encoding="utf-8"), re.MULTILINE):
-    errors.append("CHANGELOG must document version 0.65.0")
-if (ROOT / "VERSION").read_text(encoding="utf-8").strip() != "0.65.0":
-    errors.append("VERSION must be 0.65.0")
+current_version = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+if not re.search(rf"^## {re.escape(current_version)}$", (ROOT / "CHANGELOG.md").read_text(encoding="utf-8"), re.MULTILINE):
+    errors.append("CHANGELOG must contain a heading for the current VERSION")
 if not (ROOT / "docs/human/assets/system-overview.svg").read_text(encoding="utf-8").endswith("</svg>\n"):
     errors.append("System overview SVG must remain closed and newline-terminated")
