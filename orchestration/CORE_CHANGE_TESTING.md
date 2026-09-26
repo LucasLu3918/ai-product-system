@@ -85,6 +85,8 @@ Material mismatch requires additional testing or explicit scope correction befor
 
 Use `aips publish preview --base <base> --change-class <class>` before committing to include staged, unstaged and untracked paths in recursive documentation, matrix-binding, content-safety and configured Git identity previews. Findings include categories only, never candidate PII or configured email values. `aips publish matrix-sync --base <base>` refreshes only the canonical matrix base/hash fields; boundary, evidence, blockers and readiness remain subject to review before the Gate can accept the matrix.
 
+Preview and Gate share the same required Matrix readiness conditions: executable status, no blockers, reconciled actual diff, and matching base/hash. A preview with any outstanding condition reports `NEEDS_WORK`; `READY_FOR_GATE` remains a planning signal, not Gate PASS.
+
 Before merge/publication of an integration candidate, use `orchestration/INTEGRATION_GATE.md`.
 
 For Large/Core changes, the existing Impact-derived Test Matrix remains authoritative for applicability. The Integration Gate may require the matrix and binds:

@@ -296,6 +296,8 @@ The publication plan records the change-class label for the initial PR create re
 
 Before commit, use the publication preview to inspect the complete working-tree file set, recursive documentation requirements and matrix hash. Synchronize only the canonical matrix binding after the scope is complete, then review the invalidated matrix evidence before Gate execution.
 
+Treat Matrix `NEEDS_WORK` from a DRAFT status, remaining blockers, unreconciled diff or stale binding as an implementation task. Clear it before running the exact-candidate Gate; a preview readiness result never authorizes publication.
+
 Eval-as-CI is a Core Change capability. The Orchestrator must route it through the Core Change Test Matrix, reuse existing Agent Eval / Scenario Conformance contracts, start trajectory evaluation in shadow mode, and preserve Human authority over Git Publish.
 
 When a repository PR represents an already approved Large/Core Change, preserve that classification into deterministic CI with `aips:large-change` or `aips:core-change`. Integration Gate uses the change class only to select evidence requirements; it does not create semantic classification or approval authority.

@@ -63,6 +63,8 @@ AIPS keeps the existing protected-main required context `repository`.
 
 The validation workflow runs the `janitor` job first. The required `repository` job is a compatibility aggregate that can succeed only when Janitor succeeds. Therefore existing branch protection continues to block a failing candidate without requiring a branch-protection migration.
 
+When concurrency cancels a superseded workflow, the aggregate does not run. An active workflow still runs the aggregate after Janitor failure, so a genuine failed candidate remains red. Review the latest run for the candidate SHA when older runs were canceled.
+
 ~~~text
 PR/main candidate
 → janitor: exact candidate + lint/type/tests/contracts
@@ -123,7 +125,7 @@ Core `READY` reconciliation is independently checked against Git: base must be a
 
 ## Conditional Core Matrix enforcement
 
-Preview may report a stale Core Matrix base/hash and suggest `aips publish matrix-sync --base <sha>` before commit. The sync operation marks the matrix DRAFT for review; the final Gate evaluates only an exact, clean committed candidate.
+Preview reports the same Matrix readiness failures as the Gate, including DRAFT status, remaining blockers, unreconciled actual diff and stale base/hash. A stale binding suggests `aips publish matrix-sync --base <sha>` before commit. The sync operation marks the matrix DRAFT for review; the final Gate evaluates only an exact, clean committed candidate.
 
 Validation Profiles may declare `matrix_required_change_classes` plus a narrow `matrix_required_paths` safety net. Standard changes are Matrix-optional by default; `aips:large-change` and `aips:core-change` resolve to required Matrix evidence. Known governance-core Integration Gate surfaces may also require the Matrix when labels are absent.
 

@@ -212,6 +212,8 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 `aips publish plan` 對失效的 GitHub CLI 認證只回報 `AUTH_REQUIRED` 與重新登入步驟，不回傳 CLI stderr 或 token。PR 分類標籤應在首次建立時帶入，以便首次 CI 選用正確的驗證等級。
 
+Publication preview 對 Matrix 未就緒原因只回報固定類別，不輸出 blocker 內容；被 concurrency 取消的舊 CI run 不會執行 required aggregate，而現行 run 的 Janitor 失敗仍維持 fail closed。
+
 Use `orchestration/SECRET_HANDLING.md` whenever code, tests, deployment or an external integration needs credentials.
 
 Security review verifies:

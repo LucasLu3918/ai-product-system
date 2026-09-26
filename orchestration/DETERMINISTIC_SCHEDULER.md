@@ -90,6 +90,8 @@ CI 在這項掃描通過後以相同 base/head 執行 repository preflight，再
 
 Preflight 也驗證候選 checkout 與 Core Matrix changed-files hash；若工作樹 dirty、HEAD 不符或 browser smoke probe 失敗，應在 lifecycle 前回報明確的 `BLOCKED`／`ENVIRONMENT_BLOCKED` 原因。
 
+提交前的 publication preview 亦檢查 Matrix 狀態、blockers 與實際差異核對；這些條件與正式 Gate 共用判定，避免預覽宣稱可進 Gate 卻被同一矩陣擋下。
+
 Output includes graph/state/decision SHA-256 fingerprints for reproducibility.
 
 CI integration evidence is written to the runner temporary directory and uploaded after validation. Scheduler and repository checks therefore inspect the unchanged checkout revision instead of treating generated reports as dirty inputs.

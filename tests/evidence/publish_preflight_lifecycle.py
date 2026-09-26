@@ -24,6 +24,7 @@ def load_module():
 
 def main() -> int:
     publish = load_module()
+    from integration_gate import GateError, matrix_fingerprint
 
     change_class, warning = publish.resolve_change_class("auto", "bug,aips:core-change")
     assert change_class == "core" and warning is None
@@ -100,6 +101,51 @@ def main() -> int:
     assert "Documentation placement: guide.md: outside allowed H2" in preview["pending"]
     assert preview["matrix"]["next_step"].startswith("Run `aips publish matrix-sync")
     assert preview["pr_creation"]["required_label"] == "aips:core-change"
+
+    with tempfile.TemporaryDirectory() as td:
+        matrix_path = Path(td) / "matrix.yaml"
+        files = ["scripts/feature.py"]
+        matrix_hash = publish.canonical_hash(files)
+        matrix = {
+            "candidate": {"base_sha": "base-sha", "changed_files_hash": matrix_hash},
+            "status": "READY", "blockers": [], "actual_diff_reconciled": True,
+        }
+        cases = [
+            ({"status": "DRAFT"}, ["status"]),
+            ({"blockers": ["pending review"]}, ["blockers"]),
+            ({"actual_diff_reconciled": False}, ["actual_diff_reconciled"]),
+            ({"candidate": {"base_sha": "old", "changed_files_hash": matrix_hash}}, ["base_sha"]),
+            ({}, []),
+        ]
+        for changes, expected_issues in cases:
+            candidate = {**matrix, **changes}
+            matrix_path.write_text(yaml.safe_dump(candidate), encoding="utf-8")
+            with patch.object(publish, "resolve_commit", side_effect=["base-sha", "head-sha"]), patch.object(
+                publish, "worktree_changed_files", return_value=files
+            ), patch.object(
+                publish, "documentation_impact", return_value={"required_additions": [], "complete": True}
+            ), patch.object(
+                publish.documentation_placement, "audit_worktree", return_value=[]
+            ), patch.object(
+                publish, "preview_content_safety", return_value={"status": "PASS", "blockers": []}
+            ), patch.object(
+                publish, "configured_identity_plan", return_value={"status": "PASS", "blockers": []}
+            ):
+                candidate_preview = publish.preview_candidate(Namespace(
+                    base="main", head="HEAD", change_class="core", labels="aips:core-change",
+                    profile=ROOT / "config/integration-gate.yaml", matrix=matrix_path,
+                ))
+            assert candidate_preview["matrix"]["issues"] == expected_issues
+            assert candidate_preview["status"] == ("NEEDS_WORK" if expected_issues else "READY_FOR_GATE")
+            if expected_issues:
+                try:
+                    matrix_fingerprint(matrix_path, True, base_sha="base-sha", changed_files_hash=matrix_hash)
+                except GateError:
+                    pass
+                else:
+                    raise AssertionError(f"Gate accepted matrix issues: {expected_issues}")
+            else:
+                assert matrix_fingerprint(matrix_path, True, base_sha="base-sha", changed_files_hash=matrix_hash)[0]
 
     with patch.object(publish.shutil, "which", return_value="/usr/bin/gh"), patch.object(
         publish, "git", return_value="https://github.com/owner/repo.git"
