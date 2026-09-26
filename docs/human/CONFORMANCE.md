@@ -39,6 +39,8 @@ Scenario 111/114 覆蓋 risk/data-aware resolver：無啟用 provider 時為 `UN
 
 Scenario 178 validates the opt-in independent-review contract, including required-mode fail-closed behavior. The active repository matrix currently disables PR enforcement until a trusted runtime-attestation verifier is available; lifecycle fixtures do not claim live runtime attestation.
 
+Publication lifecycle evidence compares Matrix preview and Gate across DRAFT, blocker, unreconciled diff, stale binding and READY cases; the CI contract also preserves failure for active Janitor failures while skipping the aggregate for superseded canceled runs.
+
 ## v0.14.1 Legacy Scenario Reconciliation
 
 v0.14.1 重新核對 Scenario 001–095 與目前 canonical contracts，先修正規格漂移，再提升 automation evidence，避免把過時行為固定成自動化測試。

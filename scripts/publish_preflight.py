@@ -22,6 +22,8 @@ if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
 import documentation_placement  # noqa: E402
+from integration_gate import load_yaml as load_matrix_yaml
+from integration_gate import matrix_readiness_issues
 
 try:
     from content_safety import safe_emit
@@ -212,26 +214,37 @@ def preview_candidate(args: argparse.Namespace) -> dict[str, Any]:
     matrix_hash = canonical_hash(files)
     binding: dict[str, Any] = {"required": required, "path": str(matrix_path), "changed_files_hash": matrix_hash}
     if required and matrix_path.is_file():
-        matrix = yaml.safe_load(matrix_path.read_text(encoding="utf-8")) or {}
+        matrix = load_matrix_yaml(matrix_path)
         candidate = matrix.get("candidate") or {}
+        issues = matrix_readiness_issues(matrix, base_sha=base, changed_files_hash=matrix_hash)
         binding.update({
             "base_matches": candidate.get("base_sha") == base,
             "hash_matches": candidate.get("changed_files_hash") == matrix_hash,
             "bound_base": candidate.get("base_sha"),
             "bound_hash": candidate.get("changed_files_hash"),
+            "readiness": "READY" if not issues else "BLOCKED",
+            "issues": issues,
         })
     else:
         binding["base_matches"] = not required
         binding["hash_matches"] = not required
+        binding["readiness"] = "BLOCKED" if required else "NOT_REQUIRED"
+        binding["issues"] = ["missing"] if required else []
     pending = list(docs["required_additions"])
-    if required and not matrix_path.is_file():
-        pending.append("canonical Core Change Test Matrix is missing")
-    if required and (not binding.get("base_matches") or not binding.get("hash_matches")):
+    if required and any(issue in {"base_sha", "changed_files_hash", "missing"} for issue in binding["issues"]):
         binding["next_step"] = (
             f"Run `aips publish matrix-sync --base {base}`, then review the matrix scope and "
             "evidence before marking it READY."
         )
-        pending.append("Core Change Test Matrix binding needs synchronization: " + binding["next_step"])
+    matrix_messages = {
+        "missing": "canonical Core Change Test Matrix is missing",
+        "status": "Core Change Test Matrix status is not executable; review scope and mark it READY",
+        "blockers": "Core Change Test Matrix contains blockers; resolve them before Gate",
+        "actual_diff_reconciled": "Core Change Test Matrix actual diff is not reconciled",
+        "base_sha": "Core Change Test Matrix base binding needs synchronization",
+        "changed_files_hash": "Core Change Test Matrix changed-files binding needs synchronization",
+    }
+    pending.extend(matrix_messages[issue] for issue in binding["issues"])
     pending.extend(f"Documentation placement: {item}" for item in placement_errors)
     safety = preview_content_safety(base, files)
     identity = configured_identity_plan()

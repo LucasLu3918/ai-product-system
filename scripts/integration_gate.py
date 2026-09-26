@@ -121,19 +121,34 @@ def matrix_fingerprint(
     matrix = load_yaml(path)
     if not required:
         return canonical_hash(matrix), matrix
+    issues = matrix_readiness_issues(matrix, base_sha=base_sha, changed_files_hash=changed_files_hash)
+    if issues:
+        messages = {
+            "status": f"Core Change Test Matrix status is not executable: {matrix.get('status')!r}",
+            "blockers": "Core Change Test Matrix contains blockers",
+            "actual_diff_reconciled": "Core Change Test Matrix actual_diff_reconciled must be true",
+            "base_sha": "Core Change Test Matrix base_sha does not match candidate",
+            "changed_files_hash": "Core Change Test Matrix changed_files_hash does not match candidate",
+        }
+        raise GateError(messages[issues[0]])
+    return canonical_hash(matrix), matrix
+
+
+def matrix_readiness_issues(matrix: dict[str, Any], *, base_sha: str, changed_files_hash: str) -> list[str]:
+    """Return the Gate's matrix readiness failures in evaluation order."""
+    issues: list[str] = []
     if matrix.get("status") not in {"READY", "APPROVED", "PASS"}:
-        raise GateError(f"Core Change Test Matrix status is not executable: {matrix.get('status')!r}")
-    blockers = matrix.get("blockers") or []
-    if blockers:
-        raise GateError("Core Change Test Matrix contains blockers")
+        issues.append("status")
+    if matrix.get("blockers"):
+        issues.append("blockers")
     if not matrix.get("actual_diff_reconciled"):
-        raise GateError("Core Change Test Matrix actual_diff_reconciled must be true")
+        issues.append("actual_diff_reconciled")
     binding = matrix.get("candidate") or {}
     if binding.get("base_sha") != base_sha:
-        raise GateError("Core Change Test Matrix base_sha does not match candidate")
+        issues.append("base_sha")
     if binding.get("changed_files_hash") != changed_files_hash:
-        raise GateError("Core Change Test Matrix changed_files_hash does not match candidate")
-    return canonical_hash(matrix), matrix
+        issues.append("changed_files_hash")
+    return issues
 
 
 def run_check(

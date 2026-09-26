@@ -66,6 +66,7 @@ workflow = (ROOT / ".github/workflows/validate.yml").read_text(encoding="utf-8")
 for phrase in (
     "janitor:",
     "repository:\n    needs: janitor",
+    "if: ${{ !cancelled() }}",
     "needs.janitor.result",
     "requirements-validation.txt",
     "scripts/publish_preflight.py",

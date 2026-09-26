@@ -331,6 +331,12 @@ Keep the top-level validator as an aggregator. New substantial validation belong
 
 ## Deterministic Scheduler / Integration Gate consistency
 
+Preview 對 Core Matrix 套用與 Gate 相同的就緒條件：可執行狀態、無 blockers、實際差異已核對、base/hash 相符。同步後若仍是 DRAFT 或有待處理項目，先完成審查並清除已解決的 blocker；`READY_FOR_GATE` 不是正式 Gate PASS。
+
+在原始碼 checkout 驗證尚未安裝的修改時，使用 `./bin/aips`，避免全域安裝的 CLI 指向另一份系統程式碼或 Matrix。受限 sandbox 若禁止 localhost bind，先用 `prepare-local-validation` 辨識 `ENVIRONMENT_BLOCKED`；恢復該能力後重新執行完整驗證，不略過測試。
+
+被 concurrency 取消的舊 CI run 不執行 `repository` 彙總 job，現行 run 的 Janitor 失敗仍讓彙總 job 失敗。檢查同一候選 SHA 的最新 required aggregate。
+
 When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 27 deterministic, 98 lifecycle and 54 agent_eval scenarios (179 automated total).
 
 When deterministic scheduling or merge-candidate validation changes, review together:

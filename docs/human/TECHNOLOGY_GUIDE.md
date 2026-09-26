@@ -46,6 +46,8 @@ Core、Recall 與 temporal evidence 共用硬預算；Index 開啟或查詢失�
 
 本地發布驗證可由 `bin/prepare-local-validation` 在 repository 外的暫存目錄準備 Python 3.12 venv、CI requirements 與 Chromium；`--check-only --run --base <sha> --head <sha>` 使用同一環境執行既有 `publish_preflight.py`，並把驗證設定放在暫存 `XDG_CONFIG_HOME`。檢索索引使用 `XDG_CACHE_HOME` 下可重建的 SQLite 快取，路徑不可寫時應修復快取設定並重建，不改寫 canonical Intelligence。
 
+驗證原始碼 checkout 時以 `./bin/aips` 呼叫本地 CLI；受限執行環境先由 `prepare-local-validation` 檢查 localhost 與瀏覽器能力，再解讀完整驗證的結果。
+
 Temporal Change Impact 可依 Git revision 還原當時有效的 assertion 與 Impact Graph edge；canonical YAML 保留真實來源，SQLite 只作可重建的 query projection。這延伸現有 Project Intelligence，不引入外部 Graph Database。
 
 Portable Command projections use ownership and digest checks to preserve user edits; the same Canonical Registry and renderer serve CLI and MCP without granting protected-operation authority.
@@ -73,6 +75,8 @@ Parallel worktree 可取得 repository-scoped TCP port lease；跨 process alloc
 The Gate can require an expected unittest count for commands whose success output includes the collected-test summary; absent or mismatched counts fail the check.
 
 `aips publish preview` includes untracked and uncommitted paths in documentation and Core Matrix planning. `aips publish matrix-sync` updates the candidate binding and returns the matrix to DRAFT for review.
+
+Matrix readiness checks are shared with the exact-candidate Gate: status, blockers, actual-diff reconciliation and base/hash must all pass before preview reports `READY_FOR_GATE`.
 
 Merge candidate 依 change class 與 actual diff 執行 lint、type、test、repository validation 與 Core Change Matrix。
 
