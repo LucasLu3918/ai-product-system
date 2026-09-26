@@ -112,6 +112,12 @@ Usage:
   aips conformance agent-eval check [--format yaml|json]
   aips conformance agent-eval report [--format yaml|json]
   aips conformance agent-eval consistency --case <yaml> --results-dir <dir> [--min-repetitions <n>] [--min-pass-rate <0..1>] [--format yaml|json]
+  aips eval import-promptfoo --config <yaml> --results <jsonl> --output <yaml>
+  aips eval export-promptfoo --case <yaml> --provider <built-in-id> --output <yaml>
+  aips eval import-pyrit --bridge <yaml> --output <yaml>
+  aips eval verify-evidence --evidence <yaml> [--config <yaml> --results <jsonl>]
+  aips eval profile --change-class <class> [--area <class>] [--deep-pyrit]
+  aips eval promote-finding --finding <yaml> --output <case.yaml>
 
   aips isolation resolve --mode auto|shared|worktree|sandbox [--risk normal|elevated|high|critical] [--untrusted-execution] [--data-class public|internal|confidential|restricted] [--project <path>] [--format yaml|json]
   aips isolation create --id <id> --boundary <id> [--mode worktree|sandbox] [--project <path>] [--ref <ref>] [--port <id>] [--preferred <port>] [--expose <ENV>]
@@ -664,6 +670,13 @@ agent_eval_cmd() {
   py="$(python_bin)"
   [ -n "$py" ] || die "python3 is required."
   "$py" "$SYSTEM_DIR/scripts/agent_eval.py" "$@"
+}
+
+eval_interop_cmd() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/eval_interop.py" "$@"
 }
 
 trajectory_eval_cmd() {
@@ -1489,6 +1502,10 @@ case "${1:-help}" in
       shift 2 || true
       conformance_cmd "$sub" "$@"
     fi
+    ;;
+  eval)
+    shift
+    eval_interop_cmd "$@"
     ;;
   trajectory)
     action="${2:-evaluate}"

@@ -108,6 +108,8 @@ Runtime Policy Enforcement 使用四種結果：`ALLOW`、`DENY`、`REQUIRE_APPR
 
 ## Scenario Conformance 與 Agent Eval
 
+外部 Eval / Red-Team 工具只作為可選 evidence producer。AIPS 以離線、限縮的 adapter 驗證輸入與來源 fingerprint；外部 score 維持 `SIGNAL` / `REVIEW`，經 Human 確認的最小重現案例才轉成 canonical Agent Eval Case，交由本機 deterministic scorer 與既有 Gate 使用。
+
 Change Impact unknown 可以記錄 evidence-backed disposition；Legacy string、失效或越界證據、未經 Human review 的處置及 incomplete traversal 仍維持阻擋。Scenario 179 驗證此契約，同時保留 exact READY diff reconciliation 與全域圖涵蓋狀態。
 
 Remote Git publication has a mandatory candidate secret scan inside the existing Publication Preflight and Integration Gate flow. It checks the final tree and all candidate commits, binds redacted evidence to the candidate, policy and scanner hashes, and blocks incomplete scans. CI then runs the same repository preflight before installing full dependencies and Chromium. It reuses the built-in scanner and adds no approval authority or required external service.

@@ -1,0 +1,13 @@
+description: offline fixture; importing does not execute this config
+prompts:
+  - "Return JSON for {{question}}"
+providers:
+  - openai:chat:gpt-4o-mini
+tests:
+  - vars:
+      question: "name a color"
+    assert:
+      - type: contains
+        value: "color"
+      - type: is-json
+        value: true

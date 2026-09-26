@@ -82,7 +82,7 @@ placement_rules:
   - id: publication-cli
     triggers: [bin/aips]
     placements:
-      docs/human/USER_GUIDE.md: [Execution Isolation 與 Runtime Resource, Git Publication 與 Release]
+      docs/human/USER_GUIDE.md: [Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
 
   - id: execution-isolation
@@ -200,20 +200,26 @@ placement_rules:
       - scripts/requirements_traceability.py
       - tests/scenarios/174-ears-requirement-traceability.md
       - tests/scenarios/175-risk-adaptive-bounded-impact.md
-      - tests/scenario_coverage.yaml
-      - tests/validation/conformance_isolation.py
-      - tests/validate_repository.py
-      - orchestration/DOCUMENTATION_SYNC.md
     placements:
       docs/human/USER_GUIDE.md: [需求釐清與 Planning, Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification, Security & Governance]
       docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Execution Isolation Conformance]
 
   - id: scenario-conformance
-    triggers: [orchestration/CONFORMANCE.md, tests/scenario_coverage.yaml, tests/validation/conformance_isolation.py, tests/validation/ears_requirement_contracts.py, tests/scenarios/175-risk-adaptive-bounded-impact.md, tests/scenarios/176-mandatory-candidate-secret-scanning.md, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, tests/evidence/secret_scan_publication_lifecycle.py, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py]
+    triggers: [orchestration/CONFORMANCE.md, tests/scenario_coverage.yaml, tests/validation/conformance_isolation.py, tests/validation/ears_requirement_contracts.py, tests/scenarios/175-risk-adaptive-bounded-impact.md, tests/scenarios/176-mandatory-candidate-secret-scanning.md, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, tests/evidence/secret_scan_publication_lifecycle.py, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/180-external-eval-interoperability.md, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py, tests/validation/eval_interop_contracts.py, scripts/eval_interop.py, orchestration/EVAL_INTEROPERABILITY.md, orchestration/AGENT_EVAL.md]
     placements:
-      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Execution Isolation Conformance]
+      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Execution Isolation Conformance]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification, Security & Governance]
+
+  - id: eval-interoperability
+    triggers: [scripts/eval_interop.py, config/eval-profiles.yaml, config/integration-gate.yaml, orchestration/EVAL_INTEROPERABILITY.md, orchestration/AGENT_EVAL.md, orchestration/schemas/external-eval-evidence.yaml, orchestration/schemas/eval-profile.yaml, orchestration/schemas/red-team-finding.yaml, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py, tests/validation/eval_interop_contracts.py, tests/scenarios/180-external-eval-interoperability.md, tests/scenario_coverage.yaml]
+    placements:
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Scenario Conformance 與 Agent Eval]
+      docs/human/CONFORMANCE.md: [Scenario 180 — External Eval / Red-Team Interoperability]
+      docs/human/SECURITY_ASSURANCE.md: [Secret and credential safety]
+      docs/human/USER_GUIDE.md: [Quality 與 Review]
+      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+      docs/human/DOCUMENTATION_MAP.md: [Agent / machine canonical 文件]
 
   - id: documentation-platform
     triggers: [docs/human/.vitepress/**, package.json, .github/workflows/docs-site.yml, scripts/documentation_placement.py, config/documentation-placement.yaml]
@@ -250,16 +256,13 @@ placement_rules:
       - orchestration/EXECUTION_ISOLATION.md
       - orchestration/PLANNING_PACKAGE.md
       - orchestration/REQUIREMENT_CLARIFICATION.md
-      - orchestration/DOCUMENTATION_SYNC.md
-      - tests/scenario_coverage.yaml
       - tests/scenarios/178-independent-review-isolation.md
       - tests/evidence/review_isolation_lifecycle.py
       - tests/validation/review_isolation_contracts.py
-      - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
     placements:
       docs/human/USER_GUIDE.md: [Quality 與 Review, Deterministic Scheduler, Execution Isolation 與 Runtime Resource, 需求釐清與 Planning, Git Publication 與 Release]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance, Product Delivery]
       docs/human/SECURITY_ASSURANCE.md: [Product baseline vs change impact, Secret and credential safety, Runtime Policy Enforcement]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval]
-      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Execution Isolation Conformance]
+      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Execution Isolation Conformance]
       docs/human/MAINTENANCE.md: [Deterministic Scheduler / Integration Gate consistency]

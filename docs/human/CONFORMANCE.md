@@ -1371,3 +1371,16 @@ Lifecycle and contract evidence validate structured OPEN / RESOLVED / MITIGATED 
 - manual：0
 - uncovered：0
 - automated：**179 / 179**
+
+## Scenario 180 — External Eval / Red-Team Interoperability
+
+外部工具設定不會在 AIPS 執行；受限的 Promptfoo subset 與 versioned PyRIT bridge 只能產生有 fingerprint 的 `SIGNAL` / `REVIEW` evidence。未經 Human 確認的 finding 不能成為 regression。Scenario 180 驗證 parser 邊界、secret/private reasoning 拒絕、來源 freshness、risk profile、CLI 與 canonical deterministic promotion lifecycle。
+
+目前 Scenario inventory：
+
+- deterministic：27
+- lifecycle：99
+- agent_eval：54
+- manual：0
+- uncovered：0
+- automated：**180 / 180**

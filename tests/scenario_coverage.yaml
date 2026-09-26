@@ -1404,3 +1404,11 @@ scenarios:
       - tests/validation/change_impact_resolution_contracts.py
       - scripts/project_intelligence.py
       - templates/intelligence/CHANGE_IMPACT.yaml
+  - id: "180"
+    path: tests/scenarios/180-external-eval-interoperability.md
+    coverage: lifecycle
+    evidence:
+      - scripts/eval_interop.py
+      - tests/test_eval_interop.py
+      - tests/evidence/eval_interop_lifecycle.py
+      - tests/validation/eval_interop_contracts.py

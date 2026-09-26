@@ -131,6 +131,8 @@ Scenario registry 將 evidence 分成 deterministic、lifecycle、agent_eval、m
 
 ### Agent Evaluation
 
+外部 Eval adapter 位於 `scripts/eval_interop.py`，使用無第三方框架 runtime 依賴的 bounded parser；Promptfoo static subset、PyRIT versioned bridge、risk profiles 與 finding promotion 都沿用 Agent Eval Case/Result 和既有 Gate authority。輸入格式與限制見 `orchestration/EVAL_INTEROPERABILITY.md`。
+
 需要 semantic judgment 的 case 使用 provider-neutral observable-result contract，不保存 private reasoning。
 
 ### Repository Health

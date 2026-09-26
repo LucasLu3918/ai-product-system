@@ -321,6 +321,8 @@ Portable Command contract 位於 `tests/validation/portable_commands_contracts.p
 - `tests/validation/syntax_contracts.py` — shell syntax checks;
 - `tests/evidence/*` — focused one-to-one executable evidence.
 
+External Eval / Red-Team Interoperability contracts are checked by `tests/validation/eval_interop_contracts.py`; focused unit and lifecycle runners are invoked by the repository validator. Keep the top-level validator as an aggregator and preserve the lifecycle evidence's isolated local HTTP fixture.
+
 Keep the top-level validator as an aggregator. New substantial validation belongs in the narrowest existing module or a focused evidence runner rather than expanding the entrypoint back into a monolith.
 
 `scripts/repository_preflight.py` 先跑快速文件／schema／diff 檢查；通過後才進入完整 lifecycle。環境缺少 localhost bind 或 browser 時回報 `ENVIRONMENT_BLOCKED`，不混稱產品測試失敗。

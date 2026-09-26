@@ -96,6 +96,22 @@ flowchart LR
 
 The evaluator measures task-specific evidence retrieval only. It records deterministic quality/token metrics plus informational observed latency, and has no authority to enable semantic providers, change rank weights or select a new retrieval technology.
 
+## External Eval / Red-Team evidence flow
+
+~~~mermaid
+flowchart LR
+    PF[Optional Promptfoo run] --> N[Bounded static AIPS normalizer]
+    PY[Optional PyRIT bridge] --> N
+    N --> EV[Fingerprint-bound SIGNAL / REVIEW evidence]
+    EV --> H[Human review]
+    H -->|confirmed finding + minimal reproduction| CASE[Canonical AIPS Agent Eval Case]
+    CASE --> SCORE[Local deterministic scorer]
+    SCORE --> G[Existing Integration Gate policy]
+    EV -. external score never authorizes .-> G
+~~~
+
+The normalizer does not execute external configuration or frameworks. Discovery scans, stochastic scores, and LLM judging stay advisory; Human authority and existing runtime Safety/Policy boundaries remain unchanged.
+
 ### Adopted structural retrieval + retained trial replay
 
 ~~~mermaid

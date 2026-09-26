@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.64.0
+
+- Add offline-first Promptfoo/PyRIT Eval interoperability, fingerprint verification, risk profiles, and Human-confirmed finding-to-regression promotion.
+- Keep external scores advisory and preserve canonical deterministic Agent Eval, Runtime Safety/Policy, and Human publication authority.
+
 ## Unreleased
 
 - Run the existing repository preflight early in CI, after the mandatory candidate secret scan and before full validation dependencies and Chromium.

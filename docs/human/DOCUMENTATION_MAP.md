@@ -44,6 +44,8 @@ Secret handling guidance covers the built-in mandatory publication-candidate sca
 
 ## Agent / machine canonical 文件
 
+`orchestration/EVAL_INTEROPERABILITY.md` 是外部 Promptfoo / PyRIT evidence 邊界、支援 subset、CLI、驗證與 Human finding promotion 的 machine canonical 文件。
+
 Content safety 的 machine canonical 文件為 `config/content-safety.yaml`、`scripts/content_safety.py` 與 `orchestration/CONTENT_SAFETY_BOUNDARY.md`；Human-facing placement 由本專案的 documentation placement contract 維護。
 
 `orchestration/TRAJECTORY_EVAL.md`、`templates/review/TRAJECTORY_TRACE.yaml` 與 `templates/review/TRAJECTORY_EVIDENCE.yaml` 是 Eval-as-CI trajectory contract 的 canonical machine-facing 文件。
