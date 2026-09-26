@@ -247,7 +247,7 @@ blockers:
   - candidate binding refreshed; review scope and evidence before marking READY
 candidate:
   base_sha: 59a400e07a450395eff01c60ccb1d5ff07d9c024
-  changed_files_hash: 3421f158745be0a676c268e150e3f1e41877faeb6173d6e59f1c6d41501eb153
+  changed_files_hash: 5b88cfcc683be85231953ada20030e287a2b2e89673751a746909a5e4171fc71
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
