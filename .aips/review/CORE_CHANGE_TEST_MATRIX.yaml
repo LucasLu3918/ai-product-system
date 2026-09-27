@@ -242,13 +242,12 @@ matrix:
       evidence: User and maintainer guidance plus orchestration docs describe root selection, local docs/build checks, environment blockers, labels and Change Impact dispositions.
 
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
-blockers:
-  - candidate binding refreshed; review scope and evidence before marking READY
+actual_diff_reconciled: true
+blockers: []
 candidate:
   base_sha: 59a400e07a450395eff01c60ccb1d5ff07d9c024
   changed_files_hash: 5b88cfcc683be85231953ada20030e287a2b2e89673751a746909a5e4171fc71
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
-status: DRAFT
+status: READY
