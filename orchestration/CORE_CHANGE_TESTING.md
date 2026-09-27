@@ -105,6 +105,8 @@ The independent-review mechanism is implemented but its PR enforcement is curren
 
 Before publication, run the shared preflight from a clean candidate worktree. It must resolve the same base/head and change class that CI will use, verify recursive documentation placement, and reject a stale Core Matrix or browser launch prerequisite before expensive lifecycle checks.
 
+For local publication, the same preflight checks the explicit repository root, required Python/Ruff modules, loopback binding and browser launch before starting the Integration Gate. Changed Markdown links and the VitePress build run before full lifecycle validation when docs/package paths are part of the candidate.
+
 Integration Gate PASS is evidence only. It never supplies Human approval, merge authority, publication authority, architecture approval or risk acceptance.
 
 ## Conditional CI enforcement

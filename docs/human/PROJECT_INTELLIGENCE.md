@@ -61,6 +61,8 @@ Mutation 前建立 CHANGE_IMPACT，涵蓋 Input / Output / Data / Events / Consu
 
 需要 traversal 時，先以 `aips intelligence impact-traverse --project <repo> --seed <symbol> --seed-path <path> --risk-class <class>` 找候選 callers/consumers。風險政策設定最低深度；node、edge 與 depth 都有上限。結果會區分實際修改與受影響但未修改的節點，後者必須記錄 `reviewed_safe`、`requires_change` 或 `unknown`。依賴注入、反射、動態 dispatch、圖涵蓋不足、索引過期與預算截斷都保留為不確定性；高風險 change 有 unresolved 或 truncated 證據時不得標記 traversal 完整。Lexical 關係是 inferred evidence，需人工核對。
 
+若 `impact-validate` 指出節點缺少 final disposition，依錯誤中的路徑檢視 caller/consumer，再明確選擇允許值並重跑驗證；不會根據沒有程式碼差異就自動標成安全。
+
 ## Preserve Valid Native Conventions
 
 Explicit Rule → Formatter/Linter/Contract → Shared Abstraction → Majority Convention → Approved Intelligence → Framework Best Practice → AIPS Default。Unsafe/broken legacy pattern 不盲目複製。

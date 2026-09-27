@@ -106,7 +106,11 @@ When required, the Gate validates structured evidence for review mode, distinct 
 
 Local maintainers and GitHub Actions MUST enter the Gate through `scripts/publish_preflight.py` for publication candidates. The shared resolver binds the same base/head, PR-label change class, canonical `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`, `AIPS_DOCS_DIFF_BASE` and fast repository preflight before expensive lifecycle checks.
 
-The preflight also requires a clean exact candidate checkout and validates the Matrix changed-files hash before the Gate starts. Browser-dependent evidence uses a versioned Playwright managed browser when available; a failed isolated launch probe is `ENVIRONMENT_BLOCKED`, not a product regression.
+The preflight also requires a clean exact candidate checkout and validates the Matrix changed-files hash before the Gate starts. `aips publish plan` reports the resolved repository root and Git checkout root. When the installed CLI is pointed at another checkout, pass `--project-root <repo>` so scripts, configuration and candidate paths all come from that checkout. Browser-dependent evidence uses a versioned Playwright managed browser when available; a failed isolated launch probe is `ENVIRONMENT_BLOCKED`, not a product regression.
+
+Before starting the full Gate, `aips publish preflight` checks the selected Python runtime, PyYAML, Ruff, loopback binding and browser launch capability. An environment blocker returns its exact check and remediation before candidate scans or lifecycle tests run. The repository preflight also checks local links in changed Markdown files; `--docs-build` builds VitePress when documentation paths changed. The normal local publication path enables this build automatically.
+
+For Core/Large PRs, create the pull request with its `aips:core-change` or `aips:large-change` label in the initial request (the plan prints the matching `gh pr create --label ...` command). This lets the first validation run use the correct matrix and avoids an extra `labeled` event run. `remote.status: AUTH_REQUIRED` means the GitHub CLI cannot perform that command yet; run `gh auth login -h github.com` and verify with `gh auth status -h github.com`, or use another already-authorized publication route.
 
 For pull-request validation, the caller should provide `--base-tip <fresh-target-ref>` after freshly fetching the target branch.
 

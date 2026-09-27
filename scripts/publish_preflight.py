@@ -95,7 +95,8 @@ def pr_creation_plan(change_class: str) -> dict[str, Any]:
     return {
         "required_label": label,
         "gh_create_args": ["gh", "pr", "create", *(["--label", label] if label else [])],
-        "note": "Attach the change-class label in the initial PR create request so the opened run uses the intended gate.",
+        "label_timing": "initial_create_request" if label else "not_required",
+        "note": "Create the PR with its change-class label in the same request so the opened run uses the intended gate without a second labeled-event run.",
     }
 
 
@@ -159,6 +160,30 @@ def documentation_impact(files: list[str]) -> dict[str, Any]:
 def environment_status() -> dict[str, Any]:
     blockers: list[str] = []
     diagnostics: list[dict[str, str]] = []
+    python_version = subprocess.run([sys.executable, "--version"], capture_output=True, text=True)
+    missing_modules = []
+    for module in ("yaml", "ruff"):
+        check = subprocess.run(
+            [sys.executable, "-c", f"import {module}"], capture_output=True, text=True
+        )
+        if check.returncode:
+            missing_modules.append(module)
+    if missing_modules:
+        blockers.append("python_modules:" + ",".join(missing_modules))
+        diagnostics.append({
+            "check": "python_modules",
+            "status": "BLOCKED",
+            "detail": ",".join(missing_modules),
+            "next_step": "Run `python3.12 bin/prepare-local-validation` to install the pinned Gate dependencies, then rerun `aips publish environment`.",
+        })
+    if python_version.returncode:
+        blockers.append("python_runtime:unavailable")
+        diagnostics.append({
+            "check": "python_runtime",
+            "status": "BLOCKED",
+            "detail": "selected Python executable could not report its version",
+            "next_step": "Select the repository validation environment with `aips publish --project-root <repo> environment`.",
+        })
     try:
         probe = socket.socket()
         probe.bind(("127.0.0.1", 0))
@@ -184,16 +209,29 @@ def environment_status() -> dict[str, Any]:
             next_step = "Install project validation dependencies, then rerun `aips publish environment`."
         else:
             next_step = "Inspect the browser probe stderr and retry with the managed Playwright browser; classify launch permission failures as environment blockers."
+        stderr = str(browser_probe.get("stderr") or "")
+        if any(token in stderr for token in ("PermissionError", "EPERM", "EACCES")):
+            detail = "browser launch is blocked by process permissions"
+            next_step = "Run in an environment that permits the managed browser to launch, then rerun `aips publish environment`."
+        else:
+            detail = "browser launch probe failed; inspect locally with `aips publish environment`"
         diagnostics.append({
             "check": "browser_probe",
             "status": str(browser_probe["status"]),
-            "detail": str(browser_probe.get("stderr") or browser_probe.get("path") or "browser unavailable"),
+            "detail": detail,
             "next_step": next_step,
         })
     return {
         "status": "READY" if not blockers else "ENVIRONMENT_BLOCKED",
+        "python": {"executable": Path(sys.executable).name, "version": python_version.stdout.strip() or python_version.stderr.strip()},
+        "python_modules": {"status": "READY" if not missing_modules else "BLOCKED", "missing": missing_modules},
         "localhost": localhost,
-        "browser": browser_probe,
+        "browser": {
+            "status": browser_probe["status"],
+            "provider": browser_probe.get("provider"),
+            "version": browser_probe.get("version"),
+            "path_configured": bool(browser_probe.get("path")),
+        },
         "blockers": blockers,
         "diagnostics": diagnostics,
     }
@@ -450,7 +488,7 @@ def secret_scan_plan(base: str, head: str) -> dict[str, Any]:
     return report
 
 
-def build_plan(args: argparse.Namespace) -> dict[str, Any]:
+def build_plan(args: argparse.Namespace, environment: dict[str, Any] | None = None) -> dict[str, Any]:
     base = resolve_commit(args.base)
     head = resolve_commit(args.head)
     files = changed_files(base, head)
@@ -460,6 +498,12 @@ def build_plan(args: argparse.Namespace) -> dict[str, Any]:
     matrix = Path(args.matrix).resolve() if args.matrix else CANONICAL_MATRIX
     matrix_ok = matrix.is_file() and matrix == CANONICAL_MATRIX.resolve()
     blockers: list[str] = []
+    try:
+        git_root = Path(git("rev-parse", "--show-toplevel")).resolve()
+    except PreflightError:
+        git_root = None
+    if git_root != ROOT.resolve():
+        blockers.append("publish preflight source root does not match the Git checkout root")
     if required and not matrix_ok:
         blockers.append("canonical Core Change Test Matrix is required")
     docs = documentation_impact(files)
@@ -489,6 +533,11 @@ def build_plan(args: argparse.Namespace) -> dict[str, Any]:
             blockers.append("Core Change Test Matrix changed_files_hash does not match candidate")
     return {
         "version": 1,
+        "repository": {
+            "root": str(ROOT.resolve()),
+            "git_root": str(git_root) if git_root else None,
+            "root_matches": git_root == ROOT.resolve(),
+        },
         "candidate": {"base": base, "head": head, "changed_files": files},
         "change_class": change_class,
         "change_class_warning": warning,
@@ -500,7 +549,7 @@ def build_plan(args: argparse.Namespace) -> dict[str, Any]:
             "changed_files_hash": canonical_hash(files),
         },
         "documentation": docs,
-        "environment": environment_status(),
+        "environment": environment if environment is not None else environment_status(),
         "remote": remote_policy(args.branch, args.offline),
         "content_safety": safety,
         "secret_scan": secret_scan,
@@ -574,17 +623,24 @@ def emit(value: dict[str, Any], fmt: str) -> None:
 
 
 def run_candidate(args: argparse.Namespace) -> int:
-    plan = build_plan(args)
-    if plan["environment"]["status"] != "READY":
-        plan["blockers"].extend(f"environment:{item}" for item in plan["environment"]["blockers"])
-        plan["status"] = "ENVIRONMENT_BLOCKED"
+    environment = environment_status()
+    if environment["status"] != "READY":
+        emit({
+            "version": 1,
+            "repository": {"root": str(ROOT.resolve()), "git_root": git("rev-parse", "--show-toplevel", check=False)},
+            "status": "ENVIRONMENT_BLOCKED",
+            "environment": environment,
+            "blockers": [f"environment:{item}" for item in environment["blockers"]],
+        }, args.format)
+        return 2
+    plan = build_plan(args, environment=environment)
     if plan["status"] != "READY":
         emit(plan, args.format)
         return 2 if plan["status"] == "ENVIRONMENT_BLOCKED" else 1
     env = dict(os.environ)
     env["AIPS_DOCS_DIFF_BASE"] = plan["candidate"]["base"]
     fast = subprocess.run(
-        [sys.executable, str(ROOT / "scripts/repository_preflight.py"), "--base", plan["candidate"]["base"], "--head", plan["candidate"]["head"]],
+        [sys.executable, str(ROOT / "scripts/repository_preflight.py"), "--base", plan["candidate"]["base"], "--head", plan["candidate"]["head"], "--docs-build"],
         cwd=ROOT,
         env=env,
     )

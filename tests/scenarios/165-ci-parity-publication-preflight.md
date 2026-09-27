@@ -19,6 +19,11 @@ The maintainer previews a working tree, binds the reviewed Core Matrix, then run
 - missing base or required documentation cannot be reported as CI-parity PASS;
 - Git-ignored local metadata does not violate documentation audience layout;
 - unsupported localhost/browser capabilities are reported as environment blockers;
+- explicit `--project-root` keeps source scripts, configuration, candidate identity and the Integration Gate on one checkout;
+- changed Markdown local links and the local VitePress build fail before the full publication Gate;
+- missing Python, Ruff, loopback or browser prerequisites return remediation before candidate scanning and lifecycle execution;
+- missing Change Impact final dispositions show allowed choices while unknown and high-risk findings remain blocking;
+- the Core/Large classification label is present in the initial PR creation request, and missing GitHub CLI authentication is reported without raw stderr;
 - protected main routes through a pull request;
 - post-merge reconciliation requires a clean tree, preserves a backup branch and resets only when tree objects are identical;
 - Project Intelligence revision refresh occurs automatically only for equivalent trees; semantic changes remain fail-closed;

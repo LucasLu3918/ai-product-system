@@ -208,6 +208,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 
 ## Quality 與 Review
 
+本地發佈預檢會先確認 Python／Ruff、loopback 與 Chromium 等 Integration Gate 條件，再做完整候選驗證；文件變更時也會檢查本地 Markdown 連結並建置 VitePress。用全域 CLI 驗證另一份 checkout 時加上 `--project-root <repo>`，讓腳本、設定與候選使用同一個 repo root。
+
 ### OpenTelemetry run traces
 
 Record a lifecycle pair in the existing run event stream, then export or replay it:

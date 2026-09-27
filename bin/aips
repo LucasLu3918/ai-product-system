@@ -132,9 +132,9 @@ Usage:
   aips isolation remove --id <id> [--project <path>] [--format yaml|json]
 
   aips scheduler --graph <yaml> [--state <yaml>] [--format yaml|json]
-  aips integration-gate --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>]
+  aips integration-gate --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>] [--project-root <repo>]
   aips janitor --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>]
-  aips publish preview|plan|preflight|matrix-sync|post-merge [publish-preflight options]
+  aips publish preview|plan|preflight|matrix-sync|post-merge [publish-preflight options] [--project-root <repo>]
   aips docs impact --base <ref> [--head <ref>] [--format yaml|json]
 
   aips identity [--project <path>] [--format yaml|json]
@@ -743,21 +743,70 @@ scheduler_cmd() {
 
 integration_gate_cmd() {
   local py
-  py="$(python_bin)"
+  local selected_root=""
+  local -a gate_args=()
+  while [ "$#" -gt 0 ]; do
+    if [ "$1" = "--project-root" ]; then
+      [ "$#" -ge 2 ] || die "--project-root requires a repository path."
+      selected_root="$2"
+      shift 2
+    else
+      gate_args+=("$1")
+      shift
+    fi
+  done
+  local command_root="$SYSTEM_DIR"
+  if [ -n "$selected_root" ]; then
+    command_root="$(cd "$selected_root" 2>/dev/null && pwd -P)" || die "Cannot resolve --project-root: $selected_root"
+    [ -f "$command_root/scripts/integration_gate.py" ] || die "--project-root is not an AIPS repository: $command_root"
+    say "Integration Gate project root: $command_root" >&2
+    if [ -x "$command_root/.venv/bin/python" ]; then
+      py="$command_root/.venv/bin/python"
+    else
+      py="$(python_bin)"
+    fi
+  else
+    py="$(python_bin)"
+  fi
+  set -- "${gate_args[@]}"
   [ -n "$py" ] || die "python3 is required."
-  "$py" -c 'import yaml' >/dev/null 2>&1 || die "The selected Python environment lacks PyYAML. Run aips doctor or install the repository requirements before validation."
-  PATH="$(dirname "$py"):$PATH" "$py" "$SYSTEM_DIR/scripts/integration_gate.py" "$@"
+  "$py" -c 'import yaml' >/dev/null 2>&1 || die "The Python selected for $command_root ($py) lacks PyYAML. Run `python3.12 bin/prepare-local-validation` in that checkout, then retry."
+  PATH="$(dirname "$py"):$PATH" "$py" "$command_root/scripts/integration_gate.py" "$@"
 }
 
 publish_preflight_cmd() {
   local action="${1:-plan}"
   local py
+  local selected_root=""
+  local -a publish_args=()
   shift || true
+  while [ "$#" -gt 0 ]; do
+    if [ "$1" = "--project-root" ]; then
+      [ "$#" -ge 2 ] || die "--project-root requires a repository path."
+      selected_root="$2"
+      shift 2
+    else
+      publish_args+=("$1")
+      shift
+    fi
+  done
   [ "$action" != "preflight" ] || action="run"
-  py="$(python_bin)"
+  local command_root="$SYSTEM_DIR"
+  if [ -n "$selected_root" ]; then
+    command_root="$(cd "$selected_root" 2>/dev/null && pwd -P)" || die "Cannot resolve --project-root: $selected_root"
+    [ -f "$command_root/scripts/publish_preflight.py" ] || die "--project-root is not an AIPS repository: $command_root"
+    say "Publish preflight project root: $command_root" >&2
+    if [ -x "$command_root/.venv/bin/python" ]; then
+      py="$command_root/.venv/bin/python"
+    else
+      py="$(python_bin)"
+    fi
+  else
+    py="$(python_bin)"
+  fi
   [ -n "$py" ] || die "python3 is required."
-  "$py" -c 'import yaml' >/dev/null 2>&1 || die "The selected Python environment lacks PyYAML. Run aips doctor or install the repository requirements before validation."
-  PATH="$(dirname "$py"):$PATH" "$py" "$SYSTEM_DIR/scripts/publish_preflight.py" "$action" "$@"
+  "$py" -c 'import yaml' >/dev/null 2>&1 || die "The Python selected for $command_root ($py) lacks PyYAML. Run `python3.12 bin/prepare-local-validation` in that checkout, then retry."
+  PATH="$(dirname "$py"):$PATH" "$py" "$command_root/scripts/publish_preflight.py" "$action" "${publish_args[@]}"
 }
 
 docs_cmd() {

@@ -284,6 +284,16 @@ unknowns: []
             },
         }
         self.assertEqual(validate_traversal_evidence(valid, ["src/api.py"]), [])
+        missing_disposition = {
+            **valid,
+            "traversal": {
+                **valid["traversal"],
+                "nodes": [{"kind": "caller", "path": "src/api.py", "impact_status": "affected_and_changed"}],
+            },
+        }
+        errors = validate_traversal_evidence(missing_disposition, ["src/api.py"])
+        self.assertTrue(any("reviewed_safe, requires_change or unknown" in error for error in errors))
+        self.assertTrue(any("aips intelligence impact-validate" in error for error in errors))
         broken = {**valid, "traversal": {**valid["traversal"], "status": "TRUNCATED", "truncated": True}}
         self.assertTrue(validate_traversal_evidence(broken, ["src/api.py"]))
 

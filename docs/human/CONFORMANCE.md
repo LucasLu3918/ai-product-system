@@ -1365,6 +1365,8 @@ Lifecycle and deterministic evidence check deny-by-default policy evaluation, ex
 
 Lifecycle and contract evidence validate structured OPEN / RESOLVED / MITIGATED / ACCEPTED_LIMITATION entries, fail-closed legacy strings, required Human review, in-root current file SHA-256 evidence, traversal digest and seed-scope binding, and rejection of malformed, stale, truncated, or out-of-scope evidence. Existing exact READY diff reconciliation remains required, and scoped coverage does not upgrade global Impact Graph coverage.
 
+Traversal findings name the affected path and allowed final dispositions; they do not assign a decision. High-risk unknown relationships remain blocking until reviewed or incorporated into the approved impact boundary.
+
 目前 Scenario inventory：
 
 - deterministic：27
