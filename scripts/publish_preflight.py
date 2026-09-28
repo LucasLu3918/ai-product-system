@@ -308,6 +308,11 @@ def preview_candidate(args: argparse.Namespace) -> dict[str, Any]:
 
 def preview_content_safety(base: str, files: list[str]) -> dict[str, Any]:
     tracked_diff = git("diff", "--no-ext-diff", "--unified=0", base, "--")
+    tracked_additions = [
+        line[1:]
+        for line in tracked_diff.splitlines()
+        if line.startswith("+") and not line.startswith("+++")
+    ]
     untracked: dict[str, str] = {}
     unscannable: list[str] = []
     for relative in files:
@@ -324,7 +329,7 @@ def preview_content_safety(base: str, files: list[str]) -> dict[str, Any]:
             untracked[relative] = path.read_text(encoding="utf-8", errors="strict")
         except (OSError, UnicodeError):
             unscannable.append(relative)
-    check = safe_emit(sink="source_artifact", payload={"tracked_diff": tracked_diff, "untracked_files": untracked})
+    check = safe_emit(sink="source_artifact", payload={"tracked_additions": tracked_additions, "untracked_files": untracked})
     blockers = []
     if check["decision"] == "BLOCK":
         blockers.append("early content-safety check blocked the working-tree candidate")

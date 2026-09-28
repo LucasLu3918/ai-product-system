@@ -1,7 +1,9 @@
 version: 1
 change:
-  id: opentelemetry-telemetry-export
-  summary: Add privacy-safe OpenTelemetry trace projection and optional OTLP export/replay for AIPS run evidence.
+  id: aips-system-hardening
+  summary: Harden turn intent and instruction scope, durable event concurrency, read-only
+    retrieval, current Agent Eval evidence, observed stage telemetry, and trusted
+    review attestation.
   boundary:
   - matrix-readiness-preview-and-gate
   - canceled-workflow-required-aggregate
@@ -10,6 +12,11 @@ change:
   - telemetry-projection-and-otlp-export
   - architecture-documentation-and-release
   - publication-readiness-preflight
+  - scoped-turn-context-and-intent
+  - concurrent-event-stream-and-read-only-retrieval
+  - current-eval-and-observed-stage-evidence
+  - trusted-review-attestation
+  - compatibility-documentation-and-release
 matrix:
 - boundary: matrix-readiness-preview-and-gate
   reason: Preview previously accepted DRAFT, blocked or unreconciled Matrix state
@@ -121,29 +128,37 @@ matrix:
       evidence: Maintenance, User Guide, Technology Guide, Architecture and Conformance
         docs close declared impact.
 - boundary: durable-run-events-and-telemetry-recording
-  reason: Extend append-only run evidence with a bounded telemetry allowlist and lifecycle CLI.
+  reason: Extend append-only run evidence with a bounded telemetry allowlist and lifecycle
+    CLI.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff passed on new telemetry modules and tests; Python compilation and complete repository validation passed.
+      evidence: Ruff passed on new telemetry modules and tests; Python compilation
+        and complete repository validation passed.
     unit:
       applicable: true
-      evidence: telemetry_export_lifecycle.py passed allowlist, bounds, timestamps, pairing, and deterministic IDs.
+      evidence: telemetry_export_lifecycle.py passed allowlist, bounds, timestamps,
+        pairing, and deterministic IDs.
     integration:
       applicable: true
-      evidence: telemetry_export_lifecycle.py passed recording-to-replay and loopback OTLP receiver integration.
+      evidence: telemetry_export_lifecycle.py passed recording-to-replay and loopback
+        OTLP receiver integration.
     contract:
       applicable: true
-      evidence: telemetry_export_contracts.py passed; legacy event records remain valid and invalid telemetry fields reject.
+      evidence: telemetry_export_contracts.py passed; legacy event records remain
+        valid and invalid telemetry fields reject.
     e2e:
       applicable: false
-      na_reason: No deployed service; the local receiver exercises the full exporter request path.
+      na_reason: No deployed service; the local receiver exercises the full exporter
+        request path.
     security:
       applicable: true
-      evidence: Lifecycle rejected secret-like identifiers and content fields without persistence; strict candidate scan is required after commit.
+      evidence: Lifecycle rejected secret-like identifiers and content fields without
+        persistence; strict candidate scan is required after commit.
     migration_recovery:
       applicable: true
-      evidence: Legacy event loading, deterministic replay, and non-mutating exporter failure checks passed.
+      evidence: Legacy event loading, deterministic replay, and non-mutating exporter
+        failure checks passed.
     cli_harness:
       applicable: true
       evidence: aips telemetry --help and telemetry lifecycle checks passed.
@@ -151,47 +166,61 @@ matrix:
       applicable: true
       evidence: Telemetry schema checks and complete repository validation passed.
 - boundary: telemetry-projection-and-otlp-export
-  reason: Add deterministic offline projection and explicit host-side OTLP/HTTP JSON delivery.
+  reason: Add deterministic offline projection and explicit host-side OTLP/HTTP JSON
+    delivery.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff and Python compilation passed for telemetry modules and lifecycle/contract tests.
+      evidence: Ruff and Python compilation passed for telemetry modules and lifecycle/contract
+        tests.
     unit:
       applicable: true
-      evidence: Lifecycle checks passed stable IDs, nesting, links, allowlisted attributes, and incomplete evidence degradation.
+      evidence: Change Impact traversal lifecycle passed dynamic-dispatch detection,
+        static helper-list false-positive rejection, coverage scope, and disposition
+        checks; telemetry lifecycle passed stable IDs, nesting, links, allowlisted
+        attributes, and incomplete evidence degradation.
     integration:
       applicable: true
-      evidence: Local receiver verified OTLP envelope, host authorization, server failure, and redirect rejection.
+      evidence: Local receiver verified OTLP envelope, host authorization, server
+        failure, and redirect rejection.
     contract:
       applicable: true
-      evidence: Contract checks passed against the pinned immutable GenAI mapping snapshot.
+      evidence: Contract checks passed against the pinned immutable GenAI mapping
+        snapshot.
     e2e:
       applicable: false
-      na_reason: No remote observability backend is required for the provider-neutral exporter.
+      na_reason: No remote observability backend is required for the provider-neutral
+        exporter.
     security:
       applicable: true
-      evidence: Endpoint, credential, content exclusion, bounds, redaction, and redirect negative paths passed; strict repository source scan passed before commit.
+      evidence: Endpoint, credential, content exclusion, bounds, redaction, and redirect
+        negative paths passed; strict repository source scan passed before commit.
     migration_recovery:
       applicable: true
-      evidence: Replay is deterministic and transport failures do not mutate canonical run evidence.
+      evidence: Replay is deterministic and transport failures do not mutate canonical
+        run evidence.
     cli_harness:
       applicable: true
-      evidence: Offline and explicit-send CLI lifecycle plus top-level telemetry help passed.
+      evidence: Offline and explicit-send CLI lifecycle plus top-level telemetry help
+        passed.
     docs_schema:
       applicable: true
-      evidence: Schema, pinned mapping, and exporter docs passed complete repository validation.
+      evidence: Schema, pinned mapping, and exporter docs passed complete repository
+        validation.
 - boundary: architecture-documentation-and-release
   reason: Update canonical architecture, user guidance, conformance, and release metadata.
   checks:
     static_lint:
       applicable: true
-      evidence: Complete repository validation passed documentation and release metadata contracts.
+      evidence: Complete repository validation passed documentation and release metadata
+        contracts.
     unit:
       applicable: false
       na_reason: Documentation and release metadata have no separate runtime behavior.
     integration:
       applicable: true
-      evidence: Exact-candidate publication preview and Integration Gate are required before remote merge.
+      evidence: Exact-candidate publication preview and Integration Gate are required
+        before remote merge.
     contract:
       applicable: true
       evidence: Scenario 181 registry and documented CLI/config are checked by telemetry_export_contracts.py.
@@ -209,44 +238,269 @@ matrix:
       evidence: Local aips telemetry command routing and help checks passed.
     docs_schema:
       applicable: true
-      evidence: VERSION, CHANGELOG, diagrams, and canonical guidance pass complete repository validation.
+      evidence: VERSION, CHANGELOG, diagrams, and canonical guidance pass complete
+        repository validation.
 - boundary: publication-readiness-preflight
-  reason: Make publication work against the explicitly selected checkout, detect local documentation/runtime blockers before the full Gate, and resolve traversal review findings without weakening approval semantics.
+  reason: Make publication work against the explicitly selected checkout, detect local
+    documentation/runtime blockers before the full Gate, and resolve traversal review
+    findings without weakening approval semantics.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff and Python syntax checks cover the CLI, preflight scripts, Change Impact validation and focused lifecycle tests.
+      evidence: Ruff and Python syntax checks cover the CLI, preflight scripts, Change
+        Impact validation and focused lifecycle tests.
     unit:
       applicable: true
-      evidence: Focused tests cover explicit-root selection/reporting, environment preflight order, Markdown local-link classification and actionable final-disposition diagnostics.
+      evidence: Focused tests cover explicit-root selection/reporting, environment
+        preflight order, Markdown local-link classification and actionable final-disposition
+        diagnostics.
     integration:
       applicable: true
-      evidence: Exact-candidate publish preflight runs repository checks, local VitePress build for documentation changes and the Integration Gate using one selected checkout.
+      evidence: Exact-candidate publish preflight runs repository checks, local VitePress
+        build for documentation changes and the Integration Gate using one selected
+        checkout.
     contract:
       applicable: true
-      evidence: CLI/report additive fields, required class-label creation arguments, safe remote-auth diagnostics and fail-closed Change Impact behavior are asserted by contracts.
+      evidence: CLI/report additive fields, required class-label creation arguments,
+        safe remote-auth diagnostics and fail-closed Change Impact behavior are asserted
+        by contracts.
     e2e:
       applicable: false
-      na_reason: There is no deployed service; repository lifecycle checks plus the remote PR CI run cover the publication path.
+      na_reason: There is no deployed service; repository lifecycle checks plus the
+        remote PR CI run cover the publication path.
     security:
       applicable: true
-      evidence: Authentication stderr remains redacted, strict exact-candidate secret scanning remains required, and unknown Impact nodes are never auto-approved.
+      evidence: Authentication stderr remains redacted, strict exact-candidate secret
+        scanning remains required, and unknown Impact nodes are never auto-approved.
     migration_recovery:
       applicable: false
-      na_reason: No persisted schema or external integration state is changed; only ignored retrieval-index metadata is rebuilt.
+      na_reason: No persisted schema or external integration state is changed; only
+        ignored retrieval-index metadata is rebuilt.
     cli_harness:
       applicable: true
-      evidence: Source CLI and installed CLI with --project-root are checked against the same explicit candidate root.
+      evidence: Source CLI and installed CLI with --project-root are checked against
+        the same explicit candidate root.
     docs_schema:
       applicable: true
-      evidence: User and maintainer guidance plus orchestration docs describe root selection, local docs/build checks, environment blockers, labels and Change Impact dispositions.
-
+      evidence: User and maintainer guidance plus orchestration docs describe root
+        selection, local docs/build checks, environment blockers, labels and Change
+        Impact dispositions.
+- boundary: scoped-turn-context-and-intent
+  reason: Turn classification and instruction resolution determine which project guidance
+    governs read-only versus mutating work.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Critical Ruff checks passed for scripts and tests.
+    unit:
+      applicable: true
+      evidence: tests/evidence/intelligence_context_lifecycle.py passed explicit intent
+      negation: null
+      nested instruction scope: null
+      and non-Git behavior.: null
+    integration:
+      applicable: true
+      evidence: AIPS context lifecycle exercised scoped YAML and JSON output against
+        temporary project trees.
+    contract:
+      applicable: true
+      evidence: Existing context pointers and full JSON manifest remain compatible;
+        compact YAML is the default projection.
+    e2e:
+      applicable: false
+      na_reason: No deployed service; temporary project lifecycle covers the complete
+        local CLI path.
+    security:
+      applicable: true
+      evidence: Scoped instruction resolution excludes unrelated nested project guidance
+        and preserves authoritative-source precedence.
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted schema or user data migration.
+    cli_harness:
+      applicable: true
+      evidence: Context lifecycle tests invoke the project intelligence CLI for intent
+        and target-path resolution.
+    docs_schema:
+      applicable: true
+      evidence: Project Intelligence
+      Turn Harness: null
+      System: null
+      and user guidance document the new behavior.: null
+- boundary: concurrent-event-stream-and-read-only-retrieval
+  reason: Run evidence writers must not interleave under concurrent processes, and
+    retrieval queries must not mutate the index.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Critical Ruff checks passed for shared event writer
+      run state: null
+      telemetry: null
+      and retrieval modules.: null
+    unit:
+      applicable: true
+      evidence: Retrieval lifecycle verifies read-only access and stable snapshot
+        fallback; telemetry lifecycle verifies event pairing and sequence behavior.
+    integration:
+      applicable: true
+      evidence: Telemetry lifecycle concurrently writes mixed event types and validates
+        every resulting JSONL event.
+    contract:
+      applicable: true
+      evidence: Existing event records and retrieval result shape remain compatible.
+    e2e:
+      applicable: false
+      na_reason: No deployed service; temporary SQLite and local filesystem integration
+        exercises producer-to-reader behavior.
+    security:
+      applicable: true
+      evidence: Retrieval opens SQLite read-only and snapshot fallback uses a stable
+        copy with quick_check.
+    migration_recovery:
+      applicable: true
+      evidence: Existing databases remain readable; snapshot fallback covers unavailable
+        WAL sidecars without changing the source database.
+    cli_harness:
+      applicable: true
+      evidence: Retrieval and telemetry lifecycle tests exercise the local command
+        modules.
+    docs_schema:
+      applicable: true
+      evidence: Architecture and technology guidance describe event durability and
+        read-only retrieval.
+- boundary: current-eval-and-observed-stage-evidence
+  reason: Agent Eval results must identify the exact current system dependencies,
+    while stage telemetry must reflect observed execution.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Critical Ruff checks passed for Agent Eval
+      observed-stage instrumentation: null
+      and Integration Gate.: null
+    unit:
+      applicable: true
+      evidence: tests/evidence/agent_eval_framework.py verifies CURRENT
+      STALE: null
+      and UNBOUND result binding.: null
+    integration:
+      applicable: true
+      evidence: Telemetry lifecycle verifies actual stage spans
+      missing-run degradation: null
+      and concurrent run event persistence.: null
+    contract:
+      applicable: true
+      evidence: Agent Eval template and report preserve historical results while declaring
+        unbound results explicitly.
+    e2e:
+      applicable: false
+      na_reason: No hosted evaluator or deployed service is required for local observable-evidence
+        capture.
+    security:
+      applicable: true
+      evidence: Stage instrumentation records bounded allowlisted metadata and does
+        not gate on missing optional telemetry.
+    migration_recovery:
+      applicable: true
+      evidence: Historical Agent Eval results remain available and are classified
+        UNBOUND rather than rewritten.
+    cli_harness:
+      applicable: true
+      evidence: Agent Eval and Integration Gate lifecycle checks exercise exact local
+        command paths.
+    docs_schema:
+      applicable: true
+      evidence: Agent Eval
+      telemetry: null
+      architecture: null
+      and conformance docs explain freshness and observed spans.: null
+- boundary: trusted-review-attestation
+  reason: Review evidence needs an externally administered Ed25519 trust root before
+    it can satisfy mandatory independent review.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Critical Ruff checks passed for attestation verification and review
+        evidence integration.
+    unit:
+      applicable: true
+      evidence: tests/validation/review_isolation_contracts.py verifies signature
+        acceptance
+      tamper rejection: null
+      and repository-local trust-store rejection.: null
+    integration:
+      applicable: true
+      evidence: review_isolation_lifecycle.py passed with an external temporary trust
+        store and signed candidate evidence.
+    contract:
+      applicable: true
+      evidence: Integration Gate reports UNVERIFIED without a configured trusted issuer
+        and rejects invalid signatures.
+    e2e:
+      applicable: false
+      na_reason: No production issuer is configured in this repository; wiring a real
+        host-managed trust root is an operational prerequisite.
+    security:
+      applicable: true
+      evidence: Ed25519 signatures bind canonical attestation fields; key trust is
+        resolved outside the candidate repository.
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted review evidence migration; enforcement remains disabled
+        until an external issuer is configured.
+    cli_harness:
+      applicable: true
+      evidence: Integration Gate lifecycle validates the trust-store option and fail-closed
+        verification behavior.
+    docs_schema:
+      applicable: true
+      evidence: Multi-review and Core Change Testing guidance document the trust-root
+        requirement and disabled default.
+- boundary: compatibility-documentation-and-release
+  reason: Public contracts, dependencies, diagrams, CLI help, and release metadata
+    must agree with the implementation.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Critical Ruff, Python compilation, and git diff whitespace checks
+        passed for changed sources and lifecycle/contract tests.
+    unit:
+      applicable: true
+      evidence: Lifecycle checks passed stable IDs, nesting, links, allowlisted attributes,
+        and incomplete evidence degradation.
+    integration:
+      applicable: true
+      evidence: Local receiver verified OTLP envelope, host authorization, server
+        failure, and redirect rejection.
+    contract:
+      applicable: true
+      evidence: Contract checks passed against the pinned immutable GenAI mapping
+        snapshot.
+    e2e:
+      applicable: false
+      na_reason: No remote observability backend is required for the provider-neutral
+        exporter.
+    security:
+      applicable: true
+      evidence: Endpoint, credential, content exclusion, bounds, redaction, and redirect
+        negative paths passed; strict repository source scan passed before commit.
+    migration_recovery:
+      applicable: true
+      evidence: Replay is deterministic and transport failures do not mutate canonical
+        run evidence.
+    cli_harness:
+      applicable: true
+      evidence: Offline and explicit-send CLI lifecycle plus top-level telemetry help
+        passed.
+    docs_schema:
+      applicable: true
+      evidence: Schema, pinned mapping, exporter docs, human and agent docs, diagrams,
+        and release metadata passed complete repository validation.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 59a400e07a450395eff01c60ccb1d5ff07d9c024
-  changed_files_hash: 5b88cfcc683be85231953ada20030e287a2b2e89673751a746909a5e4171fc71
+  base_sha: 591a74960c849c8658334873b8e2cd3a02d98435
+  changed_files_hash: c40b5d76cd2db084ac6c45e79ec42dbc064cbf5f974044ffb99b14724bb37768
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

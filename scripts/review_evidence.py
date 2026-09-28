@@ -13,6 +13,7 @@ import re
 from typing import Any, Callable
 
 import yaml
+from review_attestation import verifier_from_store
 
 from review_packet import ALLOWED_SOURCE_CLASSES, FINGERPRINT_RE, SHA256_RE
 
@@ -183,6 +184,7 @@ def validate_report(
     expected_candidate: dict[str, str],
     *,
     allow_external: bool = False,
+    trust_store: Path | None = None,
 ) -> dict[str, Any]:
     repo = root.resolve()
     resolved = report_path if report_path.is_absolute() else repo / report_path
@@ -195,8 +197,14 @@ def validate_report(
     except (OSError, UnicodeError, yaml.YAMLError):
         return {"status": "FAILED", "reason_codes": ["review_evidence_unreadable"]}
     try:
-        result = evaluate_evidence(report, expected_candidate)
-    except ReviewEvidenceError:
+        verifier = None
+        if trust_store is not None:
+            trusted_path = trust_store.resolve(strict=True)
+            if trusted_path.is_relative_to(repo):
+                return {"status": "UNVERIFIED", "reason_codes": ["trust_store_must_be_external"]}
+            verifier = verifier_from_store(trusted_path)
+        result = evaluate_evidence(report, expected_candidate, attestation_verifier=verifier)
+    except (ReviewEvidenceError, OSError, ValueError, yaml.YAMLError):
         result = {"status": "FAILED", "reason_codes": ["invalid_review_evidence_schema"]}
     result["evidence_path"] = resolved.relative_to(repo).as_posix() if inside_repo else "external_artifact"
     result["evidence_sha256"] = "sha256:" + hashlib.sha256(resolved.read_bytes()).hexdigest()
@@ -210,6 +218,7 @@ def main() -> int:
     parser.add_argument("--base", required=True)
     parser.add_argument("--head", required=True)
     parser.add_argument("--changed-files-hash", required=True)
+    parser.add_argument("--trust-store", type=Path)
     args = parser.parse_args()
     candidate = {
         "base_sha": args.base,
@@ -217,7 +226,7 @@ def main() -> int:
         "changed_files_hash": args.changed_files_hash,
     }
     try:
-        result = validate_report(args.root, args.evidence, candidate)
+        result = validate_report(args.root, args.evidence, candidate, trust_store=args.trust_store)
     except ReviewEvidenceError as exc:
         print(f"REVIEW EVIDENCE BLOCKED: {exc}")
         return 2

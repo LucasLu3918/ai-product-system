@@ -7,11 +7,15 @@ from pathlib import Path
 import subprocess
 import sys
 import tempfile
+import sqlite3
+from unittest.mock import patch
 
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 PI = ROOT / "scripts" / "project_intelligence.py"
+sys.path.insert(0, str(ROOT / "scripts"))
+import retrieval_intelligence as RI
 
 
 def require(condition: bool, message: str) -> None:
@@ -200,6 +204,29 @@ def main() -> int:
         require(context_structural.get("selection") == "default", "Turn Context structural selection must be default")
         require("structural_reference_graph" in (context_ranking.get("lanes") or []),
                 "Turn Context ranking must expose structural relation graph")
+
+    with tempfile.TemporaryDirectory(prefix="aips-readonly-index-") as tmp:
+        db_path = Path(tmp) / "index.sqlite"
+        writer, _ = RI.open_db(db_path)
+        writer.execute("INSERT INTO files(path, content_hash, size) VALUES ('example.py', 'digest', 7)")
+        writer.commit()
+        writer.close()
+        original_bytes = db_path.read_bytes()
+        real_connect = sqlite3.connect
+        def reject_source_read(target, *args, **kwargs):
+            if str(target) == db_path.as_uri() + "?mode=ro":
+                raise sqlite3.OperationalError("sandbox denied SQLite shared memory")
+            return real_connect(target, *args, **kwargs)
+        with patch.object(RI.sqlite3, "connect", side_effect=reject_source_read):
+            reader, _, snapshot = RI.open_read_db(db_path)
+            try:
+                require(reader.execute("SELECT COUNT(*) FROM files").fetchone()[0] == 1,
+                        "read-only snapshot must preserve indexed rows")
+            finally:
+                reader.close()
+                if snapshot is not None:
+                    snapshot.cleanup()
+        require(db_path.read_bytes() == original_bytes, "read-only retrieval must not mutate the source index")
 
     print("retrieval_intelligence_lifecycle evidence: PASS")
     return 0

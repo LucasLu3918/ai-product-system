@@ -7,6 +7,7 @@ import os
 import sys
 import tempfile
 import threading
+from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from types import SimpleNamespace
@@ -20,6 +21,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from telemetry_export import _endpoint_allowed, export
 from telemetry_projection import build_projection
 from telemetry_record import record
+from run_state import append_event as append_run_event
+from observed_stage import observed_stage
 
 
 class Receiver(BaseHTTPRequestHandler):
@@ -67,6 +70,13 @@ def main() -> int:
         run_id = "run-otel-test"
         run_dir = make_run(root, run_id)
 
+        with observed_stage(root, run_id, "intelligence.context") as observation:
+            pass
+        assert observation["status"] == "RECORDED"
+        with observed_stage(root, "missing-run", "intelligence.context") as degraded:
+            pass
+        assert degraded["status"] == "DEGRADED", "missing telemetry destination must remain non-blocking"
+
         marker(root, run_id, "phase", "started", "plan-op", "planning")
         marker(root, run_id, "phase", "completed", "plan-op", "planning")
         marker(root, run_id, "phase", "started", "review-op", "review", related_operation_id="plan-op")
@@ -96,6 +106,20 @@ def main() -> int:
         payload_text = json.dumps(first["otlp"])
         for forbidden in ("prompt", "private reasoning", "tool arguments", "AIPS_OTLP_AUTHORIZATION"):
             assert forbidden not in payload_text
+
+        concurrent_id = "run-concurrent-events"
+        concurrent_dir = make_run(root, concurrent_id)
+        def write_one(index: int) -> None:
+            if index % 2:
+                marker(root, concurrent_id, "phase", "started", f"phase-{index}", "planning")
+            else:
+                append_run_event(SimpleNamespace(project=str(root), run_id=concurrent_id,
+                                                 event=f"run-event-{index}", status="INFO",
+                                                 artifact=None, evidence=[]))
+        with ThreadPoolExecutor(max_workers=8) as pool:
+            list(pool.map(write_one, range(40)))
+        concurrent_events = [json.loads(line) for line in (concurrent_dir / "EVENTS.jsonl").read_text().splitlines()]
+        assert [event["sequence"] for event in concurrent_events] == list(range(1, 41)), "mixed writers must serialize sequence allocation"
 
         events_path = run_dir / "EVENTS.jsonl"
         existing = events_path.read_text(encoding="utf-8")

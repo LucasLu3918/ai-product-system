@@ -6,6 +6,8 @@ It replaces Project Knowledge as the long-term cache model. Existing `.ai/knowle
 
 ## Goals
 
+Read-only Context remains available in ordinary directories and repositories without a first commit. Temporal assertions requiring Git ancestry are unavailable until a commit exists. Source Registry instructions are selected by target path and runtime; unrelated nested adapters are not injected into root work. Retrieval queries use read-only SQLite access and may use a verified, disposable snapshot when WAL shared memory is unavailable; index construction and refresh remain writer operations.
+
 - understand an existing project once, then reuse that understanding across Agents and turns;
 - preserve authoritative project instructions/docs instead of duplicating them;
 - make architecture, data flow, module boundaries, contracts and change impact discoverable;

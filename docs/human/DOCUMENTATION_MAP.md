@@ -54,6 +54,8 @@ Content safety 的 machine canonical 文件為 `config/content-safety.yaml`、`s
 
 Independent review isolation is defined across `orchestration/MULTI_REVIEW.md`, `orchestration/DETERMINISTIC_SCHEDULER.md`, `orchestration/INTEGRATION_GATE.md`, `orchestration/schemas/task-graph.yaml`, `orchestration/schemas/context-manifest.yaml`, `scripts/review_packet.py` and `scripts/review_evidence.py`. Human guidance lives in the User Guide, Technology Guide and Security Assurance. The mechanism is implemented but PR enforcement is currently disabled in the active Core Change Matrix; the placement rule keeps these surfaces synchronized.
 
+Turn Context intent and scoped instruction selection are implemented in `scripts/turn_intent.py` and `scripts/project_intelligence.py`; event serialization and observed stage recording use `scripts/run_event_stream.py` and `scripts/observed_stage.py`. Eval freshness and externally trusted review receipts are defined by `scripts/agent_eval.py`, `scripts/review_attestation.py` and the validation dependency lock.
+
 `orchestration/REQUIREMENT_CLARIFICATION.md` 和 `orchestration/PLANNING_PACKAGE.md` 定義需求澄清與規劃規則；`templates/planning-package/REQUIREMENTS.yaml` 與 `scripts/requirements_traceability.py` 定義可選需求追溯資料及其結構檢查，CLI 提供 JSON PASS/FAIL 與相應退出碼。EARS 語義判讀仍由需求審查負責。
 
 Publication routing and validation contracts live in `orchestration/INTEGRATION_GATE.md`, `scripts/publish_preflight.py` and `scripts/repository_preflight.py`; Human workflows remain in User Guide and Maintenance. Scenario 165 in the shared registry maps their executable evidence.

@@ -93,6 +93,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+Turn Context intent and `--target-path` narrow instruction selection before mutation analysis. This routing is advisory: the declared Change Boundary and post-diff reconciliation remain authoritative, and non-Git directories retain basic context without historical assertions.
+
 After implementation compare:
 
 ~~~text

@@ -91,6 +91,18 @@ def main() -> int:
 
     result = base_result(module, case)
     scored = module.score(case, result)
+    require(scored["evidence_freshness"] == "UNBOUND", "legacy evidence must be labeled historical")
+
+    bound_case = base_case()
+    bound_case["system_dependencies"] = ["SYSTEM.md"]
+    bound = base_result(module, bound_case)
+    bound["execution"]["system_fingerprint"] = module.system_fingerprint(bound_case)
+    require(module.score(bound_case, bound)["evidence_freshness"] == "CURRENT",
+            "current system dependency evidence must be recognized")
+    bound["execution"]["system_fingerprint"] = "sha256:" + "0" * 64
+    stale_system = module.score(bound_case, bound)
+    require(stale_system["status"] == "FAIL" and stale_system["evidence_freshness"] == "STALE",
+            "a changed system dependency must stale the result")
     require(scored["status"] == "PASS", f"valid provider-neutral result should PASS: {scored}")
 
     bad = base_result(module, case)

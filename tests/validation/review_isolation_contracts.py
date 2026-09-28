@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import sys
+import base64
+import json
+import tempfile
 from pathlib import Path
 
 import yaml
@@ -12,6 +15,7 @@ if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
 from review_evidence import evaluate_evidence
+from review_attestation import verifier_from_store
 from review_packet import ReviewPacketError, build_packet
 
 
@@ -50,6 +54,25 @@ def report() -> dict:
 def main() -> None:
     candidate = report()["candidate"]
     assert evaluate_evidence(report(), candidate)["reason_codes"] == ["trusted_runtime_attestation_verifier_unavailable"]
+    from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+    from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+    with tempfile.TemporaryDirectory(prefix="aips-review-trust-") as temporary:
+        signer = Ed25519PrivateKey.generate()
+        trust_store = Path(temporary) / "trusted-issuers.yaml"
+        trust_store.write_text(yaml.safe_dump({
+            "version": 1,
+            "issuers": [{"key_id": "fixture-key", "runtime": "fixture", "public_key_b64": base64.b64encode(
+                signer.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw)).decode("ascii")}],
+        }), encoding="utf-8")
+        signed = report()
+        attestation = signed["runtime_attestation"]
+        message = json.dumps({key: value for key, value in attestation.items() if key != "signature_b64"},
+                             sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
+        attestation["signature_b64"] = base64.b64encode(signer.sign(message)).decode("ascii")
+        verifier = verifier_from_store(trust_store)
+        assert evaluate_evidence(signed, candidate, attestation_verifier=verifier)["status"] == "VERIFIED"
+        attestation["read_only_authority"] = "FAILED"
+        assert evaluate_evidence(signed, candidate, attestation_verifier=verifier)["status"] == "FAILED"
     trusted_fixture_verifier = lambda attestation: attestation.get("receipt_ref") == "fixture://receipt"
     assert evaluate_evidence(report(), candidate, attestation_verifier=trusted_fixture_verifier)["status"] == "VERIFIED"
     assert evaluate_evidence({**report(), "reviewer_execution_id": "impl-1"}, candidate, attestation_verifier=trusted_fixture_verifier)["status"] == "FAILED"
@@ -58,8 +81,6 @@ def main() -> None:
     assert evaluate_evidence({**report(), "candidate": {**candidate, "head_sha": "d" * 40}}, candidate)["status"] == "STALE"
     assert evaluate_evidence({**report(), "private_reasoning": "must not be included"}, candidate)["status"] == "FAILED"
 
-    import tempfile
-    from pathlib import Path
 
     with tempfile.TemporaryDirectory() as directory:
         root = Path(directory)

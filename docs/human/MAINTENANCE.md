@@ -218,6 +218,8 @@ Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverif
 
 The Parallel Run Dashboard reads canonical checkpoints and related evidence through one sanitized projection. Keep it observational: approval, retry, cancellation, merge and publication remain outside the dashboard.
 
+Event changes must preserve a single serialized sequence across run-state and telemetry writers. Observed Context, Retrieval and Gate stages record actual operation boundaries; when evidence is unavailable, observation is degraded and the original operation result is preserved.
+
 When durable run state changes, review together:
 
 - PROJECT_IDENTITY + RUN_RESUME;
@@ -268,6 +270,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 ## Public repository / CI consistency
 
 提交前的 `aips publish preview --base <sha> --change-class <class>` 會檢查工作樹（含未追蹤檔）的文件 H2 placement、Core Matrix base/hash 綁定與 PR 首次建立所需標籤。若 CLI 認證失效，`aips publish plan` 回報 `AUTH_REQUIRED` 與重新登入步驟，不會輸出憑證內容；最終 Gate 仍以乾淨的已提交候選執行。
+
+The working-tree preview scans candidate additions and complete untracked files. The exact committed candidate still receives the mandatory final-tree and commit-history scan in Integration Gate.
 
 When publication preflight changes, keep the working-tree preview, content safety findings, configured Git identity checks and exact-candidate resolver aligned with CI.
 

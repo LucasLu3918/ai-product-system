@@ -20,6 +20,8 @@ MCP 提供 portability；native adapters 提供可驗證的 runtime hook / guard
 
 ## Project Intelligence 與 Retrieval
 
+Turn Context 在選取任務相關內容前，先依目標路徑與 Runtime 篩選指示來源；分類只協助路由。非 Git 或尚無 `HEAD` 的資料夾保留基本 Context，歷史斷言維持不可用。檢索讀取與索引寫入分開，在安全條件下可使用經檢查的唯讀暫時快照。
+
 Squash merge 後的 revision refresh 只有在舊／新 Git tree 完全一致時可自動更新 metadata；tree 不同時維持 semantic refresh required，避免把內容變更誤標為 CURRENT。
 
 Existing Project 第一次需要廣泛理解或修改時，先 read-only bootstrap，再建立 Architecture / Data Flow / Modules / Contracts / Tests / Security / Operations 等 stable Intelligence。
@@ -61,6 +63,8 @@ Plan
 Production、Git publication、merge 與 release authority 不因 Automation 或 MCP 而自動取得。
 
 ## Deterministic Execution
+
+Run Event 與 Telemetry Event 共用鎖定的 append 寫入器，讓混合寫入維持唯一且遞增的序號。Context、Retrieval 與 Integration Gate 可選擇記錄其實際執行邊界；觀測結果不改變 Gate 判定。
 
 Independent-review isolation is an implemented opt-in capability. The active Core Change Matrix currently disables PR enforcement (`review_evidence.required: false`) while no trusted runtime-attestation verifier is connected; enabling it requires that verifier and retains fail-closed behavior.
 
@@ -109,6 +113,8 @@ Human Approval 維持最高決策權；machine-readable approval binding、resou
 Runtime Policy Enforcement 使用四種結果：`ALLOW`、`DENY`、`REQUIRE_APPROVAL`、`BLOCKED`。SAL3/4 外連需有核准範圍相符的 Approval Record、可攔截的 runtime hook，以及可驗證的 sandbox network allowlist。現行 E2B provider 仍 disabled、未驗證且 deny-all，因此目前高風險外連會 `BLOCKED`。Codex 維持 `ADVISORY`；shell hook 不代表子程序或網路隔離。
 
 ## Scenario Conformance 與 Agent Eval
+
+Agent Eval 的 rubric PASS 與受測系統新鮮度分開報告。舊結果標記為歷史未綁定；新結果可綁定 Case 指定的系統來源。獨立審查可驗證由外部可信執行環境簽發的 Ed25519 receipt，但沒有受信任簽發者時仍維持 `UNVERIFIED`。
 
 The optional OpenTelemetry export uses the same canonical `CHECKPOINT.yaml` and `EVENTS.jsonl` evidence through a separate privacy-whitelisted projection. Export is explicitly enabled, credentials stay on the host, replay does not modify run state, and telemetry failure is evidence-only. Scenario 181 validates this boundary independently from Agent Eval; exported traces do not contribute scores or publication authority.
 

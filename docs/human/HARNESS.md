@@ -74,6 +74,8 @@ Trajectory Quality Gate 是 provider-neutral capability。Harness 可提供 obse
 
 Independent review uses the canonical Scheduler and Integration Gate contracts through the existing runtime surfaces. The capability is implemented but PR enforcement is currently disabled in the active Core Change Matrix. Harness does not provide reviewer attestation itself: without a trusted runtime verifier, explicitly required evidence remains `UNVERIFIED` and blocks the Gate.
 
+若執行環境已有獨立且受信任的簽發者，可將外部 trust store 交給 review validator／Integration Gate 驗證 Ed25519 receipt；trust store 不得放在候選 repository。AIPS 不簽發執行隔離或唯讀權限證明，也不因只有合法簽章格式就認定審查獨立。
+
 Runtime Content Safety Boundary 只在 AIPS-owned sink 或已驗證 native hook 上宣稱強制能力；MCP-only 或 unsupported host tools 維持 ADVISORY。安全掃描不會取得 Host-native tool interception 或 Human Authority。
 
 ## Progressive disclosure

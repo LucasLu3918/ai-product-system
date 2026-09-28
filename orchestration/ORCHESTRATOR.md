@@ -114,6 +114,8 @@ Do not create a permanent/high-authority role without user approval.
 
 ## Context expansion
 
+Turn Context classifies write intent with explicit intent overrides and respects the target file's scoped runtime instructions. The compact YAML view is the default; callers that need the complete manifest can request `--full` or JSON.
+
 An active role may request missing context rather than preloading everything.
 
 ```yaml
@@ -275,6 +277,8 @@ approved proposal/scope
 Do not infer machine-bound approval from vague context. Runtime guards are enforcement transport; architectural/security reasoning remains in orchestration/review.
 
 ## Checkpoint and resume
+
+Concurrent Run State and telemetry producers serialize writes through one append-only event stream. A failed optional observation degrades its evidence and never fabricates completion or changes the workflow's primary gate.
 
 The Parallel Run Dashboard projects checkpoint and event facts for observation only. Resume continues to use canonical Run State and existing authority checks.
 

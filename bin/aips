@@ -85,7 +85,7 @@ Usage:
   aips intelligence bootstrap [--project <path>]
   aips intelligence status [--project <path>]
   aips intelligence refresh [--project <path>]
-  aips intelligence context --runtime <id> [--project <path>] [--prompt <text>]
+  aips intelligence context --runtime <id> [--project <path>] [--prompt <text>] [--target-path <path>] [--intent auto|read|write] [--full] [--observe-run-id <id>]
   aips intelligence impact-init [--project <path>] [--prompt <text>] [--change-id <id>] [--reset]
   aips intelligence impact-traverse --seed <symbol> --risk-class <class> [--project <path>] [--seed-path <path>] [--direction callers|consumers]
   aips intelligence context-audit [--project <path>]
@@ -132,7 +132,7 @@ Usage:
   aips isolation remove --id <id> [--project <path>] [--format yaml|json]
 
   aips scheduler --graph <yaml> [--state <yaml>] [--format yaml|json]
-  aips integration-gate --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>] [--project-root <repo>]
+  aips integration-gate --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--review-trust-store <path>] [--observe-run-id <id>] [--output <path>] [--project-root <repo>]
   aips janitor --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>]
   aips publish preview|plan|preflight|matrix-sync|post-merge [publish-preflight options] [--project-root <repo>]
   aips docs impact --base <ref> [--head <ref>] [--format yaml|json]

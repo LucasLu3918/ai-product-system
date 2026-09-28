@@ -8,8 +8,10 @@ import math
 import os
 from pathlib import Path
 import re
+import shutil
 import sqlite3
 import subprocess
+import tempfile
 from typing import Any, Iterable
 
 import yaml
@@ -356,6 +358,36 @@ def open_db(path: Path) -> tuple[sqlite3.Connection, bool]:
     return conn, fts_available
 
 
+def open_read_db(path: Path) -> tuple[sqlite3.Connection, bool, tempfile.TemporaryDirectory[str] | None]:
+    """Read an existing index without running schema or journal writes."""
+    snapshot: tempfile.TemporaryDirectory[str] | None = None
+    try:
+        conn = sqlite3.connect(path.as_uri() + "?mode=ro", uri=True)
+    except sqlite3.OperationalError:
+        # A read-only sandbox may prevent SQLite from creating WAL shared memory.
+        # A live WAL cannot be copied independently from its database safely.
+        if path.with_name(path.name + "-wal").exists():
+            raise
+        before = path.stat()
+        snapshot = tempfile.TemporaryDirectory(prefix="aips-retrieval-read-")
+        try:
+            copied = Path(snapshot.name) / "index.sqlite"
+            shutil.copyfile(path, copied)
+            after = path.stat()
+            if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns) or path.with_name(path.name + "-wal").exists():
+                raise sqlite3.OperationalError("retrieval index changed during read-only snapshot")
+            conn = sqlite3.connect(copied.as_uri() + "?mode=ro", uri=True)
+            if conn.execute("PRAGMA quick_check").fetchone()[0] != "ok":
+                raise sqlite3.DatabaseError("retrieval index snapshot failed integrity check")
+        except BaseException:
+            snapshot.cleanup()
+            raise
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA query_only=ON")
+    fts_available = conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='chunks_fts'").fetchone() is not None
+    return conn, fts_available, snapshot
+
+
 def metadata_get(conn: sqlite3.Connection, key: str) -> str | None:
     row = conn.execute("SELECT value FROM metadata WHERE key = ?", (key,)).fetchone()
     return str(row["value"]) if row else None
@@ -664,7 +696,7 @@ def traverse_change_impact(
 
     db_path = index_path(root)
     try:
-        conn, _fts_available = open_db(db_path)
+        conn, _fts_available, snapshot = open_read_db(db_path)
     except (OSError, sqlite3.Error) as exc:
         report["stop_reason"] = "retrieval_index_unavailable"
         report["unresolved"].append({"kind": "retrieval_index", "status": "INDEX_UNAVAILABLE"})
@@ -710,7 +742,7 @@ def traverse_change_impact(
                 (name,),
             ).fetchall():
                 snippet = str(chunk["text"])
-                if re.search(r"(?is)(resolve|dispatch|emit|subscribe|register|route|inject|handler)\s*[^\n]{0,100}[\"']" + re.escape(name) + r"[\"']", snippet):
+                if re.search(r"(?is)\b(?:resolve|dispatch|emit|subscribe|register|route|inject|handler)\b\s*[^\n]{0,100}[\"']" + re.escape(name) + r"[\"']", snippet):
                     unknown = {"kind": "dynamic_relationship", "symbol": name, "path": str(chunk["path"]), "line": int(chunk["start_line"]), "resolution": "unresolved"}
                     report["unresolved"].append(unknown)
                     report["resolution"]["unresolved"].append(name)
@@ -873,6 +905,8 @@ def traverse_change_impact(
         return report
     finally:
         conn.close()
+        if snapshot is not None:
+            snapshot.cleanup()
 
 
 def refresh_commits(conn: sqlite3.Connection, root: Path) -> None:
@@ -1661,7 +1695,7 @@ def query_repository(
         alias_terms, alias_telemetry = semantic_alias_expansion(terms)
     db_path = index_path(root)
     try:
-        conn, fts_available = open_db(db_path)
+        conn, fts_available, snapshot = open_read_db(db_path)
     except (OSError, sqlite3.Error) as exc:
         return index_unavailable(exc, token_budget=token_budget, query=query)
     try:
@@ -1874,6 +1908,8 @@ def query_repository(
         }
     finally:
         conn.close()
+        if snapshot is not None:
+            snapshot.cleanup()
 
 
 def compact_pointer(result: dict[str, Any]) -> str:

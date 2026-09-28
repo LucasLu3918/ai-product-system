@@ -261,6 +261,25 @@ unknowns: []
         self.assertIn("dynamic_relationship", {item.get("kind") for item in report["unresolved"]})
         self.assertEqual(report["status"], "BOUNDED_WITH_UNKNOWNS")
 
+    def test_file_names_containing_dispatch_terms_are_not_dynamic_calls(self) -> None:
+        self.write(
+            "src/helper_list.py",
+            'helpers = ("harness_resolve.py", "retrieval_intelligence.py")\n',
+        )
+        self.git("add", "-A")
+        self.git("-c", "user.name=AIPS Test", "-c", "user.email=" + chr(64) + "example.invalid", "commit", "-qm", "static helper list")
+        index_repository(self.repo, self.store)
+        report = traverse_change_impact(
+            self.repo,
+            self.store,
+            [{"symbol": "retrieval_intelligence.py", "path": "src/api.py"}],
+            "private_leaf",
+            directions=["callers"],
+            max_depth=1,
+            changed_paths=["src/api.py"],
+        )
+        self.assertNotIn("dynamic_relationship", {item.get("kind") for item in report["unresolved"]})
+
     def test_budget_exhaustion_and_stale_index_are_truthful(self) -> None:
         limited = self.traverse(max_edges=1)
         self.assertTrue(limited["truncated"])

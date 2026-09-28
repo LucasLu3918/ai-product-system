@@ -62,6 +62,8 @@ Prefer focused evidence under `tests/evidence/` when this makes one-to-one trace
 
 ## Agent Eval admission
 
+Cases may bind results to repository-relative system dependencies. The evaluator marks mismatched evidence `STALE` and legacy results `UNBOUND`; neither historical rubric scores nor missing fingerprints claim current-system conformance.
+
 Trajectory Quality Gate 重用 Agent Eval 的 observable-only privacy contract。Trajectory evidence 可被 Scenario registry 綁定為 lifecycle evidence；不得保存 chain-of-thought，也不得把評估結果視為 publication authority。
 
 For `agent_eval`, load `orchestration/AGENT_EVAL.md`.

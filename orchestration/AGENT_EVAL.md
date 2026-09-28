@@ -69,6 +69,8 @@ The provider/model/runtime values are evidence metadata, not routing constraints
 
 ## Freshness
 
+New Cases may declare `system_dependencies` as repository-relative canonical source paths. A Result recorded by an actual Agent run may bind `execution.system_fingerprint` to those exact bytes. The scorer reports `CURRENT`, `STALE`, or `UNBOUND` separately from rubric PASS/FAIL; a mismatched bound result fails. Existing results without such a binding remain historical `UNBOUND` evidence and are never silently relabeled current.
+
 Any material Case change changes its fingerprint.
 
 ~~~text

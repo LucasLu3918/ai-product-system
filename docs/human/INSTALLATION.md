@@ -73,6 +73,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 
 The optional `aips run dashboard` command uses the existing Python runtime and loopback-only HTTP server; it adds no database, frontend dependency chain or mutation endpoint.
 
+Validation installs the pinned `cryptography` dependency used to verify Ed25519 review receipts against trust anchors supplied outside the project checkout. No issuer is trusted by default.
+
 安裝後可使用 `aips commands list` 檢視 Portable Command Registry；`aips commands render` 只預覽，`aips commands install --host <id>` 才建立 AIPS-owned projection。這些 projection 不會自動修改 Client-owned MCP 設定，也不提供 Runtime-native enforcement。
 Native Runtime Adapter 與 MCP 是兩個互補平面：
 

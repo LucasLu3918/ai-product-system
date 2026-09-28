@@ -68,6 +68,8 @@ aips commands list
 
 For parallel local work, `aips run dashboard` provides a read-only repository-scoped view of known runs on `127.0.0.1`; it cannot mutate, approve, merge or publish.
 
+Concurrent AIPS event writers share an append lock and sequence allocator, so events remain ordered when more than one local operation records evidence for the same run.
+
 不需要先建立 .ai/。EPHEMERAL mode 可直接工作；只有需要 project-local persistent state 時才：
 
 ~~~bash

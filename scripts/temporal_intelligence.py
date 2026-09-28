@@ -144,6 +144,9 @@ def active_assertions(root: Path, doc: dict[str, Any], revision: str | None = No
     if errors:
         raise ValueError("invalid temporal assertions: " + "; ".join(errors))
     explicit = revision is not None
+    if not explicit and _git(root, ["rev-parse", "--verify", "HEAD^{commit}"]).returncode != 0:
+        return {"revision": None, "mode": "CURRENT", "assertions": [], "excluded": [],
+                "conflicts": [], "availability": "GIT_HEAD_UNAVAILABLE"}
     target = resolve_revision(root, revision)
     active: list[dict[str, Any]] = []
     excluded: list[dict[str, Any]] = []

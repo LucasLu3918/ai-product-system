@@ -47,6 +47,8 @@ Offline `--output` creates a new file with owner-only permissions and refuses to
 
 ## Runtime integrations and cost
 
+Context, Retrieval, and Integration Gate CLI entry points can automatically record observed operation boundaries when supplied with an existing checkpoint ID. If no matching checkpoint exists, the observation is marked `DEGRADED` and the original operation continues. No model usage is inferred from these spans.
+
 The initial capability defines a provider-neutral recording contract. No AIPS runtime is marked as automatically capturing live LLM calls, retrieval, embeddings, or tool arguments. Adapters may record only fields they can verify at the actual operation boundary; absent evidence stays absent. The projection reports token counts but does not calculate cost. Metrics, cost calculation, vendor SDKs, and content capture are outside this capability.
 
 ## Failure semantics
