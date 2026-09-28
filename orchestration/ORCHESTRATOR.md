@@ -61,6 +61,7 @@ Use `aips preflight <project>`, which:
 It updates the AI Product System only. Target-project source updates remain a separate user/project decision.
 
 Preflight does not attach an EPHEMERAL project. Only `aips attach` enables persistent `.ai/` state.
+Publication Preflight lifecycle evidence isolates optional Python module probes from loopback/browser blocker checks, keeping host capability failures distinct from product validation results.
 
 ## Reproducible Planning Package
 

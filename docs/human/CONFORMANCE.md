@@ -1326,6 +1326,8 @@ Deterministic evidence validates the optional Planning Package requirements regi
 
 Lifecycle evidence exercises bounded lexical caller/reference indexing, canonical architecture graph traversal, risk-specific depth and history policy, cycle handling, dynamic-dispatch unknowns, stale/truncated evidence, changed versus unchanged affected paths, and READY evidence validation. Lexical relations remain explicitly inferred; the traversal does not claim compiler-level resolution.
 
+The publication lifecycle fixture isolates the Python module availability probe before asserting localhost and browser capability blockers, so environment setup does not alter the blocker contract.
+
 目前 Scenario inventory：
 
 - deterministic：27

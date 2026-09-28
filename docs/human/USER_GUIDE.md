@@ -252,6 +252,7 @@ Core change 以 actual diff 重新對帳 Test Matrix，不能只依原始計畫�
 Integration Gate 只檢查證據格式、來源、候選綁定與確定性政策，不替代語意審查，也不授予合併或發布權限。
 
 Visual evidence 預設優先使用 Playwright managed Chromium；系統 Chrome 只有在 `AIPS_BROWSER_PROVIDER=system` 或 managed browser 不可用時使用。Publication preflight 會先執行 browser smoke probe，啟動失敗會標記為 `ENVIRONMENT_BLOCKED`，不誤判成頁面測試失敗。
+Publication Preflight 會分開呈現 Python modules、loopback 與 browser 診斷；對應 lifecycle evidence 固定 module probe，再驗證 loopback/browser 阻擋情境，避免把主機環境差異誤判為產品失敗。
 
 ## Logging、Observability 與 Operations
 

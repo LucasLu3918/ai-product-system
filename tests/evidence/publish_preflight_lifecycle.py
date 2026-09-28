@@ -288,7 +288,12 @@ def main() -> int:
     denied_socket = Mock()
     denied_socket.bind.side_effect = PermissionError("sandbox denied bind")
     denied_browser = {"status": "BROWSER_LAUNCH_FAILED", "provider": "system", "path": "/browser", "stderr": "launch denied"}
-    with patch.object(publish.socket, "socket", return_value=denied_socket), patch.object(
+    successful_python_probe = subprocess.CompletedProcess(
+        args=[sys.executable], returncode=0, stdout="Python 3.12.0\n", stderr=""
+    )
+    with patch.object(publish.subprocess, "run", return_value=successful_python_probe), patch.object(
+        publish.socket, "socket", return_value=denied_socket
+    ), patch.object(
         publish, "discover_browser", return_value={"provider": "system", "path": "/browser"}
     ), patch.object(publish, "probe_browser", return_value=denied_browser):
         blocked_environment = publish.environment_status()
