@@ -64,6 +64,8 @@ The scheduler is stateless between invocations. Durable workflow state remains o
 
 ## CLI
 
+Run-state and telemetry event producers share the same locked append stream. Concurrent writes allocate sequence numbers inside the lock and fsync each appended record before returning; the dashboard remains a read-only projection.
+
 The local validation preparation entry reports actionable Python, dependency, writable-temp, localhost and browser diagnostics before exact-candidate Gate execution. Publication preview checks working-tree documentation placement and matrix binding before commit.
 
 Lifecycle subprocess 應以目前驗證器的 `sys.executable` 啟動，確保子程序沿用相同 Python runtime 與相依套件環境。
@@ -99,6 +101,8 @@ CI integration evidence is written to the runner temporary directory and uploade
 ## Failure behavior
 
 Publication Preflight checks runtime prerequisites before launching the expensive Integration Gate lifecycle. `ENVIRONMENT_BLOCKED` identifies missing Python/Ruff, loopback or browser capability; it is an environment result, not a Scheduler or product test failure.
+
+Optional observed-stage recording reports `DEGRADED` when a run destination is absent or event writing fails. This observation is evidence only and does not alter the command's primary status.
 
 Trajectory Quality Gate 可記錄 scheduler/tool execution 的 observable events，但不改變 scheduler 的 authority。必要 invariant 或 authorization 失敗應形成 evidence，並由上層 Integration/Publish Gate 依 policy 處理。
 

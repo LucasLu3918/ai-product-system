@@ -178,7 +178,7 @@ with tempfile.TemporaryDirectory() as directory:
     require(PI.retrieval_failure_code(PermissionError("Operation not permitted")) == "RETRIEVAL_CACHE_ACCESS_DENIED",
             "cache permission failures need a stable diagnostic code")
     with patch.object(RI, "index_status", return_value={"status": "CURRENT"}), patch.object(
-        RI, "open_db", side_effect=sqlite3.OperationalError("unable to open database file")
+        RI, "open_read_db", side_effect=sqlite3.OperationalError("unable to open database file")
     ):
         query_diagnostic = RI.query_repository(root, store, "cache diagnostic", refresh=False)
     require(query_diagnostic["status"] == "INDEX_UNAVAILABLE" and query_diagnostic["reason_code"] == "SQLITE_OPEN_FAILED" and query_diagnostic["remediation"],

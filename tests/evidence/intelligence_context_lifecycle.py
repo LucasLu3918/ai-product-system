@@ -56,6 +56,8 @@ def source_registry_runtime_dedup(base: Path, env: dict[str, str]) -> None:
     (project / "CLAUDE.md").write_text("# Claude project rules\n", encoding="utf-8")
     (project / "GEMINI.md").write_text("# Gemini project rules\n", encoding="utf-8")
     (project / "docs" / "ARCHITECTURE.md").write_text("# Architecture\nOfficial architecture contract.\n", encoding="utf-8")
+    (project / "harness" / "adapters" / "codex").mkdir(parents=True)
+    (project / "harness" / "adapters" / "codex" / "AGENTS.md").write_text("# Adapter fixture\n", encoding="utf-8")
     (project / "main.py").write_text("print('ok')\n", encoding="utf-8")
     git(project, "add", "-A")
     git(project, "commit", "-qm", "baseline")
@@ -108,6 +110,16 @@ def source_registry_runtime_dedup(base: Path, env: dict[str, str]) -> None:
             str((project / "docs" / "ARCHITECTURE.md").resolve()) in project_native,
             f"{runtime} must retain targeted-load pointer for non-native authoritative docs",
         )
+        require(str((project / "harness" / "adapters" / "codex" / "AGENTS.md").resolve()) not in runtime_native,
+                "nested adapter instructions must not apply to root work")
+
+    nested = json_run([
+        sys.executable, str(PI), "context", "--project", str(project),
+        "--target-path", "harness/adapters/codex/AGENTS.md", "--runtime", "codex",
+        "--prompt", "Review this file", "--format", "json",
+    ], env)
+    require(str((project / "harness" / "adapters" / "codex" / "AGENTS.md").resolve()) in nested["context"]["runtime_native"],
+            "nested instructions must apply at their own target path")
 
     intel = load_yaml(store / "PROJECT_INTELLIGENCE.yaml")
     require((intel.get("topics") or {}) == {}, "deterministic bootstrap must not copy authoritative source content into derived topics")
@@ -230,6 +242,28 @@ def normal_chat_no_bootstrap(base: Path, env: dict[str, str]) -> None:
     require("mutation_likely=False" in hook.stdout, "normal chat context must remain non-mutating")
     require(not (project / ".ai").exists(), "Turn Context hook must not auto-attach normal chat project")
     require(not config_projects.exists(), "Turn Context hook must not create external Intelligence for normal chat")
+
+    plain = base / "plain-directory"
+    plain.mkdir()
+    plain_context = json_run([
+        sys.executable, str(PI), "context", "--project", str(plain),
+        "--runtime", "codex", "--prompt", "Review the project", "--format", "json",
+    ], env)
+    require(plain_context["project"]["mode"] == "EPHEMERAL", "non-Git directory must retain basic context")
+    require(plain_context["context"]["layers"]["core"]["derived"] is True,
+            "non-Git context must keep its bounded core capsule")
+
+    sys.path.insert(0, str(ROOT / "scripts"))
+    from turn_intent import classify_prompt
+    for prompt, expected in (
+        ("不要修改程式碼", False),
+        ("請解釋 update 指令", False),
+        ("Explain the build system", False),
+        ("請修好登入功能", True),
+    ):
+        require(classify_prompt(prompt)[1] is expected, f"incorrect task intent: {prompt}")
+    require(classify_prompt("Explain the build system")[0] == "general", "build must not trigger UI routing")
+    require(classify_prompt("不要修改程式碼", "write")[1] is True, "explicit write intent must be honored")
 
 
 def main() -> int:

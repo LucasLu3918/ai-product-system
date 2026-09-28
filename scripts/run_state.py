@@ -19,6 +19,7 @@ from aips_identity import (
     repository_identity,
     workspace_snapshot,
 )
+from run_event_stream import append_event as append_stream_event
 
 SECRET_PATTERNS = [
     re.compile(r"gh[pousr]_[A-Za-z0-9]{20,}"),
@@ -163,20 +164,14 @@ def append_event(args) -> dict:
     root = project_root(Path(args.project))
     store, mode = run_store(root, args.run_id)
     path = store / "EVENTS.jsonl"
-    path.parent.mkdir(parents=True, exist_ok=True)
-    seq = 1
-    if path.exists():
-        seq = sum(1 for line in path.read_text(encoding="utf-8").splitlines() if line.strip()) + 1
     event = {
-        "sequence": seq,
         "timestamp": now(),
         "event": safe_text(args.event),
         "status": args.status,
         "artifact": safe_text(args.artifact) if args.artifact else None,
         "evidence": [safe_text(x) for x in (args.evidence or [])],
     }
-    with path.open("a", encoding="utf-8") as fh:
-        fh.write(json.dumps(event, ensure_ascii=False, sort_keys=True) + "\n")
+    seq = append_stream_event(path, event)
     return {"events": str(path), "mode": mode, "sequence": seq}
 
 

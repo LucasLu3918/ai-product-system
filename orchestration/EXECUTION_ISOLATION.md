@@ -270,6 +270,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+Observed Context, Retrieval and Gate stages record only bounded operation names, outcome and measured duration. The recorder uses the existing run event stream; it does not capture prompts, tool arguments or private reasoning, and missing run state remains non-blocking.
+
 The read-only dashboard aggregates known workspaces by repository identity and reports workspace health without changing ownership, isolation mode or writer boundaries.
 
 A worktree separates Git/filesystem state, but parallel tasks can still collide on host runtime resources such as a development-server TCP port. Runtime Resource Lease extends the existing Execution Isolation ownership lifecycle; it is not a second isolation subsystem.

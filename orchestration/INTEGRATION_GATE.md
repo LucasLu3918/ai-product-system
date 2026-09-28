@@ -88,6 +88,8 @@ PASS means deterministic validation evidence is green. It does **not** authorize
 
 ## Independent review evidence
 
+Ed25519 runtime receipts are accepted only when verified against a trust store supplied outside the candidate repository. The active matrix leaves mandatory review disabled until a real host-managed issuer is configured; an absent issuer yields `UNVERIFIED` and cannot satisfy a required review.
+
 Independent-review packet, task and evidence support is implemented, but PR enforcement is currently disabled in the active Core Change Matrix (`review_evidence.required: false`). Keep it disabled until a trusted runtime-attestation verifier is configured. Enabling the matrix flag without that verifier intentionally blocks required review as `UNVERIFIED`.
 
 The Core Change Matrix may declare:

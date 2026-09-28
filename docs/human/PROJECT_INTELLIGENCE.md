@@ -12,6 +12,8 @@ Read-only Discovery 先建立 PARTIAL，再由 Agent 針對 Architecture、Data 
 
 已有 AGENTS / CLAUDE / GEMINI / ADR / OpenAPI / Architecture Docs / Brand / Visual / Quality Artifact 時，只存 Pointer/Metadata。SOURCE_REGISTRY 同時記錄 Runtime visibility。
 
+Turn Context 依 `--target-path` 與 Runtime 選取適用指示；根目錄工作不會套用子目錄的 Adapter 範本。`--intent read|write` 可在語意不明時提供明確任務方向。非 Git 資料夾及尚無首筆 commit 的專案仍可取得基本 Context，歷史查詢則維持不可用。
+
 ## 四份核心 Machine-readable 檔
 
 - `PROJECT_INTELLIGENCE.yaml`：Identity / Branch / Worktree / State / Topic pointers。
@@ -42,6 +44,8 @@ Git 路徑以 NUL 分隔讀取，完整變更集合用於新鮮度判斷；畫�
 任務層 freshness 只有在選取的 topic/component 路徑都能映射，且所有受影響 topic 都已知並與選取範圍不相交時，才可證明不相關。沒有選取 topic、source registry 改變、未知影響或路徑無法映射時，回報 `STALE`／`UNKNOWN`；mutation 仍依全域 freshness 封閉。
 
 Core capsule 目標上限為 1,600 tokens，Recall 為 6,000，組裝總估值為 7,600。組裝前先預留時序資料與 topic 指標所需空間，再把剩餘預算交給本機檢索；時序資料或檢索結果超量時會明確標示截斷。估值採 deterministic 字元估算，並非特定模型 tokenizer。Runtime hook 會再次量測最終文字輸出並裁切可選內容，保留 freshness、retrieval status 和來源摘要。
+
+CLI 預設 YAML 只顯示精簡 Context；`--full` 可查看完整診斷，JSON 格式保留機器可讀的完整結構。`full_manifest_characters` 是完整序列化字元數，不是模型 token 數。
 
 Architecture 摘要、核准覆寫與時序文字在進入 Runtime Context 前共用 Runtime Content Safety Boundary。檢索索引不可用時回報穩定錯誤類別與修復指引，同時保留 canonical source pointers。
 
@@ -76,6 +80,8 @@ Intelligence / HTML 不保存實際 Password、Token、Private Key、Secret env 
 採 System-level + Target Component + Shared Impact relationships 的 Lazy Load，不因整體理解就載入所有 Component。
 
 ## Retrieval Intelligence：即時按需檢索
+
+查詢與索引建置使用不同 SQLite 開啟路徑。唯讀環境無法開啟 WAL shared memory 時，若沒有待套用的 WAL，AIPS 可使用經完整性檢查的暫時快照；仍無法安全讀取時會回報索引不可用，不推測索引已損壞。
 
 Project Intelligence 不再只依賴預先整理好的 Topic。AIPS 保留原本的穩定理解層，同時加入一個可以隨時重建的 Retrieval Intelligence 快取。
 

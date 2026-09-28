@@ -19,6 +19,12 @@
 
 ## Unreleased
 
+- Route Turn Context with scoped project instructions, explicit read/write intent, non-Git fallback, and compact default YAML output.
+- Serialize all run and telemetry event writers; separate read-only retrieval from index maintenance with a checked snapshot fallback.
+- Report Agent Eval evidence freshness against selected system sources without relabeling legacy results as current.
+- Add opt-in observed AIPS operation spans and an external-trust-store Ed25519 verifier for independent-review receipts; required review remains fail-closed without a trusted issuer.
+- Make working-tree content preview scan candidate additions and untracked files without treating removed historical text as new content.
+
 - Run the existing repository preflight early in CI, after the mandatory candidate secret scan and before full validation dependencies and Chromium.
 - Add an exact-candidate `--run` path to the local validation helper, with an isolated temporary configuration directory.
 - Reject duplicate Change Impact initialization by default; explicit `--reset` saves the previous evidence as a timestamped backup.

@@ -34,6 +34,8 @@ External provider credential 永遠是 optional enhancement，不得變成普通
 
 ## Effectiveness Feedback
 
+Effectiveness evidence distinguishes current system-bound evaluations from historical results without a source fingerprint. Optional operation spans report observed duration and outcome only when a matching run record is available.
+
 The read-only Parallel Run Dashboard is an observation surface for parallel workflow state; it does not create an Evolution decision or merge authority.
 
 Agent trajectory evidence 可回饋至後續 regression scenario，但不具備自動修改、merge、release 或 publication authority。

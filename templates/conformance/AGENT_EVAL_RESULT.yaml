@@ -7,4 +7,5 @@ execution:
   model: null
   runtime: null
   executed_at: null
+  system_fingerprint: null # Digest of the Case's system_dependencies at actual execution time.
 response: {}

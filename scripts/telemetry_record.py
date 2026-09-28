@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
-import fcntl
 import json
 import os
 import re
@@ -12,6 +11,7 @@ import sys
 from pathlib import Path
 
 from aips_identity import project_root
+from run_event_stream import append_event as append_stream_event
 from run_state import run_store
 
 SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$")
@@ -44,35 +44,7 @@ def _valid_id(value: str | None, label: str, *, required: bool = False) -> str |
 
 
 def _append_event(path: Path, event: dict) -> int:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    lock_path = path.with_suffix(path.suffix + ".lock")
-    with lock_path.open("a+b") as lock:
-        fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
-        seq = 1
-        if path.exists():
-            with path.open("rb") as existing:
-                for line in existing:
-                    if line.strip():
-                        seq += 1
-        event["sequence"] = seq
-        encoded = json.dumps(event, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode("utf-8") + b"\n"
-        if len(encoded) > MAX_EVENT_BYTES:
-            raise ValueError("telemetry event exceeds the bounded event size")
-        fd = os.open(path, os.O_CREAT | os.O_WRONLY | os.O_APPEND, 0o600)
-        try:
-            with os.fdopen(fd, "ab", closefd=True) as out:
-                out.write(encoded)
-                out.flush()
-                os.fsync(out.fileno())
-        except BaseException:
-            try:
-                os.close(fd)
-            except OSError:
-                pass
-            raise
-        finally:
-            fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
-    return seq
+    return append_stream_event(path, event, max_bytes=MAX_EVENT_BYTES)
 
 
 def record(args: argparse.Namespace) -> dict:

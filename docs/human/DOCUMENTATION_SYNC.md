@@ -20,6 +20,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Changes to turn intent, scoped instruction selection, event serialization, observed stage evidence, Agent Eval freshness and review attestation must update their canonical Human and orchestration sections together with `config/documentation-placement.yaml`.
+
 Telemetry export sources map to the observability/run-state topics and Scenario 181; new source files must add a canonical placement rule before Human documentation is considered complete.
 
 提交前的 Publication Preview 會以工作樹為輸入檢查 H2 placement，包含已追蹤與未追蹤的新增內容；缺少 canonical H2 或內容落在不允許的段落時，診斷會列出允許的 H2。最終 Repository Preflight 仍驗證已提交的 diff。

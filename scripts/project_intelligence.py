@@ -61,6 +61,8 @@ from retrieval_intelligence import (
 )
 from retrieval_intelligence import redact_text as redact_retrieval_text
 from content_safety import safe_emit as safe_context_emit
+from observed_stage import observed_stage
+from turn_intent import classify_prompt
 from temporal_intelligence import (
     active_assertions as temporal_active_assertions,
     between as temporal_between,
@@ -96,16 +98,6 @@ CONTEXT_RECALL_HARD_BUDGET = 6000
 CONTEXT_TEMPORAL_RESERVE = 1000
 CONTEXT_TOTAL_HARD_BUDGET = 7600
 OPTIONAL_SEMANTIC_TOPICS = ("operations",)
-MUTATION_WORDS = {
-    "modify", "change", "fix", "implement", "add", "remove", "refactor", "update",
-    "create", "delete", "rename", "修改", "調整", "實作", "新增", "刪除", "重構", "修正", "更新",
-}
-VISUAL_WORDS = {"css", "ui", "ux", "button", "tag", "layout", "visual", "style", "樣式", "風格", "按鈕", "版面"}
-DATA_WORDS = {"database", "schema", "sql", "migration", "table", "db", "資料庫", "欄位", "遷移"}
-API_WORDS = {"api", "endpoint", "request", "response", "handler", "route", "接口", "介面", "請求", "回應"}
-SECURITY_WORDS = {"auth", "authorization", "security", "permission", "token", "權限", "驗證", "資安"}
-TEST_WORDS = {"test", "spec", "coverage", "測試"}
-
 REDACTION_PATTERNS = (
     re.compile(r"(?i)(password\s*[:=]\s*)([^\s,;]+)"),
     re.compile(r"(?i)((?:api[_-]?key|token|secret)\s*[:=]\s*)([^\s,;]+)"),
@@ -306,6 +298,35 @@ def discover_sources(root: Path, files: list[Path]) -> list[dict[str, Any]]:
     return sorted(sources, key=lambda x: x["path"])
 
 
+def scoped_sources(root: Path, registry: dict[str, Any], runtime: str, target_path: str | None) -> tuple[list[dict[str, Any]], str, int]:
+    """Keep applicable instructions; leave official documents as on-demand pointers."""
+    root = root.resolve()
+    target = Path(target_path) if target_path else root
+    if not target.is_absolute():
+        target = root / target
+    target = target.resolve()
+    try:
+        relative = target.relative_to(root)
+    except ValueError as exc:
+        raise ValueError("target path must remain inside the project") from exc
+    directory = relative if target.is_dir() or relative == Path(".") else relative.parent
+    selected: list[dict[str, Any]] = []
+    excluded = 0
+    for source in registry.get("sources") or []:
+        if source.get("authority") != "project_instruction":
+            selected.append(source)
+            continue
+        scope = str(source.get("scope") or ".").strip("/") or "."
+        in_scope = scope == "." or directory == Path(scope) or Path(scope) in directory.parents
+        runtimes = source.get("auto_loaded_by") or []
+        runtime_matches = not runtimes or runtime in runtimes
+        if in_scope and runtime_matches:
+            selected.append(source)
+        else:
+            excluded += 1
+    return selected, directory.as_posix(), excluded
+
+
 def inventory(root: Path, files: list[Path]) -> dict[str, Any]:
     ext_counts: dict[str, int] = {}
     manifests: list[str] = []
@@ -366,23 +387,6 @@ def seed_impact_graph(inv: dict[str, Any]) -> dict[str, Any]:
         "coverage": {"api": "partial", "data": "partial", "events": "partial", "consumers": "unknown"},
         "unknowns": ["Semantic relationships require Agent enrichment from repository evidence."],
     }
-
-
-def classify_prompt(prompt: str) -> tuple[str, bool, list[str]]:
-    low = prompt.lower()
-    mutation = any(w in low for w in MUTATION_WORDS)
-    topics = ["architecture", "conventions", "modules"] if mutation else []
-    if any(w in low for w in VISUAL_WORDS):
-        return "visual", mutation, ["conventions", "modules"]
-    if any(w in low for w in DATA_WORDS):
-        return "data", mutation, ["architecture", "data-flow", "modules"]
-    if any(w in low for w in SECURITY_WORDS):
-        return "security", mutation, ["architecture", "security", "modules"]
-    if any(w in low for w in TEST_WORDS):
-        return "testing", mutation, ["testing", "modules", "conventions"]
-    if any(w in low for w in API_WORDS):
-        return "api", mutation, ["architecture", "data-flow", "modules", "conventions"]
-    return ("mutation" if mutation else "general"), mutation, topics
 
 
 def layered_context(root: Path, store: Path, intel: dict[str, Any], retrieval: dict[str, Any], selected: list[str], freshness_result: dict[str, Any]) -> dict[str, Any]:
@@ -1233,14 +1237,17 @@ def retrieval_failure_remediation(exc: BaseException) -> str:
     return str(retrieval_index_unavailable(exc).get("remediation"))
 
 
-def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = False, component: str | None = None) -> dict[str, Any]:
+def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = False, component: str | None = None,
+                     target_path: str | None = None, intent: str = "auto") -> dict[str, Any]:
     store, mode, pid = intelligence_store(root)
-    category, mutation, desired_topics = classify_prompt(prompt)
+    category, mutation, desired_topics = classify_prompt(prompt, intent)
     fr = freshness(root)
     intel = load_yaml(store / "PROJECT_INTELLIGENCE.yaml", {}) if (store / "PROJECT_INTELLIGENCE.yaml").exists() else {}
     registry = load_yaml(store / "SOURCE_REGISTRY.yaml", {"sources": []}) if store.exists() else {"sources": []}
+    applicable, target_scope, excluded_sources = scoped_sources(root, registry, runtime, target_path)
+    scoped_registry = {**registry, "sources": applicable}
     state = intel.get("state") or {}
-    authority_conflicts = active_authority_conflicts(store, intel, registry, runtime) if store.exists() else []
+    authority_conflicts = active_authority_conflicts(store, intel, scoped_registry, runtime) if store.exists() else []
 
     available = intel.get("topics") or {}
     selected: list[str] = []
@@ -1321,7 +1328,7 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
 
     project_native: list[str] = []
     runtime_visible: list[str] = []
-    for src in registry.get("sources") or []:
+    for src in applicable:
         p = str(src.get("path", ""))
         if not p:
             continue
@@ -1347,7 +1354,7 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
         if authority_conflicts:
             fail_closed_reasons.append("unresolved_authority_conflict")
 
-    return {
+    manifest = {
         "version": 1,
         "runtime": {
             "id": runtime,
@@ -1370,6 +1377,7 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             ],
             "runtime_native": runtime_visible[:30],
             "project_native": project_native[:30],
+            "source_scope": {"target_path": target_scope, "excluded_instruction_sources": excluded_sources},
             "intelligence_topics": selected,
             "optional_evidence": [str(store / "DISCOVERY.yaml")] if (store / "DISCOVERY.yaml").exists() else [],
             "retrieval": retrieval,
@@ -1433,6 +1441,44 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             "mode": "closed" if fail_closed_reasons else "soft",
             "reasons": fail_closed_reasons,
         },
+    }
+    manifest["context"]["layers"]["telemetry"]["full_manifest_characters"] = len(json.dumps(manifest, ensure_ascii=False))
+    return manifest
+
+
+def compact_context_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
+    context = manifest.get("context") or {}
+    layers = context.get("layers") or {}
+    retrieval = context.get("retrieval") or {}
+    instruction_names = SOURCE_NAMES
+    project_instructions = [path for path in context.get("project_native") or [] if Path(path).name in instruction_names]
+    return {
+        "version": manifest.get("version"),
+        "runtime": manifest.get("runtime"),
+        "project": manifest.get("project"),
+        "task": manifest.get("task"),
+        "context": {
+            "always": context.get("always") or [],
+            "runtime_native": context.get("runtime_native") or [],
+            "project_native": project_instructions,
+            "source_scope": context.get("source_scope") or {},
+            "intelligence_topics": context.get("intelligence_topics") or [],
+            "project_core": (layers.get("core") or {}).get("summary"),
+            "retrieval": {
+                "status": retrieval.get("status"),
+                "reason_code": retrieval.get("reason_code"),
+                "remediation": retrieval.get("remediation"),
+                "results": [
+                    {key: item.get(key) for key in ("path", "start_line", "end_line", "reason", "snippet") if item.get(key) is not None}
+                    for item in (retrieval.get("results") or [])[:4]
+                ],
+            },
+            "on_demand_source_count": len(context.get("project_native") or []) - len(project_instructions),
+        },
+        "intelligence": manifest.get("intelligence"),
+        "freshness": {key: (manifest.get("freshness") or {}).get(key) for key in ("status", "reasons", "affected_topics")},
+        "requirements": manifest.get("requirements"),
+        "fail_policy": manifest.get("fail_policy"),
     }
 
 
@@ -2323,6 +2369,10 @@ def main() -> int:
     p.add_argument("--runtime", default="unknown")
     p.add_argument("--prompt", default="")
     p.add_argument("--component")
+    p.add_argument("--target-path", help="File or directory whose scoped project instructions apply")
+    p.add_argument("--intent", choices=("auto", "read", "write"), default="auto")
+    p.add_argument("--full", action="store_true", help="Include complete Turn Context diagnostics")
+    p.add_argument("--observe-run-id", help="Record this Context operation in an existing AIPS run")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
     p.add_argument("--explain", action="store_true")
 
@@ -2390,6 +2440,7 @@ def main() -> int:
     p.add_argument("--limit", type=int, default=RETRIEVAL_DEFAULT_RESULT_LIMIT)
     p.add_argument("--no-refresh", action="store_true")
     p.add_argument("--no-structural", action="store_true")
+    p.add_argument("--observe-run-id", help="Record this Retrieval operation in an existing AIPS run")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
     p = sub.add_parser("evaluate")
@@ -2412,7 +2463,12 @@ def main() -> int:
         elif args.command == "refresh":
             result = refresh(root)
         elif args.command == "context":
-            result = context_manifest(root, args.runtime, args.prompt, args.explain, args.component)
+            with observed_stage(root, args.observe_run_id, "intelligence.context") as observation:
+                result = context_manifest(root, args.runtime, args.prompt, args.explain, args.component,
+                                          args.target_path or args.project, args.intent)
+            result["observation"] = observation
+            if args.format == "yaml" and not args.full:
+                result = compact_context_manifest(result)
         elif args.command == "promotion-plan":
             result = promotion_plan(root, args.topic)
         elif args.command == "promotion-apply":
@@ -2458,15 +2514,17 @@ def main() -> int:
             store, _, _ = intelligence_store(root)
             if not (store / "PROJECT_INTELLIGENCE.yaml").exists():
                 raise RuntimeError("Project Intelligence must be initialized before Retrieval Intelligence query")
-            result = retrieval_query_repository(
-                root,
-                store,
-                args.prompt,
-                token_budget=max(256, args.token_budget),
-                limit=max(1, min(50, args.limit)),
-                refresh=not args.no_refresh,
-                structural=False if args.no_structural else None,
-            )
+            with observed_stage(root, args.observe_run_id, "intelligence.retrieve") as observation:
+                result = retrieval_query_repository(
+                    root,
+                    store,
+                    args.prompt,
+                    token_budget=max(256, args.token_budget),
+                    limit=max(1, min(50, args.limit)),
+                    refresh=not args.no_refresh,
+                    structural=False if args.no_structural else None,
+                )
+            result["observation"] = observation
         elif args.command == "evaluate":
             store, _, _ = intelligence_store(root)
             if not (store / "PROJECT_INTELLIGENCE.yaml").exists():

@@ -255,6 +255,8 @@ Visual evidence 預設優先使用 Playwright managed Chromium；系統 Chrome �
 
 ## Logging、Observability 與 Operations
 
+已有 AIPS Run checkpoint 時，可對 `aips intelligence context`、`aips intelligence retrieve` 或 Integration Gate 加上 `--observe-run-id <id>`，自動記錄 AIPS 自己實際觀察到的操作起迄。這些紀錄不推算模型 token 或成本；記錄失敗會標示降級，不改變主要指令的判定。
+
 正式產品依風險規劃 logs、metrics、health / smoke、alerts、runbook 與 rollback。Observability 的目的不是大量產生 log，而是讓重要 failure mode 可被定位與復原。
 
 Production verification 應使用 observable evidence，不以「workflow 已執行」取代 service health / smoke / deployment state。
@@ -277,6 +279,8 @@ aips run dashboard --project .
 The dashboard is an observation surface. It shows workflow state, gate, last activity and workspace health, but it cannot approve, retry, cancel, merge or publish. `ACTIVE` means the last checkpoint reported an active workflow; it does not prove that an Agent process is still live. The local server binds only to `127.0.0.1`.
 
 ## Project Intelligence
+
+`aips intelligence context --project . --runtime codex --prompt '...'` 預設顯示精簡 YAML；`--full` 顯示完整診斷。可用 `--target-path src/file.py` 限定指示範圍，或用 `--intent read|write` 明確標示本次意圖。JSON 輸出維持完整格式，供既有整合使用。
 
 Stable Intelligence 保存 Architecture、Data Flow、Modules、Contracts、Conventions、Testing、Security、Operations、Source Registry 與 Impact Graph。
 

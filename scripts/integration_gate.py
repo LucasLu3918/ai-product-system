@@ -17,6 +17,7 @@ from typing import Any
 
 import yaml
 from review_evidence import validate_report
+from observed_stage import observed_stage
 
 
 class GateError(ValueError):
@@ -268,9 +269,11 @@ def main() -> int:
     parser.add_argument("--change-class", choices=("standard", "large", "core"), default="standard")
     parser.add_argument("--matrix", type=Path)
     parser.add_argument("--review-evidence", type=Path, help="Structured independent-review evidence artifact")
+    parser.add_argument("--review-trust-store", type=Path, help="Host-supplied trust anchors outside the candidate repository")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--format", choices=("yaml", "json"), default="yaml")
     parser.add_argument("--omit-output-tail", action="store_true", help="Omit check output from the report and stdout")
+    parser.add_argument("--observe-run-id", help="Record observed checks in an existing AIPS run")
     args = parser.parse_args()
 
     try:
@@ -328,6 +331,7 @@ def main() -> int:
                         "changed_files_hash": files_hash,
                     },
                     allow_external=args.review_evidence is not None,
+                    trust_store=args.review_trust_store,
                 )
             candidate["review_evidence_hash"] = review_result.get("evidence_sha256")
         candidate_env = {
@@ -343,10 +347,11 @@ def main() -> int:
             candidate_env["AIPS_SECRET_SCAN_SCANNER_SHA256"] = secret_scan["scanner_sha256"]
             candidate_env["AIPS_SECRET_SCAN_POLICY_SHA256"] = secret_scan["policy_sha256"]
         candidate_fingerprint = canonical_hash(candidate)
-        results = [
-            run_check(item, omit_output_tail=args.omit_output_tail, candidate_env=candidate_env)
-            for item in checks
-        ]
+        with observed_stage(repository_root, args.observe_run_id, "integration.check") as observation:
+            results = [
+                run_check(item, omit_output_tail=args.omit_output_tail, candidate_env=candidate_env)
+                for item in checks
+            ]
         failures = [r["id"] for r in results if r.get("status") == "FAIL" and r.get("required", True)]
         if review_required and review_result.get("status") != "VERIFIED":
             failures.append("independent-review-evidence")
@@ -356,6 +361,7 @@ def main() -> int:
             "candidate": candidate,
             "candidate_fingerprint": candidate_fingerprint,
             "checks": results,
+            "observation": observation,
             "review_evidence": review_result,
             "status": "PASS" if not failures else "FAIL",
             "blockers": failures,

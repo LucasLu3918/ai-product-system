@@ -8,9 +8,10 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 flowchart TD
     S[User Prompt] --> RA[Runtime Adapter]
     RA --> TC[Compact Turn Context]
-    TC --> ENG{Engineering / Project task?}
+    TC --> SCOPE[Resolve advisory intent + scoped instructions]
+    SCOPE --> ENG{Engineering / Project task?}
     ENG -->|no| CHAT[Normal conversation]
-    ENG -->|yes| ID[Resolve repository_id + workspace_id]\n    ID --> P[Resolve Project Mode + Intelligence Store]
+    ENG -->|yes| ID[Resolve repository_id + workspace_id]\n    ID --> P[Resolve Project Mode + Intelligence Store; basic context without Git HEAD]
     P --> I{Intelligence state}
     I -->|MISSING| B[Read-only Bootstrap]
     I -->|STALE| R[Targeted Refresh]
@@ -20,7 +21,7 @@ flowchart TD
     F --> IDX[Ensure rebuildable Retrieval Index]
     R --> L
     L --> Q{Retrieval index available?}
-    Q -->|yes| RET[Hybrid JIT Retrieval: lexical + symbols + structural + tests + graph + Git history]
+    Q -->|yes| RET[Read-only Hybrid JIT Retrieval: lexical + symbols + structural + tests + graph + Git history]
     Q -->|no| DEG[Truthful fallback to stable Intelligence]
     IDX --> RET
     RET --> BUD[Rank + token budget + provenance]
@@ -44,6 +45,8 @@ flowchart TD
 ~~~
 
 The synchronous Turn Hook resolves identity/freshness plus bounded evidence from an already available Retrieval Index. Whole-project bootstrap, initial index construction, semantic enrichment, impact-graph rebuilding and HTML generation stay outside the hook latency path. Retrieval cache state is non-canonical and degrades truthfully to stable Project Intelligence when unavailable.
+
+All writers of `EVENTS.jsonl` share one sequence lock. Optional observed operation spans use an existing Run checkpoint and remain evidence only. External review trust anchors may verify signed runtime receipts, while an absent trusted issuer preserves the required-review block.
 
 ## Parallel run observation flow
 

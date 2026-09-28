@@ -70,6 +70,8 @@ Read-only explanation/research that does not mutate a project does not need to m
 
 ## Global Agent Harness
 
+Turn Context classification is an advisory routing hint. Match only applicable scoped project instructions; `--intent read|write` may override ambiguous wording, while actual mutations retain their normal approval and Change Impact requirements. A directory without a Git HEAD still receives basic context, with history-dependent conclusions marked unavailable. Default human-facing YAML is compact; `--full` retains the diagnostic manifest.
+
 Use `harness/HARNESS_PROTOCOL.md`, `orchestration/TURN_HARNESS.md` and `orchestration/HARNESS_RESOLUTION.md`.
 
 The Harness is available after installation, but full AIPS orchestration activates only for applicable product/project/software work.

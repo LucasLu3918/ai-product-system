@@ -150,6 +150,8 @@ The durable Human surface is the original GitHub Issue containing Radar evidence
 
 ## Documentation consistency
 
+Telemetry and evaluation evidence must state what the runtime actually observed. Current-system fingerprints bind Agent Eval results to declared source files, while unbound historical results remain identifiable and are never silently upgraded.
+
 The Parallel Run Dashboard may provide operational evidence for human review, but it is not an Evolution source of truth and cannot authorize adoption, merge or publication.
 
 Evolution behavior changes are covered by `orchestration/DOCUMENTATION_SYNC.md`, `config/documentation-sync.yaml` and the Human namespace policy in `config/documentation-audience.yaml`.

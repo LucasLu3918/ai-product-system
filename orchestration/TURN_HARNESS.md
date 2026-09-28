@@ -29,6 +29,8 @@ resolve project identity
 
 Heavy work such as initial bootstrap, broad targeted refresh, impact-graph rebuild and HTML regeneration happens outside the synchronous hook path.
 
+Intent classification uses word boundaries and negation handling; callers can pass `--intent read|write` when the prompt is ambiguous. Instruction pointers are filtered by `--target-path` and runtime before conflict resolution. The default YAML CLI view is compact; machine JSON and `--full` retain the complete manifest. Layer token estimates cover only their named layers, while `full_manifest_characters` measures the serialized full manifest without claiming tokenizer accuracy.
+
 ## Capability states
 
 Runtime capability is multidimensional:

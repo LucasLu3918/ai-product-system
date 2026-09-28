@@ -1,5 +1,7 @@
 # Multi-Perspective Review
 
+An optional externally provisioned trust store can verify an Ed25519 runtime receipt for an independent reviewer. AIPS validates the signature and candidate binding but does not issue the receipt or infer read-only isolation. Without a trusted issuer, required independent review remains `UNVERIFIED`.
+
 Use for large/core/high-risk changes when one generic reviewer is insufficient.
 
 ## Trigger

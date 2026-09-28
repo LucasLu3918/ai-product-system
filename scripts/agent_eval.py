@@ -50,6 +50,20 @@ def fingerprint(doc: dict[str, Any]) -> str:
     return "sha256:" + hashlib.sha256(payload.encode("utf-8")).hexdigest()
 
 
+def system_fingerprint(case: dict[str, Any]) -> str | None:
+    dependencies = case.get("system_dependencies") or []
+    if not dependencies:
+        return None
+    sources: dict[str, str] = {}
+    for raw in dependencies:
+        path = (ROOT / raw).resolve(strict=True)
+        path.relative_to(ROOT)
+        if not path.is_file():
+            raise ValueError(f"system dependency is not a file: {raw}")
+        sources[raw] = "sha256:" + hashlib.sha256(path.read_bytes()).hexdigest()
+    return fingerprint(sources)
+
+
 def get_path(doc: dict[str, Any], path: str) -> Any:
     current: Any = doc
     for part in path.split("."):
@@ -98,6 +112,12 @@ def validate_case(case: dict[str, Any]) -> list[str]:
         errors.append("case.id is required")
     if not re.fullmatch(r"\d{3}", str(case.get("scenario_id") or "")):
         errors.append("case.scenario_id must be a 3-digit string")
+    dependencies = case.get("system_dependencies") or []
+    if not isinstance(dependencies, list) or len(dependencies) > 32 or any(
+        not isinstance(path, str) or not path or Path(path).is_absolute() or ".." in Path(path).parts
+        for path in dependencies
+    ):
+        errors.append("case.system_dependencies must be up to 32 repository-relative paths")
     input_doc = case.get("input") or {}
     if not isinstance(input_doc, dict) or not str(input_doc.get("prompt") or "").strip():
         errors.append("case.input.prompt is required")
@@ -147,6 +167,15 @@ def validate_result(case: dict[str, Any], result: dict[str, Any]) -> list[str]:
 
 def score(case: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
     errors = validate_case(case) + validate_result(case, result)
+    expected_system = system_fingerprint(case) if not errors else None
+    observed_system = (result.get("execution") or {}).get("system_fingerprint")
+    if expected_system is None or not observed_system:
+        evidence_freshness = "UNBOUND"
+    elif observed_system == expected_system:
+        evidence_freshness = "CURRENT"
+    else:
+        evidence_freshness = "STALE"
+        errors.append("result.execution.system_fingerprint does not match current system dependencies")
     checks: list[dict[str, Any]] = []
     response_doc = {"response": result.get("response") or {}}
     rubric = case.get("rubric") or {}
@@ -207,6 +236,7 @@ def score(case: dict[str, Any], result: dict[str, Any]) -> dict[str, Any]:
     status = "PASS" if not errors and not failed else "FAIL"
     return {
         "status": status,
+        "evidence_freshness": evidence_freshness,
         "case_id": case.get("id"),
         "scenario_id": str(case.get("scenario_id") or ""),
         "case_fingerprint": fingerprint(case),
@@ -348,6 +378,8 @@ def analyze(cases_dir: Path, results_dir: Path) -> dict[str, Any]:
         errors.append(f"orphan Agent Eval result: {orphan}")
 
     passed = sum(1 for item in items if item["status"] == "PASS")
+    current = sum(1 for item in items if item.get("evidence_freshness") == "CURRENT")
+    unbound = sum(1 for item in items if item.get("evidence_freshness") == "UNBOUND")
     return {
         "status": "PASS" if not errors else "FAIL",
         "errors": errors,
@@ -355,6 +387,8 @@ def analyze(cases_dir: Path, results_dir: Path) -> dict[str, Any]:
             "cases": len(cases),
             "results": len(results),
             "passed": passed,
+            "current_system_bound": current,
+            "historical_unbound": unbound,
             "failed": len(items) - passed,
             "missing_results": len(set(cases) - set(results)),
             "orphan_results": len(set(results) - set(cases)),
