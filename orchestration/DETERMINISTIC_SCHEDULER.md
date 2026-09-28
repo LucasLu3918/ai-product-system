@@ -97,6 +97,7 @@ Preflight 也驗證候選 checkout 與 Core Matrix changed-files hash；若工�
 Output includes graph/state/decision SHA-256 fingerprints for reproducibility.
 
 CI integration evidence is written to the runner temporary directory and uploaded after validation. Scheduler and repository checks therefore inspect the unchanged checkout revision instead of treating generated reports as dirty inputs.
+Publication Preflight lifecycle evidence stubs the Python module probe before asserting loopback/browser blockers; this keeps environment diagnosis deterministic without changing Gate behavior.
 
 ## Failure behavior
 

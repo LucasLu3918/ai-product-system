@@ -252,8 +252,9 @@ matrix:
     unit:
       applicable: true
       evidence: Focused tests cover explicit-root selection/reporting, environment
-        preflight order, Markdown local-link classification and actionable final-disposition
-        diagnostics.
+        preflight order, Markdown local-link classification, actionable final-disposition
+        diagnostics, and isolation of Python module availability from localhost/browser
+        blocker assertions in publish_preflight_lifecycle.py.
     integration:
       applicable: true
       evidence: Exact-candidate publish preflight runs repository checks, local VitePress
@@ -284,7 +285,8 @@ matrix:
       applicable: true
       evidence: User and maintainer guidance plus orchestration docs describe root
         selection, local docs/build checks, environment blockers, labels and Change
-        Impact dispositions.
+        Impact dispositions; the lifecycle test boundary is documented in the human
+        conformance and architecture guides and relevant orchestration references.
 - boundary: scoped-turn-context-and-intent
   reason: Turn classification and instruction resolution determine which project guidance
     governs read-only versus mutating work.
@@ -499,8 +501,8 @@ scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 591a74960c849c8658334873b8e2cd3a02d98435
-  changed_files_hash: c40b5d76cd2db084ac6c45e79ec42dbc064cbf5f974044ffb99b14724bb37768
+  base_sha: 2776d75dff6b77338bd5017bcf508bb07447d955
+  changed_files_hash: 90ab6f698b3b59c815159391989882de166ad4542dde806ea9aeed05cb6acec8
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

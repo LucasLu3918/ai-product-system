@@ -48,6 +48,7 @@ Each project declares native validation as argv arrays, never arbitrary model ju
 AIPS Core must not hard-code one language toolchain as the universal project contract. Go/PHP/JS/Python projects keep their own appropriate commands.
 
 Path filters may skip checks that provably do not apply. Required applicable failures block the candidate.
+The Publication Preflight lifecycle fixture isolates Python module availability from loopback/browser capability failures; these assertions validate diagnostics and do not alter the Integration Gate contract.
 
 ## Core Change Test Matrix reuse
 

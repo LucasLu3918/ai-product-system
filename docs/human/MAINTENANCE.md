@@ -312,6 +312,7 @@ When public repository hardening changes, review together:
 - concurrency cancellation so a newer PR/main validation supersedes older in-progress work for the same ref/PR;
 - atomic remote branch-update practice so CI receives coherent logical states instead of file-by-file intermediate states;
 - validator contracts that check policy properties rather than freezing one dependency version.
+Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
 

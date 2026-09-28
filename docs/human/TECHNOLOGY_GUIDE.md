@@ -154,6 +154,7 @@ Architecture Surface、documentation mapping、validation contract 與 drift evi
 Documentation audience 掃描忽略 Git 已明確忽略的本機 metadata；未被忽略的未知 docs-root entry 仍 fail closed。
 
 獨立程式碼審查以 `SELF_CHECK` 與 `INDEPENDENT_REVIEW` 分開建模。Scheduler 建立唯讀隔離任務；review packet 以 allowlist、大小／路徑限制和檔案指紋固定審查輸入。Evidence 必須綁定精確 base/head、packet 與不同 execution ID，並由可信 runtime attestation verifier 驗證。沒有可用 verifier 時維持 `UNVERIFIED`，必要審查在 Integration Gate fail closed；靜態結構檢查不能冒充簽章驗證或語意判斷。
+Publication Preflight 的 lifecycle evidence 固定 Python module probe，再分別模擬 loopback 與 browser blocker，讓環境診斷測試不依賴主機是否安裝 optional modules。
 
 ## Product Delivery
 
