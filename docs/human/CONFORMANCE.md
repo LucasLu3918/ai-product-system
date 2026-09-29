@@ -112,6 +112,8 @@ Eval Case
 
 AIPS Core 不在 CI 裡呼叫特定模型 API。CI 驗證的是已記錄的 observable Result 是否仍綁定目前 Case，以及 rubric 是否通過。
 
+GitHub PR validation 也以精確候選為邊界：`opened` 與 `labeled` 使用不同併發群組；新 `synchronize` 可取代同 PR 舊 revision 的執行。被取消的舊 run 不代表 PASS，仍須確認最新候選 SHA 的 required `repository` aggregate。
+
 第一批 Agent Eval：
 
 ~~~text

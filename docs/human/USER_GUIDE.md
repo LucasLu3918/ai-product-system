@@ -310,7 +310,7 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 
 ## Git Publication 與 Release
 
-建立 Large/Core PR 前，先用 `aips publish preview` 檢查未提交文件位置與 Matrix 綁定，再用 `aips publish plan` 確認 GitHub CLI 認證與首次 PR 分類標籤。首次 `gh pr create` 應同時帶入 `--label aips:large-change` 或 `--label aips:core-change`。
+建立 Large/Core PR 前，先用 `aips publish preview` 檢查未提交文件位置與 Matrix 綁定，再用 `aips publish plan` 確認 GitHub CLI 認證與首次 PR 分類標籤。`gh pr create` 可同時帶入 `--label aips:large-change` 或 `--label aips:core-change`，讓 `opened` 事件採用預期分類；GitHub 仍可能另觸發 `labeled` CI，工作流程會分開排程這兩種事件。
 
 Remote Git publication 前需有 current Human authorization 與適用 validation evidence。AIPS 會區分：
 
@@ -341,7 +341,7 @@ Preview 也會在昂貴驗證前檢查候選內容安全與允許的 Git email �
 
 若本機工作樹包含其他未提交變更，先建立乾淨 worktree 驗證候選；不要讓 unrelated diff 改變 changed-files hash 或 Repository Health 結果。
 
-Squash merge 後可執行 `aips publish post-merge --fetch --apply --refresh-intelligence`。只有工作樹乾淨且 local／remote tree object 完全相同時，才會先建立 backup branch 再對齊；內容不同一律停止。
+合併後可執行 `aips publish post-merge --fetch --apply --refresh-intelligence`。工作樹乾淨且本地 `main` 是遠端目標的祖先時，工具先建立 backup branch，再以 `git merge --ff-only` 同步；若提交歷史已分歧，只有兩邊 tree object 完全相同時才採用有備份的既有對齊方式，其他情況一律停止。
 
 Release model 與版本歷史以 repository 的 current policy / CHANGELOG 為準。
 

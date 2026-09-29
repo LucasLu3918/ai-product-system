@@ -88,6 +88,8 @@ CI 在強制候選秘密掃描後先執行輕量 repository preflight，再安�
 
 Publication Preflight 是 Local／CI 共用的 candidate resolver，並在完整 Gate 前執行 diff-aware repository preflight。Change class 來自明確參數或 PR labels；Large/Core 只接受 canonical Matrix path。遠端保護查詢與 environment probe 只產生 evidence，不取得 publication authority。
 
+Validation workflow 的 concurrency group 包含 PR action，避免建立 PR 的 `opened` run 與分類標籤的 `labeled` run 互相取消；同一 PR 的新 `synchronize` revision 可取消舊 revision，main push 也可取代舊 push。
+
 Browser runtime 以 Playwright managed Chromium 為首選，system Chrome 透過 `AIPS_BROWSER_PROVIDER=system` 明確選用或作 auto fallback。Preflight 會執行 version 與 isolated-profile headless smoke probe；binary 存在但無法啟動時，結果是 `ENVIRONMENT_BLOCKED` 而非產品測試失敗。
 
 Remote Git publication uses the built-in credential-free candidate scanner in strict mode. The Integration Gate binds the final-tree and commit-history scan to candidate, policy and scanner fingerprints; provider tools remain optional.

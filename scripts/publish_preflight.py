@@ -96,7 +96,7 @@ def pr_creation_plan(change_class: str) -> dict[str, Any]:
         "required_label": label,
         "gh_create_args": ["gh", "pr", "create", *(["--label", label] if label else [])],
         "label_timing": "initial_create_request" if label else "not_required",
-        "note": "Create the PR with its change-class label in the same request so the opened run uses the intended gate without a second labeled-event run.",
+        "note": "Include the change-class label in the PR creation request when the route supports it. GitHub may still emit a separate labeled event; the validation workflow isolates lifecycle events so they can complete independently.",
     }
 
 
@@ -576,6 +576,7 @@ def post_merge(args: argparse.Namespace) -> dict[str, Any]:
     local_tree = git("rev-parse", "HEAD^{tree}")
     remote_tree = git("rev-parse", f"{remote_ref}^{{tree}}")
     clean = not bool(git("status", "--porcelain"))
+    fast_forward_possible = git_success("merge-base", "--is-ancestor", local_sha, remote_sha)
     result: dict[str, Any] = {
         "version": 1,
         "branch": current_branch,
@@ -583,6 +584,7 @@ def post_merge(args: argparse.Namespace) -> dict[str, Any]:
         "local_sha": local_sha,
         "remote_sha": remote_sha,
         "tree_equivalent": local_tree == remote_tree,
+        "fast_forward_possible": fast_forward_possible,
         "clean": clean,
         "action": "NONE",
         "status": "CURRENT" if local_sha == remote_sha else "RECONCILIATION_REQUIRED",
@@ -597,9 +599,9 @@ def post_merge(args: argparse.Namespace) -> dict[str, Any]:
         result["status"] = "BLOCKED"
         result["reason"] = "working tree is dirty"
         return result
-    if local_tree != remote_tree:
+    if not fast_forward_possible and local_tree != remote_tree:
         result["status"] = "BLOCKED"
-        result["reason"] = "local and remote trees differ; automatic reset is unsafe"
+        result["reason"] = "local and remote histories diverged and trees differ; automatic reconciliation is unsafe"
         return result
     backup = args.backup_branch or f"aips/pre-reconcile-{local_sha[:12]}"
     if git_success("show-ref", "--verify", "--quiet", f"refs/heads/{backup}"):
@@ -607,8 +609,12 @@ def post_merge(args: argparse.Namespace) -> dict[str, Any]:
         result["reason"] = f"backup branch already exists: {backup}"
         return result
     subprocess.run(["git", "branch", backup, local_sha], cwd=ROOT, check=True)
-    subprocess.run(["git", "reset", "--hard", remote_ref], cwd=ROOT, check=True)
-    result.update({"status": "RECONCILED", "action": "RESET_EQUIVALENT_TREE", "backup_branch": backup})
+    if fast_forward_possible:
+        subprocess.run(["git", "merge", "--ff-only", remote_ref], cwd=ROOT, check=True, capture_output=True, text=True)
+        result.update({"status": "RECONCILED", "action": "FAST_FORWARD", "backup_branch": backup})
+    elif local_tree == remote_tree:
+        subprocess.run(["git", "reset", "--hard", remote_ref], cwd=ROOT, check=True)
+        result.update({"status": "RECONCILED", "action": "RESET_EQUIVALENT_TREE", "backup_branch": backup})
     if args.refresh_intelligence:
         refresh_result = subprocess.run(
             [sys.executable, str(ROOT / "scripts/project_intelligence.py"), "refresh", "--project", str(ROOT), "--format", "json"],

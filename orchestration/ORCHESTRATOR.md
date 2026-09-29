@@ -303,6 +303,8 @@ Publication-readiness changes include the selected checkout, local documentation
 
 The publication plan records the change-class label for the initial PR create request. A missing or invalid GitHub CLI login is reported as `AUTH_REQUIRED` with a recovery command; credential output is never included.
 
+GitHub may emit a separate `labeled` event even when the label is supplied during PR creation. Validate workflow concurrency groups are action-scoped so `opened` and `labeled` checks do not cancel one another; only newer `synchronize` revisions supersede older revisions.
+
 Before commit, use the publication preview to inspect the complete working-tree file set, recursive documentation requirements and matrix hash. Synchronize only the canonical matrix binding after the scope is complete, then review the invalidated matrix evidence before Gate execution.
 
 Treat Matrix `NEEDS_WORK` from a DRAFT status, remaining blockers, unreconciled diff or stale binding as an implementation task. Clear it before running the exact-candidate Gate; a preview readiness result never authorizes publication.
@@ -311,7 +313,7 @@ Eval-as-CI is a Core Change capability. The Orchestrator must route it through t
 
 When a repository PR represents an already approved Large/Core Change, preserve that classification into deterministic CI with `aips:large-change` or `aips:core-change`. Integration Gate uses the change class only to select evidence requirements; it does not create semantic classification or approval authority.
 
-Before requesting Git publication approval, run the shared publication plan/preflight, resolve protected-branch routing, and present the exact candidate after diff-aware documentation checks pass. Post-merge local reconciliation may reset only an equivalent tree after creating a backup branch; otherwise stop for Human review.
+Before requesting Git publication approval, run the shared publication plan/preflight, resolve protected-branch routing, and present the exact candidate after diff-aware documentation checks pass. After merge, fast-forward a clean local `main` only when it is an ancestor of the fetched target, preserving a backup branch first. If histories diverged, reconcile only equivalent trees with a backup; otherwise stop for Human review.
 
 When Core Change Testing requires independent review, schedule a separate read-only `INDEPENDENT_REVIEW` task over the bounded packet and exact candidate. The Integration Gate must consume evidence from a trusted runtime attestation verifier; absent or stale attestation blocks required review rather than falling back to self-check.
 ## Runtime Content Safety Boundary

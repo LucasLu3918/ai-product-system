@@ -1,61 +1,60 @@
 version: 1
 change:
-  id: deterministic-execution-ownership
-  summary: Bind scheduler-dispatched tasks to one verified AIPS worktree execution;
-    track renewable ownership leases; expose truthful advisory authorization; reconcile
-    actual Git changes against task write sets; and project owner state read-only.
+  id: validate-pr-event-concurrency
+  summary: Isolate GitHub pull-request lifecycle validation runs by event action,
+    keep required validation checks fail-closed, and safely fast-forward local main
+    after a merge while preserving backups and refusing divergent history.
   boundary:
-  - task-execution-ownership
+  - ci-validation-publication
 matrix:
-- boundary: task-execution-ownership
-  reason: Scheduler dispatch, runtime owner leases, write authorization, isolation
-    and final diff reconciliation form one security-sensitive lifecycle; dashboard
-    state remains an observation-only projection.
+- boundary: ci-validation-publication
+  reason: Pull-request event scheduling, required validation evidence, and post-merge
+    local ref recovery are one publication lifecycle; event runs must remain isolated
+    while failed validation and divergent Git history stay fail-closed.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff critical rules, Python 3.12 compilation and required scheduler
-        Gate mypy command pass.
+      evidence: Python compilation and the repository validator pass; CI runs the
+        configured Ruff rules on the exact PR candidate.
     unit:
       applicable: true
-      evidence: task_ownership_lifecycle.py and tests.test_run_projection pass boundary/path,
-        legacy projection and expired lease cases.
+      evidence: publish_preflight_lifecycle.py passes clean post-merge fast-forward
+        and divergent-history refusal fixtures.
     integration:
       applicable: true
-      evidence: task_ownership_lifecycle.py passes claim/dispatch, shared-lock race,
-        worktree binding, expiry/recovery retry and Git diff reconciliation.
+      evidence: Temporary Git repositories exercise backup preservation, local main
+        fast-forward, remote reachability, and no ref mutation when local history diverges.
     contract:
       applicable: true
-      evidence: scheduler_gate_contracts.py and conformance_isolation.py pass; Task
-        Graph v1 compatibility and truthful ADVISORY state are asserted.
+      evidence: static_contracts.py checks action-scoped concurrency groups and allows
+        cancellation only for superseded synchronize and push runs.
     e2e:
       applicable: false
-      na_reason: No deployed multi-agent runtime is available locally; isolated Git
-        worktree lifecycle and exact local CLI state provide the executable boundary.
+      na_reason: GitHub-hosted opened and labeled event delivery cannot run locally;
+        the exact PR Actions checks provide this publication-only end-to-end evidence.
     security:
       applicable: true
-      evidence: The required Integration Gate runs the strict mandatory candidate
-        scanner over exact base/head and binds its findings, policy hash and scanner
-        hash in the candidate report.
+      evidence: Required Integration Gate candidate scanning and protected required
+        validation checks remain fail-closed; cancellation is limited to superseded runs.
     migration_recovery:
       applicable: true
-      evidence: task_ownership_lifecycle.py passes legacy projection, dirty stale
-        recovery, wrong isolation rejection, interrupted write retry and rename-aware
-        reconciliation.
+      evidence: publish_preflight_lifecycle.py confirms clean ancestor fast-forward
+        preserves a local backup and divergent history is rejected before changing refs.
     cli_harness:
       applicable: true
-      evidence: aips run owner help and task_ownership_lifecycle.py exercise owner
-        actions with shared scheduler state and AIPS isolation IDs.
+      evidence: publish_preflight_lifecycle.py exercises the publish_preflight
+        post-merge command against isolated local Git repositories.
     docs_schema:
       applicable: true
-      evidence: Scenario 182, scenario registry, task-state schema/template, scheduler,
-        authorization, isolation, dashboard, architecture and user documentation agree.
+      evidence: Scenario 165 and the architecture, maintenance, security, technology,
+        user, scheduler, orchestrator, Integration Gate, and core testing documentation
+        describe matching event and recovery behavior; architecture diagrams are unaffected.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: af9179469d14e3db758687da8909b59ea4d79350
-  changed_files_hash: 55d8fe23c9fd83e91596b24d3035b098233ed126f7705f29d113c12e66d2df9f
+  base_sha: 404c4983fefcb6fb58bda533b9e0840203e9e36d
+  changed_files_hash: 07a8662755171974b06afc9171a42b652627b30632020a2717cb348696ce85f6
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

@@ -288,7 +288,7 @@ Portable Command 變更必須同時驗證 Registry、renderer、CLI lifecycle、
 
 本地首次執行 Gate 前，以 Python 3.12 執行 `python3.12 bin/prepare-local-validation`。它在系統暫存目錄建立獨立 venv，安裝與 CI 相同的三份 requirements 和 Playwright Chromium，接著檢查 `ruff`、`mypy`、瀏覽器及 localhost。之後可執行 `python3.12 bin/prepare-local-validation --check-only --run --base <base-sha> --head <head-sha> --change-class core`，用既有環境執行 exact-candidate Publication Preflight 與 Gate；它會將 `PATH` 指向 venv，並以暫存 `XDG_CONFIG_HOME` 隔離測試設定。若輸出 `ENVIRONMENT_BLOCKED`，先依診斷修復執行環境，再判讀程式測試結果。`--check-only` 不安裝套件；Gate 報告路徑可用 `--output` 指定。
 
-建立已核准的 Large/Core PR 時，在 `gh pr create` 同一命令附上 `--label aips:large-change` 或 `--label aips:core-change`，讓首次 `opened` 事件即使用正確分類；後續標籤異動仍會觸發新的驗證，舊執行可能因 concurrency 設定取消。檢查最新同一候選 SHA 的 required aggregate，避免把被取代的執行判成測試失敗。
+建立已核准的 Large/Core PR 時，在 `gh pr create` 同一命令附上 `--label aips:large-change` 或 `--label aips:core-change`，讓首次 `opened` 事件即使用正確分類；GitHub 仍可能額外送出 `labeled` 事件，工作流程會為 PR 動作使用獨立併發群組。只有較新的 `synchronize` 更新會取代同 PR 較舊的 `synchronize` 執行。檢查最新同一候選 SHA 的 required aggregate，避免把被取代的執行判成測試失敗。
 
 若 Turn Context 回報 `INDEX_UNAVAILABLE`／`SQLITE_OPEN_FAILED`，先確認 `XDG_CACHE_HOME` 指向可寫的快取目錄，再執行 `aips intelligence index --project "$PWD" --force`。索引是可重建的快取；`SEMANTIC_REFRESH_REQUIRED` 則表示來源內容變更，仍需依 Project Intelligence 流程檢視受影響的語意主題。
 
@@ -342,7 +342,7 @@ Keep the top-level validator as an aggregator. New substantial validation belong
 
 ## Deterministic Scheduler / Integration Gate consistency
 
-Keep the local publication route on one explicit checkout. Its preflight checks Python/Ruff, loopback and browser readiness before lifecycle validation, then checks changed Markdown links and builds VitePress for documentation candidates. Use `--project-root <repo>` when the installed CLI validates a separate source checkout. Core/Large labels belong on the initial PR creation request when using `gh`; a connector that cannot set labels atomically requires the label event and a fresh CI result.
+Keep the local publication route on one explicit checkout. Its preflight checks Python/Ruff, loopback and browser readiness before lifecycle validation, then checks changed Markdown links and builds VitePress for documentation candidates. Use `--project-root <repo>` when the installed CLI validates a separate source checkout. Core/Large labels belong on the initial PR creation request when using `gh`; a connector that cannot set labels atomically requires the label event and its own fresh CI result. After merge, update a clean local `main` with fast-forward-only when it is behind `origin/main`; preserve a backup before reconciliation and block dirty or divergent histories.
 
 
 Preview 對 Core Matrix 套用與 Gate 相同的就緒條件：可執行狀態、無 blockers、實際差異已核對、base/hash 相符。同步後若仍是 DRAFT 或有待處理項目，先完成審查並清除已解決的 blocker；`READY_FOR_GATE` 不是正式 Gate PASS。
