@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.67.0
+
+- Add an optional versioned Planning Package manifest, deterministic structural validator, cross-artifact traceability and separately evidenced human planning/implementation gates while keeping legacy packages compatible.
+- Expand product research, discovery, UX, visual, domain and API planning guidance; add the reusable product-research and data-modeling skills and an on-demand e-commerce reference pack.
+- Add Planning Package lifecycle validation, Scenarios 183–192, and synchronized Agent/Human documentation and architecture diagrams.
+
 ## 0.66.0
 
 - Add explicit `--project-root` routing and checkout identity to publication and Integration Gate diagnostics.

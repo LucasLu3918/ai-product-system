@@ -103,6 +103,8 @@ Brand System 可涵蓋 Brand Intent、Audience / Positioning、Purpose / Mission
 - implementation readiness；
 - assumptions / decisions。
 
+新的完整規劃可在 package 根目錄加入 `PLANNING_MANIFEST.yaml`，逐項記錄 artifact 路徑、適用性、狀態與依賴；既有沒有 manifest 的 package 繼續沿用原流程。`python scripts/planning_package_validate.py <package> --format json` 會檢查依賴環、路徑、穩定 ID、需求到下游 artifact 的追溯，以及 Gate 1 / Gate 2 證據格式。它只檢查結構，不替人判斷研究、UX、架構或核准。研究需要可查證依據時使用 `PRODUCT_RESEARCH.md`；領域行為重要時使用 `DOMAIN_MODEL.md`。電商需求符合觸發條件時，先讀 `references/domains/ecommerce/OVERVIEW.md`，再只載入相關模組，並將未決政策留在決策紀錄。
+
 對已釐清的功能行為，可使用 EARS 句型整理觸發條件、適用狀態、系統與可觀察回應。依情況選用恆常、事件、狀態、選配功能或異常行為句型；非功能需求保留量化目標和驗證方法，不必硬套 EARS。需要跨需求追溯時，可在 Planning Package 加入 `REQUIREMENTS.yaml`，把需求 ID 連到驗收條件與驗證方式。可用 `python scripts/requirements_traceability.py <package>/REQUIREMENTS.yaml --format json` 取得機器可讀的 PASS/FAIL；退出碼 0 代表結構檢查通過，非 0 代表檢查失敗。句型或 evidence 路徑都不代表測試已執行或通過。
 
 Planning 核准後，再整理 Initial Implementation Items + Recommended Flow；Large/Core change 在 implementation 前需 Proposal-first 範圍與 Architecture Diagram Impact Check。

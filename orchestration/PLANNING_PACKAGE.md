@@ -16,11 +16,14 @@ Recommended package:
 
 ~~~text
 planning/
+├── PLANNING_MANIFEST.yaml    # optional Planning Package v2 machine contract
 ├── PLANNING_INDEX.md
+├── PRODUCT_RESEARCH.md      # when evidence-backed product decisions are needed
 ├── PRODUCT_PLAN.md
 ├── REQUIREMENTS.yaml          # optional traceable requirement registry
 ├── EXPERIENCE_DESIGN.md
 ├── VISUAL_SYSTEM.md
+├── DOMAIN_MODEL.md          # when domain/data behavior is material
 ├── TECHNICAL_ARCHITECTURE.md
 ├── API_SPEC.md
 ├── IMPLEMENTATION_PLAN.md
@@ -36,6 +39,37 @@ For complete products also persist/link the Quality Profile, normally:
 When independent review is required, persist the review contract and evidence pointer with the planning/validation artifacts: reviewer task mode, read-only boundary, allowlisted packet provenance, exact candidate binding, and the runtime attestation verification status. Store only evidence needed to reproduce the decision; never copy implementation chat, hidden reasoning, scratchpads, or raw traces into the package. Missing trusted verification remains `UNVERIFIED` and is not waived by planning metadata.
 
 Genuinely non-applicable artifacts/dimensions are marked N/A with a reason.
+
+## Planning Package v2 contract
+
+Use `PLANNING_MANIFEST.yaml` for new v2 packages that need machine-checkable artifact state, applicability, dependency and traceability. Existing packages without a Manifest remain valid legacy packages. Do not require repository-wide migration.
+
+The Manifest declares each artifact as `applicable` or `not_applicable`. Applicable artifacts have a package-relative path and one status: `NOT_STARTED`, `IN_PROGRESS`, `NEEDS_DECISION`, `READY_FOR_REVIEW`, `APPROVED` or `STALE`. Non-applicable artifacts use `status: N/A` and a reason. Dependencies declare `required`, `recommended` or `conditional`; only required dependencies block an artifact from becoming ready. Reject missing/escaping paths, unknown references, duplicate IDs and dependency cycles.
+
+The package lifecycle is `DISCOVERY → PLANNING → REVIEW → GATE_1_READY → GATE_1_APPROVED → IMPLEMENTATION_READY`. Gate 1 and Gate 2 approval evidence is supplied by a human. A validator may verify that evidence is present; it must never create or infer approval. Gate 2 remains separate from Gate 1.
+
+For traceable requirements, the Manifest maps every requirement ID and acceptance ID to applicable downstream artifact IDs. A target may be marked not applicable only with a reason. Assign stable IDs such as `SCR-NNN` for screens, `VIS-NNN` for visual components, `DOM-NNN` for domain concepts and `OP-NNN` for API operations. Planned verification references describe intent, not executed passing evidence.
+
+Run both checks when the package contains `PLANNING_MANIFEST.yaml`:
+
+~~~bash
+python scripts/requirements_traceability.py <package>/REQUIREMENTS.yaml --format json
+python scripts/planning_package_validate.py <package> --format json
+~~~
+
+The Planning Package validator is deterministic and structural. It cannot assess whether research is true, product scope is good, UX is usable, API design is optimal or architecture is appropriate. Use the existing Product Manager, Product Designer, Software Architect, Database Engineer, Backend Engineer, Security Engineer, Quality Reviewer and Delivery Planner for relevant semantic cross-review; do not create a Planning Reviewer Role.
+
+## Discovery and research
+
+Proceed one material decision group at a time. Use a safe professional default when it resolves a non-blocking detail and record it as an assumption. Offer a small set of understandable options with a recommendation when the user must decide. Do not ask users to design schemas, APIs or infrastructure before those choices are required.
+
+Use `PRODUCT_RESEARCH.md` when current external product, user, market or competitor evidence materially informs a product decision. Record sources, observed dates, geography, evidence type, confidence, freshness and limitations. Keep facts/observations distinct from inference, recommendation, assumption and unknown. Visual reference research remains under `creative-reference-research`.
+
+## Domain, UX and API traceability
+
+Create stable screen IDs and map primary requirements to journeys, flows, screen responsibilities, interaction states, responsive behavior and accessibility. Create a `DOMAIN_MODEL.md` when domain concepts, lifecycles, ownership or invariants affect the product; model those concepts before choosing persistence technology. Specify API operations from consumer needs and domain behavior, including authorization, validation, errors, retry/idempotency, concurrency and compatibility as applicable.
+
+Load `references/domains/<domain>/` only when the product needs it. Domain packs provide common terminology, workflows, edge cases and risks; they do not prescribe features for every product. Keep visual system definition in the existing `visual-direction` Skill unless repeated evidence justifies a separate reusable Skill.
 
 ## Quality and delivery planning
 
@@ -131,10 +165,12 @@ Track FACT / ASSUMPTION / PROPOSAL / ACCEPTED DECISION / UNKNOWN / deferred deci
 ## Gate 1 — Planning Package Approval
 
 Persist and cross-review the package, surface material issues, then obtain user planning approval. Do not start implementation yet.
+For v2, set `GATE_1_READY` only after every applicable artifact is ready, deterministic validation passes, semantic review is completed, and material blocking unknowns are resolved. Then wait for Human approval and record its evidence.
 
 ## Gate 2 — Implementation Readiness Approval
 
 After Gate 1, derive Initial Implementation Items + recommended order, identify first milestone/dependencies/tests/risky steps, and obtain explicit implementation approval.
+Record Gate 2 approval separately; never infer it from Gate 1.
 
 ## Reproducibility standard
 

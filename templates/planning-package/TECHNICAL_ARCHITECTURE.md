@@ -30,6 +30,8 @@ flowchart LR
 
 ## Data Model
 
+Reference `DOMAIN_MODEL.md` for concepts, lifecycle, ownership and invariants. Record storage choices and persistence implications here rather than inventing domain meaning in the schema.
+
 ## Integrations
 
 ## Security Assurance

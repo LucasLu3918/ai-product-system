@@ -1422,3 +1422,9 @@ Lifecycle evidence covers scheduler-serialized ownership claims, active worktree
 - manual：0
 - uncovered：0
 - automated：**182 / 182**
+
+## Scenario 183–192 — Planning Package v2
+
+Scenarios 183–192 cover optional manifest dependency graphs, stable requirement and acceptance traceability, separate Human approvals at Gate 1 and Gate 2, reuse of product and data-modeling capabilities, cross-artifact UX/visual/domain/API references, legacy package compatibility, on-demand e-commerce guidance, actionable structural diagnostics and an end-to-end planning journey. Structural and lifecycle contracts run locally; Scenario 192 remains manual because a real product-specific planning and approval journey requires human decisions.
+
+Current inventory after Scenario 192: 34 deterministic + 103 lifecycle + 54 agent_eval = 191 / 191 automated; 1 manual; 0 uncovered.

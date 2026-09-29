@@ -13,6 +13,23 @@ skills:
       reliability: high
       minimum_tier: 1
       preferred_tier: 2
+  product-research:
+    capability: product
+    path: product/product-research/SKILL.md
+    triggers:
+    - market_research
+    - competitor_research
+    - product_benchmark
+    - user_problem_research
+    - industry_research
+    - product_strategy_evidence
+    cost: medium
+    model_requirements:
+      reasoning: high
+      coding: none
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 2
   requirements-definition:
     capability: product
     path: product/requirements-definition/SKILL.md
@@ -196,6 +213,22 @@ skills:
     triggers:
     - sql_bottleneck_evidence
     cost: low
+    model_requirements:
+      reasoning: high
+      coding: normal
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 3
+  data-modeling:
+    capability: database
+    path: database/data-modeling/SKILL.md
+    triggers:
+    - domain_model
+    - entity_relationships
+    - business_invariants
+    - data_ownership
+    - schema_evolution_planning
+    cost: medium
     model_requirements:
       reasoning: high
       coding: normal

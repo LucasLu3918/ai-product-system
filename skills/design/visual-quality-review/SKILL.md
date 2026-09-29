@@ -23,6 +23,8 @@ Independently review an implemented/generated visual artifact against approved C
 - default/hover/focus/active/selected/disabled states;
 - state geometry stability.
 
+For Planning Package review, also compare the selected visual direction to approved product context, UX screens and stable requirement references. Report mismatches as review findings; do not let a deterministic package validator claim visual quality.
+
 ## Existing UI / V2 review
 
 Use `orchestration/VISUAL_POLISH.md`.

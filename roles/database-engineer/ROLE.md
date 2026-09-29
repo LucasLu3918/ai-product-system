@@ -7,6 +7,7 @@ Own data model, query/index analysis, migrations and database performance.
 ## Common skills
 
 - `sql-performance`
+- `data-modeling`
 - `characterization-testing`
 
 ## Boundaries

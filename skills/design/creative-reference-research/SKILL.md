@@ -6,7 +6,7 @@ estimated_context_cost: medium
 
 # Creative Reference Research
 
-Use for websites, banners, hero visuals, social assets, presentations, product pages, campaigns, UI and other visual work when the direction is not locked.
+Use for websites, banners, hero visuals, social assets, presentations, product pages, campaigns, UI and other visual work when the direction is not locked. For product research, limit this Skill to visual evidence; use `product-research` for market and user evidence.
 
 1. Read user-provided assets/references first.
 2. Extract visual traits instead of copying references literally.
@@ -15,5 +15,7 @@ Use for websites, banners, hero visuals, social assets, presentations, product p
 5. Explain fit, tradeoffs and what should be borrowed.
 6. When image tools are available, show current reference images or generate an original concept preview.
 7. Persist selected references and why they matter.
+
+When used in a Planning Package, record reference source, date inspected, relevant traits, product fit, what to adapt and what not to copy. Reference research never establishes market demand or authorizes a product feature.
 
 Styles are reference data, not separate skills.

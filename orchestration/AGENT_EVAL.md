@@ -111,6 +111,8 @@ A Scenario may be classified `agent_eval` only when:
 
 A case file without a result is not automated evidence.
 
+Scenario 192 (complete Planning Package to implementation readiness) remains `manual` because its product decisions and Gate approvals require a real Human; its structural subcontracts are covered by deterministic and lifecycle tests. Do not create an Agent Eval result from a template or infer approval from a validator PASS.
+
 ## Commands
 
 ~~~bash

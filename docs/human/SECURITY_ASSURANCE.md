@@ -104,6 +104,8 @@ Change Impact unknown dispositions are security-relevant evidence: closed record
 
 A high-risk product does not automatically require a deep SAL 4 review for every cosmetic change.
 
+A Planning Package manifest may mark a security artifact not applicable only with a scope-specific reason. That structural status cannot lower the product SAL floor, waive an applicable security boundary review, or infer regulatory/payment compliance; preserve those decisions in the security plan and human review.
+
 Maintain:
 
 ~~~yaml
