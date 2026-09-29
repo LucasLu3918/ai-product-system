@@ -150,6 +150,8 @@ The durable Human surface is the original GitHub Issue containing Radar evidence
 
 ## Documentation consistency
 
+Changes to run projection/dashboard or task-owner leases must preserve the observation-only dashboard boundary, legacy `UNASSIGNED` projection, and read-only status inspection; ownership decisions remain in Scheduler/run-state commands.
+
 Telemetry and evaluation evidence must state what the runtime actually observed. Current-system fingerprints bind Agent Eval results to declared source files, while unbound historical results remain identifiable and are never silently upgraded.
 
 The Parallel Run Dashboard may provide operational evidence for human review, but it is not an Evolution source of truth and cannot authorize adoption, merge or publication.

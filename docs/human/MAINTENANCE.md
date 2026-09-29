@@ -216,6 +216,8 @@ Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverif
 
 ## Durable Run State consistency
 
+Task ownership lease 與共用 Scheduler state 必須以同一 task/execution identity 維持一致。過期 dirty work 不可自動重派；recovery 保留原 base revision 和 write set，最終以該 base 的完整 Git diff 對帳。
+
 The Parallel Run Dashboard reads canonical checkpoints and related evidence through one sanitized projection. Keep it observational: approval, retry, cancellation, merge and publication remain outside the dashboard.
 
 Event changes must preserve a single serialized sequence across run-state and telemetry writers. Observed Context, Retrieval and Gate stages record actual operation boundaries; when evidence is unavailable, observation is degraded and the original operation result is preserved.

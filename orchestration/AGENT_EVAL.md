@@ -98,6 +98,8 @@ Recorded results may include concise decisions, actions, selected roles/skills, 
 
 ## Coverage admission
 
+涵蓋 Scheduler owner lifecycle 的 Eval Scenario 應以實際 Task Graph、active isolation、lease expiry/recovery 與 diff reconciliation 作為 deterministic evidence；不可把 `ADVISORY` authorization 當成 runtime write enforcement。
+
 A Scenario may be classified `agent_eval` only when:
 
 1. the Scenario is current with canonical system behavior;

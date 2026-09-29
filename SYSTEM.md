@@ -470,10 +470,14 @@ Human-approved scope
 → LLM Planner / Orchestrator once
 → Structured Task Graph
 → dependency readiness + stable ordering + Change Boundary locks
+→ task owner lease + active worktree/isolation binding
+→ actual Git diff ⊆ task write set ⊆ Change Boundary
 → bounded worktree writers
 ~~~
 
 Use `orchestration/DETERMINISTIC_SCHEDULER.md` and `scripts/deterministic_scheduler.py`. The Scheduler cannot invent tasks, expand scope, resolve architecture/requirement conflicts, approve risk, merge or release. The same graph + task state produces the same scheduling decision/fingerprint.
+
+`aips run owner claim` accepts only an active Scheduler dispatch and binds it under the shared scheduler-state lock to one execution and AIPS-managed worktree. Heartbeat, explicit recovery and completion reconciliation update existing run state; lease expiry never automatically reassigns dirty work. Current task write authorization remains ADVISORY unless a verified filesystem/runtime guard is available.
 
 ## Integration Gate (Janitor)
 

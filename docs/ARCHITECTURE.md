@@ -931,6 +931,24 @@ flowchart LR
 
 Worktree state and runtime resource state share the existing Execution Isolation ownership boundary but have independent lifecycles. The Scheduler validates and propagates requests; `execution_isolation.py` performs atomic lease allocation. The registry is external AIPS state, not project source. Clean workspace removal releases leases, while dirty workspace preservation does not prevent an explicit runtime release.
 
+## Deterministic task execution ownership
+
+~~~mermaid
+flowchart LR
+    TG[Task Graph v1] --> DS[Deterministic dispatch]
+    DS --> CL[Atomic task claim + shared scheduler state]
+    CL --> OWN[Execution owner + lease]
+    CL --> ISO[Verified AIPS worktree isolation]
+    OWN --> AUTH[Task write_set authorization · ADVISORY]
+    OWN --> DIFF[Actual Git diff reconciliation]
+    DIFF -->|within write_set and Boundary| DONE[Complete]
+    DIFF -->|outside scope| BLOCK[BLOCKED / explicit recovery]
+    OWN --> PROJ[Read-only run projection]
+    PROJ --> UI[Task ownership dashboard]
+~~~
+
+The task lease binds a task ID and execution ID to an active isolation/worktree, Change Boundary, write set and scheduler state. Its expiry never transfers dirty work. Final reconciliation preserves `ActualDiff ⊆ WriteSet ⊆ ChangeBoundary`; the lease remains coordination evidence and does not replace a verified runtime enforcement point.
+
 ## MCP interoperability access plane
 
 ~~~mermaid

@@ -34,6 +34,8 @@ External provider credential 永遠是 optional enhancement，不得變成普通
 
 ## Effectiveness Feedback
 
+Task ownership leases and Dashboard projection are execution operations, not Radar decisions. They cannot adopt a candidate, approve a Trial, or grant publication authority.
+
 Effectiveness evidence distinguishes current system-bound evaluations from historical results without a source fingerprint. Optional operation spans report observed duration and outcome only when a matching run record is available.
 
 The read-only Parallel Run Dashboard is an observation surface for parallel workflow state; it does not create an Evolution decision or merge authority.

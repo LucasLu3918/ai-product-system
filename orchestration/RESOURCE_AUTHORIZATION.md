@@ -57,6 +57,8 @@ A runtime with a verified pre-tool guard may consume this evidence as an additio
 
 Resource Authorization can tighten an operation but never widens Change Boundary, Execution Isolation, Role/Skill responsibility or Human authority.
 
+For scheduled repository work, `aips run owner claim` derives a task-scoped authorization record from the canonical Task Graph `write_set` and `change_boundary`. Paths outside the write set remain denied at the contract level, and final task completion independently checks the actual Git diff. This record is advisory evidence: it is not a filesystem sandbox and cannot intercept arbitrary runtime writes. Report `TOOL_GUARDED` only when a verified native write guard enforces the exact task record.
+
 For supported runtime tool actions, Resource Authorization is one input to `orchestration/RUNTIME_POLICY_ENFORCEMENT.md`. It remains default-DENY evidence and is evaluated before policy ALLOW; an action cannot use a policy allow rule to bypass a missing resource grant.
 
 ## CLI

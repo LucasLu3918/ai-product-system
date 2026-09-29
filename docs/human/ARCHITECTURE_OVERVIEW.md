@@ -82,6 +82,8 @@ Publication Preflight provides a read-only working-tree preview with rule-by-rul
 
 ### Parallel Run Dashboard
 
+Run ownership augments existing checkpoint/event state with one task lease: owner execution, active worktree/isolation, Boundary/write set, heartbeat and recovery status. The Scheduler still chooses dispatch; an expired dirty lease needs explicit recovery, and completion requires the actual Git diff to fit both the write set and Change Boundary. Dashboard and projection remain read-only.
+
 `scripts/run_projection.py` is a read-only projection over canonical checkpoint, event, scheduler/isolation and gate facts. CLI and browser consumers share the projection; the dashboard never becomes a second state machine or authority surface. Repository-scoped aggregation allows a maintainer to observe parallel worktrees while preserving existing workspace fingerprints and Resume semantics.
 
 `aips commands render` 僅預覽，`install`／`upgrade` 只管理 AIPS-owned projection；ownership digest 會偵測使用者修改並保留衝突檔案。

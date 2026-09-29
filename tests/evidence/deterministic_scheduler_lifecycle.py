@@ -91,6 +91,44 @@ def main() -> int:
         assert proc.returncode == 2
         assert "requires non-empty change_boundary" in proc.stdout
 
+    outside_write_set = {
+        "version": 1,
+        "plan_id": "write-set-outside-boundary",
+        "tasks": [
+            {"id": "writer", "dependencies": [], "change_boundary": ["modules/api"], "write_set": ["modules/billing/**"]}
+        ],
+    }
+    with tempfile.TemporaryDirectory() as td:
+        path = Path(td) / "graph.yaml"
+        path.write_text(yaml.safe_dump(outside_write_set), encoding="utf-8")
+        proc = subprocess.run([sys.executable, str(SCRIPT), "--graph", str(path)], text=True, capture_output=True)
+        assert proc.returncode == 2
+        assert "write_set must be contained in change_boundary" in proc.stdout
+
+    valid_glob_boundary = {
+        "version": 1,
+        "plan_id": "write-set-within-boundary",
+        "tasks": [
+            {"id": "writer", "dependencies": [], "change_boundary": ["modules/api/**"], "write_set": ["modules/api/src/**"]}
+        ],
+    }
+    rc_boundary, _ = run(valid_glob_boundary, {"plan_id": "write-set-within-boundary", "tasks": {}})
+    assert rc_boundary == 0
+
+    path_traversal_write_set = {
+        "version": 1,
+        "plan_id": "write-set-path-traversal",
+        "tasks": [
+            {"id": "writer", "dependencies": [], "change_boundary": ["src"], "write_set": ["src/../secrets/**"]}
+        ],
+    }
+    with tempfile.TemporaryDirectory() as td:
+        path = Path(td) / "graph.yaml"
+        path.write_text(yaml.safe_dump(path_traversal_write_set), encoding="utf-8")
+        proc = subprocess.run([sys.executable, str(SCRIPT), "--graph", str(path)], text=True, capture_output=True)
+        assert proc.returncode == 2
+        assert "normalized repository-relative paths" in proc.stdout
+
     # An explicitly read-only task may omit Change Boundary because it owns no writer lock.
     read_only_graph = {
         "version": 1,

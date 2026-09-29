@@ -89,6 +89,8 @@ Do not create a parallel `docs/agent/` tree. Existing `orchestration/`, `harness
 
 ## Deterministic execution mapping
 
+Task ownership 的 Human 指引、架構、Scenario 182、`run-task-state.yaml` 與 Scheduler/Authorization/Dashboard 協定均以 `task-execution-ownership` placement rule 綁定；legacy run 仍以 `UNASSIGNED` 相容投影。
+
 The Parallel Run Dashboard is registered as a read-only projection surface. Its implementation, checkpoint contract, orchestration protocol and Human guidance must remain synchronized without introducing a second state source or authority path.
 
 The `deterministic-execution` rule binds Scheduler / Integration Gate implementation, Task Graph / Validation Profile contracts, validation dependencies and the GitHub validation workflow to their Human architecture/user guidance and Agent orchestration protocols.

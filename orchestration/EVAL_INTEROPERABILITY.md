@@ -2,6 +2,8 @@
 
 ## Authority and data flow
 
+Imported external evaluation evidence cannot assign task owners, extend leases, authorize writes or complete Scheduler tasks. Scenario 182 tests those execution boundaries independently of external scoring.
+
 AIPS Agent Eval Case / Result remain canonical. Promptfoo and PyRIT are optional evidence producers behind `scripts/eval_interop.py`; their status, score, or discovery finding never becomes an Integration Gate result.
 
 Scenario 181 adds an independent operational telemetry lane; it does not change external-evaluation evidence, score interpretation or finding-promotion authority.

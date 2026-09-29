@@ -103,6 +103,7 @@ Usage:
   aips run event --run-id <id> --event <name> [--project <path>]
   aips run resume --run-id <id> [--project <path>]
   aips run status --run-id <id> [--project <path>]
+  aips run owner <claim|heartbeat|status|authorize|release|reconcile|recover> --run-id <id> [--project <path>]
   aips run list [--project <path>]
   aips run inspect --run-id <id> [--project <path>]
   aips run dashboard [--project <path>] [--open]

@@ -20,6 +20,8 @@ from aips_identity import (
     workspace_snapshot,
 )
 from run_event_stream import append_event as append_stream_event
+from task_ownership import add_parser as add_owner_parser
+from task_ownership import run_command as run_owner_command
 
 SECRET_PATTERNS = [
     re.compile(r"gh[pousr]_[A-Za-z0-9]{20,}"),
@@ -272,9 +274,13 @@ def main() -> int:
         q.add_argument("--project", default=os.getcwd())
         q.add_argument("--run-id", required=True)
         q.add_argument("--format", choices=["yaml","json"], default="yaml")
+    add_owner_parser(sub)
     a = p.parse_args()
     try:
-        data = checkpoint(a) if a.command == "checkpoint" else append_event(a) if a.command == "event" else resume(a)
+        if a.command == "owner":
+            data = run_owner_command(a)
+        else:
+            data = checkpoint(a) if a.command == "checkpoint" else append_event(a) if a.command == "event" else resume(a)
     except (RuntimeError, OSError, ValueError) as exc:
         print("ERROR: " + str(exc), file=sys.stderr)
         return 2

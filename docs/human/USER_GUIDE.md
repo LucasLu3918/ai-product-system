@@ -262,11 +262,22 @@ Publication Preflight 會分開呈現 Python modules、loopback 與 browser 診�
 
 Production verification 應使用 observable evidence，不以「workflow 已執行」取代 service health / smoke / deployment state。
 
-## Checkpoint / Resume
+開始執行前，先確認 Task Graph 可排程，為任務建立 AIPS worktree isolation，再用 `aips run owner claim` 綁定派送結果：
 
-長流程在 material step 保存 durable checkpoint / event evidence。Resume 時重新比較 repository/workspace identity、HEAD、branch、dirty state 與 relevant approvals。
+```bash
+aips run owner claim --project <worktree> --run-id <unique-run-id> \
+  --graph TASK_GRAPH.yaml --state <shared-scheduler-state.yaml> \
+  --task-id <task-id> --execution-id <runtime-execution-id> \
+  --isolation-id <active-aips-worktree-id> --runtime codex
+aips run owner heartbeat --project <worktree> --run-id <unique-run-id> \
+  --state <shared-scheduler-state.yaml> --task-id <task-id> \
+  --execution-id <runtime-execution-id>
+aips run owner reconcile --project <worktree> --run-id <unique-run-id> \
+  --state <shared-scheduler-state.yaml> --task-id <task-id> \
+  --execution-id <runtime-execution-id>
+```
 
-舊聊天內容不是 authoritative run state；若 workspace fingerprint 已變，先 refresh / revalidate 再接續。
+Scheduler 從 graph 取得 write set、Boundary 與 dependencies；claim 只接受當下 dispatch 的 task。`reconcile` 會以 claim 時記錄的 base revision 比對 staged、unstaged 與 untracked 檔案。租約過期且有 dirty files 時，先檢視再使用 `aips run owner recover` 並提供原因；接手 dirty 工作還要加 `--accept-dirty`。過界 diff 會將 task 標成 BLOCKED，不能完成。Owner lease 是協調證據，當前 enforcement capability 仍為 ADVISORY。
 
 ### Parallel Run Dashboard
 
@@ -278,6 +289,14 @@ aips run dashboard --project .
 ```
 
 The dashboard is an observation surface. It shows workflow state, gate, last activity and workspace health, but it cannot approve, retry, cancel, merge or publish. `ACTIVE` means the last checkpoint reported an active workflow; it does not prove that an Agent process is still live. The local server binds only to `127.0.0.1`.
+
+有 ownership state 時，dashboard 也顯示 task owner、lease/recovery、Boundary、worktree、dirty files、dependencies、heartbeat 與 enforcement capability。舊 run 沒有 owner 時顯示 `UNASSIGNED`，檢視不會改變其狀態。
+
+## Checkpoint / Resume
+
+長流程在 material step 保存 durable checkpoint / event evidence。Resume 時重新比較 repository/workspace identity、HEAD、branch、dirty state 與 relevant approvals。
+
+舊聊天內容不是 authoritative run state；若 workspace fingerprint 已變，先 refresh / revalidate 再接續。
 
 ## Project Intelligence
 

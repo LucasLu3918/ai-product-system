@@ -88,7 +88,16 @@ def normalize_boundaries(raw: Any) -> tuple[str, ...]:
         raw = [raw]
     if not isinstance(raw, list) or not all(isinstance(x, str) and x.strip() for x in raw):
         raise SchedulerError("change_boundary must be a non-empty string or list of strings")
-    return tuple(sorted({x.strip().strip("/") for x in raw}))
+    normalized = {x.strip().strip("/") for x in raw}
+    if any(
+        not item
+        or item.startswith(("/", "\\"))
+        or "\\" in item
+        or any(part in {".", ".."} for part in item.split("/"))
+        for item in normalized
+    ):
+        raise SchedulerError("change_boundary paths must be normalized repository-relative paths")
+    return tuple(sorted(normalized))
 
 
 def boundary_conflict(left: tuple[str, ...], right: tuple[str, ...]) -> bool:
@@ -97,6 +106,32 @@ def boundary_conflict(left: tuple[str, ...], right: tuple[str, ...]) -> bool:
             if a == b or a.startswith(b + "/") or b.startswith(a + "/"):
                 return True
     return False
+
+
+def _literal_prefix(pattern: str) -> str:
+    """Return the stable directory prefix before the first glob metacharacter."""
+    parts = pattern.strip("/").split("/")
+    prefix: list[str] = []
+    for part in parts:
+        if any(char in part for char in "*?["):
+            break
+        prefix.append(part)
+    return "/".join(prefix)
+
+
+def write_set_within_boundary(write_set: list[str], boundaries: tuple[str, ...]) -> bool:
+    """Conservatively require every declared write pattern to fit an approved boundary."""
+    for pattern in write_set:
+        prefix = _literal_prefix(pattern)
+        if not prefix:
+            return False
+        if not any(
+            prefix == _literal_prefix(boundary)
+            or prefix.startswith(_literal_prefix(boundary).rstrip("/") + "/")
+            for boundary in boundaries
+        ):
+            return False
+    return True
 
 
 def validate_graph(graph: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -124,6 +159,13 @@ def validate_graph(graph: dict[str, Any]) -> dict[str, dict[str, Any]]:
         if not isinstance(write_set, list) or not all(isinstance(x, str) and x.strip() for x in write_set):
             raise SchedulerError(f"task {task_id}: write_set must be a list of non-empty paths")
         item["write_set"] = sorted(set(x.strip() for x in write_set))
+        if any(
+            value.startswith(("/", "\\"))
+            or "\\" in value
+            or any(part in {".", ".."} for part in value.split("/"))
+            for value in item["write_set"]
+        ):
+            raise SchedulerError(f"task {task_id}: write_set paths must be normalized repository-relative paths")
         item["change_boundary"] = normalize_boundaries(item.get("change_boundary"))
         if not item["change_boundary"] and not read_only:
             raise SchedulerError(
@@ -132,6 +174,8 @@ def validate_graph(graph: dict[str, Any]) -> dict[str, dict[str, Any]]:
             )
         if read_only and item["write_set"]:
             raise SchedulerError(f"task {task_id}: read_only task must not declare write_set")
+        if item["write_set"] and not write_set_within_boundary(item["write_set"], item["change_boundary"]):
+            raise SchedulerError(f"task {task_id}: write_set must be contained in change_boundary")
         isolation = item.get("isolation") or {}
         if not isinstance(isolation, dict):
             raise SchedulerError(f"task {task_id}: isolation must be a mapping")

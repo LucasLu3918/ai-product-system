@@ -1407,3 +1407,16 @@ Lifecycle evidence checks append-only telemetry recording, allowlist and bounds,
 - manual：0
 - uncovered：0
 - automated：**181 / 181**
+
+## Scenario 182 — Deterministic Execution Ownership
+
+Lifecycle evidence covers scheduler-serialized ownership claims, active worktree/isolation binding, overlapping boundary rejection, heartbeat expiry, explicit dirty recovery, rename-aware diff reconciliation, out-of-scope blocking and read-only ownership projection. Task Graph v1 and legacy run records remain compatible; unverified runtime enforcement remains `ADVISORY`.
+
+目前 Scenario inventory：
+
+- deterministic：27
+- lifecycle：101
+- agent_eval：54
+- manual：0
+- uncovered：0
+- automated：**182 / 182**
