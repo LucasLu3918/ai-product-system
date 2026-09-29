@@ -103,6 +103,8 @@ exact base/head candidate
 
 A stale candidate, missing required matrix, unresolved blocker, failed required command or unreconciled actual diff blocks the candidate.
 
+CI workflow or publication-preflight changes must test the relevant event pairs and recovery path: `opened` and `labeled` runs remain independent, newer `synchronize` runs may supersede only older revisions, and the current candidate still produces the required aggregate. Post-merge reconciliation tests must prove clean ancestor fast-forward, backup preservation and no ref mutation for dirty or divergent histories.
+
 The independent-review mechanism is implemented but its PR enforcement is currently **disabled by default**: the active Core Change Matrix sets `review_evidence.required: false` because no trusted runtime-attestation verifier is connected. Core Changes may opt in by setting the matrix field to `true` after configuring that verifier. When enabled, `VERIFIED` requires matching base/head and changed-file fingerprints, an exact review-packet fingerprint, distinct execution identities, no inherited implementer context, read-only authority, and runtime attestation. `SELF_CHECK`, missing attestation (`UNVERIFIED`), stale evidence, or failed evidence cannot satisfy the requirement. The Integration Gate checks these deterministic bindings; it does not score semantic review quality or authorize merge.
 
 Before publication, run the shared preflight from a clean candidate worktree. It must resolve the same base/head and change class that CI will use, verify recursive documentation placement, and reject a stale Core Matrix or browser launch prerequisite before expensive lifecycle checks.

@@ -79,6 +79,7 @@ def main() -> int:
     assert publish.pr_creation_plan("core")["label_timing"] == "initial_create_request"
     assert publish.pr_creation_plan("large")["required_label"] == "aips:large-change"
     assert publish.pr_creation_plan("standard")["required_label"] is None
+    assert "may still emit a separate labeled event" in publish.pr_creation_plan("core")["note"]
 
     with patch.object(publish, "resolve_commit", side_effect=["base-sha", "head-sha"]), patch.object(
         publish, "worktree_changed_files", return_value=["bin/aips", "untracked-note.md"]
@@ -155,6 +156,60 @@ def main() -> int:
     assert auth["status"] == "AUTH_REQUIRED"
     assert "gh auth login" in auth["next_step"]
     assert "private error" not in repr(auth)
+
+    def git_fixture(*args: str) -> str:
+        result = subprocess.run(["git", *args], cwd=root, check=True, capture_output=True, text=True)
+        return result.stdout.strip()
+
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        git_fixture("init", "-q", "-b", "main")
+        git_fixture("config", "user.name", "AIPS Test")
+        git_fixture("config", "user.email", "noreply" + chr(64) + "github.com")
+        (root / "state.txt").write_text("base\n", encoding="utf-8")
+        git_fixture("add", "state.txt")
+        git_fixture("commit", "-qm", "base")
+        base_sha = git_fixture("rev-parse", "HEAD")
+        (root / "state.txt").write_text("remote update\n", encoding="utf-8")
+        git_fixture("commit", "-qam", "remote update")
+        remote_sha = git_fixture("rev-parse", "HEAD")
+        git_fixture("update-ref", "refs/remotes/origin/main", remote_sha)
+        git_fixture("reset", "--hard", base_sha)
+        with patch.object(publish, "ROOT", root):
+            fast_forward = publish.post_merge(Namespace(
+                remote="origin", branch="main", fetch=False, apply=True,
+                backup_branch="backup-before-fast-forward", refresh_intelligence=False,
+            ))
+        assert fast_forward["status"] == "RECONCILED" and fast_forward["action"] == "FAST_FORWARD"
+        assert git_fixture("rev-parse", "HEAD") == remote_sha
+        assert git_fixture("rev-parse", "backup-before-fast-forward") == base_sha
+
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        git_fixture("init", "-q", "-b", "main")
+        git_fixture("config", "user.name", "AIPS Test")
+        git_fixture("config", "user.email", "noreply" + chr(64) + "github.com")
+        (root / "state.txt").write_text("base\n", encoding="utf-8")
+        git_fixture("add", "state.txt")
+        git_fixture("commit", "-qm", "base")
+        base_sha = git_fixture("rev-parse", "HEAD")
+        (root / "state.txt").write_text("local change\n", encoding="utf-8")
+        git_fixture("commit", "-qam", "local change")
+        (root / "state.txt").write_text("remote change\n", encoding="utf-8")
+        git_fixture("commit", "-qam", "remote change")
+        remote_sha = git_fixture("rev-parse", "HEAD")
+        git_fixture("update-ref", "refs/remotes/origin/main", remote_sha)
+        git_fixture("reset", "--hard", base_sha)
+        (root / "state.txt").write_text("local divergence\n", encoding="utf-8")
+        git_fixture("commit", "-qam", "local divergence")
+        with patch.object(publish, "ROOT", root):
+            blocked = publish.post_merge(Namespace(
+                remote="origin", branch="main", fetch=False, apply=True,
+                backup_branch="backup-before-divergence", refresh_intelligence=False,
+            ))
+        assert blocked["status"] == "BLOCKED" and "histories diverged" in blocked["reason"]
+        assert git_fixture("rev-parse", "HEAD") != remote_sha
+        assert not (root / ".git/refs/heads/backup-before-divergence").exists()
 
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
@@ -319,6 +374,8 @@ def main() -> int:
         "probe_browser",
         "changed_files_hash",
         "RESET_EQUIVALENT_TREE",
+        "FAST_FORWARD",
+        "merge-base",
         "refresh-intelligence",
         "preview_content_safety",
         "configured_identity_plan",

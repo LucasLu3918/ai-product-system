@@ -25,6 +25,8 @@ The maintainer previews a working tree, binds the reviewed Core Matrix, then run
 - missing Change Impact final dispositions show allowed choices while unknown and high-risk findings remain blocking;
 - the Core/Large classification label is present in the initial PR creation request, and missing GitHub CLI authentication is reported without raw stderr;
 - protected main routes through a pull request;
-- post-merge reconciliation requires a clean tree, preserves a backup branch and resets only when tree objects are identical;
+- post-merge reconciliation requires a clean tree, preserves a backup branch and fast-forwards only when local main is an ancestor of the fetched target; divergent histories block, while equivalent trees retain the existing guarded reconciliation;
+- opened and labeled PR events use separate validate concurrency groups; newer synchronize events can cancel superseded synchronize runs;
+- a clean local main fast-forwards only when it is an ancestor of the fetched target, preserves its old tip as a backup, and leaves divergent histories untouched;
 - Project Intelligence revision refresh occurs automatically only for equivalent trees; semantic changes remain fail-closed;
 - publication, reset and merge authority remain Human-controlled.
