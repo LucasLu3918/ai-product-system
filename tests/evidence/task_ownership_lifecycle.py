@@ -172,6 +172,13 @@ def main() -> int:
             raise AssertionError("stale task must not be automatically reassigned")
         except OwnershipError as exc:
             assert "scheduler has not dispatched" in str(exc)
+        wrong_isolation = args("recover", project=repo, store=store, graph_path=graph_path, state=state, task="api", execution="exec-new", accept_dirty=True)
+        wrong_isolation.isolation_id = "different-active-worktree"
+        try:
+            invoke(wrong_isolation, store, repo)
+            raise AssertionError("recovery must remain bound to the original isolation")
+        except OwnershipError as exc:
+            assert "original AIPS-managed worktree isolation" in str(exc)
         with patch("scripts.task_ownership._atomic_yaml", side_effect=OSError("simulated lease write interruption")):
             try:
                 invoke(args("recover", project=repo, store=store, graph_path=graph_path, state=state, task="api", execution="exec-new", accept_dirty=True), store, repo)

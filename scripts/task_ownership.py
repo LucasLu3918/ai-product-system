@@ -336,6 +336,7 @@ def recover(
     *,
     task_id: str,
     execution_id: str,
+    isolation_id: str,
     reason: str,
     accept_dirty: bool,
     lease_seconds: int,
@@ -351,6 +352,8 @@ def recover(
                 _atomic_yaml(path, doc)
             if doc.get("task_id") != task_id or doc.get("status") not in {"STALE", "ORPHANED", "RECOVERY_REQUIRED", "BLOCKED"}:
                 raise OwnershipError("only a stale, orphaned or blocked task can be explicitly recovered")
+            if doc.get("isolation_id") != isolation_id or doc.get("isolation_mode") != "worktree":
+                raise OwnershipError("recovery must use the task's original AIPS-managed worktree isolation")
             if not reason.strip():
                 raise OwnershipError("recovery requires an explicit reason")
             if lease_seconds < 30 or lease_seconds > 86400:
@@ -554,7 +557,7 @@ def run_command(args: argparse.Namespace) -> dict[str, Any]:
                     raise OwnershipError("recovery requires the task's active AIPS-managed worktree")
                 result = recover(
                     root, store, state_path, task_id=args.task_id,
-                    execution_id=args.execution_id, reason=args.reason,
+                    execution_id=args.execution_id, isolation_id=args.isolation_id, reason=args.reason,
                     accept_dirty=args.accept_dirty, lease_seconds=args.lease_seconds,
                 )
             finally:

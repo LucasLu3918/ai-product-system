@@ -1,554 +1,60 @@
 version: 1
 change:
-  id: aips-system-hardening
-  summary: Harden turn intent and instruction scope, durable event concurrency, read-only
-    retrieval, current Agent Eval evidence, observed stage telemetry, and trusted
-    review attestation.
+  id: deterministic-execution-ownership
+  summary: Bind scheduler-dispatched tasks to one verified AIPS worktree execution;
+    track renewable ownership leases; expose truthful advisory authorization; reconcile
+    actual Git changes against task write sets; and project owner state read-only.
   boundary:
-  - matrix-readiness-preview-and-gate
-  - canceled-workflow-required-aggregate
-  - local-validation-guidance-and-documentation-closure
-  - durable-run-events-and-telemetry-recording
-  - telemetry-projection-and-otlp-export
-  - architecture-documentation-and-release
-  - publication-readiness-preflight
-  - scoped-turn-context-and-intent
-  - concurrent-event-stream-and-read-only-retrieval
-  - current-eval-and-observed-stage-evidence
-  - trusted-review-attestation
-  - compatibility-documentation-and-release
   - task-execution-ownership
 matrix:
-- boundary: matrix-readiness-preview-and-gate
-  reason: Preview previously accepted DRAFT, blocked or unreconciled Matrix state
-    that exact Gate rejects.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Critical Ruff and Python syntax checks for publication and Gate modules.
-    unit:
-      applicable: true
-      evidence: Matrix readiness cases for DRAFT, blockers, unreconciled actual diff,
-        stale base and READY.
-    integration:
-      applicable: true
-      evidence: Publication preview and exact Gate use the same matrix_readiness_issues
-        predicate.
-    contract:
-      applicable: true
-      evidence: Existing Gate error messages and candidate binding remain compatible.
-    e2e:
-      applicable: false
-      na_reason: No deployed service; exact-candidate local Gate and PR CI cover publication
-        lifecycle.
-    security:
-      applicable: true
-      evidence: Preview returns fixed issue codes without rendering blocker contents;
-        Gate remains fail closed.
-    migration_recovery:
-      applicable: false
-      na_reason: No persisted schema changes; matrix-sync still resets readiness for
-        review.
-    cli_harness:
-      applicable: true
-      evidence: Local ./bin/aips preview and matrix-sync lifecycle.
-    docs_schema:
-      applicable: true
-      evidence: Core testing, Integration Gate and Human documentation closure validated
-        by preview.
-- boundary: canceled-workflow-required-aggregate
-  reason: A superseded canceled validate run could leave a misleading failed repository
-    aggregate.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: GitHub Actions expression and workflow contract checked statically.
-    unit:
-      applicable: true
-      evidence: Scheduler Gate static contract requires cancellation-aware job condition
-        and Janitor result assertion.
-    integration:
-      applicable: true
-      evidence: Active runs still execute required repository aggregate and fail when
-        Janitor fails; PR CI verifies workflow execution before merge.
-    contract:
-      applicable: true
-      evidence: Required context remains repository; Janitor result is still asserted
-        success.
-    e2e:
-      applicable: false
-      na_reason: Remote GitHub cancellation behavior is verified on the PR before
-        merge, not executable by local Gate.
-    security:
-      applicable: true
-      evidence: Cancellation skips only superseded workflows; active Janitor failures
-        remain blocking.
-    migration_recovery:
-      applicable: false
-      na_reason: No branch protection or persisted data migration.
-    cli_harness:
-      applicable: false
-      na_reason: Workflow condition is evaluated by GitHub Actions, not the local
-        CLI.
-    docs_schema:
-      applicable: true
-      evidence: Integration Gate and maintenance documentation describe cancellation
-        behavior.
-- boundary: local-validation-guidance-and-documentation-closure
-  reason: Source checkout and sandbox capability mismatches obscured the actual local
-    validation result.
-  checks:
-    static_lint:
-      applicable: false
-      na_reason: Documentation-only part has no executable syntax.
-    unit:
-      applicable: false
-      na_reason: No new validation behavior; existing environment probes are covered
-        by lifecycle tests.
-    integration:
-      applicable: true
-      evidence: Publication preview verifies recursive documentation closure and placement.
-    contract:
-      applicable: true
-      evidence: prepare-local-validation retains ENVIRONMENT_BLOCKED diagnostics and
-        full validation requirement.
-    e2e:
-      applicable: false
-      na_reason: No deployed service or additional external integration.
-    security:
-      applicable: true
-      evidence: No credential or private path values are added to validation output.
-    migration_recovery:
-      applicable: false
-      na_reason: No stored records or schema changes.
-    cli_harness:
-      applicable: true
-      evidence: Local source ./bin/aips is used for matrix binding and preview.
-    docs_schema:
-      applicable: true
-      evidence: Maintenance, User Guide, Technology Guide, Architecture and Conformance
-        docs close declared impact.
-- boundary: durable-run-events-and-telemetry-recording
-  reason: Extend append-only run evidence with a bounded telemetry allowlist and lifecycle
-    CLI.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Ruff passed on new telemetry modules and tests; Python compilation
-        and complete repository validation passed.
-    unit:
-      applicable: true
-      evidence: telemetry_export_lifecycle.py passed allowlist, bounds, timestamps,
-        pairing, and deterministic IDs.
-    integration:
-      applicable: true
-      evidence: telemetry_export_lifecycle.py passed recording-to-replay and loopback
-        OTLP receiver integration.
-    contract:
-      applicable: true
-      evidence: telemetry_export_contracts.py passed; legacy event records remain
-        valid and invalid telemetry fields reject.
-    e2e:
-      applicable: false
-      na_reason: No deployed service; the local receiver exercises the full exporter
-        request path.
-    security:
-      applicable: true
-      evidence: Lifecycle rejected secret-like identifiers and content fields without
-        persistence; strict candidate scan is required after commit.
-    migration_recovery:
-      applicable: true
-      evidence: Legacy event loading, deterministic replay, and non-mutating exporter
-        failure checks passed.
-    cli_harness:
-      applicable: true
-      evidence: aips telemetry --help and telemetry lifecycle checks passed.
-    docs_schema:
-      applicable: true
-      evidence: Telemetry schema checks and complete repository validation passed.
-- boundary: telemetry-projection-and-otlp-export
-  reason: Add deterministic offline projection and explicit host-side OTLP/HTTP JSON
-    delivery.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Ruff and Python compilation passed for telemetry modules and lifecycle/contract
-        tests.
-    unit:
-      applicable: true
-      evidence: Change Impact traversal lifecycle passed dynamic-dispatch detection,
-        static helper-list false-positive rejection, coverage scope, and disposition
-        checks; telemetry lifecycle passed stable IDs, nesting, links, allowlisted
-        attributes, and incomplete evidence degradation.
-    integration:
-      applicable: true
-      evidence: Local receiver verified OTLP envelope, host authorization, server
-        failure, and redirect rejection.
-    contract:
-      applicable: true
-      evidence: Contract checks passed against the pinned immutable GenAI mapping
-        snapshot.
-    e2e:
-      applicable: false
-      na_reason: No remote observability backend is required for the provider-neutral
-        exporter.
-    security:
-      applicable: true
-      evidence: Endpoint, credential, content exclusion, bounds, redaction, and redirect
-        negative paths passed; strict repository source scan passed before commit.
-    migration_recovery:
-      applicable: true
-      evidence: Replay is deterministic and transport failures do not mutate canonical
-        run evidence.
-    cli_harness:
-      applicable: true
-      evidence: Offline and explicit-send CLI lifecycle plus top-level telemetry help
-        passed.
-    docs_schema:
-      applicable: true
-      evidence: Schema, pinned mapping, and exporter docs passed complete repository
-        validation.
-- boundary: architecture-documentation-and-release
-  reason: Update canonical architecture, user guidance, conformance, and release metadata.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Complete repository validation passed documentation and release metadata
-        contracts.
-    unit:
-      applicable: false
-      na_reason: Documentation and release metadata have no separate runtime behavior.
-    integration:
-      applicable: true
-      evidence: Exact-candidate publication preview and Integration Gate are required
-        before remote merge.
-    contract:
-      applicable: true
-      evidence: Scenario 181 registry and documented CLI/config are checked by telemetry_export_contracts.py.
-    e2e:
-      applicable: false
-      na_reason: No deployment or hosted service is part of this change.
-    security:
-      applicable: true
-      evidence: Strict complete-candidate secret scan is required before publication.
-    migration_recovery:
-      applicable: false
-      na_reason: No durable schema migration; event field is additive.
-    cli_harness:
-      applicable: true
-      evidence: Local aips telemetry command routing and help checks passed.
-    docs_schema:
-      applicable: true
-      evidence: VERSION, CHANGELOG, diagrams, and canonical guidance pass complete
-        repository validation.
-- boundary: publication-readiness-preflight
-  reason: Make publication work against the explicitly selected checkout, detect local
-    documentation/runtime blockers before the full Gate, and resolve traversal review
-    findings without weakening approval semantics.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Ruff and Python syntax checks cover the CLI, preflight scripts, Change
-        Impact validation and focused lifecycle tests.
-    unit:
-      applicable: true
-      evidence: Focused tests cover explicit-root selection/reporting, environment
-        preflight order, Markdown local-link classification, actionable final-disposition
-        diagnostics, and isolation of Python module availability from localhost/browser
-        blocker assertions in publish_preflight_lifecycle.py.
-    integration:
-      applicable: true
-      evidence: Exact-candidate publish preflight runs repository checks, local VitePress
-        build for documentation changes and the Integration Gate using one selected
-        checkout.
-    contract:
-      applicable: true
-      evidence: CLI/report additive fields, required class-label creation arguments,
-        safe remote-auth diagnostics and fail-closed Change Impact behavior are asserted
-        by contracts.
-    e2e:
-      applicable: false
-      na_reason: There is no deployed service; repository lifecycle checks plus the
-        remote PR CI run cover the publication path.
-    security:
-      applicable: true
-      evidence: Authentication stderr remains redacted, strict exact-candidate secret
-        scanning remains required, and unknown Impact nodes are never auto-approved.
-    migration_recovery:
-      applicable: false
-      na_reason: No persisted schema or external integration state is changed; only
-        ignored retrieval-index metadata is rebuilt.
-    cli_harness:
-      applicable: true
-      evidence: Source CLI and installed CLI with --project-root are checked against
-        the same explicit candidate root.
-    docs_schema:
-      applicable: true
-      evidence: User and maintainer guidance plus orchestration docs describe root
-        selection, local docs/build checks, environment blockers, labels and Change
-        Impact dispositions; the lifecycle test boundary is documented in the human
-        conformance and architecture guides and relevant orchestration references.
-- boundary: scoped-turn-context-and-intent
-  reason: Turn classification and instruction resolution determine which project guidance
-    governs read-only versus mutating work.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Critical Ruff checks passed for scripts and tests.
-    unit:
-      applicable: true
-      evidence: tests/evidence/intelligence_context_lifecycle.py passed explicit intent
-      negation: null
-      nested instruction scope: null
-      and non-Git behavior.: null
-    integration:
-      applicable: true
-      evidence: AIPS context lifecycle exercised scoped YAML and JSON output against
-        temporary project trees.
-    contract:
-      applicable: true
-      evidence: Existing context pointers and full JSON manifest remain compatible;
-        compact YAML is the default projection.
-    e2e:
-      applicable: false
-      na_reason: No deployed service; temporary project lifecycle covers the complete
-        local CLI path.
-    security:
-      applicable: true
-      evidence: Scoped instruction resolution excludes unrelated nested project guidance
-        and preserves authoritative-source precedence.
-    migration_recovery:
-      applicable: false
-      na_reason: No persisted schema or user data migration.
-    cli_harness:
-      applicable: true
-      evidence: Context lifecycle tests invoke the project intelligence CLI for intent
-        and target-path resolution.
-    docs_schema:
-      applicable: true
-      evidence: Project Intelligence
-      Turn Harness: null
-      System: null
-      and user guidance document the new behavior.: null
-- boundary: concurrent-event-stream-and-read-only-retrieval
-  reason: Run evidence writers must not interleave under concurrent processes, and
-    retrieval queries must not mutate the index.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Critical Ruff checks passed for shared event writer
-      run state: null
-      telemetry: null
-      and retrieval modules.: null
-    unit:
-      applicable: true
-      evidence: Retrieval lifecycle verifies read-only access and stable snapshot
-        fallback; telemetry lifecycle verifies event pairing and sequence behavior.
-    integration:
-      applicable: true
-      evidence: Telemetry lifecycle concurrently writes mixed event types and validates
-        every resulting JSONL event.
-    contract:
-      applicable: true
-      evidence: Existing event records and retrieval result shape remain compatible.
-    e2e:
-      applicable: false
-      na_reason: No deployed service; temporary SQLite and local filesystem integration
-        exercises producer-to-reader behavior.
-    security:
-      applicable: true
-      evidence: Retrieval opens SQLite read-only and snapshot fallback uses a stable
-        copy with quick_check.
-    migration_recovery:
-      applicable: true
-      evidence: Existing databases remain readable; snapshot fallback covers unavailable
-        WAL sidecars without changing the source database.
-    cli_harness:
-      applicable: true
-      evidence: Retrieval and telemetry lifecycle tests exercise the local command
-        modules.
-    docs_schema:
-      applicable: true
-      evidence: Architecture and technology guidance describe event durability and
-        read-only retrieval.
-- boundary: current-eval-and-observed-stage-evidence
-  reason: Agent Eval results must identify the exact current system dependencies,
-    while stage telemetry must reflect observed execution.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Critical Ruff checks passed for Agent Eval
-      observed-stage instrumentation: null
-      and Integration Gate.: null
-    unit:
-      applicable: true
-      evidence: tests/evidence/agent_eval_framework.py verifies CURRENT
-      STALE: null
-      and UNBOUND result binding.: null
-    integration:
-      applicable: true
-      evidence: Telemetry lifecycle verifies actual stage spans
-      missing-run degradation: null
-      and concurrent run event persistence.: null
-    contract:
-      applicable: true
-      evidence: Agent Eval template and report preserve historical results while declaring
-        unbound results explicitly.
-    e2e:
-      applicable: false
-      na_reason: No hosted evaluator or deployed service is required for local observable-evidence
-        capture.
-    security:
-      applicable: true
-      evidence: Stage instrumentation records bounded allowlisted metadata and does
-        not gate on missing optional telemetry.
-    migration_recovery:
-      applicable: true
-      evidence: Historical Agent Eval results remain available and are classified
-        UNBOUND rather than rewritten.
-    cli_harness:
-      applicable: true
-      evidence: Agent Eval and Integration Gate lifecycle checks exercise exact local
-        command paths.
-    docs_schema:
-      applicable: true
-      evidence: Agent Eval
-      telemetry: null
-      architecture: null
-      and conformance docs explain freshness and observed spans.: null
-- boundary: trusted-review-attestation
-  reason: Review evidence needs an externally administered Ed25519 trust root before
-    it can satisfy mandatory independent review.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Critical Ruff checks passed for attestation verification and review
-        evidence integration.
-    unit:
-      applicable: true
-      evidence: tests/validation/review_isolation_contracts.py verifies signature
-        acceptance
-      tamper rejection: null
-      and repository-local trust-store rejection.: null
-    integration:
-      applicable: true
-      evidence: review_isolation_lifecycle.py passed with an external temporary trust
-        store and signed candidate evidence.
-    contract:
-      applicable: true
-      evidence: Integration Gate reports UNVERIFIED without a configured trusted issuer
-        and rejects invalid signatures.
-    e2e:
-      applicable: false
-      na_reason: No production issuer is configured in this repository; wiring a real
-        host-managed trust root is an operational prerequisite.
-    security:
-      applicable: true
-      evidence: Ed25519 signatures bind canonical attestation fields; key trust is
-        resolved outside the candidate repository.
-    migration_recovery:
-      applicable: false
-      na_reason: No persisted review evidence migration; enforcement remains disabled
-        until an external issuer is configured.
-    cli_harness:
-      applicable: true
-      evidence: Integration Gate lifecycle validates the trust-store option and fail-closed
-        verification behavior.
-    docs_schema:
-      applicable: true
-      evidence: Multi-review and Core Change Testing guidance document the trust-root
-        requirement and disabled default.
-- boundary: compatibility-documentation-and-release
-  reason: Public contracts, dependencies, diagrams, CLI help, and release metadata
-    must agree with the implementation.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Critical Ruff, Python compilation, and git diff whitespace checks
-        passed for changed sources and lifecycle/contract tests.
-    unit:
-      applicable: true
-      evidence: Lifecycle checks passed stable IDs, nesting, links, allowlisted attributes,
-        and incomplete evidence degradation.
-    integration:
-      applicable: true
-      evidence: Local receiver verified OTLP envelope, host authorization, server
-        failure, and redirect rejection.
-    contract:
-      applicable: true
-      evidence: Contract checks passed against the pinned immutable GenAI mapping
-        snapshot.
-    e2e:
-      applicable: false
-      na_reason: No remote observability backend is required for the provider-neutral
-        exporter.
-    security:
-      applicable: true
-      evidence: Endpoint, credential, content exclusion, bounds, redaction, and redirect
-        negative paths passed; strict repository source scan passed before commit.
-    migration_recovery:
-      applicable: true
-      evidence: Replay is deterministic and transport failures do not mutate canonical
-        run evidence.
-    cli_harness:
-      applicable: true
-      evidence: Offline and explicit-send CLI lifecycle plus top-level telemetry help
-        passed.
-    docs_schema:
-      applicable: true
-      evidence: Schema, pinned mapping, exporter docs, human and agent docs, diagrams,
-        and release metadata passed complete repository validation.
 - boundary: task-execution-ownership
-  reason: Scheduler dispatch, runtime owner leases, write authorization, isolation and
-    final diff reconciliation form one security-sensitive lifecycle; dashboard state
-    remains an observation-only projection.
+  reason: Scheduler dispatch, runtime owner leases, write authorization, isolation
+    and final diff reconciliation form one security-sensitive lifecycle; dashboard
+    state remains an observation-only projection.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff and Python compilation for scheduler, owner lease, projection,
-        dashboard, lifecycle and contract modules.
+      evidence: Python compilation and git diff --check pass; Ruff availability is
+        pending local validation preflight.
     unit:
       applicable: true
-      evidence: Boundary/write-set containment, normalized-path rejection, legacy
-        projection defaults and expired read-only ownership projection.
+      evidence: task_ownership_lifecycle.py and tests.test_run_projection pass boundary/path,
+        legacy projection and expired lease cases.
     integration:
       applicable: true
-      evidence: Scheduler-bound claim, shared state locking, overlapping concurrent
-        claims, active worktree verification, heartbeat, recovery and final Git diff.
+      evidence: task_ownership_lifecycle.py passes claim/dispatch, shared-lock race,
+        worktree binding, expiry/recovery retry and Git diff reconciliation.
     contract:
       applicable: true
-      evidence: Task Graph v1 compatibility, additive run-task-state schema, truthful
-        ADVISORY capability and read-only dashboard projection.
+      evidence: scheduler_gate_contracts.py and conformance_isolation.py pass; Task
+        Graph v1 compatibility and truthful ADVISORY state are asserted.
     e2e:
       applicable: false
       na_reason: No deployed multi-agent runtime is available locally; isolated Git
         worktree lifecycle and exact local CLI state provide the executable boundary.
     security:
       applicable: true
-      evidence: Absolute/traversal write paths and out-of-scope diffs fail closed;
-        duplicate and overlapping claims serialize; secrets/content are not recorded;
-        unverified guards remain ADVISORY.
+      evidence: Publication preview exact working-tree scan passes with no findings;
+        exact base..head history scan remains required by Integration Gate.
     migration_recovery:
       applicable: true
-      evidence: v1/v2 legacy checkpoints remain readable; stale dirty work is not
-        reassigned; explicit recovery preserves base revision/write set; rename paths
-        are reconciled without collapsing old/new names.
+      evidence: task_ownership_lifecycle.py passes legacy projection, dirty stale
+        recovery, wrong isolation rejection, interrupted write retry and rename-aware
+        reconciliation.
     cli_harness:
       applicable: true
-      evidence: aips run owner claim/heartbeat/status/release/reconcile/recover help
-        and lifecycle execute against shared scheduler state and an AIPS isolation ID.
+      evidence: aips run owner help and task_ownership_lifecycle.py exercise owner
+        actions with shared scheduler state and AIPS isolation IDs.
     docs_schema:
       applicable: true
       evidence: Scenario 182, scenario registry, task-state schema/template, scheduler,
         authorization, isolation, dashboard, architecture and user documentation agree.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: false
-blockers:
-  - Exact committed candidate hash and changed-file set must be synchronized after
-    implementation and validation.
+blockers: []
 candidate:
   base_sha: af9179469d14e3db758687da8909b59ea4d79350
-  changed_files_hash: null
+  changed_files_hash: 55d8fe23c9fd83e91596b24d3035b098233ed126f7705f29d113c12e66d2df9f
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
