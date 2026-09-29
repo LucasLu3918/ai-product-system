@@ -30,6 +30,8 @@ Runtime action authorization is canonical in `config/runtime-policy.yaml`, `orch
 
 Secret handling guidance covers the built-in mandatory publication-candidate scan in the existing Git Publication and Security Assurance topics. Provider scanners are optional defense-in-depth, not baseline dependencies.
 
+GitHub API transfer integrity is documented in User Guide 的 Git Publication、Maintenance 的 CI consistency 及 Technology Guide 的驗證說明；`scripts/publication_transfer.py` 是 deterministic implementation，文件範圍由 `publication-transfer` placement rule 維護。
+
 ### 架構與技術
 
 - ARCHITECTURE_OVERVIEW.md：目前 architecture。

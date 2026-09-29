@@ -81,6 +81,7 @@ for evidence in (
     Path(__file__).parent / "test_eval_interop.py",
     Path(__file__).parent / "evidence/eval_interop_lifecycle.py",
     Path(__file__).parent / "evidence/telemetry_export_lifecycle.py",
+    Path(__file__).parent / "evidence/publication_transfer_lifecycle.py",
 ):
     result = subprocess.run([sys.executable, str(evidence)], cwd=Path(__file__).resolve().parents[1], capture_output=True, text=True, check=False)
     if result.returncode:
