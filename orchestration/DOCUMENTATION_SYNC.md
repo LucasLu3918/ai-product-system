@@ -97,6 +97,8 @@ The `requirement-planning` rule binds requirement clarification, Planning Packag
 
 The publication-preflight mapping also covers candidate cleanliness, exact head/base binding, recursive documentation closure, Core Matrix changed-file hashes, browser smoke probes and the mandatory redacted secret scan over the exact final tree and complete candidate history. A system-browser launch crash is classified as an environment blocker and must not be reported as a product regression.
 
+The separate `publication-transfer` placement rule maps the read-only GitHub API blob/tree identity guard and its focused evidence to the existing Human publication, maintenance and technical topics. Editing the placement registry itself also requires the documentation-platform closure; this rule does not replace candidate-history scanning or grant remote-ref authority.
+
 Independent review changes also synchronize the review task/context schemas, bounded packet and evidence contracts, Scheduler and Integration Gate behavior, scenario registry, Core Change Matrix, User Guide, Technology Guide, Security Assurance, Execution Isolation and requirement/planning protocols. Keep the attestation boundary explicit: structural validation cannot authenticate a reviewer; without a trusted runtime verifier, required review remains `UNVERIFIED` and blocks publication.
 
 This keeps the runtime implementation, exact-candidate CI behavior and authority boundaries synchronized when future changes touch scheduling or Janitor behavior.

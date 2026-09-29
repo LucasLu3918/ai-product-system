@@ -125,6 +125,13 @@ placement_rules:
       docs/human/SECURITY_ASSURANCE.md: [Secret and credential safety, Runtime Policy Enforcement]
       orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior, Read-only declaration and fail-closed boundary, Runtime Content Safety Boundary]
 
+  - id: publication-transfer
+    triggers: [scripts/publication_transfer.py, tests/evidence/publication_transfer_lifecycle.py]
+    placements:
+      docs/human/MAINTENANCE.md: [Public repository / CI consistency]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification]
+      docs/human/USER_GUIDE.md: [Git Publication 與 Release]
+
   - id: project-intelligence
     triggers: [scripts/project_intelligence.py, scripts/retrieval_intelligence.py, scripts/temporal_intelligence.py, scripts/turn_context_hook.py, scripts/turn_intent.py, scripts/git_paths.py, orchestration/PROJECT_INTELLIGENCE.md, orchestration/CHANGE_IMPACT.md, orchestration/TURN_HARNESS.md, templates/intelligence/**, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md]
     placements:

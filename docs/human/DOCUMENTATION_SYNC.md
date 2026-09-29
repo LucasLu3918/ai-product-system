@@ -24,6 +24,8 @@ Changes to turn intent, scoped instruction selection, event serialization, obser
 
 Telemetry export sources map to the observability/run-state topics and Scenario 181; new source files must add a canonical placement rule before Human documentation is considered complete.
 
+`publication-transfer` placement rule 將新的 API transfer guard 與 lifecycle evidence 對應至 User Guide、Maintenance 和 Technology Guide 的現有章節；規則本身變更時仍需檢查 Architecture Overview、Documentation Map 及此文件的遞迴閉包。
+
 提交前的 Publication Preview 會以工作樹為輸入檢查 H2 placement，包含已追蹤與未追蹤的新增內容；缺少 canonical H2 或內容落在不允許的段落時，診斷會列出允許的 H2。最終 Repository Preflight 仍驗證已提交的 diff。
 
 `tests/validation/ears_requirement_contracts.py` 對應 Scenario Conformance；只有測試契約改動時更新 Conformance 與 Technology Guide，需求追蹤程式、規劃範本或 canonical requirement 文件仍觸發完整 Requirement Planning 閉包。

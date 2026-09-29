@@ -300,6 +300,10 @@ Browser evidence 同樣必須先通過 version 與 isolated-profile headless smo
 
 Publication preflight must run against an exact, clean candidate. It verifies recursive documentation impact, placement rules, candidate head/base and Core Matrix binding before the expensive Integration Gate; a dirty workspace or stale candidate is blocked rather than silently treated as the PR revision.
 
+For GitHub API or Connector publication, use the exact-candidate transfer guard before creating a remote commit or updating any branch ref. First run `aips publish environment`; resolve `ENVIRONMENT_BLOCKED` in a capable validation environment before interpreting the full suite. After the final changed-file list is known, run `aips publish preview --base <base-sha>` and close its documentation and Matrix requirements. Commit the candidate and run `aips publish preflight --base <base-sha> --head HEAD --output <report>`.
+
+Run `python scripts/publication_transfer.py prepare --base <base-sha> --repository <owner/name>` in that clean checkout. It rejects a GitHub `origin` that differs from the explicit destination, a stale or dirty candidate, and API candidates with more than one commit. Upload the listed changed blobs using their complete local bytes; check every returned blob SHA. Create the proposed tree from the exact remote base tree and check its returned SHA. Record the GitHub responses in a temporary JSON receipt containing `repository`, `base_sha`, `tree_sha`, and `blobs` (path-to-SHA for every changed non-deleted path). Run `python scripts/publication_transfer.py verify --base <base-sha> --repository <owner/name> --receipt <receipt.json>`; only `READY_TO_PUBLISH` permits creating the remote commit and ref. Recheck the remote `main` SHA immediately before the ref update; a moved base requires a new local candidate and verification. Never repair a malformed published intermediate commit with another commit: the strict candidate-history scan will still reject it. Keep the receipt outside the repository and do not place credentials or file contents in it.
+
 When public repository hardening changes, review together:
 
 - .github/workflows/validate.yml;
