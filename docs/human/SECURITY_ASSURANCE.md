@@ -278,6 +278,8 @@ AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned cont
 
 ## Runtime Policy Enforcement
 
+Scheduler ownership 的 write-set authorization 目前明確標記 `ADVISORY`，不代表 runtime 已攔截檔案寫入。Task completion 仍會以 staged、unstaged 與 untracked diff 做 fail-closed 範圍檢查；不符時維持 `BLOCKED`，dirty recovery 需有人提供原因並確認接手。
+
 The independent-review isolation mechanism is present but not enabled as a default PR requirement. The active Core Change Matrix keeps `review_evidence.required: false` until a trusted runtime-attestation verifier is configured; explicitly required reviews still fail closed when that proof is unavailable.
 
 Before a supported tool action executes, Runtime Policy Enforcement checks the action envelope against Resource Authorization and the deterministic runtime policy. The result is `ALLOW`, `DENY`, `REQUIRE_APPROVAL` or `BLOCKED`; policy conflicts use deny-overrides. An approval binds the exact action and policy digests, destination, data labels, Change Boundary and expiry.

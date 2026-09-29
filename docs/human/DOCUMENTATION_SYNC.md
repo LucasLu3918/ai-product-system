@@ -20,6 +20,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Deterministic execution ownership 由 Scheduler、run state、projection 和 dashboard 共用同一個 canonical contract。更新 lease 或授權行為時，需同步更新 Human 操作／技術文件、run-state schema、Scenario 182 與 placement map。
+
 Changes to turn intent, scoped instruction selection, event serialization, observed stage evidence, Agent Eval freshness and review attestation must update their canonical Human and orchestration sections together with `config/documentation-placement.yaml`.
 
 Telemetry export sources map to the observability/run-state topics and Scenario 181; new source files must add a canonical placement rule before Human documentation is considered complete.

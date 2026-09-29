@@ -107,6 +107,8 @@ When required, the Gate validates structured evidence for review mode, distinct 
 
 ## PR base freshness
 
+Task ownership reconciliation is local run evidence and does not alter candidate authority. The Gate still binds publication checks to the exact clean base/head diff; an owner lease never grants merge or publish permission.
+
 Local maintainers and GitHub Actions MUST enter the Gate through `scripts/publish_preflight.py` for publication candidates. The shared resolver binds the same base/head, PR-label change class, canonical `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`, `AIPS_DOCS_DIFF_BASE` and fast repository preflight before expensive lifecycle checks.
 
 The preflight also requires a clean exact candidate checkout and validates the Matrix changed-files hash before the Gate starts. `aips publish plan` reports the resolved repository root and Git checkout root. When the installed CLI is pointed at another checkout, pass `--project-root <repo>` so scripts, configuration and candidate paths all come from that checkout. Browser-dependent evidence uses a versioned Playwright managed browser when available; a failed isolated launch probe is `ENVIRONMENT_BLOCKED`, not a product regression.

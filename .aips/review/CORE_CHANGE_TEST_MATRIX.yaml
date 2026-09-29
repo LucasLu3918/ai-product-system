@@ -17,6 +17,7 @@ change:
   - current-eval-and-observed-stage-evidence
   - trusted-review-attestation
   - compatibility-documentation-and-release
+  - task-execution-ownership
 matrix:
 - boundary: matrix-readiness-preview-and-gate
   reason: Preview previously accepted DRAFT, blocked or unreconciled Matrix state
@@ -497,13 +498,58 @@ matrix:
       applicable: true
       evidence: Schema, pinned mapping, exporter docs, human and agent docs, diagrams,
         and release metadata passed complete repository validation.
+- boundary: task-execution-ownership
+  reason: Scheduler dispatch, runtime owner leases, write authorization, isolation and
+    final diff reconciliation form one security-sensitive lifecycle; dashboard state
+    remains an observation-only projection.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff and Python compilation for scheduler, owner lease, projection,
+        dashboard, lifecycle and contract modules.
+    unit:
+      applicable: true
+      evidence: Boundary/write-set containment, normalized-path rejection, legacy
+        projection defaults and expired read-only ownership projection.
+    integration:
+      applicable: true
+      evidence: Scheduler-bound claim, shared state locking, overlapping concurrent
+        claims, active worktree verification, heartbeat, recovery and final Git diff.
+    contract:
+      applicable: true
+      evidence: Task Graph v1 compatibility, additive run-task-state schema, truthful
+        ADVISORY capability and read-only dashboard projection.
+    e2e:
+      applicable: false
+      na_reason: No deployed multi-agent runtime is available locally; isolated Git
+        worktree lifecycle and exact local CLI state provide the executable boundary.
+    security:
+      applicable: true
+      evidence: Absolute/traversal write paths and out-of-scope diffs fail closed;
+        duplicate and overlapping claims serialize; secrets/content are not recorded;
+        unverified guards remain ADVISORY.
+    migration_recovery:
+      applicable: true
+      evidence: v1/v2 legacy checkpoints remain readable; stale dirty work is not
+        reassigned; explicit recovery preserves base revision/write set; rename paths
+        are reconciled without collapsing old/new names.
+    cli_harness:
+      applicable: true
+      evidence: aips run owner claim/heartbeat/status/release/reconcile/recover help
+        and lifecycle execute against shared scheduler state and an AIPS isolation ID.
+    docs_schema:
+      applicable: true
+      evidence: Scenario 182, scenario registry, task-state schema/template, scheduler,
+        authorization, isolation, dashboard, architecture and user documentation agree.
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: true
-blockers: []
+actual_diff_reconciled: false
+blockers:
+  - Exact committed candidate hash and changed-file set must be synchronized after
+    implementation and validation.
 candidate:
-  base_sha: 2776d75dff6b77338bd5017bcf508bb07447d955
-  changed_files_hash: 90ab6f698b3b59c815159391989882de166ad4542dde806ea9aeed05cb6acec8
+  base_sha: af9179469d14e3db758687da8909b59ea4d79350
+  changed_files_hash: null
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
-status: READY
+status: DRAFT

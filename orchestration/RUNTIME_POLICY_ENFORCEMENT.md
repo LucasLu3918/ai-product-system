@@ -19,6 +19,8 @@ Runtime hook payload
 
 The policy evaluator is the Policy Decision Point. Claude `PreToolUse` and Gemini CLI `BeforeTool` are Policy Enforcement Points only for the operations their verified native hooks can actually block. Codex remains `ADVISORY`; generic runtimes remain `UNSUPPORTED` until a concrete verified PEP exists.
 
+Task write authorization is not a substitute for the Runtime Action PEP. `aips run owner` records the task's write set and truthful enforcement capability; `ADVISORY` must never be promoted to `TOOL_GUARDED` based on the presence of a lease alone.
+
 ## Runtime Action Envelope
 
 `orchestration/schemas/runtime-action.yaml` defines version 1. The action binds actor/task/runtime, tool/operation/arguments, resource, destination/trust, effective SAL, Change Boundary, data classes, protected assets, Resource Authorization profile, credential reference and required enforcement. SAL is not data classification. The action digest includes the normalized arguments, destination, risk/data labels, boundary and the Resource Authorization profile fingerprint; it excludes the approval ID.

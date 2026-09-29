@@ -1,0 +1,39 @@
+version: 1
+record: TASK_OWNERSHIP.yaml
+description: Optional additive run-state record for deterministic task execution ownership.
+fields:
+  task_id: string
+  execution_id: string
+  runtime: string
+  isolation_id: string
+  isolation_mode: worktree
+  status: ACTIVE | STALE | ORPHANED | RECOVERY_REQUIRED | BLOCKED | RELEASED
+  change_boundary: string[]
+  read_set: string[]
+  write_set: string[]
+  dependencies: string[]
+  workspace_id: string
+  branch: string
+  base_revision: full Git commit SHA
+  claimed_at: ISO-8601 UTC timestamp
+  heartbeat_at: ISO-8601 UTC timestamp
+  expires_at: ISO-8601 UTC timestamp
+  lease_seconds: integer in [30, 86400]
+  observed_dirty_files: repository-relative path[]
+  actual_diff: repository-relative path[]
+  out_of_scope_files: repository-relative path[]
+  recovery_status: NONE | RELEASE_REQUIRED | RECOVERY_REQUIRED
+  resource_authorization:
+    source: task_write_set
+    effect: DENY_OUTSIDE_WRITE_SET
+    change_boundary: string[]
+    write_set: string[]
+    enforcement_capability: ADVISORY | TOOL_GUARDED
+    capability_verified: boolean
+invariants:
+  - ActualDiff ⊆ WriteSet ⊆ ChangeBoundary
+  - only one active owner may hold a task lease
+  - lease expiry never automatically reassigns a task
+  - dirty stale or orphaned tasks require explicit recovery
+  - TOOL_GUARDED requires verified runtime write-guard integration
+  - projection of this record is read-only

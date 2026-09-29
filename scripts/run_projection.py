@@ -23,6 +23,7 @@ if str(ROOT) not in sys.path:
 
 from aips_identity import config_home, project_root, repository_identity, workspace_snapshot
 from run_state import _freshness, load_yaml, safe_text
+from task_ownership import LEASE_FILE, project_ownership
 
 SCHEMA_VERSION = 1
 MAX_EVENTS = 20
@@ -184,6 +185,7 @@ def _project_run(checkpoint: Path, mode: str, workspace_root: Path | None) -> di
             "runtime": execution.get("runtime", "UNKNOWN"),
             "isolation_id": execution.get("isolation_id", "UNKNOWN"),
         },
+        "ownership": project_ownership(checkpoint.parent / LEASE_FILE, workspace_root),
         "gate": {
             "id": gate.get("id", "UNKNOWN"),
             "status": gate.get("status", "UNKNOWN"),

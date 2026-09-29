@@ -56,6 +56,8 @@ Temporal Project Intelligence 的 historical query 由既有 deterministic CLI�
 
 ## Capability truth
 
+Scheduler-backed task ownership 記錄執行 owner、worktree isolation、lease 與 write-set reconciliation。這是協調與證據能力；只有 runtime 提供並驗證寫入攔截器後，才可宣稱工具寫入受到強制限制。
+
 Runtime isolation behavior is reported only at the boundary supported by its registered evidence. Scenario Conformance inventory counts must be updated together with isolation lifecycle tests; registration does not prove that an unverified environment is isolated.
 
 Repository Integration Gate commands run under the selected AIPS Python runtime, and test checks can bind an expected collected-test count so a no-op subprocess cannot masquerade as lifecycle evidence.

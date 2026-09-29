@@ -279,6 +279,8 @@ Do not infer machine-bound approval from vague context. Runtime guards are enfor
 
 ## Checkpoint and resume
 
+When parallel Task Graph execution is enabled, claim only scheduler-dispatched work inside its active AIPS worktree. Preserve the task lease and base revision across recovery; reconcile the actual Git diff before marking completion. Resource authorization remains advisory until a native write guard is verified.
+
 Concurrent Run State and telemetry producers serialize writes through one append-only event stream. A failed optional observation degrades its evidence and never fabricates completion or changes the workflow's primary gate.
 
 The Parallel Run Dashboard projects checkpoint and event facts for observation only. Resume continues to use canonical Run State and existing authority checks.

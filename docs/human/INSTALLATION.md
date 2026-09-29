@@ -71,6 +71,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 
 ## Runtime integration
 
+Task ownership CLI 隨 AIPS CLI 一併提供，不需額外 runtime 套件。啟用前需建立 AIPS 管理的 Git worktree isolation；在不支援 native write guard 的 runtime，資源授權結果會明確維持 advisory。
+
 The optional `aips run dashboard` command uses the existing Python runtime and loopback-only HTTP server; it adds no database, frontend dependency chain or mutation endpoint.
 
 Validation installs the pinned `cryptography` dependency used to verify Ed25519 review receipts against trust anchors supplied outside the project checkout. No issuer is trusted by default.

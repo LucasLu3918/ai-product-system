@@ -1422,3 +1422,17 @@ scenarios:
       - tests/evidence/telemetry_export_lifecycle.py
       - tests/validation/telemetry_export_contracts.py
       - orchestration/schemas/telemetry-export.yaml
+  - id: "182"
+    path: tests/scenarios/182-deterministic-execution-ownership.md
+    coverage: lifecycle
+    evidence:
+      - scripts/deterministic_scheduler.py
+      - scripts/task_ownership.py
+      - scripts/run_state.py
+      - scripts/run_projection.py
+      - scripts/run_dashboard.py
+      - tests/evidence/deterministic_scheduler_lifecycle.py
+      - tests/evidence/task_ownership_lifecycle.py
+      - tests/evidence/run_dashboard_lifecycle.py
+      - tests/test_run_projection.py
+      - orchestration/schemas/run-task-state.yaml

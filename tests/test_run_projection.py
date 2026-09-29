@@ -53,6 +53,38 @@ class RunProjectionTests(unittest.TestCase):
             self.assertEqual(result["checkpoint_version"], 2)
             self.assertEqual(result["workspace"]["health"], "UNKNOWN")
             self.assertEqual(result["execution"]["task_id"], "UNKNOWN")
+            self.assertEqual(result["ownership"]["task_id"], "UNASSIGNED")
+
+    def test_task_ownership_projects_stale_state_without_mutation(self) -> None:
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            checkpoint = root / "CHECKPOINT.yaml"
+            checkpoint.write_text(yaml.safe_dump({"version": 3, "run_id": "run-owner", "status": "ACTIVE"}), encoding="utf-8")
+            ownership_path = root / "TASK_OWNERSHIP.yaml"
+            ownership = {
+                "version": 1,
+                "task_id": "api",
+                "execution_id": "exec-1",
+                "status": "ACTIVE",
+                "change_boundary": ["src"],
+                "write_set": ["src/**"],
+                "dependencies": ["prepare"],
+                "workspace_id": "workspace-1",
+                "branch": "feature/api",
+                "heartbeat_at": "2026-09-28T10:00:00Z",
+                "expires_at": "2000-01-01T00:00:00Z",
+                "observed_dirty_files": ["src/api.py"],
+                "resource_authorization": {"enforcement_capability": "ADVISORY"},
+            }
+            ownership_path.write_text(yaml.safe_dump(ownership), encoding="utf-8")
+            before = ownership_path.read_bytes()
+            projected = _project_run(checkpoint, "EPHEMERAL", None)
+            assert projected is not None
+            self.assertEqual(projected["ownership"]["task_id"], "api")
+            self.assertEqual(projected["ownership"]["lease_status"], "STALE")
+            self.assertEqual(projected["ownership"]["recovery_status"], "RECOVERY_REQUIRED")
+            self.assertEqual(projected["ownership"]["enforcement_capability"], "ADVISORY")
+            self.assertEqual(ownership_path.read_bytes(), before)
 
     def test_same_projection_has_same_fingerprint(self) -> None:
         with patch("scripts.run_projection._workspace_catalog", return_value={}), patch(

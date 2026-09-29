@@ -19,6 +19,7 @@
 
 ## Unreleased
 
+- Bind deterministic scheduler dispatch to durable task owner leases, AIPS worktree identity, shared scheduler state, task-derived write authorization and final Git-diff reconciliation; add read-only ownership dashboard projection.
 - Route Turn Context with scoped project instructions, explicit read/write intent, non-Git fallback, and compact default YAML output.
 - Serialize all run and telemetry event writers; separate read-only retrieval from index maintenance with a checked snapshot fallback.
 - Report Agent Eval evidence freshness against selected system sources without relabeling legacy results as current.

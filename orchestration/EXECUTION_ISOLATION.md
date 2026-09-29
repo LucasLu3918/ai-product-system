@@ -313,3 +313,5 @@ aips isolation runtime-reconcile --project /repo
 ~~~
 
 A lease is coordination evidence, not authority. It does not authorize network access, publication, destructive operations, a wider Change Boundary, or bypass Resource Authorization.
+
+Task ownership binds the dispatched task lease to its active AIPS-managed worktree and isolation ID. The scheduler state serializes competing claims across runs; lease expiry never transfers dirty work. Recovery is explicit and retains the original base revision and write set until final Git-diff reconciliation.

@@ -30,3 +30,9 @@ tasks: []
 #           preferred: 3000
 #           expose_as: [PORT]
 #   validation_profile: project-default
+#
+# Claim only a deterministic scheduler dispatch with:
+# aips run owner claim --project <worktree> --run-id <unique-run> \
+#   --graph <this-graph> --state <shared-scheduler-state> --task-id <task> \
+#   --execution-id <runtime-execution> --isolation-id <active-aips-worktree>
+# Ownership derives Boundary, write_set and dependencies from this graph.

@@ -751,3 +751,9 @@ Current automated inventory: 27 deterministic + 98 lifecycle + 54 agent_eval = 1
 Lifecycle evidence validates bounded existing-event extensions; deterministic OTLP projection/replay; exact pinned GenAI field names; duration spans only for complete timestamp pairs; Gate waiting intervals; independent-review correlation without inherited context; HTTPS/loopback policy; host-only credentials; content/secret rejection; local receiver behavior; and transport-failure degradation without changing AIPS execution results.
 
 Current automated inventory: 27 deterministic + 100 lifecycle + 54 agent_eval = 181 / 181; manual 0; uncovered 0.
+
+## Scenario 182 — Deterministic Execution Ownership
+
+Lifecycle evidence covers scheduler-serialized task claims, active AIPS worktree binding, lease heartbeat/stale/recovery states, actual Git-diff reconciliation, out-of-scope blocking and read-only owner projection. Legacy Task Graph v1 and checkpoints remain valid; current Resource Authorization enforcement stays `ADVISORY`.
+
+Current automated inventory: 27 deterministic + 101 lifecycle + 54 agent_eval = 182 / 182; manual 0; uncovered 0.

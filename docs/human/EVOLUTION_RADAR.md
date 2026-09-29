@@ -42,6 +42,8 @@ Monthly / quarterly roll-up 量測 collected → shortlist → semantic → acti
 
 ## Current Boundaries
 
+Task ownership leases and dashboard projections are operational coordination evidence, not Radar signals or Human adoption decisions. They cannot promote a candidate or grant publication authority.
+
 Runtime evidence changes preserve provenance: evaluation results state whether they match the current system, and operational spans reflect measured stage boundaries. Historical unbound results remain historical signals and cannot claim current effectiveness.
 
 GitHub Actions workflows 使用固定 Ubuntu 24.04 runner；Node runtime 相容性依賴各 action 的官方版本支援，artifact action 使用完整 SHA pin 並需在升級時重新驗證。

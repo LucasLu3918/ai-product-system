@@ -127,6 +127,16 @@ Task Graphs now include explicit `read_only` intent.
 
 This rule prevents missing planning metadata from becoming an unlocked writer. The Scheduler blocks the graph instead of assuming an empty boundary is safe.
 
+### Execution ownership and completion
+
+`aips run owner claim` binds a scheduler-dispatched task to one runtime execution, active AIPS worktree, Change Boundary, write/read sets, dependencies and renewable lease. Claims serialize against shared scheduler state; deterministic dispatch remains authoritative and overlapping active boundaries cannot be claimed concurrently.
+
+Leases move through `ACTIVE`, `STALE`, `ORPHANED`, `RECOVERY_REQUIRED`, `BLOCKED` and `RELEASED`. Expiry does not reassign a task. Dirty stale/orphaned work requires an explicit `recover` command, reason and `--accept-dirty` acknowledgement before another execution can resume it. Missing worktrees remain recovery-required.
+
+Final reconciliation compares the Git diff from the lease base revision, including staged, unstaged and untracked files, against the task write set. Out-of-scope changes set the task to `BLOCKED`; only `ActualDiff ⊆ WriteSet ⊆ ChangeBoundary` can mark it complete. A rename is checked as its old and new paths. Ownership events contain task/execution IDs and bounded path evidence, never file contents.
+
+Task-derived Resource Authorization is default deny outside the write set. `aips run owner authorize` emits `ADVISORY_ALLOW` only for declared paths and explicitly reports `enforced: false`; outside paths or inactive/wrong owners are `DENY`. The lease does not claim to intercept writes. A runtime is reported `TOOL_GUARDED` only after a verified native write guard is connected. Ownership is an optional additive run record, so Task Graph v1 and legacy checkpoints remain valid.
+
 ### Review task contract
 
 An optional task `review` block declares `mode: SELF_CHECK | INDEPENDENT_REVIEW`, `review_of_task`, `required`, `context_inheritance`, and `allowed_context_classes`. A reviewer task is always `read_only: true`, has an empty `write_set`, and depends on the task it reviews. Independent review uses only allowlisted canonical evidence classes and requires `context_inheritance: none`.

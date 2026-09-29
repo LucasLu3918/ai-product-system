@@ -15,6 +15,8 @@ REQUIRED = (
     "templates/review/INTEGRATION_GATE_REPORT.yaml",
     "config/integration-gate.yaml",
     "scripts/deterministic_scheduler.py",
+    "scripts/task_ownership.py",
+    "orchestration/schemas/run-task-state.yaml",
     "scripts/review_packet.py",
     "scripts/review_evidence.py",
     "scripts/integration_gate.py",
@@ -26,6 +28,7 @@ REQUIRED = (
     "tests/scenarios/135-deterministic-multi-agent-scheduler.md",
     "tests/scenarios/136-exact-candidate-integration-gate.md",
     "tests/scenarios/178-independent-review-isolation.md",
+    "tests/scenarios/182-deterministic-execution-ownership.md",
 )
 for rel in REQUIRED:
     if not (ROOT / rel).exists():
@@ -85,7 +88,7 @@ for phrase in (
         errors.append(f"validate workflow missing Integration Gate contract: {phrase}")
 
 scheduler_doc = (ROOT / "orchestration/DETERMINISTIC_SCHEDULER.md").read_text(encoding="utf-8")
-for phrase in ("Structured Task Graph", "Change Boundary", "same Task Graph + state", "SCHEDULER BLOCKED", "read_only"):
+for phrase in ("Structured Task Graph", "Change Boundary", "same Task Graph + state", "SCHEDULER BLOCKED", "read_only", "Execution ownership and completion", "ActualDiff ⊆ WriteSet ⊆ ChangeBoundary"):
     if phrase not in scheduler_doc:
         errors.append(f"DETERMINISTIC_SCHEDULER.md missing: {phrase}")
 
