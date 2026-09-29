@@ -41,7 +41,11 @@ def timestamp(value: dt.datetime | None = None) -> str:
 
 def _git(root: Path, *args: str) -> str:
     proc = subprocess.run(
-        ["git", "-C", str(root), *args], capture_output=True, text=True, check=False, timeout=15
+        ["git", "-C", str(root), *args],
+        capture_output=True,
+        text=True,
+        check=False,
+        timeout=15,
     )
     if proc.returncode:
         raise OwnershipError(proc.stderr.strip() or "git inspection failed")
@@ -50,7 +54,17 @@ def _git(root: Path, *args: str) -> str:
 
 def current_changes(root: Path, base_revision: str) -> list[str]:
     tracked = subprocess.run(
-        ["git", "-C", str(root), "diff", "--no-renames", "--name-only", "-z", base_revision, "--"],
+        [
+            "git",
+            "-C",
+            str(root),
+            "diff",
+            "--no-renames",
+            "--name-only",
+            "-z",
+            base_revision,
+            "--",
+        ],
         capture_output=True,
         check=False,
         timeout=15,
@@ -65,7 +79,11 @@ def current_changes(root: Path, base_revision: str) -> list[str]:
         raise OwnershipError("unable to inspect the actual worktree diff")
     names = set()
     for blob in (tracked.stdout, untracked.stdout):
-        names.update(item.decode("utf-8", errors="surrogateescape") for item in blob.split(b"\0") if item)
+        names.update(
+            item.decode("utf-8", errors="surrogateescape")
+            for item in blob.split(b"\0")
+            if item
+        )
     return sorted(names)
 
 
@@ -122,7 +140,9 @@ def _expire(doc: dict[str, Any], root: Path) -> bool:
     if doc.get("status") != "ACTIVE":
         return False
     try:
-        expires = dt.datetime.fromisoformat(str(doc["expires_at"]).replace("Z", "+00:00"))
+        expires = dt.datetime.fromisoformat(
+            str(doc["expires_at"]).replace("Z", "+00:00")
+        )
     except (KeyError, ValueError, TypeError):
         doc["status"] = "ORPHANED"
         doc["recovery_status"] = "RECOVERY_REQUIRED"
@@ -143,7 +163,14 @@ def _expire(doc: dict[str, Any], root: Path) -> bool:
     return True
 
 
-def _event(store: Path, name: str, status: str, task_id: str, execution_id: str, evidence: list[str] | None = None) -> None:
+def _event(
+    store: Path,
+    name: str,
+    status: str,
+    task_id: str,
+    execution_id: str,
+    evidence: list[str] | None = None,
+) -> None:
     from run_event_stream import append_event
     from run_state import safe_text
 
@@ -192,13 +219,23 @@ def claim(
             if old:
                 _expire(old, root)
                 if old.get("status") == "ACTIVE":
-                    if old.get("execution_id") == execution_id and old.get("task_id") == task_id:
+                    if (
+                        old.get("execution_id") == execution_id
+                        and old.get("task_id") == task_id
+                    ):
                         return old
                     _atomic_yaml(path, old)
                     raise OwnershipError("task already has an active execution owner")
-                if old.get("status") in {"STALE", "ORPHANED", "BLOCKED", "RECOVERY_REQUIRED"}:
+                if old.get("status") in {
+                    "STALE",
+                    "ORPHANED",
+                    "BLOCKED",
+                    "RECOVERY_REQUIRED",
+                }:
                     _atomic_yaml(path, old)
-                    raise OwnershipError("stale or orphaned ownership requires explicit recovery before reassignment")
+                    raise OwnershipError(
+                        "stale or orphaned ownership requires explicit recovery before reassignment"
+                    )
             if _git(root, "status", "--porcelain"):
                 raise OwnershipError("task ownership claim requires a clean worktree")
             base = _git(root, "rev-parse", "HEAD")
@@ -250,7 +287,15 @@ def claim(
             fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
 
 
-def transition(root: Path, store: Path, action: str, task_id: str, execution_id: str, *, lease_seconds: int = 300) -> dict[str, Any]:
+def transition(
+    root: Path,
+    store: Path,
+    action: str,
+    task_id: str,
+    execution_id: str,
+    *,
+    lease_seconds: int = 300,
+) -> dict[str, Any]:
     path = store / LEASE_FILE
     with _locked(store) as lock:
         fcntl.flock(lock.fileno(), fcntl.LOCK_EX)
@@ -272,10 +317,19 @@ def transition(root: Path, store: Path, action: str, task_id: str, execution_id:
             changed = _expire(doc, root)
             if changed:
                 _atomic_yaml(path, doc)
-                _event(store, "task.orphaned" if doc["status"] == "ORPHANED" else "task.stale", "BLOCKED", str(doc.get("task_id")), execution_id, doc.get("observed_dirty_files", []))
+                _event(
+                    store,
+                    "task.orphaned" if doc["status"] == "ORPHANED" else "task.stale",
+                    "BLOCKED",
+                    str(doc.get("task_id")),
+                    execution_id,
+                    doc.get("observed_dirty_files", []),
+                )
                 raise OwnershipError("lease expired; task requires explicit recovery")
             if doc.get("status") != "ACTIVE":
-                raise OwnershipError("task lease is not active; explicit recovery is required")
+                raise OwnershipError(
+                    "task lease is not active; explicit recovery is required"
+                )
             if action == "heartbeat":
                 if doc.get("status") != "ACTIVE":
                     raise OwnershipError("only an active lease can heartbeat")
@@ -283,10 +337,14 @@ def transition(root: Path, store: Path, action: str, task_id: str, execution_id:
                     raise OwnershipError("lease_seconds must be between 30 and 86400")
                 stamp = now()
                 doc["heartbeat_at"] = timestamp(stamp)
-                doc["expires_at"] = timestamp(stamp + dt.timedelta(seconds=lease_seconds))
+                doc["expires_at"] = timestamp(
+                    stamp + dt.timedelta(seconds=lease_seconds)
+                )
                 doc["updated_at"] = timestamp(stamp)
                 _atomic_yaml(path, doc)
-                _event(store, "task.heartbeat", "INFO", str(doc["task_id"]), execution_id)
+                _event(
+                    store, "task.heartbeat", "INFO", str(doc["task_id"]), execution_id
+                )
                 return doc
             if action == "release":
                 dirty = current_changes(root, str(doc["base_revision"]))
@@ -296,13 +354,24 @@ def transition(root: Path, store: Path, action: str, task_id: str, execution_id:
                     doc["recovery_status"] = "RECOVERY_REQUIRED"
                     doc["updated_at"] = timestamp()
                     _atomic_yaml(path, doc)
-                    _event(store, "task.orphaned", "BLOCKED", str(doc["task_id"]), execution_id, dirty)
-                    raise OwnershipError("dirty work cannot release ownership; reconcile it or recover explicitly")
+                    _event(
+                        store,
+                        "task.orphaned",
+                        "BLOCKED",
+                        str(doc["task_id"]),
+                        execution_id,
+                        dirty,
+                    )
+                    raise OwnershipError(
+                        "dirty work cannot release ownership; reconcile it or recover explicitly"
+                    )
                 doc["status"] = "RELEASED"
                 doc["released_at"] = timestamp()
                 doc["recovery_status"] = "NONE"
                 _atomic_yaml(path, doc)
-                _event(store, "task.released", "INFO", str(doc["task_id"]), execution_id)
+                _event(
+                    store, "task.released", "INFO", str(doc["task_id"]), execution_id
+                )
                 return doc
             if action == "reconcile":
                 actual = current_changes(root, str(doc["base_revision"]))
@@ -316,13 +385,29 @@ def transition(root: Path, store: Path, action: str, task_id: str, execution_id:
                     doc["recovery_status"] = "RECOVERY_REQUIRED"
                     doc["recovery_reason"] = "actual_diff_exceeds_write_set"
                     _atomic_yaml(path, doc)
-                    _event(store, "task.reconciled", "BLOCKED", str(doc["task_id"]), execution_id, out_of_scope)
-                    raise OwnershipError("actual Git diff exceeds write_set; task completion is blocked")
+                    _event(
+                        store,
+                        "task.reconciled",
+                        "BLOCKED",
+                        str(doc["task_id"]),
+                        execution_id,
+                        out_of_scope,
+                    )
+                    raise OwnershipError(
+                        "actual Git diff exceeds write_set; task completion is blocked"
+                    )
                 doc["status"] = "RECONCILED"
                 doc["completion_status"] = "COMPLETE"
                 doc["recovery_status"] = "NONE"
                 _atomic_yaml(path, doc)
-                _event(store, "task.reconciled", "PASS", str(doc["task_id"]), execution_id, actual)
+                _event(
+                    store,
+                    "task.reconciled",
+                    "PASS",
+                    str(doc["task_id"]),
+                    execution_id,
+                    actual,
+                )
                 return doc
             raise OwnershipError(f"unsupported ownership action: {action}")
         finally:
@@ -350,26 +435,52 @@ def recover(
             doc = _read(path)
             if doc.get("status") == "ACTIVE" and _expire(doc, root):
                 _atomic_yaml(path, doc)
-            if doc.get("task_id") != task_id or doc.get("status") not in {"STALE", "ORPHANED", "RECOVERY_REQUIRED", "BLOCKED"}:
-                raise OwnershipError("only a stale, orphaned or blocked task can be explicitly recovered")
-            if doc.get("isolation_id") != isolation_id or doc.get("isolation_mode") != "worktree":
-                raise OwnershipError("recovery must use the task's original AIPS-managed worktree isolation")
+            if doc.get("task_id") != task_id or doc.get("status") not in {
+                "STALE",
+                "ORPHANED",
+                "RECOVERY_REQUIRED",
+                "BLOCKED",
+            }:
+                raise OwnershipError(
+                    "only a stale, orphaned or blocked task can be explicitly recovered"
+                )
+            if (
+                doc.get("isolation_id") != isolation_id
+                or doc.get("isolation_mode") != "worktree"
+            ):
+                raise OwnershipError(
+                    "recovery must use the task's original AIPS-managed worktree isolation"
+                )
             if not reason.strip():
                 raise OwnershipError("recovery requires an explicit reason")
             if lease_seconds < 30 or lease_seconds > 86400:
                 raise OwnershipError("lease_seconds must be between 30 and 86400")
             if not root.is_dir():
-                raise OwnershipError("orphaned worktree is missing; recovery must occur after isolation is restored")
+                raise OwnershipError(
+                    "orphaned worktree is missing; recovery must occur after isolation is restored"
+                )
             actual = current_changes(root, str(doc.get("base_revision") or "HEAD"))
             if actual and not accept_dirty:
-                raise OwnershipError("dirty recovery requires explicit --accept-dirty acknowledgement")
+                raise OwnershipError(
+                    "dirty recovery requires explicit --accept-dirty acknowledgement"
+                )
             state = load_yaml(state_path, {"tasks": {}})
             task_state = (state.get("tasks") or {}).get(task_id, {})
-            task_state = task_state if isinstance(task_state, dict) else {"status": task_state}
+            task_state = (
+                task_state if isinstance(task_state, dict) else {"status": task_state}
+            )
             if task_state.get("status") not in {"RUNNING", "BLOCKED"}:
-                raise OwnershipError("scheduler state does not allow recovery of this task")
-            if task_state.get("execution_id") not in (None, doc.get("execution_id"), execution_id):
-                raise OwnershipError("scheduler state names a different execution owner")
+                raise OwnershipError(
+                    "scheduler state does not allow recovery of this task"
+                )
+            if task_state.get("execution_id") not in (
+                None,
+                doc.get("execution_id"),
+                execution_id,
+            ):
+                raise OwnershipError(
+                    "scheduler state names a different execution owner"
+                )
             stamp = now()
             doc["previous_execution_id"] = doc.get("execution_id")
             doc["execution_id"] = execution_id
@@ -399,7 +510,9 @@ def recover(
             fcntl.flock(lock.fileno(), fcntl.LOCK_UN)
 
 
-def project_ownership(path: Path | None, worktree_root: Path | None = None) -> dict[str, Any]:
+def project_ownership(
+    path: Path | None, worktree_root: Path | None = None
+) -> dict[str, Any]:
     if not path or not path.is_file():
         return {
             "task_id": "UNASSIGNED",
@@ -417,13 +530,19 @@ def project_ownership(path: Path | None, worktree_root: Path | None = None) -> d
     doc = _read(path)
     status = str(doc.get("status") or "UNKNOWN").upper()
     try:
-        expires = dt.datetime.fromisoformat(str(doc.get("expires_at") or "").replace("Z", "+00:00"))
+        expires = dt.datetime.fromisoformat(
+            str(doc.get("expires_at") or "").replace("Z", "+00:00")
+        )
         if status == "ACTIVE" and expires <= now():
             status = "STALE"
     except ValueError:
         pass
     dirty = list(doc.get("observed_dirty_files") or doc.get("actual_diff") or [])
-    if worktree_root is not None and worktree_root.is_dir() and doc.get("base_revision"):
+    if (
+        worktree_root is not None
+        and worktree_root.is_dir()
+        and doc.get("base_revision")
+    ):
         try:
             dirty = current_changes(worktree_root, str(doc["base_revision"]))
         except (OSError, OwnershipError, subprocess.SubprocessError):
@@ -450,16 +569,24 @@ def project_ownership(path: Path | None, worktree_root: Path | None = None) -> d
     }
 
 
-def authorize(path: Path, *, task_id: str, operation: str, execution_id: str, record_path: Path) -> dict[str, Any]:
+def authorize(
+    path: Path, *, task_id: str, operation: str, execution_id: str, record_path: Path
+) -> dict[str, Any]:
     doc = _read(record_path)
     current = project_ownership(record_path)
     relative = path.as_posix()
     normalized = relative
-    valid = bool(normalized) and not path.is_absolute() and "\\" not in relative and all(
-        part not in {"", ".", ".."} for part in relative.split("/")
+    valid = (
+        bool(normalized)
+        and not path.is_absolute()
+        and "\\" not in relative
+        and all(part not in {"", ".", ".."} for part in relative.split("/"))
     )
     if not valid:
-        decision, reason = "DENY", "resource_path_must_be_normalized_and_repository_relative"
+        decision, reason = (
+            "DENY",
+            "resource_path_must_be_normalized_and_repository_relative",
+        )
     elif doc.get("task_id") != task_id:
         decision, reason = "DENY", "run_lease_belongs_to_another_task"
     elif doc.get("status") != "ACTIVE" or current.get("lease_status") != "ACTIVE":
@@ -468,11 +595,18 @@ def authorize(path: Path, *, task_id: str, operation: str, execution_id: str, re
         decision, reason = "DENY", "execution_does_not_own_task_lease"
     else:
         write_operation = operation in {"create", "update", "delete"}
-        patterns = list(doc.get("write_set") or []) if write_operation else [
-            *list(doc.get("read_set") or []), *list(doc.get("write_set") or [])
-        ]
-        if _covered(normalized, patterns) and _boundary_covers(normalized, list(doc.get("change_boundary") or [])):
-            decision, reason = "ADVISORY_ALLOW", "within_task_write_set_and_change_boundary"
+        patterns = (
+            list(doc.get("write_set") or [])
+            if write_operation
+            else [*list(doc.get("read_set") or []), *list(doc.get("write_set") or [])]
+        )
+        if _covered(normalized, patterns) and _boundary_covers(
+            normalized, list(doc.get("change_boundary") or [])
+        ):
+            decision, reason = (
+                "ADVISORY_ALLOW",
+                "within_task_write_set_and_change_boundary",
+            )
         else:
             decision, reason = "DENY", "outside_task_write_set_or_change_boundary"
     auth = doc.get("resource_authorization") or {}
@@ -498,7 +632,10 @@ def run_command(args: argparse.Namespace) -> dict[str, Any]:
     store.mkdir(parents=True, exist_ok=True)
     if args.action == "claim":
         state_path = Path(args.state).expanduser().resolve()
-        graph = yaml.safe_load(Path(args.graph).expanduser().read_text(encoding="utf-8")) or {}
+        graph = (
+            yaml.safe_load(Path(args.graph).expanduser().read_text(encoding="utf-8"))
+            or {}
+        )
         by_id = validate_graph(graph)
         task = by_id.get(args.task_id)
         if task is None:
@@ -506,40 +643,77 @@ def run_command(args: argparse.Namespace) -> dict[str, Any]:
         with _locked(state_path) as state_lock:
             fcntl.flock(state_lock.fileno(), fcntl.LOCK_EX)
             try:
-                current_state = load_yaml(state_path, {"plan_id": graph.get("plan_id"), "tasks": {}})
+                current_state = load_yaml(
+                    state_path, {"plan_id": graph.get("plan_id"), "tasks": {}}
+                )
                 current_task = (current_state.get("tasks") or {}).get(args.task_id, {})
-                current_task = current_task if isinstance(current_task, dict) else {"status": current_task}
+                current_task = (
+                    current_task
+                    if isinstance(current_task, dict)
+                    else {"status": current_task}
+                )
                 decision = schedule(graph, current_state)
-                same_owner = current_task.get("status") == "RUNNING" and current_task.get("execution_id") == args.execution_id
+                same_owner = (
+                    current_task.get("status") == "RUNNING"
+                    and current_task.get("execution_id") == args.execution_id
+                )
                 if args.task_id not in decision["dispatch"] and not same_owner:
                     raise OwnershipError("scheduler has not dispatched this task")
-                if current_task.get("status") == "RUNNING" and current_task.get("execution_id") not in (None, args.execution_id):
-                    raise OwnershipError("task is already assigned to another execution")
+                if current_task.get("status") == "RUNNING" and current_task.get(
+                    "execution_id"
+                ) not in (None, args.execution_id):
+                    raise OwnershipError(
+                        "task is already assigned to another execution"
+                    )
                 from execution_isolation import status_isolation
 
-                isolation = status_isolation(SimpleNamespace(project=str(root), id=args.isolation_id))
+                isolation = status_isolation(
+                    SimpleNamespace(project=str(root), id=args.isolation_id)
+                )
                 if (
                     isolation.get("status") != "ACTIVE"
                     or isolation.get("mode") != "worktree"
                     or isolation.get("exists") is not True
-                    or Path(str(isolation.get("path") or "")).resolve() != root.resolve()
+                    or Path(str(isolation.get("path") or "")).resolve()
+                    != root.resolve()
                 ):
-                    raise OwnershipError("isolation_id must identify this active AIPS-managed worktree")
+                    raise OwnershipError(
+                        "isolation_id must identify this active AIPS-managed worktree"
+                    )
                 result = claim(
-                    root, store, task_id=args.task_id, execution_id=args.execution_id,
-                    boundary=list(task["change_boundary"]), write_set=list(task["write_set"]),
-                    dependencies=list(task["dependencies"]), read_set=list(task.get("read_set") or []), lease_seconds=args.lease_seconds,
-                    runtime=args.runtime, isolation_id=args.isolation_id,
+                    root,
+                    store,
+                    task_id=args.task_id,
+                    execution_id=args.execution_id,
+                    boundary=list(task["change_boundary"]),
+                    write_set=list(task["write_set"]),
+                    dependencies=list(task["dependencies"]),
+                    read_set=list(task.get("read_set") or []),
+                    lease_seconds=args.lease_seconds,
+                    runtime=args.runtime,
+                    isolation_id=args.isolation_id,
                 )
                 tasks = current_state.setdefault("tasks", {})
-                tasks[args.task_id] = {**current_task, "status": "RUNNING", "execution_id": args.execution_id, "run_id": args.run_id, "isolation_id": args.isolation_id}
+                tasks[args.task_id] = {
+                    **current_task,
+                    "status": "RUNNING",
+                    "execution_id": args.execution_id,
+                    "run_id": args.run_id,
+                    "isolation_id": args.isolation_id,
+                }
                 atomic_yaml(state_path, current_state)
             finally:
                 fcntl.flock(state_lock.fileno(), fcntl.LOCK_UN)
     elif args.action == "status":
         result = project_ownership(store / LEASE_FILE)
     elif args.action == "authorize":
-        result = authorize(Path(args.path), task_id=args.task_id, operation=args.operation, execution_id=args.execution_id, record_path=store / LEASE_FILE)
+        result = authorize(
+            Path(args.path),
+            task_id=args.task_id,
+            operation=args.operation,
+            execution_id=args.execution_id,
+            record_path=store / LEASE_FILE,
+        )
     elif args.action == "recover":
         state_path = Path(args.state).expanduser().resolve()
         with _locked(state_path) as state_lock:
@@ -547,18 +721,29 @@ def run_command(args: argparse.Namespace) -> dict[str, Any]:
             try:
                 from execution_isolation import status_isolation
 
-                isolation = status_isolation(SimpleNamespace(project=str(root), id=args.isolation_id))
+                isolation = status_isolation(
+                    SimpleNamespace(project=str(root), id=args.isolation_id)
+                )
                 if (
                     isolation.get("status") != "ACTIVE"
                     or isolation.get("mode") != "worktree"
                     or isolation.get("exists") is not True
-                    or Path(str(isolation.get("path") or "")).resolve() != root.resolve()
+                    or Path(str(isolation.get("path") or "")).resolve()
+                    != root.resolve()
                 ):
-                    raise OwnershipError("recovery requires the task's active AIPS-managed worktree")
+                    raise OwnershipError(
+                        "recovery requires the task's active AIPS-managed worktree"
+                    )
                 result = recover(
-                    root, store, state_path, task_id=args.task_id,
-                    execution_id=args.execution_id, isolation_id=args.isolation_id, reason=args.reason,
-                    accept_dirty=args.accept_dirty, lease_seconds=args.lease_seconds,
+                    root,
+                    store,
+                    state_path,
+                    task_id=args.task_id,
+                    execution_id=args.execution_id,
+                    isolation_id=args.isolation_id,
+                    reason=args.reason,
+                    accept_dirty=args.accept_dirty,
+                    lease_seconds=args.lease_seconds,
                 )
             finally:
                 fcntl.flock(state_lock.fileno(), fcntl.LOCK_UN)
@@ -569,20 +754,46 @@ def run_command(args: argparse.Namespace) -> dict[str, Any]:
             try:
                 state = load_yaml(state_path, {"tasks": {}})
                 task_state = (state.get("tasks") or {}).get(args.task_id, {})
-                task_state = task_state if isinstance(task_state, dict) else {"status": task_state}
-                if task_state.get("status") != "RUNNING" or task_state.get("execution_id") != args.execution_id:
-                    raise OwnershipError("scheduler state does not assign this task to the execution")
-                result = transition(root, store, args.action, args.task_id, args.execution_id, lease_seconds=args.lease_seconds)
+                task_state = (
+                    task_state
+                    if isinstance(task_state, dict)
+                    else {"status": task_state}
+                )
+                if (
+                    task_state.get("status") != "RUNNING"
+                    or task_state.get("execution_id") != args.execution_id
+                ):
+                    raise OwnershipError(
+                        "scheduler state does not assign this task to the execution"
+                    )
+                result = transition(
+                    root,
+                    store,
+                    args.action,
+                    args.task_id,
+                    args.execution_id,
+                    lease_seconds=args.lease_seconds,
+                )
                 new_status = "COMPLETE" if args.action == "reconcile" else "PENDING"
-                state.setdefault("tasks", {})[args.task_id] = {**task_state, "status": new_status}
+                state.setdefault("tasks", {})[args.task_id] = {
+                    **task_state,
+                    "status": new_status,
+                }
                 atomic_yaml(state_path, state)
             except OwnershipError:
                 state = load_yaml(state_path, {"tasks": {}})
                 lease = _read(store / LEASE_FILE)
                 if lease.get("status") == "BLOCKED":
                     task_state = state.setdefault("tasks", {}).get(args.task_id, {})
-                    task_state = task_state if isinstance(task_state, dict) else {"status": task_state}
-                    state.setdefault("tasks", {})[args.task_id] = {**task_state, "status": "BLOCKED"}
+                    task_state = (
+                        task_state
+                        if isinstance(task_state, dict)
+                        else {"status": task_state}
+                    )
+                    state.setdefault("tasks", {})[args.task_id] = {
+                        **task_state,
+                        "status": "BLOCKED",
+                    }
                     atomic_yaml(state_path, state)
                 raise
             finally:
@@ -591,19 +802,33 @@ def run_command(args: argparse.Namespace) -> dict[str, Any]:
 
 
 def add_parser(sub: argparse._SubParsersAction) -> None:
-    parser = sub.add_parser("owner", help="claim and inspect deterministic task ownership leases")
+    parser = sub.add_parser(
+        "owner", help="claim and inspect deterministic task ownership leases"
+    )
     actions = parser.add_subparsers(dest="action", required=True)
-    for name in ("claim", "heartbeat", "status", "release", "reconcile", "recover", "authorize"):
+    for name in (
+        "claim",
+        "heartbeat",
+        "status",
+        "release",
+        "reconcile",
+        "recover",
+        "authorize",
+    ):
         item = actions.add_parser(name)
         item.add_argument("--project", default=os.getcwd())
         item.add_argument("--run-id", required=True)
         if name not in {"status"}:
             item.add_argument("--execution-id", required=name != "claim")
         if name in {"claim", "heartbeat", "release", "reconcile"}:
-            item.add_argument("--state", required=True, help="shared scheduler state YAML")
+            item.add_argument(
+                "--state", required=True, help="shared scheduler state YAML"
+            )
         if name == "claim":
             item.add_argument("--task-id", required=True)
-            item.add_argument("--graph", required=True, help="canonical Task Graph YAML")
+            item.add_argument(
+                "--graph", required=True, help="canonical Task Graph YAML"
+            )
             item.add_argument("--isolation-id", required=True)
             item.add_argument("--runtime", default="unknown")
         elif name != "status":
@@ -614,7 +839,11 @@ def add_parser(sub: argparse._SubParsersAction) -> None:
             item.add_argument("--accept-dirty", action="store_true")
         if name == "authorize":
             item.add_argument("--path", required=True)
-            item.add_argument("--operation", choices=("read", "search", "create", "update", "delete"), required=True)
+            item.add_argument(
+                "--operation",
+                choices=("read", "search", "create", "update", "delete"),
+                required=True,
+            )
         item.add_argument("--lease-seconds", type=int, default=300)
         item.add_argument("--format", choices=("yaml", "json"), default="yaml")
 
@@ -626,7 +855,13 @@ def main() -> int:
     args = parser.parse_args()
     try:
         result = run_command(args)
-    except (OSError, RuntimeError, ValueError, subprocess.SubprocessError, yaml.YAMLError) as exc:
+    except (
+        OSError,
+        RuntimeError,
+        ValueError,
+        subprocess.SubprocessError,
+        yaml.YAMLError,
+    ) as exc:
         print("ERROR: " + str(exc), file=sys.stderr)
         return 2
     if args.format == "json":
