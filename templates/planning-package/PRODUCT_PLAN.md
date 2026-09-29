@@ -31,3 +31,7 @@ Connect each acceptance criterion to a requirement ID and describe the observabl
 ## Success Metrics
 
 ## Constraints
+
+## Evidence / Research Inputs
+
+Link applicable findings in `PRODUCT_RESEARCH.md`. Label sourced observations, inferences, assumptions and unknowns distinctly.

@@ -757,3 +757,9 @@ Current automated inventory: 27 deterministic + 100 lifecycle + 54 agent_eval = 
 Lifecycle evidence covers scheduler-serialized task claims, active AIPS worktree binding, lease heartbeat/stale/recovery states, actual Git-diff reconciliation, out-of-scope blocking and read-only owner projection. Legacy Task Graph v1 and checkpoints remain valid; current Resource Authorization enforcement stays `ADVISORY`.
 
 Current automated inventory: 27 deterministic + 101 lifecycle + 54 agent_eval = 182 / 182; manual 0; uncovered 0.
+
+## Scenario 183–192 — Planning Package v2
+
+Scenarios 183–192 cover optional manifest dependency graphs, stable requirement and acceptance traceability, separate Human approvals at Gate 1 and Gate 2, reuse of product and data-modeling capabilities, cross-artifact UX/visual/domain/API references, legacy package compatibility, on-demand e-commerce guidance, actionable structural diagnostics and an end-to-end planning journey. Structural and lifecycle contracts run locally; Scenario 192 remains manual because a real product-specific planning and approval journey requires human decisions.
+
+Current inventory after Scenario 192: 34 deterministic + 103 lifecycle + 54 agent_eval = 191 / 191 automated; 1 manual; 0 uncovered.

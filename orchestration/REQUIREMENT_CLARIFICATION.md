@@ -101,6 +101,8 @@ EARS also permits a complex form combining a `While` precondition with one `When
 
 EARS does not supply missing product decisions. A trigger such as “repeated failures” still needs a defined count/window/reset rule when those details affect behavior. Ask only for materially blocking decisions under the existing clarification rules; otherwise apply and record a safe default. Never infer that an EARS-shaped statement is unambiguous, testable, implemented, or passed solely from its syntax.
 
+A v2 Planning Package may add `PLANNING_MANIFEST.yaml` to record artifact paths, applicability, status, dependency strength and downstream traceability; legacy packages without it remain valid. Use `scripts/planning_package_validate.py` for deterministic structural checks, while the Product Manager, Designer, Architect, Database Engineer, Backend Engineer, Security Engineer and Quality Reviewer make domain judgments and Humans retain both planning and implementation approvals.
+
 When a Planning Package needs durable traceability, use the optional `templates/planning-package/REQUIREMENTS.yaml` registry. Give each requirement a stable ID, connect it to one or more acceptance criteria, and state the verification method. An evidence reference is a location or planned check; it is not proof that the check ran or passed. AIPS Scenario Conformance remains a separate registry of AIPS behavior and executable evidence.
 
 For automation, `python scripts/requirements_traceability.py <registry> --format json` emits `status: PASS` or `status: FAIL`; it exits zero only when structural validation passes and non-zero when it fails. This result covers registry structure, not requirement meaning or execution of the referenced verification.

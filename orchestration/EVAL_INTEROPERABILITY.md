@@ -8,6 +8,8 @@ AIPS Agent Eval Case / Result remain canonical. Promptfoo and PyRIT are optional
 
 Scenario 181 adds an independent operational telemetry lane; it does not change external-evaluation evidence, score interpretation or finding-promotion authority.
 
+Planning Package Scenario 192 is explicitly manual; planning template validation is structural evidence and does not become an Agent Eval score or product approval.
+
 ~~~text
 Promptfoo config + JSONL observations ─┐
 PyRIT v1 bridge observations ──────────┴→ bounded static parser → normalized, fingerprinted evidence

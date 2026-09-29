@@ -14,7 +14,11 @@ If not applicable, set Applicability: N/A and explain why.
 
 ## Operations
 
+Map each operation to stable requirement, domain and authorization references. Assign an `OP-NNN` ID to every operation used by Manifest traceability.
+
 ### METHOD /path
+
+Operation ID: OP-001 (replace with a stable operation ID)
 
 Purpose:
 

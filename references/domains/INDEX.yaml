@@ -1,0 +1,22 @@
+version: 1
+policy:
+  default_loading: overview_only
+  load_details_on_trigger: true
+  domain_packs_are_guidance_not_requirements: true
+
+domains:
+  ecommerce:
+    title: E-commerce product planning
+    triggers:
+      - product includes a catalog, cart, checkout, orders, payment, refund, inventory, or fulfillment
+      - user asks for an online store, marketplace, or direct-to-consumer commerce workflow
+    overview: references/domains/ecommerce/OVERVIEW.md
+    modules:
+      catalog_inventory: references/domains/ecommerce/CATALOG_INVENTORY.md
+      cart_checkout: references/domains/ecommerce/CART_CHECKOUT.md
+      order_payment_refund: references/domains/ecommerce/ORDER_PAYMENT_REFUND.md
+      operations: references/domains/ecommerce/OPERATIONS.md
+    loading:
+      - read overview when a trigger matches
+      - read only module references that intersect the confirmed scope
+      - record domain-specific assumptions and exclusions in DECISIONS_ASSUMPTIONS.md

@@ -47,7 +47,7 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Planning 與 Product Delivery
 
-大型產品先形成 Planning Package，再經 Human review 進入 implementation planning。產品生命週期維持：
+大型產品先形成 Planning Package。可選的 `PLANNING_MANIFEST.yaml` 對 artifact 狀態、適用性、依賴與 requirement-to-artifact links 提供 deterministic structural validation；研究、產品方向、UX 與 domain/API 選擇仍由既有專業角色交叉審查。Gate 1 與 Gate 2 各自保留 Human approval。舊 package 沒有 manifest 時仍相容。產品生命週期維持：
 
 Planning 階段可用 EARS 整理適合的功能需求，並透過可選的需求登錄檔連結需求、驗收條件與驗證方法；格式檢查與語義審查、執行證據各司其職。
 

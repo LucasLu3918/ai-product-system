@@ -443,8 +443,9 @@ For Large/Core changes, architecture-diagram impact is mandatory. Update each af
 ~~~mermaid
 flowchart TD
     U[User Request / Assets] --> Q[Q1/Q2/Q3 Quality Planning]
-    Q --> PP[Planning Package]
-    PP --> G1[Gate 1 Planning Approval]
+    Q --> PP[Planning Package: Research, Requirements, UX, Visual, Domain, API]
+    PP --> MV[Manifest: status, applicability, dependencies, traceability]
+    MV --> G1[Gate 1 Planning Approval]
     G1 --> G2[Gate 2 Implementation Approval]
     G2 --> I[Implementation + Observability Instrumentation]
     I --> V[Local Tests / Security / Quality Evidence]

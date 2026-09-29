@@ -1436,3 +1436,78 @@ scenarios:
       - tests/evidence/run_dashboard_lifecycle.py
       - tests/test_run_projection.py
       - orchestration/schemas/run-task-state.yaml
+  - id: "183"
+    path: tests/scenarios/183-planning-package-manifest-graph.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/planning_package_lifecycle.py
+      - scripts/planning_package_validate.py
+  - id: "184"
+    path: tests/scenarios/184-planning-package-requirement-traceability.md
+    coverage: deterministic
+    evidence:
+      - tests/validation/planning_package_contracts.py
+      - scripts/planning_package_validate.py
+  - id: "185"
+    path: tests/scenarios/185-planning-package-human-approval-gates.md
+    coverage: deterministic
+    evidence:
+      - tests/validation/planning_package_contracts.py
+      - scripts/planning_package_validate.py
+  - id: "186"
+    path: tests/scenarios/186-planning-package-reusable-discovery-and-research.md
+    coverage: deterministic
+    evidence:
+      - tests/validation/planning_package_contracts.py
+      - skills/product/product-discovery/SKILL.md
+      - skills/product/product-research/SKILL.md
+      - roles/product-manager/ROLE.md
+  - id: "187"
+    path: tests/scenarios/187-planning-package-ux-visual-consistency.md
+    coverage: deterministic
+    evidence:
+      - tests/validation/planning_package_contracts.py
+      - skills/design/ux-web-design/SKILL.md
+      - skills/design/visual-direction/SKILL.md
+      - templates/planning-package/EXPERIENCE_DESIGN.md
+      - templates/planning-package/VISUAL_SYSTEM.md
+  - id: "188"
+    path: tests/scenarios/188-planning-package-domain-and-api-consistency.md
+    coverage: deterministic
+    evidence:
+      - tests/validation/planning_package_contracts.py
+      - skills/database/data-modeling/SKILL.md
+      - skills/engineering/rest-api/SKILL.md
+      - templates/planning-package/DOMAIN_MODEL.md
+      - templates/planning-package/API_SPEC.md
+  - id: "189"
+    path: tests/scenarios/189-planning-package-legacy-compatibility.md
+    coverage: deterministic
+    evidence:
+      - tests/validation/planning_package_contracts.py
+      - orchestration/PLANNING_PACKAGE.md
+  - id: "190"
+    path: tests/scenarios/190-planning-package-scoped-domain-reference.md
+    coverage: deterministic
+    evidence:
+      - tests/validation/planning_package_contracts.py
+      - references/domains/INDEX.yaml
+      - references/domains/ecommerce/OVERVIEW.md
+      - references/domains/ecommerce/CATALOG_INVENTORY.md
+      - references/domains/ecommerce/CART_CHECKOUT.md
+      - references/domains/ecommerce/ORDER_PAYMENT_REFUND.md
+      - references/domains/ecommerce/OPERATIONS.md
+  - id: "191"
+    path: tests/scenarios/191-planning-package-structural-failure-diagnostics.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/planning_package_lifecycle.py
+      - tests/validation/planning_package_contracts.py
+  - id: "192"
+    path: tests/scenarios/192-planning-package-complete-product-to-implementation.md
+    coverage: manual
+    evidence:
+      - orchestration/PLANNING_PACKAGE.md
+      - templates/planning-package/PLANNING_INDEX.md
+      - templates/planning-package/PLANNING_MANIFEST.yaml
+      - tests/scenarios/192-planning-package-complete-product-to-implementation.md

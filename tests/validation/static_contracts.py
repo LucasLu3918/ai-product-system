@@ -62,6 +62,7 @@ yaml_files = [
     "templates/quality/QUALITY_PROFILE.yaml",
     "templates/knowledge/KNOWLEDGE_INDEX.yaml",
     "templates/design/PROJECT_VISUAL_PROFILE.yaml",
+    "templates/planning-package/PLANNING_MANIFEST.yaml",
     "templates/design/VISUAL_AUDIT.yaml",
     "templates/delivery/RELEASE_READINESS.yaml",
     "templates/delivery/DEPLOYMENT_UNIT.yaml",
@@ -97,6 +98,7 @@ yaml_files = [
     "tests/fixtures/eval_interop/finding-confirmed.yaml",
     "tests/fixtures/eval_interop/promptfoo.results.jsonl",
 ]
+yaml_files.extend(["references/domains/INDEX.yaml"])
 for rel in yaml_files:
     p = ROOT / rel
     if not p.exists():
@@ -169,10 +171,26 @@ required_files = [
     "scripts/aips_identity.py", "scripts/execution_isolation.py",
     "scripts/agent_eval.py", "scripts/trajectory_eval.py", "scripts/check_secret_leakage.py", "scripts/content_safety.py", "scripts/visual_profile.py",
     "scripts/requirements_traceability.py",
+    "scripts/planning_package_validate.py",
+    "tests/evidence/planning_package_lifecycle.py",
+    "references/domains/INDEX.yaml",
+    "references/domains/ecommerce/OVERVIEW.md",
+    "skills/product/product-research/SKILL.md",
+    "skills/database/data-modeling/SKILL.md",
     "config/content-safety.yaml", "orchestration/CONTENT_SAFETY_BOUNDARY.md",
     "tests/evidence/governance_command_guard.py", "tests/evidence/trajectory_quality_gate_lifecycle.py", "tests/evidence/visual_profile_lifecycle.py",
     "tests/evidence/change_impact_resolution_lifecycle.py", "tests/validation/change_impact_resolution_contracts.py", "tests/validation/conformance_isolation.py",
     "tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md",
+    "tests/scenarios/183-planning-package-manifest-graph.md",
+    "tests/scenarios/184-planning-package-requirement-traceability.md",
+    "tests/scenarios/185-planning-package-human-approval-gates.md",
+    "tests/scenarios/186-planning-package-reusable-discovery-and-research.md",
+    "tests/scenarios/187-planning-package-ux-visual-consistency.md",
+    "tests/scenarios/188-planning-package-domain-and-api-consistency.md",
+    "tests/scenarios/189-planning-package-legacy-compatibility.md",
+    "tests/scenarios/190-planning-package-scoped-domain-reference.md",
+    "tests/scenarios/191-planning-package-structural-failure-diagnostics.md",
+    "tests/scenarios/192-planning-package-complete-product-to-implementation.md",
     "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml", ".github/workflows/retrieval-semantic-trial.yml",
     ".github/dependabot.yml", "SECURITY.md",
 ]
@@ -184,6 +202,9 @@ security_templates = [
 ]
 planning_templates = [
     "templates/planning-package/PLANNING_INDEX.md",
+    "templates/planning-package/PLANNING_MANIFEST.yaml",
+    "templates/planning-package/PRODUCT_RESEARCH.md",
+    "templates/planning-package/DOMAIN_MODEL.md",
     "templates/planning-package/PRODUCT_PLAN.md",
     "templates/planning-package/EXPERIENCE_DESIGN.md",
     "templates/planning-package/VISUAL_SYSTEM.md",
@@ -630,7 +651,7 @@ for rel, keys in {
         if key not in doc:
             errors.append(f"{rel} missing top-level key: {key}")
 
-for helper in ("scripts/harness_resolve.py", "scripts/project_intelligence.py", "scripts/retrieval_intelligence.py", "scripts/retrieval_evaluation.py", "scripts/structural_retrieval_trial.py", "scripts/retrieval_embedding_trial.py", "scripts/retrieval_embedding_trial_summary.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py", "scripts/requirements_traceability.py"):
+for helper in ("scripts/harness_resolve.py", "scripts/project_intelligence.py", "scripts/retrieval_intelligence.py", "scripts/retrieval_evaluation.py", "scripts/structural_retrieval_trial.py", "scripts/retrieval_embedding_trial.py", "scripts/retrieval_embedding_trial_summary.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py", "scripts/requirements_traceability.py", "scripts/planning_package_validate.py"):
     helper_path = ROOT / helper
     if helper_path.exists():
         compiled = subprocess.run([sys.executable, "-m", "py_compile", str(helper_path)], capture_output=True, text=True)

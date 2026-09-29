@@ -6,7 +6,18 @@ estimated_context_cost: low
 
 # Ux Web Design
 
-Design flows, navigation, information hierarchy, responsive behavior and interface states. Keep UX decisions traceable to user goals, Quality Profile and approved product scope.
+Translate approved product goals and requirements into implementable information architecture, journeys, task flows, screens and interaction behavior.
+
+## Planning sequence
+
+1. Map information architecture and primary journeys.
+2. Define task flows, including alternate, failure and recovery paths.
+3. Create a screen inventory and assign stable `SCR-NNN` IDs.
+4. For each material screen, record primary user, responsibility, requirement IDs, entry/exit points and interactions.
+5. Specify normal, loading, empty, error, disabled, success and relevant permission/authentication states.
+6. Define responsive behavior, accessibility requirements and edge cases.
+
+Keep design traceable to user goals, requirements and the Quality Profile. Do not invent product scope in UX. Explicitly mark inapplicable flows with a reason.
 
 For existing UI:
 - reuse Project Visual Profile when current;

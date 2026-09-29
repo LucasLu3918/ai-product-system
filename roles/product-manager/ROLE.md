@@ -7,6 +7,7 @@ Own product intent, scope and requirement clarity. Convert user goals into testa
 ## Common skills
 
 - `product-discovery`
+- `product-research`
 - `requirements-definition`
 - `brand-foundation` when brand purpose, positioning or audience definition is needed
 

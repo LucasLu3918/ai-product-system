@@ -1,60 +1,64 @@
 version: 1
 change:
-  id: validate-pr-event-concurrency
-  summary: Isolate GitHub pull-request lifecycle validation runs by event action,
-    keep required validation checks fail-closed, and safely fast-forward local main
-    after a merge while preserving backups and refusing divergent history.
+  id: plan10-product-planning-capability
+  summary: Add an optional machine-checkable Planning Package with deterministic cross-artifact
+    traceability, expanded product research and domain planning, and preserve existing
+    roles, Human approvals and legacy package compatibility.
   boundary:
-  - ci-validation-publication
+  - product-planning-package
 matrix:
-- boundary: ci-validation-publication
-  reason: Pull-request event scheduling, required validation evidence, and post-merge
-    local ref recovery are one publication lifecycle; event runs must remain isolated
-    while failed validation and divergent Git history stay fail-closed.
+- boundary: product-planning-package
+  reason: Manifest lifecycle, artifact dependency/traceability and skill/reference
+    guidance form one coherent product planning contract. The same exact candidate
+    includes its tests, scenarios and human/agent documentation.
   checks:
     static_lint:
       applicable: true
-      evidence: Python compilation and the repository validator pass; CI runs the
-        configured Ruff rules on the exact PR candidate.
+      evidence: Full tests/validate_repository.py passed; YAML/Markdown/static contracts
+        and Python compilation are included.
     unit:
       applicable: true
-      evidence: publish_preflight_lifecycle.py passes clean post-merge fast-forward
-        and divergent-history refusal fixtures.
+      evidence: tests/validation/planning_package_contracts.py passed dependency,
+        path, traceability, applicability and separate gate-evidence rejection cases.
     integration:
       applicable: true
-      evidence: Temporary Git repositories exercise backup preservation, local main
-        fast-forward, remote reachability, and no ref mutation when local history diverges.
+      evidence: tests/evidence/planning_package_lifecycle.py passed canonical template
+        validation and rejected unknown operation/path traversal in isolated temporary
+        package copies.
     contract:
       applicable: true
-      evidence: static_contracts.py checks action-scoped concurrency groups and allows
-        cancellation only for superseded synchronize and push runs.
+      evidence: python scripts/planning_package_validate.py templates/planning-package
+        --format json returned PASS for 11 artifacts and 2 requirements; Scenario
+        Conformance returned 192 registered, 0 uncovered.
     e2e:
       applicable: false
-      na_reason: GitHub-hosted opened and labeled event delivery cannot run locally;
-        the exact PR Actions checks provide this publication-only end-to-end evidence.
+      na_reason: The end-to-end product planning and approvals depend on real user
+        decisions; Scenario 192 is explicitly manual. Structural subcontracts have
+        deterministic/lifecycle evidence.
     security:
       applicable: true
-      evidence: Required Integration Gate candidate scanning and protected required
-        validation checks remain fail-closed; cancellation is limited to superseded runs.
+      evidence: Validator rejects escaping paths and requires reasons for N/A plus
+        independent human evidence for Gates; domain guidance prohibits raw payment
+        credentials and invented compliance claims. Candidate content safety scan
+        passed.
     migration_recovery:
       applicable: true
-      evidence: publish_preflight_lifecycle.py confirms clean ancestor fast-forward
-        preserves a local backup and divergent history is rejected before changing refs.
+      evidence: No persistence migration is introduced; legacy packages without PLANNING_MANIFEST.yaml
+        remain valid as documented and structurally checked.
     cli_harness:
       applicable: true
-      evidence: publish_preflight_lifecycle.py exercises the publish_preflight
-        post-merge command against isolated local Git repositories.
+      evidence: Planning validator JSON PASS/FAIL and exit status are exercised through
+        direct invocation and isolated lifecycle evidence.
     docs_schema:
       applicable: true
-      evidence: Scenario 165 and the architecture, maintenance, security, technology,
-        user, scheduler, orchestrator, Integration Gate, and core testing documentation
-        describe matching event and recovery behavior; architecture diagrams are unaffected.
+      evidence: Documentation placement passed; Human/Agent canonical docs, product-delivery
+        SVG, Mermaid flow, templates, version and Scenario 183–192 were synchronized.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 404c4983fefcb6fb58bda533b9e0840203e9e36d
-  changed_files_hash: 07a8662755171974b06afc9171a42b652627b30632020a2717cb348696ce85f6
+  base_sha: 15c14587d299c103d7571a1ab94988fc1b3323b3
+  changed_files_hash: 7d9c54ba53c9d951fec5e559d024472038cd83433997f3eb6a0b321db68f5b1a
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
