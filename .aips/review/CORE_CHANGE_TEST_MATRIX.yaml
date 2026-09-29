@@ -50,13 +50,12 @@ matrix:
         user, scheduler, orchestrator, Integration Gate, and core testing documentation
         describe matching event and recovery behavior; architecture diagrams are unaffected.
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
-blockers:
-  - candidate binding refreshed; review scope and evidence before marking READY
+actual_diff_reconciled: true
+blockers: []
 candidate:
   base_sha: 404c4983fefcb6fb58bda533b9e0840203e9e36d
   changed_files_hash: 07a8662755171974b06afc9171a42b652627b30632020a2717cb348696ce85f6
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
-status: DRAFT
+status: READY
