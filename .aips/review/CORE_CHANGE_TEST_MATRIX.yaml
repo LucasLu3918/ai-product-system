@@ -34,9 +34,9 @@ matrix:
         worktree lifecycle and exact local CLI state provide the executable boundary.
     security:
       applicable: true
-      evidence: Strict mandatory candidate scanner passed base af9179469d14e3db758687da8909b59ea4d79350
-        through head 3ae3bad7fbd0f854fdfa1b3287a10bb5a3b50985 with no findings; policy
-        and scanner digests are in the local Gate report.
+      evidence: The required Integration Gate runs the strict mandatory candidate
+        scanner over exact base/head and binds its findings, policy hash and scanner
+        hash in the candidate report.
     migration_recovery:
       applicable: true
       evidence: task_ownership_lifecycle.py passes legacy projection, dirty stale

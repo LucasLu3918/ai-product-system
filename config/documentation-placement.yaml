@@ -108,6 +108,7 @@ placement_rules:
     placements:
       docs/human/USER_GUIDE.md: [Deterministic Scheduler, Execution Isolation 與 Runtime Resource, Checkpoint / Resume, Logging、Observability 與 Operations]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution, Security 與 Governance]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution]
       docs/human/CONFORMANCE.md: [Scenario 182 — Deterministic Execution Ownership]
       docs/ARCHITECTURE.md: [Deterministic task execution ownership]
       orchestration/CONFORMANCE.md: [Scenario 182 — Deterministic Execution Ownership]
