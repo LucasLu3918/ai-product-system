@@ -14,8 +14,8 @@ matrix:
   checks:
     static_lint:
       applicable: true
-      evidence: Python compilation and git diff --check pass; Ruff availability is
-        pending local validation preflight.
+      evidence: Ruff critical rules, Python 3.12 compilation and required scheduler
+        Gate mypy command pass.
     unit:
       applicable: true
       evidence: task_ownership_lifecycle.py and tests.test_run_projection pass boundary/path,
@@ -34,8 +34,9 @@ matrix:
         worktree lifecycle and exact local CLI state provide the executable boundary.
     security:
       applicable: true
-      evidence: Publication preview exact working-tree scan passes with no findings;
-        exact base..head history scan remains required by Integration Gate.
+      evidence: Strict mandatory candidate scanner passed base af9179469d14e3db758687da8909b59ea4d79350
+        through head 3ae3bad7fbd0f854fdfa1b3287a10bb5a3b50985 with no findings; policy
+        and scanner digests are in the local Gate report.
     migration_recovery:
       applicable: true
       evidence: task_ownership_lifecycle.py passes legacy projection, dirty stale
@@ -50,7 +51,7 @@ matrix:
       evidence: Scenario 182, scenario registry, task-state schema/template, scheduler,
         authorization, isolation, dashboard, architecture and user documentation agree.
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
+actual_diff_reconciled: true
 blockers: []
 candidate:
   base_sha: af9179469d14e3db758687da8909b59ea4d79350
@@ -58,4 +59,4 @@ candidate:
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
-status: DRAFT
+status: READY
