@@ -1,0 +1,66 @@
+version: 1
+scenarios:
+  - id: S1
+    context: Existing Go project with an established simple architecture; add a CRUD endpoint.
+    must_preserve: [project_architecture, local_pattern]
+    must_not_infer: [clean_architecture, ddd, architecture_migration]
+  - id: S2
+    context: Existing Laravel project with explicit module conventions.
+    must_preserve: [project_framework, project_conventions]
+    must_not_infer: [generic_pattern_overrides_project_rule]
+  - id: S3
+    context: Existing legacy Python project without configured strict typing or lint rules.
+    must_preserve: [detected_toolchain]
+    must_not_infer: [mypy_strict_mandatory, ruff_mandatory]
+  - id: S4
+    context: Existing .NET project with .editorconfig and project analyzers.
+    must_preserve: [editorconfig,project_analyzers]
+    must_not_infer: [generic_toolchain_replacement]
+  - id: S5
+    context: New simple Go REST API with low domain and workflow complexity.
+    must_recommend: [simple_or_modular, human_confirmation]
+    must_not_infer: [ddd_by_default, microservices_by_scale_alone]
+  - id: S6
+    context: New Python CRUD API with no domain invariants.
+    must_recommend: [framework_native_or_modular]
+    must_not_infer: [tactical_ddd]
+  - id: S7
+    context: New .NET system with complex order, payment, refund, and inventory invariants.
+    must_recommend: [consider_clean_boundaries, consider_tactical_ddd, explain_tradeoffs]
+    must_require: [human_confirmation]
+  - id: S8
+    context: New PHP API without a selected framework; team and deployment constraints are provided.
+    must_recommend: [language_then_framework, evidence_and_tradeoffs]
+    must_require: [human_confirmation]
+  - id: S9
+    context: Approved canonical OpenAPI contract for a new API.
+    must_resolve: [contract_authority_canonical]
+    must_preserve: [breaking_change_human_decision]
+  - id: S10
+    context: Existing API has OpenAPI but no evidence identifies its authority.
+    must_resolve: [contract_authority_unresolved]
+    must_block: [contract_affecting_implementation]
+  - id: S11
+    context: Generator configuration and CI prove a client file is generated.
+    must_protect: [generated_file]
+    must_not_modify: [generated_artifact]
+  - id: S12
+    context: Ownership of a candidate path cannot be determined.
+    must_resolve: [ownership_unresolved]
+    must_protect: [unknown_path]
+  - id: S13
+    context: Architecture documentation conflicts with observed dependency direction.
+    must_resolve: [architecture_conflicting]
+    must_not_infer: [automatic_refactor]
+  - id: S14
+    context: DDD indicators are not found in the inspected project evidence.
+    must_resolve: [ddd_not_detected]
+    must_not_infer: [ddd_none_without_evidence]
+  - id: S15
+    context: Selected framework behavior depends on a version not covered by local evidence.
+    must_route: [version_aware_official_context]
+    must_record: [source_version_provenance]
+  - id: S16
+    context: Required verification environment is unavailable.
+    must_report: [UNVERIFIED]
+    must_not_report: [PASS]

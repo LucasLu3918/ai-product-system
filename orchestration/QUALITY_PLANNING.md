@@ -161,6 +161,17 @@ High-value/security-sensitive actions may require separate audit logs with stron
 
 Keep instrumentation provider-neutral where practical. Select ELK/Loki/Prometheus/Grafana/OpenTelemetry/managed services after the target production environment and operations constraints are known.
 
+## Implementation Definition of Done
+
+For implementation work, express completion as layered evidence rather than an Agent assertion:
+
+- universal mandatory checks;
+- project-required commands and gates;
+- risk-triggered checks for the changed boundary;
+- advisory checks that do not silently become blockers.
+
+Record each result as `PASS`, `FAIL`, `UNVERIFIED`, or `BLOCKED`, with the command/source, scope and evidence provenance. Preserve project-native commands and test conventions. Add contract compatibility, generated drift, security or deeper integration checks when the boundary warrants them; do not require arbitrary coverage percentages. Missing or unavailable evidence is never `PASS`.
+
 ## Output
 
 Persist the active profile using `templates/quality/QUALITY_PROFILE.yaml`.

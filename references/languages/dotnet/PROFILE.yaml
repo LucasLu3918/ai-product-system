@@ -1,0 +1,28 @@
+schema_version: "1"
+identity:
+  language: dotnet
+detection:
+  manifests: ["*.sln", "*.slnx", "*.csproj", Directory.Build.props, global.json]
+runtime:
+  version_source: [global.json, project_target_framework, CI]
+package_model:
+  guidance: Follow solution, project, namespace and dependency-injection conventions already in use.
+dependency_management:
+  native: [NuGet, project_assets_and_lock_files]
+formatting:
+  baseline: [dotnet_format_when_configured, editorconfig]
+static_analysis:
+  baseline: [compiler_analyzers, project_configured_analyzers]
+error_handling:
+  guidance: [explicit_result_or_exception_contracts, preserve_error_context]
+testing:
+  baseline: [dotnet_test]
+concurrency:
+  guidance: [async_await, cancellation_tokens, avoid_blocking_async]
+resource_management:
+  guidance: [IDisposable, IAsyncDisposable, deterministic_cleanup]
+security:
+  inherit: [universal_quality_contract]
+precedence:
+  preserve_project_native: true
+  framework_or_library_defaults: []

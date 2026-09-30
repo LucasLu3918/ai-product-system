@@ -46,6 +46,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+`orchestration/IMPLEMENTATION_RESOLUTION.md` 定義實作解析流程；Profile 範本與 Go、PHP、Python、.NET 語言基線分別位於 `templates/implementation/` 和 `references/languages/`。
+
 Task ownership 的 canonical contract 分布於 `orchestration/DETERMINISTIC_SCHEDULER.md`、`orchestration/RESOURCE_AUTHORIZATION.md`、`orchestration/RUN_DASHBOARD.md`、`orchestration/schemas/run-task-state.yaml` 與 Task Graph 範本；`config/documentation-placement.yaml` 維護對應 Human 文件閉包。
 
 `orchestration/TELEMETRY_EXPORT.md` 與 `orchestration/schemas/telemetry-export.yaml` 定義 optional OpenTelemetry trace projection、欄位 allowlist、端點與降級行為；Human 操作說明由 User Guide、Technology Guide 與 Telemetry Export topic 提供。

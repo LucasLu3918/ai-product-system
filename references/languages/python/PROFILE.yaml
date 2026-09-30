@@ -1,0 +1,28 @@
+schema_version: "1"
+identity:
+  language: python
+detection:
+  manifests: [pyproject.toml, requirements.txt, setup.cfg, setup.py]
+runtime:
+  version_source: [pyproject.toml, .python-version, CI]
+package_model:
+  guidance: Follow the repository's package layout and import boundaries.
+dependency_management:
+  native: [pyproject.toml, lockfile, requirements_files]
+formatting:
+  baseline: [detect_Ruff_Black_or_project_formatter]
+static_analysis:
+  baseline: [detect_mypy_pyright_or_project_analyzer]
+error_handling:
+  guidance: [specific_exceptions, preserve_error_context]
+testing:
+  baseline: [detect_pytest_or_unittest_configuration]
+concurrency:
+  guidance: [respect_sync_async_boundaries, cancellation_and_lifecycle]
+resource_management:
+  guidance: [context_managers, deterministic_cleanup]
+security:
+  inherit: [universal_quality_contract]
+precedence:
+  preserve_project_native: true
+  framework_or_library_defaults: []

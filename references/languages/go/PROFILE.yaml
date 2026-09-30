@@ -1,0 +1,28 @@
+schema_version: "1"
+identity:
+  language: go
+detection:
+  manifests: [go.mod]
+runtime:
+  version_source: [go.mod, go.work, project_toolchain]
+package_model:
+  guidance: Use module and package boundaries consistent with the repository.
+dependency_management:
+  native: [go.mod, go.sum]
+formatting:
+  baseline: [gofmt]
+static_analysis:
+  baseline: [go vet]
+error_handling:
+  guidance: [explicit_errors, contextual_wrapping, avoid_ignored_errors]
+testing:
+  baseline: [go test]
+concurrency:
+  guidance: [context_cancellation, goroutine_ownership, race_awareness]
+resource_management:
+  guidance: [deterministic_cleanup, close_owned_resources]
+security:
+  inherit: [universal_quality_contract]
+precedence:
+  preserve_project_native: true
+  framework_or_library_defaults: []

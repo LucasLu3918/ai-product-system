@@ -48,6 +48,8 @@ Portable Command Registry、CLI lifecycle 與 MCP renderer 的 current behavior 
 
 Requirement clarification 與 Planning Package 的變更由 requirement-planning placement rule 綁定至 User Guide 的需求釐清主題、Technology Guide 的 Product Delivery / Quality & Verification，以及對應的 Agent protocols。v2 Manifest、研究、domain 與 cross-artifact 範本由同一閉包維護，電商 domain pack 依索引觸發並按需載入。需求登錄檔和兩個檢查器只驗證結構及 ID 關聯；CLI 可輸出 JSON PASS/FAIL 並以零／非零退出碼表示結構檢查結果，語義審查與實際測試仍屬其他流程。
 
+Implementation Resolution、Profile 範本、語言 Profile、結構驗證器與 Scenario 193 由同一 `requirement-planning` placement rule 綁定至 User Guide、Technology Guide、Architecture Overview、Conformance 和相關 Agent protocols。Profile validator 的 PASS 只表示結構符合，不代表語言、框架或架構建議經語義驗證。
+
 Risk-adaptive Change Impact traversal 的操作流程與 READY 證據由 `orchestration/CHANGE_IMPACT.md` 定義；Human 使用方式落在 Project Intelligence 的 Change Impact topic，架構層次與限制同步到 Architecture Overview 和 Technology Guide。`tests/scenarios/175-risk-adaptive-bounded-impact.md` 綁定 lifecycle 與 contract evidence。
 
 Structured Change Impact unknown dispositions remain in this same topic. Documentation Sync maps the validator, template and lifecycle evidence to the Project Intelligence, Change Impact and Conformance canonical sections; evidence requirements and legacy fail-closed behavior are not restated as a separate policy.

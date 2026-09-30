@@ -79,6 +79,12 @@ Clarification answers may provide bounded facts, constraints, decisions, and sou
 
 Use `templates/requirements/IMPLEMENTATION_GOAL.yaml` when persistence is useful.
 
+## New-project technology and architecture decisions
+
+When a new project's language/framework/architecture materially affects implementation, discover only the missing constraints that change the recommendation. Apply hard constraints first, then consider team expertise, product/workload, ecosystem, existing systems, delivery, performance/runtime, operations, maintenance and Human preference. Recommend a primary choice plus at most two meaningful alternatives with trade-offs; do not invent weighted scores. Decide language before framework.
+
+Assess architecture with qualitative complexity signals, triggers and counter-signals. Keep framework, Clean Architecture, tactical/strategic DDD, logical boundaries and deployment model as separate decisions. A simple CRUD project should not gain DDD by default; complex domain does not imply microservices. Preserve a user-specified choice unless a material conflict or risk requires a warning. Human confirms material technology/architecture decisions before the Implementation Profile is finalized.
+
 ## Structured functional requirements (EARS)
 
 `tests/validation/ears_requirement_contracts.py` 的測試契約維護由 Scenario Conformance 文件規則涵蓋；EARS requirement format、Planning Package 範本與需求追蹤實作仍由本規範及完整 Requirement Planning 文件閉包涵蓋。

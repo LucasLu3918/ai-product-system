@@ -129,6 +129,8 @@ When end-to-end delivery behavior changes, verify together:
 
 ### Interaction / requirement / external context
 
+Implementation Resolution changes update `orchestration/IMPLEMENTATION_RESOLUTION.md`, its profile and language references, the structural validator, and Scenario 193 evidence together. Preserve contract authority, evidence provenance, ownership protection and `UNVERIFIED` semantics; a profile does not authorize migration or publication.
+
 When these behaviors change, review together:
 
 - Requirement clarification and Planning Package v2 → SYSTEM / ORCHESTRATOR / research, plan, requirement, experience, visual, domain, API and manifest templates / structural validator / reusable roles and skills / lazy domain references / Human Guide / architecture map / scenarios.

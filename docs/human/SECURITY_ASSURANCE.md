@@ -127,6 +127,8 @@ For each change:
 
 If a footer text change in a payment platform does not touch any sensitive boundary, review can stay light. A change to payment state, balance, points, coupons, authorization or settlement inherits the appropriate high-risk floor.
 
+Implementation Profile validation is structural assurance only. It preserves unresolved contract authority and unknown file ownership as blockers, and does not establish that a technology choice is safe, that verification passed, or that a migration is approved. Apply the existing SAL and Change Impact review to the actual implementation boundary.
+
 ## High-value business logic is a security boundary
 
 For economic-value features, security review includes more than classic vulnerabilities.

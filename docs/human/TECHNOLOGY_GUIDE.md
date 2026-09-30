@@ -168,6 +168,8 @@ Product Delivery 把 requirement、planning、implementation、security、qualit
 
 Planning Package 可用 EARS 結構表達適合的功能需求，並以 optional `REQUIREMENTS.yaml` 維護需求 ID、驗收條件與驗證方式的連結。`scripts/requirements_traceability.py` 支援 JSON PASS/FAIL 輸出與成功／失敗退出碼，供自動化工具判斷結構檢查結果。EARS 只約束敘述結構；semantic review 和實際驗證仍走既有澄清、品質規劃與 evidence 流程。 v2 package 可選 `PLANNING_MANIFEST.yaml` 與 `scripts/planning_package_validate.py` 檢查 artifact 狀態、適用性、依賴 DAG、穩定參照、requirements traceability 與雙階段人工核准證據；沒有 manifest 的舊 package 保持相容。`PRODUCT_RESEARCH.md`、`DOMAIN_MODEL.md`、experience、visual 與 API 範本形成跨文件契約。電商參考資料由 `references/domains/INDEX.yaml` 依觸發條件延遲載入；不適用於其他領域的規則不會變成全域前提。
 
+Implementation Resolution 先釐清 REST/OpenAPI authority，再依既有專案證據或新專案的 Human-confirmed 選型建立 Implementation Profile。Go、PHP、Python、.NET 語言 Profile 提供穩定基線，專案規則與工具鏈仍優先。結構驗證器只檢查欄位、來源和 ownership 衝突，不判斷架構或技術建議是否正確；未取得驗證證據時回報 `UNVERIFIED`。
+
 ## Evolution & Maintenance
 
 ### Evolution Radar

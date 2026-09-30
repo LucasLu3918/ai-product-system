@@ -1,64 +1,46 @@
 version: 1
 change:
-  id: plan10-product-planning-capability
-  summary: Add an optional machine-checkable Planning Package with deterministic cross-artifact
-    traceability, expanded product research and domain planning, and preserve existing
-    roles, Human approvals and legacy package compatibility.
+  id: implementation-resolution-foundation
+  summary: Add evidence-driven REST/OpenAPI implementation resolution, a provenance-bearing profile, four language baselines, structural validation and Scenario 193 while preserving existing roles, project conventions and Human authority.
   boundary:
-  - product-planning-package
+    - implementation-resolution
 matrix:
-- boundary: product-planning-package
-  reason: Manifest lifecycle, artifact dependency/traceability and skill/reference
-    guidance form one coherent product planning contract. The same exact candidate
-    includes its tests, scenarios and human/agent documentation.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Full tests/validate_repository.py passed; YAML/Markdown/static contracts
-        and Python compilation are included.
-    unit:
-      applicable: true
-      evidence: tests/validation/planning_package_contracts.py passed dependency,
-        path, traceability, applicability and separate gate-evidence rejection cases.
-    integration:
-      applicable: true
-      evidence: tests/evidence/planning_package_lifecycle.py passed canonical template
-        validation and rejected unknown operation/path traversal in isolated temporary
-        package copies.
-    contract:
-      applicable: true
-      evidence: python scripts/planning_package_validate.py templates/planning-package
-        --format json returned PASS for 11 artifacts and 2 requirements; Scenario
-        Conformance returned 192 registered, 0 uncovered.
-    e2e:
-      applicable: false
-      na_reason: The end-to-end product planning and approvals depend on real user
-        decisions; Scenario 192 is explicitly manual. Structural subcontracts have
-        deterministic/lifecycle evidence.
-    security:
-      applicable: true
-      evidence: Validator rejects escaping paths and requires reasons for N/A plus
-        independent human evidence for Gates; domain guidance prohibits raw payment
-        credentials and invented compliance claims. Candidate content safety scan
-        passed.
-    migration_recovery:
-      applicable: true
-      evidence: No persistence migration is introduced; legacy packages without PLANNING_MANIFEST.yaml
-        remain valid as documented and structurally checked.
-    cli_harness:
-      applicable: true
-      evidence: Planning validator JSON PASS/FAIL and exit status are exercised through
-        direct invocation and isolated lifecycle evidence.
-    docs_schema:
-      applicable: true
-      evidence: Documentation placement passed; Human/Agent canonical docs, product-delivery
-        SVG, Mermaid flow, templates, version and Scenario 183–192 were synchronized.
+  - boundary: implementation-resolution
+    reason: Contract authority, repository evidence, implementation profile structure, language baselines, ownership protection, quality evidence and Agent handoff form one coherent implementation-planning contract. The same exact candidate includes deterministic/lifecycle checks, Scenario 193, architecture, Agent and Human documentation.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: Ruff passed on the three new Python implementation files; Python compileall and full tests/validate_repository.py passed on Python 3.12.
+      unit:
+        applicable: true
+        evidence: tests/validation/implementation_profile_contracts.py passed blocked-template, resolved-profile, evidence provenance, ownership overlap/traversal, not_detected semantics, language profiles and 16 representative scenario assertions.
+      integration:
+        applicable: true
+        evidence: tests/evidence/implementation_resolution_lifecycle.py passed validator CLI exit-state, invalid-enum and four-language-profile checks.
+      contract:
+        applicable: true
+        evidence: scripts/implementation_profile_validate.py reported structural PASS and implementation BLOCKED for unresolved contract authority; Scenario Conformance reported 193 registered, 0 uncovered.
+      e2e:
+        applicable: false
+        na_reason: Semantic API authority, technology selection, architecture quality and implementation correctness require project evidence and Human decisions; Phase 1 does not generate or modify application code. Scenario 193 retains two manual semantic scenarios.
+      security:
+        applicable: true
+        evidence: Structural contracts reject ownership overlap and path traversal; unresolved authority remains blocking; repository secret scan passed with zero findings; publication preview content-safety scan passed.
+      migration_recovery:
+        applicable: false
+        na_reason: This additive planning/profile capability introduces no persistence migration, project-local state migration or generated application change.
+      cli_harness:
+        applicable: true
+        evidence: Lifecycle evidence exercised validator JSON statuses and PASS/FAIL exit codes through direct CLI invocation.
+      docs_schema:
+        applicable: true
+        evidence: Full repository validation and documentation placement passed; Human/Agent canonical docs, architecture flow, profile/language YAML, Scenario 193 registry, changelog and version were synchronized.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 15c14587d299c103d7571a1ab94988fc1b3323b3
-  changed_files_hash: 7d9c54ba53c9d951fec5e559d024472038cd83433997f3eb6a0b321db68f5b1a
+  base_sha: 3e32a8b640e00234bf32144b915574f0470847c1
+  changed_files_hash: d52742b463c304124d5f0d4d5a3a3d062e9220e50a0e191d9c480645c0b0dc40
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

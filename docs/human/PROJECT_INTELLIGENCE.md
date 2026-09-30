@@ -8,6 +8,8 @@ Project Intelligence 是 AIPS 對既有專案建立的可重用理解層。
 
 Read-only Discovery 先建立 PARTIAL，再由 Agent 針對 Architecture、Data Flow、Modules、Contracts、DB/Events、Conventions、Testing、Security、Operations 做 evidence-based semantic enrichment；通過 finalize 才是 READY。
 
+Implementation planning may reuse runtime/framework, project rules, toolchain, architecture and API-contract evidence, testing conventions, generated ownership, and nearby examples. Record each source and scope. One local example does not establish a repository-wide rule, and a directory name alone does not prove DDD or Clean Architecture.
+
 ## 不重複正式文件
 
 已有 AGENTS / CLAUDE / GEMINI / ADR / OpenAPI / Architecture Docs / Brand / Visual / Quality Artifact 時，只存 Pointer/Metadata。SOURCE_REGISTRY 同時記錄 Runtime visibility。

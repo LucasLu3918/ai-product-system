@@ -109,6 +109,10 @@ Brand System 可涵蓋 Brand Intent、Audience / Positioning、Purpose / Mission
 
 Planning 核准後，再整理 Initial Implementation Items + Recommended Flow；Large/Core change 在 implementation 前需 Proposal-first 範圍與 Architecture Diagram Impact Check。
 
+實作 REST API 時，AIPS 會先確認 OpenAPI／其他契約的權威性，再依專案契約、架構、工具鏈、測試方式和相似程式範例形成有來源的 Implementation Profile。新專案的技術和架構選擇須由使用者確認。局部範例不會自動變成全域規則；無法確認是否由 generator 管理的檔案會先受到保護。
+
+新專案若尚未選擇技術，AIPS 會先檢查硬性限制，再依團隊、產品、既有系統、交付與維護需求提出少量候選和取捨；語言與框架分開選擇。架構建議同時看複雜度訊號與反向訊號，並分開說明 Clean Architecture、DDD 與部署方式。重要選擇由使用者確認後，才會整理到 Implementation Profile。
+
 ## Global Harness 與 MCP
 
 Native Adapter 用來取得 runtime-specific hook / guard；MCP 提供跨 Host 標準接入。兩者共用 canonical Roles、Skills、Orchestration 與 Project Intelligence。

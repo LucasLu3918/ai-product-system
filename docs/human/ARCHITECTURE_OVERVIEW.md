@@ -62,6 +62,8 @@ Plan
 
 Production、Git publication、merge 與 release authority 不因 Automation 或 MCP 而自動取得。
 
+Implementation Resolution 位於 Project Intelligence / Planning 與既有工程角色之間。它將契約權威、專案證據、Human 確認的技術與架構決策、ownership 和品質要求整理為有來源的 Implementation Profile，再交給既有角色實作與驗證。
+
 ## Deterministic Execution
 
 Run Event 與 Telemetry Event 共用鎖定的 append 寫入器，讓混合寫入維持唯一且遞增的序號。Context、Retrieval 與 Integration Gate 可選擇記錄其實際執行邊界；觀測結果不改變 Gate 判定。
