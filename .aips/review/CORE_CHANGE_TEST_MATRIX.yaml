@@ -36,13 +36,12 @@ matrix:
         applicable: true
         evidence: Full repository validation and documentation placement passed; Human/Agent canonical docs, architecture flow, profile/language YAML, Scenario 193 registry, changelog and version were synchronized.
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
-blockers:
-  - candidate binding refreshed; review scope and evidence before marking READY
+actual_diff_reconciled: true
+blockers: []
 candidate:
   base_sha: 3e32a8b640e00234bf32144b915574f0470847c1
   changed_files_hash: d52742b463c304124d5f0d4d5a3a3d062e9220e50a0e191d9c480645c0b0dc40
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
-status: DRAFT
+status: READY
