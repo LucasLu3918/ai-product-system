@@ -1,0 +1,28 @@
+schema_version: "1"
+identity:
+  language: php
+detection:
+  manifests: [composer.json, composer.lock]
+runtime:
+  version_source: [composer.json, runtime_configuration, CI]
+package_model:
+  guidance: Follow Composer autoloading and the project's namespace/module layout.
+dependency_management:
+  native: [composer.json, composer.lock]
+formatting:
+  baseline: [project_configured_formatter, PSR-12_when_no_project_rule]
+static_analysis:
+  baseline: [detect_PHPStan_or_Psalm_configuration]
+error_handling:
+  guidance: [typed_interfaces_when_supported, explicit_exception_boundaries]
+testing:
+  baseline: [detect_PHPUnit_or_Pest_configuration]
+concurrency:
+  guidance: [follow_project_runtime_async_model]
+resource_management:
+  guidance: [deterministic_database_and_stream_cleanup]
+security:
+  inherit: [universal_quality_contract]
+precedence:
+  preserve_project_native: true
+  framework_or_library_defaults: []

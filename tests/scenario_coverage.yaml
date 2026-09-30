@@ -1511,3 +1511,11 @@ scenarios:
       - templates/planning-package/PLANNING_INDEX.md
       - templates/planning-package/PLANNING_MANIFEST.yaml
       - tests/scenarios/192-planning-package-complete-product-to-implementation.md
+  - id: "193"
+    path: tests/scenarios/193-implementation-resolution-foundation.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/193-implementation-resolution-foundation.md
+      - tests/fixtures/implementation_resolution_scenarios.yaml
+      - tests/validation/implementation_profile_contracts.py
+      - tests/evidence/implementation_resolution_lifecycle.py

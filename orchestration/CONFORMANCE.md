@@ -763,3 +763,9 @@ Current automated inventory: 27 deterministic + 101 lifecycle + 54 agent_eval = 
 Scenarios 183–192 cover optional manifest dependency graphs, stable requirement and acceptance traceability, separate Human approvals at Gate 1 and Gate 2, reuse of product and data-modeling capabilities, cross-artifact UX/visual/domain/API references, legacy package compatibility, on-demand e-commerce guidance, actionable structural diagnostics and an end-to-end planning journey. Structural and lifecycle contracts run locally; Scenario 192 remains manual because a real product-specific planning and approval journey requires human decisions.
 
 Current inventory after Scenario 192: 34 deterministic + 103 lifecycle + 54 agent_eval = 191 / 191 automated; 1 manual; 0 uncovered.
+
+## Scenario 193 — Evidence-driven Implementation Resolution
+
+Scenario 193 covers REST/OpenAPI-first resolution across existing and new projects, four language profiles, technology/architecture decisions, evidence provenance, contract authority, ownership protection, version-aware knowledge, and verification status. Deterministic and lifecycle checks validate profile structure and validator boundaries. Semantic quality across 16 representative contexts remains manual; structural checks do not claim that an Agent recommendation is correct.
+
+Current inventory after Scenario 193: 34 deterministic + 103 lifecycle + 54 agent_eval = 191 automated; 2 manual; 193 total; 0 uncovered.

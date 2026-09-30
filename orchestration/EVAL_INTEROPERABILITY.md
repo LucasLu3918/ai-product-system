@@ -10,6 +10,8 @@ Scenario 181 adds an independent operational telemetry lane; it does not change 
 
 Planning Package Scenario 192 is explicitly manual; planning template validation is structural evidence and does not become an Agent Eval score or product approval.
 
+Scenario 193 Implementation Resolution evidence is separate from external Agent Eval: profile structure/lifecycle checks do not score semantic technology or architecture recommendations, and external findings cannot resolve contract authority or authorize implementation.
+
 ~~~text
 Promptfoo config + JSONL observations ─┐
 PyRIT v1 bridge observations ──────────┴→ bounded static parser → normalized, fingerprinted evidence

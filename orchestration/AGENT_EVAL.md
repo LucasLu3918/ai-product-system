@@ -10,6 +10,8 @@ Provide truthful, provider-neutral evidence for Acceptance Scenarios whose contr
 
 Agent Eval does not inspect or score private chain-of-thought. It scores only observable structured outputs.
 
+Scenario 193 Implementation Profile checks are deterministic contract/lifecycle evidence, not Agent Eval scores; semantic resolution quality remains a Human-reviewed question.
+
 ## Separation of responsibilities
 
 ~~~text

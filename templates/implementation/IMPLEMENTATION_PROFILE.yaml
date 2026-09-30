@@ -1,0 +1,95 @@
+schema_version: "1"
+status: BLOCKED # READY | BLOCKED; unresolved authority below intentionally blocks implementation
+
+project:
+  mode: existing # existing | new
+  evidence:
+    - source: repository
+      reference: go.mod
+
+requirement:
+  summary: null
+  acceptance_references: []
+
+contract:
+  type: openapi # openapi | none | other
+  source: api/openapi.yaml
+  authority: unresolved # canonical | descriptive | proposed | unresolved
+  affects_change: true
+  resolution: unresolved # confirmed | strong_evidence | inferred | not_detected | unresolved | conflicting
+  evidence: []
+
+technology:
+  language:
+    name: go # go | php | python | dotnet
+    version: null
+    resolution: strong_evidence
+    evidence:
+      - source: repository
+        reference: go.mod
+  framework:
+    name: null # Optional; resolved after language
+    version: null
+    resolution: not_detected
+    evidence: []
+  decision_record:
+    constraints: []
+    human_preferences: []
+    candidates: []
+    selected_by: project_evidence # project_evidence | human
+    confirmed: true
+
+architecture:
+  complexity_signals: [] # Qualitative evidence; never a summed score
+  triggers: []
+  counter_signals: []
+  logical_style:
+    value: unknown # simple | modular | modular_monolith | domain_oriented | domain_ecosystem | unknown
+    resolution: unresolved
+    evidence: []
+  clean_architecture:
+    level: unknown # none | light | full | unknown
+    resolution: not_detected
+    evidence: []
+  ddd:
+    tactical:
+      level: unknown # none | selective | tactical | unknown
+      resolution: not_detected
+      evidence: []
+    strategic:
+      level: unknown # none | selective | strategic | unknown
+      resolution: not_detected
+      evidence: []
+  deployment:
+    style: unknown # single_deployment | modular_monolith | microservices | serverless | unknown
+    resolution: unresolved
+    evidence: []
+
+generation:
+  enabled: false
+  policy: none # none | boundary_only
+
+ownership:
+  generated: []
+  scaffolded: []
+  project_owned: []
+  unresolved: [] # Protected until Human/project evidence resolves ownership
+
+quality:
+  mandatory: []
+  project_required: []
+  risk_triggered: []
+  advisory: []
+  evidence: [] # PASS | FAIL | UNVERIFIED | BLOCKED with command/source provenance
+
+knowledge:
+  project_evidence: []
+  external_evidence: [] # Official source and applicable version
+
+unresolved:
+  - id: U-CONTRACT-AUTHORITY
+    topic: contract_authority
+    description: Confirm who owns the API contract before contract-affecting implementation.
+    blocking: true
+    resolution: Human clarification is required.
+    evidence: []

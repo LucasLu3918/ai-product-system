@@ -1428,3 +1428,9 @@ Lifecycle evidence covers scheduler-serialized ownership claims, active worktree
 Scenarios 183–192 cover optional manifest dependency graphs, stable requirement and acceptance traceability, separate Human approvals at Gate 1 and Gate 2, reuse of product and data-modeling capabilities, cross-artifact UX/visual/domain/API references, legacy package compatibility, on-demand e-commerce guidance, actionable structural diagnostics and an end-to-end planning journey. Structural and lifecycle contracts run locally; Scenario 192 remains manual because a real product-specific planning and approval journey requires human decisions.
 
 Current inventory after Scenario 192: 34 deterministic + 103 lifecycle + 54 agent_eval = 191 / 191 automated; 1 manual; 0 uncovered.
+
+## Scenario 193 — Evidence-driven Implementation Resolution
+
+Scenario 193 covers existing/new project implementation planning from REST/OpenAPI, project evidence, Human-confirmed technology and architecture, ownership, quality evidence, and version-aware context. Its 16 representative cases include authority conflicts, generated ownership, `not_detected` versus `none`, and unavailable verification. The validator and lifecycle evidence check structure and safe state handling; semantic Agent recommendations remain a Human review responsibility.
+
+Current inventory after Scenario 193: 34 deterministic + 103 lifecycle + 54 agent_eval = 191 automated; 2 manual; 193 total; 0 uncovered.

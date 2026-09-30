@@ -164,13 +164,28 @@ rules:
       - templates/planning-package/REQUIREMENTS.yaml
       - scripts/requirements_traceability.py
       - tests/scenarios/174-ears-requirement-traceability.md
+      - orchestration/IMPLEMENTATION_RESOLUTION.md
+      - templates/implementation/**
+      - references/languages/**
+      - scripts/implementation_profile_validate.py
+      - skills/engineering/rest-api/SKILL.md
+      - tests/fixtures/implementation_resolution_scenarios.yaml
+      - tests/validation/implementation_profile_contracts.py
+      - tests/evidence/implementation_resolution_lifecycle.py
+      - tests/scenarios/193-implementation-resolution-foundation.md
     human_docs:
       - docs/human/USER_GUIDE.md
       - docs/human/TECHNOLOGY_GUIDE.md
       - docs/human/CONFORMANCE.md
+      - docs/human/ARCHITECTURE_OVERVIEW.md
     agent_docs:
+      - orchestration/IMPLEMENTATION_RESOLUTION.md
+      - orchestration/PROJECT_INTELLIGENCE.md
+      - orchestration/QUALITY_PLANNING.md
       - orchestration/REQUIREMENT_CLARIFICATION.md
+      - orchestration/EXTERNAL_CONTEXT_RESOLUTION.md
       - orchestration/PLANNING_PACKAGE.md
+      - skills/engineering/rest-api/SKILL.md
       - orchestration/CONFORMANCE.md
       - orchestration/DOCUMENTATION_SYNC.md
 

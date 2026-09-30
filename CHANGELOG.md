@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.68.0
+
+- Add an evidence-driven REST/OpenAPI Implementation Resolution workflow and provenance-bearing Implementation Profile for existing and new projects.
+- Add stable Go, PHP, Python, and .NET language profiles plus deterministic structural validation for decisions, ownership, blockers, and verification evidence.
+- Extend existing Project Intelligence, planning, quality, REST API, documentation, and conformance surfaces without adding language Roles, framework Skills, generators, or governance gates.
+- Add Scenario 193 with 16 representative cases; keep semantic recommendation quality manual while executable tests cover structural and lifecycle contracts.
+
 ## 0.67.0
 
 - Add an optional versioned Planning Package manifest, deterministic structural validator, cross-artifact traceability and separately evidenced human planning/implementation gates while keeping legacy packages compatible.

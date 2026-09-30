@@ -149,9 +149,9 @@ placement_rules:
     triggers: [scripts/project_intelligence.py, scripts/retrieval_intelligence.py, scripts/temporal_intelligence.py, scripts/turn_context_hook.py, scripts/turn_intent.py, scripts/git_paths.py, orchestration/PROJECT_INTELLIGENCE.md, orchestration/CHANGE_IMPACT.md, orchestration/TURN_HARNESS.md, templates/intelligence/**, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md]
     placements:
       docs/human/PROJECT_INTELLIGENCE.md: [第一次 Existing Project, 不重複正式文件, 四份核心 Machine-readable 檔, 三軸狀態, Human Review HTML, Freshness, Attach / Detach, Change Impact, Preserve Valid Native Conventions, Sensitive Data, Monorepo, Retrieval Intelligence：即時按需檢索, Retrieval Quality Evaluation：先量測，再決定下一項技術, Structural Retrieval：已採用的跨檔關係檢索, Semantic Alias Expansion Candidate Trial：HOLD, Remote Embedding Retrieval Trial Readiness（Scenario 133）, Provider-Neutral Local-First Embedding Trial（Scenario 134）, Debug, Identity namespace, Runtime Content Safety Boundary]
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
-      docs/human/TECHNOLOGY_GUIDE.md: [Project Understanding, Execution, Quality & Verification, Runtime Content Safety Boundary]
-      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
+      docs/human/TECHNOLOGY_GUIDE.md: [Project Understanding, Product Delivery, Execution, Quality & Verification, Runtime Content Safety Boundary]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 193 — Evidence-driven Implementation Resolution]
 
   - id: repository-health
     triggers: [scripts/repository_health.py, config/architecture-surfaces.yaml, config/repository-health.yaml, orchestration/REPOSITORY_HEALTH.md]
@@ -263,6 +263,8 @@ placement_rules:
   - id: requirement-planning
     triggers:
       - orchestration/REQUIREMENT_CLARIFICATION.md
+      - orchestration/EXTERNAL_CONTEXT_RESOLUTION.md
+      - orchestration/QUALITY_PLANNING.md
       - orchestration/PLANNING_PACKAGE.md
       - templates/requirements/IMPLEMENTATION_GOAL.yaml
       - templates/planning-package/PRODUCT_PLAN.md
@@ -270,22 +272,34 @@ placement_rules:
       - scripts/requirements_traceability.py
       - tests/scenarios/174-ears-requirement-traceability.md
       - tests/scenarios/175-risk-adaptive-bounded-impact.md
+      - orchestration/EXTERNAL_CONTEXT_RESOLUTION.md
+      - orchestration/QUALITY_PLANNING.md
+      - orchestration/IMPLEMENTATION_RESOLUTION.md
+      - templates/implementation/**
+      - references/languages/**
+      - scripts/implementation_profile_validate.py
+      - skills/engineering/rest-api/SKILL.md
+      - tests/fixtures/implementation_resolution_scenarios.yaml
+      - tests/validation/implementation_profile_contracts.py
+      - tests/evidence/implementation_resolution_lifecycle.py
+      - tests/scenarios/193-implementation-resolution-foundation.md
     placements:
-      docs/human/USER_GUIDE.md: [需求釐清與 Planning, Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release]
+      docs/human/USER_GUIDE.md: [Existing Project, 需求釐清與 Planning, Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification, Security & Governance]
-      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 183–192 — Planning Package v2, Execution Isolation Conformance]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Planning 與 Product Delivery]
+      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Execution Isolation Conformance]
 
   - id: scenario-conformance
     triggers: [orchestration/CONFORMANCE.md, tests/scenario_coverage.yaml, tests/validation/conformance_isolation.py, tests/validation/ears_requirement_contracts.py, tests/scenarios/175-risk-adaptive-bounded-impact.md, tests/scenarios/176-mandatory-candidate-secret-scanning.md, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, tests/evidence/secret_scan_publication_lifecycle.py, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/180-external-eval-interoperability.md, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py, tests/validation/eval_interop_contracts.py, scripts/eval_interop.py, scripts/agent_eval.py, templates/conformance/AGENT_EVAL_RESULT.yaml, orchestration/EVAL_INTEROPERABILITY.md, orchestration/AGENT_EVAL.md]
     placements:
-      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Execution Isolation Conformance]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Execution Isolation Conformance]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification, Security & Governance]
 
   - id: eval-interoperability
     triggers: [scripts/eval_interop.py, scripts/agent_eval.py, templates/conformance/AGENT_EVAL_RESULT.yaml, config/eval-profiles.yaml, config/integration-gate.yaml, orchestration/EVAL_INTEROPERABILITY.md, orchestration/schemas/external-eval-evidence.yaml, orchestration/schemas/eval-profile.yaml, orchestration/schemas/red-team-finding.yaml, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py, tests/validation/eval_interop_contracts.py, tests/scenarios/180-external-eval-interoperability.md]
     placements:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Deterministic Execution, Scenario Conformance 與 Agent Eval]
-      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution]
       docs/human/SECURITY_ASSURANCE.md: [Product baseline vs change impact, Secret and credential safety, Runtime Policy Enforcement]
       docs/human/USER_GUIDE.md: [需求釐清與 Planning, Quality 與 Review, Logging、Observability 與 Operations, Checkpoint / Resume, Project Intelligence]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification]
@@ -336,7 +350,7 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance, Product Delivery]
       docs/human/SECURITY_ASSURANCE.md: [Product baseline vs change impact, Secret and credential safety, Runtime Policy Enforcement]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval]
-      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Execution Isolation Conformance]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Execution Isolation Conformance]
       docs/human/MAINTENANCE.md:
         - Deterministic Scheduler / Integration Gate consistency
         - Durable Run State consistency
@@ -368,7 +382,7 @@ placement_rules:
       docs/human/DOCUMENTATION_MAP.md: [Agent / machine canonical 文件]
       docs/human/DOCUMENTATION_SYNC.md: [Current-behavior placement contract]
       docs/human/MAINTENANCE.md: [Subsystem consistency map]
-      docs/human/CONFORMANCE.md: [Scenario 183–192 — Planning Package v2]
-      docs/ARCHITECTURE.md: [End-to-end product delivery]
+      docs/human/CONFORMANCE.md: [Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution]
+      docs/ARCHITECTURE.md: [End-to-end product delivery, Implementation Resolution]
       orchestration/PLANNING_PACKAGE.md: [Required planning artifacts, Planning Package v2 contract, Discovery and research, "Domain, UX and API traceability", Gate 1 — Planning Package Approval, Gate 2 — Implementation Readiness Approval]
-      orchestration/CONFORMANCE.md: [Scenario 183–192 — Planning Package v2]
+      orchestration/CONFORMANCE.md: [Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution]

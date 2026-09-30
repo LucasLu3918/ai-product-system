@@ -236,6 +236,25 @@ flowchart LR
     II --> G2[Gate 2]
 ```
 
+## Implementation Resolution
+
+```mermaid
+flowchart LR
+    REQ[Requirement clarification] --> MODE{Project mode}
+    MODE -->|Existing| PI[Project Intelligence + local evidence]
+    MODE -->|New| TECH[Constraints + Human-confirmed technology]
+    PI --> CONTRACT[Contract authority]
+    TECH --> ARCH[Architecture and technology decisions]
+    CONTRACT --> RESOLVE[Implementation Resolution]
+    ARCH --> RESOLVE
+    RESOLVE --> PROFILE[Provenance-bearing Implementation Profile]
+    PROFILE --> ROLE[Existing Backend Engineer + Skills]
+    ROLE --> VERIFY[TDD + project-native verification]
+    VERIFY --> REVIEW[Review]
+```
+
+The resolution/profile layer does not add a language-specific Role, Framework Skill or generator. Human-confirmed choices, project conventions, ownership, quality evidence and unresolved blockers are carried to existing implementation and review workflows.
+
 ## Risk-proportional security assurance
 
 ~~~mermaid
