@@ -1377,6 +1377,8 @@ Traversal findings name the affected path and allowed final dispositions; they d
 
 發布工具維護仍須把 CLI 目標、驗證環境、檢索快取與文件閉包記入 Change Impact，並以實際 diff 與 lifecycle evidence 核對；測試涵蓋舊 checkout 的安全快轉、矩陣目標路由、網路與認證診斷、唯讀檢索回復指引。
 
+唯讀檢索回復的新增回歸案例會讓 SQLite 建立連線成功、首次查詢失敗，確認安全快照可讀；另驗證 live WAL 仍阻止複製，來源索引位元組未變。
+
 目前 Scenario inventory：
 
 - deterministic：27

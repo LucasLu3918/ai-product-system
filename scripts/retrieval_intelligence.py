@@ -361,31 +361,41 @@ def open_db(path: Path) -> tuple[sqlite3.Connection, bool]:
 def open_read_db(path: Path) -> tuple[sqlite3.Connection, bool, tempfile.TemporaryDirectory[str] | None]:
     """Read an existing index without running schema or journal writes."""
     snapshot: tempfile.TemporaryDirectory[str] | None = None
+    conn: sqlite3.Connection | None = None
     try:
         conn = sqlite3.connect(path.as_uri() + "?mode=ro", uri=True)
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA query_only=ON")
+        fts_available = conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='chunks_fts'").fetchone() is not None
+        return conn, fts_available, None
     except sqlite3.OperationalError:
-        # A read-only sandbox may prevent SQLite from creating WAL shared memory.
-        # A live WAL cannot be copied independently from its database safely.
+        # SQLite may connect successfully but fail on its first read when a
+        # sandbox denies WAL shared memory. Never snapshot a live WAL alone.
+        if conn is not None:
+            conn.close()
         if path.with_name(path.name + "-wal").exists():
             raise
-        before = path.stat()
-        snapshot = tempfile.TemporaryDirectory(prefix="aips-retrieval-read-")
-        try:
-            copied = Path(snapshot.name) / "index.sqlite"
-            shutil.copyfile(path, copied)
-            after = path.stat()
-            if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns) or path.with_name(path.name + "-wal").exists():
-                raise sqlite3.OperationalError("retrieval index changed during read-only snapshot")
-            conn = sqlite3.connect(copied.as_uri() + "?mode=ro", uri=True)
-            if conn.execute("PRAGMA quick_check").fetchone()[0] != "ok":
-                raise sqlite3.DatabaseError("retrieval index snapshot failed integrity check")
-        except BaseException:
-            snapshot.cleanup()
-            raise
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA query_only=ON")
-    fts_available = conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='chunks_fts'").fetchone() is not None
-    return conn, fts_available, snapshot
+    before = path.stat()
+    snapshot = tempfile.TemporaryDirectory(prefix="aips-retrieval-read-")
+    conn = None
+    try:
+        copied = Path(snapshot.name) / "index.sqlite"
+        shutil.copyfile(path, copied)
+        after = path.stat()
+        if (before.st_size, before.st_mtime_ns) != (after.st_size, after.st_mtime_ns) or path.with_name(path.name + "-wal").exists():
+            raise sqlite3.OperationalError("retrieval index changed during read-only snapshot")
+        conn = sqlite3.connect(copied.as_uri() + "?mode=ro", uri=True)
+        if conn.execute("PRAGMA quick_check").fetchone()[0] != "ok":
+            raise sqlite3.DatabaseError("retrieval index snapshot failed integrity check")
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA query_only=ON")
+        fts_available = conn.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='chunks_fts'").fetchone() is not None
+        return conn, fts_available, snapshot
+    except BaseException:
+        if conn is not None:
+            conn.close()
+        snapshot.cleanup()
+        raise
 
 
 def metadata_get(conn: sqlite3.Connection, key: str) -> str | None:
