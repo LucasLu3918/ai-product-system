@@ -256,6 +256,7 @@ Initial bootstrap is read-only. EPHEMERAL projects may use external cache; ATTAC
 
 ## Quality Planning
 
+
 Use `orchestration/QUALITY_PLANNING.md` for complete products and material product plans. Q1/Q2/Q3 are baselines, not rigid bundles. Feed measurable targets/budgets into architecture, implementation verification and Release Readiness.
 
 ## Local and production milestones
@@ -298,6 +299,8 @@ When emitting a Structured Task Graph, treat tasks as writable by default. Set `
 For Evolution Radar semantic work, prefer the generated provider-neutral handoff when no scheduled provider is available rather than inventing a recommendation. For PR integration, stale target-base evidence must route back to refresh/revalidation rather than proceeding with an old PASS.
 
 ## Change-class handoff to Integration Gate
+
+When an OpenAPI contract affects implementation, include offline validation, canonical-baseline compatibility review and project-native contract tests in the quality handoff. `UNKNOWN`, unavailable, stale or failed evidence blocks only the dependent work and remains explicit for Human review.
 
 Publication-readiness changes include the selected checkout, local documentation/build checks, Gate environment preflight and initial PR classification label in the proposal and exact-candidate evidence.
 

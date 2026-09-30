@@ -125,6 +125,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+REST/OpenAPI evidence uses optional pinned dependencies from `requirements-openapi.txt` and `scripts/openapi_contracts.py` for offline specification validation, repository-local reference checks, conservative compatibility classification, project-native JUnit coverage and revision freshness. Contract commands run without a shell and retain output digests rather than raw streams. Unknown changes and stale reports never qualify as PASS; operation-name coverage does not establish assertion quality.
+
 Publication Preflight reports the script root and Git root, checks Python/Ruff, loopback and browser readiness before expensive Gate work, and runs changed-Markdown link checks plus a VitePress build for documentation candidates. `--project-root <repo>` binds an installed CLI to another source checkout. Post-merge reconciliation runs the installed script against that checkout so a stale target script cannot block a safe fast-forward; other candidate calculations run from the selected checkout.
 
 `scripts/publication_transfer.py` adds a read-only GitHub API transfer boundary. `prepare` derives the exact changed Git blob identities and final tree from one clean local candidate commit, and checks the explicit destination against `origin`. `verify` compares a receipt of GitHub-created blob and tree SHAs with that same local candidate before any commit or ref mutation. It returns `BLOCKED` on missing, truncated, stale or mismatched identities and never contacts GitHub or updates refs itself. The existing strict candidate-history scanner remains the publication content gate.

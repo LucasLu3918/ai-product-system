@@ -2,6 +2,8 @@
 
 ## Authority and data flow
 
+OpenAPI implementation evidence is deterministic contract-validation evidence, not an external eval result. It may feed a quality decision only with its source digests and exact revision intact; it does not imply semantic quality or approval.
+
 Imported external evaluation evidence cannot assign task owners, extend leases, authorize writes or complete Scheduler tasks. Scenario 182 tests those execution boundaries independently of external scoring.
 
 AIPS Agent Eval Case / Result remain canonical. Promptfoo and PyRIT are optional evidence producers behind `scripts/eval_interop.py`; their status, score, or discovery finding never becomes an Integration Gate result.

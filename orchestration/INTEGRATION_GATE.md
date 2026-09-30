@@ -12,6 +12,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+Implementation evidence for OpenAPI contracts is bound to spec and JUnit digests plus the exact repository revision. The Integration Gate must reject stale or mismatched evidence and must not reinterpret an `UNKNOWN` compatibility result as approval.
+
 ~~~text
 base SHA + head SHA
 → changed-file set/hash

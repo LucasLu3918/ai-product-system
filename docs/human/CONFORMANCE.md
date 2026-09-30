@@ -1438,3 +1438,9 @@ Current inventory after Scenario 192: 34 deterministic + 103 lifecycle + 54 agen
 Scenario 193 covers existing/new project implementation planning from REST/OpenAPI, project evidence, Human-confirmed technology and architecture, ownership, quality evidence, and version-aware context. Its 16 representative cases include authority conflicts, generated ownership, `not_detected` versus `none`, and unavailable verification. The validator and lifecycle evidence check structure and safe state handling; semantic Agent recommendations remain a Human review responsibility.
 
 Current inventory after Scenario 193: 34 deterministic + 103 lifecycle + 54 agent_eval = 191 automated; 2 manual; 193 total; 0 uncovered.
+
+### Scenario 194 — OpenAPI validity, compatibility and evidence provenance
+
+Lifecycle evidence validates supported OpenAPI inputs, rejects remote/path-escaping references, classifies known breaking and non-breaking changes, keeps unclassified schema/security changes `UNKNOWN`, requires a canonical compatibility baseline, executes project commands without a shell, checks JUnit operation coverage, and binds spec/report digests to the exact Git revision. Stale or unavailable evidence cannot report PASS. JUnit operation-name coverage does not establish assertion quality; semantic test and compatibility review remain Human responsibilities.
+
+Current inventory after Scenario 194: 34 deterministic + 104 lifecycle + 54 agent_eval = 192 automated; 2 manual; 194 total; 0 uncovered.

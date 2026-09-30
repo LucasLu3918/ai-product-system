@@ -112,6 +112,8 @@ Never assume a source is visible to every Runtime merely because it exists.
 
 ## Authority
 
+Project Intelligence may identify OpenAPI files and consumers, but file presence does not make a specification canonical. Preserve source authority and revision; remote references are not fetched by the validator.
+
 Project Intelligence is below:
 
 1. external platform/safety requirements;

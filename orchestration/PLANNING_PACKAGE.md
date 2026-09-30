@@ -67,6 +67,8 @@ Use `PRODUCT_RESEARCH.md` when current external product, user, market or competi
 
 ## Domain, UX and API traceability
 
+For REST/OpenAPI implementation readiness, record whether the contract is canonical, descriptive, proposed or unresolved, and identify the exact baseline source when compatibility analysis is required. A structural comparison cannot replace Human approval of breaking changes.
+
 Create stable screen IDs and map primary requirements to journeys, flows, screen responsibilities, interaction states, responsive behavior and accessibility. Create a `DOMAIN_MODEL.md` when domain concepts, lifecycles, ownership or invariants affect the product; model those concepts before choosing persistence technology. Specify API operations from consumer needs and domain behavior, including authorization, validation, errors, retry/idempotency, concurrency and compatibility as applicable.
 
 Load `references/domains/<domain>/` only when the product needs it. Domain packs provide common terminology, workflows, edge cases and risks; they do not prescribe features for every product. Keep visual system definition in the existing `visual-direction` Skill unless repeated evidence justifies a separate reusable Skill.
@@ -132,6 +134,7 @@ Include:
 Do not select an ELK/Prometheus/Grafana/etc. stack merely because observability is required; choose concrete services after production environment/operations constraints are known.
 
 ## API_SPEC.md
+
 
 When applicable define operations, auth/authz, request/response, validation/errors, pagination/filtering/idempotency/versioning/examples/compatibility. Prefer machine-readable contracts where appropriate.
 

@@ -1519,3 +1519,13 @@ scenarios:
       - tests/fixtures/implementation_resolution_scenarios.yaml
       - tests/validation/implementation_profile_contracts.py
       - tests/evidence/implementation_resolution_lifecycle.py
+  - id: "194"
+    path: tests/scenarios/194-implementation-resolution-openapi-evidence.md
+    coverage: lifecycle
+    evidence:
+      - scripts/openapi_contracts.py
+      - tests/fixtures/openapi_phase2_valid.yaml
+      - tests/fixtures/openapi_phase2_invalid.yaml
+      - tests/fixtures/openapi_phase2_network_ref.yaml
+      - tests/validation/openapi_contracts.py
+      - tests/evidence/openapi_contracts_lifecycle.py

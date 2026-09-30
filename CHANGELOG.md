@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.69.0
+
+- Add REST/OpenAPI 3.0/3.1/3.2 validation, local-reference safety, and conservative compatibility analysis against explicitly canonical baselines.
+- Run project-native contract tests with argv-only execution; bind JUnit operation coverage, specification hashes, command digests and Git revisions, and detect stale evidence.
+- Extend Implementation Profiles, Scenario 194, architecture and Human guidance; breaking changes and unknown compatibility remain subject to Human review.
+
 ## 0.68.2
 
 - Recover read-only retrieval when SQLite opens successfully but its first query fails under restricted WAL shared-memory access.

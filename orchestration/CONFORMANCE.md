@@ -769,3 +769,7 @@ Current inventory after Scenario 192: 34 deterministic + 103 lifecycle + 54 agen
 Scenario 193 covers REST/OpenAPI-first resolution across existing and new projects, four language profiles, technology/architecture decisions, evidence provenance, contract authority, ownership protection, version-aware knowledge, and verification status. Deterministic and lifecycle checks validate profile structure and validator boundaries. Semantic quality across 16 representative contexts remains manual; structural checks do not claim that an Agent recommendation is correct.
 
 Current inventory after Scenario 193: 34 deterministic + 103 lifecycle + 54 agent_eval = 191 automated; 2 manual; 193 total; 0 uncovered.
+
+### Scenario 194 — OpenAPI contract validation and revision-bound evidence
+
+`scripts/openapi_contracts.py` validates OpenAPI 3.0, 3.1 and 3.2 offline, confines local references to the repository, classifies compatibility conservatively, runs declared contract tests without a shell, verifies operation coverage in JUnit, and binds reports to content digests and the exact revision. Unknown classifications, stale evidence and unavailable checks fail closed. Evidence does not authorize breaking changes or establish semantic test quality.

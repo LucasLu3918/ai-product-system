@@ -20,6 +20,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+OpenAPI contract tooling and its optional dependency file have an explicit placement rule: workflow commands belong in User Guide quality guidance, technical limits in the Technology Guide, and lifecycle claims in Scenario 194. Keep the Agent contract and Human descriptions synchronized when the validator or evidence schema changes.
+
 Deterministic execution ownership 由 Scheduler、run state、projection 和 dashboard 共用同一個 canonical contract。更新 lease 或授權行為時，需同步更新 Human 操作／技術文件、run-state schema、Scenario 182 與 placement map。
 
 Changes to turn intent, scoped instruction selection, event serialization, observed stage evidence, Agent Eval freshness and review attestation must update their canonical Human and orchestration sections together with `config/documentation-placement.yaml`.

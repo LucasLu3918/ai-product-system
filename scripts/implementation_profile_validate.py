@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from pathlib import Path, PurePosixPath
 from typing import Any
@@ -141,6 +142,34 @@ def validate_profile(doc: Any) -> dict[str, Any]:
         errors.append(f"contract.resolution must be one of {sorted(RESOLUTIONS)}")
     _evidence(contract.get("evidence"), "contract.evidence", errors,
               required=contract.get("resolution") in {"confirmed", "strong_evidence", "inferred"})
+    openapi_evidence = contract.get("openapi")
+    if openapi_evidence is not None:
+        openapi_evidence = _mapping(openapi_evidence, "contract.openapi", errors)
+        if openapi_evidence.get("validation_status") not in QUALITY_RESULTS:
+            errors.append("contract.openapi.validation_status is invalid")
+        if openapi_evidence.get("compatibility_status") not in {"NO_CHANGE", "NON_BREAKING", "BREAKING", "UNKNOWN", "BLOCKED"}:
+            errors.append("contract.openapi.compatibility_status is invalid")
+        if openapi_evidence.get("implementation_conformance_status") not in QUALITY_RESULTS:
+            errors.append("contract.openapi.implementation_conformance_status is invalid")
+        if openapi_evidence.get("baseline_authority") not in AUTHORITIES:
+            errors.append("contract.openapi.baseline_authority is invalid")
+        if not isinstance(openapi_evidence.get("compatibility_required"), bool):
+            errors.append("contract.openapi.compatibility_required must be boolean")
+        for key, status_key in (("validation_report", "validation_status"),
+                                ("compatibility_report", "compatibility_status"),
+                                ("conformance_report", "implementation_conformance_status")):
+            reference = openapi_evidence.get(key)
+            if reference is not None and (not isinstance(reference, str) or not reference.strip() or reference.startswith("/") or ".." in reference.split("/")):
+                errors.append(f"contract.openapi.{key} must be a repository-relative path")
+            if openapi_evidence.get(status_key) in {"PASS", "NO_CHANGE", "NON_BREAKING"} and not reference:
+                errors.append(f"contract.openapi.{key} is required for a passing status")
+        spec_digest = openapi_evidence.get("spec_sha256")
+        if spec_digest is not None and (not isinstance(spec_digest, str) or not re.fullmatch(r"sha256:[0-9a-f]{64}", spec_digest)):
+            errors.append("contract.openapi.spec_sha256 must be sha256:<64 lowercase hex>")
+        if openapi_evidence.get("validation_status") == "PASS" and not spec_digest:
+            errors.append("a passing OpenAPI validation requires spec_sha256")
+        if openapi_evidence.get("baseline_authority") != "canonical" and openapi_evidence.get("compatibility_status") in {"NO_CHANGE", "NON_BREAKING", "BREAKING"}:
+            errors.append("compatibility status requires a canonical baseline authority")
 
     technology = _mapping(root.get("technology"), "technology", errors)
     language = _mapping(technology.get("language"), "technology.language", errors)
@@ -247,14 +276,27 @@ def validate_profile(doc: Any) -> dict[str, Any]:
         _evidence(row.get("evidence"), f"unresolved[{index}].evidence", errors)
 
     blocked = blocking or (contract.get("authority") == "unresolved" and contract.get("affects_change") is True)
+    openapi_blocked = False
+    if contract.get("type") == "openapi" and contract.get("affects_change") is True and isinstance(contract.get("openapi"), dict):
+        oas = contract["openapi"]
+        if contract.get("authority") in {"canonical", "proposed"} and oas.get("validation_status") != "PASS":
+            openapi_blocked = True
+        if oas.get("compatibility_required") is True and (
+            oas.get("baseline_authority") != "canonical"
+            or oas.get("compatibility_status") not in {"NO_CHANGE", "NON_BREAKING"}
+        ):
+            openapi_blocked = True
+        if oas.get("implementation_conformance_status") in {"FAIL", "BLOCKED"}:
+            openapi_blocked = True
+    blocked = blocked or openapi_blocked
     blocked = blocked or (project.get("mode") == "new" and decision_record.get("confirmed") is not True)
     declared_status = root.get("status")
     if declared_status not in {"READY", "BLOCKED"}:
         errors.append("status must be READY or BLOCKED")
     if declared_status == "READY" and blocked:
-        errors.append("status=READY conflicts with blocking unresolved items or unresolved contract authority")
+        errors.append("status=READY conflicts with unresolved decisions, invalid/missing authoritative OpenAPI evidence, required compatibility review, or unconfirmed new-project decisions")
     if declared_status == "BLOCKED" and not blocked:
-        errors.append("status=BLOCKED requires a blocking unresolved, affected unresolved contract authority, or unconfirmed new-project decision")
+        errors.append("status=BLOCKED requires an unresolved decision, affected unresolved contract authority, required OpenAPI evidence, failed conformance, or unconfirmed new-project decision")
     return {
         "structural_status": "FAIL" if errors else "PASS",
         "implementation_status": "BLOCKED" if blocked else "READY",
