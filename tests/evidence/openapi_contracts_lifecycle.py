@@ -71,7 +71,7 @@ with tempfile.TemporaryDirectory(prefix="aips-openapi-ref-", dir=ROOT) as temp_n
     finally:
         link.unlink(missing_ok=True)
 
-with tempfile.TemporaryDirectory(prefix="aips-openapi-outside-", dir="/private/tmp") as temp_name:
+with tempfile.TemporaryDirectory(prefix="aips-openapi-outside-") as temp_name:
     outside = Path(temp_name) / "outside.yaml"
     outside.write_text("safe: true\n", encoding="utf-8")
     link = ROOT / "tests/fixtures/openapi_phase2_external_link.yaml"
