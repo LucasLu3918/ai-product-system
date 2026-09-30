@@ -1012,11 +1012,12 @@ def index_unavailable(exc: BaseException, *, token_budget: int = 0, query: str |
         code = "SQLITE_DATABASE_INVALID"
     else:
         code = "RETRIEVAL_INDEX_UNAVAILABLE"
-    remediation = (
-        "Rebuild the disposable index with aips intelligence index --project <project> --force."
-        if code == "SQLITE_DATABASE_INVALID"
-        else "Check that the configured AIPS cache directory is accessible and writable, then rebuild with aips intelligence index --project <project> --force."
-    )
+    if code == "SQLITE_DATABASE_INVALID":
+        remediation = "Rebuild the disposable index with aips intelligence index --project <project> --force."
+    elif code == "RETRIEVAL_CACHE_ACCESS_DENIED":
+        remediation = "Allow the current runtime to read the configured AIPS cache, or choose an accessible XDG_CACHE_HOME; then retry retrieval."
+    else:
+        remediation = "Check that the current runtime can read the AIPS cache and its SQLite file; retry outside a restricted sandbox if appropriate. Rebuild with aips intelligence index --project <project> --force only if the error persists with cache access."
     result: dict[str, Any] = {
         "status": "INDEX_UNAVAILABLE",
         "reason_code": code,

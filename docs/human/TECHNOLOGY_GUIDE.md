@@ -48,7 +48,7 @@ Deterministic Scheduler 可將派送 task 綁定到 AIPS worktree、runtime exec
 
 Core、Recall 與 temporal evidence 共用硬預算；Index 開啟或查詢失敗時提供穩定診斷與修復提示，並回退至 canonical source pointers。`READY` 對帳綁定 Git base/head、乾淨且位於 head 的工作樹、實際 binary diff digest、變更路徑與宣告範圍；僅填狀態或人工提供 digest 不構成證據。
 
-本地發布驗證可由 `bin/prepare-local-validation` 在 repository 外的暫存目錄準備 Python 3.12 venv、CI requirements 與 Chromium；`--check-only --run --base <sha> --head <sha>` 使用同一環境執行既有 `publish_preflight.py`，並把驗證設定放在暫存 `XDG_CONFIG_HOME`。檢索索引使用 `XDG_CACHE_HOME` 下可重建的 SQLite 快取，路徑不可寫時應修復快取設定並重建，不改寫 canonical Intelligence。
+本地發布驗證可由 `bin/prepare-local-validation` 在 repository 外的暫存目錄準備 Python 3.12 venv、CI requirements 與 Chromium；`--check-only --run --base <sha> --head <sha>` 使用同一 `--venv` 執行既有 `publish_preflight.py`，並把驗證設定放在暫存 `XDG_CONFIG_HOME`。缺少套件時錯誤會指出實際選用的 venv；文件建置另需 Node.js 與 checkout 的 VitePress 相依套件。檢索索引使用 `XDG_CACHE_HOME` 下可重建的 SQLite 快取；唯讀查詢失敗時先查 runtime 讀取權限，持續失敗才重建，不改寫 canonical Intelligence。
 
 驗證原始碼 checkout 時以 `./bin/aips` 呼叫本地 CLI；受限執行環境先由 `prepare-local-validation` 檢查 localhost 與瀏覽器能力，再解讀完整驗證的結果。
 
@@ -78,7 +78,7 @@ Parallel worktree 可取得 repository-scoped TCP port lease；跨 process alloc
 
 The Gate can require an expected unittest count for commands whose success output includes the collected-test summary; absent or mismatched counts fail the check.
 
-`aips publish preview` includes untracked and uncommitted paths in documentation and Core Matrix planning. `aips publish matrix-sync` updates the candidate binding and returns the matrix to DRAFT for review.
+`aips publish preview` includes untracked and uncommitted paths in documentation and Core Matrix planning. `aips publish matrix-sync` resolves the current AIPS checkout or an explicit `--project-root`, updates its candidate binding and returns the matrix to DRAFT for review.
 
 Matrix readiness checks are shared with the exact-candidate Gate: status, blockers, actual-diff reconciliation and base/hash must all pass before preview reports `READY_FOR_GATE`.
 
@@ -125,7 +125,7 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
-Publication Preflight reports the script root and Git root, checks Python/Ruff, loopback and browser readiness before expensive Gate work, and runs changed-Markdown link checks plus a VitePress build for documentation candidates. `--project-root <repo>` binds an installed CLI to another source checkout; all candidate calculations then run from that checkout.
+Publication Preflight reports the script root and Git root, checks Python/Ruff, loopback and browser readiness before expensive Gate work, and runs changed-Markdown link checks plus a VitePress build for documentation candidates. `--project-root <repo>` binds an installed CLI to another source checkout. Post-merge reconciliation runs the installed script against that checkout so a stale target script cannot block a safe fast-forward; other candidate calculations run from the selected checkout.
 
 `scripts/publication_transfer.py` adds a read-only GitHub API transfer boundary. `prepare` derives the exact changed Git blob identities and final tree from one clean local candidate commit, and checks the explicit destination against `origin`. `verify` compares a receipt of GitHub-created blob and tree SHAs with that same local candidate before any commit or ref mutation. It returns `BLOCKED` on missing, truncated, stale or mismatched identities and never contacts GitHub or updates refs itself. The existing strict candidate-history scanner remains the publication content gate.
 

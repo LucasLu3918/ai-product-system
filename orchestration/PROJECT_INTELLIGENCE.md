@@ -566,7 +566,7 @@ The CLI commands are deterministic building blocks used by the Agent/Harness and
 
 Structured unknown dispositions preserve the original description and require a verifiable repository-file or complete scoped traversal evidence item plus explicit Human review. Legacy strings, stale evidence, out-of-root paths and mismatched scope remain blocking; they do not alter repository-wide coverage.
 
-Documentation trigger、出版 preflight、workflow 或其測試契約變更時，先比對 working-tree impact preview，再將 Core Matrix 綁定至完成文件擴張後的候選差異。
+Documentation trigger、出版 preflight、workflow 或其測試契約變更時，先比對 working-tree impact preview，再將 Core Matrix 綁定至完成文件擴張後的候選差異。Retrieval SQLite 唯讀失敗時保留 `INDEX_UNAVAILABLE`，先診斷 runtime 的快取讀取權限；重建只作為存取正常但故障持續時的復原步驟。
 
 Project Intelligence provides the reusable graph. Per-change impact remains a run artifact rather than permanent project policy.
 

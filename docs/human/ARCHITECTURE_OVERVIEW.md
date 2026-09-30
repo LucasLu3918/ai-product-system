@@ -70,7 +70,7 @@ Run Event 與 Telemetry Event 共用鎖定的 append 寫入器，讓混合寫入
 
 Independent-review isolation is an implemented opt-in capability. The active Core Change Matrix currently disables PR enforcement (`review_evidence.required: false`) while no trusted runtime-attestation verifier is connected; enabling it requires that verifier and retains fail-closed behavior.
 
-Publication Preview 在工作樹階段讀取文件位置契約與 Core Matrix 綁定，提供可修復診斷；正式 Integration Gate 仍只對已提交且乾淨的 exact candidate 作判定。
+Publication Preview 在工作樹階段讀取文件位置契約與 Core Matrix 綁定，提供可修復診斷；`matrix-sync` 只寫入目前或明確指定的 checkout，合併後的安全對齊由安裝版 CLI 操作目標 checkout；正式 Integration Gate 仍只對已提交且乾淨的 exact candidate 作判定。
 
 兩者共用 Core Matrix 就緒條件；預覽會在 DRAFT、blocker、未核對差異或過期綁定時回報 `NEEDS_WORK`，避免正式 Gate 才發現同一問題。
 

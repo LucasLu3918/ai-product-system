@@ -227,6 +227,12 @@ def main() -> int:
                 if snapshot is not None:
                     snapshot.cleanup()
         require(db_path.read_bytes() == original_bytes, "read-only retrieval must not mutate the source index")
+        restricted = RI.index_unavailable(sqlite3.OperationalError("unable to open database file"))
+        require(restricted["reason_code"] == "SQLITE_OPEN_FAILED" and "sandbox" in restricted["remediation"],
+                "restricted SQLite reads must suggest checking runtime access before rebuilding")
+        denied = RI.index_unavailable(PermissionError("Operation not permitted"))
+        require(denied["reason_code"] == "RETRIEVAL_CACHE_ACCESS_DENIED" and "read" in denied["remediation"],
+                "cache access errors must identify the read permission boundary")
 
     print("retrieval_intelligence_lifecycle evidence: PASS")
     return 0

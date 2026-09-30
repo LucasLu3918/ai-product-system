@@ -1,46 +1,61 @@
 version: 1
 change:
-  id: implementation-resolution-foundation
-  summary: Add evidence-driven REST/OpenAPI implementation resolution, a provenance-bearing profile, four language baselines, structural validation and Scenario 193 while preserving existing roles, project conventions and Human authority.
+  id: publish-reliability-followup
+  summary: Harden checkout-scoped publication commands, old-checkout post-merge recovery,
+    local validation diagnostics and read-only retrieval cache guidance without changing
+    Human authority or CI gate policy.
   boundary:
-    - implementation-resolution
+  - publication-routing-and-retrieval-diagnostics
 matrix:
-  - boundary: implementation-resolution
-    reason: Contract authority, repository evidence, implementation profile structure, language baselines, ownership protection, quality evidence and Agent handoff form one coherent implementation-planning contract. The same exact candidate includes deterministic/lifecycle checks, Scenario 193, architecture, Agent and Human documentation.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: Ruff passed on the three new Python implementation files; Python compileall and full tests/validate_repository.py passed on Python 3.12.
-      unit:
-        applicable: true
-        evidence: tests/validation/implementation_profile_contracts.py passed blocked-template, resolved-profile, evidence provenance, ownership overlap/traversal, not_detected semantics, language profiles and 16 representative scenario assertions.
-      integration:
-        applicable: true
-        evidence: tests/evidence/implementation_resolution_lifecycle.py passed validator CLI exit-state, invalid-enum and four-language-profile checks.
-      contract:
-        applicable: true
-        evidence: scripts/implementation_profile_validate.py reported structural PASS and implementation BLOCKED for unresolved contract authority; Scenario Conformance reported 193 registered, 0 uncovered.
-      e2e:
-        applicable: false
-        na_reason: Semantic API authority, technology selection, architecture quality and implementation correctness require project evidence and Human decisions; Phase 1 does not generate or modify application code. Scenario 193 retains two manual semantic scenarios.
-      security:
-        applicable: true
-        evidence: Structural contracts reject ownership overlap and path traversal; unresolved authority remains blocking; repository secret scan passed with zero findings; publication preview content-safety scan passed.
-      migration_recovery:
-        applicable: false
-        na_reason: This additive planning/profile capability introduces no persistence migration, project-local state migration or generated application change.
-      cli_harness:
-        applicable: true
-        evidence: Lifecycle evidence exercised validator JSON statuses and PASS/FAIL exit codes through direct CLI invocation.
-      docs_schema:
-        applicable: true
-        evidence: Full repository validation and documentation placement passed; Human/Agent canonical docs, architecture flow, profile/language YAML, Scenario 193 registry, changelog and version were synchronized.
+- boundary: publication-routing-and-retrieval-diagnostics
+  reason: The CLI target, Git safety checks, auth diagnosis, validation environment
+    and retrieval cache are one bounded reliability change; lifecycle evidence exercises
+    negative paths and unchanged approval boundaries.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Python compileall and required Ruff E9/F63/F7/F82 passed for scripts
+        and tests.
+    unit:
+      applicable: true
+      evidence: Retrieval intelligence lifecycle passed read-only fallback and distinct
+        cache-access remediation assertions.
+    integration:
+      applicable: true
+      evidence: Publication lifecycle passed installed-CLI old-checkout fast-forward,
+        matrix target routing, backup collision and wrong-branch checks.
+    contract:
+      applicable: true
+      evidence: Full tests/validate_repository.py passed version 0.68.1 with 193 scenarios;
+        repository preflight and changed Markdown/VitePress checks passed.
+    e2e:
+      applicable: false
+      na_reason: No application UI or deployed service is changed; CLI lifecycle covers
+        the observable commands.
+    security:
+      applicable: true
+      evidence: Publication lifecycle passed redacted network-versus-auth diagnostics;
+        exact-candidate mandatory strict secret scan remains required by Integration
+        Gate.
+    migration_recovery:
+      applicable: true
+      evidence: Publication lifecycle passed old-checkout fast-forward, backup preservation,
+        dirty/divergent/wrong-branch refusal and backup collision; retrieval lifecycle
+        passed read-only snapshot and recovery guidance.
+    cli_harness:
+      applicable: true
+      evidence: Publication CLI lifecycle passed; prepared Python 3.12 validation
+        venv check reported READY with loopback/browser access.
+    docs_schema:
+      applicable: true
+      evidence: Recursive documentation impact closure complete; docs-site repository
+        preflight and full repository validation passed.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 3e32a8b640e00234bf32144b915574f0470847c1
-  changed_files_hash: d52742b463c304124d5f0d4d5a3a3d062e9220e50a0e191d9c480645c0b0dc40
+  base_sha: 9aa1e2fdc4c848df61f2ed469cd088276a41ab07
+  changed_files_hash: 53f57251b2d1ea663b00d0472249f0c4b20e423b2ee45a0bbc1a00a700f7c8b6
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

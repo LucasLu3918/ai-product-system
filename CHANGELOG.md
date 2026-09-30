@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.68.1
+
+- Route matrix synchronization to the selected checkout and run post-merge reconciliation with the installed CLI so an older target checkout can safely fast-forward.
+- Distinguish GitHub connectivity failures from expired authentication without exposing CLI stderr or tokens.
+- Show the selected validation venv and targeted recovery command; clarify read-only retrieval cache access diagnostics before suggesting an index rebuild.
+- Extend publication and retrieval lifecycle evidence for these recovery paths.
+
 ## 0.68.0
 
 - Add an evidence-driven REST/OpenAPI Implementation Resolution workflow and provenance-bearing Implementation Profile for existing and new projects.

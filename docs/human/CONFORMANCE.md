@@ -1375,6 +1375,8 @@ Lifecycle and contract evidence validate structured OPEN / RESOLVED / MITIGATED 
 
 Traversal findings name the affected path and allowed final dispositions; they do not assign a decision. High-risk unknown relationships remain blocking until reviewed or incorporated into the approved impact boundary.
 
+發布工具維護仍須把 CLI 目標、驗證環境、檢索快取與文件閉包記入 Change Impact，並以實際 diff 與 lifecycle evidence 核對；測試涵蓋舊 checkout 的安全快轉、矩陣目標路由、網路與認證診斷、唯讀檢索回復指引。
+
 目前 Scenario inventory：
 
 - deterministic：27

@@ -292,7 +292,7 @@ Portable Command 變更必須同時驗證 Registry、renderer、CLI lifecycle、
 
 建立已核准的 Large/Core PR 時，在 `gh pr create` 同一命令附上 `--label aips:large-change` 或 `--label aips:core-change`，讓首次 `opened` 事件即使用正確分類；GitHub 仍可能額外送出 `labeled` 事件，工作流程會為 PR 動作使用獨立併發群組。只有較新的 `synchronize` 更新會取代同 PR 較舊的 `synchronize` 執行。檢查最新同一候選 SHA 的 required aggregate，避免把被取代的執行判成測試失敗。
 
-若 Turn Context 回報 `INDEX_UNAVAILABLE`／`SQLITE_OPEN_FAILED`，先確認 `XDG_CACHE_HOME` 指向可寫的快取目錄，再執行 `aips intelligence index --project "$PWD" --force`。索引是可重建的快取；`SEMANTIC_REFRESH_REQUIRED` 則表示來源內容變更，仍需依 Project Intelligence 流程檢視受影響的語意主題。
+若 Turn Context 回報 `INDEX_UNAVAILABLE`／`SQLITE_OPEN_FAILED`，先確認目前 runtime 可讀取 `XDG_CACHE_HOME` 中的 SQLite 檔案，並排除 sandbox 存取限制；權限正常仍持續失敗時，再執行 `aips intelligence index --project "$PWD" --force`。索引是可重建的快取；`SEMANTIC_REFRESH_REQUIRED` 則表示來源內容變更，仍需依 Project Intelligence 流程檢視受影響的語意主題。
 
 公開 PR 的每個新 commit 都要使用 GitHub noreply author 與 committer 身分，並避免在 commit message、Co-authored-by trailer 與差異內容寫入個人資料。先在 GitHub **Settings → Emails** 開啟 **Keep my email addresses private**，讓 GitHub 網頁/API 合併使用 noreply；再從同頁複製 GitHub 提供的 noreply 位址，執行 `git config --local user.email "<noreply 位址>"`。以 `git log -1 --format='%ae%n%ce'` 確認本機 author/committer；不要把實際位址貼進 issue、PR 描述或驗證輸出。發布 preflight 會檢查候選範圍內的所有 commit message 與身份欄位。
 
