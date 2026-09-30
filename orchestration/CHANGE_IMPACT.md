@@ -91,6 +91,8 @@ Run `aips intelligence impact-validate --project <repo> --path <CHANGE_IMPACT.ya
 
 For publication-tool changes, include the selected checkout, installed CLI routing, local validation environment and retrieval-cache consumers in the declared impact. Reconcile every documentation path required by the working-tree impact preview before marking the artifact READY.
 
+For retrieval-cache recovery, distinguish connection establishment from the first SQLite query. Preserve live-WAL refusal, source-stability comparison and snapshot integrity as explicit data boundaries in the impact review.
+
 When traversal validation reports `affected node lacks a final disposition`, inspect that node's callers and consumers and explicitly choose `reviewed_safe`, `requires_change` or `unknown`. Do not infer a disposition from the absence of a diff. `requires_change` must be included in the approved `target_paths`; high-risk `unknown` nodes remain blocking until the relationship is reviewed or the impact boundary is expanded. Rerun `aips intelligence impact-validate` after resolving each finding.
 
 ## Diff reconciliation

@@ -226,6 +226,42 @@ def main() -> int:
                 reader.close()
                 if snapshot is not None:
                     snapshot.cleanup()
+        class ConnectedButUnreadable:
+            def __init__(self, connection):
+                self.connection = connection
+
+            def execute(self, *_args, **_kwargs):
+                raise sqlite3.OperationalError("unable to open database file")
+
+            def close(self):
+                self.connection.close()
+
+        def reject_first_source_query(target, *args, **kwargs):
+            connection = real_connect(target, *args, **kwargs)
+            if str(target) == db_path.as_uri() + "?mode=ro":
+                return ConnectedButUnreadable(connection)
+            return connection
+        with patch.object(RI.sqlite3, "connect", side_effect=reject_first_source_query):
+            reader, _, snapshot = RI.open_read_db(db_path)
+            try:
+                require(snapshot is not None, "first-query SQLite failure must use the checked snapshot")
+                require(reader.execute("SELECT COUNT(*) FROM files").fetchone()[0] == 1,
+                        "first-query fallback must preserve indexed rows")
+            finally:
+                reader.close()
+                if snapshot is not None:
+                    snapshot.cleanup()
+            wal = db_path.with_name(db_path.name + "-wal")
+            wal.write_bytes(b"live WAL marker")
+            try:
+                try:
+                    RI.open_read_db(db_path)
+                except sqlite3.OperationalError:
+                    pass
+                else:
+                    raise AssertionError("a live WAL must block first-query snapshot fallback")
+            finally:
+                wal.unlink()
         require(db_path.read_bytes() == original_bytes, "read-only retrieval must not mutate the source index")
         restricted = RI.index_unavailable(sqlite3.OperationalError("unable to open database file"))
         require(restricted["reason_code"] == "SQLITE_OPEN_FAILED" and "sandbox" in restricted["remediation"],

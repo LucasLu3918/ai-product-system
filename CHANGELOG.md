@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.68.2
+
+- Recover read-only retrieval when SQLite opens successfully but its first query fails under restricted WAL shared-memory access.
+- Keep live-WAL refusal, source-stability checks and snapshot integrity verification; add a lifecycle regression for the first-query failure.
+
 ## 0.68.1
 
 - Route matrix synchronization to the selected checkout and run post-merge reconciliation with the installed CLI so an older target checkout can safely fast-forward.
