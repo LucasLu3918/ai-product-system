@@ -273,6 +273,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 
 ## Public repository / CI consistency
 
+The validation workflow installs the optional pinned `requirements-openapi.txt` set before running repository checks, so offline OpenAPI lifecycle tests use the same validator version in local and CI runs.
+
 提交前的 `aips publish preview --base <sha> --change-class <class>` 會檢查工作樹（含未追蹤檔）的文件 H2 placement、Core Matrix base/hash 綁定與 PR 首次建立所需標籤。若 CLI 認證失效，`aips publish plan` 回報 `AUTH_REQUIRED` 與重新登入步驟，不會輸出憑證內容；最終 Gate 仍以乾淨的已提交候選執行。
 
 The working-tree preview scans candidate additions and complete untracked files. The exact committed candidate still receives the mandatory final-tree and commit-history scan in Integration Gate.
@@ -323,6 +325,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+OpenAPI validation and evidence lifecycle checks are included in the repository validation entry point; installing `requirements-openapi.txt` is required for that full validation profile.
 
 Portable Command contract 位於 `tests/validation/portable_commands_contracts.py`，涵蓋 registry、projection install、status 與修改檔案 conflict；它不授予 merge 或 release authority。
 `tests/validate_repository.py` is the stable CI/user entrypoint. Internal validation is modular:

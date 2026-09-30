@@ -32,9 +32,40 @@ ready["contract"].update({
     "resolution": "confirmed",
     "evidence": [{"source": "human", "reference": "approved-contract"}],
 })
+ready["contract"]["openapi"].update({
+    "validation_status": "PASS",
+    "validation_report": "evidence/openapi-validation.json",
+    "spec_sha256": "sha256:" + "a" * 64,
+})
 ready["unresolved"] = []
 if validator.validate_profile(ready)["structural_status"] != "PASS":
     errors.append(f"resolved canonical-contract profile should pass: {validator.validate_profile(ready)}")
+
+bad = deepcopy(ready)
+bad["contract"]["openapi"].update({"validation_status": "PASS", "validation_report": None, "spec_sha256": "sha256:" + "a" * 64})
+if not any("validation_report is required" in item for item in validator.validate_profile(bad)["errors"]):
+    errors.append("passing OpenAPI validation must link its provenance report")
+
+bad = deepcopy(ready)
+bad["contract"]["openapi"].update({"compatibility_status": "NON_BREAKING", "baseline_authority": "descriptive"})
+if not any("canonical baseline" in item for item in validator.validate_profile(bad)["errors"]):
+    errors.append("descriptive contracts must not be treated as compatibility baselines")
+
+blocked = deepcopy(ready)
+blocked["contract"]["openapi"]["validation_status"] = "UNVERIFIED"
+blocked["status"] = "BLOCKED"
+if validator.validate_profile(blocked)["implementation_status"] != "BLOCKED":
+    errors.append("authoritative OpenAPI without successful validation must block readiness")
+
+blocked = deepcopy(ready)
+blocked["contract"]["openapi"].update({
+    "compatibility_required": True,
+    "baseline_authority": "canonical",
+    "compatibility_status": "UNKNOWN",
+})
+blocked["status"] = "BLOCKED"
+if validator.validate_profile(blocked)["implementation_status"] != "BLOCKED":
+    errors.append("unknown compatibility against a required canonical baseline must block readiness")
 
 bad = deepcopy(ready)
 bad["ownership"]["generated"] = ["src/client.go"]

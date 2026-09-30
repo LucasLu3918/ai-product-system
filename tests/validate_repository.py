@@ -56,6 +56,7 @@ from validation import conformance_isolation as conformance_isolation  # noqa: F
 from validation import ears_requirement_contracts as ears_requirement_contracts  # noqa: F401
 from validation import planning_package_contracts as planning_package_contracts  # noqa: F401
 from validation import implementation_profile_contracts as implementation_profile_contracts  # noqa: F401
+from validation import openapi_contracts as openapi_contracts  # noqa: F401
 from validation import retrieval_embedding_trial_contracts as retrieval_embedding_trial_contracts  # noqa: F401
 from validation import syntax_contracts as syntax_contracts  # noqa: F401
 from validation import scheduler_gate_contracts as scheduler_gate_contracts  # noqa: F401
@@ -85,6 +86,7 @@ for evidence in (
     Path(__file__).parent / "evidence/telemetry_export_lifecycle.py",
     Path(__file__).parent / "evidence/publication_transfer_lifecycle.py",
     Path(__file__).parent / "evidence/implementation_resolution_lifecycle.py",
+    Path(__file__).parent / "evidence/openapi_contracts_lifecycle.py",
 ):
     result = subprocess.run([sys.executable, str(evidence)], cwd=Path(__file__).resolve().parents[1], capture_output=True, text=True, check=False)
     if result.returncode:
@@ -97,6 +99,7 @@ errors = static_contracts.errors
 errors.extend(eval_interop_contracts.errors)
 errors.extend(telemetry_export_contracts.errors)
 errors.extend(implementation_profile_contracts.errors)
+errors.extend(openapi_contracts.errors)
 
 if errors:
     print("VALIDATION FAILED")

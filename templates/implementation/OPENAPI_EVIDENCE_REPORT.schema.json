@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aips.local/schemas/openapi-evidence-report-v1.json",
+  "title": "AIPS OpenAPI Evidence Report v1",
+  "oneOf": [
+    { "$ref": "#/$defs/validation" },
+    { "$ref": "#/$defs/compatibility" },
+    { "$ref": "#/$defs/contractTest" }
+  ],
+  "$defs": {
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "revision": { "type": "string", "pattern": "^(unbound|[0-9a-f]{40,64})$" },
+    "fileRef": {
+      "type": "object",
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/digest" }
+      },
+      "additionalProperties": false
+    },
+    "validation": {
+      "type": "object",
+      "required": ["kind", "status", "schema_version", "openapi_version", "spec", "repository_revision", "validator", "network_references"],
+      "properties": {
+        "kind": { "const": "openapi_validation" },
+        "status": { "const": "PASS" },
+        "schema_version": { "const": 1 },
+        "openapi_version": { "type": "string", "pattern": "^3\\.(0|1|2)\\.\\d+" },
+        "spec": { "$ref": "#/$defs/fileRef" },
+        "repository_revision": { "$ref": "#/$defs/revision" },
+        "validator": { "const": "openapi-spec-validator==0.9.0" },
+        "network_references": { "const": "DENIED" }
+      },
+      "additionalProperties": false
+    },
+    "change": {
+      "type": "object",
+      "required": ["classification", "location", "reason"],
+      "properties": {
+        "classification": { "enum": ["BREAKING", "NON_BREAKING", "UNKNOWN"] },
+        "location": { "type": "string" },
+        "reason": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "compatibility": {
+      "type": "object",
+      "required": ["kind", "status", "schema_version", "baseline_authority", "baseline", "candidate", "repository_revision", "automated_approval"],
+      "properties": {
+        "kind": { "const": "openapi_compatibility" },
+        "status": { "enum": ["NO_CHANGE", "NON_BREAKING", "BREAKING", "UNKNOWN", "BLOCKED"] },
+        "schema_version": { "const": 1 },
+        "baseline_authority": { "enum": ["canonical", "descriptive", "proposed", "unresolved"] },
+        "baseline": { "$ref": "#/$defs/fileRef" },
+        "candidate": { "$ref": "#/$defs/fileRef" },
+        "repository_revision": { "$ref": "#/$defs/revision" },
+        "changes": { "type": "array", "items": { "$ref": "#/$defs/change" } },
+        "reason": { "type": "string" },
+        "automated_approval": { "const": false }
+      },
+      "allOf": [
+        { "if": { "properties": { "status": { "enum": ["NO_CHANGE", "NON_BREAKING", "BREAKING", "UNKNOWN"] } } }, "then": { "required": ["changes"] } },
+        { "if": { "properties": { "status": { "enum": ["NO_CHANGE", "NON_BREAKING"] } } }, "then": { "properties": { "baseline_authority": { "const": "canonical" } } } }
+      ],
+      "additionalProperties": false
+    },
+    "contractTest": {
+      "type": "object",
+      "required": ["schema_version", "kind", "status", "spec", "repository_revision", "validator", "command", "junit", "operation_coverage", "started_at", "finished_at", "raw_output_persisted"],
+      "properties": {
+        "schema_version": { "const": 1 },
+        "kind": { "const": "openapi_contract_test" },
+        "status": { "enum": ["PASS", "FAIL", "UNVERIFIED"] },
+        "spec": { "$ref": "#/$defs/fileRef" },
+        "repository_revision": { "$ref": "#/$defs/revision" },
+        "validator": { "const": "openapi-spec-validator==0.9.0" },
+        "command": {
+          "type": "object",
+          "required": ["argv_sha256", "exit_code", "stdout_sha256", "stderr_sha256", "duration_seconds"],
+          "properties": {
+            "argv_sha256": { "$ref": "#/$defs/digest" },
+            "exit_code": { "type": "integer" },
+            "stdout_sha256": { "$ref": "#/$defs/digest" },
+            "stderr_sha256": { "$ref": "#/$defs/digest" },
+            "duration_seconds": { "type": "number", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "junit": {
+          "type": "object",
+          "required": ["path", "sha256", "cases", "failures_or_errors", "skipped"],
+          "properties": {
+            "path": { "type": "string", "minLength": 1 },
+            "sha256": { "$ref": "#/$defs/digest" },
+            "cases": { "type": "integer", "minimum": 0 },
+            "failures_or_errors": { "type": "integer", "minimum": 0 },
+            "skipped": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "operation_coverage": {
+          "type": "object",
+          "required": ["expected", "covered", "missing"],
+          "properties": {
+            "expected": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+            "covered": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+            "missing": { "type": "array", "items": { "type": "string" }, "uniqueItems": true }
+          },
+          "additionalProperties": false
+        },
+        "started_at": { "type": "string", "minLength": 1 },
+        "finished_at": { "type": "string", "minLength": 1 },
+        "raw_output_persisted": { "const": false }
+      },
+      "additionalProperties": false
+    }
+  }
+}

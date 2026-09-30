@@ -62,7 +62,7 @@ Plan
 
 Production、Git publication、merge 與 release authority 不因 Automation 或 MCP 而自動取得。
 
-Implementation Resolution 位於 Project Intelligence / Planning 與既有工程角色之間。它將契約權威、專案證據、Human 確認的技術與架構決策、ownership 和品質要求整理為有來源的 Implementation Profile，再交給既有角色實作與驗證。
+Implementation Resolution 位於 Project Intelligence / Planning 與既有工程角色之間。它將契約權威、專案證據、Human 確認的技術與架構決策、ownership 和品質要求整理為有來源的 Implementation Profile。REST/OpenAPI 實作證據驗證規格有效性、本機參照安全、canonical baseline 相容性、operation 測試覆蓋及證據 revision 新鮮度；未知差異維持待審，不會自動核准破壞性變更。
 
 ## Deterministic Execution
 

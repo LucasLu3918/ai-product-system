@@ -101,6 +101,8 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 ## Failure behavior
 
+The OpenAPI contract-test action is explicit argv evidence attached to an implementation task; it does not grant scheduler authority or bypass the task write boundary. A missing command, timeout, nonzero exit or incomplete JUnit operation coverage remains non-PASS.
+
 Publication Preflight checks runtime prerequisites before launching the expensive Integration Gate lifecycle. `ENVIRONMENT_BLOCKED` identifies missing Python/Ruff, loopback or browser capability; it is an environment result, not a Scheduler or product test failure.
 
 Optional observed-stage recording reports `DEGRADED` when a run destination is absent or event writing fails. This observation is evidence only and does not alter the command's primary status.
@@ -146,6 +148,7 @@ An optional task `review` block declares `mode: SELF_CHECK | INDEPENDENT_REVIEW`
 Execution IDs and runtime attestation are produced by the execution runtime and recorded in task state; they are not guessed from Role, model, prompt, or task labels. On completion, the Scheduler validates structured evidence. Same execution becomes `FAILED`; absent/unverifiable runtime evidence becomes `UNVERIFIED`; packet/candidate drift becomes `STALE`. A required review that does not meet its declared mode is not treated as COMPLETE for downstream dispatch. The Integration Gate separately checks the report against the exact candidate.
 
 ## Validation de-duplication boundary
+
 
 The repository validator may skip the focused Scheduler/Integration Gate lifecycle only when `AIPS_PROFILE_LIFECYCLE_ALREADY_EXECUTED=1` is injected by the deterministic Validation Profile after those checks already ran. Standalone repository validation must execute the lifecycle evidence normally.
 

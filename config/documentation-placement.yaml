@@ -72,6 +72,14 @@ legacy_append_forbidden:
   - docs/human/EVOLUTION_RADAR_OVERVIEW.html
 
 placement_rules:
+  - id: openapi-contract-evidence
+    triggers: [scripts/openapi_contracts.py, requirements-openapi.txt, templates/implementation/OPENAPI_EVIDENCE_REPORT.schema.json]
+    placements:
+      docs/human/USER_GUIDE.md: [Quality 與 Review]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Planning 與 Product Delivery, Scenario Conformance 與 Agent Eval, Deterministic Execution]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
+      docs/human/CONFORMANCE.md: [Scenario 193 — Evidence-driven Implementation Resolution]
+
   - id: installation
     triggers: [scripts/install.sh, scripts/install.ps1, scripts/uninstall.ps1, scripts/bootstrap.sh, scripts/uninstall.sh]
     placements:
@@ -132,7 +140,7 @@ placement_rules:
         - Deterministic Scheduler / Integration Gate consistency
         - Execution Isolation consistency
         - Durable Run State consistency
-      docs/human/USER_GUIDE.md: [Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release, Logging、Observability 與 Operations, Project Intelligence]
+      docs/human/USER_GUIDE.md: [需求釐清與 Planning, Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release, Logging、Observability 與 Operations, Project Intelligence]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
       docs/human/SECURITY_ASSURANCE.md: [Product baseline vs change impact, Secret and credential safety, Runtime Policy Enforcement]
@@ -163,14 +171,14 @@ placement_rules:
     triggers: [scripts/governance_guard.py, scripts/runtime_policy.py, scripts/semantic_guard.py, scripts/resource_authorization.py, scripts/external_credential_guard.py, scripts/governance_audit.py, scripts/governance_audit_retention.py, scripts/check_secret_leakage.py, config/runtime-policy.yaml, orchestration/schemas/runtime-action.yaml, config/secret-scan.yaml, config/integration-gate.yaml, .github/workflows/validate.yml, orchestration/SECRET_HANDLING.md, orchestration/INTEGRATION_GATE.md, orchestration/RESOURCE_AUTHORIZATION.md, orchestration/GOVERNANCE_AUDIT.md, orchestration/RUNTIME_POLICY_ENFORCEMENT.md, tests/evidence/runtime_policy_lifecycle.py, tests/test_runtime_policy.py, tests/validation/runtime_policy_contracts.py, tests/scenarios/177-runtime-policy-enforcement.md]
     placements:
       docs/human/SECURITY_ASSURANCE.md: [Core model, Assurance levels, Release Security Gate, Secret and credential safety, Runtime Content Safety Boundary, Runtime Policy Enforcement]
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Security 與 Governance, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Security 與 Governance, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
       docs/human/TECHNOLOGY_GUIDE.md: [Security & Governance, Execution, Quality & Verification, Runtime Content Safety Boundary, Security & Governance]
 
   - id: deterministic-execution
     triggers: [scripts/deterministic_scheduler.py, scripts/integration_gate.py, scripts/publish_preflight.py, scripts/repository_preflight.py, scripts/execution_isolation.py, scripts/run_state.py, .github/workflows/validate.yml, .github/workflows/installation-entrypoints.yml, orchestration/INTEGRATION_GATE.md, orchestration/DETERMINISTIC_SCHEDULER.md, orchestration/ORCHESTRATOR.md]
     placements:
       docs/human/USER_GUIDE.md: [Deterministic Scheduler, Execution Isolation 與 Runtime Resource, Checkpoint / Resume, Quality 與 Review, Git Publication 與 Release, Runtime Content Safety Boundary, Logging、Observability 與 Operations, Project Intelligence]
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Runtime Content Safety Boundary, Security & Governance]
       orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior, Read-only declaration and fail-closed boundary, Runtime Content Safety Boundary]
       orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight, Risk-Proportional Security Assurance, Context expansion, Checkpoint and resume, Change-class handoff to Integration Gate, Runtime Content Safety Boundary]
@@ -355,6 +363,8 @@ placement_rules:
         - Deterministic Scheduler / Integration Gate consistency
         - Durable Run State consistency
         - Public repository / CI consistency
+        - Validation architecture consistency
+        - Subsystem consistency map
         - Subsystem consistency map
 
   - id: planning-package
@@ -376,13 +386,13 @@ placement_rules:
       - tests/scenarios/191-planning-package-structural-failure-diagnostics.md
       - tests/scenarios/192-planning-package-complete-product-to-implementation.md
     placements:
-      docs/human/USER_GUIDE.md: [需求釐清與 Planning]
+      docs/human/USER_GUIDE.md: [需求釐清與 Planning, Quality 與 Review]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Quality & Verification]
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Planning 與 Product Delivery]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Planning 與 Product Delivery, Scenario Conformance 與 Agent Eval]
       docs/human/DOCUMENTATION_MAP.md: [Agent / machine canonical 文件]
       docs/human/DOCUMENTATION_SYNC.md: [Current-behavior placement contract]
-      docs/human/MAINTENANCE.md: [Subsystem consistency map]
+      docs/human/MAINTENANCE.md: [Subsystem consistency map, Public repository / CI consistency, Validation architecture consistency]
       docs/human/CONFORMANCE.md: [Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution]
       docs/ARCHITECTURE.md: [End-to-end product delivery, Implementation Resolution]
-      orchestration/PLANNING_PACKAGE.md: [Required planning artifacts, Planning Package v2 contract, Discovery and research, "Domain, UX and API traceability", Gate 1 — Planning Package Approval, Gate 2 — Implementation Readiness Approval]
+      orchestration/PLANNING_PACKAGE.md: [Required planning artifacts, Planning Package v2 contract, Discovery and research, "Domain, UX and API traceability", API_SPEC.md, Gate 1 — Planning Package Approval, Gate 2 — Implementation Readiness Approval]
       orchestration/CONFORMANCE.md: [Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution]

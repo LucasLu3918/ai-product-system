@@ -4,6 +4,8 @@ Use for complete products and material product plans to turn vague quality expec
 
 ## Quality classes
 
+For OpenAPI changes, include specification validity, compatibility evidence when a canonical baseline exists, and project-native contract-test evidence. Operation-name coverage is structural evidence only; semantic assertions and breaking-change approval remain Human-reviewed.
+
 Use one baseline, then adjust individual dimensions independently.
 
 - **Q1 — Lightweight**: personal tools, static sites, demos, low-risk internal tools.

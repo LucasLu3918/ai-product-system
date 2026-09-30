@@ -12,6 +12,8 @@ A green subset does not prove a core change is safe when an affected boundary ha
 
 ## Impact-derived Test Matrix
 
+REST/OpenAPI core changes should include lifecycle evidence for supported-spec validation, local-reference confinement, canonical-baseline comparison, project-native command execution, JUnit operation coverage and revision-bound report freshness.
+
 For Turn Context, run-event, retrieval, Agent Eval freshness, observed-stage telemetry and review-attestation changes, bind separate boundaries to executable lifecycle evidence. A trusted review matrix stays disabled until its external issuer is configured; tests with fixture keys do not establish a production trust root.
 
 Before implementation, start from `templates/review/CORE_CHANGE_TEST_MATRIX.yaml` and maintain the active candidate at `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`.

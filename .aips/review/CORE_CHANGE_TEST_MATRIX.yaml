@@ -1,57 +1,110 @@
 version: 1
 change:
-  id: retrieval-readonly-first-query
-  summary: Recover a read-only SQLite index when connection succeeds but its first
-    query fails under restricted WAL shared-memory access, preserving snapshot safety.
+  id: implementation-resolution-phase2
+  summary: Add offline OpenAPI validity/compatibility analysis, project-native contract-test evidence, and spec/JUnit/revision provenance.
   boundary:
-  - retrieval-readonly-first-query
+    - openapi-validation-and-safe-local-reference-resolution
+    - canonical-baseline-compatibility-classification
+    - argv-only-contract-test-execution-and-operation-coverage
+    - profile-evidence-schema-and-stale-report-detection
+    - phase2-scenario-documentation-and-repository-integration
 matrix:
-- boundary: retrieval-readonly-first-query
-  reason: The read-only database open, first-query failure, live-WAL refusal, checked
-    snapshot and consumer diagnostics form one safety boundary.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Python compileall and required Ruff E9/F63/F7/F82 passed for scripts
-        and tests.
-    unit:
-      applicable: true
-      evidence: Retrieval lifecycle passed connection-success/first-query-failure
-        snapshot and live-WAL refusal assertions.
-    integration:
-      applicable: true
-      evidence: Real restricted-runtime retrieval against the current main index returned
-        READY with one result; repository validation passed 193 scenarios.
-    contract:
-      applicable: true
-      evidence: Project Intelligence retrieve contract retained READY/results shape;
-        exact-candidate Gate remains required after commit.
-    e2e:
-      applicable: false
-      na_reason: No application UI or deployed service changes; retrieval lifecycle
-        exercises the observable CLI.
-    security:
-      applicable: true
-      evidence: Lifecycle asserted source index bytes unchanged and live-WAL refusal;
-        candidate-bound strict secret scan remains required by Gate.
-    migration_recovery:
-      applicable: true
-      evidence: Both connection failure and first-query failure use the checked snapshot
-        only when no live WAL; existing index is never mutated.
-    cli_harness:
-      applicable: true
-      evidence: Direct Project Intelligence retrieve and retrieval lifecycle passed
-        in the restricted runtime.
-    docs_schema:
-      applicable: true
-      evidence: Recursive documentation closure, docs-site repository preflight and
-        full repository validation passed.
+  - boundary: openapi-validation-and-safe-local-reference-resolution
+    reason: Specification correctness and local reference safety gate downstream contract-based work.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: Ruff E9/F63/F7/F82 and Python compile checks passed for affected Python modules.
+      unit:
+        applicable: true
+        evidence: Positive/negative OpenAPI and YAML duplicate-key cases pass.
+      integration:
+        applicable: true
+        evidence: Lifecycle validates OpenAPI 3.0.3, 3.1.0 and 3.2.0; network references fail without fetching.
+      contract:
+        applicable: true
+        evidence: Pinned openapi-spec-validator validates valid fixture and rejects invalid fixture.
+      e2e:
+        applicable: false
+        na_reason: No deployed service or application UI is changed; CLI lifecycle is the observable integration boundary.
+      security:
+        applicable: true
+        evidence: External URL, traversal, missing files and symlink escapes are refused; no network dereference.
+      migration_recovery:
+        applicable: false
+        na_reason: No persisted product data or schema is migrated.
+      cli_harness:
+        applicable: true
+        evidence: OpenAPI validate command returns structured PASS/BLOCKED output with a pinned tool version.
+      docs_schema:
+        applicable: true
+        evidence: OpenAPI evidence JSON Schema and usage/conformance documentation are validated by repository checks.
+  - boundary: canonical-baseline-compatibility-classification
+    reason: Contract changes need conservative, reviewable classification without assuming authority.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: Ruff E9/F63/F7/F82 and Python compile checks passed.
+      unit:
+        applicable: true
+        evidence: No-change, optional/required additions, removals, security changes and unknown schemas are covered.
+      integration:
+        applicable: true
+        evidence: CLI validates both baseline and candidate before comparing and blocks non-canonical baseline authority.
+      contract:
+        applicable: true
+        evidence: Compatibility fixture cases validate status and change-location evidence.
+      e2e:
+        applicable: false
+        na_reason: No deployed application or external consumer is available in this repository.
+      security:
+        applicable: true
+        evidence: No automatic approval; unclassified behavior remains UNKNOWN and is not a success exit code.
+      migration_recovery:
+        applicable: false
+        na_reason: No migration or persisted state change.
+      cli_harness:
+        applicable: true
+        evidence: Compare command requires explicit baseline authority and returns a machine-readable classification.
+      docs_schema:
+        applicable: true
+        evidence: Compatibility limits and Human review boundaries are documented.
+  - boundary: argv-only-contract-test-evidence-and-provenance
+    reason: Contract-test evidence must come from the current project command and remain tied to exact inputs.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: Ruff E9/F63/F7/F82 and Python compile checks passed.
+      unit:
+        applicable: true
+        evidence: JUnit operation coverage, skip/fail/missing statuses, timeout, and report schema cases are covered.
+      integration:
+        applicable: true
+        evidence: Lifecycle executes a synthetic argv command, validates JUnit, checks exact Git revision and detects changed report digest.
+      contract:
+        applicable: true
+        evidence: Report schema requires spec/JUnit hashes, argv/output digests, operation coverage and no raw output persistence.
+      e2e:
+        applicable: false
+        na_reason: Project-specific HTTP runtime and framework are intentionally supplied by the project's own contract test command.
+      security:
+        applicable: true
+        evidence: No shell execution, timeout enforced, report path confined to repository, raw stdout/stderr not persisted.
+      migration_recovery:
+        applicable: false
+        na_reason: Evidence is run-local and no persistent database is changed.
+      cli_harness:
+        applicable: true
+        evidence: run-contract-tests and verify-evidence lifecycle passes exact operation mapping and stale rejection.
+      docs_schema:
+        applicable: true
+        evidence: Evidence schema and command examples are covered by repository validation.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 7fb1b6bb18d91da6aba01965014450feb5df6da4
-  changed_files_hash: b9c895d141590068da803f4ec63a6835e01fc3d34f7073ba65befc0b71a6eb1a
+  base_sha: cd8d53452f9c9d041e6191c82656564824819d6d
+  changed_files_hash: d8a4eb12240891432cb9e558848a93aa85b173c9f5a61d4d65687dce0ba36b7c
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

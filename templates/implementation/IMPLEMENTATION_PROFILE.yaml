@@ -18,6 +18,16 @@ contract:
   affects_change: true
   resolution: unresolved # confirmed | strong_evidence | inferred | not_detected | unresolved | conflicting
   evidence: []
+  openapi:
+    validation_status: UNVERIFIED # PASS | FAIL | UNVERIFIED | BLOCKED
+    validation_report: null # Repository-relative, versioned evidence artifact
+    spec_sha256: null
+    compatibility_required: false
+    compatibility_status: UNKNOWN # NO_CHANGE | NON_BREAKING | BREAKING | UNKNOWN | BLOCKED
+    baseline_authority: unresolved # Only canonical may be automatically compared
+    compatibility_report: null
+    implementation_conformance_status: UNVERIFIED # PASS | FAIL | UNVERIFIED | BLOCKED
+    conformance_report: null
 
 technology:
   language:

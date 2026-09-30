@@ -248,12 +248,15 @@ flowchart LR
     CONTRACT --> RESOLVE[Implementation Resolution]
     ARCH --> RESOLVE
     RESOLVE --> PROFILE[Provenance-bearing Implementation Profile]
-    PROFILE --> ROLE[Existing Backend Engineer + Skills]
-    ROLE --> VERIFY[TDD + project-native verification]
+    PROFILE --> OAS[OpenAPI validation + canonical baseline compatibility]
+    OAS --> ROLE[Existing Backend Engineer + Skills]
+    ROLE --> TEST[Project-native contract / conformance tests]
+    TEST --> EVIDENCE[Bind spec + JUnit hashes + Git revision]
+    EVIDENCE --> VERIFY[TDD + project-native verification]
     VERIFY --> REVIEW[Review]
 ```
 
-The resolution/profile layer does not add a language-specific Role, Framework Skill or generator. Human-confirmed choices, project conventions, ownership, quality evidence and unresolved blockers are carried to existing implementation and review workflows.
+The resolution/profile layer does not add a language-specific Role, Framework Skill or generator. OpenAPI compatibility is automated only against an explicitly canonical baseline; unknown semantics remain unknown, and breaking changes still require Human approval. Project-native tests remain the source of runtime assertions; the evidence binder does not claim to grade their semantic quality.
 
 ## Risk-proportional security assurance
 

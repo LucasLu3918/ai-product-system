@@ -92,7 +92,37 @@ Support REST/OpenAPI first. Record authority explicitly:
 - `proposed`: contract defines a future target;
 - `unresolved`: authority is unknown.
 
-Assess contract, source, tests and observed runtime as separate evidence. Existing-project OpenAPI is not automatically canonical. Do not silently normalize drift. Classify the disagreement and ask for a decision when it materially affects implementation. Even a canonical contract does not authorize an unapproved breaking change. Full automated compatibility and conformance engines are deferred.
+Assess contract, source, tests and observed runtime as separate evidence. Existing-project OpenAPI is not automatically canonical. Do not silently normalize drift. Classify the disagreement and ask for a decision when it materially affects implementation. Even a canonical contract does not authorize an unapproved breaking change.
+
+### OpenAPI validation and compatibility
+
+For REST/OpenAPI work, use `scripts/openapi_contracts.py` when specification evidence affects the change. It supports OpenAPI 3.0, 3.1 and 3.2 through the optional pinned dependencies in `requirements-openapi.txt`; validation is offline, rejects remote references, and treats only an explicitly canonical baseline as eligible for compatibility comparison.
+
+```bash
+python scripts/openapi_contracts.py validate api/openapi.yaml --repo-root . --output /tmp/openapi-validation.json
+python scripts/openapi_contracts.py compare contracts/approved/openapi.yaml api/openapi.yaml \
+  --baseline-authority canonical --repo-root . --output /tmp/openapi-compatibility.json
+python scripts/openapi_contracts.py verify-evidence /tmp/openapi-validation.json --repo-root .
+```
+
+Only internal references and repository-local file references contained within the repository root are accepted. Network references, path traversal, missing files, unsupported versions, invalid specs and missing validator dependencies fail closed; validation never fetches a URL.
+
+Compatibility comparison requires an explicitly selected baseline whose authority is `canonical`. It reports `BREAKING`, `NON_BREAKING`, `NO_CHANGE`, `UNKNOWN` or `BLOCKED`. Operation/response removal, required parameter addition and operation ID change are breaking. Component/schema, security, path-level parameter and other unclassified behavior changes remain `UNKNOWN`; the classifier is conservative and does not claim complete consumer semantics. A breaking result never approves a contract change.
+
+### Contract-test and implementation-conformance evidence
+
+Run the project's documented contract/conformance command with argv JSON and a JUnit XML report. Do not pass a shell command string. The test command receives the desired report location in `AIPS_JUNIT_XML`.
+
+```bash
+python scripts/openapi_contracts.py run-contract-tests api/openapi.yaml --repo-root . \
+  --command '["go","test","./...","-json"]' --junit build/contract-tests.xml \
+  --output /tmp/openapi-contract-evidence.json
+python scripts/openapi_contracts.py verify-evidence /tmp/openapi-contract-evidence.json --repo-root .
+```
+
+For `PASS`, the command must exit 0, JUnit must contain at least one non-skipped test, and every OpenAPI operation ID must appear in a JUnit test name/class. Failed commands/tests report `FAIL`; timeout, skipped or missing operation coverage reports `UNVERIFIED`; malformed or unavailable evidence reports `BLOCKED`. AIPS records argv/output digests rather than raw command output. The test suite remains project-owned; operation-name matching proves declared coverage evidence, not semantic quality of the assertions.
+
+Evidence binds the spec and JUnit file hashes plus the full Git revision. `verify-evidence` reports `STALE` after any input hash or repository revision change. Re-run evidence on the exact candidate revision. Profile fields link validation, compatibility and conformance reports; a `PASS` without its report and content hash is structurally invalid.
 
 ## Architecture resolution
 
@@ -133,6 +163,8 @@ python scripts/implementation_profile_validate.py path/to/IMPLEMENTATION_PROFILE
 
 Phase 1: Resolution contract, profile template, Go/PHP/Python/.NET profiles, Project Intelligence and planning integration, structural validator, representative conformance, diagrams and Human guidance.
 
-Later: Phase 2 OpenAPI validity/compatibility, implementation conformance, contract testing and evidence provenance automation; Phase 3 deterministic ownership/provenance/drift/quality enforcement integrated into existing gates; Phase 4 justified generator adapters for transport/client boundaries only.
+Phase 2: OpenAPI validity and conservative compatibility analysis, project-native contract-test execution, operation coverage and revision/hash-bound evidence reports.
 
-Do not add language-specific Roles, framework Skills/Profiles, code-generator adapters, GraphQL/gRPC/AsyncAPI support, automatic migrations, or automatic framework modernization in Phase 1.
+Later: Phase 3 deterministic ownership/provenance/drift/quality enforcement integrated into existing gates; Phase 4 justified generator adapters for transport/client boundaries only.
+
+Do not add language-specific Roles, framework Skills/Profiles, code-generator adapters, GraphQL/gRPC/AsyncAPI support, automatic migrations, or automatic framework modernization as part of Phases 1–2.

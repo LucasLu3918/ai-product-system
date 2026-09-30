@@ -88,6 +88,8 @@ Never update only the fingerprint to make a stale result pass. The Agent respons
 
 ## Privacy / safety
 
+Implementation-resolution contract evidence is not Agent Eval evidence. OpenAPI lifecycle tests establish deterministic validator behavior; they do not score semantic recommendation quality or authorize an Agent decision.
+
 Do not persist:
 
 - chain-of-thought;
