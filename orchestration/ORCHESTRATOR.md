@@ -301,11 +301,11 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 Publication-readiness changes include the selected checkout, local documentation/build checks, Gate environment preflight and initial PR classification label in the proposal and exact-candidate evidence.
 
-The publication plan records the change-class label for the initial PR create request. A missing or invalid GitHub CLI login is reported as `AUTH_REQUIRED` with a recovery command; credential output is never included.
+The publication plan records the change-class label for the initial PR create request. An invalid GitHub CLI login is `AUTH_REQUIRED`; network or sandbox connectivity failure is `NETWORK_UNAVAILABLE`. Recovery steps differ, and credential or raw CLI output is never included.
 
 GitHub may emit a separate `labeled` event even when the label is supplied during PR creation. Validate workflow concurrency groups are action-scoped so `opened` and `labeled` checks do not cancel one another; only newer `synchronize` revisions supersede older revisions.
 
-Before commit, use the publication preview to inspect the complete working-tree file set, recursive documentation requirements and matrix hash. Synchronize only the canonical matrix binding after the scope is complete, then review the invalidated matrix evidence before Gate execution.
+Before commit, use the publication preview to inspect the complete working-tree file set, recursive documentation requirements and matrix hash. Synchronize only the selected checkout's canonical matrix binding after the scope is complete, then review the invalidated matrix evidence before Gate execution. Use the installed CLI against an explicit target for post-merge reconciliation when the target checkout may contain an older script.
 
 Treat Matrix `NEEDS_WORK` from a DRAFT status, remaining blockers, unreconciled diff or stale binding as an implementation task. Clear it before running the exact-candidate Gate; a preview readiness result never authorizes publication.
 

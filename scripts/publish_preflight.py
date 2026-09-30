@@ -417,6 +417,13 @@ def remote_policy(branch: str, offline: bool) -> dict[str, Any]:
         return {"status": "UNAVAILABLE", "reason": "GitHub CLI or GitHub origin unavailable", "next_step": "Install gh and configure a GitHub origin before publication."}
     auth = subprocess.run([gh, "auth", "status", "-h", "github.com"], cwd=ROOT, capture_output=True, text=True)
     if auth.returncode:
+        diagnostic = (auth.stderr + "\n" + auth.stdout).lower()
+        if any(marker in diagnostic for marker in (
+            "no such host", "could not resolve", "network is unreachable",
+            "temporary failure in name resolution", "connection timed out",
+            "connect: operation not permitted", "failed to connect",
+        )):
+            return {"status": "NETWORK_UNAVAILABLE", "reason": "GitHub connectivity is unavailable", "next_step": "Check network or sandbox access to api.github.com, then rerun `gh auth status -h github.com`."}
         return {"status": "AUTH_REQUIRED", "reason": "GitHub CLI authentication is unavailable", "next_step": "Run `gh auth login -h github.com`, then rerun `gh auth status -h github.com`."}
     path = remote.removeprefix("git@github.com:").removeprefix("https://github.com/").removesuffix(".git")
     proc = subprocess.run([gh, "api", f"repos/{path}/branches/{branch}/protection"], cwd=ROOT, capture_output=True, text=True)
@@ -565,18 +572,30 @@ def build_plan(args: argparse.Namespace, environment: dict[str, Any] | None = No
 
 
 def post_merge(args: argparse.Namespace) -> dict[str, Any]:
+    root = (getattr(args, "project_root", None) or ROOT).resolve()
+    if not (root / "scripts/publish_preflight.py").is_file():
+        raise PreflightError(f"not an AIPS repository: {root}")
+    def git_at(*parts: str, check: bool = True) -> str:
+        proc = subprocess.run(["git", *parts], cwd=root, capture_output=True, text=True)
+        if check and proc.returncode:
+            raise PreflightError(proc.stderr.strip() or f"git {' '.join(parts)} failed")
+        return proc.stdout.strip()
+    def git_success_at(*parts: str) -> bool:
+        return subprocess.run(["git", *parts], cwd=root, capture_output=True).returncode == 0
+    if Path(git_at("rev-parse", "--show-toplevel")).resolve() != root:
+        raise PreflightError(f"project root is not the Git top level: {root}")
     remote_ref = f"{args.remote}/{args.branch}"
     if args.fetch:
-        proc = subprocess.run(["git", "fetch", args.remote, args.branch], cwd=ROOT, capture_output=True, text=True)
+        proc = subprocess.run(["git", "fetch", args.remote, args.branch], cwd=root, capture_output=True, text=True)
         if proc.returncode:
             raise PreflightError(proc.stderr.strip() or "git fetch failed")
-    remote_sha = resolve_commit(remote_ref)
-    local_sha = resolve_commit("HEAD")
-    current_branch = git("branch", "--show-current")
-    local_tree = git("rev-parse", "HEAD^{tree}")
-    remote_tree = git("rev-parse", f"{remote_ref}^{{tree}}")
-    clean = not bool(git("status", "--porcelain"))
-    fast_forward_possible = git_success("merge-base", "--is-ancestor", local_sha, remote_sha)
+    remote_sha = git_at("rev-parse", f"{remote_ref}^{{commit}}")
+    local_sha = git_at("rev-parse", "HEAD^{commit}")
+    current_branch = git_at("branch", "--show-current")
+    local_tree = git_at("rev-parse", "HEAD^{tree}")
+    remote_tree = git_at("rev-parse", f"{remote_ref}^{{tree}}")
+    clean = not bool(git_at("status", "--porcelain"))
+    fast_forward_possible = git_success_at("merge-base", "--is-ancestor", local_sha, remote_sha)
     result: dict[str, Any] = {
         "version": 1,
         "branch": current_branch,
@@ -604,21 +623,21 @@ def post_merge(args: argparse.Namespace) -> dict[str, Any]:
         result["reason"] = "local and remote histories diverged and trees differ; automatic reconciliation is unsafe"
         return result
     backup = args.backup_branch or f"aips/pre-reconcile-{local_sha[:12]}"
-    if git_success("show-ref", "--verify", "--quiet", f"refs/heads/{backup}"):
+    if git_success_at("show-ref", "--verify", "--quiet", f"refs/heads/{backup}"):
         result["status"] = "BLOCKED"
         result["reason"] = f"backup branch already exists: {backup}"
         return result
-    subprocess.run(["git", "branch", backup, local_sha], cwd=ROOT, check=True)
+    subprocess.run(["git", "branch", backup, local_sha], cwd=root, check=True)
     if fast_forward_possible:
-        subprocess.run(["git", "merge", "--ff-only", remote_ref], cwd=ROOT, check=True, capture_output=True, text=True)
+        subprocess.run(["git", "merge", "--ff-only", remote_ref], cwd=root, check=True, capture_output=True, text=True)
         result.update({"status": "RECONCILED", "action": "FAST_FORWARD", "backup_branch": backup})
     elif local_tree == remote_tree:
-        subprocess.run(["git", "reset", "--hard", remote_ref], cwd=ROOT, check=True)
+        subprocess.run(["git", "reset", "--hard", remote_ref], cwd=root, check=True)
         result.update({"status": "RECONCILED", "action": "RESET_EQUIVALENT_TREE", "backup_branch": backup})
     if args.refresh_intelligence:
         refresh_result = subprocess.run(
-            [sys.executable, str(ROOT / "scripts/project_intelligence.py"), "refresh", "--project", str(ROOT), "--format", "json"],
-            cwd=ROOT,
+            [sys.executable, str(root / "scripts/project_intelligence.py"), "refresh", "--project", str(root), "--format", "json"],
+            cwd=root,
             capture_output=True,
             text=True,
         )
@@ -715,6 +734,7 @@ def main() -> int:
     env = subs.add_parser("environment")
     env.add_argument("--format", choices=("yaml", "json"), default="yaml")
     post = subs.add_parser("post-merge")
+    post.add_argument("--project-root", type=Path)
     post.add_argument("--remote", default="origin")
     post.add_argument("--branch", default="main")
     post.add_argument("--fetch", action="store_true")

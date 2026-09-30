@@ -334,9 +334,9 @@ Agent、MCP、CI workflow 或 external analyzer 不能因為具有執行能力�
 
 若用 GitHub Connector／API 建立 PR 分支，先確認 `aips publish environment` 可執行完整驗證；文件範圍確定後重新執行 `publish preview`。本地候選提交與 preflight 通過後，執行 `python scripts/publication_transfer.py prepare --base <base-sha> --repository <owner/name>`，核對 `origin` 與預期目的地。建立遠端 blob 與 tree 後，將 GitHub 回傳的 `repository`、`base_sha`、`tree_sha` 及逐檔 `blobs` SHA 寫入倉庫外的暫存 JSON，再執行同腳本的 `verify --base <base-sha> --repository <owner/name> --receipt <receipt.json>`。只有 `READY_TO_PUBLISH` 才能建立遠端 commit／branch；若主分支已移動，先重建候選並重驗。`publish plan` 的 `gh` 認證狀態不代表 Connector 的認證狀態，Connector 連線需在發佈工具側另行確認。
 
-若 preview 回報 Matrix DRAFT、blocker、尚未核對差異或 base/hash 不符，先處理對應 `pending`；`READY_FOR_GATE` 只表示可進入正式 Gate。從原始碼 checkout 執行時使用 `./bin/aips`，以免讀到全域安裝版本的矩陣。
+若 preview 回報 Matrix DRAFT、blocker、尚未核對差異或 base/hash 不符，先處理對應 `pending`；`READY_FOR_GATE` 只表示可進入正式 Gate。全域安裝的 `aips publish matrix-sync` 會選用目前 AIPS checkout；從其他目錄執行時必須傳 `--project-root <repo>`，避免寫入安裝目錄。從原始碼 checkout 執行時亦可使用 `./bin/aips`。
 
-本地首次驗證可先執行 `python3.12 bin/prepare-local-validation`，之後用 `python3.12 bin/prepare-local-validation --check-only --run --base <base-sha> --head <head-sha> --change-class core` 執行同一候選的 Publication Preflight 與 Gate；驗證設定會暫存在 repository 外。建立 Large/Core PR 時同時使用 `gh pr create --label aips:large-change` 或 `--label aips:core-change`，讓首輪 CI 取得正確分類。
+本地首次驗證可先執行 `python3.12 bin/prepare-local-validation --venv <validation-venv>`，之後用相同 `--venv` 加上 `--check-only --run --base <base-sha> --head <head-sha> --change-class core` 執行同一候選的 Publication Preflight 與 Gate；驗證設定會暫存在 repository 外。文件候選另需讓 Node.js 位於 `PATH`，並先在 checkout 安裝 `package.json` 的 VitePress 相依套件。建立 Large/Core PR 時同時使用 `gh pr create --label aips:large-change` 或 `--label aips:core-change`，讓首輪 CI 取得正確分類。
 
 每個 Remote Git publication candidate 都會由 AIPS 內建秘密掃描器檢查 exact final tree 和 base 到 head 的 commit 歷史。找到秘密、歷史或候選內容無法完整掃描、policy 無效時，發布檢查會阻擋並只顯示遮蔽後位置與指紋；修正後須重新驗證。Gitleaks、GitGuardian 與 GitHub Secret Scanning 可作第二層防護，不需要它們的憑證才能通過 AIPS baseline。
 
@@ -347,7 +347,7 @@ Preview 也會在昂貴驗證前檢查候選內容安全與允許的 Git email �
 
 若本機工作樹包含其他未提交變更，先建立乾淨 worktree 驗證候選；不要讓 unrelated diff 改變 changed-files hash 或 Repository Health 結果。
 
-合併後可執行 `aips publish post-merge --fetch --apply --refresh-intelligence`。工作樹乾淨且本地 `main` 是遠端目標的祖先時，工具先建立 backup branch，再以 `git merge --ff-only` 同步；若提交歷史已分歧，只有兩邊 tree object 完全相同時才採用有備份的既有對齊方式，其他情況一律停止。
+合併後可執行 `aips publish post-merge --fetch --apply --refresh-intelligence`；從其他目錄執行時加上 `--project-root <repo>`。全域 CLI 以安裝版的安全對齊邏輯操作指定 checkout，即使 checkout 本身仍含舊版腳本也能處理安全快轉。工作樹乾淨且本地 `main` 是遠端目標的祖先時，工具先建立 backup branch，再以 `git merge --ff-only` 同步；若提交歷史已分歧，只有兩邊 tree object 完全相同時才採用有備份的既有對齊方式，其他情況一律停止。
 
 Release model 與版本歷史以 repository 的 current policy / CHANGELOG 為準。
 

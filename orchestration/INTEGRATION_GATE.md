@@ -2,6 +2,8 @@
 
 Publication preflight 在昂貴的完整驗證前先執行快速文件閉包檢查；CI 也會在強制候選秘密掃描後、完整相依套件與 Chromium 安裝前執行同一 `repository_preflight.py`。完整 Integration Gate 仍是候選發布的權威驗證。候選身份政策同時檢查 base 到 head 的每一筆 commit author/committer 與所有 commit message，報告不得輸出未核准的 email 值。
 
+Local preparation failures must identify the selected validation venv and missing Node/VitePress prerequisites before the Gate; installed CLI post-merge reconciliation and matrix target routing do not alter the exact-candidate Gate result or Human approval boundary.
+
 Use before merge/publication of an integration candidate when deterministic validation can prove candidate fitness.
 
 `Janitor` is the informal name. The canonical AIPS contract is **Integration Gate**.

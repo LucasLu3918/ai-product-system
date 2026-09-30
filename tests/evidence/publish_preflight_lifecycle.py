@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import importlib.util
+import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -151,11 +153,18 @@ def main() -> int:
 
     with patch.object(publish.shutil, "which", return_value="/usr/bin/gh"), patch.object(
         publish, "git", return_value="https://github.com/owner/repo.git"
-    ), patch.object(publish.subprocess, "run", return_value=Mock(returncode=1, stderr="private error")):
+    ), patch.object(publish.subprocess, "run", return_value=Mock(returncode=1, stderr="private error", stdout="")):
         auth = publish.remote_policy("main", False)
     assert auth["status"] == "AUTH_REQUIRED"
     assert "gh auth login" in auth["next_step"]
     assert "private error" not in repr(auth)
+    with patch.object(publish.shutil, "which", return_value="/usr/bin/gh"), patch.object(
+        publish, "git", return_value="https://github.com/owner/repo.git"
+    ), patch.object(publish.subprocess, "run", return_value=Mock(returncode=1, stderr="lookup api.github.com: no such host", stdout="")):
+        network = publish.remote_policy("main", False)
+    assert network["status"] == "NETWORK_UNAVAILABLE"
+    assert "gh auth login" not in network["next_step"]
+    assert "no such host" not in repr(network)
 
     def git_fixture(*args: str) -> str:
         result = subprocess.run(["git", *args], cwd=root, check=True, capture_output=True, text=True)
@@ -164,10 +173,12 @@ def main() -> int:
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
         git_fixture("init", "-q", "-b", "main")
+        (root / "scripts").mkdir()
+        (root / "scripts/publish_preflight.py").write_text("raise SystemExit('stale target script executed')\n", encoding="utf-8")
         git_fixture("config", "user.name", "AIPS Test")
         git_fixture("config", "user.email", "noreply" + chr(64) + "github.com")
         (root / "state.txt").write_text("base\n", encoding="utf-8")
-        git_fixture("add", "state.txt")
+        git_fixture("add", "state.txt", "scripts/publish_preflight.py")
         git_fixture("commit", "-qm", "base")
         base_sha = git_fixture("rev-parse", "HEAD")
         (root / "state.txt").write_text("remote update\n", encoding="utf-8")
@@ -183,14 +194,54 @@ def main() -> int:
         assert fast_forward["status"] == "RECONCILED" and fast_forward["action"] == "FAST_FORWARD"
         assert git_fixture("rev-parse", "HEAD") == remote_sha
         assert git_fixture("rev-parse", "backup-before-fast-forward") == base_sha
+        # The current installed CLI must reconcile a checkout whose own script is stale.
+        git_fixture("reset", "--hard", base_sha)
+        git_fixture("branch", "-D", "backup-before-fast-forward")
+        env = dict(os.environ)
+        env["PATH"] = str(Path(sys.executable).parent) + os.pathsep + env.get("PATH", "")
+        routed = subprocess.run([
+            str(ROOT / "bin/aips"), "publish", "post-merge", "--project-root", str(root),
+            "--apply", "--backup-branch", "backup-before-cli-fast-forward", "--format", "json",
+        ], cwd=ROOT, capture_output=True, text=True, env=env)
+        assert routed.returncode == 0, routed.stderr
+        assert json.loads(routed.stdout)["action"] == "FAST_FORWARD"
+        assert git_fixture("rev-parse", "HEAD") == remote_sha
+        git_fixture("reset", "--hard", base_sha)
+        with patch.object(publish, "ROOT", root):
+            collision = publish.post_merge(Namespace(
+                remote="origin", branch="main", fetch=False, apply=True,
+                backup_branch="backup-before-cli-fast-forward", refresh_intelligence=False,
+            ))
+        assert collision["status"] == "BLOCKED" and "backup branch already exists" in collision["reason"]
+        assert git_fixture("rev-parse", "HEAD") == base_sha
+        (root / "state.txt").write_text("dirty\n", encoding="utf-8")
+        with patch.object(publish, "ROOT", root):
+            dirty = publish.post_merge(Namespace(
+                remote="origin", branch="main", fetch=False, apply=True,
+                backup_branch="backup-should-not-exist", refresh_intelligence=False,
+            ))
+        assert dirty["status"] == "BLOCKED" and dirty["reason"] == "working tree is dirty"
+        assert git_fixture("rev-parse", "HEAD") == base_sha
+        assert not (root / ".git/refs/heads/backup-should-not-exist").exists()
+        git_fixture("checkout", "--", "state.txt")
+        git_fixture("checkout", "-qb", "other")
+        with patch.object(publish, "ROOT", root):
+            wrong_branch = publish.post_merge(Namespace(
+                remote="origin", branch="main", fetch=False, apply=True,
+                backup_branch="backup-wrong-branch", refresh_intelligence=False,
+            ))
+        assert wrong_branch["status"] == "BLOCKED" and "checkout main" in wrong_branch["reason"]
+        assert git_fixture("rev-parse", "HEAD") == base_sha
 
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
         git_fixture("init", "-q", "-b", "main")
+        (root / "scripts").mkdir()
+        (root / "scripts/publish_preflight.py").write_text("# stale target script\n", encoding="utf-8")
         git_fixture("config", "user.name", "AIPS Test")
         git_fixture("config", "user.email", "noreply" + chr(64) + "github.com")
         (root / "state.txt").write_text("base\n", encoding="utf-8")
-        git_fixture("add", "state.txt")
+        git_fixture("add", "state.txt", "scripts/publish_preflight.py")
         git_fixture("commit", "-qm", "base")
         base_sha = git_fixture("rev-parse", "HEAD")
         (root / "state.txt").write_text("local change\n", encoding="utf-8")
@@ -210,6 +261,20 @@ def main() -> int:
         assert blocked["status"] == "BLOCKED" and "histories diverged" in blocked["reason"]
         assert git_fixture("rev-parse", "HEAD") != remote_sha
         assert not (root / ".git/refs/heads/backup-before-divergence").exists()
+
+    with tempfile.TemporaryDirectory() as td:
+        root = Path(td)
+        git_fixture("init", "-q")
+        (root / "scripts").mkdir()
+        (root / "scripts/publish_preflight.py").write_text("print('ROUTED_TO_CHECKOUT')\n", encoding="utf-8")
+        env = dict(os.environ)
+        env["PATH"] = str(Path(sys.executable).parent) + os.pathsep + env.get("PATH", "")
+        routed = subprocess.run([str(ROOT / "bin/aips"), "publish", "matrix-sync", "--base", "HEAD"],
+                                cwd=root, capture_output=True, text=True, env=env)
+        assert routed.returncode == 0 and "ROUTED_TO_CHECKOUT" in routed.stdout, routed.stderr
+        outside = subprocess.run([str(ROOT / "bin/aips"), "publish", "matrix-sync", "--base", "HEAD"],
+                                 cwd=root.parent, capture_output=True, text=True, env=env)
+        assert outside.returncode != 0 and "--project-root" in outside.stderr
 
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)
@@ -251,7 +316,7 @@ def main() -> int:
             cwd=ROOT, capture_output=True, text=True,
         )
         assert check.returncode == 2
-        assert "python3.12 bin/prepare-local-validation" in check.stderr
+        assert "--venv" in check.stderr and str(Path(td) / "missing") in check.stderr
 
     with tempfile.TemporaryDirectory() as td:
         root = Path(td)

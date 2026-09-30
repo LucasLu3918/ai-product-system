@@ -83,7 +83,7 @@ Intelligence / HTML 不保存實際 Password、Token、Private Key、Secret env 
 
 ## Retrieval Intelligence：即時按需檢索
 
-查詢與索引建置使用不同 SQLite 開啟路徑。唯讀環境無法開啟 WAL shared memory 時，若沒有待套用的 WAL，AIPS 可使用經完整性檢查的暫時快照；仍無法安全讀取時會回報索引不可用，不推測索引已損壞。
+查詢與索引建置使用不同 SQLite 開啟路徑。唯讀環境無法開啟 WAL shared memory 時，若沒有待套用的 WAL，AIPS 可使用經完整性檢查的暫時快照；仍無法安全讀取時會回報索引不可用，先檢查 runtime 對快取的讀取權限與 sandbox 限制，再考慮重建，不推測索引已損壞。
 
 Project Intelligence 不再只依賴預先整理好的 Topic。AIPS 保留原本的穩定理解層，同時加入一個可以隨時重建的 Retrieval Intelligence 快取。
 

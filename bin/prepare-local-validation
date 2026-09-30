@@ -98,12 +98,14 @@ def main() -> int:
         if not run([str(python), "-m", "playwright", "install", "chromium"], phase="Playwright Chromium"):
             return 2
     elif not python.is_file():
-        print("ENVIRONMENT_BLOCKED: validation venv is missing; run without --check-only.", file=sys.stderr)
-        print("Run `python3.12 bin/prepare-local-validation` first.", file=sys.stderr)
+        print(f"ENVIRONMENT_BLOCKED: validation venv is missing at {target}.", file=sys.stderr)
+        print(f"Run `python3.12 bin/prepare-local-validation --venv {shlex.quote(str(target))}` first, or pass --venv for an existing validation environment.", file=sys.stderr)
         return 2
 
     for module in ("ruff", "mypy", "playwright"):
         if not run([str(python), "-m", module, "--version"], phase=f"{module} availability"):
+            print(f"Selected validation venv: {target}", file=sys.stderr)
+            print(f"Install pinned dependencies with `python3.12 bin/prepare-local-validation --venv {shlex.quote(str(target))}`, or pass --venv for an existing prepared environment.", file=sys.stderr)
             return 2
 
     result = subprocess.run(
