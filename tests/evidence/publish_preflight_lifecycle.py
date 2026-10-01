@@ -4,6 +4,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import runpy
 import subprocess
 import sys
 import tempfile
@@ -26,6 +27,11 @@ def load_module():
 
 def main() -> int:
     publish = load_module()
+    local_validation = runpy.run_path(
+        str(ROOT / "bin/prepare-local-validation"),
+        run_name="prepare_local_validation_contracts",
+    )
+    assert "requirements-openapi.txt" in local_validation["REQUIREMENTS"]
     from integration_gate import GateError, matrix_fingerprint
 
     change_class, warning = publish.resolve_change_class("auto", "bug,aips:core-change")
@@ -165,6 +171,53 @@ def main() -> int:
     assert network["status"] == "NETWORK_UNAVAILABLE"
     assert "gh auth login" not in network["next_step"]
     assert "no such host" not in repr(network)
+
+    def github_api(*args, **kwargs):
+        command = args[0]
+        if command[1:3] == ["auth", "status"]:
+            return Mock(returncode=0, stderr="", stdout="Logged in")
+        if command[1:3] == ["api", "repos/owner/repo"]:
+            return Mock(returncode=0, stderr="", stdout=json.dumps({
+                "allow_merge_commit": True,
+                "allow_squash_merge": False,
+                "allow_rebase_merge": True,
+            }))
+        return Mock(returncode=1, stderr="HTTP 404: Branch not protected", stdout="")
+
+    with patch.object(publish.shutil, "which", return_value="/usr/bin/gh"), patch.object(
+        publish, "git", return_value="https://github.com/owner/repo.git"
+    ), patch.object(publish.subprocess, "run", side_effect=github_api):
+        policy = publish.remote_policy("main", False)
+    assert policy["status"] == "UNPROTECTED"
+    assert policy["merge_methods"] == ["merge_commit", "rebase"]
+
+    def repository_access_failure(*args, **kwargs):
+        command = args[0]
+        if command[1:3] == ["auth", "status"]:
+            return Mock(returncode=0, stderr="", stdout="Logged in")
+        return Mock(returncode=1, stderr="HTTP 403: private detail", stdout="")
+
+    with patch.object(publish.shutil, "which", return_value="/usr/bin/gh"), patch.object(
+        publish, "git", return_value="https://github.com/owner/repo.git"
+    ), patch.object(publish.subprocess, "run", side_effect=repository_access_failure):
+        access = publish.remote_policy("main", False)
+    assert access["status"] == "AUTH_REQUIRED"
+    assert "private detail" not in repr(access)
+
+    def branch_network_failure(*args, **kwargs):
+        command = args[0]
+        if command[1:3] == ["auth", "status"]:
+            return Mock(returncode=0, stderr="", stdout="Logged in")
+        if command[1:3] == ["api", "repos/owner/repo"]:
+            return Mock(returncode=0, stderr="", stdout=json.dumps({"allow_merge_commit": True}))
+        return Mock(returncode=1, stderr="lookup api.github.com: no such host", stdout="")
+
+    with patch.object(publish.shutil, "which", return_value="/usr/bin/gh"), patch.object(
+        publish, "git", return_value="https://github.com/owner/repo.git"
+    ), patch.object(publish.subprocess, "run", side_effect=branch_network_failure):
+        branch_network = publish.remote_policy("main", False)
+    assert branch_network["status"] == "NETWORK_UNAVAILABLE"
+    assert "no such host" not in repr(branch_network)
 
     def git_fixture(*args: str) -> str:
         result = subprocess.run(["git", *args], cwd=root, check=True, capture_output=True, text=True)

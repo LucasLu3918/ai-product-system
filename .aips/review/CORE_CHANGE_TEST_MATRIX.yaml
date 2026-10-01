@@ -1,110 +1,212 @@
 version: 1
 change:
-  id: implementation-resolution-phase2
-  summary: Add offline OpenAPI validity/compatibility analysis, project-native contract-test evidence, and spec/JUnit/revision provenance.
+  id: ci-publication-reliability
+  summary: Lock documentation dependencies, supersede duplicate PR validation runs
+    using latest labels, and report repository-supported GitHub merge methods with
+    safe API diagnostics.
   boundary:
-    - openapi-validation-and-safe-local-reference-resolution
-    - canonical-baseline-compatibility-classification
-    - argv-only-contract-test-execution-and-operation-coverage
-    - profile-evidence-schema-and-stale-report-detection
-    - phase2-scenario-documentation-and-repository-integration
+  - node-documentation-dependency-installation
+  - pull-request-validation-event-concurrency
+  - github-repository-publication-policy-diagnostics
+  - canonical-documentation-and-agent-contracts
+  - local-validation-requirement-parity
 matrix:
-  - boundary: openapi-validation-and-safe-local-reference-resolution
-    reason: Specification correctness and local reference safety gate downstream contract-based work.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: Ruff E9/F63/F7/F82 and Python compile checks passed for affected Python modules.
-      unit:
-        applicable: true
-        evidence: Positive/negative OpenAPI and YAML duplicate-key cases pass.
-      integration:
-        applicable: true
-        evidence: Lifecycle validates OpenAPI 3.0.3, 3.1.0 and 3.2.0; network references fail without fetching.
-      contract:
-        applicable: true
-        evidence: Pinned openapi-spec-validator validates valid fixture and rejects invalid fixture.
-      e2e:
-        applicable: false
-        na_reason: No deployed service or application UI is changed; CLI lifecycle is the observable integration boundary.
-      security:
-        applicable: true
-        evidence: External URL, traversal, missing files and symlink escapes are refused; no network dereference.
-      migration_recovery:
-        applicable: false
-        na_reason: No persisted product data or schema is migrated.
-      cli_harness:
-        applicable: true
-        evidence: OpenAPI validate command returns structured PASS/BLOCKED output with a pinned tool version.
-      docs_schema:
-        applicable: true
-        evidence: OpenAPI evidence JSON Schema and usage/conformance documentation are validated by repository checks.
-  - boundary: canonical-baseline-compatibility-classification
-    reason: Contract changes need conservative, reviewable classification without assuming authority.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: Ruff E9/F63/F7/F82 and Python compile checks passed.
-      unit:
-        applicable: true
-        evidence: No-change, optional/required additions, removals, security changes and unknown schemas are covered.
-      integration:
-        applicable: true
-        evidence: CLI validates both baseline and candidate before comparing and blocks non-canonical baseline authority.
-      contract:
-        applicable: true
-        evidence: Compatibility fixture cases validate status and change-location evidence.
-      e2e:
-        applicable: false
-        na_reason: No deployed application or external consumer is available in this repository.
-      security:
-        applicable: true
-        evidence: No automatic approval; unclassified behavior remains UNKNOWN and is not a success exit code.
-      migration_recovery:
-        applicable: false
-        na_reason: No migration or persisted state change.
-      cli_harness:
-        applicable: true
-        evidence: Compare command requires explicit baseline authority and returns a machine-readable classification.
-      docs_schema:
-        applicable: true
-        evidence: Compatibility limits and Human review boundaries are documented.
-  - boundary: argv-only-contract-test-evidence-and-provenance
-    reason: Contract-test evidence must come from the current project command and remain tied to exact inputs.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: Ruff E9/F63/F7/F82 and Python compile checks passed.
-      unit:
-        applicable: true
-        evidence: JUnit operation coverage, skip/fail/missing statuses, timeout, and report schema cases are covered.
-      integration:
-        applicable: true
-        evidence: Lifecycle executes a synthetic argv command, validates JUnit, checks exact Git revision and detects changed report digest.
-      contract:
-        applicable: true
-        evidence: Report schema requires spec/JUnit hashes, argv/output digests, operation coverage and no raw output persistence.
-      e2e:
-        applicable: false
-        na_reason: Project-specific HTTP runtime and framework are intentionally supplied by the project's own contract test command.
-      security:
-        applicable: true
-        evidence: No shell execution, timeout enforced, report path confined to repository, raw stdout/stderr not persisted.
-      migration_recovery:
-        applicable: false
-        na_reason: Evidence is run-local and no persistent database is changed.
-      cli_harness:
-        applicable: true
-        evidence: run-contract-tests and verify-evidence lifecycle passes exact operation mapping and stale rejection.
-      docs_schema:
-        applicable: true
-        evidence: Evidence schema and command examples are covered by repository validation.
+- boundary: node-documentation-dependency-installation
+  reason: VitePress CI builds need a deterministic dependency graph and a lockfile-aware
+    build trigger.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Workflow contracts assert Node 24, setup-node npm cache keyed by package-lock.json,
+        and npm ci.
+    unit:
+      applicable: true
+      evidence: A clean npm ci restored all 126 locked packages with npm 11.6.2.
+    integration:
+      applicable: true
+      evidence: npm run docs:build completed with VitePress 1.6.4 after npm ci.
+    contract:
+      applicable: true
+      evidence: Validation and docs-site workflow contracts use the committed npm
+        lockfile; package-lock changes trigger docs-site.
+    e2e:
+      applicable: false
+      na_reason: No deployed product or UI changed; npm ci plus the production VitePress
+        build is the relevant boundary.
+    security:
+      applicable: true
+      evidence: CI installation preserves --ignore-scripts and lockfile integrity
+        hashes; npm audit remains disabled per repository policy.
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted application data or schema changes.
+    cli_harness:
+      applicable: false
+      na_reason: This boundary changes CI dependency installation, not AIPS CLI or
+        Harness behavior.
+    docs_schema:
+      applicable: true
+      evidence: Documentation sync/placement preview is complete and the VitePress
+        site build passes.
+- boundary: pull-request-validation-event-concurrency
+  reason: Opened, label, unlabel and synchronize events must run the latest label-sensitive
+    Gate without duplicate in-progress Gate work.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Python static contracts validate the action-independent PR group and
+        cancellation policy.
+    unit:
+      applicable: true
+      evidence: Static contract cases confirm PR events share a group, pushes remain
+        isolated, and workflow_dispatch is not canceled.
+    integration:
+      applicable: true
+      evidence: Exact candidate Integration Gate and required repository aggregate
+        run after publication.
+    contract:
+      applicable: true
+      evidence: The validate workflow retains all PR event types and derives Core/Large
+        level from the latest event labels.
+    e2e:
+      applicable: false
+      na_reason: No deployed product path changes; workflow contracts and the exact
+        candidate aggregate are the observable boundary.
+    security:
+      applicable: true
+      evidence: Cancellation changes scheduling only; it does not weaken candidate
+        secret scanning, label routing or required aggregate behavior.
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted state or workflow database migration.
+    cli_harness:
+      applicable: false
+      na_reason: No CLI command or Harness behavior changes in this boundary.
+    docs_schema:
+      applicable: true
+      evidence: Conformance, Maintenance, Security Assurance, User Guide and Gate
+        protocols describe latest-event behavior.
+- boundary: github-repository-publication-policy-diagnostics
+  reason: Publication planning must distinguish GitHub API auth/network failures and
+    report only repository-enabled merge methods.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff and Python compile checks cover scripts/publish_preflight.py
+        and its lifecycle test.
+    unit:
+      applicable: true
+      evidence: Lifecycle evidence covers protected/unprotected status, merge-method
+        flags, HTTP 403, DNS failure and diagnostic redaction.
+    integration:
+      applicable: true
+      evidence: The exact candidate Gate runs offline; the publication plan performs
+        read-only GitHub metadata/policy queries when online.
+    contract:
+      applicable: true
+      evidence: Structured publish plan output includes merge_methods containing only
+        enabled repository settings.
+    e2e:
+      applicable: false
+      na_reason: The plan is read-only and no remote branch, PR, merge or release
+        side effect is part of this boundary.
+    security:
+      applicable: true
+      evidence: GitHub errors are reduced to fixed statuses/remediation; credentials
+        and raw stderr are not returned.
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted data or schema migration.
+    cli_harness:
+      applicable: true
+      evidence: Publish-preflight lifecycle and plan contract tests verify the shared
+        CLI resolver behavior.
+    docs_schema:
+      applicable: true
+      evidence: Human publication/security guidance and Agent Gate contracts are updated
+        and validated.
+- boundary: canonical-documentation-and-agent-contracts
+  reason: Document the lockfile, latest-event workflow semantics and read-only merge-method
+    diagnostics in their existing canonical sections.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Documentation placement and consistency preflight checks changed files
+        and canonical sections.
+    unit:
+      applicable: true
+      evidence: Documentation link and layout validators cover all changed Human and
+        Agent guidance.
+    integration:
+      applicable: true
+      evidence: npm run docs:build renders the updated docs site.
+    contract:
+      applicable: true
+      evidence: Documentation sync preview reports a complete recursive closure with
+        no missing required additions.
+    e2e:
+      applicable: false
+      na_reason: No user-facing application workflow changed; the documentation site
+        build covers this boundary.
+    security:
+      applicable: true
+      evidence: Security guidance states API diagnostics remain read-only and do not
+        grant merge authority.
+    migration_recovery:
+      applicable: false
+      na_reason: Documentation updates require no migration or rollback mechanism.
+    cli_harness:
+      applicable: false
+      na_reason: No CLI/Harness contract documentation or command schema changed.
+    docs_schema:
+      applicable: true
+      evidence: VitePress build plus repository documentation checks validate output.
+- boundary: local-validation-requirement-parity
+  reason: The local validation helper must install the same pinned Python requirements
+    as GitHub Actions so the exact Integration Gate can run offline with complete
+    validators.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: The local-preparation lifecycle test executes with Ruff critical rules
+        and Python compile validation.
+    unit:
+      applicable: true
+      evidence: Publication lifecycle evidence asserts requirements-openapi.txt is
+        included in the local environment dependency set.
+    integration:
+      applicable: true
+      evidence: The corrected prepare-local-validation script installed all four CI
+        requirements and reported READY.
+    contract:
+      applicable: true
+      evidence: CI workflow and local preparation dependency lists are tested for
+        parity.
+    e2e:
+      applicable: false
+      na_reason: No deployed application changed; the validation environment setup
+        and exact-candidate Gate are the integration boundary.
+    security:
+      applicable: true
+      evidence: All local requirements remain exact pinned files; the helper runs
+        the same isolated venv policy as CI.
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted product state or dependency migration.
+    cli_harness:
+      applicable: true
+      evidence: The local prepare/check-only command and exact-candidate invocation
+        are covered by the existing lifecycle contract.
+    docs_schema:
+      applicable: true
+      evidence: Maintenance and Technology Guide now document all four requirements
+        and docs site builds successfully.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: cd8d53452f9c9d041e6191c82656564824819d6d
-  changed_files_hash: d8a4eb12240891432cb9e558848a93aa85b173c9f5a61d4d65687dce0ba36b7c
+  base_sha: 877ea1d64491b83b30d77c676b145a6f088301ea
+  changed_files_hash: 6cba98908efb47c3b40053dc680b41d96e4a14766cfcd142ddc4e932079e9b81
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

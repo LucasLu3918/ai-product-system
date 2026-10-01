@@ -5,12 +5,14 @@ on:
     paths:
       - "docs/human/**"
       - "package.json"
+      - "package-lock.json"
       - ".github/workflows/docs-site.yml"
   push:
     branches: [main]
     paths:
       - "docs/human/**"
       - "package.json"
+      - "package-lock.json"
       - ".github/workflows/docs-site.yml"
   workflow_dispatch:
 
@@ -33,7 +35,9 @@ jobs:
       - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: "24"
-      - run: npm install --no-audit --no-fund --ignore-scripts
+          cache: npm
+          cache-dependency-path: package-lock.json
+      - run: npm ci --no-audit --no-fund --ignore-scripts
       - run: npm run docs:build
 
       - id: pages-state

@@ -226,29 +226,46 @@ for contract in (
     "pull_request:",
     "workflow_dispatch:",
     "concurrency:",
-    "group: validate-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.event.action || github.event_name }}",
-    "cancel-in-progress: ${{ github.event_name == 'push' || github.event.action == 'synchronize' }}",
+    "group: validate-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}",
+    "cancel-in-progress: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}",
     "github.event_name == 'push' && github.event.before",
 ):
     if contract not in workflow_text:
         errors.append(f"validate workflow missing CI-noise contract: {contract}")
 
-def validate_concurrency_group(action: str | None, event_name: str, pr_number: int = 191, head_sha: str = "") -> str:
-    return f"validate-validate-{pr_number}-{action or event_name}"
+def validate_concurrency_group(action: str | None, event_name: str, pr_number: int = 191) -> str:
+    ref = f"{pr_number}" if event_name == "pull_request" else "refs/heads/main"
+    return f"validate-validate-{ref}"
 
 
 def validate_concurrency_cancels(action: str | None, event_name: str) -> bool:
-    return event_name == "push" or action == "synchronize"
+    return event_name in {"push", "pull_request"}
 
 
-if validate_concurrency_group("opened", "pull_request") == validate_concurrency_group("labeled", "pull_request"):
-    errors.append("validate workflow must isolate opened and labeled PR runs")
-if validate_concurrency_group("synchronize", "pull_request", head_sha="old") != validate_concurrency_group("synchronize", "pull_request", head_sha="new"):
-    errors.append("repeated synchronize events must share a concurrency group")
-if any(validate_concurrency_cancels(action, "pull_request") for action in ("opened", "labeled", "unlabeled")):
-    errors.append("PR lifecycle events must not cancel one another")
-if not validate_concurrency_cancels("synchronize", "pull_request") or not validate_concurrency_cancels(None, "push"):
-    errors.append("superseded synchronize and push runs must remain cancellable")
+pr_actions = ("opened", "synchronize", "labeled", "unlabeled")
+if len({validate_concurrency_group(action, "pull_request") for action in pr_actions}) != 1:
+    errors.append("validate PR lifecycle actions must share a concurrency group")
+if not all(validate_concurrency_cancels(action, "pull_request") for action in pr_actions):
+    errors.append("a newer PR event must supersede the active validation for that PR")
+if validate_concurrency_group(None, "pull_request") == validate_concurrency_group(None, "push"):
+    errors.append("PR validation must not share a concurrency group with main pushes")
+if validate_concurrency_cancels(None, "workflow_dispatch") or not validate_concurrency_cancels(None, "push"):
+    errors.append("only PR events and pushes must cancel superseded validations")
+
+package_json = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
+package_lock = json.loads((ROOT / "package-lock.json").read_text(encoding="utf-8")) if (ROOT / "package-lock.json").exists() else {}
+if package_lock.get("lockfileVersion") != 3:
+    errors.append("documentation dependencies require an npm lockfile version 3")
+elif package_lock.get("packages", {}).get("", {}).get("devDependencies") != package_json.get("devDependencies"):
+    errors.append("package-lock.json root devDependencies must match package.json")
+for workflow_path in (".github/workflows/validate.yml", ".github/workflows/docs-site.yml"):
+    workflow = (ROOT / workflow_path).read_text(encoding="utf-8")
+    for contract in ("node-version: \"24\"", "cache: npm", "cache-dependency-path: package-lock.json", "npm ci --no-audit --no-fund --ignore-scripts"):
+        if contract not in workflow:
+            errors.append(f"{workflow_path} missing reproducible docs dependency contract: {contract}")
+if (ROOT / ".github/workflows/docs-site.yml").read_text(encoding="utf-8").count('"package-lock.json"') != 2:
+    errors.append("docs-site pull_request and main push path filters must include package-lock.json")
+
 for action in ("actions/checkout", "actions/setup-python"):
     match = re.search(r"uses:\s*" + re.escape(action) + r"@([0-9a-f]{40})(?:\s|$)", workflow_text)
     if not match:

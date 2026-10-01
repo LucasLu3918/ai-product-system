@@ -35,6 +35,8 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 The validation workflow keeps Gate and Repository Health evidence in the CI runner temporary directory until checks finish, then uploads those files as artifacts. This preserves exact-revision evidence for the repository validator.
 
+Both validation and docs-site workflows use Node 24 with `npm ci` and the repository lockfile; setup-node caches against `package-lock.json`. Publication Preflight reports the repository's enabled merge methods and distinguishes GitHub API network/access failures without changing the Human-controlled merge route.
+
 Protected `main` publication must wait for the exact PR candidate's required `repository` aggregate to pass.
 
 For a candidate built in a shared workspace, first snapshot the intended head and validate it in a clean worktree. Unrelated dirty changes must remain outside the candidate; a changed-files hash or Matrix computed before the final commit is invalid after scope changes.
@@ -306,7 +308,7 @@ Publication-readiness changes include the selected checkout, local documentation
 
 The publication plan records the change-class label for the initial PR create request. An invalid GitHub CLI login is `AUTH_REQUIRED`; network or sandbox connectivity failure is `NETWORK_UNAVAILABLE`. Recovery steps differ, and credential or raw CLI output is never included.
 
-GitHub may emit a separate `labeled` event even when the label is supplied during PR creation. Validate workflow concurrency groups are action-scoped so `opened` and `labeled` checks do not cancel one another; only newer `synchronize` revisions supersede older revisions.
+GitHub may emit a separate `labeled` event even when the label is supplied during PR creation. Group validation runs by PR number and allow the newest PR event to supersede an in-progress run; the active run then uses the latest labels to select the correct Gate.
 
 Before commit, use the publication preview to inspect the complete working-tree file set, recursive documentation requirements and matrix hash. Synchronize only the selected checkout's canonical matrix binding after the scope is complete, then review the invalidated matrix evidence before Gate execution. Use the installed CLI against an explicit target for post-merge reconciliation when the target checkout may contain an older script.
 
