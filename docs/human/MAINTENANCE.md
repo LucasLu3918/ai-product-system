@@ -281,6 +281,8 @@ The working-tree preview scans candidate additions and complete untracked files.
 
 When publication preflight changes, keep the working-tree preview, content safety findings, configured Git identity checks and exact-candidate resolver aligned with CI.
 
+The GitHub validation and docs-site workflows use Node 24, the committed `package-lock.json`, `npm ci`, and setup-node's npm cache keyed by that lockfile. A lockfile change triggers the docs-site build, so dependency changes receive the same build check as documentation edits. Publication Preflight also queries repository metadata to list enabled merge methods before operators choose the supported PR merge route; network and API authorization failures remain separate diagnostics.
+
 Every publication candidate also runs the built-in strict secret scan before dependency installation in GitHub Actions and during local publication preflight. The Integration Gate repeats the scan as required candidate-bound evidence. Both use `config/secret-scan.yaml`, scan final content plus `base..head` history, ignore no inline bypass markers and fail closed on incomplete input. Keep the single `repository` required-check context; the Janitor aggregate continues to carry failures.
 
 Before committing, `aips publish preview --base <base> --change-class <class>` reports documentation closure with the rule responsible for each required file and checks the candidate Core Matrix binding. After reviewing the final change boundary, `aips publish matrix-sync --base <base>` can refresh the canonical matrix base/hash fields. This does not mark the matrix ready or reconciled.
@@ -290,9 +292,9 @@ Before committing, `aips publish preview --base <base> --change-class <class>` r
 Portable Command 變更必須同時驗證 Registry、renderer、CLI lifecycle、MCP read-only facade、ownership conflict 與相關 canonical documentation；版本更新不得把 Host-native capability 誤標為已驗證。
 本機與 GitHub 必須透過 `scripts/publish_preflight.py` 共用 base/head、change class、canonical matrix 與 diff-aware documentation base。發布提案前先執行 `aips publish plan`，確認 protected branch 路由與 PR label；未帶 `AIPS_DOCS_DIFF_BASE` 的一般 validation 不得宣稱為 CI-parity 證據。
 
-本地首次執行 Gate 前，以 Python 3.12 執行 `python3.12 bin/prepare-local-validation`。它在系統暫存目錄建立獨立 venv，安裝與 CI 相同的三份 requirements 和 Playwright Chromium，接著檢查 `ruff`、`mypy`、瀏覽器及 localhost。之後可執行 `python3.12 bin/prepare-local-validation --check-only --run --base <base-sha> --head <head-sha> --change-class core`，用既有環境執行 exact-candidate Publication Preflight 與 Gate；它會將 `PATH` 指向 venv，並以暫存 `XDG_CONFIG_HOME` 隔離測試設定。若輸出 `ENVIRONMENT_BLOCKED`，先依診斷修復執行環境，再判讀程式測試結果。`--check-only` 不安裝套件；Gate 報告路徑可用 `--output` 指定。
+本地首次執行 Gate 前，以 Python 3.12 執行 `python3.12 bin/prepare-local-validation`。它在系統暫存目錄建立獨立 venv，安裝與 CI 相同的四份 requirements（包含 OpenAPI validator）和 Playwright Chromium，接著檢查 `ruff`、`mypy`、瀏覽器及 localhost。之後可執行 `python3.12 bin/prepare-local-validation --check-only --run --base <base-sha> --head <head-sha> --change-class core`，用既有環境執行 exact-candidate Publication Preflight 與 Gate；它會將 `PATH` 指向 venv，並以暫存 `XDG_CONFIG_HOME` 隔離測試設定。若輸出 `ENVIRONMENT_BLOCKED`，先依診斷修復執行環境，再判讀程式測試結果。`--check-only` 不安裝套件；Gate 報告路徑可用 `--output` 指定。
 
-建立已核准的 Large/Core PR 時，在 `gh pr create` 同一命令附上 `--label aips:large-change` 或 `--label aips:core-change`，讓首次 `opened` 事件即使用正確分類；GitHub 仍可能額外送出 `labeled` 事件，工作流程會為 PR 動作使用獨立併發群組。只有較新的 `synchronize` 更新會取代同 PR 較舊的 `synchronize` 執行。檢查最新同一候選 SHA 的 required aggregate，避免把被取代的執行判成測試失敗。
+建立已核准的 Large/Core PR 時，在 `gh pr create` 同一命令附上 `--label aips:large-change` 或 `--label aips:core-change`，讓首次 `opened` 事件即使用正確分類。PR number 共用併發群組；較新的 PR action 會取代同 PR 舊 run，並按最新 labels 執行。檢查最新候選 SHA 的 required aggregate，避免把被取代的執行判成測試失敗。
 
 若 Turn Context 回報 `INDEX_UNAVAILABLE`／`SQLITE_OPEN_FAILED`，先確認目前 runtime 可讀取 `XDG_CACHE_HOME` 中的 SQLite 檔案，並排除 sandbox 存取限制；權限正常仍持續失敗時，再執行 `aips intelligence index --project "$PWD" --force`。索引是可重建的快取；`SEMANTIC_REFRESH_REQUIRED` 則表示來源內容變更，仍需依 Project Intelligence 流程檢視受影響的語意主題。
 

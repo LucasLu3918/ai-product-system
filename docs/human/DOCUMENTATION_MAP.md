@@ -99,6 +99,8 @@ Publication Preflight 由 Maintenance、User Guide、Architecture Overview 與 T
 
 Publication Preflight 也管理 candidate head/base、changed-files hash、documentation closure 與 browser smoke probe；視覺證據優先使用 Playwright managed Chromium，系統 Chrome 啟動失敗歸類為環境阻擋。
 
+Node documentation dependencies are locked by `package-lock.json` and installed with `npm ci` in validation and docs-site workflows. The publication plan reports the GitHub repository's enabled merge methods alongside its existing branch-protection and access diagnostics.
+
 `orchestration/CONFORMANCE.md` 的 Runtime／MCP Scenario 行為由 harness placement rule 管理；變更時同步既有 Harness、Runtime Architecture 與 Runtime Technology 主題，不建立第二套 current-behavior 分類。
 
 Temporal Project Intelligence 的 Human 說明由 `PROJECT_INTELLIGENCE.md` 負責；其 current/as-of/between/why 查詢、Git revision provenance、validity interval 與 supersession 語義，必須與 Agent protocol、Technology Guide 及 Conformance evidence 一起維護。

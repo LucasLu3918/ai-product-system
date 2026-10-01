@@ -4,6 +4,8 @@ Publication preflight 在昂貴的完整驗證前先執行快速文件閉包檢�
 
 Local preparation failures must identify the selected validation venv and missing Node/VitePress prerequisites before the Gate; installed CLI post-merge reconciliation and matrix target routing do not alter the exact-candidate Gate result or Human approval boundary.
 
+Documentation dependencies are installed with `npm ci` from the committed `package-lock.json`; setup-node caches npm packages using that file, and lockfile changes trigger the docs-site build. Lockfile drift therefore fails the same required candidate workflow before the Gate runs.
+
 Use before merge/publication of an integration candidate when deterministic validation can prove candidate fitness.
 
 `Janitor` is the informal name. The canonical AIPS contract is **Integration Gate**.
@@ -119,7 +121,7 @@ The preflight also requires a clean exact candidate checkout and validates the M
 
 Before starting the full Gate, `aips publish preflight` checks the selected Python runtime, PyYAML, Ruff, loopback binding and browser launch capability. An environment blocker returns its exact check and remediation before candidate scans or lifecycle tests run. The repository preflight also checks local links in changed Markdown files; `--docs-build` builds VitePress when documentation paths changed. The normal local publication path enables this build automatically.
 
-For Core/Large PRs, create the pull request with its `aips:core-change` or `aips:large-change` label in the initial request (the plan prints the matching `gh pr create --label ...` command). This helps the `opened` run use the intended matrix. GitHub may also emit a separate `labeled` event; the workflow assigns distinct concurrency groups so those runs do not cancel one another. Newer `synchronize` runs may cancel superseded `synchronize` runs for the same PR. `remote.status: AUTH_REQUIRED` means the GitHub CLI cannot perform that command yet; run `gh auth login -h github.com` and verify with `gh auth status -h github.com`, or use another already-authorized publication route.
+For Core/Large PRs, create the pull request with its `aips:core-change` or `aips:large-change` label in the initial request (the plan prints the matching `gh pr create --label ...` command). This helps the `opened` run use the intended matrix. The workflow groups all actions by PR number; a newer `labeled` or `synchronize` run cancels an in-progress older run and evaluates the latest event payload. Confirm the latest candidate SHA's aggregate after any cancellation. `remote.status: AUTH_REQUIRED` means the GitHub CLI cannot perform that command yet; run `gh auth login -h github.com` and verify with `gh auth status -h github.com`, or use another already-authorized publication route.
 
 For pull-request validation, the caller should provide `--base-tip <fresh-target-ref>` after freshly fetching the target branch.
 

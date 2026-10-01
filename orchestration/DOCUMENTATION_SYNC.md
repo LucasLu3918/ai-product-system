@@ -97,6 +97,8 @@ The Parallel Run Dashboard is registered as a read-only projection surface. Its 
 
 The `deterministic-execution` rule binds Scheduler / Integration Gate implementation, Task Graph / Validation Profile contracts, validation dependencies and the GitHub validation workflow to their Human architecture/user guidance and Agent orchestration protocols.
 
+Validation and docs-site workflow changes that affect Node dependencies must keep `package-lock.json`, `npm ci`, setup-node caching and lockfile path triggers synchronized. Publication Preflight's merge-method and GitHub API diagnostics remain read-only guidance and preserve Human merge authority.
+
 The Planning Package v2 manifest, product research/domain templates, validator, reusable skills and selectively loaded domain references extend that same rule. Keep legacy package compatibility, human approval authority and the boundary between structural evidence and semantic review explicit in both audiences. Scenario 183–192 coverage is recorded in the shared registry; Scenario 192 stays manual.
 
 The `requirement-planning` rule binds requirement clarification, Planning Package templates, the optional EARS requirements registry and its deterministic structure checker to User Guide / Technology Guide guidance, Scenario 174 evidence, and the canonical Agent protocols. The checker exposes JSON PASS/FAIL and zero/non-zero exit status for automation; these indicate structural validity only. Structure validation does not replace semantic review or test execution.

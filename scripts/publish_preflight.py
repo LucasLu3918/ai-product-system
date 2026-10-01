@@ -426,11 +426,43 @@ def remote_policy(branch: str, offline: bool) -> dict[str, Any]:
             return {"status": "NETWORK_UNAVAILABLE", "reason": "GitHub connectivity is unavailable", "next_step": "Check network or sandbox access to api.github.com, then rerun `gh auth status -h github.com`."}
         return {"status": "AUTH_REQUIRED", "reason": "GitHub CLI authentication is unavailable", "next_step": "Run `gh auth login -h github.com`, then rerun `gh auth status -h github.com`."}
     path = remote.removeprefix("git@github.com:").removeprefix("https://github.com/").removesuffix(".git")
+    repository = subprocess.run([gh, "api", f"repos/{path}"], cwd=ROOT, capture_output=True, text=True)
+    if repository.returncode:
+        diagnostic = (repository.stderr + "\n" + repository.stdout).lower()
+        if any(marker in diagnostic for marker in (
+            "no such host", "could not resolve", "network is unreachable",
+            "temporary failure in name resolution", "connection timed out",
+            "connect: operation not permitted", "failed to connect",
+        )):
+            return {"status": "NETWORK_UNAVAILABLE", "reason": "GitHub connectivity is unavailable", "next_step": "Check network or sandbox access to api.github.com, then rerun `gh auth status -h github.com`."}
+        if any(marker in diagnostic for marker in ("http 401", "http 403", "bad credentials", "resource not accessible")):
+            return {"status": "AUTH_REQUIRED", "reason": "GitHub API access to the repository is unavailable", "next_step": "Verify repository access with `gh auth status -h github.com` and ensure the token can read repository metadata."}
+        return {"status": "UNAVAILABLE", "reason": "repository metadata query failed", "next_step": "Check GitHub CLI repository access and rerun publication plan."}
+    try:
+        repository_data = json.loads(repository.stdout)
+    except json.JSONDecodeError:
+        return {"status": "UNAVAILABLE", "reason": "repository metadata response was invalid", "next_step": "Retry the GitHub repository metadata query before publication."}
+    merge_methods = [
+        name for key, name in (
+            ("allow_merge_commit", "merge_commit"),
+            ("allow_squash_merge", "squash"),
+            ("allow_rebase_merge", "rebase"),
+        ) if repository_data.get(key) is True
+    ]
     proc = subprocess.run([gh, "api", f"repos/{path}/branches/{branch}/protection"], cwd=ROOT, capture_output=True, text=True)
     if proc.returncode == 0:
-        return {"status": "PROTECTED", "publication_route": "pull_request"}
+        return {"status": "PROTECTED", "publication_route": "pull_request", "merge_methods": merge_methods}
     if "Branch not protected" in proc.stderr or "404" in proc.stderr:
-        return {"status": "UNPROTECTED", "publication_route": "direct_or_pull_request"}
+        return {"status": "UNPROTECTED", "publication_route": "direct_or_pull_request", "merge_methods": merge_methods}
+    diagnostic = (proc.stderr + "\n" + proc.stdout).lower()
+    if any(marker in diagnostic for marker in (
+        "no such host", "could not resolve", "network is unreachable",
+        "temporary failure in name resolution", "connection timed out",
+        "connect: operation not permitted", "failed to connect",
+    )):
+        return {"status": "NETWORK_UNAVAILABLE", "reason": "GitHub connectivity is unavailable", "next_step": "Check network or sandbox access to api.github.com, then rerun publication plan."}
+    if any(marker in diagnostic for marker in ("http 401", "http 403", "bad credentials", "resource not accessible")):
+        return {"status": "AUTH_REQUIRED", "reason": "GitHub branch policy could not be read", "next_step": "Verify repository access with `gh auth status -h github.com` and ensure the token can read branch settings."}
     return {"status": "UNAVAILABLE", "reason": "branch protection query failed", "next_step": "Check GitHub CLI repository access and rerun publication plan."}
 
 

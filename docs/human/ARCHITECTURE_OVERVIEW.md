@@ -74,7 +74,7 @@ Publication Preview 在工作樹階段讀取文件位置契約與 Core Matrix �
 
 兩者共用 Core Matrix 就緒條件；預覽會在 DRAFT、blocker、未核對差異或過期綁定時回報 `NEEDS_WORK`，避免正式 Gate 才發現同一問題。
 
-GitHub validation 依 pull request action 分隔併發群組，讓 `opened` 與 `labeled` 檢查各自完成；只有較新的 `synchronize` 或 `main` push 可取消同類舊執行。合併後，本地 `main` 僅在乾淨且為遠端祖先時快轉；分歧且 tree 不同時停止。
+GitHub validation 以 PR number 共用併發群組；較新的 `opened`、`labeled`、`unlabeled` 或 `synchronize` run 會取代同 PR 舊 run，避免同一候選同時重複消耗 Gate。新事件的 label 狀態決定當前 Gate 分級；合併後，本地 `main` 僅在乾淨且為遠端祖先時快轉，分歧且 tree 不同時停止。
 
 核心變更需要獨立審查時，AIPS 先從核准來源建立有上限且可指紋驗證的 review packet，再交給沒有沿用實作者對話、具唯讀權限的 reviewer 執行。審查 evidence 綁定精確 base/head、變更檔案與 packet；執行身分、context 隔離或唯讀權限缺少可信 runtime 證明時標記 `UNVERIFIED`，必需的審查不能通過 Integration Gate。目前尚未連接可信 runtime-attestation verifier，因此只有欄位或簽章格式正確仍不能驗證。`SELF_CHECK` 不會被稱為獨立審查。Gate 僅驗證 evidence 與候選版本，不取代語意審查，也不取得合併權。
 
@@ -132,6 +132,8 @@ Change Impact unknown 可以記錄 evidence-backed disposition；Legacy string�
 Publication Preflight keeps checkout selection, changed-document link/build checks and Integration Gate environment diagnostics in the existing publication path; an explicit project root keeps the CLI, scripts, configuration and candidate on one checkout. These checks report readiness and do not grant publication or merge authority.
 
 Remote Git publication has a mandatory candidate secret scan inside the existing Publication Preflight and Integration Gate flow. It checks the final tree and all candidate commits, binds redacted evidence to the candidate, policy and scanner hashes, and blocks incomplete scans. CI then runs the same repository preflight before installing full dependencies and Chromium. It reuses the built-in scanner and adds no approval authority or required external service.
+
+The validation and documentation workflows install VitePress with `npm ci` from the committed `package-lock.json` and cache npm data against that lockfile. Publication Preflight reads enabled GitHub merge methods and reports API network or access failures separately; the result is diagnostic and never grants merge authority.
 
 EARS validator contract-only changes use the Scenario Conformance documentation closure; changes to requirement planning behavior, templates, or canonical requirements retain the full planning closure.
 

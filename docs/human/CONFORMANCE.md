@@ -41,6 +41,8 @@ Scenario 111/114 覆蓋 risk/data-aware resolver：無啟用 provider 時為 `UN
 
 Scenario 178 validates the opt-in independent-review contract, including required-mode fail-closed behavior. The active repository matrix currently disables PR enforcement until a trusted runtime-attestation verifier is available; lifecycle fixtures do not claim live runtime attestation.
 
+The CI lifecycle contract groups PR validation by PR number. A newer `opened`, `labeled`, `unlabeled` or `synchronize` event replaces an in-progress run and evaluates the latest label state; canceled runs do not produce a successful required aggregate.
+
 Publication lifecycle evidence compares Matrix preview and Gate across DRAFT, blocker, unreconciled diff, stale binding and READY cases; the CI contract also preserves failure for active Janitor failures while skipping the aggregate for superseded canceled runs.
 
 ## v0.14.1 Legacy Scenario Reconciliation
@@ -112,7 +114,7 @@ Eval Case
 
 AIPS Core 不在 CI 裡呼叫特定模型 API。CI 驗證的是已記錄的 observable Result 是否仍綁定目前 Case，以及 rubric 是否通過。
 
-GitHub PR validation 也以精確候選為邊界：`opened` 與 `labeled` 使用不同併發群組；新 `synchronize` 可取代同 PR 舊 revision 的執行。被取消的舊 run 不代表 PASS，仍須確認最新候選 SHA 的 required `repository` aggregate。
+GitHub PR validation 也以精確候選為邊界：同一 PR 的 `opened`、`labeled`、`unlabeled` 與 `synchronize` 共用併發群組，較新的事件會取代舊執行並依最新 label 狀態選擇 Gate。被取消的舊 run 不代表 PASS，仍須確認最新候選 SHA 的 required `repository` aggregate。
 
 第一批 Agent Eval：
 
@@ -1270,6 +1272,7 @@ Scenario 164 驗證只支援 MCP Tools 的 Host 仍能透過唯讀 catalog／rea
 Scenario 165 now verifies working-tree previews include uncommitted paths, documentation requirements include their triggering rules, Matrix rebinding clears prior readiness, declared unittest counts are enforced, and PR classification-label changes rerun CI.
 
 Scenario 165 驗證本機與 GitHub Actions 共用同一個 exact-candidate resolver，統一解析 base/head、PR label change class、canonical Core Change Test Matrix 與文件 diff base。快速 diff／文件檢查會先執行；localhost 或 browser 能力不足會明確標為 `ENVIRONMENT_BLOCKED`。
+
 
 Lifecycle evidence 同時驗證 Git-ignored metadata、遞迴文件影響、安全的 tree-equivalent post-squash reconciliation，以及 Project Intelligence revision refresh 的 fail-closed 條件。發布、reset 與 merge authority 仍由 Human 控制。
 

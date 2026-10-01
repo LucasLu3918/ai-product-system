@@ -48,7 +48,9 @@ Deterministic Scheduler 可將派送 task 綁定到 AIPS worktree、runtime exec
 
 Core、Recall 與 temporal evidence 共用硬預算；Index 開啟或查詢失敗時提供穩定診斷與修復提示，並回退至 canonical source pointers。`READY` 對帳綁定 Git base/head、乾淨且位於 head 的工作樹、實際 binary diff digest、變更路徑與宣告範圍；僅填狀態或人工提供 digest 不構成證據。
 
-本地發布驗證可由 `bin/prepare-local-validation` 在 repository 外的暫存目錄準備 Python 3.12 venv、CI requirements 與 Chromium；`--check-only --run --base <sha> --head <sha>` 使用同一 `--venv` 執行既有 `publish_preflight.py`，並把驗證設定放在暫存 `XDG_CONFIG_HOME`。缺少套件時錯誤會指出實際選用的 venv；文件建置另需 Node.js 與 checkout 的 VitePress 相依套件。檢索索引使用 `XDG_CACHE_HOME` 下可重建的 SQLite 快取；SQLite 唯讀連線或首次查詢因 sandbox 失敗時，沒有 live WAL 才可複製穩定來源並驗證暫時快照。無法安全讀取時先查 runtime 權限，持續失敗才重建，不改寫 canonical Intelligence。
+本地發布驗證可由 `bin/prepare-local-validation` 在 repository 外的暫存目錄準備 Python 3.12 venv、與 CI 相同的四份 requirements（包含 OpenAPI validator）及 Chromium；`--check-only --run --base <sha> --head <sha>` 使用同一 `--venv` 執行既有 `publish_preflight.py`，並把驗證設定放在暫存 `XDG_CONFIG_HOME`。缺少套件時錯誤會指出實際選用的 venv；文件建置另需 Node.js 與 checkout 的 VitePress 相依套件。檢索索引使用 `XDG_CACHE_HOME` 下可重建的 SQLite 快取；SQLite 唯讀連線或首次查詢因 sandbox 失敗時，沒有 live WAL 才可複製穩定來源並驗證暫時快照。無法安全讀取時先查 runtime 權限，持續失敗才重建，不改寫 canonical Intelligence。
+
+CI 的文件建置使用 Node 24、npm lockfile version 3 和 `npm ci --ignore-scripts`；`actions/setup-node` 以 `package-lock.json` 為快取鍵。更新 `package.json` 相依套件時需一併更新 lockfile，並驗證 `npm ci` 與 `npm run docs:build`。
 
 驗證原始碼 checkout 時以 `./bin/aips` 呼叫本地 CLI；受限執行環境先由 `prepare-local-validation` 檢查 localhost 與瀏覽器能力，再解讀完整驗證的結果。
 
@@ -88,7 +90,7 @@ CI 在強制候選秘密掃描後先執行輕量 repository preflight，再安�
 
 Publication Preflight 是 Local／CI 共用的 candidate resolver，並在完整 Gate 前執行 diff-aware repository preflight。Change class 來自明確參數或 PR labels；Large/Core 只接受 canonical Matrix path。遠端保護查詢與 environment probe 只產生 evidence，不取得 publication authority。
 
-Validation workflow 的 concurrency group 包含 PR action，避免建立 PR 的 `opened` run 與分類標籤的 `labeled` run 互相取消；同一 PR 的新 `synchronize` revision 可取消舊 revision，main push 也可取代舊 push。
+Validation workflow 的 concurrency group 以 PR number 識別；新 PR action 會取消同 PR 進行中的舊 run，並以最新 label payload 選擇 Gate。main push 使用分開的 ref group，可取代同 branch 舊 push。
 
 Browser runtime 以 Playwright managed Chromium 為首選，system Chrome 透過 `AIPS_BROWSER_PROVIDER=system` 明確選用或作 auto fallback。Preflight 會執行 version 與 isolated-profile headless smoke probe；binary 存在但無法啟動時，結果是 `ENVIRONMENT_BLOCKED` 而非產品測試失敗。
 
