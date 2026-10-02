@@ -45,8 +45,8 @@ matrix:
         exit semantics.
     docs_schema:
       applicable: true
-      evidence: Maintenance and Core Change Testing document the single-execution
-        rule.
+      evidence: Maintenance, Core Change Testing, and required documentation placements
+        document the single-execution rule and its validation scope.
 - boundary: local-and-ci-timing-artifacts
   reason: Compare the previous PR/main module timings with the candidate timing artifact;
     full PR and main Gates remain mandatory.
@@ -96,8 +96,8 @@ matrix:
         validation.
     integration:
       applicable: true
-      evidence: Exact-candidate preflight checks matrix binding
-      documentation impact and Gate status.: null
+      evidence: Exact-candidate preflight checks matrix binding, documentation impact,
+        and Gate status.
     contract:
       applicable: true
       evidence: Workflow still requires janitor success through the repository aggregate.
@@ -112,20 +112,20 @@ matrix:
       na_reason: No persisted product state changes.
     cli_harness:
       applicable: true
-      evidence: Publication preview
-      plan and post-merge reconciliation use existing commands.: null
+      evidence: Publication preview, plan, and post-merge reconciliation use existing
+        commands.
     docs_schema:
       applicable: true
       evidence: Recursive documentation placement, changed Markdown links, and VitePress
         build pass for affected docs.
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
+actual_diff_reconciled: true
 blockers:
-- candidate binding refreshed; review scope and evidence before marking READY
+  - candidate binding refreshed; review scope and evidence before marking READY
 candidate:
   base_sha: 1374ea576c5ffcfccbd7c9916f07f463b7acdfbc
-  changed_files_hash: 045ad2f4f7138d1126b5a3066a3dc613ae544f88cdf4e5beb05b6f1400694f80
+  changed_files_hash: dd98895b5d15e33afbaa8143d750965cd1924ec64761c74f8a2ee900a48d849c
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
-status: DRAFT
+status: READY
