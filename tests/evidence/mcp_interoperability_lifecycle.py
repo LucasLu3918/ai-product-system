@@ -197,6 +197,7 @@ def exercise_cli() -> None:
         for item in inspected["client_compatibility"].values()
     )
 
+    copilot = None
     for client_name in inspected["clients"]:
         configured = subprocess.run(
             [sys.executable, str(SERVER), "config", "--client", client_name],
@@ -207,14 +208,9 @@ def exercise_cli() -> None:
         payload = json.loads(configured.stdout)
         assert payload["client"] == client_name
         assert payload["automatic_change"] is False
-    copilot = json.loads(
-        subprocess.run(
-            [sys.executable, str(SERVER), "config", "--client", "copilot"],
-            capture_output=True,
-            text=True,
-            check=True,
-        ).stdout
-    )
+        if client_name == "copilot":
+            copilot = payload
+    assert copilot is not None, "Copilot client must be included in the advertised clients"
     copilot_tools = copilot["config"]["mcpServers"]["aips"]["tools"]
     assert "aips_capability_read" in copilot_tools
     assert "aips_workflow_context" in copilot_tools
