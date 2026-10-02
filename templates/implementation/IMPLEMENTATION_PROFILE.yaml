@@ -92,6 +92,7 @@ enforcement:
   language_profile: null # e.g. references/languages/go/PROFILE.yaml
   commands: [] # id, argv, source, timeout_seconds, deterministic
   generation_records: [] # path, tool, version, output_sha256, inputs [{path, sha256}]
+  generator_reports: [] # Optional: {adapter_id, report}; report stays untracked and is checked against current records
 
 quality:
   mandatory: [] # Enforced entries: {id, command_id, evidence_report}

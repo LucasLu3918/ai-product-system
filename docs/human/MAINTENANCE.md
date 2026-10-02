@@ -182,7 +182,7 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
-Phase 4 generator adapter 維護需同步檢查 Profile schema、OpenAPI evidence、命令執行邊界、allowlist、Phase 3 generation records、原子回復、Scenario 196 與 Integration Gate fixture。Gate 僅執行隔離的假 generator lifecycle，不呼叫專案設定的實際 generator。更換 generator 或 version 時應重新審查 executable hash、版本輸出、argv 與生成差異，並執行專案原生測試。
+Phase 4 generator adapter 維護需同步檢查 Profile schema、OpenAPI evidence、命令執行邊界、allowlist、Phase 3 generation records、原子回復、Scenario 196 與 Integration Gate fixture。Gate 僅執行隔離的假 generator lifecycle，不呼叫專案設定的實際 generator。更換 generator 或 version 時應重新審查 executable hash、版本輸出、argv 與生成差異，並執行專案原生測試。Phase 5 的 `generator_reports` 是 Profile 自願啟用的未追蹤本機報告；維護時檢查 schema/fingerprint、Git 祖先、Profile 前後雜湊、工具版本與 argv、輸入與輸出及 generation records。執行 `tests/evidence/openapi_client_pilot_lifecycle.py` 確認本機服務、client、證據鏈及負面路徑；新增產品不自動複製 AIPS 範例。
 
 For every Large/Core Change, testing is derived from the final Change Boundary, not from a fixed minimum smoke suite.
 

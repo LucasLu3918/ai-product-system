@@ -58,6 +58,8 @@ Implementation Resolution、Profile 範本、語言 Profile、結構驗證器與
 
 Phase 4 generator adapter、報告 schema、Gate fixture 與 Scenario 196 沿用 `requirement-planning` placement closure；Human 文件同步標示本機 `--execute`、CI/Gate 不執行專案 generator、ownership/hash 保護與 subprocess 不具 OS sandbox 的限制。
 
+Phase 5 的可選 Phase 4 report 核對及 Scenario 197 共用參考案例沿用同一 placement closure。User Guide 說明執行與多產品邊界；Technology Guide、Architecture Overview、Maintenance、Conformance 與 Documentation Map 同步記錄證據與適用限制。
+
 Risk-adaptive Change Impact traversal 的操作流程與 READY 證據由 `orchestration/CHANGE_IMPACT.md` 定義；Human 使用方式落在 Project Intelligence 的 Change Impact topic，架構層次與限制同步到 Architecture Overview 和 Technology Guide。`tests/scenarios/175-risk-adaptive-bounded-impact.md` 綁定 lifecycle 與 contract evidence。
 
 Structured Change Impact unknown dispositions remain in this same topic. Documentation Sync maps the validator, template and lifecycle evidence to the Project Intelligence, Change Impact and Conformance canonical sections; evidence requirements and legacy fail-closed behavior are not restated as a separate policy.

@@ -256,12 +256,15 @@ flowchart LR
     ENFORCE --> ADAPTER[Local generator preview]
     ADAPTER -->|Human passes --execute| GENERATE[Pinned local client generator]
     GENERATE --> OWNERSHIP[Atomic output + Phase 3 ownership records]
+    OWNERSHIP --> REPORT[Optional Phase 4 run report bound by Phase 3]
     ENFORCE -->|Integration Gate inspection only| VERIFY[TDD + project-native verification]
-    OWNERSHIP --> VERIFY
+    REPORT --> VERIFY
     VERIFY --> REVIEW[Review]
 ```
 
 The resolution/profile layer does not add a language-specific Role or Framework Skill. A concrete generator is selected only when a target project provides canonical contract and toolchain evidence. OpenAPI compatibility is automated only against an explicitly canonical baseline; unknown semantics remain unknown, and breaking changes still require Human approval. Phase 3 inspects exact-candidate ownership, generated hashes, language identity, required command evidence and OpenAPI report freshness. Phase 4's adapter is preview-only by default; only an explicit Human `--execute` invokes the pinned local tool, while the Gate remains inspection-only. Project-native tests remain the source of runtime assertions; neither the evidence binder nor the Phase 3/4 hashes grade semantic quality or provide OS-level isolation.
+
+Phase 5 optionally binds the ephemeral generator run report to the current Profile, tool, inputs, outputs and candidate history. One shared Widgets reference project exercises a generated client against a local service; each real product retains its own contract and acceptance evidence.
 
 ## Risk-proportional security assurance
 

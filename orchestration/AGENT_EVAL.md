@@ -92,6 +92,8 @@ Never update only the fingerprint to make a stale result pass. The Agent respons
 
 The OpenAPI generator adapter lifecycle is execution/ownership evidence only, not an Agent Eval result. It persists no raw generator stream; semantic client quality remains subject to project tests and review.
 
+Scenario 197's local Widgets service/client run is lifecycle evidence for a shared reference project. It does not score an Agent decision or establish semantic acceptance for another product; keep its `lifecycle` coverage separate from `agent_eval` results.
+
 Implementation-resolution contract evidence is not Agent Eval evidence. OpenAPI lifecycle tests establish deterministic validator behavior; they do not score semantic recommendation quality or authorize an Agent decision.
 
 Do not persist:

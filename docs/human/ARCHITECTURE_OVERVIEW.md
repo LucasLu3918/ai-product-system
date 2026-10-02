@@ -68,6 +68,8 @@ Phase 3 在同一流程核對確切候選的 Profile 指紋、語言 Profile、�
 
 Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：預覽與 Gate 僅檢查，使用者在本機明確指定 `--execute` 才以固定的 repository-local tool 產生 transport/client 邊界。輸出只有符合 allowlist 且既有 ownership 雜湊仍有效時才會套用，並與 Profile provenance 一起原子更新。此 subprocess 不宣稱 OS sandbox，亦不替代語義測試。
 
+Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
+
 ## Deterministic Execution
 
 Run Event 與 Telemetry Event 共用鎖定的 append 寫入器，讓混合寫入維持唯一且遞增的序號。Context、Retrieval 與 Integration Gate 可選擇記錄其實際執行邊界；觀測結果不改變 Gate 判定。

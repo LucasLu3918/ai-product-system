@@ -129,6 +129,7 @@ If a footer text change in a payment platform does not touch any sensitive bound
 
 Implementation Profile validation is structural assurance only. It preserves unresolved contract authority and unknown file ownership as blockers, and does not establish that a technology choice is safe, that verification passed, or that a migration is approved. Apply the existing SAL and Change Impact review to the actual implementation boundary.
 
+
 ## High-value business logic is a security boundary
 
 For economic-value features, security review includes more than classic vulnerabilities.
@@ -288,6 +289,8 @@ The Parallel Run Dashboard is loopback-only and read-only. Its projection cannot
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.
 
 ## Runtime Policy Enforcement
+
+An opted-in Phase 5 generator report is ephemeral execution evidence. The inspector checks its fingerprint, revision ancestry, pinned tool and inputs, output hashes and ownership records; missing or stale evidence blocks that Profile. The shared Widgets pilot uses a local fixture token and does not establish authentication or security assurance for another product.
 
 本機 OpenAPI generator adapter 只接受 Profile 綁定的 repository-local executable、精確 SHA-256、argv 與宣告輸入；預覽及 Integration Gate 不會執行 generator。使用者加上 `--execute` 才會啟動本機子程序。輸入以唯讀副本 staging，執行有 timeout 與產物數量／容量限制，且既有產物必須仍符合 Phase 3 ownership 與 hash。這些控制降低誤覆寫與參數注入風險，但不構成 OS sandbox；不可信 executable 仍可能存取目前使用者權限內的資源。只執行已審查及固定版本的工具。
 

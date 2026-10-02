@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Inspect Phase 3 implementation evidence for an exact Git candidate."""
 from __future__ import annotations
 
@@ -14,10 +13,11 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 import yaml
-from jsonschema import validate as validate_json
-
 from implementation_profile_validate import validate_language_profile, validate_profile
+from jsonschema import validate as validate_json
 from openapi_contracts import ContractError, verify_evidence
+from openapi_generator_adapter import repo_path as generator_repo_path
+from openapi_generator_adapter import validate_report as validate_generator_report
 
 MAX_OUTPUT_BYTES = 1_048_576
 SHELLS = {"sh", "bash", "zsh", "fish", "cmd", "powershell", "pwsh"}
@@ -247,6 +247,82 @@ def openapi_checks(profile: dict[str, Any], root: Path, checks: list[dict[str, A
             issue(checks, "openapi-" + identifier, "PASS", "verified_openapi_evidence", reference)
 
 
+def generator_report_checks(profile: dict[str, Any], profile_relative: str, profile_digest: str, root: Path,
+                            head_sha: str, checks: list[dict[str, Any]]) -> None:
+    """Bind optional, ephemeral Phase 4 execution evidence to current Phase 3 records."""
+    policy = profile.get("enforcement") or {}
+    adapters = {row["id"]: row for row in (profile.get("generation") or {}).get("adapters") or []}
+    records = {row["path"]: row for row in policy.get("generation_records") or []}
+    for reference in policy.get("generator_reports") or []:
+        adapter_id, relative = reference["adapter_id"], reference["report"]
+        check_id = "generator-report-" + adapter_id
+        try:
+            path = repo_file(root, relative)
+            if subprocess.run(["git", "-C", str(root), "ls-files", "--error-unmatch", "--", relative],
+                              capture_output=True, check=False).returncode == 0:
+                raise EnforcementError("generator report must remain ephemeral")
+            report = json.loads(path.read_text(encoding="utf-8"))
+            validate_generator_report(report)
+            adapter = adapters[adapter_id]
+            before = dict(report)
+            fingerprint = before.pop("fingerprint")
+            if fingerprint != canonical_digest(before):
+                raise EnforcementError("generator report fingerprint differs")
+            if (report["status"] != "PASS" or report["mode"] != "run" or report["applied"] is not True
+                    or report["cleanup_pending"] is not False or report["raw_output_persisted"] is not False):
+                raise EnforcementError("generator report does not show a complete apply")
+            if (report["profile"]["path"] != profile_relative
+                    or report["profile"]["after_sha256"] != profile_digest
+                    or report["contract"] != {"path": adapter["spec_path"],
+                                               "sha256": digest_file(generator_repo_path(root, adapter["spec_path"]))}):
+                raise EnforcementError("generator report profile or contract is stale")
+            generator = report["generator"]
+            expected = {"id": adapter_id, "executable": adapter["executable"],
+                        "executable_sha256": digest_file(generator_repo_path(root, adapter["executable"])),
+                        "version": adapter["version"], "argv_sha256": canonical_digest(adapter["argv"])}
+            if (adapter["executable_sha256"] != expected["executable_sha256"]
+                    or any(generator.get(key) != value for key, value in expected.items())):
+                raise EnforcementError("generator identity changed")
+            expected_runs = 3 if adapter["deterministic"] else 2
+            if (len(report["runs"]) != expected_runs or not generator.get("version_output_sha256")
+                    or any(row["status"] != "PASS" or row["timed_out"] or row["output_truncated"]
+                           for row in report["runs"])):
+                raise EnforcementError("generator runs are incomplete")
+            if report["deterministic"] != adapter["deterministic"] or (adapter["deterministic"] and report["determinism_verified"] is not True):
+                raise EnforcementError("generator determinism is unverified")
+            revision = report["candidate_revision"]
+            if subprocess.run(["git", "-C", str(root), "merge-base", "--is-ancestor", revision, head_sha],
+                              capture_output=True, check=False).returncode != 0:
+                raise EnforcementError("generator report revision is outside the candidate history")
+            expected_inputs = sorted([{"path": adapter["spec_path"],
+                                       "sha256": digest_file(generator_repo_path(root, adapter["spec_path"]))},
+                                      {"path": adapter["executable"],
+                                       "sha256": digest_file(generator_repo_path(root, adapter["executable"]))},
+                                      *({"path": item, "sha256": digest_file(generator_repo_path(root, item))}
+                                        for item in adapter.get("tool_inputs") or [])], key=lambda row: row["path"])
+            if sorted(report["inputs"], key=lambda row: row["path"]) != expected_inputs:
+                raise EnforcementError("generator inputs changed")
+            outputs = report["outputs"]
+            if (not outputs or len({row["path"] for row in outputs}) != len(outputs)
+                    or any(not row["path"].startswith(adapter["output_dir"] + "/") for row in outputs)):
+                raise EnforcementError("generator output boundary differs")
+            if {row["path"] for row in outputs} != {path for path, row in records.items() if row["tool"] == adapter_id}:
+                raise EnforcementError("generator output set differs from provenance")
+            for row in outputs:
+                record = records[row["path"]]
+                output = generator_repo_path(root, row["path"])
+                if (row["sha256"] != digest_file(output)
+                        or row["bytes"] != output.stat().st_size
+                        or record["output_sha256"] != row["sha256"]
+                        or record["version"] != adapter["version"]
+                        or sorted(record["inputs"], key=lambda item: item["path"]) != expected_inputs):
+                    raise EnforcementError("generator output or provenance changed")
+        except (EnforcementError, OSError, ValueError, KeyError, TypeError, json.JSONDecodeError):
+            issue(checks, check_id, "BLOCKED", "generator_report_missing_or_stale", relative)
+        else:
+            issue(checks, check_id, "PASS", "verified_generator_execution", relative)
+
+
 def inspect_profile(profile_path: Path, root: Path, base: str, head: str, *, mode: str = "report",
                     expected_profile_sha256: str | None = None) -> dict[str, Any]:
     root = root.resolve(strict=True)
@@ -334,6 +410,7 @@ def inspect_profile(profile_path: Path, root: Path, base: str, head: str, *, mod
             status, reason = command_evidence(profile, profile_digest, root, head_sha, row)
             issue(checks, "quality-" + row["id"], status, reason, row["evidence_report"])
     openapi_checks(profile, root, checks)
+    generator_report_checks(profile, profile_path.relative_to(root).as_posix(), profile_digest, root, head_sha, checks)
     statuses = {row["status"] for row in checks}
     status = next((item for item in ("FAIL", "BLOCKED", "UNVERIFIED") if item in statuses), "PASS")
     report = {"schema_version": 1, "kind": "implementation_enforcement", "mode": mode, "status": status,

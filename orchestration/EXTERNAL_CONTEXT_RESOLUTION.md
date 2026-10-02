@@ -74,4 +74,6 @@ Phase 3 enforcement binds the selected stable language Profile by path and diges
 
 External research may inform generator selection, but executable binaries, remote specifications and mutable package tags are not adapter inputs. A configured generator must be pinned locally with repository-relative paths and current canonical OpenAPI evidence.
 
+The shared Phase 5 Widgets example is workflow evidence only. When onboarding a real product, resolve that product's contract authority and supported generator version from its own repository and applicable official sources; do not carry the example's contract or tool choice into the product by inference.
+
 Connections and actions still follow provider permissions, privacy, least privilege and existing tool/governance rules.

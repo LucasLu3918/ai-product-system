@@ -91,6 +91,7 @@ for evidence in (
     Path(__file__).parent / "evidence/implementation_enforcement_lifecycle.py",
     Path(__file__).parent / "evidence/openapi_contracts_lifecycle.py",
     Path(__file__).parent / "evidence/openapi_generator_adapter_lifecycle.py",
+    Path(__file__).parent / "evidence/openapi_client_pilot_lifecycle.py",
 ):
     result = subprocess.run([sys.executable, str(evidence)], cwd=Path(__file__).resolve().parents[1], capture_output=True, text=True, check=False)
     if result.returncode:

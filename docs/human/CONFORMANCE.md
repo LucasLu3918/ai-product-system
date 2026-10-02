@@ -1459,3 +1459,9 @@ Current inventory after Scenario 195: 34 deterministic + 105 lifecycle + 54 agen
 The lifecycle fixture verifies that preview and Integration Gate inspection never execute the configured generator. An explicit local run checks current canonical OpenAPI evidence and a pinned repository-local executable, stages inputs, bounds process/output resources, tests deterministic output, and applies only allowlisted files. Phase 3 ownership and input/output hashes are updated with the files; modified prior output is protected and a failed Profile update restores the prior output. Process output is not persisted. This evidence does not establish semantic client correctness or operating-system sandboxing.
 
 Current inventory after Scenario 196: 34 deterministic + 106 lifecycle + 54 agent_eval = 194 automated; 2 manual; 196 total; 0 uncovered.
+
+**Scenario 197 — Shared OpenAPI client reference pilot.**
+
+The standalone Widgets fixture runs the Phase 2 validation, explicit Phase 4 generation, project-native HTTP client tests, operation coverage, and Phase 3 exact-candidate inspection. Missing or altered run reports fail closed for the opted-in Profile; existing Profiles remain compatible. The fixture proves its own behavior and workflow, not another product's semantics.
+
+Current inventory after Scenario 197: 34 deterministic + 107 lifecycle + 54 agent_eval = 195 automated; 2 manual; 197 total; 0 uncovered.

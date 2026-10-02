@@ -783,3 +783,7 @@ Current inventory after Scenario 193: 34 deterministic + 103 lifecycle + 54 agen
 Lifecycle evidence proves preview and the Integration Gate do not execute generators; an explicit local `--execute` uses pinned repository-local tools, staged inputs, bounded execution and allowlisted outputs. It verifies deterministic output, Phase 3 ownership/hash records and atomic rollback, and rejects stale OpenAPI evidence, unsafe paths, unexpected files, timeouts and edited generated outputs. This is execution safety and provenance evidence; it does not prove generated client semantics or provide an operating-system sandbox.
 
 Current inventory after Scenario 196: 34 deterministic + 106 lifecycle + 54 agent_eval = 194 automated; 2 manual; 196 total; 0 uncovered.
+
+**Scenario 197 — Shared OpenAPI client reference pilot.** A temporary standalone Widgets project runs canonical validation, explicit deterministic generation, local HTTP client/consumer tests, operation coverage and exact-candidate Phase 3 inspection. Missing or altered execution reports block the opted-in Profile. This lifecycle covers the reference workflow; product-specific acceptance stays in each product repository.
+
+Current inventory after Scenario 197: 34 deterministic + 107 lifecycle + 54 agent_eval = 195 automated; 2 manual; 197 total; 0 uncovered.

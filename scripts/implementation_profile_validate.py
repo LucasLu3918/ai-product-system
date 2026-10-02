@@ -87,7 +87,7 @@ def _digest(value: Any, label: str, errors: list[str]) -> None:
         errors.append(f"{label} must be sha256:<64 lowercase hex>")
 
 
-def _enforcement(value: Any, quality: dict[str, Any], errors: list[str]) -> None:
+def _enforcement(value: Any, quality: dict[str, Any], errors: list[str], root: dict[str, Any]) -> None:
     """Validate only the additive Phase 3 contract; execution evidence is checked separately."""
     if value is None:
         return
@@ -146,6 +146,20 @@ def _enforcement(value: Any, quality: dict[str, Any], errors: list[str]) -> None
             evidence = _mapping(input_item, f"enforcement.generation_records[{index}].inputs[{input_index}]", errors)
             _owned_path(evidence.get("path"), f"enforcement.generation_records[{index}].inputs[{input_index}].path", errors)
             _digest(evidence.get("sha256"), f"enforcement.generation_records[{index}].inputs[{input_index}].sha256", errors)
+
+    report_ids: set[str] = set()
+    generation = root.get("generation")
+    adapter_ids = {row.get("id") for row in (generation.get("adapters") or [])
+                   if isinstance(row, dict)} if isinstance(generation, dict) else set()
+    for index, item in enumerate(_list(section.get("generator_reports", []), "enforcement.generator_reports", errors)):
+        row = _mapping(item, f"enforcement.generator_reports[{index}]", errors)
+        identifier = row.get("adapter_id")
+        if identifier not in adapter_ids:
+            errors.append(f"enforcement.generator_reports[{index}].adapter_id must name a configured adapter")
+        if identifier in report_ids:
+            errors.append(f"enforcement.generator_reports duplicates adapter_id {identifier}")
+        report_ids.add(identifier)
+        _owned_path(row.get("report"), f"enforcement.generator_reports[{index}].report", errors)
 
     if mode == "disabled":
         return
@@ -438,7 +452,7 @@ def validate_profile(doc: Any) -> dict[str, Any]:
                 if not any(isinstance(row.get(k), str) and row[k].strip() for k in ("source", "command", "reference")):
                     errors.append(f"quality.evidence[{index}] requires source/command/reference provenance")
 
-    _enforcement(root.get("enforcement"), quality, errors)
+    _enforcement(root.get("enforcement"), quality, errors, root)
 
     knowledge = _mapping(root.get("knowledge"), "knowledge", errors)
     _evidence(knowledge.get("project_evidence"), "knowledge.project_evidence", errors)

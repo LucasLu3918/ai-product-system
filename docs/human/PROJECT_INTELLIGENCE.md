@@ -10,6 +10,8 @@ Read-only Discovery 先建立 PARTIAL，再由 Agent 針對 Architecture、Data 
 
 Implementation planning may reuse runtime/framework, project rules, toolchain, architecture and API-contract evidence, testing conventions, generated ownership, and nearby examples. Record each source and scope. One local example does not establish a repository-wide rule, and a directory name alone does not prove DDD or Clean Architecture.
 
+Phase 5 的 Widgets 案例可重用的是 OpenAPI client 生成與驗證流程；多個真實產品各自保存 canonical 契約、Profile、產物 ownership 和整合測試。只有新的技術或架構暴露共通缺口，才擴充 AIPS 範例。
+
 ## 不重複正式文件
 
 已有 AGENTS / CLAUDE / GEMINI / ADR / OpenAPI / Architecture Docs / Brand / Visual / Quality Artifact 時，只存 Pointer/Metadata。SOURCE_REGISTRY 同時記錄 Runtime visibility。
