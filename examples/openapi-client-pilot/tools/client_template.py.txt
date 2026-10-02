@@ -1,0 +1,45 @@
+"""Generated Widgets transport client. Do not edit this output directly."""
+from __future__ import annotations
+
+import json
+from urllib.error import HTTPError
+from urllib.parse import quote
+from urllib.request import Request, urlopen
+
+SPEC_SHA256 = "__SPEC_SHA256__"
+
+
+class WidgetApiError(Exception):
+    def __init__(self, status: int, code: str) -> None:
+        self.status = status
+        self.code = code
+        super().__init__(f"Widgets API {status}: {code}")
+
+
+class WidgetClient:
+    def __init__(self, base_url: str, token: str) -> None:
+        self.base_url = base_url.rstrip("/")
+        self.token = token
+
+    def _request(self, method: str, path: str, payload: dict | None = None) -> dict:
+        body = json.dumps(payload, ensure_ascii=False).encode("utf-8") if payload is not None else None
+        headers = {"Authorization": f"Bearer {self.token}", "Accept": "application/json"}
+        if body is not None:
+            headers["Content-Type"] = "application/json"
+        request = Request(self.base_url + path, data=body, headers=headers, method=method)
+        try:
+            with urlopen(request, timeout=3) as response:
+                return json.load(response)
+        except HTTPError as exc:
+            try:
+                error = json.load(exc)
+                code = error["code"]
+            except (ValueError, KeyError, TypeError):
+                code = "invalid_error_response"
+            raise WidgetApiError(exc.code, code) from exc
+
+    def create_widget(self, name: str) -> dict:
+        return self._request("POST", "/widgets", {"name": name})
+
+    def get_widget(self, widget_id: str) -> dict:
+        return self._request("GET", "/widgets/" + quote(widget_id, safe=""))

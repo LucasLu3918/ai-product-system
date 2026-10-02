@@ -116,6 +116,8 @@ Repository-local generator executable/configuration and generated-file ownership
 
 Project Intelligence may identify OpenAPI files and consumers, but file presence does not make a specification canonical. Preserve source authority and revision; remote references are not fetched by the validator.
 
+Phase 5 的共用參考案例只說明可重現的流程。真實產品的 canonical OpenAPI、generator 報告、client ownership 和專案測試仍屬產品本地 Profile 與候選證據；不把 Widgets 案例推論成其他產品的語義或全域工具選擇。
+
 For Phase 3 Implementation Resolution, retain the source of project-native commands, generated-file ownership and selected language guidance so the current candidate can be checked against those records. Project Intelligence describes the repository; fresh command results and generated input/output hashes belong to the per-candidate Profile/report rather than a reusable semantic topic.
 
 Project Intelligence is below:

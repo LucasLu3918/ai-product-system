@@ -78,6 +78,8 @@ Show only material recommendations/unknowns to the user.
 
 For generated API clients, define project-native compile, contract and integration checks separately from the generator's exit status and output hashes. Adapter provenance proves which pinned inputs/tool produced the files; it does not prove client behavior.
 
+Phase 5 的共用 Widgets 案例可驗證 AIPS 流程及案例本身；每個真實產品仍需以自己的服務、成功與錯誤路徑、序列化和適用的授權測試提供驗收證據。啟用 `generator_reports` 時，將本次未追蹤執行報告納入 Phase 3 檢查。
+
 Prefer:
 
 ~~~text

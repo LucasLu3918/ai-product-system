@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.72.0
+
+- Optionally bind ephemeral Phase 4 generator execution reports to the current Phase 3 Profile, tool, input, output, ownership and Git candidate evidence; existing Profiles remain compatible.
+- Add one runnable Widgets OpenAPI client reference pilot with a real local service, generated client, consumer, operation coverage and negative-path lifecycle evidence. Product-specific acceptance remains in each product repository.
+- Add Scenario 197 and synchronized Human guidance for multi-product onboarding.
+
 ## 0.71.0
 
 - Add an opt-in OpenAPI client generator adapter contract with preview-only default and explicit local execution, pinned repository tools, staged inputs, bounded process/output resources and allowlisted generated paths.

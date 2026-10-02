@@ -226,6 +226,12 @@ Phase 3 可在 Implementation Profile 的 `enforcement` 區段指定適用路徑
 
 執行器只接受 Profile 固定的可執行檔雜湊和 argv，不使用 shell，並以暫存副本、逾時及檔案／位元組上限執行。它只會替換 Phase 3 ownership/hash 記錄仍吻合的產物。CI 與 Integration Gate 不執行 Profile 指定的 generator。此流程不提供 OS sandbox，也不代表生成 client 已通過語義或整合測試；仍需依專案測試流程驗證。
 
+### Phase 5：真實產品驗收與共用參考案例
+
+沒有可用的真實產品時，可先執行 `python3 tests/evidence/openapi_client_pilot_lifecycle.py`。此案例在暫存 Git 專案內建立 Widgets API 與產生的 Python client，檢查 OpenAPI、生成確定性、ownership、操作覆蓋、授權、錯誤及 Unicode 傳輸。Profile 可設定 `enforcement.generator_reports: [{adapter_id: <id>, report: evidence/generator.json}]`，讓 Phase 3 檢查未追蹤的 Phase 4 執行報告；報告缺少或過期時，已啟用的檢查會阻擋候選。執行器與 Gate 仍不會自動執行專案 generator。
+
+多個產品共用這一份 AIPS 工作流程範例。各產品應在自己的 repository 保存 canonical 契約、Profile、client、產生報告與專案原生驗收測試；獨立 API/client 邊界可各有本地驗收套件。只有不同技術或架構暴露共通缺口時，才擴充 AIPS 參考案例。參考案例的 PASS 不代表其他產品已完成語義驗收。
+
 ### OpenTelemetry run traces
 
 Record a lifecycle pair in the existing run event stream, then export or replay it:

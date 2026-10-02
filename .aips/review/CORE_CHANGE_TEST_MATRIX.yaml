@@ -1,14 +1,16 @@
 version: 1
 change:
-  id: implementation-resolution-phase4
-  summary: Add explicit local OpenAPI client generator adapters with deterministic
-    fixture coverage, ownership-safe output replacement and Gate inspection-only behavior.
+  id: implementation-resolution-phase5
+  summary: Optionally verify generator execution evidence and run one shared
+    OpenAPI client reference product against a local service.
   boundary:
   - profile-and-language-contracts
   - generated-ownership-and-provenance
   - project-quality-and-openapi-evidence
   - integration-gate-and-documentation
   - openapi-generator-adapter-execution-and-rollback
+  - optional-generator-report-binding
+  - shared-openapi-client-reference-pilot
 matrix:
 - boundary: profile-and-language-contracts
   reason: Preserve Phase 1/2 Profiles while validating opt-in enforcement configuration
@@ -195,12 +197,36 @@ matrix:
     docs_schema:
       applicable: true
       evidence: Recursive documentation placement, links, human/agent synchronization and docs site build cover Scenario 196.
+- boundary: optional-generator-report-binding
+  reason: An opted-in Profile must reject missing or stale Phase 4 execution evidence without changing legacy Profiles.
+  checks:
+    static_lint: {applicable: true, evidence: Ruff critical lint and Python compile.}
+    unit: {applicable: true, evidence: Profile structural contracts and unchanged legacy lifecycle.}
+    integration: {applicable: true, evidence: Scenario 197 exact-candidate Phase 3 inspector against a generated client.}
+    contract: {applicable: true, evidence: Report schema, fingerprint, revision, tool, input, output and provenance bindings.}
+    e2e: {applicable: true, evidence: Reference client runs against a loopback API before inspector PASS.}
+    security: {applicable: true, evidence: Missing or tampered reports block; inspection never executes the generator.}
+    migration_recovery: {applicable: false, na_reason: Optional additive Profile field requires no migration.}
+    cli_harness: {applicable: true, evidence: Phase 3 inspect report and enforce modes retain existing entry points.}
+    docs_schema: {applicable: true, evidence: Scenario 197 and synchronized Human guidance.}
+- boundary: shared-openapi-client-reference-pilot
+  reason: One executable reference verifies workflow behavior without claiming acceptance for other products.
+  checks:
+    static_lint: {applicable: true, evidence: Ruff critical lint and Python compile on example and lifecycle.}
+    unit: {applicable: true, evidence: Generator verifies supported canonical contract operations and security shape.}
+    integration: {applicable: true, evidence: Create/get, errors, Unicode JSON and bearer auth against local HTTP service.}
+    contract: {applicable: true, evidence: Phase 2 OpenAPI validity and JUnit operation coverage reports.}
+    e2e: {applicable: true, evidence: Temporary standalone Git product runs Phase 2 through Phase 4 and Phase 3.}
+    security: {applicable: true, evidence: Only fake local bearer token, bounded generator output and hand-edit protection.}
+    migration_recovery: {applicable: true, evidence: Existing Phase 4 rollback fixture plus no product migration.}
+    cli_harness: {applicable: true, evidence: Preview, explicit execution and exact-candidate inspector lifecycle.}
+    docs_schema: {applicable: true, evidence: Example README and Scenario 197 explain multi-product ownership.}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 9ab2dc4120ebff0d780368d8e2ec47bd15d11f16
-  changed_files_hash: e79d643a57716b055df4cddef42cd092accbb120d051339c22a7ede0a582eb86
+  base_sha: 1581e3cec7cf11c99c3b40202434515a426773a1
+  changed_files_hash: 345c6771b568209ed670a69b85e6c4983ea34fd2ccd060a2c858041f1efd52b2
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

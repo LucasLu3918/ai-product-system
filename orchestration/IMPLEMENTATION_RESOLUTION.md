@@ -194,4 +194,6 @@ Default invocation is preview-only and never runs the tool. Local execution stag
 
 The adapter is a local subprocess boundary, not an OS sandbox: a malicious or compromised executable may access resources available to the current user. Run only a trusted, repository-pinned tool. The report does not establish semantic client correctness. CI and the Integration Gate inspect reports and fixture behavior but never execute a project-configured generator. A concrete production generator is selected only after the target project supplies canonical spec, language, supported version and approved toolchain evidence.
 
+Phase 5 may opt in to `enforcement.generator_reports` with an adapter ID and an untracked report path. The Phase 3 inspector verifies a completed Phase 4 run against the current Profile, canonical spec, pinned executable/version/argv, input hashes, exact output set, generation records and candidate history. Inspection never runs the generator. The shared Widgets pilot demonstrates this evidence chain and exercises a generated client against a local service; each actual product must retain its own contract and semantic acceptance tests.
+
 Do not add language-specific Roles, framework Skills/Profiles, GraphQL/gRPC/AsyncAPI support, automatic migrations, or automatic framework modernization as part of Phases 1–4.

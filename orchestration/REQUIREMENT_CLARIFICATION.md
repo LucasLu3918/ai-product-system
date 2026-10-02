@@ -91,6 +91,8 @@ When a new project's language/framework/architecture materially affects implemen
 
 Assess architecture with qualitative complexity signals, triggers and counter-signals. Keep framework, Clean Architecture, tactical/strategic DDD, logical boundaries and deployment model as separate decisions. A simple CRUD project should not gain DDD by default; complex domain does not imply microservices. Preserve a user-specified choice unless a material conflict or risk requires a warning. Human confirms material technology/architecture decisions before the Implementation Profile is finalized.
 
+When the user has multiple products, resolve each product's canonical API/client boundary separately. The shared Phase 5 Widgets pilot can establish workflow readiness while no real product is available; it cannot provide another product's contract authority, generator choice or acceptance criteria.
+
 ## Structured functional requirements (EARS)
 
 `tests/validation/ears_requirement_contracts.py` 的測試契約維護由 Scenario Conformance 文件規則涵蓋；EARS requirement format、Planning Package 範本與需求追蹤實作仍由本規範及完整 Requirement Planning 文件閉包涵蓋。

@@ -29,6 +29,8 @@ PyRIT v1 bridge observations ──────────┴→ bounded static
 
 No Promptfoo or PyRIT command is executed by AIPS. No provider credential, remote generation, upload, sharing, or telemetry is required or enabled by this adapter. Users may run an external producer separately and explicitly choose which local evidence to import.
 
+The Phase 5 Widgets pilot is deterministic product-client lifecycle evidence and does not enter the external Eval import or finding-promotion path. A real product's client tests remain project-native evidence.
+
 ## Supported commands
 
 - `aips eval export-promptfoo --case CASE.yaml --provider openai:MODEL --output promptfooconfig.yaml` emits one inline prompt, one explicit built-in OpenAI provider, and one variables-only test. It does not convert the AIPS rubric into external executable assertions; AIPS remains the scorer.

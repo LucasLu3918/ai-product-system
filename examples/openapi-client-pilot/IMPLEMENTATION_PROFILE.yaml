@@ -1,0 +1,145 @@
+schema_version: '1'
+status: READY
+project:
+  mode: new
+  evidence:
+  - source: repository
+    reference: service.py
+requirement:
+  summary: Reference Widgets API client pilot
+  acceptance_references:
+  - README.md
+contract:
+  type: openapi
+  source: api/openapi.json
+  authority: canonical
+  affects_change: true
+  resolution: confirmed
+  evidence:
+  - source: repository
+    reference: README.md
+  openapi:
+    validation_status: PASS
+    validation_report: evidence/openapi-validation.json
+    spec_sha256: sha256:646ef3b3b629a3d1f04e3652a0d28800fd4e805f6fe8fe63a295eb5abcc88e82
+    compatibility_required: false
+    compatibility_status: UNKNOWN
+    baseline_authority: unresolved
+    compatibility_report: null
+    implementation_conformance_status: PASS
+    conformance_report: evidence/openapi-conformance.json
+technology:
+  language:
+    name: python
+    version: '3.12'
+    resolution: strong_evidence
+    evidence:
+    - source: repository
+      reference: service.py
+  framework:
+    name: null
+    version: null
+    resolution: not_detected
+    evidence: []
+  decision_record:
+    constraints:
+    - Python standard library reference only
+    human_preferences: []
+    candidates: []
+    selected_by: project_evidence
+    confirmed: true
+architecture:
+  complexity_signals: []
+  triggers: []
+  counter_signals: []
+  logical_style:
+    value: simple
+    resolution: strong_evidence
+    evidence:
+    - source: repository
+      reference: service.py
+  clean_architecture:
+    level: unknown
+    resolution: not_detected
+    evidence: []
+  ddd:
+    tactical:
+      level: unknown
+      resolution: not_detected
+      evidence: []
+    strategic:
+      level: unknown
+      resolution: not_detected
+      evidence: []
+  deployment:
+    style: single_deployment
+    resolution: strong_evidence
+    evidence:
+    - source: repository
+      reference: service.py
+generation:
+  enabled: true
+  policy: boundary_only
+  adapters:
+  - id: pilot-python
+    type: openapi_client_cli
+    spec_path: api/openapi.json
+    executable: tools/generate_client.py
+    executable_sha256: sha256:744b7869e1b40f78eb4452e907d58012b6c0d893fe34aed636649329b07586af
+    version: pilot-client-generator 1.0
+    version_args:
+    - --version
+    argv:
+    - --spec
+    - '{spec}'
+    - --template
+    - '{input:tools/client_template.py.txt}'
+    - --output
+    - '{output}'
+    tool_inputs:
+    - tools/client_template.py.txt
+    output_dir: client/generated
+    output_patterns:
+    - client.py
+    deterministic: true
+    timeout_seconds: 10
+    max_files: 2
+    max_bytes: 20000
+ownership:
+  generated: []
+  scaffolded: []
+  project_owned:
+  - path: consumer.py
+    source: repository
+    reference: README.md
+  unresolved: []
+enforcement:
+  mode: enforce
+  scope_paths:
+  - client/generated/**
+  language_profile: language/PROFILE.yaml
+  commands:
+  - id: pilot-integration
+    argv:
+    - python3
+    - verify.py
+    source: verify.py
+    timeout_seconds: 15
+    deterministic: true
+  generation_records: []
+  generator_reports:
+  - adapter_id: pilot-python
+    report: evidence/generator.json
+quality:
+  mandatory: []
+  project_required:
+  - id: pilot-integration
+    command_id: pilot-integration
+    evidence_report: evidence/pilot-command.json
+  risk_triggered: []
+  advisory: []
+  evidence: []
+knowledge:
+  project_evidence: []
+  external_evidence: []
+unresolved: []

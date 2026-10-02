@@ -69,6 +69,8 @@ Use `PRODUCT_RESEARCH.md` when current external product, user, market or competi
 
 Client generation is a downstream implementation option after API requirements and the canonical contract are approved. Record the selected generator/version and generated-client verification criteria in the project plan; do not infer a production generator from the AIPS fixture.
 
+For several products, keep one AIPS reference pilot and put each product's canonical contract, Profile, generated-client ownership and test plan in that product's own planning and implementation artifacts. Separate independent API/client boundaries only where their acceptance evidence differs.
+
 For REST/OpenAPI implementation readiness, record whether the contract is canonical, descriptive, proposed or unresolved, and identify the exact baseline source when compatibility analysis is required. A structural comparison cannot replace Human approval of breaking changes.
 
 Create stable screen IDs and map primary requirements to journeys, flows, screen responsibilities, interaction states, responsive behavior and accessibility. Create a `DOMAIN_MODEL.md` when domain concepts, lifecycles, ownership or invariants affect the product; model those concepts before choosing persistence technology. Specify API operations from consumer needs and domain behavior, including authorization, validation, errors, retry/idempotency, concurrency and compatibility as applicable.

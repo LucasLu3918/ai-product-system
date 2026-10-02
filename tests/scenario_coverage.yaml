@@ -1546,3 +1546,10 @@ scenarios:
       - templates/implementation/GENERATOR_ADAPTER_REPORT.schema.json
       - tests/validation/implementation_profile_contracts.py
       - tests/evidence/openapi_generator_adapter_lifecycle.py
+  - id: "197"
+    path: tests/scenarios/197-openapi-client-reference-pilot.md
+    coverage: lifecycle
+    evidence:
+      - examples/openapi-client-pilot/README.md
+      - scripts/implementation_enforcement.py
+      - tests/evidence/openapi_client_pilot_lifecycle.py
