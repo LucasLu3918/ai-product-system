@@ -6,6 +6,8 @@ Use for complete products and material product plans to turn vague quality expec
 
 For OpenAPI changes, include specification validity, compatibility evidence when a canonical baseline exists, and project-native contract-test evidence. Operation-name coverage is structural evidence only; semantic assertions and breaking-change approval remain Human-reviewed.
 
+When Phase 3 enforcement applies, give each mandatory, project-required and risk-triggered implementation check a stable ID and link it to an explicit project command and current-run evidence report. Report mode may expose missing coverage; enforce mode requires PASS for every applicable check. Command output hashes and repeatability do not establish assertion quality.
+
 Use one baseline, then adjust individual dimensions independently.
 
 - **Q1 — Lightweight**: personal tools, static sites, demos, low-risk internal tools.

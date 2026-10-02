@@ -252,11 +252,12 @@ flowchart LR
     OAS --> ROLE[Existing Backend Engineer + Skills]
     ROLE --> TEST[Project-native contract / conformance tests]
     TEST --> EVIDENCE[Bind spec + JUnit hashes + Git revision]
-    EVIDENCE --> VERIFY[TDD + project-native verification]
+    EVIDENCE --> ENFORCE[Scoped Phase 3 ownership + quality evidence inspection]
+    ENFORCE --> VERIFY[TDD + project-native verification]
     VERIFY --> REVIEW[Review]
 ```
 
-The resolution/profile layer does not add a language-specific Role, Framework Skill or generator. OpenAPI compatibility is automated only against an explicitly canonical baseline; unknown semantics remain unknown, and breaking changes still require Human approval. Project-native tests remain the source of runtime assertions; the evidence binder does not claim to grade their semantic quality.
+The resolution/profile layer does not add a language-specific Role, Framework Skill or generator. OpenAPI compatibility is automated only against an explicitly canonical baseline; unknown semantics remain unknown, and breaking changes still require Human approval. Phase 3 inspects exact-candidate ownership, generated hashes, language identity, required command evidence and OpenAPI report freshness. Project-native tests remain the source of runtime assertions; neither the evidence binder nor the Phase 3 inspector grades their semantic quality.
 
 ## Risk-proportional security assurance
 

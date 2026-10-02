@@ -75,6 +75,8 @@ Load `references/domains/<domain>/` only when the product needs it. Domain packs
 
 When implementation readiness is approved, the Implementation Resolution workflow may project the approved requirement, API authority, Human-confirmed technology/architecture decisions and quality expectations into an `IMPLEMENTATION_PROFILE.yaml`. The profile is a traceable handoff to existing implementation roles; it does not replace the Planning Package, approve the plan, or authorize a migration.
 
+If the downstream REST/OpenAPI implementation opts into Phase 3, the Profile also names the applicable source paths, selected language Profile and project-required checks. Planning records the intended checks; current-run command and contract reports are gathered against the exact implementation candidate later, before an enforce-mode Gate claims PASS.
+
 ## Quality and delivery planning
 
 既有專案的核心契約變更應在 Change Impact 中列出風險、traversal seed、候選 consumer 與不確定性；依風險設定有界檢查，並在驗收時核對 affected-but-unchanged 節點。Traversal 僅提供候選證據，不取代範圍核准、測試或 diff reconciliation。

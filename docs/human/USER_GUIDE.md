@@ -216,6 +216,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 
 REST/OpenAPI 變更可用 `python scripts/openapi_contracts.py validate <spec> --repo-root .` 驗證 OpenAPI 3.0／3.1／3.2；只接受 repository root 內的本機 `$ref`，不會連線載入 URL。`compare <canonical-baseline> <candidate> --baseline-authority canonical` 會分類明確的破壞性／相容性變更，無法可靠分類的差異回報 `UNKNOWN`。`run-contract-tests` 以 argv 執行專案原生測試並綁定 JUnit、operation ID coverage、規格雜湊與 Git revision；`verify-evidence` 可找出內容或 revision 已改變的舊報告。AIPS 不替專案判斷測試斷言是否足夠，也不會自動核准破壞性 API 變更。
 
+Phase 3 可在 Implementation Profile 的 `enforcement` 區段指定適用路徑、語言 Profile、所有權、生成來源與專案原生檢查。先用 `python scripts/implementation_enforcement.py inspect IMPLEMENTATION_PROFILE.yaml --repo-root . --base <base-sha> --head HEAD --mode report` 檢視缺口；完成命令證據收集後改用 `--mode enforce`。命令收集需明確執行 `run-command ... --command-id <id> --execute`，宣告為 deterministic 的命令還需 `--repeat 2`。Gate 只驗證目前候選的證據，不會執行 Profile 內的命令；所有權未知、必要證據缺少或過期時不能通過。
+
 本地發佈預檢會先確認 Python／Ruff、loopback 與 Chromium 等 Integration Gate 條件，再做完整候選驗證；文件變更時也會檢查本地 Markdown 連結並建置 VitePress。用全域 CLI 驗證另一份 checkout 時加上 `--project-root <repo>`，讓腳本、設定與候選使用同一個 repo root。
 
 ### OpenTelemetry run traces

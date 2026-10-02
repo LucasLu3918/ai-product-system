@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from implementation_enforcement import EnforcementError, inspect_profile
 from review_evidence import validate_report
 from observed_stage import observed_stage
 
@@ -92,6 +93,47 @@ def profile_checks(profile: dict[str, Any], files: list[str]) -> list[dict[str, 
         enriched["env"] = env
         checks.append(enriched)
     return checks
+
+
+def implementation_enforcement_check(
+    profile: dict[str, Any], files: list[str], repository_root: Path, base_sha: str, head_sha: str,
+) -> tuple[dict[str, Any] | None, dict[str, Any] | None]:
+    """Inspect configured Phase 3 evidence without executing candidate-supplied commands."""
+    policy = profile.get("implementation_enforcement")
+    if policy is None:
+        return None, None
+    if not isinstance(policy, dict):
+        raise GateError("implementation_enforcement must be a mapping")
+    paths = policy.get("paths")
+    if not isinstance(paths, list) or not paths or not all(isinstance(path, str) and path for path in paths):
+        raise GateError("implementation_enforcement.paths must be non-empty glob strings")
+    mode = policy.get("mode", "report")
+    if mode not in {"report", "enforce"}:
+        raise GateError("implementation_enforcement.mode must be report or enforce")
+    relative = policy.get("profile_path")
+    if not isinstance(relative, str) or not relative:
+        raise GateError("implementation_enforcement.profile_path is required")
+    expected = policy.get("expected_profile_sha256")
+    if expected is not None and (not isinstance(expected, str) or not re.fullmatch(r"sha256:[0-9a-f]{64}", expected)):
+        raise GateError("implementation_enforcement.expected_profile_sha256 is invalid")
+    if not files or not any(any(fnmatch.fnmatch(path, pattern) for pattern in paths) for path in files):
+        return {"id": "implementation-enforcement", "category": "contract", "required": mode == "enforce",
+                "status": "SKIPPED", "reason": "path_filter"}, None
+    try:
+        report = inspect_profile(repository_root / relative, repository_root, base_sha, head_sha,
+                                 mode=mode, expected_profile_sha256=expected)
+        status = report["status"]
+        if status == "SKIPPED":
+            status = "BLOCKED"
+        result = {"id": "implementation-enforcement", "category": "contract", "required": mode == "enforce",
+                  "status": "PASS" if status == "PASS" else "FAIL",
+                  "reason": "report_only" if mode == "report" else status,
+                  "evidence_fingerprint": report["fingerprint"]}
+        return result, report
+    except (EnforcementError, OSError, ValueError):
+        result = {"id": "implementation-enforcement", "category": "contract", "required": mode == "enforce",
+                  "status": "FAIL", "reason": "report_only_blocked" if mode == "report" else "evidence_blocked"}
+        return result, {"status": "BLOCKED", "reason": "evidence_blocked"}
 
 
 def matrix_required_for_candidate(profile: dict[str, Any], files: list[str], change_class: str) -> bool:
@@ -352,6 +394,11 @@ def main() -> int:
                 run_check(item, omit_output_tail=args.omit_output_tail, candidate_env=candidate_env)
                 for item in checks
             ]
+            implementation_result, implementation_report = implementation_enforcement_check(
+                profile, files, repository_root, base_sha, head_sha,
+            )
+            if implementation_result is not None:
+                results.append(implementation_result)
         failures = [r["id"] for r in results if r.get("status") == "FAIL" and r.get("required", True)]
         if review_required and review_result.get("status") != "VERIFIED":
             failures.append("independent-review-evidence")
@@ -371,6 +418,8 @@ def main() -> int:
                 "human_authority_preserved": True,
             },
         }
+        if implementation_report is not None:
+            report["implementation_enforcement"] = implementation_report
     except (OSError, yaml.YAMLError, GateError) as exc:
         print(f"INTEGRATION GATE BLOCKED: {exc}")
         return 2

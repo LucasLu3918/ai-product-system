@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.70.0
+
+- Add scoped Phase 3 Implementation Resolution enforcement for exact-candidate ownership, generated-file provenance, selected language, required project-command evidence and OpenAPI report freshness.
+- Add versioned, reproducible report and explicit argv-only local command collection; keep candidate commands out of the Integration Gate execution path.
+- Add optional report/enforce Integration Gate policy, Scenario 195 lifecycle coverage and matching Human/Agent documentation. Existing Profiles and projects without a Phase 3 policy remain compatible.
+
 ## 0.69.0
 
 - Add REST/OpenAPI 3.0/3.1/3.2 validation, local-reference safety, and conservative compatibility analysis against explicitly canonical baselines.

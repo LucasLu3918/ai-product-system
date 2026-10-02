@@ -773,3 +773,7 @@ Current inventory after Scenario 193: 34 deterministic + 103 lifecycle + 54 agen
 ### Scenario 194 — OpenAPI contract validation and revision-bound evidence
 
 `scripts/openapi_contracts.py` validates OpenAPI 3.0, 3.1 and 3.2 offline, confines local references to the repository, classifies compatibility conservatively, runs declared contract tests without a shell, verifies operation coverage in JUnit, and binds reports to content digests and the exact revision. Unknown classifications, stale evidence and unavailable checks fail closed. Evidence does not authorize breaking changes or establish semantic test quality.
+
+### Scenario 195 — Implementation Resolution deterministic enforcement
+
+`scripts/implementation_enforcement.py` verifies exact-candidate Profile fingerprints, language identity, in-scope ownership, generated input/output hashes, fresh project-command evidence and Phase 2 OpenAPI reports. Lifecycle fixtures cover missing and stale evidence, command timeout, shell refusal, report stability and optional Integration Gate report/enforce modes. These checks do not prove generator execution or semantic test quality.

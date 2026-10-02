@@ -64,6 +64,8 @@ Do not send long questionnaires. Ask the next blocking question or a small batch
 
 An API implementation-ready goal identifies contract authority and, when applicable, the canonical comparison baseline and required contract-test evidence. Unresolved authority or unknown compatibility is recorded as a blocker for affected behavior rather than inferred from the existence of a spec file.
 
+For a Phase 3 enforced implementation, clarify the affected source paths, ownership evidence, selected language Profile and project checks before marking the Profile ready for the candidate. Unknown ownership stays protected; a planned test is not current-run PASS evidence.
+
 For existing-project goals, preserve material uncertainty as explicit Change Impact unknowns. Do not translate an unresolved assumption into a closed disposition without verifiable evidence and explicit Human review.
 
 Before broad implementation, ensure enough clarity exists for:

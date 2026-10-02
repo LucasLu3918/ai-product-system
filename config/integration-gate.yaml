@@ -11,6 +11,8 @@ matrix_required_paths:
   # Narrow fail-closed safety net for governance-core Integration Gate surfaces.
   # Ordinary changes remain matrix-optional unless classified large/core.
   - scripts/integration_gate.py
+  - scripts/implementation_enforcement.py
+  - scripts/implementation_profile_validate.py
   - scripts/publish_preflight.py
   - scripts/check_secret_leakage.py
   - scripts/repository_preflight.py
@@ -23,6 +25,7 @@ matrix_required_paths:
   - templates/review/CORE_CHANGE_TEST_MATRIX.yaml
   - tests/validation/scheduler_gate_contracts.py
   - tests/evidence/integration_gate_lifecycle.py
+  - tests/evidence/implementation_enforcement_lifecycle.py
   - scripts/trajectory_eval.py
   - tests/evidence/trajectory_quality_gate_lifecycle.py
 checks:
@@ -80,6 +83,22 @@ checks:
       - .github/workflows/validate.yml
       - tests/evidence/integration_gate_lifecycle.py
       - tests/scenarios/136-exact-candidate-integration-gate.md
+  - id: implementation-enforcement-lifecycle
+    category: test
+    required: true
+    timeout_seconds: 120
+    argv: [python3, tests/evidence/implementation_enforcement_lifecycle.py]
+    paths:
+      - scripts/implementation_enforcement.py
+      - scripts/implementation_profile_validate.py
+      - scripts/integration_gate.py
+      - scripts/openapi_contracts.py
+      - templates/implementation/IMPLEMENTATION_PROFILE.yaml
+      - templates/implementation/IMPLEMENTATION_ENFORCEMENT_REPORT.schema.json
+      - config/integration-gate.yaml
+      - tests/validation/implementation_enforcement_contracts.py
+      - tests/evidence/implementation_enforcement_lifecycle.py
+      - tests/scenarios/195-implementation-resolution-deterministic-enforcement.md
   - id: review-isolation-lifecycle
     category: test
     required: true

@@ -12,6 +12,8 @@ Agent Eval does not inspect or score private chain-of-thought. It scores only ob
 
 Scenario 193 Implementation Profile checks are deterministic contract/lifecycle evidence, not Agent Eval scores; semantic resolution quality remains a Human-reviewed question.
 
+Scenario 195 adds exact-candidate deterministic checks for ownership, language, generated hashes and required verification evidence. Its report cannot score semantic technology choice or establish that project test assertions are adequate; those judgments remain in the applicable review path.
+
 ## Separation of responsibilities
 
 ~~~text

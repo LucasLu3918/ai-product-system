@@ -157,7 +157,26 @@ python scripts/implementation_profile_validate.py path/to/IMPLEMENTATION_PROFILE
   --language-profile references/languages/go/PROFILE.yaml --format json
 ```
 
-`structural_status` reports `PASS` or `FAIL`; `implementation_status` reports `READY` or `BLOCKED`. Exit codes are 0 for structurally valid and ready, 1 for structural errors, and 2 for a structurally valid but blocked profile. The validator checks allowed states/enums, required sections, decision provenance, profile consistency, normalized repository-relative ownership paths, ownership overlap, unresolved blockers and language profile shape. It does not assess semantic quality or choose a technology.
+`structural_status` reports `PASS` or `FAIL`; `implementation_status` reports `READY` or `BLOCKED`. Exit codes are 0 for structurally valid and ready, 1 for structural errors, and 2 for a structurally valid but blocked profile. The validator checks allowed states/enums, required sections, decision provenance, profile consistency, normalized repository-relative ownership paths, ownership overlap, unresolved blockers, language profile shape and the optional Phase 3 evidence declarations. It does not assess semantic quality or choose a technology. A structural `READY` does not replace the Phase 3 candidate report when enforcement applies.
+
+## Phase 3 deterministic enforcement
+
+The additive `enforcement` section is optional for existing Profiles. Set `mode: report` while establishing coverage, then `mode: enforce` for an approved task scope. Declare repository-relative `scope_paths`, the selected language Profile, generated-file records and project-native argv commands. Changed in-scope paths require explicit ownership evidence; `unresolved` and unlisted paths stay protected. Generated records bind an output hash, input hashes and tool/version, but matching hashes do not prove a generator ran or the generated behavior is correct.
+
+For each applicable `quality.mandatory`, `quality.project_required` and `quality.risk_triggered` entry, declare an `id`, `command_id` and current-run `evidence_report`. A report is bound to the Profile bytes, command argv, command source file and exact Git revision. Command evidence must be ephemeral in the current checkout; committed command reports are rejected. Project commands remain project-owned and their assertions remain subject to review.
+
+Explicit local collection is separate from Gate verification:
+
+```bash
+python scripts/implementation_enforcement.py run-command IMPLEMENTATION_PROFILE.yaml \
+  --repo-root . --command-id project-check --repeat 2 --execute \
+  --output evidence/project-check.json
+python scripts/implementation_enforcement.py inspect IMPLEMENTATION_PROFILE.yaml \
+  --repo-root . --base <base-sha> --head HEAD --mode enforce \
+  --output /tmp/implementation-enforcement.json
+```
+
+Use `--repeat 2` for commands declared deterministic. Collection uses argv without a shell, a declared timeout, minimal environment and digest-only bounded output; it does not run automatically in the Gate. The Phase 3 inspector re-verifies selected language identity, Profile fingerprint, generated input/output hashes, required command evidence, and Phase 2 OpenAPI report kind/status/path/hash/revision. `FAIL`, `BLOCKED` and `UNVERIFIED` cannot satisfy enforcement. A report with the same inputs has the same normalized fingerprint; command repeat mismatches remain `UNVERIFIED`.
 
 ## Non-goals and phases
 
@@ -165,6 +184,6 @@ Phase 1: Resolution contract, profile template, Go/PHP/Python/.NET profiles, Pro
 
 Phase 2: OpenAPI validity and conservative compatibility analysis, project-native contract-test execution, operation coverage and revision/hash-bound evidence reports.
 
-Later: Phase 3 deterministic ownership/provenance/drift/quality enforcement integrated into existing gates; Phase 4 justified generator adapters for transport/client boundaries only.
+Phase 3: optional, scoped deterministic ownership/provenance/drift/quality enforcement integrated into the existing Gate. Phase 4 remains justified generator adapters for transport/client boundaries only.
 
-Do not add language-specific Roles, framework Skills/Profiles, code-generator adapters, GraphQL/gRPC/AsyncAPI support, automatic migrations, or automatic framework modernization as part of Phases 1–2.
+Do not add language-specific Roles, framework Skills/Profiles, code-generator adapters, GraphQL/gRPC/AsyncAPI support, automatic migrations, or automatic framework modernization as part of Phases 1–3.

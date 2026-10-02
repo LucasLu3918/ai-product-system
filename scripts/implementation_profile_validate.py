@@ -16,6 +16,7 @@ AUTHORITIES = {"canonical", "descriptive", "proposed", "unresolved"}
 LANGUAGES = {"go", "php", "python", "dotnet"}
 OWNERSHIP = ("generated", "scaffolded", "project_owned", "unresolved")
 QUALITY_RESULTS = {"PASS", "FAIL", "UNVERIFIED", "BLOCKED"}
+ENFORCEMENT_MODES = {"disabled", "report", "enforce"}
 PROFILE_SECTIONS = (
     "identity", "detection", "runtime", "package_model", "dependency_management",
     "formatting", "static_analysis", "error_handling", "testing", "concurrency",
@@ -78,6 +79,94 @@ def _owned_path(entry: Any, label: str, errors: list[str]) -> str | None:
         errors.append(f"{label} must be a normalized repository-relative path")
         return None
     return pure.as_posix()
+
+
+def _digest(value: Any, label: str, errors: list[str]) -> None:
+    if not isinstance(value, str) or not re.fullmatch(r"sha256:[0-9a-f]{64}", value):
+        errors.append(f"{label} must be sha256:<64 lowercase hex>")
+
+
+def _enforcement(value: Any, quality: dict[str, Any], errors: list[str]) -> None:
+    """Validate only the additive Phase 3 contract; execution evidence is checked separately."""
+    if value is None:
+        return
+    section = _mapping(value, "enforcement", errors)
+    mode = section.get("mode")
+    if mode not in ENFORCEMENT_MODES:
+        errors.append(f"enforcement.mode must be one of {sorted(ENFORCEMENT_MODES)}")
+    scope = _list(section.get("scope_paths"), "enforcement.scope_paths", errors)
+    for index, pattern in enumerate(scope):
+        _owned_path(pattern, f"enforcement.scope_paths[{index}]", errors)
+    language_path = section.get("language_profile")
+    if language_path is not None:
+        _owned_path(language_path, "enforcement.language_profile", errors)
+    if mode == "enforce" and (not scope or not language_path):
+        errors.append("enforcement mode requires scope_paths and language_profile")
+
+    commands = _list(section.get("commands"), "enforcement.commands", errors)
+    command_ids: set[str] = set()
+    for index, item in enumerate(commands):
+        row = _mapping(item, f"enforcement.commands[{index}]", errors)
+        identifier = row.get("id")
+        if not isinstance(identifier, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]*", identifier):
+            errors.append(f"enforcement.commands[{index}].id must be a stable identifier")
+        elif identifier in command_ids:
+            errors.append(f"enforcement.commands duplicates id {identifier}")
+        else:
+            command_ids.add(identifier)
+        argv = row.get("argv")
+        if not isinstance(argv, list) or not argv or not all(isinstance(arg, str) and arg for arg in argv):
+            errors.append(f"enforcement.commands[{index}].argv must be a non-empty string list")
+        source = row.get("source")
+        _owned_path(source, f"enforcement.commands[{index}].source", errors)
+        timeout = row.get("timeout_seconds")
+        if not isinstance(timeout, int) or isinstance(timeout, bool) or not 1 <= timeout <= 900:
+            errors.append(f"enforcement.commands[{index}].timeout_seconds must be 1..900")
+        if not isinstance(row.get("deterministic"), bool):
+            errors.append(f"enforcement.commands[{index}].deterministic must be boolean")
+
+    records = _list(section.get("generation_records"), "enforcement.generation_records", errors)
+    record_paths: set[str] = set()
+    for index, item in enumerate(records):
+        row = _mapping(item, f"enforcement.generation_records[{index}]", errors)
+        path = _owned_path(row.get("path"), f"enforcement.generation_records[{index}].path", errors)
+        if path in record_paths:
+            errors.append(f"enforcement.generation_records duplicates path {path}")
+        if path:
+            record_paths.add(path)
+        for key in ("tool", "version"):
+            if not isinstance(row.get(key), str) or not row[key].strip():
+                errors.append(f"enforcement.generation_records[{index}].{key} is required")
+        _digest(row.get("output_sha256"), f"enforcement.generation_records[{index}].output_sha256", errors)
+        inputs = _list(row.get("inputs"), f"enforcement.generation_records[{index}].inputs", errors)
+        if not inputs:
+            errors.append(f"enforcement.generation_records[{index}].inputs is required")
+        for input_index, input_item in enumerate(inputs):
+            evidence = _mapping(input_item, f"enforcement.generation_records[{index}].inputs[{input_index}]", errors)
+            _owned_path(evidence.get("path"), f"enforcement.generation_records[{index}].inputs[{input_index}].path", errors)
+            _digest(evidence.get("sha256"), f"enforcement.generation_records[{index}].inputs[{input_index}].sha256", errors)
+
+    if mode == "disabled":
+        return
+    requirement_ids: set[str] = set()
+    for category in ("mandatory", "project_required", "risk_triggered"):
+        entries = quality.get(category)
+        for index, item in enumerate(entries if isinstance(entries, list) else []):
+            if not isinstance(item, dict):
+                if mode == "enforce":
+                    errors.append(f"quality.{category}[{index}] requires an evidence mapping for enforcement")
+                continue
+            identifier = item.get("id")
+            if not isinstance(identifier, str) or not identifier.strip():
+                errors.append(f"quality.{category}[{index}].id is required")
+            elif identifier in requirement_ids:
+                errors.append(f"quality requirement duplicates id {identifier}")
+            else:
+                requirement_ids.add(identifier)
+            command_id = item.get("command_id")
+            if command_id not in command_ids:
+                errors.append(f"quality.{category}[{index}].command_id must name an enforcement command")
+            _owned_path(item.get("evidence_report"), f"quality.{category}[{index}].evidence_report", errors)
 
 
 def validate_language_profile(doc: Any) -> list[str]:
@@ -254,6 +343,8 @@ def validate_profile(doc: Any) -> dict[str, Any]:
                     errors.append(f"quality.evidence[{index}].status must be one of {sorted(QUALITY_RESULTS)}")
                 if not any(isinstance(row.get(k), str) and row[k].strip() for k in ("source", "command", "reference")):
                     errors.append(f"quality.evidence[{index}] requires source/command/reference provenance")
+
+    _enforcement(root.get("enforcement"), quality, errors)
 
     knowledge = _mapping(root.get("knowledge"), "knowledge", errors)
     _evidence(knowledge.get("project_evidence"), "knowledge.project_evidence", errors)

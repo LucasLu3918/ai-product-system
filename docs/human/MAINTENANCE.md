@@ -131,6 +131,7 @@ When end-to-end delivery behavior changes, verify together:
 
 Implementation Resolution changes update `orchestration/IMPLEMENTATION_RESOLUTION.md`, its profile and language references, the structural validator, and Scenario 193 evidence together. Preserve contract authority, evidence provenance, ownership protection and `UNVERIFIED` semantics; a profile does not authorize migration or publication.
 
+
 When these behaviors change, review together:
 
 - Requirement clarification and Planning Package v2 → SYSTEM / ORCHESTRATOR / research, plan, requirement, experience, visual, domain, API and manifest templates / structural validator / reusable roles and skills / lazy domain references / Human Guide / architecture map / scenarios.
@@ -349,6 +350,8 @@ Keep the top-level validator as an aggregator. New substantial validation belong
 
 
 ## Deterministic Scheduler / Integration Gate consistency
+
+Phase 3 enforcement changes also update `scripts/implementation_enforcement.py`, its versioned report schema, Scenario 195 and the existing Integration Gate profile/lifecycle evidence. Check report-only behavior before enabling path-scoped enforcement in a project; a missing current-run command report or stale generated/OpenAPI hash must not turn into PASS. Generated hashes verify recorded provenance, not generator execution.
 
 Keep the local publication route on one explicit checkout. Its preflight checks Python/Ruff, loopback and browser readiness before lifecycle validation, then checks changed Markdown links and builds VitePress for documentation candidates. Use `--project-root <repo>` when the installed CLI validates a separate source checkout. Core/Large labels belong on the initial PR creation request when using `gh`; a connector that cannot set labels atomically requires the label event and its own fresh CI result. After merge, update a clean local `main` with fast-forward-only when it is behind `origin/main`; preserve a backup before reconciliation and block dirty or divergent histories.
 
