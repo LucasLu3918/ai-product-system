@@ -322,6 +322,8 @@ Eval-as-CI is a Core Change capability. The Orchestrator must route it through t
 
 When a repository PR represents an already approved Large/Core Change, preserve that classification into deterministic CI with `aips:large-change` or `aips:core-change`. Integration Gate uses the change class only to select evidence requirements; it does not create semantic classification or approval authority.
 
+For a fixed local candidate, schedule one complete Publication Preflight after focused development checks; it includes repository validation. PR and main retain separate complete CI Gates, with an optional timing artifact to guide later performance work. Timing evidence grants no merge or publication authority.
+
 Before requesting Git publication approval, run the shared publication plan/preflight, resolve protected-branch routing, and present the exact candidate after diff-aware documentation checks pass. After merge, fast-forward a clean local `main` only when it is an ancestor of the fetched target, preserving a backup branch first. If histories diverged, reconcile only equivalent trees with a backup; otherwise stop for Human review.
 
 When Core Change Testing requires independent review, schedule a separate read-only `INDEPENDENT_REVIEW` task over the bounded packet and exact candidate. The Integration Gate must consume evidence from a trusted runtime attestation verifier; absent or stale attestation blocks required review rather than falling back to self-check.

@@ -1,232 +1,124 @@
 version: 1
 change:
-  id: implementation-resolution-phase5
-  summary: Optionally verify generator execution evidence and run one shared
-    OpenAPI client reference product against a local service.
+  id: validation-timing-optimization
+  summary: Measure repository validation bottlenecks and avoid redundant local full
+    validation without reducing required CI coverage.
   boundary:
-  - profile-and-language-contracts
-  - generated-ownership-and-provenance
-  - project-quality-and-openapi-evidence
-  - integration-gate-and-documentation
-  - openapi-generator-adapter-execution-and-rollback
-  - optional-generator-report-binding
-  - shared-openapi-client-reference-pilot
+  - repository-validator-contracts
+  - local-and-ci-timing-artifacts
+  - publication-and-documentation-closure
 matrix:
-- boundary: profile-and-language-contracts
-  reason: Preserve Phase 1/2 Profiles while validating opt-in enforcement configuration
-    and selected language identity.
+- boundary: repository-validator-contracts
+  reason: Contract imports and lifecycle subprocesses must keep their order, failure
+    propagation and scenario coverage while recording durations.
   checks:
     static_lint:
       applicable: true
-      evidence: Profile structural and language fixtures Ruff critical lint and Python
-        compile.
+      evidence: Python compile and Ruff critical lint for the validator.
     unit:
       applicable: true
-      evidence: Profile structural and language fixtures Static and lifecycle assertions
-        cover failure states.
+      evidence: Existing contract modules run through the unchanged repository entrypoint.
     integration:
       applicable: true
-      evidence: Profile structural and language fixtures Exact-candidate Integration
-        Gate and repository validation run locally.
+      evidence: Exact-candidate Gate runs repository-validation on the full candidate.
     contract:
       applicable: true
-      evidence: Profile structural and language fixtures Profile/report schema and
-        legacy compatibility contracts are validated.
+      evidence: PASS or FAIL and 197 scenario inventory remain unchanged; timing JSON
+        contains check names
+      statuses and durations.: null
     e2e:
       applicable: false
-      na_reason: No deployed application changes; Git fixture and exact-candidate
-        Gate cover the boundary.
+      na_reason: No deployed application behavior changes.
     security:
       applicable: true
-      evidence: Profile structural and language fixtures Path scope, ownership and
-        evidence binding fail closed.
+      evidence: Timing report excludes captured test output and secrets; mandatory
+        candidate secret scans remain required.
     migration_recovery:
       applicable: false
-      na_reason: Additive optional Profile contract; no persisted migration.
+      na_reason: Optional ephemeral timing artifact has no stored schema migration.
     cli_harness:
       applicable: true
-      evidence: Profile structural and language fixtures Inspect and explicit command
-        collection CLI are exercised.
+      evidence: Standalone validator and Publication Preflight retain their existing
+        exit semantics.
     docs_schema:
       applicable: true
-      evidence: Profile structural and language fixtures Documentation placement,
-        links and site build are checked.
-- boundary: generated-ownership-and-provenance
-  reason: Unknown ownership and stale generated input/output hashes must block enforced
-    candidates.
+      evidence: Human and Agent documentation describe Gate inclusion and timing output.
+- boundary: local-and-ci-timing-artifacts
+  reason: The local wrapper and GitHub Actions must publish the same diagnostic report
+    while preserving full PR and main Gate runs.
   checks:
     static_lint:
       applicable: true
-      evidence: Scenario 195 Git fixtures Ruff critical lint and Python compile.
+      evidence: Python compile and workflow YAML parse.
     unit:
       applicable: true
-      evidence: Scenario 195 Git fixtures Static and lifecycle assertions cover failure
-        states.
+      evidence: Wrapper output path and CI artifact configuration are checked against
+        the validator report contract.
     integration:
       applicable: true
-      evidence: Scenario 195 Git fixtures Exact-candidate Integration Gate and repository
-        validation run locally.
+      evidence: Local exact-candidate Gate and PR CI produce parseable timing reports.
     contract:
       applicable: true
-      evidence: Scenario 195 Git fixtures Profile/report schema and legacy compatibility
-        contracts are validated.
+      evidence: Gate PASS remains required for the repository aggregate; missing optional
+        artifact cannot masquerade as PASS.
     e2e:
-      applicable: false
-      na_reason: No deployed application changes; Git fixture and exact-candidate
-        Gate cover the boundary.
+      applicable: true
+      evidence: PR and post-merge main CI each run the complete Gate.
     security:
       applicable: true
-      evidence: Scenario 195 Git fixtures Path scope, ownership and evidence binding
-        fail closed.
+      evidence: Reports contain no test output or secrets and use short artifact retention.
     migration_recovery:
       applicable: false
-      na_reason: Additive optional Profile contract; no persisted migration.
+      na_reason: Runner temporary artifacts expire; no persistent migration.
     cli_harness:
       applicable: true
-      evidence: Scenario 195 Git fixtures Inspect and explicit command collection
-        CLI are exercised.
+      evidence: prepare-local-validation selects the prepared venv and writes beside
+        its Gate report.
     docs_schema:
       applicable: true
-      evidence: Scenario 195 Git fixtures Documentation placement, links and site
-        build are checked.
-- boundary: project-quality-and-openapi-evidence
-  reason: Quality commands require current bounded evidence; OpenAPI reports bind
-    to the selected spec.
+      evidence: Maintenance and Integration Gate docs explain the single local full-run
+        path.
+- boundary: publication-and-documentation-closure
+  reason: Core CI changes must retain publication identity, matrix binding, documentation
+    placement and remote merge checks.
   checks:
     static_lint:
       applicable: true
-      evidence: Scenario 195 command and OpenAPI lifecycle Ruff critical lint and
-        Python compile.
+      evidence: Git diff check and critical Ruff lint.
     unit:
       applicable: true
-      evidence: Scenario 195 command and OpenAPI lifecycle Static and lifecycle assertions
-        cover failure states.
+      evidence: Publication preflight and documentation contracts run in repository
+        validation.
     integration:
       applicable: true
-      evidence: Scenario 195 command and OpenAPI lifecycle Exact-candidate Integration
-        Gate and repository validation run locally.
+      evidence: Exact-candidate preflight checks matrix binding
+      documentation impact and Gate status.: null
     contract:
       applicable: true
-      evidence: Scenario 195 command and OpenAPI lifecycle Profile/report schema and
-        legacy compatibility contracts are validated.
+      evidence: Workflow still requires janitor success through the repository aggregate.
     e2e:
-      applicable: false
-      na_reason: No deployed application changes; Git fixture and exact-candidate
-        Gate cover the boundary.
+      applicable: true
+      evidence: PR and main checks verify separate commit identities after merge.
     security:
       applicable: true
-      evidence: Scenario 195 command and OpenAPI lifecycle Path scope, ownership and
-        evidence binding fail closed.
+      evidence: Candidate secret scans run before dependencies and within the Gate.
     migration_recovery:
       applicable: false
-      na_reason: Additive optional Profile contract; no persisted migration.
+      na_reason: No persisted product state changes.
     cli_harness:
       applicable: true
-      evidence: Scenario 195 command and OpenAPI lifecycle Inspect and explicit command
-        collection CLI are exercised.
+      evidence: Publication preview
+      plan and post-merge reconciliation use existing commands.: null
     docs_schema:
       applicable: true
-      evidence: Scenario 195 command and OpenAPI lifecycle Documentation placement,
-        links and site build are checked.
-- boundary: integration-gate-and-documentation
-  reason: Report mode and enforce mode must retain existing Gate policy and recursive
-    docs placement.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Gate lifecycle and publication preview Ruff critical lint and Python
-        compile.
-    unit:
-      applicable: true
-      evidence: Gate lifecycle and publication preview Static and lifecycle assertions
-        cover failure states.
-    integration:
-      applicable: true
-      evidence: Gate lifecycle and publication preview Exact-candidate Integration
-        Gate and repository validation run locally.
-    contract:
-      applicable: true
-      evidence: Gate lifecycle and publication preview Profile/report schema and legacy
-        compatibility contracts are validated.
-    e2e:
-      applicable: false
-      na_reason: No deployed application changes; Git fixture and exact-candidate
-        Gate cover the boundary.
-    security:
-      applicable: true
-      evidence: Gate lifecycle and publication preview Path scope, ownership and evidence
-        binding fail closed.
-    migration_recovery:
-      applicable: false
-      na_reason: Additive optional Profile contract; no persisted migration.
-    cli_harness:
-      applicable: true
-      evidence: Gate lifecycle and publication preview Inspect and explicit command
-        collection CLI are exercised.
-    docs_schema:
-      applicable: true
-      evidence: Gate lifecycle and publication preview Documentation placement, links
-        and site build are checked.
-- boundary: openapi-generator-adapter-execution-and-rollback
-  reason: Only explicit local execution may invoke the pinned client generator; stale, unsafe or hand-edited outputs must not be applied.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Ruff critical lint and compilation cover the adapter, Profile validator and lifecycle fixture.
-    unit:
-      applicable: true
-      evidence: Profile and report schema contracts cover legacy defaults, declared inputs, path safety and preview invariants.
-    integration:
-      applicable: true
-      evidence: Scenario 196 runs the fixture generator in temporary Git repositories and verifies the exact Integration Gate check.
-    contract:
-      applicable: true
-      evidence: Profile adapter contract and versioned report schema bind paths, executable/input/output hashes and state transitions.
-    e2e:
-      applicable: false
-      na_reason: AIPS has no production OpenAPI client target; isolated Git fixtures verify the reusable local adapter contract.
-    security:
-      applicable: true
-      evidence: Lifecycle checks shell-free argv, revision-bound evidence, staged inputs, bounded timeout/output, allowlists, symlink rejection, edit protection and rollback; no OS sandbox is claimed.
-    migration_recovery:
-      applicable: true
-      evidence: Additive Profile defaults preserve older files; injected Profile replacement failure verifies restoration of prior generated output.
-    cli_harness:
-      applicable: true
-      evidence: Preview is the default and only --execute invokes the generator; JSON report schema and exit states are tested.
-    docs_schema:
-      applicable: true
-      evidence: Recursive documentation placement, links, human/agent synchronization and docs site build cover Scenario 196.
-- boundary: optional-generator-report-binding
-  reason: An opted-in Profile must reject missing or stale Phase 4 execution evidence without changing legacy Profiles.
-  checks:
-    static_lint: {applicable: true, evidence: Ruff critical lint and Python compile.}
-    unit: {applicable: true, evidence: Profile structural contracts and unchanged legacy lifecycle.}
-    integration: {applicable: true, evidence: Scenario 197 exact-candidate Phase 3 inspector against a generated client.}
-    contract: {applicable: true, evidence: Report schema, fingerprint, revision, tool, input, output and provenance bindings.}
-    e2e: {applicable: true, evidence: Reference client runs against a loopback API before inspector PASS.}
-    security: {applicable: true, evidence: Missing or tampered reports block; inspection never executes the generator.}
-    migration_recovery: {applicable: false, na_reason: Optional additive Profile field requires no migration.}
-    cli_harness: {applicable: true, evidence: Phase 3 inspect report and enforce modes retain existing entry points.}
-    docs_schema: {applicable: true, evidence: Scenario 197 and synchronized Human guidance.}
-- boundary: shared-openapi-client-reference-pilot
-  reason: One executable reference verifies workflow behavior without claiming acceptance for other products.
-  checks:
-    static_lint: {applicable: true, evidence: Ruff critical lint and Python compile on example and lifecycle.}
-    unit: {applicable: true, evidence: Generator verifies supported canonical contract operations and security shape.}
-    integration: {applicable: true, evidence: Create/get, errors, Unicode JSON and bearer auth against local HTTP service.}
-    contract: {applicable: true, evidence: Phase 2 OpenAPI validity and JUnit operation coverage reports.}
-    e2e: {applicable: true, evidence: Temporary standalone Git product runs Phase 2 through Phase 4 and Phase 3.}
-    security: {applicable: true, evidence: Only fake local bearer token, bounded generator output and hand-edit protection.}
-    migration_recovery: {applicable: true, evidence: Existing Phase 4 rollback fixture plus no product migration.}
-    cli_harness: {applicable: true, evidence: Preview, explicit execution and exact-candidate inspector lifecycle.}
-    docs_schema: {applicable: true, evidence: Example README and Scenario 197 explain multi-product ownership.}
+      evidence: Recursive documentation placement
+      changed Markdown links and VitePress build pass.: null
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 1581e3cec7cf11c99c3b40202434515a426773a1
-  changed_files_hash: 345c6771b568209ed670a69b85e6c4983ea34fd2ccd060a2c858041f1efd52b2
+  base_sha: 2201223e82a7f90b3929ad72374fb6c287286f8e
+  changed_files_hash: 31090df99db151799b4bd55b78dc963597214dd6708685b4a627e4f5b05e0765
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

@@ -117,6 +117,8 @@ Before publication, run the shared preflight from a clean candidate worktree. It
 
 For local publication, the same preflight checks the explicit repository root, required Python/Ruff modules, loopback binding and browser launch before starting the Integration Gate. Changed Markdown links and the VitePress build run before full lifecycle validation when docs/package paths are part of the candidate.
 
+Run focused checks during development, then one exact-candidate Gate after the commit is fixed; its required `repository-validation` already executes the full repository validator. The optional timing JSON records each contract import and lifecycle duration for diagnosis. CI retains full PR and post-merge main Gates, and timing evidence never substitutes for a passing check.
+
 Integration Gate PASS is evidence only. It never supplies Human approval, merge authority, publication authority, architecture approval or risk acceptance.
 Publication Preflight lifecycle evidence must isolate optional Python module probes from loopback/browser blocker assertions so host dependency availability cannot change the tested diagnostics.
 

@@ -356,6 +356,8 @@ Agent、MCP、CI workflow 或 external analyzer 不能因為具有執行能力�
 
 本地首次驗證可先執行 `python3.12 bin/prepare-local-validation --venv <validation-venv>`，之後用相同 `--venv` 加上 `--check-only --run --base <base-sha> --head <head-sha> --change-class core` 執行同一候選的 Publication Preflight 與 Gate；驗證設定會暫存在 repository 外。文件候選另需讓 Node.js 位於 `PATH`，並先在 checkout 安裝 `package.json` 的 VitePress 相依套件。建立 Large/Core PR 時同時使用 `gh pr create --label aips:large-change` 或 `--label aips:core-change`，讓首輪 CI 取得正確分類。
 
+開發時先跑受影響測試，候選 commit 固定後再跑一次上述完整 Gate；其中已包含 `tests/validate_repository.py`。本機 `.timing.json` 與 CI 的 `repository-validation-timing` artifact 可用來找出最慢項目，不須為取得時間資料重跑完整驗證。
+
 每個 Remote Git publication candidate 都會由 AIPS 內建秘密掃描器檢查 exact final tree 和 base 到 head 的 commit 歷史。找到秘密、歷史或候選內容無法完整掃描、policy 無效時，發布檢查會阻擋並只顯示遮蔽後位置與指紋；修正後須重新驗證。Gitleaks、GitGuardian 與 GitHub Secret Scanning 可作第二層防護，不需要它們的憑證才能通過 AIPS baseline。
 
 Core Matrix 的 `changed_files_hash` 必須綁定相同 base/head 的完整變更檔案集合；精確候選通過 preflight 後才可請求 PR review。Integration Gate PASS 是驗證證據，不會代替明確的 merge 授權。

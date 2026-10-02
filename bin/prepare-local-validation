@@ -150,8 +150,11 @@ def main() -> int:
             env = dict(os.environ)
             env["XDG_CONFIG_HOME"] = config_home
             env["PATH"] = str(python.parent) + os.pathsep + env.get("PATH", "")
+            timing_report = output.with_suffix(".timing.json")
+            env["AIPS_VALIDATION_TIMING_REPORT"] = str(timing_report)
             result = subprocess.run(command, cwd=ROOT, env=env, check=False)
         print(f"Integration Gate report: {output}")
+        print(f"Repository validation timing report: {timing_report}")
         return result.returncode
     print("Then run with --check-only --run --base <revision> --head <revision> --change-class <class>.")
     return 0

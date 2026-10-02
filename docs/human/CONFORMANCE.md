@@ -116,6 +116,8 @@ AIPS Core 不在 CI 裡呼叫特定模型 API。CI 驗證的是已記錄的 obse
 
 GitHub PR validation 也以精確候選為邊界：同一 PR 的 `opened`、`labeled`、`unlabeled` 與 `synchronize` 共用併發群組，較新的事件會取代舊執行並依最新 label 狀態選擇 Gate。被取消的舊 run 不代表 PASS，仍須確認最新候選 SHA 的 required `repository` aggregate。
 
+完整 repository validation 現會輸出逐項時間 JSON 供分析；測試失敗仍使 Gate 與 required aggregate 失敗。時間報告只含模組／lifecycle 名稱、狀態與毫秒數，不包含測試輸出。
+
 第一批 Agent Eval：
 
 ~~~text
