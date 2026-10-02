@@ -120,8 +120,7 @@ matrix:
         build pass for affected docs.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
-blockers:
-  - candidate binding refreshed; review scope and evidence before marking READY
+blockers: []
 candidate:
   base_sha: 1374ea576c5ffcfccbd7c9916f07f463b7acdfbc
   changed_files_hash: dd98895b5d15e33afbaa8143d750965cd1924ec64761c74f8a2ee900a48d849c
