@@ -66,6 +66,8 @@ Eval-as-CI Core Change 必須涵蓋 trace schema、deterministic trajectory rule
 
 Prefer deterministic evidence and exact commands/results.
 
+When a validation contract immediately executes a Python helper or lifecycle script, that execution also checks Python syntax. Avoid a separate `py_compile` subprocess for the same file in the same path. Assign each lifecycle evidence script one owning invocation in the full repository validator; reference its result from other contracts instead of running the identical lifecycle twice. Keep syntax-only compilation for Python files that are not otherwise executed by the affected validation path.
+
 For system/Harness/CLI changes, include executable lifecycle tests rather than documentation-only validation.
 
 For API/contract/data changes, include producer/consumer compatibility where applicable.

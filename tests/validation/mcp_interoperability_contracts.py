@@ -17,9 +17,6 @@ for path in required:
 
 server = ROOT / "scripts/mcp_server.py"
 if server.exists():
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(server)], capture_output=True, text=True)
-    if compiled.returncode != 0:
-        errors.append(f"mcp_server.py syntax failed: {compiled.stderr.strip()}")
     text = server.read_text(encoding="utf-8")
     for marker in (
         "from mcp.server import MCPServer",
@@ -109,10 +106,6 @@ for client in ("cursor", "windsurf", "copilot", "amp", "codex", "generic"):
 
 evidence = ROOT / "tests/evidence/mcp_interoperability_lifecycle.py"
 if evidence.exists():
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(evidence)], capture_output=True, text=True)
-    if compiled.returncode != 0:
-        errors.append(f"MCP interoperability lifecycle syntax failed: {compiled.stderr.strip()}")
-    else:
-        result = subprocess.run([sys.executable, str(evidence)], capture_output=True, text=True, timeout=180)
-        if result.returncode != 0:
-            errors.append(f"MCP interoperability lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}")
+    result = subprocess.run([sys.executable, str(evidence)], capture_output=True, text=True, timeout=180)
+    if result.returncode != 0:
+        errors.append(f"MCP interoperability lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}")

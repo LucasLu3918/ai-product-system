@@ -1,31 +1,34 @@
 version: 1
 change:
-  id: validation-timing-optimization
-  summary: Measure repository validation bottlenecks and avoid redundant local full
-    validation without reducing required CI coverage.
+  id: phase6-validation-duplication-optimization
+  summary: Profile repository validator hot spots and remove redundant Python pre-compilation
+    and duplicate lifecycle execution while preserving the full Integration Gate.
   boundary:
   - repository-validator-contracts
   - local-and-ci-timing-artifacts
   - publication-and-documentation-closure
 matrix:
 - boundary: repository-validator-contracts
-  reason: Contract imports and lifecycle subprocesses must keep their order, failure
-    propagation and scenario coverage while recording durations.
+  reason: Validator modules keep failure propagation and all unique lifecycle coverage
+    while avoiding duplicate compile subprocesses and repeated execution of the same
+    evidence.
   checks:
     static_lint:
       applicable: true
-      evidence: Python compile and Ruff critical lint for the validator.
+      evidence: Compile the edited validators; run repository critical Ruff checks.
     unit:
       applicable: true
-      evidence: Existing contract modules run through the unchanged repository entrypoint.
+      evidence: Import each affected contract module through tests/validate_repository.py
+        and preserve all existing assertions.
     integration:
       applicable: true
-      evidence: Exact-candidate Gate runs repository-validation on the full candidate.
+      evidence: Run the exact-candidate Publication Preflight and complete Integration
+        Gate.
     contract:
       applicable: true
-      evidence: PASS or FAIL and 197 scenario inventory remain unchanged; timing JSON
-        contains check names
-      statuses and durations.: null
+      evidence: All 197 registered scenarios remain accounted for; every unique lifecycle
+        executes at least once, and duplicate py_compile/direct-execution pairs are
+        removed.
     e2e:
       applicable: false
       na_reason: No deployed application behavior changes.
@@ -42,10 +45,11 @@ matrix:
         exit semantics.
     docs_schema:
       applicable: true
-      evidence: Human and Agent documentation describe Gate inclusion and timing output.
+      evidence: Maintenance and Core Change Testing document the single-execution
+        rule.
 - boundary: local-and-ci-timing-artifacts
-  reason: The local wrapper and GitHub Actions must publish the same diagnostic report
-    while preserving full PR and main Gate runs.
+  reason: Compare the previous PR/main module timings with the candidate timing artifact;
+    full PR and main Gates remain mandatory.
   checks:
     static_lint:
       applicable: true
@@ -56,7 +60,8 @@ matrix:
         the validator report contract.
     integration:
       applicable: true
-      evidence: Local exact-candidate Gate and PR CI produce parseable timing reports.
+      evidence: Local exact-candidate Gate and remote PR/main CI publish parseable
+        repository-validation timing artifacts.
     contract:
       applicable: true
       evidence: Gate PASS remains required for the repository aggregate; missing optional
@@ -111,15 +116,16 @@ matrix:
       plan and post-merge reconciliation use existing commands.: null
     docs_schema:
       applicable: true
-      evidence: Recursive documentation placement
-      changed Markdown links and VitePress build pass.: null
+      evidence: Recursive documentation placement, changed Markdown links, and VitePress
+        build pass for affected docs.
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: true
-blockers: []
+actual_diff_reconciled: false
+blockers:
+- candidate binding refreshed; review scope and evidence before marking READY
 candidate:
-  base_sha: 2201223e82a7f90b3929ad72374fb6c287286f8e
-  changed_files_hash: 31090df99db151799b4bd55b78dc963597214dd6708685b4a627e4f5b05e0765
+  base_sha: 1374ea576c5ffcfccbd7c9916f07f463b7acdfbc
+  changed_files_hash: 045ad2f4f7138d1126b5a3066a3dc613ae544f88cdf4e5beb05b6f1400694f80
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
-status: READY
+status: DRAFT
