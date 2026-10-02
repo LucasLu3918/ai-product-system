@@ -89,6 +89,7 @@ jobs:
         shell: bash
         env:
           AIPS_GATE_REPORT: ${{ runner.temp }}/integration-gate-report.yaml
+          AIPS_VALIDATION_TIMING_REPORT: ${{ runner.temp }}/repository-validation-timing.json
           PR_LABELS: ${{ github.event_name == 'pull_request' && join(github.event.pull_request.labels.*.name, ',') || '' }}
         run: |
           base_tip_args=()
@@ -138,6 +139,14 @@ jobs:
         with:
           name: integration-gate-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/integration-gate-report.yaml
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Upload repository validation timing
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: repository-validation-timing-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/repository-validation-timing.json
           if-no-files-found: ignore
           retention-days: 14
       - name: Repository Health evidence

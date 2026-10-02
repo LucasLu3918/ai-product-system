@@ -306,3 +306,5 @@ An optional semantic provider may deny or escalate an otherwise allowed action. 
 
 Independent review evidence is accepted only for the exact candidate and bounded review packet. The reviewer must have a distinct execution identity and read-only authority; implementation transcripts, hidden reasoning, scratchpads and raw traces are excluded. A trusted runtime attestation verifier must validate reviewer identity and execution claims. Until one is configured, evidence remains `UNVERIFIED` and any policy-required review blocks the Gate; a self-declared signature field is not proof.
 Publication Preflight 的環境診斷 lifecycle 會隔離 Python module probe，並獨立驗證 loopback/browser capability blockers；主機限制不會被記成 policy enforcement 或產品安全行為變更。
+
+Repository validation 的時間 artifact 只記錄檢查名稱、結果和耗時，不儲存測試輸出或秘密。早期候選秘密掃描、Gate 內的強制掃描及 PR/main 的完整驗證均維持必要條件。

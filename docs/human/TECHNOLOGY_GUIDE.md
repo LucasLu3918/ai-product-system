@@ -54,6 +54,8 @@ CI 的文件建置使用 Node 24、npm lockfile version 3 和 `npm ci --ignore-s
 
 驗證原始碼 checkout 時以 `./bin/aips` 呼叫本地 CLI；受限執行環境先由 `prepare-local-validation` 檢查 localhost 與瀏覽器能力，再解讀完整驗證的結果。
 
+`prepare-local-validation --check-only --run` 會在 Gate 報告旁產生 `.timing.json`，記錄 repository validator 的模組與 lifecycle 耗時。CI 使用同一環境變數輸出報告並上傳 artifact；它是可觀測性資料，不取代任何 Gate 判定。
+
 Temporal Change Impact 可依 Git revision 還原當時有效的 assertion 與 Impact Graph edge；canonical YAML 保留真實來源，SQLite 只作可重建的 query projection。這延伸現有 Project Intelligence，不引入外部 Graph Database。
 
 Portable Command projections use ownership and digest checks to preserve user edits; the same Canonical Registry and renderer serve CLI and MCP without granting protected-operation authority.
