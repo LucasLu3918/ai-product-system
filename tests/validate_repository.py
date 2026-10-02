@@ -1,4 +1,3 @@
-import importlib
 import json
 import os
 import subprocess
@@ -28,18 +27,6 @@ def _write_timing_report(status: str) -> None:
             "total_duration_ms": int((time.monotonic() - _validation_started) * 1000),
             "checks": _timings,
         }, indent=2) + "\n", encoding="utf-8")
-
-
-def _timed_import(name: str):
-    started = time.monotonic()
-    try:
-        module = importlib.import_module(f"validation.{name}")
-    except BaseException:
-        _record_timing(f"validation.{name}", started, "FAIL")
-        _write_timing_report("FAIL")
-        raise
-    _record_timing(f"validation.{name}", started, "PASS")
-    return module
 
 
 def _append_validation_git_config(key: str, value: str) -> None:
@@ -77,32 +64,123 @@ _append_validation_git_config("gc.autoDetach", "false")
 _append_validation_git_config("maintenance.auto", "false")
 _append_validation_git_config("maintenance.autoDetach", "false")
 
-static_contracts = _timed_import("static_contracts")
-for name in (
-    "runtime_contracts", "visual_render_contracts", "performance_evidence_contracts",
-    "creative_evidence_contracts", "product_delivery_contracts", "evolution_radar_contracts",
-    "evolution_governance_contracts", "documentation_sync_contracts",
-    "documentation_audience_contracts", "documentation_placement_contracts", "governance_resume",
-    "conformance_isolation", "ears_requirement_contracts", "planning_package_contracts",
-):
-    _timed_import(name)
-implementation_profile_contracts = _timed_import("implementation_profile_contracts")
-openapi_generator_adapter_contracts = _timed_import("openapi_generator_adapter_contracts")
-implementation_enforcement_contracts = _timed_import("implementation_enforcement_contracts")
-openapi_contracts = _timed_import("openapi_contracts")
-for name in (
-    "retrieval_embedding_trial_contracts", "syntax_contracts", "scheduler_gate_contracts",
-    "review_isolation_contracts", "branch_hygiene_contracts", "resource_authorization_contracts",
-    "runtime_policy_contracts", "agent_anomaly_evaluation_contracts",
-    "agent_observable_event_trial_contracts", "gemini_observable_event_capture_contracts",
-    "gemini_runtime_verification_contracts", "gemini_provider_session_verification_contracts",
-    "gemini_provider_session_workflow_contracts", "external_credential_guard_contracts",
-    "repository_health_contracts", "mcp_interoperability_contracts",
-    "evolution_effectiveness_contracts", "publish_preflight_contracts",
-):
-    _timed_import(name)
-eval_interop_contracts = _timed_import("eval_interop_contracts")
-telemetry_export_contracts = _timed_import("telemetry_export_contracts")
+_import_started = time.monotonic()
+from validation import static_contracts as static_contracts
+_record_timing("validation.static_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import runtime_contracts as runtime_contracts  # noqa: F401
+_record_timing("validation.runtime_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import visual_render_contracts as visual_render_contracts  # noqa: F401
+_record_timing("validation.visual_render_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import performance_evidence_contracts as performance_evidence_contracts  # noqa: F401
+_record_timing("validation.performance_evidence_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import creative_evidence_contracts as creative_evidence_contracts  # noqa: F401
+_record_timing("validation.creative_evidence_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import product_delivery_contracts as product_delivery_contracts  # noqa: F401
+_record_timing("validation.product_delivery_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import evolution_radar_contracts as evolution_radar_contracts  # noqa: F401
+_record_timing("validation.evolution_radar_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import evolution_governance_contracts as evolution_governance_contracts  # noqa: F401
+_record_timing("validation.evolution_governance_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import documentation_sync_contracts as documentation_sync_contracts  # noqa: F401
+_record_timing("validation.documentation_sync_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import documentation_audience_contracts as documentation_audience_contracts  # noqa: F401
+_record_timing("validation.documentation_audience_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import documentation_placement_contracts as documentation_placement_contracts  # noqa: F401
+_record_timing("validation.documentation_placement_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import governance_resume as governance_resume  # noqa: F401
+_record_timing("validation.governance_resume", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import conformance_isolation as conformance_isolation  # noqa: F401
+_record_timing("validation.conformance_isolation", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import ears_requirement_contracts as ears_requirement_contracts  # noqa: F401
+_record_timing("validation.ears_requirement_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import planning_package_contracts as planning_package_contracts  # noqa: F401
+_record_timing("validation.planning_package_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import implementation_profile_contracts as implementation_profile_contracts  # noqa: F401
+_record_timing("validation.implementation_profile_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import openapi_generator_adapter_contracts as openapi_generator_adapter_contracts  # noqa: F401
+_record_timing("validation.openapi_generator_adapter_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import implementation_enforcement_contracts as implementation_enforcement_contracts  # noqa: F401
+_record_timing("validation.implementation_enforcement_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import openapi_contracts as openapi_contracts  # noqa: F401
+_record_timing("validation.openapi_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import retrieval_embedding_trial_contracts as retrieval_embedding_trial_contracts  # noqa: F401
+_record_timing("validation.retrieval_embedding_trial_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import syntax_contracts as syntax_contracts  # noqa: F401
+_record_timing("validation.syntax_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import scheduler_gate_contracts as scheduler_gate_contracts  # noqa: F401
+_record_timing("validation.scheduler_gate_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import review_isolation_contracts as review_isolation_contracts  # noqa: F401
+_record_timing("validation.review_isolation_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import branch_hygiene_contracts as branch_hygiene_contracts  # noqa: F401
+_record_timing("validation.branch_hygiene_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import resource_authorization_contracts as resource_authorization_contracts  # noqa: F401
+_record_timing("validation.resource_authorization_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import runtime_policy_contracts as runtime_policy_contracts  # noqa: F401
+_record_timing("validation.runtime_policy_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import agent_anomaly_evaluation_contracts as agent_anomaly_evaluation_contracts  # noqa: F401
+_record_timing("validation.agent_anomaly_evaluation_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import agent_observable_event_trial_contracts as agent_observable_event_trial_contracts  # noqa: F401
+_record_timing("validation.agent_observable_event_trial_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import gemini_observable_event_capture_contracts as gemini_observable_event_capture_contracts  # noqa: F401
+_record_timing("validation.gemini_observable_event_capture_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import gemini_runtime_verification_contracts as gemini_runtime_verification_contracts  # noqa: F401
+_record_timing("validation.gemini_runtime_verification_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import gemini_provider_session_verification_contracts as gemini_provider_session_verification_contracts  # noqa: F401
+_record_timing("validation.gemini_provider_session_verification_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import gemini_provider_session_workflow_contracts as gemini_provider_session_workflow_contracts  # noqa: F401
+_record_timing("validation.gemini_provider_session_workflow_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import external_credential_guard_contracts as external_credential_guard_contracts  # noqa: F401
+_record_timing("validation.external_credential_guard_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import repository_health_contracts as repository_health_contracts  # noqa: F401
+_record_timing("validation.repository_health_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import mcp_interoperability_contracts as mcp_interoperability_contracts  # noqa: F401
+_record_timing("validation.mcp_interoperability_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import evolution_effectiveness_contracts as evolution_effectiveness_contracts  # noqa: F401
+_record_timing("validation.evolution_effectiveness_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import publish_preflight_contracts as publish_preflight_contracts  # noqa: F401
+_record_timing("validation.publish_preflight_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import eval_interop_contracts as eval_interop_contracts  # noqa: F401
+_record_timing("validation.eval_interop_contracts", _import_started, "PASS")
+_import_started = time.monotonic()
+from validation import telemetry_export_contracts as telemetry_export_contracts  # noqa: F401
+_record_timing("validation.telemetry_export_contracts", _import_started, "PASS")
 
 for evidence in (
     Path(__file__).parent / "validation/change_impact_resolution_contracts.py",
