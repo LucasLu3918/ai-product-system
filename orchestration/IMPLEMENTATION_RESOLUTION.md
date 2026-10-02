@@ -186,4 +186,12 @@ Phase 2: OpenAPI validity and conservative compatibility analysis, project-nativ
 
 Phase 3: optional, scoped deterministic ownership/provenance/drift/quality enforcement integrated into the existing Gate. Phase 4 remains justified generator adapters for transport/client boundaries only.
 
-Do not add language-specific Roles, framework Skills/Profiles, code-generator adapters, GraphQL/gRPC/AsyncAPI support, automatic migrations, or automatic framework modernization as part of Phases 1–3.
+## Phase 4 — Explicit OpenAPI client generator adapters
+
+The optional `generation.adapters` contract supports a repository-local OpenAPI client CLI only when the project has a canonical OpenAPI source and current Phase 2 evidence. It pins the executable digest, exact version output, argv, declared tool inputs, output directory and allowlisted output patterns. Existing Profiles remain compatible; generation stays disabled unless both the Profile enables `boundary_only` and the Human explicitly passes `--execute` to `scripts/openapi_generator_adapter.py`.
+
+Default invocation is preview-only and never runs the tool. Local execution stages read-only copies of the specification and tool inputs, invokes argv without a shell in a minimal environment with a bounded timeout, and captures only a digest, byte count and bounded preview in memory. Deterministic adapters run twice and outputs must match. Symlinks, undeclared/oversized files, missing/stale OpenAPI evidence, changed tool inputs and hand-edited or unowned prior output block apply. Existing generated output may be replaced only when Phase 3 ownership and input/output hashes still match. The output directory and updated ownership/provenance records are applied with same-filesystem swaps and rollback.
+
+The adapter is a local subprocess boundary, not an OS sandbox: a malicious or compromised executable may access resources available to the current user. Run only a trusted, repository-pinned tool. The report does not establish semantic client correctness. CI and the Integration Gate inspect reports and fixture behavior but never execute a project-configured generator. A concrete production generator is selected only after the target project supplies canonical spec, language, supported version and approved toolchain evidence.
+
+Do not add language-specific Roles, framework Skills/Profiles, GraphQL/gRPC/AsyncAPI support, automatic migrations, or automatic framework modernization as part of Phases 1–4.

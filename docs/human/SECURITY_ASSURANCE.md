@@ -216,6 +216,7 @@ OpenAPI evidence validation is offline, confines local references to the reposit
 
 Phase 3 treats unknown ownership as protected and rejects repository-path traversal or symlink escape. Explicit project-command collection refuses shell/inline code, has a timeout and keeps digest-only bounded output; the Gate does not execute candidate Profile commands. Generated-file input/output hashes and unsigned command reports provide consistency evidence only. Enforced projects must collect command reports in the current trusted run; committed reports are rejected, and Human review still decides contract authority, breaking changes and semantic quality.
 
+
 Independent-review signatures use Ed25519 keys from a host-managed trust store outside the candidate repository. Without that trust anchor, review evidence remains `UNVERIFIED`; signature-shaped fields alone do not establish trusted runtime isolation.
 
 OpenTelemetry authorization values are resolved from a named host environment variable only. They are not copied into run evidence, trace attributes or exporter errors.
@@ -287,6 +288,8 @@ The Parallel Run Dashboard is loopback-only and read-only. Its projection cannot
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.
 
 ## Runtime Policy Enforcement
+
+本機 OpenAPI generator adapter 只接受 Profile 綁定的 repository-local executable、精確 SHA-256、argv 與宣告輸入；預覽及 Integration Gate 不會執行 generator。使用者加上 `--execute` 才會啟動本機子程序。輸入以唯讀副本 staging，執行有 timeout 與產物數量／容量限制，且既有產物必須仍符合 Phase 3 ownership 與 hash。這些控制降低誤覆寫與參數注入風險，但不構成 OS sandbox；不可信 executable 仍可能存取目前使用者權限內的資源。只執行已審查及固定版本的工具。
 
 Scheduler ownership 的 write-set authorization 目前明確標記 `ADVISORY`，不代表 runtime 已攔截檔案寫入。Task completion 仍會以 staged、unstaged 與 untracked diff 做 fail-closed 範圍檢查；不符時維持 `BLOCKED`，dirty recovery 需有人提供原因並確認接手。
 

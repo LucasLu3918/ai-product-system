@@ -182,6 +182,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+Phase 4 generator adapter 維護需同步檢查 Profile schema、OpenAPI evidence、命令執行邊界、allowlist、Phase 3 generation records、原子回復、Scenario 196 與 Integration Gate fixture。Gate 僅執行隔離的假 generator lifecycle，不呼叫專案設定的實際 generator。更換 generator 或 version 時應重新審查 executable hash、版本輸出、argv 與生成差異，並執行專案原生測試。
+
 For every Large/Core Change, testing is derived from the final Change Boundary, not from a fixed minimum smoke suite.
 
 Build and persist a matrix:

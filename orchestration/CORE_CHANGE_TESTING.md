@@ -8,6 +8,8 @@ Use for every Large/Core Change and whenever scope/risk suggests a fixed smoke s
 
 Required testing is derived from the final Change Boundary and actual affected interfaces, not from a generic minimum list.
 
+For Phase 4 generator-adapter changes, the affected-boundary matrix includes the local fake-generator lifecycle: preview and Gate inspection do not execute configured tools; explicit execution checks pinned inputs, deterministic allowlisted output, Phase 3 ownership, timeout handling and rollback. The exact-candidate Integration Gate runs only this fixture, never a project-selected generator.
+
 A green subset does not prove a core change is safe when an affected boundary has no evidence.
 
 ## Impact-derived Test Matrix

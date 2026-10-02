@@ -70,6 +70,8 @@ implementation_enforcement:
 
 The Gate calls the Phase 3 inspector on the checked-out base/head. It never executes commands declared inside the candidate Profile. A trusted local/CI collection step must produce current-run command reports before the Gate when required quality checks apply; committed command reports cannot satisfy them. Phase 2 OpenAPI report status and freshness are rechecked. Profile and generated-file hashes prove evidence consistency only, not semantic correctness or generator execution.
 
+For Phase 4, the Gate runs only the deterministic fake-generator lifecycle fixture when relevant paths change. It never executes a generator configured by a project Implementation Profile. Generator execution is local, opt-in and explicitly requested with `--execute`; the adapter report remains evidence of bounded execution and hashes, not semantic correctness or OS-level isolation.
+
 ## Core Change Test Matrix reuse
 
 For Large/Core changes, the Gate reuses `templates/review/CORE_CHANGE_TEST_MATRIX.yaml`; it does not introduce a parallel Janitor matrix.

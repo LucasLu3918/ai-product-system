@@ -90,6 +90,8 @@ Never update only the fingerprint to make a stale result pass. The Agent respons
 
 ## Privacy / safety
 
+The OpenAPI generator adapter lifecycle is execution/ownership evidence only, not an Agent Eval result. It persists no raw generator stream; semantic client quality remains subject to project tests and review.
+
 Implementation-resolution contract evidence is not Agent Eval evidence. OpenAPI lifecycle tests establish deterministic validator behavior; they do not score semantic recommendation quality or authorize an Agent decision.
 
 Do not persist:

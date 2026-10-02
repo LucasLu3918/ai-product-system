@@ -76,6 +76,8 @@ Show only material recommendations/unknowns to the user.
 
 ## Targets and evidence
 
+For generated API clients, define project-native compile, contract and integration checks separately from the generator's exit status and output hashes. Adapter provenance proves which pinned inputs/tool produced the files; it does not prove client behavior.
+
 Prefer:
 
 ~~~text

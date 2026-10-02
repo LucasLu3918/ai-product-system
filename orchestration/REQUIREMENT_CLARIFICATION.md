@@ -62,6 +62,8 @@ Do not send long questionnaires. Ask the next blocking question or a small batch
 
 ## Implementation-ready goal
 
+When generated client code is in scope, capture whether the OpenAPI source is canonical and any Human-approved generator/language/version constraint. An unresolved contract or toolchain decision blocks generation; the adapter fixture is not a production selection recommendation.
+
 An API implementation-ready goal identifies contract authority and, when applicable, the canonical comparison baseline and required contract-test evidence. Unresolved authority or unknown compatibility is recorded as a blocker for affected behavior rather than inferred from the existence of a spec file.
 
 For a Phase 3 enforced implementation, clarify the affected source paths, ownership evidence, selected language Profile and project checks before marking the Profile ready for the candidate. Unknown ownership stays protected; a planned test is not current-run PASS evidence.

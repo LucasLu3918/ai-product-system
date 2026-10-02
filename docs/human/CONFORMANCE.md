@@ -1453,3 +1453,9 @@ Current inventory after Scenario 194: 34 deterministic + 104 lifecycle + 54 agen
 Lifecycle evidence checks exact-candidate Profile and language fingerprints, changed-file ownership, generated source/output hashes, fresh project-command evidence, OpenAPI report binding, stable report fingerprints and report/enforce Integration Gate behavior. Negative cases include unknown ownership, modified generated output, missing or stale quality evidence, command timeout, shell refusal, stale OpenAPI evidence and a Profile scope narrower than the Gate. Hash agreement is not generator execution proof or semantic test review.
 
 Current inventory after Scenario 195: 34 deterministic + 105 lifecycle + 54 agent_eval = 193 automated; 2 manual; 195 total; 0 uncovered.
+
+## Scenario 196 — Explicit OpenAPI client generator adapter
+
+The lifecycle fixture verifies that preview and Integration Gate inspection never execute the configured generator. An explicit local run checks current canonical OpenAPI evidence and a pinned repository-local executable, stages inputs, bounds process/output resources, tests deterministic output, and applies only allowlisted files. Phase 3 ownership and input/output hashes are updated with the files; modified prior output is protected and a failed Profile update restores the prior output. Process output is not persisted. This evidence does not establish semantic client correctness or operating-system sandboxing.
+
+Current inventory after Scenario 196: 34 deterministic + 106 lifecycle + 54 agent_eval = 194 automated; 2 manual; 196 total; 0 uncovered.

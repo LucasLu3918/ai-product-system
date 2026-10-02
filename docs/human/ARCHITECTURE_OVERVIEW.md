@@ -66,6 +66,8 @@ Implementation Resolution 位於 Project Intelligence / Planning 與既有工程
 
 Phase 3 在同一流程核對確切候選的 Profile 指紋、語言 Profile、檔案所有權、生成檔輸入／輸出雜湊、必要專案命令證據及 OpenAPI 報告新鮮度。只有設定了適用路徑的既有 Integration Gate 才會強制執行；這些證據不代表 generator 已重跑，也不代替人類判斷測試斷言或契約變更。
 
+Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：預覽與 Gate 僅檢查，使用者在本機明確指定 `--execute` 才以固定的 repository-local tool 產生 transport/client 邊界。輸出只有符合 allowlist 且既有 ownership 雜湊仍有效時才會套用，並與 Profile provenance 一起原子更新。此 subprocess 不宣稱 OS sandbox，亦不替代語義測試。
+
 ## Deterministic Execution
 
 Run Event 與 Telemetry Event 共用鎖定的 append 寫入器，讓混合寫入維持唯一且遞增的序號。Context、Retrieval 與 Integration Gate 可選擇記錄其實際執行邊界；觀測結果不改變 Gate 判定。

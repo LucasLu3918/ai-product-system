@@ -52,6 +52,8 @@ Phase 3 deterministic enforcement is specified by the same Implementation Resolu
 
 `orchestration/IMPLEMENTATION_RESOLUTION.md` 定義實作解析流程；Profile 範本與 Go、PHP、Python、.NET 語言基線分別位於 `templates/implementation/` 和 `references/languages/`。
 
+Phase 4 OpenAPI client generator 的 canonical contract 位於 `scripts/openapi_generator_adapter.py`、`templates/implementation/GENERATOR_ADAPTER_REPORT.schema.json` 與 Integration Gate lifecycle fixture。預覽不執行工具；只有明確的本機 `--execute` 會呼叫 Profile 固定的 generator。Scenario 196 維護其輸出 ownership、rollback 與安全邊界證據。
+
 Task ownership 的 canonical contract 分布於 `orchestration/DETERMINISTIC_SCHEDULER.md`、`orchestration/RESOURCE_AUTHORIZATION.md`、`orchestration/RUN_DASHBOARD.md`、`orchestration/schemas/run-task-state.yaml` 與 Task Graph 範本；`config/documentation-placement.yaml` 維護對應 Human 文件閉包。
 
 `orchestration/TELEMETRY_EXPORT.md` 與 `orchestration/schemas/telemetry-export.yaml` 定義 optional OpenTelemetry trace projection、欄位 allowlist、端點與降級行為；Human 操作說明由 User Guide、Technology Guide 與 Telemetry Export topic 提供。

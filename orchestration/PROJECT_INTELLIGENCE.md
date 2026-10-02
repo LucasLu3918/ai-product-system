@@ -112,6 +112,8 @@ Never assume a source is visible to every Runtime merely because it exists.
 
 ## Authority
 
+Repository-local generator executable/configuration and generated-file ownership are project evidence. Store them in the Implementation Profile and its Phase 3 provenance records; do not promote one project's tool choice to global Project Intelligence.
+
 Project Intelligence may identify OpenAPI files and consumers, but file presence does not make a specification canonical. Preserve source authority and revision; remote references are not fetched by the validator.
 
 For Phase 3 Implementation Resolution, retain the source of project-native commands, generated-file ownership and selected language guidance so the current candidate can be checked against those records. Project Intelligence describes the repository; fresh command results and generated input/output hashes belong to the per-candidate Profile/report rather than a reusable semantic topic.

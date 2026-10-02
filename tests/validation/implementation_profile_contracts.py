@@ -76,6 +76,30 @@ bad = deepcopy(ready)
 bad["ownership"]["unresolved"] = ["../secrets.env"]
 expect_error(bad, "normalized repository-relative", "ownership must reject parent traversal")
 
+adapter_ready = deepcopy(ready)
+adapter_ready["generation"].update({"enabled": True, "policy": "boundary_only", "adapters": [{
+    "id": "fixture-client", "type": "openapi_client_cli", "spec_path": "api/openapi.yaml",
+    "executable": "tools/generator", "executable_sha256": "sha256:" + "b" * 64,
+    "version": "1.0", "version_args": ["--version"],
+    "argv": ["--spec", "{spec}", "--config", "{input:config/generator.yaml}", "--output", "{output}"],
+    "tool_inputs": ["config/generator.yaml"], "output_dir": "src/generated/client",
+    "output_patterns": ["*.go"], "deterministic": True, "timeout_seconds": 30,
+}]})
+if validator.validate_profile(adapter_ready)["structural_status"] != "PASS":
+    errors.append(f"declared generator input placeholders must be accepted: {validator.validate_profile(adapter_ready)}")
+
+bad = deepcopy(adapter_ready)
+bad["generation"]["adapters"][0]["argv"][3] = "{input:config/undeclared.yaml}"
+expect_error(bad, "undeclared input placeholder", "generator argv must reject undeclared tool inputs")
+
+bad = deepcopy(adapter_ready)
+bad["generation"]["adapters"][0]["executable"] = "tools/sh"
+expect_error(bad, "cannot be a shell", "generator executable cannot be a shell")
+
+bad = deepcopy(adapter_ready)
+bad["generation"]["adapters"][0]["output_dir"] = "api/openapi.yaml/generated"
+expect_error(bad, "overlaps an input", "generator output cannot contain its contract input")
+
 bad = deepcopy(ready)
 bad["architecture"]["ddd"]["tactical"].update({"level": "none", "resolution": "not_detected"})
 expect_error(bad, "not_detected is not none", "not_detected must not be interpreted as none")

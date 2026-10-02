@@ -127,6 +127,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Phase 4 的 generator adapter 以 `scripts/openapi_generator_adapter.py` 在本機明確執行；Profile 必須引用 canonical OpenAPI Phase 2 evidence，並固定本地 executable digest、version、argv、輸入與輸出 allowlist。預覽預設不執行工具，Gate 只驗證 fixture。成功後由 Profile ownership 與 Phase 3 generation records 綁定輸入、工具版本和輸出雜湊；這是可追溯性證據，仍需專案原生測試確認 client 行為。
+
 REST/OpenAPI evidence uses optional pinned dependencies from `requirements-openapi.txt` and `scripts/openapi_contracts.py` for offline specification validation, repository-local reference checks, conservative compatibility classification, project-native JUnit coverage and revision freshness. Contract commands run without a shell and retain output digests rather than raw streams. Unknown changes and stale reports never qualify as PASS; operation-name coverage does not establish assertion quality.
 
 Phase 3 uses `scripts/implementation_enforcement.py` and `templates/implementation/IMPLEMENTATION_ENFORCEMENT_REPORT.schema.json` for an exact-candidate, versioned evidence report. It reuses Python, PyYAML and JSON Schema dependencies already needed by repository validation. Explicit `run-command` collection uses argv, a declared timeout, a minimal environment and at most 1 MiB of hashed output; the Integration Gate calls inspection only. Command reports are current-run artifacts and must not be committed as proof of a later revision.

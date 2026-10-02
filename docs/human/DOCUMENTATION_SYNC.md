@@ -56,6 +56,8 @@ Requirement clarification 與 Planning Package 的變更由 requirement-planning
 
 Implementation Resolution、Profile 範本、語言 Profile、結構驗證器與 Scenario 193 由同一 `requirement-planning` placement rule 綁定至 User Guide、Technology Guide、Architecture Overview、Conformance 和相關 Agent protocols。Profile validator 的 PASS 只表示結構符合，不代表語言、框架或架構建議經語義驗證。
 
+Phase 4 generator adapter、報告 schema、Gate fixture 與 Scenario 196 沿用 `requirement-planning` placement closure；Human 文件同步標示本機 `--execute`、CI/Gate 不執行專案 generator、ownership/hash 保護與 subprocess 不具 OS sandbox 的限制。
+
 Risk-adaptive Change Impact traversal 的操作流程與 READY 證據由 `orchestration/CHANGE_IMPACT.md` 定義；Human 使用方式落在 Project Intelligence 的 Change Impact topic，架構層次與限制同步到 Architecture Overview 和 Technology Guide。`tests/scenarios/175-risk-adaptive-bounded-impact.md` 綁定 lifecycle 與 contract evidence。
 
 Structured Change Impact unknown dispositions remain in this same topic. Documentation Sync maps the validator, template and lifecycle evidence to the Project Intelligence, Change Impact and Conformance canonical sections; evidence requirements and legacy fail-closed behavior are not restated as a separate policy.
