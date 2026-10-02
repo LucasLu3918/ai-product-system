@@ -304,6 +304,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+Repository validation may remove duplicate syntax-compilation and lifecycle subprocesses only when each unique evidence lifecycle still has one owning invocation and the complete Integration Gate remains mandatory.
+
 When an OpenAPI contract affects implementation, include offline validation, canonical-baseline compatibility review and project-native contract tests in the quality handoff. `UNKNOWN`, unavailable, stale or failed evidence blocks only the dependent work and remains explicit for Human review.
 
 When a project opts into Phase 3 Implementation Resolution enforcement, bind the applicable changed paths to an exact Profile fingerprint, declared ownership, selected language Profile, generated source/output hashes and current-run quality/contract evidence. Run project-native command collection explicitly in the trusted local/CI context; the Integration Gate verifies those artifacts without executing candidate Profile commands. Start with report mode to confirm applicability, then enable enforce mode for the approved path scope.
