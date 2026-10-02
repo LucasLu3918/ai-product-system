@@ -60,6 +60,8 @@ Do not preserve an obsolete Scenario merely to keep historical wording stable. S
 
 Prefer focused evidence under `tests/evidence/` when this makes one-to-one traceability clearer. Repository validation must execute promoted evidence rather than only checking that the evidence file exists.
 
+Each lifecycle must have one execution owner in repository validation. `runtime_contracts` executes `intelligence_context_lifecycle.py`; `conformance_isolation` retains the artifact-existence check only. The MCP lifecycle executes and validates configuration output for all six advertised clients, so validator modules must not repeat those CLI invocations.
+
 ## Agent Eval admission
 
 Cases may bind results to repository-relative system dependencies. The evaluator marks mismatched evidence `STALE` and legacy results `UNBOUND`; neither historical rubric scores nor missing fingerprints claim current-system conformance.

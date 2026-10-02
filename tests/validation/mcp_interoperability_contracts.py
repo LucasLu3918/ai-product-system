@@ -86,26 +86,10 @@ for forbidden in ("OPENAI_API_KEY", "GEMINI_API_KEY", "secrets."):
     if forbidden in workflow:
         errors.append(f"MCP/Codex interoperability workflow must be credential-free: {forbidden}")
 
-for client in ("cursor", "windsurf", "copilot", "amp", "codex", "generic"):
-    result = subprocess.run(
-        [sys.executable, str(server), "config", "--client", client],
-        capture_output=True,
-        text=True,
-        check=False,
-    )
-    if result.returncode != 0:
-        errors.append(f"MCP client configuration failed for {client}: {result.stderr.strip()}")
-        continue
-    try:
-        payload = __import__("json").loads(result.stdout)
-    except ValueError as exc:
-        errors.append(f"MCP client configuration is not JSON for {client}: {exc}")
-        continue
-    if payload.get("client") != client or payload.get("automatic_change") is not False:
-        errors.append(f"MCP client configuration boundary mismatch for {client}")
-
 evidence = ROOT / "tests/evidence/mcp_interoperability_lifecycle.py"
 if evidence.exists():
+    # The lifecycle exercises every advertised client config and validates the
+    # JSON shape and no-automatic-change boundary in one owner path.
     result = subprocess.run([sys.executable, str(evidence)], capture_output=True, text=True, timeout=180)
     if result.returncode != 0:
         errors.append(f"MCP interoperability lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}")
