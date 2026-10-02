@@ -1,6 +1,7 @@
 """Phase 3 Profile and Integration Gate contract regression checks."""
 from __future__ import annotations
 
+import ast
 import json
 import sys
 from copy import deepcopy
@@ -70,6 +71,16 @@ gate = yaml.safe_load((ROOT / "config/integration-gate.yaml").read_text(encoding
 checks = {row["id"]: row for row in gate["checks"]}
 if "implementation-enforcement-lifecycle" not in checks:
     errors.append("existing Integration Gate must run Phase 3 lifecycle on relevant changes")
+
+gate_tree = ast.parse((ROOT / "scripts/integration_gate.py").read_text(encoding="utf-8"))
+if any(isinstance(node, ast.ImportFrom) and node.module == "implementation_enforcement"
+       for node in gate_tree.body):
+    errors.append("fast Janitor precheck must not import Phase 3-only dependencies at module load")
+gate_helper = next((node for node in gate_tree.body if isinstance(node, ast.FunctionDef)
+                    and node.name == "implementation_enforcement_check"), None)
+if gate_helper is None or not any(isinstance(node, ast.ImportFrom) and node.module == "implementation_enforcement"
+                                  for node in ast.walk(gate_helper)):
+    errors.append("configured Gate path must still import the Phase 3 inspector")
 
 if errors:
     for error in errors:

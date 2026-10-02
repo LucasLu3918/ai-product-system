@@ -16,7 +16,6 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from implementation_enforcement import EnforcementError, inspect_profile
 from review_evidence import validate_report
 from observed_stage import observed_stage
 
@@ -120,6 +119,8 @@ def implementation_enforcement_check(
         return {"id": "implementation-enforcement", "category": "contract", "required": mode == "enforce",
                 "status": "SKIPPED", "reason": "path_filter"}, None
     try:
+        from implementation_enforcement import inspect_profile
+
         report = inspect_profile(repository_root / relative, repository_root, base_sha, head_sha,
                                  mode=mode, expected_profile_sha256=expected)
         status = report["status"]
@@ -130,7 +131,7 @@ def implementation_enforcement_check(
                   "reason": "report_only" if mode == "report" else status,
                   "evidence_fingerprint": report["fingerprint"]}
         return result, report
-    except (EnforcementError, OSError, ValueError):
+    except (ImportError, OSError, ValueError):
         result = {"id": "implementation-enforcement", "category": "contract", "required": mode == "enforce",
                   "status": "FAIL", "reason": "report_only_blocked" if mode == "report" else "evidence_blocked"}
         return result, {"status": "BLOCKED", "reason": "evidence_blocked"}
