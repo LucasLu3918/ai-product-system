@@ -39,6 +39,8 @@ v0.14 新增 Scenario 111–115，全部都有直接 executable evidence：2 個
 
 Scenario 111/114 覆蓋 risk/data-aware resolver：無啟用 provider 時為 `UNSUPPORTED`；啟用但證據過期、registry digest 不符或控制缺漏時為 `BLOCKED`；一般風險選 worktree，高風險不降級。E2B PR 驗證使用合成 canary；live workflow 僅能從 `main` 手動啟動，需確認 provider 事前書面測試同意，缺少 optional key 時回報 `SKIPPED_NOT_CONFIGURED`。
 
+Repository validation assigns each lifecycle to one owner module. `intelligence_context_lifecycle.py` runs through `runtime_contracts`; `conformance_isolation` checks its presence without running it again. MCP client configuration for all six advertised clients is exercised by the MCP lifecycle, which also checks the JSON shape and no-automatic-change boundary.
+
 Scenario 178 validates the opt-in independent-review contract, including required-mode fail-closed behavior. The active repository matrix currently disables PR enforcement until a trusted runtime-attestation verifier is available; lifecycle fixtures do not claim live runtime attestation.
 
 The CI lifecycle contract groups PR validation by PR number. A newer `opened`, `labeled`, `unlabeled` or `synchronize` event replaces an in-progress run and evaluates the latest label state; canceled runs do not produce a successful required aggregate.

@@ -131,6 +131,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 When a validation contract executes a Python helper directly, that invocation also checks syntax; retain separate compilation only for files not executed by that validation path.
 
+Repository validation assigns each lifecycle to one owner module so the same fixture is not started twice. `runtime_contracts` owns `intelligence_context_lifecycle.py`; the MCP lifecycle owns all six advertised client configuration checks, including JSON shape and no-automatic-change assertions.
+
 Phase 4 的 generator adapter 以 `scripts/openapi_generator_adapter.py` 在本機明確執行；Profile 必須引用 canonical OpenAPI Phase 2 evidence，並固定本地 executable digest、version、argv、輸入與輸出 allowlist。預覽預設不執行工具，Gate 只驗證 fixture。成功後由 Profile ownership 與 Phase 3 generation records 綁定輸入、工具版本和輸出雜湊；這是可追溯性證據，仍需專案原生測試確認 client 行為。
 
 Phase 5 可讓 Phase 3 inspector 核對 Phase 4 的未追蹤執行報告，並以 `examples/openapi-client-pilot/` 的 Widgets 案例驗證一條可重現的本機 API/client 流程。該案例使用受限的專案本地 generator，並不指定所有產品的語言或工具；每個真實產品仍由自己的契約和整合測試負責驗收。

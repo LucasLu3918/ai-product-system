@@ -140,10 +140,8 @@ else:
 instruction_context_evidence = ROOT / "tests/evidence/intelligence_context_lifecycle.py"
 if not instruction_context_evidence.exists():
     errors.append("Missing v0.18.1 instruction composition lifecycle evidence")
-else:
-    result = subprocess.run([sys.executable, str(instruction_context_evidence)], capture_output=True, text=True)
-    if result.returncode != 0:
-        errors.append(f"Instruction context lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
+# runtime_contracts owns execution of this lifecycle; keep the artifact check here
+# without launching the same full lifecycle a second time.
 
 # v0.18 Project Authority reconciliation lifecycle
 project_authority_evidence = ROOT / "tests/evidence/project_override_reconciliation_lifecycle.py"
