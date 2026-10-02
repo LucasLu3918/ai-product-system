@@ -1,129 +1,52 @@
 version: 1
 change:
-  id: phase6-validation-duplication-optimization
-  summary: Profile repository validator hot spots and remove redundant Python pre-compilation
-    and duplicate lifecycle execution while preserving the full Integration Gate.
+  id: phase7-validation-runtime-optimization
+  summary: Reduce validation fixture overhead and remove a repeated MCP client-config
+    subprocess while preserving all lifecycle coverage.
   boundary:
-  - repository-validator-contracts
-  - local-and-ci-timing-artifacts
-  - publication-and-documentation-closure
+  - validation-fixture-efficiency
+  - core-change-test-matrix
 matrix:
-- boundary: repository-validator-contracts
-  reason: Validator modules keep failure propagation and all unique lifecycle coverage
-    while avoiding duplicate compile subprocesses and repeated execution of the same
-    evidence.
+- boundary: validation-fixture-efficiency
+  reason: Test fixtures skip untracked local Node dependencies and check Copilot configuration
+    from the result already produced by the all-client loop; no scenarios or assertions
+    are removed.
   checks:
     static_lint:
       applicable: true
-      evidence: Compile the edited validators; run repository critical Ruff checks.
+      evidence: Python compilation and critical Ruff checks for changed test evidence.
     unit:
       applicable: true
-      evidence: Import each affected contract module through tests/validate_repository.py
-        and preserve all existing assertions.
+      evidence: Existing lifecycle evidence passes for install/preflight and all six MCP clients.
     integration:
       applicable: true
-      evidence: Run the exact-candidate Publication Preflight and complete Integration
-        Gate.
+      evidence: Exact-candidate local Integration Gate passes including repository validation.
     contract:
       applicable: true
-      evidence: All 197 registered scenarios remain accounted for; every unique lifecycle
-        executes at least once, and duplicate py_compile/direct-execution pairs are
-        removed.
+      evidence: Existing fixture isolation, fast-forward/divergence/version gates, and every
+        advertised MCP client assertion remain exercised.
     e2e:
       applicable: false
       na_reason: No deployed application behavior changes.
     security:
       applicable: true
-      evidence: Timing report excludes captured test output and secrets; mandatory
-        candidate secret scans remain required.
+      evidence: Mandatory exact-candidate secret scan remains required; no credentials or
+        runtime data are added.
     migration_recovery:
       applicable: false
-      na_reason: Optional ephemeral timing artifact has no stored schema migration.
+      na_reason: Test-only fixture behavior; no persisted product state.
     cli_harness:
       applicable: true
-      evidence: Standalone validator and Publication Preflight retain their existing
-        exit semantics.
+      evidence: Existing install, preflight, update and MCP CLI lifecycle assertions pass.
     docs_schema:
-      applicable: true
-      evidence: Maintenance, Core Change Testing, and required documentation placements
-        document the single-execution rule and its validation scope.
-- boundary: local-and-ci-timing-artifacts
-  reason: Compare the previous PR/main module timings with the candidate timing artifact;
-    full PR and main Gates remain mandatory.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Python compile and workflow YAML parse.
-    unit:
-      applicable: true
-      evidence: Wrapper output path and CI artifact configuration are checked against
-        the validator report contract.
-    integration:
-      applicable: true
-      evidence: Local exact-candidate Gate and remote PR/main CI publish parseable
-        repository-validation timing artifacts.
-    contract:
-      applicable: true
-      evidence: Gate PASS remains required for the repository aggregate; missing optional
-        artifact cannot masquerade as PASS.
-    e2e:
-      applicable: true
-      evidence: PR and post-merge main CI each run the complete Gate.
-    security:
-      applicable: true
-      evidence: Reports contain no test output or secrets and use short artifact retention.
-    migration_recovery:
       applicable: false
-      na_reason: Runner temporary artifacts expire; no persistent migration.
-    cli_harness:
-      applicable: true
-      evidence: prepare-local-validation selects the prepared venv and writes beside
-        its Gate report.
-    docs_schema:
-      applicable: true
-      evidence: Maintenance and Integration Gate docs explain the single local full-run
-        path.
-- boundary: publication-and-documentation-closure
-  reason: Core CI changes must retain publication identity, matrix binding, documentation
-    placement and remote merge checks.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Git diff check and critical Ruff lint.
-    unit:
-      applicable: true
-      evidence: Publication preflight and documentation contracts run in repository
-        validation.
-    integration:
-      applicable: true
-      evidence: Exact-candidate preflight checks matrix binding, documentation impact,
-        and Gate status.
-    contract:
-      applicable: true
-      evidence: Workflow still requires janitor success through the repository aggregate.
-    e2e:
-      applicable: true
-      evidence: PR and main checks verify separate commit identities after merge.
-    security:
-      applicable: true
-      evidence: Candidate secret scans run before dependencies and within the Gate.
-    migration_recovery:
-      applicable: false
-      na_reason: No persisted product state changes.
-    cli_harness:
-      applicable: true
-      evidence: Publication preview, plan, and post-merge reconciliation use existing
-        commands.
-    docs_schema:
-      applicable: true
-      evidence: Recursive documentation placement, changed Markdown links, and VitePress
-        build pass for affected docs.
+      na_reason: No user-facing behavior or documentation contract changes.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 1374ea576c5ffcfccbd7c9916f07f463b7acdfbc
-  changed_files_hash: dd98895b5d15e33afbaa8143d750965cd1924ec64761c74f8a2ee900a48d849c
+  base_sha: 7f7b10e2aced03553a64153acb0a2f7745a92c32
+  changed_files_hash: 559eb755781c2aa9f65e9ba607172ddb45f7f84c8c7a68a419505f7521f3ab50
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
