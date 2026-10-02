@@ -19,9 +19,6 @@ for required in (conformance_protocol, conformance_registry, conformance_helper)
         errors.append(f"Missing v0.13 conformance artifact: {required.relative_to(ROOT)}")
 
 if conformance_helper.exists():
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(conformance_helper)], capture_output=True, text=True)
-    if compiled.returncode != 0:
-        errors.append(f"scenario_conformance.py syntax failed: {compiled.stderr.strip()}")
     check = subprocess.run([sys.executable, str(conformance_helper), "check", "--format", "json"], capture_output=True, text=True)
     if check.returncode != 0:
         errors.append(f"Scenario conformance check failed: {check.stdout.strip()} {check.stderr.strip()}")
@@ -66,10 +63,6 @@ agent_eval_evidence = ROOT / "tests/evidence/agent_eval_framework.py"
 for required in (agent_eval_helper, agent_eval_evidence):
     if not required.exists():
         errors.append(f"Missing v0.16 Agent Eval artifact: {required.relative_to(ROOT)}")
-    else:
-        compiled = subprocess.run([sys.executable, "-m", "py_compile", str(required)], capture_output=True, text=True)
-        if compiled.returncode != 0:
-            errors.append(f"Agent Eval artifact syntax failed: {required.relative_to(ROOT)}: {compiled.stderr.strip()}")
 
 if agent_eval_evidence.exists():
     framework = subprocess.run([sys.executable, str(agent_eval_evidence)], capture_output=True, text=True)
@@ -104,13 +97,9 @@ retrieval_quality_evaluation_evidence = ROOT / "tests/evidence/retrieval_quality
 if not retrieval_quality_evaluation_evidence.exists():
     errors.append("Missing v0.22 Retrieval Quality Evaluation lifecycle evidence")
 else:
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(retrieval_quality_evaluation_evidence)], capture_output=True, text=True)
-    if compiled.returncode != 0:
-        errors.append(f"Retrieval Quality Evaluation evidence syntax failed: {compiled.stderr.strip()}")
-    else:
-        result = subprocess.run([sys.executable, str(retrieval_quality_evaluation_evidence)], capture_output=True, text=True)
-        if result.returncode != 0:
-            errors.append(f"Retrieval Quality Evaluation lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
+    result = subprocess.run([sys.executable, str(retrieval_quality_evaluation_evidence)], capture_output=True, text=True)
+    if result.returncode != 0:
+        errors.append(f"Retrieval Quality Evaluation lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
 
 # v0.21 Retrieval Intelligence lifecycle
 git_path_integrity_evidence = ROOT / "tests/evidence/git_path_integrity_lifecycle.py"
@@ -125,65 +114,45 @@ retrieval_intelligence_evidence = ROOT / "tests/evidence/retrieval_intelligence_
 if not retrieval_intelligence_evidence.exists():
     errors.append("Missing v0.21 Retrieval Intelligence lifecycle evidence")
 else:
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(retrieval_intelligence_evidence)], capture_output=True, text=True)
-    if compiled.returncode != 0:
-        errors.append(f"Retrieval Intelligence evidence syntax failed: {compiled.stderr.strip()}")
-    else:
-        result = subprocess.run([sys.executable, str(retrieval_intelligence_evidence)], capture_output=True, text=True)
-        if result.returncode != 0:
-            errors.append(f"Retrieval Intelligence lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
+    result = subprocess.run([sys.executable, str(retrieval_intelligence_evidence)], capture_output=True, text=True)
+    if result.returncode != 0:
+        errors.append(f"Retrieval Intelligence lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
 
 # v0.18.3 Project Intelligence promotion lifecycle
 project_intelligence_promotion_evidence = ROOT / "tests/evidence/project_intelligence_promotion_lifecycle.py"
 if not project_intelligence_promotion_evidence.exists():
     errors.append("Missing v0.18.3 Project Intelligence promotion lifecycle evidence")
 else:
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(project_intelligence_promotion_evidence)], capture_output=True, text=True)
-    if compiled.returncode != 0:
-        errors.append(f"Project Intelligence promotion evidence syntax failed: {compiled.stderr.strip()}")
-    else:
-        result = subprocess.run([sys.executable, str(project_intelligence_promotion_evidence)], capture_output=True, text=True)
-        if result.returncode != 0:
-            errors.append(f"Project Intelligence promotion lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
+    result = subprocess.run([sys.executable, str(project_intelligence_promotion_evidence)], capture_output=True, text=True)
+    if result.returncode != 0:
+        errors.append(f"Project Intelligence promotion lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
 
 # v0.18.2 monorepo lazy component Intelligence lifecycle
 monorepo_lazy_evidence = ROOT / "tests/evidence/monorepo_lazy_intelligence_lifecycle.py"
 if not monorepo_lazy_evidence.exists():
     errors.append("Missing v0.18.2 monorepo lazy Intelligence lifecycle evidence")
 else:
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(monorepo_lazy_evidence)], capture_output=True, text=True)
-    if compiled.returncode != 0:
-        errors.append(f"Monorepo lazy Intelligence evidence syntax failed: {compiled.stderr.strip()}")
-    else:
-        result = subprocess.run([sys.executable, str(monorepo_lazy_evidence)], capture_output=True, text=True)
-        if result.returncode != 0:
-            errors.append(f"Monorepo lazy Intelligence lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
+    result = subprocess.run([sys.executable, str(monorepo_lazy_evidence)], capture_output=True, text=True)
+    if result.returncode != 0:
+        errors.append(f"Monorepo lazy Intelligence lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
 
 # v0.18.1 runtime/project instruction composition lifecycle
 instruction_context_evidence = ROOT / "tests/evidence/intelligence_context_lifecycle.py"
 if not instruction_context_evidence.exists():
     errors.append("Missing v0.18.1 instruction composition lifecycle evidence")
 else:
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(instruction_context_evidence)], capture_output=True, text=True)
-    if compiled.returncode != 0:
-        errors.append(f"Instruction context evidence syntax failed: {compiled.stderr.strip()}")
-    else:
-        result = subprocess.run([sys.executable, str(instruction_context_evidence)], capture_output=True, text=True)
-        if result.returncode != 0:
-            errors.append(f"Instruction context lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
+    result = subprocess.run([sys.executable, str(instruction_context_evidence)], capture_output=True, text=True)
+    if result.returncode != 0:
+        errors.append(f"Instruction context lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
 
 # v0.18 Project Authority reconciliation lifecycle
 project_authority_evidence = ROOT / "tests/evidence/project_override_reconciliation_lifecycle.py"
 if not project_authority_evidence.exists():
     errors.append("Missing v0.18 Project Authority reconciliation lifecycle evidence")
 else:
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(project_authority_evidence)], capture_output=True, text=True)
-    if compiled.returncode != 0:
-        errors.append(f"Project Authority reconciliation evidence syntax failed: {compiled.stderr.strip()}")
-    else:
-        result = subprocess.run([sys.executable, str(project_authority_evidence)], capture_output=True, text=True)
-        if result.returncode != 0:
-            errors.append(f"Project Authority reconciliation lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
+    result = subprocess.run([sys.executable, str(project_authority_evidence)], capture_output=True, text=True)
+    if result.returncode != 0:
+        errors.append(f"Project Authority reconciliation lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
 
 # v0.15 canonical identity / resume integrity
 identity_helper = ROOT / "scripts/aips_identity.py"
@@ -191,10 +160,6 @@ identity_evidence = ROOT / "tests/evidence/identity_resume_isolation.py"
 for required in (identity_helper, identity_evidence):
     if not required.exists():
         errors.append(f"Missing v0.15 identity artifact: {required.relative_to(ROOT)}")
-    else:
-        compiled = subprocess.run([sys.executable, "-m", "py_compile", str(required)], capture_output=True, text=True)
-        if compiled.returncode != 0:
-            errors.append(f"v0.15 identity artifact syntax failed: {required.relative_to(ROOT)}: {compiled.stderr.strip()}")
 if identity_evidence.exists():
     result = subprocess.run([sys.executable, str(identity_evidence)], capture_output=True, text=True)
     if result.returncode != 0:
@@ -462,10 +427,6 @@ for rel in legacy_evidence:
     if not evidence_path.exists():
         errors.append(f"Missing v0.14.1 legacy evidence: {rel}")
         continue
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(evidence_path)], capture_output=True, text=True)
-    if compiled.returncode != 0:
-        errors.append(f"Legacy evidence syntax failed: {rel}: {compiled.stderr.strip()}")
-        continue
     result = subprocess.run([sys.executable, str(evidence_path)], capture_output=True, text=True)
     if result.returncode != 0:
         errors.append(f"Legacy evidence failed: {rel}: {result.stdout.strip()} {result.stderr.strip()}")
@@ -475,26 +436,18 @@ project_knowledge_migration_evidence = ROOT / "tests/evidence/project_knowledge_
 if not project_knowledge_migration_evidence.exists():
     errors.append("Missing v0.17 Project Knowledge migration lifecycle evidence")
 else:
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(project_knowledge_migration_evidence)], capture_output=True, text=True)
-    if compiled.returncode != 0:
-        errors.append(f"Project Knowledge migration evidence syntax failed: {compiled.stderr.strip()}")
-    else:
-        result = subprocess.run([sys.executable, str(project_knowledge_migration_evidence)], capture_output=True, text=True)
-        if result.returncode != 0:
-            errors.append(f"Project Knowledge migration lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
+    result = subprocess.run([sys.executable, str(project_knowledge_migration_evidence)], capture_output=True, text=True)
+    if result.returncode != 0:
+        errors.append(f"Project Knowledge migration lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
 
 # v0.17.1 legacy installation -> managed Harness migration lifecycle
 legacy_harness_migration_evidence = ROOT / "tests/evidence/legacy_harness_migration_lifecycle.py"
 if not legacy_harness_migration_evidence.exists():
     errors.append("Missing v0.17.1 legacy Harness migration lifecycle evidence")
 else:
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(legacy_harness_migration_evidence)], capture_output=True, text=True)
-    if compiled.returncode != 0:
-        errors.append(f"Legacy Harness migration evidence syntax failed: {compiled.stderr.strip()}")
-    else:
-        result = subprocess.run([sys.executable, str(legacy_harness_migration_evidence)], capture_output=True, text=True)
-        if result.returncode != 0:
-            errors.append(f"Legacy Harness migration lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
+    result = subprocess.run([sys.executable, str(legacy_harness_migration_evidence)], capture_output=True, text=True)
+    if result.returncode != 0:
+        errors.append(f"Legacy Harness migration lifecycle evidence failed: {result.stdout.strip()} {result.stderr.strip()}")
 
 
 # v0.51 parallel runtime port isolation
@@ -504,13 +457,9 @@ for required in (runtime_port_evidence, runtime_port_scenario):
     if not required.exists():
         errors.append(f"Missing v0.51 runtime-port isolation artifact: {required.relative_to(ROOT)}")
 if runtime_port_evidence.exists():
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(runtime_port_evidence)], capture_output=True, text=True)
-    if compiled.returncode != 0:
-        errors.append(f"Runtime-port isolation lifecycle syntax failed: {compiled.stderr.strip()}")
-    else:
-        result = subprocess.run([sys.executable, str(runtime_port_evidence)], capture_output=True, text=True, timeout=180)
-        if result.returncode != 0:
-            errors.append(f"Runtime-port isolation lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}")
+    result = subprocess.run([sys.executable, str(runtime_port_evidence)], capture_output=True, text=True, timeout=180)
+    if result.returncode != 0:
+        errors.append(f"Runtime-port isolation lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}")
 if isolation_helper.exists():
     isolation_text = isolation_helper.read_text(encoding="utf-8")
     for required_text in (
