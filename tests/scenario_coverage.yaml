@@ -1529,3 +1529,11 @@ scenarios:
       - tests/fixtures/openapi_phase2_network_ref.yaml
       - tests/validation/openapi_contracts.py
       - tests/evidence/openapi_contracts_lifecycle.py
+  - id: "195"
+    path: tests/scenarios/195-implementation-resolution-deterministic-enforcement.md
+    coverage: lifecycle
+    evidence:
+      - scripts/implementation_enforcement.py
+      - templates/implementation/IMPLEMENTATION_ENFORCEMENT_REPORT.schema.json
+      - tests/validation/implementation_enforcement_contracts.py
+      - tests/evidence/implementation_enforcement_lifecycle.py

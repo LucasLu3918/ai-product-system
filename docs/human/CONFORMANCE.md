@@ -1447,3 +1447,9 @@ Current inventory after Scenario 193: 34 deterministic + 103 lifecycle + 54 agen
 Lifecycle evidence validates supported OpenAPI inputs, rejects remote/path-escaping references, classifies known breaking and non-breaking changes, keeps unclassified schema/security changes `UNKNOWN`, requires a canonical compatibility baseline, executes project commands without a shell, checks JUnit operation coverage, and binds spec/report digests to the exact Git revision. Stale or unavailable evidence cannot report PASS. JUnit operation-name coverage does not establish assertion quality; semantic test and compatibility review remain Human responsibilities.
 
 Current inventory after Scenario 194: 34 deterministic + 104 lifecycle + 54 agent_eval = 192 automated; 2 manual; 194 total; 0 uncovered.
+
+## Scenario 195 — Implementation Resolution deterministic enforcement
+
+Lifecycle evidence checks exact-candidate Profile and language fingerprints, changed-file ownership, generated source/output hashes, fresh project-command evidence, OpenAPI report binding, stable report fingerprints and report/enforce Integration Gate behavior. Negative cases include unknown ownership, modified generated output, missing or stale quality evidence, command timeout, shell refusal, stale OpenAPI evidence and a Profile scope narrower than the Gate. Hash agreement is not generator execution proof or semantic test review.
+
+Current inventory after Scenario 195: 34 deterministic + 105 lifecycle + 54 agent_eval = 193 automated; 2 manual; 195 total; 0 uncovered.

@@ -105,6 +105,8 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 The OpenAPI contract-test action is explicit argv evidence attached to an implementation task; it does not grant scheduler authority or bypass the task write boundary. A missing command, timeout, nonzero exit or incomplete JUnit operation coverage remains non-PASS.
 
+Phase 3 command evidence is likewise collected only as an explicitly selected project action. The Scheduler may order that action before an Integration Gate task, while the Gate reads its current-run report and performs no command execution from the candidate Implementation Profile. An expired or incomplete report leaves the dependent task blocked.
+
 Publication Preflight checks runtime prerequisites before launching the expensive Integration Gate lifecycle. `ENVIRONMENT_BLOCKED` identifies missing Python/Ruff, loopback or browser capability; it is an environment result, not a Scheduler or product test failure.
 
 Optional observed-stage recording reports `DEGRADED` when a run destination is absent or event writing fails. This observation is evidence only and does not alter the command's primary status.

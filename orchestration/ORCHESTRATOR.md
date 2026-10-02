@@ -304,6 +304,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 When an OpenAPI contract affects implementation, include offline validation, canonical-baseline compatibility review and project-native contract tests in the quality handoff. `UNKNOWN`, unavailable, stale or failed evidence blocks only the dependent work and remains explicit for Human review.
 
+When a project opts into Phase 3 Implementation Resolution enforcement, bind the applicable changed paths to an exact Profile fingerprint, declared ownership, selected language Profile, generated source/output hashes and current-run quality/contract evidence. Run project-native command collection explicitly in the trusted local/CI context; the Integration Gate verifies those artifacts without executing candidate Profile commands. Start with report mode to confirm applicability, then enable enforce mode for the approved path scope.
+
 Publication-readiness changes include the selected checkout, local documentation/build checks, Gate environment preflight and initial PR classification label in the proposal and exact-candidate evidence.
 
 The publication plan records the change-class label for the initial PR create request. An invalid GitHub CLI login is `AUTH_REQUIRED`; network or sandbox connectivity failure is `NETWORK_UNAVAILABLE`. Recovery steps differ, and credential or raw CLI output is never included.

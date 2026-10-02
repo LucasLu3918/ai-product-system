@@ -56,6 +56,20 @@ AIPS Core must not hard-code one language toolchain as the universal project con
 Path filters may skip checks that provably do not apply. Required applicable failures block the candidate.
 The Publication Preflight lifecycle fixture isolates Python module availability from loopback/browser capability failures; these assertions validate diagnostics and do not alter the Integration Gate contract.
 
+### Optional Implementation Resolution enforcement
+
+An existing Validation Profile may select Phase 3 checks for a specific project's REST/OpenAPI paths. `report` mode records an advisory PASS/FAIL check without blocking; `enforce` mode requires a Phase 3 PASS. A configured Gate path that the Implementation Profile omits from its own scope fails enforcement. Projects without this policy keep their existing Gate behavior.
+
+~~~yaml
+implementation_enforcement:
+  mode: enforce # report while validating coverage
+  profile_path: IMPLEMENTATION_PROFILE.yaml
+  paths: ["src/api/**", "api/**"]
+  expected_profile_sha256: sha256:<approved Profile digest>
+~~~
+
+The Gate calls the Phase 3 inspector on the checked-out base/head. It never executes commands declared inside the candidate Profile. A trusted local/CI collection step must produce current-run command reports before the Gate when required quality checks apply; committed command reports cannot satisfy them. Phase 2 OpenAPI report status and freshness are rechecked. Profile and generated-file hashes prove evidence consistency only, not semantic correctness or generator execution.
+
 ## Core Change Test Matrix reuse
 
 For Large/Core changes, the Gate reuses `templates/review/CORE_CHANGE_TEST_MATRIX.yaml`; it does not introduce a parallel Janitor matrix.

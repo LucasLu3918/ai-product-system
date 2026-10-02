@@ -114,6 +114,8 @@ Never assume a source is visible to every Runtime merely because it exists.
 
 Project Intelligence may identify OpenAPI files and consumers, but file presence does not make a specification canonical. Preserve source authority and revision; remote references are not fetched by the validator.
 
+For Phase 3 Implementation Resolution, retain the source of project-native commands, generated-file ownership and selected language guidance so the current candidate can be checked against those records. Project Intelligence describes the repository; fresh command results and generated input/output hashes belong to the per-candidate Profile/report rather than a reusable semantic topic.
+
 Project Intelligence is below:
 
 1. external platform/safety requirements;

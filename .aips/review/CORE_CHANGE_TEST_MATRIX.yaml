@@ -1,212 +1,175 @@
 version: 1
 change:
-  id: ci-publication-reliability
-  summary: Lock documentation dependencies, supersede duplicate PR validation runs
-    using latest labels, and report repository-supported GitHub merge methods with
-    safe API diagnostics.
+  id: implementation-resolution-phase3
+  summary: Add deterministic Phase 3 evidence inspection and optional path-scoped
+    Integration Gate enforcement to Implementation Resolution.
   boundary:
-  - node-documentation-dependency-installation
-  - pull-request-validation-event-concurrency
-  - github-repository-publication-policy-diagnostics
-  - canonical-documentation-and-agent-contracts
-  - local-validation-requirement-parity
+  - profile-and-language-contracts
+  - generated-ownership-and-provenance
+  - project-quality-and-openapi-evidence
+  - integration-gate-and-documentation
 matrix:
-- boundary: node-documentation-dependency-installation
-  reason: VitePress CI builds need a deterministic dependency graph and a lockfile-aware
-    build trigger.
+- boundary: profile-and-language-contracts
+  reason: Preserve Phase 1/2 Profiles while validating opt-in enforcement configuration
+    and selected language identity.
   checks:
     static_lint:
       applicable: true
-      evidence: Workflow contracts assert Node 24, setup-node npm cache keyed by package-lock.json,
-        and npm ci.
+      evidence: Profile structural and language fixtures Ruff critical lint and Python
+        compile.
     unit:
       applicable: true
-      evidence: A clean npm ci restored all 126 locked packages with npm 11.6.2.
+      evidence: Profile structural and language fixtures Static and lifecycle assertions
+        cover failure states.
     integration:
       applicable: true
-      evidence: npm run docs:build completed with VitePress 1.6.4 after npm ci.
+      evidence: Profile structural and language fixtures Exact-candidate Integration
+        Gate and repository validation run locally.
     contract:
       applicable: true
-      evidence: Validation and docs-site workflow contracts use the committed npm
-        lockfile; package-lock changes trigger docs-site.
+      evidence: Profile structural and language fixtures Profile/report schema and
+        legacy compatibility contracts are validated.
     e2e:
       applicable: false
-      na_reason: No deployed product or UI changed; npm ci plus the production VitePress
-        build is the relevant boundary.
+      na_reason: No deployed application changes; Git fixture and exact-candidate
+        Gate cover the boundary.
     security:
       applicable: true
-      evidence: CI installation preserves --ignore-scripts and lockfile integrity
-        hashes; npm audit remains disabled per repository policy.
+      evidence: Profile structural and language fixtures Path scope, ownership and
+        evidence binding fail closed.
     migration_recovery:
       applicable: false
-      na_reason: No persisted application data or schema changes.
+      na_reason: Additive optional Profile contract; no persisted migration.
     cli_harness:
-      applicable: false
-      na_reason: This boundary changes CI dependency installation, not AIPS CLI or
-        Harness behavior.
+      applicable: true
+      evidence: Profile structural and language fixtures Inspect and explicit command
+        collection CLI are exercised.
     docs_schema:
       applicable: true
-      evidence: Documentation sync/placement preview is complete and the VitePress
-        site build passes.
-- boundary: pull-request-validation-event-concurrency
-  reason: Opened, label, unlabel and synchronize events must run the latest label-sensitive
-    Gate without duplicate in-progress Gate work.
+      evidence: Profile structural and language fixtures Documentation placement,
+        links and site build are checked.
+- boundary: generated-ownership-and-provenance
+  reason: Unknown ownership and stale generated input/output hashes must block enforced
+    candidates.
   checks:
     static_lint:
       applicable: true
-      evidence: Python static contracts validate the action-independent PR group and
-        cancellation policy.
+      evidence: Scenario 195 Git fixtures Ruff critical lint and Python compile.
     unit:
       applicable: true
-      evidence: Static contract cases confirm PR events share a group, pushes remain
-        isolated, and workflow_dispatch is not canceled.
+      evidence: Scenario 195 Git fixtures Static and lifecycle assertions cover failure
+        states.
     integration:
       applicable: true
-      evidence: Exact candidate Integration Gate and required repository aggregate
-        run after publication.
+      evidence: Scenario 195 Git fixtures Exact-candidate Integration Gate and repository
+        validation run locally.
     contract:
       applicable: true
-      evidence: The validate workflow retains all PR event types and derives Core/Large
-        level from the latest event labels.
+      evidence: Scenario 195 Git fixtures Profile/report schema and legacy compatibility
+        contracts are validated.
     e2e:
       applicable: false
-      na_reason: No deployed product path changes; workflow contracts and the exact
-        candidate aggregate are the observable boundary.
+      na_reason: No deployed application changes; Git fixture and exact-candidate
+        Gate cover the boundary.
     security:
       applicable: true
-      evidence: Cancellation changes scheduling only; it does not weaken candidate
-        secret scanning, label routing or required aggregate behavior.
+      evidence: Scenario 195 Git fixtures Path scope, ownership and evidence binding
+        fail closed.
     migration_recovery:
       applicable: false
-      na_reason: No persisted state or workflow database migration.
+      na_reason: Additive optional Profile contract; no persisted migration.
     cli_harness:
-      applicable: false
-      na_reason: No CLI command or Harness behavior changes in this boundary.
+      applicable: true
+      evidence: Scenario 195 Git fixtures Inspect and explicit command collection
+        CLI are exercised.
     docs_schema:
       applicable: true
-      evidence: Conformance, Maintenance, Security Assurance, User Guide and Gate
-        protocols describe latest-event behavior.
-- boundary: github-repository-publication-policy-diagnostics
-  reason: Publication planning must distinguish GitHub API auth/network failures and
-    report only repository-enabled merge methods.
+      evidence: Scenario 195 Git fixtures Documentation placement, links and site
+        build are checked.
+- boundary: project-quality-and-openapi-evidence
+  reason: Quality commands require current bounded evidence; OpenAPI reports bind
+    to the selected spec.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff and Python compile checks cover scripts/publish_preflight.py
-        and its lifecycle test.
+      evidence: Scenario 195 command and OpenAPI lifecycle Ruff critical lint and
+        Python compile.
     unit:
       applicable: true
-      evidence: Lifecycle evidence covers protected/unprotected status, merge-method
-        flags, HTTP 403, DNS failure and diagnostic redaction.
+      evidence: Scenario 195 command and OpenAPI lifecycle Static and lifecycle assertions
+        cover failure states.
     integration:
       applicable: true
-      evidence: The exact candidate Gate runs offline; the publication plan performs
-        read-only GitHub metadata/policy queries when online.
+      evidence: Scenario 195 command and OpenAPI lifecycle Exact-candidate Integration
+        Gate and repository validation run locally.
     contract:
       applicable: true
-      evidence: Structured publish plan output includes merge_methods containing only
-        enabled repository settings.
+      evidence: Scenario 195 command and OpenAPI lifecycle Profile/report schema and
+        legacy compatibility contracts are validated.
     e2e:
       applicable: false
-      na_reason: The plan is read-only and no remote branch, PR, merge or release
-        side effect is part of this boundary.
+      na_reason: No deployed application changes; Git fixture and exact-candidate
+        Gate cover the boundary.
     security:
       applicable: true
-      evidence: GitHub errors are reduced to fixed statuses/remediation; credentials
-        and raw stderr are not returned.
+      evidence: Scenario 195 command and OpenAPI lifecycle Path scope, ownership and
+        evidence binding fail closed.
     migration_recovery:
       applicable: false
-      na_reason: No persisted data or schema migration.
+      na_reason: Additive optional Profile contract; no persisted migration.
     cli_harness:
       applicable: true
-      evidence: Publish-preflight lifecycle and plan contract tests verify the shared
-        CLI resolver behavior.
+      evidence: Scenario 195 command and OpenAPI lifecycle Inspect and explicit command
+        collection CLI are exercised.
     docs_schema:
       applicable: true
-      evidence: Human publication/security guidance and Agent Gate contracts are updated
-        and validated.
-- boundary: canonical-documentation-and-agent-contracts
-  reason: Document the lockfile, latest-event workflow semantics and read-only merge-method
-    diagnostics in their existing canonical sections.
+      evidence: Scenario 195 command and OpenAPI lifecycle Documentation placement,
+        links and site build are checked.
+- boundary: integration-gate-and-documentation
+  reason: Report mode and enforce mode must retain existing Gate policy and recursive
+    docs placement.
   checks:
     static_lint:
       applicable: true
-      evidence: Documentation placement and consistency preflight checks changed files
-        and canonical sections.
+      evidence: Gate lifecycle and publication preview Ruff critical lint and Python
+        compile.
     unit:
       applicable: true
-      evidence: Documentation link and layout validators cover all changed Human and
-        Agent guidance.
+      evidence: Gate lifecycle and publication preview Static and lifecycle assertions
+        cover failure states.
     integration:
       applicable: true
-      evidence: npm run docs:build renders the updated docs site.
+      evidence: Gate lifecycle and publication preview Exact-candidate Integration
+        Gate and repository validation run locally.
     contract:
       applicable: true
-      evidence: Documentation sync preview reports a complete recursive closure with
-        no missing required additions.
+      evidence: Gate lifecycle and publication preview Profile/report schema and legacy
+        compatibility contracts are validated.
     e2e:
       applicable: false
-      na_reason: No user-facing application workflow changed; the documentation site
-        build covers this boundary.
+      na_reason: No deployed application changes; Git fixture and exact-candidate
+        Gate cover the boundary.
     security:
       applicable: true
-      evidence: Security guidance states API diagnostics remain read-only and do not
-        grant merge authority.
+      evidence: Gate lifecycle and publication preview Path scope, ownership and evidence
+        binding fail closed.
     migration_recovery:
       applicable: false
-      na_reason: Documentation updates require no migration or rollback mechanism.
-    cli_harness:
-      applicable: false
-      na_reason: No CLI/Harness contract documentation or command schema changed.
-    docs_schema:
-      applicable: true
-      evidence: VitePress build plus repository documentation checks validate output.
-- boundary: local-validation-requirement-parity
-  reason: The local validation helper must install the same pinned Python requirements
-    as GitHub Actions so the exact Integration Gate can run offline with complete
-    validators.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: The local-preparation lifecycle test executes with Ruff critical rules
-        and Python compile validation.
-    unit:
-      applicable: true
-      evidence: Publication lifecycle evidence asserts requirements-openapi.txt is
-        included in the local environment dependency set.
-    integration:
-      applicable: true
-      evidence: The corrected prepare-local-validation script installed all four CI
-        requirements and reported READY.
-    contract:
-      applicable: true
-      evidence: CI workflow and local preparation dependency lists are tested for
-        parity.
-    e2e:
-      applicable: false
-      na_reason: No deployed application changed; the validation environment setup
-        and exact-candidate Gate are the integration boundary.
-    security:
-      applicable: true
-      evidence: All local requirements remain exact pinned files; the helper runs
-        the same isolated venv policy as CI.
-    migration_recovery:
-      applicable: false
-      na_reason: No persisted product state or dependency migration.
+      na_reason: Additive optional Profile contract; no persisted migration.
     cli_harness:
       applicable: true
-      evidence: The local prepare/check-only command and exact-candidate invocation
-        are covered by the existing lifecycle contract.
+      evidence: Gate lifecycle and publication preview Inspect and explicit command
+        collection CLI are exercised.
     docs_schema:
       applicable: true
-      evidence: Maintenance and Technology Guide now document all four requirements
-        and docs site builds successfully.
+      evidence: Gate lifecycle and publication preview Documentation placement, links
+        and site build are checked.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 877ea1d64491b83b30d77c676b145a6f088301ea
-  changed_files_hash: 6cba98908efb47c3b40053dc680b41d96e4a14766cfcd142ddc4e932079e9b81
+  base_sha: d2254eec75bf331b4fc1d438bc5a10b319e0e208
+  changed_files_hash: 7dab832a6ae22fd5df8fa35940cd2528576c3fd1d8823c3ea8ee485d8d0b93ad
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

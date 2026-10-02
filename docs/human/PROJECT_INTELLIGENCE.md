@@ -59,6 +59,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 Project Intelligence can locate OpenAPI specifications and likely consumers, but presence in the repository does not establish contract authority. Implementation Resolution records whether the source is canonical, descriptive, proposed or unresolved before compatibility evidence is used.
 
+Phase 3 的 Implementation Enforcement 只依選定 Profile 的明確路徑範圍檢查目前候選差異。Project Intelligence 提供候選來源與 consumer 線索，但仍須由 Profile 指定權威契約、輸入、生成輸出與品質命令；未知 ownership 或過期證據會阻擋強制模式，不可由檢索結果推定已驗證。
+
 CI、publication preflight 與 documentation trigger policy 的變更，應一併預覽遞迴文件閉包，並以最終差異重新綁定 Core Change Test Matrix。
 
 Mutation 前建立 CHANGE_IMPACT，涵蓋 Input / Output / Data / Events / Consumers / Security / Invariants / Compatibility / Tests，完成範圍審查並記錄使用者授權後進入 `IMPLEMENTATION_APPROVED`。`unknowns` 可保留舊字串格式，但舊字串仍視為未解並阻擋核准；新的結構化項目記錄 `id`、描述、`OPEN` / `RESOLVED` / `MITIGATED` / `ACCEPTED_LIMITATION`、處置說明、可驗證證據與 Human review。已處置項目必須提供仍有效且位於 repo 內的檔案 SHA-256 證據或符合相同 scope 的 traversal digest，以及 `reviewer: human`、核准參考與時間。`OPEN`、缺漏、過期、越界或 scope 不吻合時仍 fail closed。Seed-scoped traversal 只支援該範圍的判斷，不能把全域 graph coverage 改成 complete。

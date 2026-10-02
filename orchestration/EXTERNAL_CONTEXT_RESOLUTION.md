@@ -68,6 +68,8 @@ For OpenAPI validation, use the pinned local validator and declared specificatio
 
 For a selected framework or runtime, use official documentation matching the project version when a material implementation question is not answered by current project evidence or a stable language profile. Record the exact source, applicable version and retrieved/reviewed date. Do not copy a framework's entire documentation set into AIPS. If official context is unavailable or conflicting, preserve the gap in the Implementation Profile and block only the decision-dependent work. Repeated, stable gaps may be proposed for Capability Incubation; they do not automatically create a Skill or Framework Profile.
 
+Phase 3 enforcement binds the selected stable language Profile by path and digest to the exact implementation candidate. External framework documentation remains contextual evidence with source/version provenance; a Profile hash cannot establish that remote documentation or a framework recommendation is semantically correct.
+
 ## Safety / permissions
 
 Connections and actions still follow provider permissions, privacy, least privilege and existing tool/governance rules.

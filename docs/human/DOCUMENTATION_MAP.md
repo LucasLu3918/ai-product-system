@@ -48,6 +48,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 REST/OpenAPI implementation evidence is specified by `orchestration/IMPLEMENTATION_RESOLUTION.md`, `scripts/openapi_contracts.py` and `templates/implementation/OPENAPI_EVIDENCE_REPORT.schema.json`; Human workflow guidance lives in `docs/human/USER_GUIDE.md` and Scenario 194.
 
+Phase 3 deterministic enforcement is specified by the same Implementation Resolution and Integration Gate protocols, `scripts/implementation_enforcement.py` and `templates/implementation/IMPLEMENTATION_ENFORCEMENT_REPORT.schema.json`; Human workflow, security and conformance guidance lives in the User Guide, Security Assurance and Scenario 195.
+
 `orchestration/IMPLEMENTATION_RESOLUTION.md` 定義實作解析流程；Profile 範本與 Go、PHP、Python、.NET 語言基線分別位於 `templates/implementation/` 和 `references/languages/`。
 
 Task ownership 的 canonical contract 分布於 `orchestration/DETERMINISTIC_SCHEDULER.md`、`orchestration/RESOURCE_AUTHORIZATION.md`、`orchestration/RUN_DASHBOARD.md`、`orchestration/schemas/run-task-state.yaml` 與 Task Graph 範本；`config/documentation-placement.yaml` 維護對應 Human 文件閉包。

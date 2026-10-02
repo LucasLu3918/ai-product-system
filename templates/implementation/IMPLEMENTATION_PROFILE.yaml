@@ -85,10 +85,17 @@ ownership:
   project_owned: []
   unresolved: [] # Protected until Human/project evidence resolves ownership
 
+enforcement:
+  mode: disabled # disabled | report | enforce; old Profiles may omit this section
+  scope_paths: [] # Repository-relative globs for files governed by this Profile
+  language_profile: null # e.g. references/languages/go/PROFILE.yaml
+  commands: [] # id, argv, source, timeout_seconds, deterministic
+  generation_records: [] # path, tool, version, output_sha256, inputs [{path, sha256}]
+
 quality:
-  mandatory: []
-  project_required: []
-  risk_triggered: []
+  mandatory: [] # Enforced entries: {id, command_id, evidence_report}
+  project_required: [] # Same shape; project command remains authoritative
+  risk_triggered: [] # Same shape when risk trigger applies
   advisory: []
   evidence: [] # PASS | FAIL | UNVERIFIED | BLOCKED with command/source provenance
 

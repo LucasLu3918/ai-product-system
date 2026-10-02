@@ -14,6 +14,8 @@ Planning Package Scenario 192 is explicitly manual; planning template validation
 
 Scenario 193 Implementation Resolution evidence is separate from external Agent Eval: profile structure/lifecycle checks do not score semantic technology or architecture recommendations, and external findings cannot resolve contract authority or authorize implementation.
 
+Scenario 195 Phase 3 reports are deterministic implementation evidence. Profile and command fingerprints, generated hashes and OpenAPI freshness may inform a quality handoff; external Eval findings do not replace the current-run project command or contract evidence required by enforcement.
+
 ~~~text
 Promptfoo config + JSONL observations ─┐
 PyRIT v1 bridge observations ──────────┴→ bounded static parser → normalized, fingerprinted evidence

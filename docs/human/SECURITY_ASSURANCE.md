@@ -214,6 +214,8 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 OpenAPI evidence validation is offline, confines local references to the repository root, invokes contract test commands without a shell, and stores output digests instead of raw stdout/stderr. These controls do not assert that the project test assertions are semantically sufficient.
 
+Phase 3 treats unknown ownership as protected and rejects repository-path traversal or symlink escape. Explicit project-command collection refuses shell/inline code, has a timeout and keeps digest-only bounded output; the Gate does not execute candidate Profile commands. Generated-file input/output hashes and unsigned command reports provide consistency evidence only. Enforced projects must collect command reports in the current trusted run; committed reports are rejected, and Human review still decides contract authority, breaking changes and semantic quality.
+
 Independent-review signatures use Ed25519 keys from a host-managed trust store outside the candidate repository. Without that trust anchor, review evidence remains `UNVERIFIED`; signature-shaped fields alone do not establish trusted runtime isolation.
 
 OpenTelemetry authorization values are resolved from a named host environment variable only. They are not copied into run evidence, trace attributes or exporter errors.
