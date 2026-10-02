@@ -777,3 +777,9 @@ Current inventory after Scenario 193: 34 deterministic + 103 lifecycle + 54 agen
 ### Scenario 195 — Implementation Resolution deterministic enforcement
 
 `scripts/implementation_enforcement.py` verifies exact-candidate Profile fingerprints, language identity, in-scope ownership, generated input/output hashes, fresh project-command evidence and Phase 2 OpenAPI reports. Lifecycle fixtures cover missing and stale evidence, command timeout, shell refusal, report stability and optional Integration Gate report/enforce modes. These checks do not prove generator execution or semantic test quality.
+
+## Scenario 196 — Explicit OpenAPI client generator adapter
+
+Lifecycle evidence proves preview and the Integration Gate do not execute generators; an explicit local `--execute` uses pinned repository-local tools, staged inputs, bounded execution and allowlisted outputs. It verifies deterministic output, Phase 3 ownership/hash records and atomic rollback, and rejects stale OpenAPI evidence, unsafe paths, unexpected files, timeouts and edited generated outputs. This is execution safety and provenance evidence; it does not prove generated client semantics or provide an operating-system sandbox.
+
+Current inventory after Scenario 196: 34 deterministic + 106 lifecycle + 54 agent_eval = 194 automated; 2 manual; 196 total; 0 uncovered.

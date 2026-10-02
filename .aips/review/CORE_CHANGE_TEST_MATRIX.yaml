@@ -1,13 +1,14 @@
 version: 1
 change:
-  id: implementation-resolution-phase3
-  summary: Add deterministic Phase 3 evidence inspection and optional path-scoped
-    Integration Gate enforcement to Implementation Resolution.
+  id: implementation-resolution-phase4
+  summary: Add explicit local OpenAPI client generator adapters with deterministic
+    fixture coverage, ownership-safe output replacement and Gate inspection-only behavior.
   boundary:
   - profile-and-language-contracts
   - generated-ownership-and-provenance
   - project-quality-and-openapi-evidence
   - integration-gate-and-documentation
+  - openapi-generator-adapter-execution-and-rollback
 matrix:
 - boundary: profile-and-language-contracts
   reason: Preserve Phase 1/2 Profiles while validating opt-in enforcement configuration
@@ -164,12 +165,42 @@ matrix:
       applicable: true
       evidence: Gate lifecycle and publication preview Documentation placement, links
         and site build are checked.
+- boundary: openapi-generator-adapter-execution-and-rollback
+  reason: Only explicit local execution may invoke the pinned client generator; stale, unsafe or hand-edited outputs must not be applied.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff critical lint and compilation cover the adapter, Profile validator and lifecycle fixture.
+    unit:
+      applicable: true
+      evidence: Profile and report schema contracts cover legacy defaults, declared inputs, path safety and preview invariants.
+    integration:
+      applicable: true
+      evidence: Scenario 196 runs the fixture generator in temporary Git repositories and verifies the exact Integration Gate check.
+    contract:
+      applicable: true
+      evidence: Profile adapter contract and versioned report schema bind paths, executable/input/output hashes and state transitions.
+    e2e:
+      applicable: false
+      na_reason: AIPS has no production OpenAPI client target; isolated Git fixtures verify the reusable local adapter contract.
+    security:
+      applicable: true
+      evidence: Lifecycle checks shell-free argv, revision-bound evidence, staged inputs, bounded timeout/output, allowlists, symlink rejection, edit protection and rollback; no OS sandbox is claimed.
+    migration_recovery:
+      applicable: true
+      evidence: Additive Profile defaults preserve older files; injected Profile replacement failure verifies restoration of prior generated output.
+    cli_harness:
+      applicable: true
+      evidence: Preview is the default and only --execute invokes the generator; JSON report schema and exit states are tested.
+    docs_schema:
+      applicable: true
+      evidence: Recursive documentation placement, links, human/agent synchronization and docs site build cover Scenario 196.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: d2254eec75bf331b4fc1d438bc5a10b319e0e208
-  changed_files_hash: 7dab832a6ae22fd5df8fa35940cd2528576c3fd1d8823c3ea8ee485d8d0b93ad
+  base_sha: 9ab2dc4120ebff0d780368d8e2ec47bd15d11f16
+  changed_files_hash: e79d643a57716b055df4cddef42cd092accbb120d051339c22a7ede0a582eb86
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

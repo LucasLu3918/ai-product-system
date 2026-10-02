@@ -40,6 +40,8 @@ No Promptfoo or PyRIT command is executed by AIPS. No provider credential, remot
 
 ## Input and persistence boundary
 
+Local OpenAPI generator adapter reports are not imported as external evaluation evidence. They bind tool/spec/input/output hashes and bounded process metadata, and do not claim semantic client correctness.
+
 All imported YAML is UTF-8 and bounded to 1 MB, 20 levels, 10,000 nodes, and 100 cases. Duplicate keys, aliases, explicit tags, unknown fields, file/path-backed providers, generators, hooks, custom code, model-graded assertions, and unsupported result shapes fail closed. Each JSONL row is a bounded mapping with optional scalar `vars`, required `response` (text or `{output: text}`), and optional boolean `success` / numeric `score`; only response text is scored, and external status/score values are discarded. No `eval`, shell, plugin, provider, scorer, or callback is invoked.
 
 Private reasoning fields and recognizable secret material are rejected before output. Diagnostics expose categories only. Evidence contains source digests and a SHA-256 fingerprint over canonical JSON; `verify-evidence` detects edits to evidence or imported source files. Imported observations can contain sensitive prompts and responses, so output stays at the caller-selected local path and must follow the repository's existing data handling policy.

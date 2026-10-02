@@ -72,4 +72,6 @@ Phase 3 enforcement binds the selected stable language Profile by path and diges
 
 ## Safety / permissions
 
+External research may inform generator selection, but executable binaries, remote specifications and mutable package tags are not adapter inputs. A configured generator must be pinned locally with repository-relative paths and current canonical OpenAPI evidence.
+
 Connections and actions still follow provider permissions, privacy, least privilege and existing tool/governance rules.

@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aips.local/schemas/generator-adapter-report.schema.json",
+  "title": "OpenAPI Generator Adapter Report",
+  "type": "object",
+  "required": ["schema_version", "kind", "status", "mode", "candidate_revision", "profile", "contract", "generator", "inputs", "output_dir", "outputs", "runs", "deterministic", "determinism_verified", "applied", "existing_outputs_sha256", "cleanup_pending", "raw_output_persisted", "fingerprint"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "kind": { "const": "openapi_generator_adapter" },
+    "status": { "enum": ["READY", "PASS", "FAIL", "BLOCKED", "UNVERIFIED"] },
+    "mode": { "enum": ["preview", "run"] },
+    "candidate_revision": { "$ref": "#/$defs/revision" },
+    "profile": {
+      "type": "object", "required": ["path", "before_sha256", "after_sha256"],
+      "properties": { "path": { "$ref": "#/$defs/path" }, "before_sha256": { "$ref": "#/$defs/digest" }, "after_sha256": { "$ref": "#/$defs/digest" } },
+      "additionalProperties": false
+    },
+    "contract": {
+      "type": "object", "required": ["path", "sha256"],
+      "properties": { "path": { "$ref": "#/$defs/path" }, "sha256": { "$ref": "#/$defs/digest" } },
+      "additionalProperties": false
+    },
+    "generator": {
+      "type": "object", "required": ["id", "executable", "executable_sha256", "version", "argv_sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 }, "executable": { "$ref": "#/$defs/path" },
+        "executable_sha256": { "$ref": "#/$defs/digest" }, "version": { "type": "string", "minLength": 1 },
+        "argv_sha256": { "$ref": "#/$defs/digest" }, "version_output_sha256": { "$ref": "#/$defs/digest" }
+      },
+      "additionalProperties": false
+    },
+    "inputs": { "type": "array", "items": { "$ref": "#/$defs/input" } },
+    "output_dir": { "$ref": "#/$defs/path" },
+    "outputs": { "type": "array", "items": { "$ref": "#/$defs/output" } },
+    "runs": { "type": "array", "items": { "$ref": "#/$defs/run" } },
+    "deterministic": { "type": "boolean" },
+    "determinism_verified": { "type": ["boolean", "null"] },
+    "applied": { "type": "boolean" },
+    "existing_outputs_sha256": { "type": "object", "propertyNames": { "$ref": "#/$defs/path" }, "additionalProperties": { "$ref": "#/$defs/digest" } },
+    "cleanup_pending": { "type": "boolean" },
+    "raw_output_persisted": { "const": false },
+    "fingerprint": { "$ref": "#/$defs/digest" }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "mode": { "const": "preview" } } },
+      "then": { "properties": { "status": { "const": "READY" }, "applied": { "const": false }, "runs": { "maxItems": 0 } } }
+    },
+    {
+      "if": { "properties": { "applied": { "const": true } } },
+      "then": { "properties": { "mode": { "const": "run" }, "status": { "const": "PASS" }, "outputs": { "minItems": 1 } } }
+    },
+    {
+      "if": { "properties": { "applied": { "const": true }, "deterministic": { "const": true } } },
+      "then": { "properties": { "determinism_verified": { "const": true } } }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "path": { "type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?/)[^\\\\]+$" },
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "revision": { "type": "string", "pattern": "^[0-9a-f]{40,64}$" },
+    "input": {
+      "type": "object", "required": ["path", "sha256"],
+      "properties": { "path": { "$ref": "#/$defs/path" }, "sha256": { "$ref": "#/$defs/digest" } }, "additionalProperties": false
+    },
+    "output": {
+      "type": "object", "required": ["path", "sha256", "bytes"],
+      "properties": { "path": { "$ref": "#/$defs/path" }, "sha256": { "$ref": "#/$defs/digest" }, "bytes": { "type": "integer", "minimum": 0 } }, "additionalProperties": false
+    },
+    "run": {
+      "type": "object", "required": ["status", "exit_code", "timed_out", "output_sha256", "output_bytes", "output_truncated", "duration_ms"],
+      "properties": {
+        "status": { "enum": ["PASS", "FAIL", "UNVERIFIED"] }, "exit_code": { "type": ["integer", "null"] },
+        "timed_out": { "type": "boolean" }, "output_sha256": { "$ref": "#/$defs/digest" },
+        "output_bytes": { "type": "integer", "minimum": 0 }, "output_truncated": { "type": "boolean" },
+        "duration_ms": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    }
+  }
+}

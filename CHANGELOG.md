@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.71.0
+
+- Add an opt-in OpenAPI client generator adapter contract with preview-only default and explicit local execution, pinned repository tools, staged inputs, bounded process/output resources and allowlisted generated paths.
+- Bind generated output ownership and provenance to existing Implementation Profile enforcement records; refuse stale evidence, unsafe output and hand-edited files, with atomic rollback on apply failure.
+- Add Scenario 196 lifecycle coverage and document the Integration Gate inspection-only boundary. No concrete generator is selected because this repository has no production OpenAPI client target.
+
 ## 0.70.0
 
 - Add scoped Phase 3 Implementation Resolution enforcement for exact-candidate ownership, generated-file provenance, selected language, required project-command evidence and OpenAPI report freshness.

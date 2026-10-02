@@ -13,6 +13,7 @@ matrix_required_paths:
   - scripts/integration_gate.py
   - scripts/implementation_enforcement.py
   - scripts/implementation_profile_validate.py
+  - scripts/openapi_generator_adapter.py
   - scripts/publish_preflight.py
   - scripts/check_secret_leakage.py
   - scripts/repository_preflight.py
@@ -26,6 +27,7 @@ matrix_required_paths:
   - tests/validation/scheduler_gate_contracts.py
   - tests/evidence/integration_gate_lifecycle.py
   - tests/evidence/implementation_enforcement_lifecycle.py
+  - tests/evidence/openapi_generator_adapter_lifecycle.py
   - scripts/trajectory_eval.py
   - tests/evidence/trajectory_quality_gate_lifecycle.py
 checks:
@@ -99,6 +101,20 @@ checks:
       - tests/validation/implementation_enforcement_contracts.py
       - tests/evidence/implementation_enforcement_lifecycle.py
       - tests/scenarios/195-implementation-resolution-deterministic-enforcement.md
+  - id: openapi-generator-adapter-lifecycle
+    category: test
+    required: true
+    timeout_seconds: 120
+    argv: [python3, tests/evidence/openapi_generator_adapter_lifecycle.py]
+    paths:
+      - scripts/openapi_generator_adapter.py
+      - scripts/implementation_profile_validate.py
+      - templates/implementation/IMPLEMENTATION_PROFILE.yaml
+      - templates/implementation/GENERATOR_ADAPTER_REPORT.schema.json
+      - config/integration-gate.yaml
+      - tests/validation/implementation_profile_contracts.py
+      - tests/evidence/openapi_generator_adapter_lifecycle.py
+      - tests/scenarios/196-openapi-generator-adapter.md
   - id: review-isolation-lifecycle
     category: test
     required: true

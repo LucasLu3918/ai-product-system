@@ -57,6 +57,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+OpenAPI generator executable/version, declared tool inputs and generated ownership are project-local implementation evidence. Keep them in the Implementation Profile and Phase 3 provenance records; do not promote one project's generator choice into reusable global Project Intelligence. Scenario 196 defines the local execution and rollback boundary.
+
 Project Intelligence can locate OpenAPI specifications and likely consumers, but presence in the repository does not establish contract authority. Implementation Resolution records whether the source is canonical, descriptive, proposed or unresolved before compatibility evidence is used.
 
 Phase 3 的 Implementation Enforcement 只依選定 Profile 的明確路徑範圍檢查目前候選差異。Project Intelligence 提供候選來源與 consumer 線索，但仍須由 Profile 指定權威契約、輸入、生成輸出與品質命令；未知 ownership 或過期證據會阻擋強制模式，不可由檢索結果推定已驗證。

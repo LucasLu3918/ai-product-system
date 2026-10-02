@@ -220,6 +220,12 @@ Phase 3 可在 Implementation Profile 的 `enforcement` 區段指定適用路徑
 
 本地發佈預檢會先確認 Python／Ruff、loopback 與 Chromium 等 Integration Gate 條件，再做完整候選驗證；文件變更時也會檢查本地 Markdown 連結並建置 VitePress。用全域 CLI 驗證另一份 checkout 時加上 `--project-root <repo>`，讓腳本、設定與候選使用同一個 repo root。
 
+### Phase 4：本機 OpenAPI client generator
+
+只有專案已確認 canonical OpenAPI、目前 Phase 2 驗證證據及 repository-local generator 後，才可在 Profile 設定 `generation.enabled: true`、`policy: boundary_only` 和 `generation.adapters`。預設執行 `python scripts/openapi_generator_adapter.py IMPLEMENTATION_PROFILE.yaml --repo-root . --adapter-id <id>` 只預覽，不會啟動 generator。檢查路徑、版本、輸出 allowlist 與證據後，使用者明確執行同一命令並加上 `--execute` 才會在本機產生並套用 client 檔案。
+
+執行器只接受 Profile 固定的可執行檔雜湊和 argv，不使用 shell，並以暫存副本、逾時及檔案／位元組上限執行。它只會替換 Phase 3 ownership/hash 記錄仍吻合的產物。CI 與 Integration Gate 不執行 Profile 指定的 generator。此流程不提供 OS sandbox，也不代表生成 client 已通過語義或整合測試；仍需依專案測試流程驗證。
+
 ### OpenTelemetry run traces
 
 Record a lifecycle pair in the existing run event stream, then export or replay it:

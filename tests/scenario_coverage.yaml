@@ -1537,3 +1537,12 @@ scenarios:
       - templates/implementation/IMPLEMENTATION_ENFORCEMENT_REPORT.schema.json
       - tests/validation/implementation_enforcement_contracts.py
       - tests/evidence/implementation_enforcement_lifecycle.py
+  - id: "196"
+    path: tests/scenarios/196-openapi-generator-adapter.md
+    coverage: lifecycle
+    evidence:
+      - scripts/openapi_generator_adapter.py
+      - scripts/implementation_profile_validate.py
+      - templates/implementation/GENERATOR_ADAPTER_REPORT.schema.json
+      - tests/validation/implementation_profile_contracts.py
+      - tests/evidence/openapi_generator_adapter_lifecycle.py

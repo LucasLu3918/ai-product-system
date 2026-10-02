@@ -253,11 +253,15 @@ flowchart LR
     ROLE --> TEST[Project-native contract / conformance tests]
     TEST --> EVIDENCE[Bind spec + JUnit hashes + Git revision]
     EVIDENCE --> ENFORCE[Scoped Phase 3 ownership + quality evidence inspection]
-    ENFORCE --> VERIFY[TDD + project-native verification]
+    ENFORCE --> ADAPTER[Local generator preview]
+    ADAPTER -->|Human passes --execute| GENERATE[Pinned local client generator]
+    GENERATE --> OWNERSHIP[Atomic output + Phase 3 ownership records]
+    ENFORCE -->|Integration Gate inspection only| VERIFY[TDD + project-native verification]
+    OWNERSHIP --> VERIFY
     VERIFY --> REVIEW[Review]
 ```
 
-The resolution/profile layer does not add a language-specific Role, Framework Skill or generator. OpenAPI compatibility is automated only against an explicitly canonical baseline; unknown semantics remain unknown, and breaking changes still require Human approval. Phase 3 inspects exact-candidate ownership, generated hashes, language identity, required command evidence and OpenAPI report freshness. Project-native tests remain the source of runtime assertions; neither the evidence binder nor the Phase 3 inspector grades their semantic quality.
+The resolution/profile layer does not add a language-specific Role or Framework Skill. A concrete generator is selected only when a target project provides canonical contract and toolchain evidence. OpenAPI compatibility is automated only against an explicitly canonical baseline; unknown semantics remain unknown, and breaking changes still require Human approval. Phase 3 inspects exact-candidate ownership, generated hashes, language identity, required command evidence and OpenAPI report freshness. Phase 4's adapter is preview-only by default; only an explicit Human `--execute` invokes the pinned local tool, while the Gate remains inspection-only. Project-native tests remain the source of runtime assertions; neither the evidence binder nor the Phase 3/4 hashes grade semantic quality or provide OS-level isolation.
 
 ## Risk-proportional security assurance
 

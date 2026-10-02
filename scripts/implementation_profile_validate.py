@@ -17,6 +17,7 @@ LANGUAGES = {"go", "php", "python", "dotnet"}
 OWNERSHIP = ("generated", "scaffolded", "project_owned", "unresolved")
 QUALITY_RESULTS = {"PASS", "FAIL", "UNVERIFIED", "BLOCKED"}
 ENFORCEMENT_MODES = {"disabled", "report", "enforce"}
+GENERATOR_ID = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.-]*\Z")
 PROFILE_SECTIONS = (
     "identity", "detection", "runtime", "package_model", "dependency_management",
     "formatting", "static_analysis", "error_handling", "testing", "concurrency",
@@ -169,6 +170,98 @@ def _enforcement(value: Any, quality: dict[str, Any], errors: list[str]) -> None
             _owned_path(item.get("evidence_report"), f"quality.{category}[{index}].evidence_report", errors)
 
 
+def _generator_adapters(value: Any, root: dict[str, Any], errors: list[str]) -> None:
+    generation = _mapping(value, "generation", errors)
+    adapters = _list(generation.get("adapters", []), "generation.adapters", errors)
+    if adapters and (generation.get("enabled") is not True or generation.get("policy") != "boundary_only"):
+        errors.append("generation adapters require enabled=true and policy=boundary_only")
+    contract = root.get("contract") if isinstance(root.get("contract"), dict) else {}
+    if adapters and (contract.get("type") != "openapi" or contract.get("authority") != "canonical"):
+        errors.append("OpenAPI client generation requires a canonical OpenAPI contract")
+    identifiers: set[str] = set()
+    output_dirs: set[str] = set()
+    for index, item in enumerate(adapters):
+        label = f"generation.adapters[{index}]"
+        row = _mapping(item, label, errors)
+        identifier = row.get("id")
+        if not isinstance(identifier, str) or not GENERATOR_ID.fullmatch(identifier):
+            errors.append(f"{label}.id must be a stable identifier")
+        elif identifier in identifiers:
+            errors.append(f"generation.adapters duplicates id {identifier}")
+        else:
+            identifiers.add(identifier)
+        if row.get("type") != "openapi_client_cli":
+            errors.append(f"{label}.type must be openapi_client_cli")
+        spec_path = _owned_path(row.get("spec_path"), f"{label}.spec_path", errors)
+        if spec_path and spec_path != contract.get("source"):
+            errors.append(f"{label}.spec_path must match contract.source")
+        executable = _owned_path(row.get("executable"), f"{label}.executable", errors)
+        if executable and Path(executable).name.lower() in {"sh", "bash", "zsh", "fish", "cmd", "powershell", "pwsh"}:
+            errors.append(f"{label}.executable cannot be a shell")
+        _digest(row.get("executable_sha256"), f"{label}.executable_sha256", errors)
+        if not isinstance(row.get("version"), str) or not row["version"].strip():
+            errors.append(f"{label}.version is required")
+        version_args = row.get("version_args")
+        if not isinstance(version_args, list) or not all(isinstance(arg, str) and arg for arg in version_args):
+            errors.append(f"{label}.version_args must be a string list")
+        argv = row.get("argv")
+        if not isinstance(argv, list) or not argv or not all(isinstance(arg, str) and arg for arg in argv):
+            errors.append(f"{label}.argv must be a non-empty string list")
+        else:
+            if argv.count("{spec}") != 1 or argv.count("{output}") != 1:
+                errors.append(f"{label}.argv requires exactly one {{spec}} and {{output}} argument")
+            for arg in argv:
+                if arg in {"{spec}", "{output}"}:
+                    continue
+                if "{" in arg or "}" in arg:
+                    match = re.fullmatch(r"\{input:([^{}]+)\}", arg)
+                    if not match or match.group(1) not in row.get("tool_inputs", []):
+                        errors.append(f"{label}.argv contains an unsupported or undeclared input placeholder")
+            if any(arg in {"-c", "--command", "-e", "--eval"} for arg in argv):
+                errors.append(f"{label}.argv cannot request inline code execution")
+        tool_inputs = _list(row.get("tool_inputs", []), f"{label}.tool_inputs", errors)
+        normalized_inputs: set[str] = set()
+        for input_index, source in enumerate(tool_inputs):
+            normalized = _owned_path(source, f"{label}.tool_inputs[{input_index}]", errors)
+            if normalized:
+                if normalized in normalized_inputs:
+                    errors.append(f"{label}.tool_inputs duplicates {normalized}")
+                normalized_inputs.add(normalized)
+                if normalized in {executable, spec_path}:
+                    errors.append(f"{label}.tool_inputs must not duplicate executable or spec_path")
+        output_dir = _owned_path(row.get("output_dir"), f"{label}.output_dir", errors)
+        if output_dir:
+            if output_dir in output_dirs:
+                errors.append(f"generation.adapters duplicates output_dir {output_dir}")
+            output_dirs.add(output_dir)
+            protected_inputs = [path for path in [spec_path, executable, *normalized_inputs] if path]
+            if (output_dir in protected_inputs or any(path.startswith(output_dir + "/") for path in protected_inputs)
+                    or output_dir.startswith((spec_path or "") + "/")):
+                errors.append(f"{label}.output_dir overlaps an input")
+        patterns = _list(row.get("output_patterns"), f"{label}.output_patterns", errors)
+        if not patterns:
+            errors.append(f"{label}.output_patterns is required")
+        for pattern_index, pattern in enumerate(patterns):
+            if not isinstance(pattern, str):
+                errors.append(f"{label}.output_patterns[{pattern_index}] must be a string")
+                continue
+            raw = pattern.strip()
+            if (not raw or "\\" in raw or raw.startswith("/") or
+                    any(part in {"", ".", ".."} for part in raw.split("/"))):
+                errors.append(f"{label}.output_patterns[{pattern_index}] must be a safe relative glob")
+        if not isinstance(row.get("deterministic"), bool):
+            errors.append(f"{label}.deterministic must be boolean")
+        timeout = row.get("timeout_seconds")
+        if not isinstance(timeout, int) or isinstance(timeout, bool) or not 1 <= timeout <= 900:
+            errors.append(f"{label}.timeout_seconds must be 1..900")
+        max_files = row.get("max_files", 500)
+        if not isinstance(max_files, int) or isinstance(max_files, bool) or not 1 <= max_files <= 5000:
+            errors.append(f"{label}.max_files must be 1..5000")
+        max_bytes = row.get("max_bytes", 25_000_000)
+        if not isinstance(max_bytes, int) or isinstance(max_bytes, bool) or not 1 <= max_bytes <= 200_000_000:
+            errors.append(f"{label}.max_bytes must be 1..200000000")
+
+
 def validate_language_profile(doc: Any) -> list[str]:
     errors: list[str] = []
     root = _mapping(doc, "language_profile", errors)
@@ -315,6 +408,7 @@ def validate_profile(doc: Any) -> dict[str, Any]:
         errors.append("generation.policy must be none or boundary_only")
     if generation.get("enabled") is False and generation.get("policy") != "none":
         errors.append("disabled generation requires policy=none")
+    _generator_adapters(generation, root, errors)
 
     ownership = _mapping(root.get("ownership"), "ownership", errors)
     seen_paths: dict[str, str] = {}

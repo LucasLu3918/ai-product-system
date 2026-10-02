@@ -78,6 +78,7 @@ architecture:
 generation:
   enabled: false
   policy: none # none | boundary_only
+  adapters: [] # Optional Phase 4 OpenAPI client CLI adapters; execution requires an explicit local --execute.
 
 ownership:
   generated: []

@@ -103,6 +103,8 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 ## Failure behavior
 
+The Integration Gate never executes a generator configured in an Implementation Profile. For Phase 4 changes it runs only the isolated fake-generator lifecycle fixture; project generator execution remains an explicit local `--execute` action.
+
 The OpenAPI contract-test action is explicit argv evidence attached to an implementation task; it does not grant scheduler authority or bypass the task write boundary. A missing command, timeout, nonzero exit or incomplete JUnit operation coverage remains non-PASS.
 
 Phase 3 command evidence is likewise collected only as an explicitly selected project action. The Scheduler may order that action before an Integration Gate task, while the Gate reads its current-run report and performs no command execution from the candidate Implementation Profile. An expired or incomplete report leaves the dependent task blocked.
