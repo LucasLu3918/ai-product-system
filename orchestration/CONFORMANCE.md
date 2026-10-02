@@ -730,6 +730,8 @@ Current automated inventory: 27 deterministic + 93 lifecycle + 54 agent_eval = 1
 
 ## Scenario 175 — Risk-adaptive bounded Change Impact
 
+Validation-only changes may use bounded source review when the Impact Graph cannot map the repository validator, provided the validator-to-Gate path is evidenced and graph-wide product impact remains explicitly unknown.
+
 Scenario 175 is lifecycle coverage for rebuildable lexical relation indexing, bounded caller/consumer traversal across code and canonical architecture edges, risk-specific depth/history, explicit unknown and truncation states, seed-scoped graph coverage that preserves repository-wide partial status, changed/unchanged affected-node dispositions and READY evidence validation. It does not claim compiler-grade reference resolution.
 
 Current automated inventory: 27 deterministic + 98 lifecycle + 54 agent_eval = 179 / 179; manual 0; uncovered 0.
