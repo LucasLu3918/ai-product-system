@@ -2,6 +2,8 @@
 
 AIPS 的 Agent integration 分成 **Portable MCP Access Plane** 與 **Runtime-native Adapter Plane**。兩者讀取相同 canonical AIPS sources，但責任不同。
 
+本機 CLI 與 Runtime adapter 共用 checkout-root-aware 的 AIPS commands。`aips integration-gate` 使用已準備好的 Python 3.12 驗證環境；Publication Preflight 對文件候選直接呼叫已安裝的 VitePress bundle，不會自動安裝套件或連接 registry。
+
 ## Integration model
 
 ~~~text

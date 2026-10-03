@@ -258,6 +258,8 @@ Before promoting legacy manual coverage: reconcile the Scenario to current canon
 
 ## Execution Isolation consistency
 
+The local Integration Gate selects a complete Python 3.12 validation environment and reports missing dependencies before candidate scanning. For documentation changes it requires Node 24+ and the already-installed VitePress bundle, invokes that bundle directly, and never installs packages or contacts a registry. The E2B artifact workflow pins the Node 24 upload action; its existing synthetic-data and least-privilege boundaries remain in force.
+
 When Execution Isolation behavior changes, review together:
 
 - PROJECT_IDENTITY + EXECUTION_ISOLATION;
@@ -283,8 +285,6 @@ The validation workflow installs the optional pinned `requirements-openapi.txt` 
 The working-tree preview scans candidate additions and complete untracked files. The exact committed candidate still receives the mandatory final-tree and commit-history scan in Integration Gate.
 
 When publication preflight changes, keep the working-tree preview, content safety findings, configured Git identity checks and exact-candidate resolver aligned with CI.
-
-The GitHub validation and docs-site workflows use Node 24, the committed `package-lock.json`, `npm ci`, and setup-node's npm cache keyed by that lockfile. A lockfile change triggers the docs-site build, so dependency changes receive the same build check as documentation edits. Publication Preflight also queries repository metadata to list enabled merge methods before operators choose the supported PR merge route; network and API authorization failures remain separate diagnostics.
 
 Every publication candidate also runs the built-in strict secret scan before dependency installation in GitHub Actions and during local publication preflight. The Integration Gate repeats the scan as required candidate-bound evidence. Both use `config/secret-scan.yaml`, scan final content plus `base..head` history, ignore no inline bypass markers and fail closed on incomplete input. Keep the single `repository` required-check context; the Janitor aggregate continues to carry failures.
 

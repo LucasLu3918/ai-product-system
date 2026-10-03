@@ -382,6 +382,7 @@ placement_rules:
         - Public repository / CI consistency
         - Validation architecture consistency
         - Impact-derived regression testing
+        - Execution Isolation consistency
         - Subsystem consistency map
         - Subsystem consistency map
 

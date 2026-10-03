@@ -62,6 +62,8 @@ A Large/Core Change is not complete when:
 
 ## Evidence
 
+For publication-preflight changes, run focused lifecycle checks while editing, bind the final Core Matrix to the exact base and changed-file set, then run the complete local Integration Gate once for that fixed candidate. The Gate includes repository validation; PR and main CI remain separate candidate checks.
+
 Eval-as-CI Core Change 必須涵蓋 trace schema、deterministic trajectory rules、privacy rejection、Scenario contract、Evidence Bundle 與 shadow-mode publish boundary；LLM Judge 的非確定性只能作為 evidence，不可取代 deterministic hard constraints。
 
 Prefer deterministic evidence and exact commands/results.

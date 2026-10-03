@@ -20,6 +20,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Publication preflight changes synchronize the local Python/Node environment checks, GitHub workflow runtime pins, exact-candidate Gate instructions and Scenario 165. Local docs builds use Node 24+ and the installed VitePress bundle without package-manager or registry access.
+
 OpenAPI contract tooling and its optional dependency file have an explicit placement rule: workflow commands belong in User Guide quality guidance, technical limits in the Technology Guide, and lifecycle claims in Scenario 194. Keep the Agent contract and Human descriptions synchronized when the validator or evidence schema changes.
 
 Phase 3 Profile／Gate enforcement 另由 `implementation-enforcement` placement rule 綁定。新增 CLI、Profile 欄位、報告 schema 或 Scenario 195 行為時，同步檢查 User Guide、Architecture Overview、Technology Guide、Security Assurance 與 Conformance 的既有主題；維持「雜湊一致不等於 generator 已執行」與 Human authority 的界線。

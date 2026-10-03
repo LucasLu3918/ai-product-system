@@ -178,6 +178,32 @@ python_bin() {
   fi
 }
 
+validation_python_for_root() {
+  local root="$1"
+  local require_full="${2:-true}"
+  local base="" prepared_venv="" candidate="" venv_candidate=""
+  base="$(python_bin)"
+  if [ -n "$base" ] && [ -f "$root/bin/prepare-local-validation" ]; then
+    prepared_venv="$("$base" -c 'import hashlib, pathlib, sys, tempfile; root=pathlib.Path(sys.argv[1]).resolve(); print(pathlib.Path(tempfile.gettempdir()) / ("aips-validation-" + hashlib.sha256(str(root).encode()).hexdigest()[:12]))' "$root" 2>/dev/null || true)"
+  fi
+  if [ -n "${AIPS_VALIDATION_VENV:-}" ]; then
+    venv_candidate="$AIPS_VALIDATION_VENV/bin/python"
+  fi
+  for candidate in "${AIPS_VALIDATION_PYTHON:-}" "$venv_candidate" "$root/.venv/bin/python" "$prepared_venv/bin/python" "$base"; do
+    [ -x "$candidate" ] || continue
+    if [ "$require_full" = "true" ]; then
+      if "$candidate" -c 'import yaml, ruff, mypy, playwright, openapi_spec_validator, jsonschema, cryptography; import sys; raise SystemExit(0 if sys.version_info[:2] == (3, 12) else 1)' >/dev/null 2>&1; then
+        printf '%s\n' "$candidate"
+        return 0
+      fi
+    elif "$candidate" -c 'import yaml' >/dev/null 2>&1; then
+      printf '%s\n' "$candidate"
+      return 0
+    fi
+  done
+  return 1
+}
+
 compatible_python_bin() {
   local candidate path
   for candidate in "${AIPS_PYTHON:-}" python3.13 python3.12 python3.11 python3.10 python3; do
@@ -761,17 +787,16 @@ integration_gate_cmd() {
     command_root="$(cd "$selected_root" 2>/dev/null && pwd -P)" || die "Cannot resolve --project-root: $selected_root"
     [ -f "$command_root/scripts/integration_gate.py" ] || die "--project-root is not an AIPS repository: $command_root"
     say "Integration Gate project root: $command_root" >&2
-    if [ -x "$command_root/.venv/bin/python" ]; then
-      py="$command_root/.venv/bin/python"
-    else
-      py="$(python_bin)"
-    fi
+    py="$(validation_python_for_root "$command_root" true || true)"
   else
-    py="$(python_bin)"
+    py="$(validation_python_for_root "$command_root" true || true)"
   fi
-  set -- "${gate_args[@]}"
-  [ -n "$py" ] || die "python3 is required."
-  "$py" -c 'import yaml' >/dev/null 2>&1 || die "The Python selected for $command_root ($py) lacks PyYAML. Run `python3.12 bin/prepare-local-validation` in that checkout, then retry."
+  [ -n "$py" ] || die "No complete Python 3.12 validation environment found for $command_root. Set AIPS_VALIDATION_VENV or AIPS_VALIDATION_PYTHON, or run python3.12 bin/prepare-local-validation; inspect blockers with aips publish environment --project-root $command_root."
+  if [ "${#gate_args[@]}" -gt 0 ]; then
+    set -- "${gate_args[@]}"
+  else
+    set --
+  fi
   PATH="$(dirname "$py"):$PATH" "$py" "$command_root/scripts/integration_gate.py" "$@"
 }
 
@@ -801,21 +826,26 @@ publish_preflight_cmd() {
     command_root="$(cd "$selected_root" 2>/dev/null && pwd -P)" || die "Cannot resolve --project-root: $selected_root"
     [ -f "$command_root/scripts/publish_preflight.py" ] || die "--project-root is not an AIPS repository: $command_root"
     say "Publish preflight project root: $command_root" >&2
-    if [ -x "$command_root/.venv/bin/python" ]; then
-      py="$command_root/.venv/bin/python"
-    else
-      py="$(python_bin)"
-    fi
+    py="$(validation_python_for_root "$command_root" false || true)"
   else
     py="$(python_bin)"
   fi
+  [ -n "$py" ] || py="$(python_bin)"
   [ -n "$py" ] || die "python3 is required."
   "$py" -c 'import yaml' >/dev/null 2>&1 || die "The Python selected for $command_root ($py) lacks PyYAML. Run `python3.12 bin/prepare-local-validation` in that checkout, then retry."
   if [ "$action" = "post-merge" ]; then
-    PATH="$(dirname "$py"):$PATH" "$py" "$SYSTEM_DIR/scripts/publish_preflight.py" "$action" --project-root "$command_root" "${publish_args[@]}"
+    if [ "${#publish_args[@]}" -gt 0 ]; then
+      PATH="$(dirname "$py"):$PATH" "$py" "$SYSTEM_DIR/scripts/publish_preflight.py" "$action" --project-root "$command_root" "${publish_args[@]}"
+    else
+      PATH="$(dirname "$py"):$PATH" "$py" "$SYSTEM_DIR/scripts/publish_preflight.py" "$action" --project-root "$command_root"
+    fi
     return
   fi
-  PATH="$(dirname "$py"):$PATH" "$py" "$command_root/scripts/publish_preflight.py" "$action" "${publish_args[@]}"
+  if [ "${#publish_args[@]}" -gt 0 ]; then
+    PATH="$(dirname "$py"):$PATH" "$py" "$command_root/scripts/publish_preflight.py" "$action" "${publish_args[@]}"
+  else
+    PATH="$(dirname "$py"):$PATH" "$py" "$command_root/scripts/publish_preflight.py" "$action"
+  fi
 }
 
 docs_cmd() {

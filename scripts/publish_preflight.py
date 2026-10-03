@@ -22,6 +22,7 @@ if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
 import documentation_placement  # noqa: E402
+import repository_preflight  # noqa: E402
 from integration_gate import load_yaml as load_matrix_yaml
 from integration_gate import matrix_readiness_issues
 
@@ -162,7 +163,7 @@ def environment_status() -> dict[str, Any]:
     diagnostics: list[dict[str, str]] = []
     python_version = subprocess.run([sys.executable, "--version"], capture_output=True, text=True)
     missing_modules = []
-    for module in ("yaml", "ruff"):
+    for module in ("yaml", "ruff", "openapi_spec_validator"):
         check = subprocess.run(
             [sys.executable, "-c", f"import {module}"], capture_output=True, text=True
         )
@@ -183,6 +184,16 @@ def environment_status() -> dict[str, Any]:
             "status": "BLOCKED",
             "detail": "selected Python executable could not report its version",
             "next_step": "Select the repository validation environment with `aips publish --project-root <repo> environment`.",
+        })
+    _, docs_errors = repository_preflight.docs_build_prerequisites(ROOT)
+    for message in docs_errors:
+        check = "node_runtime" if "Node.js" in message else "vitepress"
+        blockers.append(check)
+        diagnostics.append({
+            "check": check,
+            "status": "BLOCKED",
+            "detail": message.split(";", 1)[0],
+            "next_step": message,
         })
     try:
         probe = socket.socket()

@@ -64,6 +64,8 @@ The scheduler is stateless between invocations. Durable workflow state remains o
 
 ## CLI
 
+`aips integration-gate` resolves a complete Python 3.12 environment before starting candidate work. Missing modules or host capabilities are environment blockers with remediation; they do not become lifecycle failures, and the CLI does not install packages automatically.
+
 The full Integration Gate remains required after validation optimizations; contracts that directly execute the same Python lifecycle should assign it one owning invocation and reuse that result.
 
 Run-state and telemetry event producers share the same locked append stream. Concurrent writes allocate sequence numbers inside the lock and fsync each appended record before returning; the dashboard remains a read-only projection.

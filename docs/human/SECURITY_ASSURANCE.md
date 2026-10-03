@@ -153,6 +153,7 @@ Review cases such as:
 
 ## External sandbox execution
 
+
 The initial E2B candidate is disabled by default and limited to synthetic or explicitly approved `public` data. Its optional API key is exposed only to a manual workflow on `main` after the operator confirms prior written provider consent. No provider key, Git publication credential or production credential is sent to the guest. The candidate uses deny-all egress, no host mounts, bounded lifetime and no publication authority.
 
 Provider documentation and AIPS-observed integration behavior are separate evidence. A smoke-test receipt checks creation, execution, denied public egress, TTL, destruction and an unchanged host fixture; it does not prove the provider's hypervisor implementation. Registry changes or expired evidence block selection. A sandbox result remains untrusted until host-side path/content validation and existing Integration/Security gates pass.
@@ -214,6 +215,8 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 
 ## Secret and credential safety
+
+
 
 OpenAPI evidence validation is offline, confines local references to the repository root, invokes contract test commands without a shell, and stores output digests instead of raw stdout/stderr. These controls do not assert that the project test assertions are semantically sufficient.
 
@@ -291,6 +294,8 @@ The Parallel Run Dashboard is loopback-only and read-only. Its projection cannot
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.
 
 ## Runtime Policy Enforcement
+
+Local environment diagnostics report missing runtime/module names and remediation without exposing credentials or invoking package installation. GitHub workflow action references remain pinned to immutable commit SHAs with their declared Node runtime reviewed.
 
 An opted-in Phase 5 generator report is ephemeral execution evidence. The inspector checks its fingerprint, revision ancestry, pinned tool and inputs, output hashes and ownership records; missing or stale evidence blocks that Profile. The shared Widgets pilot uses a local fixture token and does not establish authentication or security assurance for another product.
 

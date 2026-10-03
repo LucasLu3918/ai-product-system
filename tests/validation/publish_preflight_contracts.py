@@ -29,6 +29,21 @@ for phrase in ("def refresh(root:", "REFRESHED_EQUIVALENT_TREE", "SEMANTIC_REFRE
     if phrase not in intelligence:
         errors.append(f"Project Intelligence equivalent-tree refresh missing: {phrase}")
 
+repository_preflight = (ROOT / "scripts/repository_preflight.py").read_text(encoding="utf-8")
+for phrase in ("AIPS_VALIDATION_VENV", "AIPS_VALIDATION_PYTHON", "openapi_spec_validator"):
+    if phrase not in cli + (ROOT / "scripts/publish_preflight.py").read_text(encoding="utf-8"):
+        errors.append(f"local validation environment contract missing: {phrase}")
+for phrase in ("AIPS_NODE_BINARY", "Node.js 24 or newer", "node_modules/vitepress/bin/vitepress.js", "No package install or registry access is attempted"):
+    if phrase not in repository_preflight:
+        errors.append(f"offline documentation build contract missing: {phrase}")
+workflow_pins = {
+    ".github/workflows/docs-site.yml": "actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1",
+    ".github/workflows/e2b-sandbox-verification.yml": "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0",
+}
+for rel, expected in workflow_pins.items():
+    if expected not in (ROOT / rel).read_text(encoding="utf-8"):
+        errors.append(f"Node 24 action pin mismatch: {rel}")
+
 evidence = ROOT / "tests/evidence/publish_preflight_lifecycle.py"
 if evidence.is_file():
     proc = subprocess.run([sys.executable, str(evidence)], cwd=ROOT, capture_output=True, text=True)
