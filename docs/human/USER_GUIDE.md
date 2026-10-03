@@ -168,6 +168,8 @@ PR 驗證會把 Gate 與 Repository Health 報告放在 CI runner 的暫存位�
 
 ## Execution Isolation 與 Runtime Resource
 
+執行 `aips integration-gate` 前，準備完整 Python 3.12 環境並以 `AIPS_VALIDATION_PYTHON` 或 `AIPS_VALIDATION_VENV` 指定；缺少依賴時命令會先停止並列出診斷。文件候選另需 Node 24+（可用 `AIPS_NODE_BINARY` 指定）和 checkout 內已安裝的 VitePress；預檢不會自動安裝套件或連接 registry.
+
 Mutation 可依需要使用 shared workspace、AIPS-owned Git worktree 或 verified sandbox。沒有可驗證 sandbox provider 時，不把一般 temp directory 宣稱成 sandbox。
 
 高／critical 風險或明確不受信任的執行可用 `aips isolation resolve --mode auto --risk high --data-class public` 檢查最低隔離要求。一般風險會選 worktree；高風險需要已啟用、證據新鮮且資料政策相符的 sandbox。找不到時顯示 `UNSUPPORTED`/`BLOCKED`，不會自動降級。E2B 目前停用，僅有合成資料 smoke verifier。
@@ -333,6 +335,7 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 詳見 [Project Intelligence](PROJECT_INTELLIGENCE.md)。
 
 ## Git Publication 與 Release
+
 
 建立 Large/Core PR 前，先用 `aips publish preview` 檢查未提交文件位置與 Matrix 綁定，再用 `aips publish plan` 確認 GitHub CLI 認證與首次 PR 分類標籤。`gh pr create` 可同時帶入 `--label aips:large-change` 或 `--label aips:core-change`，讓 `opened` 事件採用預期分類；同 PR 後續 label 事件會取代進行中的舊驗證，並按最新 labels 執行。
 

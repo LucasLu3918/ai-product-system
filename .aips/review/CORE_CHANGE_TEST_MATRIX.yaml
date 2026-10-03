@@ -1,52 +1,152 @@
 version: 1
 change:
-  id: phase7-validation-runtime-optimization
-  summary: Reduce validation fixture overhead and remove a repeated MCP client-config
-    subprocess while preserving all lifecycle coverage.
+  id: phase9-validation-environment-and-actions
+  summary: >-
+    Harden local exact-candidate validation environment selection and offline docs builds,
+    preserve macOS Bash 3 CLI argument behavior, upgrade the remaining Node 20 workflow
+    actions, and close recursive documentation impact without broad legacy lint changes.
   boundary:
-  - validation-fixture-efficiency
-  - core-change-test-matrix
+    - cli-validation-environment
+    - offline-docs-build
+    - github-action-runtime-pins
+    - documentation-impact-closure
 matrix:
-- boundary: validation-fixture-efficiency
-  reason: Test fixtures skip untracked local Node dependencies and check Copilot configuration
-    from the result already produced by the all-client loop; no scenarios or assertions
-    are removed.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Python compilation and critical Ruff checks for changed test evidence.
-    unit:
-      applicable: true
-      evidence: Existing lifecycle evidence passes for install/preflight and all six MCP clients.
-    integration:
-      applicable: true
-      evidence: Exact-candidate local Integration Gate passes including repository validation.
-    contract:
-      applicable: true
-      evidence: Existing fixture isolation, fast-forward/divergence/version gates, and every
-        advertised MCP client assertion remain exercised.
-    e2e:
-      applicable: false
-      na_reason: No deployed application behavior changes.
-    security:
-      applicable: true
-      evidence: Mandatory exact-candidate secret scan remains required; no credentials or
-        runtime data are added.
-    migration_recovery:
-      applicable: false
-      na_reason: Test-only fixture behavior; no persisted product state.
-    cli_harness:
-      applicable: true
-      evidence: Existing install, preflight, update and MCP CLI lifecycle assertions pass.
-    docs_schema:
-      applicable: false
-      na_reason: No user-facing behavior or documentation contract changes.
+  - boundary: cli-validation-environment
+    reason: >-
+      The aips wrapper selects a complete prepared Python 3.12 environment before Gate
+      execution and must preserve empty and non-empty publish argument dispatch under
+      macOS Bash 3.2.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: Critical Ruff E9,F63,F7,F82 checks for scripts and tests; bash -n bin/aips.
+      unit:
+        applicable: true
+        evidence: publish_preflight_lifecycle.py verifies validation diagnostics and CLI argument forwarding.
+      integration:
+        applicable: true
+        evidence: Run the full exact-candidate Publication Preflight and Integration Gate once after commit.
+      contract:
+        applicable: true
+        evidence: publish_preflight_contracts.py verifies environment selection and early missing-dependency behavior.
+      e2e:
+        applicable: false
+        na_reason: No end-user application or deployed service behavior changes.
+      security:
+        applicable: true
+        evidence: Environment diagnostics redact credentials and stop before candidate work when dependencies are missing; the exact Gate runs the mandatory secret scan.
+      migration_recovery:
+        applicable: false
+        na_reason: No persisted product data, schema, or migration behavior changes.
+      cli_harness:
+        applicable: true
+        evidence: Bash 3.2 lifecycle covers zero and non-zero publish arguments; Integration Gate help verifies selected project and prepared environment routing.
+      docs_schema:
+        applicable: true
+        evidence: User Guide and Harness describe the prepared Python environment and explicit remediation flow.
+  - boundary: offline-docs-build
+    reason: >-
+      Repository preflight validates Node 24+ and installed VitePress, then invokes the
+      local bundle directly without package-manager or registry access.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: Critical Ruff checks and Python syntax execution through the lifecycle validator.
+      unit:
+        applicable: true
+        evidence: publish_preflight_lifecycle.py covers missing Node, Node 24, older Node, missing VitePress and direct invocation.
+      integration:
+        applicable: true
+        evidence: Build the documentation site with the installed VitePress bundle; full candidate Gate also runs once.
+      contract:
+        applicable: true
+        evidence: publish_preflight_contracts.py binds AIPS_NODE_BINARY, Node 24+ and the VitePress entrypoint contract.
+      e2e:
+        applicable: false
+        na_reason: The change validates a static documentation build and does not change a deployed application flow.
+      security:
+        applicable: true
+        evidence: Lifecycle verifies the build invokes only the existing Node/VitePress bundle and does not install packages or contact a registry.
+      migration_recovery:
+        applicable: false
+        na_reason: No persisted product state or migration behavior changes.
+      cli_harness:
+        applicable: true
+        evidence: Publish preflight CLI accepts the explicit checkout root and AIPS_NODE_BINARY environment override.
+      docs_schema:
+        applicable: true
+        evidence: VitePress build and recursive documentation placement preview validate the canonical Markdown sources.
+  - boundary: github-action-runtime-pins
+    reason: >-
+      The docs deployment and E2B artifact upload actions move to immutable Node 24
+      releases while retaining the workflow's existing permissions and triggers.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: Workflow pin contract checks exact immutable action SHAs and release labels.
+      unit:
+        applicable: true
+        evidence: publish_preflight_lifecycle.py asserts both action pin values.
+      integration:
+        applicable: true
+        evidence: PR CI must execute the workflow and the required repository Gate for the exact candidate.
+      contract:
+        applicable: true
+        evidence: Official action runtime metadata was checked for Node 24 compatibility and contracts reject SHA drift.
+      e2e:
+        applicable: false
+        na_reason: No hosted application behavior changes; docs build and the workflow action's CI path cover the affected behavior.
+      security:
+        applicable: true
+        evidence: Actions remain pinned to immutable full SHAs and retain least-privilege workflow permissions.
+      migration_recovery:
+        applicable: false
+        na_reason: Workflow action upgrades do not alter persisted project data or require migration.
+      cli_harness:
+        applicable: false
+        na_reason: These two workflow action pins do not change CLI or Harness dispatch behavior.
+      docs_schema:
+        applicable: true
+        evidence: Documentation synchronization and VitePress build validate the changed docs workflow path.
+  - boundary: documentation-impact-closure
+    reason: >-
+      Publication preview recursively binds the new CLI, environment, workflow, Harness
+      and documentation-placement changes to canonical Human and orchestration sections.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: Documentation placement contract and critical Ruff checks pass for changed validation sources.
+      unit:
+        applicable: true
+        evidence: publish_preflight_lifecycle.py covers recursive preview and matrix binding diagnostics.
+      integration:
+        applicable: true
+        evidence: Exact-candidate preview must report no required_additions or placement_errors before the full Gate.
+      contract:
+        applicable: true
+        evidence: Documentation placement contracts and publication preview validate each canonical section and the rule overlap correction.
+      e2e:
+        applicable: false
+        na_reason: Documentation closure has no deployed user journey; VitePress validates the generated site.
+      security:
+        applicable: true
+        evidence: Content-safety preview and exact-candidate secret scan remain mandatory.
+      migration_recovery:
+        applicable: false
+        na_reason: Documentation and validation rules do not migrate persistent product state.
+      cli_harness:
+        applicable: true
+        evidence: The publish preview CLI resolves the checked-out project root and reports the exact recursive closure.
+      docs_schema:
+        applicable: true
+        evidence: Recursive publication preview reports complete closure and VitePress builds all updated canonical docs.
+
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 7f7b10e2aced03553a64153acb0a2f7745a92c32
-  changed_files_hash: 559eb755781c2aa9f65e9ba607172ddb45f7f84c8c7a68a419505f7521f3ab50
+  base_sha: 8606e675a5560ad2244b18a598db3ca637cde9db
+  changed_files_hash: 781aba6e851a0877a93faaea7728eca8d446eb0608733020c6164ed42e6731dc
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

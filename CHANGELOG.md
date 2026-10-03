@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.72.1
+
+- Select a complete prepared Python 3.12 validation environment before starting the local Integration Gate; report missing OpenAPI dependencies and docs build prerequisites early.
+- Build local VitePress documentation directly with Node 24+ and existing dependencies, without automatic package-manager or registry access; fix empty publish argument handling on macOS Bash 3.2.
+- Upgrade the remaining deprecated Node 20 `deploy-pages` and `upload-artifact` action pins to verified Node 24 releases, and record the existing 43-finding broad Ruff baseline for phased cleanup.
+
 ## 0.72.0
 
 - Optionally bind ephemeral Phase 4 generator execution reports to the current Phase 3 Profile, tool, input, output, ownership and Git candidate evidence; existing Profiles remain compatible.

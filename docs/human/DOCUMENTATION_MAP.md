@@ -87,6 +87,8 @@ docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGEL
 
 ## 文件一致性
 
+VitePress renders the canonical Markdown files directly; local publication preflight uses the installed bundle and does not create or install a second documentation source.
+
 文件位置契約的工作樹預覽與已提交候選檢查使用相同 canonical H2 規則；前者讓維護者在提交前修正段落，後者作為 CI 前置驗證證據。
 
 文件影響以 `aips docs impact` 顯示的 trigger 與遞迴閉包為準；EARS validator 契約由 Scenario Conformance 維護，需求規劃功能則由 Requirement Planning 維護。

@@ -5,6 +5,7 @@ import json
 import os
 from pathlib import Path
 import runpy
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -456,6 +457,84 @@ def main() -> int:
         assert "docs/guide.md: local Markdown link target does not exist: ./missing.md" in link_errors
         assert any("escapes the repository" in error for error in link_errors)
         assert not any("not-a-real-link" in error for error in link_errors)
+        with patch.object(repository_preflight, "resolve_node_binary", return_value=None):
+            _, missing_node = repository_preflight.docs_build_prerequisites(docs_root)
+        assert missing_node and "AIPS_NODE_BINARY" in missing_node[0]
+        with patch.object(repository_preflight, "resolve_node_binary", return_value="/node24"), patch.object(
+            repository_preflight.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess(["/node24", "--version"], 0, "v24.1.0\n", ""),
+        ):
+            _, missing_vitepress = repository_preflight.docs_build_prerequisites(docs_root)
+        assert missing_vitepress and "VitePress is not installed" in missing_vitepress[0]
+        (docs_root / "node_modules/vitepress/bin").mkdir(parents=True)
+        (docs_root / "node_modules/vitepress/bin/vitepress.js").write_text("// local fixture\n", encoding="utf-8")
+        with patch.object(repository_preflight, "resolve_node_binary", return_value="/node24"), patch.object(
+            repository_preflight.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess(["/node24", "--version"], 0, "v24.1.0\n", ""),
+        ):
+            node, ready_errors = repository_preflight.docs_build_prerequisites(docs_root)
+            assert node == "/node24" and ready_errors == []
+        with patch.object(repository_preflight, "resolve_node_binary", return_value="/node24"), patch.object(
+            repository_preflight.subprocess,
+            "run",
+            side_effect=[
+                subprocess.CompletedProcess(["/node24", "--version"], 0, "v24.1.0\n", ""),
+                subprocess.CompletedProcess(["/node24", "vitepress.js"], 0, "", ""),
+            ],
+        ) as run_node:
+            assert repository_preflight.build_docs_site(docs_root) == []
+            assert run_node.call_args_list[-1].args[0] == [
+                "/node24", str(docs_root / "node_modules/vitepress/bin/vitepress.js"), "build", "docs/human"
+            ]
+        with patch.object(repository_preflight, "resolve_node_binary", return_value="/node20"), patch.object(
+            repository_preflight.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess(["/node20", "--version"], 0, "v20.11.0\n", ""),
+        ):
+            _, old_node = repository_preflight.docs_build_prerequisites(docs_root)
+            assert old_node and "Node.js 24 or newer" in old_node[0]
+
+        # Bash 3.2 (macOS default) treats expanding an empty array under nounset as an error.
+        fake_project = root / "fake-project"
+        (fake_project / "scripts").mkdir(parents=True)
+        (fake_project / "scripts/publish_preflight.py").write_text(
+            "import json, sys\nprint(json.dumps(sys.argv[1:]))\n", encoding="utf-8"
+        )
+        (fake_project / "scripts/integration_gate.py").write_text("raise SystemExit(0)\n", encoding="utf-8")
+        shell = "/bin/bash"
+        for forwarded, expected in (([], ["plan"]), (["--probe", "kept"], ["plan", "--probe", "kept"])):
+            cli = subprocess.run(
+                [shell, str(ROOT / "bin/aips"), "publish", "plan", "--project-root", str(fake_project), *forwarded],
+                cwd=fake_project,
+                env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable},
+                capture_output=True,
+                text=True,
+            )
+            assert cli.returncode == 0, cli.stderr
+            assert json.loads(cli.stdout.strip().splitlines()[-1]) == expected
+        isolated_path = root / "isolated-bin"
+        isolated_path.mkdir()
+        dirname = shutil.which("dirname")
+        assert dirname is not None
+        (isolated_path / "dirname").symlink_to(dirname)
+        unavailable = subprocess.run(
+            [shell, str(ROOT / "bin/aips"), "integration-gate", "--project-root", str(fake_project), "--help"],
+            cwd=fake_project,
+            env={
+                **os.environ,
+                "PATH": str(isolated_path),
+                "AIPS_VALIDATION_VENV": "",
+                "AIPS_VALIDATION_PYTHON": "/missing/python3",
+            },
+            capture_output=True,
+            text=True,
+        )
+        assert unavailable.returncode != 0
+        assert "No complete Python 3.12 validation environment found" in unavailable.stderr
+        assert "aips publish environment --project-root" in unavailable.stderr
+        assert "ENVIRONMENT_BLOCKED" not in unavailable.stdout + unavailable.stderr
     assert isinstance(environment["blockers"], list)
     assert isinstance(environment["diagnostics"], list)
     denied_socket = Mock()
@@ -468,7 +547,9 @@ def main() -> int:
         publish.socket, "socket", return_value=denied_socket
     ), patch.object(
         publish, "discover_browser", return_value={"provider": "system", "path": "/browser"}
-    ), patch.object(publish, "probe_browser", return_value=denied_browser):
+    ), patch.object(publish, "probe_browser", return_value=denied_browser), patch.object(
+        publish.repository_preflight, "docs_build_prerequisites", return_value=(None, [])
+    ):
         blocked_environment = publish.environment_status()
     assert blocked_environment["status"] == "ENVIRONMENT_BLOCKED"
     assert {item["check"] for item in blocked_environment["diagnostics"]} == {"localhost_bind", "browser_probe"}
@@ -496,6 +577,7 @@ def main() -> int:
         "merge-base",
         "refresh-intelligence",
         "preview_content_safety",
+        "openapi_spec_validator",
         "configured_identity_plan",
     ):
         assert contract in source
@@ -514,6 +596,11 @@ def main() -> int:
     assert positions == sorted(positions), "CI must reject repository drift before expensive validation"
     assert 'python scripts/repository_preflight.py' in workflow
     assert '--base "$AIPS_GATE_BASE" --head "$AIPS_GATE_HEAD"' in workflow
+    assert "AIPS_VALIDATION_VENV" in (ROOT / "bin/aips").read_text(encoding="utf-8")
+    docs_workflow = (ROOT / ".github/workflows/docs-site.yml").read_text(encoding="utf-8")
+    sandbox_workflow = (ROOT / ".github/workflows/e2b-sandbox-verification.yml").read_text(encoding="utf-8")
+    assert "actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1" in docs_workflow
+    assert "actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0" in sandbox_workflow
 
     print("PUBLISH PREFLIGHT LIFECYCLE PASSED")
     return 0

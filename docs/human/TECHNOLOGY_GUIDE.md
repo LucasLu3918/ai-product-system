@@ -42,6 +42,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+本機 Integration Gate 會先選用完整的 Python 3.12 驗證環境。文件變更的 VitePress 建置需要 Node 24+ 與既有 `node_modules/vitepress/bin/vitepress.js`；Node 不在 `PATH` 時可用 `AIPS_NODE_BINARY` 指定，預檢不會自動安裝套件或連接 registry.
+
 Deterministic Scheduler 可將派送 task 綁定到 AIPS worktree、runtime execution、Boundary/write set 與 renewable lease。完成時比對 lease base 到目前工作樹的實際 Git diff；過期 dirty task 需明確 recovery，未驗證的 write guard 一律維持 advisory。
 
 本機驗證入口先確認 Python 3.12、requirements、venv 寫入位置、ruff、mypy、Playwright、localhost 與瀏覽器探測，失敗時給出對應修復命令。Publication Preview 可在 commit 前檢查工作樹文件 H2 placement 與 Matrix base/hash；正式 Gate 維持 exact-candidate 驗證。

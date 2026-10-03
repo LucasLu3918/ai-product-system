@@ -23,6 +23,7 @@ import documentation_sync  # noqa: E402
 
 
 MARKDOWN_LINK = re.compile(r"!?(?:\[[^\]]*\])\(\s*(<[^>]+>|[^\s)]+)")
+NODE_VERSION = re.compile(r"^v?(\d+)\.")
 
 
 def markdown_files_changed(base: str, head: str) -> list[str]:
@@ -67,14 +68,36 @@ def check_markdown_links(root: Path, paths: list[str]) -> list[str]:
     return errors
 
 
-def build_docs_site() -> list[str]:
-    if not shutil.which("node"):
-        return ["documentation site build requires Node.js on PATH; install Node.js or add its bin directory to PATH, then run `npm run docs:build`"]
-    vitepress = ROOT / "node_modules/.bin/vitepress"
-    if not vitepress.exists():
-        return ["VitePress dependencies are not installed; run `npm install` or `pnpm install`, then rerun the publication preflight"]
-    command = [str(vitepress), "build", "docs/human"]
-    result = subprocess.run(command, cwd=ROOT, capture_output=True, text=True)
+def resolve_node_binary() -> str | None:
+    configured = os.environ.get("AIPS_NODE_BINARY")
+    if configured:
+        path = Path(configured).expanduser()
+        return str(path.resolve()) if path.is_file() and os.access(path, os.X_OK) else None
+    return shutil.which("node")
+
+
+def docs_build_prerequisites(root: Path = ROOT) -> tuple[str | None, list[str]]:
+    node = resolve_node_binary()
+    if not node:
+        return None, ["documentation build requires Node.js 24 or newer; add it to PATH or set AIPS_NODE_BINARY. No package install or registry access is attempted."]
+    version = subprocess.run([node, "--version"], cwd=root, capture_output=True, text=True)
+    match = NODE_VERSION.match(version.stdout.strip())
+    if version.returncode or not match or int(match.group(1)) < 24:
+        actual = version.stdout.strip() or "unavailable"
+        return node, [f"documentation build requires Node.js 24 or newer; detected {actual}. Set AIPS_NODE_BINARY or update PATH."]
+    vitepress = root / "node_modules/vitepress/bin/vitepress.js"
+    if not vitepress.is_file():
+        return node, ["VitePress is not installed at node_modules/vitepress/bin/vitepress.js; install the locked docs dependencies explicitly, then rerun the preflight. No install is attempted automatically."]
+    return node, []
+
+
+def build_docs_site(root: Path = ROOT) -> list[str]:
+    node, errors = docs_build_prerequisites(root)
+    if errors:
+        return errors
+    vitepress = root / "node_modules/vitepress/bin/vitepress.js"
+    command = [str(node), str(vitepress), "build", "docs/human"]
+    result = subprocess.run(command, cwd=root, capture_output=True, text=True)
     if result.returncode:
         detail = (result.stdout + "\n" + result.stderr).strip().splitlines()[-12:]
         return ["documentation site build failed: " + " | ".join(detail)]

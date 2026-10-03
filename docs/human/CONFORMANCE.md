@@ -37,6 +37,8 @@ v0.14 新增 Scenario 111–115，全部都有直接 executable evidence：2 個
 
 ## Execution Isolation Conformance
 
+Scenario 165 verifies that missing Gate dependencies, Node/VitePress or host capabilities are reported before candidate lifecycle execution, while documentation builds use only the checked-out VitePress bundle and do not install packages.
+
 Scenario 111/114 覆蓋 risk/data-aware resolver：無啟用 provider 時為 `UNSUPPORTED`；啟用但證據過期、registry digest 不符或控制缺漏時為 `BLOCKED`；一般風險選 worktree，高風險不降級。E2B PR 驗證使用合成 canary；live workflow 僅能從 `main` 手動啟動，需確認 provider 事前書面測試同意，缺少 optional key 時回報 `SKIPPED_NOT_CONFIGURED`。
 
 Repository validation assigns each lifecycle to one owner module. `intelligence_context_lifecycle.py` runs through `runtime_contracts`; `conformance_isolation` checks its presence without running it again. MCP client configuration for all six advertised clients is exercised by the MCP lifecycle, which also checks the JSON shape and no-automatic-change boundary.

@@ -49,6 +49,8 @@ Release history belongs in `CHANGELOG.md`; Scenario / verification history belon
 
 ## Validation behavior
 
+Publication Preflight uses Node 24+ and the installed VitePress entrypoint for a local docs build. Keep this behavior aligned with the Node 24 GitHub workflow pins, Python environment selection and Scenario 165; local preflight does not access a package registry.
+
 Validation workflows keep generated Gate and Repository Health reports outside the checkout until the validation steps finish. Artifact upload preserves evidence without making generated files part of the documentation or revision binding.
 
 `documentation_sync.py`:
