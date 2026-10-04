@@ -297,6 +297,8 @@ Portable Command 變更必須同時驗證 Registry、renderer、CLI lifecycle、
 
 本地首次執行 Gate 前，以 Python 3.12 執行 `python3.12 bin/prepare-local-validation`。它在系統暫存目錄建立獨立 venv，安裝與 CI 相同的四份 requirements（包含 OpenAPI validator）和 Playwright Chromium，接著檢查 `ruff`、`mypy`、瀏覽器及 localhost。之後可執行 `python3.12 bin/prepare-local-validation --check-only --run --base <base-sha> --head <head-sha> --change-class core`，用既有環境執行 exact-candidate Publication Preflight 與 Gate；它會將 `PATH` 指向 venv，並以暫存 `XDG_CONFIG_HOME` 隔離測試設定。若輸出 `ENVIRONMENT_BLOCKED`，先依診斷修復執行環境，再判讀程式測試結果。`--check-only` 不安裝套件；Gate 報告路徑可用 `--output` 指定。開發時先跑受影響測試；候選 commit 固定後只執行這一次完整 Gate，不需另外先跑 `tests/validate_repository.py`。Validator 直接執行 Python helper 或 lifecycle 腳本時，同一路徑不需再對該檔案另跑 `py_compile`；相同 lifecycle 在完整 validator 中只執行一次。包裝器會另輸出 `.timing.json`，列出每個 contract 模組與 lifecycle 的耗時；CI 也會保留 `repository-validation-timing` artifact 供比較。
 
+直接呼叫 `scripts/publish_preflight.py run` 時，也會讓子程序優先使用目前 `sys.executable` 所在的 Python 目錄。先用 `--check-only` 檢查已準備好的 venv 與瀏覽器，再跑確切候選的完整 Gate；這可避免子程序從原始 `PATH` 誤用缺少依賴的 Python，並避免因此重跑完整驗證。GitHub 僅需既有 allowlist；不要為本機依賴準備擴大永久網路權限。
+
 建立已核准的 Large/Core PR 時，在 `gh pr create` 同一命令附上 `--label aips:large-change` 或 `--label aips:core-change`，讓首次 `opened` 事件即使用正確分類。PR number 共用併發群組；較新的 PR action 會取代同 PR 舊 run，並按最新 labels 執行。檢查最新候選 SHA 的 required aggregate，避免把被取代的執行判成測試失敗。
 
 若 Turn Context 回報 `INDEX_UNAVAILABLE`／`SQLITE_OPEN_FAILED`，先確認目前 runtime 可讀取 `XDG_CACHE_HOME` 中的 SQLite 檔案，並排除 sandbox 存取限制；權限正常仍持續失敗時，再執行 `aips intelligence index --project "$PWD" --force`。索引是可重建的快取；`SEMANTIC_REFRESH_REQUIRED` 則表示來源內容變更，仍需依 Project Intelligence 流程檢視受影響的語意主題。

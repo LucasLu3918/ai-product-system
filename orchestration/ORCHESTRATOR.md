@@ -306,6 +306,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 For a fixed Core candidate, finish the documentation closure and bind the reviewed Matrix before the single complete local Gate run. The local entrypoint must resolve Python 3.12, OpenAPI validation modules and any Node/VitePress docs-build requirements before beginning expensive lifecycle work.
 
+The exact-candidate runner also gives child processes the selected Python directory first in `PATH`; a direct script invocation has the same nested interpreter selection as the prepared local wrapper.
+
 Repository validation may remove duplicate syntax-compilation and lifecycle subprocesses only when each unique evidence lifecycle still has one owning invocation and the complete Integration Gate remains mandatory.
 
 When an OpenAPI contract affects implementation, include offline validation, canonical-baseline compatibility review and project-native contract tests in the quality handoff. `UNKNOWN`, unavailable, stale or failed evidence blocks only the dependent work and remains explicit for Human review.

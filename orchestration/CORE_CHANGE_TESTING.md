@@ -126,6 +126,8 @@ Run focused checks during development, then one exact-candidate Gate after the c
 Integration Gate PASS is evidence only. It never supplies Human approval, merge authority, publication authority, architecture approval or risk acceptance.
 Publication Preflight lifecycle evidence must isolate optional Python module probes from loopback/browser blocker assertions so host dependency availability cannot change the tested diagnostics.
 
+Its `run` lifecycle must also verify that fast preflight and Integration Gate receive a child `PATH` headed by the selected Python directory, independent of the inherited shell `PATH`.
+
 ## Conditional CI enforcement
 
 The publication preview reports the required Core Matrix base/hash binding and a synchronization command before commit. Synchronization resets the matrix to DRAFT and retains human scope/evidence review; it never grants READY automatically.

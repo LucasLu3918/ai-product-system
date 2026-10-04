@@ -52,6 +52,8 @@ Core、Recall 與 temporal evidence 共用硬預算；Index 開啟或查詢失�
 
 本地發布驗證可由 `bin/prepare-local-validation` 在 repository 外的暫存目錄準備 Python 3.12 venv、與 CI 相同的四份 requirements（包含 OpenAPI validator）及 Chromium；`--check-only --run --base <sha> --head <sha>` 使用同一 `--venv` 執行既有 `publish_preflight.py`，並把驗證設定放在暫存 `XDG_CONFIG_HOME`。缺少套件時錯誤會指出實際選用的 venv；文件建置另需 Node.js 與 checkout 的 VitePress 相依套件。檢索索引使用 `XDG_CACHE_HOME` 下可重建的 SQLite 快取；SQLite 唯讀連線或首次查詢因 sandbox 失敗時，沒有 live WAL 才可複製穩定來源並驗證暫時快照。無法安全讀取時先查 runtime 權限，持續失敗才重建，不改寫 canonical Intelligence。
 
+直接執行 Publication Preflight 的 `run` 入口也會將目前 Python 執行檔所在目錄放在子程序 `PATH` 最前面，使巢狀 `python3` 呼叫沿用已檢查的驗證環境。
+
 CI 的文件建置使用 Node 24、npm lockfile version 3 和 `npm ci --ignore-scripts`；`actions/setup-node` 以 `package-lock.json` 為快取鍵。更新 `package.json` 相依套件時需一併更新 lockfile，並驗證 `npm ci` 與 `npm run docs:build`。
 
 驗證原始碼 checkout 時以 `./bin/aips` 呼叫本地 CLI；受限執行環境先由 `prepare-local-validation` 檢查 localhost 與瀏覽器能力，再解讀完整驗證的結果。
