@@ -114,6 +114,8 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 ## Failure behavior
 
+GitHub Actions may select optional CI toolchain setup from the exact changed-file set before Integration Gate starts. That provisioning decision does not change Scheduler task readiness, ordering or boundary locks; an unknown selector falls back to full toolchain setup.
+
 CI precheck failures must emit their missing-document paths in a bounded Step Summary. The complete Gate remains authoritative; timing summaries expose duration without converting missing evidence into zero duration or PASS. Classification label changes still supersede stale validation; any failed/cancelled/timed-out Janitor remains blocking. Label-only aggregates inspect the latest full Janitor using actions-read metadata and require a matching PR/head/base/class run title; they cannot replace failed or stale full validation.
 
 The Integration Gate never executes a generator configured in an Implementation Profile. For Phase 4 changes it runs only the isolated fake-generator lifecycle fixture; project generator execution remains an explicit local `--execute` action.

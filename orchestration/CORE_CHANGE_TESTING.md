@@ -72,6 +72,8 @@ Runtime recovery evidence must exercise a linked worktree installer on Bash 3.2,
 
 For publication-preflight changes, run focused lifecycle checks while editing, bind the final Core Matrix to the exact base and changed-file set, then run the complete local Integration Gate once for that fixed candidate. The Gate includes repository validation; PR and main CI remain separate candidate checks.
 
+For CI provisioning or changed-path planner changes, include positive selector cases, unknown-path and malformed-plan fail-closed cases, and proof that required secret scanning, repository validation and the complete Gate remain enabled. Run the full local toolchain for Core candidates even when an ordinary PR can use demand-driven setup.
+
 Eval-as-CI Core Change 必須涵蓋 trace schema、deterministic trajectory rules、privacy rejection、Scenario contract、Evidence Bundle 與 shadow-mode publish boundary；LLM Judge 的非確定性只能作為 evidence，不可取代 deterministic hard constraints。
 
 Prefer deterministic evidence and exact commands/results.

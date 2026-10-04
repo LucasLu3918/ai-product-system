@@ -1,0 +1,64 @@
+version: 1
+full_validation_paths:
+  - .github/workflows/validate.yml
+  - config/ci-validation-plan.yaml
+  - config/integration-gate.yaml
+  - scripts/ci_validation_plan.py
+  - scripts/publish_preflight.py
+  - scripts/repository_preflight.py
+  - scripts/runtime_context.py
+  - tests/validate_repository.py
+known_path_prefixes:
+  - .github/
+  - bin/
+  - capabilities/
+  - config/
+  - constraints/
+  - core/
+  - docs/
+  - docs-site/
+  - examples/
+  - harness/
+  - orchestration/
+  - references/
+  - roles/
+  - scripts/
+  - skills/
+  - templates/
+  - tests/
+  - work-modes/
+  - workflows/
+known_root_paths:
+  - AGENTS.md
+  - CHANGELOG.md
+  - README.md
+  - SYSTEM.md
+  - USER_GUIDE.md
+  - VERSION
+  - package.json
+  - package-lock.json
+  - pyproject.toml
+  - requirements.txt
+  - requirements-visual.txt
+  - requirements-validation.txt
+  - requirements-openapi.txt
+capabilities:
+  node:
+    - docs/human/
+    - docs-site/
+    - package.json
+    - package-lock.json
+    - scripts/docs_site.py
+  browser:
+    - scripts/visual_
+    - scripts/browser_
+    - config/project-visual-profile.yaml
+    - tests/evidence/visual_
+    - tests/evidence/browser_
+  openapi:
+    - scripts/openapi_
+    - examples/openapi/
+    - requirements-openapi.txt
+    - templates/implementation/OPENAPI_
+    - tests/evidence/openapi_
+    - tests/validation/openapi_

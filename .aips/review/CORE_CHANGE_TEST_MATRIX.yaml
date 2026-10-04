@@ -1,66 +1,76 @@
 version: 1
 change:
-  id: plan12-core-modularization
-  summary: Incrementally modularize the AIPS CLI, publication preflight, and repository
-    validation while preserving all public and evidence contracts.
+  id: plan12-maintenance
+  summary: Implement Phase C repository and policy simplification without duplicating existing capabilities or weakening CI and branch cleanup authority.
   boundary:
-  - cli-entrypoint
-  - publication-policy
-  - validator-registry
+    - canonical-machine-readable-facts
+    - release-history-contract
+    - rolling-branch-proposal
+    - python-toolchain-contract
+    - demand-driven-validation
 matrix:
-- boundary: cli-entrypoint
-  reason: The public launcher resolves the owning checkout and forwards argv unchanged
-    to the legacy command implementation.
-  checks: &id001
-    static_lint:
-      applicable: true
-      evidence: Ruff critical scan plus full repository validation.
-    unit:
-      applicable: true
-      evidence: Deterministic publication policy tests and validator registry lifecycle
-        contract.
-    integration:
-      applicable: true
-      evidence: Publication preflight lifecycle, CLI launcher lifecycle, repository
-        validator, and exact-candidate Integration Gate.
-    contract:
-      applicable: true
-      evidence: Stable CLI argv/exit behavior, policy outputs, registry order and
-        error aggregation, documentation and architecture bindings.
-    e2e:
-      applicable: true
-      evidence: Source checkout and installed symlink lifecycle plus all remote required
-        PR checks.
-    security:
-      applicable: true
-      evidence: Mandatory candidate secret scan; preserve publication authorization
-        boundary and required security validator registration.
-    migration_recovery:
-      applicable: false
-      na_reason: No persistent data, schema, or user-owned state format changes.
-    cli_harness:
-      applicable: true
-      evidence: Run public bin/aips from checkout and installed-path lifecycle, including
-        symlink resolution and argument forwarding.
-    docs_schema:
-      applicable: true
-      evidence: Documentation placement/sync, Architecture Surface and Repository
-        Health validation, plus updated CLI and Gate documentation.
-- boundary: publication-policy
-  reason: Pure change-class, PR label, matrix applicability and documentation closure
-    calculations move behind a dedicated policy module.
-  checks: *id001
-- boundary: validator-registry
-  reason: The registry preserves 39 module imports, timing labels, explicit lifecycle
-    ownership and seven-module error aggregation order.
-  checks: *id001
+  - boundary: canonical-machine-readable-facts
+    reason: Existing architecture inventory gains versioned command/capability facts and deterministic generated reference tables.
+    checks: &shared
+      static_lint:
+        applicable: true
+        evidence: Ruff critical scan, mypy for touched Python, full repository validation.
+      unit:
+        applicable: true
+        evidence: System facts schema, deterministic rendering, stale generated-file and invalid-reference fixtures.
+      integration:
+        applicable: true
+        evidence: Full repository validator, docs placement/sync checks, exact-candidate Integration Gate.
+      contract:
+        applicable: true
+        evidence: Generated table bindings for commands, capabilities, platform support, runtime requirements, validation and docs.
+      e2e:
+        applicable: true
+        evidence: Docs-site build and all required PR checks.
+      security:
+        applicable: true
+        evidence: Facts contain no secrets or user data; mandatory candidate secret scan.
+      migration_recovery:
+        applicable: false
+        na_reason: No persisted user state or migration format is introduced.
+      cli_harness:
+        applicable: false
+        na_reason: Public CLI behavior and runtime routing are unchanged.
+      docs_schema:
+        applicable: true
+        evidence: Generated-reference determinism, documentation placement/sync, and docs-site build.
+  - boundary: release-history-contract
+    reason: A deterministic validator enforces one leading Unreleased section and descending unique released SemVer headings aligned with VERSION.
+    checks: *shared
+  - boundary: rolling-branch-proposal
+    reason: Classification coverage and proposal evidence expand while report-only behavior and explicit exact-manifest deletion remain enforced.
+    checks:
+      <<: *shared
+      security:
+        applicable: true
+        evidence: Negative tests prove proposal mode never deletes refs; cleanup requires explicit protected-main dispatch and exact one-time manifest.
+      migration_recovery:
+        applicable: true
+        evidence: Existing v1 cleanup manifest remains valid and the proposal schema is separately versioned.
+  - boundary: python-toolchain-contract
+    reason: pyproject.toml records tooling and Python support; tested constraints pin the reproducible CI dependency set without narrowing user-supported ranges.
+    checks: *shared
+  - boundary: demand-driven-validation
+    reason: Exact changed paths select optional Node, browser and OpenAPI provisioning while retaining mandatory preflight, secret scan, repository checks and full candidate Gate semantics.
+    checks:
+      <<: *shared
+      security:
+        applicable: true
+        evidence: Unknown paths fail closed to the full toolchain; event/concurrency lifecycle checks prove optional provisioning cannot skip required candidate validation.
+      cli_harness:
+        applicable: true
+        evidence: CI plan lifecycle covers source-checkout base/head selection and capability inheritance into child validation processes.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: cd04056396af78904a0416409a5d4b5e180b2dca
-  changed_files_hash: 4d973186665fb1e3a98f4158b4175e116ca65da377df80ddabf725148e7e2e4b
+  base_sha: 7fb5649d94ecdf207eab103a727171f95b264b4c
+  changed_files_hash: b4ae8c5d9b49b1a2f809dde2b7f85431367d150267b5ded0b0073f259fc3dba2
 review_evidence:
   required: false
-  path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
 status: READY

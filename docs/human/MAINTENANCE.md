@@ -94,6 +94,13 @@ Multi-file changes should normally be assembled into one coherent remote branch 
 
 Major updates are not auto-applied by `aips preflight` without explicit `--allow-major`.
 
+`tests/validation/versioning_contracts.py` verifies one leading `Unreleased` heading, unique strictly descending SemVer release headings, and `VERSION` equal to the newest release. Keep runtime dependency ranges in requirements files; `constraints/tested.txt` records the exact CI-tested set. Python support is declared separately from the tested Python version in `pyproject.toml` and `config/system-facts.yaml`.
+
+## System facts and validation planning
+
+`config/system-facts.yaml` and `config/architecture-surfaces.yaml` are the source for factual command/capability tables in `docs/human/SYSTEM_REFERENCE.md`. Run `python scripts/system_facts.py --write` after changing those facts and `--check` in validation. Keep explanatory prose in its canonical topic documents.
+
+CI derives optional Node, browser and OpenAPI provisioning from exact candidate paths using `scripts/ci_validation_plan.py`. Unknown paths select the full toolchain. The plan only skips unrelated optional setup and its isolated lifecycle evidence; mandatory secret scanning, fast preflight, repository validation and the exact-candidate Integration Gate remain required.
 
 ## Documentation audience
 
@@ -400,7 +407,7 @@ Do not let the Scheduler make semantic scope decisions, and do not let Integrati
 
 ## Branch lifecycle hygiene
 
-Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanup. Persistent operational branches are preserved; ephemeral branches become deletion candidates only after deterministic integration into `main`; unclassified branches are preserved by default. Integration recognition is conservative and squash-aware: direct ancestry is checked first, then per-commit patch equivalence, then a clean synthetic `git merge-tree --write-tree` whose result must be identical to the target tree. This catches multi-commit branches that were squash-merged without granting deletion authority. The policy is `report_only`: branch deletion remains an explicit maintenance action outside this classifier. In CI, `.github/workflows/branch-hygiene.yml` performs a full remote-ref fetch and runs `scripts/branch_hygiene.py --remote origin`, so scheduled/manual reports inspect the repository branch set rather than only the checkout's local branch. The workflow has `contents: read` only and publishes candidates to the GitHub Job Summary; it never deletes or rewrites refs.
+Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanup. Persistent operational branches are preserved; common short-lived prefixes are classified as ephemeral; unclassified branches are preserved by default. The report includes current SHA, matching merged PR state, branch age, integration status and a cleanup review recommendation. Integration recognition is conservative and squash-aware: direct ancestry is checked first, then per-commit patch equivalence, then a clean synthetic `git merge-tree --write-tree` whose result must be identical to the target tree. The policy is `report_only`; scheduled and main-push reports publish proposals and never delete refs. Cleanup requires a separate explicit workflow dispatch on protected `main` with `apply_cleanup=true`, plus the exact one-time reviewed manifest.
 
 ## Repository Health / Architecture Drift consistency
 
@@ -444,14 +451,14 @@ This is observational maintenance evidence. Any actual source-policy adjustment 
 
 一般 Branch Hygiene 仍是 `report_only`。只有在 repository maintainer 明確批准的 one-time manifest 中，AIPS 才可刪除 remote branch。
 
-`config/branch-cleanup-manifest.yaml` 會逐筆綁定 branch name、exact expected SHA 與 merged PR evidence。Protected-main cleanup job 在刪除前會重新驗證：
+`config/branch-cleanup-manifest.yaml` 會逐筆綁定 branch name、exact expected SHA 與 merged PR evidence。Protected-main 人工 dispatch cleanup job 在刪除前會重新驗證：
 
 - branch 仍存在且 SHA 沒有漂移；
 - lifecycle 是 `EPHEMERAL`；
 - branch 已由 local Git integration proof，或 GitHub merged PR 的 exact head SHA/ref/base 證據，確認整合進 `main`；
 - manifest authorization 是 `explicit_user_request + exact_manifest_only + one_time`。
 
-若使用 GitHub merged-PR fallback，workflow 會重新讀取該 PR，確認 `merged_at`、head SHA、head ref 與 base ref 全部符合 manifest。任何一筆失敗都會在第一個 delete 前 block 整批。Persistent、unclassified、pending 或 manifest 外 branch 一律不刪。Scheduled/manual hygiene report 仍只有 `contents: read`；只有 protected-main cleanup job 在這份 exact manifest 範圍內取得 `contents: write`。
+若使用 GitHub merged-PR fallback，workflow 會重新讀取該 PR，確認 `merged_at`、head SHA、head ref 與 base ref 全部符合 manifest。任何一筆失敗都會在第一個 delete 前 block 整批。Persistent、unclassified、pending 或 manifest 外 branch 一律不刪。排程、push 與未啟用 cleanup 的人工 dispatch 都只有 `contents: read`；只有 protected-main 上明確啟用 cleanup 的 job 在這份 exact manifest 範圍內取得 `contents: write`。
 ## Runtime Content Safety Boundary
 
 Register every new persistence or publication sink in `config/content-safety.yaml`. Preserve the `sanitize → hash → persist` ordering for audit data and update scenarios when detector or sink policy behavior changes.

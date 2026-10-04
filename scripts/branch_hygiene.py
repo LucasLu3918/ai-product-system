@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import fnmatch
 import json
 import os
@@ -85,23 +86,61 @@ def branch_refs(target: str, remote: str | None) -> tuple[str, list[tuple[str, s
     return target, rows
 
 
-def build_report(config: dict[str, Any], target: str, remote: str | None) -> dict[str, Any]:
+def _pull_request_state(branch: str, target: str, sha: str, pull_requests: list[dict[str, Any]]) -> tuple[int | None, str]:
+    rows = [
+        row for row in pull_requests
+        if row.get("headRefName") == branch and row.get("baseRefName") == target
+    ]
+    exact = [row for row in rows if row.get("headRefOid") == sha]
+    candidates = exact or rows
+    if not candidates:
+        return None, "NO_MATCHING_PR"
+    row = max(candidates, key=lambda item: str(item.get("mergedAt") or item.get("closedAt") or ""))
+    if row.get("mergedAt"):
+        return int(row["number"]), "MERGED" if row.get("headRefOid") == sha else "MERGED_HEAD_MOVED"
+    if row.get("state") == "OPEN":
+        return int(row["number"]), "OPEN"
+    if row.get("closedAt") or row.get("state") == "CLOSED":
+        return int(row["number"]), "CLOSED_UNMERGED"
+    return int(row["number"]), "UNKNOWN"
+
+
+def build_report(
+    config: dict[str, Any], target: str, remote: str | None,
+    pull_requests: list[dict[str, Any]] | None = None, generated_at: str | None = None,
+) -> dict[str, Any]:
     target_ref, refs = branch_refs(target, remote)
+    prs = pull_requests or []
+    try:
+        now = datetime.fromisoformat((generated_at or datetime.now(timezone.utc).isoformat()).replace("Z", "+00:00"))
+    except ValueError as exc:
+        raise BranchHygieneError("generated_at must be a valid ISO-8601 timestamp") from exc
     rows = []
     for name, ref in refs:
         lifecycle = classify(name, config)
         is_integrated = integrated(ref, target_ref)
+        sha = git("rev-parse", ref).stdout.strip()
+        committed_at = datetime.fromisoformat(git("show", "-s", "--format=%cI", ref).stdout.strip())
+        age_days = max(0, (now - committed_at).days)
+        merged_pr, merged_status = _pull_request_state(name, target, sha, prs)
+        action = "REVIEW_FOR_CLEANUP" if lifecycle == "EPHEMERAL" and is_integrated else "PRESERVE"
         rows.append({
             "branch": name,
             "lifecycle": lifecycle,
+            "current_sha": sha,
+            "merged_pr": merged_pr,
+            "merged_status": merged_status,
+            "age_days": age_days,
             "integrated_into_target": is_integrated,
-            "deletion_candidate": lifecycle == "EPHEMERAL" and is_integrated,
+            "recommended_action": action,
+            "recommendation_reason": "ephemeral_and_integrated" if action == "REVIEW_FOR_CLEANUP" else "persistent_unclassified_or_not_integrated",
         })
     return {
-        "version": 1,
+        "version": 2,
         "target": target,
         "ref_scope": f"remote:{remote}" if remote else "local",
         "policy": "report_only",
+        "generated_at": now.isoformat(),
         "branches": rows,
         "authority": {
             "branch_deletion_authorized": False,
@@ -250,6 +289,8 @@ def main() -> int:
     parser.add_argument("--config", type=Path, default=Path("config/branch-lifecycle.yaml"))
     parser.add_argument("--target")
     parser.add_argument("--remote", help="Classify refs/remotes/<remote>; required for approved cleanup.")
+    parser.add_argument("--pull-requests", type=Path, help="Read-only JSON from `gh pr list` for the branch proposal report.")
+    parser.add_argument("--generated-at", help="Fixed ISO-8601 report time for deterministic replay.")
     parser.add_argument("--apply-cleanup", type=Path, help="Apply one exact Human-authorized cleanup manifest.")
     parser.add_argument(
         "--github-repository",
@@ -272,7 +313,10 @@ def main() -> int:
                 github_repository=args.github_repository,
             )
         else:
-            payload = build_report(config, target, args.remote)
+            prs = json.loads(args.pull_requests.read_text(encoding="utf-8")) if args.pull_requests else []
+            if not isinstance(prs, list) or any(not isinstance(row, dict) for row in prs):
+                raise BranchHygieneError("pull request report input must be a JSON list of mappings")
+            payload = build_report(config, target, args.remote, prs, args.generated_at)
     except (OSError, yaml.YAMLError, BranchHygieneError) as exc:
         print(f"BRANCH HYGIENE BLOCKED: {exc}")
         return 2

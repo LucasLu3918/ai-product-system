@@ -730,7 +730,7 @@ def main() -> int:
     ordered_steps = (
         "Mandatory candidate secret scan (fail fast)",
         "Repository preflight (fail fast)",
-        "python -m pip install -r requirements.txt",
+        "python -m pip install -c constraints/tested.txt -r requirements.txt -r requirements-validation.txt",
         "Install deterministic Playwright Chromium",
         "deterministic integration gate",
     )
@@ -738,6 +738,8 @@ def main() -> int:
     assert positions == sorted(positions), "CI must reject repository drift before expensive validation"
     assert 'python scripts/repository_preflight.py' in workflow
     assert '--base "$AIPS_GATE_BASE" --head "$AIPS_GATE_HEAD"' in workflow
+    assert "Build exact-candidate optional toolchain plan" in workflow
+    assert "needs_openapi" in workflow and "needs_browser" in workflow and "needs_node" in workflow
     assert "AIPS_VALIDATION_VENV" in (ROOT / "scripts/aips_cli.sh").read_text(encoding="utf-8")
     docs_workflow = (ROOT / ".github/workflows/docs-site.yml").read_text(encoding="utf-8")
     sandbox_workflow = (ROOT / ".github/workflows/e2b-sandbox-verification.yml").read_text(encoding="utf-8")

@@ -4,12 +4,15 @@ from __future__ import annotations
 import subprocess
 import sys
 import tempfile
+import json
 from pathlib import Path
 
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "branch_hygiene.py"
+sys.path.insert(0, str(ROOT / "scripts"))
+from branch_hygiene import classify
 
 
 def git(cwd: Path, *args: str) -> str:
@@ -19,9 +22,10 @@ def git(cwd: Path, *args: str) -> str:
 
 def validate(payload: dict) -> None:
     rows = {row["branch"]: row for row in payload["branches"]}
-    assert rows["feature/merged"]["deletion_candidate"] is True
-    assert rows["feature/squashed"]["deletion_candidate"] is True
-    assert rows["feature/pending"]["deletion_candidate"] is False
+    assert rows["feature/merged"]["recommended_action"] == "REVIEW_FOR_CLEANUP"
+    assert rows["feature/squashed"]["recommended_action"] == "REVIEW_FOR_CLEANUP"
+    assert rows["feature/pending"]["recommended_action"] == "PRESERVE"
+    assert {"current_sha", "merged_pr", "merged_status", "age_days", "integrated_into_target"}.issubset(rows["feature/merged"])
     assert rows["feature/retrieval-embedding-trial"]["lifecycle"] == "PERSISTENT"
     assert payload["authority"]["branch_deletion_authorized"] is False
     assert payload["authority"]["human_authority_preserved"] is True
@@ -79,19 +83,21 @@ def main() -> int:
         git(repo, "checkout", "-q", "main")
 
         config = repo / "branch-lifecycle.yaml"
-        config.write_text(
-            """version: 1
+        config_data = """version: 1
 default_branch: main
 persistent_exact: [main, feature/retrieval-embedding-trial]
 persistent_patterns: []
-ephemeral_patterns: [feature/*, release/*]
+ephemeral_patterns: [feat/*, feature/*, fix/*, ci/*, chore/*, perf/*, ops/*, release/*]
 deletion:
   mode: report_only
   require_integrated_into_default: true
   preserve_unclassified: true
-""",
-            encoding="utf-8",
-        )
+"""
+        config.write_text(config_data, encoding="utf-8")
+        parsed_config = yaml.safe_load(config_data)
+        for prefix in ("feat/x", "feature/x", "fix/x", "ci/x", "chore/x", "perf/x", "ops/x", "release/x"):
+            assert classify(prefix, parsed_config) == "EPHEMERAL", prefix
+        assert classify("customer/keep-forever", parsed_config) == "UNCLASSIFIED"
 
         local = subprocess.run(
             [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main"],
@@ -99,6 +105,25 @@ deletion:
         )
         assert local.returncode == 0, local.stdout + local.stderr
         validate(yaml.safe_load(local.stdout))
+
+        prs = [
+            {"number": 21, "headRefName": "feature/merged", "headRefOid": merged_sha, "baseRefName": "main", "state": "CLOSED", "mergedAt": "2026-09-21T00:00:00Z", "closedAt": "2026-09-21T00:00:00Z"},
+            {"number": 22, "headRefName": "feature/pending", "headRefOid": pending_sha, "baseRefName": "main", "state": "OPEN", "mergedAt": None, "closedAt": None},
+        ]
+        pr_fixture = repo / "pull-requests.json"
+        pr_fixture.write_text(json.dumps(prs), encoding="utf-8")
+        dated = subprocess.run(
+            [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main", "--pull-requests", str(pr_fixture), "--generated-at", "2026-10-01T00:00:00Z"],
+            cwd=repo, text=True, capture_output=True,
+        )
+        assert dated.returncode == 0, dated.stdout + dated.stderr
+        dated_report = yaml.safe_load(dated.stdout)
+        dated_rows = {row["branch"]: row for row in dated_report["branches"]}
+        assert dated_rows["feature/merged"]["merged_pr"] == 21
+        assert dated_rows["feature/merged"]["merged_status"] == "MERGED"
+        assert dated_rows["feature/pending"]["merged_status"] == "OPEN"
+        assert dated_rows["feature/merged"]["age_days"] >= 0
+        assert dated_report["authority"]["branch_deletion_authorized"] is False
 
         remote = root / "remote.git"
         git(root, "init", "--bare", "-q", str(remote))

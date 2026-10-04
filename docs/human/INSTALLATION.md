@@ -17,8 +17,6 @@ AIPS 的 public lifecycle terminology 統一使用 **Install / Update / Uninstal
 
 Installer 會自行管理 AIPS system checkout、Python virtual environment、CLI 與可安全安裝的 Runtime integrations。`--configure-shell` 會在 zsh／bash profile 寫入可辨識、可逆的 AIPS-owned `PATH` 區塊；使用者不需要先建立目錄、cd 或手動 git clone。若要自行管理 profile，使用 `--no-configure-shell`。
 
-AIPS runtime 需要 Python 3.10 以上。Installer 會依序選擇可用的相容 Python；需要指定解譯器時可設定 `AIPS_PYTHON=/path/to/python3`。若既有 AIPS-owned `.venv` 使用較舊版本，install／update／preflight 在修復依賴時會用相容 Python 重建該環境。
-
 預設 managed system path：
 
 ~~~text
@@ -72,6 +70,8 @@ OpenAPI tooling 是選用相依套件，不會隨基本安裝自動下載。使�
 Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需要額外安裝 Neo4j、外部資料庫或 provider credential。
 
 ## Runtime integration
+
+AIPS runtime 支援 Python 3.10 以上；GitHub CI 目前固定以 Python 3.12 驗證。支援範圍和已測版本維護於 `pyproject.toml`、`config/system-facts.yaml` 與 `constraints/tested.txt`。Installer 會依序選擇可用的相容 Python；需要指定解譯器時可設定 `AIPS_PYTHON=/path/to/python3`。若既有 AIPS-owned `.venv` 使用較舊版本，install／update／preflight 在修復依賴時會用相容 Python 重建該環境。
 
 Task ownership CLI 隨 AIPS CLI 一併提供，不需額外 runtime 套件。啟用前需建立 AIPS 管理的 Git worktree isolation；在不支援 native write guard 的 runtime，資源授權結果會明確維持 advisory。
 

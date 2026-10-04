@@ -33,8 +33,11 @@ if config_path.exists():
         errors.append("branch lifecycle must preserve unclassified branches")
     if deletion.get("approved_cleanup_manifest") != "config/branch-cleanup-manifest.yaml":
         errors.append("branch lifecycle must bind the exact approved cleanup manifest")
-    if deletion.get("apply_only_on_protected_main_push") is not True:
-        errors.append("branch cleanup must be restricted to protected-main push")
+    if deletion.get("apply_only_on_protected_main_dispatch") is not True:
+        errors.append("branch cleanup must require explicit protected-main dispatch")
+    expected_ephemeral = {"feat/*", "feature/*", "fix/*", "ci/*", "chore/*", "perf/*", "ops/*", "release/*"}
+    if not expected_ephemeral.issubset(set(config.get("ephemeral_patterns") or [])):
+        errors.append("branch lifecycle must classify the supported short-lived prefix families")
     persistent = set(config.get("persistent_exact") or [])
     if "main" not in persistent:
         errors.append("branch lifecycle must preserve main")
@@ -57,13 +60,15 @@ if workflow.exists():
     for token in (
         "permissions:",
         "contents: read",
+        "pull-requests: read",
         "fetch-depth: 0",
         "+refs/heads/*:refs/remotes/origin/*",
         "--remote origin",
         "branch_deletion_authorized",
         "needs: report",
-        "github.event_name == 'push'",
+        "github.event_name == 'workflow_dispatch'",
         "github.ref == 'refs/heads/main'",
+        "inputs.apply_cleanup == true",
         "contents: write",
         "--apply-cleanup config/branch-cleanup-manifest.yaml",
         "--github-repository",
@@ -76,6 +81,8 @@ if workflow.exists():
             errors.append(f"branch hygiene workflow contract missing: {token}")
     if "git branch -D" in text:
         errors.append("branch hygiene workflow must not locally force-delete branches")
+    if "deletion_candidate" in text:
+        errors.append("branch hygiene workflow must publish review proposals, not deletion candidacy")
 
 evidence = ROOT / "tests/evidence/branch_hygiene_lifecycle.py"
 if evidence.exists():

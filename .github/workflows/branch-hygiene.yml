@@ -4,6 +4,12 @@ on:
   schedule:
     - cron: "0 2 * * 1"  # Monday 10:00 Asia/Taipei
   workflow_dispatch:
+    inputs:
+      apply_cleanup:
+        description: Apply the exact Human-approved one-time cleanup manifest
+        required: false
+        default: false
+        type: boolean
   push:
     branches:
       - main
@@ -15,6 +21,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 jobs:
   report:
@@ -34,12 +41,22 @@ jobs:
         shell: bash
         run: git fetch --prune origin '+refs/heads/*:refs/remotes/origin/*'
 
+      - name: Read pull request metadata
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          gh pr list --repo "$GITHUB_REPOSITORY" --state all --limit 1000
+          --json number,headRefName,headRefOid,baseRefName,state,mergedAt,closedAt
+          > branch-pull-requests.json
+
       - name: Build deterministic report
         run: >-
           python scripts/branch_hygiene.py
           --config config/branch-lifecycle.yaml
           --target main
           --remote origin
+          --pull-requests branch-pull-requests.json
+          --generated-at "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           > branch-hygiene.yaml
 
       - name: Publish report summary
@@ -51,7 +68,7 @@ jobs:
 
           report = yaml.safe_load(Path("branch-hygiene.yaml").read_text(encoding="utf-8"))
           rows = report.get("branches") or []
-          candidates = [row["branch"] for row in rows if row.get("deletion_candidate")]
+          candidates = [row for row in rows if row.get("recommended_action") == "REVIEW_FOR_CLEANUP"]
           persistent = [row["branch"] for row in rows if row.get("lifecycle") == "PERSISTENT"]
           with Path(__import__("os").environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as out:
               out.write("# Branch Hygiene Report\n\n")
@@ -59,15 +76,29 @@ jobs:
               out.write(f"- ref scope: `{report['ref_scope']}`\n")
               out.write(f"- policy: `{report['policy']}`\n")
               out.write(f"- branches inspected: **{len(rows)}**\n")
-              out.write(f"- deletion candidates: **{len(candidates)}**\n")
+              out.write(f"- cleanup proposals: **{len(candidates)}**\n")
               out.write(f"- persistent branches: **{len(persistent)}**\n")
               out.write("- branch_deletion_authorized: **false**\n")
               out.write("- human_authority_preserved: **true**\n\n")
-              if candidates:
-                  out.write("## Deletion candidates\n\n")
-                  for name in candidates:
-                      out.write(f"- `{name}`\n")
+              if rows:
+                  out.write("## Branch cleanup proposal\n\n")
+                  out.write("| Branch | Current SHA | Merged PR | Age (days) | Main integration | Recommended action |\n")
+                  out.write("|---|---|---|---:|---|---|\n")
+                  for row in rows:
+                      out.write(
+                          f"| `{row['branch']}` | `{row['current_sha']}` | "
+                          f"{row.get('merged_pr') or '—'} ({row['merged_status']}) | "
+                          f"{row['age_days']} | {row['integrated_into_target']} | "
+                          f"{row['recommended_action']} |\n"
+                      )
           PY
+
+      - name: Upload branch cleanup proposal
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: branch-cleanup-proposal-${{ github.run_id }}
+          path: branch-hygiene.yaml
+          retention-days: 90
 
       - name: Verify report-only authority
         shell: bash
@@ -82,11 +113,12 @@ jobs:
           PY
 
   cleanup:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.apply_cleanup == true
     needs: report
     runs-on: ubuntu-24.04
     permissions:
       contents: write
+      pull-requests: read
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

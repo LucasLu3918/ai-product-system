@@ -176,6 +176,12 @@ Change Impact traversal 使用本地可重建索引與 canonical Impact Graph，
 
 Validation workflow 先執行輕量文件影響檢查，再安裝完整依賴與 Playwright；EARS validator-only 變更使用 Scenario Conformance 閉包，規劃功能與範本變更維持完整 Requirement Planning 閉包。
 
+Public command, platform, runtime, optional-dependency, validation and documentation facts are registered in `config/system-facts.yaml`; capability surfaces remain in `config/architecture-surfaces.yaml`. `scripts/system_facts.py` deterministically derives factual tables in System Reference while policy and explanatory prose stay in canonical topic documents. `pyproject.toml` records Ruff/mypy and Python compatibility; `constraints/tested.txt` identifies the exact repository-validation dependency set used by CI.
+
+Repository validation classifies exact candidate paths before provisioning optional Node, browser and OpenAPI toolchains. Unknown paths use the full toolchain. The Integration Gate, mandatory secret scan and repository validation remain required for every candidate.
+
+Branch hygiene emits deterministic SHA, PR, age and integration proposals; removal remains an explicit exact-manifest operation. CI selects optional Node, browser and OpenAPI toolchains from exact changed paths and fails closed to the full profile on unknown input.
+
 Eval-as-CI / Trajectory Quality Gate 以 provider-neutral trace 產生 observable evidence。Deterministic violations 可形成 `BLOCK`，效率偏差形成 `WARN` 或 `DEGRADED`；shadow mode 不授予 Git Publish 權限，Human Authority 仍是最後決策者。
 
 ### Scenario Conformance

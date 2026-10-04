@@ -194,6 +194,8 @@ Review actual:
 
 ## Release Security Gate
 
+Changed-path CI planning can omit unrelated optional tools, but every publication candidate still runs the mandatory candidate secret scan, repository validation and exact-candidate Integration Gate. Unknown paths select the full toolchain.
+
 For SAL 3–4 affected changes, persist SECURITY_REVIEW.md.
 
 Allowed decisions:

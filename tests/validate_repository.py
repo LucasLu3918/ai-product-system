@@ -64,6 +64,21 @@ _append_validation_git_config("gc.autoDetach", "false")
 _append_validation_git_config("maintenance.auto", "false")
 _append_validation_git_config("maintenance.autoDetach", "false")
 
+_OPENAPI_EVIDENCE = {
+    "openapi_contracts_lifecycle.py",
+    "openapi_generator_adapter_lifecycle.py",
+    "openapi_client_pilot_lifecycle.py",
+    "openapi_cli_install_lifecycle.py",
+}
+_ci_plan = None
+if os.environ.get("AIPS_CI_VALIDATION_PLAN"):
+    try:
+        _ci_plan = json.loads(Path(os.environ["AIPS_CI_VALIDATION_PLAN"]).read_text(encoding="utf-8"))
+        if not isinstance(_ci_plan, dict) or _ci_plan.get("version") != 1:
+            _ci_plan = None
+    except (OSError, ValueError, TypeError):
+        _ci_plan = None
+
 from validation.registry import ERROR_AGGREGATION_ORDER, VALIDATORS, load_validators
 
 validation_modules = load_validators(
@@ -93,7 +108,12 @@ for evidence in (
     Path(__file__).parent / "evidence/runtime_recovery_lifecycle.py",
     Path(__file__).parent / "evidence/runtime_context_lifecycle.py",
     Path(__file__).parent / "evidence/validator_registry_lifecycle.py",
+    Path(__file__).parent / "evidence/system_facts_lifecycle.py",
+    Path(__file__).parent / "evidence/ci_validation_plan_lifecycle.py",
 ):
+    if evidence.name in _OPENAPI_EVIDENCE and _ci_plan is not None and _ci_plan.get("needs_openapi") is False:
+        _record_timing(str(evidence.relative_to(Path(__file__).resolve().parents[1])), time.monotonic(), "SKIPPED: exact-path plan does not require OpenAPI")
+        continue
     started = time.monotonic()
     result = subprocess.run([sys.executable, str(evidence)], cwd=Path(__file__).resolve().parents[1], capture_output=True, text=True, check=False)
     _record_timing(str(evidence.relative_to(Path(__file__).resolve().parents[1])), started,
