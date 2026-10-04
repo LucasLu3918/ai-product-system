@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add explicit setup and diagnostics for optional OpenAPI dependencies; verify the installed product CLI from an independent repository in installation CI.
+
 - Fix CLI validation help and documentation-impact checkout routing; add installed OpenAPI product commands, preserve GitHub configuration during isolated local validation, and detect invalid Python venvs before Gate execution.
 
 - Add an ordered AI onboarding checklist for REST/OpenAPI products, with evidence freshness recovery and product-native acceptance boundaries; extend lifecycle coverage for stale contract and revision-bound evidence.

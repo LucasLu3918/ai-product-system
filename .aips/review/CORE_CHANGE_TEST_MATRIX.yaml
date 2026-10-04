@@ -1,57 +1,81 @@
 version: 1
 change:
-  id: phase11-cli-reliability
-  summary: Correct CLI routing, isolated GitHub configuration and onboarding execution;
-    reject invalid validation environments.
+  id: phase12-installation-cli
+  summary: Add explicit optional OpenAPI setup and diagnostics and verify installed
+    product CLI behavior across the supported installation paths.
   boundary:
-  - publication-cli-routing
-  - validation-environment-configuration
-  - product-onboarding-tool-entry
+  - optional-openapi-installation
+  - installed-product-cli
+  - supported-installation-platforms
 matrix:
-- boundary: publication-cli-routing
-  reason: CLI source checkout, help and product-root consumers need deterministic
-    regression evidence.
+- boundary: optional-openapi-installation
+  reason: Fresh installations need actionable optional-dependency status without changing
+    the required baseline or silently performing network installation.
   checks:
     static_lint:
       applicable: true
-      evidence: Critical Ruff, shell syntax, diff check and repository static contracts
+      evidence: Critical Ruff, Bash syntax, diff check, docs closure and repository static contracts
     unit:
       applicable: true
-      evidence: Publication lifecycle verifies gh configuration precedence, auth diagnosis
-        and invalid venv identity
+      evidence: Isolated OpenAPI CLI lifecycle verifies missing/ready/install state and exact pinned requirements path
     integration:
       applicable: true
-      evidence: CLI lifecycle verifies different source checkout routing and installed
-        OpenAPI operation in independent product repository
+      evidence: Installed CLI validates a contract from a product directory with spaces; install CI checks the actual pinned validator
     contract:
       applicable: true
-      evidence: Existing scenario 165, CLI and publication contracts; preserve existing
-        schema and status consumers
+      evidence: Existing AIPS CLI and installation contracts; additive commands preserve baseline install and required dependency status
     e2e:
       applicable: true
-      evidence: Actual AIPS local exact-candidate Gate, PR and main required validation
+      evidence: Actual AIPS local exact-candidate Gate, PR and main required validation; Linux fresh-install product fixture
     security:
       applicable: true
-      evidence: No credential values copied or printed; remote OpenAPI references
-        remain blocked; exact candidate secret scan
+      evidence: No automatic network installation; explicit pinned dependency action; existing remote OpenAPI reference and repo-root restrictions remain blocked; exact candidate secret scan
     migration_recovery:
       applicable: true
-      evidence: Invalid environment remediation, preserved GH_CONFIG_DIR and existing
-        commands without arguments remain compatible
+      evidence: Base AIPS installs omit optional packages, existing commands remain compatible, explicit setup is repeatable
     cli_harness:
       applicable: true
-      evidence: Help does not run validation; unknown arguments fail; implicit and
-        explicit checkout routing; installed product tools
+      evidence: Doctor distinguishes optional status; validator gives safe remediation; product cwd and CLI routing are verified
     docs_schema:
       applicable: true
       evidence: Full documentation impact closure, placement, links and VitePress
         build
+- boundary: supported-installation-platforms
+  reason: Keep actual support claims aligned with executable Linux/macOS entrypoints and the Windows WSL launcher contract.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Installer shell syntax and PowerShell parser contracts
+    unit:
+      applicable: true
+      evidence: Linux/macOS isolated CLI lifecycle uses no package download
+    integration:
+      applicable: true
+      evidence: Linux managed install sets up pinned OpenAPI tooling and validates a separate product tree
+    contract:
+      applicable: true
+      evidence: Windows supported WSL launcher smoke remains covered
+    e2e:
+      applicable: true
+      evidence: Exact candidate repository validator and platform installation workflows
+    security:
+      applicable: true
+      evidence: No native Windows support claim; no ambient product-root files or credentials modified
+    migration_recovery:
+      applicable: true
+      evidence: Existing users opt into the optional toolchain without runtime migration
+    cli_harness:
+      applicable: true
+      evidence: Installed executable works from an independent product root on supported Unix hosts
+    docs_schema:
+      applicable: true
+      evidence: Installation and product onboarding claims describe actual Linux/macOS/Windows WSL scope
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 4d55560c4a6f8d58eb1fc2e6612f054047329e9b
-  changed_files_hash: c7e1922e700d62eba2185418fe9124fdd93fecc26fcabc3ad8b3c884f21bdaa3
+  base_sha: 5ce592bcdff9b81bad3d13832e94aee001776deb
+  changed_files_hash: 0f06176ec5858373be3deef23433ed0b942c629105dbbad7a8063efff5d365fa
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

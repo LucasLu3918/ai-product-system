@@ -104,6 +104,8 @@ Changes to validation orchestration preserve candidate secret scanning and requi
 
 Change Impact unknown dispositions are security-relevant evidence: closed records require current in-repository or complete scoped traversal evidence and explicit Human review. Legacy strings, stale hashes, out-of-root paths, incomplete traversals and mismatched scopes remain unresolved and fail closed.
 
+The Phase 12 installation CLI Matrix keeps `review_evidence.required: false`; installation and contract lifecycle results are not independent semantic review or runtime attestation.
+
 A high-risk product does not automatically require a deep SAL 4 review for every cosmetic change.
 
 A Planning Package manifest may mark a security artifact not applicable only with a scope-specific reason. That structural status cannot lower the product SAL floor, waive an applicable security boundary review, or infer regulatory/payment compliance; preserve those decisions in the security plan and human review.
