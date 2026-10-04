@@ -185,8 +185,8 @@ with tempfile.TemporaryDirectory() as directory:
             "direct retrieval query must return an actionable SQLite open failure")
     with patch.object(RI, "open_db", side_effect=PermissionError("Operation not permitted")):
         index_diagnostic = RI.index_repository(root, store)
-    require(index_diagnostic["status"] == "INDEX_UNAVAILABLE" and index_diagnostic["reason_code"] == "RETRIEVAL_CACHE_ACCESS_DENIED",
-            "direct index rebuild must report cache access errors instead of a traceback")
+    require(index_diagnostic["status"] == "INDEX_UNAVAILABLE" and index_diagnostic["reason_code"] == "RETRIEVAL_CACHE_WRITE_ACCESS_DENIED",
+            "direct index rebuild must identify cache write denial instead of reporting a read failure or traceback")
     with patch.object(PI, "retrieval_index_status", return_value={"status": "CURRENT"}), patch.object(
         PI, "retrieval_query_repository", side_effect=PermissionError("cache path denied")
     ):

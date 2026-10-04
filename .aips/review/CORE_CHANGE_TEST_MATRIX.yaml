@@ -19,6 +19,8 @@ matrix:
       applicable: true
       evidence: retrieval_intelligence_lifecycle.py exercises stale refresh write
         denial, reader snapshot fallback, live-WAL refusal and unchanged source bytes.
+        Existing layered_context_memory_lifecycle.py now asserts the distinct cache-write-denial
+        code for direct index rebuild.
     integration:
       applicable: true
       evidence: Exact-candidate Publication Preflight / Integration Gate and repository
@@ -90,7 +92,7 @@ actual_diff_reconciled: true
 blockers: []
 candidate:
   base_sha: b0242d7a7f812e03b9698f6e8d02b43769de6b67
-  changed_files_hash: 60071a688496a8b9bfebac34ccf5c67d8d21f697591a2ea27bd292ee8739daf9
+  changed_files_hash: 5af577736efd70522de747d92d3dbb1a92b47ba419da33e4d6380b19c651a9f0
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
