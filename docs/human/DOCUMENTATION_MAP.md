@@ -56,7 +56,7 @@ Phase 3 deterministic enforcement is specified by the same Implementation Resolu
 
 Phase 4 OpenAPI client generator 的 canonical contract 位於 `scripts/openapi_generator_adapter.py`、`templates/implementation/GENERATOR_ADAPTER_REPORT.schema.json` 與 Integration Gate lifecycle fixture。預覽不執行工具；只有明確的本機 `--execute` 會呼叫 Profile 固定的 generator。Scenario 196 維護其輸出 ownership、rollback 與安全邊界證據。
 
-Phase 5 的可選執行報告核對位於 `scripts/implementation_enforcement.py` 與 Profile 範本；單一共用範例在 `examples/openapi-client-pilot/`，Scenario 197 與 lifecycle 測試驗證其本機 API/client 流程。產品專屬證據由產品 repository 保存。
+Phase 5 的可選執行報告核對位於 `scripts/implementation_enforcement.py` 與 Profile 範本；單一共用範例在 `examples/openapi-client-pilot/`，其中 `AI_ONBOARDING.md` 提供可依序執行的真實產品導入檢查表。Scenario 197 與 lifecycle 測試驗證其本機 API/client 流程；產品專屬證據由產品 repository 保存。
 
 Task ownership 的 canonical contract 分布於 `orchestration/DETERMINISTIC_SCHEDULER.md`、`orchestration/RESOURCE_AUTHORIZATION.md`、`orchestration/RUN_DASHBOARD.md`、`orchestration/schemas/run-task-state.yaml` 與 Task Graph 範本；`config/documentation-placement.yaml` 維護對應 Human 文件閉包。
 

@@ -126,6 +126,56 @@ with tempfile.TemporaryDirectory(prefix="aips-openapi-evidence-", dir=ROOT) as t
     require(stale["status"] == "STALE" and any("junit:content_digest_changed" in reason for reason in stale["stale_reasons"]),
             "changed JUnit must invalidate evidence")
 
+with tempfile.TemporaryDirectory(prefix="aips-openapi-stale-evidence-", dir=ROOT) as temp_name:
+    project = Path(temp_name) / "product"
+    project.mkdir()
+    (project / "api").mkdir()
+    (project / "evidence").mkdir()
+    spec = project / "api/openapi.yaml"
+    spec.write_bytes(valid.read_bytes())
+    (project / "README.md").write_text("fixture\n", encoding="utf-8")
+
+    def git(*args: str) -> None:
+        subprocess.run(["git", *args], cwd=project, check=True, capture_output=True, text=True)
+
+    git("init", "-q")
+    git("config", "user.email", "aips-test")
+    git("config", "user.name", "AIPS Test")
+    git("add", ".")
+    git("commit", "-qm", "evidence baseline")
+    junit_path = project / "evidence/contract-tests.xml"
+    evidence_path = project / "evidence/openapi-evidence.json"
+    script = "import os,pathlib; pathlib.Path(os.environ['AIPS_JUNIT_XML']).write_text('<testsuite tests=\"1\"><testcase classname=\"api.listWidgets\" name=\"returns_widgets\"/></testsuite>', encoding='utf-8')"
+    args = type("Args", (), {
+        "repo_root": project,
+        "spec": spec,
+        "command": json.dumps([sys.executable, "-c", script]),
+        "junit": junit_path,
+        "timeout": 10,
+        "output": evidence_path,
+    })()
+    require(contracts._run(args) == 0, "isolated candidate should produce current evidence")
+    require(contracts.verify_evidence(evidence_path, project)["status"] == "PASS",
+            "evidence must pass on its exact fixture revision")
+
+    original_spec = spec.read_bytes()
+    spec.write_bytes(original_spec + b"\n# changed contract fixture\n")
+    stale_spec = contracts.verify_evidence(evidence_path, project)
+    require(stale_spec["status"] == "STALE" and "spec:content_digest_changed" in stale_spec["stale_reasons"],
+            "changed OpenAPI content must invalidate evidence")
+    spec.write_bytes(original_spec)
+
+    (project / "README.md").write_text("new candidate revision\n", encoding="utf-8")
+    git("add", "README.md")
+    git("commit", "-qm", "advance candidate")
+    stale_revision = contracts.verify_evidence(evidence_path, project)
+    require(stale_revision["status"] == "STALE" and "repository_revision_changed" in stale_revision["stale_reasons"],
+            "a new candidate revision must invalidate otherwise unchanged evidence")
+    junit_path.unlink()
+    require(contracts._run(args) == 0, "evidence must be regenerable after candidate changes")
+    recovered = contracts.verify_evidence(evidence_path, project)
+    require(recovered["status"] == "PASS", "fresh evidence must restore PASS on the current revision")
+
 duplicate = ROOT / "tests/fixtures/openapi_phase2_duplicate_key.yaml"
 duplicate.write_text("openapi: 3.1.0\ninfo:\n  title: First\n  title: Second\n", encoding="utf-8")
 try:

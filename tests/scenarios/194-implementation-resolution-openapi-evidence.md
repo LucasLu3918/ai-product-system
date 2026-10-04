@@ -12,6 +12,9 @@ Validate REST/OpenAPI inputs, classify compatibility only against an explicitly 
 - Non-canonical or unresolved baselines are `BLOCKED`; no report automatically approves a breaking change.
 - Contract-test evidence requires a successful argv-only command, non-empty non-skipped JUnit tests and coverage for every operation ID.
 - Reports bind exact spec/JUnit hashes and Git revision; content or revision drift returns `STALE`. Raw command output is not persisted.
+- Changing either the contract or JUnit invalidates its evidence; changing the repository revision also makes prior evidence stale while its files remain unchanged.
+
+The lifecycle fixture writes a valid contract report in a temporary Git product, verifies `PASS`, changes the contract to require `STALE`, then advances only the Git revision and again requires `STALE`.
 
 ## Limits
 

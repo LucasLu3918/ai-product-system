@@ -1,215 +1,61 @@
 version: 1
 change:
-  id: phase10-environment-ci-recovery
-  summary: Recover CLI runtime selection, CI diagnostics and dependency updates, and
-    Intelligence preservation with truthful freshness.
+  id: phase11-product-onboarding
+  summary: AI onboarding workflow, product evidence freshness lifecycle and validation
+    efficiency guidance.
   boundary:
-  - ci-label-event-concurrency
-  - required-repository-aggregate
-  - cli-runtime-and-offline-dependencies
-  - intelligence-preservation-and-freshness
-  - ci-diagnostics-and-actions
+  - openapi-product-onboarding
+  - openapi-evidence-freshness-and-recovery
+  - validation-and-documentation-closure
 matrix:
-- boundary: ci-label-event-concurrency
-  reason: Candidate updates and Core/Large classification-label changes affect the
-    validated candidate or its Gate class; unrelated labels do not.
+- boundary: openapi-product-onboarding
+  reason: The shared OpenAPI pilot guides real-product adoption while preserving product
+    contract authority, local generation and acceptance boundaries.
   checks:
     static_lint:
       applicable: true
-      evidence: Critical Ruff checks, workflow expression syntax, and git diff --check.
+      evidence: Critical Ruff and git diff --check; repository static contracts validate
+        documentation links and placement.
     unit:
       applicable: true
-      evidence: Static event-policy contracts cover push, workflow_dispatch, candidate
-        events, classification labels, unrelated labels, skip conditions, and aggregate
-        results.
+      evidence: openapi_contracts_lifecycle verifies current evidence, changed contract/JUnit/revision
+        staleness and recovery to PASS.
     integration:
       applicable: true
-      evidence: Exact-candidate Integration Gate and repository validation run the
-        updated contracts and documentation checks.
+      evidence: OpenAPI client pilot lifecycle exercises the local service, generated
+        consumer, authorization, errors and operation coverage; full exact-candidate
+        Gate validates the integrated repository.
     contract:
       applicable: true
-      evidence: Scenario 165 asserts classification-label supersession, unrelated-label
-        no-op, and required aggregate behavior.
+      evidence: Scenario 194 covers OpenAPI contract authority and freshness behavior;
+        Scenario 197 preserves reference pilot behavior.
     e2e:
       applicable: false
-      na_reason: No deployed product journey or production application behavior changes.
+      na_reason: No selected real product or deployed production journey is in this
+        implementation scope.
     security:
       applicable: true
-      evidence: Workflow keeps contents-read and grants the repository aggregate actions-read only; unrelated label values are passed
-        through environment context and never interpolated into shell source.
-    migration_recovery:
-      applicable: false
-      na_reason: No persistent data, schema, or branch-protection required-context
-        migration.
-    cli_harness:
-      applicable: true
-      evidence: Publication plan guidance accurately describes initial classification
-        labels and later event behavior.
-    docs_schema:
-      applicable: true
-      evidence: Human guidance, Integration Gate operations, Orchestrator, Scheduler,
-        and Scenario 165 describe the same event policy.
-- boundary: required-repository-aggregate
-  reason: Existing protected-main branch rules depend on the single repository check
-    context; only an unrelated-label skip with exact successful full Gate evidence may produce a no-op success.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Static contract asserts workflow skip guard and no-op summary while
-        preserving failure propagation.
-    unit:
-      applicable: true
-      evidence: Aggregate model verifies only an unrelated labeled/unlabeled event
-        with skipped Janitor succeeds; failed and other skipped jobs remain non-success; the embedded workflow resolver rejects stale/missing/failed full Gate metadata.
-    integration:
-      applicable: true
-      evidence: Exact-candidate GitHub validation confirms repository remains the
-        required successful aggregate for full Gate runs.
-    contract:
-      applicable: true
-      evidence: Scenario 165 retains the same required context and tests skipped/no-op
-        boundary.
-    e2e:
-      applicable: false
-      na_reason: No deployed product journey or production application behavior changes.
-    security:
-      applicable: true
-      evidence: No new permissions or credentials; failure results remain blocking.
-    migration_recovery:
-      applicable: false
-      na_reason: Protected branch required context remains repository; no migration
-        is needed.
-    cli_harness:
-      applicable: true
-      evidence: Existing publish preflight label plan remains compatible and documents
-        when full validation occurs.
-    docs_schema:
-      applicable: true
-      evidence: Required aggregate/no-op behavior is documented in canonical maintenance
-        and Gate guidance.
-- boundary: cli-runtime-and-offline-dependencies
-  reason: Publication and Intelligence must choose the intended repository and configured
-    Python without silently using old installed scripts.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'publish_preflight_lifecycle: implicit/explicit roots, Python routing,
-        cache denial and wheelhouse argv; full Gate'
-    unit:
-      applicable: true
-      evidence: 'publish_preflight_lifecycle: implicit/explicit roots, Python routing,
-        cache denial and wheelhouse argv; full Gate'
-    integration:
-      applicable: true
-      evidence: 'publish_preflight_lifecycle: implicit/explicit roots, Python routing,
-        cache denial and wheelhouse argv; full Gate'
-    contract:
-      applicable: true
-      evidence: 'publish_preflight_lifecycle: implicit/explicit roots, Python routing,
-        cache denial and wheelhouse argv; full Gate'
-    e2e:
-      applicable: false
-      na_reason: No deployed product journey or production application behavior changes.
-    security:
-      applicable: true
-      evidence: 'publish_preflight_lifecycle: implicit/explicit roots, Python routing,
-        cache denial and wheelhouse argv; full Gate'
+      evidence: Checklist requires preview-only default, explicit local execute, trusted
+        pinned generator, ownership protection and no secrets in evidence.
     migration_recovery:
       applicable: true
-      evidence: Existing Intelligence preserved; stale hashes remain stale; explicit
-        root overrides implicit checkout.
+      evidence: Changed inputs or revisions invalidate old evidence; rerunning on
+        the exact current candidate restores PASS.
     cli_harness:
       applicable: true
-      evidence: 'publish_preflight_lifecycle: implicit/explicit roots, Python routing,
-        cache denial and wheelhouse argv; full Gate'
+      evidence: AI_ONBOARDING.md provides ordered commands, gates and recovery actions;
+        Documentation Map links the checklist.
     docs_schema:
       applicable: true
-      evidence: 'publish_preflight_lifecycle: implicit/explicit roots, Python routing,
-        cache denial and wheelhouse argv; full Gate'
-- boundary: intelligence-preservation-and-freshness
-  reason: Bootstrap and finalize must retain existing semantic data and stale-source
-    evidence.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'project_intelligence_lifecycle: preserved bootstrap bytes, read-only
-        refresh-plan, stale source finalization; full Gate'
-    unit:
-      applicable: true
-      evidence: 'project_intelligence_lifecycle: preserved bootstrap bytes, read-only
-        refresh-plan, stale source finalization; full Gate'
-    integration:
-      applicable: true
-      evidence: 'project_intelligence_lifecycle: preserved bootstrap bytes, read-only
-        refresh-plan, stale source finalization; full Gate'
-    contract:
-      applicable: true
-      evidence: 'project_intelligence_lifecycle: preserved bootstrap bytes, read-only
-        refresh-plan, stale source finalization; full Gate'
-    e2e:
-      applicable: false
-      na_reason: No deployed product journey or production application behavior changes.
-    security:
-      applicable: true
-      evidence: 'project_intelligence_lifecycle: preserved bootstrap bytes, read-only
-        refresh-plan, stale source finalization; full Gate'
-    migration_recovery:
-      applicable: true
-      evidence: Existing Intelligence preserved; stale hashes remain stale; explicit
-        root overrides implicit checkout.
-    cli_harness:
-      applicable: true
-      evidence: 'project_intelligence_lifecycle: preserved bootstrap bytes, read-only
-        refresh-plan, stale source finalization; full Gate'
-    docs_schema:
-      applicable: true
-      evidence: 'project_intelligence_lifecycle: preserved bootstrap bytes, read-only
-        refresh-plan, stale source finalization; full Gate'
-- boundary: ci-diagnostics-and-actions
-  reason: Required documentation closure, Node 24 runner compatibility, bounded timing
-    and fail-closed aggregates.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'publish_preflight_lifecycle: summary exit status; static event result
-        cross-product; PR/main CI and docs build'
-    unit:
-      applicable: true
-      evidence: 'publish_preflight_lifecycle: summary exit status; static event result
-        cross-product; PR/main CI and docs build'
-    integration:
-      applicable: true
-      evidence: 'publish_preflight_lifecycle: summary exit status; static event result
-        cross-product; PR/main CI and docs build'
-    contract:
-      applicable: true
-      evidence: 'publish_preflight_lifecycle: summary exit status; static event result
-        cross-product; PR/main CI and docs build'
-    e2e:
-      applicable: false
-      na_reason: No deployed product journey or production application behavior changes.
-    security:
-      applicable: true
-      evidence: 'publish_preflight_lifecycle: summary exit status; static event result
-        cross-product; PR/main CI and docs build'
-    migration_recovery:
-      applicable: true
-      evidence: Existing Intelligence preserved; stale hashes remain stale; explicit
-        root overrides implicit checkout.
-    cli_harness:
-      applicable: true
-      evidence: 'publish_preflight_lifecycle: summary exit status; static event result
-        cross-product; PR/main CI and docs build'
-    docs_schema:
-      applicable: true
-      evidence: 'publish_preflight_lifecycle: summary exit status; static event result
-        cross-product; PR/main CI and docs build'
+      evidence: Human Guide, Documentation Map, reference example, Agent protocol,
+        Scenario 194 and changelog updated; documentation impact/placement and VitePress
+        build required.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 187f44bedda8b61a9e93666425cc888ef47a716f
-  changed_files_hash: a1161916b4e18923f81042780f93ea58634793a2c087a5fefc58519bde87cf82
+  base_sha: 4750f23f4252e4f2267bb5c3809ea5092f7c4ccd
+  changed_files_hash: 120173661b50c658af8d8ee7d6182b00878e4cf7d0da4b2d3b203ff364537103
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

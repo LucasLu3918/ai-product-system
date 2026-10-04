@@ -1,5 +1,9 @@
 # OpenAPI client reference pilot
 
+AI implementers onboarding a real product should follow
+[AI_ONBOARDING.md](AI_ONBOARDING.md); this folder is the synthetic workflow
+fixture, not product acceptance evidence.
+
 This small Widgets product is the shared Phase 5B reference. It proves the AIPS
 Phase 2 → Phase 4 → Phase 3 workflow with a real local HTTP service and consumer.
 It does not claim that another product's API behavior has been accepted.
