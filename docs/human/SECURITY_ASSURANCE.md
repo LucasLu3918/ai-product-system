@@ -219,6 +219,8 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 ## Secret and credential safety
 
+快取恢復不改 sandbox 權限、不複製 GitHub 憑證，也不修改明確的快取或認證設定。自動暫存 fallback 必須是目前使用者的私有目錄，拒絕 symlink；套件下載原始 stdout/stderr 只在程序記憶體中分類，不寫入持久紀錄或公開診斷。安裝同步限乾淨、同遠端與 ancestor fast-forward，禁止 reset 分歧安裝版。
+
 隔離 AIPS 的設定目錄時，GitHub 登入查找需保留原本的設定位置；只傳遞 `GH_CONFIG_DIR` 路徑參照，不複製或列印憑證。設定位置待確認、檔案寫入、localhost 綁定、browser 啟動與 DNS／網路阻擋應分別診斷；任一測試使用較高權限成功，不代表已放寬預設沙盒政策。
 
 The repository aggregate has read-only Actions metadata access to bind label-only success to an actual passing full Gate for the same PR/head/base/class. Failure and missing evidence stay blocking. CI diagnostic summaries contain required repository document paths and bounded test timing rather than raw authentication output or signed artifact URLs. Network allowlists remain explicit: GitHub API connectivity does not imply authorization for Azure Blob redirects. Use writable temporary cache roots for restricted runtimes; do not broaden network access to solve filesystem denial.

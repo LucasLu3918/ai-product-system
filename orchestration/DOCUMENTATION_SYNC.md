@@ -8,6 +8,8 @@ OpenTelemetry export sources are mapped to the observability/run-state topics an
 
 ## Purpose
 
+Map shared runtime cache and package-install diagnostics into existing canonical publication and installation topics. Preserve the current topic structure and verify the recursive documentation closure with the final candidate.
+
 Keep Human-facing and Agent-facing documentation synchronized with behavior-bearing AIPS changes.
 
 Documentation completeness is part of implementation completeness. A change is not complete merely because code and tests pass while affected guidance, terminology or architecture descriptions remain stale.

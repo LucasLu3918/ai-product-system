@@ -135,7 +135,7 @@ Usage:
   aips scheduler --graph <yaml> [--state <yaml>] [--format yaml|json]
   aips integration-gate --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--review-trust-store <path>] [--observe-run-id <id>] [--output <path>] [--project-root <repo>]
   aips janitor --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>]
-  aips publish preview|plan|preflight|matrix-sync|post-merge [publish-preflight options] [--project-root <repo>]
+  aips publish preview|plan|preflight|matrix-sync|post-merge|checks [publish-preflight options] [--project-root <repo>]
   aips docs impact --base <ref> [--head <ref>] [--project-root <repo>] [--format yaml|json]
   aips openapi <doctor|install|validate|compare|run-contract-tests|verify-evidence|generator> ...
 
@@ -272,7 +272,7 @@ openapi_dependency_status() {
 install_runtime_dependencies() {
   ensure_compatible_venv
   local py="$SYSTEM_DIR/.venv/bin/python"
-  "$py" -m pip install --disable-pip-version-check -q -r "$SYSTEM_DIR/requirements.txt" ||
+  "$py" "$SYSTEM_DIR/scripts/package_install.py" --python "$py" --requirements "$SYSTEM_DIR/requirements.txt" ||
     die "AIPS runtime dependency installation failed."
   "$py" -c 'import yaml, mcp' >/dev/null 2>&1 ||
     die "AIPS runtime dependencies are incomplete after installation."
@@ -854,7 +854,11 @@ publish_preflight_cmd() {
     command_root="$(cd "$selected_root" 2>/dev/null && pwd -P)" || die "Cannot resolve --project-root: $selected_root"
     [ -f "$command_root/scripts/publish_preflight.py" ] || die "--project-root is not an AIPS repository: $command_root"
     say "Publish preflight project root: $command_root" >&2
-    py="$(validation_python_for_root "$command_root" false || true)"
+    case "$action" in
+      plan|run|environment)
+        py="$(validation_python_for_root "$command_root" true || validation_python_for_root "$command_root" false || true)" ;;
+      *) py="$(validation_python_for_root "$command_root" false || true)" ;;
+    esac
   else
     py="$(python_bin)"
   fi
@@ -866,9 +870,9 @@ publish_preflight_cmd() {
   "$py" -c 'import yaml' >/dev/null 2>&1 || die "The Python selected for $command_root ($py) lacks PyYAML. Run `python3.12 bin/prepare-local-validation` in that checkout, then retry."
   if [ "$action" = "post-merge" ]; then
     if [ "${#publish_args[@]}" -gt 0 ]; then
-      PATH="$(dirname "$py"):$PATH" "$py" "$SYSTEM_DIR/scripts/publish_preflight.py" "$action" --project-root "$command_root" "${publish_args[@]}"
+      AIPS_INSTALLED_SYSTEM_DIR="$(cat "$CONFIG_HOME/system-dir" 2>/dev/null || true)" PATH="$(dirname "$py"):$PATH" "$py" "$SYSTEM_DIR/scripts/publish_preflight.py" "$action" --project-root "$command_root" "${publish_args[@]}"
     else
-      PATH="$(dirname "$py"):$PATH" "$py" "$SYSTEM_DIR/scripts/publish_preflight.py" "$action" --project-root "$command_root"
+      AIPS_INSTALLED_SYSTEM_DIR="$(cat "$CONFIG_HOME/system-dir" 2>/dev/null || true)" PATH="$(dirname "$py"):$PATH" "$py" "$SYSTEM_DIR/scripts/publish_preflight.py" "$action" --project-root "$command_root"
     fi
     return
   fi
@@ -901,7 +905,7 @@ openapi_cmd() {
       ensure_compatible_venv
       py="$SYSTEM_DIR/.venv/bin/python"
       [ -r "$SYSTEM_DIR/requirements-openapi.txt" ] || die "OpenAPI optional requirements are missing: $SYSTEM_DIR/requirements-openapi.txt"
-      "$py" -m pip install --disable-pip-version-check -q -r "$SYSTEM_DIR/requirements-openapi.txt" ||
+      "$py" "$SYSTEM_DIR/scripts/package_install.py" --python "$py" --requirements "$SYSTEM_DIR/requirements-openapi.txt" ||
         die "OpenAPI optional dependency installation failed."
       "$py" -c 'import openapi_spec_validator, jsonschema' >/dev/null 2>&1 ||
         die "OpenAPI optional dependencies are incomplete after installation."

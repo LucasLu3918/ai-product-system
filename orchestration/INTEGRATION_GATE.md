@@ -18,6 +18,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+A pip download cache is keyed by pinned requirement files; every candidate still installs dependencies and runs its complete Gate and secret scan. Publication diagnostics prefer a complete validation interpreter and report every missing Gate module. Latest-check summaries preserve cancellation/skipping distinctions and never supply merge authority.
+
 Implementation evidence for OpenAPI contracts is bound to spec and JUnit digests plus the exact repository revision. The Integration Gate must reject stale or mismatched evidence and must not reinterpret an `UNKNOWN` compatibility result as approval.
 
 ~~~text

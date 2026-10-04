@@ -89,6 +89,8 @@ docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGEL
 
 ## 文件一致性
 
+執行環境恢復的操作說明分別由 Installation、Project Intelligence 與 Maintenance 承載；Technology Guide 提供共用工具位置，來源對應由既有 canonical placement 規則約束。
+
 VitePress renders the canonical Markdown files directly; local publication preflight uses the installed bundle and does not create or install a second documentation source.
 
 文件位置契約的工作樹預覽與已提交候選檢查使用相同 canonical H2 規則；前者讓維護者在提交前修正段落，後者作為 CI 前置驗證證據。

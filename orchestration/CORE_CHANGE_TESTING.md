@@ -66,6 +66,8 @@ A Large/Core Change is not complete when:
 
 ## Evidence
 
+Runtime recovery evidence must exercise a linked worktree installer on Bash 3.2, complete-versus-partial interpreter selection, deleted-index metadata, explicit-cache preservation and symlink refusal, redacted HTTP/proxy/DNS/TLS diagnostics, cancelled/newer CI outcomes, and dirty/divergent installed synchronization. pip download cache does not replace fresh candidate Gates.
+
 For publication-preflight changes, run focused lifecycle checks while editing, bind the final Core Matrix to the exact base and changed-file set, then run the complete local Integration Gate once for that fixed candidate. The Gate includes repository validation; PR and main CI remain separate candidate checks.
 
 Eval-as-CI Core Change 必須涵蓋 trace schema、deterministic trajectory rules、privacy rejection、Scenario contract、Evidence Bundle 與 shadow-mode publish boundary；LLM Judge 的非確定性只能作為 evidence，不可取代 deterministic hard constraints。

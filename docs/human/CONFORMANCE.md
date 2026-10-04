@@ -106,6 +106,8 @@ Identity/Resume evidence 同時驗證跨 worktree repository identity、dirty wo
 
 ## v0.16 Agent Eval Conformance
 
+恢復生命週期證據涵蓋 worktree 安裝、macOS Bash 3.2 無選項呼叫、不完整 Python 環境、快取權限與索引清理、安裝版分歧拒絕及 CI 取消判讀。這些是 AIPS 工具驗收，不能作為真實 REST 產品驗收，也不能將情境清單數量等同所有端到端測試通過。
+
 Agent Eval may bind a case to repository-relative system dependencies. Reports distinguish `CURRENT`, `STALE`, and historical `UNBOUND` evidence so an old rubric PASS cannot imply that the current system was evaluated.
 
 需要 Agent 語意判斷的 Scenario 不再只能停留在 manual，也不會被硬改成 deterministic test。

@@ -320,6 +320,8 @@ Scenario 134 不改 production Retrieval / Turn Context。Local Trial PASS 也�
 Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL storage is workspace-scoped by canonical `workspace_id`; repository-wide writer coordination belongs to the isolation layer and uses `repository_id`.
 ## Runtime Content Safety Boundary
 
+明確的 `XDG_CACHE_HOME` 會原樣保留。預設快取不可寫時，AIPS 可使用目前使用者擁有、權限為 0700 的可重建暫存快取；symlink 與其他使用者擁有的快取會拒絕。外部 Intelligence metadata 不可寫時，可重建 metadata 保存在快取旁並回報 `CACHE_ONLY`；索引 freshness 仍由實際候選比對，canonical 來源與 graph 不會被替代。資料庫被清理後，保留的 metadata 只回報 `MISSING/ORPHANED`；執行 `aips intelligence index --project <path>` 即可重建，不需 `--force`。
+
 Run Dashboard projections consume only sanitized, allowlisted operational facts; prompts, reasoning, raw output, secrets and raw workspace paths remain excluded.
 
 Project Intelligence outputs are AIPS-owned durable content and must pass the Runtime Content Safety Boundary before persistence. Secret findings remain fingerprint-only and never include the detected value.

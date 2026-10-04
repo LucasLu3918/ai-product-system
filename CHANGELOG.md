@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Harden disposable cache recovery, linked-worktree installs, package-index diagnostics, validation interpreter selection, installed post-merge synchronization and latest CI reporting; retain exact candidate Gates with pip download caching.
+
 - Add explicit setup and diagnostics for optional OpenAPI dependencies; verify the installed product CLI from an independent repository in installation CI.
 
 - Fix CLI validation help and documentation-impact checkout routing; add installed OpenAPI product commands, preserve GitHub configuration during isolated local validation, and detect invalid Python venvs before Gate execution.
