@@ -28,6 +28,27 @@ def load_module():
 
 def main() -> int:
     publish = load_module()
+    candidate = {
+        "status": "READY",
+        "candidate": {"base": "base-sha", "head": "head-sha"},
+        "change_class": "standard",
+        "matrix": {"required": False, "path": "/nonexistent/matrix.yaml"},
+    }
+    with patch.object(publish, "environment_status", return_value={"status": "READY"}), patch.object(
+        publish, "build_plan", return_value=candidate
+    ), patch.dict(os.environ, {"PATH": "/usr/bin"}), patch.object(
+        publish.subprocess, "run", return_value=Mock(returncode=0)
+    ) as run:
+        result = publish.run_candidate(Namespace(
+            format="json", profile="profile.yaml", output="report.yaml",
+            review_evidence=None, base_tip=None,
+        ))
+    assert result == 0 and run.call_count == 2
+    for call in run.call_args_list:
+        child_env = call.kwargs["env"]
+        assert child_env["PATH"].split(os.pathsep)[0] == str(Path(sys.executable).parent)
+        assert child_env["AIPS_DOCS_DIFF_BASE"] == "base-sha"
+
     local_validation = runpy.run_path(
         str(ROOT / "bin/prepare-local-validation"),
         run_name="prepare_local_validation_contracts",

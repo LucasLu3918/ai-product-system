@@ -132,6 +132,7 @@ If a footer text change in a payment platform does not touch any sensitive bound
 Implementation Profile validation is structural assurance only. It preserves unresolved contract authority and unknown file ownership as blockers, and does not establish that a technology choice is safe, that verification passed, or that a migration is approved. Apply the existing SAL and Change Impact review to the actual implementation boundary.
 
 
+
 ## High-value business logic is a security boundary
 
 For economic-value features, security review includes more than classic vulnerabilities.
@@ -215,6 +216,8 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 
 ## Secret and credential safety
+
+Publication Preflight places the selected Python directory first in child `PATH`, reducing unintended interpreter selection. This does not change credential handling, domain allowlists or Git publication authority.
 
 
 

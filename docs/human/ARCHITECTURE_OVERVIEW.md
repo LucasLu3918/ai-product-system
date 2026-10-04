@@ -94,6 +94,8 @@ Publication preview checks staged, unstaged and untracked candidate content plus
 
 Publication Preflight provides a read-only working-tree preview with rule-by-rule documentation closure, and a matrix-binding command that invalidates prior readiness whenever the candidate base or changed-file hash changes.
 
+Exact-candidate `run` pins child-process `PATH` to its selected Python executable directory before repository preflight and Integration Gate execution. Nested Python helpers therefore use the same prepared environment that passed the initial dependency probe.
+
 ### Parallel Run Dashboard
 
 Run ownership augments existing checkpoint/event state with one task lease: owner execution, active worktree/isolation, Boundary/write set, heartbeat and recovery status. The Scheduler still chooses dispatch; an expired dirty lease needs explicit recovery, and completion requires the actual Git diff to fit both the write set and Change Boundary. Dashboard and projection remain read-only.

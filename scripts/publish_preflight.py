@@ -711,6 +711,8 @@ def run_candidate(args: argparse.Namespace) -> int:
         emit(plan, args.format)
         return 2 if plan["status"] == "ENVIRONMENT_BLOCKED" else 1
     env = dict(os.environ)
+    # Nested helpers invoke bare `python3`; keep them on this Gate interpreter.
+    env["PATH"] = os.pathsep.join((str(Path(sys.executable).parent), env.get("PATH", "")))
     env["AIPS_DOCS_DIFF_BASE"] = plan["candidate"]["base"]
     fast = subprocess.run(
         [sys.executable, str(ROOT / "scripts/repository_preflight.py"), "--base", plan["candidate"]["base"], "--head", plan["candidate"]["head"], "--docs-build"],

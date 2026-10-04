@@ -116,6 +116,8 @@ Phase 3 command evidence is likewise collected only as an explicitly selected pr
 
 Publication Preflight checks runtime prerequisites before launching the expensive Integration Gate lifecycle. `ENVIRONMENT_BLOCKED` identifies missing Python/Ruff, loopback or browser capability; it is an environment result, not a Scheduler or product test failure.
 
+For the single exact-candidate Gate invocation, both fast preflight and Integration Gate receive a child `PATH` beginning with the selected Python directory. Nested Python commands therefore use the environment already checked for dependencies.
+
 Optional observed-stage recording reports `DEGRADED` when a run destination is absent or event writing fails. This observation is evidence only and does not alter the command's primary status.
 
 Trajectory Quality Gate 可記錄 scheduler/tool execution 的 observable events，但不改變 scheduler 的 authority。必要 invariant 或 authorization 失敗應形成 evidence，並由上層 Integration/Publish Gate 依 policy 處理。
@@ -162,6 +164,7 @@ Execution IDs and runtime attestation are produced by the execution runtime and 
 
 
 The repository validator may skip the focused Scheduler/Integration Gate lifecycle only when `AIPS_PROFILE_LIFECYCLE_ALREADY_EXECUTED=1` is injected by the deterministic Validation Profile after those checks already ran. Standalone repository validation must execute the lifecycle evidence normally.
+
 
 ## Runtime resource requests
 
