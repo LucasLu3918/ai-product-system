@@ -232,7 +232,7 @@ OpenTelemetry authorization values are resolved from a named host environment va
 
 外部 Eval / Red-Team 匯入採 allowlist、大小/深度限制、來源 SHA-256 與 fingerprint；YAML alias、重複鍵、自訂標籤、程式碼 provider、未知欄位、secret-like 值與 private reasoning 都會 fail closed。Promptfoo / PyRIT 不列為 AIPS 執行相依套件，也不會由 AIPS 自動執行；外部結果不能取得發布權限。詳見 `orchestration/EVAL_INTEROPERABILITY.md`。
 
-`aips publish plan` 對失效的 GitHub CLI 認證回報 `AUTH_REQUIRED`，對 DNS／網路受限回報 `NETWORK_UNAVAILABLE`；兩者都不回傳 CLI stderr 或 token，並給出不同修復步驟。PR 分類標籤可在首次建立時帶入；若同一 PR 隨後收到 `labeled` event，較新的驗證會取代舊 run 並以最新 labels 決定等級。
+`aips publish plan` 對失效的 GitHub CLI 認證回報 `AUTH_REQUIRED`，對 DNS／網路受限回報 `NETWORK_UNAVAILABLE`；兩者都不回傳 CLI stderr 或 token，並給出不同修復步驟。PR 分類標籤可在首次建立時帶入；Core/Large 分類標籤的新增或移除會觸發最新分級驗證，其他標籤事件不會取消進行中的 run，並略過完整 Gate。
 
 Publication preflight reports the selected checkout root and safe environment status; browser stderr and local executable paths are not copied into its report. These diagnostics do not replace the exact-candidate secret scan or authorize publication.
 

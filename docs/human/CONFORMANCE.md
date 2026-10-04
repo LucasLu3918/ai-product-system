@@ -47,7 +47,7 @@ Repository validation assigns each lifecycle to one owner module. `intelligence_
 
 Scenario 178 validates the opt-in independent-review contract, including required-mode fail-closed behavior. The active repository matrix currently disables PR enforcement until a trusted runtime-attestation verifier is available; lifecycle fixtures do not claim live runtime attestation.
 
-The CI lifecycle contract groups PR validation by PR number. A newer `opened`, `labeled`, `unlabeled` or `synchronize` event replaces an in-progress run and evaluates the latest label state; canceled runs do not produce a successful required aggregate.
+The CI lifecycle contract groups PR validation by PR number. New candidate events and Core/Large classification-label changes may replace an in-progress run; unrelated label events neither cancel active validation nor run the expensive Gate. Their skipped Janitor is successful only through the explicit no-op path in the existing `repository` required aggregate.
 
 Publication lifecycle evidence compares Matrix preview and Gate across DRAFT, blocker, unreconciled diff, stale binding and READY cases; the CI contract also preserves failure for active Janitor failures while skipping the aggregate for superseded canceled runs.
 
@@ -120,7 +120,7 @@ Eval Case
 
 AIPS Core 不在 CI 裡呼叫特定模型 API。CI 驗證的是已記錄的 observable Result 是否仍綁定目前 Case，以及 rubric 是否通過。
 
-GitHub PR validation 也以精確候選為邊界：同一 PR 的 `opened`、`labeled`、`unlabeled` 與 `synchronize` 共用併發群組，較新的事件會取代舊執行並依最新 label 狀態選擇 Gate。被取消的舊 run 不代表 PASS，仍須確認最新候選 SHA 的 required `repository` aggregate。
+GitHub PR validation 也以精確候選為邊界：同一 PR 的事件共用併發群組；新候選與 Core/Large 分類標籤變更會執行最新分級的 Gate，無關標籤不會取消進行中的 run 並走快速 no-op。被取消的舊 run 不代表 PASS，仍須確認最新候選 SHA 的 required `repository` aggregate。
 
 完整 repository validation 現會輸出逐項時間 JSON 供分析；測試失敗仍使 Gate 與 required aggregate 失敗。時間報告只含模組／lifecycle 名稱、狀態與毫秒數，不包含測試輸出。
 
@@ -1278,8 +1278,6 @@ Scenario 164 驗證只支援 MCP Tools 的 Host 仍能透過唯讀 catalog／rea
 - manual：0
 - uncovered：0
 ## Scenario 165 — CI-Parity Publication Preflight
-
-Scenario 165 now verifies working-tree previews include uncommitted paths, documentation requirements include their triggering rules, Matrix rebinding clears prior readiness, declared unittest counts are enforced, and PR classification-label changes rerun CI.
 
 Scenario 165 驗證本機與 GitHub Actions 共用同一個 exact-candidate resolver，統一解析 base/head、PR label change class、canonical Core Change Test Matrix 與文件 diff base。快速 diff／文件檢查會先執行；localhost 或 browser 能力不足會明確標為 `ENVIRONMENT_BLOCKED`。
 

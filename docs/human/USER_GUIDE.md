@@ -337,7 +337,7 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 ## Git Publication 與 Release
 
 
-建立 Large/Core PR 前，先用 `aips publish preview` 檢查未提交文件位置與 Matrix 綁定，再用 `aips publish plan` 確認 GitHub CLI 認證與首次 PR 分類標籤。`gh pr create` 可同時帶入 `--label aips:large-change` 或 `--label aips:core-change`，讓 `opened` 事件採用預期分類；同 PR 後續 label 事件會取代進行中的舊驗證，並按最新 labels 執行。
+建立 Large/Core PR 前，先用 `aips publish preview` 檢查未提交文件位置與 Matrix 綁定，再用 `aips publish plan` 確認 GitHub CLI 認證與首次 PR 分類標籤。`gh pr create` 可同時帶入 `--label aips:large-change` 或 `--label aips:core-change`，讓 `opened` 事件採用預期分類；後續只有這兩種分類標籤的新增或移除會取代舊驗證並按最新 labels 執行，無關標籤會跳過 Gate 且不取消進行中的驗證。
 
 `publish plan` 會查詢 repository settings 並列出目前允許的 `merge_commit`、`squash` 或 `rebase` 方法，讓操作者選用 GitHub 實際支援的合併方式。API 網路中斷與 repository 權限不足會分別回報；兩者都不會授予合併權限。
 

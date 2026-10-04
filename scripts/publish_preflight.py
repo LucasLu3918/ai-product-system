@@ -97,7 +97,7 @@ def pr_creation_plan(change_class: str) -> dict[str, Any]:
         "required_label": label,
         "gh_create_args": ["gh", "pr", "create", *(["--label", label] if label else [])],
         "label_timing": "initial_create_request" if label else "not_required",
-        "note": "Include the change-class label in the PR creation request when the route supports it. GitHub may still emit a separate labeled event; the validation workflow isolates lifecycle events so they can complete independently.",
+        "note": "Include the change-class label in the PR creation request when the route supports it. GitHub may still emit a separate labeled event; classification-label changes rerun the full Gate, while unrelated label events skip the Gate without cancelling active validation.",
     }
 
 

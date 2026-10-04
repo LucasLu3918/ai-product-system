@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Distinguish read-only retrieval access from stale-index refresh write denial and provide cache-write-specific recovery guidance without weakening stale-index checks.
+- Keep unrelated PR label events from cancelling active CI; skip their expensive Gate while preserving the existing successful `repository` aggregate, and continue full validation for classification-label changes.
 
 ## 0.72.1
 
