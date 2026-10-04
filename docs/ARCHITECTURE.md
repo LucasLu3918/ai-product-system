@@ -7,6 +7,7 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 ~~~mermaid
 flowchart TD
     S[User Prompt] --> RA[Runtime Adapter]
+    RA --> RC[Shared Runtime Context]
     RA --> TC[Compact Turn Context]
     TC --> SCOPE[Resolve advisory intent + scoped instructions]
     SCOPE --> ENG{Engineering / Project task?}
@@ -43,6 +44,8 @@ flowchart TD
     V --> IR[Targeted Intelligence Refresh]
     IR --> DONE[Persist / Complete]
 ~~~
+
+Runtime Context centralizes validation interpreter selection and runtime path reporting for source checkouts, linked worktrees and installed systems. Its deterministic invariant matrix exercises Python capability, cache, network and platform combinations.
 
 The synchronous Turn Hook resolves identity/freshness plus bounded evidence from an already available Retrieval Index. Whole-project bootstrap, initial index construction, semantic enrichment, impact-graph rebuilding and HTML generation stay outside the hook latency path. Retrieval cache state is non-canonical and degrades truthfully to stable Project Intelligence when unavailable.
 

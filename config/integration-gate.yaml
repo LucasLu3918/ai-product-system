@@ -30,7 +30,24 @@ matrix_required_paths:
   - tests/evidence/openapi_generator_adapter_lifecycle.py
   - scripts/trajectory_eval.py
   - tests/evidence/trajectory_quality_gate_lifecycle.py
+  - scripts/runtime_context.py
+  - scripts/runtime_invariant_matrix.py
+  - config/runtime-invariants.yaml
+  - tests/evidence/runtime_context_lifecycle.py
+  - tests/scenarios/198-runtime-context-invariant-matrix.md
 checks:
+  - id: runtime-invariant-matrix
+    category: test
+    required: true
+    timeout_seconds: 120
+    argv: [python3, scripts/runtime_invariant_matrix.py, --check]
+    paths:
+      - scripts/runtime_context.py
+      - scripts/runtime_invariant_matrix.py
+      - config/runtime-invariants.yaml
+      - tests/evidence/runtime_context_lifecycle.py
+      - tests/scenarios/198-runtime-context-invariant-matrix.md
+      - config/integration-gate.yaml
   - id: ruff-critical
     category: lint
     required: true

@@ -1,6 +1,9 @@
 version: 1
 purpose: Compact current-AIPS capability index for Evolution Radar semantic comparison; canonical behavior remains in referenced protocols.
 capabilities:
+  - {id: unified-runtime-path-resolution, name_en: Unified Runtime Path Resolution, name_zh: 共用執行環境路徑解析, docs: [orchestration/RUNTIME_CONTEXT.md, docs/human/ARCHITECTURE_OVERVIEW.md]}
+  - {id: validation-interpreter-capability-selection, name_en: Validation Interpreter Capability Selection, name_zh: 驗證直譯器能力選擇, docs: [orchestration/RUNTIME_CONTEXT.md, docs/human/TECHNOLOGY_GUIDE.md]}
+  - {id: runtime-invariant-matrix, name_en: Runtime Invariant Matrix, name_zh: 執行環境不變條件矩陣, docs: [orchestration/RUNTIME_CONTEXT.md, orchestration/CONFORMANCE.md, docs/human/CONFORMANCE.md]}
   - {id: turn-aware-global-harness, name_en: Turn-Aware Global Harness, name_zh: 回合感知全域代理框架, docs: [harness/HARNESS_PROTOCOL.md, orchestration/TURN_HARNESS.md, docs/human/HARNESS.md, harness/PORTABLE_COMMANDS.md]}
   - {id: project-intelligence, name_en: Project Intelligence, name_zh: 專案智慧, docs: [orchestration/PROJECT_INTELLIGENCE.md, docs/human/PROJECT_INTELLIGENCE.md]}
   - {id: canonical-project-identity, name_en: Canonical Project Identity, name_zh: 標準專案身分識別, docs: [orchestration/PROJECT_IDENTITY.md]}

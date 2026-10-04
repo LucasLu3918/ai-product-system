@@ -64,7 +64,21 @@ def main() -> int:
         (project / "scripts").mkdir(parents=True)
         (project / ".venv/bin").mkdir(parents=True)
         complete = project / ".venv/bin/python"
-        complete.write_text(f'#!/bin/sh\nexec {shlex.quote(sys.executable)} "$@"\n')
+        # Model a project validation interpreter without depending on the Python
+        # environment that happened to launch this lifecycle script. The outer
+        # AIPS validation venv may contain only runtime dependencies, so forwarding
+        # the full package probe to sys.executable makes this fixture environment-
+        # dependent and can turn the intended complete candidate into a partial one.
+        complete.write_text(
+            f'#!/bin/sh\nreal={shlex.quote(sys.executable)}\n'
+            'if [ "$1" = "-c" ]; then\n'
+            '  case "$2" in\n'
+            "    *'import importlib.util,json,sys;'*) printf '%s\\n' '{\"version\":[3,12,0],\"modules\":{\"yaml\":true,\"ruff\":true,\"mypy\":true,\"playwright\":true,\"openapi_spec_validator\":true,\"jsonschema\":true,\"cryptography\":true}}'; exit 0 ;;\n"
+            '    *"import yaml, ruff, mypy, playwright, openapi_spec_validator, jsonschema, cryptography;"*) exit 0 ;;\n'
+            '  esac\n'
+            'fi\n'
+            'exec "$real" "$@"\n'
+        )
         complete.chmod(0o755)
         partial = base / "partial python"
         partial.write_text('#!/bin/sh\nif [ "$1" = -c ] && [ "$2" = "import yaml" ]; then exit 0; fi\nexit 1\n')

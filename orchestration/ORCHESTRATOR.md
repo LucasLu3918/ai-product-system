@@ -1,5 +1,7 @@
 # Orchestrator
 
+Local publication validation uses the shared Runtime Context resolver so the selected interpreter and its required capabilities are consistent with the Integration Gate.
+
 Before publication, diagnose configuration selection separately from authentication and connectivity. Reuse a verified Python 3.12 environment; preview documentation closure before edits, run affected checks during development and one complete local Gate after the candidate is fixed. Installed OpenAPI tools operate on an explicit product root; real-product acceptance requires that product service and native tests.
 
 The orchestrator coordinates work. It is not a super-role and cannot override governance or accepted user/project decisions.

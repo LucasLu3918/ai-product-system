@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Centralize runtime path and validation interpreter resolution; expose credential-free Runtime Context diagnostics and enforce deterministic runtime invariant coverage across installation, Python, cache, network and platform dimensions.
+
 - Harden disposable cache recovery, linked-worktree installs, package-index diagnostics, validation interpreter selection, installed post-merge synchronization and latest CI reporting; retain exact candidate Gates with pip download caching.
 
 - Add explicit setup and diagnostics for optional OpenAPI dependencies; verify the installed product CLI from an independent repository in installation CI.

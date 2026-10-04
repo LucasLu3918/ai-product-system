@@ -1,5 +1,7 @@
 # Evolution Radar 持續演進研究
 
+Capability Map 也涵蓋 Runtime Context、驗證直譯器選擇與 runtime invariant matrix；Radar 用於比較演化訊號，不改寫其執行政策。
+
 Evolution Radar 是 AIPS 的 maintenance plane。它把外部技術研究、evidence quality、Human Decision 與 bounded Trial 接回正常 System Self-Improvement / Core Change / Git Publish 流程，但本身不取得 implementation、merge 或 release authority。
 
 ## Weekly Signal Scan

@@ -8,6 +8,7 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 Portable Commands 以 Canonical ID（例如 `aips.plan`）將同一治理工作流渲染為 Slash Command、Skill 或 generic MCP bootstrap；它是 advisory access plane，不取代 Runtime-native Adapter 的 turn hook 或 pre-tool guard。
 
+
 ~~~text
 User Prompt
 → MCP Access Plane 或 Runtime-native Adapter
@@ -48,6 +49,8 @@ repository_id
 EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才使用 project-local .ai/。
 
 ## Planning 與 Product Delivery
+
+Runtime Context 共用驗證 Python 選擇與 runtime 路徑解析，讓 CLI、local validation 與 publication preflight 使用同一套能力判定。Scenario 198 以確定性矩陣覆蓋安裝型態、Python、cache、網路與平台組合。
 
 大型產品先形成 Planning Package。可選的 `PLANNING_MANIFEST.yaml` 對 artifact 狀態、適用性、依賴與 requirement-to-artifact links 提供 deterministic structural validation；研究、產品方向、UX 與 domain/API 選擇仍由既有專業角色交叉審查。Gate 1 與 Gate 2 各自保留 Human approval。舊 package 沒有 manifest 時仍相容。產品生命週期維持：
 

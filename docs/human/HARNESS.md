@@ -4,6 +4,8 @@ AIPS 的 Agent integration 分成 **Portable MCP Access Plane** 與 **Runtime-na
 
 本機 CLI 與 Runtime adapter 共用 checkout-root-aware 的 AIPS commands。`aips integration-gate` 使用已準備好的 Python 3.12 驗證環境；Publication Preflight 對文件候選直接呼叫已安裝的 VitePress bundle，不會自動安裝套件或連接 registry。
 
+Runtime Context 統一解析驗證 Python 與 cache/config 路徑；它將 Playwright 套件、瀏覽器執行檔和實際啟動驗證分開回報，也不會宣稱未驗證的 sandbox 能力。
+
 ## Integration model
 
 ~~~text

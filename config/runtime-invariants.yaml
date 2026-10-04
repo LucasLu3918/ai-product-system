@@ -1,0 +1,14 @@
+version: 1
+policy:
+  coverage: exhaustive_cross_product
+  maximum_cases: 128
+  fail_on_duplicate_cases: true
+dimensions:
+  invocation_mode: [source_checkout, linked_worktree, installed_system]
+  python_mode: [system_base, validation_venv, partial_runtime]
+  cache_mode: [default_home, explicit_xdg, private_fallback]
+  network_mode: [online, offline]
+  platform_family: [posix, windows]
+high_risk_combinations:
+  - {invocation_mode: linked_worktree, python_mode: validation_venv, cache_mode: explicit_xdg, network_mode: offline, platform_family: posix}
+  - {invocation_mode: installed_system, python_mode: partial_runtime, cache_mode: private_fallback, network_mode: offline, platform_family: posix}

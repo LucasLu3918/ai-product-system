@@ -1,5 +1,7 @@
 # Security Assurance
 
+Runtime Context 僅回報必要路徑、能力旗標與選擇原因；不得序列化環境變數、token、憑證檔案內容或含機密的命令輸出。
+
 Security review depth is proportional to the actual product/feature risk. The system does not apply the same heavy security process to every change.
 
 ## Core model

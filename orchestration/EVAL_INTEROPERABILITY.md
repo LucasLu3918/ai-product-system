@@ -1,5 +1,7 @@
 # Eval / Red-Team Interoperability
 
+Scenario 198 adds lifecycle evidence for Runtime Context and deterministic environment combinations; the registry remains the source of executable coverage claims.
+
 ## Authority and data flow
 
 OpenAPI implementation evidence is deterministic contract-validation evidence, not an external eval result. It may feed a quality decision only with its source digests and exact revision intact; it does not imply semantic quality or approval.

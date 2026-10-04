@@ -185,27 +185,12 @@ python_bin() {
 validation_python_for_root() {
   local root="$1"
   local require_full="${2:-true}"
-  local base="" prepared_venv="" candidate="" venv_candidate=""
-  base="$(python_bin)"
-  if [ -n "$base" ] && [ -f "$root/bin/prepare-local-validation" ]; then
-    prepared_venv="$("$base" -c 'import hashlib, pathlib, sys, tempfile; root=pathlib.Path(sys.argv[1]).resolve(); print(pathlib.Path(tempfile.gettempdir()) / ("aips-validation-" + hashlib.sha256(str(root).encode()).hexdigest()[:12]))' "$root" 2>/dev/null || true)"
-  fi
-  if [ -n "${AIPS_VALIDATION_VENV:-}" ]; then
-    venv_candidate="$AIPS_VALIDATION_VENV/bin/python"
-  fi
-  for candidate in "${AIPS_VALIDATION_PYTHON:-}" "$venv_candidate" "$root/.venv/bin/python" "$prepared_venv/bin/python" "$base"; do
-    [ -x "$candidate" ] || continue
-    if [ "$require_full" = "true" ]; then
-      if "$candidate" -c 'import yaml, ruff, mypy, playwright, openapi_spec_validator, jsonschema, cryptography; import sys; raise SystemExit(0 if sys.version_info[:2] == (3, 12) else 1)' >/dev/null 2>&1; then
-        printf '%s\n' "$candidate"
-        return 0
-      fi
-    elif "$candidate" -c 'import yaml' >/dev/null 2>&1; then
-      printf '%s\n' "$candidate"
-      return 0
-    fi
-  done
-  return 1
+  local base="" full_flag=""
+  base="$(command -v python3 || python_bin)"
+  [ -n "$base" ] || return 1
+  [ "$require_full" = "true" ] && full_flag="--require-full"
+  "$base" "$SYSTEM_DIR/scripts/runtime_context.py" resolve-python \
+    --system-root "$SYSTEM_DIR" --project-root "$root" $full_flag 2>/dev/null
 }
 
 compatible_python_bin() {

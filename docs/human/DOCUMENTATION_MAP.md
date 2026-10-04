@@ -1,5 +1,7 @@
 # 文件導覽
 
+Runtime Context 行為契約位於 `orchestration/RUNTIME_CONTEXT.md`，範例輸出位於 `templates/runtime/RUNTIME_CONTEXT.yaml`；人類閱讀入口是架構總覽與 Technology Guide。
+
 Human Docs 依使用目的組織，而不是依版本號堆疊。
 
 ## Official Docs Site

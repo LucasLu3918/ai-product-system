@@ -1,5 +1,7 @@
 # 文件一致性契約（Documentation Consistency Contract）
 
+Runtime Context 的 Agent canonical 文件為 `orchestration/RUNTIME_CONTEXT.md`；Runtime Context、矩陣及 Scenario 198 改動時，需同步架構、Technology Guide、Conformance 與 Integration Gate 說明。
+
 Human Docs 與 Agent canonical protocols 分工，但 behavior-bearing change 必須同步更新適用文件。
 
 ## 文件角色

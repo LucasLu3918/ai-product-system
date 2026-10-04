@@ -4,6 +4,29 @@ policy:
   capability_accounting: complete
   validation_binding: scenario_or_repository_validator
 surfaces:
+  - id: runtime-context
+    capabilities:
+      - unified-runtime-path-resolution
+      - validation-interpreter-capability-selection
+      - runtime-invariant-matrix
+    required_paths:
+      - scripts/runtime_context.py
+      - scripts/runtime_cache.py
+      - scripts/runtime_invariant_matrix.py
+      - config/runtime-invariants.yaml
+      - orchestration/RUNTIME_CONTEXT.md
+      - templates/runtime/RUNTIME_CONTEXT.yaml
+      - bin/aips
+      - bin/prepare-local-validation
+      - scripts/publish_preflight.py
+      - config/integration-gate.yaml
+      - tests/scenarios/198-runtime-context-invariant-matrix.md
+    canonical_docs: [orchestration/RUNTIME_CONTEXT.md]
+    validation_paths:
+      - tests/evidence/runtime_context_lifecycle.py
+      - scripts/runtime_invariant_matrix.py
+      - tests/validate_repository.py
+
   - id: harness-runtime
     capabilities:
       - turn-aware-global-harness
