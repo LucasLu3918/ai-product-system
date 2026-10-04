@@ -346,3 +346,5 @@ When Core Change Testing requires independent review, schedule a separate read-o
 After merge, use the updated checkout CLI `publish post-merge --fetch --sync-installed --apply` to verify target main and the registered installed system. Installed synchronization refuses dirty/wrong-branch, different remote, stale target and divergent history; it never resets the installation or grants publication authority.
 
 The orchestrator routes AIPS-owned persistence through `safe_emit` and keeps content safety separate from publish authorization. Untrusted external content carries provenance and cannot grant protected tool authority.
+
+`bin/aips` is the public thin launcher: it resolves the repository root and forwards arguments to `scripts/aips_cli.sh`. Keep command dispatch, installed-link behavior, exit status, and user-visible output compatible while implementation modules are extracted incrementally.

@@ -363,7 +363,7 @@ Keep the top-level validator as an aggregator. New substantial validation belong
 
 `scripts/repository_preflight.py` 先跑快速文件／schema／diff 檢查；通過後才進入完整 lifecycle。環境缺少 localhost bind 或 browser 時回報 `ENVIRONMENT_BLOCKED`，不混稱產品測試失敗。
 
-
+The public `bin/aips` launcher must remain a small argument-preserving handoff to `scripts/aips_cli.sh`; preserve source-checkout and installed-symlink entry paths. Keep publication policy calculations in `scripts/publish_preflight_policy.py`, with Git and environment orchestration in `scripts/publish_preflight.py`. Validator imports belong to the explicit ordered `tests/validation/registry.py`; preserve import order, timing labels, error aggregation order, and the single execution owner for lifecycle evidence.
 
 ## Deterministic Scheduler / Integration Gate consistency
 

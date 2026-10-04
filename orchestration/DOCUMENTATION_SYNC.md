@@ -164,3 +164,5 @@ Temporal Project Intelligence evidence is recorded in the existing Project Intel
 Do not satisfy documentation impact by appending a version/scenario note at the end of USER_GUIDE, ARCHITECTURE_OVERVIEW, HARNESS, INSTALLATION, TECHNOLOGY_GUIDE, or EVOLUTION_RADAR_OVERVIEW. Release history belongs in CHANGELOG; verification history belongs in CONFORMANCE.
 
 `docs/human/` is also the VitePress source root. VitePress is a renderer only; it does not create a second canonical copy. PR/main can always validate the static build. GitHub Pages hosting is a separate repository setting: when not configured, deployment reports `SKIPPED_NOT_CONFIGURED` instead of misreporting a documentation build failure.
+
+Before editing Human docs for a new behavior-bearing source, add its path to `config/documentation-placement.yaml` and name the exact canonical sections. Keep the source mapping, documentation-sync closure, and Agent protocol updates in one candidate so preflight can verify changed lines against the declared topics.

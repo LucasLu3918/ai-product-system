@@ -84,6 +84,8 @@ Structured unknown dispositions extend that same contract: repository-file evide
 
 Agent 由 AGENTS.md / SYSTEM.md 進入，按需讀取 orchestration/、roles/、skills/。Official Docs Site 不複製這些 protocol 成第二份 Human source。
 
+CLI entry-point and publication-preflight modularization map to this document, Architecture Overview, Maintenance, Technology Guide, User Guide, Conformance, Security Assurance, and the relevant orchestration contracts.
+
 ## Shared canonical 文件
 
 docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGELOG.md 是 release history。

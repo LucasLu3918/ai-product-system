@@ -187,3 +187,5 @@ The Integration Gate runs the content-safety lifecycle for affected candidates a
 Runtime Policy changes require deterministic evaluator and native-hook lifecycle checks plus the mandatory exact-candidate secret scan. Live external sandbox/provider credentials are not baseline gate dependencies; absent verification must continue to produce a blocking runtime decision.
 
 Publication preview scans the exact tracked diff and bounded untracked candidate files before expensive lifecycle validation. Unscannable inputs block preview; findings expose only detector type and source location. The same preview checks that configured commit email matches the repository's allowed identity policy.
+
+`tests/validate_repository.py` loads repository contract modules from `tests/validation/registry.py`, whose order and timing labels are explicit. Lifecycle evidence remains a separate ordered list. The Gate fails if a registered import fails, and accumulated contract errors retain their established aggregation order.

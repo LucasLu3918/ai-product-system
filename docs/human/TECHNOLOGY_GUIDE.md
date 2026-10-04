@@ -113,6 +113,8 @@ Remote Git publication uses the built-in credential-free candidate scanner in st
 
 The first dashboard implementation uses Python stdlib HTTP, static HTML/CSS/Vanilla JavaScript and polling. It has no frontend dependency chain, database, WebSocket or mutation endpoint. API output is a whitelist and excludes prompts, reasoning, raw output, secrets and raw paths.
 
+CLI architecture: `bin/aips` resolves the checkout and forwards all arguments to `scripts/aips_cli.sh`. Publication policy helpers in `scripts/publish_preflight_policy.py` are deterministic and receive the repository root explicitly; `scripts/publish_preflight.py` owns environment probes, Git reads, candidate evaluation, and CLI output. Repository validation imports the registered validator modules through `tests/validation/registry.py` in a declared order.
+
 ## Security & Governance
 
 ### Security Assurance Level

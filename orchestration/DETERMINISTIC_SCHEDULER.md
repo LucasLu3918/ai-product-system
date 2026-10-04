@@ -200,3 +200,5 @@ Publication uses `aips publish checks --pr <number> --head <sha>` for latest-che
 Content safety decisions used by deterministic execution and publication preflight must be provider-neutral and reproducible. Optional semantic classifiers may emit advisory signals only and cannot be the sole release decision.
 
 Runtime action authorization is evaluated at the native tool boundary by Runtime Policy Enforcement; task dispatch metadata does not grant action approval or network-egress isolation.
+
+Publication preflight policy calculations are isolated in `scripts/publish_preflight_policy.py` and remain deterministic; repository filesystem inputs are rooted at an explicit `Path`. `scripts/publish_preflight.py` remains responsible for Git, runtime probes, candidate orchestration, and publication evidence.

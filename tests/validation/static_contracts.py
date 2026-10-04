@@ -617,7 +617,10 @@ if "<svg" not in lifecycle_svg or "Installation, Harness &amp; Intelligence Life
 if "EPHEMERAL" not in lifecycle_svg or "ATTACHED" not in lifecycle_svg or "managed adapters" not in lifecycle_svg:
     errors.append("System lifecycle SVG must reflect Harness adapters and EPHEMERAL/ATTACHED Intelligence modes")
 
-cli_text = (ROOT / "bin/aips").read_text(encoding="utf-8") if (ROOT / "bin/aips").exists() else ""
+cli_text = (ROOT / "bin/aips").read_text(encoding="utf-8") + "\n" + (ROOT / "scripts/aips_cli.sh").read_text(encoding="utf-8") if (ROOT / "bin/aips").exists() and (ROOT / "scripts/aips_cli.sh").exists() else ""
+launcher_lines = (ROOT / "bin/aips").read_text(encoding="utf-8").splitlines() if (ROOT / "bin/aips").exists() else []
+if len(launcher_lines) > 24 or 'exec "$BASH" "$SYSTEM_DIR/scripts/aips_cli.sh" "$@"' not in "\n".join(launcher_lines):
+    errors.append("bin/aips must stay a thin argument-preserving dispatcher to scripts/aips_cli.sh")
 for phrase in ("aips attach <project-path>", "aips detach <project-path>", "aips status <project-path>", "aips harness install", "aips harness uninstall", "aips harness status", "aips harness doctor", "aips harness resolve", "aips intelligence bootstrap", "aips intelligence status", "aips intelligence context", "aips intelligence render"):
     if phrase not in cli_text:
         errors.append(f"bin/aips missing lifecycle command: {phrase}")

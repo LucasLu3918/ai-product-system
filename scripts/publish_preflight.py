@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import fnmatch
 import json
 import os
 import re
@@ -24,6 +23,7 @@ if str(ROOT / "scripts") not in sys.path:
 
 import documentation_placement  # noqa: E402
 import repository_preflight  # noqa: E402
+from publish_preflight_policy import documentation_impact, matrix_required, matches, pr_creation_plan, resolve_change_class
 from runtime_context import collect_runtime_context
 from integration_gate import load_yaml as load_matrix_yaml
 from integration_gate import matrix_readiness_issues
@@ -79,86 +79,6 @@ def canonical_hash(value: Any) -> str:
     import hashlib
 
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
-
-
-def matches(paths: list[str], patterns: list[str]) -> bool:
-    return any(fnmatch.fnmatchcase(path, pattern) for path in paths for pattern in patterns)
-
-
-def resolve_change_class(explicit: str, labels: str) -> tuple[str, str | None]:
-    label_set = {item.strip() for item in labels.split(",") if item.strip()}
-    label_class = "core" if "aips:core-change" in label_set else "large" if "aips:large-change" in label_set else "standard"
-    if explicit == "auto":
-        return label_class, None
-    warning = None if explicit == label_class or not labels else f"explicit {explicit} differs from labels ({label_class})"
-    return explicit, warning
-
-
-def pr_creation_plan(change_class: str) -> dict[str, Any]:
-    label = {"core": "aips:core-change", "large": "aips:large-change"}.get(change_class)
-    return {
-        "required_label": label,
-        "gh_create_args": ["gh", "pr", "create", *(["--label", label] if label else [])],
-        "label_timing": "initial_create_request" if label else "not_required",
-        "note": "Include the change-class label in the PR creation request when the route supports it. GitHub may still emit a separate labeled event; classification-label changes rerun the full Gate, while unrelated label events skip the Gate without cancelling active validation and require matching successful full Gate evidence.",
-    }
-
-
-def matrix_required(profile: dict[str, Any], files: list[str], change_class: str) -> bool:
-    if change_class in (profile.get("matrix_required_change_classes") or []):
-        return True
-    return matches(files, [str(item) for item in profile.get("matrix_required_paths") or []])
-
-
-def documentation_impact(files: list[str]) -> dict[str, Any]:
-    sync = yaml.safe_load((ROOT / "config/documentation-sync.yaml").read_text(encoding="utf-8")) or {}
-    placement = yaml.safe_load((ROOT / "config/documentation-placement.yaml").read_text(encoding="utf-8")) or {}
-    closure = set(files)
-    triggered: dict[str, dict[str, Any]] = {}
-    required_by: dict[str, set[str]] = {}
-    placement_hits = []
-    for rule in placement.get("placement_rules") or []:
-        patterns = [str(item) for item in rule.get("triggers") or []]
-        if not matches(files, patterns):
-            continue
-        placements = rule.get("placements") or {}
-        placement_hits.append({"id": rule.get("id"), "placements": placements})
-        for path in placements:
-            target = str(path)
-            required_by.setdefault(target, set()).add(f"placement:{rule.get('id')}")
-            closure.add(target)
-    changed = True
-    while changed:
-        changed = False
-        current = sorted(closure)
-        technology = sync.get("technology_guide") or {}
-        if matches(current, [str(item) for item in technology.get("triggers") or []]):
-            target = str(technology.get("path") or "")
-            if target:
-                required_by.setdefault(target, set()).add("technology-guide")
-                if target not in closure:
-                    closure.add(target)
-                    changed = True
-        for rule in sync.get("rules") or []:
-            patterns = [str(item) for item in rule.get("triggers") or []]
-            if not matches(current, patterns):
-                continue
-            required = [str(item) for item in (rule.get("human_docs") or []) + (rule.get("agent_docs") or [])]
-            triggered.setdefault(str(rule.get("id")), {"required": required})
-            for path in required:
-                required_by.setdefault(path, set()).add(f"sync:{rule.get('id')}")
-            before = len(closure)
-            closure.update(required)
-            changed = changed or len(closure) != before
-    required = sorted(closure - set(files))
-    return {
-        "changed_files": files,
-        "triggered_rules": triggered,
-        "required_additions": required,
-        "required_by": {path: sorted(required_by.get(path, set())) for path in required},
-        "complete": not required,
-        "placement_rules": placement_hits,
-    }
 
 
 def environment_status() -> dict[str, Any]:
@@ -287,7 +207,7 @@ def preview_candidate(args: argparse.Namespace) -> dict[str, Any]:
     matrix_path = Path(args.matrix).resolve() if args.matrix else CANONICAL_MATRIX.resolve()
     if required and matrix_path == CANONICAL_MATRIX.resolve():
         files = sorted(set(files) | {str(CANONICAL_MATRIX.relative_to(ROOT))})
-    docs = documentation_impact(files)
+    docs = documentation_impact(files, ROOT)
     placement_errors = documentation_placement.audit_worktree(base)
     matrix_hash = canonical_hash(files)
     binding: dict[str, Any] = {"required": required, "path": str(matrix_path), "changed_files_hash": matrix_hash}
@@ -597,7 +517,7 @@ def build_plan(args: argparse.Namespace, environment: dict[str, Any] | None = No
         blockers.append("publish preflight source root does not match the Git checkout root")
     if required and not matrix_ok:
         blockers.append("canonical Core Change Test Matrix is required")
-    docs = documentation_impact(files)
+    docs = documentation_impact(files, ROOT)
     if not docs["complete"]:
         blockers.append("documentation impact is incomplete")
     if git("status", "--porcelain"):
@@ -927,7 +847,7 @@ def main() -> int:
     args = parser.parse_args()
     try:
         if args.command == "docs-impact":
-            impact = documentation_impact(changed_files(resolve_commit(args.base), resolve_commit(args.head)))
+            impact = documentation_impact(changed_files(resolve_commit(args.base), resolve_commit(args.head)), ROOT)
             emit(impact, args.format)
             if args.summary_file:
                 with Path(args.summary_file).open("a", encoding="utf-8") as summary:

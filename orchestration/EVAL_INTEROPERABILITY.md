@@ -59,3 +59,5 @@ The versioned profiles in `config/eval-profiles.yaml` cover ordinary changes, pr
 ## Format references
 
 The adapter intentionally supports a small static subset because Promptfoo accepts file-backed and executable configuration in addition to inline cases ([Promptfoo configuration guide](https://www.promptfoo.dev/docs/configuration/guide/), [reference](https://www.promptfoo.dev/docs/configuration/reference/)). PyRIT is an evolving framework with modular scenarios, attacks, converters, targets, scorers and memory; AIPS therefore accepts a versioned bridge envelope instead of claiming native-format compatibility ([PyRIT framework](https://github.com/microsoft/PyRIT/blob/main/doc/code/framework.md)).
+
+The repository validator registry includes `validation.eval_interop_contracts` without changing Eval evidence authority. Registry order and the existing error-aggregation order are explicit; scenario and evidence lifecycles keep their single execution owner.

@@ -10,7 +10,7 @@ import yaml
 
 from .static_contracts import ROOT, errors, load_yaml, roles, skills, scenarios, version
 
-for shell in ("bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "harness/adapters/gemini-cli/hooks/aips-turn-context.sh", "harness/adapters/gemini-cli/hooks/aips-governance-guard.sh"):
+for shell in ("bin/aips", "scripts/aips_cli.sh", "scripts/bootstrap.sh", "scripts/uninstall.sh", "harness/adapters/gemini-cli/hooks/aips-turn-context.sh", "harness/adapters/gemini-cli/hooks/aips-governance-guard.sh"):
     p = ROOT / shell
     if p.exists():
         result = subprocess.run(["bash", "-n", str(p)], capture_output=True, text=True)
