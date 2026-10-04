@@ -51,7 +51,7 @@ Core capsule 目標上限為 1,600 tokens，Recall 為 6,000，組裝總估值�
 
 CLI 預設 YAML 只顯示精簡 Context；`--full` 可查看完整診斷，JSON 格式保留機器可讀的完整結構。`full_manifest_characters` 是完整序列化字元數，不是模型 token 數。
 
-Architecture 摘要、核准覆寫與時序文字在進入 Runtime Context 前共用 Runtime Content Safety Boundary。檢索索引不可用時回報穩定錯誤類別與修復指引，同時保留 canonical source pointers。
+Architecture 摘要、核准覆寫與時序文字在進入 Runtime Context 前共用 Runtime Content Safety Boundary。檢索索引不可用時回報穩定錯誤類別與修復指引，同時保留 canonical source pointers。讀取快取受限時會嘗試經驗證的唯讀快照；索引落後目前 revision 時的自動刷新需要 SQLite 快取目錄可寫（含 sidecar 檔）。若沙盒只允許讀取，應為目前 Runtime 指定可寫的 `XDG_CACHE_HOME` 或在可寫 Runtime 中刷新索引；診斷會明確指出寫入需求，不會將舊索引標示為最新，也不會因一般寫入拒絕就要求強制重建。
 
 ## Attach / Detach
 

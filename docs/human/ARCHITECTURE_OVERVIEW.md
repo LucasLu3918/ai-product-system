@@ -26,7 +26,7 @@ Squash merge 後的 revision refresh 只有在舊／新 Git tree 完全一致時
 
 Existing Project 第一次需要廣泛理解或修改時，先 read-only bootstrap，再建立 Architecture / Data Flow / Modules / Contracts / Tests / Security / Operations 等 stable Intelligence。
 
-後續 Turn 以 Just-in-Time Retrieval 取得 task-relevant code、symbols、tests、Impact Graph 與 Git history；retrieval cache 可重建，不取得治理 authority。受限 runtime 若在 SQLite 建立唯讀連線後的首次查詢才失敗，仍可在沒有 live WAL 且來源穩定時使用經完整性檢查的暫時快照。
+後續 Turn 以 Just-in-Time Retrieval 取得 task-relevant code、symbols、tests、Impact Graph 與 Git history；retrieval cache 可重建，不取得治理 authority。受限 runtime 若在 SQLite 建立唯讀連線後的首次查詢才失敗，仍可在沒有 live WAL 且來源穩定時使用經完整性檢查的暫時快照。索引落後目前 revision 時，刷新需要 SQLite cache 與 sidecar 可寫；寫入受限會回報獨立診斷，不會把舊索引當成最新。
 
 修改既有專案時，Change Impact 會把 canonical Impact Graph、可重建的本機 lexical code relations 與本次 traversal evidence 分成三層。依風險設定 caller/consumer 深度與 node/edge 上限；結果會列出受影響但未修改的檔案供 review。Lexical 關係是候選而非編譯器解析結果；動態 dispatch、圖涵蓋不足、索引過期或預算截斷都會標成 unknown/incomplete，高風險情境不能據此宣稱完整。
 

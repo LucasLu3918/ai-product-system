@@ -1012,9 +1012,22 @@ def write_metadata_file(store: Path, doc: dict[str, Any]) -> None:
     os.replace(temp, path)
 
 
-def index_unavailable(exc: BaseException, *, token_budget: int = 0, query: str | None = None) -> dict[str, Any]:
+def index_unavailable(
+    exc: BaseException,
+    *,
+    token_budget: int = 0,
+    query: str | None = None,
+    operation: str = "read",
+) -> dict[str, Any]:
     message = str(exc).lower()
-    if "unable to open database file" in message or "database or disk is full" in message:
+    if operation == "refresh" and (
+        "unable to open database file" in message
+        or isinstance(exc, PermissionError)
+        or "permission denied" in message
+        or "operation not permitted" in message
+    ):
+        code = "RETRIEVAL_CACHE_WRITE_ACCESS_DENIED"
+    elif "unable to open database file" in message or "database or disk is full" in message:
         code = "SQLITE_OPEN_FAILED"
     elif isinstance(exc, PermissionError) or "permission denied" in message or "operation not permitted" in message:
         code = "RETRIEVAL_CACHE_ACCESS_DENIED"
@@ -1024,6 +1037,13 @@ def index_unavailable(exc: BaseException, *, token_budget: int = 0, query: str |
         code = "RETRIEVAL_INDEX_UNAVAILABLE"
     if code == "SQLITE_DATABASE_INVALID":
         remediation = "Rebuild the disposable index with aips intelligence index --project <project> --force."
+    elif code == "RETRIEVAL_CACHE_WRITE_ACCESS_DENIED":
+        remediation = (
+            "The retrieval index is stale and needs a SQLite write refresh. Allow the current runtime "
+            "to write the configured AIPS cache (including SQLite sidecar files), or set XDG_CACHE_HOME "
+            "to a cache directory writable by this runtime; then retry retrieval. Do not force-rebuild "
+            "unless the index is reported invalid."
+        )
     elif code == "RETRIEVAL_CACHE_ACCESS_DENIED":
         remediation = "Allow the current runtime to read the configured AIPS cache, or choose an accessible XDG_CACHE_HOME; then retry retrieval."
     else:
@@ -1047,7 +1067,7 @@ def index_repository(root: Path, store: Path, force: bool = False) -> dict[str, 
     try:
         conn, fts_available = open_db(db_path)
     except (OSError, sqlite3.Error) as exc:
-        return index_unavailable(exc)
+        return index_unavailable(exc, operation="refresh")
     try:
         old_schema = metadata_get(conn, "schema_version")
         old_head = metadata_get(conn, "git_head")

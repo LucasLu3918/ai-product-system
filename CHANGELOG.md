@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Distinguish read-only retrieval access from stale-index refresh write denial and provide cache-write-specific recovery guidance without weakening stale-index checks.
+
 ## 0.72.1
 
 - Select a complete prepared Python 3.12 validation environment before starting the local Integration Gate; report missing OpenAPI dependencies and docs build prerequisites early.

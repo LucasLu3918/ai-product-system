@@ -266,6 +266,21 @@ def main() -> int:
         restricted = RI.index_unavailable(sqlite3.OperationalError("unable to open database file"))
         require(restricted["reason_code"] == "SQLITE_OPEN_FAILED" and "sandbox" in restricted["remediation"],
                 "restricted SQLite reads must suggest checking runtime access before rebuilding")
+        refresh_denied = RI.index_unavailable(
+            sqlite3.OperationalError("unable to open database file"), operation="refresh"
+        )
+        require(
+            refresh_denied["reason_code"] == "RETRIEVAL_CACHE_WRITE_ACCESS_DENIED"
+            and "write" in refresh_denied["remediation"]
+            and "XDG_CACHE_HOME" in refresh_denied["remediation"],
+            "stale-index refresh failures must explain the cache write requirement and safe recovery",
+        )
+        with patch.object(RI, "open_db", side_effect=sqlite3.OperationalError("unable to open database file")):
+            refresh_result = RI.index_repository(project, store)
+        require(
+            refresh_result["reason_code"] == "RETRIEVAL_CACHE_WRITE_ACCESS_DENIED",
+            "index refresh must identify cache write denial instead of reporting a generic open failure",
+        )
         denied = RI.index_unavailable(PermissionError("Operation not permitted"))
         require(denied["reason_code"] == "RETRIEVAL_CACHE_ACCESS_DENIED" and "read" in denied["remediation"],
                 "cache access errors must identify the read permission boundary")
