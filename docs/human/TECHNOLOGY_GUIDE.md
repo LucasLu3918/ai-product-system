@@ -135,6 +135,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Publication CLI 的 help 不啟動完整驗證。docs impact 與 publication 共用 active-checkout routing；OpenAPI CLI 則呼叫安裝版工具並明確傳入 product root。驗證環境會核對 Python 3.12 的 venv prefix，保留原本 GitHub 設定位置，並把設定位置未確認與網路／依賴／localhost／browser 阻擋分開呈現。
+
 Publication routing uses an explicit project root or the current AIPS Git checkout; the selected validation Python also serves Intelligence commands. Label-only aggregates require matching prior full Janitor success via actions-read metadata and candidate-bound run titles. CI reports documentation precheck failures, Gate duration and the slowest ten repository checks in Step Summaries. setup-node v7 uses Node 24 and Pages artifact v5 delegates to artifact v7 on Ubuntu 24.04. Existing npm caches and check-only prepared environments reduce installation work while PR/main validation stays complete.
 
 When a validation contract executes a Python helper directly, that invocation also checks syntax; retain separate compilation only for files not executed by that validation path.

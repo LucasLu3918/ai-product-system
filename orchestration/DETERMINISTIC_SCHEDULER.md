@@ -1,5 +1,7 @@
 # Deterministic Scheduler
 
+CLI help must not schedule validation work. Local preparation preserves gh configuration references while isolating AIPS state and rejects a mismatched venv before dependency checks. Docs impact follows the selected checkout. Existing timing evidence supports removal of accidental duplicate runs without skipping the required exact-candidate Gate or PR/main checks.
+
 Use after planning when one approved change is decomposed into multiple bounded tasks that may execute independently.
 
 The Scheduler is deterministic code, not a Role, Agent, approval gate or architecture decision-maker.

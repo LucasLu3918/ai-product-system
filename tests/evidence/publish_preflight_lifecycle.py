@@ -85,11 +85,26 @@ def main() -> int:
         ), patch("venv.EnvBuilder") as builder, patch.dict(
             local_validation["main"].__globals__, {"run": Mock(return_value=True)}
         ), patch.object(subprocess, "run", return_value=Mock(returncode=0, stdout='{"status":"READY"}')):
-            assert local_validation["main"]() == 0
+            with patch.dict(local_validation["main"].__globals__, {"validation_venv_ready": Mock(return_value=True)}):
+                assert local_validation["main"]() == 0
             builder.assert_called_once()
             calls = local_validation["main"].__globals__["run"].call_args_list
             install = calls[0].args[0]
             assert "--no-index" in install and str(wheelhouse.resolve()) in install
+    isolate = local_validation["isolated_config_env"]
+    with patch.dict(os.environ, {"XDG_CONFIG_HOME": "/original-config"}, clear=True):
+        isolated = isolate("/isolated-config")
+        assert isolated["GH_CONFIG_DIR"] == "/original-config/gh"
+        assert isolated["XDG_CONFIG_HOME"] == "/isolated-config"
+        assert "GH_CONFIG_DIR" not in os.environ
+    with patch.dict(os.environ, {"GH_CONFIG_DIR": "/explicit-gh"}, clear=True):
+        assert isolate("/isolated-config")["GH_CONFIG_DIR"] == "/explicit-gh"
+    with patch.dict(os.environ, {}, clear=True):
+        assert isolate("/isolated-config")["GH_CONFIG_DIR"] == str(Path.home() / ".config/gh")
+    with patch.object(subprocess, "run", return_value=Mock(returncode=0, stdout=json.dumps({
+        "prefix": "/base", "base_prefix": "/base", "version": [3, 12],
+    }))):
+        assert not local_validation["validation_venv_ready"](Path(sys.executable), Path("/requested"))
     from integration_gate import GateError, matrix_fingerprint
 
     change_class, warning = publish.resolve_change_class("auto", "bug,aips:core-change")
@@ -225,13 +240,21 @@ def main() -> int:
             else:
                 assert matrix_fingerprint(matrix_path, True, base_sha="base-sha", changed_files_hash=matrix_hash)[0]
 
-    with patch.object(publish.shutil, "which", return_value="/usr/bin/gh"), patch.object(
+    with patch.dict(os.environ, {}, clear=True), patch.object(publish.shutil, "which", return_value="/usr/bin/gh"), patch.object(
         publish, "git", return_value="https://github.com/owner/repo.git"
     ), patch.object(publish.subprocess, "run", return_value=Mock(returncode=1, stderr="private error", stdout="")):
         auth = publish.remote_policy("main", False)
     assert auth["status"] == "AUTH_REQUIRED"
-    assert "gh auth login" in auth["next_step"]
+    assert "GH_CONFIG_DIR" in auth["next_step"]
     assert "private error" not in repr(auth)
+    with patch.dict(os.environ, {"XDG_CONFIG_HOME": "/isolated"}, clear=True), patch.object(
+        publish.shutil, "which", return_value="/usr/bin/gh"
+    ), patch.object(publish, "git", return_value="https://github.com/owner/repo.git"), patch.object(
+        publish.subprocess, "run", return_value=Mock(returncode=1, stderr="private error", stdout="")
+    ):
+        isolated_auth = publish.remote_policy("main", False)
+    assert isolated_auth["status"] == "AUTH_CONFIGURATION_UNVERIFIED"
+    assert "GH_CONFIG_DIR" in isolated_auth["next_step"] and "private error" not in repr(isolated_auth)
     with patch.object(publish.shutil, "which", return_value="/usr/bin/gh"), patch.object(
         publish, "git", return_value="https://github.com/owner/repo.git"
     ), patch.object(publish.subprocess, "run", return_value=Mock(returncode=1, stderr="lookup api.github.com: no such host", stdout="")):
@@ -590,6 +613,44 @@ def main() -> int:
         assert implicit.returncode == 0, implicit.stderr
         assert json.loads(implicit.stdout.strip().splitlines()[-1]) == ["plan", "--probe", "implicit"]
         assert f"target={fake_project.resolve()}" in implicit.stderr
+        for options in ([], ["--project-root", str(fake_project)]):
+            docs_cli = subprocess.run(
+                [shell, str(ROOT / "bin/aips"), "docs", "impact", "--base", "fixture-base", *options],
+                cwd=fake_project, env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable},
+                capture_output=True, text=True,
+            )
+            assert docs_cli.returncode == 0, docs_cli.stderr
+            assert json.loads(docs_cli.stdout.strip()) == ["docs-impact", "--base", "fixture-base"]
+            assert f"target={fake_project.resolve()}" in docs_cli.stderr
+        for action, expected in (("--help", 0), ("--unknown", 1)):
+            safe_help = subprocess.run(
+                [shell, str(ROOT / "bin/aips"), "validate", action],
+                cwd=root, env={**os.environ, "AIPS_VALIDATION_PYTHON": "/missing-python", "PATH": "/usr/bin:/bin"},
+                capture_output=True, text=True,
+            )
+            assert safe_help.returncode == expected and "validate" in safe_help.stdout + safe_help.stderr
+        product = root / "product"
+        product.mkdir()
+        for action in ("compare", "run-contract-tests", "verify-evidence", "generator"):
+            tool_help = subprocess.run(
+                [shell, str(ROOT / "bin/aips"), "openapi", action, "--help"],
+                cwd=product, env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable}, capture_output=True, text=True,
+            )
+            assert tool_help.returncode == 0 and "--repo-root" in tool_help.stdout, tool_help.stderr
+        spec_path = product / "openapi.yaml"
+        spec_path.write_text("openapi: 3.0.3\ninfo: {title: Independent product, version: '1.0'}\npaths: {}\n")
+        contract_cli = subprocess.run(
+            [shell, str(ROOT / "bin/aips"), "openapi", "validate", "openapi.yaml", "--repo-root", ".", "--output", str(product / "validation.json")],
+            cwd=product, env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable}, capture_output=True, text=True,
+        )
+        assert contract_cli.returncode == 0, contract_cli.stdout + contract_cli.stderr
+        assert (product / "validation.json").is_file() and not (product / "scripts").exists()
+        spec_path.write_text("openapi: 3.0.3\ninfo: {title: Independent product, version: '1.0'}\npaths: {}\ncomponents:\n  schemas:\n    External: {$ref: 'https://example.invalid/schema.yaml'}\n")
+        blocked_cli = subprocess.run(
+            [shell, str(ROOT / "bin/aips"), "openapi", "validate", "openapi.yaml", "--repo-root", "."],
+            cwd=product, env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable}, capture_output=True, text=True,
+        )
+        assert blocked_cli.returncode != 0, "installed routing must retain remote-reference blocking"
         intelligence_cli = subprocess.run(
             [shell, str(ROOT / "bin/aips"), "intelligence", "--help"],
             env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable}, capture_output=True, text=True,

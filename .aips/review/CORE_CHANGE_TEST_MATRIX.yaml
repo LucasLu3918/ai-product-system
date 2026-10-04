@@ -1,61 +1,57 @@
 version: 1
 change:
-  id: phase11-product-onboarding
-  summary: AI onboarding workflow, product evidence freshness lifecycle and validation
-    efficiency guidance.
+  id: phase11-cli-reliability
+  summary: Correct CLI routing, isolated GitHub configuration and onboarding execution;
+    reject invalid validation environments.
   boundary:
-  - openapi-product-onboarding
-  - openapi-evidence-freshness-and-recovery
-  - validation-and-documentation-closure
+  - publication-cli-routing
+  - validation-environment-configuration
+  - product-onboarding-tool-entry
 matrix:
-- boundary: openapi-product-onboarding
-  reason: The shared OpenAPI pilot guides real-product adoption while preserving product
-    contract authority, local generation and acceptance boundaries.
+- boundary: publication-cli-routing
+  reason: CLI source checkout, help and product-root consumers need deterministic
+    regression evidence.
   checks:
     static_lint:
       applicable: true
-      evidence: Critical Ruff and git diff --check; repository static contracts validate
-        documentation links and placement.
+      evidence: Critical Ruff, shell syntax, diff check and repository static contracts
     unit:
       applicable: true
-      evidence: openapi_contracts_lifecycle verifies current evidence, changed contract/JUnit/revision
-        staleness and recovery to PASS.
+      evidence: Publication lifecycle verifies gh configuration precedence, auth diagnosis
+        and invalid venv identity
     integration:
       applicable: true
-      evidence: OpenAPI client pilot lifecycle exercises the local service, generated
-        consumer, authorization, errors and operation coverage; full exact-candidate
-        Gate validates the integrated repository.
+      evidence: CLI lifecycle verifies different source checkout routing and installed
+        OpenAPI operation in independent product repository
     contract:
       applicable: true
-      evidence: Scenario 194 covers OpenAPI contract authority and freshness behavior;
-        Scenario 197 preserves reference pilot behavior.
+      evidence: Existing scenario 165, CLI and publication contracts; preserve existing
+        schema and status consumers
     e2e:
-      applicable: false
-      na_reason: No selected real product or deployed production journey is in this
-        implementation scope.
+      applicable: true
+      evidence: Actual AIPS local exact-candidate Gate, PR and main required validation
     security:
       applicable: true
-      evidence: Checklist requires preview-only default, explicit local execute, trusted
-        pinned generator, ownership protection and no secrets in evidence.
+      evidence: No credential values copied or printed; remote OpenAPI references
+        remain blocked; exact candidate secret scan
     migration_recovery:
       applicable: true
-      evidence: Changed inputs or revisions invalidate old evidence; rerunning on
-        the exact current candidate restores PASS.
+      evidence: Invalid environment remediation, preserved GH_CONFIG_DIR and existing
+        commands without arguments remain compatible
     cli_harness:
       applicable: true
-      evidence: AI_ONBOARDING.md provides ordered commands, gates and recovery actions;
-        Documentation Map links the checklist.
+      evidence: Help does not run validation; unknown arguments fail; implicit and
+        explicit checkout routing; installed product tools
     docs_schema:
       applicable: true
-      evidence: Human Guide, Documentation Map, reference example, Agent protocol,
-        Scenario 194 and changelog updated; documentation impact/placement and VitePress
-        build required.
+      evidence: Full documentation impact closure, placement, links and VitePress
+        build
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 4750f23f4252e4f2267bb5c3809ea5092f7c4ccd
-  changed_files_hash: 120173661b50c658af8d8ee7d6182b00878e4cf7d0da4b2d3b203ff364537103
+  base_sha: 4d55560c4a6f8d58eb1fc2e6612f054047329e9b
+  changed_files_hash: c7e1922e700d62eba2185418fe9124fdd93fecc26fcabc3ad8b3c884f21bdaa3
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

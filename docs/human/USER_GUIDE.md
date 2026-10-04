@@ -336,6 +336,12 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 
 ## Git Publication 與 Release
 
+`aips validate --help` 只顯示說明，不執行驗證；未知參數會明確失敗。`aips docs impact --base <ref>` 使用目前 AIPS checkout；從其他目錄呼叫時加上 `--project-root <repo>`。先用 `aips publish preview` 檢查未提交文件閉包，再固定候選執行完整 Gate。
+
+本地驗證設定隔離會保留原本 GitHub 設定位置。自行設定暫存 `XDG_CONFIG_HOME` 時，先以 `GH_CONFIG_DIR` 指定原本的 gh 設定目錄；`AUTH_CONFIGURATION_UNVERIFIED` 表示設定位置待確認，不應直接重新登入。`prepare-local-validation --check-only` 先確認 Python 3.12 venv 身分，再檢查依賴、Node、localhost 與 browser；依 named diagnostic 修復並重跑同一檢查。
+
+在產品 repository 使用 `aips openapi validate <spec> --repo-root .` 或 `aips openapi generator <profile> --repo-root . --adapter-id <id>` 可呼叫安裝版工具，無須複製 AIPS scripts。generator 預設僅 preview；明確授權後才加 `--execute`。
+
 Run publication commands inside the target AIPS checkout or pass `--project-root <repo>`. Inspect the printed source, target and Python before proceeding. For repeated local checks, reuse the prepared venv with `--check-only`; use `--wheelhouse` for offline Python packages when needed. Unrelated label checks pass only with matching successful full Gate evidence; otherwise rerun the full candidate workflow. Read CI documentation-failure and timing summaries before requesting external artifact-storage access.
 
 
