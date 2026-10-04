@@ -202,10 +202,10 @@ jobs:
           retention-days: 14
 
   repository:
+    needs: janitor
     permissions:
       contents: read
       actions: read
-    needs: janitor
     if: ${{ !cancelled() }}
     runs-on: ubuntu-24.04
     steps:
