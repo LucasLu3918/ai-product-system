@@ -227,7 +227,12 @@ for contract in (
     "workflow_dispatch:",
     "concurrency:",
     "group: validate-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}",
-    "cancel-in-progress: ${{ github.event_name == 'push' || github.event_name == 'pull_request' }}",
+    "cancel-in-progress: >-",
+    "github.event.label.name == 'aips:core-change'",
+    "github.event.label.name == 'aips:large-change'",
+    "AIPS_LABEL_NOOP:",
+    "AIPS_JANITOR_RESULT:",
+    'test "$AIPS_JANITOR_RESULT" = "success"',
     "github.event_name == 'push' && github.event.before",
 ):
     if contract not in workflow_text:
@@ -238,19 +243,61 @@ def validate_concurrency_group(action: str | None, event_name: str, pr_number: i
     return f"validate-validate-{ref}"
 
 
-def validate_concurrency_cancels(action: str | None, event_name: str) -> bool:
-    return event_name in {"push", "pull_request"}
+CLASSIFICATION_LABELS = {"aips:core-change", "aips:large-change"}
+
+
+def validate_concurrency_cancels(action: str | None, event_name: str, label_name: str | None = None) -> bool:
+    if event_name == "push":
+        return True
+    if event_name != "pull_request":
+        return False
+    if action in {"labeled", "unlabeled"}:
+        return label_name in CLASSIFICATION_LABELS
+    return True
+
+
+def validate_janitor_runs(action: str | None, event_name: str, label_name: str | None = None) -> bool:
+    if event_name != "pull_request" or action not in {"labeled", "unlabeled"}:
+        return True
+    return label_name in CLASSIFICATION_LABELS
+
+
+def repository_aggregate_passes(
+    janitor_result: str,
+    action: str | None,
+    event_name: str,
+    label_name: str | None = None,
+) -> bool:
+    if janitor_result == "skipped" and not validate_janitor_runs(action, event_name, label_name):
+        return True
+    return janitor_result == "success"
 
 
 pr_actions = ("opened", "synchronize", "labeled", "unlabeled")
 if len({validate_concurrency_group(action, "pull_request") for action in pr_actions}) != 1:
     errors.append("validate PR lifecycle actions must share a concurrency group")
-if not all(validate_concurrency_cancels(action, "pull_request") for action in pr_actions):
-    errors.append("a newer PR event must supersede the active validation for that PR")
+if not all(validate_concurrency_cancels(action, "pull_request") for action in ("opened", "synchronize", "reopened", "ready_for_review")):
+    errors.append("a new PR candidate event must supersede the active validation for that PR")
+for action in ("labeled", "unlabeled"):
+    if validate_concurrency_cancels(action, "pull_request", "documentation"):
+        errors.append("an unrelated PR label event must not cancel active candidate validation")
+    if validate_janitor_runs(action, "pull_request", "documentation"):
+        errors.append("an unrelated PR label event must skip expensive Janitor validation")
+    if not repository_aggregate_passes("skipped", action, "pull_request", "documentation"):
+        errors.append("an unrelated PR label event must satisfy the repository aggregate as a no-op")
+    for label in CLASSIFICATION_LABELS:
+        if not validate_concurrency_cancels(action, "pull_request", label) or not validate_janitor_runs(action, "pull_request", label):
+            errors.append("classification label changes must run and supersede stale validation")
+        if repository_aggregate_passes("skipped", action, "pull_request", label):
+            errors.append("a skipped classification-label validation must not satisfy the repository aggregate")
 if validate_concurrency_group(None, "pull_request") == validate_concurrency_group(None, "push"):
     errors.append("PR validation must not share a concurrency group with main pushes")
 if validate_concurrency_cancels(None, "workflow_dispatch") or not validate_concurrency_cancels(None, "push"):
-    errors.append("only PR events and pushes must cancel superseded validations")
+    errors.append("only candidate PR events and pushes must cancel superseded validations")
+if repository_aggregate_passes("failure", "labeled", "pull_request", "documentation"):
+    errors.append("a failed Janitor must never satisfy the repository aggregate")
+if repository_aggregate_passes("skipped", "synchronize", "pull_request"):
+    errors.append("a skipped candidate validation must not satisfy the repository aggregate")
 
 package_json = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
 package_lock = json.loads((ROOT / "package-lock.json").read_text(encoding="utf-8")) if (ROOT / "package-lock.json").exists() else {}

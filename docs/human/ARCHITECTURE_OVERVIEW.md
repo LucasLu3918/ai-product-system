@@ -84,7 +84,7 @@ Publication Preview 在工作樹階段讀取文件位置契約與 Core Matrix �
 
 兩者共用 Core Matrix 就緒條件；預覽會在 DRAFT、blocker、未核對差異或過期綁定時回報 `NEEDS_WORK`，避免正式 Gate 才發現同一問題。
 
-GitHub validation 以 PR number 共用併發群組；較新的 `opened`、`labeled`、`unlabeled` 或 `synchronize` run 會取代同 PR 舊 run，避免同一候選同時重複消耗 Gate。新事件的 label 狀態決定當前 Gate 分級；合併後，本地 `main` 僅在乾淨且為遠端祖先時快轉，分歧且 tree 不同時停止。
+GitHub validation 以 PR number 共用併發群組。新候選、push 與 Core/Large 分類標籤變更可取代同 PR 舊 run；無關標籤不會取消進行中的驗證，且跳過昂貴 Gate，由 `repository` required aggregate 明確成功結束。合併後，本地 `main` 僅在乾淨且為遠端祖先時快轉，分歧且 tree 不同時停止。
 
 核心變更需要獨立審查時，AIPS 先從核准來源建立有上限且可指紋驗證的 review packet，再交給沒有沿用實作者對話、具唯讀權限的 reviewer 執行。審查 evidence 綁定精確 base/head、變更檔案與 packet；執行身分、context 隔離或唯讀權限缺少可信 runtime 證明時標記 `UNVERIFIED`，必需的審查不能通過 Integration Gate。目前尚未連接可信 runtime-attestation verifier，因此只有欄位或簽章格式正確仍不能驗證。`SELF_CHECK` 不會被稱為獨立審查。Gate 僅驗證 evidence 與候選版本，不取代語意審查，也不取得合併權。
 

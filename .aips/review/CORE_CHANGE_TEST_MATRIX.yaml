@@ -1,98 +1,77 @@
 version: 1
 change:
-  id: phase10-intelligence-recovery
-  summary: Classify stale retrieval index refresh write denial separately from read
-    access failures; give runtime-writable cache recovery guidance while preserving
-    stale status and checked snapshot/WAL protections.
+  id: phase10-ci-label-events
+  summary: Prevent unrelated PR label events from cancelling active CI or running the expensive Gate, while preserving full validation for candidate and classification-label changes plus the existing repository required context.
   boundary:
-  - retrieval-cache-refresh-diagnostics
-  - project-intelligence-documentation
+    - ci-label-event-concurrency
+    - required-repository-aggregate
 matrix:
-- boundary: retrieval-cache-refresh-diagnostics
-  reason: A stale index refresh writes SQLite cache state; a runtime write denial
-    must be reported distinctly from read-only access and invalid database evidence.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Critical Ruff checks on retrieval helper plus git diff --check.
-    unit:
-      applicable: true
-      evidence: retrieval_intelligence_lifecycle.py exercises stale refresh write
-        denial, reader snapshot fallback, live-WAL refusal and unchanged source bytes.
-        Existing layered_context_memory_lifecycle.py now asserts the distinct cache-write-denial
-        code for direct index rebuild.
-    integration:
-      applicable: true
-      evidence: Exact-candidate Publication Preflight / Integration Gate and repository
-        validation.
-    contract:
-      applicable: true
-      evidence: Scenario 128 lifecycle conformance; output reason_code and remediation
-        contract.
-    e2e:
-      applicable: false
-      na_reason: No deployed product journey or public product API changes.
-    security:
-      applicable: true
-      evidence: Retrieval remains non-canonical; no secret paths, credentials or broader
-        authority enter output.
-    migration_recovery:
-      applicable: false
-      na_reason: The retrieval index is a rebuildable cache; no canonical or product
-        schema migration.
-    cli_harness:
-      applicable: true
-      evidence: aips intelligence retrieve and Turn Context return stable unavailable
-        diagnostics on sandbox write denial.
-    docs_schema:
-      applicable: true
-      evidence: Canonical Project Intelligence and Technology Guide sections describe
-        cache access and safe recovery.
-- boundary: project-intelligence-documentation
-  reason: Human and Agent guidance must distinguish rebuildable index freshness from
-    semantic source freshness and align with the tested runtime failure.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Documentation placement, recursive publication preview and git diff
-        --check.
-    unit:
-      applicable: true
-      evidence: Lifecycle assertion keeps semantic freshness and existing SQLite WAL
-        safety contracts unchanged.
-    integration:
-      applicable: true
-      evidence: Exact-candidate Gate builds updated documentation and validates the
-        repository.
-    contract:
-      applicable: true
-      evidence: Publication preview reports complete required documentation closure
-        with no placement errors.
-    e2e:
-      applicable: false
-      na_reason: No deployed product journey or public product API changes.
-    security:
-      applicable: true
-      evidence: No security boundary or credential handling behavior changes.
-    migration_recovery:
-      applicable: false
-      na_reason: The retrieval index is a rebuildable cache; no canonical or product
-        schema migration.
-    cli_harness:
-      applicable: true
-      evidence: CLI recovery guidance reflects the selected runtime cache and does
-        not force-rebuild on permission denial.
-    docs_schema:
-      applicable: true
-      evidence: Project Intelligence, Architecture Overview, Technology Guide, Maintenance
-        and Conformance align; architecture diagram impact is N/A because the retrieval
-        data path is unchanged.
+  - boundary: ci-label-event-concurrency
+    reason: Candidate updates and Core/Large classification-label changes affect the validated candidate or its Gate class; unrelated labels do not.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: Critical Ruff checks, workflow expression syntax, and git diff --check.
+      unit:
+        applicable: true
+        evidence: Static event-policy contracts cover push, workflow_dispatch, candidate events, classification labels, unrelated labels, skip conditions, and aggregate results.
+      integration:
+        applicable: true
+        evidence: Exact-candidate Integration Gate and repository validation run the updated contracts and documentation checks.
+      contract:
+        applicable: true
+        evidence: Scenario 165 asserts classification-label supersession, unrelated-label no-op, and required aggregate behavior.
+      e2e:
+        applicable: false
+        na_reason: No deployed product journey or production application behavior changes.
+      security:
+        applicable: true
+        evidence: Workflow remains contents-read only; unrelated label values are passed through environment context and never interpolated into shell source.
+      migration_recovery:
+        applicable: false
+        na_reason: No persistent data, schema, or branch-protection required-context migration.
+      cli_harness:
+        applicable: true
+        evidence: Publication plan guidance accurately describes initial classification labels and later event behavior.
+      docs_schema:
+        applicable: true
+        evidence: Human guidance, Integration Gate operations, Orchestrator, Scheduler, and Scenario 165 describe the same event policy.
+  - boundary: required-repository-aggregate
+    reason: Existing protected-main branch rules depend on the single repository check context; only an unrelated-label skip may produce a no-op success.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: Static contract asserts workflow skip guard and no-op summary while preserving failure propagation.
+      unit:
+        applicable: true
+        evidence: Aggregate model verifies only an unrelated labeled/unlabeled event with skipped Janitor succeeds; failed and other skipped jobs remain non-success.
+      integration:
+        applicable: true
+        evidence: Exact-candidate GitHub validation confirms repository remains the required successful aggregate for full Gate runs.
+      contract:
+        applicable: true
+        evidence: Scenario 165 retains the same required context and tests skipped/no-op boundary.
+      e2e:
+        applicable: false
+        na_reason: No deployed product journey or production application behavior changes.
+      security:
+        applicable: true
+        evidence: No new permissions or credentials; failure results remain blocking.
+      migration_recovery:
+        applicable: false
+        na_reason: Protected branch required context remains repository; no migration is needed.
+      cli_harness:
+        applicable: true
+        evidence: Existing publish preflight label plan remains compatible and documents when full validation occurs.
+      docs_schema:
+        applicable: true
+        evidence: Required aggregate/no-op behavior is documented in canonical maintenance and Gate guidance.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: b0242d7a7f812e03b9698f6e8d02b43769de6b67
-  changed_files_hash: 5af577736efd70522de747d92d3dbb1a92b47ba419da33e4d6380b19c651a9f0
+  base_sha: cb1a9104437c43d98733e48c7a3ef2f730ba188f
+  changed_files_hash: 0d2b51eafec2c15b111b66706cb82c51991c0ae8ab7f07fada571816ad0c604c
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

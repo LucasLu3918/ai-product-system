@@ -109,7 +109,8 @@ def main() -> int:
     assert publish.pr_creation_plan("core")["label_timing"] == "initial_create_request"
     assert publish.pr_creation_plan("large")["required_label"] == "aips:large-change"
     assert publish.pr_creation_plan("standard")["required_label"] is None
-    assert "may still emit a separate labeled event" in publish.pr_creation_plan("core")["note"]
+    assert "classification-label changes rerun the full Gate" in publish.pr_creation_plan("core")["note"]
+    assert "unrelated label events skip the Gate without cancelling active validation" in publish.pr_creation_plan("core")["note"]
 
     with patch.object(publish, "resolve_commit", side_effect=["base-sha", "head-sha"]), patch.object(
         publish, "worktree_changed_files", return_value=["bin/aips", "untracked-note.md"]

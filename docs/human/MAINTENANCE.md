@@ -328,7 +328,7 @@ When public repository hardening changes, review together:
 - immutable full-SHA action pinning;
 - explicit least-privilege workflow permissions;
 - validation trigger policy: automatic on PR synchronization and main pushes, manual via workflow_dispatch, not on every standalone feature-branch push;
-- concurrency cancellation so a newer PR/main validation supersedes older in-progress work for the same ref/PR;
+- concurrency cancellation so a newer candidate or classification-label validation supersedes older work, while unrelated PR label events skip the expensive Gate and cannot cancel active candidate validation;
 - atomic remote branch-update practice so CI receives coherent logical states instead of file-by-file intermediate states;
 - validator contracts that check policy properties rather than freezing one dependency version.
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
@@ -366,7 +366,7 @@ Preview 對 Core Matrix 套用與 Gate 相同的就緒條件：可執行狀態�
 
 在原始碼 checkout 驗證尚未安裝的修改時，使用 `./bin/aips`，避免全域安裝的 CLI 指向另一份系統程式碼或 Matrix。受限 sandbox 若禁止 localhost bind，先用 `prepare-local-validation` 辨識 `ENVIRONMENT_BLOCKED`；恢復該能力後重新執行完整驗證，不略過測試。
 
-被 concurrency 取消的舊 CI run 不執行 `repository` 彙總 job，現行 run 的 Janitor 失敗仍讓彙總 job 失敗。檢查同一候選 SHA 的最新 required aggregate。
+被 concurrency 取消的舊 CI run 不執行 `repository` 彙總 job，現行 run 的 Janitor 失敗仍讓彙總 job 失敗。無關 PR 標籤事件會跳過 Janitor；只有該事件明確屬於無關標籤時，`repository` aggregate 才以記錄在 Step Summary 的 no-op 成功結束。檢查同一候選 SHA 的最新 required aggregate。
 
 When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 27 deterministic, 98 lifecycle and 54 agent_eval scenarios (179 automated total).
 

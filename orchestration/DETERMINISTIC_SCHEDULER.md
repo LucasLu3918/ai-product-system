@@ -128,7 +128,7 @@ Invalid graph, unknown dependency, cycle, invalid state or plan mismatch is `SCH
 
 Publication preview performs the bounded content-safety and configured Git identity checks before scheduling repository lifecycle validation; an unscannable candidate or disallowed identity is a deterministic preflight block.
 
-GitHub Actions workflow concurrency is a separate CI scheduling boundary: the validate group includes the pull request action so label updates do not cancel `opened` validation. Only superseded `synchronize` revisions and earlier main push runs are cancellable; this does not alter Scheduler task ownership or the required `repository` check.
+GitHub Actions workflow concurrency is a separate CI scheduling boundary: the validate group uses the pull request number, and cancellation is conditional on the event. New candidate events and Core/Large classification-label changes can replace stale validation; unrelated label changes neither cancel active work nor run the expensive Gate. This does not alter Scheduler task ownership or the required `repository` check.
 
 When the Execution Profile requires sandbox isolation, Scheduler dispatch must preserve its risk, minimum-isolation and data-class inputs and stop on `UNSUPPORTED`/`BLOCKED`. Worktree or shared execution is not a fallback for a task whose minimum isolation is sandbox. The E2B candidate remains disabled until its task adapter and data-transfer scope are approved.
 
