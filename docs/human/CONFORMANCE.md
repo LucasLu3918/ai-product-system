@@ -1490,3 +1490,11 @@ Current inventory after Scenario 197: 34 deterministic + 107 lifecycle + 54 agen
 ## Scenario 198 — Runtime Context and invariant matrix
 
 `tests/evidence/runtime_context_lifecycle.py` 驗證共用驗證環境路徑、interpreter 優先序、credential-free Context 報告與 deterministic invariant matrix。矩陣涵蓋每組維度值對並檢查上限及高風險案例。
+
+## Scenario 199 — Branch cleanup proposal evidence
+
+Lifecycle evidence checks supported short-lived prefixes, unclassified preservation, current SHA, merged PR status, branch age, target integration and cleanup recommendation. Routine reports remain read-only; deletion still requires a protected-main explicit dispatch and a one-time exact manifest.
+
+## Scenario 200 — Demand-driven CI toolchain planning
+
+Lifecycle evidence checks exact-path Node, browser and OpenAPI selection, full provisioning for sensitive paths and unknown paths, and explicit skips for optional OpenAPI evidence. Secret scanning, preflight, repository validation and the exact-candidate Integration Gate remain mandatory. Without a valid CI plan, local checks retain the full toolchain profile.

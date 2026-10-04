@@ -344,12 +344,6 @@ if "do not disclose credentials" not in security_policy.lower() or "Report a vul
     errors.append("SECURITY.md missing private vulnerability reporting guidance")
 
 version = (ROOT / "VERSION").read_text(encoding="utf-8").strip() if (ROOT / "VERSION").exists() else ""
-if not re.fullmatch(r"\d+\.\d+\.\d+", version):
-    errors.append(f"VERSION is not SemVer x.y.z: {version!r}")
-
-changelog = (ROOT / "CHANGELOG.md").read_text(encoding="utf-8") if (ROOT / "CHANGELOG.md").exists() else ""
-if version and f"## {version}" not in changelog:
-    errors.append(f"CHANGELOG.md has no section for VERSION {version}")
 
 architecture = (ROOT / "docs/ARCHITECTURE.md").read_text(encoding="utf-8") if (ROOT / "docs/ARCHITECTURE.md").exists() else ""
 if "mermaid" not in architecture or "flowchart" not in architecture:

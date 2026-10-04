@@ -85,8 +85,25 @@ def environment_status() -> dict[str, Any]:
     blockers: list[str] = []
     diagnostics: list[dict[str, str]] = []
     python_version = subprocess.run([sys.executable, "--version"], capture_output=True, text=True)
+    plan_path = os.environ.get("AIPS_CI_VALIDATION_PLAN")
+    plan = None
+    if plan_path:
+        try:
+            plan = json.loads(Path(plan_path).read_text(encoding="utf-8"))
+            if not isinstance(plan, dict) or plan.get("version") != 1:
+                plan = None
+        except (OSError, ValueError, TypeError):
+            plan = None
+    needs_browser = plan is None or plan.get("needs_browser") is True
+    needs_openapi = plan is None or plan.get("needs_openapi") is True
+    needs_node = plan is None or plan.get("needs_node") is True
+    required_modules = ["yaml", "ruff", "mypy", "cryptography"]
+    if needs_browser:
+        required_modules.append("playwright")
+    if needs_openapi:
+        required_modules.extend(("openapi_spec_validator", "jsonschema"))
     missing_modules = []
-    for module in ("yaml", "ruff", "mypy", "playwright", "openapi_spec_validator", "jsonschema", "cryptography"):
+    for module in required_modules:
         check = subprocess.run(
             [sys.executable, "-c", f"import {module}"], capture_output=True, text=True
         )
@@ -108,7 +125,7 @@ def environment_status() -> dict[str, Any]:
             "detail": "selected Python executable could not report its version",
             "next_step": "Select the repository validation environment with `aips publish --project-root <repo> environment`.",
         })
-    _, docs_errors = repository_preflight.docs_build_prerequisites(ROOT)
+    _, docs_errors = repository_preflight.docs_build_prerequisites(ROOT) if needs_node else (None, [])
     for message in docs_errors:
         check = "node_runtime" if "Node.js" in message else "vitepress"
         blockers.append(check)
@@ -118,23 +135,25 @@ def environment_status() -> dict[str, Any]:
             "detail": message.split(";", 1)[0],
             "next_step": message,
         })
-    try:
-        probe = socket.socket()
-        probe.bind(("127.0.0.1", 0))
-        probe.close()
-        localhost = "READY"
-    except OSError as exc:
-        localhost = "BLOCKED"
-        blocker = f"localhost_bind:{exc.__class__.__name__}"
-        blockers.append(blocker)
-        diagnostics.append({
-            "check": "localhost_bind",
-            "status": "BLOCKED",
-            "detail": exc.__class__.__name__,
-            "next_step": "Run in an environment that permits loopback socket binding; rerun `aips publish environment` to verify.",
-        })
-    selection = discover_browser()
-    browser_probe = probe_browser(selection.get("path"), provider=str(selection["provider"]))
+    localhost = "NOT_REQUIRED"
+    if needs_browser:
+        try:
+            probe = socket.socket()
+            probe.bind(("127.0.0.1", 0))
+            probe.close()
+            localhost = "READY"
+        except OSError as exc:
+            localhost = "BLOCKED"
+            blocker = f"localhost_bind:{exc.__class__.__name__}"
+            blockers.append(blocker)
+            diagnostics.append({
+                "check": "localhost_bind",
+                "status": "BLOCKED",
+                "detail": exc.__class__.__name__,
+                "next_step": "Run in an environment that permits loopback socket binding; rerun `aips publish environment` to verify.",
+            })
+    selection = discover_browser() if needs_browser else {"provider": "not_required"}
+    browser_probe = probe_browser(selection.get("path"), provider=str(selection.get("provider") or "not_required")) if needs_browser else {"status": "NOT_REQUIRED", "provider": "not_required"}
     if browser_probe["status"] != "READY":
         blockers.append(f"browser:{browser_probe['status']}")
         if browser_probe["status"] == "BROWSER_NOT_FOUND":

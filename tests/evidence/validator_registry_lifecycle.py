@@ -15,6 +15,8 @@ assert modules and len(modules) == len(set(modules)), "validator registry must b
 assert modules[0] == "validation.static_contracts", "static validation remains first"
 assert ERROR_AGGREGATION_ORDER == (
     "validation.static_contracts",
+    "validation.versioning_contracts",
+    "validation.system_facts_contracts",
     "validation.eval_interop_contracts",
     "validation.telemetry_export_contracts",
     "validation.implementation_profile_contracts",

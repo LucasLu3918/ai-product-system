@@ -1562,3 +1562,16 @@ scenarios:
       - scripts/runtime_invariant_matrix.py
       - config/runtime-invariants.yaml
       - tests/evidence/runtime_context_lifecycle.py
+  - id: "199"
+    path: tests/scenarios/199-branch-cleanup-proposal-evidence.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/branch_hygiene_lifecycle.py
+      - tests/validation/branch_hygiene_contracts.py
+  - id: "200"
+    path: tests/scenarios/200-demand-driven-toolchain-provisioning.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/ci_validation_plan_lifecycle.py
+      - tests/validation/ci_validation_plan_contracts.py
+      - scripts/ci_validation_plan.py

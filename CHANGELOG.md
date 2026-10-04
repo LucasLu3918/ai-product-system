@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add machine-readable system facts and version/toolchain contracts; plan optional CI provisioning from exact changed paths; expand branch cleanup reports into PR-backed, read-only proposals requiring explicit protected-main dispatch for exact-manifest cleanup.
+
 - Centralize runtime path and validation interpreter resolution; expose credential-free Runtime Context diagnostics and enforce deterministic runtime invariant coverage across installation, Python, cache, network and platform dimensions.
 
 - Harden disposable cache recovery, linked-worktree installs, package-index diagnostics, validation interpreter selection, installed post-merge synchronization and latest CI reporting; retain exact candidate Gates with pip download caching.
@@ -16,6 +18,18 @@
 
 - Distinguish read-only retrieval access from stale-index refresh write denial and provide cache-write-specific recovery guidance without weakening stale-index checks.
 - Keep unrelated PR label events from cancelling active CI; skip their expensive Gate while preserving the existing successful `repository` aggregate, and continue full validation for classification-label changes.
+
+- Bind deterministic scheduler dispatch to durable task owner leases, AIPS worktree identity, shared scheduler state, task-derived write authorization and final Git-diff reconciliation; add read-only ownership dashboard projection.
+- Route Turn Context with scoped project instructions, explicit read/write intent, non-Git fallback, and compact default YAML output.
+- Serialize all run and telemetry event writers; separate read-only retrieval from index maintenance with a checked snapshot fallback.
+- Report Agent Eval evidence freshness against selected system sources without relabeling legacy results as current.
+- Add opt-in observed AIPS operation spans and an external-trust-store Ed25519 verifier for independent-review receipts; required review remains fail-closed without a trusted issuer.
+- Make working-tree content preview scan candidate additions and untracked files without treating removed historical text as new content.
+
+- Repository preflight now runs after the mandatory candidate secret scan and before full validation dependencies and Chromium.
+- Add an exact-candidate `--run` path to the local validation helper, with an isolated temporary configuration directory.
+- Reject duplicate Change Impact initialization by default; explicit `--reset` saves the previous evidence as a timestamped backup.
+- Preserve Change Impact unknowns as typed evidence-backed dispositions; legacy strings, stale/out-of-root evidence, incomplete traversal and missing Human review remain fail-closed.
 
 ## 0.72.1
 
@@ -88,20 +102,6 @@
 
 - Add offline-first Promptfoo/PyRIT Eval interoperability, fingerprint verification, risk profiles, and Human-confirmed finding-to-regression promotion.
 - Keep external scores advisory and preserve canonical deterministic Agent Eval, Runtime Safety/Policy, and Human publication authority.
-
-## Unreleased
-
-- Bind deterministic scheduler dispatch to durable task owner leases, AIPS worktree identity, shared scheduler state, task-derived write authorization and final Git-diff reconciliation; add read-only ownership dashboard projection.
-- Route Turn Context with scoped project instructions, explicit read/write intent, non-Git fallback, and compact default YAML output.
-- Serialize all run and telemetry event writers; separate read-only retrieval from index maintenance with a checked snapshot fallback.
-- Report Agent Eval evidence freshness against selected system sources without relabeling legacy results as current.
-- Add opt-in observed AIPS operation spans and an external-trust-store Ed25519 verifier for independent-review receipts; required review remains fail-closed without a trusted issuer.
-- Make working-tree content preview scan candidate additions and untracked files without treating removed historical text as new content.
-
-- Run the existing repository preflight early in CI, after the mandatory candidate secret scan and before full validation dependencies and Chromium.
-- Add an exact-candidate `--run` path to the local validation helper, with an isolated temporary configuration directory.
-- Reject duplicate Change Impact initialization by default; explicit `--reset` saves the previous evidence as a timestamped backup.
-- Preserve Change Impact unknowns as typed evidence-backed dispositions; legacy strings, stale/out-of-root evidence, incomplete traversal and missing Human review remain fail-closed.
 
 ## 0.63.0
 

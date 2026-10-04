@@ -16,6 +16,8 @@ class ValidatorSpec:
 
 VALIDATORS = (
     ValidatorSpec("validation.static_contracts", True),
+    ValidatorSpec("validation.versioning_contracts", True),
+    ValidatorSpec("validation.system_facts_contracts", True),
     ValidatorSpec("validation.runtime_contracts", False),
     ValidatorSpec("validation.visual_render_contracts", False),
     ValidatorSpec("validation.performance_evidence_contracts", False),
@@ -39,6 +41,7 @@ VALIDATORS = (
     ValidatorSpec("validation.scheduler_gate_contracts", False),
     ValidatorSpec("validation.review_isolation_contracts", False),
     ValidatorSpec("validation.branch_hygiene_contracts", False),
+    ValidatorSpec("validation.ci_validation_plan_contracts", False),
     ValidatorSpec("validation.resource_authorization_contracts", False),
     ValidatorSpec("validation.runtime_policy_contracts", False),
     ValidatorSpec("validation.agent_anomaly_evaluation_contracts", False),
@@ -59,6 +62,8 @@ VALIDATORS = (
 
 ERROR_AGGREGATION_ORDER = (
     "validation.static_contracts",
+    "validation.versioning_contracts",
+    "validation.system_facts_contracts",
     "validation.eval_interop_contracts",
     "validation.telemetry_export_contracts",
     "validation.implementation_profile_contracts",

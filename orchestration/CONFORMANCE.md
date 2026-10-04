@@ -770,6 +770,14 @@ Scenarios 183–192 cover optional manifest dependency graphs, stable requiremen
 
 Current inventory after Scenario 192: 34 deterministic + 103 lifecycle + 54 agent_eval = 191 / 191 automated; 1 manual; 0 uncovered.
 
+## Scenario 199 — Branch cleanup proposal evidence
+
+Lifecycle evidence checks supported ephemeral prefixes, PR state, branch age, integration, read-only proposals and the explicit protected-main exact-manifest cleanup boundary.
+
+## Scenario 200 — Demand-driven CI toolchain planning
+
+Lifecycle evidence checks exact-path optional tooling, full provisioning for unknown or sensitive paths, and preservation of mandatory validation stages.
+
 ## Scenario 193 — Evidence-driven Implementation Resolution
 
 Scenario 193 covers REST/OpenAPI-first resolution across existing and new projects, four language profiles, technology/architecture decisions, evidence provenance, contract authority, ownership protection, version-aware knowledge, and verification status. Deterministic and lifecycle checks validate profile structure and validator boundaries. Semantic quality across 16 representative contexts remains manual; structural checks do not claim that an Agent recommendation is correct.

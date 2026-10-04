@@ -36,6 +36,8 @@ base SHA + head SHA
 
 The checked-out `HEAD` must equal the declared head SHA. A stale/mismatched checkout is BLOCKED before checks execute.
 
+The exact-path CI validation plan may omit installation of optional Node, browser and OpenAPI tooling only when the changed-file selector returns a valid plan. Unknown paths, diff or configuration errors select the full toolchain. This setup optimization never skips the mandatory secret scan, repository validator or Integration Gate checks.
+
 Changing code, base revision, Validation Profile or required Test Matrix changes the candidate fingerprint and invalidates prior evidence.
 
 ### Mandatory Candidate Secret Scan

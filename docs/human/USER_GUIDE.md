@@ -340,6 +340,8 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 
 ## Git Publication 與 Release
 
+CI 會依 exact candidate paths 決定是否安裝 Node、browser 與 OpenAPI 選用工具；未知路徑使用完整工具鏈。每個候選仍執行必要的 secret scan、repository validation 與 exact-candidate Integration Gate。
+
 發布前可執行 `aips publish checks --pr <number> --head <sha>`，區分最新的失敗、等待、取消及跳過；這份摘要不授予合併權限。合併後從已更新 checkout 執行 `./bin/aips publish post-merge --fetch --sync-installed --apply`，核對本機 main 與註冊安裝版同步。Phase 12E 真實 REST 驗收暫緩；AIPS 只作 CLI、安裝、快取與發布驗收。
 
 `aips validate --help` 只顯示說明，不執行驗證；未知參數會明確失敗。`aips docs impact --base <ref>` 使用目前 AIPS checkout；從其他目錄呼叫時加上 `--project-root <repo>`。先用 `aips publish preview` 檢查未提交文件閉包，再固定候選執行完整 Gate。

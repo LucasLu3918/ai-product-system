@@ -55,9 +55,22 @@ jobs:
             requirements-visual.txt
             requirements-validation.txt
             requirements-openapi.txt
+            constraints/tested.txt
+      - name: Build exact-candidate optional toolchain plan
+        id: validation_plan
+        shell: bash
+        run: |
+          python -m pip install -c constraints/tested.txt PyYAML
+          plan_path="$RUNNER_TEMP/ci-validation-plan.json"
+          python scripts/ci_validation_plan.py --base "$AIPS_GATE_BASE" --head "$AIPS_GATE_HEAD" --output "$plan_path"
+          echo "AIPS_CI_VALIDATION_PLAN=$plan_path" >> "$GITHUB_ENV"
+          echo "needs_node=$(python -c 'import json,sys; print(str(json.load(open(sys.argv[1]))["needs_node"]).lower())' "$plan_path")" >> "$GITHUB_OUTPUT"
+          echo "needs_browser=$(python -c 'import json,sys; print(str(json.load(open(sys.argv[1]))["needs_browser"]).lower())' "$plan_path")" >> "$GITHUB_OUTPUT"
+          echo "needs_openapi=$(python -c 'import json,sys; print(str(json.load(open(sys.argv[1]))["needs_openapi"]).lower())' "$plan_path")" >> "$GITHUB_OUTPUT"
+          cat "$plan_path" >> "$GITHUB_STEP_SUMMARY"
       - name: Fast documentation impact precheck
         run: |
-          python -m pip install PyYAML
+          python -m pip install -c constraints/tested.txt PyYAML
           python scripts/publish_preflight.py docs-impact \
             --base "$AIPS_GATE_BASE" \
             --head "$AIPS_GATE_HEAD" \
@@ -82,14 +95,23 @@ jobs:
           python scripts/repository_preflight.py
           --base "$AIPS_GATE_BASE" --head "$AIPS_GATE_HEAD"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        if: steps.validation_plan.outputs.needs_node == 'true'
         with:
           node-version: "24"
           cache: npm
           cache-dependency-path: package-lock.json
       - name: Install documentation build dependencies
+        if: steps.validation_plan.outputs.needs_node == 'true'
         run: npm ci --no-audit --no-fund --ignore-scripts
-      - run: python -m pip install -r requirements.txt -r requirements-visual.txt -r requirements-validation.txt -r requirements-openapi.txt
+      - run: python -m pip install -c constraints/tested.txt -r requirements.txt -r requirements-validation.txt
+      - name: Install browser validation dependencies
+        if: steps.validation_plan.outputs.needs_browser == 'true'
+        run: python -m pip install -c constraints/tested.txt -r requirements-visual.txt
+      - name: Install OpenAPI validation dependencies
+        if: steps.validation_plan.outputs.needs_openapi == 'true'
+        run: python -m pip install -c constraints/tested.txt -r requirements-openapi.txt
       - name: Install deterministic Playwright Chromium
+        if: steps.validation_plan.outputs.needs_browser == 'true'
         run: python -m playwright install chromium
       - name: Resolve change class
         id: change_class
