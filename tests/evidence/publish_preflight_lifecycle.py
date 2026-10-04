@@ -28,6 +28,27 @@ def load_module():
 
 def main() -> int:
     publish = load_module()
+    workflow = yaml.safe_load((ROOT / ".github/workflows/validate.yml").read_text())
+    aggregate = workflow["jobs"]["repository"]["steps"][0]["run"]
+    evidence_code = aggregate.split("python3 - <<'PYTHON'\n", 1)[1].split("\nPYTHON", 1)[0]
+    with tempfile.TemporaryDirectory(prefix="aips-label-evidence-") as directory:
+        summary = Path(directory) / "summary.md"
+        for conclusion, title, expected in (("success", "matching", 0), ("failure", "matching", 1), ("cancelled", "matching", 1), (None, "matching", 1), ("success", "stale", 1), ("skipped", "matching", 1)):
+            payloads = [
+                {"workflow_runs": [{"id": 99, "head_sha": "candidate", "display_title": title}]},
+                {"jobs": [{"name": "janitor", "conclusion": conclusion}]},
+            ]
+            with patch.dict(os.environ, {"GITHUB_REPOSITORY": "fixture/repo", "GITHUB_RUN_ID": "100", "AIPS_CANDIDATE_HEAD": "candidate", "AIPS_EXPECTED_RUN": "matching", "GITHUB_STEP_SUMMARY": str(summary)}), patch.object(
+                subprocess, "run", side_effect=[Mock(returncode=0, stdout=json.dumps(item)) for item in payloads]
+            ):
+                try:
+                    exec(compile(evidence_code, "workflow-label-evidence", "exec"), {})
+                except SystemExit as result:
+                    assert result.code == expected, (conclusion, title)
+                else:
+                    raise AssertionError("label evidence must return a deterministic exit status")
+    with patch.object(publish.tempfile, "TemporaryFile", side_effect=PermissionError):
+        assert all(item["status"] == "WRITE_BLOCKED" for item in publish.cache_diagnostics())
     candidate = {
         "status": "READY",
         "candidate": {"base": "base-sha", "head": "head-sha"},
@@ -54,6 +75,21 @@ def main() -> int:
         run_name="prepare_local_validation_contracts",
     )
     assert "requirements-openapi.txt" in local_validation["REQUIREMENTS"]
+    with tempfile.TemporaryDirectory(prefix="aips-wheelhouse-") as directory:
+        temporary = Path(directory)
+        wheelhouse = temporary / "wheels"
+        wheelhouse.mkdir()
+        prepared = temporary / "prepared"
+        with patch.object(sys, "argv", ["prepare", "--venv", str(prepared), "--wheelhouse", str(wheelhouse)]), patch.object(
+            sys, "version_info", (3, 12, 0)
+        ), patch("venv.EnvBuilder") as builder, patch.dict(
+            local_validation["main"].__globals__, {"run": Mock(return_value=True)}
+        ), patch.object(subprocess, "run", return_value=Mock(returncode=0, stdout='{"status":"READY"}')):
+            assert local_validation["main"]() == 0
+            builder.assert_called_once()
+            calls = local_validation["main"].__globals__["run"].call_args_list
+            install = calls[0].args[0]
+            assert "--no-index" in install and str(wheelhouse.resolve()) in install
     from integration_gate import GateError, matrix_fingerprint
 
     change_class, warning = publish.resolve_change_class("auto", "bug,aips:core-change")
@@ -70,6 +106,15 @@ def main() -> int:
     assert "docs/human/INSTALLATION.md" not in impact["required_additions"]
     assert "docs/human/GETTING_STARTED.md" not in impact["required_additions"]
     assert not impact["complete"]
+
+    with tempfile.TemporaryDirectory(prefix="aips-docs-summary-") as summary_dir:
+        summary_path = Path(summary_dir) / "summary.md"
+        with patch.object(sys, "argv", ["publish", "docs-impact", "--base", "HEAD", "--require-complete", "--summary-file", str(summary_path)]), patch.object(
+            publish, "resolve_commit", return_value="head"
+        ), patch.object(publish, "changed_files", return_value=["bin/aips"]), patch.object(publish, "emit"):
+            assert publish.main() == 1
+        assert "Documentation impact: FAIL" in summary_path.read_text()
+        assert "docs/human/USER_GUIDE.md" in summary_path.read_text()
 
     complete_files = ["bin/aips", *impact["required_additions"]]
     assert publish.documentation_impact(complete_files)["complete"]
@@ -526,6 +571,7 @@ def main() -> int:
         )
         (fake_project / "scripts/integration_gate.py").write_text("raise SystemExit(0)\n", encoding="utf-8")
         shell = "/bin/bash"
+        subprocess.run(["git", "init", "-q", str(fake_project)], check=True)
         for forwarded, expected in (([], ["plan"]), (["--probe", "kept"], ["plan", "--probe", "kept"])):
             cli = subprocess.run(
                 [shell, str(ROOT / "bin/aips"), "publish", "plan", "--project-root", str(fake_project), *forwarded],
@@ -536,6 +582,19 @@ def main() -> int:
             )
             assert cli.returncode == 0, cli.stderr
             assert json.loads(cli.stdout.strip().splitlines()[-1]) == expected
+        implicit = subprocess.run(
+            [shell, str(ROOT / "bin/aips"), "publish", "plan", "--probe", "implicit"],
+            cwd=fake_project, env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable},
+            capture_output=True, text=True,
+        )
+        assert implicit.returncode == 0, implicit.stderr
+        assert json.loads(implicit.stdout.strip().splitlines()[-1]) == ["plan", "--probe", "implicit"]
+        assert f"target={fake_project.resolve()}" in implicit.stderr
+        intelligence_cli = subprocess.run(
+            [shell, str(ROOT / "bin/aips"), "intelligence", "--help"],
+            env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable}, capture_output=True, text=True,
+        )
+        assert intelligence_cli.returncode == 0 and "refresh-plan" in intelligence_cli.stdout
         isolated_path = root / "isolated-bin"
         isolated_path.mkdir()
         dirname = shutil.which("dirname")

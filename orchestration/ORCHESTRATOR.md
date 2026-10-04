@@ -304,6 +304,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+Resolve publication target from explicit --project-root or the active AIPS checkout, and disclose source/target/Python selection. Reuse prepared dependencies for focused checks, then run one exact-candidate local Gate. Dependency workflow updates carry their required documentation closure and candidate-bound Matrix; PR and main CI retain independent full validation.
+
 For a fixed Core candidate, finish the documentation closure and bind the reviewed Matrix before the single complete local Gate run. The local entrypoint must resolve Python 3.12, OpenAPI validation modules and any Node/VitePress docs-build requirements before beginning expensive lifecycle work.
 
 The exact-candidate runner also gives child processes the selected Python directory first in `PATH`; a direct script invocation has the same nested interpreter selection as the prepared local wrapper.
@@ -318,7 +320,7 @@ Publication-readiness changes include the selected checkout, local documentation
 
 The publication plan records the change-class label for the initial PR create request. An invalid GitHub CLI login is `AUTH_REQUIRED`; network or sandbox connectivity failure is `NETWORK_UNAVAILABLE`. Recovery steps differ, and credential or raw CLI output is never included.
 
-GitHub may emit a separate `labeled` event even when the label is supplied during PR creation. Group validation runs by PR number. Candidate changes and Core/Large classification-label changes may supersede an in-progress run; unrelated label events skip the expensive Gate without cancelling active candidate validation. The existing required aggregate reports a successful no-op only for that explicit skipped-label case.
+GitHub may emit a separate `labeled` event even when the label is supplied during PR creation. Group validation runs by PR number. Candidate changes and Core/Large classification-label changes may supersede an in-progress run; unrelated label events skip the expensive Gate without cancelling active candidate validation. The required aggregate reports a successful no-op only when that explicit skipped-label case also has matching successful full Janitor evidence for the same PR/head/base/change class. Missing, stale, failed or unfinished evidence blocks; the aggregate uses actions-read metadata without downloading artifacts.
 
 Before commit, use the publication preview to inspect the complete working-tree file set, recursive documentation requirements and matrix hash. Synchronize only the selected checkout's canonical matrix binding after the scope is complete, then review the invalidated matrix evidence before Gate execution. Use the installed CLI against an explicit target for post-merge reconciliation when the target checkout may contain an older script.
 

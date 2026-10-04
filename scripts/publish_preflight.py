@@ -12,6 +12,7 @@ import shutil
 import socket
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -97,7 +98,7 @@ def pr_creation_plan(change_class: str) -> dict[str, Any]:
         "required_label": label,
         "gh_create_args": ["gh", "pr", "create", *(["--label", label] if label else [])],
         "label_timing": "initial_create_request" if label else "not_required",
-        "note": "Include the change-class label in the PR creation request when the route supports it. GitHub may still emit a separate labeled event; classification-label changes rerun the full Gate, while unrelated label events skip the Gate without cancelling active validation.",
+        "note": "Include the change-class label in the PR creation request when the route supports it. GitHub may still emit a separate labeled event; classification-label changes rerun the full Gate, while unrelated label events skip the Gate without cancelling active validation and require matching successful full Gate evidence.",
     }
 
 
@@ -234,6 +235,8 @@ def environment_status() -> dict[str, Any]:
         })
     return {
         "status": "READY" if not blockers else "ENVIRONMENT_BLOCKED",
+        "runtime": {"project_root": str(ROOT), "commit": git("rev-parse", "HEAD", check=False), "python": sys.executable},
+        "cache_diagnostics": cache_diagnostics(),
         "python": {"executable": Path(sys.executable).name, "version": python_version.stdout.strip() or python_version.stderr.strip()},
         "python_modules": {"status": "READY" if not missing_modules else "BLOCKED", "missing": missing_modules},
         "localhost": localhost,
@@ -246,6 +249,29 @@ def environment_status() -> dict[str, Any]:
         "blockers": blockers,
         "diagnostics": diagnostics,
     }
+
+
+def cache_diagnostics() -> list[dict[str, str]]:
+    """Probe cache parents separately from Gate prerequisites, without installing anything."""
+    results = []
+    for name, root in (
+        ("retrieval", Path(os.environ.get("XDG_CACHE_HOME") or Path.home() / ".cache")),
+        ("intelligence", Path(os.environ.get("XDG_CONFIG_HOME") or Path.home() / ".config")),
+    ):
+        parent = root
+        while not parent.exists() and parent != parent.parent:
+            parent = parent.parent
+        try:
+            with tempfile.TemporaryFile(dir=parent):
+                pass
+            status = "PARENT_WRITABLE"
+        except OSError:
+            status = "WRITE_BLOCKED"
+        results.append({
+            "check": name, "status": status,
+            "next_step": "Use a writable XDG_CACHE_HOME/XDG_CONFIG_HOME for this runtime; existing SQLite files and sidecars may have separate permissions. Keep network and filesystem diagnosis separate.",
+        })
+    return results
 
 
 def preview_candidate(args: argparse.Namespace) -> dict[str, Any]:
@@ -770,6 +796,7 @@ def main() -> int:
     docs.add_argument("--base", required=True)
     docs.add_argument("--head", default="HEAD")
     docs.add_argument("--require-complete", action="store_true")
+    docs.add_argument("--summary-file", help="Append bounded diagnostics to a GitHub Step Summary")
     docs.add_argument("--format", choices=("yaml", "json"), default="yaml")
     matrix_sync = subs.add_parser("matrix-sync")
     matrix_sync.add_argument("--base", required=True)
@@ -792,6 +819,14 @@ def main() -> int:
         if args.command == "docs-impact":
             impact = documentation_impact(changed_files(resolve_commit(args.base), resolve_commit(args.head)))
             emit(impact, args.format)
+            if args.summary_file:
+                with Path(args.summary_file).open("a", encoding="utf-8") as summary:
+                    summary.write("Documentation impact: " + ("PASS" if impact["complete"] else "FAIL") + "\n")
+                    for path in impact["required_additions"][:40]:
+                        # Repository-controlled paths are rendered as plain text.
+                        summary.write("- Required: " + str(path).replace("\n", " ").replace("\r", " ") + "\n")
+                    if len(impact["required_additions"]) > 40:
+                        summary.write("- Additional paths omitted; inspect the full precheck report.\n")
             return 0 if impact["complete"] or not args.require_complete else 1
         if args.command == "environment":
             result = environment_status()

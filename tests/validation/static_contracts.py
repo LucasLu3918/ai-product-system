@@ -267,9 +267,11 @@ def repository_aggregate_passes(
     action: str | None,
     event_name: str,
     label_name: str | None = None,
+    prior_gate: str | None = None,
+    candidate_matches: bool = False,
 ) -> bool:
     if janitor_result == "skipped" and not validate_janitor_runs(action, event_name, label_name):
-        return True
+        return prior_gate == "success" and candidate_matches
     return janitor_result == "success"
 
 
@@ -283,8 +285,13 @@ for action in ("labeled", "unlabeled"):
         errors.append("an unrelated PR label event must not cancel active candidate validation")
     if validate_janitor_runs(action, "pull_request", "documentation"):
         errors.append("an unrelated PR label event must skip expensive Janitor validation")
-    if not repository_aggregate_passes("skipped", action, "pull_request", "documentation"):
+    if not repository_aggregate_passes("skipped", action, "pull_request", "documentation", "success", True):
         errors.append("an unrelated PR label event must satisfy the repository aggregate as a no-op")
+    for prior in (None, "failure", "cancelled", "in_progress"):
+        if repository_aggregate_passes("skipped", action, "pull_request", "documentation", prior, True):
+            errors.append("label-only checks must require matching successful full Gate evidence")
+    if repository_aggregate_passes("skipped", action, "pull_request", "documentation", "success", False):
+        errors.append("stale candidate or classification evidence must not pass a label-only check")
     for label in CLASSIFICATION_LABELS:
         if not validate_concurrency_cancels(action, "pull_request", label) or not validate_janitor_runs(action, "pull_request", label):
             errors.append("classification label changes must run and supersede stale validation")
@@ -298,6 +305,15 @@ if repository_aggregate_passes("failure", "labeled", "pull_request", "documentat
     errors.append("a failed Janitor must never satisfy the repository aggregate")
 if repository_aggregate_passes("skipped", "synchronize", "pull_request"):
     errors.append("a skipped candidate validation must not satisfy the repository aggregate")
+
+for result in ("failure", "cancelled", "timed_out", "action_required"):
+    for action in pr_actions:
+        for label in (*CLASSIFICATION_LABELS, "documentation", None):
+            if repository_aggregate_passes(result, action, "pull_request", label):
+                errors.append("non-success Janitor results must remain blocking across label events")
+for token in ('--summary-file "$GITHUB_STEP_SUMMARY"', 'Repository validation timing summary', 'checks[:10]', 'duration_ms'):
+    if token not in workflow_text:
+        errors.append(f"CI bounded diagnostic/timing summary missing: {token}")
 
 package_json = json.loads((ROOT / "package.json").read_text(encoding="utf-8"))
 package_lock = json.loads((ROOT / "package-lock.json").read_text(encoding="utf-8")) if (ROOT / "package-lock.json").exists() else {}

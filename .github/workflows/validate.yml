@@ -1,4 +1,6 @@
 name: validate
+run-name: >-
+  validate pr=${{ github.event.pull_request.number || 0 }} head=${{ github.event.pull_request.head.sha || github.sha }} base=${{ github.event.pull_request.base.sha || github.event.before || '' }} class=${{ contains(github.event.pull_request.labels.*.name, 'aips:core-change') && 'core' || contains(github.event.pull_request.labels.*.name, 'aips:large-change') && 'large' || 'standard' }}
 
 on:
   push:
@@ -54,6 +56,7 @@ jobs:
             --base "$AIPS_GATE_BASE" \
             --head "$AIPS_GATE_HEAD" \
             --require-complete \
+            --summary-file "$GITHUB_STEP_SUMMARY" \
             --format json
       - name: Refresh pull request base tip
         if: github.event_name == 'pull_request'
@@ -72,7 +75,7 @@ jobs:
         run: >-
           python scripts/repository_preflight.py
           --base "$AIPS_GATE_BASE" --head "$AIPS_GATE_HEAD"
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "24"
           cache: npm
@@ -140,7 +143,7 @@ jobs:
           print(f"Fingerprint: {report.get('candidate_fingerprint', 'unknown')}")
           for check in report.get("checks") or []:
               print(f"- {check.get('id', 'unknown')}: {check.get('status', 'unknown')} "
-                    f"(exit={check.get('exit_code', 'n/a')}, reason={check.get('reason', 'n/a')})")
+                    f"(exit={check.get('exit_code', 'n/a')}, reason={check.get('reason', 'n/a')}, duration_ms={check.get('duration_ms', 'n/a')})")
           PY
           fi
       - name: Upload Integration Gate evidence
@@ -151,6 +154,27 @@ jobs:
           path: ${{ runner.temp }}/integration-gate-report.yaml
           if-no-files-found: ignore
           retention-days: 14
+      - name: Repository validation timing summary
+        if: ${{ always() }}
+        shell: bash
+        env:
+          AIPS_TIMING_PATH: ${{ runner.temp }}/repository-validation-timing.json
+        run: |
+          python3 - <<'PYTHON' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path(os.environ["AIPS_TIMING_PATH"])
+          if not path.is_file():
+              print("Repository timing: UNAVAILABLE (validation did not produce timing evidence).")
+          else:
+              report = json.loads(path.read_text(encoding="utf-8"))
+              print(f"Repository timing: {report.get('status', 'UNKNOWN')}; total_ms={report.get('total_duration_ms', 'unknown')}")
+              checks = sorted(report.get("checks", []), key=lambda item: item.get("duration_ms", 0), reverse=True)
+              for check in checks[:10]:
+                  print(f"- {check.get('name', 'unknown')}: {check.get('duration_ms', 'unknown')} ms ({check.get('status', 'unknown')})")
+          PYTHON
       - name: Upload repository validation timing
         if: ${{ always() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
@@ -179,6 +203,9 @@ jobs:
 
   repository:
     needs: janitor
+    permissions:
+      contents: read
+      actions: read
     if: ${{ !cancelled() }}
     runs-on: ubuntu-24.04
     steps:
@@ -186,9 +213,44 @@ jobs:
         env:
           AIPS_LABEL_NOOP: ${{ github.event_name == 'pull_request' && (github.event.action == 'labeled' || github.event.action == 'unlabeled') && github.event.label.name != 'aips:core-change' && github.event.label.name != 'aips:large-change' }}
           AIPS_JANITOR_RESULT: ${{ needs.janitor.result }}
+          GH_TOKEN: ${{ github.token }}
+          AIPS_EXPECTED_RUN: validate pr=${{ github.event.pull_request.number || 0 }} head=${{ github.event.pull_request.head.sha || github.sha }} base=${{ github.event.pull_request.base.sha || github.event.before || '' }} class=${{ contains(github.event.pull_request.labels.*.name, 'aips:core-change') && 'core' || contains(github.event.pull_request.labels.*.name, 'aips:large-change') && 'large' || 'standard' }}
+          AIPS_CANDIDATE_HEAD: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           if [[ "$AIPS_JANITOR_RESULT" == "skipped" && "$AIPS_LABEL_NOOP" == "true" ]]; then
-            echo "No classification label changed; required validation remains represented by this successful no-op." >> "$GITHUB_STEP_SUMMARY"
-            exit 0
+            python3 - <<'PYTHON'
+          import json
+          import os
+          import subprocess
+          import sys
+
+          def api(path):
+              result = subprocess.run(["gh", "api", path], capture_output=True, text=True)
+              if result.returncode:
+                  raise RuntimeError("GitHub validation evidence unavailable")
+              return json.loads(result.stdout)
+
+          passed = False
+          try:
+              repo = os.environ["GITHUB_REPOSITORY"]
+              head = os.environ["AIPS_CANDIDATE_HEAD"]
+              current = int(os.environ["GITHUB_RUN_ID"])
+              runs = api(f"repos/{repo}/actions/workflows/validate.yml/runs?head_sha={head}&per_page=100")["workflow_runs"]
+              for run in sorted(runs, key=lambda item: item["id"], reverse=True):
+                  if run["id"] >= current or run.get("head_sha") != head:
+                      continue
+                  jobs = api(f"repos/{repo}/actions/runs/{run['id']}/jobs?filter=latest")["jobs"]
+                  janitor = next((job for job in jobs if job["name"] == "janitor"), None)
+                  if janitor and janitor.get("conclusion") == "skipped":
+                      continue
+                  passed = bool(janitor and janitor.get("conclusion") == "success" and run.get("display_title") == os.environ["AIPS_EXPECTED_RUN"])
+                  break
+          except (RuntimeError, ValueError, KeyError, OSError):
+              passed = False
+          with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
+              summary.write("Label-only validation: " + ("PASS (matching complete Gate)" if passed else "BLOCKED (no matching successful complete Gate)") + "\n")
+          sys.exit(0 if passed else 1)
+          PYTHON
+            exit $?
           fi
           test "$AIPS_JANITOR_RESULT" = "success"

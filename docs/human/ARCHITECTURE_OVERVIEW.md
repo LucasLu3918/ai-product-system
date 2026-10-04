@@ -72,6 +72,8 @@ Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行
 
 ## Deterministic Execution
 
+CLI publication commands select the active AIPS checkout unless `--project-root` explicitly selects another. Python selection honors the configured validation interpreter, and reports the source/target pair. CI publishes bounded documentation failures and the slowest ten validation checks in GitHub summaries; full PR and main Gates remain required. Label-only aggregates bind success to the latest full Janitor and exact PR/head/base/class metadata; missing or stale evidence blocks.
+
 Local publication preflight verifies a prepared Python 3.12 Gate environment and, for documentation changes, Node 24+ plus the installed VitePress bundle. It invokes that bundle directly, so a local exact-candidate check does not install packages or contact a registry.
 
 Repository validator optimizations preserve the full Integration Gate and unique lifecycle coverage; maintenance guidance defines the single-invocation rule for validation evidence.

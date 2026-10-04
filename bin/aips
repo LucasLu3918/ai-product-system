@@ -171,11 +171,14 @@ current_commit() { git_in_system rev-parse HEAD; }
 major_of() { printf '%s' "$1" | awk -F. '{print $1}'; }
 
 python_bin() {
-  if [ -x "$SYSTEM_DIR/.venv/bin/python" ]; then
-    printf '%s\n' "$SYSTEM_DIR/.venv/bin/python"
-  else
-    command -v python3 || true
-  fi
+  local candidate
+  for candidate in "${AIPS_VALIDATION_PYTHON:-}" "${AIPS_VALIDATION_VENV:+$AIPS_VALIDATION_VENV/bin/python}" "$SYSTEM_DIR/.venv/bin/python"; do
+    [ -x "$candidate" ] || continue
+    "$candidate" -c 'import yaml' >/dev/null 2>&1 || continue
+    printf '%s\n' "$candidate"
+    return 0
+  done
+  command -v python3 || true
 }
 
 validation_python_for_root() {
@@ -242,7 +245,12 @@ ensure_compatible_venv() {
 
 runtime_dependencies_available() {
   local py
-  py="$(python_bin)"
+  # Doctor and installer inspect the installed runtime, not a caller's Gate venv.
+  if [ -x "$SYSTEM_DIR/.venv/bin/python" ]; then
+    py="$SYSTEM_DIR/.venv/bin/python"
+  else
+    py="$(command -v python3 || true)"
+  fi
   [ -n "$py" ] && "$py" -c 'import yaml, mcp' >/dev/null 2>&1
 }
 
@@ -818,9 +826,14 @@ publish_preflight_cmd() {
   done
   [ "$action" != "preflight" ] || action="run"
   local command_root="$SYSTEM_DIR"
-  if [ -z "$selected_root" ] && { [ "$action" = "matrix-sync" ] || [ "$action" = "post-merge" ]; }; then
+  if [ -z "$selected_root" ]; then
     selected_root="$(git -C "$PWD" rev-parse --show-toplevel 2>/dev/null || true)"
-    [ -n "$selected_root" ] && [ -f "$selected_root/scripts/publish_preflight.py" ] || die "Run publish $action from an AIPS checkout or pass --project-root <repo>."
+    if [ -z "$selected_root" ] || [ ! -f "$selected_root/scripts/publish_preflight.py" ]; then
+      selected_root=""
+      if [ "$action" = "matrix-sync" ] || [ "$action" = "post-merge" ]; then
+        die "Run publish $action from an AIPS checkout or pass --project-root <repo>."
+      fi
+    fi
   fi
   if [ -n "$selected_root" ]; then
     command_root="$(cd "$selected_root" 2>/dev/null && pwd -P)" || die "Cannot resolve --project-root: $selected_root"
@@ -832,6 +845,9 @@ publish_preflight_cmd() {
   fi
   [ -n "$py" ] || py="$(python_bin)"
   [ -n "$py" ] || die "python3 is required."
+  local script_root="$command_root"
+  [ "$action" != "post-merge" ] || script_root="$SYSTEM_DIR"
+  say "Publish runtime: launcher=$SYSTEM_DIR source=$script_root target=$command_root python=$py" >&2
   "$py" -c 'import yaml' >/dev/null 2>&1 || die "The Python selected for $command_root ($py) lacks PyYAML. Run `python3.12 bin/prepare-local-validation` in that checkout, then retry."
   if [ "$action" = "post-merge" ]; then
     if [ "${#publish_args[@]}" -gt 0 ]; then

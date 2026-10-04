@@ -52,6 +52,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--venv", type=Path, default=DEFAULT_VENV)
     parser.add_argument("--check-only", action="store_true", help="Check an existing environment without installing packages")
+    parser.add_argument("--wheelhouse", type=Path, help="Install from a local wheel directory without package-index access")
     parser.add_argument("--run", action="store_true", help="Run the exact-candidate Publication Preflight after environment checks")
     parser.add_argument("--base", help="Candidate base revision; required with --run")
     parser.add_argument("--head", default="HEAD", help="Candidate head revision")
@@ -96,6 +97,10 @@ def main() -> int:
             print("Check free space and write permissions, or choose another `--venv <path>`.", file=sys.stderr)
             return 2
         install = [str(python), "-m", "pip", "install"]
+        if args.wheelhouse:
+            if not args.wheelhouse.is_dir():
+                parser.error("--wheelhouse must be an existing directory")
+            install.extend(("--no-index", "--find-links", str(args.wheelhouse.resolve())))
         for requirement in REQUIREMENTS:
             install.extend(("-r", str(ROOT / requirement)))
         if not run(install, phase="validation dependencies"):

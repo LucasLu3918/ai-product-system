@@ -335,6 +335,7 @@ def inventory(root: Path, files: list[Path]) -> dict[str, Any]:
     data_candidates: list[str] = []
     event_candidates: list[str] = []
     test_candidates: list[str] = []
+    ci_candidates: list[str] = []
     top_dirs: dict[str, int] = {}
     for p in files:
         rp = rel(root, p)
@@ -347,6 +348,8 @@ def inventory(root: Path, files: list[Path]) -> dict[str, Any]:
         if p.name in MANIFEST_NAMES:
             manifests.append(rp)
         low = rp.lower()
+        if rp.startswith(".github/workflows/") and p.suffix in {".yml", ".yaml"}:
+            ci_candidates.append(rp)
         if p.name.lower() in {"main.go", "main.py", "app.py", "server.py", "index.ts", "index.js", "program.cs"}:
             entry_candidates.append(rp)
         if any(k in low for k in ("openapi", "swagger", "/api/", "/routes/", "/handlers/", "/controller")):
@@ -367,6 +370,7 @@ def inventory(root: Path, files: list[Path]) -> dict[str, Any]:
         "data_candidates": sorted(data_candidates)[:300],
         "event_candidates": sorted(event_candidates)[:300],
         "test_candidates": sorted(test_candidates)[:300],
+        "ci_candidates": sorted(ci_candidates)[:100],
     }
 
 
@@ -376,6 +380,7 @@ def seed_impact_graph(inv: dict[str, Any]) -> dict[str, Any]:
         ("api_source", "api_candidates"),
         ("data_source", "data_candidates"),
         ("event_source", "event_candidates"),
+        ("ci_workflow", "ci_candidates"),
     ):
         for path in inv.get(key, [])[:100]:
             nid = f"{kind}-{sha(path)[:12]}"
@@ -631,6 +636,12 @@ def initial_intelligence(root: Path, pid: str, ident: dict[str, str], old_knowle
 def bootstrap(root: Path) -> dict[str, Any]:
     store, mode, pid = intelligence_store(root, create=True)
     with writer_lock(store):
+        if (store / "PROJECT_INTELLIGENCE.yaml").exists():
+            return {
+                "project_id": pid, "mode": mode, "store": str(store),
+                "status": "PRESERVED_EXISTING",
+                "next": "Use status and refresh-plan; enrich only affected topics before finalize.",
+            }
         files = safe_walk(root)
         inv = inventory(root, files)
         sources = discover_sources(root, files)
@@ -1545,13 +1556,50 @@ def finalize(root: Path) -> dict[str, Any]:
             "verified_at": utc_now(),
         }
         atomic_yaml(ip, intel)
+        # Finalization records semantic work; it cannot silently approve stale sources.
+        current_freshness = freshness(root)
+        state["freshness"] = current_freshness["status"]
+        atomic_yaml(ip, intel)
     review = render_review(root)
     return {
         "project_id": pid,
         "mode": mode,
         "readiness": readiness,
         "missing": missing,
+        "freshness": current_freshness["status"],
+        "reasons": current_freshness.get("reasons", []),
         "review_html": str(review),
+    }
+
+
+def refresh_plan(root: Path) -> dict[str, Any]:
+    """Describe exact source changes without mutating or approving Intelligence."""
+    store, mode, pid = intelligence_store(root)
+    registry = load_yaml(store / "SOURCE_REGISTRY.yaml", {"sources": []})
+    changes = []
+    for source in registry.get("sources") or []:
+        relative = str(source.get("path") or "")
+        path = root / relative
+        if not relative or Path(relative).is_absolute() or ".." in Path(relative).parts:
+            continue
+        if not path.resolve().is_relative_to(root.resolve()) or path.is_symlink() or not path.is_file():
+            changes.append({"path": relative, "status": "UNAVAILABLE"})
+            continue
+        digest = file_hash(path)
+        if digest != source.get("hash"):
+            changes.append({"path": relative, "status": "CHANGED", "current_hash": digest})
+    report = freshness(root)
+    return {
+        "project_id": pid, "mode": mode, "status": report["status"],
+        "affected_topics": report.get("affected_topics", []),
+        "reasons": report.get("reasons", []), "source_changes": changes,
+        "steps": [
+            "Review changed sources and enrich affected semantic topics.",
+            "Update only reviewed SOURCE_REGISTRY hashes; retain review status and partial graph coverage.",
+            "Run finalize, then status; resolve any remaining stale reasons.",
+            "Refresh the retrieval index without --force using a writable cache including SQLite sidecars.",
+        ],
+        "read_only": True,
     }
 
 
@@ -1589,6 +1637,7 @@ def refresh(root: Path) -> dict[str, Any]:
                 "status": "SEMANTIC_REFRESH_REQUIRED",
                 "affected_topics": report.get("affected_topics") or [],
                 "reasons": report.get("reasons") or [],
+                "next": "aips intelligence refresh-plan --project <project>",
             }
         ident = repository_identity(root)
         intel.setdefault("project", {})["worktree_identity"] = ident["worktree_id"]
@@ -1601,6 +1650,8 @@ def refresh(root: Path) -> dict[str, Any]:
             "dirty_paths_truncated": False,
             "verified_at": utc_now(),
         }
+        atomic_yaml(ip, intel)
+        intel["state"]["freshness"] = freshness(root)["status"]
         atomic_yaml(ip, intel)
     review = render_review(root)
     return {
@@ -2359,7 +2410,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="AIPS Project Intelligence deterministic helper")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    for name in ("bootstrap", "status", "render", "finalize", "refresh", "migrate-attached", "sync-external", "reconcile-overrides"):
+    for name in ("bootstrap", "status", "render", "finalize", "refresh", "refresh-plan", "migrate-attached", "sync-external", "reconcile-overrides"):
         p = sub.add_parser(name)
         p.add_argument("--project", default=os.getcwd())
         p.add_argument("--format", choices=["yaml", "json"], default="yaml")
@@ -2462,6 +2513,8 @@ def main() -> int:
             result = finalize(root)
         elif args.command == "refresh":
             result = refresh(root)
+        elif args.command == "refresh-plan":
+            result = refresh_plan(root)
         elif args.command == "context":
             with observed_stage(root, args.observe_run_id, "intelligence.context") as observation:
                 result = context_manifest(root, args.runtime, args.prompt, args.explain, args.component,

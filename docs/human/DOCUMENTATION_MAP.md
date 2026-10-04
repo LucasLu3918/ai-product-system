@@ -4,6 +4,8 @@ Human Docs 依使用目的組織，而不是依版本號堆疊。
 
 ## Official Docs Site
 
+The docs-site workflow uses pinned setup-node v7 and upload-pages-artifact v5 on GitHub-hosted Ubuntu 24.04. Action upgrades include architecture, technology and documentation-sync updates; dependency PRs are subject to the same documentation closure as manual changes.
+
 docs/human/ 是 canonical Human source，也是 VitePress site root。首頁為 index.md，網站提供 sidebar、local search 與 page outline。
 
 Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時，deployment 會以 `SKIPPED_NOT_CONFIGURED` 誠實略過。啟用 Source = GitHub Actions 後，main push 會自動部署同一份 build artifact。Legacy `TECHNOLOGY_GUIDE.html` / `EVOLUTION_RADAR_OVERVIEW.html` 只保留舊連結相容，不再作為新增內容的 canonical target。

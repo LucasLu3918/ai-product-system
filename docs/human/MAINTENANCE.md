@@ -278,6 +278,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 
 ## Public repository / CI consistency
 
+Use `aips publish environment` from the intended checkout and inspect its source/target/Python diagnostic before validation. Reuse an existing environment with `python3.12 bin/prepare-local-validation --venv <path> --check-only`; a local `--wheelhouse <path>` supports offline Python dependency installation. Browser downloads remain separate prerequisites. GitHub logs/artifacts may redirect to external storage; keep domain approval explicit and use bounded Check summaries for initial diagnosis.
+
 The validation workflow installs the optional pinned `requirements-openapi.txt` set before running repository checks, so offline OpenAPI lifecycle tests use the same validator version in local and CI runs.
 
 Retrieval cache failures distinguish read access from stale-index refresh writes. A `RETRIEVAL_CACHE_WRITE_ACCESS_DENIED` result means SQLite could not open the rebuildable cache for update; allow cache and sidecar writes or set `XDG_CACHE_HOME` to a location writable by the current runtime, then retry. Keep invalid-index rebuilds (`--force`) for an index explicitly reported `INVALID`; do not use them to bypass ordinary sandbox write restrictions. Project Intelligence semantic refresh remains separate and must still re-read changed authoritative sources.
@@ -366,7 +368,7 @@ Preview 對 Core Matrix 套用與 Gate 相同的就緒條件：可執行狀態�
 
 在原始碼 checkout 驗證尚未安裝的修改時，使用 `./bin/aips`，避免全域安裝的 CLI 指向另一份系統程式碼或 Matrix。受限 sandbox 若禁止 localhost bind，先用 `prepare-local-validation` 辨識 `ENVIRONMENT_BLOCKED`；恢復該能力後重新執行完整驗證，不略過測試。
 
-被 concurrency 取消的舊 CI run 不執行 `repository` 彙總 job，現行 run 的 Janitor 失敗仍讓彙總 job 失敗。無關 PR 標籤事件會跳過 Janitor；只有該事件明確屬於無關標籤時，`repository` aggregate 才以記錄在 Step Summary 的 no-op 成功結束。檢查同一候選 SHA 的最新 required aggregate。
+被 concurrency 取消的舊 CI run 不執行 `repository` 彙總 job，現行 run 的 Janitor 失敗仍讓彙總 job 失敗。無關 PR 標籤事件會跳過 Janitor；只有該事件明確屬於無關標籤，且最新完整 Janitor 已成功、run title 綁定同一 PR/head/base/change class 時，`repository` aggregate 才以記錄在 Step Summary 的 no-op 成功結束。缺漏、失敗、取消、尚未完成或 stale evidence 均阻擋；Actions metadata 只需 repository job 的 `actions: read` 權限。檢查同一候選 SHA 的最新 required aggregate。
 
 When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 27 deterministic, 98 lifecycle and 54 agent_eval scenarios (179 automated total).
 

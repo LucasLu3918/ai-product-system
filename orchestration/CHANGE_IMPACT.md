@@ -1,5 +1,7 @@
 # Change Impact Guard
 
+CI workflow seeds are included in deterministic discovery while global graph coverage remains partial. Review runtime routing, required-check consumers, registry/hash persistence and offline-dependency behavior explicitly; a discovered seed does not prove a compiler-resolved relationship.
+
 Use before mutating an existing project.
 
 ## Purpose
