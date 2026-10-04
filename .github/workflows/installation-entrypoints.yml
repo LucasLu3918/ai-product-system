@@ -10,9 +10,13 @@ on:
       - "scripts/uninstall.sh"
       - "bin/aips"
       - "docs/human/INSTALLATION.md"
+      - "docs/human/MAINTENANCE.md"
+      - "docs/human/USER_GUIDE.md"
       - "docs/human/GETTING_STARTED.md"
       - "README.md"
+      - "requirements-openapi.txt"
       - "tests/evidence/install_download_lifecycle.py"
+      - "tests/evidence/openapi_cli_install_lifecycle.py"
       - "tests/evidence/install_download_contract.ps1"
       - ".github/workflows/installation-entrypoints.yml"
   workflow_dispatch:
@@ -32,6 +36,7 @@ jobs:
       - run: bash -n scripts/install.sh scripts/bootstrap.sh scripts/uninstall.sh
       - run: bash scripts/install.sh --dry-run
       - run: python3 tests/evidence/install_download_lifecycle.py
+      - run: python3 tests/evidence/openapi_cli_install_lifecycle.py
 
   linux-lifecycle:
     runs-on: ubuntu-24.04
@@ -46,6 +51,24 @@ jobs:
           AIPS_INSTALL_SOURCE="$GITHUB_WORKSPACE" bash scripts/install.sh
           export PATH="$HOME/.local/bin:$PATH"
           aips doctor
+          optional_status="$(aips openapi doctor)"
+          printf '%s\n' "$optional_status"
+          [[ "$optional_status" == *NOT_INSTALLED* ]]
+          mkdir -p "$RUNNER_TEMP/aips openapi product"
+          cat > "$RUNNER_TEMP/aips openapi product/openapi.yaml" <<'EOF'
+          openapi: 3.0.3
+          info: {title: Installed CLI fixture, version: '1.0'}
+          paths: {}
+          EOF
+          if missing_output="$(aips openapi validate "$RUNNER_TEMP/aips openapi product/openapi.yaml" --repo-root "$RUNNER_TEMP/aips openapi product" 2>&1)"; then
+            echo "OpenAPI validation must request explicit optional dependency installation before setup." >&2
+            exit 1
+          fi
+          [[ "$missing_output" == *"Run: aips openapi install"* ]]
+          printf '%s\n' "$missing_output"
+          aips openapi install
+          aips openapi doctor
+          aips openapi validate "$RUNNER_TEMP/aips openapi product/openapi.yaml" --repo-root "$RUNNER_TEMP/aips openapi product"
           aips mcp inspect
           aips uninstall --remove-venv
 

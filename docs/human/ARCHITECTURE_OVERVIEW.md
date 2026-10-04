@@ -74,6 +74,8 @@ Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行
 
 CLI routing 區分 AIPS checkout 與產品 root：docs impact 在選定 AIPS checkout 計算候選差異；`aips openapi` 使用安裝版工具操作明確指定的產品 root。Local preparation 隔離 AIPS 設定並保留 gh 設定位置，先確認 venv、依賴與執行權限，再進入既有完整 Gate。此修正不改變元件拓撲或治理權限。
 
+OpenAPI validator remains optional to keep baseline installation small. `aips openapi doctor` reports its availability, and only the explicit `aips openapi install` action installs the pinned validator dependencies into the managed AIPS environment. Product contract commands continue to resolve product files under the explicit product root.
+
 CLI publication commands select the active AIPS checkout unless `--project-root` explicitly selects another. Python selection honors the configured validation interpreter, and reports the source/target pair. CI publishes bounded documentation failures and the slowest ten validation checks in GitHub summaries; full PR and main Gates remain required. Label-only aggregates bind success to the latest full Janitor and exact PR/head/base/class metadata; missing or stale evidence blocks.
 
 Local publication preflight verifies a prepared Python 3.12 Gate environment and, for documentation changes, Node 24+ plus the installed VitePress bundle. It invokes that bundle directly, so a local exact-candidate check does not install packages or contact a registry.

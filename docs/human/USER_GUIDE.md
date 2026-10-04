@@ -342,6 +342,8 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 
 在產品 repository 使用 `aips openapi validate <spec> --repo-root .` 或 `aips openapi generator <profile> --repo-root . --adapter-id <id>` 可呼叫安裝版工具，無須複製 AIPS scripts。generator 預設僅 preview；明確授權後才加 `--execute`。
 
+OpenAPI 驗證器為選用套件：先執行 `aips openapi doctor` 確認狀態，再明確執行 `aips openapi install` 安裝固定版本。套件缺少時 validator 會提示安裝方式，不會直接輸出 Python traceback；基本 AIPS 安裝不會自動下載這些套件。
+
 Run publication commands inside the target AIPS checkout or pass `--project-root <repo>`. Inspect the printed source, target and Python before proceeding. For repeated local checks, reuse the prepared venv with `--check-only`; use `--wheelhouse` for offline Python packages when needed. Unrelated label checks pass only with matching successful full Gate evidence; otherwise rerun the full candidate workflow. Read CI documentation-failure and timing summaries before requesting external artifact-storage access.
 
 

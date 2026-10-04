@@ -137,7 +137,7 @@ Usage:
   aips janitor --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>]
   aips publish preview|plan|preflight|matrix-sync|post-merge [publish-preflight options] [--project-root <repo>]
   aips docs impact --base <ref> [--head <ref>] [--project-root <repo>] [--format yaml|json]
-  aips openapi <validate|compare|run-contract-tests|verify-evidence|generator> ...
+  aips openapi <doctor|install|validate|compare|run-contract-tests|verify-evidence|generator> ...
 
   aips identity [--project <path>] [--format yaml|json]
 
@@ -253,6 +253,20 @@ runtime_dependencies_available() {
     py="$(command -v python3 || true)"
   fi
   [ -n "$py" ] && "$py" -c 'import yaml, mcp' >/dev/null 2>&1
+}
+
+openapi_dependency_status() {
+  local py
+  if [ -x "$SYSTEM_DIR/.venv/bin/python" ]; then
+    py="$SYSTEM_DIR/.venv/bin/python"
+  else
+    py="$(python_bin)"
+  fi
+  if [ -n "$py" ] && "$py" -c 'import openapi_spec_validator, jsonschema' >/dev/null 2>&1; then
+    say "OpenAPI optional dependencies: READY ($py)"
+  else
+    say "OpenAPI optional dependencies: NOT_INSTALLED (optional; run aips openapi install)"
+  fi
 }
 
 install_runtime_dependencies() {
@@ -877,11 +891,32 @@ openapi_cmd() {
   shift || true
   case "$action" in
     help|-h|--help)
-      say "Usage: aips openapi <validate|compare|run-contract-tests|verify-evidence|generator> ..."
+      say "Usage: aips openapi <doctor|install|validate|compare|run-contract-tests|verify-evidence|generator> ..."
       say "Run from the product repository and pass --repo-root <product-root>."
       return ;;
+    doctor)
+      openapi_dependency_status
+      return ;;
+    install)
+      ensure_compatible_venv
+      py="$SYSTEM_DIR/.venv/bin/python"
+      [ -r "$SYSTEM_DIR/requirements-openapi.txt" ] || die "OpenAPI optional requirements are missing: $SYSTEM_DIR/requirements-openapi.txt"
+      "$py" -m pip install --disable-pip-version-check -q -r "$SYSTEM_DIR/requirements-openapi.txt" ||
+        die "OpenAPI optional dependency installation failed."
+      "$py" -c 'import openapi_spec_validator, jsonschema' >/dev/null 2>&1 ||
+        die "OpenAPI optional dependencies are incomplete after installation."
+      say "OpenAPI optional dependencies: installed in $py"
+      return ;;
     generator) script="openapi_generator_adapter.py" ;;
-    validate|compare|run-contract-tests|verify-evidence) script="openapi_contracts.py"; set -- "$action" "$@" ;;
+    validate|compare|run-contract-tests|verify-evidence)
+      script="openapi_contracts.py"
+      set -- "$action" "$@"
+      py="$(python_bin)"
+      [ -n "$py" ] || die "python3 is required."
+      "$py" -c 'import openapi_spec_validator, jsonschema' >/dev/null 2>&1 ||
+        die "OpenAPI optional dependencies are missing from the selected AIPS Python ($py). Run: aips openapi install"
+      "$py" "$SYSTEM_DIR/scripts/$script" "$@"
+      return ;;
     *) die "Unknown OpenAPI action: $action. Run aips openapi --help." ;;
   esac
   py="$(python_bin)"
@@ -1522,6 +1557,7 @@ doctor() {
     warn "MCP gateway dependency/server missing; run aips install."
     failed="true"
   fi
+  openapi_dependency_status
 
   if [ -n "$(git_in_system status --porcelain 2>/dev/null || true)" ]; then
     warn "System repo has local changes; automatic preflight update will stop."

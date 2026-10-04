@@ -39,6 +39,8 @@ v0.14 新增 Scenario 111–115，全部都有直接 executable evidence：2 個
 
 Publication lifecycle 驗證設定隔離保留 gh 設定位置、異常 venv 被拒絕、help 無驗證副作用，以及安裝版 CLI 對不同 checkout 的 docs impact 路由。獨立產品 fixture 不含 AIPS scripts，仍能驗證本地 OpenAPI 契約，並保持遠端 reference 阻擋；fixture 通過不代表真實產品 API 驗收完成。
 
+Core Change matrices record independent-review evidence separately from test completion. The Phase 12 installation CLI matrix leaves `review_evidence.required: false`; the CLI and installation lifecycle checks do not claim independent semantic review or runtime attestation.
+
 Scenario 165 verifies that missing Gate dependencies, Node/VitePress or host capabilities are reported before candidate lifecycle execution, while documentation builds use only the checked-out VitePress bundle and do not install packages.
 
 Publication Preflight lifecycle also checks that both `run` child processes put the selected Python directory first in `PATH`, even when the inherited shell path points elsewhere.

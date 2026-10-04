@@ -306,6 +306,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+Installed product CLI acceptance keeps the required AIPS runtime dependencies separate from optional OpenAPI validator packages. Require an explicit setup command before contract validation; exercise the installed entrypoint from a product root containing no AIPS scripts, then retain platform installation and exact-candidate Gates.
+
 Resolve publication target from explicit --project-root or the active AIPS checkout, and disclose source/target/Python selection. Reuse prepared dependencies for focused checks, then run one exact-candidate local Gate. Dependency workflow updates carry their required documentation closure and candidate-bound Matrix; PR and main CI retain independent full validation.
 
 For a fixed Core candidate, finish the documentation closure and bind the reviewed Matrix before the single complete local Gate run. The local entrypoint must resolve Python 3.12, OpenAPI validation modules and any Node/VitePress docs-build requirements before beginning expensive lifecycle work.

@@ -292,6 +292,8 @@ The working-tree preview scans candidate additions and complete untracked files.
 
 When publication preflight changes, keep the working-tree preview, content safety findings, configured Git identity checks and exact-candidate resolver aligned with CI.
 
+The optional OpenAPI validator is installed only by `aips openapi install` into the managed AIPS venv using pinned `requirements-openapi.txt`; basic installation stays network-minimal. Keep `aips openapi doctor`, `aips doctor`, actionable missing-dependency errors and product-root CLI validation aligned. The `installation-entrypoints` workflow must prove fresh-install missing status, explicit setup and real validation from an independent product directory on Linux, plus dependency-free lifecycle contracts on Linux and macOS. Windows coverage describes the supported WSL launcher contract only.
+
 Every publication candidate also runs the built-in strict secret scan before dependency installation in GitHub Actions and during local publication preflight. The Integration Gate repeats the scan as required candidate-bound evidence. Both use `config/secret-scan.yaml`, scan final content plus `base..head` history, ignore no inline bypass markers and fail closed on incomplete input. Keep the single `repository` required-check context; the Janitor aggregate continues to carry failures.
 
 Before committing, `aips publish preview --base <base> --change-class <class>` reports documentation closure with the rule responsible for each required file and checks the candidate Core Matrix binding. After reviewing the final change boundary, `aips publish matrix-sync --base <base>` can refresh the canonical matrix base/hash fields. This does not mark the matrix ready or reconciled.
