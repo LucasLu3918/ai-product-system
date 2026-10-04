@@ -68,20 +68,20 @@ if script.exists():
                     "Repository Health baseline must PASS"
                 )
             architecture = report.get("architecture_surfaces") or {}
-            if architecture.get("surface_count") != 9:
+            if architecture.get("surface_count") != 10:
                 errors.append(
                     "Repository Health architecture inventory must "
-                    "contain 9 major surfaces"
+                    "contain 10 major surfaces"
                 )
-            if architecture.get("capability_count") != 28:
+            if architecture.get("capability_count") != 31:
                 errors.append(
                     "Repository Health architecture inventory must "
-                    "observe all 28 Capability Map entries"
+                    "observe all 31 Capability Map entries"
                 )
-            if architecture.get("capability_accounted") != 28:
+            if architecture.get("capability_accounted") != 31:
                 errors.append(
                     "Repository Health architecture inventory must "
-                    "classify all 28 Capability Map entries"
+                    "classify all 31 Capability Map entries"
                 )
             if architecture.get("unclassified_capabilities"):
                 errors.append(

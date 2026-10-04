@@ -1484,3 +1484,7 @@ Current inventory after Scenario 196: 34 deterministic + 106 lifecycle + 54 agen
 The standalone Widgets fixture runs the Phase 2 validation, explicit Phase 4 generation, project-native HTTP client tests, operation coverage, and Phase 3 exact-candidate inspection. Missing or altered run reports fail closed for the opted-in Profile; existing Profiles remain compatible. The fixture proves its own behavior and workflow, not another product's semantics.
 
 Current inventory after Scenario 197: 34 deterministic + 107 lifecycle + 54 agent_eval = 195 automated; 2 manual; 197 total; 0 uncovered.
+
+## Scenario 198 — Runtime Context and invariant matrix
+
+`tests/evidence/runtime_context_lifecycle.py` 驗證共用驗證環境路徑、interpreter 優先序、credential-free Context 報告與 deterministic invariant matrix。矩陣涵蓋每組維度值對並檢查上限及高風險案例。

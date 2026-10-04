@@ -24,6 +24,7 @@ if str(ROOT / "scripts") not in sys.path:
 
 import documentation_placement  # noqa: E402
 import repository_preflight  # noqa: E402
+from runtime_context import collect_runtime_context
 from integration_gate import load_yaml as load_matrix_yaml
 from integration_gate import matrix_readiness_issues
 from runtime_cache import cache_environment
@@ -236,6 +237,7 @@ def environment_status() -> dict[str, Any]:
         })
     return {
         "status": "READY" if not blockers else "ENVIRONMENT_BLOCKED",
+        "runtime_context": collect_runtime_context(ROOT, ROOT),
         "runtime": {"project_root": str(ROOT), "commit": git("rev-parse", "HEAD", check=False), "python": sys.executable},
         "cache_diagnostics": cache_diagnostics(),
         "python": {"executable": Path(sys.executable).name, "version": python_version.stdout.strip() or python_version.stderr.strip()},

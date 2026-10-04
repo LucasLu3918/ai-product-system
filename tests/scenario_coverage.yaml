@@ -1553,3 +1553,11 @@ scenarios:
       - examples/openapi-client-pilot/README.md
       - scripts/implementation_enforcement.py
       - tests/evidence/openapi_client_pilot_lifecycle.py
+  - id: "198"
+    path: tests/scenarios/198-runtime-context-invariant-matrix.md
+    coverage: lifecycle
+    evidence:
+      - scripts/runtime_context.py
+      - scripts/runtime_invariant_matrix.py
+      - config/runtime-invariants.yaml
+      - tests/evidence/runtime_context_lifecycle.py

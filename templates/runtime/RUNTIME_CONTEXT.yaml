@@ -1,0 +1,21 @@
+version: 1
+invocation_mode: source_checkout  # source_checkout | linked_worktree | installed_system
+system_root: null
+project_root: null
+python:
+  selected: null
+  full_validation: null
+  base_runtime: null
+  selection_attempts: []
+paths:
+  config_home: null
+  cache_home: null
+  validation_venv: null
+  github_config: null
+capabilities:
+  python_full_validation: {available: false, reason_code: full_validation_python_unavailable}
+  openapi: {available: false, reason_code: module_missing}
+  playwright: {available: false, reason_code: module_missing}
+  browser: {executable_available: null, launch_verified: false, reason_code: launch_probe_not_run}
+  sandbox: {status: NOT_PROBED, reason_code: sandbox_provider_not_verified}
+  offline: false

@@ -1,5 +1,7 @@
 # Evolution Radar 流程總覽
 
+目前 Capability Map 納入 Runtime Context 與 runtime invariant matrix，供後續 Radar 比較與趨勢追蹤。
+
 Evolution Radar 是 AIPS 的 maintenance plane，用來研究外部技術變化，但不直接取得 implementation / merge / release authority。
 
 ## Signal Collection

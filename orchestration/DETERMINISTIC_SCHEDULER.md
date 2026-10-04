@@ -1,5 +1,7 @@
 # Deterministic Scheduler
 
+Runtime invariant matrix 是既有 Integration Gate 的必要 deterministic check，依 `config/runtime-invariants.yaml` 驗證所有維度值對、案例上限與高風險組合。
+
 CLI help must not schedule validation work. Local preparation preserves gh configuration references while isolating AIPS state and rejects a mismatched venv before dependency checks. Docs impact follows the selected checkout. Existing timing evidence supports removal of accidental duplicate runs without skipping the required exact-candidate Gate or PR/main checks.
 
 Use after planning when one approved change is decomposed into multiple bounded tasks that may execute independently.

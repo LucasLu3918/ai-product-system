@@ -1,5 +1,7 @@
 # Execution Isolation
 
+Runtime Context 會辨識 source checkout、linked worktree 與 installed system，並回報 offline 能力旗標；它只描述執行環境，不授予新的隔離或資源權限。
+
 Execution isolation is a capability of the existing Execution Profile. It is not a Role, Skill or approval gate.
 
 ## Modes

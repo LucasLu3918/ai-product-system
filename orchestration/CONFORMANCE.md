@@ -1,5 +1,7 @@
 # Scenario Conformance
 
+Scenario 198 is lifecycle-covered by `tests/evidence/runtime_context_lifecycle.py` and `scripts/runtime_invariant_matrix.py`. Runtime Context reporting must remain credential-free, and the matrix must retain complete deterministic pair coverage within its declared case bound.
+
 External Eval and red-team producers are normalized through `orchestration/EVAL_INTEROPERABILITY.md`. Their scores and findings remain REVIEW/SIGNAL evidence; a Human-confirmed minimal reproduction becomes a canonical Agent Eval Case before deterministic conformance can rely on it.
 
 EARS validator 測試契約的文件影響限於本 Conformance 規範與對應的人類 Conformance / Technology Guide；需求追蹤實作、規劃範本、scenario registry 或本規範本身改動時，仍按 Requirement Planning 的完整文件閉包更新。

@@ -12,6 +12,23 @@ technology_guide:
     - .github/workflows/**
     - requirements*.txt
 rules:
+  - id: runtime-context
+    triggers:
+      - scripts/runtime_context.py
+      - scripts/runtime_cache.py
+      - scripts/runtime_invariant_matrix.py
+      - config/runtime-invariants.yaml
+      - templates/runtime/RUNTIME_CONTEXT.yaml
+      - tests/scenarios/198-runtime-context-invariant-matrix.md
+      - config/integration-gate.yaml
+    human_docs:
+      - docs/human/ARCHITECTURE_OVERVIEW.md
+      - docs/human/TECHNOLOGY_GUIDE.md
+      - docs/human/CONFORMANCE.md
+    agent_docs:
+      - orchestration/RUNTIME_CONTEXT.md
+      - orchestration/CONFORMANCE.md
+
   - id: evolution-radar
     triggers:
       - scripts/evolution_radar.py

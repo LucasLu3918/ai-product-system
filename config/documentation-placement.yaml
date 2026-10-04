@@ -72,6 +72,21 @@ legacy_append_forbidden:
   - docs/human/EVOLUTION_RADAR_OVERVIEW.html
 
 placement_rules:
+  - id: runtime-context
+    triggers:
+      - scripts/runtime_context.py
+      - scripts/runtime_cache.py
+      - scripts/runtime_invariant_matrix.py
+      - config/runtime-invariants.yaml
+      - templates/runtime/RUNTIME_CONTEXT.yaml
+      - tests/scenarios/198-runtime-context-invariant-matrix.md
+      - orchestration/RUNTIME_CONTEXT.md
+    placements:
+      orchestration/RUNTIME_CONTEXT.md: [Interpreter resolution, Context contract, Verification]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Planning 與 Product Delivery, Deterministic Execution, Scenario Conformance 與 Agent Eval]
+      docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification]
+      docs/human/CONFORMANCE.md: [Scenario 198 — Runtime Context and invariant matrix]
+
   - id: implementation-enforcement
     triggers: [scripts/implementation_enforcement.py, scripts/implementation_profile_validate.py, templates/implementation/IMPLEMENTATION_ENFORCEMENT_REPORT.schema.json, templates/implementation/IMPLEMENTATION_PROFILE.yaml, tests/evidence/implementation_enforcement_lifecycle.py, tests/scenarios/195-implementation-resolution-deterministic-enforcement.md]
     placements:
@@ -137,7 +152,7 @@ placement_rules:
     triggers: [harness/**, scripts/harness_resolve.py, scripts/mcp_server.py, scripts/portable_commands.py, orchestration/EXECUTION_ISOLATION.md]
     placements:
       docs/human/HARNESS.md: [Integration model, Native Runtime Adapters, MCP Interoperability, Portable Commands, Capability truth, Progressive disclosure, Ownership 與解除]
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Project Intelligence 與 Retrieval, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary]
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification, Runtime Content Safety Boundary, Security & Governance]
 
   - id: publication-preflight
@@ -312,19 +327,19 @@ placement_rules:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Planning 與 Product Delivery]
       docs/human/SECURITY_ASSURANCE.md: [Runtime Policy Enforcement]
       docs/human/MAINTENANCE.md: [Impact-derived regression testing]
-      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Execution Isolation Conformance]
+      docs/human/CONFORMANCE.md: [Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Execution Isolation Conformance]
 
   - id: scenario-conformance
     triggers: [orchestration/CONFORMANCE.md, tests/scenario_coverage.yaml, tests/validation/conformance_isolation.py, tests/validation/ears_requirement_contracts.py, tests/scenarios/175-risk-adaptive-bounded-impact.md, tests/scenarios/176-mandatory-candidate-secret-scanning.md, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, tests/evidence/secret_scan_publication_lifecycle.py, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/180-external-eval-interoperability.md, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py, tests/validation/eval_interop_contracts.py, scripts/eval_interop.py, scripts/agent_eval.py, templates/conformance/AGENT_EVAL_RESULT.yaml, orchestration/EVAL_INTEROPERABILITY.md, orchestration/AGENT_EVAL.md, tests/scenarios/196-openapi-generator-adapter.md, tests/evidence/openapi_generator_adapter_lifecycle.py]
     placements:
-      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Execution Isolation Conformance]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Execution Isolation Conformance]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification, Security & Governance]
 
   - id: eval-interoperability
     triggers: [scripts/eval_interop.py, scripts/agent_eval.py, templates/conformance/AGENT_EVAL_RESULT.yaml, config/eval-profiles.yaml, config/integration-gate.yaml, orchestration/EVAL_INTEROPERABILITY.md, orchestration/schemas/external-eval-evidence.yaml, orchestration/schemas/eval-profile.yaml, orchestration/schemas/red-team-finding.yaml, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py, tests/validation/eval_interop_contracts.py, tests/scenarios/180-external-eval-interoperability.md]
     placements:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Deterministic Execution, Scenario Conformance 與 Agent Eval]
-      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix]
       docs/human/SECURITY_ASSURANCE.md: [Product baseline vs change impact, Secret and credential safety, Runtime Policy Enforcement]
       docs/human/USER_GUIDE.md: [需求釐清與 Planning, Quality 與 Review, Logging、Observability 與 Operations, Checkpoint / Resume, Project Intelligence]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification]
@@ -375,7 +390,7 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance, Product Delivery]
       docs/human/SECURITY_ASSURANCE.md: [Product baseline vs change impact, Secret and credential safety, Runtime Policy Enforcement]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval]
-      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Execution Isolation Conformance]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Execution Isolation Conformance]
       docs/human/MAINTENANCE.md:
         - Deterministic Scheduler / Integration Gate consistency
         - Durable Run State consistency

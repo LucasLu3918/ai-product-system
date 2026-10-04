@@ -1,175 +1,39 @@
 version: 1
 change:
-  id: phase12-runtime-recovery
-  summary: Repair disposable cache, pinned package diagnostics, validation runtime,
-    linked worktree and installed synchronization; classify CI checks without weakening
-    candidate Gates.
-  boundary:
-  - cache-and-metadata-recovery
-  - installed-and-worktree-lifecycle
-  - publication-runtime-and-check-status
-  - ci-download-cache
+  id: plan12-runtime-foundation
+  summary: Unify AIPS runtime resolution and verify deterministic invariant coverage across supported execution environments.
+  boundary: [runtime-context-resolution, runtime-cache, validation-interpreter, publication-environment-report, runtime-invariant-matrix]
 matrix:
-- boundary: cache-and-metadata-recovery
-  reason: Default-only writable fallback, explicit override and private ownership,
-    source snapshot/WAL integrity, orphan metadata and rebuild lifecycle
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Critical Ruff, Bash syntax, docs placement and repository contracts
-    unit:
-      applicable: true
-      evidence: runtime_recovery_lifecycle plus existing retrieval/publish/OpenAPI
-        lifecycle
-    integration:
-      applicable: true
-      evidence: Default-only writable fallback, explicit override and private ownership,
-        source snapshot/WAL integrity, orphan metadata and rebuild lifecycle
-    contract:
-      applicable: true
-      evidence: Additive CLI flags and reason codes; preserve explicit configuration
-        and existing commands
-    e2e:
-      applicable: true
-      evidence: Exact-candidate local Integration Gate plus remote PR/main required
-        checks and Linux managed install
-    security:
-      applicable: true
-      evidence: Strict final candidate secret scan, credential-free package diagnostics,
-        cache symlink/owner rejection and remote confinement
-    migration_recovery:
-      applicable: true
-      evidence: Disposable orphan DB rebuild without force; no schema migration; installed
-        dirty/divergent histories unchanged
-    cli_harness:
-      applicable: true
-      evidence: Actual linked Git worktree, installed AIPS checkout and full-vs-partial
-        interpreter boundary
-    docs_schema:
-      applicable: true
-      evidence: Canonical documentation mapping/closure and docs site build
-- boundary: installed-and-worktree-lifecycle
-  reason: Git root/HEAD worktree install, macOS Bash 3.2 empty argv, safe same-remote
-    clean ancestor installed sync with dirty/divergent refusal
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Critical Ruff, Bash syntax, docs placement and repository contracts
-    unit:
-      applicable: true
-      evidence: runtime_recovery_lifecycle plus existing retrieval/publish/OpenAPI
-        lifecycle
-    integration:
-      applicable: true
-      evidence: Git root/HEAD worktree install, macOS Bash 3.2 empty argv, safe same-remote
-        clean ancestor installed sync with dirty/divergent refusal
-    contract:
-      applicable: true
-      evidence: Additive CLI flags and reason codes; preserve explicit configuration
-        and existing commands
-    e2e:
-      applicable: true
-      evidence: Exact-candidate local Integration Gate plus remote PR/main required
-        checks and Linux managed install
-    security:
-      applicable: true
-      evidence: Strict final candidate secret scan, credential-free package diagnostics,
-        cache symlink/owner rejection and remote confinement
-    migration_recovery:
-      applicable: true
-      evidence: Disposable orphan DB rebuild without force; no schema migration; installed
-        dirty/divergent histories unchanged
-    cli_harness:
-      applicable: true
-      evidence: Actual linked Git worktree, installed AIPS checkout and full-vs-partial
-        interpreter boundary
-    docs_schema:
-      applicable: true
-      evidence: Canonical documentation mapping/closure and docs site build
-- boundary: publication-runtime-and-check-status
-  reason: Complete Python selection and all missing module diagnostics; newest check
-    and stale head handling, cancellation/skipping status and redacted download errors
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Critical Ruff, Bash syntax, docs placement and repository contracts
-    unit:
-      applicable: true
-      evidence: runtime_recovery_lifecycle plus existing retrieval/publish/OpenAPI
-        lifecycle
-    integration:
-      applicable: true
-      evidence: Complete Python selection and all missing module diagnostics; newest
-        check and stale head handling, cancellation/skipping status and redacted download
-        errors
-    contract:
-      applicable: true
-      evidence: Additive CLI flags and reason codes; preserve explicit configuration
-        and existing commands
-    e2e:
-      applicable: true
-      evidence: Exact-candidate local Integration Gate plus remote PR/main required
-        checks and Linux managed install
-    security:
-      applicable: true
-      evidence: Strict final candidate secret scan, credential-free package diagnostics,
-        cache symlink/owner rejection and remote confinement
-    migration_recovery:
-      applicable: true
-      evidence: Disposable orphan DB rebuild without force; no schema migration; installed
-        dirty/divergent histories unchanged
-    cli_harness:
-      applicable: true
-      evidence: Actual linked Git worktree, installed AIPS checkout and full-vs-partial
-        interpreter boundary
-    docs_schema:
-      applicable: true
-      evidence: Canonical documentation mapping/closure and docs site build
-- boundary: ci-download-cache
-  reason: Pinned setup-python pip download cache by requirements; candidate Gate and
-    secret scan still executed on PR/main; supported Linux/macOS/Windows WSL scope
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Critical Ruff, Bash syntax, docs placement and repository contracts
-    unit:
-      applicable: true
-      evidence: runtime_recovery_lifecycle plus existing retrieval/publish/OpenAPI
-        lifecycle
-    integration:
-      applicable: true
-      evidence: Pinned setup-python pip download cache by requirements; candidate
-        Gate and secret scan still executed on PR/main; supported Linux/macOS/Windows
-        WSL scope
-    contract:
-      applicable: true
-      evidence: Additive CLI flags and reason codes; preserve explicit configuration
-        and existing commands
-    e2e:
-      applicable: true
-      evidence: Exact-candidate local Integration Gate plus remote PR/main required
-        checks and Linux managed install
-    security:
-      applicable: true
-      evidence: Strict final candidate secret scan, credential-free package diagnostics,
-        cache symlink/owner rejection and remote confinement
-    migration_recovery:
-      applicable: true
-      evidence: Disposable orphan DB rebuild without force; no schema migration; installed
-        dirty/divergent histories unchanged
-    cli_harness:
-      applicable: true
-      evidence: Actual linked Git worktree, installed AIPS checkout and full-vs-partial
-        interpreter boundary
-    docs_schema:
-      applicable: true
-      evidence: Canonical documentation mapping/closure and docs site build
+  - boundary: runtime-context-resolution
+    reason: Shared resolver is consumed by the CLI, local validation preparation and publication preflight.
+    checks:
+      static_lint: {applicable: true, evidence: Ruff critical checks and repository validation.}
+      unit: {applicable: true, evidence: Runtime Context precedence and credential-free report lifecycle fixture.}
+      integration: {applicable: true, evidence: AIPS publish environment report and exact-candidate Integration Gate.}
+      contract: {applicable: true, evidence: Runtime Context output template, architecture surface and scenario registry.}
+      e2e: {applicable: true, evidence: Source checkout and linked worktree preflight plus remote required PR checks.}
+      security: {applicable: true, evidence: Candidate secret scan and assertion that Runtime Context excludes environment values.}
+      migration_recovery: {applicable: false, na_reason: Resolver preserves prior precedence and cache fallback behavior without persistent migration.}
+      cli_harness: {applicable: true, evidence: Exercise actual bin/aips validation Python resolution.}
+      docs_schema: {applicable: true, evidence: Runtime Context template and synchronized Agent/Human documentation.}
+  - boundary: runtime-invariant-matrix
+    reason: The bounded matrix must cover every pair of values and retain explicit high-risk cases deterministically.
+    checks:
+      static_lint: {applicable: true, evidence: Ruff critical checks and repository validation.}
+      unit: {applicable: true, evidence: runtime_invariant_matrix.py --check and deterministic lifecycle fixture.}
+      integration: {applicable: true, evidence: Required runtime-invariant-matrix Integration Gate check.}
+      contract: {applicable: true, evidence: Matrix config, scenario registry, architecture and documentation bindings.}
+      e2e: {applicable: true, evidence: Exact-candidate local Integration Gate and remote required PR checks.}
+      security: {applicable: true, evidence: Candidate secret scan; no runtime secrets enter matrix output.}
+      migration_recovery: {applicable: false, na_reason: Matrix verification is read-only and has no persistent state.}
+      cli_harness: {applicable: true, evidence: Runtime matrix check runs through the existing Integration Gate.}
+      docs_schema: {applicable: true, evidence: Scenario 198 and Runtime Context docs placement/sync rules.}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 1bd644354a6083d90cd40b2fd38520e242af695f
-  changed_files_hash: edc33e8f9e8f140dcc2a6b0b8005ec11a36605c0d4cb8f3ac8733cabd20360a4
+  base_sha: 1658f39ce2b5742e6ccd943137c572c6a95899cc
+  changed_files_hash: e1e8383208fd4de72cc2f46a6fd24569659711e339aa65784e2e7efecc979885
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

@@ -1,5 +1,7 @@
 # System Maintenance
 
+Runtime Context 或 Integration Gate 改動時，執行 Scenario 198、完整 repository validation 與 exact-candidate Integration Gate，並維護 Change Impact 和 CORE_CHANGE_TEST_MATRIX 證據。
+
 ## Documentation Impact Gate
 
 Every system change must assess downstream documentation and behavior before completion.

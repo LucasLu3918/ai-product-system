@@ -1,5 +1,7 @@
 # Integration Gate (Janitor Gate)
 
+Core candidate 另執行 `runtime-invariant-matrix`；Runtime Context 變更應使用 `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml` 描述邊界證據，並在遠端必要檢查通過後才合併。
+
 Local preparation must verify the requested Python 3.12 venv before dependencies. Preserve gh configuration selection when isolating XDG state; AUTH_CONFIGURATION_UNVERIFIED requires configuration diagnosis, not automatic login. Docs impact uses the selected AIPS checkout, while installed OpenAPI commands accept an explicit product root. Keep one complete local Gate for the fixed candidate and the required PR/main Gates.
 
 Use the bounded documentation precheck summary and Gate/check durations before fetching external artifacts. Repository summaries include at most ten slow checks; UNAVAILABLE means no timing report. Label-only success requires the latest full Janitor success with the same PR/head/base/change class recorded in its run title; absent, stale or failed evidence blocks. The installed CLI selects the active AIPS checkout for publication and retains installed post-merge recovery logic. Reuse prepared local dependencies, then run the full Gate once for the final fixed candidate.

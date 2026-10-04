@@ -1,5 +1,7 @@
 # Agent Eval Conformance
 
+Scenario 198 is deterministic lifecycle evidence for runtime resolution and invariant coverage; it does not represent model behavior or grant publication authority.
+
 External producers and Human-confirmed finding promotion are defined by [Eval / Red-Team Interoperability](EVAL_INTEROPERABILITY.md). Imported runs stay advisory; only current canonical Case/Result evidence is eligible for deterministic regression scoring.
 
 Scenario 181 covers trace projection/export independently from Agent Eval. Telemetry spans and token counts are not evaluation scores or regression decisions.

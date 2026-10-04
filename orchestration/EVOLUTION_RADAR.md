@@ -1,5 +1,7 @@
 # Evolution Radar
 
+Capability Map 收錄 Runtime Context、驗證直譯器選擇與 invariant matrix，供演化比較使用；Radar 訊號本身不改變這些能力的執行政策。
+
 ## Purpose
 
 Continuously surface external technical signals that may materially improve AIPS while preserving Protected Human Authority. Research, semantic analysis, controlled trial execution and formal implementation are separate authority stages.

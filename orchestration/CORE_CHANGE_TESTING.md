@@ -1,5 +1,7 @@
 # Core Change Testing
 
+Runtime Foundation changes include the bounded Runtime Invariant Matrix and credential-free Context contract in the candidate-specific test matrix. Recompute the matrix and actual diff reconciliation after implementation expands.
+
 For CLI reliability changes, cover side-effect-free help, unknown-argument rejection, implicit/explicit docs-impact checkout routing, gh configuration isolation precedence, invalid venv identity and installed OpenAPI execution from an independent product root. Preserve remote-reference confinement and preview-only generation; fixture evidence is not real-product acceptance. Architecture topology is unchanged by routing fixes.
 
 Recovery changes test implicit and explicit publication roots, configured Intelligence Python, repeat-bootstrap preservation, stale-source finalization and read-only refresh planning. Exercise failure/cancellation/timeouts across classification and unrelated labels, including the embedded workflow metadata resolver. Label-only success needs matching prior full Janitor success; stale base/head/class, missing runs and API failures stay blocking. Bounded CI summaries expose precheck closure and timings without skipping complete candidate Gates.

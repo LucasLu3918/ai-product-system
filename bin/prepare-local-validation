@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 import shlex
@@ -15,15 +14,16 @@ import venv
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
+from runtime_context import default_validation_venv
+
 REQUIREMENTS = (
     "requirements.txt",
     "requirements-visual.txt",
     "requirements-validation.txt",
     "requirements-openapi.txt",
 )
-DEFAULT_VENV = Path(tempfile.gettempdir()) / (
-    "aips-validation-" + hashlib.sha256(str(ROOT.resolve()).encode()).hexdigest()[:12]
-)
+DEFAULT_VENV = default_validation_venv(ROOT)
 
 
 def run(command: list[str], *, phase: str) -> bool:
