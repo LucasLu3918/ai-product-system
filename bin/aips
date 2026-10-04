@@ -245,7 +245,12 @@ ensure_compatible_venv() {
 
 runtime_dependencies_available() {
   local py
-  py="$(python_bin)"
+  # Doctor and installer inspect the installed runtime, not a caller's Gate venv.
+  if [ -x "$SYSTEM_DIR/.venv/bin/python" ]; then
+    py="$SYSTEM_DIR/.venv/bin/python"
+  else
+    py="$(command -v python3 || true)"
+  fi
   [ -n "$py" ] && "$py" -c 'import yaml, mcp' >/dev/null 2>&1
 }
 

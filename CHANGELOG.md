@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Resolve publication targets and configured Python consistently; preserve existing Intelligence bootstrap state and expose read-only semantic refresh plans with truthful freshness.
-- Publish bounded CI documentation failures and timing summaries; complete pinned Node 24 / Pages artifact updates with their required documentation closure and support offline Python wheelhouses.
+- Prevent label-only checks from masking failed or stale full Gate evidence using exact PR/head/base/class metadata; publish bounded CI documentation failures and timing summaries; complete pinned Node 24 / Pages artifact updates with their required documentation closure and support offline Python wheelhouses.
 
 - Distinguish read-only retrieval access from stale-index refresh write denial and provide cache-write-specific recovery guidance without weakening stale-index checks.
 - Keep unrelated PR label events from cancelling active CI; skip their expensive Gate while preserving the existing successful `repository` aggregate, and continue full validation for classification-label changes.

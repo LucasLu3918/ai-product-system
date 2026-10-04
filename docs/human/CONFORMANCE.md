@@ -1385,7 +1385,7 @@ Lifecycle and deterministic evidence check deny-by-default policy evaluation, ex
 
 ## Scenario 179 — Evidence-backed Change Impact Unknown Dispositions
 
-Intelligence recovery preserves existing bootstrap metadata and keeps unreviewed source hashes STALE after finalize. Read-only `refresh-plan` exposes affected sources without approving them. Workflow graph seeds remain discovery evidence with partial coverage; final Impact evidence and Matrix review are still required.
+Intelligence recovery preserves existing bootstrap metadata and keeps unreviewed source hashes STALE after finalize. Read-only `refresh-plan` exposes affected sources without approving them. Workflow graph seeds remain discovery evidence with partial coverage; final Impact evidence and Matrix review are still required. Scenario 165 executes the workflow evidence resolver with passing, failed, cancelled, unfinished, skipped and stale candidate cases.
 
 Lifecycle and contract evidence validate structured OPEN / RESOLVED / MITIGATED / ACCEPTED_LIMITATION entries, fail-closed legacy strings, required Human review, in-root current file SHA-256 evidence, traversal digest and seed-scope binding, and rejection of malformed, stale, truncated, or out-of-scope evidence. Existing exact READY diff reconciliation remains required, and scoped coverage does not upgrade global Impact Graph coverage.
 

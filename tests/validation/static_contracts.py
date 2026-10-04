@@ -267,9 +267,11 @@ def repository_aggregate_passes(
     action: str | None,
     event_name: str,
     label_name: str | None = None,
+    prior_gate: str | None = None,
+    candidate_matches: bool = False,
 ) -> bool:
     if janitor_result == "skipped" and not validate_janitor_runs(action, event_name, label_name):
-        return True
+        return prior_gate == "success" and candidate_matches
     return janitor_result == "success"
 
 
@@ -283,8 +285,13 @@ for action in ("labeled", "unlabeled"):
         errors.append("an unrelated PR label event must not cancel active candidate validation")
     if validate_janitor_runs(action, "pull_request", "documentation"):
         errors.append("an unrelated PR label event must skip expensive Janitor validation")
-    if not repository_aggregate_passes("skipped", action, "pull_request", "documentation"):
+    if not repository_aggregate_passes("skipped", action, "pull_request", "documentation", "success", True):
         errors.append("an unrelated PR label event must satisfy the repository aggregate as a no-op")
+    for prior in (None, "failure", "cancelled", "in_progress"):
+        if repository_aggregate_passes("skipped", action, "pull_request", "documentation", prior, True):
+            errors.append("label-only checks must require matching successful full Gate evidence")
+    if repository_aggregate_passes("skipped", action, "pull_request", "documentation", "success", False):
+        errors.append("stale candidate or classification evidence must not pass a label-only check")
     for label in CLASSIFICATION_LABELS:
         if not validate_concurrency_cancels(action, "pull_request", label) or not validate_janitor_runs(action, "pull_request", label):
             errors.append("classification label changes must run and supersede stale validation")

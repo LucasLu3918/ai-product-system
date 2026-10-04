@@ -35,7 +35,7 @@ matrix:
       na_reason: No deployed product journey or production application behavior changes.
     security:
       applicable: true
-      evidence: Workflow remains contents-read only; unrelated label values are passed
+      evidence: Workflow keeps contents-read and grants the repository aggregate actions-read only; unrelated label values are passed
         through environment context and never interpolated into shell source.
     migration_recovery:
       applicable: false
@@ -51,7 +51,7 @@ matrix:
         and Scenario 165 describe the same event policy.
 - boundary: required-repository-aggregate
   reason: Existing protected-main branch rules depend on the single repository check
-    context; only an unrelated-label skip may produce a no-op success.
+    context; only an unrelated-label skip with exact successful full Gate evidence may produce a no-op success.
   checks:
     static_lint:
       applicable: true
@@ -60,7 +60,7 @@ matrix:
     unit:
       applicable: true
       evidence: Aggregate model verifies only an unrelated labeled/unlabeled event
-        with skipped Janitor succeeds; failed and other skipped jobs remain non-success.
+        with skipped Janitor succeeds; failed and other skipped jobs remain non-success; the embedded workflow resolver rejects stale/missing/failed full Gate metadata.
     integration:
       applicable: true
       evidence: Exact-candidate GitHub validation confirms repository remains the

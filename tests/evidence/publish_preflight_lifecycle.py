@@ -28,6 +28,25 @@ def load_module():
 
 def main() -> int:
     publish = load_module()
+    workflow = yaml.safe_load((ROOT / ".github/workflows/validate.yml").read_text())
+    aggregate = workflow["jobs"]["repository"]["steps"][0]["run"]
+    evidence_code = aggregate.split("python3 - <<'PYTHON'\n", 1)[1].split("\nPYTHON", 1)[0]
+    with tempfile.TemporaryDirectory(prefix="aips-label-evidence-") as directory:
+        summary = Path(directory) / "summary.md"
+        for conclusion, title, expected in (("success", "matching", 0), ("failure", "matching", 1), ("cancelled", "matching", 1), (None, "matching", 1), ("success", "stale", 1), ("skipped", "matching", 1)):
+            payloads = [
+                {"workflow_runs": [{"id": 99, "head_sha": "candidate", "display_title": title}]},
+                {"jobs": [{"name": "janitor", "conclusion": conclusion}]},
+            ]
+            with patch.dict(os.environ, {"GITHUB_REPOSITORY": "fixture/repo", "GITHUB_RUN_ID": "100", "AIPS_CANDIDATE_HEAD": "candidate", "AIPS_EXPECTED_RUN": "matching", "GITHUB_STEP_SUMMARY": str(summary)}), patch.object(
+                subprocess, "run", side_effect=[Mock(returncode=0, stdout=json.dumps(item)) for item in payloads]
+            ):
+                try:
+                    exec(compile(evidence_code, "workflow-label-evidence", "exec"), {})
+                except SystemExit as result:
+                    assert result.code == expected, (conclusion, title)
+                else:
+                    raise AssertionError("label evidence must return a deterministic exit status")
     with patch.object(publish.tempfile, "TemporaryFile", side_effect=PermissionError):
         assert all(item["status"] == "WRITE_BLOCKED" for item in publish.cache_diagnostics())
     candidate = {

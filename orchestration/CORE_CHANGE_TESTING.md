@@ -1,6 +1,6 @@
 # Core Change Testing
 
-Recovery changes test implicit and explicit publication roots, configured Intelligence Python, repeat-bootstrap preservation, stale-source finalization and read-only refresh planning. Exercise failure/cancellation/timeouts across classification and unrelated labels. Bounded CI summaries expose precheck closure and timings without skipping complete candidate Gates.
+Recovery changes test implicit and explicit publication roots, configured Intelligence Python, repeat-bootstrap preservation, stale-source finalization and read-only refresh planning. Exercise failure/cancellation/timeouts across classification and unrelated labels, including the embedded workflow metadata resolver. Label-only success needs matching prior full Janitor success; stale base/head/class, missing runs and API failures stay blocking. Bounded CI summaries expose precheck closure and timings without skipping complete candidate Gates.
 
 發布治理、CI workflow、文件影響政策與 preflight validator 屬於 Core 變更。矩陣必須逐項涵蓋身份與訊息隱私、文件影響閉包、Actions runner/action 相容性、Python lifecycle 執行器及遠端 merge 後驗證，並綁定實際候選差異雜湊。CI 的快速 repository preflight 須在強制候選秘密掃描之後、完整依賴與 Chromium 安裝之前，且不可取代完整 Gate。
 

@@ -135,7 +135,7 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
-Publication routing uses an explicit project root or the current AIPS Git checkout; the selected validation Python also serves Intelligence commands. CI reports documentation precheck failures, Gate duration and the slowest ten repository checks in Step Summaries. setup-node v7 uses Node 24 and Pages artifact v5 delegates to artifact v7 on Ubuntu 24.04. Existing npm caches and check-only prepared environments reduce installation work while PR/main validation stays complete.
+Publication routing uses an explicit project root or the current AIPS Git checkout; the selected validation Python also serves Intelligence commands. Label-only aggregates require matching prior full Janitor success via actions-read metadata and candidate-bound run titles. CI reports documentation precheck failures, Gate duration and the slowest ten repository checks in Step Summaries. setup-node v7 uses Node 24 and Pages artifact v5 delegates to artifact v7 on Ubuntu 24.04. Existing npm caches and check-only prepared environments reduce installation work while PR/main validation stays complete.
 
 When a validation contract executes a Python helper directly, that invocation also checks syntax; retain separate compilation only for files not executed by that validation path.
 

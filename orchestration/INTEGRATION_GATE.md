@@ -1,6 +1,6 @@
 # Integration Gate (Janitor Gate)
 
-Use the bounded documentation precheck summary and Gate/check durations before fetching external artifacts. Repository summaries include at most ten slow checks; UNAVAILABLE means no timing report. The installed CLI selects the active AIPS checkout for publication and retains installed post-merge recovery logic. Reuse prepared local dependencies, then run the full Gate once for the final fixed candidate.
+Use the bounded documentation precheck summary and Gate/check durations before fetching external artifacts. Repository summaries include at most ten slow checks; UNAVAILABLE means no timing report. Label-only success requires the latest full Janitor success with the same PR/head/base/change class recorded in its run title; absent, stale or failed evidence blocks. The installed CLI selects the active AIPS checkout for publication and retains installed post-merge recovery logic. Reuse prepared local dependencies, then run the full Gate once for the final fixed candidate.
 
 Publication preflight 在昂貴的完整驗證前先執行快速文件閉包檢查；CI 也會在強制候選秘密掃描後、完整相依套件與 Chromium 安裝前執行同一 `repository_preflight.py`。完整 Integration Gate 仍是候選發布的權威驗證。候選身份政策同時檢查 base 到 head 的每一筆 commit author/committer 與所有 commit message，報告不得輸出未核准的 email 值。
 

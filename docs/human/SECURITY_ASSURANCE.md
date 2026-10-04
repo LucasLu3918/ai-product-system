@@ -217,7 +217,7 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 ## Secret and credential safety
 
-CI diagnostic summaries contain required repository document paths and bounded test timing rather than raw authentication output or signed artifact URLs. Network allowlists remain explicit: GitHub API connectivity does not imply authorization for Azure Blob redirects. Use writable temporary cache roots for restricted runtimes; do not broaden network access to solve filesystem denial.
+The repository aggregate has read-only Actions metadata access to bind label-only success to an actual passing full Gate for the same PR/head/base/class. Failure and missing evidence stay blocking. CI diagnostic summaries contain required repository document paths and bounded test timing rather than raw authentication output or signed artifact URLs. Network allowlists remain explicit: GitHub API connectivity does not imply authorization for Azure Blob redirects. Use writable temporary cache roots for restricted runtimes; do not broaden network access to solve filesystem denial.
 
 Publication Preflight places the selected Python directory first in child `PATH`, reducing unintended interpreter selection. This does not change credential handling, domain allowlists or Git publication authority.
 
