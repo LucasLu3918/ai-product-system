@@ -11,7 +11,7 @@ coverage = yaml.safe_load((ROOT / "tests/scenario_coverage.yaml").read_text(enco
 record = (ROOT / "scripts/telemetry_record.py").read_text(encoding="utf-8")
 projection = (ROOT / "scripts/telemetry_projection.py").read_text(encoding="utf-8")
 exporter = (ROOT / "scripts/telemetry_export.py").read_text(encoding="utf-8")
-cli = (ROOT / "bin/aips").read_text(encoding="utf-8")
+cli = (ROOT / "bin/aips").read_text(encoding="utf-8") + "\n" + (ROOT / "scripts/aips_cli.sh").read_text(encoding="utf-8")
 scenario = ROOT / "tests/scenarios/181-opentelemetry-telemetry-export.md"
 
 if config.get("enabled") is not False:

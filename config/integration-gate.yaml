@@ -48,6 +48,16 @@ checks:
       - tests/evidence/runtime_context_lifecycle.py
       - tests/scenarios/198-runtime-context-invariant-matrix.md
       - config/integration-gate.yaml
+  - id: validator-registry-lifecycle
+    category: test
+    required: true
+    timeout_seconds: 60
+    argv: [python3, tests/evidence/validator_registry_lifecycle.py]
+    paths:
+      - tests/validate_repository.py
+      - tests/validation/registry.py
+      - tests/evidence/validator_registry_lifecycle.py
+      - config/integration-gate.yaml
   - id: ruff-critical
     category: lint
     required: true

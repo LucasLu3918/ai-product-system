@@ -282,6 +282,8 @@ Integration Gate 只檢查證據格式、來源、候選綁定與確定性政策
 Visual evidence 預設優先使用 Playwright managed Chromium；系統 Chrome 只有在 `AIPS_BROWSER_PROVIDER=system` 或 managed browser 不可用時使用。Publication preflight 會先執行 browser smoke probe，啟動失敗會標記為 `ENVIRONMENT_BLOCKED`，不誤判成頁面測試失敗。
 Publication Preflight 會分開呈現 Python modules、loopback 與 browser 診斷；對應 lifecycle evidence 固定 module probe，再驗證 loopback/browser 阻擋情境，避免把主機環境差異誤判為產品失敗。
 
+The supported command remains `aips` (or `bin/aips` from a source checkout). The public launcher forwards commands and arguments to the checkout implementation; command names, output, and environment selection remain unchanged by the internal module split.
+
 ## Logging、Observability 與 Operations
 
 已有 AIPS Run checkpoint 時，可對 `aips intelligence context`、`aips intelligence retrieve` 或 Integration Gate 加上 `--observe-run-id <id>`，自動記錄 AIPS 自己實際觀察到的操作起迄。這些紀錄不推算模型 token 或成本；記錄失敗會標示降級，不改變主要指令的判定。

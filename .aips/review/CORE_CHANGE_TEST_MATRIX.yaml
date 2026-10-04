@@ -1,39 +1,65 @@
 version: 1
 change:
-  id: plan12-runtime-foundation
-  summary: Unify AIPS runtime resolution and verify deterministic invariant coverage across supported execution environments.
-  boundary: [runtime-context-resolution, runtime-cache, validation-interpreter, publication-environment-report, runtime-invariant-matrix]
+  id: plan12-core-modularization
+  summary: Incrementally modularize the AIPS CLI, publication preflight, and repository
+    validation while preserving all public and evidence contracts.
+  boundary:
+  - cli-entrypoint
+  - publication-policy
+  - validator-registry
 matrix:
-  - boundary: runtime-context-resolution
-    reason: Shared resolver is consumed by the CLI, local validation preparation and publication preflight.
-    checks:
-      static_lint: {applicable: true, evidence: Ruff critical checks and repository validation.}
-      unit: {applicable: true, evidence: Runtime Context precedence and credential-free report lifecycle fixture.}
-      integration: {applicable: true, evidence: AIPS publish environment report and exact-candidate Integration Gate.}
-      contract: {applicable: true, evidence: Runtime Context output template, architecture surface and scenario registry.}
-      e2e: {applicable: true, evidence: Source checkout and linked worktree preflight plus remote required PR checks.}
-      security: {applicable: true, evidence: Candidate secret scan and assertion that Runtime Context excludes environment values.}
-      migration_recovery: {applicable: false, na_reason: Resolver preserves prior precedence and cache fallback behavior without persistent migration.}
-      cli_harness: {applicable: true, evidence: Exercise actual bin/aips validation Python resolution.}
-      docs_schema: {applicable: true, evidence: Runtime Context template and synchronized Agent/Human documentation.}
-  - boundary: runtime-invariant-matrix
-    reason: The bounded matrix must cover every pair of values and retain explicit high-risk cases deterministically.
-    checks:
-      static_lint: {applicable: true, evidence: Ruff critical checks and repository validation.}
-      unit: {applicable: true, evidence: runtime_invariant_matrix.py --check and deterministic lifecycle fixture.}
-      integration: {applicable: true, evidence: Required runtime-invariant-matrix Integration Gate check.}
-      contract: {applicable: true, evidence: Matrix config, scenario registry, architecture and documentation bindings.}
-      e2e: {applicable: true, evidence: Exact-candidate local Integration Gate and remote required PR checks.}
-      security: {applicable: true, evidence: Candidate secret scan; no runtime secrets enter matrix output.}
-      migration_recovery: {applicable: false, na_reason: Matrix verification is read-only and has no persistent state.}
-      cli_harness: {applicable: true, evidence: Runtime matrix check runs through the existing Integration Gate.}
-      docs_schema: {applicable: true, evidence: Scenario 198 and Runtime Context docs placement/sync rules.}
+- boundary: cli-entrypoint
+  reason: The public launcher resolves the owning checkout and forwards argv unchanged
+    to the legacy command implementation.
+  checks: &id001
+    static_lint:
+      applicable: true
+      evidence: Ruff critical scan plus full repository validation.
+    unit:
+      applicable: true
+      evidence: Deterministic publication policy tests and validator registry lifecycle
+        contract.
+    integration:
+      applicable: true
+      evidence: Publication preflight lifecycle, CLI launcher lifecycle, repository
+        validator, and exact-candidate Integration Gate.
+    contract:
+      applicable: true
+      evidence: Stable CLI argv/exit behavior, policy outputs, registry order and
+        error aggregation, documentation and architecture bindings.
+    e2e:
+      applicable: true
+      evidence: Source checkout and installed symlink lifecycle plus all remote required
+        PR checks.
+    security:
+      applicable: true
+      evidence: Mandatory candidate secret scan; preserve publication authorization
+        boundary and required security validator registration.
+    migration_recovery:
+      applicable: false
+      na_reason: No persistent data, schema, or user-owned state format changes.
+    cli_harness:
+      applicable: true
+      evidence: Run public bin/aips from checkout and installed-path lifecycle, including
+        symlink resolution and argument forwarding.
+    docs_schema:
+      applicable: true
+      evidence: Documentation placement/sync, Architecture Surface and Repository
+        Health validation, plus updated CLI and Gate documentation.
+- boundary: publication-policy
+  reason: Pure change-class, PR label, matrix applicability and documentation closure
+    calculations move behind a dedicated policy module.
+  checks: *id001
+- boundary: validator-registry
+  reason: The registry preserves 39 module imports, timing labels, explicit lifecycle
+    ownership and seven-module error aggregation order.
+  checks: *id001
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 1658f39ce2b5742e6ccd943137c572c6a95899cc
-  changed_files_hash: e1e8383208fd4de72cc2f46a6fd24569659711e339aa65784e2e7efecc979885
+  base_sha: cd04056396af78904a0416409a5d4b5e180b2dca
+  changed_files_hash: 4d973186665fb1e3a98f4158b4175e116ca65da377df80ddabf725148e7e2e4b
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

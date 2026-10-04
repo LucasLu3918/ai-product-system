@@ -32,6 +32,7 @@ def main() -> int:
         (system / "scripts").mkdir()
         (system / ".venv" / "bin").mkdir(parents=True)
         shutil.copy2(ROOT / "bin" / "aips", system / "bin" / "aips")
+        shutil.copy2(ROOT / "scripts" / "aips_cli.sh", system / "scripts" / "aips_cli.sh")
         shutil.copy2(ROOT / "requirements-openapi.txt", system / "requirements-openapi.txt")
         shutil.copy2(ROOT / "scripts/package_install.py", system / "scripts/package_install.py")
 

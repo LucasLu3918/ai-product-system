@@ -168,7 +168,7 @@ def preflight_and_project_lifecycle() -> None:
 
         def system_update(updater: Path) -> None:
             (updater / "VERSION").write_text(upgraded_version + "\n", encoding="utf-8")
-            cli_path = updater / "bin" / "aips"
+            cli_path = updater / "scripts" / "aips_cli.sh"
             text = cli_path.read_text(encoding="utf-8")
             needle = 'preflight_after_update() {\n  local project="$1"'
             replacement = needle + '\n  say "UPDATED_CLI_MARKER"'

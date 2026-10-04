@@ -154,3 +154,5 @@ The consistency report deterministically validates every Result against the exac
 Exact wording does not need to be identical when every response still satisfies the rubric. Response fingerprints make variability visible without copying response text into the aggregate report. Stale fingerprints, private-reasoning fields or secret-like values are invalid evidence and fail the consistency report regardless of the configured pass-rate threshold.
 
 Consistency evidence is measurement, not runtime authority. It does not choose a provider, expose chain-of-thought, authorize tool calls, or replace Human review.
+
+`tests/validation/registry.py` registers `validation.eval_interop_contracts` in repository validation and preserves its existing error-aggregation position. Eval lifecycle evidence remains separately listed and runs once under `tests/validate_repository.py`.

@@ -236,6 +236,7 @@ surfaces:
     required_paths:
       - scripts/integration_gate.py
       - scripts/publish_preflight.py
+      - scripts/publish_preflight_policy.py
       - scripts/repository_preflight.py
       - config/integration-gate.yaml
       - orchestration/INTEGRATION_GATE.md
@@ -246,6 +247,7 @@ surfaces:
       - tests/evidence/integration_gate_lifecycle.py
       - tests/evidence/publish_preflight_lifecycle.py
       - tests/validation/publish_preflight_contracts.py
+      - tests/evidence/validator_registry_lifecycle.py
 
   - id: repository-health
     capabilities:

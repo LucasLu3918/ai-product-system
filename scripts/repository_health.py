@@ -404,13 +404,21 @@ def analyze(root: Path, config_path: Path) -> dict[str, Any]:
         if repository_validator_path.exists()
         else ""
     )
+    validator_registry_text = (
+        (root / "tests/validation/registry.py").read_text(encoding="utf-8")
+        if (root / "tests/validation/registry.py").exists()
+        else ""
+    )
 
     def validation_path_is_bound(rel: str) -> bool:
         if rel in scenario_evidence_paths:
             return True
         if rel.startswith("tests/validation/") and rel.endswith(".py"):
             module = Path(rel).stem
-            return f"from validation import {module}" in repository_validator_text
+            return (
+                f"from validation import {module}" in repository_validator_text
+                or f'ValidatorSpec("validation.{module}",' in validator_registry_text
+            )
         return False
 
     architecture_inventory: dict[str, Any] = {}

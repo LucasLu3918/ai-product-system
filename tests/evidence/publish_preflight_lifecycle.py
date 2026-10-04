@@ -738,7 +738,7 @@ def main() -> int:
     assert positions == sorted(positions), "CI must reject repository drift before expensive validation"
     assert 'python scripts/repository_preflight.py' in workflow
     assert '--base "$AIPS_GATE_BASE" --head "$AIPS_GATE_HEAD"' in workflow
-    assert "AIPS_VALIDATION_VENV" in (ROOT / "bin/aips").read_text(encoding="utf-8")
+    assert "AIPS_VALIDATION_VENV" in (ROOT / "scripts/aips_cli.sh").read_text(encoding="utf-8")
     docs_workflow = (ROOT / ".github/workflows/docs-site.yml").read_text(encoding="utf-8")
     sandbox_workflow = (ROOT / ".github/workflows/e2b-sandbox-verification.yml").read_text(encoding="utf-8")
     assert "actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1" in docs_workflow

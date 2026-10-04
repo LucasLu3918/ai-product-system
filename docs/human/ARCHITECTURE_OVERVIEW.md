@@ -75,6 +75,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
+Phase B keeps `bin/aips` as a small argument-preserving launcher to `scripts/aips_cli.sh`; runtime path and Python resolution remain in the implementation layer.
+
 ## Deterministic Execution
 
 CLI routing 區分 AIPS checkout 與產品 root：docs impact 在選定 AIPS checkout 計算候選差異；`aips openapi` 使用安裝版工具操作明確指定的產品 root。Local preparation 隔離 AIPS 設定並保留 gh 設定位置，先確認 venv、依賴與執行權限，再進入既有完整 Gate。此修正不改變元件拓撲或治理權限。

@@ -848,6 +848,8 @@ GitHub Actions 的 `repository` required check 保持相容，但改成只能在
 
 目前 Scenario inventory 為 **136**：22 deterministic + 60 lifecycle + 54 agent_eval，**136 / 136 automated、0 manual、0 uncovered**。
 
+`tests/evidence/validator_registry_lifecycle.py` verifies the ordered validator registry, module availability, unique entries, and the established error aggregation contract. `tests/validate_repository.py` remains the single import owner for those validator modules; dedicated lifecycle evidence continues to run once through its explicit evidence list.
+
 ## Agent Eval Repeatability（Scenario 137）
 
 單次 Agent Eval PASS 只能證明「這一次」的 observable response 符合 rubric，不能代表相同任務重跑仍穩定。Scenario 137 因此沿用既有 Agent Eval Case / Result 契約，新增多次結果的一致性量測：每一筆都必須綁定同一個 Case fingerprint，先逐筆做 privacy / secret / stale validation 與 deterministic rubric scoring，再計算 repetitions、PASS rate、outcome consistency、unique observable-response fingerprints 與 exact response repeatability。

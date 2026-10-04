@@ -150,3 +150,5 @@ Publication Preflight lifecycle tests must cover the enabled merge-method respon
 Runtime Content Safety Boundary changes require detector, sink, publication, provenance and documentation evidence. The active Core Change Matrix must bind the exact candidate changed-file set and include security negative paths.
 
 Runtime Policy Enforcement Core Changes also reconcile action and policy digest binding, approval expiry/scope drift, runtime capability truthfulness, high-risk sandbox fail-closed behavior, semantic deny/escalate monotonicity, audit redaction and the exact candidate file-set binding.
+
+For CLI and validation modularization, the boundary matrix must cover direct source-checkout invocation, installed symlink invocation, argument and exit-status compatibility, validator import order and timing labels, error aggregation order, single-owner lifecycle execution, and publication-policy output equivalence.

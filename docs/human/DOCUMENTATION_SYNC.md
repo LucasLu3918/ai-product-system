@@ -96,6 +96,8 @@ Temporal 查詢的有效歷史以可驗證 Git revision 與 assertion provenance
 
 若新 capability 沒有適合 section，應先設計新的 topic section並更新 placement config，而不是直接 append。
 
+Behavior-bearing source changes must first map every new source path in `config/documentation-placement.yaml` to its canonical Human topic and allowed H2 section. Update all required Human and Agent documents in the same change; diff-aware preflight checks both closure and changed-line placement.
+
 ## Official Docs Site
 
 Pinned Actions updates require synchronized operational documentation. setup-node v7 executes with Node 24; upload-pages-artifact v5 uses upload-artifact v7. GitHub-hosted Ubuntu 24.04 supplies the runner; PR builds keep deployment skipped and main retains the configured Pages-state guard.

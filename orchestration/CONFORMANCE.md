@@ -793,3 +793,5 @@ Current inventory after Scenario 196: 34 deterministic + 106 lifecycle + 54 agen
 **Scenario 197 — Shared OpenAPI client reference pilot.** A temporary standalone Widgets project runs canonical validation, explicit deterministic generation, local HTTP client/consumer tests, operation coverage and exact-candidate Phase 3 inspection. Missing or altered execution reports block the opted-in Profile. This lifecycle covers the reference workflow; product-specific acceptance stays in each product repository.
 
 Current inventory after Scenario 197: 34 deterministic + 107 lifecycle + 54 agent_eval = 195 automated; 2 manual; 197 total; 0 uncovered.
+
+Repository validators are imported only through the explicit ordered `tests/validation/registry.py`. Preserve the current import order and timing labels; keep the ordered error aggregation list separate from import order. Lifecycle evidence remains owned by the explicit evidence runner and must not be duplicated by the registry.

@@ -267,6 +267,7 @@ AIPS 另外使用 External Credential Dependency Guard（`config/external-creden
 
 For SAL 3–4 or production credentials, an active exposed credential is release-blocking until containment and required rotation/revocation are complete.
 
+The `bin/aips` launcher resolves its own symlink target before forwarding arguments to the AIPS checkout. Security-sensitive validation, installation, and publication behavior remains in the checkout implementation; static checks and installed-entrypoint lifecycle tests cover both paths. The validator registry is explicit and ordered so security checks cannot disappear through implicit discovery.
 
 ## 可驗證治理稽核證據
 
