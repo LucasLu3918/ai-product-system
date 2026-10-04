@@ -88,9 +88,20 @@ placement_rules:
   - id: maintenance-planning
     triggers: [config/ci-validation-plan.yaml, scripts/ci_validation_plan.py, scripts/branch_hygiene.py, config/branch-lifecycle.yaml, .github/workflows/validate.yml, .github/workflows/branch-hygiene.yml]
     placements:
-      docs/human/MAINTENANCE.md: [Versioning, System facts and validation planning, Branch lifecycle hygiene, Controlled branch cleanup]
+      docs/human/MAINTENANCE.md: [Versioning, System facts and validation planning, Branch lifecycle hygiene, Validation architecture consistency, Controlled branch cleanup]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
-      docs/human/CONFORMANCE.md: [Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning]
+      docs/human/CONFORMANCE.md: [Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Scenario 201 — Monthly maintenance reliability evidence]
+  - id: maintenance-reliability
+    triggers: [scripts/maintenance_reliability.py, config/maintenance-reliability.yaml, .github/workflows/maintenance-reliability.yml, tests/evidence/maintenance_reliability_lifecycle.py, tests/validation/maintenance_reliability_contracts.py, tests/scenarios/201-monthly-maintenance-reliability.md, tests/scenario_coverage.yaml, tests/validate_repository.py, tests/validation/conformance_isolation.py]
+    placements:
+      docs/human/MAINTENANCE.md: [Monthly maintenance reliability, Validation architecture consistency]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Documentation Architecture]
+      docs/human/TECHNOLOGY_GUIDE.md: [Evolution & Maintenance]
+      docs/human/CONFORMANCE.md: [Scenario 201 — Monthly maintenance reliability evidence]
+      docs/human/DOCUMENTATION_MAP.md: [文件角色]
+      docs/human/DOCUMENTATION_SYNC.md: [Deterministic protection]
+      orchestration/CONFORMANCE.md: [Scenario 201 — Monthly maintenance reliability evidence]
+      orchestration/DOCUMENTATION_SYNC.md: [Maintenance reliability mapping]
   - id: runtime-context
     triggers:
       - scripts/runtime_context.py
@@ -358,7 +369,8 @@ placement_rules:
     triggers: [orchestration/CONFORMANCE.md, tests/scenario_coverage.yaml, tests/validation/conformance_isolation.py, tests/validation/ears_requirement_contracts.py, tests/scenarios/175-risk-adaptive-bounded-impact.md, tests/scenarios/176-mandatory-candidate-secret-scanning.md, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, tests/evidence/secret_scan_publication_lifecycle.py, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/180-external-eval-interoperability.md, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py, tests/validation/eval_interop_contracts.py, scripts/eval_interop.py, scripts/agent_eval.py, templates/conformance/AGENT_EVAL_RESULT.yaml, orchestration/EVAL_INTEROPERABILITY.md, orchestration/AGENT_EVAL.md, tests/scenarios/196-openapi-generator-adapter.md, tests/evidence/openapi_generator_adapter_lifecycle.py]
     placements:
       docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Execution Isolation Conformance]
-      docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification, Security & Governance]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Scenario 201 — Monthly maintenance reliability evidence, Execution Isolation Conformance]
+      docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification, Evolution & Maintenance, Security & Governance]
 
   - id: eval-interoperability
     triggers: [scripts/eval_interop.py, scripts/agent_eval.py, templates/conformance/AGENT_EVAL_RESULT.yaml, config/eval-profiles.yaml, config/integration-gate.yaml, orchestration/EVAL_INTEROPERABILITY.md, orchestration/schemas/external-eval-evidence.yaml, orchestration/schemas/eval-profile.yaml, orchestration/schemas/red-team-finding.yaml, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py, tests/validation/eval_interop_contracts.py, tests/scenarios/180-external-eval-interoperability.md]

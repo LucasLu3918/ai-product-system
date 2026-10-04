@@ -54,6 +54,7 @@ VALIDATORS = (
     ValidatorSpec("validation.repository_health_contracts", False),
     ValidatorSpec("validation.mcp_interoperability_contracts", False),
     ValidatorSpec("validation.evolution_effectiveness_contracts", False),
+    ValidatorSpec("validation.maintenance_reliability_contracts", False),
     ValidatorSpec("validation.publish_preflight_contracts", False),
     ValidatorSpec("validation.eval_interop_contracts", True),
     ValidatorSpec("validation.telemetry_export_contracts", True),

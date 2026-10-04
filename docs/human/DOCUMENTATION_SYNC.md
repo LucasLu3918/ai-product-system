@@ -129,3 +129,5 @@ Documentation Sync 驗證「哪些文件必須一起改」；Documentation Place
 Execution Isolation 的 provider registry、resolver、optional E2B smoke workflow、profile schema 與其 tests/scenarios 由 `execution-isolation` sync rule 綁定到 Architecture Overview、Security Assurance、Technology Guide、User Guide、Conformance 與 canonical Agent protocols。資料外送 adapter 未取得明確範圍前，文件與 workflow 維持 synthetic-only。
 
 Runtime Policy Enforcement 的 action schema、deny-by-default evaluator、native hook decision 與高風險 sandbox 要求，沿用 Resource Authorization、Execution Isolation、Governance Audit 和 Security Assurance 文件閉包；Scenario 177 維護執行階段授權及限制的 evidence。
+
+The `maintenance-reliability` mapping binds the bounded monthly collector, configuration, GitHub workflow, lifecycle and contract checks, Scenario 201, registry and evidence runner to the Human Maintenance / Conformance / Technology Guide / Documentation Map topics and the Agent Conformance protocol. Keep UNKNOWN handling, collection bounds, exact-SHA correlation and no-remediation authority aligned.

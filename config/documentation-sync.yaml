@@ -21,11 +21,35 @@ rules:
       - .github/workflows/branch-hygiene.yml
       - tests/validate_repository.py
     human_docs:
+      - docs/human/ARCHITECTURE_OVERVIEW.md
       - docs/human/MAINTENANCE.md
       - docs/human/CONFORMANCE.md
       - docs/human/TECHNOLOGY_GUIDE.md
     agent_docs:
       - orchestration/CONFORMANCE.md
+    evidence:
+      - tests/scenario_coverage.yaml
+  - id: maintenance-reliability
+    triggers:
+      - scripts/maintenance_reliability.py
+      - config/maintenance-reliability.yaml
+      - .github/workflows/maintenance-reliability.yml
+      - tests/evidence/maintenance_reliability_lifecycle.py
+      - tests/validation/maintenance_reliability_contracts.py
+      - tests/scenarios/201-monthly-maintenance-reliability.md
+      - tests/scenario_coverage.yaml
+      - tests/validate_repository.py
+      - tests/validation/conformance_isolation.py
+    human_docs:
+      - docs/human/MAINTENANCE.md
+      - docs/human/CONFORMANCE.md
+      - docs/human/TECHNOLOGY_GUIDE.md
+      - docs/human/ARCHITECTURE_OVERVIEW.md
+      - docs/human/DOCUMENTATION_MAP.md
+      - docs/human/DOCUMENTATION_SYNC.md
+    agent_docs:
+      - orchestration/CONFORMANCE.md
+      - orchestration/DOCUMENTATION_SYNC.md
     evidence:
       - tests/scenario_coverage.yaml
   - id: runtime-context

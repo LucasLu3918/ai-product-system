@@ -136,6 +136,10 @@ Execution Profile isolation fields now include optional minimum runtime class, p
 Runtime Policy action schemas, deterministic decisions, hook capability claims and high-risk egress requirements are canonical in `orchestration/RUNTIME_POLICY_ENFORCEMENT.md`; synchronize them with Resource Authorization, Execution Isolation, Governance Audit, the adapter contract, Security Assurance, Harness and Scenario 177.
 
 
+## Maintenance reliability mapping
+
+The `maintenance-reliability` sync rule binds the monthly collector, policy, workflow, lifecycle evidence, contract validator, Scenario 201 and its registry/runner wiring to the Human Maintenance, Conformance, Technology Guide and Documentation Map topics plus this Agent-facing protocol and `orchestration/CONFORMANCE.md`. Changes must preserve bounded collection, UNKNOWN for incomplete input, exact-SHA correlation limits and Human-only remediation.
+
 ## Evolution Effectiveness mapping
 
 The `evolution-radar` mapping includes the deterministic effectiveness script, policy config and monthly GitHub workflow. Changes to metric definitions, thresholds, source review flags, Issue publication behavior or authority fields must synchronize the canonical Evolution Radar / Execution Isolation Human and Agent docs plus the Technology Guide.
