@@ -23,7 +23,7 @@ local contract. Resolve only repository-local references; remote references and
 paths escaping the product root must stay blocked.
 
 ```bash
-python scripts/openapi_contracts.py validate api/openapi.yaml --repo-root . \
+aips openapi validate api/openapi.yaml --repo-root . \
   --output /tmp/openapi-validation.json
 ```
 
@@ -47,7 +47,7 @@ Run the adapter without `--execute` first and inspect its version, argv, input
 hashes and allowed output paths:
 
 ```bash
-python scripts/openapi_generator_adapter.py IMPLEMENTATION_PROFILE.yaml \
+aips openapi generator IMPLEMENTATION_PROFILE.yaml \
   --repo-root . --adapter-id <adapter-id>
 ```
 
@@ -81,7 +81,7 @@ product-owned code.
 Useful freshness check:
 
 ```bash
-python scripts/openapi_contracts.py verify-evidence <report.json> --repo-root .
+aips openapi verify-evidence <report.json> --repo-root .
 ```
 
 ## 5. Stop conditions and recovery

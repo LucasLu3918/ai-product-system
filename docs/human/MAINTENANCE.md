@@ -278,6 +278,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 
 ## Public repository / CI consistency
 
+排查 `AUTH_CONFIGURATION_UNVERIFIED` 時先確認 `GH_CONFIG_DIR` 與 `XDG_CONFIG_HOME` 的設定選擇，再檢查登入；不要複製憑證。Local preparation 保留原本 gh 設定目錄並拒絕不屬於指定 Python 3.12 venv 的執行檔。文件異動先用 preview 查閉包；docs impact 須解析正確 checkout。重用準備好的環境，候選固定後執行一次完整本地 Gate，保留 PR 與 main CI；以既有 timing evidence 評估慢項目。
+
 Use `aips publish environment` from the intended checkout and inspect its source/target/Python diagnostic before validation. Reuse an existing environment with `python3.12 bin/prepare-local-validation --venv <path> --check-only`; a local `--wheelhouse <path>` supports offline Python dependency installation. Browser downloads remain separate prerequisites. GitHub logs/artifacts may redirect to external storage; keep domain approval explicit and use bounded Check summaries for initial diagnosis.
 
 The validation workflow installs the optional pinned `requirements-openapi.txt` set before running repository checks, so offline OpenAPI lifecycle tests use the same validator version in local and CI runs.

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix CLI validation help and documentation-impact checkout routing; add installed OpenAPI product commands, preserve GitHub configuration during isolated local validation, and detect invalid Python venvs before Gate execution.
+
 - Add an ordered AI onboarding checklist for REST/OpenAPI products, with evidence freshness recovery and product-native acceptance boundaries; extend lifecycle coverage for stale contract and revision-bound evidence.
 - Resolve publication targets and configured Python consistently; preserve existing Intelligence bootstrap state and expose read-only semantic refresh plans with truthful freshness.
 - Prevent label-only checks from masking failed or stale full Gate evidence using exact PR/head/base/class metadata; publish bounded CI documentation failures and timing summaries; complete pinned Node 24 / Pages artifact updates with their required documentation closure and support offline Python wheelhouses.

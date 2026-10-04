@@ -136,7 +136,8 @@ Usage:
   aips integration-gate --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--review-trust-store <path>] [--observe-run-id <id>] [--output <path>] [--project-root <repo>]
   aips janitor --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>]
   aips publish preview|plan|preflight|matrix-sync|post-merge [publish-preflight options] [--project-root <repo>]
-  aips docs impact --base <ref> [--head <ref>] [--format yaml|json]
+  aips docs impact --base <ref> [--head <ref>] [--project-root <repo>] [--format yaml|json]
+  aips openapi <validate|compare|run-contract-tests|verify-evidence|generator> ...
 
   aips identity [--project <path>] [--format yaml|json]
 
@@ -830,7 +831,7 @@ publish_preflight_cmd() {
     selected_root="$(git -C "$PWD" rev-parse --show-toplevel 2>/dev/null || true)"
     if [ -z "$selected_root" ] || [ ! -f "$selected_root/scripts/publish_preflight.py" ]; then
       selected_root=""
-      if [ "$action" = "matrix-sync" ] || [ "$action" = "post-merge" ]; then
+      if [ "$action" = "matrix-sync" ] || [ "$action" = "post-merge" ] || [ "$action" = "docs-impact" ]; then
         die "Run publish $action from an AIPS checkout or pass --project-root <repo>."
       fi
     fi
@@ -868,7 +869,24 @@ docs_cmd() {
   local action="${1:-}"
   shift || true
   [ "$action" = "impact" ] || die "Usage: aips docs impact --base <ref> [--head <ref>]"
-  "$(python_bin)" "$SYSTEM_DIR/scripts/publish_preflight.py" docs-impact "$@"
+  publish_preflight_cmd docs-impact "$@"
+}
+
+openapi_cmd() {
+  local action="${1:---help}" py script
+  shift || true
+  case "$action" in
+    help|-h|--help)
+      say "Usage: aips openapi <validate|compare|run-contract-tests|verify-evidence|generator> ..."
+      say "Run from the product repository and pass --repo-root <product-root>."
+      return ;;
+    generator) script="openapi_generator_adapter.py" ;;
+    validate|compare|run-contract-tests|verify-evidence) script="openapi_contracts.py"; set -- "$action" "$@" ;;
+    *) die "Unknown OpenAPI action: $action. Run aips openapi --help." ;;
+  esac
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/$script" "$@"
 }
 
 mcp_cmd() {
@@ -1681,6 +1699,10 @@ case "${1:-help}" in
     shift
     docs_cmd "$@"
     ;;
+  openapi)
+    shift
+    openapi_cmd "$@"
+    ;;
   identity)
     shift
     identity_cmd "$@"
@@ -1723,6 +1745,13 @@ case "${1:-help}" in
     doctor
     ;;
   validate)
+    shift
+    if [ "$#" -eq 1 ]; then
+      case "$1" in
+        help|-h|--help) say "Usage: aips validate (validate the installed AIPS repository)"; exit 0 ;;
+      esac
+    fi
+    [ "$#" -eq 0 ] || die "Unknown validate arguments. Run aips validate --help."
     validate_repo
     ;;
   version)

@@ -48,6 +48,39 @@ def recovery_step(phase: str) -> str:
     return "Retry `python3.12 bin/prepare-local-validation` to install pinned validation dependencies."
 
 
+def isolated_config_env(config_home: str) -> dict[str, str]:
+    """Isolate AIPS state without changing gh's configured credential lookup."""
+    env = dict(os.environ)
+    if not env.get("GH_CONFIG_DIR"):
+        if env.get("XDG_CONFIG_HOME"):
+            gh_config = Path(env["XDG_CONFIG_HOME"]) / "gh"
+        elif sys.platform == "win32" and env.get("AppData"):
+            gh_config = Path(env["AppData"]) / "GitHub CLI"
+        else:
+            gh_config = Path.home() / ".config/gh"
+        env["GH_CONFIG_DIR"] = str(gh_config)
+    env["XDG_CONFIG_HOME"] = config_home
+    return env
+
+
+def validation_venv_ready(python: Path, target: Path) -> bool:
+    try:
+        probe = subprocess.run(
+            [str(python), "-c", "import json,sys; print(json.dumps({'prefix':sys.prefix,'base_prefix':sys.base_prefix,'version':list(sys.version_info[:2])}))"],
+            capture_output=True, text=True,
+        )
+        runtime = json.loads(probe.stdout)
+        valid = (probe.returncode == 0 and runtime["version"] == [3, 12]
+                 and Path(runtime["prefix"]).resolve() == target
+                 and runtime["prefix"] != runtime["base_prefix"])
+    except (OSError, ValueError, KeyError, TypeError):
+        valid = False
+    if not valid:
+        print("ENVIRONMENT_BLOCKED: selected Python is not the requested Python 3.12 venv.", file=sys.stderr)
+        print(f"Recreate the environment with `python3.12 bin/prepare-local-validation --venv {shlex.quote(str(target))}`.", file=sys.stderr)
+    return valid
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--venv", type=Path, default=DEFAULT_VENV)
@@ -112,6 +145,9 @@ def main() -> int:
         print(f"Run `python3.12 bin/prepare-local-validation --venv {shlex.quote(str(target))}` first, or pass --venv for an existing validation environment.", file=sys.stderr)
         return 2
 
+    if not validation_venv_ready(python, target):
+        return 2
+
     for module in ("ruff", "mypy", "playwright"):
         if not run([str(python), "-m", module, "--version"], phase=f"{module} availability"):
             print(f"Selected validation venv: {target}", file=sys.stderr)
@@ -152,8 +188,7 @@ def main() -> int:
         if args.base_tip:
             command.extend(("--base-tip", args.base_tip))
         with tempfile.TemporaryDirectory(prefix="aips-validation-config-") as config_home:
-            env = dict(os.environ)
-            env["XDG_CONFIG_HOME"] = config_home
+            env = isolated_config_env(config_home)
             env["PATH"] = str(python.parent) + os.pathsep + env.get("PATH", "")
             timing_report = output.with_suffix(".timing.json")
             env["AIPS_VALIDATION_TIMING_REPORT"] = str(timing_report)

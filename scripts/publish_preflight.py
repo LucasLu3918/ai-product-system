@@ -461,7 +461,13 @@ def remote_policy(branch: str, offline: bool) -> dict[str, Any]:
             "connect: operation not permitted", "failed to connect",
         )):
             return {"status": "NETWORK_UNAVAILABLE", "reason": "GitHub connectivity is unavailable", "next_step": "Check network or sandbox access to api.github.com, then rerun `gh auth status -h github.com`."}
-        return {"status": "AUTH_REQUIRED", "reason": "GitHub CLI authentication is unavailable", "next_step": "Run `gh auth login -h github.com`, then rerun `gh auth status -h github.com`."}
+        if os.environ.get("XDG_CONFIG_HOME") and not os.environ.get("GH_CONFIG_DIR"):
+            return {
+                "status": "AUTH_CONFIGURATION_UNVERIFIED",
+                "reason": "GitHub CLI authentication was checked using XDG_CONFIG_HOME/gh",
+                "next_step": "Verify that this is the intended GitHub configuration directory. When isolating AIPS configuration, preserve the original gh directory with GH_CONFIG_DIR, then rerun `gh auth status -h github.com`. Do not copy credentials or repeat login solely because configuration was isolated.",
+            }
+        return {"status": "AUTH_REQUIRED", "reason": "GitHub CLI authentication is unavailable in the selected configuration", "next_step": "Verify GH_CONFIG_DIR/XDG_CONFIG_HOME selects the intended gh configuration, then run `gh auth status -h github.com`; login only if authentication is actually missing."}
     path = remote.removeprefix("git@github.com:").removeprefix("https://github.com/").removesuffix(".git")
     repository = subprocess.run([gh, "api", f"repos/{path}"], cwd=ROOT, capture_output=True, text=True)
     if repository.returncode:
