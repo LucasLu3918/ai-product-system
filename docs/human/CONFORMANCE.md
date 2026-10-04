@@ -124,6 +124,8 @@ GitHub PR validation 也以精確候選為邊界：同一 PR 的 `opened`、`lab
 
 完整 repository validation 現會輸出逐項時間 JSON 供分析；測試失敗仍使 Gate 與 required aggregate 失敗。時間報告只含模組／lifecycle 名稱、狀態與毫秒數，不包含測試輸出。
 
+Scenario 128 的 Retrieval lifecycle 也區分唯讀讀取受限與過期索引刷新遭拒寫入；這是可重現的 lifecycle 證據，不代表 Agent Eval 或即時 Runtime 權限證明。
+
 第一批 Agent Eval：
 
 ~~~text
@@ -1391,7 +1393,7 @@ Traversal findings name the affected path and allowed final dispositions; they d
 
 發布工具維護仍須把 CLI 目標、驗證環境、檢索快取與文件閉包記入 Change Impact，並以實際 diff 與 lifecycle evidence 核對；測試涵蓋舊 checkout 的安全快轉、矩陣目標路由、網路與認證診斷、唯讀檢索回復指引。
 
-唯讀檢索回復的新增回歸案例會讓 SQLite 建立連線成功、首次查詢失敗，確認安全快照可讀；另驗證 live WAL 仍阻止複製，來源索引位元組未變。
+唯讀檢索回復的回歸案例會讓 SQLite 建立連線成功、首次查詢失敗，確認安全快照可讀；另驗證 live WAL 仍阻止複製，來源索引位元組未變。
 
 目前 Scenario inventory：
 

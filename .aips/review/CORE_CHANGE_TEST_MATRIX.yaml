@@ -1,88 +1,98 @@
 version: 1
 change:
-  id: publish-python-subprocess-path
-  summary: Bind exact-candidate preflight child PATH to the selected Python, verify
-    both stages, and document the validation environment.
+  id: phase10-intelligence-recovery
+  summary: Classify stale retrieval index refresh write denial separately from read
+    access failures; give runtime-writable cache recovery guidance while preserving
+    stale status and checked snapshot/WAL protections.
   boundary:
-  - publication-python-environment
-  - documentation-impact-closure
+  - retrieval-cache-refresh-diagnostics
+  - project-intelligence-documentation
 matrix:
-- boundary: publication-python-environment
-  reason: Direct Publication Preflight must use the same selected Python for nested
-    helpers as the prepared local wrapper.
+- boundary: retrieval-cache-refresh-diagnostics
+  reason: A stale index refresh writes SQLite cache state; a runtime write denial
+    must be reported distinctly from read-only access and invalid database evidence.
   checks:
     static_lint:
       applicable: true
-      evidence: Critical Ruff checks and git diff --check for changed Python and documentation.
+      evidence: Critical Ruff checks on retrieval helper plus git diff --check.
     unit:
       applicable: true
-      evidence: publish_preflight_lifecycle.py asserts PATH and AIPS_DOCS_DIFF_BASE
-        for both child subprocesses.
+      evidence: retrieval_intelligence_lifecycle.py exercises stale refresh write
+        denial, reader snapshot fallback, live-WAL refusal and unchanged source bytes.
+        Existing layered_context_memory_lifecycle.py now asserts the distinct cache-write-denial
+        code for direct index rebuild.
     integration:
       applicable: true
-      evidence: Run one exact-candidate Publication Preflight and Integration Gate
-        after commit.
+      evidence: Exact-candidate Publication Preflight / Integration Gate and repository
+        validation.
     contract:
       applicable: true
-      evidence: publish_preflight_contracts.py and existing environment diagnostics
-        remain valid.
+      evidence: Scenario 128 lifecycle conformance; output reason_code and remediation
+        contract.
     e2e:
       applicable: false
-      na_reason: No deployed product journey changes.
+      na_reason: No deployed product journey or public product API changes.
     security:
       applicable: true
-      evidence: Selected Python precedes inherited PATH; candidate secret scan and
-        Git publication approval remain required.
+      evidence: Retrieval remains non-canonical; no secret paths, credentials or broader
+        authority enter output.
     migration_recovery:
       applicable: false
-      na_reason: No persisted data or schema changes.
+      na_reason: The retrieval index is a rebuildable cache; no canonical or product
+        schema migration.
     cli_harness:
       applicable: true
-      evidence: Direct publish_preflight.py run and prepared wrapper route to the
-        same selected interpreter.
+      evidence: aips intelligence retrieve and Turn Context return stable unavailable
+        diagnostics on sandbox write denial.
     docs_schema:
       applicable: true
-      evidence: Publication Preview checks recursive documentation closure; VitePress
-        builds updated Human docs.
-- boundary: documentation-impact-closure
-  reason: Canonical Human and orchestration documents describe the exact child environment
-    behavior.
+      evidence: Canonical Project Intelligence and Technology Guide sections describe
+        cache access and safe recovery.
+- boundary: project-intelligence-documentation
+  reason: Human and Agent guidance must distinguish rebuildable index freshness from
+    semantic source freshness and align with the tested runtime failure.
   checks:
     static_lint:
       applicable: true
-      evidence: Documentation placement and diff checks pass.
+      evidence: Documentation placement, recursive publication preview and git diff
+        --check.
     unit:
       applicable: true
-      evidence: Publication lifecycle exercises preview and candidate Matrix binding.
+      evidence: Lifecycle assertion keeps semantic freshness and existing SQLite WAL
+        safety contracts unchanged.
     integration:
       applicable: true
-      evidence: Exact candidate Gate verifies documentation and repository validation.
+      evidence: Exact-candidate Gate builds updated documentation and validates the
+        repository.
     contract:
       applicable: true
-      evidence: Publication preview reports no missing required docs or placement
-        errors.
+      evidence: Publication preview reports complete required documentation closure
+        with no placement errors.
     e2e:
       applicable: false
-      na_reason: No deployed application path changes.
+      na_reason: No deployed product journey or public product API changes.
     security:
       applicable: true
-      evidence: Documentation does not expand allowlists or publication authority.
+      evidence: No security boundary or credential handling behavior changes.
     migration_recovery:
       applicable: false
-      na_reason: No persisted product state changes.
+      na_reason: The retrieval index is a rebuildable cache; no canonical or product
+        schema migration.
     cli_harness:
       applicable: true
-      evidence: Selected checkout and exact candidate are bound by Publication Preflight.
+      evidence: CLI recovery guidance reflects the selected runtime cache and does
+        not force-rebuild on permission denial.
     docs_schema:
       applicable: true
-      evidence: All required canonical files are updated in allowed sections and VitePress
-        builds.
+      evidence: Project Intelligence, Architecture Overview, Technology Guide, Maintenance
+        and Conformance align; architecture diagram impact is N/A because the retrieval
+        data path is unchanged.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 57e9408c180b631833e3d0b0807d150dd00fcff6
-  changed_files_hash: da08b8708ff150690d0b41fdc21e200c1cc44cd6c3d09a3b30d148b04039dde2
+  base_sha: b0242d7a7f812e03b9698f6e8d02b43769de6b67
+  changed_files_hash: 5af577736efd70522de747d92d3dbb1a92b47ba419da33e4d6380b19c651a9f0
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml

@@ -275,6 +275,8 @@ Rebuildable Retrieval Intelligence
 
 The retrieval database MUST NOT become a source of truth and may be deleted/rebuilt at any time. Canonical facts, approved overrides and authority precedence continue to live in Project Intelligence and project-native sources.
 
+Opening the read-only index and refreshing a stale index are separate capabilities. Read-only retrieval may use a verified temporary snapshot when WAL shared memory is unavailable, but refresh requires write access to the configured SQLite cache, its parent and sidecar files. Report refresh denial as `RETRIEVAL_CACHE_WRITE_ACCESS_DENIED`, retain the stale status, and suggest a Runtime-writable `XDG_CACHE_HOME`; do not force-rebuild unless index validation reports `INVALID`. Semantic Project Intelligence freshness still requires reviewing changed authoritative sources.
+
 Default local retrieval uses multiple lanes rather than treating vector similarity as sufficient:
 
 1. lexical repository search;

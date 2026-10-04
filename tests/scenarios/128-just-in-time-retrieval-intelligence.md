@@ -12,3 +12,4 @@ A retrieval turn must:
 - exclude secret/credential paths from indexing and output;
 - degrade truthfully when no optional semantic provider is configured;
 - expose the bounded result through the Turn Context Manifest without making the retrieval cache a source of truth.
+- return `RETRIEVAL_CACHE_WRITE_ACCESS_DENIED` when a stale index cannot be refreshed because the runtime cannot write the cache; keep that stale state distinct from readable, current evidence.

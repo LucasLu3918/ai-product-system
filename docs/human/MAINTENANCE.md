@@ -280,6 +280,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 
 The validation workflow installs the optional pinned `requirements-openapi.txt` set before running repository checks, so offline OpenAPI lifecycle tests use the same validator version in local and CI runs.
 
+Retrieval cache failures distinguish read access from stale-index refresh writes. A `RETRIEVAL_CACHE_WRITE_ACCESS_DENIED` result means SQLite could not open the rebuildable cache for update; allow cache and sidecar writes or set `XDG_CACHE_HOME` to a location writable by the current runtime, then retry. Keep invalid-index rebuilds (`--force`) for an index explicitly reported `INVALID`; do not use them to bypass ordinary sandbox write restrictions. Project Intelligence semantic refresh remains separate and must still re-read changed authoritative sources.
+
 提交前的 `aips publish preview --base <sha> --change-class <class>` 會檢查工作樹（含未追蹤檔）的文件 H2 placement、Core Matrix base/hash 綁定與 PR 首次建立所需標籤。若 CLI 認證失效，`aips publish plan` 回報 `AUTH_REQUIRED` 與重新登入步驟，不會輸出憑證內容；最終 Gate 仍以乾淨的已提交候選執行。
 
 The working-tree preview scans candidate additions and complete untracked files. The exact committed candidate still receives the mandatory final-tree and commit-history scan in Integration Gate.
@@ -301,7 +303,7 @@ Portable Command 變更必須同時驗證 Registry、renderer、CLI lifecycle、
 
 建立已核准的 Large/Core PR 時，在 `gh pr create` 同一命令附上 `--label aips:large-change` 或 `--label aips:core-change`，讓首次 `opened` 事件即使用正確分類。PR number 共用併發群組；較新的 PR action 會取代同 PR 舊 run，並按最新 labels 執行。檢查最新候選 SHA 的 required aggregate，避免把被取代的執行判成測試失敗。
 
-若 Turn Context 回報 `INDEX_UNAVAILABLE`／`SQLITE_OPEN_FAILED`，先確認目前 runtime 可讀取 `XDG_CACHE_HOME` 中的 SQLite 檔案，並排除 sandbox 存取限制；權限正常仍持續失敗時，再執行 `aips intelligence index --project "$PWD" --force`。索引是可重建的快取；`SEMANTIC_REFRESH_REQUIRED` 則表示來源內容變更，仍需依 Project Intelligence 流程檢視受影響的語意主題。
+若 Turn Context 回報 `RETRIEVAL_CACHE_WRITE_ACCESS_DENIED`，先確認目前 Runtime 可寫入 `XDG_CACHE_HOME` 下的 SQLite 檔案、父目錄及 sidecar；沙盒不允許時，為該 Runtime 指定可寫的 `XDG_CACHE_HOME`，再重試檢索。只有索引明確回報 `INVALID` 才以 `--force` 重建。唯讀連線失敗仍依 `RETRIEVAL_CACHE_ACCESS_DENIED` 檢查讀取權限；`SEMANTIC_REFRESH_REQUIRED` 表示來源內容變更，須依 Project Intelligence 流程檢視受影響語意主題。
 
 公開 PR 的每個新 commit 都要使用 GitHub noreply author 與 committer 身分，並避免在 commit message、Co-authored-by trailer 與差異內容寫入個人資料。先在 GitHub **Settings → Emails** 開啟 **Keep my email addresses private**，讓 GitHub 網頁/API 合併使用 noreply；再從同頁複製 GitHub 提供的 noreply 位址，執行 `git config --local user.email "<noreply 位址>"`。以 `git log -1 --format='%ae%n%ce'` 確認本機 author/committer；不要把實際位址貼進 issue、PR 描述或驗證輸出。發布 preflight 會檢查候選範圍內的所有 commit message 與身份欄位。
 
