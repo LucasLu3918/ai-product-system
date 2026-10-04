@@ -33,6 +33,7 @@ def main() -> int:
         (system / ".venv" / "bin").mkdir(parents=True)
         shutil.copy2(ROOT / "bin" / "aips", system / "bin" / "aips")
         shutil.copy2(ROOT / "requirements-openapi.txt", system / "requirements-openapi.txt")
+        shutil.copy2(ROOT / "scripts/package_install.py", system / "scripts/package_install.py")
 
         marker = base / "optional-dependencies-installed"
         fake_python = system / ".venv" / "bin" / "python"

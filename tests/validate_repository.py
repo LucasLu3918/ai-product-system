@@ -195,6 +195,7 @@ for evidence in (
     Path(__file__).parent / "evidence/openapi_generator_adapter_lifecycle.py",
     Path(__file__).parent / "evidence/openapi_client_pilot_lifecycle.py",
     Path(__file__).parent / "evidence/openapi_cli_install_lifecycle.py",
+    Path(__file__).parent / "evidence/runtime_recovery_lifecycle.py",
 ):
     started = time.monotonic()
     result = subprocess.run([sys.executable, str(evidence)], cwd=Path(__file__).resolve().parents[1], capture_output=True, text=True, check=False)

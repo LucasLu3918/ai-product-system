@@ -193,6 +193,8 @@ The Scheduler validates this structure and includes runtime requirements only fo
 Only `tcp` is supported in v0.51. Port IDs must be stable resource IDs, `preferred` is optional and non-authoritative, and `expose_as` accepts environment-variable names only.
 ## Runtime Content Safety Boundary
 
+Publication uses `aips publish checks --pr <number> --head <sha>` for latest-check diagnostics only. Cancelled superseded runs are separate observations, while incomplete current checks remain blocking. Post-merge `--sync-installed` verifies the registered AIPS checkout and permits only a clean same-remote fast-forward.
+
 Content safety decisions used by deterministic execution and publication preflight must be provider-neutral and reproducible. Optional semantic classifiers may emit advisory signals only and cannot be the sole release decision.
 
 Runtime action authorization is evaluated at the native tool boundary by Runtime Policy Enforcement; task dispatch metadata does not grant action approval or network-egress isolation.

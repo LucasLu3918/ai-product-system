@@ -8,6 +8,8 @@ It replaces Project Knowledge as the long-term cache model. Existing `.ai/knowle
 
 ## Goals
 
+Disposable default-cache recovery uses a private current-user temporary directory when the default home cache is unwritable; explicit XDG configuration is authoritative. When registered derived metadata is read-only, colocated disposable metadata reports CACHE_ONLY and preserves revision-bound freshness without replacing canonical sources or graphs. Missing databases yield MISSING/ORPHANED rather than trusting persisted READY metadata; rebuilding does not require force. Read-only snapshot, WAL refusal and source-integrity checks remain intact.
+
 Read-only Context remains available in ordinary directories and repositories without a first commit. Temporal assertions requiring Git ancestry are unavailable until a commit exists. Source Registry instructions are selected by target path and runtime; unrelated nested adapters are not injected into root work. Retrieval queries use read-only SQLite access and may use a verified, disposable snapshot when WAL shared memory is unavailable; index construction and refresh remain writer operations.
 
 - understand an existing project once, then reuse that understanding across Agents and turns;

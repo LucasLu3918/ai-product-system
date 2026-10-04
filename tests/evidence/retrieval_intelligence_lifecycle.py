@@ -205,6 +205,29 @@ def main() -> int:
         require("structural_reference_graph" in (context_ranking.get("lanes") or []),
                 "Turn Context ranking must expose structural relation graph")
 
+        with patch.dict(os.environ, {"XDG_CACHE_HOME": str(cache)}):
+            directional = RI.traverse_change_impact(project, store,
+                [{"symbol": "refund_order", "path": "orders/refund_service.py"}],
+                "shared_library", directions=["callers", "consumers"], max_depth=2)
+            require(directional["required_depth"]["consumers"] == 2 and directional["required_depth"]["callers"] == 2,
+                    "reported consumer depth must bind the same minimum that Impact validation enforces")
+            db_path = RI.index_path(project)
+            saved = db_path.with_suffix(".saved")
+            db_path.rename(saved)
+            try:
+                missing = RI.index_status(project, store)
+                require(missing["status"] == "MISSING" and missing["metadata_status"] == "ORPHANED",
+                        "deleted disposable indexes must not retain a CURRENT metadata claim")
+                rebuilt = RI.index_repository(project, store)
+                require(rebuilt["status"] == "READY" and rebuilt["full_rebuild"],
+                        "a cleaned disposable index must rebuild without --force")
+                with patch.object(RI, "write_metadata_file", side_effect=PermissionError("sandbox store is read-only")):
+                    cache_only = RI.index_repository(project, store)
+                require(cache_only["metadata_persistence"] == "CACHE_ONLY" and RI.index_status(project, store)["status"] == "CURRENT",
+                        "a read-only Intelligence store must not block a valid disposable cache refresh")
+            finally:
+                saved.unlink()
+
     with tempfile.TemporaryDirectory(prefix="aips-readonly-index-") as tmp:
         db_path = Path(tmp) / "index.sqlite"
         writer, _ = RI.open_db(db_path)
@@ -284,6 +307,7 @@ def main() -> int:
         denied = RI.index_unavailable(PermissionError("Operation not permitted"))
         require(denied["reason_code"] == "RETRIEVAL_CACHE_ACCESS_DENIED" and "read" in denied["remediation"],
                 "cache access errors must identify the read permission boundary")
+
 
     print("retrieval_intelligence_lifecycle evidence: PASS")
     return 0

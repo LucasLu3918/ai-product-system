@@ -26,6 +26,7 @@ import documentation_placement  # noqa: E402
 import repository_preflight  # noqa: E402
 from integration_gate import load_yaml as load_matrix_yaml
 from integration_gate import matrix_readiness_issues
+from runtime_cache import cache_environment
 
 try:
     from content_safety import safe_emit
@@ -164,7 +165,7 @@ def environment_status() -> dict[str, Any]:
     diagnostics: list[dict[str, str]] = []
     python_version = subprocess.run([sys.executable, "--version"], capture_output=True, text=True)
     missing_modules = []
-    for module in ("yaml", "ruff", "openapi_spec_validator"):
+    for module in ("yaml", "ruff", "mypy", "playwright", "openapi_spec_validator", "jsonschema", "cryptography"):
         check = subprocess.run(
             [sys.executable, "-c", f"import {module}"], capture_output=True, text=True
         )
@@ -452,7 +453,8 @@ def remote_policy(branch: str, offline: bool) -> dict[str, Any]:
     remote = git("remote", "get-url", "origin", check=False)
     if not gh or "github.com" not in remote:
         return {"status": "UNAVAILABLE", "reason": "GitHub CLI or GitHub origin unavailable", "next_step": "Install gh and configure a GitHub origin before publication."}
-    auth = subprocess.run([gh, "auth", "status", "-h", "github.com"], cwd=ROOT, capture_output=True, text=True)
+    gh_env = cache_environment()
+    auth = subprocess.run([gh, "auth", "status", "-h", "github.com"], cwd=ROOT, capture_output=True, text=True, env=gh_env)
     if auth.returncode:
         diagnostic = (auth.stderr + "\n" + auth.stdout).lower()
         if any(marker in diagnostic for marker in (
@@ -469,7 +471,7 @@ def remote_policy(branch: str, offline: bool) -> dict[str, Any]:
             }
         return {"status": "AUTH_REQUIRED", "reason": "GitHub CLI authentication is unavailable in the selected configuration", "next_step": "Verify GH_CONFIG_DIR/XDG_CONFIG_HOME selects the intended gh configuration, then run `gh auth status -h github.com`; login only if authentication is actually missing."}
     path = remote.removeprefix("git@github.com:").removeprefix("https://github.com/").removesuffix(".git")
-    repository = subprocess.run([gh, "api", f"repos/{path}"], cwd=ROOT, capture_output=True, text=True)
+    repository = subprocess.run([gh, "api", f"repos/{path}"], cwd=ROOT, capture_output=True, text=True, env=gh_env)
     if repository.returncode:
         diagnostic = (repository.stderr + "\n" + repository.stdout).lower()
         if any(marker in diagnostic for marker in (
@@ -492,7 +494,7 @@ def remote_policy(branch: str, offline: bool) -> dict[str, Any]:
             ("allow_rebase_merge", "rebase"),
         ) if repository_data.get(key) is True
     ]
-    proc = subprocess.run([gh, "api", f"repos/{path}/branches/{branch}/protection"], cwd=ROOT, capture_output=True, text=True)
+    proc = subprocess.run([gh, "api", f"repos/{path}/branches/{branch}/protection"], cwd=ROOT, capture_output=True, text=True, env=gh_env)
     if proc.returncode == 0:
         return {"status": "PROTECTED", "publication_route": "pull_request", "merge_methods": merge_methods}
     if "Branch not protected" in proc.stderr or "404" in proc.stderr:
@@ -646,6 +648,91 @@ def build_plan(args: argparse.Namespace, environment: dict[str, Any] | None = No
     }
 
 
+def summarize_checks(payload: dict[str, Any], required: list[str]) -> dict[str, Any]:
+    latest: dict[tuple[str, str], dict[str, Any]] = {}
+    cancelled = 0
+    for check in payload.get("statusCheckRollup") or []:
+        if check.get("conclusion") == "CANCELLED":
+            cancelled += 1
+        key = (str(check.get("workflowName") or ""), str(check.get("name") or check.get("context") or ""))
+        stamp = str(check.get("startedAt") or check.get("createdAt") or "")
+        previous_stamp = str(latest.get(key, {}).get("startedAt") or latest.get(key, {}).get("createdAt") or "")
+        tied_unsuccessful = stamp == previous_stamp and check.get("conclusion") not in {"SUCCESS", "NEUTRAL"}
+        if key not in latest or stamp > previous_stamp or tied_unsuccessful:
+            latest[key] = check
+    failures, pending, incomplete, skipped, passed = [], [], [], [], []
+    required_pass = set()
+    for (_, name), check in sorted(latest.items()):
+        conclusion = check.get("conclusion") or check.get("state")
+        if conclusion in {"FAILURE", "ERROR", "TIMED_OUT", "ACTION_REQUIRED", "STARTUP_FAILURE"}:
+            failures.append(name)
+        elif conclusion in {"SUCCESS", "NEUTRAL"}:
+            passed.append(name)
+            if conclusion == "SUCCESS":
+                required_pass.add(name)
+        elif conclusion == "SKIPPED":
+            skipped.append(name)
+        elif conclusion == "CANCELLED":
+            incomplete.append(name)
+        else:
+            pending.append(name)
+    missing = sorted(set(required) - required_pass)
+    status = "FAIL" if failures else "PENDING" if pending else "INCOMPLETE" if missing or incomplete else "PASS"
+    return {"status": status, "head_sha": payload.get("headRefOid"), "failures": failures,
+            "pending": pending, "incomplete": incomplete, "skipped": skipped, "passed": passed,
+            "required_not_passed": missing, "cancelled_run_checks": cancelled,
+            "merge_authority": False}
+
+
+def check_status(args: argparse.Namespace) -> dict[str, Any]:
+    gh = shutil.which("gh")
+    if not gh:
+        return {"status": "BLOCKED", "reason_code": "GH_UNAVAILABLE"}
+    proc = subprocess.run([gh, "pr", "view", str(args.pr), "--json", "headRefOid,statusCheckRollup"],
+                          cwd=ROOT, capture_output=True, text=True, env=cache_environment())
+    if proc.returncode:
+        return {"status": "BLOCKED", "reason_code": "CHECKS_UNAVAILABLE", "next_step": "Verify GitHub connectivity and repository access; raw diagnostics are withheld."}
+    try:
+        payload = json.loads(proc.stdout)
+    except json.JSONDecodeError:
+        return {"status": "BLOCKED", "reason_code": "INVALID_CHECK_RESPONSE"}
+    if not isinstance(payload, dict):
+        return {"status": "BLOCKED", "reason_code": "INVALID_CHECK_RESPONSE"}
+    if args.head and payload.get("headRefOid") != args.head:
+        return {"status": "BLOCKED", "reason_code": "CANDIDATE_CHANGED"}
+    return summarize_checks(payload, args.required_check or ["repository"])
+
+
+def sync_installed(root: Path, args: argparse.Namespace, expected: str) -> dict[str, Any]:
+    configured = os.environ.get("AIPS_INSTALLED_SYSTEM_DIR")
+    if not configured:
+        return {"status": "BLOCKED", "reason_code": "INSTALLATION_NOT_REGISTERED"}
+    installed = Path(configured).resolve()
+    def read(path: Path, *parts: str) -> str:
+        return subprocess.run(["git", *parts], cwd=path, capture_output=True, text=True, check=True).stdout.strip()
+    try:
+        if Path(read(installed, "rev-parse", "--show-toplevel")).resolve() != installed:
+            raise ValueError("installation is not a Git root")
+        if read(installed, "remote", "get-url", args.remote) != read(root, "remote", "get-url", args.remote):
+            return {"status": "BLOCKED", "reason_code": "INSTALLATION_REMOTE_MISMATCH"}
+        if read(installed, "branch", "--show-current") != args.branch or read(installed, "status", "--porcelain"):
+            return {"status": "BLOCKED", "reason_code": "INSTALLATION_NOT_CLEAN_MAIN"}
+        if args.fetch:
+            read(installed, "fetch", args.remote, args.branch)
+        if read(installed, "rev-parse", f"{args.remote}/{args.branch}^{{commit}}") != expected:
+            return {"status": "BLOCKED", "reason_code": "INSTALLATION_REMOTE_STALE"}
+        head = read(installed, "rev-parse", "HEAD")
+        if subprocess.run(["git", "merge-base", "--is-ancestor", head, expected], cwd=installed, capture_output=True).returncode:
+            return {"status": "BLOCKED", "reason_code": "INSTALLATION_DIVERGED"}
+        if head != expected and args.apply:
+            read(installed, "merge", "--ff-only", f"{args.remote}/{args.branch}")
+        actual = read(installed, "rev-parse", "HEAD")
+        return {"status": "CURRENT" if actual == expected else "RECONCILIATION_REQUIRED",
+                "head_sha": actual, "expected_sha": expected, "action": "FAST_FORWARD" if args.apply and head != actual else "NONE"}
+    except (OSError, subprocess.CalledProcessError, ValueError):
+        return {"status": "BLOCKED", "reason_code": "INSTALLATION_SYNC_FAILED", "next_step": "Inspect the registered installation and its Git access; no raw Git diagnostics are emitted."}
+
+
 def post_merge(args: argparse.Namespace) -> dict[str, Any]:
     root = (getattr(args, "project_root", None) or ROOT).resolve()
     if not (root / "scripts/publish_preflight.py").is_file():
@@ -683,8 +770,17 @@ def post_merge(args: argparse.Namespace) -> dict[str, Any]:
         "action": "NONE",
         "status": "CURRENT" if local_sha == remote_sha else "RECONCILIATION_REQUIRED",
     }
-    if not args.apply or local_sha == remote_sha:
+    def finish() -> dict[str, Any]:
+        if getattr(args, "sync_installed", False):
+            if result["status"] not in {"CURRENT", "RECONCILED"} or current_branch != args.branch or not clean:
+                result.update(status="BLOCKED", reason="reconcile a clean target branch before syncing the installation")
+            else:
+                result["installation"] = sync_installed(root, args, remote_sha)
+                if result["installation"]["status"] != "CURRENT":
+                    result["status"] = result["installation"]["status"]
         return result
+    if not args.apply or local_sha == remote_sha:
+        return finish()
     if current_branch != args.branch:
         result["status"] = "BLOCKED"
         result["reason"] = f"checkout {args.branch} before applying reconciliation"
@@ -720,7 +816,7 @@ def post_merge(args: argparse.Namespace) -> dict[str, Any]:
             result["intelligence_refresh"] = {"status": "FAILED", "error": refresh_result.stderr.strip() or refresh_result.stdout.strip()}
         else:
             result["intelligence_refresh"] = json.loads(refresh_result.stdout)
-    return result
+    return finish()
 
 
 def emit(value: dict[str, Any], fmt: str) -> None:
@@ -819,7 +915,13 @@ def main() -> int:
     post.add_argument("--apply", action="store_true")
     post.add_argument("--backup-branch")
     post.add_argument("--refresh-intelligence", action="store_true")
+    post.add_argument("--sync-installed", action="store_true", help="Also verify or fast-forward the registered installed AIPS checkout; never reset it")
     post.add_argument("--format", choices=("yaml", "json"), default="yaml")
+    checks = subs.add_parser("checks", help="Summarize latest PR check results; this does not grant merge authority")
+    checks.add_argument("--pr", required=True, type=int)
+    checks.add_argument("--head")
+    checks.add_argument("--required-check", action="append")
+    checks.add_argument("--format", choices=("yaml", "json"), default="yaml")
     args = parser.parse_args()
     try:
         if args.command == "docs-impact":
@@ -834,6 +936,10 @@ def main() -> int:
                     if len(impact["required_additions"]) > 40:
                         summary.write("- Additional paths omitted; inspect the full precheck report.\n")
             return 0 if impact["complete"] or not args.require_complete else 1
+        if args.command == "checks":
+            result = check_status(args)
+            emit(result, args.format)
+            return 0 if result["status"] == "PASS" else 1
         if args.command == "environment":
             result = environment_status()
             emit(result, args.format)

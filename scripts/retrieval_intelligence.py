@@ -117,14 +117,15 @@ def repository_identity(root: Path) -> dict[str, str]:
     return canonical_repository_identity(root)
 
 
-def cache_root() -> Path:
-    base = Path(os.environ.get("XDG_CACHE_HOME") or (Path.home() / ".cache"))
+def cache_root(*, for_write: bool = False) -> Path:
+    from runtime_cache import cache_home
+    base = cache_home(for_write=for_write)
     return base / "aips" / "projects"
 
 
-def index_path(root: Path) -> Path:
+def index_path(root: Path, *, for_write: bool = False) -> Path:
     ident = repository_identity(root)
-    return cache_root() / ident["workspace_id"] / "retrieval" / "index.sqlite"
+    return cache_root(for_write=for_write) / ident["workspace_id"] / "retrieval" / "index.sqlite"
 
 
 def metadata_path(store: Path) -> Path:
@@ -665,7 +666,7 @@ def traverse_change_impact(
         "status": "INCOMPLETE",
         "seeds": seeds,
         "directions": requested_directions,
-        "required_depth": {"callers": policy["required_depth"]},
+        "required_depth": {"callers": policy["required_depth"], **{direction: policy["required_depth"] for direction in requested_directions}},
         "reached_depth": {direction: 0 for direction in requested_directions},
         "max_depth": depth_limit,
         "limits": {"nodes": max_nodes, "edges": max_edges, "depth": depth_limit},
@@ -1005,7 +1006,10 @@ def count_table(conn: sqlite3.Connection, table: str) -> int:
 
 
 def write_metadata_file(store: Path, doc: dict[str, Any]) -> None:
-    path = metadata_path(store)
+    write_metadata_path(metadata_path(store), doc)
+
+
+def write_metadata_path(path: Path, doc: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     temp = path.with_name(f".{path.name}.tmp-{os.getpid()}")
     temp.write_text(yaml.safe_dump(doc, sort_keys=False, allow_unicode=True), encoding="utf-8")
@@ -1063,11 +1067,19 @@ def index_unavailable(
 
 def index_repository(root: Path, store: Path, force: bool = False) -> dict[str, Any]:
     root = root.resolve()
-    db_path = index_path(root)
     try:
+        db_path = index_path(root, for_write=True)
         conn, fts_available = open_db(db_path)
     except (OSError, sqlite3.Error) as exc:
-        return index_unavailable(exc, operation="refresh")
+        failure = index_unavailable(exc, operation="refresh")
+        if os.environ.get("XDG_CACHE_HOME") or failure.get("reason_code") != "RETRIEVAL_CACHE_WRITE_ACCESS_DENIED":
+            return failure
+        from runtime_cache import private_fallback
+        try:
+            db_path = private_fallback() / "aips/projects" / repository_identity(root)["workspace_id"] / "retrieval/index.sqlite"
+            conn, fts_available = open_db(db_path)
+        except (OSError, sqlite3.Error) as retry_exc:
+            return index_unavailable(retry_exc, operation="refresh")
     try:
         old_schema = metadata_get(conn, "schema_version")
         old_head = metadata_get(conn, "git_head")
@@ -1161,7 +1173,13 @@ def index_repository(root: Path, store: Path, force: bool = False) -> dict[str, 
                 "temporal_supersession_links": count_table(conn, "temporal_supersession"),
             },
         }
-        write_metadata_file(store, doc)
+        cached_metadata = db_path.with_suffix(".metadata.yaml")
+        write_metadata_path(cached_metadata, doc)
+        metadata_persistence = "REGISTERED"
+        try:
+            write_metadata_file(store, doc)
+        except PermissionError:
+            metadata_persistence = "CACHE_ONLY"
         return {
             "status": "READY",
             "full_rebuild": full,
@@ -1169,7 +1187,8 @@ def index_repository(root: Path, store: Path, force: bool = False) -> dict[str, 
             "indexed_paths": indexed,
             "removed_paths": removed,
             "index": str(db_path),
-            "metadata": str(metadata_path(store)),
+            "metadata": str(metadata_path(store) if metadata_persistence == "REGISTERED" else cached_metadata),
+            "metadata_persistence": metadata_persistence,
             "coverage": doc["coverage"],
             "temporal": temporal,
             "providers": doc["providers"],
@@ -1181,8 +1200,13 @@ def index_repository(root: Path, store: Path, force: bool = False) -> dict[str, 
 def index_status(root: Path, store: Path) -> dict[str, Any]:
     path = metadata_path(store)
     db_path = index_path(root)
+    cached_metadata = db_path.with_suffix(".metadata.yaml")
+    if cached_metadata.is_file():
+        path = cached_metadata
     if not path.is_file() or not db_path.is_file():
-        return {"status": "MISSING", "index": str(db_path), "metadata": str(path)}
+        return {"status": "MISSING", "index": str(db_path), "metadata": str(path),
+                "metadata_status": "ORPHANED" if path.is_file() else "MISSING",
+                "reason_code": "CACHE_DATABASE_MISSING", "next_step": "Run aips intelligence index --project <project>; the disposable cache may have been cleaned. Do not trust retained metadata as index readiness."}
     try:
         doc = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     except Exception:
@@ -1199,6 +1223,8 @@ def index_status(root: Path, store: Path) -> dict[str, Any]:
             "coverage": doc.get("coverage") or {},
         }
     reasons: list[str] = []
+    if (doc.get("cache") or {}).get("database") != str(db_path):
+        reasons.append("cache_location_changed")
     if str((doc.get("schema") or {}).get("version")) != str(SCHEMA_VERSION):
         reasons.append("retrieval_schema_changed")
     if repo.get("head") != head:

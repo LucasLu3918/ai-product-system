@@ -48,7 +48,9 @@ fi
 
 if [ ! -d "$INSTALL_DIR/.git" ]; then
   if [ -n "$SOURCE_CHECKOUT" ]; then
-    [ -d "$SOURCE_CHECKOUT/.git" ] || { echo "ERROR: source checkout is not a Git repository: $SOURCE_CHECKOUT" >&2; exit 1; }
+    source_root="$(git -C "$SOURCE_CHECKOUT" rev-parse --show-toplevel 2>/dev/null)" || { echo "ERROR: source checkout is not a Git worktree: $SOURCE_CHECKOUT" >&2; exit 1; }
+    [ "$(cd "$SOURCE_CHECKOUT" && pwd -P)" = "$(cd "$source_root" && pwd -P)" ] || { echo "ERROR: source checkout must be the Git top level" >&2; exit 1; }
+    [ -f "$SOURCE_CHECKOUT/bin/aips" ] || { echo "ERROR: source checkout has no AIPS CLI" >&2; exit 1; }
     source_head="$(git -C "$SOURCE_CHECKOUT" rev-parse HEAD)"
     git clone --quiet --local --no-checkout "$SOURCE_CHECKOUT" "$INSTALL_DIR"
     git -C "$INSTALL_DIR" checkout --quiet -B "$DEFAULT_BRANCH" "$source_head"
@@ -62,4 +64,7 @@ else
   git -C "$INSTALL_DIR" merge --ff-only --quiet "origin/$DEFAULT_BRANCH"
 fi
 
-exec "$INSTALL_DIR/bin/aips" install "${CLI_ARGS[@]}"
+if [ "${#CLI_ARGS[@]}" -gt 0 ]; then
+  exec "$INSTALL_DIR/bin/aips" install "${CLI_ARGS[@]}"
+fi
+exec "$INSTALL_DIR/bin/aips" install

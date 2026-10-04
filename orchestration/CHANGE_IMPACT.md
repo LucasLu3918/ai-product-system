@@ -6,6 +6,8 @@ Use before mutating an existing project.
 
 ## Purpose
 
+For cache recovery, review implicit fallback versus explicit XDG settings, directory ownership/symlink rejection, orphan metadata and rebuild behavior. Include gh child cache environments, package diagnostic consumers and installed-checkout synchronization in the boundary; do not widen sandbox permissions or count CLI fixtures as real REST acceptance. Traversal reports must record the policy-required consumer depth whenever consumers are requested, so generated evidence remains compatible with the unchanged validator minimum.
+
 A local code edit may change contracts, persistence, events or consumers outside the directly edited file. Resolve impact before implementation and compare declared impact against the resulting diff.
 
 ## Flow

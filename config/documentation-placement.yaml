@@ -90,7 +90,7 @@ placement_rules:
       docs/human/CONFORMANCE.md: [Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement]
 
   - id: installation
-    triggers: [scripts/install.sh, scripts/install.ps1, scripts/uninstall.ps1, scripts/bootstrap.sh, scripts/uninstall.sh]
+    triggers: [scripts/package_install.py, scripts/install.sh, scripts/install.ps1, scripts/uninstall.ps1, scripts/bootstrap.sh, scripts/uninstall.sh]
     placements:
       docs/human/INSTALLATION.md: [macOS / Linux, Windows, 驗證, Runtime integration, 常見問題與排查, 更新, 解除安裝, 會保留什麼, 相容入口]
       docs/human/GETTING_STARTED.md: [安裝 AIPS, 驗證安裝, Existing Project, 更新, 解除安裝]
@@ -141,7 +141,7 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification, Runtime Content Safety Boundary, Security & Governance]
 
   - id: publication-preflight
-    triggers: [scripts/publish_preflight.py, scripts/browser_runtime.py, scripts/repository_preflight.py, scripts/integration_gate.py, scripts/check_secret_leakage.py, config/integration-gate.yaml, config/secret-scan.yaml, config/git-publication.yaml, .github/workflows/validate.yml, .github/workflows/branch-hygiene.yml, .github/workflows/gemini-provider-session-verification.yml, .github/workflows/gemini-runtime-verification.yml, .github/workflows/mcp-codex-interop.yml, .github/workflows/repository-health.yml, .github/workflows/retrieval-semantic-trial.yml, orchestration/CORE_CHANGE_TESTING.md, orchestration/SECRET_HANDLING.md, tests/evidence/integration_gate_lifecycle.py, tests/evidence/publish_preflight_lifecycle.py, tests/evidence/secret_scan_publication_lifecycle.py, tests/validation/publish_preflight_contracts.py, tests/scenarios/176-mandatory-candidate-secret-scanning.md]
+    triggers: [scripts/runtime_cache.py, scripts/publish_preflight.py, scripts/browser_runtime.py, scripts/repository_preflight.py, scripts/integration_gate.py, scripts/check_secret_leakage.py, config/integration-gate.yaml, config/secret-scan.yaml, config/git-publication.yaml, .github/workflows/validate.yml, .github/workflows/branch-hygiene.yml, .github/workflows/gemini-provider-session-verification.yml, .github/workflows/gemini-runtime-verification.yml, .github/workflows/mcp-codex-interop.yml, .github/workflows/repository-health.yml, .github/workflows/retrieval-semantic-trial.yml, orchestration/CORE_CHANGE_TESTING.md, orchestration/SECRET_HANDLING.md, tests/evidence/integration_gate_lifecycle.py, tests/evidence/publish_preflight_lifecycle.py, tests/evidence/secret_scan_publication_lifecycle.py, tests/validation/publish_preflight_contracts.py, tests/scenarios/176-mandatory-candidate-secret-scanning.md]
     placements:
       docs/human/MAINTENANCE.md:
         - Public repository / CI consistency

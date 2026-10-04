@@ -336,6 +336,8 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 
 ## Git Publication 與 Release
 
+發布前可執行 `aips publish checks --pr <number> --head <sha>`，區分最新的失敗、等待、取消及跳過；這份摘要不授予合併權限。合併後從已更新 checkout 執行 `./bin/aips publish post-merge --fetch --sync-installed --apply`，核對本機 main 與註冊安裝版同步。Phase 12E 真實 REST 驗收暫緩；AIPS 只作 CLI、安裝、快取與發布驗收。
+
 `aips validate --help` 只顯示說明，不執行驗證；未知參數會明確失敗。`aips docs impact --base <ref>` 使用目前 AIPS checkout；從其他目錄呼叫時加上 `--project-root <repo>`。先用 `aips publish preview` 檢查未提交文件閉包，再固定候選執行完整 Gate。
 
 本地驗證設定隔離會保留原本 GitHub 設定位置。自行設定暫存 `XDG_CONFIG_HOME` 時，先以 `GH_CONFIG_DIR` 指定原本的 gh 設定目錄；`AUTH_CONFIGURATION_UNVERIFIED` 表示設定位置待確認，不應直接重新登入。`prepare-local-validation --check-only` 先確認 Python 3.12 venv 身分，再檢查依賴、Node、localhost 與 browser；依 named diagnostic 修復並重跑同一檢查。

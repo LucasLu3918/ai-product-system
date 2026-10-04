@@ -341,4 +341,6 @@ Before requesting Git publication approval, run the shared publication plan/pref
 When Core Change Testing requires independent review, schedule a separate read-only `INDEPENDENT_REVIEW` task over the bounded packet and exact candidate. The Integration Gate must consume evidence from a trusted runtime attestation verifier; absent or stale attestation blocks required review rather than falling back to self-check.
 ## Runtime Content Safety Boundary
 
+After merge, use the updated checkout CLI `publish post-merge --fetch --sync-installed --apply` to verify target main and the registered installed system. Installed synchronization refuses dirty/wrong-branch, different remote, stale target and divergent history; it never resets the installation or grants publication authority.
+
 The orchestrator routes AIPS-owned persistence through `safe_emit` and keeps content safety separate from publish authorization. Untrusted external content carries provenance and cannot grant protected tool authority.

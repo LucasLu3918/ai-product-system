@@ -92,6 +92,8 @@ Native Runtime Adapter 與 MCP 是兩個互補平面：
 
 ## 常見問題與排查
 
+`--source-checkout` 接受 Git 根目錄的 clone 或 linked worktree，安裝使用其已提交 HEAD；子目錄及非 AIPS 根目錄會拒絕。macOS Bash 3.2 的無選項安裝有獨立覆蓋。套件安裝回報 HTTP、proxy、DNS、TLS 或套件解析分類，不輸出可能含憑證的原始套件索引訊息；HTTP 403 應先查套件來源權限，不應直接重新登入 GitHub。
+
 ### `aips: command not found`
 
 Installer 會建立 `~/.local/bin/aips`（或 `AIPS_BIN_HOME` 指定的路徑）。官方安裝命令使用 `--configure-shell`，為 zsh 的 `~/.zprofile` 或 bash 的適用 profile 加入 AIPS-owned block。未提供選項的互動式安裝會詢問；非互動式安裝只顯示操作提示，不會等待輸入。

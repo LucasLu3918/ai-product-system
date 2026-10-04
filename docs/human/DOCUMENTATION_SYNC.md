@@ -20,6 +20,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+共用快取解析器歸既有 publication-preflight 主題，套件安裝診斷器歸 installation 主題；修正與文件閉包一起驗證，不建立重複的治理或文件層。
+
 Publication preflight changes synchronize the local Python/Node environment checks, GitHub workflow runtime pins, exact-candidate Gate instructions and Scenario 165. Local docs builds use Node 24+ and the installed VitePress bundle without package-manager or registry access.
 
 OpenAPI contract tooling and its optional dependency file have an explicit placement rule: workflow commands belong in User Guide quality guidance, technical limits in the Technology Guide, and lifecycle claims in Scenario 194. Keep the Agent contract and Human descriptions synchronized when the validator or evidence schema changes.
