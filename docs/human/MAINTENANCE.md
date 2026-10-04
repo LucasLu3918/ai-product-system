@@ -278,6 +278,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 
 ## Public repository / CI consistency
 
+Use `aips publish environment` from the intended checkout and inspect its source/target/Python diagnostic before validation. Reuse an existing environment with `python3.12 bin/prepare-local-validation --venv <path> --check-only`; a local `--wheelhouse <path>` supports offline Python dependency installation. Browser downloads remain separate prerequisites. GitHub logs/artifacts may redirect to external storage; keep domain approval explicit and use bounded Check summaries for initial diagnosis.
+
 The validation workflow installs the optional pinned `requirements-openapi.txt` set before running repository checks, so offline OpenAPI lifecycle tests use the same validator version in local and CI runs.
 
 Retrieval cache failures distinguish read access from stale-index refresh writes. A `RETRIEVAL_CACHE_WRITE_ACCESS_DENIED` result means SQLite could not open the rebuildable cache for update; allow cache and sidecar writes or set `XDG_CACHE_HOME` to a location writable by the current runtime, then retry. Keep invalid-index rebuilds (`--force`) for an index explicitly reported `INVALID`; do not use them to bypass ordinary sandbox write restrictions. Project Intelligence semantic refresh remains separate and must still re-read changed authoritative sources.

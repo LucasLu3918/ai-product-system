@@ -33,3 +33,5 @@ The maintainer previews a working tree, binds the reviewed Core Matrix, then run
 - a clean local main fast-forwards only when it is an ancestor of the fetched target, preserves its old tip as a backup, and leaves divergent histories untouched;
 - Project Intelligence revision refresh occurs automatically only for equivalent trees; semantic changes remain fail-closed;
 - publication, reset and merge authority remain Human-controlled.
+
+Recovery regression: implicit checkout routing and explicit project-root select the intended script; configured Python serves Intelligence; document prechecks publish bounded missing paths; CI summaries show Gate durations and the slowest ten checks. Offline wheelhouse installs avoid package-index requests. Repeated Intelligence bootstrap preserves state, and refresh-plan never approves stale sources.

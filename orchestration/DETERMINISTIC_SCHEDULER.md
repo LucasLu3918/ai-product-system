@@ -108,6 +108,8 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 ## Failure behavior
 
+CI precheck failures must emit their missing-document paths in a bounded Step Summary. The complete Gate remains authoritative; timing summaries expose duration without converting missing evidence into zero duration or PASS. Classification label changes still supersede stale validation; any failed/cancelled/timed-out Janitor remains blocking.
+
 The Integration Gate never executes a generator configured in an Implementation Profile. For Phase 4 changes it runs only the isolated fake-generator lifecycle fixture; project generator execution remains an explicit local `--execute` action.
 
 The OpenAPI contract-test action is explicit argv evidence attached to an implementation task; it does not grant scheduler authority or bypass the task write boundary. A missing command, timeout, nonzero exit or incomplete JUnit operation coverage remains non-PASS.

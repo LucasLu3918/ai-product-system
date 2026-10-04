@@ -1,5 +1,7 @@
 # Project Intelligence
 
+Repeated bootstrap preserves existing metadata, graph and temporal assertions. Use read-only refresh-plan to inspect source changes, enrich affected topics and update only reviewed registry hashes. Finalize records computed freshness, retains UNREVIEWED review status and never upgrades partial graph coverage merely because workflow seeds exist.
+
 Project Intelligence is the reusable, evidence-grounded understanding layer for existing projects.
 
 It replaces Project Knowledge as the long-term cache model. Existing `.ai/knowledge/` remains readable for migration compatibility, but new reusable discovery belongs in Project Intelligence.

@@ -54,6 +54,7 @@ jobs:
             --base "$AIPS_GATE_BASE" \
             --head "$AIPS_GATE_HEAD" \
             --require-complete \
+            --summary-file "$GITHUB_STEP_SUMMARY" \
             --format json
       - name: Refresh pull request base tip
         if: github.event_name == 'pull_request'
@@ -72,7 +73,7 @@ jobs:
         run: >-
           python scripts/repository_preflight.py
           --base "$AIPS_GATE_BASE" --head "$AIPS_GATE_HEAD"
-      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: "24"
           cache: npm
@@ -140,7 +141,7 @@ jobs:
           print(f"Fingerprint: {report.get('candidate_fingerprint', 'unknown')}")
           for check in report.get("checks") or []:
               print(f"- {check.get('id', 'unknown')}: {check.get('status', 'unknown')} "
-                    f"(exit={check.get('exit_code', 'n/a')}, reason={check.get('reason', 'n/a')})")
+                    f"(exit={check.get('exit_code', 'n/a')}, reason={check.get('reason', 'n/a')}, duration_ms={check.get('duration_ms', 'n/a')})")
           PY
           fi
       - name: Upload Integration Gate evidence
@@ -151,6 +152,27 @@ jobs:
           path: ${{ runner.temp }}/integration-gate-report.yaml
           if-no-files-found: ignore
           retention-days: 14
+      - name: Repository validation timing summary
+        if: ${{ always() }}
+        shell: bash
+        env:
+          AIPS_TIMING_PATH: ${{ runner.temp }}/repository-validation-timing.json
+        run: |
+          python3 - <<'PYTHON' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          import os
+          from pathlib import Path
+
+          path = Path(os.environ["AIPS_TIMING_PATH"])
+          if not path.is_file():
+              print("Repository timing: UNAVAILABLE (validation did not produce timing evidence).")
+          else:
+              report = json.loads(path.read_text(encoding="utf-8"))
+              print(f"Repository timing: {report.get('status', 'UNKNOWN')}; total_ms={report.get('total_duration_ms', 'unknown')}")
+              checks = sorted(report.get("checks", []), key=lambda item: item.get("duration_ms", 0), reverse=True)
+              for check in checks[:10]:
+                  print(f"- {check.get('name', 'unknown')}: {check.get('duration_ms', 'unknown')} ms ({check.get('status', 'unknown')})")
+          PYTHON
       - name: Upload repository validation timing
         if: ${{ always() }}
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1

@@ -1,5 +1,7 @@
 # Documentation Consistency Contract
 
+Action-only dependency updates still require documentation closure. setup-node v7 and Pages artifact v5 use the supported Ubuntu 24.04 hosted runner with Node 24 / artifact v7, respectively; PR deployment remains skipped and main Pages configuration remains checked.
+
 Change Impact traversal 的使用與限制應在 Human Project Intelligence 指南、Technology Guide、架構概覽及本 orchestration 契約同步；Scenario 175 的 evidence 與 Conformance inventory 也必須保持一致。
 
 OpenTelemetry export sources are mapped to the observability/run-state topics and Scenario 181. The projection stays derived and does not add a new authority surface.

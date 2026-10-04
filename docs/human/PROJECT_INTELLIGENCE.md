@@ -39,6 +39,8 @@ ATTACHED 位於 `.ai/intelligence/reviews/PROJECT_INTELLIGENCE_REVIEW.html`；EP
 
 ## Freshness
 
+`aips intelligence refresh-plan --project <project>` returns affected topics, changed source hashes and manual review steps without writing state. Review sources and update only reviewed registry hashes before finalize. Finalize records computed freshness rather than hiding stale authoritative sources. Repeated bootstrap preserves existing Intelligence and points to refresh-plan; workflow files appear as CI graph seeds with partial semantic coverage.
+
 不是任何 Commit 都全量 STALE。AIPS 比較 relevant Source Hash、watched paths、HEAD diff、dirty paths、Branch/Worktree 與 Schema，只 Targeted Refresh 受影響 Topic。
 
 Git 路徑以 NUL 分隔讀取，完整變更集合用於新鮮度判斷；畫面清單可截斷並標示總數。若 Git 掃描失敗、逾時或超過輸出上限，狀態為 `UNKNOWN`，變更工作須先排除原因，不能當成 `CURRENT`。

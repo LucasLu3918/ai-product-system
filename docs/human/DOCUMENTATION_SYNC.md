@@ -94,6 +94,8 @@ Temporal 查詢的有效歷史以可驗證 Git revision 與 assertion provenance
 
 ## Official Docs Site
 
+Pinned Actions updates require synchronized operational documentation. setup-node v7 executes with Node 24; upload-pages-artifact v5 uses upload-artifact v7. GitHub-hosted Ubuntu 24.04 supplies the runner; PR builds keep deployment skipped and main retains the configured Pages-state guard.
+
 docs/human/ 同時是 Official Docs Site 的 source；VitePress 只是 renderer。Website build output 不提交為 canonical content。
 
 PR 會 build site；main 才具有 Pages deploy path。Workflow 會先讀取 repository Pages 狀態：已設定才 upload/deploy，未設定則明確記錄 `SKIPPED_NOT_CONFIGURED`。啟用 hosting 的一次性 repository 設定是 Settings → Pages → Build and deployment → Source = GitHub Actions。

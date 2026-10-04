@@ -56,6 +56,7 @@ def main() -> int:
         git(project, "commit", "-qm", "initial")
 
         env = dict(os.environ)
+        env["AIPS_VALIDATION_PYTHON"] = sys.executable
         env["XDG_CONFIG_HOME"] = str(config)
         env["HOME"] = str(home)
         env["AIPS_BIN_HOME"] = str(bin_home)
@@ -108,6 +109,25 @@ def main() -> int:
         )
         require(final.returncode == 0, f"finalize failed: {final.stdout} {final.stderr}")
         require(json.loads(final.stdout).get("readiness") == "READY", "semantic finalize must reach READY")
+
+        snapshot = {p: p.read_bytes() for p in store.rglob("*") if p.is_file()}
+        again = run([sys.executable, str(PI), "bootstrap", "--project", str(project), "--format", "json"], env=env)
+        require(again.returncode == 0 and json.loads(again.stdout)["status"] == "PRESERVED_EXISTING", "bootstrap must preserve enriched stores")
+        require(all(p.read_bytes() == value for p, value in snapshot.items()), "bootstrap overwrote existing Intelligence")
+
+        source = project / "AGENTS.md"
+        original = source.read_bytes()
+        source.write_bytes(original + b"\nReviewed fixture change.\n")
+        plan = run([sys.executable, str(PI), "refresh-plan", "--project", str(project), "--format", "json"], env=env)
+        require(plan.returncode == 0, f"refresh plan failed: {plan.stderr}")
+        report = json.loads(plan.stdout)
+        require(report["read_only"] and any(s["path"] == "AGENTS.md" for s in report["source_changes"]), "refresh plan must identify changed source")
+        require(all(p.read_bytes() == value for p, value in snapshot.items()), "refresh plan mutated Intelligence")
+        stale_final = run([sys.executable, str(PI), "finalize", "--project", str(project), "--format", "json"], env=env)
+        require(json.loads(stale_final.stdout)["freshness"] == "STALE", "finalize must not hide unreviewed source changes")
+        require(load_yaml(intel_path)["state"]["freshness"] == "STALE", "stored freshness must agree with source hashes")
+        source.write_bytes(original)
+        run([sys.executable, str(PI), "finalize", "--project", str(project), "--format", "json"], env=env)
 
         review = store / "reviews" / "PROJECT_INTELLIGENCE_REVIEW.html"
         review_text = review.read_text(encoding="utf-8")
