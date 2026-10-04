@@ -1101,7 +1101,7 @@ validate_repo() {
   if ! "$py" -c 'import yaml' >/dev/null 2>&1; then
     die "PyYAML is missing. Run: $SYSTEM_DIR/bin/aips install"
   fi
-  "$py" "$SYSTEM_DIR/tests/validate_repository.py"
+  AIPS_VALIDATION_PYTHON="$py" "$py" "$SYSTEM_DIR/tests/validate_repository.py"
 }
 
 validate_installation() {
@@ -1111,7 +1111,7 @@ validate_installation() {
 
   "$py" -c 'import yaml, mcp' >/dev/null 2>&1 || die "AIPS runtime dependencies are incomplete."
 
-  if ! PYTHONPATH="$SYSTEM_DIR" "$py" -c 'from tests.validation import static_contracts as s; import sys; [print(f"- {item}") for item in s.errors]; sys.exit(1 if s.errors else 0)'; then
+  if ! AIPS_VALIDATION_PYTHON="$py" PYTHONPATH="$SYSTEM_DIR" "$py" -c 'from tests.validation import static_contracts as s; import sys; [print(f"- {item}") for item in s.errors]; sys.exit(1 if s.errors else 0)'; then
     die "AIPS installation integrity validation failed."
   fi
 
