@@ -1,0 +1,129 @@
+name: maintenance-reliability
+
+on:
+  schedule:
+    # Monthly on day 3 at 12:15 Asia/Taipei, after Evolution Effectiveness.
+    - cron: "15 4 3 * *"
+  workflow_dispatch:
+    inputs:
+      period:
+        description: Optional cohort month (YYYY-MM). Defaults to previous UTC calendar month.
+        required: false
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  report:
+    runs-on: ubuntu-24.04
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+
+      - name: Install pinned report dependencies
+        run: python -m pip install -c constraints/tested.txt -r requirements.txt
+
+      - name: Resolve cohort period
+        id: period
+        shell: bash
+        env:
+          REQUESTED_PERIOD: ${{ inputs.period }}
+        run: |
+          period="$REQUESTED_PERIOD"
+          if [[ -z "$period" ]]; then
+            period="$(python - <<'PY'
+          from datetime import datetime, timezone
+          now = datetime.now(timezone.utc)
+          year, month = now.year, now.month - 1
+          if month == 0:
+              year, month = year - 1, 12
+          print(f"{year:04d}-{month:02d}")
+          PY
+          )"
+          fi
+          if [[ ! "$period" =~ ^[0-9]{4}-[0-9]{2}$ ]]; then
+            echo "period must be YYYY-MM" >&2
+            exit 1
+          fi
+          echo "value=$period" >> "$GITHUB_OUTPUT"
+
+      - name: Collect bounded GitHub Actions and merged PR evidence
+        run: >-
+          python scripts/maintenance_reliability.py collect
+          --repo "$GITHUB_REPOSITORY"
+          --period "${{ steps.period.outputs.value }}"
+          --config config/maintenance-reliability.yaml
+          --output "$RUNNER_TEMP/maintenance-reliability-input.json"
+
+      - name: Build and validate deterministic report
+        shell: bash
+        run: |
+          generated_at="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          python scripts/maintenance_reliability.py build \
+            --input-json "$RUNNER_TEMP/maintenance-reliability-input.json" \
+            --config config/maintenance-reliability.yaml \
+            --repository-revision "$GITHUB_SHA" \
+            --generated-at "$generated_at" \
+            --output maintenance-reliability.yaml
+          python scripts/maintenance_reliability.py validate maintenance-reliability.yaml \
+            --config config/maintenance-reliability.yaml
+          python scripts/maintenance_reliability.py markdown maintenance-reliability.yaml \
+            --output maintenance-reliability.md
+
+      - name: Publish Job Summary
+        run: cat maintenance-reliability.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload bounded reliability evidence
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: maintenance-reliability-${{ steps.period.outputs.value }}-${{ github.run_id }}
+          path: |
+            maintenance-reliability.yaml
+            maintenance-reliability.md
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Publish or reconcile monthly review Issue
+        shell: bash
+        env:
+          PERIOD: ${{ steps.period.outputs.value }}
+        run: |
+          title="Maintenance Reliability [monthly] $PERIOD"
+          existing="$(gh issue list \
+            --repo "$GITHUB_REPOSITORY" \
+            --state all \
+            --limit 500 \
+            --search "Maintenance Reliability" \
+            --json number,title \
+            --jq ".[] | select(.title == \"$title\") | .number" | head -n 1)"
+          flags="$(python - <<'PY'
+          import yaml
+          with open("maintenance-reliability.yaml", encoding="utf-8") as source:
+              report = yaml.safe_load(source) or {}
+          print(len(report.get("review_flags") or []))
+          PY
+          )"
+          if [[ -n "$existing" ]]; then
+            gh issue edit "$existing" --repo "$GITHUB_REPOSITORY" --body-file maintenance-reliability.md
+            number="$existing"
+          else
+            url="$(gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" --body-file maintenance-reliability.md)"
+            number="${url##*/}"
+          fi
+          if [[ "$flags" -gt 0 ]]; then
+            gh issue reopen "$number" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1 || true
+          else
+            gh issue close "$number" --repo "$GITHUB_REPOSITORY" --reason completed >/dev/null 2>&1 || true
+          fi

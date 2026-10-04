@@ -175,6 +175,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 ## Documentation Architecture
 
 Human maintainers can use the generated System Reference for factual command/runtime tables; candidate validation separately derives optional toolchain provisioning from exact changed paths while keeping the required Gate intact.
+
+Monthly maintenance reliability is a read-only maintenance-plane observation surface. It summarizes bounded GitHub validation and merged-PR metadata for Human review and does not change source or grant remediation, PR, merge or release authority.
 ~~~text
 docs/human/*.md
 → canonical Human source

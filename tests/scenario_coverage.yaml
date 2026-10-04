@@ -1575,3 +1575,12 @@ scenarios:
       - tests/evidence/ci_validation_plan_lifecycle.py
       - tests/validation/ci_validation_plan_contracts.py
       - scripts/ci_validation_plan.py
+  - id: "201"
+    path: tests/scenarios/201-monthly-maintenance-reliability.md
+    coverage: lifecycle
+    evidence:
+      - scripts/maintenance_reliability.py
+      - config/maintenance-reliability.yaml
+      - .github/workflows/maintenance-reliability.yml
+      - tests/evidence/maintenance_reliability_lifecycle.py
+      - tests/validation/maintenance_reliability_contracts.py

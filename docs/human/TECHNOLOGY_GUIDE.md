@@ -225,6 +225,10 @@ TRIAL 只能在 approved scope/path 與 isolated workspace內執行；PASS 仍�
 
 Community signal 可用於 discovery，但高強度 adoption recommendation需要 primary-source corroboration。
 
+### Monthly Maintenance Reliability
+
+The monthly reliability workflow measures validation outcomes and runtime distributions, explicit hotfix labels, repeated change surfaces, bounded operational failure hints, exact-SHA escaped regressions and files per merged change. Incomplete history stays UNKNOWN and prompts Human review. GitHub Actions uses read-only Actions, contents and pull-request access plus Issue write access to publish a bounded report; it has no remediation, source change, PR, merge or release authority.
+
 ## Documentation Platform
 
 ### Human Documentation Source

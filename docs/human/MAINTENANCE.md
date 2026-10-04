@@ -368,6 +368,8 @@ External Eval / Red-Team Interoperability contracts are checked by `tests/valida
 
 Keep the top-level validator as an aggregator. New substantial validation belongs in the narrowest existing module or a focused evidence runner rather than expanding the entrypoint back into a monolith.
 
+When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 34 deterministic, 111 lifecycle and 54 agent_eval scenarios (199 automated, 2 manual, 201 total).
+
 `scripts/repository_preflight.py` 先跑快速文件／schema／diff 檢查；通過後才進入完整 lifecycle。環境缺少 localhost bind 或 browser 時回報 `ENVIRONMENT_BLOCKED`，不混稱產品測試失敗。
 
 The public `bin/aips` launcher must remain a small argument-preserving handoff to `scripts/aips_cli.sh`; preserve source-checkout and installed-symlink entry paths. Keep publication policy calculations in `scripts/publish_preflight_policy.py`, with Git and environment orchestration in `scripts/publish_preflight.py`. Validator imports belong to the explicit ordered `tests/validation/registry.py`; preserve import order, timing labels, error aggregation order, and the single execution owner for lifecycle evidence.
@@ -384,8 +386,6 @@ Preview 對 Core Matrix 套用與 Gate 相同的就緒條件：可執行狀態�
 在原始碼 checkout 驗證尚未安裝的修改時，使用 `./bin/aips`，避免全域安裝的 CLI 指向另一份系統程式碼或 Matrix。受限 sandbox 若禁止 localhost bind，先用 `prepare-local-validation` 辨識 `ENVIRONMENT_BLOCKED`；恢復該能力後重新執行完整驗證，不略過測試。
 
 被 concurrency 取消的舊 CI run 不執行 `repository` 彙總 job，現行 run 的 Janitor 失敗仍讓彙總 job 失敗。無關 PR 標籤事件會跳過 Janitor；只有該事件明確屬於無關標籤，且最新完整 Janitor 已成功、run title 綁定同一 PR/head/base/change class 時，`repository` aggregate 才以記錄在 Step Summary 的 no-op 成功結束。缺漏、失敗、取消、尚未完成或 stale evidence 均阻擋；Actions metadata 只需 repository job 的 `actions: read` 權限。檢查同一候選 SHA 的最新 required aggregate。
-
-When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 27 deterministic, 98 lifecycle and 54 agent_eval scenarios (179 automated total).
 
 When deterministic scheduling or merge-candidate validation changes, review together:
 
@@ -445,6 +445,17 @@ PASS is consistency evidence only. Repository Health is Detect + Evidence + Huma
 - no source weight, enable/disable state, source URL or repository config is changed automatically.
 
 This is observational maintenance evidence. Any actual source-policy adjustment remains a normal reviewed repository change.
+
+
+## Monthly maintenance reliability
+
+`.github/workflows/maintenance-reliability.yml` runs on day 3 each month after Evolution Effectiveness and supports a manual calendar-month selection. `scripts/maintenance_reliability.py` collects at most 10 pages of 100 validation runs and merged PRs, at most 200 failed-run job details, and at most 1,000 changed paths per PR.
+
+- The report records eligible PR validation pass rate, median/P95 runtime, explicit normalized Hotfix labels, repeated paths, keyword-based failure categories, exact merge-SHA `main` push failures, and changed-file-count median/P95.
+- Truncated or unavailable history, missing run timestamps or missing changed-file counts make dependent values `UNKNOWN` and set a review flag. Failure categories are name-based hints, not root-cause findings.
+- The workflow publishes a Job Summary, a 90-day bounded artifact and one deduplicated monthly review Issue. It stores normalized metadata and paths, not logs, prompts, secrets or raw API responses.
+- Permissions are limited to `actions: read`, `contents: read`, `pull-requests: read` and `issues: write`. The workflow cannot edit source, open implementation PRs, merge or release; all remediation requires the normal Human-reviewed change process.
+- `tests/evidence/maintenance_reliability_lifecycle.py` covers metric definitions, exact-SHA matching, incomplete input handling and API response shapes. Scenario 201 records its acceptance boundary.
 
 
 ## Controlled branch cleanup

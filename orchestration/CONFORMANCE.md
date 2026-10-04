@@ -803,3 +803,9 @@ Current inventory after Scenario 196: 34 deterministic + 106 lifecycle + 54 agen
 Current inventory after Scenario 197: 34 deterministic + 107 lifecycle + 54 agent_eval = 195 automated; 2 manual; 197 total; 0 uncovered.
 
 Repository validators are imported only through the explicit ordered `tests/validation/registry.py`. Preserve the current import order and timing labels; keep the ordered error aggregation list separate from import order. Lifecycle evidence remains owned by the explicit evidence runner and must not be duplicated by the registry.
+
+## Scenario 201 — Monthly maintenance reliability evidence
+
+`tests/evidence/maintenance_reliability_lifecycle.py` checks bounded collection, deterministic validation/runtime distributions, explicit hotfix labels, repeated changed paths, heuristic failure categories, exact merge-SHA regression linkage and UNKNOWN behavior for incomplete histories, timestamps or changed-file counts. `tests/validation/maintenance_reliability_contracts.py` checks config bounds and workflow permissions. The monthly workflow may publish an observational report and deduplicated review Issue with Actions/contents/pull-request read and Issue write permissions only; it cannot remediate, change code, create PRs, merge or release. Category names are hints rather than root-cause findings.
+
+Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agent_eval = 199 automated; 2 manual; 201 total; 0 uncovered.

@@ -1,76 +1,70 @@
 version: 1
 change:
-  id: plan12-maintenance
-  summary: Implement Phase C repository and policy simplification without duplicating existing capabilities or weakening CI and branch cleanup authority.
+  id: plan12-reliability
+  summary: Add bounded monthly GitHub validation/merge evidence and deterministic reliability metrics for Human review.
   boundary:
-    - canonical-machine-readable-facts
-    - release-history-contract
-    - rolling-branch-proposal
-    - python-toolchain-contract
-    - demand-driven-validation
+    - bounded-github-metadata-collection
+    - reliability-metric-and-unknown-semantics
+    - report-workflow-authority-and-publication
+    - scenario-validation-and-documentation-closure
 matrix:
-  - boundary: canonical-machine-readable-facts
-    reason: Existing architecture inventory gains versioned command/capability facts and deterministic generated reference tables.
+  - boundary: bounded-github-metadata-collection
+    reason: GitHub Actions runs/jobs and merged PR metadata are fetched with fixed pagination, row, failure-detail and changed-file caps; truncation remains explicit.
     checks: &shared
       static_lint:
         applicable: true
-        evidence: Ruff critical scan, mypy for touched Python, full repository validation.
+        evidence: Ruff critical scan and Python syntax through repository validation.
       unit:
         applicable: true
-        evidence: System facts schema, deterministic rendering, stale generated-file and invalid-reference fixtures.
+        evidence: Lifecycle API fixtures cover run/search objects, array-shaped PR files, truncation and unavailable failure details.
       integration:
         applicable: true
-        evidence: Full repository validator, docs placement/sync checks, exact-candidate Integration Gate.
+        evidence: Full repository validator and exact-candidate Integration Gate.
       contract:
         applicable: true
-        evidence: Generated table bindings for commands, capabilities, platform support, runtime requirements, validation and docs.
+        evidence: Maintenance reliability config/workflow contract checks permissions, finite bounds and required evidence fields.
       e2e:
         applicable: true
-        evidence: Docs-site build and all required PR checks.
+        evidence: Workflow YAML is validated by repository contracts and required GitHub PR checks exercise the candidate workflow definition.
       security:
         applicable: true
-        evidence: Facts contain no secrets or user data; mandatory candidate secret scan.
+        evidence: Exact-candidate mandatory secret scan; fixture/report stores normalized metadata only and no logs, prompts or credentials.
       migration_recovery:
         applicable: false
-        na_reason: No persisted user state or migration format is introduced.
+        na_reason: This adds a bounded report artifact and review Issue, not a repository-owned user data store or migration.
       cli_harness:
         applicable: false
-        na_reason: Public CLI behavior and runtime routing are unchanged.
+        na_reason: A new standalone evidence helper does not change public AIPS CLI routing or runtime adapters.
       docs_schema:
         applicable: true
-        evidence: Generated-reference determinism, documentation placement/sync, and docs-site build.
-  - boundary: release-history-contract
-    reason: A deterministic validator enforces one leading Unreleased section and descending unique released SemVer headings aligned with VERSION.
-    checks: *shared
-  - boundary: rolling-branch-proposal
-    reason: Classification coverage and proposal evidence expand while report-only behavior and explicit exact-manifest deletion remain enforced.
+        evidence: Scenario 201 registry/conformance, recursive documentation sync and placement preview, plus docs-site build.
+  - boundary: reliability-metric-and-unknown-semantics
+    reason: Monthly pass rate, nearest-rank runtime and files-per-change distributions, hotfix labels, repeated paths, failure hints and exact-SHA regressions must be deterministic and conservative with incomplete data.
+    checks:
+      <<: *shared
+      unit:
+        applicable: true
+        evidence: Lifecycle verifies pass-rate basis points, median/P95, normalized Hotfix labels, repeated paths, heuristic category priority, exact merge-SHA correlation, truncated history, missing timestamps and missing changed-file counts.
+  - boundary: report-workflow-authority-and-publication
+    reason: Monthly Actions may collect read-only Actions/contents/PR metadata and publish a short-lived artifact, Job Summary and deduplicated Human-review Issue without any remediation authority.
     checks:
       <<: *shared
       security:
         applicable: true
-        evidence: Negative tests prove proposal mode never deletes refs; cleanup requires explicit protected-main dispatch and exact one-time manifest.
-      migration_recovery:
-        applicable: true
-        evidence: Existing v1 cleanup manifest remains valid and the proposal schema is separately versioned.
-  - boundary: python-toolchain-contract
-    reason: pyproject.toml records tooling and Python support; tested constraints pin the reproducible CI dependency set without narrowing user-supported ranges.
-    checks: *shared
-  - boundary: demand-driven-validation
-    reason: Exact changed paths select optional Node, browser and OpenAPI provisioning while retaining mandatory preflight, secret scan, repository checks and full candidate Gate semantics.
+        evidence: Static contract pins actions:read, contents:read, pull-requests:read and issues:write; forbidden contents/PR write, merge, release and code-mutation authority is rejected.
+  - boundary: scenario-validation-and-documentation-closure
+    reason: Scenario 201 has one lifecycle owner in repository validation and the Human/Agent docs plus documentation rules remain synchronized in canonical topic sections.
     checks:
       <<: *shared
-      security:
+      integration:
         applicable: true
-        evidence: Unknown paths fail closed to the full toolchain; event/concurrency lifecycle checks prove optional provisioning cannot skip required candidate validation.
-      cli_harness:
-        applicable: true
-        evidence: CI plan lifecycle covers source-checkout base/head selection and capability inheritance into child validation processes.
+        evidence: Full repository validator, scenario conformance inventory (201 total, 199 automated, 2 manual), documentation closure and placement preview.
+status: READY
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 candidate:
-  base_sha: 7fb5649d94ecdf207eab103a727171f95b264b4c
-  changed_files_hash: b4ae8c5d9b49b1a2f809dde2b7f85431367d150267b5ded0b0073f259fc3dba2
+  base_sha: 3dbbb89c094f4b9fbb012728bb62d5e3b815ab3e
+  changed_files_hash: 4389b575d2c60823d705cc0c929b7ebb2e61c7bba2b020dee6199868be47e36d
 review_evidence:
   required: false
-status: READY

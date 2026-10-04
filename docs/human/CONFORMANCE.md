@@ -1498,3 +1498,9 @@ Lifecycle evidence checks supported short-lived prefixes, unclassified preservat
 ## Scenario 200 — Demand-driven CI toolchain planning
 
 Lifecycle evidence checks exact-path Node, browser and OpenAPI selection, full provisioning for sensitive paths and unknown paths, and explicit skips for optional OpenAPI evidence. Secret scanning, preflight, repository validation and the exact-candidate Integration Gate remain mandatory. Without a valid CI plan, local checks retain the full toolchain profile.
+
+## Scenario 201 — Monthly maintenance reliability evidence
+
+`tests/evidence/maintenance_reliability_lifecycle.py` verifies monthly validation pass-rate and runtime statistics, nearest-rank percentiles, explicit hotfix labels, repeated paths, failure-category hints, exact merge-SHA linkage and UNKNOWN results when bounded history or required timestamps/file counts are incomplete. The scheduled workflow persists normalized metadata and changed paths, publishes a bounded report and review Issue using Actions/contents/pull-request read and Issue write permissions, and grants no automatic remediation or code-change authority. Failure categories are hints, and exact-SHA correlation is limited to available main-push runs.
+
+Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agent_eval = 199 automated; 2 manual; 201 total; 0 uncovered.

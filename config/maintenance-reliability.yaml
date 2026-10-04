@@ -1,0 +1,60 @@
+version: 1
+default_branch: main
+collection:
+  validation_workflow: validate.yml
+  page_size: 100
+  max_pages: 10
+  max_pull_requests: 500
+  max_failure_details: 200
+  max_files_per_pull_request: 1000
+review_thresholds:
+  minimum_validation_attempts: 5
+  minimum_merged_changes: 3
+hotfix_labels:
+  - hotfix
+  - hot-fix
+  - emergency-fix
+failure_categories:
+  cache:
+    - cache
+    - sqlite
+    - retrieval index
+  environment:
+    - setup
+    - install
+    - provisioning
+    - checkout
+    - runner
+    - dependency
+    - browser
+    - playwright
+    - node
+    - python setup
+  runtime:
+    - runtime
+    - interpreter
+    - execution isolation
+    - process launch
+  ci:
+    - workflow
+    - github actions
+    - upload artifact
+    - required repository aggregate
+  validation:
+    - repository validation
+    - integration gate
+    - janitor
+    - test
+    - lint
+    - ruff
+    - mypy
+    - contract
+  unknown:
+    - unknown
+authority:
+  automatic_remediation: false
+  automatic_code_change: false
+  branch_or_pr_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  human_review_required: true
