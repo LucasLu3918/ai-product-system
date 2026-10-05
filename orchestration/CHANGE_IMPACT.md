@@ -2,6 +2,8 @@
 
 CI workflow seeds are included in deterministic discovery while global graph coverage remains partial. Review runtime routing, required-check consumers, registry/hash persistence and offline-dependency behavior explicitly; a discovered seed does not prove a compiler-resolved relationship.
 
+Retrieval extractions preserve the legacy `retrieval_intelligence.py` facade and output contracts. Treat index-derived relation edges as lexical candidates; incomplete traversal remains explicit and cannot support repository-wide completeness claims.
+
 Use before mutating an existing project.
 
 ## Purpose

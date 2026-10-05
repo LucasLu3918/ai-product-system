@@ -2,6 +2,8 @@
 
 本版增加意圖與目標路徑、非 Git Context、混合事件並行序號、唯讀索引、Eval 系統綁定、執行邊界觀測與外部簽章信任測試。既存 Agent Eval 結果會另列 `historical_unbound`；歷史 rubric PASS 不能解讀為目前版本已重新執行。
 
+`tests/evidence/retrieval_relations_extraction_lifecycle.py` verifies the legacy Retrieval Intelligence facade against its internal lexical relation implementation, including comment/string masking and secret-path exclusion; the test does not claim compiler-grade graph completeness.
+
 Scenario 178 covers independent-review packet provenance, execution/context/permission evidence, stale-candidate rejection, and fail-closed scheduler/Integration Gate behavior. Its deterministic lifecycle fixtures test evidence contracts; they do not claim to attest a live model runtime.
 
 EARS 需求語法的 validator 契約變更屬於 Scenario Conformance：測試契約更新時同步維護本文件、Technology Guide 與 `orchestration/CONFORMANCE.md`；修改需求追蹤實作、規劃範本或規範本身則遵守完整 Requirement Planning 文件閉包。

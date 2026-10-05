@@ -73,6 +73,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 
 ## Runtime integration
 
+Retrieval relation extraction uses the existing Python runtime and standard library; splitting its internal implementation adds no installation step or dependency.
+
 Temporal query 使用既有 `aips intelligence temporal` 入口與 Python/Git runtime；實作拆至內部 adapter 不增加安裝步驟或相依套件。
 
 AIPS runtime 最低支援 Python 3.12。PR 主 Gate 使用 Python 3.12；每週相容性 smoke workflow 驗證 Python 3.12、3.13、3.14。支援與測試版本由 `config/system-facts.yaml` 維護，並同步至 `pyproject.toml` 與本頁系統參考。Installer 會選擇 Python 3.14、3.13、3.12 或相容的 `python3`；需要指定解譯器時可設定 `AIPS_PYTHON=/path/to/python3`。低於 3.12 的 AIPS-owned `.venv` 會在 install／update／preflight 修復時重建；`aips doctor` 會指出不支援的 runtime 與修復方式。

@@ -2,6 +2,8 @@
 
 獨立審查 receipt 的 Ed25519 驗簽使用 Python `cryptography`，版本固定於驗證依賴。受信任公鑰清單由執行環境在候選 repository 外提供；未提供時不宣稱已驗證 runtime 隔離。Context、Retrieval 與 Integration Gate 的操作耗時來自實際起迄事件，不推估模型 token。
 
+Retrieval relation candidates are built by a small standard-library module behind the established Python facade. They remain rebuildable lexical evidence and do not claim compiler-grade call resolution.
+
 這份文件解釋 AIPS **目前採用的技術與架構選擇**。版本時間線不放在這裡。
 
 ## Runtime & Integration

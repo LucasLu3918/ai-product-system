@@ -115,6 +115,7 @@ for evidence in (
     Path(__file__).parent / "evidence/python_bootstrap_action_lifecycle.py",
     Path(__file__).parent / "evidence/version_policy_lifecycle.py",
     Path(__file__).parent / "evidence/module_extraction_lifecycle.py",
+    Path(__file__).parent / "evidence/retrieval_relations_extraction_lifecycle.py",
     Path(__file__).parent / "evidence/maintenance_reliability_lifecycle.py",
     Path(__file__).parent / "evidence/release_channel_lifecycle.py",
 ):

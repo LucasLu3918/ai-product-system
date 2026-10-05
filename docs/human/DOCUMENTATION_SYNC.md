@@ -4,6 +4,8 @@ Runtime Context 的 Agent canonical 文件為 `orchestration/RUNTIME_CONTEXT.md`
 
 Human Docs 與 Agent canonical protocols 分工，但 behavior-bearing change 必須同步更新適用文件。
 
+Retrieval relation extraction is an internal module behind the existing `retrieval_intelligence.py` facade. Changes preserve the public import and candidate evidence semantics, with the non-compiler-resolved boundary documented in Project Intelligence guidance.
+
 ## 文件角色
 
 ~~~text

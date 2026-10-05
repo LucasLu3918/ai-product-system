@@ -2,6 +2,8 @@
 
 This page lists factual command, capability and runtime data. Explanatory policy remains in the linked canonical documentation.
 
+The established Retrieval Intelligence command/import facade remains `scripts/retrieval_intelligence.py`; internal lexical relation extraction lives in `scripts/retrieval_relations.py`. No public command or installation dependency is added.
+
 <!-- AIPS-SYSTEM-FACTS:BEGIN -->
 ## Public commands
 
