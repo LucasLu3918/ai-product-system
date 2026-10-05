@@ -40,6 +40,10 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 Monthly/quarterly reports separate pipeline completeness from content value. Missing source cohorts or incomplete periods remain UNKNOWN/incomplete; a complete period with no actionable recommendation is a valid zero-yield result. Validated analysis is persisted in the GitHub Issue body so scheduled runs retain the reviewed state.
 
+Monthly Effectiveness also tracks pre-analysis coverage for source-bearing weekly Issues. When a weekly Issue lacks pre-analysis, per-source shortlist yield is unavailable and the report names the missing Issue; it never interprets absent triage evidence as a zero shortlist. If a complete Issue body exceeds GitHub's size limit, the workflow stores a bounded, lossless zlib/Base64 envelope with a SHA-256 digest. Roll-up consumers restore and verify the complete original body before reading evidence; invalid or oversized archives are not accepted as evidence.
+
+An unreadable archived weekly Issue remains visible in its title-derived monthly cohort and raises a separate Human-review flag. Oversized Issue bodies keep the summary readable while preserving the complete original report in the verified archive.
+
 Operational observations from the read-only Parallel Run Dashboard may inform review, but never become automatic adoption or publication decisions.
 
 Monthly / quarterly roll-up 量測 collected → shortlist → semantic → actionable → Trial → PASS → ADOPT、duplicate rate 與 failure evidence。Low-yield / high-failure 只產生 Human-review flags，不自動調整 source weights 或 enable/disable settings。

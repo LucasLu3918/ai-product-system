@@ -39,6 +39,10 @@ GitHub Actions 的 Ubuntu runner 固定在 24.04，artifact upload action 維持
 External provider credential 永遠是 optional enhancement，不得變成普通 Radar、baseline validation 或 release prerequisite。Missing credential 使用 truthful SKIPPED / PENDING state。
 
 ## Effectiveness Feedback
+The monthly Effectiveness report leaves shortlist yield unavailable when a source-bearing weekly Issue lacks pre-analysis. Oversized weekly Issue bodies use a bounded SHA-256 checked archive restored before the monthly rollup reads evidence.
+
+If archive verification fails, the monthly report names that unreadable Issue and keeps it under Human review; it is not silently omitted from the cohort.
+
 
 Task ownership leases and Dashboard projection are execution operations, not Radar decisions. They cannot adopt a candidate, approve a Trial, or grant publication authority.
 

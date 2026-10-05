@@ -11,6 +11,9 @@ Evolution Radar MUST measure which research sources and downstream decisions act
 - bind the effectiveness report to the exact cohort issue manifest, repository revision, cohort month, and deterministic input digest;
 - aggregate raw/unique signal observations and duplicate rate;
 - aggregate deterministic shortlist and semantic-selection counts;
+- report pre-analysis coverage by source-bearing weekly Issue; incomplete coverage makes shortlist yield unavailable and raises `REVIEW_INCOMPLETE_PREANALYSIS_COVERAGE` rather than counting absent pre-analysis as zero shortlisted signals;
+- preserve oversized Issue reports losslessly in a SHA-256 checked, bounded zlib/Base64 archive envelope and restore before monthly consumers parse durable evidence;
+- keep unsupported/corrupt archives in the matching monthly cohort as unreadable input and raise a Human-review flag instead of silently skipping the Issue;
 - aggregate latest semantic recommendation states and actionable ASSESS/TRIAL/ADOPT counts;
 - aggregate Human Decision counts, provider-neutral `TRIAL_HANDOFF_READY` counts, Trial PASS/FAIL/BLOCKED counts, and adoption bindings;
 - attribute collected/shortlisted/semantic/actionable/Trial/PASS/adoption observations back to exact source provenance;

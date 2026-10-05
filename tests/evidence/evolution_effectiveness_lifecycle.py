@@ -231,6 +231,23 @@ def main() -> int:
     require("REVIEW_LOW_SHORTLIST_YIELD" in rows["source-b"]["review_flags"], "low-yield source must be review-flagged")
     require("REVIEW_HIGH_FAILURE_RATE" in rows["source-b"]["review_flags"], "unreliable source must be review-flagged")
 
+    missing_preanalysis_issue = copy.deepcopy(issue2)
+    missing_preanalysis_issue["body"] = block(effectiveness.EVIDENCE_START, effectiveness.EVIDENCE_END, e2)
+    incomplete = effectiveness.build_report(
+        [issue1, missing_preanalysis_issue],
+        config,
+        period="2026-09",
+        repository_revision=revision,
+        generated_at="2026-10-02T02:15:00Z",
+    )
+    incomplete_source = {row["source_id"]: row for row in incomplete["sources"]}["source-b"]
+    require(incomplete["summary"]["preanalysis_missing_issue_numbers"] == [11], "missing pre-analysis Issue must be named")
+    require("REVIEW_INCOMPLETE_PREANALYSIS_COVERAGE" in incomplete_source["review_flags"], "missing pre-analysis must be surfaced")
+    require(incomplete_source["ratios"]["shortlist_yield_basis_points"] is None, "incomplete coverage must not claim zero shortlist yield")
+    require(incomplete_source["ratios"]["observed_shortlist_yield_basis_points"] == 0, "observed partial ratio must remain explicitly available")
+    require(not effectiveness.validate_report(incomplete, config), "incomplete-input report must remain valid evidence")
+    require("shortlist yield is unavailable" in effectiveness.markdown(incomplete), "human report must explain incomplete coverage")
+
     tampered = copy.deepcopy(report)
     tampered["authority"]["automatic_source_weight_changes"] = True
     require(effectiveness.validate_report(tampered, config), "automatic source tuning must fail validation")
