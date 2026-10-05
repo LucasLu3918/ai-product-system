@@ -314,6 +314,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+Large/Core work remains blocked from remote publication until documentation closure, the candidate-bound test matrix, mandatory secret scan and exact Integration Gate pass; publication approval names the final files, commit plan and target branch.
+
 Installed product CLI acceptance keeps the required AIPS runtime dependencies separate from optional OpenAPI validator packages. Require an explicit setup command before contract validation; exercise the installed entrypoint from a product root containing no AIPS scripts, then retain platform installation and exact-candidate Gates.
 
 Resolve publication target from explicit --project-root or the active AIPS checkout, and disclose source/target/Python selection. Reuse prepared dependencies for focused checks, then run one exact-candidate local Gate. Dependency workflow updates carry their required documentation closure and candidate-bound Matrix; PR and main CI retain independent full validation.

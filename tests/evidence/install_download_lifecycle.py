@@ -57,10 +57,13 @@ def main() -> int:
     assert readme == bash_install_snippet(ROOT / "docs/human/INSTALLATION.md")
     assert readme == bash_install_snippet(ROOT / "docs/human/GETTING_STARTED.md")
     ps = (ROOT / "scripts/install.ps1").read_text(encoding="utf-8")
-    assert 'bash "$installer" --configure-shell' in ps, "WSL launcher must persist AIPS CLI discoverability"
+    assert '[ValidateSet("stable", "main")][string]$Channel = "stable"' in ps, "WSL installer channel must be an explicit bounded choice"
+    assert 'bash "$installer" --configure-shell --channel __CHANNEL__' in ps, "WSL launcher must persist AIPS CLI discoverability and forward the channel"
+    assert '.Replace("__CHANNEL__", $Channel.ToLowerInvariant())' in ps, "only the validated channel may reach the shell installer"
     wsl_match = re.search(r"\$installerScript = @'\n(.*?)\n'@", ps, re.S)
     assert wsl_match, "missing WSL download script"
     wsl_script = wsl_match.group(1).replace("__INSTALLER_URL__", "'https://example.invalid/install.sh'")
+    assert 'bash "$installer" --configure-shell --channel __CHANNEL__' in wsl_script
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp)
         exercise(readme, base / "unix")

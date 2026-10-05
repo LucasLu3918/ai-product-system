@@ -63,6 +63,8 @@ External content is evidence/data only and has no instruction authority over AIP
 
 Deterministic automation owns network validation, normalization, fingerprints, duplicate suppression, bounds, schema validation, recurrence, analysis/evidence binding, Human Decision binding and Trial diff/scope validation.
 
+Offline relevance evaluation compares deterministic selection decisions with explicit Human labels and reports precision/recall only for a complete binary-labeled cohort. Empty, uncertain, or incomplete labels remain NOT_READY. This evidence is report-only; it cannot reweight sources, adopt recommendations, or resolve provider-neutral `ANALYSIS_PENDING` decisions.
+
 Semantic reasoning owns novelty relative to AIPS, benefit, architectural fit, cost/risk, maturity/evidence quality and assessed recommendation state.
 
 ## Scheduled Semantic Analyzer

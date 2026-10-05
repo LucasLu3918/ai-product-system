@@ -142,6 +142,9 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 Validation quality improves gradually: a Ruff baseline blocks debt growth, mypy remains scoped to selected modules, Coverage.py reports branch evidence without a premature percentage gate, and deterministic Hypothesis properties cover stable SemVer selection. Full validation remains mandatory while the shadow cohort is assembled.
 
+The Validation Taxonomy audit keeps shadow selection and graduation class/path declarations aligned and reports drift without editing either policy.
+Offline Evolution precision and recall use explicit Human relevance labels; missing labels remain `NOT_READY` and never change source-selection policy.
+
 Managed AIPS CLI requires Python >=3.12. The required PR Gate tests Python 3.12; a weekly compatibility smoke workflow exercises 3.12, 3.13, and 3.14 from `config/system-facts.yaml`. An explicit `AIPS_PYTHON` must satisfy the floor; doctor identifies an unsupported managed environment, and install/update repair recreates only an AIPS-owned venv.
 
 Runtime adapter discovery prefers an available CLI and then an explicit runtime-path fallback. Shell `PATH` integration remains opt-in and ownership-marked. `aips doctor`, `aips shell status`, `aips harness status`, and `aips harness doctor` report CLI, shell, runtime-dependency, and Harness state; a plain source checkout does not create a venv implicitly.

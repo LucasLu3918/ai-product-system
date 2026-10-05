@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Require verified stable release tags for installs and updates; add a read-only exact-candidate release readiness workflow and preserve explicit `main` opt-in.
 - Keep Evolution Effectiveness shortlist yield unknown when weekly pre-analysis is missing; preserve oversized Radar Issue bodies in a bounded, digest-checked lossless archive.
 - Require Python >=3.12 for AIPS runtime, report unsupported installed interpreters in `aips doctor`, and add scheduled 3.12/3.13/3.14 compatibility smoke coverage.
 

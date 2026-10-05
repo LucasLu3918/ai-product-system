@@ -21,6 +21,7 @@ on:
       - "requirements-openapi.txt"
       - "scripts/package_install.py"
       - "tests/evidence/runtime_recovery_lifecycle.py"
+      - "tests/evidence/release_channel_lifecycle.py"
       - "tests/evidence/install_download_lifecycle.py"
       - "tests/evidence/openapi_cli_install_lifecycle.py"
       - "tests/evidence/install_preflight_lifecycle.py"
@@ -64,7 +65,7 @@ jobs:
           export HOME="$RUNNER_TEMP/aips-home"
           export AIPS_INSTALL_DIR="$RUNNER_TEMP/aips-system"
           mkdir -p "$HOME"
-          AIPS_INSTALL_SOURCE="$GITHUB_WORKSPACE" bash scripts/install.sh
+          AIPS_INSTALL_SOURCE="$GITHUB_WORKSPACE" bash scripts/install.sh --channel main
           export PATH="$HOME/.local/bin:$PATH"
           aips doctor
           optional_status="$(aips openapi doctor)"

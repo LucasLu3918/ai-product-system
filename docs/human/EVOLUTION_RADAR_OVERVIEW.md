@@ -10,6 +10,8 @@ Evolution Radar 是 AIPS 的 maintenance plane，用來研究外部技術變化�
 
 ## Signal Collection
 
+Offline relevance evaluation compares selected/rejected signals with explicit Human labels. Unlabeled or uncertain records produce `NOT_READY`; the evaluator reports metrics but never changes source policy.
+
 Weekly scan 從 source-controlled allowlist 收集 bounded public evidence，保存 provenance、publication time、dedup identity 與 source class。
 
 ## Deterministic Pre-analysis

@@ -7,8 +7,6 @@ INSTALL_BRANCH="${AIPS_INSTALL_BRANCH:-main}"
 INSTALL_DIR="${AIPS_INSTALL_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/aips/system}"
 SOURCE_CHECKOUT="${AIPS_INSTALL_SOURCE:-}"
 DRY_RUN=false
-CHANNEL_EXPLICIT=false
-if [ "${AIPS_INSTALL_CHANNEL+x}" = x ]; then CHANNEL_EXPLICIT=true; fi
 CLI_ARGS=()
 SHELL_INTEGRATION="auto"
 
@@ -35,7 +33,6 @@ while [ "$#" -gt 0 ]; do
         stable|main) INSTALL_CHANNEL="$1" ;;
         *) echo "ERROR: unsupported install channel: $1 (expected stable or main)" >&2; exit 2 ;;
       esac
-      CHANNEL_EXPLICIT=true
       ;;
     *) echo "ERROR: unknown install option: $1" >&2; exit 2 ;;
   esac
@@ -70,6 +67,7 @@ if [ -e "$INSTALL_DIR" ] && [ ! -d "$INSTALL_DIR/.git" ]; then
 fi
 
 CLONED_NOW=false
+SOURCE_CHECKOUT_CLONED_LOCALLY=false
 if [ ! -d "$INSTALL_DIR/.git" ]; then
   if [ -n "$SOURCE_CHECKOUT" ]; then
     source_root="$(git -C "$SOURCE_CHECKOUT" rev-parse --show-toplevel 2>/dev/null)" || { echo "ERROR: source checkout is not a Git worktree: $SOURCE_CHECKOUT" >&2; exit 1; }
@@ -77,7 +75,9 @@ if [ ! -d "$INSTALL_DIR/.git" ]; then
     [ -f "$SOURCE_CHECKOUT/bin/aips" ] || { echo "ERROR: source checkout has no AIPS CLI" >&2; exit 1; }
     source_head="$(git -C "$SOURCE_CHECKOUT" rev-parse HEAD)"
     git clone --quiet --local --no-checkout "$SOURCE_CHECKOUT" "$INSTALL_DIR"
+    git -C "$INSTALL_DIR" remote set-url origin "$REPO_URL"
     git -C "$INSTALL_DIR" checkout --quiet -B "$INSTALL_BRANCH" "$source_head"
+    SOURCE_CHECKOUT_CLONED_LOCALLY=true
   else
     git clone --quiet --filter=blob:none --single-branch --branch "$INSTALL_BRANCH" "$REPO_URL" "$INSTALL_DIR"
   fi
@@ -91,26 +91,15 @@ case "$INSTALL_CHANNEL" in
   stable)
     stable_info="$(python3 "$INSTALL_DIR/scripts/release_channel.py" resolve --remote "$REPO_URL" 2>&1)" || resolve_status=$?
     resolve_status="${resolve_status:-0}"
-    if [ "$resolve_status" -eq 3 ] && [ "$CHANNEL_EXPLICIT" = false ]; then
-      echo "WARNING: no stable AIPS release tag exists yet; bootstrapping from main. Future updates will follow stable releases." >&2
-      INSTALL_CHANNEL=main
-      if [ "$CLONED_NOW" = true ] && [ -n "$SOURCE_CHECKOUT" ]; then
-        echo "Keeping the supplied source-checkout commit for bootstrap validation." >&2
-      else
-        git -C "$INSTALL_DIR" fetch --quiet origin "$INSTALL_BRANCH"
-        if [ "$(git -C "$INSTALL_DIR" branch --show-current)" != "$INSTALL_BRANCH" ]; then
-          if git -C "$INSTALL_DIR" show-ref --verify --quiet "refs/heads/$INSTALL_BRANCH"; then
-            git -C "$INSTALL_DIR" checkout --quiet "$INSTALL_BRANCH"
-          else
-            git -C "$INSTALL_DIR" checkout --quiet -b "$INSTALL_BRANCH" "origin/$INSTALL_BRANCH"
-          fi
-        fi
-        git -C "$INSTALL_DIR" merge --ff-only --quiet "origin/$INSTALL_BRANCH"
-      fi
-    elif [ "$resolve_status" -ne 0 ]; then
+    if [ "$resolve_status" -ne 0 ]; then
       if [ "$CLONED_NOW" = true ]; then rm -rf "$INSTALL_DIR"; fi
-      echo "$stable_info" >&2
-      echo "ERROR: stable channel resolution failed; use --channel main only if you want the mutable development branch." >&2
+      if [ "$resolve_status" -eq 3 ]; then
+        echo "ERROR: no stable AIPS release tag exists yet; stable installation is unavailable until an approved release is published." >&2
+      else
+        echo "$stable_info" >&2
+        echo "ERROR: stable channel resolution failed." >&2
+      fi
+      echo "Use --channel main only if you explicitly want the mutable development branch." >&2
       exit 1
     else
       stable_tag="${stable_info%%$'\t'*}"
@@ -128,15 +117,19 @@ case "$INSTALL_CHANNEL" in
         git -C "$INSTALL_DIR" checkout --quiet -b "$INSTALL_BRANCH" "origin/$INSTALL_BRANCH"
       fi
     fi
-    git -C "$INSTALL_DIR" fetch --quiet origin "$INSTALL_BRANCH"
-    git -C "$INSTALL_DIR" merge --ff-only --quiet "origin/$INSTALL_BRANCH"
+    if [ "$SOURCE_CHECKOUT_CLONED_LOCALLY" != true ]; then
+      git -C "$INSTALL_DIR" fetch --quiet origin "$INSTALL_BRANCH"
+      git -C "$INSTALL_DIR" merge --ff-only --quiet "origin/$INSTALL_BRANCH"
+    fi
     ;;
   branch)
     if [ "$(git -C "$INSTALL_DIR" branch --show-current)" != "$INSTALL_BRANCH" ]; then
       git -C "$INSTALL_DIR" checkout --quiet "$INSTALL_BRANCH"
     fi
-    git -C "$INSTALL_DIR" fetch --quiet origin "$INSTALL_BRANCH"
-    git -C "$INSTALL_DIR" merge --ff-only --quiet "origin/$INSTALL_BRANCH"
+    if [ "$SOURCE_CHECKOUT_CLONED_LOCALLY" != true ]; then
+      git -C "$INSTALL_DIR" fetch --quiet origin "$INSTALL_BRANCH"
+      git -C "$INSTALL_DIR" merge --ff-only --quiet "origin/$INSTALL_BRANCH"
+    fi
     ;;
 esac
 

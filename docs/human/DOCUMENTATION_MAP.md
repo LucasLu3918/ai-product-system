@@ -16,6 +16,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+Current behavior follows the topic sections in this map: installation and release, maintenance validation, Project Intelligence, Evolution, and security each point to one Human-facing explanation and its canonical Agent protocol.
+
 Quality and validation governance is configured by `config/quality-ratchet.yaml`, `config/validation-graduation.yaml`, and `config/maintenance-reliability.yaml`; its human-facing behavior is summarized in Maintenance and the Technology Guide.
 
 `config/system-facts.yaml` 是 runtime、命令與 CI 相容性版本的 canonical facts；`scripts/system_facts.py` 產生 System Reference 的事實表格。安裝操作維護於 Installation，CI 與維護流程維護於 Maintenance，技術背景與限制維護於 Technology Guide；Scenario evidence 以 Conformance 為準。

@@ -101,6 +101,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+Scoped traversal evidence may be complete for directly inspected callers while retrieval-index freshness or repository-wide graph coverage remains incomplete. Record the limitation and keep global coverage claims partial.
+
 Validation-scope hints remain conservative: unknown paths and validator/governance paths retain the full validator set, while the shadow report records proposed omissions without skipping execution.
 
 Architecture Impact Graph traversal is extracted behind `project_intelligence.py` while preserving the public facade and result contract. Structural retrieval graph building follows the same compatibility pattern; neither extraction changes risk policy, index authority, evidence status or consumer-facing CLI behavior.

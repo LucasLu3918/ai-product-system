@@ -19,6 +19,8 @@ AI Product System（AIPS）是一套跨 Agent 的 Software Engineering Harness�
 
 `--configure-shell` 會為 zsh 或 bash 寫入具有 AIPS ownership 標記的 `PATH` 區塊；解除安裝可安全辨識並移除。若要自行管理 shell profile，改用 `--no-configure-shell`。
 
+Stable 安裝需要已驗證的版本標籤；第一個 stable release 尚未發布時，預設安裝會停止，不會改抓可變動的 `main`。需要開發版時，Linux/macOS 可將安裝命令改為 `bash "$installer" --configure-shell --channel main`；Windows WSL 安裝器可明確使用 `-Channel main`。
+
 ### Windows
 
 正式支援路徑為 **Windows + WSL**。在 PowerShell 執行：
@@ -28,7 +30,7 @@ $installer = Join-Path ([IO.Path]::GetTempPath()) ("aips-install-" + [guid]::New
 try {
   Invoke-WebRequest -Uri https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.ps1 -OutFile $installer -ErrorAction Stop
   if (!(Test-Path -LiteralPath $installer) -or (Get-Item -LiteralPath $installer).Length -eq 0) { throw "AIPS installer download was empty." }
-  Invoke-Expression ([IO.File]::ReadAllText($installer))
+  & $installer
 } finally {
   Remove-Item -LiteralPath $installer -ErrorAction SilentlyContinue
 }

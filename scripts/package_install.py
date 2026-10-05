@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path
 import subprocess
+from pathlib import Path
 
 
 def failure_category(output: str) -> str:
@@ -22,11 +22,15 @@ def failure_category(output: str) -> str:
     return "INSTALL_FAILED"
 
 
-def install(python: str, requirements: Path) -> dict[str, str]:
+def install(python: str, requirements: Path, constraints: Path | None = None) -> dict[str, str]:
     try:
+        command = [python, "-m", "pip", "install", "--disable-pip-version-check", "-q"]
+        if constraints is not None:
+            command.extend(("-c", str(constraints)))
+        command.extend(("-r", str(requirements)))
         result = subprocess.run(
-            [python, "-m", "pip", "install", "--disable-pip-version-check", "-q", "-r", str(requirements)],
-            capture_output=True, text=True, timeout=600,
+            command,
+            capture_output=True, text=True, timeout=600, check=False,
         )
     except subprocess.TimeoutExpired:
         return {"status": "BLOCKED", "reason_code": "INSTALL_TIMEOUT", "next_step": "Check package-index connectivity and retry the explicit install command."}
@@ -45,8 +49,9 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--python", required=True)
     parser.add_argument("--requirements", required=True, type=Path)
+    parser.add_argument("--constraints", type=Path, help="Optional tested version constraints for a reproducible package set")
     args = parser.parse_args()
-    result = install(args.python, args.requirements)
+    result = install(args.python, args.requirements, args.constraints)
     print(json.dumps(result))
     return 0 if result["status"] == "PASS" else 1
 

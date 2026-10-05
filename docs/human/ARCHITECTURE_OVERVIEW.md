@@ -174,6 +174,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 ## Maintenance governance
 
+Release readiness binds stable installation to a version-verified candidate and keeps tag creation separate. Validation runs remain complete while shadow observations, quality ratchets, and human-reviewed Evolution labels accumulate evidence; none grants merge or release authority.
+
 P14 maintenance controls publish Dependency Review and advisory Scorecard workflows, keep validator selection in full-run shadow pending evidence, and collect non-gating quality and governance metrics. Stable installs resolve verified immutable release tags when available; this operational policy does not create a release by itself.
 
 Managed AIPS CLI supports Python >=3.12; the required PR Gate tests 3.12 and a scheduled smoke workflow covers 3.12–3.14. This support policy is derived from canonical system facts and does not change product-task runtime selection.

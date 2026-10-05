@@ -20,6 +20,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+The Gate enforces the touched-code no-growth ratchet, selected-module mypy ceiling and full validation set on the exact base/head candidate. Observation artifacts are diagnostic evidence and never reduce the checks required for this run.
+
 
 The required repository Gate uses Python 3.12. A separate scheduled compatibility smoke covers 3.12–3.14 and does not replace or weaken exact-candidate PR validation.
 

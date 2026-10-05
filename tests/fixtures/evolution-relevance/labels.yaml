@@ -1,0 +1,36 @@
+version: 1
+label_authority: human
+automatic_policy_changes: false
+labels:
+  - signal_fingerprint: sha256:0000000000000000000000000000000000000000000000000000000000000001
+    label_source: human
+    reviewer: fixture-reviewer
+    reviewed_at: 2026-10-01T00:00:00Z
+    relevance: RELEVANT
+    label_rationale: The reviewed signal matches the target capability need.
+    selection: SELECTED
+    selection_reason: Deterministic pre-analysis ranked the signal in the shortlist.
+  - signal_fingerprint: sha256:0000000000000000000000000000000000000000000000000000000000000002
+    label_source: human
+    reviewer: fixture-reviewer
+    reviewed_at: 2026-10-01T00:00:00Z
+    relevance: NOT_RELEVANT
+    label_rationale: The reviewed signal does not apply to the stated capability scope.
+    selection: SELECTED
+    selection_reason: Deterministic pre-analysis ranked the signal in the shortlist.
+  - signal_fingerprint: sha256:0000000000000000000000000000000000000000000000000000000000000003
+    label_source: human
+    reviewer: fixture-reviewer
+    reviewed_at: 2026-10-01T00:00:00Z
+    relevance: RELEVANT
+    label_rationale: The reviewed signal applies to the stated capability scope.
+    selection: REJECTED
+    selection_reason: The bounded shortlist omitted this low-ranked signal.
+  - signal_fingerprint: sha256:0000000000000000000000000000000000000000000000000000000000000004
+    label_source: human
+    reviewer: fixture-reviewer
+    reviewed_at: 2026-10-01T00:00:00Z
+    relevance: NOT_RELEVANT
+    label_rationale: The reviewed signal is outside the product scope.
+    selection: REJECTED
+    selection_reason: Deterministic pre-analysis ranked the signal below the shortlist.

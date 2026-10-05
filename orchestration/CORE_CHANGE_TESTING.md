@@ -69,6 +69,8 @@ A Large/Core Change is not complete when:
 
 ## Evidence
 
+The completed matrix binds the candidate base and canonical changed-file hash. Evidence must name the local test or lifecycle that ran; unexecuted architecture or migration checks need an explicit, reasoned not-applicable disposition.
+
 Runtime recovery evidence must exercise a linked worktree installer on Bash 3.2, complete-versus-partial interpreter selection, deleted-index metadata, explicit-cache preservation and symlink refusal, redacted HTTP/proxy/DNS/TLS diagnostics, cancelled/newer CI outcomes, and dirty/divergent installed synchronization. pip download cache does not replace fresh candidate Gates.
 
 For publication-preflight changes, run focused lifecycle checks while editing, bind the final Core Matrix to the exact base and changed-file set, then run the complete local Integration Gate once for that fixed candidate. The Gate includes repository validation; PR and main CI remain separate candidate checks.

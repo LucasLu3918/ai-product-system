@@ -8,6 +8,13 @@ policy:
     no_uncovered: true
 
 scenarios:
+  - id: "219"
+    path: tests/scenarios/219-validation-policy-taxonomy-drift.md
+    coverage: lifecycle
+    evidence:
+      - scripts/validation_taxonomy.py
+      - tests/evidence/validation_taxonomy_lifecycle.py
+      - tests/validation/validation_taxonomy_contracts.py
   - id: "212"
     path: tests/scenarios/212-validation-graduation-evidence.md
     coverage: lifecycle
@@ -1668,3 +1675,44 @@ scenarios:
       - .github/workflows/maintenance-reliability.yml
       - tests/evidence/maintenance_reliability_lifecycle.py
       - tests/validation/maintenance_reliability_contracts.py
+  - id: "214"
+    path: tests/scenarios/214-stable-install-fails-closed-and-release-readiness.md
+    coverage: lifecycle
+    evidence:
+      - scripts/install.sh
+      - scripts/aips_cli.sh
+      - scripts/version_tag_policy.py
+      - .github/workflows/release-readiness.yml
+      - tests/evidence/release_channel_lifecycle.py
+      - tests/evidence/version_policy_lifecycle.py
+  - id: "215"
+    path: tests/scenarios/215-stable-runtime-dependency-constraints.md
+    coverage: lifecycle
+    evidence:
+      - scripts/package_install.py
+      - scripts/aips_cli.sh
+      - constraints/tested.txt
+      - tests/evidence/runtime_dependency_lock_lifecycle.py
+  - id: "216"
+    path: tests/scenarios/216-touched-code-quality-no-growth.md
+    coverage: lifecycle
+    evidence:
+      - scripts/quality_ratchet.py
+      - config/quality-ratchet.yaml
+      - tests/evidence/quality_ratchet_lifecycle.py
+  - id: "217"
+    path: tests/scenarios/217-validation-observation-collector.md
+    coverage: lifecycle
+    evidence:
+      - scripts/validation_observation.py
+      - .github/workflows/validation-observation-collector.yml
+      - tests/evidence/validation_observation_lifecycle.py
+      - tests/validation/validation_observation_contracts.py
+  - id: "218"
+    path: tests/scenarios/218-evolution-human-relevance-evaluation.md
+    coverage: lifecycle
+    evidence:
+      - scripts/evolution_relevance.py
+      - config/evolution-relevance-labels.yaml
+      - tests/evidence/evolution_relevance_lifecycle.py
+      - tests/validation/evolution_relevance_contracts.py

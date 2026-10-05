@@ -52,6 +52,8 @@ The scheduled Python compatibility smoke is maintenance evidence about supported
 
 Monthly / quarterly roll-up 量測 collected → shortlist → semantic → actionable → Trial → PASS → ADOPT、duplicate rate 與 failure evidence。Low-yield / high-failure 只產生 Human-review flags，不自動調整 source weights 或 enable/disable settings。
 
+`scripts/evolution_relevance.py` can measure selection precision and recall offline against explicit Human relevance labels. The production label file starts empty; missing, uncertain, or incomplete labels keep the report `NOT_READY`. Evaluation never changes the shortlist, source policy, provider handoff, or `ANALYSIS_PENDING` state.
+
 ## Current Boundaries
 
 Task ownership leases and dashboard projections are operational coordination evidence, not Radar signals or Human adoption decisions. They cannot promote a candidate or grant publication authority.

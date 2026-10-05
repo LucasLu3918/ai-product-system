@@ -4,6 +4,8 @@ Runtime Context is the bounded, deterministic view of the active AIPS runtime, t
 
 ## Interpreter resolution
 
+The tested runtime installs from the repository's bounded constraints file through the existing bootstrap path. The resolver uses the same supported Python floor for CLI, validation and publication preflight.
+
 Installed AIPS update selection follows the channel recorded in Git metadata: verified stable tags by default, explicit development branch when requested, and a documented `main` bootstrap only while no stable tag exists. Keep interpreter floor resolution independent from the update channel.
 
 Resolve the Python interpreter from the target system/project configuration using the existing runtime path helper. Prefer a prepared, complete validation environment; report the selected executable and missing capabilities. Do not infer compatibility from a Python executable name alone.

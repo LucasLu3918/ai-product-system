@@ -61,6 +61,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+Validation-scope metadata is advisory while every Gate still runs the complete validator set. Impact traversal reports scoped callers and consumers; stale retrieval indexes remain an explicit incomplete-evidence condition.
+
 Repository validation-scope metadata can refine candidate-path planning, but current execution remains full-run shadow and does not alter Project Intelligence consumer closure or impact confidence.
 
 Architecture-impact traversal is kept behind `project_intelligence.py` as a compatible internal module; existing callers keep the same function and evidence shape. Retrieval structural graph construction follows the same facade boundary. These extractions preserve indexed evidence, bounded traversal and explicit unknowns.

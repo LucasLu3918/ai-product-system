@@ -276,6 +276,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+The Validation Observation Collector has only read access to Actions and repository metadata. Artifact downloads are bounded, redirect credentials are not forwarded, and collection cannot write repository settings, branches or validation policy.
+
 Coverage and Hypothesis lifecycle checks use the existing isolated validation Python process; they introduce no runtime service, network call, or cross-run resource sharing.
 
 Evolution analysis persistence is an Issue-body handoff only after exact evidence and decision validation; scheduled workflow state does not grant additional write authority. Missing issue history or incomplete source cohorts remain visible as incomplete evidence.

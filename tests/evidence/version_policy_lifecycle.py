@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from pathlib import Path
 import sys
+from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from version_tag_policy import evaluate as evaluate_tag  # noqa: E402
-from github_ruleset_policy import assess as assess_rules  # noqa: E402
+from github_ruleset_policy import assess as assess_rules
+from version_tag_policy import evaluate as evaluate_tag
 
 
 def require(condition: bool, message: str) -> None:
@@ -20,6 +20,8 @@ def main() -> int:
     sha = "a" * 40
     require(evaluate_tag("0.73.0", sha, sha, None)["status"] == "READY_FOR_EXPLICIT_RELEASE_APPROVAL",
             "exact main candidate should be ready for a separate release decision")
+    require(evaluate_tag("0.73.0", sha, sha, None, "0.72.0")["status"] == "BLOCKED",
+            "a candidate whose VERSION differs from the requested release must be blocked")
     require(evaluate_tag("0.73.0", sha, "b" * 40, None)["status"] == "BLOCKED",
             "a pre-merge candidate must not become tag-ready")
     require(evaluate_tag("0.73.0", sha, sha, "b" * 40)["status"] == "BLOCKED",

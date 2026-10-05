@@ -104,6 +104,8 @@ jobs:
         if: steps.validation_plan.outputs.needs_node == 'true'
         run: npm ci --no-audit --no-fund --ignore-scripts
       - run: python -m pip install -c constraints/tested.txt -r requirements.txt -r requirements-validation.txt
+      - name: Enforce progressive quality ratchet
+        run: python scripts/quality_ratchet.py check --base "$AIPS_GATE_BASE"
       - name: Install browser validation dependencies
         if: steps.validation_plan.outputs.needs_browser == 'true'
         run: python -m pip install -c constraints/tested.txt -r requirements-visual.txt
@@ -156,6 +158,28 @@ jobs:
             --offline \
             "${base_tip_args[@]}" \
             --output "$AIPS_GATE_REPORT"
+      - name: Capture combined validation observation
+        if: ${{ always() }}
+        shell: bash
+        env:
+          AIPS_SHADOW_REPORT: ${{ runner.temp }}/validation-shadow-plan.json
+          AIPS_TIMING_REPORT: ${{ runner.temp }}/repository-validation-timing.json
+          AIPS_GATE_REPORT: ${{ runner.temp }}/integration-gate-report.yaml
+          AIPS_OBSERVATION: ${{ runner.temp }}/validation-observation/observation.json
+        run: |
+          args=(--event "$GITHUB_EVENT_PATH" --output "$AIPS_OBSERVATION" --run-id "$GITHUB_RUN_ID" --run-attempt "$GITHUB_RUN_ATTEMPT" --workflow "$GITHUB_WORKFLOW")
+          [[ -s "$AIPS_SHADOW_REPORT" ]] && args+=(--shadow "$AIPS_SHADOW_REPORT")
+          [[ -s "$AIPS_TIMING_REPORT" ]] && args+=(--timing "$AIPS_TIMING_REPORT")
+          [[ -s "$AIPS_GATE_REPORT" ]] && args+=(--gate "$AIPS_GATE_REPORT")
+          python scripts/validation_observation.py capture "${args[@]}"
+      - name: Upload combined validation observation
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: validation-observation-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/validation-observation/observation.json
+          if-no-files-found: ignore
+          retention-days: 90
       - name: Integration Gate evidence summary
         if: ${{ always() }}
         shell: bash
