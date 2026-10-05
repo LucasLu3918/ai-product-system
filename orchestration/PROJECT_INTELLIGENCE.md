@@ -658,6 +658,8 @@ Ordinary narrow fixes with no Intelligence change do not require HTML regenerati
 
 ## Temporal Project Intelligence
 
+Implementation detail: `temporal_query` is extracted to `scripts/project_intelligence_temporal.py`; `scripts/project_intelligence.py` remains the compatibility facade and CLI entrypoint, with Scenario 204 guarding object identity and result shape.
+
 Project Intelligence may include `TEMPORAL_ASSERTIONS.yaml` as its canonical temporal assertion ledger. It records facts and architecture decisions with explicit provenance, supersession and history quality. Git revision ancestry is the authoritative validity axis; wall-clock timestamps are observation metadata only.
 
 The current materialized view remains the default path. Historical work uses bounded, just-in-time queries:

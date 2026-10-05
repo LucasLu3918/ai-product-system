@@ -1,0 +1,50 @@
+version: 1
+
+change:
+  id: plan16-01-branch-lifecycle
+  summary: Bind exact branch cleanup to the current main baseline and reject stale, replayed, absent-ref, and partial-state manifests.
+  boundary:
+    - branch cleanup manifest preflight and protected-main dispatch
+
+candidate:
+  base_sha: 8ff07c6d26548aa227b541685d66d4b4c7de8a78
+  changed_files_hash: a527592140ded03b7131a54f43fb42c5ea9f9ef367d2a45724e20958a886450e
+
+matrix:
+  - boundary: branch-cleanup-lifecycle
+    reason: Exact remote branch deletions are destructive and require baseline-bound, all-or-nothing preflight plus replay rejection.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: python -m ruff check scripts/branch_hygiene.py tests/evidence/branch_hygiene_lifecycle.py tests/validation/branch_hygiene_contracts.py
+      unit:
+        applicable: true
+        evidence: tests/evidence/branch_hygiene_lifecycle.py
+      integration:
+        applicable: true
+        evidence: tests/evidence/branch_hygiene_lifecycle.py using a temporary bare Git remote and injected deletion failure
+      contract:
+        applicable: true
+        evidence: tests/validation/branch_hygiene_contracts.py
+      e2e:
+        applicable: true
+        evidence: full tests/validate_repository.py and exact-candidate Integration Gate
+      security:
+        applicable: true
+        evidence: stale baseline, absent ref, moved SHA, non-EPHEMERAL and non-integrated branch negative cases; candidate secret scan
+      migration_recovery:
+        applicable: true
+        evidence: mid-batch remote failure report plus replay rejection and fresh-manifest recovery guidance
+      cli_harness:
+        applicable: true
+        evidence: branch_hygiene.py --apply-cleanup CLI lifecycle under explicit remote scope
+      docs_schema:
+        applicable: true
+        evidence: Scenario 156/205, Human Maintenance guide, Architecture Overview, Technology Guide, permitted Human Conformance cross-reference, CHANGELOG, and publish documentation preflight
+
+scope_recomputed_after_expansion: false
+actual_diff_reconciled: true
+review_evidence:
+  required: false
+blockers: []
+status: READY

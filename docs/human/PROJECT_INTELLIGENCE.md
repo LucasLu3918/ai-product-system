@@ -61,6 +61,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+Temporal query 的實作抽至 `scripts/project_intelligence_temporal.py`；`scripts/project_intelligence.py` 仍保留同一 facade 函式與 CLI 路由，Scenario 204 驗證其 identity 和輸出。
+
 Validation-scope metadata is advisory while every Gate still runs the complete validator set. Impact traversal reports scoped callers and consumers; stale retrieval indexes remain an explicit incomplete-evidence condition.
 
 Repository validation-scope metadata can refine candidate-path planning, but current execution remains full-run shadow and does not alter Project Intelligence consumer closure or impact confidence.

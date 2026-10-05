@@ -359,6 +359,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+Scenario 204 的 module-extraction lifecycle 核對既有 facade 與 temporal current-mode 契約，讓內部拆分維持可回歸驗證。
+
 Selective Validation remains in `FULL_RUN_SHADOW` until an exact-artifact cohort covers at least 30 days, enough unique pull requests, zero false-negative skips, conservative full-validation fallbacks, and deterministic full-run sampling. Each validation run retains one combined observation for 90 days. The daily Validation Observation Collector reads completed `validate.yml` runs with read-only Actions access, deduplicates reruns to the latest record per pull request, and calls `scripts/validation_graduation.py`; missing, expired, cancelled, mismatched, or failed-attribution evidence blocks graduation. If a full validation fails without a validator-specific failure record, all predicted skips are conservatively treated as failed. The evaluator reports `READY_FOR_HUMAN_REVIEW` only; a Human must separately decide whether to enable selective execution. The collector never changes which checks run.
 
 `scripts/validation_taxonomy.py` checks that `config/validation-scope.yaml` and `config/validation-graduation.yaml` declare the same unique full-validation classes and path prefixes. Missing, malformed, duplicate, or divergent declarations fail closed; this audit is read-only and never enables selective execution.

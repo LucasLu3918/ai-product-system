@@ -110,6 +110,9 @@ Docs deployment 不取得 code merge、release 或 product production authority�
 
 ## Technology Guide
 
+內部模組抽離若保留既有 CLI facade 與輸出，仍同步更新架構／文件觸發索引；操作說明只描述使用者可觀察的 current behavior。
+
+
 Trajectory evaluator、trace template 或 Scenario evidence 的變更，必須同步更新 `docs/human/TECHNOLOGY_GUIDE.md` 的 Quality & Verification 說明與對應的 placement/Conformance bindings。
 
 `config/system-facts.yaml` 保存 command、platform、runtime、optional dependency、validation 與 documentation bindings。執行 `python scripts/system_facts.py --write` 更新 `SYSTEM_REFERENCE.md` 的標記區塊；CI 以 `--check` 驗證來源與衍生表格一致。Generator 只產生表格，不改寫解釋性文字或 policy prose。

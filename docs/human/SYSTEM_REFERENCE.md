@@ -37,3 +37,5 @@ This page lists factual command, capability and runtime data. Explanatory policy
 - CI compatibility smoke-tested Python: `3.12, 3.13, 3.14`
 - CI tested Node.js: `24`
 <!-- AIPS-SYSTEM-FACTS:END -->
+
+Temporal queries use the existing Python and Git runtime; the internal adapter adds no dependency or public command.
