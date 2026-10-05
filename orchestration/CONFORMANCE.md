@@ -580,7 +580,7 @@ The monthly workflow requires no external Agent/provider credential and has only
 
 ## Scenario 156 — Human-authorized Exact Branch Cleanup
 
-Scenario 156 validates that normal branch hygiene stays report-only while a separately reviewed one-time manifest may delete only exact EPHEMERAL branch+SHA entries after complete-batch preflight. Any moved ref, non-ephemeral branch or non-integrated branch blocks the batch before deletion. Persistent/unclassified/pending branches remain preserved.
+Scenario 156 validates that normal branch hygiene stays report-only while a separately reviewed one-time manifest may delete only exact EPHEMERAL branch+SHA entries after complete-batch preflight. The manifest main baseline must match the current target tip; any absent or moved ref, non-ephemeral branch or non-integrated branch blocks the batch before deletion. A deletion failure stops the batch, reports completed rows, and the original manifest cannot resume after any row is absent. Persistent/unclassified/pending branches remain preserved.
 
 ## Scenario 157 — Stale Evolution Issue Lifecycle Reconciliation
 

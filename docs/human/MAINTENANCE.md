@@ -487,11 +487,12 @@ This is observational maintenance evidence. Any actual source-policy adjustment 
 `config/branch-cleanup-manifest.yaml` 會逐筆綁定 branch name、exact expected SHA 與 merged PR evidence。Protected-main 人工 dispatch cleanup job 在刪除前會重新驗證：
 
 - branch 仍存在且 SHA 沒有漂移；
+- manifest 的 `baseline_main_sha` 必須等於此次檢查的目前 `main` tip；
 - lifecycle 是 `EPHEMERAL`；
 - branch 已由 local Git integration proof，或 GitHub merged PR 的 exact head SHA/ref/base 證據，確認整合進 `main`；
 - manifest authorization 是 `explicit_user_request + exact_manifest_only + one_time`。
 
-若使用 GitHub merged-PR fallback，workflow 會重新讀取該 PR，確認 `merged_at`、head SHA、head ref 與 base ref 全部符合 manifest。任何一筆失敗都會在第一個 delete 前 block 整批。Persistent、unclassified、pending 或 manifest 外 branch 一律不刪。排程、push 與未啟用 cleanup 的人工 dispatch 都只有 `contents: read`；只有 protected-main 上明確啟用 cleanup 的 job 在這份 exact manifest 範圍內取得 `contents: write`。
+若使用 GitHub merged-PR fallback，workflow 會重新讀取該 PR，確認 `merged_at`、head SHA、head ref 與 base ref 全部符合 manifest。任何一筆失敗都會在第一個 delete 前 block 整批。清單中已有缺失的 branch 也會使整批拒絕，作為重播或上次部分執行的訊號；刪除途中若遇遠端錯誤，報告會列出已完成項目並停止，後續必須重新檢查 refs 並取得新的人類審核 manifest。Persistent、unclassified、pending 或 manifest 外 branch 一律不刪。排程、push 與未啟用 cleanup 的人工 dispatch 都只有 `contents: read`；只有 protected-main 上明確啟用 cleanup 的 job 在這份 exact manifest 範圍內取得 `contents: write`。
 一般 cleanup report 另外產生 fingerprint-bound proposal，列出 branch SHA、merged PR、merged date 與產生報告時的 main SHA。Proposal 本身不會擴大既有 exact-manifest authority；main baseline 或 branch 狀態變更後須重新產生並 review。
 
 

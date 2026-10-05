@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import json
+import shutil
 import subprocess
 import sys
 import tempfile
-import json
 from pathlib import Path
 
 import yaml
@@ -41,6 +42,7 @@ def remote_exists(repo: Path, name: str) -> bool:
         cwd=repo,
         text=True,
         capture_output=True,
+        check=False,
     )
     return proc.returncode == 0
 
@@ -106,6 +108,7 @@ deletion:
         local = subprocess.run(
             [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main"],
             cwd=repo, text=True, capture_output=True,
+            check=False,
         )
         assert local.returncode == 0, local.stdout + local.stderr
         validate(yaml.safe_load(local.stdout))
@@ -119,6 +122,7 @@ deletion:
         dated = subprocess.run(
             [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main", "--pull-requests", str(pr_fixture), "--generated-at", "2026-10-01T00:00:00Z"],
             cwd=repo, text=True, capture_output=True,
+            check=False,
         )
         assert dated.returncode == 0, dated.stdout + dated.stderr
         dated_report = yaml.safe_load(dated.stdout)
@@ -154,12 +158,17 @@ deletion:
         remote = root / "remote.git"
         git(root, "init", "--bare", "-q", str(remote))
         git(repo, "remote", "add", "origin", str(remote))
+        git(repo, "branch", "feature/partial-one", "main")
+        partial_one_sha = git(repo, "rev-parse", "feature/partial-one")
+        git(repo, "branch", "feature/partial-two", "main")
+        partial_two_sha = git(repo, "rev-parse", "feature/partial-two")
         git(repo, "push", "-q", "origin", "--all")
         git(repo, "fetch", "-q", "origin", "+refs/heads/*:refs/remotes/origin/*")
 
         remote_run = subprocess.run(
             [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin"],
             cwd=repo, text=True, capture_output=True,
+            check=False,
         )
         assert remote_run.returncode == 0, remote_run.stdout + remote_run.stderr
         validate(yaml.safe_load(remote_run.stdout))
@@ -184,7 +193,7 @@ deletion:
         blocked = subprocess.run(
             [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin",
              "--apply-cleanup", str(blocked_manifest)],
-            cwd=repo, text=True, capture_output=True,
+            cwd=repo, text=True, capture_output=True, check=False,
         )
         assert blocked.returncode != 0
         assert remote_exists(repo, "feature/merged"), "batch preflight must prevent partial deletion"
@@ -213,6 +222,84 @@ raise SystemExit(1)
         cleanup_env["PATH"] = str(fake_bin) + __import__("os").pathsep + cleanup_env["PATH"]
 
         cleanup_manifest = repo / "cleanup.yaml"
+        target_sha = git(repo, "rev-parse", "origin/main")
+
+        stale_manifest = repo / "stale-cleanup.yaml"
+        stale_manifest.write_text(yaml.safe_dump({
+            "version": 1,
+            "cleanup_id": "stale-test",
+            "baseline_main_sha": "0" * 40,
+            "authorization": {"type": "explicit_user_request", "approved_by": "test-maintainer", "approved_at": "2026-09-21", "scope": "exact_manifest_only", "one_time": True},
+            "branches": [{"branch": "feature/merged", "expected_sha": merged_sha, "merged_pr": 1}],
+        }, sort_keys=False), encoding="utf-8")
+        stale = subprocess.run(
+            [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin", "--apply-cleanup", str(stale_manifest)],
+            cwd=repo, text=True, capture_output=True, check=False,
+        )
+        assert stale.returncode != 0 and "baseline is stale" in stale.stdout
+        assert remote_exists(repo, "feature/merged"), "stale main baseline must block the whole batch"
+
+        absent_manifest = repo / "absent-cleanup.yaml"
+        absent_manifest.write_text(yaml.safe_dump({
+            "version": 1,
+            "cleanup_id": "absent-test",
+            "baseline_main_sha": target_sha,
+            "authorization": {"type": "explicit_user_request", "approved_by": "test-maintainer", "approved_at": "2026-09-21", "scope": "exact_manifest_only", "one_time": True},
+            "branches": [
+                {"branch": "feature/merged", "expected_sha": merged_sha, "merged_pr": 1},
+                {"branch": "feature/already-missing", "expected_sha": "1" * 40, "merged_pr": 2},
+            ],
+        }, sort_keys=False), encoding="utf-8")
+        absent = subprocess.run(
+            [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin", "--apply-cleanup", str(absent_manifest)],
+            cwd=repo, text=True, capture_output=True, check=False,
+        )
+        assert absent.returncode != 0 and "consumed, replayed, or partially applied" in absent.stdout
+        assert remote_exists(repo, "feature/merged"), "an absent manifest row must block all deletions"
+
+        partial_manifest = repo / "partial-cleanup.yaml"
+        partial_manifest.write_text(yaml.safe_dump({
+            "version": 1,
+            "cleanup_id": "partial-test",
+            "baseline_main_sha": target_sha,
+            "authorization": {"type": "explicit_user_request", "approved_by": "test-maintainer", "approved_at": "2026-09-21", "scope": "exact_manifest_only", "one_time": True},
+            "branches": [
+                {"branch": "feature/partial-one", "expected_sha": partial_one_sha, "merged_pr": 4},
+                {"branch": "feature/partial-two", "expected_sha": partial_two_sha, "merged_pr": 5},
+            ],
+        }, sort_keys=False), encoding="utf-8")
+        failing_git = fake_bin / "git"
+        real_git = shutil.which("git")
+        assert real_git, "git executable must be available for failure-injection test"
+        failing_git.write_text(
+            "#!/bin/sh\n"
+            "if [ \"$1\" = push ]; then\n"
+            "  for arg in \"$@\"; do\n"
+            "    if [ \"$arg\" = feature/partial-two ]; then echo 'simulated remote failure' >&2; exit 1; fi\n"
+            "  done\n"
+            "fi\n"
+            f"exec {real_git!r} \"$@\"\n",
+            encoding="utf-8",
+        )
+        failing_git.chmod(0o755)
+        partial_env = dict(cleanup_env)
+        partial_env["PATH"] = str(fake_bin) + __import__("os").pathsep + partial_env["PATH"]
+        partial = subprocess.run(
+            [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin", "--apply-cleanup", str(partial_manifest)],
+            cwd=repo, text=True, capture_output=True, env=partial_env,
+            check=False,
+        )
+        assert partial.returncode != 0 and "branches deleted before failure: ['feature/partial-one']" in partial.stdout
+        assert not remote_exists(repo, "feature/partial-one")
+        assert remote_exists(repo, "feature/partial-two"), "deletion failure must stop before later branches"
+        partial_replay = subprocess.run(
+            [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin", "--apply-cleanup", str(partial_manifest)],
+            cwd=repo, text=True, capture_output=True,
+            check=False,
+        )
+        assert partial_replay.returncode != 0 and "consumed, replayed, or partially applied" in partial_replay.stdout
+        assert remote_exists(repo, "feature/partial-two"), "partial manifests must not resume on replay"
+
         cleanup_manifest.write_text(yaml.safe_dump({
             "version": 1,
             "cleanup_id": "approved-test",
@@ -234,6 +321,7 @@ raise SystemExit(1)
             [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin",
              "--apply-cleanup", str(cleanup_manifest), "--github-repository", "owner/repo"],
             cwd=repo, text=True, capture_output=True, env=cleanup_env,
+            check=False,
         )
         assert cleanup.returncode == 0, cleanup.stdout + cleanup.stderr
         cleanup_doc = yaml.safe_load(cleanup.stdout)
@@ -246,6 +334,14 @@ raise SystemExit(1)
         assert not remote_exists(repo, "feature/pr-evidence")
         assert remote_exists(repo, "feature/pending")
         assert remote_exists(repo, "feature/retrieval-embedding-trial")
+
+        replay = subprocess.run(
+            [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin",
+             "--apply-cleanup", str(cleanup_manifest), "--github-repository", "owner/repo"],
+            cwd=repo, text=True, capture_output=True, env=cleanup_env,
+            check=False,
+        )
+        assert replay.returncode != 0 and "consumed, replayed, or partially applied" in replay.stdout
 
     print("branch hygiene lifecycle: PASS")
     return 0

@@ -1,0 +1,452 @@
+version: 1
+change:
+  id: plan15-operational-closure
+  summary: Close the approved Plan15 operational gaps by extending the existing release, installer, dependency, quality, validation-observation,
+    branch proposal, Project Intelligence/Retrieval, Evolution, configuration taxonomy and GitHub ruleset mechanisms while
+    preserving human authority and full validation.
+  boundary:
+  - Stable release candidate provenance and installer bootstrap/update behavior
+  - Runtime dependency closure and supported Python/platform compatibility
+  - Ruff debt reporting and no-growth enforcement; selected-module mypy and coverage ratchets
+  - Validation shadow-observation collection, provenance, retention and graduation evaluation
+  - Exact-SHA branch cleanup proposal freshness and human-only execution safeguards
+  - Project Intelligence and Retrieval responsibility boundaries with facade/CLI/data compatibility
+  - Evolution offline relevance evaluation, labeled evidence and provider-neutral pending decisions
+  - Configuration taxonomy drift detection and consumer-safe consolidation
+  - GitHub Ruleset read-only comparison and evidence-gated transition planning
+  - Cross-cutting documentation, scenarios, schemas, architecture and publication evidence
+matrix:
+- boundary: Stable release candidate provenance and installer bootstrap/update behavior
+  reason: Stable installation must resolve an approved exact version commit and fail closed on absent or invalid release evidence.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: tests/evidence/version_policy_lifecycle.py, tests/evidence/install_download_lifecycle.py, tests/evidence/release_channel_lifecycle.py
+        (including detached source checkout without refs/heads/main), tests/validation/version_policy_contracts.py; exact
+        candidate Gate and Windows contract CI required before merge. A signed stable tag/key is unavailable, so stable install
+        remains fail-closed pending the first verified release.'
+    unit:
+      applicable: true
+      evidence: 'PASS: tests/evidence/version_policy_lifecycle.py, tests/evidence/install_download_lifecycle.py, tests/evidence/release_channel_lifecycle.py
+        (including detached source checkout without refs/heads/main), tests/validation/version_policy_contracts.py; exact
+        candidate Gate and Windows contract CI required before merge. A signed stable tag/key is unavailable, so stable install
+        remains fail-closed pending the first verified release.'
+    integration:
+      applicable: true
+      evidence: 'PASS: tests/evidence/version_policy_lifecycle.py, tests/evidence/install_download_lifecycle.py, tests/evidence/release_channel_lifecycle.py
+        (including detached source checkout without refs/heads/main), tests/validation/version_policy_contracts.py; exact
+        candidate Gate and Windows contract CI required before merge. A signed stable tag/key is unavailable, so stable install
+        remains fail-closed pending the first verified release.'
+    contract:
+      applicable: true
+      evidence: 'PASS: tests/evidence/version_policy_lifecycle.py, tests/evidence/install_download_lifecycle.py, tests/evidence/release_channel_lifecycle.py
+        (including detached source checkout without refs/heads/main), tests/validation/version_policy_contracts.py; exact
+        candidate Gate and Windows contract CI required before merge. A signed stable tag/key is unavailable, so stable install
+        remains fail-closed pending the first verified release.'
+    e2e:
+      applicable: true
+      evidence: 'PASS: tests/evidence/version_policy_lifecycle.py, tests/evidence/install_download_lifecycle.py, tests/evidence/release_channel_lifecycle.py
+        (including detached source checkout without refs/heads/main), tests/validation/version_policy_contracts.py; exact
+        candidate Gate and Windows contract CI required before merge. A signed stable tag/key is unavailable, so stable install
+        remains fail-closed pending the first verified release.'
+    security:
+      applicable: true
+      evidence: 'PASS: tests/evidence/version_policy_lifecycle.py, tests/evidence/install_download_lifecycle.py, tests/evidence/release_channel_lifecycle.py
+        (including detached source checkout without refs/heads/main), tests/validation/version_policy_contracts.py; exact
+        candidate Gate and Windows contract CI required before merge. A signed stable tag/key is unavailable, so stable install
+        remains fail-closed pending the first verified release.'
+    migration_recovery:
+      applicable: true
+      evidence: 'PASS: tests/evidence/version_policy_lifecycle.py, tests/evidence/install_download_lifecycle.py, tests/evidence/release_channel_lifecycle.py
+        (including detached source checkout without refs/heads/main), tests/validation/version_policy_contracts.py; exact
+        candidate Gate and Windows contract CI required before merge. A signed stable tag/key is unavailable, so stable install
+        remains fail-closed pending the first verified release.'
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: tests/evidence/version_policy_lifecycle.py, tests/evidence/install_download_lifecycle.py, tests/evidence/release_channel_lifecycle.py
+        (including detached source checkout without refs/heads/main), tests/validation/version_policy_contracts.py; exact
+        candidate Gate and Windows contract CI required before merge. A signed stable tag/key is unavailable, so stable install
+        remains fail-closed pending the first verified release.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: tests/evidence/version_policy_lifecycle.py, tests/evidence/install_download_lifecycle.py, tests/evidence/release_channel_lifecycle.py
+        (including detached source checkout without refs/heads/main), tests/validation/version_policy_contracts.py; exact
+        candidate Gate and Windows contract CI required before merge. A signed stable tag/key is unavailable, so stable install
+        remains fail-closed pending the first verified release.'
+- boundary: Runtime dependency closure and supported Python/platform compatibility
+  reason: Stable installation and runtime must consume a reproducible, compatible dependency set.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: tests/evidence/runtime_dependency_lock_lifecycle.py, tests/evidence/runtime_recovery_lifecycle.py,
+        tests/validation/runtime_contracts.py; full candidate Gate follows.'
+    unit:
+      applicable: true
+      evidence: 'PASS: tests/evidence/runtime_dependency_lock_lifecycle.py, tests/evidence/runtime_recovery_lifecycle.py,
+        tests/validation/runtime_contracts.py; full candidate Gate follows.'
+    integration:
+      applicable: true
+      evidence: 'PASS: tests/evidence/runtime_dependency_lock_lifecycle.py, tests/evidence/runtime_recovery_lifecycle.py,
+        tests/validation/runtime_contracts.py; full candidate Gate follows.'
+    contract:
+      applicable: true
+      evidence: 'PASS: tests/evidence/runtime_dependency_lock_lifecycle.py, tests/evidence/runtime_recovery_lifecycle.py,
+        tests/validation/runtime_contracts.py; full candidate Gate follows.'
+    e2e:
+      applicable: true
+      evidence: 'PASS: tests/evidence/runtime_dependency_lock_lifecycle.py, tests/evidence/runtime_recovery_lifecycle.py,
+        tests/validation/runtime_contracts.py; full candidate Gate follows.'
+    security:
+      applicable: true
+      evidence: 'PASS: tests/evidence/runtime_dependency_lock_lifecycle.py, tests/evidence/runtime_recovery_lifecycle.py,
+        tests/validation/runtime_contracts.py; full candidate Gate follows.'
+    migration_recovery:
+      applicable: true
+      evidence: 'PASS: tests/evidence/runtime_dependency_lock_lifecycle.py, tests/evidence/runtime_recovery_lifecycle.py,
+        tests/validation/runtime_contracts.py; full candidate Gate follows.'
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: tests/evidence/runtime_dependency_lock_lifecycle.py, tests/evidence/runtime_recovery_lifecycle.py,
+        tests/validation/runtime_contracts.py; full candidate Gate follows.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: tests/evidence/runtime_dependency_lock_lifecycle.py, tests/evidence/runtime_recovery_lifecycle.py,
+        tests/validation/runtime_contracts.py; full candidate Gate follows.'
+- boundary: Progressive quality ratchets
+  reason: Existing Ruff debt must not grow and selected-module typing/coverage evidence must remain measurable.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: tests/evidence/quality_ratchet_lifecycle.py, tests/validation/quality_ratchet_contracts.py; Ruff baseline
+        872/current 863, selected mypy 0; full candidate Gate follows.'
+    unit:
+      applicable: true
+      evidence: 'PASS: tests/evidence/quality_ratchet_lifecycle.py, tests/validation/quality_ratchet_contracts.py; Ruff baseline
+        872/current 863, selected mypy 0; full candidate Gate follows.'
+    integration:
+      applicable: true
+      evidence: 'PASS: tests/evidence/quality_ratchet_lifecycle.py, tests/validation/quality_ratchet_contracts.py; Ruff baseline
+        872/current 863, selected mypy 0; full candidate Gate follows.'
+    contract:
+      applicable: true
+      evidence: 'PASS: tests/evidence/quality_ratchet_lifecycle.py, tests/validation/quality_ratchet_contracts.py; Ruff baseline
+        872/current 863, selected mypy 0; full candidate Gate follows.'
+    e2e:
+      applicable: false
+      na_reason: quality policy is validated through the complete repository gate
+    security:
+      applicable: true
+      evidence: 'PASS: tests/evidence/quality_ratchet_lifecycle.py, tests/validation/quality_ratchet_contracts.py; Ruff baseline
+        872/current 863, selected mypy 0; full candidate Gate follows.'
+    migration_recovery:
+      applicable: true
+      evidence: 'PASS: tests/evidence/quality_ratchet_lifecycle.py, tests/validation/quality_ratchet_contracts.py; Ruff baseline
+        872/current 863, selected mypy 0; full candidate Gate follows.'
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: tests/evidence/quality_ratchet_lifecycle.py, tests/validation/quality_ratchet_contracts.py; Ruff baseline
+        872/current 863, selected mypy 0; full candidate Gate follows.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: tests/evidence/quality_ratchet_lifecycle.py, tests/validation/quality_ratchet_contracts.py; Ruff baseline
+        872/current 863, selected mypy 0; full candidate Gate follows.'
+- boundary: Validation observation and graduation evidence
+  reason: Observation must bind complete full-run evidence over the required window without enabling selective execution.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_observation_lifecycle.py and tests/validation/validation_observation_contracts.py;
+        collector remains read-only and empty history NOT_READY; full candidate Gate follows.'
+    unit:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_observation_lifecycle.py and tests/validation/validation_observation_contracts.py;
+        collector remains read-only and empty history NOT_READY; full candidate Gate follows.'
+    integration:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_observation_lifecycle.py and tests/validation/validation_observation_contracts.py;
+        collector remains read-only and empty history NOT_READY; full candidate Gate follows.'
+    contract:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_observation_lifecycle.py and tests/validation/validation_observation_contracts.py;
+        collector remains read-only and empty history NOT_READY; full candidate Gate follows.'
+    e2e:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_observation_lifecycle.py and tests/validation/validation_observation_contracts.py;
+        collector remains read-only and empty history NOT_READY; full candidate Gate follows.'
+    security:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_observation_lifecycle.py and tests/validation/validation_observation_contracts.py;
+        collector remains read-only and empty history NOT_READY; full candidate Gate follows.'
+    migration_recovery:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_observation_lifecycle.py and tests/validation/validation_observation_contracts.py;
+        collector remains read-only and empty history NOT_READY; full candidate Gate follows.'
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_observation_lifecycle.py and tests/validation/validation_observation_contracts.py;
+        collector remains read-only and empty history NOT_READY; full candidate Gate follows.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_observation_lifecycle.py and tests/validation/validation_observation_contracts.py;
+        collector remains read-only and empty history NOT_READY; full candidate Gate follows.'
+- boundary: Branch cleanup proposal lifecycle
+  reason: Proposed cleanup must bind exact SHAs and become stale on any drift; deletion remains separately authorized.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: tests/evidence/branch_hygiene_lifecycle.py; exact-SHA freshness and human-only apply checks passed;
+        full candidate Gate follows.'
+    unit:
+      applicable: true
+      evidence: 'PASS: tests/evidence/branch_hygiene_lifecycle.py; exact-SHA freshness and human-only apply checks passed;
+        full candidate Gate follows.'
+    integration:
+      applicable: true
+      evidence: 'PASS: tests/evidence/branch_hygiene_lifecycle.py; exact-SHA freshness and human-only apply checks passed;
+        full candidate Gate follows.'
+    contract:
+      applicable: true
+      evidence: 'PASS: tests/evidence/branch_hygiene_lifecycle.py; exact-SHA freshness and human-only apply checks passed;
+        full candidate Gate follows.'
+    e2e:
+      applicable: true
+      evidence: 'PASS: tests/evidence/branch_hygiene_lifecycle.py; exact-SHA freshness and human-only apply checks passed;
+        full candidate Gate follows.'
+    security:
+      applicable: true
+      evidence: 'PASS: tests/evidence/branch_hygiene_lifecycle.py; exact-SHA freshness and human-only apply checks passed;
+        full candidate Gate follows.'
+    migration_recovery:
+      applicable: true
+      evidence: 'PASS: tests/evidence/branch_hygiene_lifecycle.py; exact-SHA freshness and human-only apply checks passed;
+        full candidate Gate follows.'
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: tests/evidence/branch_hygiene_lifecycle.py; exact-SHA freshness and human-only apply checks passed;
+        full candidate Gate follows.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: tests/evidence/branch_hygiene_lifecycle.py; exact-SHA freshness and human-only apply checks passed;
+        full candidate Gate follows.'
+- boundary: Project Intelligence and Retrieval modularization
+  reason: Internal responsibility changes must preserve public facade, import, CLI, serialization, query and cache behavior.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: tests/evidence/module_extraction_lifecycle.py, tests/evidence/retrieval_intelligence_lifecycle.py,
+        tests/evidence/change_impact_traversal_lifecycle.py; scoped direct callers reviewed, global semantic graph remains
+        partial and retrieval index stale; full candidate Gate follows.'
+    unit:
+      applicable: true
+      evidence: 'PASS: tests/evidence/module_extraction_lifecycle.py, tests/evidence/retrieval_intelligence_lifecycle.py,
+        tests/evidence/change_impact_traversal_lifecycle.py; scoped direct callers reviewed, global semantic graph remains
+        partial and retrieval index stale; full candidate Gate follows.'
+    integration:
+      applicable: true
+      evidence: 'PASS: tests/evidence/module_extraction_lifecycle.py, tests/evidence/retrieval_intelligence_lifecycle.py,
+        tests/evidence/change_impact_traversal_lifecycle.py; scoped direct callers reviewed, global semantic graph remains
+        partial and retrieval index stale; full candidate Gate follows.'
+    contract:
+      applicable: true
+      evidence: 'PASS: tests/evidence/module_extraction_lifecycle.py, tests/evidence/retrieval_intelligence_lifecycle.py,
+        tests/evidence/change_impact_traversal_lifecycle.py; scoped direct callers reviewed, global semantic graph remains
+        partial and retrieval index stale; full candidate Gate follows.'
+    e2e:
+      applicable: true
+      evidence: 'PASS: tests/evidence/module_extraction_lifecycle.py, tests/evidence/retrieval_intelligence_lifecycle.py,
+        tests/evidence/change_impact_traversal_lifecycle.py; scoped direct callers reviewed, global semantic graph remains
+        partial and retrieval index stale; full candidate Gate follows.'
+    security:
+      applicable: true
+      evidence: 'PASS: tests/evidence/module_extraction_lifecycle.py, tests/evidence/retrieval_intelligence_lifecycle.py,
+        tests/evidence/change_impact_traversal_lifecycle.py; scoped direct callers reviewed, global semantic graph remains
+        partial and retrieval index stale; full candidate Gate follows.'
+    migration_recovery:
+      applicable: true
+      evidence: 'PASS: tests/evidence/module_extraction_lifecycle.py, tests/evidence/retrieval_intelligence_lifecycle.py,
+        tests/evidence/change_impact_traversal_lifecycle.py; scoped direct callers reviewed, global semantic graph remains
+        partial and retrieval index stale; full candidate Gate follows.'
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: tests/evidence/module_extraction_lifecycle.py, tests/evidence/retrieval_intelligence_lifecycle.py,
+        tests/evidence/change_impact_traversal_lifecycle.py; scoped direct callers reviewed, global semantic graph remains
+        partial and retrieval index stale; full candidate Gate follows.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: tests/evidence/module_extraction_lifecycle.py, tests/evidence/retrieval_intelligence_lifecycle.py,
+        tests/evidence/change_impact_traversal_lifecycle.py; scoped direct callers reviewed, global semantic graph remains
+        partial and retrieval index stale; full candidate Gate follows.'
+- boundary: Evolution relevance evaluation and pending decision workflow
+  reason: Selection must be explainable and provider-neutral, with human-controlled source-policy decisions.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: tests/evidence/evolution_relevance_lifecycle.py and tests/validation/evolution_relevance_contracts.py;
+        production human-label corpus is empty and correctly NOT_READY, synthetic fixture is test-only; full candidate Gate
+        follows.'
+    unit:
+      applicable: true
+      evidence: 'PASS: tests/evidence/evolution_relevance_lifecycle.py and tests/validation/evolution_relevance_contracts.py;
+        production human-label corpus is empty and correctly NOT_READY, synthetic fixture is test-only; full candidate Gate
+        follows.'
+    integration:
+      applicable: true
+      evidence: 'PASS: tests/evidence/evolution_relevance_lifecycle.py and tests/validation/evolution_relevance_contracts.py;
+        production human-label corpus is empty and correctly NOT_READY, synthetic fixture is test-only; full candidate Gate
+        follows.'
+    contract:
+      applicable: true
+      evidence: 'PASS: tests/evidence/evolution_relevance_lifecycle.py and tests/validation/evolution_relevance_contracts.py;
+        production human-label corpus is empty and correctly NOT_READY, synthetic fixture is test-only; full candidate Gate
+        follows.'
+    e2e:
+      applicable: true
+      evidence: 'PASS: tests/evidence/evolution_relevance_lifecycle.py and tests/validation/evolution_relevance_contracts.py;
+        production human-label corpus is empty and correctly NOT_READY, synthetic fixture is test-only; full candidate Gate
+        follows.'
+    security:
+      applicable: true
+      evidence: 'PASS: tests/evidence/evolution_relevance_lifecycle.py and tests/validation/evolution_relevance_contracts.py;
+        production human-label corpus is empty and correctly NOT_READY, synthetic fixture is test-only; full candidate Gate
+        follows.'
+    migration_recovery:
+      applicable: true
+      evidence: 'PASS: tests/evidence/evolution_relevance_lifecycle.py and tests/validation/evolution_relevance_contracts.py;
+        production human-label corpus is empty and correctly NOT_READY, synthetic fixture is test-only; full candidate Gate
+        follows.'
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: tests/evidence/evolution_relevance_lifecycle.py and tests/validation/evolution_relevance_contracts.py;
+        production human-label corpus is empty and correctly NOT_READY, synthetic fixture is test-only; full candidate Gate
+        follows.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: tests/evidence/evolution_relevance_lifecycle.py and tests/validation/evolution_relevance_contracts.py;
+        production human-label corpus is empty and correctly NOT_READY, synthetic fixture is test-only; full candidate Gate
+        follows.'
+- boundary: Configuration taxonomy and consumer invariants
+  reason: Detect drift before consolidation and preserve each consumer's fail-safe behavior.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_taxonomy_lifecycle.py and tests/validation/validation_taxonomy_contracts.py;
+        read-only drift detector preserves full-validation fail-safe; full candidate Gate follows.'
+    unit:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_taxonomy_lifecycle.py and tests/validation/validation_taxonomy_contracts.py;
+        read-only drift detector preserves full-validation fail-safe; full candidate Gate follows.'
+    integration:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_taxonomy_lifecycle.py and tests/validation/validation_taxonomy_contracts.py;
+        read-only drift detector preserves full-validation fail-safe; full candidate Gate follows.'
+    contract:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_taxonomy_lifecycle.py and tests/validation/validation_taxonomy_contracts.py;
+        read-only drift detector preserves full-validation fail-safe; full candidate Gate follows.'
+    e2e:
+      applicable: false
+      na_reason: no new user-facing runtime flow; covered by repository validation
+    security:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_taxonomy_lifecycle.py and tests/validation/validation_taxonomy_contracts.py;
+        read-only drift detector preserves full-validation fail-safe; full candidate Gate follows.'
+    migration_recovery:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_taxonomy_lifecycle.py and tests/validation/validation_taxonomy_contracts.py;
+        read-only drift detector preserves full-validation fail-safe; full candidate Gate follows.'
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_taxonomy_lifecycle.py and tests/validation/validation_taxonomy_contracts.py;
+        read-only drift detector preserves full-validation fail-safe; full candidate Gate follows.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: tests/evidence/validation_taxonomy_lifecycle.py and tests/validation/validation_taxonomy_contracts.py;
+        read-only drift detector preserves full-validation fail-safe; full candidate Gate follows.'
+- boundary: GitHub Ruleset comparison and conditional transition
+  reason: Any transition must be based on a complete exact settings snapshot, recovery plan and applicable authorization.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: read-only exact settings snapshot and comparator report NO_CHANGE; no transition was required or performed.
+        Ruleset lifecycle/contracts passed; full candidate Gate follows.'
+    unit:
+      applicable: true
+      evidence: 'PASS: read-only exact settings snapshot and comparator report NO_CHANGE; no transition was required or performed.
+        Ruleset lifecycle/contracts passed; full candidate Gate follows.'
+    integration:
+      applicable: true
+      evidence: 'PASS: read-only exact settings snapshot and comparator report NO_CHANGE; no transition was required or performed.
+        Ruleset lifecycle/contracts passed; full candidate Gate follows.'
+    contract:
+      applicable: true
+      evidence: 'PASS: read-only exact settings snapshot and comparator report NO_CHANGE; no transition was required or performed.
+        Ruleset lifecycle/contracts passed; full candidate Gate follows.'
+    e2e:
+      applicable: false
+      na_reason: The complete settings snapshot and comparator returned NO_CHANGE; no transition or rollback flow was necessary
+        or authorized.
+    security:
+      applicable: true
+      evidence: 'PASS: read-only exact settings snapshot and comparator report NO_CHANGE; no transition was required or performed.
+        Ruleset lifecycle/contracts passed; full candidate Gate follows.'
+    migration_recovery:
+      applicable: true
+      evidence: 'PASS: read-only exact settings snapshot and comparator report NO_CHANGE; no transition was required or performed.
+        Ruleset lifecycle/contracts passed; full candidate Gate follows.'
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: read-only exact settings snapshot and comparator report NO_CHANGE; no transition was required or performed.
+        Ruleset lifecycle/contracts passed; full candidate Gate follows.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: read-only exact settings snapshot and comparator report NO_CHANGE; no transition was required or performed.
+        Ruleset lifecycle/contracts passed; full candidate Gate follows.'
+- boundary: Documentation, scenarios, architecture and publication evidence
+  reason: Every changed contract must remain discoverable and bind to the final candidate before publication.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: documentation closure and placement preview, VitePress 1.6.4 production build, scenario conformance
+        and focused publication lifecycles passed; exact candidate Gate will bind final report.'
+    unit:
+      applicable: true
+      evidence: 'PASS: documentation closure and placement preview, VitePress 1.6.4 production build, scenario conformance
+        and focused publication lifecycles passed; exact candidate Gate will bind final report.'
+    integration:
+      applicable: true
+      evidence: 'PASS: documentation closure and placement preview, VitePress 1.6.4 production build, scenario conformance
+        and focused publication lifecycles passed; exact candidate Gate will bind final report.'
+    contract:
+      applicable: true
+      evidence: 'PASS: documentation closure and placement preview, VitePress 1.6.4 production build, scenario conformance
+        and focused publication lifecycles passed; exact candidate Gate will bind final report.'
+    e2e:
+      applicable: true
+      evidence: 'PASS: documentation closure and placement preview, VitePress 1.6.4 production build, scenario conformance
+        and focused publication lifecycles passed; exact candidate Gate will bind final report.'
+    security:
+      applicable: true
+      evidence: 'PASS: documentation closure and placement preview, VitePress 1.6.4 production build, scenario conformance
+        and focused publication lifecycles passed; exact candidate Gate will bind final report.'
+    migration_recovery:
+      applicable: true
+      evidence: 'PASS: documentation closure and placement preview, VitePress 1.6.4 production build, scenario conformance
+        and focused publication lifecycles passed; exact candidate Gate will bind final report.'
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: documentation closure and placement preview, VitePress 1.6.4 production build, scenario conformance
+        and focused publication lifecycles passed; exact candidate Gate will bind final report.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: documentation closure and placement preview, VitePress 1.6.4 production build, scenario conformance
+        and focused publication lifecycles passed; exact candidate Gate will bind final report.'
+scope_recomputed_after_expansion: true
+actual_diff_reconciled: true
+blockers: []
+status: READY
+review_evidence:
+  required: false
+  path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
+candidate:
+  base_sha: 4f0751c613352d3623a54b5e8c7cbcf73be04181
+  changed_files_hash: 39343f879e32f3b08ed0fa9f6de1d9e639d35abb80c9e73ff2f7697f3b6aa372
