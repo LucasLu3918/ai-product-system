@@ -174,6 +174,8 @@ Execution IDs and runtime attestation are produced by the execution runtime and 
 
 ## Validation de-duplication boundary
 
+The required validation profile includes a Ruff no-growth baseline and selected-module mypy ratchet. It reports coverage without a percentage gate and still invokes every repository validator during the selective-validation shadow period.
+
 Validation planning may report exact candidate validators that would run or be skipped, but this shadow plan does not change Scheduler readiness or required Integration Gate execution. Parallel-safe metadata is conservative; unknown, Core, Large and Release changes retain the complete required validation set.
 
 

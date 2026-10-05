@@ -171,6 +171,25 @@ require_cmd() {
 git_in_system() { git -C "$SYSTEM_DIR" "$@"; }
 current_version() { tr -d '[:space:]' < "$SYSTEM_DIR/VERSION"; }
 current_commit() { git_in_system rev-parse HEAD; }
+
+installed_channel() {
+  local metadata
+  metadata="$(git_in_system rev-parse --path-format=absolute --git-path aips-channel)"
+  [ -f "$metadata" ] && cat "$metadata" || printf '%s\n' main
+}
+
+checkout_main_channel() {
+  git_in_system fetch --quiet origin "$DEFAULT_BRANCH"
+  if [ "$(git_in_system branch --show-current)" != "$DEFAULT_BRANCH" ]; then
+    if git_in_system show-ref --verify --quiet "refs/heads/$DEFAULT_BRANCH"; then
+      git_in_system checkout --quiet "$DEFAULT_BRANCH"
+    else
+      git_in_system checkout --quiet -b "$DEFAULT_BRANCH" "origin/$DEFAULT_BRANCH"
+    fi
+  fi
+  git_in_system merge --ff-only --quiet "origin/$DEFAULT_BRANCH"
+}
+
 major_of() { printf '%s' "$1" | awk -F. '{print $1}'; }
 
 python_bin() {
@@ -1484,20 +1503,56 @@ update_system() {
   require_cmd git
   [ -d "$SYSTEM_DIR/.git" ] || die "System directory is not a Git repository: $SYSTEM_DIR"
 
-  local branch
+  local branch channel target_ref remote_version target_sha info status tag expected_sha
   branch="$(git_in_system branch --show-current)"
-  [ "$branch" = "$DEFAULT_BRANCH" ] || die "System repo must be on '$DEFAULT_BRANCH' before automatic update (current: $branch)."
+  channel="$(installed_channel)"
+  case "$channel" in
+    stable)
+      [ -z "$branch" ] || [ "$branch" = "$DEFAULT_BRANCH" ] || die "Stable-channel system repo has unexpected branch '$branch'."
+      ;;
+    main)
+      [ "$branch" = "$DEFAULT_BRANCH" ] || { [ -z "$branch" ] || die "System repo must be on '$DEFAULT_BRANCH' before automatic update (current: $branch)."; }
+      ;;
+    branch:*)
+      local requested_branch="${channel#branch:}"
+      [ "$branch" = "$requested_branch" ] || die "System repo must be on '$requested_branch' before automatic update (current: $branch)."
+      ;;
+    *) die "Unknown installed update channel metadata." ;;
+  esac
 
   if [ -n "$(git_in_system status --porcelain)" ]; then
     die "System repo has local changes. Commit/stash/revert them before Update Preflight."
   fi
 
   say "Checking latest AI Product System..."
-  git_in_system fetch --quiet origin "$DEFAULT_BRANCH"
-
-  local local_version remote_version local_major remote_major
+  local local_version local_major remote_major before after
   local_version="$(current_version)"
-  remote_version="$(git_in_system show "origin/$DEFAULT_BRANCH:VERSION" 2>/dev/null | tr -d '[:space:]')" || die "Remote VERSION could not be read."
+  case "$channel" in
+    stable)
+      if info="$(python3 "$SYSTEM_DIR/scripts/release_channel.py" resolve --remote "$(git_in_system remote get-url origin)")"; then
+        tag="${info%%$'\t'*}"
+        expected_sha="${info#*$'\t'}"
+        git_in_system fetch --quiet origin "refs/tags/$tag:refs/tags/$tag" || die "Could not fetch stable tag $tag."
+        python3 "$SYSTEM_DIR/scripts/release_channel.py" verify --repository "$SYSTEM_DIR" --tag "$tag" --expected-sha "$expected_sha" >/dev/null || die "Stable tag $tag failed exact commit/VERSION verification."
+        target_ref="refs/tags/$tag"
+      else
+        status=$?
+        if [ "$status" -ne 3 ]; then die "Stable release lookup failed; no update was applied."; fi
+        warn "No stable release tag exists yet; updating from main until the first approved release is published."
+        channel=main
+      fi
+      ;;
+  esac
+  if [ "$channel" = main ]; then
+    git_in_system fetch --quiet origin "$DEFAULT_BRANCH"
+    target_ref="origin/$DEFAULT_BRANCH"
+  elif [[ "$channel" == branch:* ]]; then
+    local requested_branch="${channel#branch:}"
+    git_in_system fetch --quiet origin "$requested_branch"
+    target_ref="origin/$requested_branch"
+  fi
+  remote_version="$(git_in_system show "$target_ref:VERSION" 2>/dev/null | tr -d '[:space:]')" || die "Target VERSION could not be read."
+  target_sha="$(git_in_system rev-parse "$target_ref")" || die "Target revision could not be resolved."
   local_major="$(major_of "$local_version")"
   remote_major="$(major_of "$remote_version")"
 
@@ -1505,13 +1560,21 @@ update_system() {
     die "Major version change detected ($local_version -> $remote_version). Review CHANGELOG.md, then rerun with --allow-major."
   fi
 
-  if ! git_in_system merge-base --is-ancestor HEAD "origin/$DEFAULT_BRANCH"; then
-    die "Local system history diverged from origin/$DEFAULT_BRANCH. Automatic merge/rebase is disabled."
-  fi
-
-  local before after
   before="$(current_commit)"
-  git_in_system pull --ff-only --quiet origin "$DEFAULT_BRANCH"
+  if [ "$before" != "$target_sha" ]; then
+    if ! git_in_system merge-base --is-ancestor HEAD "$target_ref"; then
+      die "Target history diverged from the installed commit. Automatic rollback, merge, or rebase is disabled."
+    fi
+    case "$channel" in
+      stable) git_in_system checkout --quiet --detach "$target_ref" ;;
+      main) checkout_main_channel ;;
+      branch:*) git_in_system pull --ff-only --quiet origin "${channel#branch:}" ;;
+    esac
+  elif [ "$channel" = main ] && [ "$branch" != "$DEFAULT_BRANCH" ]; then
+    checkout_main_channel
+  elif [ "$channel" = stable ] && [ "$branch" != "" ]; then
+    git_in_system checkout --quiet --detach "$target_ref"
+  fi
   after="$(current_commit)"
 
   if [ "$before" = "$after" ]; then

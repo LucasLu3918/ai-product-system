@@ -815,6 +815,8 @@ Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agen
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
+Scenario 211 binds Dependency Review and scheduled Scorecard permissions/action SHAs. Scenario 212 validates complete shadow evidence before human review, and Scenario 213 checks the quality debt ceiling and deterministic SemVer properties. None independently grants release or selective-validation authority.
+
 The Human current summary and Human/Agent history crosswalk are generated from this protocol, `docs/human/CONFORMANCE.md`, and `tests/scenario_coverage.yaml` by `scripts/conformance_summary.py`. Edit authoritative sources, regenerate, and verify with `aips conformance summary current|history --output <path>`; retained historical sections keep their anchors. The eight scenarios cover Evolution completeness, validation shadow/replay, module facades, branch proposals, conformance views, workflow bootstrap, tag provenance and ruleset policy.
 
 ## Scenario 210 — Python runtime support policy

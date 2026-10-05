@@ -4,6 +4,8 @@
 
 ## Inputs
 
+Dependency Review and scheduled Scorecard supplement security evidence; they do not change the configured required-check set or ruleset activation state.
+
 The weekly Python compatibility smoke is supplementary evidence, not a required PR check. Branch protection continues to rely on the exact-candidate PR Gate and its Python 3.12 baseline.
 
 The input must include branch protection, rulesets, bypass actors, and `source_complete: true`. Missing or permission-denied evidence yields `UNKNOWN`. The report exposes required checks added by the candidate. Preserve existing protection, the current required `repository` check, force-push/deletion restrictions, and known bypass actors; do not claim the policy is complete when bypass evidence is unavailable.

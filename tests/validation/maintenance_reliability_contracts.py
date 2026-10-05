@@ -22,6 +22,11 @@ if config_path.is_file():
     authority = config.get("authority") or {}
     if config.get("version") != 1 or collection.get("page_size") != 100:
         errors.append("Maintenance reliability config must use version 1 and GitHub's bounded page size")
+    slo = config.get("slo_policy") or {}
+    if slo.get("activation") != "deferred" or slo.get("thresholds_active") is not False:
+        errors.append("Reliability SLO thresholds must remain deferred until sufficient history exists")
+    if slo.get("minimum_complete_months_before_review") != 3 or slo.get("threshold_effect") != "human_review_flag_only":
+        errors.append("Reliability SLO review must require three complete months and remain advisory")
     for key in ("max_pages", "max_failure_details", "max_pull_requests", "max_files_per_pull_request"):
         if not isinstance(collection.get(key), int) or collection[key] < 1:
             errors.append(f"Maintenance reliability collection.{key} must be a positive bound")

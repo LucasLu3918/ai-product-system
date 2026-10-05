@@ -29,8 +29,8 @@ if conformance_helper.exists():
             errors.append("Scenario conformance total/registered count must match scenario inventory")
         if cov.get("uncovered") != 0:
             errors.append("Released scenario conformance registry must have no uncovered entries")
-        if cov.get("manual") != 2 or cov.get("agent_eval") != 54 or cov.get("lifecycle") != 120 or cov.get("deterministic") != 34 or cov.get("automated") != 208 or cov.get("total") != 210:
-            errors.append("current baseline must report manual=2, deterministic=34, lifecycle=120, agent_eval=54 and automated=208 of 210 total")
+        if cov.get("manual") != 2 or cov.get("agent_eval") != 54 or cov.get("lifecycle") != 121 or cov.get("deterministic") != 36 or cov.get("automated") != 211 or cov.get("total") != 213:
+            errors.append("current baseline must report manual=2, deterministic=36, lifecycle=121, agent_eval=54 and automated=211 of 213 total")
 
     with tempfile.TemporaryDirectory() as tmp:
         temp = Path(tmp)

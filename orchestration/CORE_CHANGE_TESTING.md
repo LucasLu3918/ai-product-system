@@ -20,6 +20,7 @@ A green subset does not prove a core change is safe when an affected boundary ha
 
 ## Impact-derived Test Matrix
 
+
 REST/OpenAPI core changes should include lifecycle evidence for supported-spec validation, local-reference confinement, canonical-baseline comparison, project-native command execution, JUnit operation coverage and revision-bound report freshness.
 
 When Phase 3 enforcement changes, derive separate boundaries for ownership and generation provenance, Profile/language fingerprints, required command evidence, OpenAPI report freshness, report/enforce Gate scope and unchanged legacy Profiles. A report-only observation cannot satisfy a required enforce-mode check; missing or stale evidence never becomes PASS.

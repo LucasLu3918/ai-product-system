@@ -52,6 +52,8 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+Stable installations verify an immutable `vX.Y.Z` tag against its target commit and `VERSION`. This does not create a release: tag writing still requires the separate explicit release approval, and pre-release bootstrap uses `main` only while no stable tag exists.
+
 Readiness applies to one exact release candidate/version/commit set. Material code/config/infra changes invalidate affected evidence.
 
 Scheduled Python 3.12–3.14 compatibility evidence is a supplementary maintenance signal. Merge and release readiness still require the exact candidate's full Integration Gate on the supported primary Python 3.12 runtime.

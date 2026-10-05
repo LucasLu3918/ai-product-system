@@ -227,7 +227,7 @@ jobs:
           name: validation-shadow-plan-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/validation-shadow-plan.json
           if-no-files-found: ignore
-          retention-days: 14
+          retention-days: 90
       - name: Repository Health evidence
         if: ${{ always() }}
         shell: bash

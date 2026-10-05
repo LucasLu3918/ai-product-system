@@ -16,6 +16,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+Quality and validation governance is configured by `config/quality-ratchet.yaml`, `config/validation-graduation.yaml`, and `config/maintenance-reliability.yaml`; its human-facing behavior is summarized in Maintenance and the Technology Guide.
+
 `config/system-facts.yaml` 是 runtime、命令與 CI 相容性版本的 canonical facts；`scripts/system_facts.py` 產生 System Reference 的事實表格。安裝操作維護於 Installation，CI 與維護流程維護於 Maintenance，技術背景與限制維護於 Technology Guide；Scenario evidence 以 Conformance 為準。
 
 GitHub branch cleanup、version-tag provenance 與 ruleset review 的 Human 指引位於 `MAINTENANCE.md`；Agent-facing read-only ruleset contract 位於 `orchestration/GITHUB_RULESET_POLICY.md`。
@@ -56,6 +58,7 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 - SYSTEM_REFERENCE.md：由已驗證 system facts registry 衍生的 command、capability、platform 與 runtime 表格。
 
 ## Agent / machine canonical 文件
+
 
 REST/OpenAPI implementation evidence is specified by `orchestration/IMPLEMENTATION_RESOLUTION.md`, `scripts/openapi_contracts.py` and `templates/implementation/OPENAPI_EVIDENCE_REPORT.schema.json`; Human workflow guidance lives in `docs/human/USER_GUIDE.md` and Scenario 194.
 

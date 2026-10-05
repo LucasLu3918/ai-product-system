@@ -99,7 +99,12 @@ def main() -> int:
         (source / "bin").mkdir()
         (source / "bin/aips").write_text("#!/bin/sh\nexit 0\n")
         (source / "bin/aips").chmod(0o755)
-        git(source, "add", "bin/aips")
+        (source / "scripts").mkdir()
+        (source / "scripts/release_channel.py").write_text(
+            "print('NO_STABLE_RELEASE')\nraise SystemExit(3)\n",
+            encoding="utf-8",
+        )
+        git(source, "add", "bin/aips", "scripts/release_channel.py")
         git(source, "commit", "-qm", "fixture")
         linked = base / "linked worktree"
         git(source, "worktree", "add", "--detach", str(linked))

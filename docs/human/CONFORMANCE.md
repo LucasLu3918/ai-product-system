@@ -1506,6 +1506,8 @@ Lifecycle evidence checks exact-path Node, browser and OpenAPI selection, full p
 Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agent_eval = 199 automated; 2 manual; 201 total; 0 uncovered.
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
+
+Scenarios 211–213 cover GitHub supply-chain checks, evidence-gated validator graduation, and gradual quality ratchets with deterministic property and coverage reports. All remain advisory or fail-closed controls; selective execution is not enabled by their presence.
 Scenario 155 also verifies that missing weekly pre-analysis leaves source shortlist yield unavailable and that oversized Issue evidence is digest-checked before Radar and Effectiveness consumers parse it.
 
 

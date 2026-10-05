@@ -274,7 +274,6 @@ placement_rules:
 
   - id: system-hardening
     triggers:
-      - requirements-validation.txt
       - scripts/agent_eval.py
       - scripts/observed_stage.py
       - scripts/review_attestation.py
@@ -348,7 +347,6 @@ placement_rules:
       - references/languages/**
       - scripts/implementation_profile_validate.py
       - scripts/openapi_generator_adapter.py
-      - config/integration-gate.yaml
       - skills/engineering/rest-api/SKILL.md
       - tests/fixtures/implementation_resolution_scenarios.yaml
       - tests/validation/implementation_profile_contracts.py
@@ -374,7 +372,7 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification, Evolution & Maintenance, Security & Governance]
 
   - id: eval-interoperability
-    triggers: [scripts/eval_interop.py, scripts/agent_eval.py, templates/conformance/AGENT_EVAL_RESULT.yaml, config/eval-profiles.yaml, config/integration-gate.yaml, orchestration/EVAL_INTEROPERABILITY.md, orchestration/schemas/external-eval-evidence.yaml, orchestration/schemas/eval-profile.yaml, orchestration/schemas/red-team-finding.yaml, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py, tests/validation/eval_interop_contracts.py, tests/scenarios/180-external-eval-interoperability.md]
+    triggers: [scripts/eval_interop.py, scripts/agent_eval.py, templates/conformance/AGENT_EVAL_RESULT.yaml, config/eval-profiles.yaml, orchestration/EVAL_INTEROPERABILITY.md, orchestration/schemas/external-eval-evidence.yaml, orchestration/schemas/eval-profile.yaml, orchestration/schemas/red-team-finding.yaml, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py, tests/validation/eval_interop_contracts.py, tests/scenarios/180-external-eval-interoperability.md]
     placements:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Scenario Conformance 與 Agent Eval]
       docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix]
@@ -510,3 +508,19 @@ placement_rules:
       orchestration/CHANGE_IMPACT.md: [Diff reconciliation]
       orchestration/PROJECT_INTELLIGENCE.md: [Retrieval relationships and impact traversal]
       orchestration/EXECUTION_ISOLATION.md: [Parallel runtime resource isolation]
+
+  - id: p14-maintenance-governance
+    triggers:
+      - .github/workflows/dependency-review.yml
+      - .github/workflows/scorecard.yml
+      - config/quality-ratchet.yaml
+      - config/validation-graduation.yaml
+      - scripts/quality_ratchet.py
+      - scripts/release_channel.py
+      - scripts/validation_graduation.py
+    placements:
+      docs/human/MAINTENANCE.md: [Versioning, Public repository / CI consistency, Validation architecture consistency]
+      docs/human/SECURITY_ASSURANCE.md: [Release Security Gate]
+      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
+      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]

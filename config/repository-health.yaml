@@ -1,4 +1,11 @@
 version: 1
+governance_complexity:
+  mode: advisory
+  surfaces:
+    workflows: .github/workflows/*.yml
+    validation_modules: tests/validation/*.py
+    policy_configs: config/*policy*.yaml
+    integration_steps: config/integration-gate.yaml
 evidence_binding:
   manifest: complete
   dirty_workspace: report_non_reproducible

@@ -204,7 +204,6 @@ rules:
     triggers:
       - scripts/eval_interop.py
       - config/eval-profiles.yaml
-      - config/integration-gate.yaml
       - orchestration/EVAL_INTEROPERABILITY.md
       - orchestration/schemas/external-eval-evidence.yaml
       - orchestration/schemas/eval-profile.yaml

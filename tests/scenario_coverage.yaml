@@ -8,6 +8,29 @@ policy:
     no_uncovered: true
 
 scenarios:
+  - id: "212"
+    path: tests/scenarios/212-validation-graduation-evidence.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/validation_graduation_lifecycle.py
+      - tests/validation/validation_graduation_contracts.py
+      - scripts/validation_graduation.py
+  - id: "211"
+    path: tests/scenarios/211-github-supply-chain-security.md
+    coverage: deterministic
+    evidence:
+      - tests/validation/security_workflow_contracts.py
+  - id: "213"
+    path: tests/scenarios/213-quality-ratchet-and-property-testing.md
+    coverage: deterministic
+    evidence:
+      - scripts/quality_ratchet.py
+      - tests/evidence/release_channel_properties.py
+      - tests/evidence/release_channel_lifecycle.py
+      - config/quality-ratchet.yaml
+      - tests/validation/quality_ratchet_contracts.py
+      - .github/workflows/dependency-review.yml
+      - .github/workflows/scorecard.yml
   - id: "210"
     path: tests/scenarios/210-python-runtime-support-policy.md
     coverage: lifecycle

@@ -218,6 +218,7 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 
 ## Quality 與 Review
 
+
 Validation optimizations must preserve the full Integration Gate and execute every unique lifecycle evidence script at least once; the maintenance guide describes the local exact-candidate workflow.
 
 
@@ -342,6 +343,10 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 詳見 [Project Intelligence](PROJECT_INTELLIGENCE.md)。
 
 ## Git Publication 與 Release
+
+Repository validation keeps running every validator while shadow reports assess future selective-validation safety. Coverage, governance complexity, and reliability data are review signals; they do not bypass the normal Gate or authorize automatic source changes.
+
+Managed installs default to stable releases when verified `vX.Y.Z` tags are available; use `--channel main` only to opt into development updates. The first release tag still requires its separate explicit release approval.
 
 The exact-candidate PR Gate uses Python 3.12 as its required baseline. A separate weekly compatibility workflow reports lifecycle smoke results for Python 3.12–3.14; it supplements the PR Gate and does not replace exact-candidate validation.
 

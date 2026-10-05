@@ -68,6 +68,11 @@ if script.exists():
                     "Repository Health baseline must PASS"
                 )
             architecture = report.get("architecture_surfaces") or {}
+            complexity = report.get("governance_complexity") or {}
+            if complexity.get("mode") != "advisory" or complexity.get("affects_health_status") is not False:
+                errors.append("Governance complexity metrics must remain advisory and must not affect health status")
+            if not {"workflows", "validation_modules", "policy_configs", "integration_steps"}.issubset(complexity.get("counts") or {}):
+                errors.append("Governance complexity metrics must report the configured repository surface counts")
             if architecture.get("surface_count") != 10:
                 errors.append(
                     "Repository Health architecture inventory must "

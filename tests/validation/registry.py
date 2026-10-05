@@ -59,9 +59,12 @@ VALIDATORS = (
     ValidatorSpec("validation.mcp_interoperability_contracts", False),
     ValidatorSpec("validation.evolution_effectiveness_contracts", False, ("scripts/evolution_effectiveness.py", "scripts/evolution_radar_rollup.py", "config/evolution-effectiveness.yaml", "tests/evidence/evolution_*", "tests/validation/evolution_effectiveness_contracts.py", ".github/workflows/evolution-*"), False),
     ValidatorSpec("validation.maintenance_reliability_contracts", False),
+    ValidatorSpec("validation.quality_ratchet_contracts", False, ("config/quality-ratchet.yaml", "scripts/quality_ratchet.py", "requirements-validation.txt", "constraints/tested.txt", "tests/evidence/release_channel_properties.py"), False),
     ValidatorSpec("validation.publish_preflight_contracts", False),
     ValidatorSpec("validation.eval_interop_contracts", True),
     ValidatorSpec("validation.telemetry_export_contracts", True),
+    ValidatorSpec("validation.security_workflow_contracts", False, (".github/workflows/dependency-review.yml", ".github/workflows/scorecard.yml", "tests/validation/security_workflow_contracts.py"), False),
+    ValidatorSpec("validation.validation_graduation_contracts", False, ("config/validation-scope.yaml", "config/validation-graduation.yaml", "scripts/validation_shadow_plan.py", "scripts/validation_graduation.py", "tests/evidence/validation_graduation_lifecycle.py", "tests/validation/validation_graduation_contracts.py"), False),
 )
 
 
