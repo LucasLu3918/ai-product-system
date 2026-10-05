@@ -1,22 +1,15 @@
 # Runtime Context
 
-`scripts/runtime_context.py` is the shared source for runtime path and validation interpreter resolution. Keep it free of credentials and external-service side effects.
+Runtime Context is the bounded, deterministic view of the active AIPS runtime, target project, task intent, scoped instructions, and currently available Project Intelligence. It is an advisory context contract; it does not replace host-agent judgment or grant write authority.
 
 ## Interpreter resolution
 
-The order is `AIPS_VALIDATION_PYTHON`, `AIPS_VALIDATION_VENV`, project `.venv`, the project-hashed temporary validation venv, the installed AIPS venv, and the current Python. Full validation requires Python 3.12 and the pinned Gate modules. The base runtime only requires PyYAML. `bin/aips` is the thin public launcher; `scripts/aips_cli.sh` keeps the minimal bootstrap selection, then asks Runtime Context to resolve the requested capability level.
-
-`bin/prepare-local-validation` uses the same project-hashed venv path. `scripts/package_install.py` continues to accept an explicit interpreter from its caller and does not choose one itself.
+Resolve the Python interpreter from the target system/project configuration using the existing runtime path helper. Prefer a prepared, complete validation environment; report the selected executable and missing capabilities. Do not infer compatibility from a Python executable name alone.
 
 ## Context contract
 
-The publication environment report may include invocation mode, project/system roots, selected interpreter, capability readiness, config/cache paths, the GitHub CLI config path, and offline mode. Runtime Context reports Playwright package availability and leaves browser launch state unverified; the publication environment probe reports the actual browser launch result. It does not claim sandbox support without provider verification. Never serialize environment values, tokens, credential files, or secret-bearing command output.
-
-Explicit `XDG_CACHE_HOME` remains authoritative. Without it, existing private fallback validation and write checks apply. Context collection must not create directories or modify permissions.
+For project work, context identifies project mode and stable instruction sources, then loads only relevant Intelligence topics. Missing/stale Intelligence and Retrieval remain explicit. A non-Git or no-HEAD workspace still receives basic context; Git-dependent history is reported unavailable. Turn Context does not persist prompts, tool arguments, secrets, or private reasoning.
 
 ## Verification
 
-`config/runtime-invariants.yaml` declares the supported invariant dimensions and high-risk combinations. `scripts/runtime_invariant_matrix.py --check` deterministically verifies exhaustive pair coverage, uniqueness, high-risk membership, and the configured case bound. Scenario 198 and its lifecycle evidence are registered in the repository conformance map.
-
-
-The public `bin/aips` launcher resolves symlinks and forwards arguments to `scripts/aips_cli.sh`. Keep the shared resolver call and capability selection in the implementation layer while preserving the launcher contract.
+Use `aips intelligence context --runtime <id> --project <path> --prompt <task>` to inspect the resolved view and `aips publish environment` / the repository validator to inspect local Gate prerequisites. Runtime lifecycle evidence binds results to exact project/runtime inputs; diagnostics do not substitute for the final candidate Integration Gate.

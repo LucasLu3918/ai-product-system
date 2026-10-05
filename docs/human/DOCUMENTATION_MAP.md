@@ -16,6 +16,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+GitHub branch cleanup、version-tag provenance 與 ruleset review 的 Human 指引位於 `MAINTENANCE.md`；Agent-facing read-only ruleset contract 位於 `orchestration/GITHUB_RULESET_POLICY.md`。
+
 ### 開始使用
 
 - GETTING_STARTED.md：最短成功路徑。
@@ -46,6 +48,7 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 - CONFORMANCE.md：Scenario / verification history。
 - MAINTENANCE.md：system maintainer workflow。
+- assets/maintenance-governance-overview.svg：Evolution、驗證影子計畫、branch、版本與 GitHub policy 的 Human review 邊界。
 - Monthly maintenance reliability uses `scripts/maintenance_reliability.py` and `.github/workflows/maintenance-reliability.yml`; maintainer instructions are in MAINTENANCE.md and behavior evidence is Scenario 201 in CONFORMANCE.md.
 - DOCUMENTATION_SYNC.md：文件 consistency / placement contract。
 - SYSTEM_REFERENCE.md：由已驗證 system facts registry 衍生的 command、capability、platform 與 runtime 表格。

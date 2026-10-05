@@ -1,0 +1,13 @@
+version: 1
+tag_prefix: v
+source_file: VERSION
+release_branch: main
+requirements:
+  exact_candidate_commit: true
+  candidate_on_main: true
+  existing_tag_must_match: true
+  no_historical_backfill: true
+  tag_write_requires_explicit_release_approval: true
+outputs:
+  ready: READY_FOR_EXPLICIT_RELEASE_APPROVAL
+  blocked: BLOCKED

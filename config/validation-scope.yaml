@@ -1,0 +1,40 @@
+version: 1
+full_validation_classes: [large, core, release, unknown]
+full_validation_paths:
+  - .github/workflows/validate.yml
+  - config/validation-scope.yaml
+  - scripts/validation_shadow_plan.py
+  - tests/validation/registry.py
+  - tests/validate_repository.py
+known_path_prefixes:
+  - .aips/
+  - .github/
+  - adapters/
+  - bin/
+  - capabilities/
+  - config/
+  - constraints/
+  - core/
+  - docs/
+  - docs-site/
+  - examples/
+  - harness/
+  - orchestration/
+  - references/
+  - roles/
+  - scripts/
+  - skills/
+  - templates/
+  - tests/
+  - work-modes/
+known_root_paths:
+  - AGENTS.md
+  - CHANGELOG.md
+  - README.md
+  - SYSTEM.md
+  - USER_GUIDE.md
+  - VERSION
+  - package.json
+  - package-lock.json
+  - pyproject.toml
+  - requirements.txt

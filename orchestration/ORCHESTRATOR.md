@@ -123,6 +123,8 @@ Do not create a permanent/high-authority role without user approval.
 
 ## Context expansion
 
+For publication-bound Core/Large work, load the final candidate Change Impact and Core Matrix evidence after implementation, recheck documentation closure and candidate identity, then run the exact-candidate Integration Gate before presenting the Git Publish Proposal. Candidate evidence does not authorize merge, tag creation or repository policy writes.
+
 Turn Context classifies write intent with explicit intent overrides and respects the target file's scoped runtime instructions. The compact YAML view is the default; callers that need the complete manifest can request `--full` or JSON.
 
 An active role may request missing context rather than preloading everything.

@@ -38,6 +38,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+Monthly/quarterly reports separate pipeline completeness from content value. Missing source cohorts or incomplete periods remain UNKNOWN/incomplete; a complete period with no actionable recommendation is a valid zero-yield result. Validated analysis is persisted in the GitHub Issue body so scheduled runs retain the reviewed state.
+
 Operational observations from the read-only Parallel Run Dashboard may inform review, but never become automatic adoption or publication decisions.
 
 Monthly / quarterly roll-up 量測 collected → shortlist → semantic → actionable → Trial → PASS → ADOPT、duplicate rate 與 failure evidence。Low-yield / high-failure 只產生 Human-review flags，不自動調整 source weights 或 enable/disable settings。

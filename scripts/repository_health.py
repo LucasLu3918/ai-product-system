@@ -111,41 +111,7 @@ def as_mapping(value: Any, name: str) -> dict[str, Any]:
     return value
 
 
-def run_scenario_conformance(
-    root: Path,
-    helper: Path,
-    registry: Path,
-    scenario_dir: Path,
-) -> list[str]:
-    if not helper.exists():
-        return [f"scenario helper missing: {relative_path(root, helper)}"]
-    result = subprocess.run(
-        [
-            sys.executable,
-            str(helper),
-            "check",
-            "--registry",
-            str(registry),
-            "--scenario-dir",
-            str(scenario_dir),
-            "--format",
-            "json",
-        ],
-        cwd=root,
-        capture_output=True,
-        text=True,
-    )
-    try:
-        payload = json.loads(result.stdout)
-        problems = payload.get("errors") or []
-        if result.returncode == 0 and payload.get("status") == "PASS":
-            return []
-        if problems:
-            return [str(item) for item in problems]
-    except json.JSONDecodeError:
-        pass
-    detail = (result.stdout + "\n" + result.stderr).strip()
-    return [f"scenario conformance failed: {detail[:1200]}"]
+from repository_health_conformance import run_scenario_conformance
 
 
 def add_manifest_path(

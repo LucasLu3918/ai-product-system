@@ -96,6 +96,8 @@ Major updates are not auto-applied by `aips preflight` without explicit `--allow
 
 `tests/validation/versioning_contracts.py` verifies one leading `Unreleased` heading, unique strictly descending SemVer release headings, and `VERSION` equal to the newest release. Keep runtime dependency ranges in requirements files; `constraints/tested.txt` records the exact CI-tested set. Python support is declared separately from the tested Python version in `pyproject.toml` and `config/system-facts.yaml`.
 
+`scripts/version_tag_policy.py` checks `VERSION`, exact candidate/main SHA and any existing tag destination. READY still requires separate explicit release approval; merging a PR does not create a version tag or backfill historical tags.
+
 ## System facts and validation planning
 
 `config/system-facts.yaml` and `config/architecture-surfaces.yaml` are the source for factual command/capability tables in `docs/human/SYSTEM_REFERENCE.md`. Run `python scripts/system_facts.py --write` after changing those facts and `--check` in validation. Keep explanatory prose in its canonical topic documents.
@@ -368,11 +370,13 @@ External Eval / Red-Team Interoperability contracts are checked by `tests/valida
 
 Keep the top-level validator as an aggregator. New substantial validation belongs in the narrowest existing module or a focused evidence runner rather than expanding the entrypoint back into a monolith.
 
-When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 34 deterministic, 111 lifecycle and 54 agent_eval scenarios (199 automated, 2 manual, 201 total).
+When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 34 deterministic, 119 lifecycle and 54 agent_eval scenarios (207 automated, 2 manual, 209 total).
 
 `scripts/repository_preflight.py` 先跑快速文件／schema／diff 檢查；通過後才進入完整 lifecycle。環境缺少 localhost bind 或 browser 時回報 `ENVIRONMENT_BLOCKED`，不混稱產品測試失敗。
 
 The public `bin/aips` launcher must remain a small argument-preserving handoff to `scripts/aips_cli.sh`; preserve source-checkout and installed-symlink entry paths. Keep publication policy calculations in `scripts/publish_preflight_policy.py`, with Git and environment orchestration in `scripts/publish_preflight.py`. Validator imports belong to the explicit ordered `tests/validation/registry.py`; preserve import order, timing labels, error aggregation order, and the single execution owner for lifecycle evidence.
+
+`.github/actions/aips-python-bootstrap` centralizes pinned Python setup, declared requirements/constraints and pip cache inputs for the MCP interoperability and Repository Health pilots. These workflows retain their read-only permissions and triggers. `scripts/github_ruleset_policy.py` compares complete supplied snapshots only; missing admin/bypass evidence is UNKNOWN, and the report never writes or activates repository settings.
 
 ## Deterministic Scheduler / Integration Gate consistency
 
@@ -470,6 +474,8 @@ This is observational maintenance evidence. Any actual source-policy adjustment 
 - manifest authorization 是 `explicit_user_request + exact_manifest_only + one_time`。
 
 若使用 GitHub merged-PR fallback，workflow 會重新讀取該 PR，確認 `merged_at`、head SHA、head ref 與 base ref 全部符合 manifest。任何一筆失敗都會在第一個 delete 前 block 整批。Persistent、unclassified、pending 或 manifest 外 branch 一律不刪。排程、push 與未啟用 cleanup 的人工 dispatch 都只有 `contents: read`；只有 protected-main 上明確啟用 cleanup 的 job 在這份 exact manifest 範圍內取得 `contents: write`。
+一般 cleanup report 另外產生 fingerprint-bound proposal，列出 branch SHA、merged PR、merged date 與產生報告時的 main SHA。Proposal 本身不會擴大既有 exact-manifest authority；main baseline 或 branch 狀態變更後須重新產生並 review。
+
 ## Runtime Content Safety Boundary
 
 Register every new persistence or publication sink in `config/content-safety.yaml`. Preserve the `sanitize → hash → persist` ordering for audit data and update scenarios when detector or sink policy behavior changes.

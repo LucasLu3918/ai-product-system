@@ -274,6 +274,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+Evolution analysis persistence is an Issue-body handoff only after exact evidence and decision validation; scheduled workflow state does not grant additional write authority. Missing issue history or incomplete source cohorts remain visible as incomplete evidence.
+
 Observed Context, Retrieval and Gate stages record only bounded operation names, outcome and measured duration. The recorder uses the existing run event stream; it does not capture prompts, tool arguments or private reasoning, and missing run state remains non-blocking.
 
 The read-only dashboard aggregates known workspaces by repository identity and reports workspace health without changing ownership, isolation mode or writer boundaries.

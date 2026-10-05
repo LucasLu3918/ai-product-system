@@ -142,6 +142,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+The maintenance plane separates Evolution pipeline completeness from content value, publishes validator-scope shadow/replay without skipping checks, and binds branch cleanup proposals to exact branch/main/merged-PR evidence. Version-tag readiness and GitHub ruleset comparison are read-only; each protected operation still uses its separate approval path.
+
 Runtime Context 由 `scripts/runtime_context.py` 統一解析驗證 Python 與 runtime 路徑；Runtime invariant matrix 會驗證宣告維度的完整值對覆蓋。
 
 Publication CLI 的 help 不啟動完整驗證。docs impact 與 publication 共用 active-checkout routing；OpenAPI CLI 則呼叫安裝版工具並明確傳入 product root。驗證環境會核對 Python 3.12 的 venv prefix，保留原本 GitHub 設定位置，並把設定位置未確認與網路／依賴／localhost／browser 阻擋分開呈現。

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="560" viewBox="0 0 1120 560" role="img" aria-labelledby="title desc">
+  <title id="title">Maintenance and governance evidence flow</title>
+  <desc id="desc">Evolution evidence, validation shadow and replay, branch cleanup, version tags, and GitHub ruleset policy each produce evidence for human review before protected actions.</desc>
+  <defs>
+    <style>
+      .bg{fill:#f7f8fa}.box{fill:#fff;stroke:#34516f;stroke-width:2}.human{fill:#fff5dd;stroke:#a56d00;stroke-width:2}.action{fill:#f4f5f7;stroke:#6c757d;stroke-width:2;stroke-dasharray:7 5}.h{font:700 19px Arial,sans-serif;fill:#18334f}.t{font:15px Arial,sans-serif;fill:#334155}.note{font:14px Arial,sans-serif;fill:#596579}.line{stroke:#42627f;stroke-width:2;fill:none;marker-end:url(#arrow)}.dashed{stroke:#8a929c;stroke-width:2;stroke-dasharray:7 5;fill:none;marker-end:url(#arrowGray)}
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#42627f"/></marker>
+    <marker id="arrowGray" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#8a929c"/></marker>
+  </defs>
+  <rect class="bg" width="1120" height="560" rx="18"/>
+  <text x="40" y="45" class="h" font-size="25">Maintenance and governance evidence</text>
+  <rect class="box" x="40" y="90" width="315" height="115" rx="14"/><text x="65" y="125" class="h">Evolution</text><text x="65" y="155" class="t">Source completeness → content value</text><text x="65" y="180" class="t">Validated analysis stays with its Issue</text>
+  <rect class="box" x="402" y="90" width="315" height="115" rx="14"/><text x="427" y="125" class="h">Validation shadow</text><text x="427" y="155" class="t">Exact diff → would-run / would-skip</text><text x="427" y="180" class="t">Full execution + recorded-run replay</text>
+  <rect class="box" x="765" y="90" width="315" height="115" rx="14"/><text x="790" y="125" class="h">Branch hygiene</text><text x="790" y="155" class="t">Merged PR + branch SHA + main SHA</text><text x="790" y="180" class="t">Freshness-bound cleanup proposal</text>
+  <rect class="human" x="315" y="285" width="490" height="105" rx="16"/><text x="460" y="325" class="h">Human review and exact approval</text><text x="385" y="355" class="t">Evidence never grants authority by itself</text>
+  <path class="line" d="M195 205 V245 H410 V285"/><path class="line" d="M560 205 V285"/><path class="line" d="M922 205 V245 H710 V285"/>
+  <rect class="box" x="185" y="435" width="315" height="80" rx="14"/><text x="215" y="470" class="h">Version-tag readiness</text><text x="215" y="495" class="t">Exact main SHA; no tag write</text>
+  <rect class="box" x="620" y="435" width="315" height="80" rx="14"/><text x="650" y="470" class="h">Ruleset policy comparison</text><text x="650" y="495" class="t">Complete snapshot; no settings write</text>
+  <path class="line" d="M420 390 V435"/><path class="line" d="M700 390 V435"/>
+  <rect class="action" x="40" y="285" width="225" height="105" rx="14"/><text x="62" y="325" class="h">Protected actions</text><text x="62" y="352" class="t">cleanup · tag · ruleset</text><text x="62" y="374" class="t">remain separately authorized</text>
+  <path class="dashed" d="M315 350 H265"/>
+  <text x="40" y="542" class="note">Selective execution is disabled; unknown or high-risk changes keep the full validation path.</text>
+</svg>

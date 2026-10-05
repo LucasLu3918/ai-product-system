@@ -140,6 +140,8 @@ Runtime Policy action schemas, deterministic decisions, hook capability claims a
 
 The `maintenance-reliability` sync rule binds the monthly collector, policy, workflow, lifecycle evidence, contract validator, Scenario 201 and its registry/runner wiring to the Human Maintenance, Conformance, Technology Guide and Documentation Map topics plus this Agent-facing protocol and `orchestration/CONFORMANCE.md`. Changes must preserve bounded collection, UNKNOWN for incomplete input, exact-SHA correlation limits and Human-only remediation.
 
+Generated Conformance views must retain a deterministic path from the canonical scenario registry to current Human counts and section-level Human/Agent history anchors. Regenerate them after inventory or heading changes; do not rewrite historical sections without an explicit content-mapping review.
+
 ## Evolution Effectiveness mapping
 
 The `evolution-radar` mapping includes the deterministic effectiveness script, policy config and monthly GitHub workflow. Changes to metric definitions, thresholds, source review flags, Issue publication behavior or authority fields must synchronize the canonical Evolution Radar / Execution Isolation Human and Agent docs plus the Technology Guide.

@@ -12,6 +12,9 @@ from typing import Callable
 class ValidatorSpec:
     module: str
     collect_errors: bool = False
+    paths: tuple[str, ...] = ()
+    always_run: bool = True
+    parallel_safe: bool = False
 
 
 VALIDATORS = (
@@ -19,11 +22,11 @@ VALIDATORS = (
     ValidatorSpec("validation.versioning_contracts", True),
     ValidatorSpec("validation.system_facts_contracts", True),
     ValidatorSpec("validation.runtime_contracts", False),
-    ValidatorSpec("validation.visual_render_contracts", False),
-    ValidatorSpec("validation.performance_evidence_contracts", False),
-    ValidatorSpec("validation.creative_evidence_contracts", False),
-    ValidatorSpec("validation.product_delivery_contracts", False),
-    ValidatorSpec("validation.evolution_radar_contracts", False),
+    ValidatorSpec("validation.visual_render_contracts", False, ("scripts/visual_*", "scripts/browser_*", "tests/evidence/visual_*", "tests/evidence/browser_*", "config/project-visual-profile.yaml"), False),
+    ValidatorSpec("validation.performance_evidence_contracts", False, ("scripts/performance_*", "tests/evidence/performance_*", "config/performance-*"), False),
+    ValidatorSpec("validation.creative_evidence_contracts", False, ("scripts/creative_*", "tests/evidence/creative_*", "config/creative-*"), False),
+    ValidatorSpec("validation.product_delivery_contracts", False, ("scripts/product_delivery*", "tests/evidence/product_delivery*", "orchestration/PRODUCT_DELIVERY.md"), False),
+    ValidatorSpec("validation.evolution_radar_contracts", False, ("scripts/evolution_*", "config/evolution-*", "tests/evidence/evolution_*", "tests/validation/evolution_*", "orchestration/EVOLUTION_RADAR.md", "docs/human/EVOLUTION_RADAR.md", ".github/workflows/evolution-*"), False),
     ValidatorSpec("validation.evolution_governance_contracts", False),
     ValidatorSpec("validation.documentation_sync_contracts", False),
     ValidatorSpec("validation.documentation_audience_contracts", False),
@@ -40,8 +43,9 @@ VALIDATORS = (
     ValidatorSpec("validation.syntax_contracts", False),
     ValidatorSpec("validation.scheduler_gate_contracts", False),
     ValidatorSpec("validation.review_isolation_contracts", False),
-    ValidatorSpec("validation.branch_hygiene_contracts", False),
+    ValidatorSpec("validation.branch_hygiene_contracts", False, ("scripts/branch_hygiene.py", "config/branch-*", "tests/evidence/branch_hygiene_lifecycle.py", "tests/validation/branch_hygiene_contracts.py", ".github/workflows/branch-hygiene.yml"), False),
     ValidatorSpec("validation.ci_validation_plan_contracts", False),
+    ValidatorSpec("validation.version_policy_contracts", False, ("config/version-tag-policy.yaml", "config/github-ruleset-policy.yaml", "scripts/version_tag_policy.py", "scripts/github_ruleset_policy.py", "tests/evidence/version_policy_lifecycle.py", "tests/validation/version_policy_contracts.py"), False),
     ValidatorSpec("validation.resource_authorization_contracts", False),
     ValidatorSpec("validation.runtime_policy_contracts", False),
     ValidatorSpec("validation.agent_anomaly_evaluation_contracts", False),
@@ -51,9 +55,9 @@ VALIDATORS = (
     ValidatorSpec("validation.gemini_provider_session_verification_contracts", False),
     ValidatorSpec("validation.gemini_provider_session_workflow_contracts", False),
     ValidatorSpec("validation.external_credential_guard_contracts", False),
-    ValidatorSpec("validation.repository_health_contracts", False),
+    ValidatorSpec("validation.repository_health_contracts", False, ("scripts/repository_health.py", "config/repository-health.yaml", "tests/evidence/repository_health_lifecycle.py", "tests/validation/repository_health_contracts.py"), False),
     ValidatorSpec("validation.mcp_interoperability_contracts", False),
-    ValidatorSpec("validation.evolution_effectiveness_contracts", False),
+    ValidatorSpec("validation.evolution_effectiveness_contracts", False, ("scripts/evolution_effectiveness.py", "scripts/evolution_radar_rollup.py", "config/evolution-effectiveness.yaml", "tests/evidence/evolution_*", "tests/validation/evolution_effectiveness_contracts.py", ".github/workflows/evolution-*"), False),
     ValidatorSpec("validation.maintenance_reliability_contracts", False),
     ValidatorSpec("validation.publish_preflight_contracts", False),
     ValidatorSpec("validation.eval_interop_contracts", True),

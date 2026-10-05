@@ -1,0 +1,16 @@
+version: 1
+target_branch: main
+required_legacy_check: repository
+policy:
+  pull_request_required: true
+  required_status_checks:
+    - repository
+  block_force_push: true
+  block_deletion: true
+  bypass_actors: []
+assessment:
+  mode: read_and_compare_only
+  incomplete_source_status: UNKNOWN
+  activation_authorized: false
+  preserve_legacy_protection: true
+  no_required_check_expansion: true

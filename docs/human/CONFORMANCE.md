@@ -1504,3 +1504,7 @@ Lifecycle evidence checks exact-path Node, browser and OpenAPI selection, full p
 `tests/evidence/maintenance_reliability_lifecycle.py` verifies monthly validation pass-rate and runtime statistics, nearest-rank percentiles, explicit hotfix labels, repeated paths, failure-category hints, exact merge-SHA linkage and UNKNOWN results when bounded history or required timestamps/file counts are incomplete. The scheduled workflow persists normalized metadata and changed paths, publishes a bounded report and review Issue using Actions/contents/pull-request read and Issue write permissions, and grants no automatic remediation or code-change authority. Failure categories are hints, and exact-SHA correlation is limited to available main-push runs.
 
 Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agent_eval = 199 automated; 2 manual; 201 total; 0 uncovered.
+
+## Scenarios 202–209 — Plan13 current and provenance evidence
+
+Current counts and the Human/Agent history crosswalk are generated in [Current Scenario Conformance](CONFORMANCE_CURRENT.md) and [Conformance History Index](CONFORMANCE_HISTORY_INDEX.md). This document retains versioned baselines as historical records; normative Agent rules remain in `orchestration/CONFORMANCE.md`. Scenarios 202–209 cover Evolution completeness, validation shadow/replay, compatible module extraction, branch proposal freshness, conformance views, shared workflow bootstrap, version-tag provenance, and GitHub ruleset policy comparison.

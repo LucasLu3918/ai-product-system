@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+## 0.73.0
+
+- Close Evolution pipeline completeness and content-value reporting; persist validated analysis with durable Issues and paginate the full evidence cohort.
+- Add deterministic validator-scope shadow plans and caller-supplied replay checks while retaining full validator execution and high-risk fallbacks.
+- Extract repository-health conformance, architecture impact traversal and retrieval structural graph work behind compatible internal module facades.
+- Bind branch-cleanup proposals to exact branch/main/merged-PR evidence; generate current Conformance and Human/Agent history crosswalk views without discarding historical sections.
+- Reuse a pinned local Python bootstrap action in two read-only workflow pilots; add forward-only version-tag provenance and read-only GitHub ruleset policy assessment.
+
+This release does not enable selective validation, delete branches, create version tags, or activate GitHub rulesets.
+
 - Add machine-readable system facts and version/toolchain contracts; plan optional CI provisioning from exact changed paths; expand branch cleanup reports into PR-backed, read-only proposals requiring explicit protected-main dispatch for exact-manifest cleanup.
 
 - Centralize runtime path and validation interpreter resolution; expose credential-free Runtime Context diagnostics and enforce deterministic runtime invariant coverage across installation, Python, cache, network and platform dimensions.

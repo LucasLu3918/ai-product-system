@@ -172,6 +172,8 @@ Execution IDs and runtime attestation are produced by the execution runtime and 
 
 ## Validation de-duplication boundary
 
+Validation planning may report exact candidate validators that would run or be skipped, but this shadow plan does not change Scheduler readiness or required Integration Gate execution. Parallel-safe metadata is conservative; unknown, Core, Large and Release changes retain the complete required validation set.
+
 
 The repository validator may skip the focused Scheduler/Integration Gate lifecycle only when `AIPS_PROFILE_LIFECYCLE_ALREADY_EXECUTED=1` is injected by the deterministic Validation Profile after those checks already ran. Standalone repository validation must execute the lifecycle evidence normally.
 

@@ -12,7 +12,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "branch_hygiene.py"
 sys.path.insert(0, str(ROOT / "scripts"))
-from branch_hygiene import classify
+from branch_hygiene import BranchHygieneError, classify, validate_proposal
 
 
 def git(cwd: Path, *args: str) -> str:
@@ -29,6 +29,10 @@ def validate(payload: dict) -> None:
     assert rows["feature/retrieval-embedding-trial"]["lifecycle"] == "PERSISTENT"
     assert payload["authority"]["branch_deletion_authorized"] is False
     assert payload["authority"]["human_authority_preserved"] is True
+    proposal = payload["cleanup_proposal"]
+    assert proposal["authorization"]["authorized"] is False
+    assert proposal["proposal_fingerprint"].startswith("sha256:")
+    validate_proposal(proposal)
 
 
 def remote_exists(repo: Path, name: str) -> bool:
@@ -124,6 +128,28 @@ deletion:
         assert dated_rows["feature/pending"]["merged_status"] == "OPEN"
         assert dated_rows["feature/merged"]["age_days"] >= 0
         assert dated_report["authority"]["branch_deletion_authorized"] is False
+        proposal = dated_report["cleanup_proposal"]
+        assert proposal["generated_against_main_sha"] == git(repo, "rev-parse", "main")
+        assert proposal["branches"][0]["merged_at"] == "2026-09-21T00:00:00Z"
+        validate_proposal(
+            proposal,
+            current_main_sha=git(repo, "rev-parse", "main"),
+            current_branch_shas={"feature/merged": merged_sha},
+        )
+        try:
+            validate_proposal(proposal, current_main_sha="0" * 40)
+        except BranchHygieneError:
+            pass
+        else:
+            raise AssertionError("moved main baseline must invalidate a cleanup proposal")
+        stale_proposal = json.loads(json.dumps(proposal))
+        stale_proposal["branches"][0]["expected_sha"] = "0" * 40
+        try:
+            validate_proposal(stale_proposal)
+        except BranchHygieneError:
+            pass
+        else:
+            raise AssertionError("edited proposal content must fail fingerprint validation")
 
         remote = root / "remote.git"
         git(root, "init", "--bare", "-q", str(remote))

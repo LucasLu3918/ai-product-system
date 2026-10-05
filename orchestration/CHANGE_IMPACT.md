@@ -101,6 +101,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+Architecture Impact Graph traversal is extracted behind `project_intelligence.py` while preserving the public facade and result contract. Structural retrieval graph building follows the same compatibility pattern; neither extraction changes risk policy, index authority, evidence status or consumer-facing CLI behavior.
+
 Turn Context intent and `--target-path` narrow instruction selection before mutation analysis. This routing is advisory: the declared Change Boundary and post-diff reconciliation remain authoritative, and non-Git directories retain basic context without historical assertions.
 
 After implementation compare:

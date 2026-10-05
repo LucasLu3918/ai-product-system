@@ -10,6 +10,7 @@ on:
       - "tests/evidence/mcp_interoperability_lifecycle.py"
       - "tests/validation/mcp_interoperability_contracts.py"
       - ".github/workflows/mcp-codex-interop.yml"
+      - ".github/actions/aips-python-bootstrap/**"
   workflow_dispatch:
 
 permissions:
@@ -24,12 +25,15 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
 
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - uses: ./.github/actions/aips-python-bootstrap
         with:
           python-version: "3.12"
-
-      - name: Install AIPS dependencies
-        run: python -m pip install -r requirements.txt -r requirements-validation.txt
+          requirements-files: |
+            requirements.txt
+            requirements-validation.txt
+          cache-dependency-path: |
+            requirements.txt
+            requirements-validation.txt
 
       - name: Execute real stdio MCP protocol lifecycle
         env:

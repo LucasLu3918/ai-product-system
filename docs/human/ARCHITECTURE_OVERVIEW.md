@@ -172,6 +172,12 @@ Trajectory Quality Gate 在既有 Agent Eval 之上評估 observable Agent traje
 
 Evolution Radar 位於 maintenance plane：收集 public technical evidence、deterministic pre-analysis、provider-neutral semantic handoff、Human Decision、bounded Trial。Radar recommendations 不會自動修改 code、開 implementation PR、merge 或 release。
 
+## Maintenance governance
+
+![Maintenance and governance evidence flow](assets/maintenance-governance-overview.svg)
+
+Evolution data completeness、validator shadow/replay、branch cleanup proposal、version-tag readiness 與 GitHub protection comparison 都先產生可追溯 evidence。Selective execution、branch deletion、tag writing 和 ruleset activation 仍需分別依既有核准流程處理。
+
 ## Documentation Architecture
 
 Human maintainers can use the generated System Reference for factual command/runtime tables; candidate validation separately derives optional toolchain provisioning from exact changed paths while keeping the required Gate intact.

@@ -170,6 +170,27 @@ flowchart LR
 
 The alias candidate is deterministic and transparent. It is not an embedding provider and does not change `semantic.status=NOT_CONFIGURED`. The committed Trial follows the FAIL → KEEP branch: required regressions and no synonym-recall improvement produce recommendation `HOLD`. Normal Turn Context retrieval therefore does not enable the alias lane.
 
+## Maintenance and publication evidence
+
+~~~mermaid
+flowchart LR
+    SRC[Weekly / monthly / quarterly source evidence] --> EH[Evolution pipeline completeness]
+    EH --> EV[Content value + Human decision]
+    DIFF[Exact candidate diff] --> SH[Validator scope shadow]
+    SH --> FULL[All validators still execute]
+    HIST[Caller supplied recorded runs] --> RP[Replay false negative report]
+    RP --> SH
+    BR[Branch + merged PR evidence] --> BP[Fingerprint-bound cleanup proposal]
+    VER[VERSION + exact main SHA] --> TP[Read-only tag readiness]
+    GH[Complete GitHub policy snapshot] --> RS[Ruleset policy comparison]
+    FULL --> PUB[Existing PR / required repository Gate]
+    BP -. separate exact manifest authorization .-> DEL[Optional protected-main cleanup]
+    TP -. separate release approval .-> TAG[Version tag creation]
+    RS -. separate policy approval .-> ACT[Ruleset activation]
+~~~
+
+These paths produce evidence and proposals only. Selective validator execution, branch deletion, tag mutation, and ruleset activation remain separate human-authorized operations.
+
 ### Remote embedding Trial readiness
 
 ~~~mermaid

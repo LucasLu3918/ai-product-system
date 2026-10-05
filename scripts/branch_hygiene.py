@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 from datetime import datetime, timezone
 import fnmatch
+import hashlib
 import json
 import os
 import re
@@ -86,7 +87,7 @@ def branch_refs(target: str, remote: str | None) -> tuple[str, list[tuple[str, s
     return target, rows
 
 
-def _pull_request_state(branch: str, target: str, sha: str, pull_requests: list[dict[str, Any]]) -> tuple[int | None, str]:
+def _pull_request_state(branch: str, target: str, sha: str, pull_requests: list[dict[str, Any]]) -> tuple[int | None, str, str | None]:
     rows = [
         row for row in pull_requests
         if row.get("headRefName") == branch and row.get("baseRefName") == target
@@ -94,15 +95,15 @@ def _pull_request_state(branch: str, target: str, sha: str, pull_requests: list[
     exact = [row for row in rows if row.get("headRefOid") == sha]
     candidates = exact or rows
     if not candidates:
-        return None, "NO_MATCHING_PR"
+        return None, "NO_MATCHING_PR", None
     row = max(candidates, key=lambda item: str(item.get("mergedAt") or item.get("closedAt") or ""))
     if row.get("mergedAt"):
-        return int(row["number"]), "MERGED" if row.get("headRefOid") == sha else "MERGED_HEAD_MOVED"
+        return int(row["number"]), "MERGED" if row.get("headRefOid") == sha else "MERGED_HEAD_MOVED", row.get("mergedAt")
     if row.get("state") == "OPEN":
-        return int(row["number"]), "OPEN"
+        return int(row["number"]), "OPEN", None
     if row.get("closedAt") or row.get("state") == "CLOSED":
-        return int(row["number"]), "CLOSED_UNMERGED"
-    return int(row["number"]), "UNKNOWN"
+        return int(row["number"]), "CLOSED_UNMERGED", None
+    return int(row["number"]), "UNKNOWN", None
 
 
 def build_report(
@@ -122,7 +123,7 @@ def build_report(
         sha = git("rev-parse", ref).stdout.strip()
         committed_at = datetime.fromisoformat(git("show", "-s", "--format=%cI", ref).stdout.strip())
         age_days = max(0, (now - committed_at).days)
-        merged_pr, merged_status = _pull_request_state(name, target, sha, prs)
+        merged_pr, merged_status, merged_at = _pull_request_state(name, target, sha, prs)
         action = "REVIEW_FOR_CLEANUP" if lifecycle == "EPHEMERAL" and is_integrated else "PRESERVE"
         rows.append({
             "branch": name,
@@ -130,23 +131,92 @@ def build_report(
             "current_sha": sha,
             "merged_pr": merged_pr,
             "merged_status": merged_status,
+            "merged_at": merged_at,
             "age_days": age_days,
             "integrated_into_target": is_integrated,
             "recommended_action": action,
             "recommendation_reason": "ephemeral_and_integrated" if action == "REVIEW_FOR_CLEANUP" else "persistent_unclassified_or_not_integrated",
         })
+    main_sha = git("rev-parse", target_ref).stdout.strip()
+    proposal_rows = [
+        {
+            "branch": row["branch"],
+            "expected_sha": row["current_sha"],
+            "merged_pr": row["merged_pr"],
+            "merged_at": row["merged_at"],
+            "age_days": row["age_days"],
+            "integrated_into_main": row["integrated_into_target"],
+            "classification": row["lifecycle"],
+            "reason": row["recommendation_reason"],
+        }
+        for row in rows
+        if row["recommended_action"] == "REVIEW_FOR_CLEANUP"
+        and row["merged_status"] == "MERGED"
+        and row["merged_at"]
+    ]
+    proposal = {
+        "version": 1,
+        "status": "PROPOSED",
+        "target": target,
+        "generated_against_main_sha": main_sha,
+        "branches": proposal_rows,
+        "authorization": {
+            "authorized": False,
+            "requires_explicit_human_approval": True,
+            "scope": "proposal_only",
+        },
+    }
+    proposal["proposal_fingerprint"] = "sha256:" + hashlib.sha256(
+        json.dumps(proposal, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
     return {
         "version": 2,
         "target": target,
         "ref_scope": f"remote:{remote}" if remote else "local",
         "policy": "report_only",
         "generated_at": now.isoformat(),
+        "generated_against_main_sha": main_sha,
+        "cleanup_proposal": proposal,
         "branches": rows,
         "authority": {
             "branch_deletion_authorized": False,
             "human_authority_preserved": True,
         },
     }
+
+
+def validate_proposal(
+    proposal: dict[str, Any], *, current_main_sha: str | None = None,
+    current_branch_shas: dict[str, str] | None = None,
+) -> None:
+    if proposal.get("version") != 1 or proposal.get("status") != "PROPOSED":
+        raise BranchHygieneError("cleanup proposal must be version 1 PROPOSED")
+    authorization = proposal.get("authorization") or {}
+    if authorization.get("authorized") is not False or authorization.get("scope") != "proposal_only":
+        raise BranchHygieneError("cleanup proposal must remain unauthorized and proposal-only")
+    baseline = str(proposal.get("generated_against_main_sha") or "")
+    if not re.fullmatch(r"[0-9a-f]{40}", baseline):
+        raise BranchHygieneError("proposal generated_against_main_sha must be a full SHA")
+    if current_main_sha is not None and current_main_sha != baseline:
+        raise BranchHygieneError("cleanup proposal is stale: target main moved")
+    supplied = str(proposal.get("proposal_fingerprint") or "")
+    payload = {key: value for key, value in proposal.items() if key != "proposal_fingerprint"}
+    expected = "sha256:" + hashlib.sha256(
+        json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    if supplied != expected:
+        raise BranchHygieneError("cleanup proposal fingerprint mismatch")
+    seen: set[str] = set()
+    for row in proposal.get("branches") or []:
+        branch = str(row.get("branch") or "")
+        sha = str(row.get("expected_sha") or "")
+        if not branch or branch in seen or not re.fullmatch(r"[0-9a-f]{40}", sha):
+            raise BranchHygieneError("proposal branch entries must be unique and bind full SHAs")
+        if not row.get("integrated_into_main") or not row.get("merged_at") or not row.get("merged_pr"):
+            raise BranchHygieneError(f"{branch}: proposal requires exact integration and merged PR evidence")
+        if current_branch_shas is not None and current_branch_shas.get(branch) != sha:
+            raise BranchHygieneError(f"{branch}: cleanup proposal is stale: branch SHA moved")
+        seen.add(branch)
 
 
 def github_pr_integrated(row: dict[str, Any], *, repository: str, target: str) -> bool:

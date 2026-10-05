@@ -106,6 +106,7 @@ jobs:
           python scripts/evolution_radar_rollup.py monthly-rollup
           --issues-json evolution-radar-issues-pages.json
           --config config/evolution-sources.yaml
+          --effectiveness-config config/evolution-effectiveness.yaml
           --period "${{ steps.period.outputs.value }}"
           --output evolution-radar.yaml
 
@@ -115,6 +116,7 @@ jobs:
           python scripts/evolution_radar_rollup.py quarterly-rollup
           --issues-json evolution-radar-issues-pages.json
           --config config/evolution-sources.yaml
+          --effectiveness-config config/evolution-effectiveness.yaml
           --period "${{ steps.period.outputs.value }}"
           --output evolution-radar.yaml
 
@@ -282,11 +284,18 @@ jobs:
           cat evolution-analysis-handoff.md >> "$GITHUB_STEP_SUMMARY"
 
       - name: Build Human review issue
-        run: >-
-          python scripts/evolution_radar_rollup.py issue-body evolution-radar.yaml
-          --preanalysis evolution-local-preanalysis.md
-          --handoff evolution-analysis-handoff.md
-          --output evolution-radar-issue.md
+        shell: bash
+        run: |
+          args=(
+            issue-body evolution-radar.yaml
+            --preanalysis evolution-local-preanalysis.md
+            --handoff evolution-analysis-handoff.md
+            --output evolution-radar-issue.md
+          )
+          if [[ -f evolution-analysis.yaml ]]; then
+            args+=(--analysis evolution-analysis.yaml)
+          fi
+          python scripts/evolution_radar_rollup.py "${args[@]}"
 
       - name: Publish research report only
         shell: bash

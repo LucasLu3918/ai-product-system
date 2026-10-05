@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import calendar
 import json
 from pathlib import Path
 from typing import Any
@@ -141,11 +142,146 @@ def pending_recommendations(signals: list[dict[str, Any]]) -> list[dict[str, Any
     ]
 
 
+def _monday_dates(period: str) -> list[str]:
+    year, month = (int(part) for part in period.split("-", 1))
+    days = calendar.monthrange(year, month)[1]
+    return [
+        f"{year:04d}-{month:02d}-{day:02d}"
+        for day in range(1, days + 1)
+        if calendar.weekday(year, month, day) == calendar.MONDAY
+    ]
+
+
+def _weekly_generated_date(doc: dict[str, Any]) -> str | None:
+    generated_at = str((doc.get("run") or {}).get("generated_at") or "")
+    return generated_at[:10] if len(generated_at) >= 10 else None
+
+
+def _pipeline_health(
+    docs: list[dict[str, Any]], *, expected: list[str], expected_kind: str
+) -> dict[str, Any]:
+    observed = sorted(
+        {day for doc in docs if (day := _weekly_generated_date(doc)) is not None}
+    )
+    missing = sorted(set(expected) - set(observed))
+    duplicate_dates = sorted(
+        day for day in set(observed)
+        if sum(_weekly_generated_date(doc) == day for doc in docs) > 1
+    )
+    source_gaps: list[str] = []
+    for doc in docs:
+        sources = doc.get("sources") or {}
+        configured = set(sources.get("configured") or [])
+        attempted = set(sources.get("attempted") or [])
+        failed = {
+            str(item.get("source_id") or item.get("source") or "")
+            for item in (sources.get("failures") or [])
+            if isinstance(item, dict)
+        }
+        unaccounted = sorted(configured - attempted - failed)
+        if unaccounted:
+            source_gaps.extend(unaccounted)
+    reasons = []
+    if not expected:
+        reasons.append("expected_cohort_unknown")
+    if missing:
+        reasons.append("scheduled_runs_missing")
+    if duplicate_dates:
+        reasons.append("duplicate_run_dates")
+    if source_gaps:
+        reasons.append("configured_sources_unaccounted")
+    if any((doc.get("sources") or {}).get("failures") for doc in docs):
+        reasons.append("source_collection_failures")
+    return {
+        "status": "COMPLETE" if not reasons else "INCOMPLETE_INPUT",
+        "expected_kind": expected_kind,
+        "expected_count": len(expected),
+        "expected_dates": expected,
+        "observed_count": len(docs),
+        "observed_dates": observed,
+        "missing_dates": missing,
+        "duplicate_dates": duplicate_dates,
+        "source_gaps": sorted(set(source_gaps)),
+        "reasons": reasons,
+    }
+
+
+def _content_value(
+    docs: list[dict[str, Any]], *, complete: bool, minimum_signals: int
+) -> dict[str, Any]:
+    signal_count = sum(
+        int((doc.get("summary") or {}).get("signal_count") or len(doc.get("signals") or []))
+        for doc in docs
+    )
+    recommendations = [
+        recommendation
+        for doc in docs
+        for recommendation in (doc.get("recommendations") or [])
+        if isinstance(recommendation, dict)
+    ]
+    actionable_states = {"ASSESS", "TRIAL", "ADOPT"}
+    actionable_count = sum(
+        recommendation.get("state") in actionable_states
+        for recommendation in recommendations
+    )
+    semantic_pending = any(
+        recommendation.get("state") == "ANALYSIS_PENDING"
+        for recommendation in recommendations
+    )
+    if not complete:
+        status = "INCOMPLETE_INPUT"
+    elif semantic_pending:
+        status = "SEMANTIC_ANALYSIS_PENDING"
+    elif actionable_count:
+        status = "ACTIONABLE_CANDIDATE_READY"
+    elif signal_count < minimum_signals:
+        status = "SOURCE_YIELD_LOW"
+    else:
+        status = "HEALTHY_NO_ACTIONABLE_SIGNAL"
+    return {
+        "status": status,
+        "signal_count": signal_count,
+        "actionable_count": actionable_count,
+        "semantic_pending_count": sum(
+            recommendation.get("state") == "ANALYSIS_PENDING"
+            for recommendation in recommendations
+        ),
+        "minimum_signals_for_yield_assessment": minimum_signals,
+    }
+
+
+def _recommendations_from_docs(
+    docs: list[dict[str, Any]], signals: list[dict[str, Any]]
+) -> list[dict[str, Any]]:
+    latest: dict[str, dict[str, Any]] = {}
+    for doc in sorted(docs, key=lambda item: str((item.get("run") or {}).get("generated_at") or "")):
+        for recommendation in doc.get("recommendations") or []:
+            if isinstance(recommendation, dict) and recommendation.get("signal_fingerprint"):
+                latest[str(recommendation["signal_fingerprint"])] = dict(recommendation)
+    return [
+        latest.get(str(signal.get("fingerprint")))
+        or pending_recommendations([signal])[0]
+        for signal in signals
+    ]
+
+
+def _analyzer_status(docs: list[dict[str, Any]]) -> str:
+    if any(
+        isinstance(recommendation, dict)
+        and recommendation.get("state") != "ANALYSIS_PENDING"
+        for doc in docs
+        for recommendation in (doc.get("recommendations") or [])
+    ):
+        return "available"
+    return "unavailable"
+
+
 def monthly_rollup(
     issues: list[dict[str, Any]],
     config: dict[str, Any],
     *,
     period: str | None = None,
+    minimum_source_signals: int = 8,
 ) -> dict[str, Any]:
     errors = validate_config(config)
     if errors:
@@ -157,14 +293,26 @@ def monthly_rollup(
     for issue in issues:
         if not str(issue.get("title") or "").startswith("Evolution Radar [weekly]"):
             continue
-        if period is not None and not str(issue.get("created_at") or "").startswith(period + "-"):
-            continue
         doc = extract_evidence(str(issue.get("body") or ""))
-        if doc and (doc.get("run") or {}).get("mode") == "weekly":
+        run_period = ((doc or {}).get("run") or {}).get("period")
+        generated_date = _weekly_generated_date(doc or {})
+        if period is None:
+            in_period = True
+        elif run_period:
+            in_period = run_period == period
+        elif generated_date:
+            in_period = generated_date.startswith(period + "-")
+        else:
+            in_period = str(issue.get("created_at") or "").startswith(period + "-")
+        if doc and in_period and (doc.get("run") or {}).get("mode") == "weekly":
             weekly_docs.append(doc)
 
     signals = aggregate_signals(weekly_docs)
-    recommendations = pending_recommendations(signals)
+    recommendations = _recommendations_from_docs(weekly_docs, signals)
+    expected_dates = _monday_dates(period) if period else []
+    health = _pipeline_health(weekly_docs, expected=expected_dates, expected_kind="weekly_monday")
+    minimum_signals = int(minimum_source_signals)
+    value = _content_value(weekly_docs, complete=health["status"] == "COMPLETE", minimum_signals=minimum_signals)
     configured = [s["id"] for s in config.get("sources") or [] if s.get("enabled", True)]
     attempted = sorted({x for d in weekly_docs for x in ((d.get("sources") or {}).get("attempted") or [])})
     failures = [x for d in weekly_docs for x in ((d.get("sources") or {}).get("failures") or [])]
@@ -176,7 +324,9 @@ def monthly_rollup(
             "repository_revision": None,
             "period": period,
             "weekly_evidence_count": len(weekly_docs),
-            "analyzer": {"status": "unavailable", "provider": None, "model": None},
+            "pipeline_health": health,
+            "content_value": value,
+            "analyzer": {"status": _analyzer_status(weekly_docs), "provider": None, "model": None},
         },
         "sources": {"configured": configured, "attempted": attempted, "failures": failures},
         "signals": signals,
@@ -186,7 +336,7 @@ def monthly_rollup(
             "adopt_minimum_evidence_level": int((config.get("policy") or {}).get("evidence_quality", {}).get("adopt_minimum_level", 2)),
             "deduplicated_count": len(signals),
             "recommendation_count": len(recommendations),
-            "actionable_count": 0,
+            "actionable_count": value["actionable_count"],
             "zero_recommendations_valid": True,
         },
         "authority": {
@@ -214,6 +364,7 @@ def quarterly_rollup(
     config: dict[str, Any],
     *,
     period: str,
+    minimum_source_signals: int = 8,
 ) -> dict[str, Any]:
     errors = validate_config(config)
     if errors:
@@ -230,10 +381,37 @@ def quarterly_rollup(
             monthly_docs.append(doc)
 
     signals = aggregate_signals(monthly_docs)
-    recommendations = pending_recommendations(signals)
+    recommendations = _recommendations_from_docs(monthly_docs, signals)
     configured = [s["id"] for s in config.get("sources") or [] if s.get("enabled", True)]
     attempted = sorted({x for d in monthly_docs for x in ((d.get("sources") or {}).get("attempted") or [])})
     failures = [x for d in monthly_docs for x in ((d.get("sources") or {}).get("failures") or [])]
+    month_counts = {
+        month: sum(1 for doc in monthly_docs if (doc.get("run") or {}).get("period") == month)
+        for month in months
+    }
+    missing_months = [month for month, count in month_counts.items() if count == 0]
+    duplicate_months = [month for month, count in month_counts.items() if count > 1]
+    monthly_health = [(doc.get("run") or {}).get("pipeline_health") or {} for doc in monthly_docs]
+    health_reasons = []
+    if missing_months:
+        health_reasons.append("monthly_bundles_missing")
+    if duplicate_months:
+        health_reasons.append("duplicate_monthly_bundles")
+    if not monthly_health or any(item.get("status") != "COMPLETE" for item in monthly_health):
+        health_reasons.append("monthly_pipeline_incomplete_or_unverified")
+    health = {
+        "status": "COMPLETE" if not health_reasons else "INCOMPLETE_INPUT",
+        "expected_kind": "calendar_month",
+        "expected_count": 3,
+        "expected_months": months,
+        "observed_count": len(monthly_docs),
+        "observed_month_counts": month_counts,
+        "missing_months": missing_months,
+        "duplicate_months": duplicate_months,
+        "reasons": health_reasons,
+    }
+    minimum_signals = 3 * int(minimum_source_signals)
+    value = _content_value(monthly_docs, complete=health["status"] == "COMPLETE", minimum_signals=minimum_signals)
     return {
         "version": 1,
         "run": {
@@ -243,7 +421,9 @@ def quarterly_rollup(
             "period": period,
             "months_reviewed": months,
             "monthly_evidence_count": len(monthly_docs),
-            "analyzer": {"status": "unavailable", "provider": None, "model": None},
+            "pipeline_health": health,
+            "content_value": value,
+            "analyzer": {"status": _analyzer_status(monthly_docs), "provider": None, "model": None},
         },
         "sources": {"configured": configured, "attempted": attempted, "failures": failures},
         "signals": signals,
@@ -253,9 +433,11 @@ def quarterly_rollup(
             "adopt_minimum_evidence_level": int((config.get("policy") or {}).get("evidence_quality", {}).get("adopt_minimum_level", 2)),
             "deduplicated_count": len(signals),
             "recommendation_count": len(recommendations),
-            "actionable_count": 0,
+            "actionable_count": value["actionable_count"],
             "zero_recommendations_valid": True,
         },
+        "pipeline_health": health,
+        "content_value": value,
         "authority": {
             "code_change_authorized": False,
             "branch_or_pr_authorized": False,
@@ -265,7 +447,12 @@ def quarterly_rollup(
         },
     }
 
-def issue_markdown(doc: dict[str, Any], handoff_text: str | None = None, preanalysis_text: str | None = None) -> str:
+def issue_markdown(
+    doc: dict[str, Any],
+    handoff_text: str | None = None,
+    preanalysis_text: str | None = None,
+    analysis_text: str | None = None,
+) -> str:
     summary = doc.get("summary") or {}
     sources = doc.get("sources") or {}
     run = doc.get("run") or {}
@@ -293,13 +480,17 @@ def issue_markdown(doc: dict[str, Any], handoff_text: str | None = None, preanal
         if run.get("period"):
             lines.append(f"- Review period: {run.get('period')}")
         lines.append(f"- Weekly evidence bundles reviewed: {run.get('weekly_evidence_count', 0)}")
+    if run.get("pipeline_health"):
+        lines.append(f"- Pipeline health: `{run['pipeline_health'].get('status')}`")
+    if run.get("content_value"):
+        lines.append(f"- Content value: `{run['content_value'].get('status')}`")
     if mode == "quarterly":
         if run.get("period"):
             lines.append(f"- Review quarter: {run.get('period')}")
         lines.append(f"- Monthly evidence bundles reviewed: {run.get('monthly_evidence_count', 0)}")
         lines.append(f"- Calendar months reviewed: {', '.join(run.get('months_reviewed') or [])}")
     lines += [
-        "- Semantic assessment: `ANALYSIS_PENDING` until a validated analyzer result is bound",
+        f"- Semantic assessment: `{run.get('content_value', {}).get('status', 'ANALYSIS_PENDING')}`",
         "",
         "This report is evidence/recommendation input only. It does not authorize code changes, PRs, merges or releases.",
         "",
@@ -308,6 +499,8 @@ def issue_markdown(doc: dict[str, Any], handoff_text: str | None = None, preanal
         lines += [preanalysis_text.rstrip(), ""]
     if handoff_text:
         lines += [handoff_text.rstrip(), ""]
+    if analysis_text:
+        lines += [analysis_text.rstrip(), ""]
     lines += [
         EVIDENCE_START,
         "```yaml",
@@ -326,16 +519,19 @@ def main() -> int:
     rollup.add_argument("--issues-json", required=True)
     rollup.add_argument("--config", required=True)
     rollup.add_argument("--period")
+    rollup.add_argument("--effectiveness-config", default="config/evolution-effectiveness.yaml")
     rollup.add_argument("--output", required=True)
     quarterly = sub.add_parser("quarterly-rollup")
     quarterly.add_argument("--issues-json", required=True)
     quarterly.add_argument("--config", required=True)
     quarterly.add_argument("--period", required=True)
+    quarterly.add_argument("--effectiveness-config", default="config/evolution-effectiveness.yaml")
     quarterly.add_argument("--output", required=True)
     issue = sub.add_parser("issue-body")
     issue.add_argument("evidence")
     issue.add_argument("--handoff")
     issue.add_argument("--preanalysis")
+    issue.add_argument("--analysis")
     issue.add_argument("--output", required=True)
     args = parser.parse_args()
 
@@ -343,7 +539,9 @@ def main() -> int:
         raw_issues = json.loads(Path(args.issues_json).read_text(encoding="utf-8"))
         issues = flatten_issue_pages(raw_issues)
         config = yaml.safe_load(Path(args.config).read_text(encoding="utf-8")) or {}
-        doc = monthly_rollup(issues, config, period=args.period)
+        effectiveness_config = yaml.safe_load(Path(args.effectiveness_config).read_text(encoding="utf-8")) or {}
+        minimum = int((effectiveness_config.get("review_flags") or {}).get("minimum_source_signals", 8))
+        doc = monthly_rollup(issues, config, period=args.period, minimum_source_signals=minimum)
         Path(args.output).write_text(yaml.safe_dump(doc, sort_keys=False, allow_unicode=True), encoding="utf-8")
         return 0
 
@@ -351,7 +549,9 @@ def main() -> int:
         raw_issues = json.loads(Path(args.issues_json).read_text(encoding="utf-8"))
         issues = flatten_issue_pages(raw_issues)
         config = yaml.safe_load(Path(args.config).read_text(encoding="utf-8")) or {}
-        doc = quarterly_rollup(issues, config, period=args.period)
+        effectiveness_config = yaml.safe_load(Path(args.effectiveness_config).read_text(encoding="utf-8")) or {}
+        minimum = int((effectiveness_config.get("review_flags") or {}).get("minimum_source_signals", 8))
+        doc = quarterly_rollup(issues, config, period=args.period, minimum_source_signals=minimum)
         Path(args.output).write_text(yaml.safe_dump(doc, sort_keys=False, allow_unicode=True), encoding="utf-8")
         return 0
 
@@ -361,7 +561,16 @@ def main() -> int:
         raise ValueError("invalid evidence: " + "; ".join(errors))
     handoff_text = Path(args.handoff).read_text(encoding="utf-8") if args.handoff else None
     preanalysis_text = Path(args.preanalysis).read_text(encoding="utf-8") if args.preanalysis else None
-    Path(args.output).write_text(issue_markdown(doc, handoff_text, preanalysis_text), encoding="utf-8")
+    analysis_text = None
+    if args.analysis:
+        from evolution_analysis import analysis_markdown, validate_analysis
+
+        analysis = yaml.safe_load(Path(args.analysis).read_text(encoding="utf-8")) or {}
+        errors = validate_analysis(doc, analysis)
+        if errors:
+            raise ValueError("invalid analysis: " + "; ".join(errors))
+        analysis_text = analysis_markdown(analysis)
+    Path(args.output).write_text(issue_markdown(doc, handoff_text, preanalysis_text, analysis_text), encoding="utf-8")
     return 0
 
 

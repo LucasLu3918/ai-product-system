@@ -113,6 +113,7 @@ Usage:
 
   aips conformance check [--format yaml|json]
   aips conformance report [--format yaml|json]
+  aips conformance summary <current|history> [--output <path>]
   aips conformance agent-eval check [--format yaml|json]
   aips conformance agent-eval report [--format yaml|json]
   aips conformance agent-eval consistency --case <yaml> --results-dir <dir> [--min-repetitions <n>] [--min-pass-rate <0..1>] [--format yaml|json]
@@ -136,6 +137,7 @@ Usage:
   aips integration-gate --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--review-trust-store <path>] [--observe-run-id <id>] [--output <path>] [--project-root <repo>]
   aips janitor --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>]
   aips publish preview|plan|preflight|matrix-sync|post-merge|checks [publish-preflight options] [--project-root <repo>]
+  aips evolution package|analyze|apply [evolution analysis options]
   aips docs impact --base <ref> [--head <ref>] [--project-root <repo>] [--format yaml|json]
   aips openapi <doctor|install|validate|compare|run-contract-tests|verify-evidence|generator> ...
 
@@ -724,6 +726,11 @@ conformance_cmd() {
   local py
   py="$(python_bin)"
   [ -n "$py" ] || die "python3 is required."
+  if [ "${1:-}" = "summary" ]; then
+    shift
+    "$py" "$SYSTEM_DIR/scripts/conformance_summary.py" "$@"
+    return
+  fi
   "$py" "$SYSTEM_DIR/scripts/scenario_conformance.py" "$@"
 }
 
@@ -873,6 +880,23 @@ docs_cmd() {
   shift || true
   [ "$action" = "impact" ] || die "Usage: aips docs impact --base <ref> [--head <ref>]"
   publish_preflight_cmd docs-impact "$@"
+}
+
+evolution_cmd() {
+  local action="${1:-}"
+  [ -n "$action" ] || die "Usage: aips evolution <package|analyze|apply> [evolution analysis options]"
+  shift || true
+  case "$action" in
+    package|apply)
+      python3 "$SYSTEM_DIR/scripts/evolution_analysis.py" "$action" "$@"
+      ;;
+    analyze)
+      python3 "$SYSTEM_DIR/scripts/evolution_analysis.py" finalize "$@"
+      ;;
+    *)
+      die "Unsupported Evolution action: $action (expected package, analyze or apply)"
+      ;;
+  esac
 }
 
 openapi_cmd() {
@@ -1719,6 +1743,10 @@ case "${1:-help}" in
   publish)
     shift
     publish_preflight_cmd "$@"
+    ;;
+  evolution)
+    shift
+    evolution_cmd "$@"
     ;;
   docs)
     shift
