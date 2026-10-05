@@ -72,6 +72,7 @@ surfaces:
       - durable-run-state
     required_paths:
       - scripts/project_intelligence.py
+      - scripts/project_intelligence_temporal.py
       - orchestration/PROJECT_INTELLIGENCE.md
       - orchestration/PROJECT_IDENTITY.md
       - orchestration/CHANGE_IMPACT.md

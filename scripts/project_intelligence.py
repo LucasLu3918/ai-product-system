@@ -28,7 +28,10 @@ from aips_identity import (
 from aips_identity import (
     repository_identity as canonical_repository_identity,
 )
+from content_safety import safe_emit as safe_context_emit
 from git_paths import GitPathsError, run_git_paths
+from observed_stage import observed_stage
+from project_intelligence_temporal import temporal_query
 from retrieval_evaluation import (
     evaluate_suite as retrieval_evaluate_suite,
 )
@@ -44,7 +47,10 @@ from retrieval_intelligence import (
 from retrieval_intelligence import (
     DEFAULT_TOKEN_BUDGET as RETRIEVAL_DEFAULT_TOKEN_BUDGET,
 )
-from retrieval_intelligence import SECRET_VALUE_PATTERNS
+from retrieval_intelligence import (
+    SECRET_VALUE_PATTERNS,
+    risk_adaptive_policy,
+)
 from retrieval_intelligence import (
     index_repository as retrieval_index_repository,
 )
@@ -56,21 +62,13 @@ from retrieval_intelligence import (
     query_repository as retrieval_query_repository,
 )
 from retrieval_intelligence import (
-    risk_adaptive_policy,
     traverse_change_impact as retrieval_traverse_change_impact,
 )
-from retrieval_intelligence import redact_text as redact_retrieval_text
-from content_safety import safe_emit as safe_context_emit
-from observed_stage import observed_stage
-from turn_intent import classify_prompt
 from temporal_intelligence import (
     active_assertions as temporal_active_assertions,
-    between as temporal_between,
-    load_temporal,
-    temporal_digest,
     validate_document as validate_temporal_document,
-    why as temporal_why,
 )
+from turn_intent import classify_prompt
 
 SCHEMA_VERSION = 1
 
@@ -2079,33 +2077,6 @@ def impact_validate(path: Path, root: Path | None = None) -> dict[str, Any]:
     doc = load_yaml(path, {})
     result = validate_impact_document(doc, root)
     result["path"] = str(path)
-    return result
-
-
-def temporal_query(root: Path, store: Path, mode: str, revision: str | None,
-                   base: str | None, head: str | None, assertion_id: str | None) -> dict[str, Any]:
-    doc = load_temporal(store)
-    errors = validate_temporal_document(doc)
-    if errors:
-        raise RuntimeError("invalid temporal assertions: " + "; ".join(errors))
-    if mode == "current":
-        result = temporal_active_assertions(root, doc)
-    elif mode == "as-of":
-        if not revision:
-            raise RuntimeError("--revision is required for --mode as-of")
-        result = temporal_active_assertions(root, doc, revision)
-    elif mode == "between":
-        if not base or not head:
-            raise RuntimeError("--base and --head are required for --mode between")
-        result = temporal_between(root, doc, base, head)
-    elif mode == "why":
-        if not assertion_id:
-            raise RuntimeError("--assertion is required for --mode why")
-        result = temporal_why(doc, assertion_id)
-    else:
-        raise RuntimeError(f"unsupported temporal mode: {mode}")
-    result["canonical"] = str(store / "TEMPORAL_ASSERTIONS.yaml")
-    result["digest"] = temporal_digest(doc)
     return result
 
 

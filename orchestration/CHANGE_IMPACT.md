@@ -101,6 +101,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+Project Intelligence 的 temporal query 可逐步抽至內部 adapter，但必須保留 `project_intelligence.py` 的同一函式物件、CLI dispatch 與結果契約；Scenario 204 提供回歸證據。
+
 Scoped traversal evidence may be complete for directly inspected callers while retrieval-index freshness or repository-wide graph coverage remains incomplete. Record the limitation and keep global coverage claims partial.
 
 Validation-scope hints remain conservative: unknown paths and validator/governance paths retain the full validator set, while the shadow report records proposed omissions without skipping execution.
