@@ -43,6 +43,38 @@ def main() -> int:
             pass
         else:
             raise AssertionError("tag/version mismatch must fail closed")
+    with tempfile.TemporaryDirectory(prefix="aips-source-checkout-") as tmp:
+        base = Path(tmp)
+        source = base / "source"
+        source.mkdir()
+        git(source, "init", "-q", "-b", "candidate")
+        git(source, "config", "user.email", "aips" + chr(64) + "example.invalid")
+        git(source, "config", "user.name", "AIPS Test")
+        (source / "VERSION").write_text("0.0.0\n", encoding="utf-8")
+        (source / "bin").mkdir()
+        (source / "bin/aips").write_text("#!/usr/bin/env bash\nprintf 'candidate installed\n'\n", encoding="utf-8")
+        (source / "bin/aips").chmod(0o755)
+        (source / "scripts").mkdir()
+        (source / "scripts/release_channel.py").write_bytes((ROOT / "scripts/release_channel.py").read_bytes())
+        git(source, "add", ".")
+        git(source, "commit", "-qm", "source-checkout fixture")
+        source_head = git(source, "rev-parse", "HEAD")
+        git(source, "checkout", "--quiet", "--detach", "HEAD")
+        install_dir = base / "install"
+        env = dict(__import__("os").environ)
+        env.update({
+            "AIPS_INSTALL_SOURCE": str(source),
+            "AIPS_REPO_URL": str(source),
+            "AIPS_INSTALL_DIR": str(install_dir),
+            "HOME": str(base / "home"),
+        })
+        (base / "home").mkdir()
+        result = subprocess.run(["bash", str(ROOT / "scripts/install.sh")], env=env, text=True, capture_output=True, check=False)
+        assert result.returncode == 0, result.stdout + result.stderr
+        assert git(install_dir, "rev-parse", "HEAD") == source_head
+        channel_path = Path(git(install_dir, "rev-parse", "--path-format=absolute", "--git-path", "aips-channel"))
+        assert channel_path.read_text(encoding="utf-8").strip() == "main"
+
     property_check = subprocess.run(
         [sys.executable, str(ROOT / "tests/evidence/release_channel_properties.py")],
         capture_output=True,

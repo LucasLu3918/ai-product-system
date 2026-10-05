@@ -94,15 +94,19 @@ case "$INSTALL_CHANNEL" in
     if [ "$resolve_status" -eq 3 ] && [ "$CHANNEL_EXPLICIT" = false ]; then
       echo "WARNING: no stable AIPS release tag exists yet; bootstrapping from main. Future updates will follow stable releases." >&2
       INSTALL_CHANNEL=main
-      git -C "$INSTALL_DIR" fetch --quiet origin "$INSTALL_BRANCH"
-      if [ "$(git -C "$INSTALL_DIR" branch --show-current)" != "$INSTALL_BRANCH" ]; then
-        if git -C "$INSTALL_DIR" show-ref --verify --quiet "refs/heads/$INSTALL_BRANCH"; then
-          git -C "$INSTALL_DIR" checkout --quiet "$INSTALL_BRANCH"
-        else
-          git -C "$INSTALL_DIR" checkout --quiet -b "$INSTALL_BRANCH" "origin/$INSTALL_BRANCH"
+      if [ "$CLONED_NOW" = true ] && [ -n "$SOURCE_CHECKOUT" ]; then
+        echo "Keeping the supplied source-checkout commit for bootstrap validation." >&2
+      else
+        git -C "$INSTALL_DIR" fetch --quiet origin "$INSTALL_BRANCH"
+        if [ "$(git -C "$INSTALL_DIR" branch --show-current)" != "$INSTALL_BRANCH" ]; then
+          if git -C "$INSTALL_DIR" show-ref --verify --quiet "refs/heads/$INSTALL_BRANCH"; then
+            git -C "$INSTALL_DIR" checkout --quiet "$INSTALL_BRANCH"
+          else
+            git -C "$INSTALL_DIR" checkout --quiet -b "$INSTALL_BRANCH" "origin/$INSTALL_BRANCH"
+          fi
         fi
+        git -C "$INSTALL_DIR" merge --ff-only --quiet "origin/$INSTALL_BRANCH"
       fi
-      git -C "$INSTALL_DIR" merge --ff-only --quiet "origin/$INSTALL_BRANCH"
     elif [ "$resolve_status" -ne 0 ]; then
       if [ "$CLONED_NOW" = true ]; then rm -rf "$INSTALL_DIR"; fi
       echo "$stable_info" >&2
