@@ -46,11 +46,23 @@ if config_path.exists():
 
 script = ROOT / "scripts/branch_hygiene.py"
 if script.exists():
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(script)], cwd=ROOT, text=True, capture_output=True)
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(script)], cwd=ROOT, text=True, capture_output=True, check=False)
     if compiled.returncode != 0:
         errors.append(f"branch hygiene syntax failed: {compiled.stderr.strip()}")
     text = script.read_text(encoding="utf-8")
-    for token in ("--remote", "refs/remotes", "--apply-cleanup", "--github-repository", "GITHUB_MERGED_PR_EXACT_HEAD", "exact_manifest_only", "cleanup preflight blocked", '"branch_deletion_authorized": False'):
+    for token in (
+        "--remote",
+        "refs/remotes",
+        "--apply-cleanup",
+        "--github-repository",
+        "GITHUB_MERGED_PR_EXACT_HEAD",
+        "exact_manifest_only",
+        "cleanup preflight blocked",
+        "manifest baseline is stale",
+        "consumed, replayed, or partially applied",
+        "cleanup stopped at a deletion failure",
+        '"branch_deletion_authorized": False',
+    ):
         if token not in text:
             errors.append(f"branch hygiene remote/report-only contract missing: {token}")
 
@@ -86,7 +98,7 @@ if workflow.exists():
 
 evidence = ROOT / "tests/evidence/branch_hygiene_lifecycle.py"
 if evidence.exists():
-    result = subprocess.run([sys.executable, str(evidence)], cwd=ROOT, text=True, capture_output=True)
+    result = subprocess.run([sys.executable, str(evidence)], cwd=ROOT, text=True, capture_output=True, check=False)
     if result.returncode != 0:
         errors.append(f"branch hygiene lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}")
 

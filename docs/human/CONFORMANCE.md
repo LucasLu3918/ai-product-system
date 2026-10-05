@@ -1515,7 +1515,7 @@ Scenarios 214–219 cover verified stable-channel installation, tested runtime c
 Scenario 155 also verifies that missing weekly pre-analysis leaves source shortlist yield unavailable and that oversized Issue evidence is digest-checked before Radar and Effectiveness consumers parse it.
 
 
-Current counts and the Human/Agent history crosswalk are generated in [Current Scenario Conformance](CONFORMANCE_CURRENT.md) and [Conformance History Index](CONFORMANCE_HISTORY_INDEX.md). This document retains versioned baselines as historical records; normative Agent rules remain in `orchestration/CONFORMANCE.md`. Scenarios 202–209 cover Evolution completeness, validation shadow/replay, compatible module extraction, branch proposal freshness, conformance views, shared workflow bootstrap, version-tag provenance, and GitHub ruleset policy comparison.
+Current counts and the Human/Agent history crosswalk are generated in [Current Scenario Conformance](CONFORMANCE_CURRENT.md) and [Conformance History Index](CONFORMANCE_HISTORY_INDEX.md). This document retains versioned baselines as historical records; normative Agent rules remain in `orchestration/CONFORMANCE.md`. Scenarios 202–209 cover Evolution completeness, validation shadow/replay, compatible module extraction, branch proposal freshness, conformance views, shared workflow bootstrap, version-tag provenance, and GitHub ruleset policy comparison. Scenario 205's current branch cleanup contract also binds apply to the current main baseline and rejects absent refs as replay or partial-state evidence.
 
 ### Scenario 210 — Python runtime support policy
 

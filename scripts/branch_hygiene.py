@@ -4,13 +4,13 @@
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
 import fnmatch
 import hashlib
 import json
 import os
 import re
 import subprocess
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -29,7 +29,7 @@ def load_yaml(path: Path) -> dict[str, Any]:
 
 
 def git(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
-    proc = subprocess.run(["git", *args], text=True, capture_output=True)
+    proc = subprocess.run(["git", *args], text=True, capture_output=True, check=False)
     if check and proc.returncode != 0:
         raise BranchHygieneError(proc.stderr.strip() or f"git {' '.join(args)} failed")
     return proc
@@ -113,7 +113,7 @@ def build_report(
     target_ref, refs = branch_refs(target, remote)
     prs = pull_requests or []
     try:
-        now = datetime.fromisoformat((generated_at or datetime.now(timezone.utc).isoformat()).replace("Z", "+00:00"))
+        now = datetime.fromisoformat(generated_at or datetime.now(UTC).isoformat())
     except ValueError as exc:
         raise BranchHygieneError("generated_at must be a valid ISO-8601 timestamp") from exc
     rows = []
@@ -231,6 +231,7 @@ def github_pr_integrated(row: dict[str, Any], *, repository: str, target: str) -
         text=True,
         capture_output=True,
         env=env,
+        check=False,
     )
     if proc.returncode != 0:
         raise BranchHygieneError(
@@ -286,16 +287,23 @@ def apply_cleanup(
 ) -> dict[str, Any]:
     validate_cleanup_manifest(manifest)
     target_ref, refs = branch_refs(target, remote)
+    current_baseline = git("rev-parse", target_ref).stdout.strip()
     ref_map = dict(refs)
     preflight: list[dict[str, Any]] = []
     blockers: list[str] = []
+
+    if manifest["baseline_main_sha"] != current_baseline:
+        blockers.append(
+            "manifest baseline is stale: "
+            f"approved {manifest['baseline_main_sha']}, current {target} is {current_baseline}"
+        )
 
     for row in manifest["branches"]:
         name = row["branch"]
         expected = row["expected_sha"]
         ref = ref_map.get(name)
         if ref is None:
-            preflight.append({"branch": name, "expected_sha": expected, "status": "ALREADY_ABSENT"})
+            blockers.append(f"{name}: branch is absent; manifest is consumed, replayed, or partially applied")
             continue
         if name == target or classify(name, config) != "EPHEMERAL":
             blockers.append(f"{name}: branch is not an EPHEMERAL cleanup target")
@@ -325,13 +333,15 @@ def apply_cleanup(
 
     results: list[dict[str, Any]] = []
     for row in preflight:
-        if row["status"] == "ALREADY_ABSENT":
-            results.append(row)
-            continue
         name = row["branch"]
         proc = git("push", remote, "--delete", name, check=False)
         if proc.returncode != 0:
-            raise BranchHygieneError(proc.stderr.strip() or f"failed to delete {name}")
+            deleted = [result["branch"] for result in results]
+            raise BranchHygieneError(
+                "cleanup stopped at a deletion failure; verify remote refs and create a newly reviewed "
+                "manifest before retrying; branches deleted before failure: "
+                f"{deleted or 'none'}; {proc.stderr.strip() or f'failed to delete {name}'}"
+            )
         results.append({**row, "status": "DELETED"})
 
     return {

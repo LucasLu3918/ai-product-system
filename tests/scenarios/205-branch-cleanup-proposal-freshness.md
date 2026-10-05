@@ -1,5 +1,5 @@
 # Scenario 205: Branch cleanup proposal freshness
 
-Given a merged branch candidate, when the read-only cleanup proposal is generated, then it binds the branch SHA, merged PR, date, main baseline, and content fingerprint. Changed branch content or main baseline makes the proposal stale; generation never deletes a branch.
+Given a merged branch candidate, when the read-only cleanup proposal is generated, then it binds the branch SHA, merged PR, date, main baseline, and content fingerprint. Changed branch content or main baseline makes the proposal stale; generation never deletes a branch. Applying an exact manifest also requires its recorded main baseline to equal the current target tip, and any absent manifest ref blocks the complete batch as replay or partial-state evidence.
 
 Evidence: `tests/evidence/branch_hygiene_lifecycle.py`.

@@ -191,7 +191,7 @@ Public command, platform, runtime, optional-dependency, validation and documenta
 
 Repository validation classifies exact candidate paths before provisioning optional Node, browser and OpenAPI toolchains. Unknown paths use the full toolchain. The Integration Gate, mandatory secret scan and repository validation remain required for every candidate.
 
-Branch hygiene emits deterministic SHA, PR, age and integration proposals; removal remains an explicit exact-manifest operation. CI selects optional Node, browser and OpenAPI toolchains from exact changed paths and fails closed to the full profile on unknown input.
+Branch hygiene emits deterministic SHA, PR, age and integration proposals; cleanup requires an exact one-time manifest whose main baseline matches the current target. Any absent row blocks the complete batch as replay or partial-state evidence; a mid-run remote failure reports completed deletions and requires a newly reviewed manifest before retry. CI selects optional Node, browser and OpenAPI toolchains from exact changed paths and fails closed to the full profile on unknown input.
 
 Eval-as-CI / Trajectory Quality Gate 以 provider-neutral trace 產生 observable evidence。Deterministic violations 可形成 `BLOCK`，效率偏差形成 `WARN` 或 `DEGRADED`；shadow mode 不授予 Git Publish 權限，Human Authority 仍是最後決策者。
 
