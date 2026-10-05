@@ -305,6 +305,7 @@ def main() -> int:
         "human_decision_required": True,
     }, "research authority boundary must be fail-closed")
 
+    weekly["run"]["generated_at"] = "2026-09-01T01:00:00Z"
     body1 = rollup.issue_markdown(weekly)
     require(rollup.EVIDENCE_START in body1 and rollup.EVIDENCE_END in body1, "Issue must carry machine-readable evidence markers")
     parsed = rollup.extract_evidence(body1)

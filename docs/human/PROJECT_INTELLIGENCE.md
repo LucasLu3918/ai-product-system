@@ -61,6 +61,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+Architecture-impact traversal is kept behind `project_intelligence.py` as a compatible internal module; existing callers keep the same function and evidence shape. Retrieval structural graph construction follows the same facade boundary. These extractions preserve indexed evidence, bounded traversal and explicit unknowns.
+
 OpenAPI generator executable/version, declared tool inputs and generated ownership are project-local implementation evidence. Keep them in the Implementation Profile and Phase 3 provenance records; do not promote one project's generator choice into reusable global Project Intelligence. Scenario 196 defines the local execution and rollback boundary.
 
 Project Intelligence can locate OpenAPI specifications and likely consumers, but presence in the repository does not establish contract authority. Implementation Resolution records whether the source is canonical, descriptive, proposed or unresolved before compatibility evidence is used.

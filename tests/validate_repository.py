@@ -110,6 +110,11 @@ for evidence in (
     Path(__file__).parent / "evidence/validator_registry_lifecycle.py",
     Path(__file__).parent / "evidence/system_facts_lifecycle.py",
     Path(__file__).parent / "evidence/ci_validation_plan_lifecycle.py",
+    Path(__file__).parent / "evidence/validation_shadow_plan_lifecycle.py",
+    Path(__file__).parent / "evidence/conformance_summary_lifecycle.py",
+    Path(__file__).parent / "evidence/python_bootstrap_action_lifecycle.py",
+    Path(__file__).parent / "evidence/version_policy_lifecycle.py",
+    Path(__file__).parent / "evidence/module_extraction_lifecycle.py",
     Path(__file__).parent / "evidence/maintenance_reliability_lifecycle.py",
 ):
     if evidence.name in _OPENAPI_EVIDENCE and _ci_plan is not None and _ci_plan.get("needs_openapi") is False:

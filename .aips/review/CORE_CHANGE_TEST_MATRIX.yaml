@@ -1,70 +1,351 @@
 version: 1
 change:
-  id: plan12-reliability
-  summary: Add bounded monthly GitHub validation/merge evidence and deterministic reliability metrics for Human review.
+  id: plan13-all
+  summary: Consolidate and improve existing AIPS Evolution effectiveness, selective validation, large-module maintainability,
+    branch cleanup provenance, conformance documentation, workflow bootstrap reuse, version tag provenance, and
+    GitHub ruleset policy assessment.
   boundary:
-    - bounded-github-metadata-collection
-    - reliability-metric-and-unknown-semantics
-    - report-workflow-authority-and-publication
-    - scenario-validation-and-documentation-closure
+  - Evolution Radar cohort completeness, pipeline health/value reporting, bounded semantic handoff, and monthly-to-quarterly
+    evidence replay
+  - Repository validator registry metadata, deterministic shadow plan, fail-closed execution selection, replay parity,
+    and fallback behavior
+  - repository_health analysis extraction behind compatibility facade
+  - project_intelligence impact/context extraction behind compatibility facade
+  - retrieval_intelligence query/graph extraction behind compatibility facade
+  - branch proposal report provenance while retaining the existing exact-manifest deletion authority
+  - derived current Conformance summary and traceable Human/Agent historical content placement
+  - local composite Python bootstrap parity for pilot workflows and validate workflow if parity is proven
+  - forward-only version-tag provenance contract integrated with existing release records
+  - deterministic GitHub ruleset policy proposal/diff; no remote Ruleset activation in this candidate
+  - VERSION, CHANGELOG, scenario coverage, affected documentation placement/sync and architecture diagrams
 matrix:
-  - boundary: bounded-github-metadata-collection
-    reason: GitHub Actions runs/jobs and merged PR metadata are fetched with fixed pagination, row, failure-detail and changed-file caps; truncation remains explicit.
-    checks: &shared
-      static_lint:
-        applicable: true
-        evidence: Ruff critical scan and Python syntax through repository validation.
-      unit:
-        applicable: true
-        evidence: Lifecycle API fixtures cover run/search objects, array-shaped PR files, truncation and unavailable failure details.
-      integration:
-        applicable: true
-        evidence: Full repository validator and exact-candidate Integration Gate.
-      contract:
-        applicable: true
-        evidence: Maintenance reliability config/workflow contract checks permissions, finite bounds and required evidence fields.
-      e2e:
-        applicable: true
-        evidence: Workflow YAML is validated by repository contracts and required GitHub PR checks exercise the candidate workflow definition.
-      security:
-        applicable: true
-        evidence: Exact-candidate mandatory secret scan; fixture/report stores normalized metadata only and no logs, prompts or credentials.
-      migration_recovery:
-        applicable: false
-        na_reason: This adds a bounded report artifact and review Issue, not a repository-owned user data store or migration.
-      cli_harness:
-        applicable: false
-        na_reason: A new standalone evidence helper does not change public AIPS CLI routing or runtime adapters.
-      docs_schema:
-        applicable: true
-        evidence: Scenario 201 registry/conformance, recursive documentation sync and placement preview, plus docs-site build.
-  - boundary: reliability-metric-and-unknown-semantics
-    reason: Monthly pass rate, nearest-rank runtime and files-per-change distributions, hotfix labels, repeated paths, failure hints and exact-SHA regressions must be deterministic and conservative with incomplete data.
-    checks:
-      <<: *shared
-      unit:
-        applicable: true
-        evidence: Lifecycle verifies pass-rate basis points, median/P95, normalized Hotfix labels, repeated paths, heuristic category priority, exact merge-SHA correlation, truncated history, missing timestamps and missing changed-file counts.
-  - boundary: report-workflow-authority-and-publication
-    reason: Monthly Actions may collect read-only Actions/contents/PR metadata and publish a short-lived artifact, Job Summary and deduplicated Human-review Issue without any remediation authority.
-    checks:
-      <<: *shared
-      security:
-        applicable: true
-        evidence: Static contract pins actions:read, contents:read, pull-requests:read and issues:write; forbidden contents/PR write, merge, release and code-mutation authority is rejected.
-  - boundary: scenario-validation-and-documentation-closure
-    reason: Scenario 201 has one lifecycle owner in repository validation and the Human/Agent docs plus documentation rules remain synchronized in canonical topic sections.
-    checks:
-      <<: *shared
-      integration:
-        applicable: true
-        evidence: Full repository validator, scenario conformance inventory (201 total, 199 automated, 2 manual), documentation closure and placement preview.
-status: READY
+- boundary: Evolution evidence completeness and health/value state
+  reason: Distinguish healthy empty evidence from missing/incomplete/pending pipeline stages.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: tests/evidence/evolution_radar_lifecycle.py, evolution_effectiveness_lifecycle.py, evolution_governance_lifecycle.py,
+        evolution_pipeline_closure_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    unit:
+      applicable: true
+      evidence: tests/evidence/evolution_radar_lifecycle.py, evolution_effectiveness_lifecycle.py, evolution_governance_lifecycle.py,
+        evolution_pipeline_closure_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    integration:
+      applicable: true
+      evidence: tests/evidence/evolution_radar_lifecycle.py, evolution_effectiveness_lifecycle.py, evolution_governance_lifecycle.py,
+        evolution_pipeline_closure_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    contract:
+      applicable: true
+      evidence: tests/evidence/evolution_radar_lifecycle.py, evolution_effectiveness_lifecycle.py, evolution_governance_lifecycle.py,
+        evolution_pipeline_closure_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    e2e:
+      applicable: true
+      evidence: tests/evidence/evolution_radar_lifecycle.py, evolution_effectiveness_lifecycle.py, evolution_governance_lifecycle.py,
+        evolution_pipeline_closure_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    security:
+      applicable: true
+      evidence: tests/evidence/evolution_radar_lifecycle.py, evolution_effectiveness_lifecycle.py, evolution_governance_lifecycle.py,
+        evolution_pipeline_closure_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    migration_recovery:
+      applicable: true
+      evidence: tests/evidence/evolution_radar_lifecycle.py, evolution_effectiveness_lifecycle.py, evolution_governance_lifecycle.py,
+        evolution_pipeline_closure_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    concurrency_idempotency_replay:
+      applicable: true
+      evidence: tests/evidence/evolution_radar_lifecycle.py, evolution_effectiveness_lifecycle.py, evolution_governance_lifecycle.py,
+        evolution_pipeline_closure_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    cli_harness:
+      applicable: true
+      evidence: tests/evidence/evolution_radar_lifecycle.py, evolution_effectiveness_lifecycle.py, evolution_governance_lifecycle.py,
+        evolution_pipeline_closure_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    docs_schema:
+      applicable: true
+      evidence: tests/evidence/evolution_radar_lifecycle.py, evolution_effectiveness_lifecycle.py, evolution_governance_lifecycle.py,
+        evolution_pipeline_closure_lifecycle.py; tests/validate_repository.py (209 scenarios).
+- boundary: Selective validation plan and execution fallback
+  reason: Validator omission can conceal regressions; execution behavior is changed only after shadow and replay
+    evidence.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: tests/evidence/validation_shadow_plan_lifecycle.py; tests/validate_repository.py (209 scenarios,
+        full validation retained).
+    unit:
+      applicable: true
+      evidence: tests/evidence/validation_shadow_plan_lifecycle.py; tests/validate_repository.py (209 scenarios,
+        full validation retained).
+    integration:
+      applicable: true
+      evidence: tests/evidence/validation_shadow_plan_lifecycle.py; tests/validate_repository.py (209 scenarios,
+        full validation retained).
+    contract:
+      applicable: true
+      evidence: tests/evidence/validation_shadow_plan_lifecycle.py; tests/validate_repository.py (209 scenarios,
+        full validation retained).
+    e2e:
+      applicable: true
+      evidence: tests/evidence/validation_shadow_plan_lifecycle.py; tests/validate_repository.py (209 scenarios,
+        full validation retained).
+    security:
+      applicable: true
+      evidence: tests/evidence/validation_shadow_plan_lifecycle.py; tests/validate_repository.py (209 scenarios,
+        full validation retained).
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted schema migration; selection remains fail-closed and backward compatible.
+    concurrency_idempotency_replay:
+      applicable: true
+      evidence: tests/evidence/validation_shadow_plan_lifecycle.py; tests/validate_repository.py (209 scenarios,
+        full validation retained).
+    cli_harness:
+      applicable: true
+      evidence: tests/evidence/validation_shadow_plan_lifecycle.py; tests/validate_repository.py (209 scenarios,
+        full validation retained).
+    docs_schema:
+      applicable: true
+      evidence: tests/evidence/validation_shadow_plan_lifecycle.py; tests/validate_repository.py (209 scenarios,
+        full validation retained).
+- boundary: Three internal module extractions and compatibility facades
+  reason: Preserve public imports, CLI, observable output, error behavior and consumers during staged extraction.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: tests/evidence/module_extraction_lifecycle.py, repository_health_lifecycle.py, project_intelligence_lifecycle.py,
+        retrieval_intelligence_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    unit:
+      applicable: true
+      evidence: tests/evidence/module_extraction_lifecycle.py, repository_health_lifecycle.py, project_intelligence_lifecycle.py,
+        retrieval_intelligence_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    integration:
+      applicable: true
+      evidence: tests/evidence/module_extraction_lifecycle.py, repository_health_lifecycle.py, project_intelligence_lifecycle.py,
+        retrieval_intelligence_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    contract:
+      applicable: true
+      evidence: tests/evidence/module_extraction_lifecycle.py, repository_health_lifecycle.py, project_intelligence_lifecycle.py,
+        retrieval_intelligence_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    e2e:
+      applicable: true
+      evidence: tests/evidence/module_extraction_lifecycle.py, repository_health_lifecycle.py, project_intelligence_lifecycle.py,
+        retrieval_intelligence_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    security:
+      applicable: true
+      evidence: tests/evidence/module_extraction_lifecycle.py, repository_health_lifecycle.py, project_intelligence_lifecycle.py,
+        retrieval_intelligence_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    migration_recovery:
+      applicable: true
+      evidence: tests/evidence/module_extraction_lifecycle.py, repository_health_lifecycle.py, project_intelligence_lifecycle.py,
+        retrieval_intelligence_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    concurrency_idempotency_replay:
+      applicable: true
+      evidence: tests/evidence/module_extraction_lifecycle.py, repository_health_lifecycle.py, project_intelligence_lifecycle.py,
+        retrieval_intelligence_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    cli_harness:
+      applicable: true
+      evidence: tests/evidence/module_extraction_lifecycle.py, repository_health_lifecycle.py, project_intelligence_lifecycle.py,
+        retrieval_intelligence_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    docs_schema:
+      applicable: true
+      evidence: tests/evidence/module_extraction_lifecycle.py, repository_health_lifecycle.py, project_intelligence_lifecycle.py,
+        retrieval_intelligence_lifecycle.py; tests/validate_repository.py (209 scenarios).
+- boundary: Branch proposal report provenance and exact-manifest preflight
+  reason: Keep reporting read-only and invalidate stale branch/main SHA evidence before any cleanup attempt.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: tests/evidence/branch_hygiene_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    unit:
+      applicable: true
+      evidence: tests/evidence/branch_hygiene_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    integration:
+      applicable: true
+      evidence: tests/evidence/branch_hygiene_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    contract:
+      applicable: true
+      evidence: tests/evidence/branch_hygiene_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    e2e:
+      applicable: true
+      evidence: tests/evidence/branch_hygiene_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    security:
+      applicable: true
+      evidence: tests/evidence/branch_hygiene_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    migration_recovery:
+      applicable: true
+      evidence: tests/evidence/branch_hygiene_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    concurrency_idempotency_replay:
+      applicable: true
+      evidence: tests/evidence/branch_hygiene_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    cli_harness:
+      applicable: true
+      evidence: tests/evidence/branch_hygiene_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    docs_schema:
+      applicable: true
+      evidence: tests/evidence/branch_hygiene_lifecycle.py; tests/validate_repository.py (209 scenarios).
+- boundary: Human/Agent Conformance current view, canonical facts and history map
+  reason: Shortening duplicate history must preserve every normative rule, exception, anchor and provenance link.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: tests/evidence/conformance_summary_lifecycle.py; docs/human VitePress build; canonical registry
+        and history crosswalk review.
+    unit:
+      applicable: true
+      evidence: tests/evidence/conformance_summary_lifecycle.py; docs/human VitePress build; canonical registry
+        and history crosswalk review.
+    integration:
+      applicable: true
+      evidence: tests/evidence/conformance_summary_lifecycle.py; docs/human VitePress build; canonical registry
+        and history crosswalk review.
+    contract:
+      applicable: true
+      evidence: tests/evidence/conformance_summary_lifecycle.py; docs/human VitePress build; canonical registry
+        and history crosswalk review.
+    e2e:
+      applicable: false
+      na_reason: Documentation crosswalk
+      canonical registry comparison and production docs build are the direct boundary evidence.: null
+    security:
+      applicable: false
+      na_reason: No credential or authorization behavior changes in this documentation boundary.
+    migration_recovery:
+      applicable: true
+      evidence: tests/evidence/conformance_summary_lifecycle.py; docs/human VitePress build; canonical registry
+        and history crosswalk review.
+    concurrency_idempotency_replay:
+      applicable: false
+      na_reason: No concurrent writer or replay behavior is affected.
+    cli_harness:
+      applicable: false
+      na_reason: No CLI or Harness behavior is affected.
+    docs_schema:
+      applicable: true
+      evidence: tests/evidence/conformance_summary_lifecycle.py; docs/human VitePress build; canonical registry
+        and history crosswalk review.
+- boundary: GitHub Actions local composite bootstrap and workflow parity
+  reason: Shared action inputs, action pinning, workflow permissions, events and required aggregate must remain
+    correct.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: tests/evidence/python_bootstrap_action_lifecycle.py; tests/validate_repository.py (209 scenarios);
+        workflow/action permission and input parity review.
+    unit:
+      applicable: true
+      evidence: tests/evidence/python_bootstrap_action_lifecycle.py; tests/validate_repository.py (209 scenarios);
+        workflow/action permission and input parity review.
+    integration:
+      applicable: true
+      evidence: tests/evidence/python_bootstrap_action_lifecycle.py; tests/validate_repository.py (209 scenarios);
+        workflow/action permission and input parity review.
+    contract:
+      applicable: true
+      evidence: tests/evidence/python_bootstrap_action_lifecycle.py; tests/validate_repository.py (209 scenarios);
+        workflow/action permission and input parity review.
+    e2e:
+      applicable: true
+      evidence: tests/evidence/python_bootstrap_action_lifecycle.py; tests/validate_repository.py (209 scenarios);
+        workflow/action permission and input parity review.
+    security:
+      applicable: true
+      evidence: tests/evidence/python_bootstrap_action_lifecycle.py; tests/validate_repository.py (209 scenarios);
+        workflow/action permission and input parity review.
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted runtime data migration; workflows retain their public triggers and permissions.
+    concurrency_idempotency_replay:
+      applicable: true
+      evidence: tests/evidence/python_bootstrap_action_lifecycle.py; tests/validate_repository.py (209 scenarios);
+        workflow/action permission and input parity review.
+    cli_harness:
+      applicable: false
+      na_reason: Workflow action inputs do not modify AIPS CLI or Harness contracts.
+    docs_schema:
+      applicable: true
+      evidence: tests/evidence/python_bootstrap_action_lifecycle.py; tests/validate_repository.py (209 scenarios);
+        workflow/action permission and input parity review.
+- boundary: Version tag provenance policy and release record contract
+  reason: Each future version tag must bind to the approved exact release commit and cannot be moved or ambiguously
+    reused.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: tests/evidence/version_policy_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    unit:
+      applicable: true
+      evidence: tests/evidence/version_policy_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    integration:
+      applicable: true
+      evidence: tests/evidence/version_policy_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    contract:
+      applicable: true
+      evidence: tests/evidence/version_policy_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    e2e:
+      applicable: true
+      evidence: tests/evidence/version_policy_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    security:
+      applicable: true
+      evidence: tests/evidence/version_policy_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    migration_recovery:
+      applicable: false
+      na_reason: Forward-only policy; no historical tags are migrated or rewritten.
+    concurrency_idempotency_replay:
+      applicable: true
+      evidence: tests/evidence/version_policy_lifecycle.py; tests/validate_repository.py (209 scenarios).
+    cli_harness:
+      applicable: false
+      na_reason: No CLI/Harness behavior changes unless repository evidence requires a narrow existing release command
+        extension.
+    docs_schema:
+      applicable: true
+      evidence: tests/evidence/version_policy_lifecycle.py; tests/validate_repository.py (209 scenarios).
+- boundary: GitHub Ruleset policy assessment and proposal diff
+  reason: Ruleset policy must preserve the existing protected-main required repository check without weakening or
+    silently adding restrictions.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: tests/evidence/version_policy_lifecycle.py; tests/validate_repository.py (209 scenarios); remote
+        Rulesets remain read-only and unmodified.
+    unit:
+      applicable: true
+      evidence: tests/evidence/version_policy_lifecycle.py; tests/validate_repository.py (209 scenarios); remote
+        Rulesets remain read-only and unmodified.
+    integration:
+      applicable: true
+      evidence: tests/evidence/version_policy_lifecycle.py; tests/validate_repository.py (209 scenarios); remote
+        Rulesets remain read-only and unmodified.
+    contract:
+      applicable: true
+      evidence: tests/evidence/version_policy_lifecycle.py; tests/validate_repository.py (209 scenarios); remote
+        Rulesets remain read-only and unmodified.
+    e2e:
+      applicable: false
+      na_reason: This candidate prepares and verifies a policy diff; remote activation is outside its approved scope.
+    security:
+      applicable: true
+      evidence: tests/evidence/version_policy_lifecycle.py; tests/validate_repository.py (209 scenarios); remote
+        Rulesets remain read-only and unmodified.
+    migration_recovery:
+      applicable: true
+      evidence: tests/evidence/version_policy_lifecycle.py; tests/validate_repository.py (209 scenarios); remote
+        Rulesets remain read-only and unmodified.
+    concurrency_idempotency_replay:
+      applicable: false
+      na_reason: No remote policy write or multi-writer behavior is in scope.
+    cli_harness:
+      applicable: false
+      na_reason: No CLI/Harness change unless existing repository-native tooling is directly extended.
+    docs_schema:
+      applicable: true
+      evidence: tests/evidence/version_policy_lifecycle.py; tests/validate_repository.py (209 scenarios); remote
+        Rulesets remain read-only and unmodified.
+candidate:
+  base_sha: 974fa840e689c9d632b4a4778e535699f72caa03
+  changed_files_hash: afea1d0cb4f17aac356405e49e891d957f51fc8834a575358c575f863d7f98f5
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
-candidate:
-  base_sha: 3dbbb89c094f4b9fbb012728bb62d5e3b815ab3e
-  changed_files_hash: 4389b575d2c60823d705cc0c929b7ebb2e61c7bba2b020dee6199868be47e36d
 review_evidence:
   required: false
+  path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
+status: READY

@@ -68,26 +68,23 @@ jobs:
           from pathlib import Path
 
           repo = os.environ["GITHUB_REPOSITORY"]
-          index = json.loads(subprocess.check_output([
-              "gh", "issue", "list",
-              "--repo", repo,
-              "--state", "all",
-              "--limit", "500",
-              "--search", "Evolution Radar",
-              "--json", "number,title,body,createdAt,state",
+          pages = json.loads(subprocess.check_output([
+              "gh", "api", "--paginate", "--slurp",
+              f"repos/{repo}/issues?state=all&per_page=100",
           ], text=True))
           rows = []
-          for item in index:
-              title = str(item.get("title") or "")
-              if not title.startswith("Evolution Radar ["):
-                  continue
-              number = str(item["number"])
-              detail = json.loads(subprocess.check_output([
-                  "gh", "issue", "view", number,
-                  "--repo", repo,
-                  "--json", "number,title,body,createdAt,state,comments",
-              ], text=True))
-              rows.append(detail)
+          for page in pages:
+              for item in page:
+                  title = str(item.get("title") or "")
+                  if item.get("pull_request") or not title.startswith("Evolution Radar ["):
+                      continue
+                  number = str(item["number"])
+                  detail = json.loads(subprocess.check_output([
+                      "gh", "issue", "view", number,
+                      "--repo", repo,
+                      "--json", "number,title,body,createdAt,state,comments",
+                  ], text=True))
+                  rows.append(detail)
           Path("evolution-effectiveness-input.json").write_text(
               json.dumps(rows, ensure_ascii=False, indent=2),
               encoding="utf-8",
@@ -122,13 +119,9 @@ jobs:
           PERIOD: ${{ steps.period.outputs.value }}
         run: |
           title="Evolution Effectiveness [monthly] $PERIOD"
-          existing="$(gh issue list \
-            --repo "$GITHUB_REPOSITORY" \
-            --state all \
-            --limit 500 \
-            --search "Evolution Effectiveness" \
-            --json number,title \
-            --jq ".[] | select(.title == \"$title\") | .number" | head -n 1)"
+          api_path="repos/$GITHUB_REPOSITORY/issues?state=all&per_page=100"
+          existing="$(gh api --paginate --slurp "$api_path" \
+            | jq -r --arg title "$title" '[.[][] | select(.title == $title and (.pull_request | not)) | .number] | first // empty')"
           flags="$(python - <<'PY'
           import yaml
           doc = yaml.safe_load(open("evolution-effectiveness.yaml")) or {}

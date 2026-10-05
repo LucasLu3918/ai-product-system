@@ -1,5 +1,7 @@
 # Scenario Conformance
 
+The Agent-facing rules in this document are normative. The generated Human current view and section-anchor history crosswalk live in `docs/human/CONFORMANCE_CURRENT.md` and `docs/human/CONFORMANCE_HISTORY_INDEX.md`; `tests/scenario_coverage.yaml` remains the canonical coverage data.
+
 Scenario 198 is lifecycle-covered by `tests/evidence/runtime_context_lifecycle.py` and `scripts/runtime_invariant_matrix.py`. Runtime Context reporting must remain credential-free, and the matrix must retain complete deterministic pair coverage within its declared case bound.
 
 External Eval and red-team producers are normalized through `orchestration/EVAL_INTEROPERABILITY.md`. Their scores and findings remain REVIEW/SIGNAL evidence; a Human-confirmed minimal reproduction becomes a canonical Agent Eval Case before deterministic conformance can rely on it.
@@ -47,6 +49,7 @@ A later change may raise an automation target only through normal System Improve
 Report total scenarios, each coverage bucket, automated count/percentage and uncovered IDs.
 
 Coverage percentage is evidence metadata, not a quality score and not a substitute for risk-based testing.
+
 
 ## Legacy Scenario reconciliation
 
@@ -809,3 +812,7 @@ Repository validators are imported only through the explicit ordered `tests/vali
 `tests/evidence/maintenance_reliability_lifecycle.py` checks bounded collection, deterministic validation/runtime distributions, explicit hotfix labels, repeated changed paths, heuristic failure categories, exact merge-SHA regression linkage and UNKNOWN behavior for incomplete histories, timestamps or changed-file counts. `tests/validation/maintenance_reliability_contracts.py` checks config bounds and workflow permissions. The monthly workflow may publish an observational report and deduplicated review Issue with Actions/contents/pull-request read and Issue write permissions only; it cannot remediate, change code, create PRs, merge or release. Category names are hints rather than root-cause findings.
 
 Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agent_eval = 199 automated; 2 manual; 201 total; 0 uncovered.
+
+## Scenarios 202–209 — Plan13 current and provenance evidence
+
+The Human current summary and Human/Agent history crosswalk are generated from this protocol, `docs/human/CONFORMANCE.md`, and `tests/scenario_coverage.yaml` by `scripts/conformance_summary.py`. Edit authoritative sources, regenerate, and verify with `aips conformance summary current|history --output <path>`; retained historical sections keep their anchors. The eight scenarios cover Evolution completeness, validation shadow/replay, module facades, branch proposals, conformance views, workflow bootstrap, tag provenance and ruleset policy.

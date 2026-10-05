@@ -125,6 +125,15 @@ jobs:
             *,aips:large-change,*) value=large ;;
           esac
           echo "value=$value" >> "$GITHUB_OUTPUT"
+      - name: Publish validator selection shadow plan
+        env:
+          AIPS_SHADOW_REPORT: ${{ runner.temp }}/validation-shadow-plan.json
+        run: |
+          python scripts/validation_shadow_plan.py \
+            --base "$AIPS_GATE_BASE" \
+            --head "$AIPS_GATE_HEAD" \
+            --change-class "${{ steps.change_class.outputs.value }}" \
+            --output "$AIPS_SHADOW_REPORT" >> "$GITHUB_STEP_SUMMARY"
       - name: deterministic integration gate
         id: gate
         shell: bash
@@ -209,6 +218,14 @@ jobs:
         with:
           name: repository-validation-timing-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/repository-validation-timing.json
+          if-no-files-found: ignore
+          retention-days: 14
+      - name: Upload validator selection shadow plan
+        if: ${{ always() }}
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: validation-shadow-plan-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/validation-shadow-plan.json
           if-no-files-found: ignore
           retention-days: 14
       - name: Repository Health evidence

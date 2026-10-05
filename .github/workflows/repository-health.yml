@@ -20,11 +20,15 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.sha }}
 
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - uses: ./.github/actions/aips-python-bootstrap
         with:
           python-version: "3.12"
-
-      - run: python -m pip install -r requirements.txt -r requirements-validation.txt
+          requirements-files: |
+            requirements.txt
+            requirements-validation.txt
+          cache-dependency-path: |
+            requirements.txt
+            requirements-validation.txt
 
       - name: Run deterministic Repository Health audit
         id: audit

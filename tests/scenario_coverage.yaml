@@ -8,6 +8,59 @@ policy:
     no_uncovered: true
 
 scenarios:
+  - id: "202"
+    path: tests/scenarios/202-evolution-data-completeness.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/evolution_pipeline_closure_lifecycle.py
+      - tests/evidence/evolution_governance_lifecycle.py
+      - scripts/evolution_radar_rollup.py
+  - id: "203"
+    path: tests/scenarios/203-validation-selection-shadow-replay.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/validation_shadow_plan_lifecycle.py
+      - scripts/validation_shadow_plan.py
+      - config/validation-scope.yaml
+  - id: "204"
+    path: tests/scenarios/204-incremental-internal-module-extraction.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/repository_health_lifecycle.py
+      - tests/evidence/change_impact_traversal_lifecycle.py
+      - tests/evidence/retrieval_intelligence_lifecycle.py
+      - tests/evidence/module_extraction_lifecycle.py
+  - id: "205"
+    path: tests/scenarios/205-branch-cleanup-proposal-freshness.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/branch_hygiene_lifecycle.py
+      - scripts/branch_hygiene.py
+  - id: "206"
+    path: tests/scenarios/206-conformance-current-and-history-views.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/conformance_summary_lifecycle.py
+      - scripts/conformance_summary.py
+  - id: "207"
+    path: tests/scenarios/207-shared-python-bootstrap-action.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/python_bootstrap_action_lifecycle.py
+      - .github/actions/aips-python-bootstrap/action.yml
+  - id: "208"
+    path: tests/scenarios/208-version-tag-provenance-policy.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/version_policy_lifecycle.py
+      - scripts/version_tag_policy.py
+  - id: "209"
+    path: tests/scenarios/209-github-ruleset-policy-assessment.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/version_policy_lifecycle.py
+      - scripts/github_ruleset_policy.py
+      - config/github-ruleset-policy.yaml
   - id: "176"
     path: tests/scenarios/176-mandatory-candidate-secret-scanning.md
     coverage: lifecycle

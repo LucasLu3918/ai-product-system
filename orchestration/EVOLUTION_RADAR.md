@@ -391,3 +391,9 @@ Effectiveness flags inform Human source-policy review only. They do not change `
 A stale historical Radar Issue may be closed only after a durable reconciliation binds material candidates to current truth: terminal COVERED/HOLD outcomes, bounded ADOPT evidence, or explicit DEFERRED state.
 
 Issue #79 is reconciled in `references/evolution/ISSUE_79_LIFECYCLE_RECONCILIATION.yaml`. Its semantic-intent candidate remains DEFERRED with no Trial authority. Future positive progression MUST start from fresh current-main evidence and a new explicit Human Decision; a closed stale Issue cannot provide positive-progression authority.
+
+## Pipeline completeness and content value
+
+Roll-ups report two independent dimensions. `pipeline_health` measures the expected source cohort, collection failures, duplicate coverage, and whether the evidence period is complete. `content_value` reports whether collected signals yielded actionable recommendations under the configured effectiveness threshold. A healthy empty/zero-actionable period is a valid observation; missing sources, an incomplete month/quarter, or an absent expected weekly run remains incomplete. Never describe incomplete data as zero value.
+
+Use `aips evolution package`, `aips evolution analyze`, and `aips evolution apply` to follow the existing package → analysis → validated decision path. Analysis is persisted only after its evidence digest and decision contract validate; the workflow places the generated analysis in the Issue body so it survives subsequent scheduled runs. Issue collection paginates across repository history instead of silently capping at the first 500 records.

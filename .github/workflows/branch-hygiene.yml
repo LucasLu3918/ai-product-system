@@ -73,6 +73,8 @@ jobs:
           with Path(__import__("os").environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as out:
               out.write("# Branch Hygiene Report\n\n")
               out.write(f"- target: `{report['target']}`\n")
+              out.write(f"- generated against main: `{report['generated_against_main_sha']}`\n")
+              out.write(f"- proposal fingerprint: `{report['cleanup_proposal']['proposal_fingerprint']}`\n")
               out.write(f"- ref scope: `{report['ref_scope']}`\n")
               out.write(f"- policy: `{report['policy']}`\n")
               out.write(f"- branches inspected: **{len(rows)}**\n")

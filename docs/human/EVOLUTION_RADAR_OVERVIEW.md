@@ -1,5 +1,9 @@
 # Evolution Radar 流程總覽
 
+本期資料會分開呈現 `pipeline_health`（來源 cohort、收集失敗、重複及期間完整性）與 `content_value`（訊號是否形成可採用建議）。來源缺漏或月份未結束時是資料不完整，不能解讀為零價值；來源完整但沒有可採取建議則是有效的零產出。通過 evidence digest 驗證的分析會寫回 GitHub Issue body，避免下一次排程遺失分析狀態。
+
+本機命令沿用既有流程：`aips evolution package` 建立分析輸入、`aips evolution analyze` 完成分析、`aips evolution apply` 套用已核准決策。命令本身不授權程式碼變更或發布。
+
 目前 Capability Map 納入 Runtime Context 與 runtime invariant matrix，供後續 Radar 比較與趨勢追蹤。
 
 Evolution Radar 是 AIPS 的 maintenance plane，用來研究外部技術變化，但不直接取得 implementation / merge / release authority。

@@ -10,6 +10,7 @@ required = (
     ROOT / "scripts/evolution_effectiveness.py",
     ROOT / ".github/workflows/evolution-effectiveness.yml",
     ROOT / "tests/evidence/evolution_effectiveness_lifecycle.py",
+    ROOT / "tests/evidence/evolution_pipeline_closure_lifecycle.py",
     ROOT / "tests/scenarios/155-evolution-effectiveness-feedback-loop.md",
     ROOT / "orchestration/EVOLUTION_RADAR.md",
     ROOT / "docs/human/EVOLUTION_RADAR.md",
@@ -77,6 +78,8 @@ if workflow_path.exists():
         "evolution_effectiveness.py validate",
         "evolution_effectiveness.py markdown",
         "Evolution Effectiveness [monthly]",
+        "gh api",
+        "--paginate",
         "gh issue edit",
         "gh issue close",
         "gh issue reopen",
@@ -104,3 +107,13 @@ if lifecycle.exists():
     else:
         if result.returncode != 0:
             errors.append(f"Evolution Effectiveness lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}")
+
+closure_lifecycle = ROOT / "tests/evidence/evolution_pipeline_closure_lifecycle.py"
+if closure_lifecycle.exists():
+    try:
+        result = subprocess.run([sys.executable, str(closure_lifecycle)], capture_output=True, text=True, timeout=45)
+    except subprocess.TimeoutExpired:
+        errors.append("Evolution Pipeline Closure lifecycle timed out after 45 seconds")
+    else:
+        if result.returncode != 0:
+            errors.append(f"Evolution Pipeline Closure lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}")

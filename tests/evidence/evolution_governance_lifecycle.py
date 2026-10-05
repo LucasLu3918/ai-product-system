@@ -14,6 +14,7 @@ sys.path.insert(0, str(ROOT / 'scripts'))
 
 import evolution_analysis as analysis  # noqa: E402
 import evolution_decision as decision  # noqa: E402
+import evolution_radar_rollup as rollup  # noqa: E402
 import evolution_trial as trial  # noqa: E402
 
 
@@ -125,6 +126,12 @@ def main() -> int:
             raw, provider, provider='test', model='test', analyzed_at='2026-09-18T01:00:00Z'
         )
         assessed = analysis.apply_analysis(raw, analyzed)
+        analysis_block = analysis.analysis_markdown(analyzed)
+        issue_body = rollup.issue_markdown(assessed, analysis_text=analysis_block)
+        require(analysis.ANALYSIS_START in issue_body and analysis.ANALYSIS_END in issue_body,
+                'validated semantic result must persist in the durable Issue body')
+        require(analysis.extract_analysis(issue_body) == analyzed,
+                'persisted analysis marker must round-trip without losing evidence binding')
         human = decision.create_decision(
             assessed,
             signal_fingerprint=fingerprint,
