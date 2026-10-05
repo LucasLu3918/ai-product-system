@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Keep Evolution Effectiveness shortlist yield unknown when weekly pre-analysis is missing; preserve oversized Radar Issue bodies in a bounded, digest-checked lossless archive.
+
 ## 0.73.0
 
 - Close Evolution pipeline completeness and content-value reporting; persist validated analysis with durable Issues and paginate the full evidence cohort.

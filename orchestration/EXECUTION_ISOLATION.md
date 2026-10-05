@@ -261,6 +261,8 @@ The external executor is required to honor the exact `worktree` isolation requir
 
 
 ## Evolution Effectiveness isolation boundary
+Archived Radar Issue bodies are untrusted durable input. The decoder enforces an 8 MiB output ceiling and verifies SHA-256 before returning the original body to parsers; malformed, unsupported, or oversized payloads remain unavailable evidence and create no execution or authority boundary.
+
 
 Effectiveness analysis is a read-only deterministic evidence aggregation over already-published Evolution Radar Issues and comments. It creates no Trial worktree, invokes no execution provider, and mutates no repository source.
 

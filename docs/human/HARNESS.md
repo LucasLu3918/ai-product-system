@@ -59,6 +59,8 @@ MCP Server 不呼叫第二個 LLM，也不取得 Human approval、Git publish、
 Temporal Project Intelligence 的 historical query 由既有 deterministic CLI／Project Intelligence layer 提供；MCP 與 Runtime adapter 只傳遞 bounded context，不新增 Temporal Role、Gate 或 host-native authority。
 
 ## Capability truth
+The Evolution Radar maintenance capability preserves oversized Issue evidence in a bounded, digest-checked envelope; its monthly consumers restore the original body and report missing triage inputs as incomplete.
+
 
 Scheduler-backed task ownership 記錄執行 owner、worktree isolation、lease 與 write-set reconciliation。這是協調與證據能力；只有 runtime 提供並驗證寫入攔截器後，才可宣稱工具寫入受到強制限制。
 

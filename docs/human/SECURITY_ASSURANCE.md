@@ -224,6 +224,8 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 
 ## Secret and credential safety
+Public Radar Issue archives are treated as untrusted input. Restoration verifies SHA-256, limits decompressed output to 8 MiB and rejects malformed payloads before evidence parsers consume them; no credential data is included in the archive.
+
 
 快取恢復不改 sandbox 權限、不複製 GitHub 憑證，也不修改明確的快取或認證設定。自動暫存 fallback 必須是目前使用者的私有目錄，拒絕 symlink；套件下載原始 stdout/stderr 只在程序記憶體中分類，不寫入持久紀錄或公開診斷。安裝同步限乾淨、同遠端與 ancestor fast-forward，禁止 reset 分歧安裝版。
 

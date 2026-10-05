@@ -2,8 +2,11 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import json
+import re
+import zlib
 from pathlib import Path
 from typing import Any
 
@@ -25,6 +28,30 @@ ADOPTION_START = "<!-- AIPS_EVOLUTION_ADOPTION_START -->"
 ADOPTION_END = "<!-- AIPS_EVOLUTION_ADOPTION_END -->"
 EFFECTIVENESS_START = "<!-- AIPS_EVOLUTION_EFFECTIVENESS_START -->"
 EFFECTIVENESS_END = "<!-- AIPS_EVOLUTION_EFFECTIVENESS_END -->"
+ARCHIVE_START = "<!-- AIPS_EVOLUTION_ARCHIVE_START -->"
+ARCHIVE_END = "<!-- AIPS_EVOLUTION_ARCHIVE_END -->"
+MAX_ARCHIVE_BYTES = 8 * 1024 * 1024
+
+
+def expand_archived_text(text: str) -> str:
+    """Restore a byte-preserving archived Issue body, refusing corrupt/oversized payloads."""
+    if ARCHIVE_START not in text or ARCHIVE_END not in text:
+        return text
+    envelope = text.split(ARCHIVE_START, 1)[1].split(ARCHIVE_END, 1)[0].strip().splitlines()
+    fields = dict(line.split(":", 1) for line in envelope[:2] if ":" in line)
+    if fields.get("version") != "1" or len(fields.get("sha256", "")) != 64:
+        return text
+    try:
+        compressed = base64.b64decode("".join(envelope[2:]), validate=True)
+        inflater = zlib.decompressobj()
+        raw = inflater.decompress(compressed, MAX_ARCHIVE_BYTES + 1)
+        if len(raw) > MAX_ARCHIVE_BYTES or inflater.unconsumed_tail or not inflater.eof:
+            return text
+        if inflater.unused_data or hashlib.sha256(raw).hexdigest() != fields["sha256"]:
+            return text
+        return raw.decode("utf-8")
+    except (ValueError, zlib.error, UnicodeDecodeError):
+        return text
 
 
 def load_mapping(path: str | Path) -> dict[str, Any]:
@@ -50,7 +77,7 @@ def _strip_fence(payload: str) -> str:
 
 def extract_all(text: str, start: str, end: str) -> list[dict[str, Any]]:
     out: list[dict[str, Any]] = []
-    rest = str(text or "")
+    rest = expand_archived_text(str(text or ""))
     while start in rest and end in rest:
         after = rest.split(start, 1)[1]
         payload, tail = after.split(end, 1)
@@ -87,8 +114,8 @@ def _comments(issue: dict[str, Any]) -> list[dict[str, Any]]:
 
 
 def _text_blobs(issue: dict[str, Any]) -> list[str]:
-    blobs = [str(issue.get("body") or "")]
-    blobs.extend(str(comment.get("body") or "") for comment in _comments(issue))
+    blobs = [expand_archived_text(str(issue.get("body") or ""))]
+    blobs.extend(expand_archived_text(str(comment.get("body") or "")) for comment in _comments(issue))
     return blobs
 
 
@@ -116,11 +143,14 @@ def _run_month(evidence: dict[str, Any], issue: dict[str, Any]) -> str:
     return created[:7] if len(created) >= 7 else ""
 
 
-def select_cohort(issues: list[dict[str, Any]], period: str) -> list[tuple[dict[str, Any], dict[str, Any]]]:
-    selected: list[tuple[dict[str, Any], dict[str, Any]]] = []
+def select_cohort(issues: list[dict[str, Any]], period: str) -> list[tuple[dict[str, Any], dict[str, Any] | None]]:
+    selected: list[tuple[dict[str, Any], dict[str, Any] | None]] = []
     for issue in issues:
         evidence = _weekly_evidence(issue)
         if evidence is None:
+            title_period = re.search(r"\[weekly\]\s+(\d{4}-\d{2})", str(issue.get("title") or ""))
+            if ARCHIVE_START in str(issue.get("body") or "") and title_period and title_period.group(1) == period:
+                selected.append((issue, None))
             continue
         if _run_month(evidence, issue) == period:
             selected.append((issue, evidence))
@@ -208,6 +238,8 @@ def _init_source(source_id: str) -> dict[str, Any]:
         "trial_decision_count": 0,
         "trial_pass_count": 0,
         "adoption_count": 0,
+        "preanalysis_expected_run_count": 0,
+        "preanalysis_observed_run_count": 0,
     }
 
 
@@ -250,12 +282,15 @@ def build_report(
     trial_status_counts = {state: 0 for state in ("PASS", "FAIL", "BLOCKED")}
     trial_handoff_count = 0
     adoption_count = 0
+    preanalysis_issue_count = 0
+    preanalysis_missing_issue_numbers: list[int] = []
 
     seen_decisions: set[str] = set()
     seen_trials: set[str] = set()
     seen_handoffs: set[str] = set()
     seen_adoptions: set[str] = set()
     input_manifest: list[dict[str, Any]] = []
+    unreadable_archive_issue_numbers: list[int] = []
 
     for issue, evidence in cohort:
         issue_number = _issue_number(issue)
@@ -269,6 +304,10 @@ def build_report(
                 "comments": [str(comment.get("body") or "") for comment in _comments(issue)],
             }),
         })
+
+        if evidence is None:
+            unreadable_archive_issue_numbers.append(issue_number)
+            continue
 
         summary = evidence.get("summary") or {}
         signals = [item for item in (evidence.get("signals") or []) if isinstance(item, dict)]
@@ -298,6 +337,10 @@ def build_report(
             for source_id in ids:
                 source_metrics.setdefault(source_id, _init_source(source_id))["collected_signal_count"] += 1
 
+        issue_sources = sorted({source_id for ids in current_sources.values() for source_id in ids})
+        for source_id in issue_sources:
+            source_metrics.setdefault(source_id, _init_source(source_id))["preanalysis_expected_run_count"] += 1
+
         pre_docs: list[dict[str, Any]] = []
         analysis_docs: list[dict[str, Any]] = []
         decision_docs: list[dict[str, Any]] = []
@@ -313,6 +356,9 @@ def build_report(
             adoption_docs.extend(extract_all(blob, ADOPTION_START, ADOPTION_END))
 
         if pre_docs:
+            preanalysis_issue_count += 1
+            for source_id in issue_sources:
+                source_metrics.setdefault(source_id, _init_source(source_id))["preanalysis_observed_run_count"] += 1
             queue = (pre_docs[-1].get("review_queue") or {})
             shortlist = [str(x) for x in (queue.get("shortlist_signal_fingerprints") or [])]
             semantic = [str(x) for x in (queue.get("semantic_signal_fingerprints") or [])]
@@ -322,6 +368,8 @@ def build_report(
                 _add_for_signal(source_metrics, current_sources, fp, "shortlist_signal_count")
             for fp in semantic:
                 _add_for_signal(source_metrics, current_sources, fp, "semantic_signal_count")
+        elif signals:
+            preanalysis_missing_issue_numbers.append(issue_number)
 
         latest_states: dict[str, str] = {}
         for doc in analysis_docs:
@@ -394,8 +442,14 @@ def build_report(
 
     for source_id in sorted(source_metrics):
         row = source_metrics[source_id]
+        preanalysis_complete = row["preanalysis_expected_run_count"] == row["preanalysis_observed_run_count"]
+        observed_shortlist_yield = _bp(row["shortlist_signal_count"], row["collected_signal_count"])
         ratios = {
-            "shortlist_yield_basis_points": _bp(row["shortlist_signal_count"], row["collected_signal_count"]),
+            "shortlist_yield_basis_points": observed_shortlist_yield if preanalysis_complete else None,
+            "observed_shortlist_yield_basis_points": observed_shortlist_yield,
+            "preanalysis_coverage_basis_points": _bp(
+                row["preanalysis_observed_run_count"], row["preanalysis_expected_run_count"]
+            ),
             "semantic_yield_basis_points": _bp(row["semantic_signal_count"], row["collected_signal_count"]),
             "actionable_from_semantic_basis_points": _bp(row["actionable_recommendation_count"], row["semantic_signal_count"]),
             "trial_from_actionable_basis_points": _bp(row["trial_decision_count"], row["actionable_recommendation_count"]),
@@ -403,6 +457,8 @@ def build_report(
             "failure_rate_basis_points": _bp(row["failure_count"], row["attempted_runs"]),
         }
         flags: list[str] = []
+        if not preanalysis_complete:
+            flags.append("REVIEW_INCOMPLETE_PREANALYSIS_COVERAGE")
         if row["attempted_runs"] >= flags_cfg["minimum_source_runs"]:
             failure_bp = ratios["failure_rate_basis_points"]
             if failure_bp is not None and failure_bp >= flags_cfg["high_failure_rate_basis_points_above"]:
@@ -420,6 +476,12 @@ def build_report(
         source_rows.append(enriched)
         if flags:
             source_review_flags.append({"source_id": source_id, "flags": flags})
+
+    if unreadable_archive_issue_numbers:
+        source_review_flags.append({
+            "source_id": "__archive_input__",
+            "flags": ["REVIEW_UNREADABLE_ARCHIVED_ISSUE"],
+        })
 
     report = {
         "version": 1,
@@ -448,6 +510,11 @@ def build_report(
             "trial_handoff_ready_count": trial_handoff_count,
             "trial_status_counts": trial_status_counts,
             "adoption_count": adoption_count,
+            "preanalysis_issue_count": preanalysis_issue_count,
+            "preanalysis_missing_issue_count": len(preanalysis_missing_issue_numbers),
+            "preanalysis_missing_issue_numbers": sorted(set(preanalysis_missing_issue_numbers)),
+            "unreadable_archive_issue_count": len(unreadable_archive_issue_numbers),
+            "unreadable_archive_issue_numbers": sorted(set(unreadable_archive_issue_numbers)),
         },
         "sources": source_rows,
         "review_flags": source_review_flags,
@@ -520,6 +587,8 @@ def markdown(doc: dict[str, Any]) -> str:
         "Deterministic research-effectiveness evidence only. Metrics and review flags do not mutate source policy.",
         "",
         f"- Weekly cohort Issues: {(doc.get('baseline') or {}).get('cohort_issue_count', 0)}",
+        f"- Issues with / missing pre-analysis: {summary.get('preanalysis_issue_count', 0)} / {summary.get('preanalysis_missing_issue_count', 0)}",
+        f"- Unreadable archived weekly Issues: {summary.get('unreadable_archive_issue_count', 0)}",
         f"- Raw / unique signal observations: {summary.get('raw_signal_count', 0)} / {summary.get('unique_signal_count', 0)}",
         f"- Shortlist / semantic / actionable: {summary.get('shortlist_count', 0)} / {summary.get('semantic_signal_count', 0)} / {summary.get('actionable_recommendation_count', 0)}",
         f"- Trial handoffs ready: {summary.get('trial_handoff_ready_count', 0)}",
@@ -541,6 +610,13 @@ def markdown(doc: dict[str, Any]) -> str:
             f"{row.get('trial_pass_count', 0)} | {row.get('adoption_count', 0)} | "
             f"{row.get('failure_count', 0)} | {flags} |"
         )
+        if "REVIEW_INCOMPLETE_PREANALYSIS_COVERAGE" in (row.get("review_flags") or []):
+            lines.append(
+                f"\nPre-analysis coverage for `{row.get('source_id')}`: "
+                f"{row.get('preanalysis_observed_run_count', 0)}/"
+                f"{row.get('preanalysis_expected_run_count', 0)} source-bearing weekly Issues; "
+                "shortlist yield is unavailable until coverage is complete."
+            )
     lines += [
         "",
         "Review flags are evidence for Human source-policy review only. AIPS does not automatically reweight, enable, disable, or replace a source.",

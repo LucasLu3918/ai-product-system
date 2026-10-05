@@ -4,10 +4,13 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import calendar
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
+import zlib
 
 import yaml
 
@@ -15,9 +18,35 @@ from evolution_radar import evidence_quality_metadata, validate_config, validate
 
 EVIDENCE_START = "<!-- AIPS_EVOLUTION_EVIDENCE_START -->"
 EVIDENCE_END = "<!-- AIPS_EVOLUTION_EVIDENCE_END -->"
+ARCHIVE_START = "<!-- AIPS_EVOLUTION_ARCHIVE_START -->"
+ARCHIVE_END = "<!-- AIPS_EVOLUTION_ARCHIVE_END -->"
+MAX_ISSUE_BODY_BYTES = 60_000
+MAX_ARCHIVE_BYTES = 8 * 1024 * 1024
+
+
+def expand_archived_text(text: str) -> str:
+    """Restore an archived Issue body only when size and digest checks pass."""
+    if ARCHIVE_START not in text or ARCHIVE_END not in text:
+        return text
+    envelope = text.split(ARCHIVE_START, 1)[1].split(ARCHIVE_END, 1)[0].strip().splitlines()
+    fields = dict(line.split(":", 1) for line in envelope[:2] if ":" in line)
+    if fields.get("version") != "1" or len(fields.get("sha256", "")) != 64:
+        return text
+    try:
+        compressed = base64.b64decode("".join(envelope[2:]), validate=True)
+        inflater = zlib.decompressobj()
+        raw = inflater.decompress(compressed, MAX_ARCHIVE_BYTES + 1)
+        if len(raw) > MAX_ARCHIVE_BYTES or inflater.unconsumed_tail or not inflater.eof:
+            return text
+        if inflater.unused_data or hashlib.sha256(raw).hexdigest() != fields["sha256"]:
+            return text
+        return raw.decode("utf-8")
+    except (ValueError, zlib.error, UnicodeDecodeError):
+        return text
 
 
 def extract_evidence(body: str) -> dict[str, Any] | None:
+    body = expand_archived_text(body)
     if EVIDENCE_START not in body or EVIDENCE_END not in body:
         return None
     payload = body.split(EVIDENCE_START, 1)[1].split(EVIDENCE_END, 1)[0].strip()
@@ -509,7 +538,34 @@ def issue_markdown(
         EVIDENCE_END,
         "",
     ]
-    return "\n".join(lines)
+    rendered = "\n".join(lines)
+    if len(rendered.encode("utf-8")) <= MAX_ISSUE_BODY_BYTES:
+        return rendered
+    raw = rendered.encode("utf-8")
+    compressed = base64.b64encode(zlib.compress(raw, level=9)).decode("ascii")
+    readable_summary = "\n".join(rendered.splitlines()[:14])
+    archived = "\n".join(
+        [
+            readable_summary,
+            "",
+            "## Archived Evolution Radar evidence",
+            "",
+            "This Issue exceeded GitHub's body-size limit. Its complete original body is preserved byte-for-byte below; monthly consumers verify SHA-256 and restore it before parsing.",
+            "",
+            ARCHIVE_START,
+            "version:1",
+            f"sha256:{hashlib.sha256(raw).hexdigest()}",
+            *[compressed[index:index + 76] for index in range(0, len(compressed), 76)],
+            ARCHIVE_END,
+            "",
+        ]
+    )
+    if len(archived.encode("utf-8")) > MAX_ISSUE_BODY_BYTES:
+        raise ValueError(
+            "complete Issue body remains above the safe GitHub limit after lossless archival; "
+            "refusing to publish incomplete evidence"
+        )
+    return archived
 
 
 def main() -> int:

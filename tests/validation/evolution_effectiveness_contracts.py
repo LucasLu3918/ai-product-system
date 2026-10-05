@@ -8,6 +8,7 @@ from .static_contracts import ROOT, errors
 required = (
     ROOT / "config/evolution-effectiveness.yaml",
     ROOT / "scripts/evolution_effectiveness.py",
+    ROOT / "scripts/evolution_radar_rollup.py",
     ROOT / ".github/workflows/evolution-effectiveness.yml",
     ROOT / "tests/evidence/evolution_effectiveness_lifecycle.py",
     ROOT / "tests/evidence/evolution_pipeline_closure_lifecycle.py",
@@ -56,6 +57,9 @@ if script_path.exists():
         "monthly_effectiveness",
         "REVIEW_HIGH_FAILURE_RATE",
         "REVIEW_LOW_SHORTLIST_YIELD",
+        "REVIEW_INCOMPLETE_PREANALYSIS_COVERAGE",
+        "REVIEW_UNREADABLE_ARCHIVED_ISSUE",
+        "preanalysis_missing_issue_numbers",
         "REVIEW_ZERO_ACTIONABLE_AFTER_SEMANTIC",
         "AIPS_EVOLUTION_EFFECTIVENESS_START",
         "effectiveness_fingerprint",

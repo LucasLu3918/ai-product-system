@@ -2,10 +2,13 @@
 from __future__ import annotations
 
 import copy
+import base64
+import hashlib
 from pathlib import Path
 import socket
 import sys
 import tempfile
+import zlib
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -13,6 +16,8 @@ SCRIPTS = ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
 import evolution_analysis as analysis  # noqa: E402
+import evolution_decision as decision  # noqa: E402
+import evolution_effectiveness as effectiveness  # noqa: E402
 import evolution_radar as radar  # noqa: E402
 import evolution_radar_rollup as rollup  # noqa: E402
 
@@ -622,6 +627,63 @@ def main() -> int:
         issue_text = issue_body.read_text(encoding="utf-8")
         require("Deterministic Local Pre-analysis" in issue_text, "Issue must carry credential-free local preanalysis")
         require("Provider-Neutral Semantic Analysis Handoff" in issue_text, "Issue must carry provider-neutral analysis handoff")
+
+        oversized_handoff = handoff + "\n\n" + ("replayable evidence line\n" * 8_000)
+        archived_issue = rollup.issue_markdown(weekly, oversized_handoff, preanalysis_markdown)
+        require(len(archived_issue.encode("utf-8")) <= rollup.MAX_ISSUE_BODY_BYTES, "archived Issue must fit below GitHub's body limit")
+        require(rollup.ARCHIVE_START in archived_issue, "oversized Issue must use the lossless archive envelope")
+        restored_issue = rollup.expand_archived_text(archived_issue)
+        require(oversized_handoff in restored_issue, "archive must preserve complete handoff text")
+        require(analysis.extract_preanalysis(restored_issue) == extracted_preanalysis, "archive must preserve complete pre-analysis data")
+        require(rollup.extract_evidence(archived_issue) == weekly, "monthly rollup must parse archived weekly evidence")
+        require(
+            decision.resolve_issue_evidence({"body": archived_issue}) == weekly,
+            "decision consumer must restore archived weekly evidence before parsing",
+        )
+        archived_preanalysis = effectiveness.extract_all(
+            archived_issue,
+            effectiveness.PREANALYSIS_START,
+            effectiveness.PREANALYSIS_END,
+        )
+        require(archived_preanalysis == [extracted_preanalysis], "Effectiveness must parse archived pre-analysis evidence")
+        corrupted_archive = archived_issue.replace("version:1", "version:2", 1)
+        require(rollup.expand_archived_text(corrupted_archive) == corrupted_archive, "unsupported archive version must fail closed")
+        require(rollup.extract_evidence(corrupted_archive) is None, "corrupt archive must not be treated as complete evidence")
+        digest_marker = "sha256:"
+        digest_offset = archived_issue.index(digest_marker) + len(digest_marker)
+        tampered_archive = archived_issue[:digest_offset] + ("0" if archived_issue[digest_offset] != "0" else "1") + archived_issue[digest_offset + 1:]
+        require(rollup.expand_archived_text(tampered_archive) == tampered_archive, "digest mismatch must fail closed")
+        oversized_raw = b"x" * (rollup.MAX_ARCHIVE_BYTES + 1)
+        oversized_envelope = "\n".join([
+            rollup.ARCHIVE_START,
+            "version:1",
+            f"sha256:{hashlib.sha256(oversized_raw).hexdigest()}",
+            base64.b64encode(zlib.compress(oversized_raw)).decode("ascii"),
+            rollup.ARCHIVE_END,
+        ])
+        require(rollup.expand_archived_text(oversized_envelope) == oversized_envelope, "decompression over 8 MiB must fail closed")
+        expect_value_error(
+            lambda: decision.resolve_issue_evidence({"body": tampered_archive}),
+            "decision consumer must reject a corrupted archive",
+        )
+        corrupt_monthly = effectiveness.build_report(
+            [{
+                "number": 98,
+                "title": "Evolution Radar [weekly] 2026-09-01",
+                "createdAt": "2026-09-01T01:00:00Z",
+                "body": corrupted_archive,
+                "comments": [],
+            }],
+            effectiveness.load_mapping(ROOT / "config/evolution-effectiveness.yaml"),
+            period="2026-09",
+            repository_revision="a" * 40,
+            generated_at="2026-10-05T00:00:00Z",
+        )
+        require(corrupt_monthly["summary"]["unreadable_archive_issue_numbers"] == [98], "corrupt archive Issue must remain visible in its month cohort")
+        require(
+            any("REVIEW_UNREADABLE_ARCHIVED_ISSUE" in row["flags"] for row in corrupt_monthly["review_flags"]),
+            "corrupt archive must trigger Human review instead of being silently skipped",
+        )
 
     print("EVOLUTION RADAR LIFECYCLE PASSED")
     return 0

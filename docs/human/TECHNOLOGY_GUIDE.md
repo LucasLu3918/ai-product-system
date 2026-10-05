@@ -141,6 +141,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+Monthly Effectiveness requires complete pre-analysis coverage before treating source shortlist yield as known. Oversized GitHub Issue content uses a bounded zlib/Base64 envelope with a SHA-256 digest; consumers restore the complete body before parsing. Corrupt and over-limit archives remain unavailable evidence.
+
 
 The maintenance plane separates Evolution pipeline completeness from content value, publishes validator-scope shadow/replay without skipping checks, and binds branch cleanup proposals to exact branch/main/merged-PR evidence. Version-tag readiness and GitHub ruleset comparison are read-only; each protected operation still uses its separate approval path.
 
