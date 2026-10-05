@@ -112,6 +112,8 @@ Docs deployment 不取得 code merge、release 或 product production authority�
 
 ## Technology Guide
 
+Post-merge reconciliation is implemented in `scripts/publish_post_merge.py`; `scripts/publish_preflight.py` remains the compatible CLI facade. Keep both modules, lifecycle coverage and integration inventory synchronized when changing this boundary.
+
 內部模組抽離若保留既有 CLI facade 與輸出，仍同步更新架構／文件觸發索引；操作說明只描述使用者可觀察的 current behavior。
 
 

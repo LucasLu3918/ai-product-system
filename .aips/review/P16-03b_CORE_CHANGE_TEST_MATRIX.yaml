@@ -1,0 +1,56 @@
+version: 1
+change:
+  id: plan16-03b-retrieval-relations
+  summary: Extract lexical relation masking and row construction behind the existing Retrieval Intelligence facade without
+    changing candidate output behavior.
+  boundary:
+  - retrieval_intelligence.py compatibility facade and retrieval_relations.py internal implementation
+  - relation masking, definition ownership, lexical call/reference filtering, and row cap
+  - architecture/documentation inventories and extraction lifecycle evidence
+candidate:
+  base_sha: b61938c1da9c5a60e6743a167549c641d483a5cb
+  changed_files_hash: ffbca71e572a9576e5e9c9f37c625d90b41adddb4e9b0f621249c8b08e133b22
+matrix:
+- boundary: facade-and-relation-candidate-contract
+  reason: Existing imports, index consumers, row ordering, relation classification, and secret-path behavior must remain stable.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff critical and debt-ratchet on the changed modules, lifecycle evidence, and repository Python checks.
+    unit:
+      applicable: true
+      evidence: New retrieval_relations_extraction_lifecycle plus existing retrieval intelligence lifecycle and focused relation
+        tests.
+    integration:
+      applicable: true
+      evidence: Full repository validation and exact-candidate Integration Gate exercise index creation and retrieval consumers.
+    contract:
+      applicable: true
+      evidence: Legacy facade functions remain callable and produce identical masked text and ordered relation rows, including
+        unsupported/secret path exclusion and the existing cap.
+    e2e:
+      applicable: true
+      evidence: Full repository validation, documentation build and exact-candidate Integration Gate.
+    security:
+      applicable: true
+      evidence: Mandatory candidate secret scan; no new source access, credential handling, or trust boundary.
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted schema, database migration, canonical data, or recovery behavior changes.
+    cli_harness:
+      applicable: true
+      evidence: Existing retrieval and Change Impact CLI routes remain through retrieval_intelligence.py; full lifecycle covers
+        the facade consumer.
+    docs_schema:
+      applicable: true
+      evidence: Architecture and documentation trigger inventories include the new module; required Human/Agent closure and
+        docs build pass.
+scope_recomputed_after_expansion: true
+actual_diff_reconciled: true
+review_evidence:
+  required: false
+  status: SELF_REVIEWED
+  evidence:
+  - Reviewed exact 24-path Change Boundary, all required test dimensions, docs closure, and unchanged full Gate requirement.
+blockers: []
+status: READY

@@ -73,6 +73,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 
 ## Runtime integration
 
+Publication post-merge reconciliation 拆至 `scripts/publish_post_merge.py`，由既有 CLI facade 呼叫；使用相同 Python/Git runtime，不增加安裝步驟或相依套件。
+
 Retrieval relation extraction uses the existing Python runtime and standard library; splitting its internal implementation adds no installation step or dependency.
 
 Temporal query 使用既有 `aips intelligence temporal` 入口與 Python/Git runtime；實作拆至內部 adapter 不增加安裝步驟或相依套件。

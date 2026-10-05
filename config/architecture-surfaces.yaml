@@ -18,7 +18,6 @@ surfaces:
       - templates/runtime/RUNTIME_CONTEXT.yaml
       - bin/aips
       - bin/prepare-local-validation
-      - scripts/publish_preflight.py
       - config/integration-gate.yaml
       - tests/scenarios/198-runtime-context-invariant-matrix.md
     canonical_docs: [orchestration/RUNTIME_CONTEXT.md]
@@ -240,6 +239,7 @@ surfaces:
     required_paths:
       - scripts/integration_gate.py
       - scripts/publish_preflight.py
+      - scripts/publish_post_merge.py
       - scripts/publish_preflight_policy.py
       - scripts/repository_preflight.py
       - config/integration-gate.yaml
@@ -250,6 +250,7 @@ surfaces:
     validation_paths:
       - tests/evidence/integration_gate_lifecycle.py
       - tests/evidence/publish_preflight_lifecycle.py
+      - tests/evidence/module_extraction_lifecycle.py
       - tests/validation/publish_preflight_contracts.py
       - tests/evidence/validator_registry_lifecycle.py
 

@@ -166,11 +166,13 @@ rules:
   - id: publication-preflight
     triggers:
       - scripts/publish_preflight.py
+      - scripts/publish_post_merge.py
       - scripts/browser_runtime.py
       - scripts/repository_preflight.py
       - .github/workflows/validate.yml
       - config/integration-gate.yaml
       - tests/evidence/publish_preflight_lifecycle.py
+      - tests/evidence/module_extraction_lifecycle.py
       - tests/validation/publish_preflight_contracts.py
     human_docs:
       - docs/human/MAINTENANCE.md

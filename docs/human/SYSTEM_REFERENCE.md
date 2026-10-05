@@ -1,5 +1,7 @@
 # AIPS System Reference
 
+The publication CLI/import facade remains `scripts/publish_preflight.py`; post-merge synchronization is implemented in `scripts/publish_post_merge.py`. No public command or installation dependency is added.
+
 This page lists factual command, capability and runtime data. Explanatory policy remains in the linked canonical documentation.
 
 The established Retrieval Intelligence command/import facade remains `scripts/retrieval_intelligence.py`; internal lexical relation extraction lives in `scripts/retrieval_relations.py`. No public command or installation dependency is added.
@@ -29,7 +31,7 @@ The established Retrieval Intelligence command/import facade remains `scripts/re
 | `product-delivery` | product-delivery | orchestration/PRODUCT_DELIVERY.md | tests/evidence/product_delivery_lifecycle.py |
 | `evolution-radar` | evolution-radar, controlled-evolution-trial, trial-adoption-binding, agent-anomaly-evaluation, agent-observable-event-trial-evidence, evolution-local-deterministic-preanalysis | orchestration/EVOLUTION_RADAR.md, orchestration/AGENT_ANOMALY_EVALUATION.md, docs/human/EVOLUTION_RADAR.md | tests/evidence/evolution_radar_lifecycle.py, tests/evidence/evolution_governance_lifecycle.py, tests/evidence/evolution_effectiveness_lifecycle.py, tests/validation/evolution_effectiveness_contracts.py |
 | `documentation-consistency` | documentation-consistency, human-documentation-namespace | orchestration/DOCUMENTATION_SYNC.md, docs/human/DOCUMENTATION_SYNC.md | tests/validation/documentation_sync_contracts.py, tests/validation/documentation_placement_contracts.py |
-| `integration-gate` | integration-gate | orchestration/INTEGRATION_GATE.md | tests/evidence/integration_gate_lifecycle.py, tests/evidence/publish_preflight_lifecycle.py, tests/validation/publish_preflight_contracts.py, tests/evidence/validator_registry_lifecycle.py |
+| `integration-gate` | integration-gate | orchestration/INTEGRATION_GATE.md | tests/evidence/integration_gate_lifecycle.py, tests/evidence/publish_preflight_lifecycle.py, tests/evidence/module_extraction_lifecycle.py, tests/validation/publish_preflight_contracts.py, tests/evidence/validator_registry_lifecycle.py |
 | `repository-health` | repository-health-architecture-drift | orchestration/REPOSITORY_HEALTH.md, docs/ARCHITECTURE.md, docs/human/MAINTENANCE.md | tests/evidence/repository_health_lifecycle.py, tests/validation/repository_health_contracts.py |
 
 ## Runtime support

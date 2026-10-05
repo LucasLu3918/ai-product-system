@@ -153,6 +153,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+The post-merge reconciliation implementation is `scripts/publish_post_merge.py`; `scripts/publish_preflight.py` remains its CLI facade. Its source, lifecycle evidence, integration inventory and paired Human/Agent documentation form one synchronized boundary.
+
 The placement map includes explicit source triggers for Turn Context intent, observed run stages, shared event serialization, current-system Eval evidence, and external review attestation. Each behavior change updates the relevant Human section and machine-facing protocol without creating a second authority source.
 
 The same canonical H2 placement contract applies to pre-commit working-tree preview and committed repository preflight. Preview includes tracked, staged, unstaged and untracked paths and identifies the allowed H2 for misplaced content.

@@ -142,6 +142,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Post-merge publication reconciliation uses the existing Python/Git runtime behind the `publish_preflight` facade; extracting it adds no dependency or public command.
+
 Scenario 204 的 module-extraction evidence 會檢查 Project Intelligence temporal adapter 仍由原 facade 暴露，並固定 current-mode 欄位與 digest 格式。
 
 Validation quality improves gradually: a Ruff baseline blocks debt growth, mypy remains scoped to selected modules, Coverage.py reports branch evidence without a premature percentage gate, and deterministic Hypothesis properties cover stable SemVer selection. Full validation remains mandatory while the shadow cohort is assembled.
