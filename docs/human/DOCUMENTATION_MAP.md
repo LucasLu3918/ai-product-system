@@ -2,6 +2,8 @@
 
 Runtime Context 行為契約位於 `orchestration/RUNTIME_CONTEXT.md`，範例輸出位於 `templates/runtime/RUNTIME_CONTEXT.yaml`；人類閱讀入口是架構總覽與 Technology Guide。
 
+Retrieval internals and their compatibility facade are explained in ARCHITECTURE_OVERVIEW.md and PROJECT_INTELLIGENCE.md; lexical relations remain rebuildable candidates rather than canonical architecture facts.
+
 Human Docs 依使用目的組織，而不是依版本號堆疊。
 
 ## Official Docs Site

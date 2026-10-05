@@ -1,5 +1,7 @@
 # Project Intelligence 使用指南
 
+Retrieval 保留 `scripts/retrieval_intelligence.py` 作為相容入口；comment/string masking 與 lexical relation row 建構由 `scripts/retrieval_relations.py` 負責。這些可重建關係只提供候選，不是 canonical Impact Graph 或完整語義。
+
 Project Intelligence 是 AIPS 對既有專案建立的可重用理解層。
 
 ![Project Intelligence 流程](assets/project-intelligence-overview.svg)

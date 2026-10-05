@@ -67,6 +67,7 @@ scenarios:
       - tests/evidence/repository_health_lifecycle.py
       - tests/evidence/change_impact_traversal_lifecycle.py
       - tests/evidence/retrieval_intelligence_lifecycle.py
+      - tests/evidence/retrieval_relations_extraction_lifecycle.py
       - tests/evidence/module_extraction_lifecycle.py
   - id: "205"
     path: tests/scenarios/205-branch-cleanup-proposal-freshness.md

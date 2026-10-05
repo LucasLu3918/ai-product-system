@@ -2,6 +2,8 @@
 
 The Agent-facing rules in this document are normative. The generated Human current view and section-anchor history crosswalk live in `docs/human/CONFORMANCE_CURRENT.md` and `docs/human/CONFORMANCE_HISTORY_INDEX.md`; `tests/scenario_coverage.yaml` remains the canonical coverage data.
 
+The retrieval relation extraction lifecycle checks legacy facade behavior against the internal implementation, including masking, relation rows and secret-path exclusion. It does not upgrade lexical evidence to compiler-resolved semantics.
+
 Scenario 198 is lifecycle-covered by `tests/evidence/runtime_context_lifecycle.py` and `scripts/runtime_invariant_matrix.py`. Runtime Context reporting must remain credential-free, and the matrix must retain complete deterministic pair coverage within its declared case bound.
 
 External Eval and red-team producers are normalized through `orchestration/EVAL_INTEROPERABILITY.md`. Their scores and findings remain REVIEW/SIGNAL evidence; a Human-confirmed minimal reproduction becomes a canonical Agent Eval Case before deterministic conformance can rely on it.

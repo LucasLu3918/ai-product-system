@@ -1,0 +1,51 @@
+version: 1
+change:
+  id: plan16-03-project-intelligence-temporal
+  summary: Extract temporal_query behind the existing Project Intelligence facade without changing its CLI or result
+    contract.
+  boundary:
+  - temporal query adapter and legacy facade identity
+  - CLI dispatch, temporal persistence/helpers and downstream lifecycle evidence
+  - architecture and documentation trigger inventories
+candidate:
+  base_sha: 3e6c2350ab14b986d93a9e477b73d89a9d66ec05
+  changed_files_hash: e657c9993634520e84c8dc8d6e5ef55d4ad330a4b212241d0c703d61682d948b
+matrix:
+- boundary: temporal-query-facade-and-cli
+  reason: Existing script imports and CLI route must retain the same callable and observable temporal result behavior.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff on the extracted module, facade, and module extraction lifecycle.
+    unit:
+      applicable: true
+      evidence: Scenario 204 extraction lifecycle identity and deterministic current-mode contract; existing temporal
+        unit tests.
+    integration:
+      applicable: true
+      evidence: Existing temporal lifecycle and CLI current-mode invocation through aips_cli.sh.
+    contract:
+      applicable: true
+      evidence: Direct facade identity plus canonical path, digest, result fields, and missing-Git-HEAD behavior.
+    e2e:
+      applicable: true
+      evidence: Full repository validation and exact-candidate Integration Gate.
+    security:
+      applicable: true
+      evidence: Mandatory candidate secret scan; no new trust boundary or credential access.
+    migration_recovery:
+      applicable: false
+      na_reason: No stored schema, persisted data, migration, or recovery behavior changes.
+    cli_harness:
+      applicable: true
+      evidence: aips intelligence temporal current remains routed through scripts/project_intelligence.py.
+    docs_schema:
+      applicable: true
+      evidence: Architecture required-path and documentation placement/sync triggers include the new module; documentation
+        impact preview and docs build.
+scope_recomputed_after_expansion: true
+actual_diff_reconciled: true
+review_evidence:
+  required: false
+blockers: []
+status: READY

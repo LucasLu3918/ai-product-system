@@ -23,6 +23,7 @@ MCP 提供 portability；native adapters 提供可驗證的 runtime hook / guard
 
 `aips intelligence temporal` 仍由 `scripts/project_intelligence.py` 提供；temporal query 的內部實作位於 `scripts/project_intelligence_temporal.py`，既有 facade、輸出與權限邊界不變。
 
+
 執行環境恢復延伸既有 CLI 與 Retrieval：`runtime_cache.py` 共用可寫快取解析，`package_install.py` 回報安全的下載失敗分類；沒有新增遠端服務或治理權限，既有架構拓樸與圖不需改動。
 
 Turn Context 在選取任務相關內容前，先依目標路徑與 Runtime 篩選指示來源；分類只協助路由。非 Git 或尚無 `HEAD` 的資料夾保留基本 Context，歷史斷言維持不可用。檢索讀取與索引寫入分開，在安全條件下可使用經檢查的唯讀暫時快照。
@@ -190,6 +191,8 @@ Evolution weekly evidence uses a bounded, digest-checked archive only when an Is
 Evolution data completeness、validator shadow/replay、branch cleanup proposal、version-tag readiness 與 GitHub protection comparison 都先產生可追溯 evidence。Branch cleanup apply 會綁定目前 `main` baseline，整批確認後才開始；已缺失分支會阻擋重播或部分狀態續跑。Selective execution、branch deletion、tag writing 和 ruleset activation 仍需分別依既有核准流程處理。
 
 ## Documentation Architecture
+
+Retrieval Intelligence 保留 `scripts/retrieval_intelligence.py` 作為相容 facade；comment/string masking 與 bounded lexical relation row 建構位於 `scripts/retrieval_relations.py`。Relations 仍是可重建索引中的候選，不代表編譯器解析或完整呼叫圖。
 
 Human maintainers can use the generated System Reference for factual command/runtime tables; candidate validation separately derives optional toolchain provisioning from exact changed paths while keeping the required Gate intact.
 

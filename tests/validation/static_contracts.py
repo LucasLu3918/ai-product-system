@@ -167,7 +167,7 @@ required_files = [
     "templates/delivery/LOCAL_ENVIRONMENT.md", "templates/delivery/DEPLOYMENT_PLAN.md",
     "templates/delivery/RUNBOOK.md",
     "scripts/check_release_readiness.py", "scripts/harness_resolve.py",
-    "scripts/project_intelligence.py", "scripts/project_intelligence_temporal.py", "scripts/retrieval_intelligence.py", "scripts/retrieval_evaluation.py", "scripts/structural_retrieval_trial.py", "scripts/retrieval_embedding_trial.py", "scripts/retrieval_embedding_trial_summary.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py",
+    "scripts/project_intelligence.py", "scripts/project_intelligence_temporal.py", "scripts/retrieval_intelligence.py", "scripts/retrieval_relations.py", "scripts/retrieval_evaluation.py", "scripts/structural_retrieval_trial.py", "scripts/retrieval_embedding_trial.py", "scripts/retrieval_embedding_trial_summary.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py",
     "scripts/aips_identity.py", "scripts/execution_isolation.py",
     "scripts/agent_eval.py", "scripts/trajectory_eval.py", "scripts/check_secret_leakage.py", "scripts/content_safety.py", "scripts/visual_profile.py",
     "scripts/requirements_traceability.py",
@@ -728,7 +728,7 @@ for rel, keys in {
         if key not in doc:
             errors.append(f"{rel} missing top-level key: {key}")
 
-for helper in ("scripts/harness_resolve.py", "scripts/project_intelligence.py", "scripts/project_intelligence_temporal.py", "scripts/retrieval_intelligence.py", "scripts/retrieval_evaluation.py", "scripts/structural_retrieval_trial.py", "scripts/retrieval_embedding_trial.py", "scripts/retrieval_embedding_trial_summary.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py", "scripts/requirements_traceability.py", "scripts/planning_package_validate.py"):
+for helper in ("scripts/harness_resolve.py", "scripts/project_intelligence.py", "scripts/project_intelligence_temporal.py", "scripts/retrieval_intelligence.py", "scripts/retrieval_relations.py", "scripts/retrieval_evaluation.py", "scripts/structural_retrieval_trial.py", "scripts/retrieval_embedding_trial.py", "scripts/retrieval_embedding_trial_summary.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py", "scripts/requirements_traceability.py", "scripts/planning_package_validate.py"):
     helper_path = ROOT / helper
     if helper_path.exists():
         compiled = subprocess.run([sys.executable, "-m", "py_compile", str(helper_path)], capture_output=True, text=True)

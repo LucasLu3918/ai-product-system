@@ -2,6 +2,8 @@
 
 Repeated bootstrap preserves existing metadata, graph and temporal assertions. Use read-only refresh-plan to inspect source changes, enrich affected topics and update only reviewed registry hashes. Finalize records computed freshness, retains UNREVIEWED review status and never upgrades partial graph coverage merely because workflow seeds exist.
 
+`retrieval_intelligence.py` remains the compatibility facade for retrieval commands and imports. `retrieval_relations.py` owns comment/string masking and bounded lexical relation rows; these rebuildable candidates do not upgrade partial Impact Graph coverage or establish compiler-resolved completeness.
+
 Project Intelligence is the reusable, evidence-grounded understanding layer for existing projects.
 
 It replaces Project Knowledge as the long-term cache model. Existing `.ai/knowledge/` remains readable for migration compatibility, but new reusable discovery belongs in Project Intelligence.
