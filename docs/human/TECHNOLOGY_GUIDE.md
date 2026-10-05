@@ -142,6 +142,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+The existing `evolution_analysis.py` CLI is a compatibility facade; deterministic local pre-analysis is implemented in `evolution_preanalysis.py` with the same outputs and authority boundaries.
+
 Post-merge publication reconciliation uses the existing Python/Git runtime behind the `publish_preflight` facade; extracting it adds no dependency or public command.
 
 Scenario 204 的 module-extraction evidence 會檢查 Project Intelligence temporal adapter 仍由原 facade 暴露，並固定 current-mode 欄位與 digest 格式。
@@ -233,6 +235,7 @@ Implementation Resolution 先釐清 REST/OpenAPI authority，再依既有專案�
 ### Evolution Radar
 
 定期收集 public-source technology evidence、dedup / provenance、deterministic pre-analysis、semantic handoff 與 Human Decision。
+
 
 ### Controlled Trial
 

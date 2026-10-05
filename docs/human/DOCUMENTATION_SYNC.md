@@ -6,6 +6,8 @@ Human Docs 與 Agent canonical protocols 分工，但 behavior-bearing change �
 
 Retrieval relation extraction is an internal module behind the existing `retrieval_intelligence.py` facade. Changes preserve the public import and candidate evidence semantics, with the non-compiler-resolved boundary documented in Project Intelligence guidance.
 
+Evolution deterministic pre-analysis follows the same facade rule: `evolution_analysis.py` remains the CLI/import entry point while `evolution_preanalysis.py` owns its implementation; behavior and authority documentation stay in the Evolution topics.
+
 ## 文件角色
 
 ~~~text

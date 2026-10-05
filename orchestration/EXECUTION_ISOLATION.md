@@ -227,6 +227,8 @@ A credential-free/default execution lane must not inherit an external provider s
 
 The deterministic pre-analysis is a read-only evidence transform. It does not create a Trial worktree, invoke an Agent provider, mutate project source, or perform any additional network access.
 
+Its implementation is isolated in `scripts/evolution_preanalysis.py`; callers continue through the `scripts/evolution_analysis.py` facade with identical read-only and authority boundaries.
+
 Its inputs are bounded to committed configuration/Capability Map plus the already-collected Radar evidence. Output may be published into the Human review Issue as advisory triage metadata, but it grants no code-write, branch/PR, merge, release, publication, Human-decision, runtime-enforcement, or remediation authority.
 
 ## Repository Health interaction

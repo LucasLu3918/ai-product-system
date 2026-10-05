@@ -150,7 +150,11 @@ if rollup_script.exists():
 
 analysis_script = ROOT / "scripts/evolution_analysis.py"
 if analysis_script.exists():
-    analysis_text = analysis_script.read_text(encoding="utf-8")
+    analysis_text = "\n".join(
+        path.read_text(encoding="utf-8")
+        for path in (analysis_script, ROOT / "scripts/evolution_preanalysis.py")
+        if path.exists()
+    )
     for contract in (
         "build_local_preanalysis",
         "validate_local_preanalysis",

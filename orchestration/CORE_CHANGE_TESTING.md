@@ -18,6 +18,8 @@ For Phase 4 generator-adapter changes, the affected-boundary matrix includes the
 
 A green subset does not prove a core change is safe when an affected boundary has no evidence.
 
+When a shared module-extraction lifecycle gains another facade, retain identity checks for each moved public symbol and complete the affected subsystem lifecycle before full repository validation.
+
 ## Impact-derived Test Matrix
 
 

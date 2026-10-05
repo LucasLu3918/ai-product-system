@@ -728,7 +728,7 @@ for rel, keys in {
         if key not in doc:
             errors.append(f"{rel} missing top-level key: {key}")
 
-for helper in ("scripts/harness_resolve.py", "scripts/project_intelligence.py", "scripts/project_intelligence_temporal.py", "scripts/retrieval_intelligence.py", "scripts/retrieval_relations.py", "scripts/publish_preflight.py", "scripts/publish_post_merge.py", "scripts/retrieval_evaluation.py", "scripts/structural_retrieval_trial.py", "scripts/retrieval_embedding_trial.py", "scripts/retrieval_embedding_trial_summary.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py", "scripts/requirements_traceability.py", "scripts/planning_package_validate.py"):
+for helper in ("scripts/harness_resolve.py", "scripts/project_intelligence.py", "scripts/project_intelligence_temporal.py", "scripts/retrieval_intelligence.py", "scripts/retrieval_relations.py", "scripts/publish_preflight.py", "scripts/publish_post_merge.py", "scripts/retrieval_evaluation.py", "scripts/structural_retrieval_trial.py", "scripts/retrieval_embedding_trial.py", "scripts/retrieval_embedding_trial_summary.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py", "scripts/requirements_traceability.py", "scripts/planning_package_validate.py", "scripts/evolution_preanalysis.py"):
     helper_path = ROOT / helper
     if helper_path.exists():
         compiled = subprocess.run([sys.executable, "-m", "py_compile", str(helper_path)], capture_output=True, text=True)
