@@ -1289,6 +1289,8 @@ Scenario 164 驗證只支援 MCP Tools 的 Host 仍能透過唯讀 catalog／rea
 - uncovered：0
 ## Scenario 165 — CI-Parity Publication Preflight
 
+Scenario 165 的 lifecycle evidence 也驗證 post-merge reconciliation 由 `publish_preflight` 相容 facade 委派至 `publish_post_merge`，並保留既有 API 與同步安全條件。
+
 Scenario 165 驗證本機與 GitHub Actions 共用同一個 exact-candidate resolver，統一解析 base/head、PR label change class、canonical Core Change Test Matrix 與文件 diff base。快速 diff／文件檢查會先執行；localhost 或 browser 能力不足會明確標為 `ENVIRONMENT_BLOCKED`。
 
 

@@ -69,6 +69,8 @@ A Large/Core Change is not complete when:
 
 ## Evidence
 
+When post-merge reconciliation is extracted, include both the publication lifecycle and module-facade lifecycle evidence in the same exact-candidate matrix.
+
 The completed matrix binds the candidate base and canonical changed-file hash. Evidence must name the local test or lifecycle that ran; unexecuted architecture or migration checks need an explicit, reasoned not-applicable disposition.
 
 Runtime recovery evidence must exercise a linked worktree installer on Bash 3.2, complete-versus-partial interpreter selection, deleted-index metadata, explicit-cache preservation and symlink refusal, redacted HTTP/proxy/DNS/TLS diagnostics, cancelled/newer CI outcomes, and dirty/divergent installed synchronization. pip download cache does not replace fresh candidate Gates.

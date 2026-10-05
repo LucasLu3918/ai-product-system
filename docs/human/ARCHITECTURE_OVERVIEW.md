@@ -82,6 +82,8 @@ Phase B keeps `bin/aips` as a small argument-preserving launcher to `scripts/aip
 
 ## Deterministic Execution
 
+Post-merge reconciliation 實作位於 `scripts/publish_post_merge.py`；`scripts/publish_preflight.py` 保留既有 CLI facade。模組拆分不改變 clean-worktree、fast-forward、備份或停止條件。
+
 CLI routing 區分 AIPS checkout 與產品 root：docs impact 在選定 AIPS checkout 計算候選差異；`aips openapi` 使用安裝版工具操作明確指定的產品 root。Local preparation 隔離 AIPS 設定並保留 gh 設定位置，先確認 venv、依賴與執行權限，再進入既有完整 Gate。此修正不改變元件拓撲或治理權限。
 
 OpenAPI validator remains optional to keep baseline installation small. `aips openapi doctor` reports its availability, and only the explicit `aips openapi install` action installs the pinned validator dependencies into the managed AIPS environment. Product contract commands continue to resolve product files under the explicit product root.

@@ -708,6 +708,7 @@ def main() -> int:
     assert missing_browser["provider"] == "managed"
 
     source = (ROOT / "scripts/publish_preflight.py").read_text(encoding="utf-8")
+    post_merge_source = (ROOT / "scripts/publish_post_merge.py").read_text(encoding="utf-8")
     for contract in (
         "AIPS_DOCS_DIFF_BASE",
         "CORE_CHANGE_TEST_MATRIX.yaml",
@@ -722,7 +723,7 @@ def main() -> int:
         "openapi_spec_validator",
         "configured_identity_plan",
     ):
-        assert contract in source
+        assert contract in source + post_merge_source
     browser_source = (ROOT / "scripts/browser_runtime.py").read_text(encoding="utf-8")
     for contract in ("BROWSER_LAUNCH_FAILED", "sync_playwright", "AIPS_BROWSER_PROVIDER"):
         assert contract in browser_source

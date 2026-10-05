@@ -11,6 +11,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import project_intelligence as project_facade
 import project_intelligence_impact_graph as project_impl
 import project_intelligence_temporal as project_temporal_impl
+import publish_post_merge as publish_post_merge_impl
+import publish_preflight as publish_facade
 import repository_health as health_facade
 import repository_health_conformance as health_impl
 import retrieval_intelligence as retrieval_facade
@@ -20,11 +22,16 @@ import retrieval_structural_graph as retrieval_impl
 def main() -> int:
     assert project_facade.traverse_architecture_impact_graph is project_impl.traverse_architecture_impact_graph
     assert project_facade.temporal_query is project_temporal_impl.temporal_query
+    assert publish_facade.PreflightError is publish_post_merge_impl.PreflightError
+    assert callable(publish_facade.post_merge)
+    assert callable(publish_facade.sync_installed)
     assert health_facade.run_scenario_conformance is health_impl.run_scenario_conformance
     assert retrieval_facade.structural_relation_boosts is retrieval_impl.structural_relation_boosts
     for function in (
         project_facade.traverse_architecture_impact_graph,
         project_facade.temporal_query,
+        publish_facade.post_merge,
+        publish_facade.sync_installed,
         health_facade.run_scenario_conformance,
         retrieval_facade.structural_relation_boosts,
     ):

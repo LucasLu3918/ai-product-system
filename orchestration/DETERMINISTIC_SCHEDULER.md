@@ -68,6 +68,8 @@ The scheduler is stateless between invocations. Durable workflow state remains o
 
 ## CLI
 
+Post-merge publication reconciliation runs separately through the existing `publish_preflight` facade. Scheduler dispatch never performs checkout or installed-version synchronization.
+
 The installed `aips` command requires Python >=3.12. This is the AIPS control-plane runtime; each dispatched task continues to use its declared runtime and execution profile.
 
 `aips openapi doctor` reports optional validator readiness. `aips openapi install` is the only command that installs its pinned requirements into the managed environment; contract validation does not download packages automatically and receives an actionable error while the optional toolchain is absent.

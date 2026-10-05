@@ -55,6 +55,8 @@ The candidate fingerprint includes the scanner and policy SHA-256 hashes, along 
 
 ## Validation Profile
 
+The Integration Gate inventory includes `scripts/publish_post_merge.py` and its facade lifecycle evidence so exact-candidate validation compiles and exercises the extracted implementation.
+
 Checks may declare `expected_test_count` when a command reports a standard unittest summary. The Gate fails if the expected count is absent or different, preventing a successful no-op command from being treated as test evidence.
 
 Use `templates/automation/VALIDATION_PROFILE.yaml`.

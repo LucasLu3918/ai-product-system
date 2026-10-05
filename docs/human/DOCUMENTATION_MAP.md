@@ -18,6 +18,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+Publication preflight 保留 `scripts/publish_preflight.py` CLI facade；post-merge reconciliation 位於 `scripts/publish_post_merge.py`，由 Scenario 165 lifecycle evidence 驗證。
+
 Project Intelligence 的 temporal query 維持原有 CLI 與 `project_intelligence.py` facade；內部 adapter 位於 `scripts/project_intelligence_temporal.py`，相容性由 Scenario 204 驗證。
 
 Current behavior follows the topic sections in this map: installation and release, maintenance validation, Project Intelligence, Evolution, and security each point to one Human-facing explanation and its canonical Agent protocol.
