@@ -6,6 +6,13 @@ full_validation_paths:
   - scripts/validation_shadow_plan.py
   - tests/validation/registry.py
   - tests/validate_repository.py
+full_validation_path_prefixes:
+  - tests/validation/
+  - tests/validate_repository.py
+  - scripts/validation_
+  - scripts/publish_preflight.py
+  - scripts/repository_preflight.py
+  - scripts/check_secret_leakage.py
 known_path_prefixes:
   - .aips/
   - .github/

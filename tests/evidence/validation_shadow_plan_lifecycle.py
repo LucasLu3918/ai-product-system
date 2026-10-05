@@ -29,6 +29,10 @@ def main() -> int:
     assert unknown["full_validation_fallback"] is True
     assert unknown["would_skip"] == []
 
+    validator_change = shadow.build_plan(config, ["tests/validation/new_validator.py"], base="a" * 40, head="e" * 40, change_class="standard")
+    assert validator_change["full_validation_fallback"] is True
+    assert validator_change["would_skip"] == []
+
     for change_class in ("large", "core", "release", "unknown"):
         full = shadow.build_plan(config, paths, base="a" * 40, head="d" * 40, change_class=change_class)
         assert full["full_validation_fallback"] is True

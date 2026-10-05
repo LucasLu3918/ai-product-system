@@ -82,6 +82,8 @@ aips attach /path/to/project
 
 ## 更新
 
+安裝後預設追蹤穩定版；尚無穩定版標籤時安裝器會提示並暫從 `main` 啟動。需要開發版時可在初次安裝選擇 `--channel main`。
+
 ~~~bash
 aips update
 ~~~

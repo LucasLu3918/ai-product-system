@@ -161,6 +161,8 @@ aips harness doctor
 
 ## 更新
 
+Managed installations use the stable channel by default when verified `vX.Y.Z` releases exist. Until the first release tag is published, an implicit stable install bootstraps from `main` with a warning; selecting `--channel stable` explicitly fails if no release is available. `--channel main` opts into development updates. The installer records the selected channel so later `aips update` follows the same policy.
+
 ~~~bash
 aips update
 ~~~

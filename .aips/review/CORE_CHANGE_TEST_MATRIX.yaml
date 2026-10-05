@@ -1,16 +1,19 @@
 version: 1
 change:
-  id: plan14-python-support
-  summary: P14-02 aligns the supported Python floor with Python >=3.12 and tests the
-    3.12, 3.13, and 3.14 compatibility range; previously merged P14-01 boundaries
-    remain listed as regression evidence for the full candidate Gate.
+  id: plan14-03-10
+  summary: P14-03 through P14-10 add supply-chain checks, evidence-gated full-run
+    validation graduation, verified stable update channels, gradual coverage/lint/type
+    quality ratchets, report-only governance and reliability measures, and proposal-only
+    branch hygiene. P14-01 and P14-02 remain regression boundaries for the full Gate.
   boundary:
-  - Python runtime minimum, managed installer repair, doctor diagnosis, and compatibility
-    behavior
-  - canonical runtime facts, compatibility smoke workflow, tests, documentation, and
-    candidate binding
-  - previously merged P14-01 archive and monthly Effectiveness boundaries retained
-    for regression traceability
+  - GitHub supply-chain workflows and minimum permissions, pinned actions, dependency review, and advisory Scorecard
+  - Validation selection shadow evidence, conservative full-run fallbacks, 30-day cohort graduation and Human-only decision
+  - Stable release tag resolution and verification, channel persistence, installer/update compatibility, and no automatic release tagging
+  - Coverage and deterministic Hypothesis measurement, no-growth Ruff baseline, and selected-module mypy debt limit
+  - Advisory governance complexity counts and deferred monthly reliability SLO review thresholds
+  - Exact-SHA branch-cleanup proposals without remote deletion authority
+  - Canonical docs, Scenario registration, Integration Gate and repository validation wiring
+  - P14-01 and P14-02 regressions: durable Issue evidence, evolution rollup, Python >=3.12 runtime floor and compatibility smoke
 matrix:
 - boundary: Durable Issue archive and rollup consumer compatibility
   reason: Original evidence must remain byte-preserved below GitHub limits; invalid,
@@ -231,6 +234,71 @@ matrix:
     docs_schema:
       applicable: true
       evidence: generated system facts and canonical runtime support docs
+- boundary: GitHub supply-chain checks and repository security authority
+  reason: New pull-request and scheduled security checks must be immutable-pinned, least-privilege, and unable to publish or merge.
+  checks:
+    static_lint: {applicable: true, evidence: workflow schema and action SHA contracts}
+    unit: {applicable: false, na_reason: No security decision algorithm is added.}
+    integration: {applicable: true, evidence: Dependency Review pull_request contract and scheduled/manual Scorecard workflow contract}
+    contract: {applicable: true, evidence: tests/validation/security_workflow_contracts.py}
+    e2e: {applicable: true, evidence: GitHub CodeQL default setup configured for actions and python; initial analysis run 37306625912 completed successfully.}
+    security: {applicable: true, evidence: minimum read permissions, pinned full SHAs, no PR or release authority}
+    migration_recovery: {applicable: false, na_reason: No stored state changes.}
+    concurrency_idempotency_replay: {applicable: false, na_reason: No source writes or shared state.}
+    cli_harness: {applicable: false, na_reason: No CLI or Harness behavior changes.}
+    docs_schema: {applicable: true, evidence: Security Assurance and Scenarios 211/213 contracts}
+- boundary: Validation selection shadow and graduation safeguards
+  reason: Selective execution must remain disabled until complete exact-candidate evidence supports a separate Human decision.
+  checks:
+    static_lint: {applicable: true, evidence: scripts/validation_shadow_plan.py and scripts/validation_graduation.py syntax}
+    unit: {applicable: true, evidence: exact changed-path classes and candidate SHA audit sampling}
+    integration: {applicable: true, evidence: tests/evidence/validation_shadow_plan_lifecycle.py and tests/evidence/validation_graduation_lifecycle.py}
+    contract: {applicable: true, evidence: tests/validation/validation_graduation_contracts.py and config/validation-graduation.yaml}
+    e2e: {applicable: true, evidence: full-run artifact history, false-negative cohort, and readiness-only output lifecycle}
+    security: {applicable: true, evidence: unknown/core/large/validator paths force full run; no skipped execution or automatic activation}
+    migration_recovery: {applicable: true, evidence: missing/truncated/stale artifacts block graduation without altering current validator set}
+    concurrency_idempotency_replay: {applicable: true, evidence: deterministic SHA-keyed audit sample and repeatable shadow plan}
+    cli_harness: {applicable: false, na_reason: No public CLI command is added.}
+    docs_schema: {applicable: true, evidence: Scenario 212, maintenance docs, config schema contracts}
+- boundary: Verified stable installation and update channels
+  reason: Install/update must follow the selected channel and refuse mismatched tags, rollback, dirty state, or unsupported major changes.
+  checks:
+    static_lint: {applicable: true, evidence: bash -n plus release resolver Ruff checks}
+    unit: {applicable: true, evidence: SemVer numeric ordering, annotated tags, tag/VERSION/commit mismatch rejection}
+    integration: {applicable: true, evidence: install_preflight_lifecycle.py, install_download_lifecycle.py, and release_channel_lifecycle.py}
+    contract: {applicable: true, evidence: --channel stable/main parsing and absolute Git metadata persistence}
+    e2e: {applicable: true, evidence: new install without releases, stable tag install, installed update, fallback and rollback refusal fixtures}
+    security: {applicable: true, evidence: exact full tag SHA and VERSION verification; no credentials or release tag creation}
+    migration_recovery: {applicable: true, evidence: legacy AIPS_INSTALL_BRANCH maps to branch mode; metadata persists across updates}
+    concurrency_idempotency_replay: {applicable: false, na_reason: Updates remain single-writer fast-forward operations.}
+    cli_harness: {applicable: true, evidence: source and installed symlink entrypoint compatibility}
+    docs_schema: {applicable: true, evidence: Installation, Getting Started, Versioning, and Scenario 213 docs}
+- boundary: Gradual test quality and debt ratchets
+  reason: Add reproducible coverage and property evidence without imposing unsupported percentages or growing existing Ruff/mypy debt.
+  checks:
+    static_lint: {applicable: true, evidence: full Ruff baseline remains at 872 findings and scoped Ruff checks pass}
+    unit: {applicable: true, evidence: deterministic Hypothesis SemVer properties and release lifecycle assertions}
+    integration: {applicable: true, evidence: Integration Gate quality ratchet plus selected mypy execution}
+    contract: {applicable: true, evidence: tests/validation/quality_ratchet_contracts.py and requirements/constraints pin equality}
+    e2e: {applicable: true, evidence: Coverage.py branch report for release selector; no percentage threshold}
+    security: {applicable: false, na_reason: No runtime security boundary changes.}
+    migration_recovery: {applicable: false, na_reason: No production persisted data changes.}
+    concurrency_idempotency_replay: {applicable: true, evidence: Hypothesis uses derandomize=true and database=None}
+    cli_harness: {applicable: false, na_reason: No public product CLI behavior changes.}
+    docs_schema: {applicable: true, evidence: Quality Guide, Maintenance guidance, Scenario 213}
+- boundary: Advisory governance, reliability, and branch cleanup
+  reason: Complexity and reliability metrics must remain observational, and cleanup must never delete a remote ref without an exact separately approved manifest.
+  checks:
+    static_lint: {applicable: true, evidence: repository health and branch policy config contracts}
+    unit: {applicable: true, evidence: Repository Health advisory count computation and reliability readiness contracts}
+    integration: {applicable: true, evidence: repository_health_lifecycle.py, maintenance_reliability_lifecycle.py, branch_hygiene_lifecycle.py}
+    contract: {applicable: true, evidence: report-only flags, three-complete-month SLO deferral, proposal authorization false}
+    e2e: {applicable: true, evidence: complete and incomplete monthly report lifecycle plus exact-branch proposal generation}
+    security: {applicable: true, evidence: no writes, merge authority, release authority, or automatic deletion}
+    migration_recovery: {applicable: false, na_reason: No persisted state schema is rewritten.}
+    concurrency_idempotency_replay: {applicable: true, evidence: fingerprint-bound proposal and deterministic report output}
+    cli_harness: {applicable: false, na_reason: No public command signature changes.}
+    docs_schema: {applicable: true, evidence: Maintenance docs and Scenario registry entries}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
@@ -239,5 +307,5 @@ review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
 candidate:
-  base_sha: 2990f88bd455ff60705d05d08faf182d83b43386
-  changed_files_hash: 2eac793c44bfaf164605244e39ae1df5b68e7e2887993a3c215c834c4417e100
+  base_sha: d13f3984346af55ad22372360fc95b8782fce08b
+  changed_files_hash: 7c759d6702065f0714b37fd53568251a9cb98ac071a7eea999d4ee10c8345626

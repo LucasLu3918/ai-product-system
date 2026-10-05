@@ -116,6 +116,7 @@ for evidence in (
     Path(__file__).parent / "evidence/version_policy_lifecycle.py",
     Path(__file__).parent / "evidence/module_extraction_lifecycle.py",
     Path(__file__).parent / "evidence/maintenance_reliability_lifecycle.py",
+    Path(__file__).parent / "evidence/release_channel_lifecycle.py",
 ):
     if evidence.name in _OPENAPI_EVIDENCE and _ci_plan is not None and _ci_plan.get("needs_openapi") is False:
         _record_timing(str(evidence.relative_to(Path(__file__).resolve().parents[1])), time.monotonic(), "SKIPPED: exact-path plan does not require OpenAPI")

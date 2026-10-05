@@ -49,10 +49,12 @@ def build_plan(config: dict[str, Any], paths: list[str], *, base: str, head: str
     known_prefixes = tuple(config.get("known_path_prefixes") or [])
     known_roots = set(config.get("known_root_paths") or [])
     unknown_paths = [path for path in paths if path not in known_roots and not path.startswith(known_prefixes)]
+    full_path_prefixes = tuple(config.get("full_validation_path_prefixes") or [])
     force_full = bool(
         unknown_paths
         or change_class in set(config.get("full_validation_classes") or [])
         or set(paths).intersection(config.get("full_validation_paths") or [])
+        or any(path.startswith(full_path_prefixes) for path in paths)
     )
     scoped: list[dict[str, Any]] = []
     for spec in VALIDATORS:

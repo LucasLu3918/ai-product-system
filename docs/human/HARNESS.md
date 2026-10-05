@@ -21,6 +21,8 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+Managed AIPS installation channel selection controls system updates only. It does not change which Runtime Adapter is installed or grant a Host capability; continue to validate each adapter through its existing ownership manifest and capability evidence.
+
 ### Codex
 
 以 persistent managed instruction 提供 CONTEXT_ALWAYS；安裝器會先檢查 `codex` 命令，再檢查 `CODEX_CLI_PATH`、`AIPS_CODEX_CLI_PATH` 與 macOS ChatGPT app 內建路徑。治理強度依實際可驗證能力回報，不因 MCP 存在而升級。

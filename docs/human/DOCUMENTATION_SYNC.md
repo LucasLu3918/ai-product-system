@@ -122,6 +122,8 @@ Getting Started / Installation / User Guide 以 task-oriented方式導覽；Arch
 
 ## Deterministic protection
 
+When maintenance validation behavior changes, keep scenario registration, full-run shadow safeguards, quality ratchets, and human-facing Gate descriptions synchronized. Reports may describe future selective behavior but cannot imply validators are skipped before a separate Human decision.
+
 Python runtime floor、tested compatibility matrix 與排程 smoke workflow 共用 `system-facts` placement：事實由 `config/system-facts.yaml` 管理，System Reference 產生摘要，Installation 說明操作方式，Maintenance 說明驗證與修復，Technology Guide 記錄技術契約；相容性 workflow 的變更也必須更新這組文件。
 
 Generated Conformance current and history views derive from the canonical registry and Human/Agent sources; regenerate both after scenario inventory or section changes. Historical anchors remain linked and are not silently removed.

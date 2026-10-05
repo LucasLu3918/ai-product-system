@@ -1,0 +1,20 @@
+version: 1
+ruff:
+  baseline_findings: 872
+  policy: never_increase
+  scope: scripts_and_tests
+mypy:
+  policy: selected_module_ratchet
+  maximum_findings: 0
+  modules:
+    - scripts/deterministic_scheduler.py
+    - scripts/integration_gate.py
+    - scripts/review_packet.py
+    - scripts/review_evidence.py
+  follow_imports: skip
+  ignore_missing_imports: true
+coverage:
+  policy: report_only
+  branch_measurement: true
+  minimum_percent: null
+  note: Establish module baselines before introducing gradual touched-module ratchets.

@@ -359,6 +359,16 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+Selective Validation remains in `FULL_RUN_SHADOW` until an exact-artifact cohort covers at least 30 days, enough pull requests, zero false-negative skips, conservative full-validation fallbacks, and deterministic full-run sampling. `scripts/validation_graduation.py` reports `READY_FOR_HUMAN_REVIEW` only; a Human must separately decide whether to enable selective execution. Validation shadow artifacts are retained for 90 days to support the review window; incomplete history blocks graduation.
+
+The validation environment records exact Coverage.py and Hypothesis versions. Coverage reports branch measurements for the stable release selector without enforcing a percentage until touched-module baselines are established. Hypothesis property checks use deterministic settings. Ruff may not exceed its measured repository baseline of 872 findings; selected mypy modules keep the existing zero-error bound. Expand either scope only with a measured baseline and a small reviewed ratchet.
+
+Repository Health reports advisory counts for workflows, validation modules, policy files and Integration Gate steps. These counts provide governance-complexity trend context and never affect health status or create a new gate. Monthly reliability reports continue collecting bounded evidence; SLO thresholds remain deferred until at least three complete monthly cohorts exist, then require human review and can only raise review flags.
+
+Supply-chain checks use Dependency Review on PRs to block newly introduced high or critical vulnerabilities, configured CodeQL default setup for `actions` and `python`, and weekly advisory OpenSSF Scorecard reporting. The CodeQL initial validation run is asynchronous; verify its result and subsequent analysis before treating scan findings as available. Dependency Review and Scorecard actions remain pinned to full commit SHAs.
+
+New installations request the stable channel by default and pin an exact `vX.Y.Z` tag after verifying its commit and `VERSION`. Until the first release tag exists, an implicit stable install warns and bootstraps from `main`; explicitly requested stable installs fail closed. `--channel main` remains available for opt-in development updates. Creating the first release tag remains governed by the explicit release approval policy.
+
 OpenAPI validation and evidence lifecycle checks are included in the repository validation entry point; installing `requirements-openapi.txt` is required for that full validation profile.
 
 Portable Command contract 位於 `tests/validation/portable_commands_contracts.py`，涵蓋 registry、projection install、status 與修改檔案 conflict；它不授予 merge 或 release authority。
@@ -375,7 +385,7 @@ External Eval / Red-Team Interoperability contracts are checked by `tests/valida
 
 Keep the top-level validator as an aggregator. New substantial validation belongs in the narrowest existing module or a focused evidence runner rather than expanding the entrypoint back into a monolith.
 
-When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 34 deterministic, 120 lifecycle and 54 agent_eval scenarios (208 automated, 2 manual, 210 total).
+When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 36 deterministic, 121 lifecycle and 54 agent_eval scenarios (211 automated, 2 manual, 213 total).
 
 `scripts/repository_preflight.py` 先跑快速文件／schema／diff 檢查；通過後才進入完整 lifecycle。環境缺少 localhost bind 或 browser 時回報 `ENVIRONMENT_BLOCKED`，不混稱產品測試失敗。
 
@@ -417,6 +427,7 @@ Do not let the Scheduler make semantic scope decisions, and do not let Integrati
 ## Branch lifecycle hygiene
 
 Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanup. Persistent operational branches are preserved; common short-lived prefixes are classified as ephemeral; unclassified branches are preserved by default. The report includes current SHA, matching merged PR state, branch age, integration status and a cleanup review recommendation. Integration recognition is conservative and squash-aware: direct ancestry is checked first, then per-commit patch equivalence, then a clean synthetic `git merge-tree --write-tree` whose result must be identical to the target tree. The policy is `report_only`; scheduled and main-push reports publish proposals and never delete refs. Cleanup requires a separate explicit workflow dispatch on protected `main` with `apply_cleanup=true`, plus the exact one-time reviewed manifest.
+
 
 ## Repository Health / Architecture Drift consistency
 
@@ -480,6 +491,7 @@ This is observational maintenance evidence. Any actual source-policy adjustment 
 
 若使用 GitHub merged-PR fallback，workflow 會重新讀取該 PR，確認 `merged_at`、head SHA、head ref 與 base ref 全部符合 manifest。任何一筆失敗都會在第一個 delete 前 block 整批。Persistent、unclassified、pending 或 manifest 外 branch 一律不刪。排程、push 與未啟用 cleanup 的人工 dispatch 都只有 `contents: read`；只有 protected-main 上明確啟用 cleanup 的 job 在這份 exact manifest 範圍內取得 `contents: write`。
 一般 cleanup report 另外產生 fingerprint-bound proposal，列出 branch SHA、merged PR、merged date 與產生報告時的 main SHA。Proposal 本身不會擴大既有 exact-manifest authority；main baseline 或 branch 狀態變更後須重新產生並 review。
+
 
 ## Runtime Content Safety Boundary
 

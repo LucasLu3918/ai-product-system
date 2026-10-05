@@ -1,0 +1,25 @@
+version: 1
+mode: full_run_shadow
+execution:
+  selective_execution_enabled: false
+  human_decision_required: true
+  automatic_activation_authorized: false
+graduation:
+  minimum_observation_days: 30
+  minimum_unique_pull_requests: 30
+  maximum_false_negatives: 0
+  deterministic_full_audit_modulo: 10
+  require_complete_artifact_history: true
+  require_full_run_for_every_shadow_record: true
+  full_validation_change_classes: [large, core, release, unknown]
+  full_validation_path_prefixes:
+    - tests/validation/
+    - tests/validate_repository.py
+    - scripts/validation_
+    - scripts/publish_preflight.py
+    - scripts/repository_preflight.py
+    - scripts/check_secret_leakage.py
+notes:
+  - The evaluator produces READY_FOR_HUMAN_REVIEW only; it never enables selective execution.
+  - Missing, truncated, stale, or mismatched artifacts prevent graduation.
+  - Deterministic audit sampling is keyed by the exact candidate head SHA.

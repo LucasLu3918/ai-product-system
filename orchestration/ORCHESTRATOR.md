@@ -54,6 +54,7 @@ For a candidate built in a shared workspace, first snapshot the intended head an
 
 ## System Update Preflight
 
+
 Resolve bounded Context before implementation: prove selected-path relevance, allocate Recall from the shared Core/Recall/temporal budget, preserve canonical source pointers on index failure, and apply runtime content safety before emitting derived or retrieved text.
 
 The orchestrator must not implement project mutations using an unverified stale local system.
@@ -122,6 +123,7 @@ existing skill reuse → new narrow skill → new capability → new role
 Do not create a permanent/high-authority role without user approval.
 
 ## Context expansion
+
 
 Resolve the managed AIPS interpreter through `orchestration/RUNTIME_CONTEXT.md`: the CLI floor is Python >=3.12, explicit `AIPS_PYTHON` selection is checked against it, and validation compatibility claims come from the canonical system-facts matrix.
 

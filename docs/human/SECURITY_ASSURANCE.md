@@ -194,6 +194,8 @@ Review actual:
 
 ## Release Security Gate
 
+The public repository adds GitHub Dependency Review on pull requests (blocking newly introduced high or critical vulnerabilities), CodeQL default setup for `actions` and `python`, and scheduled OpenSSF Scorecard reporting. CodeQL uses the default query suite and remote threat model; its initial validation run was accepted by GitHub. These controls complement candidate secret scanning: dependency review detects vulnerable dependency deltas, CodeQL analyzes source vulnerabilities, and Scorecard reports repository supply-chain posture. Scorecard remains advisory; none of these workflows can merge, publish, or change source. Dependency Review and Scorecard actions are pinned to immutable commits with read-only permissions except the narrowly scoped SARIF upload token.
+
 The scheduled Python compatibility workflow uses `contents: read` and pinned checkout/setup-python actions. Its smoke result is supplementary; it cannot replace the exact-candidate PR Gate or grant publication authority.
 
 Repository protection assessments are evidence-only: incomplete Admin/bypass snapshots remain UNKNOWN, and the comparator cannot weaken branch protection or activate a ruleset. Candidate publication continues to run the mandatory secret scan and existing required `repository` Gate.

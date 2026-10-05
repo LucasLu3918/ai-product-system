@@ -95,6 +95,27 @@ def repository_state(root: Path) -> dict[str, Any]:
     }
 
 
+def governance_complexity(root: Path, config: dict[str, Any]) -> dict[str, Any]:
+    policy = as_mapping(config.get("governance_complexity"), "governance_complexity")
+    patterns = as_mapping(policy.get("surfaces"), "governance_complexity.surfaces")
+    counts = {
+        str(name): len([path for path in root.glob(str(pattern)) if path.is_file()])
+        for name, pattern in sorted(patterns.items())
+        if isinstance(pattern, str)
+    }
+    try:
+        gate = yaml.safe_load((root / "config/integration-gate.yaml").read_text(encoding="utf-8")) or {}
+        counts["integration_steps"] = len(gate.get("checks") or [])
+    except (OSError, yaml.YAMLError):
+        counts["integration_steps"] = 0
+    return {
+        "mode": "advisory",
+        "counts": counts,
+        "affects_health_status": False,
+        "interpretation": "Trend and review context only; counts do not create validation gates.",
+    }
+
+
 def as_list(value: Any, name: str) -> list[Any]:
     if value is None:
         return []
@@ -749,6 +770,7 @@ def analyze(root: Path, config_path: Path) -> dict[str, Any]:
             "evidence_fingerprint": evidence_fingerprint,
         },
         "architecture_surfaces": architecture_summary,
+        "governance_complexity": governance_complexity(root, config),
         "drift": drift,
         "execution": {
             "deterministic": True,

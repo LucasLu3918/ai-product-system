@@ -197,6 +197,8 @@ Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
 
+Validator-scope metadata is not a substitute for Project Intelligence consumer evidence. Refresh affected Intelligence topics and resolve consumer impact independently before changing shared validator behavior.
+
 The architecture graph traversal implementation lives in the narrow `project_intelligence_impact_graph.py` module and remains re-exported from `project_intelligence.py`. Structural relation candidate construction lives in `retrieval_structural_graph.py` and remains re-exported from `retrieval_intelligence.py`. Treat these as internal responsibility boundaries; the facade API and evidence semantics remain canonical.
 
 The local SQLite Retrieval Intelligence index may contain rebuildable lexical caller/reference candidates. These are inferred structural evidence, not language-server or compiler truth. Index schema changes must be versioned and the index must be safely rebuildable from repository files.

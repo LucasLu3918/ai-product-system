@@ -10,6 +10,12 @@ collection:
 review_thresholds:
   minimum_validation_attempts: 5
   minimum_merged_changes: 3
+slo_policy:
+  activation: deferred
+  minimum_complete_months_before_review: 3
+  thresholds_active: false
+  threshold_effect: human_review_flag_only
+  require_complete_collection_for_every_month: true
 hotfix_labels:
   - hotfix
   - hot-fix
