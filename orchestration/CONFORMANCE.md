@@ -816,3 +816,7 @@ Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agen
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
 The Human current summary and Human/Agent history crosswalk are generated from this protocol, `docs/human/CONFORMANCE.md`, and `tests/scenario_coverage.yaml` by `scripts/conformance_summary.py`. Edit authoritative sources, regenerate, and verify with `aips conformance summary current|history --output <path>`; retained historical sections keep their anchors. The eight scenarios cover Evolution completeness, validation shadow/replay, module facades, branch proposals, conformance views, workflow bootstrap, tag provenance and ruleset policy.
+
+## Scenario 210 — Python runtime support policy
+
+Scenario 210 is lifecycle-covered by `tests/evidence/install_preflight_lifecycle.py` and `tests/evidence/system_facts_lifecycle.py`. It verifies the Python >=3.12 floor across explicit selection, old managed venv repair, doctor diagnostics, canonical facts, and the scheduled 3.12–3.14 compatibility workflow.

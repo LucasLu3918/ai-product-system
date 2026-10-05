@@ -105,6 +105,8 @@ Architecture Impact Graph traversal is extracted behind `project_intelligence.py
 
 Turn Context intent and `--target-path` narrow instruction selection before mutation analysis. This routing is advisory: the declared Change Boundary and post-diff reconciliation remain authoritative, and non-Git directories retain basic context without historical assertions.
 
+For runtime-floor or installer-recovery changes, include explicit interpreter selection, managed venv install/update repair, `doctor`, canonical facts, scheduled compatibility CI and documentation consumers. If shell call relationships are missing or traversal is truncated, preserve that limitation and manually review the installer, workflow, tests and docs; do not claim global graph completeness.
+
 After implementation compare:
 
 ~~~text

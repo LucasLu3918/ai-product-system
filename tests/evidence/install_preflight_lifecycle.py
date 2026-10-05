@@ -2,11 +2,11 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
 
 import yaml
 
@@ -309,11 +309,23 @@ os.execv({sys.executable!r}, [{sys.executable!r}] + sys.argv[1:])
 def make_incompatible_fake_venv(system: Path) -> None:
     py = system / ".venv" / "bin" / "python"
     py.parent.mkdir(parents=True)
-    py.write_text("#!/usr/bin/env bash\nexit 1\n", encoding="utf-8")
+    body = f"""#!{sys.executable}
+import os
+import sys
+if len(sys.argv) >= 3 and sys.argv[1] == "-c" and "sys.version_info" in sys.argv[2]:
+    raise SystemExit(1)
+if len(sys.argv) >= 2 and sys.argv[1] == "--version":
+    print("Python 3.11.13")
+    raise SystemExit(0)
+if len(sys.argv) >= 3 and sys.argv[1] == "-c" and "import yaml, mcp" in sys.argv[2]:
+    raise SystemExit(0)
+os.execv({sys.executable!r}, [{sys.executable!r}] + sys.argv[1:])
+"""
+    py.write_text(body, encoding="utf-8")
     py.chmod(0o755)
 
 
-def make_fake_python_creator(base: Path, marker: Path) -> Path:
+def make_fake_python_creator(base: Path, marker: Path, version: tuple[int, int] = (3, 12)) -> Path:
     creator = base / "python3-compatible"
     runtime_body = f"""#!{sys.executable}
 import os
@@ -323,7 +335,9 @@ marker = Path({str(marker)!r})
 if len(sys.argv) >= 3 and sys.argv[1:3] == ["-m", "pip"]:
     marker.write_text("installed\\n", encoding="utf-8")
     raise SystemExit(0)
-if len(sys.argv) >= 3 and sys.argv[1] == "-c" and ("sys.version_info" in sys.argv[2] or "import yaml, mcp" in sys.argv[2]):
+if len(sys.argv) >= 3 and sys.argv[1] == "-c" and "sys.version_info" in sys.argv[2]:
+    raise SystemExit(0 if {version!r} >= (3, 12) else 1)
+if len(sys.argv) >= 3 and sys.argv[1] == "-c" and "import yaml, mcp" in sys.argv[2]:
     raise SystemExit(0)
 os.execv({sys.executable!r}, [{sys.executable!r}] + sys.argv[1:])
 """
@@ -337,7 +351,7 @@ if len(sys.argv) >= 3 and sys.argv[1:3] == ["-m", "venv"]:
     py.chmod(0o755)
     raise SystemExit(0)
 if len(sys.argv) >= 3 and sys.argv[1] == "-c" and "sys.version_info" in sys.argv[2]:
-    raise SystemExit(0)
+    raise SystemExit(0 if {version!r} >= (3, 12) else 1)
 raise SystemExit(1)
 """
     creator.write_text(creator_body, encoding="utf-8")
@@ -363,6 +377,7 @@ def runtime_dependency_health_contract() -> None:
         config_home = Path(env["XDG_CONFIG_HOME"]) / "aips"
         config_home.mkdir(parents=True, exist_ok=True)
         (config_home / "system-dir").write_text(str(system) + "\n", encoding="utf-8")
+
         repaired = cli(system, ["update"], env)
         require(repaired.returncode == 0, f"Managed update dependency repair failed: {repaired.stdout} {repaired.stderr}")
         require(marker.exists(), "Managed update must reinstall missing runtime dependencies")
@@ -386,12 +401,28 @@ def runtime_python_compatibility_contract() -> None:
         config_home.mkdir(parents=True, exist_ok=True)
         (config_home / "system-dir").write_text(str(system) + "\n", encoding="utf-8")
 
+        unsupported_doctor = cli(system, ["doctor"], env)
+        require("runtime Python: UNSUPPORTED" in unsupported_doctor.stderr, "Doctor must explain when the managed runtime is below Python 3.12")
+
         repaired = cli(system, ["update"], env)
         require(repaired.returncode == 0, f"Unsupported managed Python repair failed: {repaired.stdout} {repaired.stderr}")
-        require("unsupported Python" in repaired.stderr, "Repair must explain why the managed virtual environment is recreated")
+        require("unsupported Python" in repaired.stdout + repaired.stderr, f"Repair must explain why the managed virtual environment is recreated: {repaired.stdout} {repaired.stderr}")
         require(dependency_marker.exists(), "Recreated managed virtual environment must install runtime dependencies")
         venv = system / ".venv" / "bin" / "python"
         require(venv.exists(), "Recreated managed virtual environment Python is missing")
+
+
+def explicit_unsupported_python_contract() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        system, _ = system_fixture(base, "unsupported-explicit-python")
+        creator = make_fake_python_creator(base, base / "dependencies-installed", version=(3, 11))
+        env = make_env(base / "runtime", base / "validation.log")
+        env["AIPS_PYTHON"] = str(creator)
+        blocked = cli(system, ["install"], env)
+        require(blocked.returncode != 0, "Explicit Python 3.11 must not install AIPS after the supported floor is raised")
+        require("AIPS requires Python 3.12 or newer" in blocked.stderr, "Unsupported explicit Python must have a migration diagnostic")
+        require(not (system / ".venv").exists(), "Unsupported explicit Python must fail before creating a partial managed venv")
 
 
 def cli_collision_contract() -> None:
@@ -541,6 +572,7 @@ def main() -> int:
     cli_collision_contract()
     runtime_dependency_health_contract()
     runtime_python_compatibility_contract()
+    explicit_unsupported_python_contract()
     shell_integration_lifecycle()
     print("install_preflight_lifecycle evidence: PASS")
     return 0

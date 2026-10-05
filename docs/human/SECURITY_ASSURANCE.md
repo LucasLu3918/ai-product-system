@@ -194,6 +194,8 @@ Review actual:
 
 ## Release Security Gate
 
+The scheduled Python compatibility workflow uses `contents: read` and pinned checkout/setup-python actions. Its smoke result is supplementary; it cannot replace the exact-candidate PR Gate or grant publication authority.
+
 Repository protection assessments are evidence-only: incomplete Admin/bypass snapshots remain UNKNOWN, and the comparator cannot weaken branch protection or activate a ruleset. Candidate publication continues to run the mandatory secret scan and existing required `repository` Gate.
 
 Changed-path CI planning can omit unrelated optional tools, but every publication candidate still runs the mandatory candidate secret scan, repository validation and exact-candidate Integration Gate. Unknown paths select the full toolchain.

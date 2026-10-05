@@ -4,13 +4,13 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 import re
 import sys
+import tomllib
+from pathlib import Path
 from typing import Any
 
 import yaml
-
 
 START = "<!-- AIPS-SYSTEM-FACTS:BEGIN -->"
 END = "<!-- AIPS-SYSTEM-FACTS:END -->"
@@ -20,7 +20,7 @@ DEFAULT_ROOT = Path(__file__).resolve().parents[1]
 def read_yaml(path: Path) -> dict[str, Any]:
     data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
     if not isinstance(data, dict):
-        raise ValueError(f"{path}: expected a mapping")
+        raise TypeError(f"{path}: expected a mapping")
     return data
 
 
@@ -37,17 +37,36 @@ def validate_facts(root: Path, facts: dict[str, Any] | None = None) -> list[str]
     python = facts.get("python") or {}
     supported = str(python.get("supported") or "")
     tested = str(python.get("ci_tested") or "")
+    compatibility_tested = [str(item) for item in python.get("ci_compatibility_tested") or []]
     if not re.fullmatch(r">=3\.\d+(?:,<\d+(?:\.\d+)?)?", supported):
         errors.append("python.supported must be a bounded or open Python compatibility range")
     if not re.fullmatch(r"3\.\d+", tested):
         errors.append("python.ci_tested must be a Python major.minor version")
+    if not compatibility_tested or len(compatibility_tested) != len(set(compatibility_tested)):
+        errors.append("python.ci_compatibility_tested must be a non-empty list of unique Python versions")
+    if any(not re.fullmatch(r"3\.\d+", item) for item in compatibility_tested):
+        errors.append("python.ci_compatibility_tested entries must be Python major.minor versions")
+    baseline_match = re.match(r">=3\.(\d+)", supported)
+    if baseline_match:
+        minimum_minor = int(baseline_match.group(1))
+        if tested not in compatibility_tested:
+            errors.append("python.ci_tested must appear in python.ci_compatibility_tested")
+        if any(int(item.split(".")[1]) < minimum_minor for item in compatibility_tested if re.fullmatch(r"3\.\d+", item)):
+            errors.append("python.ci_compatibility_tested cannot include versions below python.supported")
     pyproject = root / "pyproject.toml"
     if pyproject.exists():
         text = pyproject.read_text(encoding="utf-8")
-        if f'python_supported = "{supported}"' not in text:
+        try:
+            project_config = tomllib.loads(text).get("tool", {}).get("aips", {})
+        except tomllib.TOMLDecodeError as exc:
+            errors.append(f"pyproject.toml is invalid: {exc}")
+            project_config = {}
+        if project_config.get("python_supported") != supported:
             errors.append("pyproject.toml tool.aips.python_supported must match config/system-facts.yaml")
-        if f'python_version = "{tested}"' not in text:
+        if project_config.get("python_tested") != tested:
             errors.append("pyproject.toml mypy python_version must match the CI tested Python version")
+        if project_config.get("python_compatibility_tested") != compatibility_tested:
+            errors.append("pyproject.toml tool.aips.python_compatibility_tested must match config/system-facts.yaml")
         syntax_baseline = re.search(r">=3\.(\d+)", supported)
         if not syntax_baseline or f'target-version = "py3{syntax_baseline.group(1)}"' not in text:
             errors.append("pyproject.toml Ruff target-version must match the supported Python syntax baseline")
@@ -141,6 +160,7 @@ def generated_block(root: Path, facts: dict[str, Any] | None = None) -> str:
         "",
         f"- Supported Python: `{facts['python']['supported']}`",
         f"- CI tested Python: `{facts['python']['ci_tested']}`",
+        f"- CI compatibility smoke-tested Python: `{', '.join(facts['python']['ci_compatibility_tested'])}`",
         f"- CI tested Node.js: `{facts['python']['node_tested']}`",
         END,
     ])

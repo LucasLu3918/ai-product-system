@@ -1,14 +1,15 @@
 version: 1
 python:
-  supported: ">=3.10"
+  supported: ">=3.12"
   ci_tested: "3.12"
+  ci_compatibility_tested: ["3.12", "3.13", "3.14"]
   node_tested: "24"
 commands:
   - id: install
     command: aips install
     surfaces: [harness-runtime]
     platforms: [linux, macos, windows-wsl]
-    runtime_requirement: Python ">=3.10"
+    runtime_requirement: Python ">=3.12"
     optional_dependencies: []
     validation_bindings: [tests/evidence/install_preflight_lifecycle.py]
     documentation_bindings: [docs/human/INSTALLATION.md, docs/human/USER_GUIDE.md]
@@ -16,7 +17,7 @@ commands:
     command: aips harness
     surfaces: [harness-runtime]
     platforms: [linux, macos, windows-wsl]
-    runtime_requirement: Python ">=3.10"
+    runtime_requirement: Python ">=3.12"
     optional_dependencies: []
     validation_bindings: [tests/evidence/harness_runtime_lifecycle.py]
     documentation_bindings: [docs/human/HARNESS.md, docs/human/USER_GUIDE.md]
@@ -24,7 +25,7 @@ commands:
     command: aips commands
     surfaces: [harness-runtime]
     platforms: [linux, macos, windows-wsl]
-    runtime_requirement: Python ">=3.10"
+    runtime_requirement: Python ">=3.12"
     optional_dependencies: []
     validation_bindings: [tests/evidence/harness_runtime_lifecycle.py]
     documentation_bindings: [harness/PORTABLE_COMMANDS.md, docs/human/HARNESS.md]
@@ -32,7 +33,7 @@ commands:
     command: aips intelligence
     surfaces: [project-intelligence]
     platforms: [linux, macos, windows-wsl]
-    runtime_requirement: Python ">=3.10"
+    runtime_requirement: Python ">=3.12"
     optional_dependencies: []
     validation_bindings: [tests/evidence/project_intelligence_lifecycle.py, tests/evidence/change_impact_resolution_lifecycle.py]
     documentation_bindings: [docs/human/PROJECT_INTELLIGENCE.md, docs/human/USER_GUIDE.md]
@@ -40,7 +41,7 @@ commands:
     command: aips publish
     surfaces: [runtime-context, scenario-conformance]
     platforms: [linux, macos]
-    runtime_requirement: Python ">=3.10"; validation Gate uses Python 3.12 and Node 24
+    runtime_requirement: Python ">=3.12"; validation Gate uses Python 3.12 and Node 24
     optional_dependencies: [requirements-visual.txt, requirements-openapi.txt, package-lock.json]
     validation_bindings: [scripts/repository_preflight.py, config/integration-gate.yaml, tests/evidence/publish_preflight_lifecycle.py]
     documentation_bindings: [docs/human/MAINTENANCE.md, docs/human/INSTALLATION.md]
@@ -48,7 +49,7 @@ commands:
     command: aips openapi
     surfaces: [product-delivery]
     platforms: [linux, macos, windows-wsl]
-    runtime_requirement: Python ">=3.10"
+    runtime_requirement: Python ">=3.12"
     optional_dependencies: [requirements-openapi.txt]
     validation_bindings: [tests/evidence/openapi_contracts_lifecycle.py, tests/evidence/openapi_cli_install_lifecycle.py]
     documentation_bindings: [docs/human/USER_GUIDE.md, docs/human/INSTALLATION.md]
@@ -56,7 +57,7 @@ commands:
     command: aips validate
     surfaces: [scenario-conformance]
     platforms: [linux, macos, windows-wsl]
-    runtime_requirement: Python ">=3.10"; CI tested Python 3.12
+    runtime_requirement: Python ">=3.12"; CI tested Python 3.12
     optional_dependencies: [requirements-validation.txt, requirements-visual.txt, requirements-openapi.txt]
     validation_bindings: [tests/validate_repository.py, config/integration-gate.yaml]
     documentation_bindings: [docs/human/MAINTENANCE.md, docs/human/CONFORMANCE.md]

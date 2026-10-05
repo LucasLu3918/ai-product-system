@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Keep Evolution Effectiveness shortlist yield unknown when weekly pre-analysis is missing; preserve oversized Radar Issue bodies in a bounded, digest-checked lossless archive.
+- Require Python >=3.12 for AIPS runtime, report unsupported installed interpreters in `aips doctor`, and add scheduled 3.12/3.13/3.14 compatibility smoke coverage.
 
 ## 0.73.0
 

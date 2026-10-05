@@ -284,6 +284,8 @@ The read-only dashboard aggregates known workspaces by repository identity and r
 
 A worktree separates Git/filesystem state, but parallel tasks can still collide on host runtime resources such as a development-server TCP port. Runtime Resource Lease extends the existing Execution Isolation ownership lifecycle; it is not a second isolation subsystem.
 
+The scheduled Python compatibility workflow runs repository-owned installation lifecycle fixtures on GitHub-hosted runners with `contents: read`; it does not execute product-project code or claim an external sandbox boundary.
+
 ~~~text
 scheduled task
 → AIPS-owned worktree

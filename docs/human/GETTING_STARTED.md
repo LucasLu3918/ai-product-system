@@ -30,7 +30,7 @@ try {
 
 不需要先手動 clone repository 或切換到 AIPS 目錄。
 
-AIPS runtime 需要 Python 3.10 以上；若系統同時安裝多個 Python，可用 `AIPS_PYTHON=/path/to/python3` 指定建立受管理 virtual environment 的版本。
+AIPS runtime 需要 Python 3.12 以上；若系統同時安裝多個 Python，可用 `AIPS_PYTHON=/path/to/python3` 指定建立受管理 virtual environment 的版本。使用 `aips doctor` 可檢查 runtime 版本與安裝狀態。
 
 `--configure-shell` 會為 zsh 或 bash 寫入具有 AIPS ownership 標記的 `PATH` 區塊；若要自行管理 shell profile，改用 `--no-configure-shell`。安裝後尚未重開 terminal 時，可直接使用安裝器顯示的絕對路徑，或依 [安裝排查](INSTALLATION.md#常見問題與排查) 操作。
 

@@ -197,11 +197,20 @@ validation_python_for_root() {
 
 compatible_python_bin() {
   local candidate path
-  for candidate in "${AIPS_PYTHON:-}" python3.13 python3.12 python3.11 python3.10 python3; do
+  if [ -n "${AIPS_PYTHON:-}" ]; then
+    path="$(command -v "$AIPS_PYTHON" 2>/dev/null || true)"
+    [ -n "$path" ] || path="$AIPS_PYTHON"
+    if [ -x "$path" ] && "$path" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 12) else 1)' >/dev/null 2>&1; then
+      printf '%s\n' "$path"
+      return 0
+    fi
+    return 1
+  fi
+  for candidate in python3.14 python3.13 python3.12 python3; do
     [ -n "$candidate" ] || continue
     path="$(command -v "$candidate" 2>/dev/null || true)"
     [ -n "$path" ] || continue
-    if "$path" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 10) else 1)' >/dev/null 2>&1; then
+    if "$path" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 12) else 1)' >/dev/null 2>&1; then
       printf '%s\n' "$path"
       return 0
     fi
@@ -211,13 +220,13 @@ compatible_python_bin() {
 
 venv_python_compatible() {
   [ -x "$SYSTEM_DIR/.venv/bin/python" ] &&
-    "$SYSTEM_DIR/.venv/bin/python" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 10) else 1)' >/dev/null 2>&1
+    "$SYSTEM_DIR/.venv/bin/python" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 12) else 1)' >/dev/null 2>&1
 }
 
 ensure_compatible_venv() {
   local creator
   creator="$(compatible_python_bin || true)"
-  [ -n "$creator" ] || die "AIPS requires Python 3.10 or newer. Set AIPS_PYTHON to a compatible interpreter."
+  [ -n "$creator" ] || die "AIPS requires Python 3.12 or newer. Set AIPS_PYTHON to a compatible interpreter."
   if venv_python_compatible; then
     return 0
   fi
@@ -228,7 +237,7 @@ ensure_compatible_venv() {
     say "Creating Python virtual environment with $creator..."
   fi
   "$creator" -m venv "$SYSTEM_DIR/.venv" || die "AIPS virtual environment creation failed."
-  venv_python_compatible || die "AIPS virtual environment requires Python 3.10 or newer."
+  venv_python_compatible || die "AIPS virtual environment requires Python 3.12 or newer."
 }
 
 runtime_dependencies_available() {
@@ -271,6 +280,12 @@ repair_runtime_dependencies_if_installed() {
   [ -n "$recorded" ] && recorded_canonical="$(canonical_path "$recorded" || true)"
   system_canonical="$(canonical_path "$SYSTEM_DIR" || true)"
   [ -n "$recorded_canonical" ] && [ "$recorded_canonical" = "$system_canonical" ] || return 0
+  if [ -d "$SYSTEM_DIR/.venv" ] && ! venv_python_compatible; then
+    warn "AIPS managed virtual environment uses an unsupported Python; repairing the environment."
+    install_runtime_dependencies
+    say "AIPS runtime dependencies: repaired"
+    return 0
+  fi
   if runtime_dependencies_available; then
     say "AIPS runtime dependencies: OK"
     return 0
@@ -1548,7 +1563,7 @@ preflight() {
 }
 
 doctor() {
-  local failed="false"
+  local failed="false" runtime_py runtime_version
   say "AI Product System doctor"
   say "System dir: $SYSTEM_DIR"
   say "Version: $(current_version 2>/dev/null || echo unknown)"
@@ -1557,6 +1572,23 @@ doctor() {
 
   command -v git >/dev/null 2>&1 && say "git: OK" || { warn "git: missing"; failed="true"; }
   command -v python3 >/dev/null 2>&1 && say "python3: OK" || { warn "python3: missing"; failed="true"; }
+  if [ -x "$SYSTEM_DIR/.venv/bin/python" ]; then
+    runtime_py="$SYSTEM_DIR/.venv/bin/python"
+  else
+    runtime_py="$(command -v python3 || true)"
+  fi
+  if [ -n "$runtime_py" ]; then
+    runtime_version="$("$runtime_py" --version 2>&1 || echo unknown)"
+    if "$runtime_py" -c 'import sys; raise SystemExit(0 if sys.version_info >= (3, 12) else 1)' >/dev/null 2>&1; then
+      say "runtime Python: OK ($runtime_version)"
+    else
+      warn "runtime Python: UNSUPPORTED ($runtime_version; AIPS requires Python >=3.12; run aips install with a compatible interpreter)"
+      failed="true"
+    fi
+  else
+    warn "runtime Python: MISSING (AIPS requires Python >=3.12)"
+    failed="true"
+  fi
   [ -x "$SYSTEM_DIR/.venv/bin/python" ] && say "venv: OK" || { warn "venv: not installed (run aips install)"; failed="true"; }
   if runtime_dependencies_available; then
     say "runtime dependencies: OK (PyYAML, MCP)"

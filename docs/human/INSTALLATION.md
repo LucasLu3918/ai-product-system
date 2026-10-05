@@ -71,7 +71,7 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 
 ## Runtime integration
 
-AIPS runtime 支援 Python 3.10 以上；GitHub CI 目前固定以 Python 3.12 驗證。支援範圍和已測版本維護於 `pyproject.toml`、`config/system-facts.yaml` 與 `constraints/tested.txt`。Installer 會依序選擇可用的相容 Python；需要指定解譯器時可設定 `AIPS_PYTHON=/path/to/python3`。若既有 AIPS-owned `.venv` 使用較舊版本，install／update／preflight 在修復依賴時會用相容 Python 重建該環境。
+AIPS runtime 最低支援 Python 3.12。PR 主 Gate 使用 Python 3.12；每週相容性 smoke workflow 驗證 Python 3.12、3.13、3.14。支援與測試版本由 `config/system-facts.yaml` 維護，並同步至 `pyproject.toml` 與本頁系統參考。Installer 會選擇 Python 3.14、3.13、3.12 或相容的 `python3`；需要指定解譯器時可設定 `AIPS_PYTHON=/path/to/python3`。低於 3.12 的 AIPS-owned `.venv` 會在 install／update／preflight 修復時重建；`aips doctor` 會指出不支援的 runtime 與修復方式。
 
 Task ownership CLI 隨 AIPS CLI 一併提供，不需額外 runtime 套件。啟用前需建立 AIPS 管理的 Git worktree isolation；在不支援 native write guard 的 runtime，資源授權結果會明確維持 advisory。
 

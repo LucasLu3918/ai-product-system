@@ -220,6 +220,7 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 
 Validation optimizations must preserve the full Integration Gate and execute every unique lifecycle evidence script at least once; the maintenance guide describes the local exact-candidate workflow.
 
+
 REST/OpenAPI 變更可用 `python scripts/openapi_contracts.py validate <spec> --repo-root .` 驗證 OpenAPI 3.0／3.1／3.2；只接受 repository root 內的本機 `$ref`，不會連線載入 URL。`compare <canonical-baseline> <candidate> --baseline-authority canonical` 會分類明確的破壞性／相容性變更，無法可靠分類的差異回報 `UNKNOWN`。`run-contract-tests` 以 argv 執行專案原生測試並綁定 JUnit、operation ID coverage、規格雜湊與 Git revision；`verify-evidence` 可找出內容或 revision 已改變的舊報告。AIPS 不替專案判斷測試斷言是否足夠，也不會自動核准破壞性 API 變更。
 
 Phase 3 可在 Implementation Profile 的 `enforcement` 區段指定適用路徑、語言 Profile、所有權、生成來源與專案原生檢查。先用 `python scripts/implementation_enforcement.py inspect IMPLEMENTATION_PROFILE.yaml --repo-root . --base <base-sha> --head HEAD --mode report` 檢視缺口；完成命令證據收集後改用 `--mode enforce`。命令收集需明確執行 `run-command ... --command-id <id> --execute`，宣告為 deterministic 的命令還需 `--repeat 2`。Gate 只驗證目前候選的證據，不會執行 Profile 內的命令；所有權未知、必要證據缺少或過期時不能通過。
@@ -341,6 +342,8 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 詳見 [Project Intelligence](PROJECT_INTELLIGENCE.md)。
 
 ## Git Publication 與 Release
+
+The exact-candidate PR Gate uses Python 3.12 as its required baseline. A separate weekly compatibility workflow reports lifecycle smoke results for Python 3.12–3.14; it supplements the PR Gate and does not replace exact-candidate validation.
 
 Core/Large changes publish a fingerprinted Core Change Test Matrix with each applicable boundary's local evidence. The read-only version-tag check requires the exact merged main SHA and leaves release approval/tag creation separate; ruleset policy comparison requires a complete current snapshot and performs no GitHub settings write.
 

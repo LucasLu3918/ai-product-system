@@ -153,6 +153,10 @@ The placement map includes explicit source triggers for Turn Context intent, obs
 
 The same canonical H2 placement contract applies to pre-commit working-tree preview and committed repository preflight. Preview includes tracked, staged, unstaged and untracked paths and identifies the allowed H2 for misplaced content.
 
+## Maintenance reliability mapping
+
+The Python compatibility workflow is mapped with canonical system facts: keep its tested matrix aligned with `config/system-facts.yaml`, generated System Reference, installation and maintenance guidance, Technology Guide, and Scenario 210. Register behavior-bearing workflow paths in `config/documentation-placement.yaml` before their docs can pass placement validation.
+
 Publication Preflight includes a working-tree preview and reports each closure path with its responsible placement or sync rule. This keeps the review actionable while both validators continue to enforce their existing contracts.
 
 Runtime Content Safety Boundary 是跨 Security、Deterministic Execution 與 Publication 的正式 topic。其 behavior-bearing source 必須在 documentation placement registry 登錄，並由 Human docs、protocol 與 scenarios 保持一致。

@@ -7,13 +7,13 @@ This page lists factual command, capability and runtime data. Explanatory policy
 
 | Command | Capabilities | Platforms | Runtime | Optional dependencies | Validation | Documentation |
 |---|---|---|---|---|---|---|
-| `aips install` | execution-isolation, gemini-cli-observable-event-capture-trial, gemini-cli-real-runtime-verification, resource-authorization, turn-aware-global-harness | linux, macos, windows-wsl | Python ">=3.10" | None | tests/evidence/install_preflight_lifecycle.py | docs/human/INSTALLATION.md, docs/human/USER_GUIDE.md |
-| `aips harness` | execution-isolation, gemini-cli-observable-event-capture-trial, gemini-cli-real-runtime-verification, resource-authorization, turn-aware-global-harness | linux, macos, windows-wsl | Python ">=3.10" | None | tests/evidence/harness_runtime_lifecycle.py | docs/human/HARNESS.md, docs/human/USER_GUIDE.md |
-| `aips commands` | execution-isolation, gemini-cli-observable-event-capture-trial, gemini-cli-real-runtime-verification, resource-authorization, turn-aware-global-harness | linux, macos, windows-wsl | Python ">=3.10" | None | tests/evidence/harness_runtime_lifecycle.py | harness/PORTABLE_COMMANDS.md, docs/human/HARNESS.md |
-| `aips intelligence` | canonical-project-identity, change-impact-guard, durable-run-state, project-intelligence | linux, macos, windows-wsl | Python ">=3.10" | None | tests/evidence/project_intelligence_lifecycle.py, tests/evidence/change_impact_resolution_lifecycle.py | docs/human/PROJECT_INTELLIGENCE.md, docs/human/USER_GUIDE.md |
-| `aips publish` | agent-eval, runtime-invariant-matrix, scenario-conformance, unified-runtime-path-resolution, validation-interpreter-capability-selection | linux, macos | Python ">=3.10"; validation Gate uses Python 3.12 and Node 24 | requirements-visual.txt, requirements-openapi.txt, package-lock.json | scripts/repository_preflight.py, config/integration-gate.yaml, tests/evidence/publish_preflight_lifecycle.py | docs/human/MAINTENANCE.md, docs/human/INSTALLATION.md |
-| `aips openapi` | product-delivery | linux, macos, windows-wsl | Python ">=3.10" | requirements-openapi.txt | tests/evidence/openapi_contracts_lifecycle.py, tests/evidence/openapi_cli_install_lifecycle.py | docs/human/USER_GUIDE.md, docs/human/INSTALLATION.md |
-| `aips validate` | agent-eval, scenario-conformance | linux, macos, windows-wsl | Python ">=3.10"; CI tested Python 3.12 | requirements-validation.txt, requirements-visual.txt, requirements-openapi.txt | tests/validate_repository.py, config/integration-gate.yaml | docs/human/MAINTENANCE.md, docs/human/CONFORMANCE.md |
+| `aips install` | execution-isolation, gemini-cli-observable-event-capture-trial, gemini-cli-real-runtime-verification, resource-authorization, turn-aware-global-harness | linux, macos, windows-wsl | Python ">=3.12" | None | tests/evidence/install_preflight_lifecycle.py | docs/human/INSTALLATION.md, docs/human/USER_GUIDE.md |
+| `aips harness` | execution-isolation, gemini-cli-observable-event-capture-trial, gemini-cli-real-runtime-verification, resource-authorization, turn-aware-global-harness | linux, macos, windows-wsl | Python ">=3.12" | None | tests/evidence/harness_runtime_lifecycle.py | docs/human/HARNESS.md, docs/human/USER_GUIDE.md |
+| `aips commands` | execution-isolation, gemini-cli-observable-event-capture-trial, gemini-cli-real-runtime-verification, resource-authorization, turn-aware-global-harness | linux, macos, windows-wsl | Python ">=3.12" | None | tests/evidence/harness_runtime_lifecycle.py | harness/PORTABLE_COMMANDS.md, docs/human/HARNESS.md |
+| `aips intelligence` | canonical-project-identity, change-impact-guard, durable-run-state, project-intelligence | linux, macos, windows-wsl | Python ">=3.12" | None | tests/evidence/project_intelligence_lifecycle.py, tests/evidence/change_impact_resolution_lifecycle.py | docs/human/PROJECT_INTELLIGENCE.md, docs/human/USER_GUIDE.md |
+| `aips publish` | agent-eval, runtime-invariant-matrix, scenario-conformance, unified-runtime-path-resolution, validation-interpreter-capability-selection | linux, macos | Python ">=3.12"; validation Gate uses Python 3.12 and Node 24 | requirements-visual.txt, requirements-openapi.txt, package-lock.json | scripts/repository_preflight.py, config/integration-gate.yaml, tests/evidence/publish_preflight_lifecycle.py | docs/human/MAINTENANCE.md, docs/human/INSTALLATION.md |
+| `aips openapi` | product-delivery | linux, macos, windows-wsl | Python ">=3.12" | requirements-openapi.txt | tests/evidence/openapi_contracts_lifecycle.py, tests/evidence/openapi_cli_install_lifecycle.py | docs/human/USER_GUIDE.md, docs/human/INSTALLATION.md |
+| `aips validate` | agent-eval, scenario-conformance | linux, macos, windows-wsl | Python ">=3.12"; CI tested Python 3.12 | requirements-validation.txt, requirements-visual.txt, requirements-openapi.txt | tests/validate_repository.py, config/integration-gate.yaml | docs/human/MAINTENANCE.md, docs/human/CONFORMANCE.md |
 
 ## Capability surfaces
 
@@ -32,7 +32,8 @@ This page lists factual command, capability and runtime data. Explanatory policy
 
 ## Runtime support
 
-- Supported Python: `>=3.10`
+- Supported Python: `>=3.12`
 - CI tested Python: `3.12`
+- CI compatibility smoke-tested Python: `3.12, 3.13, 3.14`
 - CI tested Node.js: `24`
 <!-- AIPS-SYSTEM-FACTS:END -->

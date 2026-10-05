@@ -20,6 +20,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+The required repository Gate uses Python 3.12. A separate scheduled compatibility smoke covers 3.12–3.14 and does not replace or weaken exact-candidate PR validation.
+
 The validator scope shadow report is bound to the exact base/head and changed-path digest. Every validator still runs; optional replay accepts a supplied recorded-run corpus and reports false-negative skips. Unknown paths and Large/Core/Release classes retain the full plan. The report does not enable selective execution.
 
 A pip download cache is keyed by pinned requirement files; every candidate still installs dependencies and runs its complete Gate and secret scan. Publication diagnostics prefer a complete validation interpreter and report every missing Gate module. Latest-check summaries preserve cancellation/skipping distinctions and never supply merge authority.

@@ -59,6 +59,8 @@ MCP Server 不呼叫第二個 LLM，也不取得 Human approval、Git publish、
 Temporal Project Intelligence 的 historical query 由既有 deterministic CLI／Project Intelligence layer 提供；MCP 與 Runtime adapter 只傳遞 bounded context，不新增 Temporal Role、Gate 或 host-native authority。
 
 ## Capability truth
+
+The managed AIPS CLI support floor is Python 3.12, with a separate scheduled 3.12–3.14 compatibility smoke. Runtime support facts are generated into System Reference and remain distinct from host-specific adapter capability.
 The Evolution Radar maintenance capability preserves oversized Issue evidence in a bounded, digest-checked envelope; its monthly consumers restore the original body and report missing triage inputs as incomplete.
 
 

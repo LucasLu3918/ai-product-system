@@ -6,6 +6,8 @@ Runtime Context is the bounded, deterministic view of the active AIPS runtime, t
 
 Resolve the Python interpreter from the target system/project configuration using the existing runtime path helper. Prefer a prepared, complete validation environment; report the selected executable and missing capabilities. Do not infer compatibility from a Python executable name alone.
 
+Managed AIPS CLI runtimes require Python >=3.12. An explicit `AIPS_PYTHON` is authoritative and must satisfy the floor; automatic selection checks supported versioned executables before the generic `python3` fallback. Repository validation's compatibility smoke matrix is sourced from `config/system-facts.yaml`.
+
 ## Context contract
 
 For project work, context identifies project mode and stable instruction sources, then loads only relevant Intelligence topics. Missing/stale Intelligence and Retrieval remain explicit. A non-Git or no-HEAD workspace still receives basic context; Git-dependent history is reported unavailable. Turn Context does not persist prompts, tool arguments, secrets, or private reasoning.
