@@ -359,7 +359,9 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
-Selective Validation remains in `FULL_RUN_SHADOW` until an exact-artifact cohort covers at least 30 days, enough pull requests, zero false-negative skips, conservative full-validation fallbacks, and deterministic full-run sampling. `scripts/validation_graduation.py` reports `READY_FOR_HUMAN_REVIEW` only; a Human must separately decide whether to enable selective execution. Validation shadow artifacts are retained for 90 days to support the review window; incomplete history blocks graduation.
+Selective Validation remains in `FULL_RUN_SHADOW` until an exact-artifact cohort covers at least 30 days, enough unique pull requests, zero false-negative skips, conservative full-validation fallbacks, and deterministic full-run sampling. Each validation run retains one combined observation for 90 days. The daily Validation Observation Collector reads completed `validate.yml` runs with read-only Actions access, deduplicates reruns to the latest record per pull request, and calls `scripts/validation_graduation.py`; missing, expired, cancelled, mismatched, or failed-attribution evidence blocks graduation. If a full validation fails without a validator-specific failure record, all predicted skips are conservatively treated as failed. The evaluator reports `READY_FOR_HUMAN_REVIEW` only; a Human must separately decide whether to enable selective execution. The collector never changes which checks run.
+
+`scripts/validation_taxonomy.py` checks that `config/validation-scope.yaml` and `config/validation-graduation.yaml` declare the same unique full-validation classes and path prefixes. Missing, malformed, duplicate, or divergent declarations fail closed; this audit is read-only and never enables selective execution.
 
 The validation environment records exact Coverage.py and Hypothesis versions. Coverage reports branch measurements for the stable release selector without enforcing a percentage until touched-module baselines are established. Hypothesis property checks use deterministic settings. Ruff may not exceed its measured repository baseline of 872 findings; selected mypy modules keep the existing zero-error bound. Expand either scope only with a measured baseline and a small reviewed ratchet.
 
@@ -367,7 +369,7 @@ Repository Health reports advisory counts for workflows, validation modules, pol
 
 Supply-chain checks use Dependency Review on PRs to block newly introduced high or critical vulnerabilities, configured CodeQL default setup for `actions` and `python`, and weekly advisory OpenSSF Scorecard reporting. The CodeQL initial validation run is asynchronous; verify its result and subsequent analysis before treating scan findings as available. Dependency Review and Scorecard actions remain pinned to full commit SHAs.
 
-New installations request the stable channel by default and pin an exact `vX.Y.Z` tag after verifying its commit and `VERSION`. Until the first release tag exists, an implicit stable install warns and bootstraps from `main`; explicitly requested stable installs fail closed. `--channel main` remains available for opt-in development updates. Creating the first release tag remains governed by the explicit release approval policy.
+New installations request the stable channel by default and pin an exact `vX.Y.Z` tag only after verifying its commit and `VERSION`. Until a verified stable tag exists, stable installation fails closed with an explicit `--channel main` development-channel suggestion; source-checkout CI and development users pass that opt-in explicitly. Creating the first release tag remains governed by the separate signing and release approval policy.
 
 OpenAPI validation and evidence lifecycle checks are included in the repository validation entry point; installing `requirements-openapi.txt` is required for that full validation profile.
 
@@ -385,7 +387,7 @@ External Eval / Red-Team Interoperability contracts are checked by `tests/valida
 
 Keep the top-level validator as an aggregator. New substantial validation belongs in the narrowest existing module or a focused evidence runner rather than expanding the entrypoint back into a monolith.
 
-When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 36 deterministic, 121 lifecycle and 54 agent_eval scenarios (211 automated, 2 manual, 213 total).
+When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 36 deterministic, 127 lifecycle and 54 agent_eval scenarios (217 automated, 2 manual, 219 total).
 
 `scripts/repository_preflight.py` 先跑快速文件／schema／diff 檢查；通過後才進入完整 lifecycle。環境缺少 localhost bind 或 browser 時回報 `ENVIRONMENT_BLOCKED`，不混稱產品測試失敗。
 

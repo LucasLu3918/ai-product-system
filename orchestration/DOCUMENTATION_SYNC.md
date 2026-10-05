@@ -138,7 +138,6 @@ Runtime Policy action schemas, deterministic decisions, hook capability claims a
 
 ## Maintenance reliability mapping
 
-
 The `maintenance-reliability` sync rule binds the monthly collector, policy, workflow, lifecycle evidence, contract validator, Scenario 201 and its registry/runner wiring to the Human Maintenance, Conformance, Technology Guide and Documentation Map topics plus this Agent-facing protocol and `orchestration/CONFORMANCE.md`. Changes must preserve bounded collection, UNKNOWN for incomplete input, exact-SHA correlation limits and Human-only remediation.
 
 Generated Conformance views must retain a deterministic path from the canonical scenario registry to current Human counts and section-level Human/Agent history anchors. Regenerate them after inventory or heading changes; do not rewrite historical sections without an explicit content-mapping review.
@@ -155,6 +154,8 @@ The placement map includes explicit source triggers for Turn Context intent, obs
 The same canonical H2 placement contract applies to pre-commit working-tree preview and committed repository preflight. Preview includes tracked, staged, unstaged and untracked paths and identifies the allowed H2 for misplaced content.
 
 ## Maintenance reliability mapping
+
+Validation taxonomy, full-run observation, stable release readiness and human-labeled Evolution metrics have source-bound placements and Scenario references; update these bindings with the canonical docs whenever the source contract changes.
 
 The Python compatibility workflow is mapped with canonical system facts: keep its tested matrix aligned with `config/system-facts.yaml`, generated System Reference, installation and maintenance guidance, Technology Guide, and Scenario 210. Register behavior-bearing workflow paths in `config/documentation-placement.yaml` before their docs can pass placement validation.
 

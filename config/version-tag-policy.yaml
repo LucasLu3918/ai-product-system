@@ -8,6 +8,9 @@ requirements:
   existing_tag_must_match: true
   no_historical_backfill: true
   tag_write_requires_explicit_release_approval: true
+  missing_stable_tag_fails_closed: true
+  stable_install_or_update_fallback: none
+  readiness_workflow_read_only: true
 outputs:
   ready: READY_FOR_EXPLICIT_RELEASE_APPROVAL
   blocked: BLOCKED

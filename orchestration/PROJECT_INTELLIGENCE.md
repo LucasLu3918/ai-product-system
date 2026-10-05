@@ -197,6 +197,8 @@ Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
 
+Project-local traversal evidence can establish a bounded caller/consumer scope without upgrading repository-wide graph coverage. A stale retrieval index remains an unresolved freshness fact and must be reconciled before final impact readiness.
+
 Validator-scope metadata is not a substitute for Project Intelligence consumer evidence. Refresh affected Intelligence topics and resolve consumer impact independently before changing shared validator behavior.
 
 The architecture graph traversal implementation lives in the narrow `project_intelligence_impact_graph.py` module and remains re-exported from `project_intelligence.py`. Structural relation candidate construction lives in `retrieval_structural_graph.py` and remains re-exported from `retrieval_intelligence.py`. Treat these as internal responsibility boundaries; the facade API and evidence semantics remain canonical.

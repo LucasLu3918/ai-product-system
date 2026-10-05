@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import subprocess
+import sys
+
 import yaml
 
 from .static_contracts import ROOT, errors
@@ -14,11 +17,22 @@ for path in (config_path, script_path, property_path):
 if config_path.is_file():
     config = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
     ruff = config.get("ruff") or {}
+    touched = config.get("touched_code") or {}
     mypy = config.get("mypy") or {}
     coverage = config.get("coverage") or {}
     if config.get("version") != 1 or ruff.get("baseline_findings") != 872 or ruff.get("policy") != "never_increase":
         errors.append("Ruff must preserve the measured 872-finding baseline and prohibit debt growth")
     if len(mypy.get("modules") or []) < 4 or mypy.get("policy") != "selected_module_ratchet":
         errors.append("Mypy must retain its existing selected-module gradual scope")
+    if "scripts/validation_observation.py" not in (mypy.get("modules") or []):
+        errors.append("The typed validation observation collector must join the zero-finding mypy modules")
     if coverage.get("policy") != "report_only" or coverage.get("minimum_percent") is not None:
         errors.append("Coverage must remain report-only until module baselines are established")
+    if ruff.get("report_dimensions") != ["rule", "module", "auto_fixable"]:
+        errors.append("Ruff debt report must include rule, module, and auto-fixability dimensions")
+    if touched.get("policy") != "no_new_findings" or touched.get("missing_base_behavior") != "block":
+        errors.append("Touched Python code must have a base comparison and fail closed when it is unavailable")
+    lifecycle = ROOT / "tests/evidence/quality_ratchet_lifecycle.py"
+    result = subprocess.run([sys.executable, str(lifecycle)], cwd=ROOT, capture_output=True, text=True, check=False)
+    if result.returncode:
+        errors.append(f"Quality ratchet lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}")

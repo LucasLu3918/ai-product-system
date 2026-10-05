@@ -344,6 +344,8 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 
 ## Git Publication 與 Release
 
+For a Large/Core change, complete documentation closure, the reviewed Core Change Test Matrix, candidate secret scanning, full repository validation, and the exact-candidate Integration Gate before asking for publication approval. Create the PR with its `aips:core-change` label on the initial request; merging and release tagging remain separate Human decisions.
+
 Repository validation keeps running every validator while shadow reports assess future selective-validation safety. Coverage, governance complexity, and reliability data are review signals; they do not bypass the normal Gate or authorize automatic source changes.
 
 Managed installs default to stable releases when verified `vX.Y.Z` tags are available; use `--channel main` only to opt into development updates. The first release tag still requires its separate explicit release approval.

@@ -35,7 +35,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - run: python -m pip install -r requirements.txt
+      - run: python -m pip install -c constraints/tested.txt -r requirements.txt
 
       - name: Refresh remote branch refs
         shell: bash
@@ -130,7 +130,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - run: python -m pip install -r requirements.txt
+      - run: python -m pip install -c constraints/tested.txt -r requirements.txt
 
       - name: Refresh exact remote branch refs
         shell: bash

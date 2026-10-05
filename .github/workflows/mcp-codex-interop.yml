@@ -31,7 +31,9 @@ jobs:
           requirements-files: |
             requirements.txt
             requirements-validation.txt
+          constraints-file: constraints/tested.txt
           cache-dependency-path: |
+            constraints/tested.txt
             requirements.txt
             requirements-validation.txt
 

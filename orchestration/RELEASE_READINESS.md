@@ -52,6 +52,8 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+Readiness validates the exact `VERSION`, tag target and main candidate without creating a tag. Stable installation remains blocked until a trusted signed version tag exists; key enrollment and first-release approval are separate decisions.
+
 Stable installations verify an immutable `vX.Y.Z` tag against its target commit and `VERSION`. This does not create a release: tag writing still requires the separate explicit release approval, and pre-release bootstrap uses `main` only while no stable tag exists.
 
 Readiness applies to one exact release candidate/version/commit set. Material code/config/infra changes invalidate affected evidence.

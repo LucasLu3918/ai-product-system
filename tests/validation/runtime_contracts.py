@@ -34,6 +34,13 @@ else:
 
 install_preflight_evidence = ROOT / "tests/evidence/install_preflight_lifecycle.py"
 install_download_evidence = ROOT / "tests/evidence/install_download_lifecycle.py"
+runtime_lock_evidence = ROOT / "tests/evidence/runtime_dependency_lock_lifecycle.py"
+if not runtime_lock_evidence.exists():
+    errors.append("Missing runtime dependency lock lifecycle evidence")
+else:
+    focused = subprocess.run([sys.executable, str(runtime_lock_evidence)], capture_output=True, text=True, check=False)
+    if focused.returncode != 0:
+        errors.append(f"Runtime dependency lock lifecycle evidence failed: {focused.stdout.strip()} {focused.stderr.strip()}")
 if not install_download_evidence.exists():
     errors.append("Missing install download lifecycle evidence")
 else:

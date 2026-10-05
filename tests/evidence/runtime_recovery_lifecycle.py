@@ -110,11 +110,11 @@ def main() -> int:
         git(source, "worktree", "add", "--detach", str(linked))
         assert (linked / ".git").is_file()
         target = base / "installed"
-        installed = subprocess.run(["bash", str(ROOT / "scripts/install.sh"), "--source-checkout", str(linked)],
+        installed = subprocess.run(["bash", str(ROOT / "scripts/install.sh"), "--channel", "main", "--source-checkout", str(linked)],
                                    env={**os.environ, "AIPS_INSTALL_DIR": str(target)}, capture_output=True, text=True)
         assert installed.returncode == 0, installed.stderr
         assert git(target, "rev-parse", "HEAD") == git(source, "rev-parse", "HEAD")
-        rejected = subprocess.run(["bash", str(ROOT / "scripts/install.sh"), "--source-checkout", str(linked / "bin")],
+        rejected = subprocess.run(["bash", str(ROOT / "scripts/install.sh"), "--channel", "main", "--source-checkout", str(linked / "bin")],
                                   env={**os.environ, "AIPS_INSTALL_DIR": str(base / "rejected")}, capture_output=True, text=True)
         assert rejected.returncode != 0 and "top level" in rejected.stderr
 

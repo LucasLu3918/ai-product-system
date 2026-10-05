@@ -21,7 +21,7 @@ function Invoke-WebRequest {
     "fail" { throw "fixture download failed" }
     "empty" { [IO.File]::WriteAllText($OutFile, "") }
     "child_fail" { [IO.File]::WriteAllText($OutFile, 'throw "fixture child failed"') }
-    "success" { [IO.File]::WriteAllText($OutFile, '$script:childRan = $true') }
+    "success" { [IO.File]::WriteAllText($OutFile, '$global:childRan = $true') }
     default { throw "Unknown fixture mode" }
   }
 }
@@ -33,12 +33,12 @@ foreach ($test in @(
   @{ Mode = "success"; Success = $true }
 )) {
   $script:mode = $test.Mode
-  $script:childRan = $false
+  $global:childRan = $false
   $script:lastOutFile = $null
   $succeeded = $true
   try { Invoke-Expression $snippets[0] } catch { $succeeded = $false }
   if ($succeeded -ne $test.Success) { throw "Unexpected install result for $($test.Mode)" }
-  if ($test.Success -and -not $script:childRan) { throw "Installer did not run" }
+  if ($test.Success -and -not $global:childRan) { throw "Installer did not run" }
   if ($script:lastOutFile -and (Test-Path -LiteralPath $script:lastOutFile)) {
     throw "Temporary installer was not removed after $($test.Mode)"
   }

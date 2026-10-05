@@ -161,12 +161,12 @@ placement_rules:
   - id: execution-isolation
     triggers: [scripts/execution_isolation.py, scripts/sandbox_providers.py, scripts/e2b_sandbox_verification.py, config/sandbox-providers.yaml, config/external-credentials.yaml, orchestration/schemas/execution-profile.yaml, requirements-sandbox.txt, .github/workflows/e2b-sandbox-verification.yml]
     placements:
-      docs/human/USER_GUIDE.md: [Execution Isolation 與 Runtime Resource]
-      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Security & Governance]
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution, Security 與 Governance]
-      docs/human/SECURITY_ASSURANCE.md: [External sandbox execution, Runtime Policy Enforcement]
-      docs/human/MAINTENANCE.md: [Execution Isolation consistency]
-      docs/human/CONFORMANCE.md: [Execution Isolation Conformance, Scenario 177 — Runtime Policy Enforcement]
+      docs/human/USER_GUIDE.md: [Execution Isolation 與 Runtime Resource, Git Publication 與 Release]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Security & Governance, Quality & Verification]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution, Security 與 Governance, Maintenance governance]
+      docs/human/SECURITY_ASSURANCE.md: [External sandbox execution, Runtime Policy Enforcement, Release Security Gate]
+      docs/human/MAINTENANCE.md: [Execution Isolation consistency, Validation architecture consistency]
+      docs/human/CONFORMANCE.md: [Execution Isolation Conformance, Scenario 177 — Runtime Policy Enforcement, Scenarios 202–209 — Plan13 current and provenance evidence]
 
   - id: task-execution-ownership
     triggers: [scripts/deterministic_scheduler.py, scripts/task_ownership.py, scripts/run_state.py, scripts/run_projection.py, scripts/run_dashboard.py, orchestration/schemas/run-task-state.yaml, templates/automation/TASK_GRAPH.yaml, tests/scenarios/182-deterministic-execution-ownership.md]
@@ -504,7 +504,7 @@ placement_rules:
       orchestration/RUNTIME_CONTEXT.md: [Interpreter resolution, Context contract, Verification]
       orchestration/INTEGRATION_GATE.md: [Exact-candidate binding]
       orchestration/DOCUMENTATION_SYNC.md: [Human documentation placement, Maintenance reliability mapping]
-      orchestration/ORCHESTRATOR.md: [Context expansion]
+      orchestration/ORCHESTRATOR.md: [Context expansion, Change-class handoff to Integration Gate]
       orchestration/CHANGE_IMPACT.md: [Diff reconciliation]
       orchestration/PROJECT_INTELLIGENCE.md: [Retrieval relationships and impact traversal]
       orchestration/EXECUTION_ISOLATION.md: [Parallel runtime resource isolation]
@@ -518,9 +518,62 @@ placement_rules:
       - scripts/quality_ratchet.py
       - scripts/release_channel.py
       - scripts/validation_graduation.py
+      - .github/workflows/release-readiness.yml
     placements:
       docs/human/MAINTENANCE.md: [Versioning, Public repository / CI consistency, Validation architecture consistency]
       docs/human/SECURITY_ASSURANCE.md: [Release Security Gate]
+      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification, Evolution & Maintenance]
+      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
+      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
+
+  - id: p15-validation-taxonomy
+    triggers:
+      - config/validation-scope.yaml
+      - config/validation-graduation.yaml
+      - scripts/validation_taxonomy.py
+      - scripts/validation_observation.py
+      - .github/workflows/validation-observation-collector.yml
+      - tests/evidence/validation_taxonomy_lifecycle.py
+      - tests/validation/validation_taxonomy_contracts.py
+      - tests/scenarios/219-validation-policy-taxonomy-drift.md
+      - tests/scenario_coverage.yaml
+    placements:
+      docs/human/MAINTENANCE.md: [Validation architecture consistency]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
       docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
       orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
+
+  - id: p15-release-readiness
+    triggers:
+      - scripts/version_tag_policy.py
+      - config/version-tag-policy.yaml
+      - .github/workflows/release-readiness.yml
+      - tests/evidence/version_policy_lifecycle.py
+      - tests/validation/version_policy_contracts.py
+      - tests/scenarios/208-version-tag-provenance-policy.md
+    placements:
+      docs/human/INSTALLATION.md: [macOS / Linux, Windows, 驗證, Runtime integration, 更新, 常見問題與排查]
+      docs/human/MAINTENANCE.md: [Versioning, Release checklist, Validation architecture consistency]
+      docs/human/SECURITY_ASSURANCE.md: [Release Security Gate]
+      docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Quality & Verification]
+      docs/human/USER_GUIDE.md: [Git Publication 與 Release]
+      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
+      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
+      orchestration/RELEASE_READINESS.md: [Candidate integrity]
+      orchestration/GITHUB_RULESET_POLICY.md: [Transition procedure]
+
+  - id: p15-validation-observation
+    triggers:
+      - scripts/validation_observation.py
+      - .github/workflows/validate.yml
+      - .github/workflows/validation-observation-collector.yml
+      - tests/evidence/validation_observation_lifecycle.py
+      - tests/validation/validation_observation_contracts.py
+      - tests/scenarios/217-validation-observation-collector.md
+    placements:
+      docs/human/MAINTENANCE.md: [Validation architecture consistency]
+      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
+      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
+      orchestration/INTEGRATION_GATE.md: [Exact-candidate binding]
+      orchestration/DETERMINISTIC_SCHEDULER.md: [Validation de-duplication boundary]

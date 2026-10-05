@@ -1,0 +1,53 @@
+name: release-readiness
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact VERSION value for the proposed stable release
+        required: true
+        type: string
+      candidate_sha:
+        description: Full commit SHA proposed as the stable release candidate
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  assess:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Collect exact-candidate release evidence
+        env:
+          CANDIDATE_SHA: ${{ inputs.candidate_sha }}
+          RELEASE_VERSION: ${{ inputs.version }}
+          REPORT_PATH: ${{ runner.temp }}/release-readiness.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "Release readiness must run from main." >&2
+            exit 2
+          fi
+          git fetch --no-tags origin main
+          git fetch --tags origin
+          python scripts/version_tag_policy.py \
+            --repo . \
+            --main-ref origin/main \
+            --candidate-sha "$CANDIDATE_SHA" \
+            --expected-version "$RELEASE_VERSION" \
+            --json > "$REPORT_PATH"
+          cat "$REPORT_PATH"
+      - name: Upload release readiness evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release-readiness-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/release-readiness.json
+          if-no-files-found: ignore
+          retention-days: 90

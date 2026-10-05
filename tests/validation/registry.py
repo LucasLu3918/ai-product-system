@@ -45,7 +45,7 @@ VALIDATORS = (
     ValidatorSpec("validation.review_isolation_contracts", False),
     ValidatorSpec("validation.branch_hygiene_contracts", False, ("scripts/branch_hygiene.py", "config/branch-*", "tests/evidence/branch_hygiene_lifecycle.py", "tests/validation/branch_hygiene_contracts.py", ".github/workflows/branch-hygiene.yml"), False),
     ValidatorSpec("validation.ci_validation_plan_contracts", False),
-    ValidatorSpec("validation.version_policy_contracts", False, ("config/version-tag-policy.yaml", "config/github-ruleset-policy.yaml", "scripts/version_tag_policy.py", "scripts/github_ruleset_policy.py", "tests/evidence/version_policy_lifecycle.py", "tests/validation/version_policy_contracts.py"), False),
+    ValidatorSpec("validation.version_policy_contracts", False, ("config/version-tag-policy.yaml", "config/github-ruleset-policy.yaml", "scripts/install.sh", "scripts/install.ps1", "scripts/version_tag_policy.py", "scripts/github_ruleset_policy.py", ".github/workflows/release-readiness.yml", "tests/evidence/version_policy_lifecycle.py", "tests/validation/version_policy_contracts.py"), False),
     ValidatorSpec("validation.resource_authorization_contracts", False),
     ValidatorSpec("validation.runtime_policy_contracts", False),
     ValidatorSpec("validation.agent_anomaly_evaluation_contracts", False),
@@ -65,6 +65,9 @@ VALIDATORS = (
     ValidatorSpec("validation.telemetry_export_contracts", True),
     ValidatorSpec("validation.security_workflow_contracts", False, (".github/workflows/dependency-review.yml", ".github/workflows/scorecard.yml", "tests/validation/security_workflow_contracts.py"), False),
     ValidatorSpec("validation.validation_graduation_contracts", False, ("config/validation-scope.yaml", "config/validation-graduation.yaml", "scripts/validation_shadow_plan.py", "scripts/validation_graduation.py", "tests/evidence/validation_graduation_lifecycle.py", "tests/validation/validation_graduation_contracts.py"), False),
+    ValidatorSpec("validation.validation_observation_contracts", False, ("scripts/validation_observation.py", ".github/workflows/validate.yml", ".github/workflows/validation-observation-collector.yml", "tests/evidence/validation_observation_lifecycle.py", "tests/validation/validation_observation_contracts.py"), False),
+    ValidatorSpec("validation.evolution_relevance_contracts", False, ("scripts/evolution_relevance.py", "config/evolution-relevance-labels.yaml", "tests/evidence/evolution_relevance_lifecycle.py", "tests/validation/evolution_relevance_contracts.py"), False),
+    ValidatorSpec("validation.validation_taxonomy_contracts", False, ("scripts/validation_taxonomy.py", "config/validation-scope.yaml", "config/validation-graduation.yaml", "tests/evidence/validation_taxonomy_lifecycle.py", "tests/validation/validation_taxonomy_contracts.py"), False),
 )
 
 

@@ -12,4 +12,6 @@ The input must include branch protection, rulesets, bypass actors, and `source_c
 
 ## Transition procedure
 
+The current policy path compares a complete read-only repository snapshot and reports `NO_CHANGE` or `NOT_READY`; it does not activate rulesets or alter branch protection. Any future transition requires a fresh settings snapshot, recovery plan and explicit approval.
+
 This assessment creates no ruleset and does not activate one. Before a future transition, retrieve the full current configuration again, inspect the exact policy diff and rollback path, verify account/API feature availability, and obtain approval for that exact candidate. Where GitHub's policy evaluation endpoint is unavailable to the account, keep evaluation as an operational review step and do not report an API evaluation result.

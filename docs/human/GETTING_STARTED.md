@@ -2,6 +2,8 @@
 
 ## 安裝 AIPS
 
+Stable installation requires a version tag whose recorded version and target commit verify successfully. Until a stable release exists, development installations must explicitly request `--channel main`.
+
 macOS / Linux：
 
 ~~~bash
@@ -22,7 +24,7 @@ $installer = Join-Path ([IO.Path]::GetTempPath()) ("aips-install-" + [guid]::New
 try {
   Invoke-WebRequest -Uri https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.ps1 -OutFile $installer -ErrorAction Stop
   if (!(Test-Path -LiteralPath $installer) -or (Get-Item -LiteralPath $installer).Length -eq 0) { throw "AIPS installer download was empty." }
-  Invoke-Expression ([IO.File]::ReadAllText($installer))
+  & $installer
 } finally {
   Remove-Item -LiteralPath $installer -ErrorAction SilentlyContinue
 }
@@ -82,7 +84,7 @@ aips attach /path/to/project
 
 ## 更新
 
-安裝後預設追蹤穩定版；尚無穩定版標籤時安裝器會提示並暫從 `main` 啟動。需要開發版時可在初次安裝選擇 `--channel main`。
+安裝後預設追蹤穩定版；尚無已驗證的穩定版標籤時，安裝與更新會停止，不會回退到可變動的 `main`。需要開發版時，初次安裝可在 Linux/macOS 傳入 `--channel main`，或在 Windows WSL wrapper 傳入 `-Channel main`。
 
 ~~~bash
 aips update

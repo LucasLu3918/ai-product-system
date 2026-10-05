@@ -3,6 +3,12 @@ ruff:
   baseline_findings: 872
   policy: never_increase
   scope: scripts_and_tests
+  report_dimensions: [rule, module, auto_fixable]
+touched_code:
+  policy: no_new_findings
+  base_ref: origin/main
+  missing_base_behavior: block
+  fingerprint_fields: [path, code, name, message, source_cell]
 mypy:
   policy: selected_module_ratchet
   maximum_findings: 0
@@ -11,10 +17,13 @@ mypy:
     - scripts/integration_gate.py
     - scripts/review_packet.py
     - scripts/review_evidence.py
+    - scripts/validation_observation.py
+    - scripts/validation_taxonomy.py
   follow_imports: skip
   ignore_missing_imports: true
 coverage:
   policy: report_only
   branch_measurement: true
   minimum_percent: null
-  note: Establish module baselines before introducing gradual touched-module ratchets.
+  module_baselines: {}
+  note: Keep coverage report-only until module baselines are established from representative lifecycle evidence.

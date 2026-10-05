@@ -38,13 +38,15 @@ $installer = Join-Path ([IO.Path]::GetTempPath()) ("aips-install-" + [guid]::New
 try {
   Invoke-WebRequest -Uri https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.ps1 -OutFile $installer -ErrorAction Stop
   if (!(Test-Path -LiteralPath $installer) -or (Get-Item -LiteralPath $installer).Length -eq 0) { throw "AIPS installer download was empty." }
-  Invoke-Expression ([IO.File]::ReadAllText($installer))
+  & $installer
 } finally {
   Remove-Item -LiteralPath $installer -ErrorAction SilentlyContinue
 }
 ~~~
 
 PowerShell launcher 會把安裝交給 WSL 內相同的 Linux installer，因此核心 install lifecycle 只有一份。安裝後請在 WSL terminal 執行 AIPS。
+
+預設 channel 為 stable；第一個已驗證 release tag 出現前，安裝會停止。若明確要安裝開發版，請執行 `& $installer -Channel main`；Linux/macOS shell installer 對應使用 `--channel main`。
 
 > Windows native PowerShell / CMD runtime 若未來實作，必須另有真實 lifecycle evidence 後才可標記為 supported。
 
@@ -161,7 +163,7 @@ aips harness doctor
 
 ## 更新
 
-Managed installations use the stable channel by default when verified `vX.Y.Z` releases exist. Until the first release tag is published, an implicit stable install bootstraps from `main` with a warning; selecting `--channel stable` explicitly fails if no release is available. `--channel main` opts into development updates. The installer records the selected channel so later `aips update` follows the same policy.
+Managed installations use the stable channel by default and require a verified `vX.Y.Z` release tag. Before the first stable release is published, initial installation and updates stop without falling back to mutable `main`; use `--channel main` only when you explicitly want the development branch. The installer records the selected channel so later `aips update` follows the same policy. Release candidates can be checked with the read-only `release-readiness` workflow; publishing a tag remains a separate explicitly approved step.
 
 ~~~bash
 aips update
