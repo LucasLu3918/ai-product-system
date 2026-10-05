@@ -8,6 +8,14 @@ policy:
     no_uncovered: true
 
 scenarios:
+  - id: "210"
+    path: tests/scenarios/210-python-runtime-support-policy.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/install_preflight_lifecycle.py
+      - tests/evidence/system_facts_lifecycle.py
+      - tests/validation/system_facts_contracts.py
+      - .github/workflows/python-compatibility.yml
   - id: "202"
     path: tests/scenarios/202-evolution-data-completeness.md
     coverage: lifecycle

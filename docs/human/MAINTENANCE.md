@@ -88,6 +88,8 @@ Multi-file changes should normally be assembled into one coherent remote branch 
 
 ## Versioning
 
+Python support facts live in `config/system-facts.yaml` and are mirrored in `pyproject.toml`. The required PR Gate tests Python 3.12; the weekly compatibility workflow smoke-tests 3.12, 3.13, and 3.14. Runtime-floor changes must keep System Reference, installation guidance, Technology Guide, and Scenario 210 aligned.
+
 - MAJOR: incompatible governance/protocol/contract changes.
 - MINOR: backward-compatible new behavior, role, skill, work mode, CLI capability or schema/planning extension.
 - PATCH: backward-compatible bug fix, hardening, clarification, typo or non-behavioral documentation/evidence correction.
@@ -99,6 +101,7 @@ Major updates are not auto-applied by `aips preflight` without explicit `--allow
 `scripts/version_tag_policy.py` checks `VERSION`, exact candidate/main SHA and any existing tag destination. READY still requires separate explicit release approval; merging a PR does not create a version tag or backfill historical tags.
 
 ## System facts and validation planning
+
 
 `config/system-facts.yaml` and `config/architecture-surfaces.yaml` are the source for factual command/capability tables in `docs/human/SYSTEM_REFERENCE.md`. Run `python scripts/system_facts.py --write` after changing those facts and `--check` in validation. Keep explanatory prose in its canonical topic documents.
 
@@ -372,7 +375,7 @@ External Eval / Red-Team Interoperability contracts are checked by `tests/valida
 
 Keep the top-level validator as an aggregator. New substantial validation belongs in the narrowest existing module or a focused evidence runner rather than expanding the entrypoint back into a monolith.
 
-When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 34 deterministic, 119 lifecycle and 54 agent_eval scenarios (207 automated, 2 manual, 209 total).
+When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 34 deterministic, 120 lifecycle and 54 agent_eval scenarios (208 automated, 2 manual, 210 total).
 
 `scripts/repository_preflight.py` 先跑快速文件／schema／diff 檢查；通過後才進入完整 lifecycle。環境缺少 localhost bind 或 browser 時回報 `ENVIRONMENT_BLOCKED`，不混稱產品測試失敗。
 

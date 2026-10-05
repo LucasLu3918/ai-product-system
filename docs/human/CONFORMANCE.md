@@ -1510,3 +1510,7 @@ Scenario 155 also verifies that missing weekly pre-analysis leaves source shortl
 
 
 Current counts and the Human/Agent history crosswalk are generated in [Current Scenario Conformance](CONFORMANCE_CURRENT.md) and [Conformance History Index](CONFORMANCE_HISTORY_INDEX.md). This document retains versioned baselines as historical records; normative Agent rules remain in `orchestration/CONFORMANCE.md`. Scenarios 202–209 cover Evolution completeness, validation shadow/replay, compatible module extraction, branch proposal freshness, conformance views, shared workflow bootstrap, version-tag provenance, and GitHub ruleset policy comparison.
+
+### Scenario 210 — Python runtime support policy
+
+Lifecycle evidence checks that Python <3.12 is rejected for explicit selection, unsupported managed environments are repaired by install/update when a compatible interpreter exists, diagnostics name the requirement, and canonical support facts agree with the scheduled 3.12–3.14 smoke matrix.

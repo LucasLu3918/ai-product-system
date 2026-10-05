@@ -71,8 +71,6 @@ Temporal Change Impact 可依 Git revision 還原當時有效的 assertion 與 I
 
 Portable Command projections use ownership and digest checks to preserve user edits; the same Canonical Registry and renderer serve CLI and MCP without granting protected-operation authority.
 
-Runtime adapter 偵測會優先使用命令列，再使用明確的 runtime path fallback。Shell `PATH` 整合採 explicit opt-in：互動式安裝詢問，`--configure-shell` 明確啟用，`--no-configure-shell` 明確略過；AIPS 以 ownership-marked block 與外部 metadata 實作冪等安裝及保守解除。CLI link、discoverability、shell integration、必要 Python runtime dependencies 與 Harness managed block 狀態由 `aips doctor`、`aips shell status`、`aips harness status` 與 `aips harness doctor` 分別驗證。Managed installation 會選擇 Python 3.10+（可由 `AIPS_PYTHON` 指定），並在 update／preflight 時只於依賴缺漏或既有 AIPS-owned `.venv` 解譯器過舊時修復；plain source checkout 不會隱式建立 `.venv`。
-
 ### Deterministic Automation
 
 可用固定規則完成的工作優先交給 Shell / Python / existing tooling，再把 compact structured evidence交給 model。
@@ -141,6 +139,10 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Managed AIPS CLI requires Python >=3.12. The required PR Gate tests Python 3.12; a weekly compatibility smoke workflow exercises 3.12, 3.13, and 3.14 from `config/system-facts.yaml`. An explicit `AIPS_PYTHON` must satisfy the floor; doctor identifies an unsupported managed environment, and install/update repair recreates only an AIPS-owned venv.
+
+Runtime adapter discovery prefers an available CLI and then an explicit runtime-path fallback. Shell `PATH` integration remains opt-in and ownership-marked. `aips doctor`, `aips shell status`, `aips harness status`, and `aips harness doctor` report CLI, shell, runtime-dependency, and Harness state; a plain source checkout does not create a venv implicitly.
 Monthly Effectiveness requires complete pre-analysis coverage before treating source shortlist yield as known. Oversized GitHub Issue content uses a bounded zlib/Base64 envelope with a SHA-256 digest; consumers restore the complete body before parsing. Corrupt and over-limit archives remain unavailable evidence.
 
 

@@ -4,6 +4,10 @@ on:
   pull_request:
     paths:
       - "scripts/install.sh"
+      - "scripts/aips_cli.sh"
+      - "scripts/system_facts.py"
+      - "config/system-facts.yaml"
+      - "pyproject.toml"
       - "scripts/install.ps1"
       - "scripts/uninstall.ps1"
       - "scripts/bootstrap.sh"
@@ -19,6 +23,9 @@ on:
       - "tests/evidence/runtime_recovery_lifecycle.py"
       - "tests/evidence/install_download_lifecycle.py"
       - "tests/evidence/openapi_cli_install_lifecycle.py"
+      - "tests/evidence/install_preflight_lifecycle.py"
+      - "tests/evidence/system_facts_lifecycle.py"
+      - "tests/validation/system_facts_contracts.py"
       - "tests/evidence/install_download_contract.ps1"
       - ".github/workflows/installation-entrypoints.yml"
   workflow_dispatch:

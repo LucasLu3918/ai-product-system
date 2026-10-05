@@ -89,6 +89,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 200 — Demand-driven CI toolchain planning](CONFORMANCE.md#scenario-200-demand-driven-ci-toolchain-planning) | Current Human guidance |
 | [## Scenario 201 — Monthly maintenance reliability evidence](CONFORMANCE.md#scenario-201-monthly-maintenance-reliability-evidence) | Current Human guidance |
 | [## Scenarios 202–209 — Plan13 current and provenance evidence](CONFORMANCE.md#scenarios-202209-plan13-current-and-provenance-evidence) | Current Human guidance |
+| [### Scenario 210 — Python runtime support policy](CONFORMANCE.md#scenario-210-python-runtime-support-policy) | Current Human guidance |
 | [# Scenario Conformance](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-conformance) | Normative rule |
 | [## Purpose](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#purpose) | Normative rule |
 | [## Registry](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#registry) | Normative rule |
@@ -151,5 +152,6 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 196 — Explicit OpenAPI client generator adapter](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-196-explicit-openapi-client-generator-adapter) | Normative rule |
 | [## Scenario 201 — Monthly maintenance reliability evidence](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-201-monthly-maintenance-reliability-evidence) | Normative rule |
 | [## Scenarios 202–209 — Plan13 current and provenance evidence](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenarios-202209-plan13-current-and-provenance-evidence) | Normative rule |
+| [## Scenario 210 — Python runtime support policy](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-210-python-runtime-support-policy) | Normative rule |
 
 The crosswalk preserves source anchors. Edit the source documents for content changes, then regenerate this index.

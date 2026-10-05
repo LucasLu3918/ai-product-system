@@ -76,13 +76,13 @@ legacy_append_forbidden:
 
 placement_rules:
   - id: system-facts
-    triggers: [config/system-facts.yaml, config/architecture-surfaces.yaml, scripts/system_facts.py, tests/validation/system_facts_contracts.py]
+    triggers: [config/system-facts.yaml, config/architecture-surfaces.yaml, scripts/system_facts.py, tests/validation/system_facts_contracts.py, .github/workflows/python-compatibility.yml]
     placements:
       docs/human/SYSTEM_REFERENCE.md: [Public commands, Capability surfaces, Runtime support]
       docs/human/DOCUMENTATION_MAP.md: [Shared canonical 文件, 文件角色, 文件角色]
       docs/human/DOCUMENTATION_SYNC.md: [Technology Guide, Deterministic protection]
       docs/human/INSTALLATION.md: [Runtime integration]
-      docs/human/MAINTENANCE.md: [Versioning, System facts and validation planning, Branch lifecycle hygiene, Controlled branch cleanup]
+      docs/human/MAINTENANCE.md: [Versioning, System facts and validation planning, Validation architecture consistency, Branch lifecycle hygiene, Controlled branch cleanup]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
 
   - id: maintenance-planning
@@ -100,7 +100,7 @@ placement_rules:
       docs/human/CONFORMANCE.md: [Scenario 201 — Monthly maintenance reliability evidence, Scenarios 202–209 — Plan13 current and provenance evidence]
       docs/human/DOCUMENTATION_MAP.md: [文件角色]
       docs/human/DOCUMENTATION_SYNC.md: [Deterministic protection]
-      orchestration/CONFORMANCE.md: [Scenario 201 — Monthly maintenance reliability evidence, Scenarios 202–209 — Plan13 current and provenance evidence]
+      orchestration/CONFORMANCE.md: [Scenario 201 — Monthly maintenance reliability evidence, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 210 — Python runtime support policy]
       orchestration/DOCUMENTATION_SYNC.md: [Maintenance reliability mapping]
   - id: runtime-context
     triggers:
@@ -369,6 +369,7 @@ placement_rules:
     triggers: [orchestration/CONFORMANCE.md, tests/scenario_coverage.yaml, tests/validation/conformance_isolation.py, tests/validation/ears_requirement_contracts.py, tests/scenarios/175-risk-adaptive-bounded-impact.md, tests/scenarios/176-mandatory-candidate-secret-scanning.md, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, tests/evidence/secret_scan_publication_lifecycle.py, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/180-external-eval-interoperability.md, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py, tests/validation/eval_interop_contracts.py, scripts/eval_interop.py, scripts/agent_eval.py, templates/conformance/AGENT_EVAL_RESULT.yaml, orchestration/EVAL_INTEROPERABILITY.md, orchestration/AGENT_EVAL.md, tests/scenarios/196-openapi-generator-adapter.md, tests/evidence/openapi_generator_adapter_lifecycle.py]
     placements:
       docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence]
       docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Scenario 201 — Monthly maintenance reliability evidence, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification, Evolution & Maintenance, Security & Governance]
 
@@ -499,7 +500,7 @@ placement_rules:
       docs/human/DOCUMENTATION_MAP.md: [文件角色]
       docs/human/DOCUMENTATION_SYNC.md: [Deterministic protection]
       docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
-      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
+      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 210 — Python runtime support policy]
       orchestration/GITHUB_RULESET_POLICY.md: [Inputs, Transition procedure]
       orchestration/RELEASE_READINESS.md: [Candidate integrity]
       orchestration/RUNTIME_CONTEXT.md: [Interpreter resolution, Context contract, Verification]

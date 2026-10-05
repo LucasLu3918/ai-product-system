@@ -1,12 +1,16 @@
 version: 1
 change:
-  id: plan14-evolution-effectiveness
-  summary: Preserve complete Evolution Radar evidence under GitHub Issue limits and
-    report missing pre-analysis as incomplete coverage.
+  id: plan14-python-support
+  summary: P14-02 aligns the supported Python floor with Python >=3.12 and tests the
+    3.12, 3.13, and 3.14 compatibility range; previously merged P14-01 boundaries
+    remain listed as regression evidence for the full candidate Gate.
   boundary:
-  - weekly Issue evidence archive and rollup compatibility
-  - monthly Effectiveness pre-analysis coverage and source-yield semantics
-  - workflow consumers, Scenario 155, documentation and candidate binding
+  - Python runtime minimum, managed installer repair, doctor diagnosis, and compatibility
+    behavior
+  - canonical runtime facts, compatibility smoke workflow, tests, documentation, and
+    candidate binding
+  - previously merged P14-01 archive and monthly Effectiveness boundaries retained
+    for regression traceability
 matrix:
 - boundary: Durable Issue archive and rollup consumer compatibility
   reason: Original evidence must remain byte-preserved below GitHub limits; invalid,
@@ -157,7 +161,77 @@ matrix:
       applicable: true
       evidence: aips publish preview documentation_placement PASS and repository documentation
         contracts
-scope_recomputed_after_expansion: false
+- boundary: Python runtime minimum and managed installation recovery
+  reason: AIPS must reject unsupported interpreters clearly and repair an existing
+    managed venv without leaving a partial install.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: bash syntax, Ruff, and repository validation
+    unit:
+      applicable: true
+      evidence: Python-version predicate boundaries for 3.11, 3.12, and newer
+    integration:
+      applicable: true
+      evidence: installer recreates an unsupported managed venv with a compatible interpreter
+    contract:
+      applicable: true
+      evidence: doctor and install errors state the Python >=3.12 requirement
+    e2e:
+      applicable: true
+      evidence: tests/evidence/install_preflight_lifecycle.py and installation-entrypoints workflow
+    security:
+      applicable: true
+      evidence: unsupported EOL runtime is not accepted; update remains fail-closed when
+        no compatible creator is available
+    migration_recovery:
+      applicable: true
+      evidence: existing managed venv below 3.12 is recreated; unmanaged project data
+        is untouched
+    concurrency_idempotency_replay:
+      applicable: false
+      na_reason: No concurrent or replayable persistent writes are introduced.
+    cli_harness:
+      applicable: true
+      evidence: aips doctor and aips install lifecycle diagnostics
+    docs_schema:
+      applicable: true
+      evidence: installation, Getting Started, Technology Guide, and generated system reference
+- boundary: Canonical Python facts and scheduled compatibility coverage
+  reason: Declared support, tested versions, installer predicates, generated references,
+    and scheduled smoke coverage must agree.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Python facts and workflow schema validation
+    unit:
+      applicable: true
+      evidence: tests/validation/system_facts_contracts.py validates range and tested matrix
+    integration:
+      applicable: true
+      evidence: system facts generator lifecycle and scheduled Python compatibility workflow
+    contract:
+      applicable: true
+      evidence: pyproject.toml and config/system-facts.yaml are cross-checked
+    e2e:
+      applicable: true
+      evidence: scheduled Python 3.12, 3.13, and 3.14 installer smoke matrix
+    security:
+      applicable: false
+      na_reason: No dependency, workflow permission, or credential scope is expanded.
+    migration_recovery:
+      applicable: false
+      na_reason: Runtime upgrade recovery is covered in the installer boundary.
+    concurrency_idempotency_replay:
+      applicable: false
+      na_reason: No new mutable runtime state is introduced.
+    cli_harness:
+      applicable: true
+      evidence: scheduled smoke runs aips install/doctor lifecycle contracts
+    docs_schema:
+      applicable: true
+      evidence: generated system facts and canonical runtime support docs
+scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 status: READY
@@ -165,5 +239,5 @@ review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
 candidate:
-  base_sha: cb3a054f832484798ce5f91a234a8771f8ff057f
-  changed_files_hash: 999dd7d6299e49f7cdc239ee41fd89e7a7e09bb4c2ad66f0edfaa48e6d029a58
+  base_sha: 2990f88bd455ff60705d05d08faf182d83b43386
+  changed_files_hash: 2eac793c44bfaf164605244e39ae1df5b68e7e2887993a3c215c834c4417e100

@@ -46,6 +46,8 @@ An unreadable archived weekly Issue remains visible in its title-derived monthly
 
 Operational observations from the read-only Parallel Run Dashboard may inform review, but never become automatic adoption or publication decisions.
 
+The scheduled Python compatibility smoke is maintenance evidence about supported runtime behavior, not a Radar effectiveness metric or an automatic adoption signal.
+
 Monthly / quarterly roll-up 量測 collected → shortlist → semantic → actionable → Trial → PASS → ADOPT、duplicate rate 與 failure evidence。Low-yield / high-failure 只產生 Human-review flags，不自動調整 source weights 或 enable/disable settings。
 
 ## Current Boundaries
