@@ -158,10 +158,9 @@ matrix:
       evidence: aips publish preview documentation_placement PASS and repository documentation
         contracts
 scope_recomputed_after_expansion: false
-actual_diff_reconciled: false
-blockers:
-  - candidate binding refreshed; review scope and evidence before marking READY
-status: DRAFT
+actual_diff_reconciled: true
+blockers: []
+status: READY
 review_evidence:
   required: false
   path: .aips/review/INDEPENDENT_REVIEW_EVIDENCE.yaml
