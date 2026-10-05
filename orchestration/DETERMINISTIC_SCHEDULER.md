@@ -10,6 +10,7 @@ The Scheduler is deterministic code, not a Role, Agent, approval gate or archite
 
 ## Separation of responsibilities
 
+
 ~~~text
 Human-approved scope
 → Planner / Orchestrator reasons once
@@ -149,6 +150,8 @@ When the Execution Profile requires sandbox isolation, Scheduler dispatch must p
 The Scheduler never falls back to LLM coordination to make a blocked graph look executable.
 
 ## Read-only declaration and fail-closed boundary
+
+The Evolution pre-analysis module split stays behind the existing CLI and does not change scheduler task definitions, dispatch, or authority.
 
 Task Graphs now include explicit `read_only` intent.
 

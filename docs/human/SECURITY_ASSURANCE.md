@@ -6,6 +6,7 @@ Security review depth is proportional to the actual product/feature risk. The sy
 
 ## Core model
 
+
 ~~~text
 Product / Feature
 → Risk Profile
@@ -232,6 +233,8 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 
 ## Secret and credential safety
+
+Evolution local pre-analysis remains credential-free, external-network-free, read-only advisory evidence. Moving its implementation behind the existing facade adds no execution, publication, or Human-decision authority.
 Public Radar Issue archives are treated as untrusted input. Restoration verifies SHA-256, limits decompressed output to 8 MiB and rejects malformed payloads before evidence parsers consume them; no credential data is included in the archive.
 
 

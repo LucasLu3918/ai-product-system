@@ -1511,7 +1511,7 @@ Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agen
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
-Scenario 204 的 module-extraction lifecycle 也核對 temporal query 的 facade identity 與 current-mode 輸出，避免內部拆分改變既有 CLI 契約。
+Scenario 204 的 module-extraction lifecycle 核對 temporal query 與 Evolution pre-analysis 的 facade identity 和 current-mode 輸出，避免內部拆分改變既有 CLI 契約。
 
 Scenarios 211–213 cover GitHub supply-chain checks, evidence-gated validator graduation, and gradual quality ratchets with deterministic property and coverage reports. All remain advisory or fail-closed controls; selective execution is not enabled by their presence.
 

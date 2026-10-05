@@ -177,7 +177,10 @@ Trajectory Quality Gate 在既有 Agent Eval 之上評估 observable Agent traje
 
 Evolution Radar 位於 maintenance plane：收集 public technical evidence、deterministic pre-analysis、provider-neutral semantic handoff、Human Decision、bounded Trial。Radar recommendations 不會自動修改 code、開 implementation PR、merge 或 release。
 
+
 ## Maintenance governance
+
+`scripts/evolution_analysis.py` 保留 Evolution analysis CLI 與相容 facade；deterministic local pre-analysis 實作位於 `scripts/evolution_preanalysis.py`，不改變輸出或 authority boundary。
 
 Release readiness binds stable installation to a version-verified candidate and keeps tag creation separate. Validation runs remain complete while shadow observations, quality ratchets, and human-reviewed Evolution labels accumulate evidence; none grants merge or release authority.
 

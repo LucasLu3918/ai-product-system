@@ -73,6 +73,7 @@ Canonical artifacts:
 
 - `config/evolution-analyzer.yaml`
 - `scripts/evolution_analysis.py`
+- `scripts/evolution_preanalysis.py`
 - `templates/evolution/EVOLUTION_ANALYZER_PROMPT.md`
 - `templates/evolution/EVOLUTION_ANALYZER_RESULT.schema.json`
 - `templates/evolution/EVOLUTION_ANALYSIS.yaml`
@@ -82,6 +83,8 @@ Canonical artifacts:
 When `OPENAI_API_KEY` is available, the scheduled workflow uses the pinned `openai/codex-action` and pinned Codex CLI version with `:read-only` permission profile and `drop-sudo` safety strategy.
 
 The model returns only a recommendation payload. Deterministic AIPS code supplies and verifies the exact evidence digest, repository revision, provider metadata and every authority=false field.
+
+The `evolution_analysis.py` CLI remains the stable facade. Its credential-free deterministic title/metadata pre-analysis implementation lives in `evolution_preanalysis.py`; this split does not change its outputs, evidence binding, or authority boundaries.
 
 If credentials are missing, the provider fails, or output validation fails, the workflow remains truthful: recommendations stay `ANALYSIS_PENDING` and the Issue records the analyzer as unavailable.
 

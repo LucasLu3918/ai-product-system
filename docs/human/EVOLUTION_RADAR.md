@@ -14,6 +14,8 @@ Community signal 主要用於 discovery；較高強度的 recommendation 需要 
 
 ## Deterministic Pre-analysis
 
+The `evolution_analysis.py` command remains the entry point. Its deterministic, credential-free title and metadata pre-analysis is implemented in `evolution_preanalysis.py`; this internal split preserves existing outputs and review boundaries.
+
 本機規則處理 category hint、capability mapping、near-duplicate grouping、review priority 與 funnel metrics。這些輸出不等於 semantic suitability，也不會改 recommendation state。
 
 ## Semantic Analysis

@@ -1,0 +1,103 @@
+version: 1
+change:
+  id: plan16-03c-publish-post-merge
+  summary: Extract post-merge reconciliation behind the existing publication preflight facade without
+    changing CLI behavior, synchronization safeguards, or authority.
+  boundary:
+  - scripts/publish_preflight.py compatibility facade and scripts/publish_post_merge.py implementation
+  - clean local-main reconciliation, backup preservation, installed synchronization, and fast-forward-only
+    behavior
+  - lifecycle evidence, Integration Gate inventory, and required Human/Agent documentation closure
+candidate:
+  base_sha: e35a866fb1dc02770b7e4b72bdd2ab4b501c16ff
+  changed_files_hash: bc927d3964c0540456c8c43c341567c37d974dd7c6b6e1c1f90b2f85003a81d8
+matrix:
+- boundary: facade-and-cli-contract
+  reason: Existing command routing, callable functions, exception identity, arguments, return behavior,
+    and ROOT test injection must remain compatible.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff critical and debt-ratchet checks cover the changed Python sources; focused import-order
+        checks cover the facade.
+    unit:
+      applicable: true
+      evidence: Focused module-extraction lifecycle verifies old facade exports and exception identity;
+        publication-preflight lifecycle verifies call behavior.
+    integration:
+      applicable: true
+      evidence: Full repository validation and exact-candidate Integration Gate exercise the facade against
+        temporary Git repositories and consumers.
+    contract:
+      applicable: true
+      evidence: Existing post-merge lifecycle assertions remain effective after extraction, including
+        CLI/API compatibility and ROOT monkeypatch behavior.
+    e2e:
+      applicable: true
+      evidence: Full repository validation, docs build, and exact-candidate Integration Gate pass on the
+        final candidate.
+    security:
+      applicable: true
+      evidence: Mandatory credential-free final-tree and complete-history candidate secret scan passes;
+        no trust or credential boundary changes.
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted schema, canonical data, database migration, or recovery format changes.
+    cli_harness:
+      applicable: true
+      evidence: Existing publish CLI routes through the facade and post-merge lifecycle confirms installed
+        and source-checkout paths.
+    docs_schema:
+      applicable: true
+      evidence: Documentation placement preview is complete; architecture, integration, placement, and
+        sync inventories include the new module and lifecycle evidence.
+- boundary: fast-forward-reconciliation-safety
+  reason: Extraction must preserve backup-before-update, clean-target checks, ancestry validation, divergence
+    blocking, and no-reset policy.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff critical and debt-ratchet cover the changed implementation and facade.
+    unit:
+      applicable: true
+      evidence: Publish-preflight lifecycle covers successful and blocked synchronization outcomes in
+        isolated Git fixtures.
+    integration:
+      applicable: true
+      evidence: Full repository validation and Integration Gate run the registered post-merge lifecycle
+        contracts.
+    contract:
+      applicable: true
+      evidence: Lifecycle assertions compare fast-forward and tree-equivalent paths, preserve backup refs,
+        and reject unsafe divergent histories.
+    e2e:
+      applicable: true
+      evidence: Exact-candidate Gate runs full validation, docs build, secret scanning, and all required
+        lifecycles.
+    security:
+      applicable: true
+      evidence: Negative lifecycle cases confirm no reset/ref update for dirty, wrong-remote, stale, or
+        divergent targets; candidate secret scan is mandatory.
+    migration_recovery:
+      applicable: false
+      na_reason: The extraction does not alter installed state format; reconciliation remains fast-forward-only.
+    cli_harness:
+      applicable: true
+      evidence: Existing installed CLI calls the extracted implementation through the compatibility facade.
+    docs_schema:
+      applicable: true
+      evidence: Human and Agent documentation retain post-merge safety and authority boundaries; docs
+        placement and build checks validate them.
+scope_recomputed_after_expansion: true
+actual_diff_reconciled: true
+review_evidence:
+  required: false
+  status: SELF_REVIEWED
+  evidence:
+  - Reviewed the exact candidate path set against the diff and approved documentation closure.
+  - Confirmed both lifecycle checks cover facade identity and all relevant post-merge success/blocking
+    outcomes.
+  - Confirmed unchanged full repository validation, candidate secret scan, docs build, and Integration
+    Gate requirements.
+blockers: []
+status: READY

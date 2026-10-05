@@ -819,7 +819,7 @@ Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agen
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
-Scenario 204 的 module-extraction evidence 斷言 temporal query 的 facade object identity，並檢查 deterministic current-mode availability、canonical path 與 digest。
+Scenario 204 的 module-extraction evidence 斷言 temporal query 與 Evolution pre-analysis 的 facade object identity，並檢查 deterministic current-mode availability、canonical path 與 digest。
 
 Scenario 211 binds Dependency Review and scheduled Scorecard permissions/action SHAs. Scenario 212 validates complete shadow evidence before human review, and Scenario 213 checks the quality debt ceiling and deterministic SemVer properties. None independently grants release or selective-validation authority.
 

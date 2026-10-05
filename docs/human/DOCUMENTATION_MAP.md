@@ -4,6 +4,8 @@ Runtime Context 行為契約位於 `orchestration/RUNTIME_CONTEXT.md`，範例�
 
 Retrieval internals and their compatibility facade are explained in ARCHITECTURE_OVERVIEW.md and PROJECT_INTELLIGENCE.md; lexical relations remain rebuildable candidates rather than canonical architecture facts.
 
+Evolution's stable CLI and deterministic pre-analysis module are described in ARCHITECTURE_OVERVIEW.md and EVOLUTION_RADAR.md; the module split adds no install step.
+
 Human Docs 依使用目的組織，而不是依版本號堆疊。
 
 ## Official Docs Site

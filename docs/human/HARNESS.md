@@ -8,6 +8,8 @@ Runtime Context 統一解析驗證 Python 與 cache/config 路徑；它將 Playw
 
 ## Integration model
 
+The Evolution pre-analysis module is an internal deterministic helper behind its existing CLI; it adds no Runtime Adapter, MCP tool, or Host integration.
+
 ~~~text
 AIPS Core
 ├─ MCP Access Plane

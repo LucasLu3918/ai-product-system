@@ -91,6 +91,7 @@ rules:
       - scripts/evolution_radar.py
       - scripts/evolution_radar_rollup.py
       - scripts/evolution_analysis.py
+      - scripts/evolution_preanalysis.py
       - scripts/evolution_decision.py
       - scripts/evolution_trial.py
       - scripts/evolution_adoption.py

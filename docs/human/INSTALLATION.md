@@ -2,6 +2,8 @@
 
 AIPS 的 public lifecycle terminology 統一使用 **Install / Update / Uninstall**。bootstrap.sh 只保留為 backward-compatible wrapper，不再是新使用者文件的主要入口。
 
+Evolution deterministic pre-analysis ships as an internal Python module with the existing AIPS checkout; it adds no separate installation step or dependency.
+
 ## macOS / Linux
 
 ~~~bash

@@ -8,6 +8,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+import evolution_analysis as evolution_facade
+import evolution_preanalysis as evolution_impl
 import project_intelligence as project_facade
 import project_intelligence_impact_graph as project_impl
 import project_intelligence_temporal as project_temporal_impl
@@ -27,6 +29,23 @@ def main() -> int:
     assert callable(publish_facade.sync_installed)
     assert health_facade.run_scenario_conformance is health_impl.run_scenario_conformance
     assert retrieval_facade.structural_relation_boosts is retrieval_impl.structural_relation_boosts
+    for name in (
+        "PREANALYSIS_START",
+        "PREANALYSIS_END",
+        "canonical_digest",
+        "evidence_digest",
+        "utc_now",
+        "_normalized_rule_text",
+        "_title_tokens",
+        "validate_local_preanalysis_config",
+        "_near_duplicate_membership",
+        "_build_review_queue",
+        "build_local_preanalysis",
+        "validate_local_preanalysis",
+        "preanalysis_markdown",
+        "extract_preanalysis",
+    ):
+        assert getattr(evolution_facade, name) is getattr(evolution_impl, name), name
     for function in (
         project_facade.traverse_architecture_impact_graph,
         project_facade.temporal_query,

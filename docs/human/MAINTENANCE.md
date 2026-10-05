@@ -4,6 +4,8 @@ Runtime Context 或 Integration Gate 改動時，執行 Scenario 198、完整 re
 
 Retrieval relation extraction changes preserve the legacy `retrieval_intelligence.py` entry points. Run the focused extraction lifecycle, retrieval lifecycle and full repository Gate; lexical traversal uncertainty remains explicit.
 
+Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as its CLI/import facade. The focused Radar lifecycle and module-identity checks preserve deterministic output and Human decision authority.
+
 ## Documentation Impact Gate
 
 Every system change must assess downstream documentation and behavior before completion.
