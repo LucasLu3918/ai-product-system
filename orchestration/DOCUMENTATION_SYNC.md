@@ -161,6 +161,10 @@ The placement map includes explicit source triggers for Turn Context intent, obs
 
 The same canonical H2 placement contract applies to pre-commit working-tree preview and committed repository preflight. Preview includes tracked, staged, unstaged and untracked paths and identifies the allowed H2 for misplaced content.
 
+## Scenario 220 — Parallel advisory fast feedback
+
+The advisory fast-feedback workflow is documented with the validation scenario and the Integration Gate required-check boundary; it remains independent of complete validation.
+
 ## Maintenance reliability mapping
 
 The runtime-context architecture inventory includes the `scripts/aips_cli.sh` facade and its `scripts/aips_cli/` modules; the System Reference is regenerated from that inventory, and lifecycle evidence is listed with the runtime surface.

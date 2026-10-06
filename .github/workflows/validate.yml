@@ -29,6 +29,44 @@ permissions:
   contents: read
 
 jobs:
+  advisory-fast-feedback:
+    if: >-
+      ${{ github.event_name == 'pull_request' &&
+          github.event.action != 'labeled' &&
+          github.event.action != 'unlabeled' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      AIPS_GATE_BASE: ${{ github.event.pull_request.base.sha }}
+      AIPS_GATE_HEAD: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install fast preflight dependency
+        run: python -m pip install -c constraints/tested.txt PyYAML
+      - name: Run advisory exact-candidate repository preflight
+        id: fast_preflight
+        continue-on-error: true
+        run: >-
+          python scripts/repository_preflight.py
+          --base "$AIPS_GATE_BASE" --head "$AIPS_GATE_HEAD"
+      - name: Report advisory preflight outcome
+        if: always()
+        env:
+          AIPS_FAST_PREFLIGHT_OUTCOME: ${{ steps.fast_preflight.outcome }}
+        run: |
+          if [[ "$AIPS_FAST_PREFLIGHT_OUTCOME" == "success" ]]; then
+            echo "Advisory fast feedback: PASS for $AIPS_GATE_HEAD" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Advisory fast feedback: FINDINGS for $AIPS_GATE_HEAD (full required repository validation still runs independently)." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
   janitor:
     if: >-
       ${{ github.event_name != 'pull_request' ||

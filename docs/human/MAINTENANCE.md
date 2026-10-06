@@ -385,6 +385,8 @@ OpenAPI validation and evidence lifecycle checks are included in the repository 
 Portable Command contract 位於 `tests/validation/portable_commands_contracts.py`，涵蓋 registry、projection install、status 與修改檔案 conflict；它不授予 merge 或 release authority。
 `tests/validate_repository.py` is the stable CI/user entrypoint. Internal validation is modular:
 
+Pull requests also run a bounded repository-preflight job in parallel with the existing validation path. Its exact-candidate findings are advisory; the required `repository` aggregate continues to depend on the complete Janitor Integration Gate and always runs the full repository validation. Label-only events skip this fast job.
+
 - `tests/validation/static_contracts.py` — schemas, indexes, documentation and static repository contracts;
 - `tests/validation/runtime_contracts.py` — Harness / Runtime / Intelligence lifecycle checks;
 - `tests/validation/governance_resume.py` — approval binding and durable-run behavior;
@@ -396,7 +398,7 @@ External Eval / Red-Team Interoperability contracts are checked by `tests/valida
 
 Keep the top-level validator as an aggregator. New substantial validation belongs in the narrowest existing module or a focused evidence runner rather than expanding the entrypoint back into a monolith.
 
-When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 36 deterministic, 127 lifecycle and 54 agent_eval scenarios (217 automated, 2 manual, 219 total).
+When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 37 deterministic, 127 lifecycle and 54 agent_eval scenarios (218 automated, 2 manual, 220 total).
 
 `scripts/repository_preflight.py` 先跑快速文件／schema／diff 檢查；通過後才進入完整 lifecycle。環境缺少 localhost bind 或 browser 時回報 `ENVIRONMENT_BLOCKED`，不混稱產品測試失敗。
 

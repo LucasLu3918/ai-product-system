@@ -1528,3 +1528,7 @@ Current counts and the Human/Agent history crosswalk are generated in [Current S
 ### Scenario 210 — Python runtime support policy
 
 Lifecycle evidence checks that Python <3.12 is rejected for explicit selection, unsupported managed environments are repaired by install/update when a compatible interpreter exists, diagnostics name the requirement, and canonical support facts agree with the scheduled 3.12–3.14 smoke matrix.
+
+## Scenario 220 — Parallel advisory fast feedback
+
+Pull requests run the bounded repository preflight concurrently against the exact candidate. Its findings are reported for early feedback and do not replace or gate the required full repository validation; unrelated label-only events skip the advisory job.

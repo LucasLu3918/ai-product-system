@@ -320,6 +320,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 After merge, post-merge checkout and installed-version reconciliation run through the established publication CLI facade and retain fast-forward-only safeguards.
 
+The pull-request advisory fast-feedback job checks the same base/head candidate in parallel and reports findings only; it does not participate in change-class routing or alter the required full validation path.
+
 Large/Core work remains blocked from remote publication until documentation closure, the candidate-bound test matrix, mandatory secret scan and exact Integration Gate pass; publication approval names the final files, commit plan and target branch.
 
 Installed product CLI acceptance keeps the required AIPS runtime dependencies separate from optional OpenAPI validator packages. Require an explicit setup command before contract validation; exercise the installed entrypoint from a product root containing no AIPS scripts, then retain platform installation and exact-candidate Gates.
