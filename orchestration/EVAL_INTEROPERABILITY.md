@@ -35,6 +35,8 @@ The Phase 5 Widgets pilot is deterministic product-client lifecycle evidence and
 
 ## Supported commands
 
+Eval CLI commands remain behind the existing `bin/aips` and `scripts/aips_cli.sh` public entrypoints. Their implementation modules may move internally only when source and installed entrypoint contracts and existing command behavior are preserved.
+
 - `aips eval export-promptfoo --case CASE.yaml --provider openai:MODEL --output promptfooconfig.yaml` emits one inline prompt, one explicit built-in OpenAI provider, and one variables-only test. It does not convert the AIPS rubric into external executable assertions; AIPS remains the scorer.
 - `aips eval import-promptfoo --config CONFIG.yaml --results RESULTS.jsonl --output EVIDENCE.yaml` accepts one inline prompt, one built-in OpenAI provider, up to 100 inline tests, and the deterministic `equals`, `contains`, `not-contains`, and `is-json` assertion subset. Result rows must align with configured variables and expose only a response string/output.
 - `aips eval verify-evidence --evidence EVIDENCE.yaml [--config CONFIG.yaml --results RESULTS.jsonl] [--bridge BRIDGE.yaml]` checks the normalized evidence fingerprint and, when source files are provided, source digests.

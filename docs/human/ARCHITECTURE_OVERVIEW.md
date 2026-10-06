@@ -78,8 +78,6 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
-Phase B keeps `bin/aips` as a small argument-preserving launcher to `scripts/aips_cli.sh`; runtime path and Python resolution remain in the implementation layer.
-
 ## Deterministic Execution
 
 Post-merge reconciliation 實作位於 `scripts/publish_post_merge.py`；`scripts/publish_preflight.py` 保留既有 CLI facade。模組拆分不改變 clean-worktree、fast-forward、備份或停止條件。
@@ -179,6 +177,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Phase B keeps `bin/aips` as a small argument-preserving launcher to `scripts/aips_cli.sh`. The facade resolves its source checkout once, then loads the help, runtime, harness, command, project, shell, installation, maintenance and dispatch modules from `scripts/aips_cli/`; this works through installed symlinks and from any caller working directory. Runtime path and Python resolution remain in the implementation layer.
 
 `scripts/evolution_analysis.py` 保留 Evolution analysis CLI 與相容 facade；deterministic local pre-analysis 實作位於 `scripts/evolution_preanalysis.py`，不改變輸出或 authority boundary。
 

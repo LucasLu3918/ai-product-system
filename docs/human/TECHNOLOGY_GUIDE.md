@@ -113,8 +113,6 @@ Remote Git publication uses the built-in credential-free candidate scanner in st
 
 The first dashboard implementation uses Python stdlib HTTP, static HTML/CSS/Vanilla JavaScript and polling. It has no frontend dependency chain, database, WebSocket or mutation endpoint. API output is a whitelist and excludes prompts, reasoning, raw output, secrets and raw paths.
 
-CLI architecture: `bin/aips` resolves the checkout and forwards all arguments to `scripts/aips_cli.sh`. Publication policy helpers in `scripts/publish_preflight_policy.py` are deterministic and receive the repository root explicitly; `scripts/publish_preflight.py` owns environment probes, Git reads, candidate evaluation, and CLI output. Repository validation imports the registered validator modules through `tests/validation/registry.py` in a declared order.
-
 ## Security & Governance
 
 ### Security Assurance Level
@@ -141,6 +139,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+CLI architecture: `bin/aips` resolves the checkout and forwards all arguments to the thin `scripts/aips_cli.sh` facade. The facade resolves its own checkout and loads implementation modules from `scripts/aips_cli/` before dispatch, preserving installed-symlink and source-checkout behavior independent of the caller working directory. Publication policy helpers in `scripts/publish_preflight_policy.py` are deterministic and receive the repository root explicitly; `scripts/publish_preflight.py` owns environment probes, Git reads, candidate evaluation, and CLI output. Repository validation imports the registered validator modules through `tests/validation/registry.py` in a declared order.
 
 The existing `evolution_analysis.py` CLI is a compatibility facade; deterministic local pre-analysis is implemented in `evolution_preanalysis.py` with the same outputs and authority boundaries.
 

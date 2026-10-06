@@ -1,0 +1,114 @@
+version: 1
+change:
+  id: plan16-03d-evolution-preanalysis
+  summary: Extract deterministic local Evolution pre-analysis behind the existing
+    analysis facade while preserving outputs, CLI behavior, semantic-state boundaries,
+    and Human authority.
+  boundary:
+  - scripts/evolution_analysis.py public import/CLI facade and scripts/evolution_preanalysis.py
+    deterministic implementation
+  - facade object identity, evidence/digest/order/rendering/selection contracts, and
+    ANALYSIS_PENDING semantic state
+  - Evolution Radar and Governance lifecycle consumers, architecture/doc inventories,
+    and exact-candidate Core validation
+candidate:
+  base_sha: 3a8ca6853f7f89c20cd612a26e762fa4a75ce9d9
+  changed_files_hash: adc1def3e79c6032b642c69414773f74fab8b82cfb6ee59caeb9552a1d5a13fa
+matrix:
+- boundary: facade-and-deterministic-output-contract
+  reason: Moved implementation symbols and constants must remain the same objects
+    through the existing facade; serialized pre-analysis, evidence ordering, digest,
+    review ranking, markdown markers, and CLI outcomes must not change.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff critical/debt ratchet and py_compile cover the facade, extracted
+        implementation, tests, and changed Python files.
+    unit:
+      applicable: true
+      evidence: module_extraction_lifecycle asserts facade object identity for every
+        moved symbol; Radar lifecycle checks deterministic queue/output contracts.
+    integration:
+      applicable: true
+      evidence: Evolution Radar and Governance lifecycle evidence exercise existing
+        CLI and semantic consumers through the facade.
+    contract:
+      applicable: true
+      evidence: Existing Radar contracts inspect both facade and implementation for
+        deterministic-only, evidence-bound, no-authority behavior.
+    e2e:
+      applicable: true
+      evidence: Full repository validation, docs build, and exact-candidate Core Gate
+        exercise final candidate.
+    security:
+      applicable: true
+      evidence: Mandatory secret scanning remains in the candidate Gate; extraction
+        introduces no credentials, network, persistence, or write path.
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted data, schema, state transition, or recovery format changes.
+    cli_harness:
+      applicable: true
+      evidence: The existing evolution_analysis.py command and arguments remain unchanged;
+        Radar and governance lifecycle consumers call its public facade.
+    docs_schema:
+      applicable: true
+      evidence: Documentation sync, placement, architecture-surface inventory, generated
+        system facts, and VitePress build pass for the full changed path set.
+- boundary: semantic-state-and-human-authority
+  reason: Local title/metadata pre-analysis stays advisory and deterministic; only
+    semantic analysis can change assessment state, and Human decisions continue to
+    own adoption, publication, and merge.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Static contracts require deterministic metadata-only mode and unchanged
+        authority=false fields.
+    unit:
+      applicable: true
+      evidence: Radar lifecycle checks ANALYSIS_PENDING preservation, authority fields,
+        evidence binding, and deterministic pre-analysis output.
+    integration:
+      applicable: true
+      evidence: Evolution Radar and Governance lifecycle evidence verify the semantic
+        handoff and Human Decision boundaries.
+    contract:
+      applicable: true
+      evidence: Architecture and Evolution docs retain credential-free, external-network-free
+        advisory-only pre-analysis guarantees.
+    e2e:
+      applicable: true
+      evidence: Full repository validation and the exact-candidate Core Gate run all
+        registered affected-boundary scenarios.
+    security:
+      applicable: true
+      evidence: No additional data collection, network access, credentials, persistence,
+        or execution authority is introduced.
+    migration_recovery:
+      applicable: false
+      na_reason: The extraction does not modify persisted records or recovery behavior.
+    cli_harness:
+      applicable: true
+      evidence: Existing CLI dispatch remains through the old facade and retains its
+        previous exit/output behavior.
+    docs_schema:
+      applicable: true
+      evidence: Human and Agent docs describe the module boundary and preserve explicit
+        authority statements.
+scope_recomputed_after_expansion: true
+actual_diff_reconciled: true
+review_evidence:
+  required: false
+  status: SELF_REVIEWED
+  evidence:
+  - matrix-sync recomputed all 30 candidate paths and the exact changed_files_hash
+    against origin/main after documentation-placement expansion.
+  - 'Full local repository validation passed: 12 roles, 27 skills and 219 scenarios;
+    the affected Evolution Radar, Governance, and module-extraction facade identity
+    lifecycles passed.'
+  - Documentation sync and generated system-facts checks pass. Reviewed the moved
+    API identity, deterministic output/evidence contracts, ANALYSIS_PENDING state,
+    Human authority, partial Impact Graph evidence, and the three placement additions;
+    no Runtime Adapter, MCP, scheduler, security, or install behavior changes.
+blockers: []
+status: READY

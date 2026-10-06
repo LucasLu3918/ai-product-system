@@ -1,114 +1,161 @@
 version: 1
 change:
-  id: plan16-03d-evolution-preanalysis
-  summary: Extract deterministic local Evolution pre-analysis behind the existing
-    analysis facade while preserving outputs, CLI behavior, semantic-state boundaries,
-    and Human authority.
+  id: plan16-03e-aips-cli-package
+  summary: Extract the existing AIPS shell CLI implementation into ordered source
+    modules while preserving its public launcher, facade, command behavior and installed/source-checkout
+    compatibility.
   boundary:
-  - scripts/evolution_analysis.py public import/CLI facade and scripts/evolution_preanalysis.py
-    deterministic implementation
-  - facade object identity, evidence/digest/order/rendering/selection contracts, and
-    ANALYSIS_PENDING semantic state
-  - Evolution Radar and Governance lifecycle consumers, architecture/doc inventories,
-    and exact-candidate Core validation
+  - bin/aips and scripts/aips_cli.sh resolved-checkout launcher/facade contract; ordered
+    sourcing of scripts/aips_cli/*.sh before dispatch
+  - command arguments, output, exit status and effects; existing CLI contract, install,
+    update, migration and optional OpenAPI lifecycle consumers
+  - runtime-context architecture inventory, generated System Reference, documentation
+    placement/synchronization and exact-candidate validation
+  - accepted partial shell call graph coverage; no changes to credentials, network
+    authority, persisted data or Human publication/merge authority
 candidate:
-  base_sha: 3a8ca6853f7f89c20cd612a26e762fa4a75ce9d9
-  changed_files_hash: adc1def3e79c6032b642c69414773f74fab8b82cfb6ee59caeb9552a1d5a13fa
+  base_sha: 3f45bf88b6ecf14085ef67586a3bd18c86b9ad42
+  changed_files_hash: 79f101647da5ec1ee12e8ebef1deb180fe54d510f6167523d909e0eac1042ad4
 matrix:
-- boundary: facade-and-deterministic-output-contract
-  reason: Moved implementation symbols and constants must remain the same objects
-    through the existing facade; serialized pre-analysis, evidence ordering, digest,
-    review ranking, markdown markers, and CLI outcomes must not change.
+- boundary: resolved-launcher-and-module-loading
+  reason: The thin public launcher and stable facade must resolve the selected checkout
+    and source all modules before dispatch, independent of caller CWD and symlink
+    entry path.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff critical/debt ratchet and py_compile cover the facade, extracted
-        implementation, tests, and changed Python files.
+      evidence: Bash syntax validation covers bin/aips, the facade and every module;
+        static contracts require bin/aips to remain the thin argument-preserving launcher.
     unit:
       applicable: true
-      evidence: module_extraction_lifecycle asserts facade object identity for every
-        moved symbol; Radar lifecycle checks deterministic queue/output contracts.
+      evidence: CLI module-extraction lifecycle asserts the exact module set and resolved-facade
+        source paths.
     integration:
       applicable: true
-      evidence: Evolution Radar and Governance lifecycle evidence exercise existing
-        CLI and semantic consumers through the facade.
+      evidence: The CLI module-extraction lifecycle runs help through the source launcher,
+        facade and a symlink launcher from an unrelated CWD.
     contract:
       applicable: true
-      evidence: Existing Radar contracts inspect both facade and implementation for
-        deterministic-only, evidence-bound, no-authority behavior.
+      evidence: CLI contracts inspect the facade plus all sorted modules; unknown-command
+        and help output remain stable.
     e2e:
       applicable: true
-      evidence: Full repository validation, docs build, and exact-candidate Core Gate
-        exercise final candidate.
+      evidence: Full repository validation and the exact-candidate Core Gate exercise
+        the candidate checkout.
     security:
       applicable: true
-      evidence: Mandatory secret scanning remains in the candidate Gate; extraction
-        introduces no credentials, network, persistence, or write path.
+      evidence: Mandatory candidate secret scanning covers every new module; source
+        paths are constrained to the resolved AIPS checkout.
     migration_recovery:
       applicable: false
-      na_reason: No persisted data, schema, state transition, or recovery format changes.
+      na_reason: No persisted state, schema, migration or recovery contract changes.
     cli_harness:
       applicable: true
-      evidence: The existing evolution_analysis.py command and arguments remain unchanged;
-        Radar and governance lifecycle consumers call its public facade.
+      evidence: Module lifecycle verifies source and symlink entrypoints from an unrelated
+        working directory.
     docs_schema:
       applicable: true
-      evidence: Documentation sync, placement, architecture-surface inventory, generated
-        system facts, and VitePress build pass for the full changed path set.
-- boundary: semantic-state-and-human-authority
-  reason: Local title/metadata pre-analysis stays advisory and deterministic; only
-    semantic analysis can change assessment state, and Human decisions continue to
-    own adoption, publication, and merge.
+      evidence: Architecture inventory and documentation placement/sync checks cover
+        the facade and all modules.
+- boundary: command-and-installed-consumer-compatibility
+  reason: Existing functions move without redesign; CLI behavior and installation/update
+    consumers must continue to use the same entrypoint and module set.
   checks:
     static_lint:
       applicable: true
-      evidence: Static contracts require deterministic metadata-only mode and unchanged
-        authority=false fields.
+      evidence: Ruff/type/shell syntax and CLI contract validators inspect the extracted
+        implementation through a shared loader.
     unit:
       applicable: true
-      evidence: Radar lifecycle checks ANALYSIS_PENDING preservation, authority fields,
-        evidence binding, and deterministic pre-analysis output.
+      evidence: Existing command contract checks plus focused module extraction lifecycle
+        pass.
     integration:
       applicable: true
-      evidence: Evolution Radar and Governance lifecycle evidence verify the semantic
-        handoff and Human Decision boundaries.
+      evidence: Install/preflight, legacy harness migration, OpenAPI CLI install,
+        dependency-lock and publish-preflight lifecycle evidence run with copied or
+        updated module packages.
     contract:
       applicable: true
-      evidence: Architecture and Evolution docs retain credential-free, external-network-free
-        advisory-only pre-analysis guarantees.
+      evidence: MCP, publication-preflight, Eval, telemetry, scheduler and static
+        CLI contracts inspect the complete module package.
     e2e:
       applicable: true
-      evidence: Full repository validation and the exact-candidate Core Gate run all
-        registered affected-boundary scenarios.
+      evidence: Full repository validation runs the registered lifecycle evidence
+        and all affected validators.
     security:
       applicable: true
-      evidence: No additional data collection, network access, credentials, persistence,
-        or execution authority is introduced.
+      evidence: No command authority, credential source, network policy or filesystem
+        scope changes.
     migration_recovery:
       applicable: false
-      na_reason: The extraction does not modify persisted records or recovery behavior.
+      na_reason: No persisted records or installation-state schema change; install/update
+        behavior is verified as compatibility evidence.
     cli_harness:
       applicable: true
-      evidence: Existing CLI dispatch remains through the old facade and retains its
-        previous exit/output behavior.
+      evidence: Installed/source CLI lifecycle evidence verifies help, symlink resolution
+        and command dispatch behavior.
     docs_schema:
       applicable: true
-      evidence: Human and Agent docs describe the module boundary and preserve explicit
-        authority statements.
+      evidence: Human and Agent docs retain entrypoint and installation compatibility
+        contracts.
+- boundary: architecture-documentation-and-governance
+  reason: The new internal module boundary must be represented in architecture inventories
+    and documentation while preserving the accepted partial shell graph limitation
+    and human authority.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: System-facts, documentation placement/sync, and architecture surface
+        validators verify the registered module paths and lifecycle binding.
+    unit:
+      applicable: true
+      evidence: Focused module extraction lifecycle and static architecture contracts
+        pass.
+    integration:
+      applicable: true
+      evidence: System Reference generation/check and documentation preflight run
+        on the full working-tree closure.
+    contract:
+      applicable: true
+      evidence: Impact review keeps shell call relationships partial and verifies
+        direct dispatch/source consumers manually.
+    e2e:
+      applicable: true
+      evidence: VitePress documentation build, full repository validation and exact-candidate
+        Core Gate verify the final candidate.
+    security:
+      applicable: true
+      evidence: No authority, secrets, persisted data or external network behavior
+        is added.
+    migration_recovery:
+      applicable: false
+      na_reason: Documentation and internal shell module layout introduce no persisted-data
+        migration.
+    cli_harness:
+      applicable: true
+      evidence: Architecture surface ties the public CLI and module package to focused
+        lifecycle evidence.
+    docs_schema:
+      applicable: true
+      evidence: Required canonical Human and Agent docs, generated facts and placement
+        closure are validated.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
   status: SELF_REVIEWED
   evidence:
-  - matrix-sync recomputed all 30 candidate paths and the exact changed_files_hash
-    against origin/main after documentation-placement expansion.
-  - 'Full local repository validation passed: 12 roles, 27 skills and 219 scenarios;
-    the affected Evolution Radar, Governance, and module-extraction facade identity
-    lifecycles passed.'
-  - Documentation sync and generated system-facts checks pass. Reviewed the moved
-    API identity, deterministic output/evidence contracts, ANALYSIS_PENDING state,
-    Human authority, partial Impact Graph evidence, and the three placement additions;
-    no Runtime Adapter, MCP, scheduler, security, or install behavior changes.
+  - Exact base and 59-path changed-file hash were refreshed by aips publish matrix-sync
+    after the candidate commit.
+  - 'Full tests/validate_repository.py passed: 12 roles, 27 skills, 219 scenarios.'
+  - Focused source, facade and installed-symlink CLI lifecycle; install/preflight,
+    legacy harness migration, OpenAPI install, runtime dependency lock, and affected
+    CLI contract validators passed.
+  - Documentation placement and System Facts passed; publication preview reported
+    no missing documentation; VitePress build passed.
+  - Quality ratchet passed with 824 Ruff findings against the 872 baseline and zero
+    touched-code mypy delta; strict secret scan passed.
+  - The nine extracted modules concatenate with the retained 54-line facade prologue
+    to reproduce the original 1,913-line CLI source byte-for-byte.
 blockers: []
 status: READY

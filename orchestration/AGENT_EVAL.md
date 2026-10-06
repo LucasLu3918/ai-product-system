@@ -127,6 +127,8 @@ Scenario 192 (complete Planning Package to implementation readiness) remains `ma
 
 ## Commands
 
+The `aips eval` public commands are dispatched through the stable `bin/aips` and `scripts/aips_cli.sh` entrypoints; internal shell modules remain an implementation detail and do not change the Eval evidence contracts.
+
 ~~~bash
 aips conformance agent-eval check
 aips conformance agent-eval report

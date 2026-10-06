@@ -70,6 +70,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 ## Agent / machine canonical 文件
 
 
+The generated System Reference records the runtime architecture inventory, including the public `bin/aips` launcher, its `scripts/aips_cli.sh` facade and the source modules under `scripts/aips_cli/`. Keep this inventory aligned with the implementation and its lifecycle validation.
+
 REST/OpenAPI implementation evidence is specified by `orchestration/IMPLEMENTATION_RESOLUTION.md`, `scripts/openapi_contracts.py` and `templates/implementation/OPENAPI_EVIDENCE_REPORT.schema.json`; Human workflow guidance lives in `docs/human/USER_GUIDE.md` and Scenario 194.
 
 Phase 3 deterministic enforcement is specified by the same Implementation Resolution and Integration Gate protocols, `scripts/implementation_enforcement.py` and `templates/implementation/IMPLEMENTATION_ENFORCEMENT_REPORT.schema.json`; Human workflow, security and conformance guidance lives in the User Guide, Security Assurance and Scenario 195.

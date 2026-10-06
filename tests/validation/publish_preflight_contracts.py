@@ -3,6 +3,7 @@ from __future__ import annotations
 import subprocess
 import sys
 
+from .cli_source import cli_implementation
 from .static_contracts import ROOT, errors
 
 required = (
@@ -16,7 +17,7 @@ for rel in required:
     if not (ROOT / rel).is_file():
         errors.append(f"Publication preflight artifact missing: {rel}")
 
-cli = (ROOT / "bin/aips").read_text(encoding="utf-8") + "\n" + (ROOT / "scripts/aips_cli.sh").read_text(encoding="utf-8")
+cli = (ROOT / "bin/aips").read_text(encoding="utf-8") + "\n" + cli_implementation(ROOT)
 workflow = (ROOT / ".github/workflows/validate.yml").read_text(encoding="utf-8")
 intelligence = (ROOT / "scripts/project_intelligence.py").read_text(encoding="utf-8")
 for phrase in ("publish preview|plan|preflight|matrix-sync|post-merge", "publish_preflight_cmd", "aips docs impact", "--project-root", "Integration Gate project root"):

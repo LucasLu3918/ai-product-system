@@ -75,6 +75,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 
 ## Runtime integration
 
+The public `bin/aips` entrypoint remains a thin launcher. Its resolved checkout contains `scripts/aips_cli.sh` and the `scripts/aips_cli/` implementation modules; installed symlinks resolve those modules relative to the installed AIPS checkout, regardless of the caller working directory.
+
 Publication post-merge reconciliation 拆至 `scripts/publish_post_merge.py`，由既有 CLI facade 呼叫；使用相同 Python/Git runtime，不增加安裝步驟或相依套件。
 
 Retrieval relation extraction uses the existing Python runtime and standard library; splitting its internal implementation adds no installation step or dependency.

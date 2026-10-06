@@ -195,6 +195,8 @@ Review actual:
 
 ## Release Security Gate
 
+The publication CLI facade loads its implementation modules from the same resolved AIPS checkout before dispatch. Candidate secret scanning and the Integration Gate continue to inspect the complete candidate; module loading does not add publication authority or alter credential handling.
+
 Post-merge reconciliation retains its clean-worktree, remote ancestry and fast-forward checks in `scripts/publish_post_merge.py`. The compatible CLI facade grants no merge, reset or release authority.
 
 Remote Git candidates receive a credential-free strict scan over the exact final tree and complete candidate history. Release readiness checks are read-only; signed tag trust and the first release decision remain separate Human-controlled steps.

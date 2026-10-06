@@ -71,6 +71,8 @@ A Large/Core Change is not complete when:
 
 ## Evidence
 
+For shell CLI module extraction, preserve the public launcher and facade, verify ordered module loading from the resolved checkout, and run the lifecycle from source and installed-symlink entrypoints with a caller working directory outside the repository.
+
 When post-merge reconciliation is extracted, include both the publication lifecycle and module-facade lifecycle evidence in the same exact-candidate matrix.
 
 The completed matrix binds the candidate base and canonical changed-file hash. Evidence must name the local test or lifecycle that ran; unexecuted architecture or migration checks need an explicit, reasoned not-applicable disposition.

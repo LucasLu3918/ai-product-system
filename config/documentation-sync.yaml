@@ -61,6 +61,8 @@ rules:
       - templates/runtime/RUNTIME_CONTEXT.yaml
       - tests/scenarios/198-runtime-context-invariant-matrix.md
       - config/integration-gate.yaml
+      - scripts/aips_cli.sh
+      - scripts/aips_cli/**
     human_docs:
       - docs/human/ARCHITECTURE_OVERVIEW.md
       - docs/human/TECHNOLOGY_GUIDE.md

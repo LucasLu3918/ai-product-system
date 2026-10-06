@@ -1,6 +1,7 @@
 import subprocess
 import sys
 
+from .cli_source import cli_implementation
 from .static_contracts import ROOT, errors
 
 required = [
@@ -54,7 +55,7 @@ requirements = (ROOT / "requirements.txt").read_text(encoding="utf-8")
 if "mcp>=2.0.0,<3" not in requirements:
     errors.append("requirements.txt must pin MCP Python SDK to stable v2 major")
 
-cli = (ROOT / "bin/aips").read_text(encoding="utf-8") + "\n" + (ROOT / "scripts/aips_cli.sh").read_text(encoding="utf-8")
+cli = (ROOT / "bin/aips").read_text(encoding="utf-8") + "\n" + cli_implementation(ROOT)
 for marker in (
     "aips mcp serve",
     "aips mcp inspect",

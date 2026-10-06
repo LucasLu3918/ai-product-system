@@ -1,10 +1,11 @@
-from pathlib import Path
 import json
 import os
 import re
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
+
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -611,7 +612,9 @@ if "<svg" not in lifecycle_svg or "Installation, Harness &amp; Intelligence Life
 if "EPHEMERAL" not in lifecycle_svg or "ATTACHED" not in lifecycle_svg or "managed adapters" not in lifecycle_svg:
     errors.append("System lifecycle SVG must reflect Harness adapters and EPHEMERAL/ATTACHED Intelligence modes")
 
-cli_text = (ROOT / "bin/aips").read_text(encoding="utf-8") + "\n" + (ROOT / "scripts/aips_cli.sh").read_text(encoding="utf-8") if (ROOT / "bin/aips").exists() and (ROOT / "scripts/aips_cli.sh").exists() else ""
+from .cli_source import cli_implementation
+
+cli_text = (ROOT / "bin/aips").read_text(encoding="utf-8") + "\n" + cli_implementation(ROOT) if (ROOT / "bin/aips").exists() and (ROOT / "scripts/aips_cli.sh").exists() else ""
 launcher_lines = (ROOT / "bin/aips").read_text(encoding="utf-8").splitlines() if (ROOT / "bin/aips").exists() else []
 if len(launcher_lines) > 24 or 'exec "$BASH" "$SYSTEM_DIR/scripts/aips_cli.sh" "$@"' not in "\n".join(launcher_lines):
     errors.append("bin/aips must stay a thin argument-preserving dispatcher to scripts/aips_cli.sh")
