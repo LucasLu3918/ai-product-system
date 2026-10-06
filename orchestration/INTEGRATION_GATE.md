@@ -109,7 +109,7 @@ AIPS keeps the existing protected-main required context `repository`.
 
 The validation workflow runs the `janitor` job first. The required `repository` job is a compatibility aggregate that can succeed only when Janitor succeeds. Therefore existing branch protection continues to block a failing candidate without requiring a branch-protection migration.
 
-An advisory preflight can run concurrently but must not be a prerequisite of the required `repository` aggregate. Its conclusion cannot satisfy the Janitor Integration Gate or full repository validation.
+An advisory preflight can run concurrently but must not be a prerequisite of the required `repository` aggregate. Its conclusion cannot satisfy the Janitor Integration Gate or full repository validation. The separate read-only validation-observation collector installs its pinned PyYAML dependency before collecting evidence; collector artifacts remain advisory and cannot replace the required Gate.
 
 When concurrency cancels a superseded workflow, the aggregate does not run. An active workflow still runs the aggregate after Janitor failure, so a genuine failed candidate remains red. Review the latest run for the candidate SHA when older runs were canceled.
 

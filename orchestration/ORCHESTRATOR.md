@@ -133,6 +133,8 @@ Resolve the managed AIPS interpreter through `orchestration/RUNTIME_CONTEXT.md`:
 
 For publication-bound Core/Large work, load the final candidate Change Impact and Core Matrix evidence after implementation, recheck documentation closure and candidate identity, then run the exact-candidate Integration Gate before presenting the Git Publish Proposal. Candidate evidence does not authorize merge, tag creation or repository policy writes.
 
+The read-only Validation Observation Collector installs its pinned PyYAML dependency before collection. Missing or incomplete collector evidence remains `NOT_READY`; it never changes required validation or enables selective execution.
+
 Turn Context classifies write intent with explicit intent overrides and respects the target file's scoped runtime instructions. The compact YAML view is the default; callers that need the complete manifest can request `--full` or JSON.
 
 An active role may request missing context rather than preloading everything.
