@@ -8,7 +8,7 @@ change:
   - No files are moved or archived; future layering decisions remain Human-owned and wait for measurement review.
 candidate:
   base_sha: 5eda403d85250bc2215163858091d1384f3ed562
-  changed_files_hash: a9667bd4924bf4c9f15bc5792d5dc728bc53d14411fdd0e4d003443877a60c5d
+  changed_files_hash: pending
 matrix:
 - boundary: tracked-file-size-measurement
   reason: Measurements must be reproducible, scoped to tracked repository text/evidence files, and expose exact bytes and the configured threshold.
@@ -79,5 +79,4 @@ review_evidence:
   - User explicitly approved implementation of all Plan16 items, local verification, remote PR publication and merge in this task.
 blockers:
 - Candidate changed-file list and hash must be reconciled after the complete diff is committed.
-- candidate binding refreshed; review scope and evidence before marking READY
 status: DRAFT

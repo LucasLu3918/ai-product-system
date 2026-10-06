@@ -829,6 +829,10 @@ The pull-request workflow runs the bounded repository preflight in a separate jo
 
 `scripts/dependency_impact.py` classifies dependency updates from `config/dependency-policy.yaml` and recommends evidence by class. Unknown packages are `UNCLASSIFIED` / `HIGH`; semantic runtime changes require retrieval regression and semantic trial evidence. The CLI is advisory, requires a human decision, and never authorizes automatic merges or policy edits.
 
+## Scenario 222 — Large Document Measurement Only
+
+The size audit measures tracked text/evidence files against 50,000 bytes and reports oversized items as non-blocking `WARN`. It never blocks a Gate and does not archive or move files.
+
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
 The public AIPS shell CLI keeps `bin/aips` as its thin launcher and `scripts/aips_cli.sh` as the checkout-resolving facade; implementation modules are loaded relative to that resolved checkout. `tests/evidence/aips_cli_module_extraction_lifecycle.py` covers source and symlink entrypoints from an unrelated working directory.

@@ -97,10 +97,10 @@ placement_rules:
       docs/human/MAINTENANCE.md: [Monthly maintenance reliability, Validation architecture consistency, Versioning, Controlled branch cleanup, Public repository / CI consistency]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Documentation Architecture, Planning 與 Product Delivery, Maintenance governance]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Evolution & Maintenance, Quality & Verification]
-      docs/human/CONFORMANCE.md: [Scenario 201 — Monthly maintenance reliability evidence, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification]
+      docs/human/CONFORMANCE.md: [Scenario 201 — Monthly maintenance reliability evidence, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification, Scenario 222 — Large Document Measurement Only]
       docs/human/DOCUMENTATION_MAP.md: [文件角色, Agent / machine canonical 文件, 文件一致性]
       docs/human/DOCUMENTATION_SYNC.md: [Deterministic protection]
-      orchestration/CONFORMANCE.md: [Scenario 201 — Monthly maintenance reliability evidence, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 210 — Python runtime support policy, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification]
+      orchestration/CONFORMANCE.md: [Scenario 201 — Monthly maintenance reliability evidence, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 210 — Python runtime support policy, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification, Scenario 222 — Large Document Measurement Only]
       orchestration/DOCUMENTATION_SYNC.md: [Maintenance reliability mapping, Scenario 220 — Parallel advisory fast feedback, Evolution Effectiveness mapping]
   - id: runtime-context
     triggers:
@@ -369,7 +369,7 @@ placement_rules:
     placements:
       docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 165 — CI-Parity Publication Preflight, Scenario 218 — Evolution Human Relevance Evaluation, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification]
       docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 165 — CI-Parity Publication Preflight, Scenario 218 — Evolution Human Relevance Evaluation, Scenario 220 — Parallel advisory fast feedback]
-      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Scenario 201 — Monthly maintenance reliability evidence, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 165 — CI-Parity Publication Preflight, Scenario 218 — Evolution Human Relevance Evaluation, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Scenario 201 — Monthly maintenance reliability evidence, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 165 — CI-Parity Publication Preflight, Scenario 218 — Evolution Human Relevance Evaluation, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification, Scenario 222 — Large Document Measurement Only]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification, Evolution & Maintenance, Security & Governance]
 
   - id: eval-interoperability
@@ -524,8 +524,8 @@ placement_rules:
       docs/human/MAINTENANCE.md: [Versioning, Public repository / CI consistency, Validation architecture consistency]
       docs/human/SECURITY_ASSURANCE.md: [Release Security Gate]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification, Evolution & Maintenance]
-      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification]
-      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification]
+      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification, Scenario 222 — Large Document Measurement Only]
+      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification, Scenario 222 — Large Document Measurement Only]
 
   - id: p15-validation-taxonomy
     triggers:
@@ -541,8 +541,8 @@ placement_rules:
     placements:
       docs/human/MAINTENANCE.md: [Validation architecture consistency]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
-      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification]
-      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification]
+      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification, Scenario 222 — Large Document Measurement Only]
+      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification, Scenario 222 — Large Document Measurement Only]
 
   - id: p15-release-readiness
     triggers:
@@ -609,4 +609,22 @@ placement_rules:
       docs/human/DOCUMENTATION_SYNC.md: [Deterministic protection]
       docs/human/CONFORMANCE.md: [Scenario 221 — Dependency Update Risk Classification]
       orchestration/CONFORMANCE.md: [Scenario 221 — Dependency Update Risk Classification]
+      orchestration/DOCUMENTATION_SYNC.md: [Evolution Effectiveness mapping]
+
+  - id: p16-document-size-measurement
+    triggers:
+      - config/document-size-policy.yaml
+      - scripts/document_size_audit.py
+      - tests/evidence/document_size_audit_lifecycle.py
+      - tests/validation/document_size_audit_contracts.py
+      - tests/scenarios/222-large-document-measurement-only.md
+      - reports/document-size-baseline.yaml
+    placements:
+      docs/human/MAINTENANCE.md: [Validation architecture consistency]
+      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Documentation Architecture]
+      docs/human/DOCUMENTATION_MAP.md: [文件一致性]
+      docs/human/DOCUMENTATION_SYNC.md: [Deterministic protection]
+      docs/human/CONFORMANCE.md: [Scenario 222 — Large Document Measurement Only]
+      orchestration/CONFORMANCE.md: [Scenario 222 — Large Document Measurement Only]
       orchestration/DOCUMENTATION_SYNC.md: [Evolution Effectiveness mapping]

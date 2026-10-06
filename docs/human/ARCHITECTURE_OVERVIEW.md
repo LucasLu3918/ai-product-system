@@ -201,6 +201,8 @@ Evolution data completeness、validator shadow/replay、branch cleanup proposal�
 
 The canonical documentation placement registry maps Evolution Radar Human-label evaluation to its Human guides and Scenario 218 so future metric or authority changes remain synchronized.
 
+The document-size audit provides report-only measurements for historical documentation and evidence so a Human can consider layering after reviewing the baseline.
+
 Dependency risk policy and its advisory classifier are mapped to maintenance, verification and Scenario 221 documentation by the canonical placement registry.
 
 Retrieval Intelligence 保留 `scripts/retrieval_intelligence.py` 作為相容 facade；comment/string masking 與 bounded lexical relation row 建構位於 `scripts/retrieval_relations.py`。Relations 仍是可重建索引中的候選，不代表編譯器解析或完整呼叫圖。
