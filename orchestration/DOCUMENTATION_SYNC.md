@@ -189,6 +189,8 @@ External Eval / Red-Team Interoperability 的 Human placement 對應 Architectur
 
 Current-behavior Human docs are topic-oriented, not release-note streams. `config/documentation-placement.yaml` maps behavior surfaces to allowed Human H2 sections. `scripts/documentation_placement.py` checks heading integrity and, when a diff base is available, verifies changed lines land inside allowed canonical sections.
 
+The required-files parity pilot maps `config/repository-contract.yaml` and its parser/lifecycle sources to Maintenance and Technology Guide. Updates to this placement registry also follow the documentation-platform closure, including this Agent protocol.
+
 Every behavior-bearing source that falls on the broad Technology Guide sync surface MUST also match a semantic placement rule. Unmapped new sources fail closed until maintainers assign the change to an existing canonical topic or deliberately add a new topic to the placement contract. This prevents future features from bypassing information architecture by merely appending prose at the end.
 
 When a Scenario changes Runtime or MCP behavior, `orchestration/CONFORMANCE.md` is owned by the harness placement rule. A placement-contract update that assigns this ownership must synchronize the existing Runtime sections in Architecture Overview and Technology Guide plus the Human Documentation Sync and Map; it does not create a new product topic.

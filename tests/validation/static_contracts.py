@@ -1,5 +1,4 @@
 import json
-import os
 import re
 import subprocess
 import sys
@@ -7,6 +6,12 @@ import tempfile
 from pathlib import Path
 
 import yaml
+
+from .repository_contract_policy import (
+    RepositoryContractPolicyError,
+    missing_required_file_findings,
+)
+from .repository_contract_policy import load_policy as load_repository_contract_policy
 
 ROOT = Path(__file__).resolve().parents[2]
 errors = []
@@ -30,7 +35,7 @@ def load_yaml(path: Path):
             construct_mapping,
         )
         return yaml.load(path.read_text(encoding="utf-8"), Loader=UniqueKeyLoader)
-    except Exception as exc:
+    except (OSError, TypeError, ValueError, yaml.YAMLError) as exc:
         errors.append(f"YAML parse failed: {path.relative_to(ROOT)}: {exc}")
         return None
 
@@ -122,9 +127,12 @@ for skill_id, meta in (skills.get("skills") or {}).items():
     for key in ("reasoning", "coding", "reliability", "minimum_tier", "preferred_tier"):
         if key not in mr:
             errors.append(f"Skill {skill_id} missing model_requirements.{key}")
-    if isinstance(mr.get("minimum_tier"), int) and isinstance(mr.get("preferred_tier"), int):
-        if mr["minimum_tier"] > mr["preferred_tier"]:
-            errors.append(f"Skill {skill_id}: minimum_tier exceeds preferred_tier")
+    if (
+        isinstance(mr.get("minimum_tier"), int)
+        and isinstance(mr.get("preferred_tier"), int)
+        and mr["minimum_tier"] > mr["preferred_tier"]
+    ):
+        errors.append(f"Skill {skill_id}: minimum_tier exceeds preferred_tier")
 
 required_files = [
     "AGENTS.md", "SYSTEM.md", "README.md", "USER_GUIDE.md", "CHANGELOG.md", "VERSION",
@@ -216,6 +224,48 @@ planning_templates = [
     "templates/planning-package/DECISIONS_ASSUMPTIONS.md",
     "templates/planning-package/REQUIREMENTS.yaml",
 ]
+
+repository_contract_path = ROOT / "config/repository-contract.yaml"
+repository_contract_policy = None
+if not repository_contract_path.is_file():
+    errors.append("Missing repository contract parity policy: config/repository-contract.yaml")
+else:
+    try:
+        repository_contract_policy = load_repository_contract_policy(repository_contract_path)
+        if set(repository_contract_policy) != set(required_files):
+            errors.append("Repository contract parity policy required_files differ from legacy required_files")
+        legacy_findings = missing_required_file_findings(required_files, ROOT)
+        policy_findings = missing_required_file_findings(repository_contract_policy, ROOT)
+        if policy_findings != legacy_findings:
+            errors.append("Repository contract parity policy changes legacy missing-file findings")
+    except RepositoryContractPolicyError as exc:
+        errors.append(f"Repository contract parity policy invalid: {exc}")
+
+for contract_artifact in (
+    "tests/validation/repository_contract_policy.py",
+    "tests/evidence/repository_contract_parity_lifecycle.py",
+):
+    if not (ROOT / contract_artifact).is_file():
+        errors.append(f"Missing repository contract parity artifact: {contract_artifact}")
+if repository_contract_policy is not None:
+    lifecycle_path = ROOT / "tests/evidence/repository_contract_parity_lifecycle.py"
+    try:
+        lifecycle = subprocess.run(
+            [sys.executable, str(lifecycle_path)],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=30,
+        )
+        if lifecycle.returncode:
+            errors.append(
+                "Repository contract parity lifecycle failed: "
+                + (lifecycle.stderr.strip() or lifecycle.stdout.strip())
+            )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        errors.append(f"Repository contract parity lifecycle could not run: {exc}")
+
 for rel in required_files + planning_templates + security_templates:
     if not (ROOT / rel).exists():
         errors.append(f"Missing required file: {rel}")
@@ -567,6 +617,7 @@ if release_checker.exists():
     ready = subprocess.run(
         [sys.executable, str(release_checker), str(ROOT / "tests/fixtures/release-readiness-ready.yaml")],
         capture_output=True, text=True,
+        check=False,
     )
     if ready.returncode != 0:
         errors.append(f"Release readiness checker rejected READY fixture: {ready.stdout.strip()} {ready.stderr.strip()}")
@@ -574,6 +625,7 @@ if release_checker.exists():
     blocked = subprocess.run(
         [sys.executable, str(release_checker), str(ROOT / "tests/fixtures/release-readiness-blocked.yaml")],
         capture_output=True, text=True,
+        check=False,
     )
     if blocked.returncode == 0:
         errors.append("Release readiness checker accepted BLOCKED fixture")
@@ -581,6 +633,7 @@ if release_checker.exists():
     sal3_risk = subprocess.run(
         [sys.executable, str(release_checker), str(ROOT / "tests/fixtures/release-readiness-sal3-risk.yaml")],
         capture_output=True, text=True,
+        check=False,
     )
     if sal3_risk.returncode != 0:
         errors.append(f"Release readiness checker over-blocked SAL 3 PASS WITH RISK fixture: {sal3_risk.stdout.strip()} {sal3_risk.stderr.strip()}")
@@ -628,25 +681,25 @@ with tempfile.TemporaryDirectory() as tmp:
     project.mkdir()
     cli = ROOT / "bin/aips"
 
-    attach = subprocess.run(["bash", str(cli), "attach", str(project)], capture_output=True, text=True)
+    attach = subprocess.run(["bash", str(cli), "attach", str(project)], capture_output=True, text=True, check=False)
     if attach.returncode != 0 or not (project / ".ai").is_dir():
         errors.append(f"aips attach lifecycle test failed: {attach.stdout.strip()} {attach.stderr.strip()}")
     else:
-        status = subprocess.run(["bash", str(cli), "status", str(project)], capture_output=True, text=True)
+        status = subprocess.run(["bash", str(cli), "status", str(project)], capture_output=True, text=True, check=False)
         if status.returncode != 0 or "Project attached: yes" not in status.stdout:
             errors.append(f"aips status attached test failed: {status.stdout.strip()} {status.stderr.strip()}")
 
-        detach = subprocess.run(["bash", str(cli), "detach", str(project)], capture_output=True, text=True)
+        detach = subprocess.run(["bash", str(cli), "detach", str(project)], capture_output=True, text=True, check=False)
         archives = sorted(project.glob(".ai.detached-*"))
         if detach.returncode != 0 or (project / ".ai").exists() or len(archives) != 1:
             errors.append(f"aips detach lifecycle test failed: {detach.stdout.strip()} {detach.stderr.strip()}")
         else:
-            blocked_attach = subprocess.run(["bash", str(cli), "attach", str(project)], capture_output=True, text=True)
+            blocked_attach = subprocess.run(["bash", str(cli), "attach", str(project)], capture_output=True, text=True, check=False)
             if blocked_attach.returncode == 0:
                 errors.append("aips attach should stop when detached workspace exists")
 
             archives[0].rename(project / ".ai")
-            reattach = subprocess.run(["bash", str(cli), "attach", str(project)], capture_output=True, text=True)
+            reattach = subprocess.run(["bash", str(cli), "attach", str(project)], capture_output=True, text=True, check=False)
             if reattach.returncode != 0 or not (project / ".ai").is_dir():
                 errors.append(f"aips reattach lifecycle test failed: {reattach.stdout.strip()} {reattach.stderr.strip()}")
 
@@ -735,6 +788,8 @@ for rel, keys in {
 for helper in ("scripts/harness_resolve.py", "scripts/project_intelligence.py", "scripts/project_intelligence_temporal.py", "scripts/retrieval_intelligence.py", "scripts/retrieval_relations.py", "scripts/publish_preflight.py", "scripts/publish_post_merge.py", "scripts/retrieval_evaluation.py", "scripts/structural_retrieval_trial.py", "scripts/retrieval_embedding_trial.py", "scripts/retrieval_embedding_trial_summary.py", "scripts/turn_context_hook.py", "scripts/manage_runtime_adapter.py", "scripts/requirements_traceability.py", "scripts/planning_package_validate.py", "scripts/evolution_preanalysis.py"):
     helper_path = ROOT / helper
     if helper_path.exists():
-        compiled = subprocess.run([sys.executable, "-m", "py_compile", str(helper_path)], capture_output=True, text=True)
+        compiled = subprocess.run(
+            [sys.executable, "-m", "py_compile", str(helper_path)], capture_output=True, text=True, check=False
+        )
         if compiled.returncode != 0:
             errors.append(f"{helper} syntax failed: {compiled.stderr.strip()}")

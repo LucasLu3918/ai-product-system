@@ -1,73 +1,76 @@
 version: 1
 change:
-  id: plan17-t05-python-bootstrap
-  summary: Replace the shared Python bootstrap hard-coded PyYAML import probe with
-    caller-declared module verification and pip dependency consistency checks; preserve
-    pinned Python, requirements profiles and tested constraints. Update the 22 canonical
-    documentation consumers required by the current placement policy.
+  id: plan17-t07-required-files-parity
+  summary: Add a strict, versioned parallel mirror of the existing 148-entry required_files
+    policy and verify exact path-set and missing-file parity while static_contracts.py
+    remains authoritative.
   boundary:
-  - Shared bootstrap composite action and its three existing read-only workflow callers;
-    module/dependency verification lifecycle; exact Core Matrix binding, CHANGELOG
-    entry, placement-contract registration, and all current-policy-required Human/Orchestration documentation.
+  - config/repository-contract.yaml and strict parser; static_contracts.py legacy-authority
+    parity checks; isolated malformed/missing/mismatch/path-safety lifecycle fixtures;
+    required Human documentation and placement registration.
+  - No yaml_files, security_templates or planning_templates migration; no authority
+    cutover or behavior change to repository pass/fail decisions.
 candidate:
-  base_sha: fe8a2e48c19cfc50c04f0275f01a520a6389e14e
-  changed_files_hash: ecba0b12e6d37b650b2dbe088f906379379543df1676d32f7727fc33ace8e6db
+  base_sha: 3aa5482eea434b73e5796ccd5466545010be9b62
+  changed_files_hash: b55a0d1940192f61a5701047934934ba3f4f3c186e4174f0f53731a4e91b04a5
 matrix:
-- boundary: declared-python-bootstrap-profile-verification
-  reason: The shared CI bootstrap must verify each caller-declared import profile
-    and dependency consistency without owning package versions or executing untrusted
-    shell input.
+- boundary: required-files-policy-parity-pilot
+  reason: The legacy required_files list controls repository validation; the parallel
+    versioned policy must reject ambiguity and preserve exact current path and missing-file
+    semantics without taking over authority.
   checks:
     static_lint:
       applicable: true
-      evidence: YAML contracts check the required verification-modules input, all
-        three callers, pinned setup-python and unchanged requirements/constraints
-        composition.
+      evidence: Ruff 0.16.8 checks the new policy parser and lifecycle fixture; the
+        complete repository quality ratchet runs in the exact-candidate Integration
+        Gate.
     unit:
       applicable: true
-      evidence: python_bootstrap_action_lifecycle.py covers valid imports, missing
-        modules and rejection of shell-like input.
+      evidence: tests/evidence/repository_contract_parity_lifecycle.py exercises valid,
+        malformed, missing, duplicate, unsafe and mismatched policy fixtures.
     integration:
       applicable: true
-      evidence: Full repository validation executes the bootstrap lifecycle; exact
-        PR Gate validates all touched files and the required repository aggregate.
+      evidence: Python 3.12 tests/validate_repository.py passed; static_contracts
+        runs the lifecycle once and compares required path sets and missing-file findings.
     contract:
       applicable: true
-      evidence: Bootstrap contracts require every caller to declare modules and pip
-        check, and reject a hard-coded PyYAML import.
+      evidence: config/repository-contract.yaml is checked against all 148 legacy
+        required_files entries; legacy remains the only authority.
     e2e:
-      applicable: true
-      evidence: PR validation exercises the exact candidate; existing lifecycle covers
-        the three calling workflows and their read-only permissions.
+      applicable: false
+      na_reason: This pilot adds repository validation policy only and changes no
+        end-user product or runtime command behavior.
     security:
       applicable: true
-      evidence: Module names are validated as dotted Python identifiers before import;
-        no shell evaluation, new package manager, permissions or unpinned dependencies
-        are introduced.
+      evidence: Parser rejects duplicate YAML keys, unknown schema keys, traversal,
+        absolute, Windows, glob and symlink-escape paths; secret scan is part of exact-candidate
+        Gate.
     migration_recovery:
-      applicable: true
-      evidence: All three callers migrate atomically with the required input in one
-        revertible PR; missing input fails action validation.
+      applicable: false
+      na_reason: No canonical migration or authority cutover is in scope; the mirror
+        is reversible and legacy validation remains active.
     cli_harness:
       applicable: false
-      na_reason: No AIPS CLI or Harness command surface changes.
+      na_reason: No CLI or runtime Harness surface changes.
     docs_schema:
       applicable: true
-      evidence: CHANGELOG Unreleased records the declared import and pip consistency
-        behavior.
+      evidence: Version-1 YAML schema is validated; placement preview passed and Maintenance,
+        Technology Guide, Architecture Overview, Documentation Map and Documentation
+        Sync were updated.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
   status: SELF_REVIEWED
   evidence:
-  - Reviewed the exact 31-path candidate including the placement contract update, all three workflow callers, the caller-declared
-    import contract, and the bounded graph limitation; dependency authority and workflow
-    permissions are unchanged.
-  - Focused bootstrap lifecycle, static contracts, Ruff, py_compile, docs-placement
-    preview, and full repository validation passed. Exact-candidate AIPS Integration
-    Gate runs before PR publication.
-  - The user explicitly authorized implementation of all plan17 recommendations, local
-    verification, and normal remote PR merge to main.
+  - 'Reviewed exact T07-only diff: 13 files, 477 insertions and 55 deletions; all
+    148 legacy required_files entries match the versioned mirror. No other legacy
+    lists or authority transitions changed.'
+  - Focused parity lifecycle, static contracts, Ruff on new modules, documentation
+    placement preview, diff check and full Python 3.12 repository validation passed
+    for the implementation; the final exact-candidate Integration Gate and remote
+    CI remain required.
+  - The candidate adds orchestration/DOCUMENTATION_SYNC.md to satisfy recursive documentation-platform
+    closure; every changed Human/Agent line is in the required canonical section.
 blockers: []
 status: READY

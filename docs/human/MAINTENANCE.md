@@ -377,6 +377,8 @@ Selective Validation remains in `FULL_RUN_SHADOW` until an exact-artifact cohort
 
 `scripts/validation_taxonomy.py` checks that `config/validation-scope.yaml` and `config/validation-graduation.yaml` declare the same unique full-validation classes and path prefixes. Missing, malformed, duplicate, or divergent declarations fail closed; this audit is read-only and never enables selective execution.
 
+`config/repository-contract.yaml` is a versioned parallel mirror of the legacy `required_files` list in `tests/validation/static_contracts.py`. The strict parser and lifecycle fixture require exact path-set parity and identical missing-file findings; the legacy list remains authoritative during this pilot. Other lists and authority cutover require a separate reviewed change.
+
 The validation environment records exact Coverage.py and Hypothesis versions. Coverage reports branch measurements for the stable release selector without enforcing a percentage until touched-module baselines are established. Hypothesis property checks use deterministic settings. Ruff may not exceed its measured repository baseline of 872 findings; selected mypy modules keep the existing zero-error bound. Expand either scope only with a measured baseline and a small reviewed ratchet.
 
 Repository Health reports advisory counts for workflows, validation modules, policy files and Integration Gate steps. These counts provide governance-complexity trend context and never affect health status or create a new gate. Monthly reliability reports continue collecting bounded evidence; SLO thresholds remain deferred until at least three complete monthly cohorts exist, then require human review and can only raise review flags.

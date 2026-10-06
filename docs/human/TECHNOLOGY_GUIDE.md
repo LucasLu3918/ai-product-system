@@ -159,6 +159,8 @@ Scenario 204 的 module-extraction evidence 會檢查 Project Intelligence tempo
 Validation quality improves gradually: a Ruff baseline blocks debt growth, mypy remains scoped to selected modules, Coverage.py reports branch evidence without a premature percentage gate, and deterministic Hypothesis properties cover stable SemVer selection. The read-only Validation Observation Collector installs its pinned PyYAML dependency before collecting the shadow cohort; full validation remains mandatory while that cohort is assembled.
 
 The Validation Taxonomy audit keeps shadow selection and graduation class/path declarations aligned and reports drift without editing either policy.
+
+The repository required-files policy has a versioned parallel manifest at `config/repository-contract.yaml`. Strict parsing and lifecycle fixtures compare its required path set and missing-file findings with `tests/validation/static_contracts.py`; the existing Python list remains authoritative during the parity pilot.
 Offline Evolution precision and recall use explicit Human relevance labels; missing labels remain `NOT_READY` and never change source-selection policy.
 
 Managed AIPS CLI requires Python >=3.12. The required PR Gate tests Python 3.12; a weekly compatibility smoke workflow exercises 3.12, 3.13, and 3.14 from `config/system-facts.yaml`. An explicit `AIPS_PYTHON` must satisfy the floor; doctor identifies an unsupported managed environment, and install/update repair recreates only an AIPS-owned venv.

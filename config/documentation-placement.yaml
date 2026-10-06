@@ -629,3 +629,13 @@ placement_rules:
       docs/human/CONFORMANCE.md: [Scenario 222 — Large Document Measurement Only]
       orchestration/CONFORMANCE.md: [Scenario 222 — Large Document Measurement Only]
       orchestration/DOCUMENTATION_SYNC.md: [Evolution Effectiveness mapping]
+
+  - id: p17-required-files-parity-pilot
+    triggers:
+      - config/repository-contract.yaml
+      - tests/validation/repository_contract_policy.py
+      - tests/validation/static_contracts.py
+      - tests/evidence/repository_contract_parity_lifecycle.py
+    placements:
+      docs/human/MAINTENANCE.md: [Validation architecture consistency]
+      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]

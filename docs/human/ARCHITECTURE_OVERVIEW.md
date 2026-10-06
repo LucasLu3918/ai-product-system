@@ -211,6 +211,8 @@ The document-size audit provides report-only measurements for historical documen
 
 Dependency risk policy and its advisory classifier are mapped to maintenance, verification and Scenario 221 documentation by the canonical placement registry.
 
+The repository required-files parity pilot is mapped by `config/documentation-placement.yaml`; its canonical guidance stays in Maintenance and Technology Guide while the legacy validator list remains authoritative.
+
 Retrieval Intelligence 保留 `scripts/retrieval_intelligence.py` 作為相容 facade；comment/string masking 與 bounded lexical relation row 建構位於 `scripts/retrieval_relations.py`。Relations 仍是可重建索引中的候選，不代表編譯器解析或完整呼叫圖。
 
 Human maintainers can use the generated System Reference for factual command/runtime tables; candidate validation separately derives optional toolchain provisioning from exact changed paths while keeping the required Gate intact.
