@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- Bound installation-entrypoint CI jobs using observed per-platform runtime percentiles.
 
 - Block stable release readiness unless `CHANGELOG.md` has exactly one empty canonical `## Unreleased` section; missing, duplicate, malformed or non-empty sections fail closed.
 - Add a strict versioned mirror and lifecycle parity pilot for repository `required_files`, keeping the existing validator list authoritative.

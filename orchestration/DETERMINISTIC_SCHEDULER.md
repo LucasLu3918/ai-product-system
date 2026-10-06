@@ -123,6 +123,8 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 Publication preflight checks only optional environment capabilities selected by the exact candidate plan. `NOT_REQUIRED` browser status is accepted when browser validation is unselected; a selected browser probe failure remains blocking.
 
+Bound GitHub Actions job runtimes from observed per-job P95 multiplied by an explicit safety factor, then round upward; record the sample window and factor in candidate evidence. Do not add concurrency merely for consistency: independent jobs with unique runner state should remain independently observable, and cancellation must not discard required evidence. Installation entrypoint jobs use a 15× factor rounded up to five-minute increments (5/10/10 minutes), based on ten successful runs from 2026-10-06 02:53–11:34 UTC.
+
 GitHub Actions may select optional CI toolchain setup from the exact changed-file set before Integration Gate starts. That provisioning decision does not change Scheduler task readiness, ordering or boundary locks; an unknown selector falls back to full toolchain setup.
 
 CI precheck failures must emit their missing-document paths in a bounded Step Summary. The complete Gate remains authoritative; timing summaries expose duration without converting missing evidence into zero duration or PASS. Classification label changes still supersede stale validation; any failed/cancelled/timed-out Janitor remains blocking. Label-only aggregates inspect the latest full Janitor using actions-read metadata and require a matching PR/head/base/class run title; they cannot replace failed or stale full validation.

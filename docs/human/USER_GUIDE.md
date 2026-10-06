@@ -170,6 +170,7 @@ PR 驗證會把 Gate 與 Repository Health 報告放在 CI runner 的暫存位�
 
 受保護分支的 `repository` required check 必須在 exact PR candidate 的 Integration Gate 成功後才會通過。
 
+Installation entrypoint workflow 保留既有 pull request 路徑與平台檢查，並以近期 job P95 加安全倍數設定明確逾時；逾時會作為該 job 的失敗呈現，不改變 required check 或 Human 核准權限。
 
 ## Execution Isolation 與 Runtime Resource
 

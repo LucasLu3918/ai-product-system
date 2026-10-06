@@ -300,6 +300,8 @@ Evolution Effectiveness reports incomplete pre-analysis coverage instead of call
 
 外部 Intelligence metadata 不可寫時，可重建 metadata 保存在快取旁並回報 `CACHE_ONLY`；索引 freshness 仍由實際候選比對，canonical 來源與 graph 不會被替代。以 `aips publish checks --pr <number> --head <sha>` 查看最新 workflow/check 結果：舊 `CANCELLED` 不覆蓋較新的成功；目前取消、缺少必要 `repository`、等待或失敗均不會成為 PASS。PR 與 main 的 Gate 仍綁定各自候選；CI pip 快取以 requirements 雜湊作鍵，安裝與完整 Gate 每輪照常執行。合併後另核對註冊安裝版的 commit。
 
+`installation-entrypoints` jobs are independent and retain their existing PR paths and read-only permissions. Review their 5/10/10-minute limits when runtime evidence changes; the limits use 15× per-job P95 from the ten latest successful runs and upward five-minute rounding. Do not add cancellation concurrency unless shared state requires it and required evidence remains observable.
+
 排查 `AUTH_CONFIGURATION_UNVERIFIED` 時先確認 `GH_CONFIG_DIR` 與 `XDG_CONFIG_HOME` 的設定選擇，再檢查登入；不要複製憑證。Local preparation 保留原本 gh 設定目錄並拒絕不屬於指定 Python 3.12 venv 的執行檔。文件異動先用 preview 查閉包；docs impact 須解析正確 checkout。重用準備好的環境，候選固定後執行一次完整本地 Gate，保留 PR 與 main CI；以既有 timing evidence 評估慢項目。
 
 Use `aips publish environment` from the intended checkout and inspect its source/target/Python diagnostic before validation. Reuse an existing environment with `python3.12 bin/prepare-local-validation --venv <path> --check-only`; a local `--wheelhouse <path>` supports offline Python dependency installation. Browser downloads remain separate prerequisites. GitHub logs/artifacts may redirect to external storage; keep domain approval explicit and use bounded Check summaries for initial diagnosis.

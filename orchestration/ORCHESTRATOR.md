@@ -320,6 +320,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+When standardizing CI, classify workflows by effective permissions and side effects rather than names. Derive timeout bounds from observed per-job P95 with a recorded safety multiplier and rounding rule; add concurrency only when shared state or resource collisions require it and cancellation cannot erase needed evidence.
+
 Changes to shared CI bootstrap behavior require exact-candidate checks for every caller, import failure handling, tested constraints, and the required repository aggregate.
 
 Publication preflight evaluates optional environment probes against the exact candidate plan: `NOT_REQUIRED` is accepted only when that capability is unselected, while selected checks and mandatory repository validation remain fail-closed.
