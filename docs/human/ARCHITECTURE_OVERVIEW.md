@@ -180,6 +180,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 Pull-request validation starts a separate, bounded repository-preflight job alongside the existing full validation path. Its summary is advisory and cannot replace the required Janitor and repository aggregate.
 
+The read-only Validation Observation Collector installs pinned PyYAML before collecting its bounded shadow evidence. Missing runtime dependencies leave graduation evidence incomplete; full validation remains required.
+
 Phase B keeps `bin/aips` as a small argument-preserving launcher to `scripts/aips_cli.sh`. The facade resolves its source checkout once, then loads the help, runtime, harness, command, project, shell, installation, maintenance and dispatch modules from `scripts/aips_cli/`; this works through installed symlinks and from any caller working directory. Runtime path and Python resolution remain in the implementation layer.
 
 `scripts/evolution_analysis.py` 保留 Evolution analysis CLI 與相容 facade；deterministic local pre-analysis 實作位於 `scripts/evolution_preanalysis.py`，不改變輸出或 authority boundary。
