@@ -162,3 +162,5 @@ Execution Isolation 的 provider registry、resolver、optional E2B smoke workfl
 Runtime Policy Enforcement 的 action schema、deny-by-default evaluator、native hook decision 與高風險 sandbox 要求，沿用 Resource Authorization、Execution Isolation、Governance Audit 和 Security Assurance 文件閉包；Scenario 177 維護執行階段授權及限制的 evidence。
 
 The `maintenance-reliability` mapping binds the bounded monthly collector, configuration, GitHub workflow, lifecycle and contract checks, Scenario 201, registry and evidence runner to the Human Maintenance / Conformance / Technology Guide / Documentation Map topics and the Agent Conformance protocol. Keep UNKNOWN handling, collection bounds, exact-SHA correlation and no-remediation authority aligned.
+
+- Version-tag readiness changes also require the canonical release-readiness and Scenario 208 documentation placements; readiness remains separate from tag publication.

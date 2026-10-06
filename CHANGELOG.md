@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Block stable release readiness unless `CHANGELOG.md` has exactly one empty canonical `## Unreleased` section; missing, duplicate, malformed or non-empty sections fail closed.
 - Add a strict versioned mirror and lifecycle parity pilot for repository `required_files`, keeping the existing validator list authoritative.
 - Bound the read-only validation observation collector to a provisional 15-minute job timeout; preserve scheduled/manual evidence runs without a concurrency group and document the two-run timing limitation.
 

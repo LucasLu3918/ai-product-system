@@ -18,17 +18,28 @@ def require(condition: bool, message: str) -> None:
 
 def main() -> int:
     sha = "a" * 40
-    require(evaluate_tag("0.73.0", sha, sha, None)["status"] == "READY_FOR_EXPLICIT_RELEASE_APPROVAL",
+    empty_changelog = "# Changelog\n\n## Unreleased\n\n## 0.73.0\n- Released.\n"
+    require(evaluate_tag("0.73.0", sha, sha, None, changelog_text=empty_changelog)["status"] == "READY_FOR_EXPLICIT_RELEASE_APPROVAL",
             "exact main candidate should be ready for a separate release decision")
-    require(evaluate_tag("0.73.0", sha, sha, None, "0.72.0")["status"] == "BLOCKED",
+    require(evaluate_tag("0.73.0", sha, sha, None, "0.72.0", empty_changelog)["status"] == "BLOCKED",
             "a candidate whose VERSION differs from the requested release must be blocked")
-    require(evaluate_tag("0.73.0", sha, "b" * 40, None)["status"] == "BLOCKED",
+    require(evaluate_tag("0.73.0", sha, "b" * 40, None, changelog_text=empty_changelog)["status"] == "BLOCKED",
             "a pre-merge candidate must not become tag-ready")
-    require(evaluate_tag("0.73.0", sha, sha, "b" * 40)["status"] == "BLOCKED",
+    require(evaluate_tag("0.73.0", sha, sha, "b" * 40, changelog_text=empty_changelog)["status"] == "BLOCKED",
             "moved/existing mismatched tags must be blocked")
-    ready = evaluate_tag("0.73.0", sha, sha, None)
+    ready = evaluate_tag("0.73.0", sha, sha, None, changelog_text=empty_changelog)
     require(ready["tag_write_authorized"] is False and ready["historical_backfill"] is False,
             "readiness must never authorize tag writes or historical backfill")
+    cases = (
+        ("# Changelog\n\n## Unreleased\n- pending\n\n## 0.73.0\n", "non-empty Unreleased section must block"),
+        ("# Changelog\n\n## 0.73.0\n- released\n", "missing Unreleased heading must block"),
+        ("## Unreleased\n\n## Unreleased\n", "duplicate Unreleased headings must block"),
+        ("##Unreleased\n", "malformed Unreleased heading must block"),
+    )
+    for changelog, message in cases:
+        require(evaluate_tag("0.73.0", sha, sha, None, changelog_text=changelog)["status"] == "BLOCKED", message)
+    require(evaluate_tag("0.73.0", sha, sha, None)["status"] == "BLOCKED",
+            "unavailable changelog content must fail closed")
 
     desired = {"required_status_checks": ["repository"], "bypass_actors": []}
     require(assess_rules({}, desired)["status"] == "UNKNOWN", "incomplete API snapshot must fail closed")

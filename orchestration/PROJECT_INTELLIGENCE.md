@@ -217,6 +217,7 @@ Impact traversal combines these candidates with exact canonical `IMPACT_GRAPH.ya
 
 Validation errors for missing dispositions state the affected node, allowed final values and the command to rerun. This improves repair guidance while leaving disposition selection explicit and high-risk unknowns blocking.
 
+- Documentation placement closure is validated against configured policy; a bounded traversal does not upgrade partial repository-wide Impact Graph coverage.
 ## Sensitive data
 
 Do not persist secret values or sensitive payload bodies in Intelligence or HTML.
