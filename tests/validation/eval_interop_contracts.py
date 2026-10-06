@@ -4,6 +4,8 @@ from pathlib import Path
 
 import yaml
 
+from .cli_source import cli_implementation
+
 ROOT = Path(__file__).resolve().parents[2]
 errors: list[str] = []
 
@@ -33,7 +35,7 @@ for tool in ("pyrit", "promptfoo"):
     if profile_config.get("deep_scan", {}).get(tool, {}).get("enabled_by_default") is not False:
         errors.append(f"{tool} deep scan must remain disabled by default")
 
-cli = (ROOT / "bin/aips").read_text(encoding="utf-8") + "\n" + (ROOT / "scripts/aips_cli.sh").read_text(encoding="utf-8")
+cli = (ROOT / "bin/aips").read_text(encoding="utf-8") + "\n" + cli_implementation(ROOT)
 for command in ("import-promptfoo", "export-promptfoo", "import-pyrit", "verify-evidence", "profile", "promote-finding"):
     if command not in cli:
         errors.append(f"AIPS CLI is missing Eval interoperability command {command}")

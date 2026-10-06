@@ -1067,6 +1067,7 @@ scenarios:
     coverage: lifecycle
     evidence:
       - tests/evidence/integration_gate_lifecycle.py
+      - tests/evidence/aips_cli_module_extraction_lifecycle.py
       - tests/evidence/validator_registry_lifecycle.py
       - scripts/integration_gate.py
       - config/integration-gate.yaml

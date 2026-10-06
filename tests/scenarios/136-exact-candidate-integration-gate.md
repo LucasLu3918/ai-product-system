@@ -9,6 +9,7 @@ Expected:
 - applicable required check failure returns FAIL and blocks the required repository aggregate check;
 - Core Change Test Matrix is reused when required rather than creating a parallel Janitor matrix;
 - PASS is validation evidence only and grants no merge/release/Human authority;
+- the public AIPS CLI facade resolves modules from the selected checkout through both source and installed-symlink entrypoints;
 - a changed candidate invalidates the prior fingerprint and must be validated again.
 
 ## Base Freshness

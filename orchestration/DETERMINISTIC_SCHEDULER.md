@@ -69,6 +69,8 @@ The scheduler is stateless between invocations. Durable workflow state remains o
 
 ## CLI
 
+The public AIPS CLI launcher remains `bin/aips`; its facade resolves the checkout and loads implementation modules before dispatch. This packaging does not change scheduler command arguments or deterministic output.
+
 Post-merge publication reconciliation runs separately through the existing `publish_preflight` facade. Scheduler dispatch never performs checkout or installed-version synchronization.
 
 The installed `aips` command requires Python >=3.12. This is the AIPS control-plane runtime; each dispatched task continues to use its declared runtime and execution profile.

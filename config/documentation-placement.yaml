@@ -79,11 +79,11 @@ placement_rules:
     triggers: [config/system-facts.yaml, config/architecture-surfaces.yaml, scripts/system_facts.py, tests/validation/system_facts_contracts.py, .github/workflows/python-compatibility.yml]
     placements:
       docs/human/SYSTEM_REFERENCE.md: [Public commands, Capability surfaces, Runtime support]
-      docs/human/DOCUMENTATION_MAP.md: [Shared canonical 文件, 文件角色, 文件角色]
+      docs/human/DOCUMENTATION_MAP.md: [Shared canonical 文件, 文件角色, Agent / machine canonical 文件]
       docs/human/DOCUMENTATION_SYNC.md: [Technology Guide, Deterministic protection]
       docs/human/INSTALLATION.md: [Runtime integration]
       docs/human/MAINTENANCE.md: [Versioning, System facts and validation planning, Validation architecture consistency, Branch lifecycle hygiene, Controlled branch cleanup]
-      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification]
 
   - id: maintenance-planning
     triggers: [config/ci-validation-plan.yaml, scripts/ci_validation_plan.py, scripts/branch_hygiene.py, config/branch-lifecycle.yaml, .github/workflows/validate.yml, .github/workflows/branch-hygiene.yml]
@@ -95,10 +95,10 @@ placement_rules:
     triggers: [scripts/maintenance_reliability.py, config/maintenance-reliability.yaml, .github/workflows/maintenance-reliability.yml, tests/evidence/maintenance_reliability_lifecycle.py, tests/validation/maintenance_reliability_contracts.py, tests/scenarios/201-monthly-maintenance-reliability.md, tests/scenario_coverage.yaml, tests/validate_repository.py, tests/validation/conformance_isolation.py]
     placements:
       docs/human/MAINTENANCE.md: [Monthly maintenance reliability, Validation architecture consistency, Versioning, Controlled branch cleanup]
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Documentation Architecture, Maintenance governance]
-      docs/human/TECHNOLOGY_GUIDE.md: [Evolution & Maintenance, Quality & Verification]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Documentation Architecture, Planning 與 Product Delivery, Maintenance governance]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Evolution & Maintenance, Quality & Verification]
       docs/human/CONFORMANCE.md: [Scenario 201 — Monthly maintenance reliability evidence, Scenarios 202–209 — Plan13 current and provenance evidence]
-      docs/human/DOCUMENTATION_MAP.md: [文件角色]
+      docs/human/DOCUMENTATION_MAP.md: [文件角色, Agent / machine canonical 文件]
       docs/human/DOCUMENTATION_SYNC.md: [Deterministic protection]
       orchestration/CONFORMANCE.md: [Scenario 201 — Monthly maintenance reliability evidence, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 210 — Python runtime support policy]
       orchestration/DOCUMENTATION_SYNC.md: [Maintenance reliability mapping]
@@ -106,6 +106,7 @@ placement_rules:
     triggers:
       - scripts/runtime_context.py
       - scripts/aips_cli.sh
+      - scripts/aips_cli/**
       - scripts/runtime_cache.py
       - scripts/runtime_invariant_matrix.py
       - config/runtime-invariants.yaml
@@ -123,7 +124,7 @@ placement_rules:
     placements:
       docs/human/USER_GUIDE.md: [Quality 與 Review]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Planning 與 Product Delivery]
-      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification]
       docs/human/CONFORMANCE.md: [Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter]
       docs/human/SECURITY_ASSURANCE.md: [Product baseline vs change impact, Release Security Gate, Secret and credential safety, Runtime Policy Enforcement]
 
@@ -143,7 +144,7 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification]
 
   - id: publication-cli
-    triggers: [bin/aips, scripts/aips_cli.sh]
+    triggers: [bin/aips, scripts/aips_cli.sh, scripts/aips_cli/**]
     placements:
       docs/human/USER_GUIDE.md: [Deterministic Scheduler, Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release, Logging、Observability 與 Operations, Checkpoint / Resume, Project Intelligence]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
@@ -153,7 +154,7 @@ placement_rules:
   - id: telemetry-export
     triggers: [config/telemetry-export.yaml, orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md, orchestration/TELEMETRY_EXPORT.md, orchestration/schemas/telemetry-export.yaml, scripts/telemetry_export.py, scripts/telemetry_projection.py, scripts/telemetry_record.py, scripts/run_event_stream.py, scripts/observed_stage.py]
     placements:
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Scenario Conformance 與 Agent Eval]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Scenario Conformance 與 Agent Eval, Maintenance governance]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
       docs/human/USER_GUIDE.md: [Quality 與 Review, Logging、Observability 與 Operations, Project Intelligence]
       docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 181 — OpenTelemetry Telemetry Projection & Export]
@@ -242,7 +243,7 @@ placement_rules:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary, Maintenance governance]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Runtime Content Safety Boundary, Security & Governance]
       orchestration/DETERMINISTIC_SCHEDULER.md: [CLI, Failure behavior, Read-only declaration and fail-closed boundary, Runtime Content Safety Boundary, Validation de-duplication boundary]
-      orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight, Risk-Proportional Security Assurance, Context expansion, Checkpoint and resume, Change-class handoff to Integration Gate, Runtime Content Safety Boundary]
+      orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight, Risk-Proportional Security Assurance, Context expansion, Checkpoint and resume, Change-class handoff to Integration Gate, Runtime Content Safety Boundary, System Self-Improvement]
 
   - id: content-safety
     triggers: [config/content-safety.yaml, scripts/content_safety.py, scripts/gemini_observable_event_capture.py, orchestration/CONTENT_SAFETY_BOUNDARY.md]
@@ -263,7 +264,7 @@ placement_rules:
       docs/human/MAINTENANCE.md:
         - Durable Run State consistency
         - Public repository / CI consistency
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Scenario Conformance 與 Agent Eval]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Scenario Conformance 與 Agent Eval, Maintenance governance]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution]
       docs/human/USER_GUIDE.md: [Checkpoint / Resume, Logging、Observability 與 Operations, Project Intelligence]
       orchestration/CONFORMANCE.md: [Runtime Content Safety Scenarios, Agent Eval admission, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership]
@@ -374,10 +375,10 @@ placement_rules:
   - id: eval-interoperability
     triggers: [scripts/eval_interop.py, scripts/agent_eval.py, templates/conformance/AGENT_EVAL_RESULT.yaml, config/eval-profiles.yaml, orchestration/EVAL_INTEROPERABILITY.md, orchestration/schemas/external-eval-evidence.yaml, orchestration/schemas/eval-profile.yaml, orchestration/schemas/red-team-finding.yaml, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py, tests/validation/eval_interop_contracts.py, tests/scenarios/180-external-eval-interoperability.md]
     placements:
-      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Scenario Conformance 與 Agent Eval]
-      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Scenario Conformance 與 Agent Eval, Maintenance governance]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenarios 202–209 — Plan13 current and provenance evidence]
       docs/human/SECURITY_ASSURANCE.md: [Product baseline vs change impact, Release Security Gate, Secret and credential safety, Runtime Policy Enforcement]
-      docs/human/USER_GUIDE.md: [需求釐清與 Planning, Quality 與 Review, Logging、Observability 與 Operations, Checkpoint / Resume, Project Intelligence]
+      docs/human/USER_GUIDE.md: [需求釐清與 Planning, Quality 與 Review, Logging、Observability 與 Operations, Checkpoint / Resume, Project Intelligence, Git Publication 與 Release]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification]
       docs/human/DOCUMENTATION_MAP.md: [Agent / machine canonical 文件]
 
@@ -491,11 +492,11 @@ placement_rules:
       docs/human/MAINTENANCE.md: [Versioning, Validation architecture consistency, Controlled branch cleanup]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Maintenance governance]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
-      docs/human/USER_GUIDE.md: [Git Publication 與 Release]
+      docs/human/USER_GUIDE.md: [Quality 與 Review, Git Publication 與 Release]
       docs/human/SECURITY_ASSURANCE.md: [Release Security Gate]
       docs/human/EVOLUTION_RADAR.md: [Effectiveness Feedback]
       docs/human/PROJECT_INTELLIGENCE.md: [Change Impact]
-      docs/human/DOCUMENTATION_MAP.md: [文件角色]
+      docs/human/DOCUMENTATION_MAP.md: [文件角色, Agent / machine canonical 文件]
       docs/human/DOCUMENTATION_SYNC.md: [Deterministic protection]
       docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
       orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 210 — Python runtime support policy]
@@ -504,7 +505,7 @@ placement_rules:
       orchestration/RUNTIME_CONTEXT.md: [Interpreter resolution, Context contract, Verification]
       orchestration/INTEGRATION_GATE.md: [Exact-candidate binding]
       orchestration/DOCUMENTATION_SYNC.md: [Human documentation placement, Maintenance reliability mapping]
-      orchestration/ORCHESTRATOR.md: [Context expansion, Change-class handoff to Integration Gate]
+      orchestration/ORCHESTRATOR.md: [Minimal algorithm, Context expansion, Change-class handoff to Integration Gate]
       orchestration/CHANGE_IMPACT.md: [Diff reconciliation]
       orchestration/PROJECT_INTELLIGENCE.md: [Retrieval relationships and impact traversal]
       orchestration/EXECUTION_ISOLATION.md: [Parallel runtime resource isolation]

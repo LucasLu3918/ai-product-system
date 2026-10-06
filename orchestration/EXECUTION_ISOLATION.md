@@ -278,6 +278,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+The AIPS CLI facade loads its internal modules from the resolved checkout before dispatch. Module extraction does not change worktree ownership, execution isolation mode or runtime resource policy.
+
 The Validation Observation Collector has only read access to Actions and repository metadata. Artifact downloads are bounded, redirect credentials are not forwarded, and collection cannot write repository settings, branches or validation policy.
 
 Coverage and Hypothesis lifecycle checks use the existing isolated validation Python process; they introduce no runtime service, network call, or cross-run resource sharing.

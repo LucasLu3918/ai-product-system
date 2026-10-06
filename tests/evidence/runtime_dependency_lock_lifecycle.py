@@ -38,7 +38,7 @@ def main() -> int:
         assert args[args.index("-c") + 1] == str(constraints)
         assert args[args.index("-r") + 1] == str(requirements)
 
-        cli = (ROOT / "scripts/aips_cli.sh").read_text(encoding="utf-8")
+        cli = "\n".join(path.read_text(encoding="utf-8") for path in [ROOT / "scripts/aips_cli.sh", *sorted((ROOT / "scripts/aips_cli").glob("*.sh"))])
         assert '--constraints "$SYSTEM_DIR/constraints/tested.txt"' in cli
     print("RUNTIME DEPENDENCY LOCK LIFECYCLE PASSED")
     return 0

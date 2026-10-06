@@ -163,6 +163,8 @@ The same canonical H2 placement contract applies to pre-commit working-tree prev
 
 ## Maintenance reliability mapping
 
+The runtime-context architecture inventory includes the `scripts/aips_cli.sh` facade and its `scripts/aips_cli/` modules; the System Reference is regenerated from that inventory, and lifecycle evidence is listed with the runtime surface.
+
 Validation taxonomy, full-run observation, stable release readiness and human-labeled Evolution metrics have source-bound placements and Scenario references; update these bindings with the canonical docs whenever the source contract changes.
 
 The Python compatibility workflow is mapped with canonical system facts: keep its tested matrix aligned with `config/system-facts.yaml`, generated System Reference, installation and maintenance guidance, Technology Guide, and Scenario 210. Register behavior-bearing workflow paths in `config/documentation-placement.yaml` before their docs can pass placement validation.

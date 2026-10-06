@@ -4,6 +4,8 @@
 
 ## Inputs
 
+The existing `bin/aips` and `scripts/aips_cli.sh` entrypoints remain stable across internal CLI module extraction; this refactor does not alter GitHub ruleset inputs or remote protection authority.
+
 Dependency Review and scheduled Scorecard supplement security evidence; they do not change the configured required-check set or ruleset activation state.
 
 The weekly Python compatibility smoke is supplementary evidence, not a required PR check. Branch protection continues to rely on the exact-candidate PR Gate and its Python 3.12 baseline.

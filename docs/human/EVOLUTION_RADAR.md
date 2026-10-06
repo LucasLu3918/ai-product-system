@@ -40,6 +40,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+CLI module extraction preserves the existing public command surface; Evolution collection and effectiveness records remain unchanged by this internal refactor.
+
 Maintenance suggestions about selective validation use the shadow cohort as evidence only; no Radar recommendation may activate validator skipping without a separate Human decision.
 
 Monthly/quarterly reports separate pipeline completeness from content value. Missing source cohorts or incomplete periods remain UNKNOWN/incomplete; a complete period with no actionable recommendation is a valid zero-yield result. Validated analysis is persisted in the GitHub Issue body so scheduled runs retain the reviewed state.

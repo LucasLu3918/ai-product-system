@@ -221,6 +221,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 ## Quality 與 Review
 
 
+Publication commands remain available through `bin/aips` and the existing `scripts/aips_cli.sh` entrypoint. The facade loads its internal command modules from the selected AIPS checkout before dispatch, preserving the same command arguments and results for source and installed entrypoints.
+
 Validation optimizations must preserve the full Integration Gate and execute every unique lifecycle evidence script at least once; the maintenance guide describes the local exact-candidate workflow.
 
 

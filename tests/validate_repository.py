@@ -107,6 +107,7 @@ for evidence in (
     Path(__file__).parent / "evidence/openapi_cli_install_lifecycle.py",
     Path(__file__).parent / "evidence/runtime_recovery_lifecycle.py",
     Path(__file__).parent / "evidence/runtime_context_lifecycle.py",
+    Path(__file__).parent / "evidence/aips_cli_module_extraction_lifecycle.py",
     Path(__file__).parent / "evidence/validator_registry_lifecycle.py",
     Path(__file__).parent / "evidence/system_facts_lifecycle.py",
     Path(__file__).parent / "evidence/ci_validation_plan_lifecycle.py",

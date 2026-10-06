@@ -27,7 +27,7 @@ def next_patch(version: str) -> str:
 
 
 def patch_updated_cli(system: Path, marker: str) -> None:
-    cli_path = system / "scripts" / "aips_cli.sh"
+    cli_path = system / "scripts" / "aips_cli" / "maintenance.sh"
     text = cli_path.read_text(encoding="utf-8")
     needle = 'preflight_after_update() {\n  local project="$1"'
     require(needle in text, "fixture could not locate updated preflight CLI entry")
