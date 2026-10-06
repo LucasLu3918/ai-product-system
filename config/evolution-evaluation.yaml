@@ -1,0 +1,19 @@
+version: 1
+cohort:
+  period: monthly
+  sample_size: 20
+  maximum_candidate_signals: 10000
+  sampling_method: sha256-period-rank
+  sample_identity: signal_fingerprint
+metrics:
+  shortlist_precision: selected_relevant / selected_binary_labels
+  shortlist_recall: selected_relevant / all_relevant_binary_labels
+  actionable_yield: human_actionable / complete_actionability_labels
+  source_yield: relevant_labels / binary_labels_per_source
+  incomplete_labels_block_evaluation: true
+authority:
+  label_authority: human
+  automatic_source_weight_changes: false
+  automatic_source_enable_disable: false
+  automatic_config_mutation: false
+  human_review_required_for_source_changes: true

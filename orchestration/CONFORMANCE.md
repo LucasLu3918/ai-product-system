@@ -817,6 +817,10 @@ Repository validators are imported only through the explicit ordered `tests/vali
 
 Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agent_eval = 199 automated; 2 manual; 201 total; 0 uncovered.
 
+## Scenario 218 — Evolution Human Relevance Evaluation
+
+Scenario 218 uses deterministic monthly fingerprint sampling and complete Human relevance/actionability labels. It reports shortlist precision/recall and source-level yield; empty, uncertain or incomplete cohorts remain `NOT_READY`, and results grant no source-policy mutation authority.
+
 ## Scenario 220 — Parallel advisory fast feedback
 
 The pull-request workflow runs the bounded repository preflight in a separate job against the exact candidate. Findings are visible but advisory; the complete Janitor Integration Gate and required repository validation remain independent and unchanged. Label-only events skip this job.

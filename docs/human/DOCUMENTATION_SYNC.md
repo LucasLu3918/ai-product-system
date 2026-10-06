@@ -131,6 +131,8 @@ Getting Started / Installation / User Guide 以 task-oriented方式導覽；Arch
 
 ## Deterministic protection
 
+Evolution evaluation changes must synchronize the Human Radar guides, Scenario 218 and its Human/Agent conformance references with the `p16-evolution-human-evaluation` placement entry.
+
 The runtime architecture inventory and System Reference are regenerated from canonical registries; CLI source modules are part of the runtime-context documentation trigger and must remain covered by the module-extraction lifecycle.
 
 The pull-request advisory preflight is documented with the required full repository gate and its Scenario 220 contract; changes to either surface update the Human and Agent conformance records together.

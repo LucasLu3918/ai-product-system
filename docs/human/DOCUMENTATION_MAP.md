@@ -119,6 +119,8 @@ docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGEL
 
 ## 文件一致性
 
+Evolution Radar 人工相關性抽樣與評估行為以 `EVOLUTION_RADAR.md` / `EVOLUTION_RADAR_OVERVIEW.md` 為 Human 說明，`orchestration/CONFORMANCE.md` 與 Scenario 218 定義 Agent 驗證契約；placement 登錄於 `config/documentation-placement.yaml`。
+
 執行環境恢復的操作說明分別由 Installation、Project Intelligence 與 Maintenance 承載；Technology Guide 提供共用工具位置，來源對應由既有 canonical placement 規則約束。
 
 VitePress renders the canonical Markdown files directly; local publication preflight uses the installed bundle and does not create or install a second documentation source.
