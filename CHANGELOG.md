@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add a strict versioned mirror and lifecycle parity pilot for repository `required_files`, keeping the existing validator list authoritative.
 - Generalize the shared Python CI bootstrap to import caller-declared modules and verify dependency consistency with `pip check`, keeping requirements and tested constraints as the source of truth.
 - Treat a successfully collected NOT_READY validation cohort as a normal result, keep collection failures blocking, use the shared constrained Python bootstrap, and record pinned Dependency Review parity in non-blocking shadow mode.
 - Bind exact branch cleanup to the current main baseline; reject replay and partial-state manifests and report interrupted batches.
