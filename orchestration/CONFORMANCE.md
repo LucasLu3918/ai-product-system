@@ -819,6 +819,8 @@ The shared repository evidence runner uses the exact-candidate CI plan to skip o
 
 Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agent_eval = 199 automated; 2 manual; 201 total; 0 uncovered.
 
+The central validator registry lifecycle also verifies exact-plan browser selection: only a valid `needs_browser: false` plan skips visual and creative render validators, and full validation imports them when no skip is declared.
+
 ## Scenario 218 — Evolution Human Relevance Evaluation
 
 Scenario 218 uses deterministic monthly fingerprint sampling and complete Human relevance/actionability labels. It reports shortlist precision/recall and source-level yield; empty, uncertain or incomplete cohorts remain `NOT_READY`, and results grant no source-policy mutation authority.

@@ -28,6 +28,8 @@ Current behavior follows the topic sections in this map: installation and releas
 
 Quality and validation governance is configured by `config/quality-ratchet.yaml`, `config/validation-graduation.yaml`, and `config/maintenance-reliability.yaml`; its human-facing behavior is summarized in Maintenance and the Technology Guide.
 
+Exact-candidate browser toolchain selection is documented in Maintenance and Technology Guide; `tests/evidence/validator_registry_lifecycle.py` verifies the central validator registry and its fail-closed full-profile default.
+
 `config/system-facts.yaml` 是 runtime、命令與 CI 相容性版本的 canonical facts；`scripts/system_facts.py` 產生 System Reference 的事實表格。安裝操作維護於 Installation，CI 與維護流程維護於 Maintenance，技術背景與限制維護於 Technology Guide；Scenario evidence 以 Conformance 為準。
 
 GitHub branch cleanup、version-tag provenance 與 ruleset review 的 Human 指引位於 `MAINTENANCE.md`；Agent-facing read-only ruleset contract 位於 `orchestration/GITHUB_RULESET_POLICY.md`。
@@ -129,6 +131,8 @@ Dependency Update risk classification 的使用方式位於 Maintenance 與 Tech
 大型歷史文件僅由 report-only size audit 量測，超過門檻時標示 WARN；目前不移動或封存，文件分層由 Human 依量測結果決定。
 
 `tests/validate_repository.py` documents the required CI evidence boundary: exact-candidate selection may skip optional OpenAPI lifecycle checks, while the required repository aggregate and Integration Gate continue to run. The selection variable is consumed by the runner and kept out of isolated lifecycle subprocesses.
+
+The same exact-candidate plan controls browser-dependent visual and creative render validators. Keep the `needs_browser` decision, fail-closed full-profile default, explicit skipped timing evidence, and mandatory repository aggregate synchronized with the validator registry lifecycle.
 
 執行環境恢復的操作說明分別由 Installation、Project Intelligence 與 Maintenance 承載；Technology Guide 提供共用工具位置，來源對應由既有 canonical placement 規則約束。
 

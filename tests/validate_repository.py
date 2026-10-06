@@ -81,10 +81,11 @@ if os.environ.get("AIPS_CI_VALIDATION_PLAN"):
         _ci_plan = None
     os.environ.pop("AIPS_CI_VALIDATION_PLAN", None)
 
-from validation.registry import ERROR_AGGREGATION_ORDER, VALIDATORS, load_validators
+from validation.registry import ERROR_AGGREGATION_ORDER, load_validators
 
 validation_modules = load_validators(
-    lambda name, started, status: _record_timing(name, started, status)
+    lambda name, started, status: _record_timing(name, started, status),
+    needs_browser=_ci_plan is None or _ci_plan.get("needs_browser") is not False,
 )
 static_contracts = validation_modules["validation.static_contracts"]
 implementation_profile_contracts = validation_modules["validation.implementation_profile_contracts"]
@@ -140,7 +141,7 @@ for evidence in (
 
 errors: list[str] = []
 for module_name in ERROR_AGGREGATION_ORDER:
-    errors.extend(getattr(validation_modules[module_name], "errors"))
+    errors.extend(validation_modules[module_name].errors)
 
 if errors:
     _write_timing_report("FAIL")

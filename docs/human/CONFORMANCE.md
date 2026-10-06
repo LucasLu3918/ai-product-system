@@ -1512,6 +1512,8 @@ Lifecycle evidence checks exact-path Node, browser and OpenAPI selection, full p
 
 The central repository evidence runner also honors exact-candidate optional toolchain selection: it skips OpenAPI-dependent lifecycle checks, including implementation enforcement, only when `needs_openapi` is false, and does not pass the selection variable into isolated lifecycle subprocesses. The required repository aggregate remains in force.
 
+Browser-dependent render validators follow the same exact-plan boundary: `needs_browser: false` omits only the visual and creative render validators, while an absent or invalid plan loads the full validator registry. Scenario lifecycle evidence confirms both validator selection and the explicit skip timing record.
+
 Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agent_eval = 199 automated; 2 manual; 201 total; 0 uncovered.
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
