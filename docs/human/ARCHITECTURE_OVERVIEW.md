@@ -182,6 +182,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 The shared Python CI bootstrap verifies caller-declared imports and dependency consistency while requirement files and tested constraints remain the package-version authority.
 
+The exact-candidate repository validator uses its optional-toolchain plan only to select evidence: OpenAPI-dependent lifecycle checks are skipped when `needs_openapi` is false, including implementation enforcement that validates OpenAPI contracts. The required repository aggregate and Integration Gate still run; without a valid plan, validation keeps the full profile.
+
 Pull-request validation starts a separate, bounded repository-preflight job alongside the existing full validation path. Its summary is advisory and cannot replace the required Janitor and repository aggregate.
 
 The read-only Validation Observation Collector installs its caller-declared dependency profile before collecting bounded shadow evidence. Its provisional 15-minute timeout is based on only two observed runs at about 31 seconds, so it is not a reliable P95; the scheduled/manual collector has no concurrency group that could replace pending evidence. Missing runtime dependencies leave graduation evidence incomplete; full validation remains required.
