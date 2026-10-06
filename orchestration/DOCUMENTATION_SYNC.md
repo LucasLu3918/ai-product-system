@@ -178,6 +178,8 @@ The advisory fast-feedback workflow is documented with the validation scenario a
 
 The central repository validator is part of this closure: use the exact-candidate plan to skip OpenAPI-dependent lifecycle evidence only when `needs_openapi` is false, keep the full profile when no valid plan is available, and remove the plan variable before contract or lifecycle subprocesses run. Preserve the mandatory repository aggregate, secret scan and Integration Gate.
 
+Workflow bootstrap, timeout or concurrency changes also update Scenario 207 evidence and the Human Maintenance, Architecture, Technology, Security, User Guide, Documentation Map and Documentation Sync placements returned by publication preview. Use observed durations when available, disclose small samples, and leave bounds unset when no successful baseline supports a defensible limit. Use GitHub's bounded pending queue when same-cohort issue writes must be serialized; never serialize distinct observation evidence into one replaceable pending run.
+
 Exact-candidate browser toolchain selection maps the validator registry and lifecycle evidence to Maintenance, Architecture Overview, Technology Guide, Conformance and this protocol. Preserve the full-profile default and keep the required aggregate active when browser-only validators are skipped.
 
 The runtime-context architecture inventory includes the `scripts/aips_cli.sh` facade and its `scripts/aips_cli/` modules; the System Reference is regenerated from that inventory, and lifecycle evidence is listed with the runtime surface.

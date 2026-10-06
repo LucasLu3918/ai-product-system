@@ -9,9 +9,18 @@ permissions:
   contents: read
   issues: write
 
+concurrency:
+  # Duplicate observations for the same exact revision are idempotent; keep a
+  # distinct revision queued instead of cancelling an in-progress report.
+  group: repository-health-${{ github.repository }}-${{ github.sha }}
+  cancel-in-progress: false
+
 jobs:
   observe:
     runs-on: ubuntu-24.04
+    # Three completed runs took 14, 14, and 19 seconds. Ten minutes is a
+    # conservative provisional bound while the timing sample remains small.
+    timeout-minutes: 10
     env:
       GH_TOKEN: ${{ github.token }}
     steps:

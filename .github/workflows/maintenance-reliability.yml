@@ -17,6 +17,13 @@ permissions:
   issues: write
   pull-requests: read
 
+concurrency:
+  # A monthly issue is reconciled from one cohort. Keep bounded pending
+  # capacity so a later dispatch does not replace an earlier report.
+  group: maintenance-reliability-${{ github.repository }}-${{ inputs.period || 'scheduled' }}
+  cancel-in-progress: false
+  queue: max
+
 jobs:
   report:
     runs-on: ubuntu-24.04
@@ -28,12 +35,17 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - uses: ./.github/actions/aips-python-bootstrap
         with:
           python-version: "3.12"
-
-      - name: Install pinned report dependencies
-        run: python -m pip install -c constraints/tested.txt -r requirements.txt
+          requirements-files: |
+            requirements.txt
+          cache-dependency-path: |
+            requirements.txt
+            constraints/tested.txt
+          constraints-file: constraints/tested.txt
+          verification-modules: |
+            yaml
 
       - name: Resolve cohort period
         id: period
