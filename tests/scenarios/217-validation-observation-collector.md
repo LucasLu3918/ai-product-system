@@ -6,6 +6,8 @@ Then one bounded observation retains candidate identity, prediction, actual vali
 And missing or mismatched evidence remains incomplete,
 And the read-only collector deduplicates reruns to one latest record per pull request and invokes the existing graduation evaluator,
 And the collector workflow installs the declared runtime and validation dependency profile under tested constraints and verifies its yaml import,
+And the read-only collector has a conservative 15-minute provisional job timeout based on two observed 31-second runs, with the small sample explicitly treated as insufficient for a reliable P95,
+And scheduled and manual evidence runs are not placed in a concurrency group that could replace pending evidence,
 And full validation remains enabled and a ready report requires human review before any selective-execution change,
 And a completed NOT_READY report is successful collection with an explicit evidence-gap summary,
 And operational API or corrupt-artifact errors remain non-zero and are reported as ERROR,

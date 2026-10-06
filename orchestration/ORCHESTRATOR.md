@@ -334,7 +334,7 @@ Resolve publication target from explicit --project-root or the active AIPS check
 
 For a fixed Core candidate, finish the documentation closure and bind the reviewed Matrix before the single complete local Gate run. The local entrypoint must resolve Python 3.12, OpenAPI validation modules and any Node/VitePress docs-build requirements before beginning expensive lifecycle work.
 
-The CI changed-path plan controls only optional toolchain installation. It does not reduce the candidate's required validations or change the approved change class; unknown path or plan evidence fails closed to full provisioning.
+The CI changed-path plan controls only optional toolchain installation. It does not reduce the candidate's required validations or change the approved change class; unknown path or plan evidence fails closed to full provisioning. The daily validation-observation collector remains outside the required gate, runs with read-only repository permissions and has a provisional 15-minute timeout; it uses no concurrency group that could discard pending evidence.
 
 The exact-candidate runner also gives child processes the selected Python directory first in `PATH`; a direct script invocation has the same nested interpreter selection as the prepared local wrapper.
 

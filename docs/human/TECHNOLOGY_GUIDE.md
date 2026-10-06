@@ -156,7 +156,7 @@ Post-merge publication reconciliation uses the existing Python/Git runtime behin
 
 Scenario 204 的 module-extraction evidence 會檢查 Project Intelligence temporal adapter 仍由原 facade 暴露，並固定 current-mode 欄位與 digest 格式。
 
-Validation quality improves gradually: a Ruff baseline blocks debt growth, mypy remains scoped to selected modules, Coverage.py reports branch evidence without a premature percentage gate, and deterministic Hypothesis properties cover stable SemVer selection. The read-only Validation Observation Collector installs its pinned PyYAML dependency before collecting the shadow cohort; full validation remains mandatory while that cohort is assembled.
+Validation quality improves gradually: a Ruff baseline blocks debt growth, mypy remains scoped to selected modules, Coverage.py reports branch evidence without a premature percentage gate, and deterministic Hypothesis properties cover stable SemVer selection. The read-only Validation Observation Collector installs its pinned PyYAML dependency before collecting the shadow cohort; full validation remains mandatory while that cohort is assembled. The collector uses a provisional 15-minute timeout from a two-run, 31-second timing sample; this is a conservative bound, not a reliable P95. It has no concurrency group because pending scheduled or manual evidence must not be replaced.
 
 The Validation Taxonomy audit keeps shadow selection and graduation class/path declarations aligned and reports drift without editing either policy.
 

@@ -304,7 +304,7 @@ Monthly Effectiveness names weekly Issues missing local pre-analysis and leaves 
 
 正式產品依風險規劃 logs、metrics、health / smoke、alerts、runbook 與 rollback。Observability 的目的不是大量產生 log，而是讓重要 failure mode 可被定位與復原。
 
-Production verification 應使用 observable evidence，不以「workflow 已執行」取代 service health / smoke / deployment state。
+Production verification 應使用 observable evidence，不以「workflow 已執行」取代 service health / smoke / deployment state。 AIPS 的 daily Validation Observation Collector uses a provisional 15-minute timeout from a two-run sample of about 31 seconds and avoids concurrency groups that could discard pending scheduled or manual evidence.
 
 開始執行前，先確認 Task Graph 可排程，為任務建立 AIPS worktree isolation，再用 `aips run owner claim` 綁定派送結果：
 
