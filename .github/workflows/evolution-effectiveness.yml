@@ -15,6 +15,12 @@ permissions:
   contents: read
   issues: write
 
+concurrency:
+  # Scheduled and manual runs can reconcile the same monthly Issue.
+  group: evolution-effectiveness-${{ github.repository }}-${{ github.event.inputs.period || 'scheduled' }}
+  cancel-in-progress: false
+  queue: max
+
 jobs:
   report:
     runs-on: ubuntu-24.04

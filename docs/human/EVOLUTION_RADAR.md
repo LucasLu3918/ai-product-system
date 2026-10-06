@@ -56,7 +56,7 @@ Operational observations from the read-only Parallel Run Dashboard may inform re
 
 The scheduled Python compatibility smoke is maintenance evidence about supported runtime behavior, not a Radar effectiveness metric or an automatic adoption signal.
 
-Monthly / quarterly roll-up 量測 collected → shortlist → semantic → actionable → Trial → PASS → ADOPT、duplicate rate 與 failure evidence。Low-yield / high-failure 只產生 Human-review flags，不自動調整 source weights 或 enable/disable settings。
+Monthly / quarterly roll-up 量測 collected → shortlist → semantic → actionable → Trial → PASS → ADOPT、duplicate rate 與 failure evidence。Low-yield / high-failure 只產生 Human-review flags，不自動調整 source weights 或 enable/disable settings。Schedule 與相同月份的手動執行共用 repository/cohort queue；最多保留 100 筆 pending 執行，不取消執行中或排隊中的報告，自訂月份各自排隊。
 
 `scripts/evolution_relevance.py` creates a reproducible monthly sample of 20 signal fingerprints and measures shortlist precision, shortlist recall, actionable yield, and per-source relevance yield against explicit Human labels. The sample does not copy article text, and the production label file starts empty; missing, uncertain, or incomplete labels keep the report `NOT_READY`. Evaluation never changes the shortlist, source policy, provider handoff, or `ANALYSIS_PENDING` state. A recommendation to review source policy still requires a separate Human decision.
 

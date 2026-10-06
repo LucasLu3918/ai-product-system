@@ -103,6 +103,15 @@ def main() -> int:
     require(any(step.get("uses") == "./.github/actions/aips-python-bootstrap"
                 for step in collector["jobs"]["collect"]["steps"]),
             "validation observation must retain the shared Python bootstrap")
+
+    effectiveness = yaml.safe_load((ROOT / ".github/workflows/evolution-effectiveness.yml").read_text(encoding="utf-8"))
+    concurrency = effectiveness.get("concurrency") or {}
+    require(concurrency.get("group") == "evolution-effectiveness-${{ github.repository }}-${{ github.event.inputs.period || 'scheduled' }}",
+            "Evolution Effectiveness schedule and same-period dispatch must share a repository-scoped queue")
+    require(concurrency.get("cancel-in-progress") is False,
+            "Evolution Effectiveness must preserve in-progress Issue reconciliation")
+    require(concurrency.get("queue") == "max",
+            "Evolution Effectiveness must retain pending same-cohort Issue reconciliations")
     print("PASS: Python bootstrap, workflow execution profiles, and permission contracts")
     return 0
 

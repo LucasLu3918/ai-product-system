@@ -1,75 +1,55 @@
 version: 1
 change:
-  id: plan17-openapi-preflight-lifecycle
-  summary: Keep required publication-preflight lifecycle evidence compatible with
-    exact-path CI plans that omit optional OpenAPI validator installation.
+  id: plan17-t06-effectiveness-concurrency
+  summary: >
+    Serialize scheduled and manual Evolution Effectiveness writes to the same monthly Issue without cancelling pending or in-progress evidence.
   boundary:
-  - Always run publication-preflight lifecycle evidence, top-level OpenAPI CLI routing,
-    and non-OpenAPI repository checks.
-  - When openapi_spec_validator and jsonschema are available, run action-level OpenAPI
-    help and contract smoke including remote-reference blocking.
-  - When an optional validator dependency is absent, assert a clear fail-closed diagnostic
-    without traceback or output artifact.
-  - Preserve the mandatory repository aggregate, exact-candidate Integration Gate,
-    candidate secret scan, and all existing publication authority.
-  - No runtime product behavior, public API, data schema, release state, or workflow
-    permission changes.
+    - Scope concurrency by repository and requested cohort; schedule and default-period dispatch share one group, while explicitly requested months remain separate.
+    - "Preserve up to 100 pending runs with queue: max and cancel-in-progress: false."
+    - Preserve schedule, workflow_dispatch, job identity, Issue content, permissions, and existing Human authority.
+    - Update Scenario 207 lifecycle evidence and the recursive canonical documentation closure.
 candidate:
-  base_sha: f7f6c301309ed48fe7ecabdba5db74b947a54f35
-  changed_files_hash: 90ab6f698b3b59c815159391989882de166ad4542dde806ea9aeed05cb6acec8
+  base_sha: 33c0064a7a881e4866d9719a8133a79ce5d838e2
+  changed_files_hash: 217d6166a6b9860abfaa10a3b044859a3c9dd07a0fa8723cef428fadb28dfd08
 matrix:
-- boundary: optional-openapi-lifecycle-evidence
-  reason: The exact-path plan may omit OpenAPI package installation; the required
-    repository lifecycle must still run without importing missing validator modules.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Ruff touched-code no-growth ratchet and recursive documentation placement
-        validation.
-    unit:
-      applicable: true
-      evidence: publish_preflight_lifecycle.py passes with optional OpenAPI dependencies
-        installed and with openapi_spec_validator import-blocked.
-    integration:
-      applicable: true
-      evidence: Full repository validation passes 222 scenarios with needs_openapi=false;
-        exact-candidate AIPS Integration Gate is required before publication.
-    contract:
-      applicable: true
-      evidence: Lifecycle asserts action-level OpenAPI smoke when dependencies exist,
-        and stable missing-dependency diagnostic with no output otherwise.
-    e2e:
-      applicable: true
-      evidence: Run the exact committed candidate through local AIPS Gate and require
-        matching PR checks; main checks run after merge.
-    security:
-      applicable: true
-      evidence: Mandatory credential-free exact-candidate secret scan remains required;
-        no permissions or secret handling change.
-    migration_recovery:
-      applicable: false
-      na_reason: Test evidence and documentation only; no persistent schema, dependency,
-        release, or migration change.
-    cli_harness:
-      applicable: true
-      evidence: Test installed AIPS CLI top-level routing and dependency-aware action
-        help/validation against the selected Python.
-    docs_schema:
-      applicable: true
-      evidence: Recursive publication-preflight placement preview passes for the complete
-        10-document closure.
+  - boundary: same-cohort-issue-reconciliation
+    reason: Scheduled and manual runs can concurrently create, edit, reopen, or close the same period Issue; serialize only the shared repository/cohort target and retain every pending run.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: 'Ruff check on tests/evidence/python_bootstrap_action_lifecycle.py passes; AIPS recursive docs preview reports placement PASS and complete closure.'
+      unit:
+        applicable: true
+        evidence: 'tests/evidence/python_bootstrap_action_lifecycle.py asserts repository/cohort group, queue: max, and cancel-in-progress: false.'
+      integration:
+        applicable: true
+        evidence: 'Full Python 3.12 repository validator and the exact-candidate AIPS Integration Gate must pass before publication.'
+      contract:
+        applicable: true
+        evidence: 'Lifecycle verifies exact workflow-level group expression, same default cohort for schedule and default dispatch, and separate custom-period groups.'
+      e2e:
+        applicable: true
+        evidence: 'Exact committed candidate must pass local AIPS Integration Gate and PR required checks; verify post-merge main checks.'
+      security:
+        applicable: true
+        evidence: 'Existing contents: read and issues: write permissions are unchanged; no new secret, credential, publishing, or repository-write authority is introduced.'
+      migration_recovery:
+        applicable: false
+        na_reason: 'Workflow scheduling change only; no persistent schema, data migration, or runtime recovery contract changes.'
+      cli_harness:
+        applicable: false
+        na_reason: 'No CLI behavior or local Harness command contract changes; GitHub Actions owns the external schedule and queue.'
+      docs_schema:
+        applicable: true
+        evidence: 'AIPS preview reports documentation placement PASS, no missing additions, and all 19 candidate paths are bound in this matrix.'
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
   status: SELF_REVIEWED
   evidence:
-  - User approved the 8 publication-preflight docs, then explicitly approved the additional
-    CONFORMANCE and DETERMINISTIC_SCHEDULER docs plus canonical matrix update for
-    this CI fix (2026-10-06).
-  - Focused lifecycle passes with OpenAPI dependencies present and with openapi_spec_validator
-    blocked; full repository validator passes 222 scenarios with needs_openapi=false.
-  - Recursive documentation placement preview passes; the exact committed-candidate
-    Integration Gate and remote checks remain mandatory before merge.
+    - User authorized completion of the executable plan17 recommendations, one reversible logical change per PR, local AIPS verification, and normal remote checks before merge.
+    - Direct review confirmed that the workflow creates/edits/reopens/closes a single title per cohort and currently has no workflow-level concurrency; Evolution Effectiveness contract, Scenario 207 lifecycle, repository validator, and recursive docs mapping were inspected.
+    - Bounded Impact Graph traversal is incomplete because the retrieval index is missing and repository-wide graph coverage is partial; the exact known workflow, contract, lifecycle, Issue consumer, authority, and documentation edges were reviewed directly. No global completeness claim is made.
 blockers: []
 status: READY

@@ -197,7 +197,7 @@ Review actual:
 
 The shared CI bootstrap validates module names as Python identifiers before import, uses checked-in requirement files and constraints, and fails on inconsistent dependencies.
 
-Scheduled reporting workflows keep repository/content permissions read-only except for narrowly scoped Issue reconciliation. A timeout bounds resource use but does not grant authority; concurrency may serialize identical-revision or same-cohort work, while distinct observation evidence remains independently reviewable.
+Scheduled reporting workflows keep repository/content permissions read-only except for narrowly scoped Issue reconciliation. A timeout bounds resource use but does not grant authority; concurrency may serialize identical-revision or same-cohort work, while distinct observation evidence remains independently reviewable. Evolution Effectiveness queues only writes to the same period Issue and preserves every pending report.
 
 The installation-entrypoint workflow grants `contents: read` only. Its bounded per-job timeout fails that job without granting publication authority, changing the required repository Gate, or cancelling a separate run.
 

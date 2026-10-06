@@ -154,7 +154,7 @@ Dependency risk classification adds an advisory policy and CLI mapping package c
 
 The large-document baseline is measurement evidence only. Keep the 50,000-byte `WARN` threshold and no-gate/no-archive behavior aligned across the policy, report, Human maintenance guidance and Scenario 222.
 
-The `evolution-radar` mapping includes the deterministic effectiveness script, policy config and monthly GitHub workflow. Changes to metric definitions, thresholds, source review flags, Issue publication behavior or authority fields must synchronize the canonical Evolution Radar / Execution Isolation Human and Agent docs plus the Technology Guide.
+The `evolution-radar` mapping includes the deterministic effectiveness script, policy config and monthly GitHub workflow. Changes to metric definitions, thresholds, source review flags, Issue publication behavior or authority fields must synchronize the canonical Evolution Radar / Execution Isolation Human and Agent docs plus the Technology Guide. Scheduled and manual runs that write the same monthly Issue use a repository/cohort queue with no cancellation; separate periods retain separate work.
 
 `scripts/evolution_preanalysis.py` is an internal implementation behind the unchanged `scripts/evolution_analysis.py` facade. Its source inventory and module-identity lifecycle belong to the `evolution-radar` documentation closure; user command and authority behavior remain unchanged.
 

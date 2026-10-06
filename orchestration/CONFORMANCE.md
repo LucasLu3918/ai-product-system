@@ -844,7 +844,7 @@ The size audit measures tracked text/evidence files against 50,000 bytes and rep
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
 Scenario 207 verifies declared bootstrap imports and dependency consistency, and confirms malformed or missing modules fail closed.
-It also verifies Maintenance Reliability's shared bootstrap, Repository Health's provisional timeout and exact-revision serialization, and Validation Observation's retained timeout without coalescing independent evidence runs.
+It also verifies Maintenance Reliability's shared bootstrap, Repository Health's provisional timeout and exact-revision serialization, Evolution Effectiveness's same-period non-cancelling queue, and Validation Observation's retained timeout without coalescing independent evidence runs.
 
 The public AIPS shell CLI keeps `bin/aips` as its thin launcher and `scripts/aips_cli.sh` as the checkout-resolving facade; implementation modules are loaded relative to that resolved checkout. `tests/evidence/aips_cli_module_extraction_lifecycle.py` covers source and symlink entrypoints from an unrelated working directory.
 

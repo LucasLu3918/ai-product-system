@@ -147,7 +147,7 @@ Dependency update classification stays advisory and maps each package class to r
 
 Document-size measurement remains informational: preserve the 50,000-byte threshold, non-blocking WARN behavior, and no-archive/no-move boundary across the audit, baseline and Scenario 222.
 
-Changes to shared Python workflow bootstrap, timing bounds or concurrency policy update the affected Human maintenance/technology guidance, Scenario 207 evidence and Agent conformance crosswalk. Timeout rationale records sample count and observed range; concurrency serializes only identical-revision or same-cohort work and preserves distinct observation evidence.
+Changes to shared Python workflow bootstrap, timing bounds or concurrency policy update the affected Human maintenance/technology guidance, Scenario 207 evidence and Agent conformance crosswalk. Timeout rationale records sample count and observed range; concurrency serializes only identical-revision or same-cohort work and preserves distinct observation evidence. Evolution Effectiveness queues same-period Issue writes without cancelling any report.
 
 New behavior-bearing scripts and workflows must receive an explicit source-to-topic placement before Human documentation changes. Validation and release additions also update their registered Scenario evidence and current conformance projection.
 
