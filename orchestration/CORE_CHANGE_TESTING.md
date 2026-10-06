@@ -98,6 +98,8 @@ For schema/persistence changes, include migration and recovery/rollback evidence
 For security/credential changes, include secret leakage/redaction and relevant negative-path tests.
 Every Remote Git publication candidate also requires a credential-free strict scan of its final tree and complete `base..head` history; Core Change evidence must bind the exact scanner and policy inputs.
 
+Internal module extraction uses `tests/evidence/module_extraction_lifecycle.py` to assert facade re-exports and keeps the existing focused lifecycle plus full repository Gate as the behavior evidence.
+
 ## Review
 
 Multi-Perspective Review compares:

@@ -170,3 +170,5 @@ The `maintenance-reliability` mapping binds the bounded monthly collector, confi
 Exact-candidate browser toolchain selection is documented under the current-behavior placement contract: the central validator registry may skip browser-dependent render lifecycle checks only when a valid plan explicitly sets `needs_browser: false`; missing or invalid plans retain the full profile.
 
 - Version-tag readiness changes also require the canonical release-readiness and Scenario 208 documentation placements; readiness remains separate from tag publication.
+
+`scripts/retrieval_storage.py` shares the existing Project Intelligence placement and documentation-sync closure with `scripts/retrieval_intelligence.py`; new helper modules must be added to both canonical trigger lists before publication.

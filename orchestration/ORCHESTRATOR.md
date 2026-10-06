@@ -195,6 +195,8 @@ Do not blindly implement a user suggestion. First evaluate appropriateness, dupl
 
 If Constitution impact exists, run the Constitutional Change Gate and require a second explicit approval after risks are disclosed.
 
+When extracting an internal retrieval module, preserve the existing facade and lifecycle contracts. Update both documentation placement and sync trigger maps so the new behavior-bearing source retains the same canonical documentation closure.
+
 ## Core Change Approval
 
 Large/core changes are proposal-first. Use `templates/core-change-proposal.md`. Semantic impact matters more than the number of changed files. No implementation begins until the user approves the proposed boundary. Material scope drift requires re-approval.

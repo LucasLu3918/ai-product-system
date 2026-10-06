@@ -108,6 +108,8 @@ When a Validation Profile marks `matrix_required: true`, missing/unready matrix,
 
 The Matrix decides what evidence is applicable. The Gate executes/verifies deterministic commands and binds the resulting evidence to the candidate.
 
+The shared module-extraction lifecycle verifies retrieval storage helper exports through the compatibility facade. It supplements the retrieval behavior tests and does not replace the exact-candidate repository Gate.
+
 ## GitHub required-check compatibility
 
 AIPS keeps the existing protected-main required context `repository`.

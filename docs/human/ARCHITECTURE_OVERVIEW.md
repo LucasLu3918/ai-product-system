@@ -40,6 +40,8 @@ Temporal Project Intelligence 在既有層上增加 `TEMPORAL_ASSERTIONS.yaml`�
 
 Turn Context 另以 deterministic L1 Project Core capsule 壓縮穩定摘要並保留 source digest/pointers；L2 提供 topic 與 bounded retrieval，L3 指向按需讀取的原始來源。Core capsule 是可重建衍生檢視，不取代權威文件或 temporal assertions；context-audit 以唯讀方式檢查 freshness、provenance 與衝突。
 
+Retrieval persistence helpers now live in `scripts/retrieval_storage.py`; `scripts/retrieval_intelligence.py` remains the compatibility facade and preserves the existing callable exports. The index remains disposable and rebuildable.
+
 ## Project Identity 與 Persistence
 
 ~~~text

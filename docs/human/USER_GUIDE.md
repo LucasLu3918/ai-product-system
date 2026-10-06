@@ -354,6 +354,8 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 
 詳見 [Project Intelligence](PROJECT_INTELLIGENCE.md)。
 
+Retrieval index persistence is an internal, rebuildable cache boundary in `scripts/retrieval_storage.py`; existing commands and imports continue through the `retrieval_intelligence.py` compatibility facade.
+
 ## Git Publication 與 Release
 
 Scheduled maintenance summaries are evidence, not permission to change source, merge, release or delete branches. When reviewing workflow reliability, distinguish an operational error from an incomplete observation cohort; inspect the run summary and bounded artifact, and retain separate observation runs for later comparison.

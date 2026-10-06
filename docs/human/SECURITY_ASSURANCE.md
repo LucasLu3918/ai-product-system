@@ -20,6 +20,8 @@ Product / Feature
 
 SAL means **Security Assurance Level**. It is not a model tier and it is not a simple average score.
 
+
+
 ## Risk profile dimensions
 
 Evaluate only dimensions relevant to the current product/change:
@@ -135,8 +137,6 @@ For each change:
 If a footer text change in a payment platform does not touch any sensitive boundary, review can stay light. A change to payment state, balance, points, coupons, authorization or settlement inherits the appropriate high-risk floor.
 
 Implementation Profile validation is structural assurance only. It preserves unresolved contract authority and unknown file ownership as blockers, and does not establish that a technology choice is safe, that verification passed, or that a migration is approved. Apply the existing SAL and Change Impact review to the actual implementation boundary.
-
-
 
 ## High-value business logic is a security boundary
 
@@ -302,6 +302,8 @@ AIPS 另外使用 External Credential Dependency Guard（`config/external-creden
 For SAL 3–4 or production credentials, an active exposed credential is release-blocking until containment and required rotation/revocation are complete.
 
 The `bin/aips` launcher resolves its own symlink target before forwarding arguments to the AIPS checkout. Security-sensitive validation, installation, and publication behavior remains in the checkout implementation; static checks and installed-entrypoint lifecycle tests cover both paths. The validator registry is explicit and ordered so security checks cannot disappear through implicit discovery.
+Retrieval index storage is disposable local cache state. Refactoring its persistence helpers must preserve read-only query behavior, live-WAL refusal, source-stability checks and integrity-verified snapshots; no canonical project data or credentials are stored there.
+
 
 ## 可驗證治理稽核證據
 
