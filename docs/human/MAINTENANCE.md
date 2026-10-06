@@ -312,6 +312,8 @@ Retrieval cache failures distinguish read access from stale-index refresh writes
 
 The working-tree preview scans candidate additions and complete untracked files. The exact committed candidate still receives the mandatory final-tree and commit-history scan in Integration Gate.
 
+Publication preflight treats an optional environment capability as `NOT_REQUIRED` when the exact candidate plan does not select it; only a selected browser check can block on loopback or browser readiness. Required repository validation, candidate secret scanning and the Integration Gate remain mandatory.
+
 When publication preflight changes, keep the working-tree preview, content safety findings, configured Git identity checks and exact-candidate resolver aligned with CI.
 
 The optional OpenAPI validator is installed only by `aips openapi install` into the managed AIPS venv using pinned `requirements-openapi.txt`; basic installation stays network-minimal. Keep `aips openapi doctor`, `aips doctor`, actionable missing-dependency errors and product-root CLI validation aligned. The `installation-entrypoints` workflow must prove fresh-install missing status, explicit setup and real validation from an independent product directory on Linux, plus dependency-free lifecycle contracts on Linux and macOS. Windows coverage describes the supported WSL launcher contract only.

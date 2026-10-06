@@ -322,6 +322,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 Changes to shared CI bootstrap behavior require exact-candidate checks for every caller, import failure handling, tested constraints, and the required repository aggregate.
 
+Publication preflight evaluates optional environment probes against the exact candidate plan: `NOT_REQUIRED` is accepted only when that capability is unselected, while selected checks and mandatory repository validation remain fail-closed.
+
 After merge, post-merge checkout and installed-version reconciliation run through the established publication CLI facade and retain fast-forward-only safeguards.
 
 The pull-request advisory fast-feedback job checks the same base/head candidate in parallel and reports findings only; it does not participate in change-class routing or alter the required full validation path.

@@ -170,6 +170,7 @@ PR 驗證會把 Gate 與 Repository Health 報告放在 CI runner 的暫存位�
 
 受保護分支的 `repository` required check 必須在 exact PR candidate 的 Integration Gate 成功後才會通過。
 
+
 ## Execution Isolation 與 Runtime Resource
 
 執行 `aips integration-gate` 前，準備完整 Python 3.12 環境並以 `AIPS_VALIDATION_PYTHON` 或 `AIPS_VALIDATION_VENV` 指定；缺少依賴時命令會先停止並列出診斷。文件候選另需 Node 24+（可用 `AIPS_NODE_BINARY` 指定）和 checkout 內已安裝的 VitePress；預檢不會自動安裝套件或連接 registry.
@@ -353,6 +354,8 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 詳見 [Project Intelligence](PROJECT_INTELLIGENCE.md)。
 
 ## Git Publication 與 Release
+
+Publication preflight 只檢查 exact candidate 所選的環境能力；候選未選 browser 驗證時 `NOT_REQUIRED` 不會阻擋，選用 browser 時 loopback 或瀏覽器檢查失敗仍會 fail closed。Required repository Gate 與 secret scan 維持必要條件。
 
 Pull requests may show an early advisory repository-preflight result while the required full validation continues. A fast-lane finding is diagnostic feedback and does not replace the required repository check.
 

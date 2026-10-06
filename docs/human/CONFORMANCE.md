@@ -1293,6 +1293,8 @@ Scenario 165 的 lifecycle evidence 也驗證 post-merge reconciliation 由 `pub
 
 Scenario 165 驗證本機與 GitHub Actions 共用同一個 exact-candidate resolver，統一解析 base/head、PR label change class、canonical Core Change Test Matrix 與文件 diff base。快速 diff／文件檢查會先執行；localhost 或 browser 能力不足會明確標為 `ENVIRONMENT_BLOCKED`。
 
+Environment readiness follows the candidate's optional toolchain plan: an unselected browser capability is `NOT_REQUIRED` and contributes no blocker; a selected browser capability still requires a successful localhost and browser probe.
+
 
 
 Lifecycle evidence 同時驗證 Git-ignored metadata、遞迴文件影響、安全的 tree-equivalent post-squash reconciliation，以及 Project Intelligence revision refresh 的 fail-closed 條件。發布、reset 與 merge authority 仍由 Human 控制。

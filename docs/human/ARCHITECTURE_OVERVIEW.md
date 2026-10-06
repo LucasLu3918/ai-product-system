@@ -139,7 +139,7 @@ Validation evidence 與 source checkout 分離保存。Gate 報告和 Repository
 Local 與 GitHub 透過 Publication Preflight 解析同一 base/head、PR-label change class、canonical matrix 與文件 diff base。快速 repository preflight 先攔截文件與 schema drift，再執行昂貴 lifecycle。
 
 Browser evidence 也屬於 deterministic environment contract：candidate preflight 會探測 Playwright managed Chromium 或明確選用的 system browser，執行最小 headless smoke probe；啟動層錯誤會以 `ENVIRONMENT_BLOCKED` 回報，避免與產品頁面回歸混淆。
-Publication Preflight 將 Python module availability 與 loopback/browser capability 分開回報；lifecycle evidence 隔離 module probe 後驗證 capability blockers，不改變 runtime contract。
+Publication Preflight 將 Python module availability 與 loopback/browser capability 分開回報；未被 exact candidate 選用的 browser probe 回報 `NOT_REQUIRED` 且不阻擋，選用時才驗證 capability blockers。
 
 ## Security 與 Governance
 
