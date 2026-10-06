@@ -268,7 +268,7 @@ Archived Radar Issue bodies are untrusted durable input. The decoder enforces an
 
 Effectiveness analysis is a read-only deterministic evidence aggregation over already-published Evolution Radar Issues and comments. It creates no Trial worktree, invokes no execution provider, and mutates no repository source.
 
-The scheduled workflow may create/update/close/reopen its own GitHub effectiveness Issue using `issues: write`, but has only `contents: read`. Review flags cannot reweight, enable, disable or replace sources and cannot authorize a Trial, code change, PR, merge or release.
+The scheduled workflow may create/update/close/reopen its own GitHub effectiveness Issue using `issues: write`, but has only `contents: read`. Scheduled and same-period manual runs share a bounded non-cancelling queue; custom cohorts remain independent. Review flags cannot reweight, enable, disable or replace sources and cannot authorize a Trial, code change, PR, merge or release.
 
 
 ## Historical Evolution Issue reconciliation boundary

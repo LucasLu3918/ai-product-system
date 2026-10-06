@@ -144,7 +144,7 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 Shared Python workflow bootstrap accepts an explicit import profile, checks imports and runs `pip check` under the repository tested constraints.
 
-Repository Health has a provisional ten-minute job limit from three successful 14–19-second samples. Monthly reliability queues up to 100 same-cohort Issue updates, uses the shared composite bootstrap, and has no guessed timeout before a successful duration is observed. Validation Observation retains its 15-minute limit and preserves each run as separate evidence.
+Repository Health has a provisional ten-minute job limit from three successful 14–19-second samples. Monthly reliability queues up to 100 same-cohort Issue updates, uses the shared composite bootstrap, and has no guessed timeout before a successful duration is observed. Evolution Effectiveness uses the same 100-entry, non-cancelling queue for same-period Issue reconciliation. Validation Observation retains its 15-minute limit and preserves each run as separate evidence.
 
 Pull requests receive an early repository-preflight summary from a separate bounded job. The result is advisory and the complete required repository validation still runs independently.
 

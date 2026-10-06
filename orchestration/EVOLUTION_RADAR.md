@@ -383,7 +383,7 @@ Per-source evidence includes collected, shortlisted, semantic-selected, actionab
 
 Pre-analysis coverage is measured across source-bearing weekly Issues. Missing triage evidence sets `REVIEW_INCOMPLETE_PREANALYSIS_COVERAGE`, lists the affected Issue number, and makes shortlist yield unavailable rather than treating missing data as zero. If the complete human-readable Issue exceeds GitHub's body limit, a bounded zlib/Base64 envelope preserves the original UTF-8 body with a SHA-256 digest. Monthly consumers restore and verify it before parsing; corruption, unsupported formats and decompression beyond 8 MiB remain unavailable evidence.
 
-The Effectiveness cohort retains a damaged archive when its weekly Issue title identifies the requested month, records the Issue number and raises `REVIEW_UNREADABLE_ARCHIVED_ISSUE`. Oversized Issue text keeps its ordinary report summary visible above the complete archived body.
+The Effectiveness cohort retains a damaged archive when its weekly Issue title identifies the requested month, records the Issue number and raises `REVIEW_UNREADABLE_ARCHIVED_ISSUE`. Oversized Issue text keeps its ordinary report summary visible above the complete archived body. Scheduled and manual runs that write the same monthly Effectiveness Issue share a repository/cohort queue of up to 100 pending runs; pending work is never cancelled and custom periods remain separate.
 
 The following MUST remain false:
 

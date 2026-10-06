@@ -10,6 +10,8 @@ Runtime Context 統一解析驗證 Python 與 cache/config 路徑；它將 Playw
 
 The public `bin/aips` command remains a thin launcher into the checkout-resolving `scripts/aips_cli.sh` facade. That facade loads the Harness, runtime, command and other shell modules from `scripts/aips_cli/` before dispatch, keeping installed symlink and source checkout behavior aligned.
 
+GitHub-hosted maintenance workflows remain owned by repository CI outside a local Agent task or worktree lease. When they reconcile one monthly Issue, a repository/cohort queue preserves same-period runs without adding token scope or publication authority.
+
 The Evolution pre-analysis module is an internal deterministic helper behind its existing CLI; it adds no Runtime Adapter, MCP tool, or Host integration.
 
 ~~~text

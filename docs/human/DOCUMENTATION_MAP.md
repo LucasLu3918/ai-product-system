@@ -125,7 +125,7 @@ docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGEL
 
 ## 文件一致性
 
-Evolution Radar 人工相關性抽樣與評估行為以 `EVOLUTION_RADAR.md` / `EVOLUTION_RADAR_OVERVIEW.md` 為 Human 說明，`orchestration/CONFORMANCE.md` 與 Scenario 218 定義 Agent 驗證契約；placement 登錄於 `config/documentation-placement.yaml`。
+Evolution Radar 人工相關性抽樣與評估行為以 `EVOLUTION_RADAR.md` / `EVOLUTION_RADAR_OVERVIEW.md` 為 Human 說明，`orchestration/CONFORMANCE.md` 與 Scenario 218 定義 Agent 驗證契約；placement 登錄於 `config/documentation-placement.yaml`。同月份 Issue reconciliation 的非取消排隊契約由 Scenario 207 lifecycle 驗證。
 
 Dependency Update risk classification 的使用方式位於 Maintenance 與 Technology Guide；Agent 契約由 Scenario 221 定義，placement 登錄於 `config/documentation-placement.yaml`。
 
