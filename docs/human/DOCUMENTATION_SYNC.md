@@ -165,4 +165,6 @@ Runtime Policy Enforcement 的 action schema、deny-by-default evaluator、nativ
 
 The `maintenance-reliability` mapping binds the bounded monthly collector, configuration, GitHub workflow, lifecycle and contract checks, Scenario 201, registry and evidence runner to the Human Maintenance / Conformance / Technology Guide / Documentation Map topics and the Agent Conformance protocol. Keep UNKNOWN handling, collection bounds, exact-SHA correlation and no-remediation authority aligned.
 
+Exact-candidate browser toolchain selection is documented under the current-behavior placement contract: the central validator registry may skip browser-dependent render lifecycle checks only when a valid plan explicitly sets `needs_browser: false`; missing or invalid plans retain the full profile.
+
 - Version-tag readiness changes also require the canonical release-readiness and Scenario 208 documentation placements; readiness remains separate from tag publication.

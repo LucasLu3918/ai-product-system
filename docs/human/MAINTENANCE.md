@@ -505,6 +505,8 @@ This is observational maintenance evidence. Any actual source-policy adjustment 
 - Permissions are limited to `actions: read`, `contents: read`, `pull-requests: read` and `issues: write`. The workflow cannot edit source, open implementation PRs, merge or release; all remediation requires the normal Human-reviewed change process.
 - `tests/evidence/maintenance_reliability_lifecycle.py` covers metric definitions, exact-SHA matching, incomplete input handling and API response shapes. Scenario 201 records its acceptance boundary.
 
+Candidate validation derives optional browser provisioning from the exact changed paths. The repository validator skips browser-dependent render lifecycle checks only when a valid CI plan declares `needs_browser: false`; an absent or invalid plan retains the full validation profile. The required repository aggregate, secret scan, preflight and Integration Gate remain mandatory.
+
 
 ## Controlled branch cleanup
 

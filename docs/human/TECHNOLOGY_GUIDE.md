@@ -163,6 +163,8 @@ Validation quality improves gradually: a Ruff baseline blocks debt growth, mypy 
 The Validation Taxonomy audit keeps shadow selection and graduation class/path declarations aligned and reports drift without editing either policy.
 
 The repository required-files policy has a versioned parallel manifest at `config/repository-contract.yaml`. Strict parsing and lifecycle fixtures compare its required path set and missing-file findings with `tests/validation/static_contracts.py`; the existing Python list remains authoritative during the parity pilot.
+
+The repository validator imports browser-dependent visual and creative render validators only when the exact-candidate plan requires a browser. A missing or invalid plan keeps the full profile; a planned skip is explicit lifecycle evidence and does not remove the repository aggregate.
 Offline Evolution precision and recall use explicit Human relevance labels; missing labels remain `NOT_READY` and never change source-selection policy.
 
 Managed AIPS CLI requires Python >=3.12. The required PR Gate tests Python 3.12; a weekly compatibility smoke workflow exercises 3.12, 3.13, and 3.14 from `config/system-facts.yaml`. An explicit `AIPS_PYTHON` must satisfy the floor; doctor identifies an unsupported managed environment, and install/update repair recreates only an AIPS-owned venv.

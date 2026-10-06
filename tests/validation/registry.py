@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 import importlib
 import time
-from typing import Callable
+from collections.abc import Callable
+from dataclasses import dataclass
 
 
 @dataclass(frozen=True)
@@ -15,6 +15,7 @@ class ValidatorSpec:
     paths: tuple[str, ...] = ()
     always_run: bool = True
     parallel_safe: bool = False
+    requires_browser: bool = False
 
 
 VALIDATORS = (
@@ -22,9 +23,9 @@ VALIDATORS = (
     ValidatorSpec("validation.versioning_contracts", True),
     ValidatorSpec("validation.system_facts_contracts", True),
     ValidatorSpec("validation.runtime_contracts", False),
-    ValidatorSpec("validation.visual_render_contracts", False, ("scripts/visual_*", "scripts/browser_*", "tests/evidence/visual_*", "tests/evidence/browser_*", "config/project-visual-profile.yaml"), False),
+    ValidatorSpec("validation.visual_render_contracts", False, ("scripts/visual_*", "scripts/browser_*", "tests/evidence/visual_*", "tests/evidence/browser_*", "config/project-visual-profile.yaml"), False, requires_browser=True),
     ValidatorSpec("validation.performance_evidence_contracts", False, ("scripts/performance_*", "tests/evidence/performance_*", "config/performance-*"), False),
-    ValidatorSpec("validation.creative_evidence_contracts", False, ("scripts/creative_*", "tests/evidence/creative_*", "config/creative-*"), False),
+    ValidatorSpec("validation.creative_evidence_contracts", False, ("scripts/creative_*", "tests/evidence/creative_*", "config/creative-*"), False, requires_browser=True),
     ValidatorSpec("validation.product_delivery_contracts", False, ("scripts/product_delivery*", "tests/evidence/product_delivery*", "orchestration/PRODUCT_DELIVERY.md"), False),
     ValidatorSpec("validation.evolution_radar_contracts", False, ("scripts/evolution_*", "config/evolution-*", "tests/evidence/evolution_*", "tests/validation/evolution_*", "orchestration/EVOLUTION_RADAR.md", "docs/human/EVOLUTION_RADAR.md", ".github/workflows/evolution-*"), False),
     ValidatorSpec("validation.evolution_governance_contracts", False),
@@ -87,11 +88,16 @@ ERROR_AGGREGATION_ORDER = (
 )
 
 
-def load_validators(record_timing: Callable[[str, float, str], None]) -> dict[str, object]:
+def load_validators(
+    record_timing: Callable[[str, float, str], None], *, needs_browser: bool = True
+) -> dict[str, object]:
     """Import validators in their established order and retain timing labels."""
     loaded: dict[str, object] = {}
     for spec in VALIDATORS:
         started = time.monotonic()
+        if spec.requires_browser and not needs_browser:
+            record_timing(spec.module, started, "SKIPPED: exact-path plan does not require browser")
+            continue
         try:
             loaded[spec.module] = importlib.import_module(spec.module)
         except Exception:

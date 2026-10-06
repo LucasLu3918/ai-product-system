@@ -223,6 +223,8 @@ Retrieval Intelligence 保留 `scripts/retrieval_intelligence.py` 作為相容 f
 Human maintainers can use the generated System Reference for factual command/runtime tables; candidate validation separately derives optional toolchain provisioning from exact changed paths while keeping the required Gate intact.
 
 Monthly maintenance reliability is a read-only maintenance-plane observation surface. It summarizes bounded GitHub validation and merged-PR metadata for Human review and does not change source or grant remediation, PR, merge or release authority.
+
+The central repository validator consumes the exact-candidate CI plan to omit browser-dependent render validators only when `needs_browser` is explicitly false. Missing or invalid plans select the full profile, preserving local validation behavior and the required aggregate.
 ~~~text
 docs/human/*.md
 → canonical Human source
