@@ -4,6 +4,8 @@ Runtime Context is the bounded, deterministic view of the active AIPS runtime, t
 
 ## Interpreter resolution
 
+The shared CI bootstrap uses the caller-selected pinned Python version, declared requirement files, tested constraints, and explicit import modules.
+
 The public shell CLI remains a thin `bin/aips` launcher into `scripts/aips_cli.sh`. The facade resolves its real checkout and sources the implementation modules from `scripts/aips_cli/` before command dispatch, so installed symlinks and unrelated caller working directories use the matching runtime implementation.
 
 The tested runtime installs from the repository's bounded constraints file through the existing bootstrap path. The resolver uses the same supported Python floor for CLI, validation and publication preflight.

@@ -181,6 +181,8 @@ Execution IDs and runtime attestation are produced by the execution runtime and 
 
 ## Validation de-duplication boundary
 
+Bootstrap verification imports each caller-declared module and runs `pip check`; missing modules fail the workflow before its validation job proceeds.
+
 GitHub Actions may run an advisory repository preflight as a separate job while the required validation workflow continues; it has no dependency edge into the required aggregate and cannot suppress or de-duplicate full validation.
 
 Validation observation capture records the actual full-run set and exact PR/base/head identity. The read-only collector installs PyYAML from `constraints/tested.txt` before reading bounded Actions artifacts; a missing dependency or artifact remains incomplete evidence. It never changes the scheduler or skips a validator.

@@ -475,6 +475,7 @@ placement_rules:
   - id: p13-maintenance-governance
     triggers:
       - .github/actions/aips-python-bootstrap/action.yml
+      - scripts/python_bootstrap_verify.py
       - config/github-ruleset-policy.yaml
       - config/version-tag-policy.yaml
       - config/validation-scope.yaml
@@ -496,7 +497,7 @@ placement_rules:
       docs/human/SECURITY_ASSURANCE.md: [Release Security Gate]
       docs/human/EVOLUTION_RADAR.md: [Effectiveness Feedback]
       docs/human/PROJECT_INTELLIGENCE.md: [Change Impact]
-      docs/human/DOCUMENTATION_MAP.md: [文件角色, Agent / machine canonical 文件]
+      docs/human/DOCUMENTATION_MAP.md: [文件角色, Agent / machine canonical 文件, Shared canonical 文件]
       docs/human/DOCUMENTATION_SYNC.md: [Deterministic protection]
       docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
       orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 210 — Python runtime support policy, Scenario 220 — Parallel advisory fast feedback]

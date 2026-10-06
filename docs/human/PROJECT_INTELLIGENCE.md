@@ -63,6 +63,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+Changes to a shared Python workflow bootstrap must reconcile every caller, declared requirement file, tested constraint, import profile, and lifecycle test.
+
 The shell CLI impact boundary includes the public `bin/aips` launcher, the resolved-checkout `scripts/aips_cli.sh` facade, its source modules, and direct CLI contract and install/update lifecycle consumers. The shell call graph remains a manually reviewed partial graph.
 
 Temporal query 的實作抽至 `scripts/project_intelligence_temporal.py`；`scripts/project_intelligence.py` 仍保留同一 facade 函式與 CLI 路由，Scenario 204 驗證其 identity 和輸出。

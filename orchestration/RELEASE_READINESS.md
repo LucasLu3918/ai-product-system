@@ -52,6 +52,8 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+A Python CI candidate must use its declared requirements and tested constraints, import its declared modules, and pass `pip check` before readiness evidence is trusted.
+
 The CLI module lifecycle is part of candidate validation for changes to the launcher, facade or sourced modules; it checks the source and installed-symlink routes without changing release or publication authority.
 
 Readiness validates the exact `VERSION`, tag target and main candidate without creating a tag. Stable installation remains blocked until a trusted signed version tag exists; key enrollment and first-release approval are separate decisions.

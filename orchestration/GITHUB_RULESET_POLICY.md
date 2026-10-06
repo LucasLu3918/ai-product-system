@@ -4,6 +4,8 @@
 
 ## Inputs
 
+The `repository` required context continues to cover full validation; the shared Python bootstrap is a caller-declared, fail-closed prerequisite within applicable workflows.
+
 The existing `bin/aips` and `scripts/aips_cli.sh` entrypoints remain stable across internal CLI module extraction; this refactor does not alter GitHub ruleset inputs or remote protection authority.
 
 Dependency Review and scheduled Scorecard supplement security evidence; they do not change the configured required-check set or ruleset activation state.

@@ -27,6 +27,8 @@ jobs:
             requirements.txt
             requirements-validation.txt
           constraints-file: constraints/tested.txt
+          verification-modules: |
+            yaml
           cache-dependency-path: |
             constraints/tested.txt
             requirements.txt

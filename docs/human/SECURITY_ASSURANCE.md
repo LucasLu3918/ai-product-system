@@ -195,6 +195,8 @@ Review actual:
 
 ## Release Security Gate
 
+The shared CI bootstrap validates module names as Python identifiers before import, uses checked-in requirement files and constraints, and fails on inconsistent dependencies.
+
 The parallel PR fast-feedback job has read-only repository permissions, checks the exact candidate and has no publication authority. Its outcome is advisory; mandatory secret scanning and the complete required repository gate remain in the existing validation path.
 
 The separate Validation Observation Collector also uses read-only Actions/content permissions and installs PyYAML from the tested constraints before collecting bounded evidence. Its artifact is advisory and cannot replace secret scanning, the required repository Gate, or Human review.

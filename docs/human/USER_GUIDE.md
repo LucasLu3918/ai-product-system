@@ -220,6 +220,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 
 ## Quality 與 Review
 
+The shared Python CI bootstrap checks each caller-declared import profile and dependency consistency; it complements the required full repository Gate.
+
 
 Publication commands remain available through `bin/aips` and the existing `scripts/aips_cli.sh` entrypoint. The facade loads its internal command modules from the selected AIPS checkout before dispatch, preserving the same command arguments and results for source and installed entrypoints.
 

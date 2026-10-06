@@ -837,6 +837,8 @@ The size audit measures tracked text/evidence files against 50,000 bytes and rep
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
+Scenario 207 verifies declared bootstrap imports and dependency consistency, and confirms malformed or missing modules fail closed.
+
 The public AIPS shell CLI keeps `bin/aips` as its thin launcher and `scripts/aips_cli.sh` as the checkout-resolving facade; implementation modules are loaded relative to that resolved checkout. `tests/evidence/aips_cli_module_extraction_lifecycle.py` covers source and symlink entrypoints from an unrelated working directory.
 
 Scenario 204 的 module-extraction evidence 斷言 temporal query 與 Evolution pre-analysis 的 facade object identity，並檢查 deterministic current-mode availability、canonical path 與 digest。
