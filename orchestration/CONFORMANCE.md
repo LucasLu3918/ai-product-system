@@ -815,6 +815,8 @@ Repository validators are imported only through the explicit ordered `tests/vali
 
 `tests/evidence/maintenance_reliability_lifecycle.py` checks bounded collection, deterministic validation/runtime distributions, explicit hotfix labels, repeated changed paths, heuristic failure categories, exact merge-SHA regression linkage and UNKNOWN behavior for incomplete histories, timestamps or changed-file counts. `tests/validation/maintenance_reliability_contracts.py` checks config bounds and workflow permissions. The monthly workflow may publish an observational report and deduplicated review Issue with Actions/contents/pull-request read and Issue write permissions only; it cannot remediate, change code, create PRs, merge or release. Category names are hints rather than root-cause findings.
 
+The shared repository evidence runner uses the exact-candidate CI plan to skip optional OpenAPI-dependent lifecycle checks only when OpenAPI is not selected; it removes that plan from contract and lifecycle subprocess environments. Secret scanning, the required repository aggregate and Integration Gate remain mandatory.
+
 Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agent_eval = 199 automated; 2 manual; 201 total; 0 uncovered.
 
 ## Scenario 218 — Evolution Human Relevance Evaluation

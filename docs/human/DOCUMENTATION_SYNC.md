@@ -135,6 +135,8 @@ Getting Started / Installation / User Guide 以 task-oriented方式導覽；Arch
 
 Document the shared Python bootstrap caller-declared import profile and dependency check alongside the canonical requirements and tested constraints.
 
+The `tests/validate_repository.py` runner is part of the maintenance reliability closure: keep its exact-candidate optional-toolchain selection, OpenAPI evidence classification and subprocess environment isolation documented with the required repository aggregate boundary.
+
 Evolution evaluation changes must synchronize the Human Radar guides, Scenario 218 and its Human/Agent conformance references with the `p16-evolution-human-evaluation` placement entry.
 
 The runtime architecture inventory and System Reference are regenerated from canonical registries; CLI source modules are part of the runtime-context documentation trigger and must remain covered by the module-extraction lifecycle.

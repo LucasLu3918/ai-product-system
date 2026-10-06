@@ -367,6 +367,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 Shared Python CI bootstrap callers must declare their requirement files, tested constraints, and import smoke tests; the action runs `pip check` and does not own package versions.
 
+`tests/validate_repository.py` classifies every OpenAPI-dependent lifecycle, including `implementation_enforcement_lifecycle.py`, under the exact candidate's optional-toolchain plan. When `needs_openapi` is false it skips those optional checks; an absent or invalid plan retains the full validation profile. The runner consumes `AIPS_CI_VALIDATION_PLAN` itself and removes it before loading contracts or launching lifecycle subprocesses, so selection metadata cannot change isolated test behavior. Secret scanning, the required repository aggregate and the Integration Gate remain mandatory.
+
 The document-size audit measures tracked documentation and evidence against a 50,000-byte threshold. Oversized items are reported as non-blocking `WARN`; use the measurements to inform a later Human layering decision. The audit does not archive or move files.
 
 Dependency updates can be classified with `python scripts/dependency_impact.py plan --ecosystem pip --name <package>`. The policy recommends evidence for each known dependency class; unknown packages default to `UNCLASSIFIED` / `HIGH`. Recommendations do not change Dependabot behavior, approve updates, or permit automatic merges.

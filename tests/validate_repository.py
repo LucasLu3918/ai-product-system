@@ -65,6 +65,7 @@ _append_validation_git_config("maintenance.auto", "false")
 _append_validation_git_config("maintenance.autoDetach", "false")
 
 _OPENAPI_EVIDENCE = {
+    "implementation_enforcement_lifecycle.py",
     "openapi_contracts_lifecycle.py",
     "openapi_generator_adapter_lifecycle.py",
     "openapi_client_pilot_lifecycle.py",
@@ -78,6 +79,7 @@ if os.environ.get("AIPS_CI_VALIDATION_PLAN"):
             _ci_plan = None
     except (OSError, ValueError, TypeError):
         _ci_plan = None
+    os.environ.pop("AIPS_CI_VALIDATION_PLAN", None)
 
 from validation.registry import ERROR_AGGREGATION_ORDER, VALIDATORS, load_validators
 
@@ -124,7 +126,9 @@ for evidence in (
         _record_timing(str(evidence.relative_to(Path(__file__).resolve().parents[1])), time.monotonic(), "SKIPPED: exact-path plan does not require OpenAPI")
         continue
     started = time.monotonic()
-    result = subprocess.run([sys.executable, str(evidence)], cwd=Path(__file__).resolve().parents[1], capture_output=True, text=True, check=False)
+    evidence_env = os.environ.copy()
+    evidence_env.pop("AIPS_CI_VALIDATION_PLAN", None)
+    result = subprocess.run([sys.executable, str(evidence)], cwd=Path(__file__).resolve().parents[1], env=evidence_env, capture_output=True, text=True, check=False)
     _record_timing(str(evidence.relative_to(Path(__file__).resolve().parents[1])), started,
                    "PASS" if result.returncode == 0 else "FAIL")
     if result.returncode:
