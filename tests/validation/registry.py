@@ -58,6 +58,7 @@ VALIDATORS = (
     ValidatorSpec("validation.external_credential_guard_contracts", False),
     ValidatorSpec("validation.repository_health_contracts", False, ("scripts/repository_health.py", "config/repository-health.yaml", "tests/evidence/repository_health_lifecycle.py", "tests/validation/repository_health_contracts.py"), False),
     ValidatorSpec("validation.mcp_interoperability_contracts", False),
+    ValidatorSpec("validation.installation_entrypoints_workflow_contracts", False, (".github/workflows/installation-entrypoints.yml", "tests/validation/installation_entrypoints_workflow_contracts.py"), False),
     ValidatorSpec("validation.evolution_effectiveness_contracts", False, ("scripts/evolution_effectiveness.py", "scripts/evolution_radar_rollup.py", "config/evolution-effectiveness.yaml", "tests/evidence/evolution_*", "tests/validation/evolution_effectiveness_contracts.py", ".github/workflows/evolution-*"), False),
     ValidatorSpec("validation.maintenance_reliability_contracts", False),
     ValidatorSpec("validation.quality_ratchet_contracts", False, ("config/quality-ratchet.yaml", "scripts/quality_ratchet.py", "requirements-validation.txt", "constraints/tested.txt", "tests/evidence/release_channel_properties.py"), False),

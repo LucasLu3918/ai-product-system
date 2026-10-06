@@ -1547,6 +1547,8 @@ The monthly evaluator deterministically samples up to 20 signal fingerprints and
 
 Pull requests run the bounded repository preflight concurrently against the exact candidate. Its findings are reported for early feedback and do not replace or gate the required full repository validation; unrelated label-only events skip the advisory job.
 
+The installation-entrypoint workflow keeps its Unix, Linux lifecycle and Windows contract checks on pull requests. Per-job limits use a 15× multiplier over P95 from the ten latest successful runs (2026-10-06 02:53–11:34 UTC), rounded upward to five-minute increments; a timeout is a failed job and does not replace the required repository Gate.
+
 Related security and observation contracts are covered by Scenarios 211 and 217: Dependency Review shadow results do not alter the required aggregate, and a completed `NOT_READY` cohort is distinct from an operational collection failure.
 
 ## Scenario 221 — Dependency Update Risk Classification
