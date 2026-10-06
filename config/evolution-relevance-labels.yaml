@@ -3,6 +3,7 @@ label_authority: human
 automatic_policy_changes: false
 notes:
   - Add reviewed signal fingerprints only after a Human assigns explicit relevance and selection labels.
+  - Add actionable labels and source IDs before a cohort is considered complete.
   - Empty or incomplete cohorts produce NOT_READY; this file contains no synthetic production labels.
   - Reports are offline evidence for review and never change source weights, enablement, or selection.
 labels: []

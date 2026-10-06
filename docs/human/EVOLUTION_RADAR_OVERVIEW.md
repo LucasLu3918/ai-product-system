@@ -43,6 +43,8 @@ GitHub Actions 的 Ubuntu runner 固定在 24.04，artifact upload action 維持
 External provider credential 永遠是 optional enhancement，不得變成普通 Radar、baseline validation 或 release prerequisite。Missing credential 使用 truthful SKIPPED / PENDING state。
 
 ## Effectiveness Feedback
+
+每月由 deterministic fingerprint 排序抽取 20 筆 signal 供 Human 標註；離線評估 shortlist precision/recall、actionable yield 與來源 relevance yield。資料不完整時維持 `NOT_READY`，結果只提供來源政策檢視建議，不會自動調整來源權重或 shortlist。
 The monthly Effectiveness report leaves shortlist yield unavailable when a source-bearing weekly Issue lacks pre-analysis. Oversized weekly Issue bodies use a bounded SHA-256 checked archive restored before the monthly rollup reads evidence.
 
 If archive verification fails, the monthly report names that unreadable Issue and keeps it under Human review; it is not silently omitted from the cohort.

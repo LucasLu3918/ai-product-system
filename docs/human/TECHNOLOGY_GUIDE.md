@@ -234,6 +234,8 @@ Implementation Resolution 先釐清 REST/OpenAPI authority，再依既有專案�
 
 ## Evolution & Maintenance
 
+Evolution relevance evaluation uses a reproducible monthly sample of 20 signal fingerprints and explicit Human labels. It reports shortlist precision/recall, actionable yield and source yield offline; incomplete labels remain `NOT_READY`, and policy changes still require a Human decision.
+
 ### Evolution Radar
 
 定期收集 public-source technology evidence、dedup / provenance、deterministic pre-analysis、semantic handoff 與 Human Decision。

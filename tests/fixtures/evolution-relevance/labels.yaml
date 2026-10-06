@@ -10,6 +10,8 @@ labels:
     label_rationale: The reviewed signal matches the target capability need.
     selection: SELECTED
     selection_reason: Deterministic pre-analysis ranked the signal in the shortlist.
+    source_ids: [github-blog]
+    actionability: ACTIONABLE
   - signal_fingerprint: sha256:0000000000000000000000000000000000000000000000000000000000000002
     label_source: human
     reviewer: fixture-reviewer
@@ -18,6 +20,8 @@ labels:
     label_rationale: The reviewed signal does not apply to the stated capability scope.
     selection: SELECTED
     selection_reason: Deterministic pre-analysis ranked the signal in the shortlist.
+    source_ids: [github-blog]
+    actionability: NOT_ACTIONABLE
   - signal_fingerprint: sha256:0000000000000000000000000000000000000000000000000000000000000003
     label_source: human
     reviewer: fixture-reviewer
@@ -26,6 +30,8 @@ labels:
     label_rationale: The reviewed signal applies to the stated capability scope.
     selection: REJECTED
     selection_reason: The bounded shortlist omitted this low-ranked signal.
+    source_ids: [hn]
+    actionability: ACTIONABLE
   - signal_fingerprint: sha256:0000000000000000000000000000000000000000000000000000000000000004
     label_source: human
     reviewer: fixture-reviewer
@@ -34,3 +40,5 @@ labels:
     label_rationale: The reviewed signal is outside the product scope.
     selection: REJECTED
     selection_reason: Deterministic pre-analysis ranked the signal below the shortlist.
+    source_ids: [hn]
+    actionability: NOT_ACTIONABLE
