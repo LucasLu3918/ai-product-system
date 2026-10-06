@@ -1510,6 +1510,8 @@ Lifecycle evidence checks exact-path Node, browser and OpenAPI selection, full p
 
 `tests/evidence/maintenance_reliability_lifecycle.py` verifies monthly validation pass-rate and runtime statistics, nearest-rank percentiles, explicit hotfix labels, repeated paths, failure-category hints, exact merge-SHA linkage and UNKNOWN results when bounded history or required timestamps/file counts are incomplete. The scheduled workflow persists normalized metadata and changed paths, publishes a bounded report and review Issue using Actions/contents/pull-request read and Issue write permissions, and grants no automatic remediation or code-change authority. Failure categories are hints, and exact-SHA correlation is limited to available main-push runs.
 
+The monthly workflow uses the shared Python bootstrap with `requirements.txt` and `constraints/tested.txt`. Same-cohort Issue reconciliation queues up to 100 reports without cancelling a running or pending report; no timeout is guessed before a successful run supplies timing evidence.
+
 The central repository evidence runner also honors exact-candidate optional toolchain selection: it skips OpenAPI-dependent lifecycle checks, including implementation enforcement, only when `needs_openapi` is false, and does not pass the selection variable into isolated lifecycle subprocesses. The required repository aggregate remains in force.
 
 Browser-dependent render validators follow the same exact-plan boundary: `needs_browser: false` omits only the visual and creative render validators, while an absent or invalid plan loads the full validator registry. Scenario lifecycle evidence confirms both validator selection and the explicit skip timing record.
@@ -1519,6 +1521,7 @@ Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agen
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
 Scenario 207 now verifies caller-declared Python imports, missing-module failure, shell-like input rejection, and dependency consistency through `pip check`.
+It also verifies Maintenance Reliability uses the shared bootstrap, Repository Health's provisional ten-minute bound and same-revision serialization, and Validation Observation's retained 15-minute bound without concurrency that could replace pending evidence.
 
 The repository validator also runs `tests/evidence/aips_cli_module_extraction_lifecycle.py`, which verifies the facade, source-checkout launcher and installed-symlink route from an unrelated working directory.
 

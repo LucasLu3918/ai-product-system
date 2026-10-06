@@ -197,6 +197,8 @@ Review actual:
 
 The shared CI bootstrap validates module names as Python identifiers before import, uses checked-in requirement files and constraints, and fails on inconsistent dependencies.
 
+Scheduled reporting workflows keep repository/content permissions read-only except for narrowly scoped Issue reconciliation. A timeout bounds resource use but does not grant authority; concurrency may serialize identical-revision or same-cohort work, while distinct observation evidence remains independently reviewable.
+
 The installation-entrypoint workflow grants `contents: read` only. Its bounded per-job timeout fails that job without granting publication authority, changing the required repository Gate, or cancelling a separate run.
 
 The parallel PR fast-feedback job has read-only repository permissions, checks the exact candidate and has no publication authority. Its outcome is advisory; mandatory secret scanning and the complete required repository gate remain in the existing validation path.

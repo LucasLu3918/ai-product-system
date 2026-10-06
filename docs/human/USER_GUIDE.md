@@ -356,6 +356,8 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 
 ## Git Publication 與 Release
 
+Scheduled maintenance summaries are evidence, not permission to change source, merge, release or delete branches. When reviewing workflow reliability, distinguish an operational error from an incomplete observation cohort; inspect the run summary and bounded artifact, and retain separate observation runs for later comparison.
+
 Publication preflight 只檢查 exact candidate 所選的環境能力；候選未選 browser 驗證時 `NOT_REQUIRED` 不會阻擋，選用 browser 時 loopback 或瀏覽器檢查失敗仍會 fail closed。Required repository Gate 與 secret scan 維持必要條件。
 
 CI 可依精確變更路徑略過未使用的 OpenAPI 套件安裝，但仍執行 publication-preflight lifecycle。已安裝 validator 時會跑 OpenAPI help 與 contract smoke；未安裝時會驗證 CLI 提供明確設定指引、沒有 traceback，也不會輸出不完整驗證檔。這不略過 required repository aggregate。

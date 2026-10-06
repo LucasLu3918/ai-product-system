@@ -66,6 +66,7 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 - MAINTENANCE.md：system maintainer workflow。
 - assets/maintenance-governance-overview.svg：Evolution、驗證影子計畫、branch、版本與 GitHub policy 的 Human review 邊界。
 - Monthly maintenance reliability uses `scripts/maintenance_reliability.py` and `.github/workflows/maintenance-reliability.yml`; maintainer instructions are in MAINTENANCE.md and behavior evidence is Scenario 201 in CONFORMANCE.md.
+- Workflow execution profiles are maintained in MAINTENANCE.md and TECHNOLOGY_GUIDE.md; `tests/evidence/python_bootstrap_action_lifecycle.py` verifies bootstrap, timeout rationale and evidence-preserving concurrency.
 - DOCUMENTATION_SYNC.md：文件 consistency / placement contract。
 - SYSTEM_REFERENCE.md：由已驗證 system facts registry 衍生的 command、capability、platform 與 runtime 表格。
 

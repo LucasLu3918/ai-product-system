@@ -60,6 +60,7 @@ def main() -> int:
     pilots = (
         ".github/workflows/mcp-codex-interop.yml",
         ".github/workflows/repository-health.yml",
+        ".github/workflows/maintenance-reliability.yml",
     )
     for relative in pilots:
         workflow = yaml.safe_load((ROOT / relative).read_text(encoding="utf-8"))
@@ -74,7 +75,35 @@ def main() -> int:
     interop_text = (ROOT / pilots[0]).read_text(encoding="utf-8")
     require('".github/actions/aips-python-bootstrap/**"' in interop_text,
             "the pilot pull request filter must include shared action changes")
-    print("PASS: Python bootstrap action, pilot workflows, and read-only contracts")
+
+    health = yaml.safe_load((ROOT / ".github/workflows/repository-health.yml").read_text(encoding="utf-8"))
+    require(health["jobs"]["observe"]["timeout-minutes"] == 10,
+            "repository health must keep its evidence-backed provisional timeout")
+    require(health["concurrency"]["cancel-in-progress"] is False,
+            "repository health must preserve an in-progress report")
+    require("${{ github.sha }}" in health["concurrency"]["group"],
+            "repository health concurrency must distinguish exact revisions")
+
+    maintenance = yaml.safe_load((ROOT / ".github/workflows/maintenance-reliability.yml").read_text(encoding="utf-8"))
+    require(maintenance["concurrency"]["cancel-in-progress"] is False,
+            "maintenance reliability must serialize cohort issue reconciliation without cancellation")
+    require(maintenance["concurrency"]["queue"] == "max",
+            "maintenance reliability must retain same-cohort pending reports instead of replacing them")
+    require("inputs.period" in maintenance["concurrency"]["group"],
+            "maintenance reliability concurrency must distinguish requested cohorts")
+    report_steps = maintenance["jobs"]["report"]["steps"]
+    require(any(step.get("uses") == "./.github/actions/aips-python-bootstrap" for step in report_steps),
+            "maintenance reliability must use the shared Python bootstrap")
+    require("timeout-minutes" not in maintenance["jobs"]["report"],
+            "do not guess a maintenance timeout before a completed timing sample exists")
+
+    collector = yaml.safe_load((ROOT / ".github/workflows/validation-observation-collector.yml").read_text(encoding="utf-8"))
+    require(collector["jobs"]["collect"]["timeout-minutes"] == 15,
+            "validation observation must retain its existing conservative timeout")
+    require(any(step.get("uses") == "./.github/actions/aips-python-bootstrap"
+                for step in collector["jobs"]["collect"]["steps"]),
+            "validation observation must retain the shared Python bootstrap")
+    print("PASS: Python bootstrap, workflow execution profiles, and permission contracts")
     return 0
 
 

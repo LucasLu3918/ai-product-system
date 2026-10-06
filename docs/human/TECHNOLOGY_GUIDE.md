@@ -144,6 +144,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 Shared Python workflow bootstrap accepts an explicit import profile, checks imports and runs `pip check` under the repository tested constraints.
 
+Repository Health has a provisional ten-minute job limit from three successful 14–19-second samples. Monthly reliability queues up to 100 same-cohort Issue updates, uses the shared composite bootstrap, and has no guessed timeout before a successful duration is observed. Validation Observation retains its 15-minute limit and preserves each run as separate evidence.
+
 Pull requests receive an early repository-preflight summary from a separate bounded job. The result is advisory and the complete required repository validation still runs independently.
 
 The repository validator derives optional evidence from the exact-candidate CI plan. OpenAPI-dependent lifecycle checks, including implementation enforcement, are skipped only when `needs_openapi` is false; without a valid plan the full profile runs. The required `publish_preflight_lifecycle.py` evidence still runs in either case: action-level OpenAPI help and validation smoke require both optional modules, while the missing-module path checks top-level help and a deterministic fail-closed diagnostic. The plan is not inherited by isolated contract and lifecycle subprocesses. The required repository aggregate, secret scan and Integration Gate remain blocking.

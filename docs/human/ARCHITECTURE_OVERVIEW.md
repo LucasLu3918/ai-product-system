@@ -185,6 +185,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 The shared Python CI bootstrap verifies caller-declared imports and dependency consistency while requirement files and tested constraints remain the package-version authority.
 
+Scheduled maintenance workflows use explicit dependency bootstrap, bounded runtime where timing evidence supports it, and concurrency only when a newer run cannot erase distinct evidence. Repository Health uses a provisional ten-minute limit from three completed 14–19-second runs; the monthly reliability collector has no timeout until a completed baseline exists. Validation Observation retains its 15-minute limit and keeps scheduled/manual runs separate.
+
 The exact-candidate repository validator uses its optional-toolchain plan only to select evidence: OpenAPI-dependent lifecycle checks are skipped when `needs_openapi` is false, including implementation enforcement that validates OpenAPI contracts. The required repository aggregate and Integration Gate still run; without a valid plan, validation keeps the full profile.
 
 Pull-request validation starts a separate, bounded repository-preflight job alongside the existing full validation path. Its summary is advisory and cannot replace the required Janitor and repository aggregate.
