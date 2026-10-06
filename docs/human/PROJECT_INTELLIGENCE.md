@@ -143,6 +143,8 @@ Temporal Project Intelligence 另外以 `TEMPORAL_ASSERTIONS.yaml` 保存具 pro
 
 每個結果會保留 path + line（或 commit）、content hash、Git HEAD / dirty fingerprint，並先排除 credential / secret path、限制最大 Context Token。
 
+SQLite schema creation, metadata access and read-only index snapshots are implemented in `scripts/retrieval_storage.py`. `scripts/retrieval_intelligence.py` remains the stable facade and re-exports these helpers; live-WAL refusal, source-stability checks and snapshot integrity behavior are unchanged.
+
 ## Retrieval Quality Evaluation：先量測，再決定下一項技術
 
 AIPS 不會因為「Vector DB、Embedding、Tree-sitter、LSP 或 Sourcegraph 看起來更進階」就直接導入。下一步先使用 repository-specific benchmark，對照：

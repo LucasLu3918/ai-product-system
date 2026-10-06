@@ -114,6 +114,8 @@ Remote Git publication uses the built-in credential-free candidate scanner in st
 ### Parallel Run Dashboard
 
 The first dashboard implementation uses Python stdlib HTTP, static HTML/CSS/Vanilla JavaScript and polling. It has no frontend dependency chain, database, WebSocket or mutation endpoint. API output is a whitelist and excludes prompts, reasoning, raw output, secrets and raw paths.
+The Retrieval Intelligence SQLite persistence boundary is `scripts/retrieval_storage.py`; the public compatibility facade remains `scripts/retrieval_intelligence.py`. The placement and documentation-sync rules map both modules to the existing Project Intelligence topic.
+
 
 ## Security & Governance
 

@@ -18,6 +18,7 @@ import publish_preflight as publish_facade
 import repository_health as health_facade
 import repository_health_conformance as health_impl
 import retrieval_intelligence as retrieval_facade
+import retrieval_storage as retrieval_storage_impl
 import retrieval_structural_graph as retrieval_impl
 
 
@@ -29,6 +30,8 @@ def main() -> int:
     assert callable(publish_facade.sync_installed)
     assert health_facade.run_scenario_conformance is health_impl.run_scenario_conformance
     assert retrieval_facade.structural_relation_boosts is retrieval_impl.structural_relation_boosts
+    for name in ("open_db", "open_read_db", "metadata_get", "metadata_set"):
+        assert getattr(retrieval_facade, name) is getattr(retrieval_storage_impl, name), name
     for name in (
         "PREANALYSIS_START",
         "PREANALYSIS_END",
@@ -53,6 +56,10 @@ def main() -> int:
         publish_facade.sync_installed,
         health_facade.run_scenario_conformance,
         retrieval_facade.structural_relation_boosts,
+        retrieval_facade.open_db,
+        retrieval_facade.open_read_db,
+        retrieval_facade.metadata_get,
+        retrieval_facade.metadata_set,
     ):
         assert callable(function)
     with tempfile.TemporaryDirectory() as temporary:

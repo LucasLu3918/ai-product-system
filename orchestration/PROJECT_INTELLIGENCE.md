@@ -332,6 +332,8 @@ Index open and query failures return a stable `INDEX_UNAVAILABLE` diagnostic wit
 
 The bounded context budget is shared across Project Core, Recall and temporal assertions. Recall receives only the remaining budget after capsule and pointer metadata; temporal evidence is capped within its reserved share. Final runtime rendering enforces the same hard limit and drops optional evidence before truncating summaries.
 
+SQLite schema creation, metadata reads/writes and read-only database snapshots live in `retrieval_storage.py`; `retrieval_intelligence.py` remains the compatibility facade. WAL refusal, source-stability checks and snapshot integrity remain explicit data boundaries.
+
 ## Retrieval Quality Evaluation
 
 Do not add a semantic provider, new parser/index dependency or ranking complexity merely because it is available. Measure the current retrieval layer first with a repository-specific evaluation suite.

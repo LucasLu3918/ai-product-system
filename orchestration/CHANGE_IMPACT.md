@@ -12,6 +12,8 @@ For cache recovery, review implicit fallback versus explicit XDG settings, direc
 
 A local code edit may change contracts, persistence, events or consumers outside the directly edited file. Resolve impact before implementation and compare declared impact against the resulting diff.
 
+Retrieval storage extraction keeps the disposable SQLite schema, read-only snapshot/WAL safeguards and facade exports unchanged. Review storage/cache consumers and preserve the exact `retrieval_intelligence.py` API boundary.
+
 ## Flow
 
 ~~~text

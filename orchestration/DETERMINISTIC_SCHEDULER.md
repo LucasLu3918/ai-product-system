@@ -204,6 +204,8 @@ The read-only observation collector preserves full validation and records cohort
 
 
 The exact-path optional-toolchain plan may omit OpenAPI package installation, but it does not remove the lifecycle owner from the required repository aggregate. `publish_preflight_lifecycle.py` keeps dependency-free top-level routing and failure checks active, and runs action-level contract smoke only when the selected Python has both optional validator modules.
+The internal Retrieval Intelligence storage extraction preserves the facade and lifecycle behavior; `tests/evidence/module_extraction_lifecycle.py` verifies helper exports. It does not change task scheduling, ownership, locks or resume state.
+
 ## Runtime resource requests
 
 Task Graph isolation metadata may declare bounded TCP port needs:

@@ -1,55 +1,72 @@
 version: 1
 change:
-  id: plan17-t06-effectiveness-concurrency
-  summary: >
-    Serialize scheduled and manual Evolution Effectiveness writes to the same monthly Issue without cancelling pending or in-progress evidence.
+  id: plan17-t08-retrieval-storage
+  summary: Extract private SQLite persistence helpers behind the stable Retrieval
+    Intelligence facade.
   boundary:
-    - Scope concurrency by repository and requested cohort; schedule and default-period dispatch share one group, while explicitly requested months remain separate.
-    - "Preserve up to 100 pending runs with queue: max and cancel-in-progress: false."
-    - Preserve schedule, workflow_dispatch, job identity, Issue content, permissions, and existing Human authority.
-    - Update Scenario 207 lifecycle evidence and the recursive canonical documentation closure.
+  - Keep retrieval_storage private; preserve the exact helper objects re-exported
+    by retrieval_intelligence.
+  - Preserve existing SQLite schema, FTS fallback, read-only and WAL snapshot behavior,
+    integrity checks, and return shapes.
+  - No public API, canonical data migration, event, scheduler, secret, network, or
+    publication authority change.
 candidate:
-  base_sha: 33c0064a7a881e4866d9719a8133a79ce5d838e2
-  changed_files_hash: 217d6166a6b9860abfaa10a3b044859a3c9dd07a0fa8723cef428fadb28dfd08
+  base_sha: f17b4f0da3480ceed2b566c99918ae7753de61f2
+  changed_files_hash: 5458bcaae601f769d19e4bdfdc8dc903e4c5f3fbe0c9c0f6efc146a8561821f4
 matrix:
-  - boundary: same-cohort-issue-reconciliation
-    reason: Scheduled and manual runs can concurrently create, edit, reopen, or close the same period Issue; serialize only the shared repository/cohort target and retain every pending run.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: 'Ruff check on tests/evidence/python_bootstrap_action_lifecycle.py passes; AIPS recursive docs preview reports placement PASS and complete closure.'
-      unit:
-        applicable: true
-        evidence: 'tests/evidence/python_bootstrap_action_lifecycle.py asserts repository/cohort group, queue: max, and cancel-in-progress: false.'
-      integration:
-        applicable: true
-        evidence: 'Full Python 3.12 repository validator and the exact-candidate AIPS Integration Gate must pass before publication.'
-      contract:
-        applicable: true
-        evidence: 'Lifecycle verifies exact workflow-level group expression, same default cohort for schedule and default dispatch, and separate custom-period groups.'
-      e2e:
-        applicable: true
-        evidence: 'Exact committed candidate must pass local AIPS Integration Gate and PR required checks; verify post-merge main checks.'
-      security:
-        applicable: true
-        evidence: 'Existing contents: read and issues: write permissions are unchanged; no new secret, credential, publishing, or repository-write authority is introduced.'
-      migration_recovery:
-        applicable: false
-        na_reason: 'Workflow scheduling change only; no persistent schema, data migration, or runtime recovery contract changes.'
-      cli_harness:
-        applicable: false
-        na_reason: 'No CLI behavior or local Harness command contract changes; GitHub Actions owns the external schedule and queue.'
-      docs_schema:
-        applicable: true
-        evidence: 'AIPS preview reports documentation placement PASS, no missing additions, and all 19 candidate paths are bound in this matrix.'
+- boundary: retrieval-storage-private-module-and-facade-compatibility
+  reason: The refactor moves SQLite helper implementations behind the existing module
+    facade; callers and persisted index behavior must remain compatible.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff passes for the new storage module; baseline comparison for the
+        changed facade shows no new finding; documentation placement passes.
+    unit:
+      applicable: true
+      evidence: tests/evidence/module_extraction_lifecycle.py verifies exact facade
+        object re-exports and writable/read-only helper behavior.
+    integration:
+      applicable: true
+      evidence: 'Full tests/validate_repository.py passed on the exact code candidate:
+        12 roles, 27 skills, 222 scenarios.'
+    contract:
+      applicable: true
+      evidence: Existing retrieval lifecycle validation passes for schema, FTS fallback,
+        WAL refusal, verified snapshot, integrity, source stability, and compatibility
+        facade.
+    e2e:
+      applicable: true
+      evidence: Exact-candidate AIPS Integration Gate and required PR checks must
+        pass before merge; verify main after merge.
+    security:
+      applicable: true
+      evidence: Read-only SQL remains query_only; live WAL is refused before snapshot;
+        snapshots are source-stability and integrity checked; no credentials or external
+        authority added.
+    migration_recovery:
+      applicable: false
+      na_reason: The SQLite retrieval index remains disposable, local, revision-scoped
+        cache data; schema and persisted canonical project data do not change.
+    cli_harness:
+      applicable: false
+      na_reason: No CLI, runtime adapter, or Harness command behavior changes.
+    docs_schema:
+      applicable: true
+      evidence: AIPS preview confirms placement PASS, no missing additions, and recursive
+        closure for all 22 exact candidate paths.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
   status: SELF_REVIEWED
   evidence:
-    - User authorized completion of the executable plan17 recommendations, one reversible logical change per PR, local AIPS verification, and normal remote checks before merge.
-    - Direct review confirmed that the workflow creates/edits/reopens/closes a single title per cohort and currently has no workflow-level concurrency; Evolution Effectiveness contract, Scenario 207 lifecycle, repository validator, and recursive docs mapping were inspected.
-    - Bounded Impact Graph traversal is incomplete because the retrieval index is missing and repository-wide graph coverage is partial; the exact known workflow, contract, lifecycle, Issue consumer, authority, and documentation edges were reviewed directly. No global completeness claim is made.
+  - User authorized implementation of all plan17 recommendations, local verification,
+    PR publication, and merge to main after checks.
+  - Reviewed the complete 22-path diff against the private storage extraction boundary
+    and recursive canonical documentation closure.
+  - Direct caller edges are recorded in the ephemeral AIPS impact graph; lifecycle
+    tests confirm stable facade exports and read/write guarantees. Full repository
+    validation passed.
 blockers: []
 status: READY
