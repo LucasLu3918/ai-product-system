@@ -10,6 +10,25 @@ from pathlib import Path
 from typing import Any
 
 VERSION_RE = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
+UNRELEASED_HEADING_RE = re.compile(r"^## Unreleased[ \t]*$")
+H2_HEADING_RE = re.compile(r"^##[ \t]+")
+
+
+def unreleased_section_errors(changelog_text: str | None) -> list[str]:
+    """Require one canonical, empty Unreleased section in the changelog."""
+    if changelog_text is None:
+        return ["CHANGELOG.md could not be read; Unreleased section readiness is unknown"]
+
+    lines = changelog_text.splitlines()
+    headings = [index for index, line in enumerate(lines) if UNRELEASED_HEADING_RE.fullmatch(line)]
+    if len(headings) != 1:
+        return ["CHANGELOG.md must contain exactly one canonical '## Unreleased' heading"]
+
+    start = headings[0] + 1
+    end = next((index for index in range(start, len(lines)) if H2_HEADING_RE.match(lines[index])), len(lines))
+    if any(line.strip() for line in lines[start:end]):
+        return ["CHANGELOG.md '## Unreleased' section must be empty before release readiness"]
+    return []
 
 
 def evaluate(
@@ -18,8 +37,9 @@ def evaluate(
     main_sha: str,
     existing_tag_sha: str | None,
     expected_version: str | None = None,
+    changelog_text: str | None = None,
 ) -> dict[str, Any]:
-    errors: list[str] = []
+    errors = unreleased_section_errors(changelog_text)
     if not VERSION_RE.fullmatch(version):
         errors.append("VERSION must be a stable SemVer X.Y.Z value")
     if expected_version is not None and version != expected_version:
@@ -54,6 +74,7 @@ def main() -> int:
     parser.add_argument("--main-ref", default="origin/main")
     parser.add_argument("--candidate-sha", help="Require this exact full commit SHA to be the release candidate")
     parser.add_argument("--expected-version", help="Require VERSION to match this exact stable SemVer value")
+    parser.add_argument("--changelog-file", default="CHANGELOG.md", help="Changelog whose Unreleased section must be empty")
     parser.add_argument("--json", action="store_true")
     args = parser.parse_args()
     repo = args.repo.resolve()
@@ -61,7 +82,11 @@ def main() -> int:
     candidate = args.candidate_sha or git(repo, "rev-parse", "HEAD") or ""
     main_sha = git(repo, "rev-parse", args.main_ref) or ""
     tag_sha = git(repo, "rev-parse", "refs/tags/v" + version + "^{commit}", check=False)
-    report = evaluate(version, candidate, main_sha, tag_sha, args.expected_version)
+    try:
+        changelog_text = (repo / args.changelog_file).read_text(encoding="utf-8")
+    except OSError:
+        changelog_text = None
+    report = evaluate(version, candidate, main_sha, tag_sha, args.expected_version, changelog_text)
     print(json.dumps(report, indent=2) if args.json else f"{report['status']}: {report['tag']} {report['candidate_sha']}")
     return 0 if report["status"] == "READY_FOR_EXPLICIT_RELEASE_APPROVAL" else 1
 

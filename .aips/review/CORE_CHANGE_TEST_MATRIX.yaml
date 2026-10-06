@@ -1,74 +1,82 @@
 version: 1
 change:
-  id: plan17-t06-observation-timeout
-  summary: Bound the read-only daily/manual Validation Observation Collector to a
-    provisional 15-minute timeout from a two-run (~31-second) sample; preserve event
-    behavior, permissions, artifact retention and pending evidence. Defer the two
-    Issue-writing workflows to Batch C.
+  id: plan17-t03-unreleased-readiness
+  summary: Block read-only release readiness while CHANGELOG.md has a missing, duplicate,
+    malformed, or non-empty canonical Unreleased section.
   boundary:
-  - Validation Observation Collector job timeout, scheduled/manual evidence lifecycle,
-    bounded graph traversal, required placement documentation and this candidate-bound
-    matrix.
+  - Require exactly one canonical top-level '## Unreleased' heading and an empty section
+    before stable readiness.
+  - Preserve exact candidate/main SHA, VERSION, existing-tag provenance, explicit
+    release approval, no-backfill, and read-only workflow contracts.
+  - Extend lifecycle and validation contracts plus Scenario 208 and concise Human/Agent
+    guidance.
+  - No tag or release creation, movement, deletion, installer policy or workflow permission
+    changes.
 candidate:
-  base_sha: b8e3e0a65a876cb99b945a7e0cbc35b2cd486074
-  changed_files_hash: 43fc370b5f7a935c3115a7faad7c1a310e6e39cf94429e841beb5f2e4f788ca9
+  base_sha: 94c8091dc8a0e1972a449c8c36f1f62a71e81fbe
+  changed_files_hash: 38afd5178a643317afc73597d353ac766bdc7a45864c710d62abe2b3aca563f3
 matrix:
-- boundary: read-only-validation-observation-timeout
-  reason: A two-run timing sample (~31 seconds) is insufficient for a reliable P95.
-    A provisional 15-minute limit bounds a hung collector with a conservative margin;
-    scheduled/manual evidence runs retain existing triggers and are not put in a concurrency
-    group that can replace pending evidence.
+- boundary: unreleased-section-release-readiness
+  reason: Release evidence must not mark a candidate ready while release notes are
+    still under Unreleased, and malformed changelog structure must fail closed.
   checks:
     static_lint:
       applicable: true
-      evidence: YAML contract verifies timeout, unchanged schedule/manual dispatch,
-        read-only token permissions and absence of concurrency cancellation.
+      evidence: Ruff, YAML contracts, repository validation and exact diff checks
+        cover the evaluator, policy config and candidate matrix.
     unit:
       applicable: true
-      evidence: Existing validation-observation lifecycle PASS; observation contract
-        checks the new timeout and evidence-preserving trigger behavior.
+      evidence: version_policy_lifecycle.py checks empty/non-empty, missing, duplicate,
+        malformed and unavailable changelog input along with existing candidate/version/tag
+        cases.
     integration:
       applicable: true
-      evidence: Exact-candidate AIPS standard publish preflight runs repository validation
-        and required aggregate before publication.
+      evidence: The public evaluator CLI reads the configured repository changelog
+        and emits BLOCKED for current main while Unreleased contains entries; exact-candidate
+        Integration Gate is required.
     contract:
       applicable: true
-      evidence: Scenario 217 and validation_observation_contracts.py enforce timeout,
-        trigger, permissions, artifact profile and no-concurrency policy.
+      evidence: version_policy_contracts.py binds config flags, CLI changelog input,
+        read-only workflow and lifecycle behavior; Scenario 208 documents the fail-closed
+        contract.
     e2e:
       applicable: true
-      evidence: PR CI exercises the collector workflow contract; full repository validation
-        and required gate remain enabled.
+      evidence: Full local AIPS Core publish preflight, normal PR checks and post-merge
+        main checks exercise the complete repository and read-only workflow contract.
     security:
       applicable: true
-      evidence: GitHub token remains actions:read/contents:read; timeout does not
-        modify permissions or release/security policy.
+      evidence: 'Exact-candidate credential-free secret scan and contract assertion
+        that release-readiness workflow remains contents: read and contains no tag/release
+        write command.'
     migration_recovery:
-      applicable: true
-      evidence: The job-level timeout is isolated and revertible; interruption reports
-        existing artifact behavior and cannot enable selective execution.
-    cli_harness:
       applicable: false
-      na_reason: No AIPS CLI or Harness command surface changes.
+      na_reason: No persistence/schema migration or tag history operation; rollback
+        is a code revert and tag state remains untouched.
+    cli_harness:
+      applicable: true
+      evidence: Lifecycle invokes evaluate directly; exact-candidate CLI smoke invokes
+        version_tag_policy.py with the repository changelog and checks exit status/report.
     docs_schema:
       applicable: true
-      evidence: CHANGELOG and all placement-required canonical Human/Orchestration
-        references state the provisional bound and small-sample limitation.
+      evidence: CHANGELOG, Scenario 208, MAINTENANCE and RELEASE_READINESS describe
+        one empty canonical section and blocked malformed/non-empty cases; architecture
+        diagrams are N/A because no architecture or authority transition changes.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
   status: SELF_REVIEWED
   evidence:
-  - Reviewed all 15 candidate paths, the exact collector workflow event/job/bootstrap/report
-    topology, timeout calculation basis, read-only token boundary, and all required
-    documentation consumers.
-  - Lifecycle, validator contract, Ruff, diff check, documentation placement and AIPS
-    Change Impact reconciliation passed. Exact-candidate AIPS publish preflight remains
-    required before remote publication.
-  - Issue-writing repository-health and maintenance-reliability workflows were excluded
-    from read-only Batch A based on observed Issue create/edit/close behavior and
-    deferred to Batch C.
-  - Rebound to the current main after PR #240; the same reviewed 15-path timeout-only boundary remains, with T07 main changes preserved.
+  - User approved exact Core Change scope fingerprint sha256:86deb7a2536ac509bef31071fb5a58043a882b8f149cef0f3cada67fc2bf3bc5.
+  - Current-main defect reproduced: exact candidate currently reports READY despite
+      non-empty Unreleased; zero tags/releases exist and no tag/release writes are
+      in scope.
+  - The user approved the two recursive documentation closure files; preview now reports
+    documentation complete with exactly 30 changed paths and no remaining additions.
+  - Documentation placement validator passes. Readiness CLI and lifecycle/contract
+    checks pass; no tag or Release objects are written.
+  - Full local AIPS repository validation PASS (222 scenarios); quality ratchet PASS;
+    focused tag-policy lifecycle/contracts and documentation placement PASS; current
+    main CLI is BLOCKED by its non-empty Unreleased section as required.
 blockers: []
 status: READY

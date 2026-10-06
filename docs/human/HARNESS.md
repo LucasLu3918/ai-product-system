@@ -96,6 +96,7 @@ Independent review uses the canonical Scheduler and Integration Gate contracts t
 
 Runtime Content Safety Boundary 只在 AIPS-owned sink 或已驗證 native hook 上宣稱強制能力；MCP-only 或 unsupported host tools 維持 ADVISORY。安全掃描不會取得 Host-native tool interception 或 Human Authority。
 
+- The release-readiness check is evidence only: it never grants runtime capability or tag-writing authority.
 ## Progressive disclosure
 
 Workflow and Runtime adapters keep validation observation collection behind the existing repository Gate; their read-only artifact reports do not enable host actions, skip checks, or add Git publication authority.

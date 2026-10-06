@@ -365,6 +365,8 @@ Before requesting Git publication approval, run the shared publication plan/pref
 When Core Change Testing requires independent review, schedule a separate read-only `INDEPENDENT_REVIEW` task over the bounded packet and exact candidate. The Integration Gate must consume evidence from a trusted runtime attestation verifier; absent or stale attestation blocks required review rather than falling back to self-check.
 
 Validation observations never authorize selective execution: `NOT_READY` is an evidence state, operational errors fail, and the full repository Gate remains required. Dependency Review parity is collected in shadow mode while the standalone security check remains authoritative; a later required-path switch needs a separately reviewed same-candidate parity result.
+
+- When release-policy sources trigger documentation placement rules, expand and review the complete required documentation closure before the Core candidate Gate.
 ## Runtime Content Safety Boundary
 
 After merge, use the updated checkout CLI `publish post-merge --fetch --sync-installed --apply` to verify target main and the registered installed system. Installed synchronization refuses dirty/wrong-branch, different remote, stale target and divergent history; it never resets the installation or grants publication authority.

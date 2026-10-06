@@ -64,7 +64,7 @@ Readiness applies to one exact release candidate/version/commit set. Material co
 
 Scheduled Python 3.12–3.14 compatibility evidence is a supplementary maintenance signal. Merge and release readiness still require the exact candidate's full Integration Gate on the supported primary Python 3.12 runtime.
 
-Version-tag provenance is a separate read-only check implemented by `scripts/version_tag_policy.py` and `config/version-tag-policy.yaml`. It is ready only when the full candidate SHA exactly equals the current main SHA and any existing `vVERSION` tag points to that same commit. A mismatched existing tag blocks the check; historical tags are not backfilled. `READY_FOR_EXPLICIT_RELEASE_APPROVAL` is evidence for a separate explicit release decision and never writes, moves, or authorizes a tag.
+Version-tag provenance is a separate read-only check implemented by `scripts/version_tag_policy.py` and `config/version-tag-policy.yaml`. It is ready only when the full candidate SHA exactly equals the current main SHA, any existing `vVERSION` tag points to that same commit, and `CHANGELOG.md` contains exactly one empty `## Unreleased` section. Missing, duplicate, malformed, or non-empty sections block the check. A mismatched existing tag blocks the check; historical tags are not backfilled. `READY_FOR_EXPLICIT_RELEASE_APPROVAL` is evidence for a separate explicit release decision and never writes, moves, or authorizes a tag.
 
 ## Post-deploy
 

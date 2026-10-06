@@ -17,12 +17,15 @@ for path in required:
 tag_script = ROOT / "scripts/version_tag_policy.py"
 if tag_script.is_file():
     text = tag_script.read_text(encoding="utf-8")
-    for token in ("READY_FOR_EXPLICIT_RELEASE_APPROVAL", "tag_write_authorized", "existing_tag_sha", "historical_backfill", "--candidate-sha", "--expected-version"):
+    for token in ("READY_FOR_EXPLICIT_RELEASE_APPROVAL", "tag_write_authorized", "existing_tag_sha", "historical_backfill", "--candidate-sha", "--expected-version", "unreleased_section_errors", "--changelog-file"):
         if token not in text:
             errors.append(f"Version tag policy missing contract token: {token}")
     policy = load_yaml(ROOT / "config/version-tag-policy.yaml")
     requirements = policy.get("requirements") or {}
-    if requirements.get("missing_stable_tag_fails_closed") is not True or requirements.get("stable_install_or_update_fallback") != "none":
+    if (requirements.get("missing_stable_tag_fails_closed") is not True
+            or requirements.get("stable_install_or_update_fallback") != "none"
+            or requirements.get("unreleased_section_must_exist_once") is not True
+            or requirements.get("unreleased_section_must_be_empty") is not True):
         errors.append("Stable installer/update must fail closed without a verified release tag")
 install_script = ROOT / "scripts/install.sh"
 if install_script.is_file() and "bootstrapping from main" in install_script.read_text(encoding="utf-8"):

@@ -6,6 +6,8 @@ requirements:
   exact_candidate_commit: true
   candidate_on_main: true
   existing_tag_must_match: true
+  unreleased_section_must_exist_once: true
+  unreleased_section_must_be_empty: true
   no_historical_backfill: true
   tag_write_requires_explicit_release_approval: true
   missing_stable_tag_fails_closed: true

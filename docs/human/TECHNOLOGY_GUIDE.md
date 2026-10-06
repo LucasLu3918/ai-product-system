@@ -234,6 +234,7 @@ Publication Preflight 的 lifecycle evidence 固定 Python module probe，再分
 
 The observation collector reports readiness separately from collection health: `NOT_READY` succeeds as evidence collection, while API/artifact failures, absent reports and unknown states fail. Dependency Review shadow runs alongside full validation but does not change the required result; promotion requires same-candidate parity and separate review.
 
+- Release-readiness changes require lifecycle cases for an empty, non-empty, missing, duplicated, malformed, and unavailable Unreleased section.
 ## Product Delivery
 
 Product Delivery 把 requirement、planning、implementation、security、quality、release readiness、staging / production verification串成可追蹤生命週期，但 Production Enablement 仍需要 Human authority。

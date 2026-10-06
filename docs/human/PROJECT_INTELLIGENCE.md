@@ -95,6 +95,7 @@ Mutation 前建立 CHANGE_IMPACT，涵蓋 Input / Output / Data / Events / Consu
 
 若 `impact-validate` 指出節點缺少 final disposition，依錯誤中的路徑檢視 caller/consumer，再明確選擇允許值並重跑驗證；不會根據沒有程式碼差異就自動標成安全。
 
+- For release-policy changes, declare readiness inputs, the changelog invariant, read-only consumers, and the documentation closure before implementation.
 ## Preserve Valid Native Conventions
 
 Explicit Rule → Formatter/Linter/Contract → Shared Abstraction → Majority Convention → Approved Intelligence → Framework Best Practice → AIPS Default。Unsafe/broken legacy pattern 不盲目複製。

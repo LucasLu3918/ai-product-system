@@ -73,6 +73,7 @@ OpenAPI tooling 是選用相依套件，不會隨基本安裝自動下載。使�
 
 Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需要額外安裝 Neo4j、外部資料庫或 provider credential。
 
+- Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
 The public `bin/aips` entrypoint remains a thin launcher. Its resolved checkout contains `scripts/aips_cli.sh` and the `scripts/aips_cli/` implementation modules; installed symlinks resolve those modules relative to the installed AIPS checkout, regardless of the caller working directory.

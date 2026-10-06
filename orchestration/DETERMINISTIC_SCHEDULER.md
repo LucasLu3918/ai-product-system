@@ -179,6 +179,7 @@ An optional task `review` block declares `mode: SELF_CHECK | INDEPENDENT_REVIEW`
 
 Execution IDs and runtime attestation are produced by the execution runtime and recorded in task state; they are not guessed from Role, model, prompt, or task labels. On completion, the Scheduler validates structured evidence. Same execution becomes `FAILED`; absent/unverifiable runtime evidence becomes `UNVERIFIED`; packet/candidate drift becomes `STALE`. A required review that does not meet its declared mode is not treated as COMPLETE for downstream dispatch. The Integration Gate separately checks the report against the exact candidate.
 
+- Release readiness also fails closed when `CHANGELOG.md` is unavailable or its canonical `## Unreleased` section is missing, duplicated, malformed, or non-empty; the check remains read-only.
 ## Validation de-duplication boundary
 
 Bootstrap verification imports each caller-declared module and runs `pip check`; missing modules fail the workflow before its validation job proceeds.
