@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Treat a successfully collected NOT_READY validation cohort as a normal result, keep collection failures blocking, use the shared constrained Python bootstrap, and record pinned Dependency Review parity in non-blocking shadow mode.
 - Bind exact branch cleanup to the current main baseline; reject replay and partial-state manifests and report interrupted batches.
 - Require verified stable release tags for installs and updates; add a read-only exact-candidate release readiness workflow and preserve explicit `main` opt-in.
 - Keep Evolution Effectiveness shortlist yield unknown when weekly pre-analysis is missing; preserve oversized Radar Issue bodies in a bounded, digest-checked lossless archive.

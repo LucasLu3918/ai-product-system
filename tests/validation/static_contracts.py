@@ -192,7 +192,8 @@ required_files = [
     "tests/scenarios/190-planning-package-scoped-domain-reference.md",
     "tests/scenarios/191-planning-package-structural-failure-diagnostics.md",
     "tests/scenarios/192-planning-package-complete-product-to-implementation.md",
-    "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml", ".github/workflows/retrieval-semantic-trial.yml",
+    "bin/aips", "scripts/bootstrap.sh", "scripts/uninstall.sh", "requirements.txt", ".github/workflows/validate.yml", ".github/workflows/dependency-review.yml", ".github/workflows/retrieval-semantic-trial.yml", ".github/actions/aips-python-bootstrap/action.yml",
+    "tests/validation/dependency_review_contracts.py",
     ".github/dependabot.yml", "SECURITY.md",
 ]
 security_templates = [

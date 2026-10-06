@@ -361,6 +361,8 @@ For a fixed local candidate, schedule one complete Publication Preflight after f
 Before requesting Git publication approval, run the shared publication plan/preflight, resolve protected-branch routing, and present the exact candidate after diff-aware documentation checks pass. After merge, fast-forward a clean local `main` only when it is an ancestor of the fetched target, preserving a backup branch first. If histories diverged, reconcile only equivalent trees with a backup; otherwise stop for Human review.
 
 When Core Change Testing requires independent review, schedule a separate read-only `INDEPENDENT_REVIEW` task over the bounded packet and exact candidate. The Integration Gate must consume evidence from a trusted runtime attestation verifier; absent or stale attestation blocks required review rather than falling back to self-check.
+
+Validation observations never authorize selective execution: `NOT_READY` is an evidence state, operational errors fail, and the full repository Gate remains required. Dependency Review parity is collected in shadow mode while the standalone security check remains authoritative; a later required-path switch needs a separately reviewed same-candidate parity result.
 ## Runtime Content Safety Boundary
 
 After merge, use the updated checkout CLI `publish post-merge --fetch --sync-installed --apply` to verify target main and the registered installed system. Installed synchronization refuses dirty/wrong-branch, different remote, stale target and divergent history; it never resets the installation or grants publication authority.

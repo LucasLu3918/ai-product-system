@@ -107,18 +107,23 @@ The Matrix decides what evidence is applicable. The Gate executes/verifies deter
 
 AIPS keeps the existing protected-main required context `repository`.
 
-The validation workflow runs the `janitor` job first. The required `repository` job is a compatibility aggregate that can succeed only when Janitor succeeds. Therefore existing branch protection continues to block a failing candidate without requiring a branch-protection migration.
+The validation workflow runs the exact-candidate `janitor` and a pinned dependency-review shadow for pull requests. During the observation window, the standalone dependency-review check remains authoritative and shadow failures do not change the required `repository` aggregate. A separate reviewed change may switch the aggregate only after same-candidate parity evidence and the observation criteria pass. Existing branch protection keeps the single stable required context `repository`; no branch-protection migration is needed.
 
-An advisory preflight can run concurrently but must not be a prerequisite of the required `repository` aggregate. Its conclusion cannot satisfy the Janitor Integration Gate or full repository validation. The separate read-only validation-observation collector installs its pinned PyYAML dependency before collecting evidence; collector artifacts remain advisory and cannot replace the required Gate.
+An advisory preflight can run concurrently but must not be a prerequisite of the required `repository` aggregate. Its conclusion cannot satisfy the Janitor Integration Gate or full repository validation. The separate read-only validation-observation collector installs `requirements.txt` and `requirements-validation.txt` under `constraints/tested.txt` through the shared Python bootstrap; its artifacts remain advisory and cannot replace the required Gate.
 
 When concurrency cancels a superseded workflow, the aggregate does not run. An active workflow still runs the aggregate after Janitor failure, so a genuine failed candidate remains red. Review the latest run for the candidate SHA when older runs were canceled.
 
 ~~~text
-PR/main candidate
-→ janitor: exact candidate + lint/type/tests/contracts
-→ repository required aggregate
-   ├─ janitor success → SUCCESS
-   └─ janitor fail/block → FAILURE
+PR candidate
+├─ janitor: exact candidate + lint/type/tests/contracts
+├─ dependency-review standalone: pinned high-severity authoritative check
+├─ dependency-review shadow: same-candidate parity evidence (non-blocking)
+└─ repository required aggregate: Janitor result
+   ├─ success → SUCCESS
+   └─ fail/block/unknown → FAILURE
+push/manual candidate
+├─ janitor
+└─ dependency-review workflows are not triggered
 → merge remains Human/GitHub governed
 ~~~
 

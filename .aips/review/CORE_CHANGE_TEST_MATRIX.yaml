@@ -1,51 +1,156 @@
 version: 1
 change:
-  id: p16-08-validation-observation-dependencies
-  summary: Install the pinned PyYAML dependency required by the 30-day Validation Observation Collector and assert its workflow contract. Keep collection read-only, full-run shadow non-selective, and full repository validation required.
+  id: plan17-phase1-observation-required-gate
+  summary: Separate observation readiness from collection failures, use the shared
+    constrained Python bootstrap, and record dependency-review parity in non-blocking
+    shadow mode.
   boundary:
-  - The manual/scheduled collector installs PyYAML from constraints/tested.txt before importing validation_observation.py.
-  - Workflow permission, observation schema, retention, and graduation rules remain unchanged.
-  - Missing or failed collection evidence remains NOT_READY; it cannot enable selective test execution or weaken the required full repository Gate.
+  - Validation Observation collect CLI readiness and operational-error status semantics.
+  - Observation collector workflow summary and shared constrained Python bootstrap
+    pilot.
+  - Exact-candidate dependency-review shadow and same-candidate parity evidence; existing
+    standalone check remains authoritative.
+  - Scenario, contract/lifecycle tests and security/integration guidance.
+  - Existing full validation, required context, human approval, tag, cleanup and permission
+    policies remain authoritative.
 candidate:
-  base_sha: 1e106013b45f1fe21c041b3e90b718c554284b53
-  changed_files_hash: 66b085941d2276865ebb24ed8c066b24c94a21f9c3ca233bdf392211b2d282cc
+  base_sha: cc8072169727b4ab514ac93feb63089908e69abd
+  changed_files_hash: 25ae1fc4b9de38293bd2680c33469321a17254f5c2d99e772bf3fc555c04a561
 matrix:
-- boundary: collector-runtime-dependency
-  reason: The collector currently fails before producing a dataset because its workflow omits PyYAML, which validation_observation.py imports.
+- boundary: observation-status-and-failure-semantics
+  reason: A completed NOT_READY report is not an operational failure, while collection
+    errors must remain blocking.
   checks:
     static_lint:
       applicable: true
-      evidence: Repository validation checks YAML and the workflow/contract code remains syntactically valid.
+      evidence: Ruff and repository YAML/schema validation for the collector, workflow
+        and registry.
     unit:
       applicable: true
-      evidence: Validation observation lifecycle continues to cover collection, deduplication and graduation outcomes.
+      evidence: CLI outcomes cover ready, normal NOT_READY, --require-ready, API failure
+        and corrupt artifact.
     integration:
       applicable: true
-      evidence: Dispatch the exact read-only workflow for a 30-day window and inspect collector conclusion plus output artifact presence.
+      evidence: Exact PR Gate runs the collector lifecycle and verifies the report/status
+        contract.
     contract:
       applicable: true
-      evidence: validation_observation_contracts.py requires PyYAML installation constrained by constraints/tested.txt; Scenario 217 records the prerequisite.
+      evidence: Validation observation contracts check workflow summary states, full-run
+        mode and retained human authority.
     e2e:
       applicable: true
-      evidence: Run the full repository validator locally and verify the exact merged-main repository check.
+      evidence: GitHub Actions validates the exact PR candidate and post-merge repository
+        run.
     security:
       applicable: true
-      evidence: Confirm actions:read and contents:read remain the only workflow permissions and artifacts contain no credentials.
+      evidence: Collector permissions stay read-only; API and artifact errors fail
+        closed; no token is printed or persisted.
     migration_recovery:
       applicable: false
-      na_reason: No persistent application state, schema, or migration is changed.
+      na_reason: The JSON evidence schema, stored artifacts and graduation policy
+        remain unchanged.
     cli_harness:
-      applicable: false
-      na_reason: No CLI or Harness entrypoint changes.
+      applicable: true
+      evidence: collect CLI default and explicit --require-ready exit behavior are
+        exercised.
     docs_schema:
       applicable: true
-      evidence: Scenario 217, the workflow contract, and all mapped Human/Agent validation documents capture the dependency prerequisite without changing observation schemas.
+      evidence: Scenario 217, its coverage map and workflow summaries describe readiness
+        and operational errors distinctly.
+- boundary: dependency-review-shadow-parity
+  reason: Collect exact-candidate parity before any canonical required-path switch;
+    the existing standalone check remains the sole authoritative dependency-review
+    status during observation.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: YAML and workflow contracts validate reusable trigger, immutable action
+        pin, high-severity threshold, read-only permissions, and non-blocking shadow
+        behavior.
+    unit:
+      applicable: true
+      evidence: Dependency review contracts assert the shadow cannot affect repository
+        result and standalone trigger remains enabled.
+    integration:
+      applicable: true
+      evidence: Exact PR GitHub Actions run records standalone and shadow results
+        against the same candidate SHA.
+    contract:
+      applicable: true
+      evidence: Scenario 211 and dependency_review_contracts.py enforce observation-only
+        behavior and parity-gated promotion.
+    e2e:
+      applicable: true
+      evidence: Observe both check runs for the same PR candidate; no required-path
+        promotion occurs in this change.
+    security:
+      applicable: true
+      evidence: High-severity threshold, immutable action SHA and read-only contents/pull-requests
+        permissions remain; the current required path is unchanged.
+    migration_recovery:
+      applicable: false
+      na_reason: No application data, persistent schema, or branch-protection setting
+        is migrated.
+    cli_harness:
+      applicable: false
+      na_reason: No CLI or runtime Harness entrypoint changes.
+    docs_schema:
+      applicable: true
+      evidence: Integration Gate and Security Assurance docs state the shadow window,
+        standalone authority and separate parity-gated switch.
+- boundary: observation-python-bootstrap-profile-pilot
+  reason: Use the existing constrained runtime+validation requirements composition
+    instead of an untracked PyYAML workflow dependency.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Workflow contracts validate requirements, tested constraints and the
+        existing bootstrap's yaml import check.
+    unit:
+      applicable: true
+      evidence: Collector lifecycle and registry checks exercise consumer behavior;
+        composite verification imports configured modules generically.
+    integration:
+      applicable: true
+      evidence: Full repository validation and PR workflow execute the candidate with
+        declared requirements.
+    contract:
+      applicable: true
+      evidence: Validation observation contract rejects bare PyYAML installation and
+        requires the shared bootstrap.
+    e2e:
+      applicable: true
+      evidence: Exact PR run installs requirements.txt and requirements-validation.txt
+        under constraints/tested.txt.
+    security:
+      applicable: true
+      evidence: No new package manager or unpinned dependency source is introduced.
+    migration_recovery:
+      applicable: false
+      na_reason: This is a workflow-only dependency-composition pilot with no persistent
+        data migration.
+    cli_harness:
+      applicable: true
+      evidence: Bootstrap verifies the declared yaml import in the selected Python
+        environment.
+    docs_schema:
+      applicable: true
+      evidence: Scenario and workflow contract record the profile used by the collector.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
   status: SELF_REVIEWED
   evidence:
-  - User authorized implementation of all Plan16 recommendations; this fix restores the existing read-only observation phase within that scope.
+  - 'Reviewed the complete 24-path candidate against the three declared boundaries:
+    observation status/error semantics, dependency-review parity shadow, and observation
+    dependency-profile pilot.'
+  - Focused lifecycle/static-contract/Ruff/scenario checks passed; the complete AIPS
+    preflight passed before final documentation additions, and the exact-candidate
+    Integration Gate will be run after commit.
+  - User explicitly requested implementation of all plan17 recommendations, local
+    verification, and remote PR merge to main; the dependency-review required-path
+    switch remains deferred until the recommended observation window and same-candidate
+    parity are satisfied.
 blockers: []
 status: READY

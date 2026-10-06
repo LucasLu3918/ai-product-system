@@ -149,6 +149,8 @@ Human Approval 維持最高決策權；machine-readable approval binding、resou
 
 Runtime Policy Enforcement 使用四種結果：`ALLOW`、`DENY`、`REQUIRE_APPROVAL`、`BLOCKED`。SAL3/4 外連需有核准範圍相符的 Approval Record、可攔截的 runtime hook，以及可驗證的 sandbox network allowlist。現行 E2B provider 仍 disabled、未驗證且 deny-all，因此目前高風險外連會 `BLOCKED`。Codex 維持 `ADVISORY`；shell hook 不代表子程序或網路隔離。
 
+Validation Observation keeps evidence readiness separate from operational failure: a completed `NOT_READY` cohort does not fail collection, while API, artifact, missing-report and unknown-status errors remain failures. Dependency Review records exact-candidate shadow parity; the standalone high-severity check remains authoritative until a separate reviewed switch after the observation window.
+
 ## Scenario Conformance 與 Agent Eval
 
 Agent Eval 的 rubric PASS 與受測系統新鮮度分開報告。舊結果標記為歷史未綁定；新結果可綁定 Case 指定的系統來源。獨立審查可驗證由外部可信執行環境簽發的 Ed25519 receipt，但沒有受信任簽發者時仍維持 `UNVERIFIED`。

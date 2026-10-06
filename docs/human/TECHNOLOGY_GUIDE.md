@@ -228,6 +228,8 @@ Documentation audience 掃描忽略 Git 已明確忽略的本機 metadata；未�
 獨立程式碼審查以 `SELF_CHECK` 與 `INDEPENDENT_REVIEW` 分開建模。Scheduler 建立唯讀隔離任務；review packet 以 allowlist、大小／路徑限制和檔案指紋固定審查輸入。Evidence 必須綁定精確 base/head、packet 與不同 execution ID，並由可信 runtime attestation verifier 驗證。沒有可用 verifier 時維持 `UNVERIFIED`，必要審查在 Integration Gate fail closed；靜態結構檢查不能冒充簽章驗證或語意判斷。
 Publication Preflight 的 lifecycle evidence 固定 Python module probe，再分別模擬 loopback 與 browser blocker，讓環境診斷測試不依賴主機是否安裝 optional modules。
 
+The observation collector reports readiness separately from collection health: `NOT_READY` succeeds as evidence collection, while API/artifact failures, absent reports and unknown states fail. Dependency Review shadow runs alongside full validation but does not change the required result; promotion requires same-candidate parity and separate review.
+
 ## Product Delivery
 
 Product Delivery 把 requirement、planning、implementation、security、quality、release readiness、staging / production verification串成可追蹤生命週期，但 Production Enablement 仍需要 Human authority。

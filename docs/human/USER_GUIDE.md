@@ -292,6 +292,8 @@ Publication Preflight 會分開呈現 Python modules、loopback 與 browser 診�
 
 The supported command remains `aips` (or `bin/aips` from a source checkout). The public launcher forwards commands and arguments to the checkout implementation; command names, output, and environment selection remain unchanged by the internal module split.
 
+Observation reports help people judge evidence quality; `NOT_READY` means the cohort is incomplete, not that collection failed or that selective validation is approved. Dependency Review remains blocking through its standalone check while a separate shadow records parity before any reviewed required-path change.
+
 ## Logging、Observability 與 Operations
 Monthly Effectiveness names weekly Issues missing local pre-analysis and leaves their complete-cohort shortlist yield unavailable. Oversized Radar Issues keep the full original evidence in a verified archive for scheduled rollups.
 

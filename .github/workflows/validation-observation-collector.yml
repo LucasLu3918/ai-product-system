@@ -23,14 +23,17 @@ jobs:
         with:
           ref: ${{ github.event.repository.default_branch }}
           persist-credentials: false
-      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+      - uses: ./.github/actions/aips-python-bootstrap
         with:
           python-version: "3.12"
-          cache: pip
+          requirements-files: |
+            requirements.txt
+            requirements-validation.txt
           cache-dependency-path: |
+            requirements.txt
             requirements-validation.txt
             constraints/tested.txt
-      - run: python -m pip install -c constraints/tested.txt -r requirements-validation.txt PyYAML
+          constraints-file: constraints/tested.txt
       - name: Collect bounded full-run evidence and evaluate graduation
         id: collect
         continue-on-error: true
@@ -58,8 +61,26 @@ jobs:
         if: always()
         env:
           COLLECT_OUTCOME: ${{ steps.collect.outcome }}
+          AIPS_REPORT: ${{ runner.temp }}/validation-graduation-report.json
         run: |
           if [[ "$COLLECT_OUTCOME" != "success" ]]; then
-            echo "Validation graduation remains NOT_READY; inspect the bounded report artifact for evidence gaps."
+            echo "Validation Observation Collector: ERROR (operational collection failed; inspect the bounded report artifact if available)." >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
+          if [[ ! -s "$AIPS_REPORT" ]]; then
+            echo "Validation Observation Collector: ERROR (report is missing or empty)." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          status="$(python -c 'import json,sys; print(json.load(open(sys.argv[1], encoding="utf-8")).get("status", "UNKNOWN"))' "$AIPS_REPORT")"
+          case "$status" in
+            READY_FOR_HUMAN_REVIEW)
+              echo "Validation graduation: READY_FOR_HUMAN_REVIEW (human review is still required)." >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            NOT_READY)
+              echo "Validation graduation: NOT_READY (evidence collection completed; full validation continues)." >> "$GITHUB_STEP_SUMMARY"
+              ;;
+            *)
+              echo "Validation Observation Collector: ERROR (missing or unknown report status)." >> "$GITHUB_STEP_SUMMARY"
+              exit 1
+              ;;
+          esac
