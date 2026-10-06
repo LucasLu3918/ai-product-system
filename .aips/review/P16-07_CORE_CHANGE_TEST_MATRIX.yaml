@@ -71,12 +71,11 @@ matrix:
       applicable: true
       evidence: Human and Agent conformance text states that future layering requires separate Human review.
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
+actual_diff_reconciled: true
 review_evidence:
   required: false
   status: SELF_REVIEWED
   evidence:
   - User explicitly approved implementation of all Plan16 items, local verification, remote PR publication and merge in this task.
-blockers:
-- Candidate changed-file list and hash must be reconciled after the complete diff is committed.
-status: DRAFT
+blockers: []
+status: READY
