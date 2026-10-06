@@ -1537,6 +1537,8 @@ The monthly evaluator deterministically samples up to 20 signal fingerprints and
 
 Pull requests run the bounded repository preflight concurrently against the exact candidate. Its findings are reported for early feedback and do not replace or gate the required full repository validation; unrelated label-only events skip the advisory job.
 
+Related security and observation contracts are covered by Scenarios 211 and 217: Dependency Review shadow results do not alter the required aggregate, and a completed `NOT_READY` cohort is distinct from an operational collection failure.
+
 ## Scenario 221 — Dependency Update Risk Classification
 
 Dependency updates receive an explicit class, risk and recommended validation plan. Unknown dependencies are high risk and require human review; semantic runtime updates include retrieval regression evaluation and a semantic trial. Classification never authorizes automatic merges or policy changes.

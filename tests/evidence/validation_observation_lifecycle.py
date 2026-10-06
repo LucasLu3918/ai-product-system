@@ -1,8 +1,12 @@
 from __future__ import annotations
 
 import io
+import json
+import os
 import sys
+import tempfile
 import zipfile
+from contextlib import redirect_stderr, redirect_stdout
 from datetime import date
 from pathlib import Path
 
@@ -10,6 +14,45 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 import validation_observation as observation
 from validation.registry import VALIDATORS
+
+
+def collect_cli_outcome(status: str | None = None, *, require_ready: bool = False, error: Exception | None = None):
+    original_argv = sys.argv
+    original_collect = observation.collect_dataset
+    original_evaluate = observation.validation_graduation.evaluate
+    token_was_set = "GITHUB_TOKEN" in os.environ
+    original_token = os.environ.get("GITHUB_TOKEN")
+    stdout = io.StringIO()
+    stderr = io.StringIO()
+    try:
+        with tempfile.TemporaryDirectory() as temp:
+            output = Path(temp) / "dataset.json"
+            report_path = Path(temp) / "report.json"
+            sys.argv = [
+                "validation_observation.py", "collect", "--output", str(output),
+                "--report", str(report_path), "--end-date", "2026-10-05",
+                *( ["--require-ready"] if require_ready else [] ),
+            ]
+            os.environ["GITHUB_TOKEN"] = "fixture-token"
+            if error is not None:
+                def collect(*_args, **_kwargs):
+                    raise error
+                observation.collect_dataset = collect
+            else:
+                observation.collect_dataset = lambda *_args, **_kwargs: {"artifact_history_complete": False, "records": []}
+                observation.validation_graduation.evaluate = lambda *_args, **_kwargs: {"status": status, "errors": []}
+            with redirect_stdout(stdout), redirect_stderr(stderr):
+                code = observation.main()
+            saved_report = json.loads(report_path.read_text(encoding="utf-8")) if report_path.exists() else None
+            return code, saved_report, stdout.getvalue(), stderr.getvalue()
+    finally:
+        sys.argv = original_argv
+        observation.collect_dataset = original_collect
+        observation.validation_graduation.evaluate = original_evaluate
+        if token_was_set:
+            os.environ["GITHUB_TOKEN"] = original_token or ""
+        else:
+            os.environ.pop("GITHUB_TOKEN", None)
 
 
 def archive(record: dict) -> bytes:
@@ -21,6 +64,24 @@ def archive(record: dict) -> bytes:
 
 
 def main() -> int:
+    ready_code, ready_report, _, ready_error = collect_cli_outcome("READY_FOR_HUMAN_REVIEW")
+    assert ready_code == 0 and ready_report["status"] == "READY_FOR_HUMAN_REVIEW" and not ready_error
+
+    not_ready_code, not_ready_report, _, not_ready_error = collect_cli_outcome("NOT_READY")
+    assert not_ready_code == 0 and not_ready_report["status"] == "NOT_READY" and not not_ready_error
+
+    strict_code, strict_report, _, _ = collect_cli_outcome("NOT_READY", require_ready=True)
+    assert strict_code == 1 and strict_report["status"] == "NOT_READY"
+
+    unknown_code, unknown_report, _, unknown_error = collect_cli_outcome("UNKNOWN")
+    assert unknown_code == 2 and unknown_report["status"] == "UNKNOWN" and "ERROR: ObservationError" in unknown_error
+
+    api_error_code, api_report, _, api_error = collect_cli_outcome(error=observation.urllib.error.URLError("fixture API failure"))
+    assert api_error_code == 2 and api_report is None and "ERROR: URLError" in api_error
+
+    corrupt_code, corrupt_report, _, corrupt_error = collect_cli_outcome(error=observation.ObservationError("artifact is corrupt"))
+    assert corrupt_code == 2 and corrupt_report is None and "ERROR: ObservationError" in corrupt_error
+
     base = "a" * 40
     head = "b" * 40
     event = {"number": 17, "pull_request": {"base": {"sha": base}, "head": {"sha": head}}}

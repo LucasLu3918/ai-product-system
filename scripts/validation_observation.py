@@ -307,6 +307,7 @@ def main() -> int:
     collect.add_argument("--output", type=Path, required=True)
     collect.add_argument("--report", type=Path, required=True)
     collect.add_argument("--end-date", type=date.fromisoformat, default=datetime.now(UTC).date())
+    collect.add_argument("--require-ready", action="store_true", help="Return non-zero when the observation cohort is not ready for Human review")
     args = parser.parse_args()
     try:
         if args.command == "capture":
@@ -334,10 +335,15 @@ def main() -> int:
         report = validation_graduation.evaluate(config, scope, dataset)
         args.report.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         print(json.dumps({"status": report["status"], "unique_pull_request_count": report.get("unique_pull_request_count"), "artifact_history_complete": dataset["artifact_history_complete"], "errors": report["errors"]}, indent=2))
-        return 0 if report["status"] == "READY_FOR_HUMAN_REVIEW" else 1
+        status = report.get("status")
+        if status == "READY_FOR_HUMAN_REVIEW":
+            return 0
+        if status == "NOT_READY":
+            return 1 if args.require_ready else 0
+        raise ObservationError(f"graduation evaluator returned an unknown status: {status!r}")
     except (OSError, ValueError, json.JSONDecodeError, yaml.YAMLError, ObservationError) as exc:
-        print(f"NOT_READY: {type(exc).__name__}: {exc}", file=sys.stderr)
-        return 1
+        print(f"ERROR: {type(exc).__name__}: {exc}", file=sys.stderr)
+        return 2
 
 
 if __name__ == "__main__":

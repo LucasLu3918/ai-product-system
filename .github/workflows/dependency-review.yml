@@ -3,6 +3,13 @@ name: dependency-review
 on:
   pull_request:
     branches: [main]
+  workflow_call:
+    inputs:
+      shadow:
+        description: Record the result without changing the caller's conclusion during parity observation.
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -14,6 +21,18 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Review dependency changes
+        id: review
+        continue-on-error: ${{ inputs.shadow }}
         uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
         with:
           fail-on-severity: high
+      - name: Report dependency review shadow outcome
+        if: always()
+        env:
+          REVIEW_OUTCOME: ${{ steps.review.outcome }}
+        run: |
+          if [[ "${{ inputs.shadow }}" == "true" ]]; then
+            echo "Dependency Review shadow outcome: ${REVIEW_OUTCOME:-unavailable}; standalone check remains authoritative during the observation window." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Standalone Dependency Review outcome: ${REVIEW_OUTCOME:-unavailable} (authoritative)." >> "$GITHUB_STEP_SUMMARY"
+          fi

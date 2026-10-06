@@ -825,6 +825,8 @@ Scenario 218 uses deterministic monthly fingerprint sampling and complete Human 
 
 The pull-request workflow runs the bounded repository preflight in a separate job against the exact candidate. Findings are visible but advisory; the complete Janitor Integration Gate and required repository validation remain independent and unchanged. Label-only events skip this job.
 
+Scenarios 211 and 217 also verify that dependency-review shadow evidence cannot change the required repository outcome and that completed `NOT_READY` observation evidence remains distinct from operational errors.
+
 ## Scenario 221 — Dependency Update Risk Classification
 
 `scripts/dependency_impact.py` classifies dependency updates from `config/dependency-policy.yaml` and recommends evidence by class. Unknown packages are `UNCLASSIFIED` / `HIGH`; semantic runtime changes require retrieval regression and semantic trial evidence. The CLI is advisory, requires a human decision, and never authorizes automatic merges or policy edits.

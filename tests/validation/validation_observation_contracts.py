@@ -26,11 +26,12 @@ if workflow.is_file():
         errors.append("Validation observation collector must use read-only GitHub permissions")
     if any(value in {"write", "write-all"} for value in permissions.values()):
         errors.append("Validation observation collector must not receive write permissions")
-    install = next((step for step in doc.get("jobs", {}).get("collect", {}).get("steps", [])
-                    if "pip install" in str(step.get("run") or "")), {})
-    install_command = str(install.get("run") or "")
-    if "-c constraints/tested.txt" not in install_command or "PyYAML" not in install_command:
-        errors.append("Validation observation collector must install its pinned PyYAML runtime dependency")
+    bootstrap = next((step for step in doc.get("jobs", {}).get("collect", {}).get("steps", [])
+                      if step.get("uses") == "./.github/actions/aips-python-bootstrap"), {})
+    if bootstrap.get("with", {}).get("requirements-files", "").splitlines() != ["requirements.txt", "requirements-validation.txt"]:
+        errors.append("Validation observation collector must use the shared runtime and validation dependency profile")
+    if bootstrap.get("with", {}).get("constraints-file") != "constraints/tested.txt":
+        errors.append("Validation observation collector must retain tested dependency constraints")
 
 if validate_workflow.is_file():
     text = validate_workflow.read_text(encoding="utf-8")
@@ -66,7 +67,17 @@ if validate_workflow.is_file():
         errors.append("Validation workflow and advisory feedback must remain read-only")
     repository = jobs.get("repository") or {}
     if repository.get("needs") != "janitor":
-        errors.append("Required repository validation must retain its existing Janitor dependency")
+        errors.append("Required repository validation must remain unchanged during dependency review shadow")
+    dependency_review = jobs.get("dependency-review-shadow") or {}
+    if dependency_review.get("uses") != "./.github/workflows/dependency-review.yml" or (dependency_review.get("with") or {}).get("shadow") is not True or "continue-on-error" in dependency_review:
+        errors.append("Dependency review must request its advisory parity shadow through the reusable workflow input")
+    if "--require-ready" not in script.read_text(encoding="utf-8"):
+        errors.append("Observation collection must provide explicit opt-in require-ready semantics")
+    if "READY_FOR_HUMAN_REVIEW" not in str(workflow.read_text(encoding="utf-8")) or "NOT_READY" not in str(workflow.read_text(encoding="utf-8")):
+        errors.append("Observation workflow summary must distinguish ready and not-ready reports")
+    collector_text = workflow.read_text(encoding="utf-8")
+    if 'if [[ ! -s "$AIPS_REPORT" ]]' not in collector_text or "unknown report status" not in collector_text or "operational collection failed" not in collector_text:
+        errors.append("Observation workflow must fail closed for missing reports, unknown states and operational errors")
 
 if lifecycle.is_file():
     import subprocess
