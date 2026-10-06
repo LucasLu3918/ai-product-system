@@ -31,6 +31,37 @@ if validate_workflow.is_file():
     text = validate_workflow.read_text(encoding="utf-8")
     if "Capture combined validation observation" not in text or "retention-days: 90" not in text:
         errors.append("Validate workflow must retain combined observations for at least 90 days")
+    import yaml
+    workflow_doc = yaml.safe_load(text) or {}
+    jobs = workflow_doc.get("jobs") or {}
+    fast_lane = jobs.get("advisory-fast-feedback") or {}
+    if not fast_lane:
+        errors.append("Validate workflow must run a separate advisory fast-feedback job")
+    else:
+        if fast_lane.get("needs"):
+            errors.append("Advisory fast feedback must run independently of the required repository gate")
+        if fast_lane.get("timeout-minutes") != 10:
+            errors.append("Advisory fast feedback must have a bounded ten-minute timeout")
+        condition = str(fast_lane.get("if") or "")
+        if "pull_request" not in condition or "labeled" not in condition or "unlabeled" not in condition:
+            errors.append("Advisory fast feedback must run only for non-label pull-request events")
+        env = fast_lane.get("env") or {}
+        if "pull_request.base.sha" not in str(env.get("AIPS_GATE_BASE")) or "pull_request.head.sha" not in str(env.get("AIPS_GATE_HEAD")):
+            errors.append("Advisory fast feedback must bind both exact pull-request SHAs")
+        steps = fast_lane.get("steps") or []
+        preflight = next((step for step in steps if step.get("id") == "fast_preflight"), {})
+        if preflight.get("continue-on-error") is not True or "scripts/repository_preflight.py" not in str(preflight.get("run") or ""):
+            errors.append("Advisory fast-preflight findings must be reported without blocking the full required gate")
+    if "AIPS_FAST_PREFLIGHT_OUTCOME" not in text:
+        errors.append("Advisory fast-feedback findings must be reported without blocking the full required gate")
+    if "--base \"$AIPS_GATE_BASE\" --head \"$AIPS_GATE_HEAD\"" not in text:
+        errors.append("Advisory fast feedback must inspect the exact pull-request candidate")
+    permissions = workflow_doc.get("permissions") or {}
+    if permissions.get("contents") != "read" or any(value in {"write", "write-all"} for value in permissions.values()):
+        errors.append("Validation workflow and advisory feedback must remain read-only")
+    repository = jobs.get("repository") or {}
+    if repository.get("needs") != "janitor":
+        errors.append("Required repository validation must retain its existing Janitor dependency")
 
 if lifecycle.is_file():
     import subprocess

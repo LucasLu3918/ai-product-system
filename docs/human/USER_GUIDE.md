@@ -348,6 +348,8 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 
 ## Git Publication 與 Release
 
+Pull requests may show an early advisory repository-preflight result while the required full validation continues. A fast-lane finding is diagnostic feedback and does not replace the required repository check.
+
 Post-merge reconciliation 的實作拆分不改變既有指令、快轉安全條件或人工合併權限。
 
 For a Large/Core change, complete documentation closure, the reviewed Core Change Test Matrix, candidate secret scanning, full repository validation, and the exact-candidate Integration Gate before asking for publication approval. Create the PR with its `aips:core-change` label on the initial request; merging and release tagging remain separate Human decisions.

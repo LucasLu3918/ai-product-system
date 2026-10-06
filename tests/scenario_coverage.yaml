@@ -1718,3 +1718,10 @@ scenarios:
       - config/evolution-relevance-labels.yaml
       - tests/evidence/evolution_relevance_lifecycle.py
       - tests/validation/evolution_relevance_contracts.py
+  - id: "220"
+    path: tests/scenarios/220-parallel-advisory-fast-feedback.md
+    coverage: deterministic
+    evidence:
+      - .github/workflows/validate.yml
+      - scripts/repository_preflight.py
+      - tests/validation/validation_observation_contracts.py

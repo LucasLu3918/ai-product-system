@@ -69,6 +69,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+Pull-request validation policy and the advisory fast-feedback boundary are documented in [Maintenance](MAINTENANCE.md#validation-architecture-consistency) and [Scenario Conformance](CONFORMANCE.md#scenario-220--parallel-advisory-fast-feedback).
+
 
 The generated System Reference records the runtime architecture inventory, including the public `bin/aips` launcher, its `scripts/aips_cli.sh` facade and the source modules under `scripts/aips_cli/`. Keep this inventory aligned with the implementation and its lifecycle validation.
 

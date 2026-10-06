@@ -817,6 +817,10 @@ Repository validators are imported only through the explicit ordered `tests/vali
 
 Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agent_eval = 199 automated; 2 manual; 201 total; 0 uncovered.
 
+## Scenario 220 — Parallel advisory fast feedback
+
+The pull-request workflow runs the bounded repository preflight in a separate job against the exact candidate. Findings are visible but advisory; the complete Janitor Integration Gate and required repository validation remain independent and unchanged. Label-only events skip this job.
+
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
 The public AIPS shell CLI keeps `bin/aips` as its thin launcher and `scripts/aips_cli.sh` as the checkout-resolving facade; implementation modules are loaded relative to that resolved checkout. `tests/evidence/aips_cli_module_extraction_lifecycle.py` covers source and symlink entrypoints from an unrelated working directory.

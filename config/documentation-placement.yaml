@@ -90,18 +90,18 @@ placement_rules:
     placements:
       docs/human/MAINTENANCE.md: [Versioning, System facts and validation planning, Branch lifecycle hygiene, Validation architecture consistency, Controlled branch cleanup]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
-      docs/human/CONFORMANCE.md: [Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Scenario 201 — Monthly maintenance reliability evidence, Scenarios 202–209 — Plan13 current and provenance evidence]
+      docs/human/CONFORMANCE.md: [Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Scenario 201 — Monthly maintenance reliability evidence, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
   - id: maintenance-reliability
     triggers: [scripts/maintenance_reliability.py, config/maintenance-reliability.yaml, .github/workflows/maintenance-reliability.yml, tests/evidence/maintenance_reliability_lifecycle.py, tests/validation/maintenance_reliability_contracts.py, tests/scenarios/201-monthly-maintenance-reliability.md, tests/scenario_coverage.yaml, tests/validate_repository.py, tests/validation/conformance_isolation.py]
     placements:
       docs/human/MAINTENANCE.md: [Monthly maintenance reliability, Validation architecture consistency, Versioning, Controlled branch cleanup]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Documentation Architecture, Planning 與 Product Delivery, Maintenance governance]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Evolution & Maintenance, Quality & Verification]
-      docs/human/CONFORMANCE.md: [Scenario 201 — Monthly maintenance reliability evidence, Scenarios 202–209 — Plan13 current and provenance evidence]
+      docs/human/CONFORMANCE.md: [Scenario 201 — Monthly maintenance reliability evidence, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
       docs/human/DOCUMENTATION_MAP.md: [文件角色, Agent / machine canonical 文件]
       docs/human/DOCUMENTATION_SYNC.md: [Deterministic protection]
-      orchestration/CONFORMANCE.md: [Scenario 201 — Monthly maintenance reliability evidence, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 210 — Python runtime support policy]
-      orchestration/DOCUMENTATION_SYNC.md: [Maintenance reliability mapping]
+      orchestration/CONFORMANCE.md: [Scenario 201 — Monthly maintenance reliability evidence, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 210 — Python runtime support policy, Scenario 220 — Parallel advisory fast feedback]
+      orchestration/DOCUMENTATION_SYNC.md: [Maintenance reliability mapping, Scenario 220 — Parallel advisory fast feedback]
   - id: runtime-context
     triggers:
       - scripts/runtime_context.py
@@ -117,7 +117,7 @@ placement_rules:
       orchestration/RUNTIME_CONTEXT.md: [Interpreter resolution, Context contract, Verification]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Planning 與 Product Delivery, Deterministic Execution, Scenario Conformance 與 Agent Eval, Maintenance governance]
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification]
-      docs/human/CONFORMANCE.md: [Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 198 — Runtime Context and invariant matrix, Scenarios 202–209 — Plan13 current and provenance evidence]
+      docs/human/CONFORMANCE.md: [Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 198 — Runtime Context and invariant matrix, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
 
   - id: implementation-enforcement
     triggers: [scripts/implementation_enforcement.py, scripts/implementation_profile_validate.py, templates/implementation/IMPLEMENTATION_ENFORCEMENT_REPORT.schema.json, templates/implementation/IMPLEMENTATION_PROFILE.yaml, tests/evidence/implementation_enforcement_lifecycle.py, tests/scenarios/195-implementation-resolution-deterministic-enforcement.md]
@@ -149,7 +149,7 @@ placement_rules:
       docs/human/USER_GUIDE.md: [Deterministic Scheduler, Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release, Logging、Observability 與 Operations, Checkpoint / Resume, Project Intelligence]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Planning 與 Product Delivery, Maintenance governance]
-      docs/human/CONFORMANCE.md: [Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenarios 202–209 — Plan13 current and provenance evidence]
+      docs/human/CONFORMANCE.md: [Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
 
   - id: telemetry-export
     triggers: [config/telemetry-export.yaml, orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md, orchestration/TELEMETRY_EXPORT.md, orchestration/schemas/telemetry-export.yaml, scripts/telemetry_export.py, scripts/telemetry_projection.py, scripts/telemetry_record.py, scripts/run_event_stream.py, scripts/observed_stage.py]
@@ -167,7 +167,7 @@ placement_rules:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution, Security 與 Governance, Maintenance governance]
       docs/human/SECURITY_ASSURANCE.md: [External sandbox execution, Runtime Policy Enforcement, Release Security Gate]
       docs/human/MAINTENANCE.md: [Execution Isolation consistency, Validation architecture consistency]
-      docs/human/CONFORMANCE.md: [Execution Isolation Conformance, Scenario 177 — Runtime Policy Enforcement, Scenarios 202–209 — Plan13 current and provenance evidence]
+      docs/human/CONFORMANCE.md: [Execution Isolation Conformance, Scenario 177 — Runtime Policy Enforcement, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
 
   - id: task-execution-ownership
     triggers: [scripts/deterministic_scheduler.py, scripts/task_ownership.py, scripts/run_state.py, scripts/run_projection.py, scripts/run_dashboard.py, orchestration/schemas/run-task-state.yaml, templates/automation/TASK_GRAPH.yaml, tests/scenarios/182-deterministic-execution-ownership.md]
@@ -221,7 +221,7 @@ placement_rules:
       docs/human/PROJECT_INTELLIGENCE.md: [第一次 Existing Project, 不重複正式文件, 四份核心 Machine-readable 檔, 三軸狀態, Human Review HTML, Freshness, Attach / Detach, Change Impact, Preserve Valid Native Conventions, Sensitive Data, Monorepo, Retrieval Intelligence：即時按需檢索, Retrieval Quality Evaluation：先量測，再決定下一項技術, Structural Retrieval：已採用的跨檔關係檢索, Semantic Alias Expansion Candidate Trial：HOLD, Remote Embedding Retrieval Trial Readiness（Scenario 133）, Provider-Neutral Local-First Embedding Trial（Scenario 134）, Debug, Identity namespace, Runtime Content Safety Boundary]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary, Maintenance governance]
       docs/human/TECHNOLOGY_GUIDE.md: [Project Understanding, Product Delivery, Execution, Quality & Verification, Runtime Content Safety Boundary]
-      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenarios 202–209 — Plan13 current and provenance evidence]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
 
   - id: repository-health
     triggers: [scripts/repository_health.py, config/architecture-surfaces.yaml, config/repository-health.yaml, orchestration/REPOSITORY_HEALTH.md]
@@ -367,16 +367,16 @@ placement_rules:
   - id: scenario-conformance
     triggers: [orchestration/CONFORMANCE.md, tests/scenario_coverage.yaml, tests/validation/conformance_isolation.py, tests/validation/ears_requirement_contracts.py, tests/scenarios/175-risk-adaptive-bounded-impact.md, tests/scenarios/176-mandatory-candidate-secret-scanning.md, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, tests/evidence/secret_scan_publication_lifecycle.py, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/180-external-eval-interoperability.md, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py, tests/validation/eval_interop_contracts.py, scripts/eval_interop.py, scripts/agent_eval.py, templates/conformance/AGENT_EVAL_RESULT.yaml, orchestration/EVAL_INTEROPERABILITY.md, orchestration/AGENT_EVAL.md, tests/scenarios/196-openapi-generator-adapter.md, tests/evidence/openapi_generator_adapter_lifecycle.py]
     placements:
-      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 165 — CI-Parity Publication Preflight]
-      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 165 — CI-Parity Publication Preflight]
-      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Scenario 201 — Monthly maintenance reliability evidence, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 165 — CI-Parity Publication Preflight]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 165 — CI-Parity Publication Preflight, Scenario 220 — Parallel advisory fast feedback]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 165 — CI-Parity Publication Preflight, Scenario 220 — Parallel advisory fast feedback]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Scenario 201 — Monthly maintenance reliability evidence, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 165 — CI-Parity Publication Preflight, Scenario 220 — Parallel advisory fast feedback]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification, Evolution & Maintenance, Security & Governance]
 
   - id: eval-interoperability
     triggers: [scripts/eval_interop.py, scripts/agent_eval.py, templates/conformance/AGENT_EVAL_RESULT.yaml, config/eval-profiles.yaml, orchestration/EVAL_INTEROPERABILITY.md, orchestration/schemas/external-eval-evidence.yaml, orchestration/schemas/eval-profile.yaml, orchestration/schemas/red-team-finding.yaml, tests/test_eval_interop.py, tests/evidence/eval_interop_lifecycle.py, tests/validation/eval_interop_contracts.py, tests/scenarios/180-external-eval-interoperability.md]
     placements:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Scenario Conformance 與 Agent Eval, Maintenance governance]
-      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenarios 202–209 — Plan13 current and provenance evidence]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
       docs/human/SECURITY_ASSURANCE.md: [Product baseline vs change impact, Release Security Gate, Secret and credential safety, Runtime Policy Enforcement]
       docs/human/USER_GUIDE.md: [需求釐清與 Planning, Quality 與 Review, Logging、Observability 與 Operations, Checkpoint / Resume, Project Intelligence, Git Publication 與 Release]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification]
@@ -427,7 +427,7 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance, Product Delivery]
       docs/human/SECURITY_ASSURANCE.md: [Product baseline vs change impact, Release Security Gate, Secret and credential safety, Runtime Policy Enforcement]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval, Maintenance governance]
-      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 165 — CI-Parity Publication Preflight]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 165 — CI-Parity Publication Preflight, Scenario 220 — Parallel advisory fast feedback]
       docs/human/MAINTENANCE.md:
         - Versioning
         - System facts and validation planning
@@ -498,12 +498,12 @@ placement_rules:
       docs/human/PROJECT_INTELLIGENCE.md: [Change Impact]
       docs/human/DOCUMENTATION_MAP.md: [文件角色, Agent / machine canonical 文件]
       docs/human/DOCUMENTATION_SYNC.md: [Deterministic protection]
-      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
-      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 210 — Python runtime support policy]
+      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
+      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 210 — Python runtime support policy, Scenario 220 — Parallel advisory fast feedback]
       orchestration/GITHUB_RULESET_POLICY.md: [Inputs, Transition procedure]
       orchestration/RELEASE_READINESS.md: [Candidate integrity]
       orchestration/RUNTIME_CONTEXT.md: [Interpreter resolution, Context contract, Verification]
-      orchestration/INTEGRATION_GATE.md: [Exact-candidate binding]
+      orchestration/INTEGRATION_GATE.md: [Exact-candidate binding, GitHub required-check compatibility]
       orchestration/DOCUMENTATION_SYNC.md: [Human documentation placement, Maintenance reliability mapping]
       orchestration/ORCHESTRATOR.md: [Minimal algorithm, Context expansion, Change-class handoff to Integration Gate]
       orchestration/CHANGE_IMPACT.md: [Diff reconciliation]
@@ -524,8 +524,8 @@ placement_rules:
       docs/human/MAINTENANCE.md: [Versioning, Public repository / CI consistency, Validation architecture consistency]
       docs/human/SECURITY_ASSURANCE.md: [Release Security Gate]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification, Evolution & Maintenance]
-      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
-      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
+      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
+      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
 
   - id: p15-validation-taxonomy
     triggers:
@@ -541,8 +541,8 @@ placement_rules:
     placements:
       docs/human/MAINTENANCE.md: [Validation architecture consistency]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
-      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
-      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
+      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
+      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
 
   - id: p15-release-readiness
     triggers:
@@ -558,8 +558,8 @@ placement_rules:
       docs/human/SECURITY_ASSURANCE.md: [Release Security Gate]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Quality & Verification]
       docs/human/USER_GUIDE.md: [Git Publication 與 Release]
-      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
-      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
+      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
+      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
       orchestration/RELEASE_READINESS.md: [Candidate integrity]
       orchestration/GITHUB_RULESET_POLICY.md: [Transition procedure]
 
@@ -574,7 +574,7 @@ placement_rules:
     placements:
       docs/human/MAINTENANCE.md: [Validation architecture consistency]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
-      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
-      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence]
-      orchestration/INTEGRATION_GATE.md: [Exact-candidate binding]
+      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
+      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
+      orchestration/INTEGRATION_GATE.md: [Exact-candidate binding, GitHub required-check compatibility]
       orchestration/DETERMINISTIC_SCHEDULER.md: [Validation de-duplication boundary]

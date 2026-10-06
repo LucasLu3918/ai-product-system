@@ -195,6 +195,8 @@ Review actual:
 
 ## Release Security Gate
 
+The parallel PR fast-feedback job has read-only repository permissions, checks the exact candidate and has no publication authority. Its outcome is advisory; mandatory secret scanning and the complete required repository gate remain in the existing validation path.
+
 The publication CLI facade loads its implementation modules from the same resolved AIPS checkout before dispatch. Candidate secret scanning and the Integration Gate continue to inspect the complete candidate; module loading does not add publication authority or alter credential handling.
 
 Post-merge reconciliation retains its clean-worktree, remote ancestry and fast-forward checks in `scripts/publish_post_merge.py`. The compatible CLI facade grants no merge, reset or release authority.
