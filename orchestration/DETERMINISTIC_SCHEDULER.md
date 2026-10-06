@@ -200,6 +200,8 @@ The repository validator may skip the focused Scheduler/Integration Gate lifecyc
 The read-only observation collector preserves full validation and records cohort readiness independently: normal `NOT_READY` returns success, `--require-ready` opts into strict readiness, and operational/API/artifact errors remain non-zero. Its provisional 15-minute timeout reflects only two observed runs at about 31 seconds, not a reliable P95. No workflow concurrency group is used because replacing pending scheduled or manual work could lose evidence. Dependency Review shadow evidence is advisory until same-candidate parity is reviewed; it never skips or replaces a validator.
 
 
+
+The exact-path optional-toolchain plan may omit OpenAPI package installation, but it does not remove the lifecycle owner from the required repository aggregate. `publish_preflight_lifecycle.py` keeps dependency-free top-level routing and failure checks active, and runs action-level contract smoke only when the selected Python has both optional validator modules.
 ## Runtime resource requests
 
 Task Graph isolation metadata may declare bounded TCP port needs:

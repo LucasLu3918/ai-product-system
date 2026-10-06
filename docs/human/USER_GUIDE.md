@@ -357,6 +357,8 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 
 Publication preflight 只檢查 exact candidate 所選的環境能力；候選未選 browser 驗證時 `NOT_REQUIRED` 不會阻擋，選用 browser 時 loopback 或瀏覽器檢查失敗仍會 fail closed。Required repository Gate 與 secret scan 維持必要條件。
 
+CI 可依精確變更路徑略過未使用的 OpenAPI 套件安裝，但仍執行 publication-preflight lifecycle。已安裝 validator 時會跑 OpenAPI help 與 contract smoke；未安裝時會驗證 CLI 提供明確設定指引、沒有 traceback，也不會輸出不完整驗證檔。這不略過 required repository aggregate。
+
 Pull requests may show an early advisory repository-preflight result while the required full validation continues. A fast-lane finding is diagnostic feedback and does not replace the required repository check.
 
 Post-merge reconciliation 的實作拆分不改變既有指令、快轉安全條件或人工合併權限。

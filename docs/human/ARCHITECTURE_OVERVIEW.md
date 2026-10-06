@@ -92,6 +92,8 @@ Local publication preflight verifies a prepared Python 3.12 Gate environment and
 
 Repository validator optimizations preserve the full Integration Gate and unique lifecycle coverage; maintenance guidance defines the single-invocation rule for validation evidence.
 
+The publication-preflight lifecycle remains required when an exact-path plan omits OpenAPI tooling. It always checks top-level CLI routing and the missing-dependency failure; action-level OpenAPI help and validation smoke run when both optional validator modules are installed.
+
 Run Event 與 Telemetry Event 共用鎖定的 append 寫入器，讓混合寫入維持唯一且遞增的序號。Context、Retrieval 與 Integration Gate 可選擇記錄其實際執行邊界；觀測結果不改變 Gate 判定。
 
 Independent-review isolation is an implemented opt-in capability. The active Core Change Matrix currently disables PR enforcement (`review_evidence.required: false`) while no trusted runtime-attestation verifier is connected; enabling it requires that verifier and retains fail-closed behavior.

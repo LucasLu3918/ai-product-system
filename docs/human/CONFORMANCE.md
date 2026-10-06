@@ -242,6 +242,7 @@ Automated     52.0%
 
 Scenario 011 / 044 / 069 現在有直接 lifecycle evidence，才從 manual 升級；其餘 Scenario 仍依 evidence truthfulness 維持原分類。
 
+
 ## v0.16.3 Intelligence Context Evidence Maturity
 
 新增 `tests/evidence/intelligence_context_lifecycle.py`，以隔離 Git project + XDG config 實際驗證：
@@ -1503,7 +1504,7 @@ Lifecycle evidence checks supported short-lived prefixes, unclassified preservat
 
 ## Scenario 200 — Demand-driven CI toolchain planning
 
-Lifecycle evidence checks exact-path Node, browser and OpenAPI selection, full provisioning for sensitive paths and unknown paths, and explicit skips for optional OpenAPI evidence. Secret scanning, preflight, repository validation and the exact-candidate Integration Gate remain mandatory. Without a valid CI plan, local checks retain the full toolchain profile.
+Lifecycle evidence checks exact-path Node, browser and OpenAPI selection, full provisioning for sensitive paths and unknown paths, and explicit skips for optional OpenAPI evidence. `publish_preflight_lifecycle.py` remains required in every plan: it exercises action-level OpenAPI help and contract behavior when both validator modules exist, and otherwise verifies top-level routing plus the clear missing-dependency failure without a traceback or output artifact. Secret scanning, preflight, repository validation and the exact-candidate Integration Gate remain mandatory. Without a valid CI plan, local checks retain the full toolchain profile.
 
 ## Scenario 201 — Monthly maintenance reliability evidence
 

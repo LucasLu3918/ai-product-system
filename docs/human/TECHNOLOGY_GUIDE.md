@@ -144,7 +144,7 @@ Shared Python workflow bootstrap accepts an explicit import profile, checks impo
 
 Pull requests receive an early repository-preflight summary from a separate bounded job. The result is advisory and the complete required repository validation still runs independently.
 
-The repository validator derives optional evidence from the exact-candidate CI plan. OpenAPI-dependent lifecycle checks, including implementation enforcement, are skipped only when `needs_openapi` is false; without a valid plan the full profile runs. The plan is not inherited by isolated contract and lifecycle subprocesses. The required repository aggregate, secret scan and Integration Gate remain blocking.
+The repository validator derives optional evidence from the exact-candidate CI plan. OpenAPI-dependent lifecycle checks, including implementation enforcement, are skipped only when `needs_openapi` is false; without a valid plan the full profile runs. The required `publish_preflight_lifecycle.py` evidence still runs in either case: action-level OpenAPI help and validation smoke require both optional modules, while the missing-module path checks top-level help and a deterministic fail-closed diagnostic. The plan is not inherited by isolated contract and lifecycle subprocesses. The required repository aggregate, secret scan and Integration Gate remain blocking.
 
 Dependency update planning uses `config/dependency-policy.yaml` and `scripts/dependency_impact.py`. `plan` recommends class-specific validation; semantic runtime changes include retrieval regression and a semantic trial, while unknown packages require human review. It is advisory and grants no automatic merge authority.
 
@@ -209,7 +209,7 @@ Validation workflow 先執行輕量文件影響檢查，再安裝完整依賴與
 
 Public command, platform, runtime, optional-dependency, validation and documentation facts are registered in `config/system-facts.yaml`; capability surfaces remain in `config/architecture-surfaces.yaml`. `scripts/system_facts.py` deterministically derives factual tables in System Reference while policy and explanatory prose stay in canonical topic documents. `pyproject.toml` records Ruff/mypy and Python compatibility; `constraints/tested.txt` identifies the exact repository-validation dependency set used by CI.
 
-Repository validation classifies exact candidate paths before provisioning optional Node, browser and OpenAPI toolchains. Unknown paths use the full toolchain. The Integration Gate, mandatory secret scan and repository validation remain required for every candidate.
+Repository validation classifies exact candidate paths before provisioning optional Node, browser and OpenAPI toolchains. Unknown paths use the complete toolchain. The Integration Gate, mandatory secret scan and repository validation remain required for every candidate.
 
 Branch hygiene emits deterministic SHA, PR, age and integration proposals; cleanup requires an exact one-time manifest whose main baseline matches the current target. Any absent row blocks the complete batch as replay or partial-state evidence; a mid-run remote failure reports completed deletions and requires a newly reviewed manifest before retry. CI selects optional Node, browser and OpenAPI toolchains from exact changed paths and fails closed to the full profile on unknown input.
 

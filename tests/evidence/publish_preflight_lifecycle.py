@@ -631,26 +631,46 @@ def main() -> int:
             assert safe_help.returncode == expected and "validate" in safe_help.stdout + safe_help.stderr
         product = root / "product"
         product.mkdir()
-        for action in ("compare", "run-contract-tests", "verify-evidence", "generator"):
-            tool_help = subprocess.run(
-                [shell, str(ROOT / "bin/aips"), "openapi", action, "--help"],
-                cwd=product, env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable}, capture_output=True, text=True,
-            )
-            assert tool_help.returncode == 0 and "--repo-root" in tool_help.stdout, tool_help.stderr
+        openapi_dependencies_available = all(
+            importlib.util.find_spec(module) is not None
+            for module in ("openapi_spec_validator", "jsonschema")
+        )
+        openapi_help = subprocess.run(
+            [shell, str(ROOT / "bin/aips"), "openapi", "--help"],
+            cwd=product, env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable}, capture_output=True, text=True, check=False,
+        )
+        assert openapi_help.returncode == 0 and "<doctor|install|validate" in openapi_help.stdout, openapi_help.stderr
+        if openapi_dependencies_available:
+            for action in ("compare", "run-contract-tests", "verify-evidence", "generator"):
+                tool_help = subprocess.run(
+                    [shell, str(ROOT / "bin/aips"), "openapi", action, "--help"],
+                    cwd=product, env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable}, capture_output=True, text=True,
+                )
+                assert tool_help.returncode == 0 and "--repo-root" in tool_help.stdout, tool_help.stderr
         spec_path = product / "openapi.yaml"
         spec_path.write_text("openapi: 3.0.3\ninfo: {title: Independent product, version: '1.0'}\npaths: {}\n")
-        contract_cli = subprocess.run(
-            [shell, str(ROOT / "bin/aips"), "openapi", "validate", "openapi.yaml", "--repo-root", ".", "--output", str(product / "validation.json")],
-            cwd=product, env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable}, capture_output=True, text=True,
-        )
-        assert contract_cli.returncode == 0, contract_cli.stdout + contract_cli.stderr
-        assert (product / "validation.json").is_file() and not (product / "scripts").exists()
-        spec_path.write_text("openapi: 3.0.3\ninfo: {title: Independent product, version: '1.0'}\npaths: {}\ncomponents:\n  schemas:\n    External: {$ref: 'https://example.invalid/schema.yaml'}\n")
-        blocked_cli = subprocess.run(
-            [shell, str(ROOT / "bin/aips"), "openapi", "validate", "openapi.yaml", "--repo-root", "."],
-            cwd=product, env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable}, capture_output=True, text=True,
-        )
-        assert blocked_cli.returncode != 0, "installed routing must retain remote-reference blocking"
+        if openapi_dependencies_available:
+            contract_cli = subprocess.run(
+                [shell, str(ROOT / "bin/aips"), "openapi", "validate", "openapi.yaml", "--repo-root", ".", "--output", str(product / "validation.json")],
+                cwd=product, env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable}, capture_output=True, text=True,
+            )
+            assert contract_cli.returncode == 0, contract_cli.stdout + contract_cli.stderr
+            assert (product / "validation.json").is_file() and not (product / "scripts").exists()
+            spec_path.write_text("openapi: 3.0.3\ninfo: {title: Independent product, version: '1.0'}\npaths: {}\ncomponents:\n  schemas:\n    External: {$ref: 'https://example.invalid/schema.yaml'}\n")
+            blocked_cli = subprocess.run(
+                [shell, str(ROOT / "bin/aips"), "openapi", "validate", "openapi.yaml", "--repo-root", "."],
+                cwd=product, env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable}, capture_output=True, text=True,
+            )
+            assert blocked_cli.returncode != 0, "installed routing must retain remote-reference blocking"
+        else:
+            unavailable_cli = subprocess.run(
+                [shell, str(ROOT / "bin/aips"), "openapi", "validate", "openapi.yaml", "--repo-root", ".", "--output", str(product / "validation.json")],
+                cwd=product, env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable}, capture_output=True, text=True, check=False,
+            )
+            assert unavailable_cli.returncode != 0, "OpenAPI validation must stop without optional dependencies"
+            assert "optional dependencies are missing" in unavailable_cli.stderr, unavailable_cli.stderr
+            assert "Traceback" not in unavailable_cli.stdout + unavailable_cli.stderr
+            assert not (product / "validation.json").exists(), "missing optional dependencies must stop before writing output"
         intelligence_cli = subprocess.run(
             [shell, str(ROOT / "bin/aips"), "intelligence", "--help"],
             env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable}, capture_output=True, text=True,

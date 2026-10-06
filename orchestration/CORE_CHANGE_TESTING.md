@@ -153,7 +153,7 @@ Its `run` lifecycle must also verify that fast preflight and Integration Gate re
 
 ## Conditional CI enforcement
 
-The exact-candidate toolchain plan defines which optional environment probes are required. Treat an unselected browser check's `NOT_REQUIRED` result as neutral; preserve blockers for selected browser prerequisites and every mandatory validation check.
+The exact-candidate toolchain plan defines which optional environment probes are required. Treat an unselected browser check's `NOT_REQUIRED` result as neutral; preserve blockers for selected browser prerequisites and every mandatory validation check. For mixed OpenAPI lifecycle evidence, keep the aggregate lifecycle active in both plans: run action-level contract smoke with the optional modules, or assert a clear fail-closed diagnostic and no output when they are absent.
 
 The publication preview reports the required Core Matrix base/hash binding and a synchronization command before commit. Synchronization resets the matrix to DRAFT and retains human scope/evidence review; it never grants READY automatically.
 
