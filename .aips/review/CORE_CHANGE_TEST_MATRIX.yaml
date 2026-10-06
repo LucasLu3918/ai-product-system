@@ -1,80 +1,75 @@
 version: 1
 change:
-  id: plan17-preflight-not-required
-  summary: Keep exact-candidate publication preflight ready when the CI toolchain
-    plan does not require optional browser or Node capabilities, while preserving
-    failures for selected prerequisites.
+  id: plan17-openapi-preflight-lifecycle
+  summary: Keep required publication-preflight lifecycle evidence compatible with
+    exact-path CI plans that omit optional OpenAPI validator installation.
   boundary:
-  - Treat browser NOT_REQUIRED as neutral only when needs_browser is false; browser
-    discovery and launch probes remain skipped for that candidate.
-  - Keep selected browser failures and every mandatory validation requirement blocking.
-  - Preserve CI validation planning, required Integration Gate execution, secret scanning,
-    repository validation, and all workflow permissions.
-  - Update focused lifecycle evidence and recursive human/agent guidance for this
-    behavior.
-  - No release, tag, dependency-policy, workflow-permission, or data-schema changes.
+  - Always run publication-preflight lifecycle evidence, top-level OpenAPI CLI routing,
+    and non-OpenAPI repository checks.
+  - When openapi_spec_validator and jsonschema are available, run action-level OpenAPI
+    help and contract smoke including remote-reference blocking.
+  - When an optional validator dependency is absent, assert a clear fail-closed diagnostic
+    without traceback or output artifact.
+  - Preserve the mandatory repository aggregate, exact-candidate Integration Gate,
+    candidate secret scan, and all existing publication authority.
+  - No runtime product behavior, public API, data schema, release state, or workflow
+    permission changes.
 candidate:
-  base_sha: c84803666183a250145261a218cd50bc4bab5021
-  changed_files_hash: da08b8708ff150690d0b41fdc21e200c1cc44cd6c3d09a3b30d148b04039dde2
+  base_sha: f7f6c301309ed48fe7ecabdba5db74b947a54f35
+  changed_files_hash: 90ab6f698b3b59c815159391989882de166ad4542dde806ea9aeed05cb6acec8
 matrix:
-- boundary: optional-browser-preflight-classification
-  reason: The exact CI validation plan selects optional environment probes. An unselected
-    browser must not block publication, and a selected browser must still fail closed.
+- boundary: optional-openapi-lifecycle-evidence
+  reason: The exact-path plan may omit OpenAPI package installation; the required
+    repository lifecycle must still run without importing missing validator modules.
   checks:
     static_lint:
       applicable: true
-      evidence: Full repository validation, quality ratchet, publication-preflight
-        contracts, and exact changed-file/hash reconciliation cover the condition
-        and its docs.
+      evidence: Ruff touched-code no-growth ratchet and recursive documentation placement
+        validation.
     unit:
       applicable: true
-      evidence: publish_preflight_lifecycle.py exercises a plan with needs_browser=false,
-        asserts READY and NOT_REQUIRED, and asserts browser discovery/probing and
-        loopback checks are not called; its existing selected-browser failure case
-        remains blocking.
+      evidence: publish_preflight_lifecycle.py passes with optional OpenAPI dependencies
+        installed and with openapi_spec_validator import-blocked.
     integration:
       applicable: true
-      evidence: Exact-candidate Integration Gate must pass after the candidate is
-        committed; the required repository validator owns the lifecycle and contract
-        checks.
+      evidence: Full repository validation passes 222 scenarios with needs_openapi=false;
+        exact-candidate AIPS Integration Gate is required before publication.
     contract:
       applicable: true
-      evidence: publish_preflight_contracts.py and the lifecycle bind CI-plan interpretation,
-        optional environment status, and fail-closed behavior for selected browser
-        requirements.
+      evidence: Lifecycle asserts action-level OpenAPI smoke when dependencies exist,
+        and stable missing-dependency diagnostic with no output otherwise.
     e2e:
       applicable: true
-      evidence: Full local publication preflight plus required PR repository/JANITOR
-        checks exercise the exact candidate; main checks run after merge.
+      evidence: Run the exact committed candidate through local AIPS Gate and require
+        matching PR checks; main checks run after merge.
     security:
       applicable: true
-      evidence: Exact-candidate credential-free strict secret scanning remains mandatory;
-        no credentials, permissions, publication writes, or secret handling change.
+      evidence: Mandatory credential-free exact-candidate secret scan remains required;
+        no permissions or secret handling change.
     migration_recovery:
       applicable: false
-      na_reason: No persistence, schema, dependency, or release-state change; rollback
-        is a code/documentation revert.
+      na_reason: Test evidence and documentation only; no persistent schema, dependency,
+        release, or migration change.
     cli_harness:
       applicable: true
-      evidence: The publication lifecycle verifies a non-browser CI plan completes
-        without optional browser or loopback probes and that selected browser failures
-        remain blockers.
+      evidence: Test installed AIPS CLI top-level routing and dependency-aware action
+        help/validation against the selected Python.
     docs_schema:
       applicable: true
-      evidence: Recursive documentation preview and placement validation bind the
-        user, orchestrator, Integration Gate, scheduler, and Core Change testing guidance
-        to the changed behavior.
+      evidence: Recursive publication-preflight placement preview passes for the complete
+        10-document closure.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
   status: SELF_REVIEWED
   evidence:
-  - User approved the exact 13-file Core Change scope and the explicitly documented
-    Impact Graph truncation/unmapped-seed limitation (2026-10-06).
-  - Full local aips validate passed 222 scenarios; focused publication-preflight lifecycle
-    and contracts passed; recursive documentation sync passed.
-  - Exact-candidate Integration Gate and publication preflight must still pass after
-    the candidate is committed; READY_FOR_GATE is not a PASS result.
+  - User approved the 8 publication-preflight docs, then explicitly approved the additional
+    CONFORMANCE and DETERMINISTIC_SCHEDULER docs plus canonical matrix update for
+    this CI fix (2026-10-06).
+  - Focused lifecycle passes with OpenAPI dependencies present and with openapi_spec_validator
+    blocked; full repository validator passes 222 scenarios with needs_openapi=false.
+  - Recursive documentation placement preview passes; the exact committed-candidate
+    Integration Gate and remote checks remain mandatory before merge.
 blockers: []
 status: READY
