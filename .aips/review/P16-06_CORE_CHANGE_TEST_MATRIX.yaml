@@ -8,7 +8,7 @@ change:
   - Scenario 221, validator contracts and canonical documentation placement keep policy, CLI and authority boundaries aligned.
 candidate:
   base_sha: 18ee2ef48b4f61fb10beb3bc94ade7d3dd543d0c
-  changed_files_hash: b0013445b3298605c5ead460b11e4d11fb9f9616fa01f4c28819711ec3042bad
+  changed_files_hash: pending
 matrix:
 - boundary: policy-classification-and-plans
   reason: Dependency class must be explicit and result in an actionable validation plan; semantic runtime changes require retrieval regression and a semantic trial.
@@ -79,5 +79,4 @@ review_evidence:
   - User explicitly approved implementation of all Plan16 items, local verification, remote PR publication and merge in this task.
 blockers:
 - Candidate file list and hash must be reconciled after the complete diff is committed.
-- candidate binding refreshed; review scope and evidence before marking READY
 status: DRAFT

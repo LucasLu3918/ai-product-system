@@ -298,7 +298,6 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 
 Evolution Effectiveness reports incomplete pre-analysis coverage instead of calling absent triage a zero shortlist. Oversized scheduled Radar Issues preserve the full UTF-8 body in a bounded digest-checked archive restored before monthly parsing.
 
-
 外部 Intelligence metadata 不可寫時，可重建 metadata 保存在快取旁並回報 `CACHE_ONLY`；索引 freshness 仍由實際候選比對，canonical 來源與 graph 不會被替代。以 `aips publish checks --pr <number> --head <sha>` 查看最新 workflow/check 結果：舊 `CANCELLED` 不覆蓋較新的成功；目前取消、缺少必要 `repository`、等待或失敗均不會成為 PASS。PR 與 main 的 Gate 仍綁定各自候選；CI pip 快取以 requirements 雜湊作鍵，安裝與完整 Gate 每輪照常執行。合併後另核對註冊安裝版的 commit。
 
 排查 `AUTH_CONFIGURATION_UNVERIFIED` 時先確認 `GH_CONFIG_DIR` 與 `XDG_CONFIG_HOME` 的設定選擇，再檢查登入；不要複製憑證。Local preparation 保留原本 gh 設定目錄並拒絕不屬於指定 Python 3.12 venv 的執行檔。文件異動先用 preview 查閉包；docs impact 須解析正確 checkout。重用準備好的環境，候選固定後執行一次完整本地 Gate，保留 PR 與 main CI；以既有 timing evidence 評估慢項目。
@@ -364,6 +363,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+Dependency updates can be classified with `python scripts/dependency_impact.py plan --ecosystem pip --name <package>`. The policy recommends evidence for each known dependency class; unknown packages default to `UNCLASSIFIED` / `HIGH`. Recommendations do not change Dependabot behavior, approve updates, or permit automatic merges.
+
 Post-merge 的本地 `main` 與 managed installation 同步位於 `scripts/publish_post_merge.py`；`scripts/publish_preflight.py` 維持舊 CLI facade。維護此邊界時，執行 publication-preflight 與 module-extraction lifecycle，再跑完整 Core Integration Gate。
 
 Scenario 204 的 module-extraction lifecycle 核對既有 facade 與 temporal current-mode 契約，讓內部拆分維持可回歸驗證。
@@ -398,7 +399,7 @@ External Eval / Red-Team Interoperability contracts are checked by `tests/valida
 
 Keep the top-level validator as an aggregator. New substantial validation belongs in the narrowest existing module or a focused evidence runner rather than expanding the entrypoint back into a monolith.
 
-When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 37 deterministic, 127 lifecycle and 54 agent_eval scenarios (218 automated, 2 manual, 220 total).
+When registering a lifecycle scenario, update the conformance inventory assertions in `conformance_isolation.py` and the canonical Human/Agent conformance records in the same change. The current release inventory is 37 deterministic, 128 lifecycle and 54 agent_eval scenarios (219 automated, 2 manual, 221 total).
 
 `scripts/repository_preflight.py` 先跑快速文件／schema／diff 檢查；通過後才進入完整 lifecycle。環境缺少 localhost bind 或 browser 時回報 `ENVIRONMENT_BLOCKED`，不混稱產品測試失敗。
 

@@ -150,6 +150,8 @@ Generated Conformance views must retain a deterministic path from the canonical 
 
 Monthly Human relevance evaluation also includes deterministic fingerprint sampling, actionable yield and per-source relevance yield. Keep these metric and authority statements aligned across the Human Radar guides, Scenario 218 and the Technology Guide; incomplete labels remain `NOT_READY`.
 
+Dependency risk classification adds an advisory policy and CLI mapping package classes to recommended validation plans. Keep the class behaviors, unknown-package fail-closed default, human decision requirement and no-auto-merge authority aligned with Maintenance, Technology Guide and Scenario 221.
+
 The `evolution-radar` mapping includes the deterministic effectiveness script, policy config and monthly GitHub workflow. Changes to metric definitions, thresholds, source review flags, Issue publication behavior or authority fields must synchronize the canonical Evolution Radar / Execution Isolation Human and Agent docs plus the Technology Guide.
 
 `scripts/evolution_preanalysis.py` is an internal implementation behind the unchanged `scripts/evolution_analysis.py` facade. Its source inventory and module-identity lifecycle belong to the `evolution-radar` documentation closure; user command and authority behavior remain unchanged.
