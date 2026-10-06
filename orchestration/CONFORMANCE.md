@@ -845,7 +845,7 @@ The Human current summary and Human/Agent history crosswalk are generated from t
 
 ### Scenarios 214–219 — Plan15 operational closure
 
-These lifecycle scenarios bind release-channel readiness, runtime constraints, quality debt, full-run validation observations, human Evolution relevance labels, and validation taxonomy alignment to focused evidence. They retain full validation, human decision authority, and fail-closed behavior when evidence is incomplete.
+These lifecycle scenarios bind release-channel readiness, runtime constraints, quality debt, full-run validation observations, human Evolution relevance labels, and validation taxonomy alignment to focused evidence. The read-only observation collector installs PyYAML from `constraints/tested.txt` before importing the collector; missing dependency or incomplete evidence remains `NOT_READY`. They retain full validation, human decision authority, and fail-closed behavior when evidence is incomplete.
 
 ## Scenario 210 — Python runtime support policy
 

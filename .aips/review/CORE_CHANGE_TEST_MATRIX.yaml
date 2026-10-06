@@ -8,7 +8,7 @@ change:
   - Missing or failed collection evidence remains NOT_READY; it cannot enable selective test execution or weaken the required full repository Gate.
 candidate:
   base_sha: 1e106013b45f1fe21c041b3e90b718c554284b53
-  changed_files_hash: 48fe7392630aafe921a0e56362d6e3aae3c871dcbff5dd71d214ec91aa0a7649
+  changed_files_hash: 1b16a5ee31115e35051803687c5f722c117290d3d1ce15cb4fb97b321471be5e
 matrix:
 - boundary: collector-runtime-dependency
   reason: The collector currently fails before producing a dataset because its workflow omits PyYAML, which validation_observation.py imports.
@@ -39,7 +39,7 @@ matrix:
       na_reason: No CLI or Harness entrypoint changes.
     docs_schema:
       applicable: true
-      evidence: Scenario 217 and existing workflow contract capture the dependency prerequisite without changing observation schemas.
+      evidence: Scenario 217, the workflow contract, and the six mapped Human/Agent validation documents capture the dependency prerequisite without changing observation schemas.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
