@@ -217,7 +217,7 @@ Evolution data completeness、validator shadow/replay、branch cleanup proposal�
 
 The canonical documentation placement registry maps Evolution Radar Human-label evaluation to its Human guides and Scenario 218 so future metric or authority changes remain synchronized.
 
-The document-size audit provides report-only measurements for historical documentation and evidence so a Human can consider layering after reviewing the baseline.
+Release history keeps the active window in CHANGELOG.md and stores older complete sections in the manually maintained docs/history/changelog/ archive. The report-only document-size audit never moves files.
 
 Dependency risk policy and its advisory classifier are mapped to maintenance, verification and Scenario 221 documentation by the canonical placement registry.
 

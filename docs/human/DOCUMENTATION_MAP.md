@@ -132,7 +132,7 @@ Evolution Radar 人工相關性抽樣與評估行為以 `EVOLUTION_RADAR.md` / `
 
 Dependency Update risk classification 的使用方式位於 Maintenance 與 Technology Guide；Agent 契約由 Scenario 221 定義，placement 登錄於 `config/documentation-placement.yaml`。
 
-大型歷史文件僅由 report-only size audit 量測，超過門檻時標示 WARN；目前不移動或封存，文件分層由 Human 依量測結果決定。
+Release history keeps Unreleased and the latest five full releases in CHANGELOG.md; older complete sections live in docs/history/changelog/ while every version heading remains at the root as a stable link. The report-only size audit remains WARN-only and never moves files; archive placement is a manual, lossless documentation decision.
 
 `tests/validate_repository.py` documents the required CI evidence boundary: exact-candidate selection may skip optional OpenAPI lifecycle checks, while the required repository aggregate and Integration Gate continue to run. The selection variable is consumed by the runner and kept out of isolated lifecycle subprocesses.
 

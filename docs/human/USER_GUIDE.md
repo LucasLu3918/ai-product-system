@@ -464,7 +464,8 @@ Current behavior / How-to / Explanation
 → docs/human/ 對應 topic section
 
 Release / version history
-→ CHANGELOG.md
+→ CHANGELOG.md（目前版本與穩定版號錨點）
+→ docs/history/changelog/（較早版本的完整內容）
 
 Scenario / validation history
 → docs/human/CONFORMANCE.md

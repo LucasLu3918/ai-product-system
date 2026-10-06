@@ -122,6 +122,7 @@ rules:
       - config/documentation-audience.yaml
       - tests/validation/documentation_sync_contracts.py
       - tests/validation/documentation_audience_contracts.py
+      - tests/scenarios/127-human-documentation-namespace.md
     human_docs:
       - docs/human/DOCUMENTATION_SYNC.md
       - docs/human/DOCUMENTATION_MAP.md
@@ -277,3 +278,20 @@ rules:
       - docs/human/DOCUMENTATION_MAP.md
     agent_docs:
       - orchestration/DOCUMENTATION_SYNC.md
+  - id: changelog-history-archive
+    triggers:
+      - CHANGELOG.md
+      - docs/history/changelog/**
+      - config/documentation-placement.yaml
+    human_docs:
+      - docs/human/ARCHITECTURE_OVERVIEW.md
+      - docs/human/DOCUMENTATION_MAP.md
+      - docs/human/DOCUMENTATION_SYNC.md
+      - docs/human/MAINTENANCE.md
+      - docs/human/TECHNOLOGY_GUIDE.md
+      - docs/human/USER_GUIDE.md
+      - docs/human/index.md
+    agent_docs:
+      - orchestration/DOCUMENTATION_SYNC.md
+    evidence:
+      - tests/validation/versioning_contracts.py

@@ -2,6 +2,9 @@ version: 2
 policy:
   current_behavior_is_topic_oriented: true
   release_history_target: CHANGELOG.md
+  release_history_archive_root: docs/history/changelog/
+  root_changelog_full_release_window: 5
+  release_history_archiving: "human-maintained; report-only size audit never moves files"
   verification_history_target: docs/human/CONFORMANCE.md
   legacy_html_append_forbidden: true
   all_added_lines_must_match_canonical_placement: true
@@ -325,6 +328,7 @@ placement_rules:
       - tests/validation/documentation_sync_contracts.py
       - tests/validation/documentation_audience_contracts.py
       - tests/validation/documentation_placement_contracts.py
+      - tests/scenarios/127-human-documentation-namespace.md
     placements:
       docs/human/DOCUMENTATION_SYNC.md: [文件角色, Current-behavior placement contract, Official Docs Site, Technology Guide, Deterministic protection]
       docs/human/DOCUMENTATION_MAP.md: [Official Docs Site, 文件角色, Agent / machine canonical 文件, Shared canonical 文件, 文件一致性]

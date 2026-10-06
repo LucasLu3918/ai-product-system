@@ -2,6 +2,8 @@ version: 1
 human_root: docs/human
 standalone_human_prefix: HUMAN_
 standalone_human_documents: []
+human_document_roots:
+  - docs/history
 shared_docs:
   - docs/ARCHITECTURE.md
 repository_root_exceptions:

@@ -41,6 +41,8 @@ if script.exists():
         with tempfile.TemporaryDirectory() as tmp:
             fixture = Path(tmp)
             (fixture / 'docs/human').mkdir(parents=True)
+            (fixture / 'docs/human/README.md').write_text('# Human docs\n', encoding='utf-8')
+            (fixture / 'docs/history/changelog').mkdir(parents=True)
             (fixture / 'docs/ARCHITECTURE.md').write_text('# Architecture\n', encoding='utf-8')
             (fixture / 'docs/.DS_Store').write_bytes(b'local metadata')
             (fixture / '.gitignore').write_text('.DS_Store\n', encoding='utf-8')
@@ -50,7 +52,8 @@ if script.exists():
                 'human_root': 'docs/human',
                 'standalone_human_prefix': 'HUMAN_',
                 'shared_docs': ['docs/ARCHITECTURE.md'],
-                'human_documents': [],
+                'human_document_roots': ['docs/history'],
+                'human_documents': ['docs/human/README.md'],
                 'standalone_human_documents': [],
                 'legacy_paths': {},
                 'scan_roots': [],
@@ -58,8 +61,10 @@ if script.exists():
             ignored_errors = audience.validate_layout(fixture, fixture_config)
             if any('DS_Store' in item for item in ignored_errors):
                 errors.append('Documentation audience must ignore Git-ignored local metadata')
+            if ignored_errors:
+                errors.extend(f'Human-only historical docs root was not accepted: {item}' for item in ignored_errors)
         source = script.read_text(encoding='utf-8')
-        for contract in ('aips-audience', 'standalone_human_documents', 'standalone_human_prefix'):
+        for contract in ('aips-audience', 'standalone_human_documents', 'standalone_human_prefix', 'human_document_roots'):
             if contract not in source:
                 errors.append(f'Documentation audience enforcement missing: {contract}')
     except Exception as exc:

@@ -53,7 +53,7 @@ Phase 3 Implementation Profile enforcement and its report schema map to the exis
 
 `docs/human/TECHNOLOGY_GUIDE.md` is the maintained Human inventory of current AIPS techniques and terms. A configured technical change requires the guide to be updated in the same diff, and Documentation Placement additionally requires changed lines to land in the owning canonical topic instead of an append-only tail section.
 
-Release history belongs in `CHANGELOG.md`; Scenario / verification history belongs in `docs/human/CONFORMANCE.md`. Legacy standalone HTML is compatibility-only.
+Current release history and stable version anchors belong in `CHANGELOG.md`; older complete release sections may be moved only by a reviewed, lossless manual archive under `docs/history/changelog/`. The document-size audit stays report-only and never moves files. Scenario / verification history belongs in `docs/human/CONFORMANCE.md`. Legacy standalone HTML is compatibility-only.
 
 ## Validation behavior
 

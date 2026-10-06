@@ -278,7 +278,7 @@ The monthly reliability workflow measures validation outcomes and runtime distri
 
 ### Human Documentation Source
 
-docs/human/*.md 是 Human canonical source。Current behavior 依 domain section維護；CHANGELOG 保存版本歷史；Conformance 保存驗證歷史。
+docs/human/*.md 是 Human canonical source。Current behavior 依 domain section維護；CHANGELOG 保留 Unreleased 與最近五個完整版本，較早的完整 release sections 由 `docs/history/changelog/` 人工封存並保留根目錄版本錨點；Conformance 保存驗證歷史。
 
 ### VitePress
 
