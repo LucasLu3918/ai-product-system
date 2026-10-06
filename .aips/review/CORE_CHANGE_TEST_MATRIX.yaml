@@ -1,81 +1,51 @@
 version: 1
 change:
-  id: plan16-p16-07-large-document-measurement
-  summary: Measure tracked documentation and evidence sizes and report warnings above 50,000 bytes without Gate blocking or file movement.
+  id: p16-08-validation-observation-dependencies
+  summary: Install the pinned PyYAML dependency required by the 30-day Validation Observation Collector and assert its workflow contract. Keep collection read-only, full-run shadow non-selective, and full repository validation required.
   boundary:
-  - Versioned report-only policy measures tracked text/documentation/evidence paths using byte counts.
-  - Over-threshold files are informational WARN rows with successful exit status; the baseline records the current snapshot.
-  - No files are moved or archived; future layering decisions remain Human-owned and wait for measurement review.
+  - The manual/scheduled collector installs PyYAML from constraints/tested.txt before importing validation_observation.py.
+  - Workflow permission, observation schema, retention, and graduation rules remain unchanged.
+  - Missing or failed collection evidence remains NOT_READY; it cannot enable selective test execution or weaken the required full repository Gate.
 candidate:
-  base_sha: 5eda403d85250bc2215163858091d1384f3ed562
-  changed_files_hash: a9667bd4924bf4c9f15bc5792d5dc728bc53d14411fdd0e4d003443877a60c5d
+  base_sha: 1e106013b45f1fe21c041b3e90b718c554284b53
+  changed_files_hash: 48fe7392630aafe921a0e56362d6e3aae3c871dcbff5dd71d214ec91aa0a7649
 matrix:
-- boundary: tracked-file-size-measurement
-  reason: Measurements must be reproducible, scoped to tracked repository text/evidence files, and expose exact bytes and the configured threshold.
+- boundary: collector-runtime-dependency
+  reason: The collector currently fails before producing a dataset because its workflow omits PyYAML, which validation_observation.py imports.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff, YAML policy contracts and repository preflight validate the report-only audit.
+      evidence: Repository validation checks YAML and the workflow/contract code remains syntactically valid.
     unit:
       applicable: true
-      evidence: Lifecycle verifies above-threshold WARN, exact-threshold OK, tracked-path scope and input immutability.
+      evidence: Validation observation lifecycle continues to cover collection, deduplication and graduation outcomes.
     integration:
       applicable: true
-      evidence: The CLI enumerates tracked files, emits deterministic JSON and optionally writes a report output.
+      evidence: Dispatch the exact read-only workflow for a 30-day window and inspect collector conclusion plus output artifact presence.
     contract:
       applicable: true
-      evidence: Scenario 222 and static contracts lock the 50,000-byte threshold and non-blocking/no-move authority boundary.
+      evidence: validation_observation_contracts.py requires PyYAML installation constrained by constraints/tested.txt; Scenario 217 records the prerequisite.
     e2e:
       applicable: true
-      evidence: Full repository validation and exact-candidate Integration Gate exercise Scenario 222 and documentation conformance.
+      evidence: Run the full repository validator locally and verify the exact merged-main repository check.
     security:
       applicable: true
-      evidence: The audit is offline, reads file size metadata only and does not emit file contents or credentials.
+      evidence: Confirm actions:read and contents:read remain the only workflow permissions and artifacts contain no credentials.
     migration_recovery:
       applicable: false
-      na_reason: No persistent application store, archive or file migration is introduced.
+      na_reason: No persistent application state, schema, or migration is changed.
     cli_harness:
-      applicable: true
-      evidence: Lifecycle executes the public audit CLI against an isolated tracked-file fixture and confirms warning exit status zero.
-    docs_schema:
-      applicable: true
-      evidence: Maintenance, Technology Guide, baseline, Scenario 222 and placement registry describe the measurement-only behavior.
-- boundary: warning-only-baseline-and-human-layering
-  reason: The initial snapshot gathers size evidence without deciding or automating archival and without changing Gate behavior.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Policy contracts reject threshold or authority drift from WARN-only and no archive/move.
-    unit:
-      applicable: true
-      evidence: Baseline values correspond to the current report and list only files above the threshold.
-    integration:
-      applicable: true
-      evidence: Baseline records measured date, base revision, file count and exact byte counts for oversized files.
-    contract:
-      applicable: true
-      evidence: Scenario 222 keeps Human layering decisions separate from measurement output.
-    e2e:
-      applicable: true
-      evidence: Exact-candidate Gate verifies the report and its no-blocking boundary.
-    security:
-      applicable: true
-      evidence: The baseline stores path and size metadata only; no document text is copied.
-    migration_recovery:
       applicable: false
-      na_reason: Measurement creates a small review snapshot and does not alter source files.
-    cli_harness:
-      applicable: true
-      evidence: The report CLI returns zero when its overall status is WARN and leaves input files unchanged.
+      na_reason: No CLI or Harness entrypoint changes.
     docs_schema:
       applicable: true
-      evidence: Human and Agent conformance text states that future layering requires separate Human review.
+      evidence: Scenario 217 and existing workflow contract capture the dependency prerequisite without changing observation schemas.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
   status: SELF_REVIEWED
   evidence:
-  - User explicitly approved implementation of all Plan16 items, local verification, remote PR publication and merge in this task.
+  - User authorized implementation of all Plan16 recommendations; this fix restores the existing read-only observation phase within that scope.
 blockers: []
 status: READY

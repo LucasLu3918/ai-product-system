@@ -30,7 +30,7 @@ jobs:
           cache-dependency-path: |
             requirements-validation.txt
             constraints/tested.txt
-      - run: python -m pip install -c constraints/tested.txt -r requirements-validation.txt
+      - run: python -m pip install -c constraints/tested.txt -r requirements-validation.txt PyYAML
       - name: Collect bounded full-run evidence and evaluate graduation
         id: collect
         continue-on-error: true

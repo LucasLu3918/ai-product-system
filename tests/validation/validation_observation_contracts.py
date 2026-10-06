@@ -26,6 +26,11 @@ if workflow.is_file():
         errors.append("Validation observation collector must use read-only GitHub permissions")
     if any(value in {"write", "write-all"} for value in permissions.values()):
         errors.append("Validation observation collector must not receive write permissions")
+    install = next((step for step in doc.get("jobs", {}).get("collect", {}).get("steps", [])
+                    if "pip install" in str(step.get("run") or "")), {})
+    install_command = str(install.get("run") or "")
+    if "-c constraints/tested.txt" not in install_command or "PyYAML" not in install_command:
+        errors.append("Validation observation collector must install its pinned PyYAML runtime dependency")
 
 if validate_workflow.is_file():
     text = validate_workflow.read_text(encoding="utf-8")
