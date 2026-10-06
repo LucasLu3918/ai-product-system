@@ -140,6 +140,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Shared Python workflow bootstrap accepts an explicit import profile, checks imports and runs `pip check` under the repository tested constraints.
+
 Pull requests receive an early repository-preflight summary from a separate bounded job. The result is advisory and the complete required repository validation still runs independently.
 
 Dependency update planning uses `config/dependency-policy.yaml` and `scripts/dependency_impact.py`. `plan` recommends class-specific validation; semantic runtime changes include retrieval regression and a semantic trial, while unknown packages require human review. It is advisory and grants no automatic merge authority.

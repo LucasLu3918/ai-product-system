@@ -112,6 +112,8 @@ CLI entry-point and publication-preflight modularization map to this document, A
 
 ## Shared canonical 文件
 
+The reusable Python CI bootstrap contract lives with its composite action; per-workflow import profiles live in the caller, and package versions remain in requirements and constraints.
+
 docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGELOG.md 是 release history。
 
 `config/system-facts.yaml` 是公開命令與 runtime support 的 machine-readable source；`scripts/system_facts.py` 只產生 `SYSTEM_REFERENCE.md` 的事實表格，不生成 policy prose。Architecture Surface Inventory 維護 subsystem capability、canonical docs 和 validation bindings。

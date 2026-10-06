@@ -320,6 +320,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+Changes to shared CI bootstrap behavior require exact-candidate checks for every caller, import failure handling, tested constraints, and the required repository aggregate.
+
 After merge, post-merge checkout and installed-version reconciliation run through the established publication CLI facade and retain fast-forward-only safeguards.
 
 The pull-request advisory fast-feedback job checks the same base/head candidate in parallel and reports findings only; it does not participate in change-class routing or alter the required full validation path.

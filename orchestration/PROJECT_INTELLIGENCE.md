@@ -199,6 +199,8 @@ Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
 
+Treat the shared Python bootstrap as a consumer boundary: follow its workflow callers and declared requirements/import profiles before changing it.
+
 AIPS shell CLI impact review must supplement the lexical graph with the exact dispatcher branches and direct source/fixture consumers because shell calls are not represented in the current structural graph.
 
 Project-local traversal evidence can establish a bounded caller/consumer scope without upgrading repository-wide graph coverage. A stale retrieval index remains an unresolved freshness fact and must be reconciled before final impact readiness.

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Generalize the shared Python CI bootstrap to import caller-declared modules and verify dependency consistency with `pip check`, keeping requirements and tested constraints as the source of truth.
 - Treat a successfully collected NOT_READY validation cohort as a normal result, keep collection failures blocking, use the shared constrained Python bootstrap, and record pinned Dependency Review parity in non-blocking shadow mode.
 - Bind exact branch cleanup to the current main baseline; reject replay and partial-state manifests and report interrupted batches.
 - Require verified stable release tags for installs and updates; add a read-only exact-candidate release readiness workflow and preserve explicit `main` opt-in.

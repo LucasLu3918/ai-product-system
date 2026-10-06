@@ -1,156 +1,73 @@
 version: 1
 change:
-  id: plan17-phase1-observation-required-gate
-  summary: Separate observation readiness from collection failures, use the shared
-    constrained Python bootstrap, and record dependency-review parity in non-blocking
-    shadow mode.
+  id: plan17-t05-python-bootstrap
+  summary: Replace the shared Python bootstrap hard-coded PyYAML import probe with
+    caller-declared module verification and pip dependency consistency checks; preserve
+    pinned Python, requirements profiles and tested constraints. Update the 22 canonical
+    documentation consumers required by the current placement policy.
   boundary:
-  - Validation Observation collect CLI readiness and operational-error status semantics.
-  - Observation collector workflow summary and shared constrained Python bootstrap
-    pilot.
-  - Exact-candidate dependency-review shadow and same-candidate parity evidence; existing
-    standalone check remains authoritative.
-  - Scenario, contract/lifecycle tests and security/integration guidance.
-  - Existing full validation, required context, human approval, tag, cleanup and permission
-    policies remain authoritative.
+  - Shared bootstrap composite action and its three existing read-only workflow callers;
+    module/dependency verification lifecycle; exact Core Matrix binding, CHANGELOG
+    entry, placement-contract registration, and all current-policy-required Human/Orchestration documentation.
 candidate:
-  base_sha: cc8072169727b4ab514ac93feb63089908e69abd
-  changed_files_hash: 25ae1fc4b9de38293bd2680c33469321a17254f5c2d99e772bf3fc555c04a561
+  base_sha: fe8a2e48c19cfc50c04f0275f01a520a6389e14e
+  changed_files_hash: ecba0b12e6d37b650b2dbe088f906379379543df1676d32f7727fc33ace8e6db
 matrix:
-- boundary: observation-status-and-failure-semantics
-  reason: A completed NOT_READY report is not an operational failure, while collection
-    errors must remain blocking.
+- boundary: declared-python-bootstrap-profile-verification
+  reason: The shared CI bootstrap must verify each caller-declared import profile
+    and dependency consistency without owning package versions or executing untrusted
+    shell input.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff and repository YAML/schema validation for the collector, workflow
-        and registry.
+      evidence: YAML contracts check the required verification-modules input, all
+        three callers, pinned setup-python and unchanged requirements/constraints
+        composition.
     unit:
       applicable: true
-      evidence: CLI outcomes cover ready, normal NOT_READY, --require-ready, API failure
-        and corrupt artifact.
+      evidence: python_bootstrap_action_lifecycle.py covers valid imports, missing
+        modules and rejection of shell-like input.
     integration:
       applicable: true
-      evidence: Exact PR Gate runs the collector lifecycle and verifies the report/status
-        contract.
+      evidence: Full repository validation executes the bootstrap lifecycle; exact
+        PR Gate validates all touched files and the required repository aggregate.
     contract:
       applicable: true
-      evidence: Validation observation contracts check workflow summary states, full-run
-        mode and retained human authority.
+      evidence: Bootstrap contracts require every caller to declare modules and pip
+        check, and reject a hard-coded PyYAML import.
     e2e:
       applicable: true
-      evidence: GitHub Actions validates the exact PR candidate and post-merge repository
-        run.
+      evidence: PR validation exercises the exact candidate; existing lifecycle covers
+        the three calling workflows and their read-only permissions.
     security:
       applicable: true
-      evidence: Collector permissions stay read-only; API and artifact errors fail
-        closed; no token is printed or persisted.
+      evidence: Module names are validated as dotted Python identifiers before import;
+        no shell evaluation, new package manager, permissions or unpinned dependencies
+        are introduced.
     migration_recovery:
-      applicable: false
-      na_reason: The JSON evidence schema, stored artifacts and graduation policy
-        remain unchanged.
-    cli_harness:
       applicable: true
-      evidence: collect CLI default and explicit --require-ready exit behavior are
-        exercised.
+      evidence: All three callers migrate atomically with the required input in one
+        revertible PR; missing input fails action validation.
+    cli_harness:
+      applicable: false
+      na_reason: No AIPS CLI or Harness command surface changes.
     docs_schema:
       applicable: true
-      evidence: Scenario 217, its coverage map and workflow summaries describe readiness
-        and operational errors distinctly.
-- boundary: dependency-review-shadow-parity
-  reason: Collect exact-candidate parity before any canonical required-path switch;
-    the existing standalone check remains the sole authoritative dependency-review
-    status during observation.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: YAML and workflow contracts validate reusable trigger, immutable action
-        pin, high-severity threshold, read-only permissions, and non-blocking shadow
+      evidence: CHANGELOG Unreleased records the declared import and pip consistency
         behavior.
-    unit:
-      applicable: true
-      evidence: Dependency review contracts assert the shadow cannot affect repository
-        result and standalone trigger remains enabled.
-    integration:
-      applicable: true
-      evidence: Exact PR GitHub Actions run records standalone and shadow results
-        against the same candidate SHA.
-    contract:
-      applicable: true
-      evidence: Scenario 211 and dependency_review_contracts.py enforce observation-only
-        behavior and parity-gated promotion.
-    e2e:
-      applicable: true
-      evidence: Observe both check runs for the same PR candidate; no required-path
-        promotion occurs in this change.
-    security:
-      applicable: true
-      evidence: High-severity threshold, immutable action SHA and read-only contents/pull-requests
-        permissions remain; the current required path is unchanged.
-    migration_recovery:
-      applicable: false
-      na_reason: No application data, persistent schema, or branch-protection setting
-        is migrated.
-    cli_harness:
-      applicable: false
-      na_reason: No CLI or runtime Harness entrypoint changes.
-    docs_schema:
-      applicable: true
-      evidence: Integration Gate and Security Assurance docs state the shadow window,
-        standalone authority and separate parity-gated switch.
-- boundary: observation-python-bootstrap-profile-pilot
-  reason: Use the existing constrained runtime+validation requirements composition
-    instead of an untracked PyYAML workflow dependency.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Workflow contracts validate requirements, tested constraints and the
-        existing bootstrap's yaml import check.
-    unit:
-      applicable: true
-      evidence: Collector lifecycle and registry checks exercise consumer behavior;
-        composite verification imports configured modules generically.
-    integration:
-      applicable: true
-      evidence: Full repository validation and PR workflow execute the candidate with
-        declared requirements.
-    contract:
-      applicable: true
-      evidence: Validation observation contract rejects bare PyYAML installation and
-        requires the shared bootstrap.
-    e2e:
-      applicable: true
-      evidence: Exact PR run installs requirements.txt and requirements-validation.txt
-        under constraints/tested.txt.
-    security:
-      applicable: true
-      evidence: No new package manager or unpinned dependency source is introduced.
-    migration_recovery:
-      applicable: false
-      na_reason: This is a workflow-only dependency-composition pilot with no persistent
-        data migration.
-    cli_harness:
-      applicable: true
-      evidence: Bootstrap verifies the declared yaml import in the selected Python
-        environment.
-    docs_schema:
-      applicable: true
-      evidence: Scenario and workflow contract record the profile used by the collector.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
   status: SELF_REVIEWED
   evidence:
-  - 'Reviewed the complete 24-path candidate against the three declared boundaries:
-    observation status/error semantics, dependency-review parity shadow, and observation
-    dependency-profile pilot.'
-  - Focused lifecycle/static-contract/Ruff/scenario checks passed; the complete AIPS
-    preflight passed before final documentation additions, and the exact-candidate
-    Integration Gate will be run after commit.
-  - User explicitly requested implementation of all plan17 recommendations, local
-    verification, and remote PR merge to main; the dependency-review required-path
-    switch remains deferred until the recommended observation window and same-candidate
-    parity are satisfied.
+  - Reviewed the exact 31-path candidate including the placement contract update, all three workflow callers, the caller-declared
+    import contract, and the bounded graph limitation; dependency authority and workflow
+    permissions are unchanged.
+  - Focused bootstrap lifecycle, static contracts, Ruff, py_compile, docs-placement
+    preview, and full repository validation passed. Exact-candidate AIPS Integration
+    Gate runs before PR publication.
+  - The user explicitly authorized implementation of all plan17 recommendations, local
+    verification, and normal remote PR merge to main.
 blockers: []
 status: READY

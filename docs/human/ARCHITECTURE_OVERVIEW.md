@@ -180,6 +180,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 ## Maintenance governance
 
+The shared Python CI bootstrap verifies caller-declared imports and dependency consistency while requirement files and tested constraints remain the package-version authority.
+
 Pull-request validation starts a separate, bounded repository-preflight job alongside the existing full validation path. Its summary is advisory and cannot replace the required Janitor and repository aggregate.
 
 The read-only Validation Observation Collector installs pinned PyYAML before collecting its bounded shadow evidence. Missing runtime dependencies leave graduation evidence incomplete; full validation remains required.

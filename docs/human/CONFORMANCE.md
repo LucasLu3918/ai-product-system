@@ -1511,6 +1511,8 @@ Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agen
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
+Scenario 207 now verifies caller-declared Python imports, missing-module failure, shell-like input rejection, and dependency consistency through `pip check`.
+
 The repository validator also runs `tests/evidence/aips_cli_module_extraction_lifecycle.py`, which verifies the facade, source-checkout launcher and installed-symlink route from an unrelated working directory.
 
 Scenario 204 的 module-extraction lifecycle 核對 temporal query 與 Evolution pre-analysis 的 facade identity 和 current-mode 輸出，避免內部拆分改變既有 CLI 契約。

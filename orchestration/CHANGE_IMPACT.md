@@ -103,6 +103,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+For shared Python bootstrap changes, reconcile every composite-action caller, each declared import profile, dependency constraints, and lifecycle evidence.
+
 For shell CLI changes, include the stable launcher and facade, module load paths, installed/source-checkout consumers and lifecycle tests. The lexical graph does not resolve shell calls; preserve any accepted partial-coverage limitation and review direct dispatch/source consumers explicitly.
 
 Project Intelligence 的 temporal query 可逐步抽至內部 adapter，但必須保留 `project_intelligence.py` 的同一函式物件、CLI dispatch 與結果契約；Scenario 204 提供回歸證據。

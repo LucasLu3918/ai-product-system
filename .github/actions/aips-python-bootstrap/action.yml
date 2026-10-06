@@ -14,6 +14,9 @@ inputs:
     description: Optional pip constraints file
     required: false
     default: ""
+  verification-modules:
+    description: Newline-separated Python modules to import after installation
+    required: true
 runs:
   using: composite
   steps:
@@ -28,6 +31,7 @@ runs:
       env:
         AIPS_REQUIREMENTS_FILES: ${{ inputs.requirements-files }}
         AIPS_CONSTRAINTS_FILE: ${{ inputs.constraints-file }}
+        AIPS_VERIFICATION_MODULES: ${{ inputs.verification-modules }}
       run: |
         set -euo pipefail
         requirement_args=()
@@ -41,4 +45,5 @@ runs:
           constraint_args=(-c "$AIPS_CONSTRAINTS_FILE")
         fi
         python -m pip install "${constraint_args[@]}" "${requirement_args[@]}"
-        python -c 'import yaml; print("AIPS Python bootstrap ready")'
+        python scripts/python_bootstrap_verify.py --modules "$AIPS_VERIFICATION_MODULES"
+        python -m pip check
