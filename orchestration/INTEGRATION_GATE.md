@@ -24,6 +24,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 The exact candidate includes shared bootstrap and caller changes; absent declared imports or inconsistent installed requirements fail the applicable repository validation.
 
+Publication preflight checks only capabilities selected by the exact candidate CI plan. `NOT_REQUIRED` browser status is accepted when `needs_browser` is false; selected browser checks still fail closed on missing dependencies, loopback bind, or launch failure.
+
 The AIPS shell CLI is a resolved-checkout facade that loads its implementation modules before command dispatch. Core candidates that modify this boundary run the CLI module-extraction lifecycle from source and installed-symlink entrypoints.
 
 The Gate enforces the touched-code no-growth ratchet, selected-module mypy ceiling and full validation set on the exact base/head candidate. Observation artifacts are diagnostic evidence and never reduce the checks required for this run.

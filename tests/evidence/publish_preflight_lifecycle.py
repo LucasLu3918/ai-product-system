@@ -698,6 +698,27 @@ def main() -> int:
     assert all(item["next_step"] for item in blocked_environment["diagnostics"])
     assert "launch denied" not in repr(blocked_environment)
     assert "/browser" not in repr(blocked_environment)
+    with tempfile.TemporaryDirectory(prefix="aips-no-browser-plan-") as directory:
+        validation_plan = Path(directory) / "plan.json"
+        validation_plan.write_text(json.dumps({
+            "version": 1, "needs_browser": False, "needs_openapi": False, "needs_node": False,
+        }), encoding="utf-8")
+        def successful_probe(args, **kwargs):
+            stdout = "Python 3.12.0\n" if args[-1] == "--version" else ""
+            return subprocess.CompletedProcess(args=args, returncode=0, stdout=stdout, stderr="")
+
+        with patch.dict(os.environ, {"AIPS_CI_VALIDATION_PLAN": str(validation_plan)}), patch.object(
+            publish.subprocess, "run", side_effect=successful_probe
+        ), patch.object(publish, "collect_runtime_context", return_value={}), patch.object(
+            publish.repository_preflight, "docs_build_prerequisites", side_effect=AssertionError("Node is not required")
+        ), patch.object(publish, "discover_browser", side_effect=AssertionError("browser is not required")), patch.object(
+            publish, "probe_browser", side_effect=AssertionError("browser is not required")
+        ), patch.object(publish.socket, "socket", side_effect=AssertionError("loopback is not required")):
+            optional_environment = publish.environment_status()
+    assert optional_environment["status"] == "READY"
+    assert optional_environment["blockers"] == []
+    assert optional_environment["localhost"] == "NOT_REQUIRED"
+    assert optional_environment["browser"]["status"] == "NOT_REQUIRED"
     with patch.object(publish, "environment_status", return_value=blocked_environment), patch.object(
         publish, "build_plan", side_effect=AssertionError("full plan must not run after an environment blocker")
     ), patch.object(publish, "emit") as emitted:

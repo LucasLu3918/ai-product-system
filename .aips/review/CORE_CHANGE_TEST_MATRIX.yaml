@@ -1,82 +1,80 @@
 version: 1
 change:
-  id: plan17-t03-unreleased-readiness
-  summary: Block read-only release readiness while CHANGELOG.md has a missing, duplicate,
-    malformed, or non-empty canonical Unreleased section.
+  id: plan17-preflight-not-required
+  summary: Keep exact-candidate publication preflight ready when the CI toolchain
+    plan does not require optional browser or Node capabilities, while preserving
+    failures for selected prerequisites.
   boundary:
-  - Require exactly one canonical top-level '## Unreleased' heading and an empty section
-    before stable readiness.
-  - Preserve exact candidate/main SHA, VERSION, existing-tag provenance, explicit
-    release approval, no-backfill, and read-only workflow contracts.
-  - Extend lifecycle and validation contracts plus Scenario 208 and concise Human/Agent
-    guidance.
-  - No tag or release creation, movement, deletion, installer policy or workflow permission
-    changes.
+  - Treat browser NOT_REQUIRED as neutral only when needs_browser is false; browser
+    discovery and launch probes remain skipped for that candidate.
+  - Keep selected browser failures and every mandatory validation requirement blocking.
+  - Preserve CI validation planning, required Integration Gate execution, secret scanning,
+    repository validation, and all workflow permissions.
+  - Update focused lifecycle evidence and recursive human/agent guidance for this
+    behavior.
+  - No release, tag, dependency-policy, workflow-permission, or data-schema changes.
 candidate:
-  base_sha: 94c8091dc8a0e1972a449c8c36f1f62a71e81fbe
-  changed_files_hash: 38afd5178a643317afc73597d353ac766bdc7a45864c710d62abe2b3aca563f3
+  base_sha: c84803666183a250145261a218cd50bc4bab5021
+  changed_files_hash: da08b8708ff150690d0b41fdc21e200c1cc44cd6c3d09a3b30d148b04039dde2
 matrix:
-- boundary: unreleased-section-release-readiness
-  reason: Release evidence must not mark a candidate ready while release notes are
-    still under Unreleased, and malformed changelog structure must fail closed.
+- boundary: optional-browser-preflight-classification
+  reason: The exact CI validation plan selects optional environment probes. An unselected
+    browser must not block publication, and a selected browser must still fail closed.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff, YAML contracts, repository validation and exact diff checks
-        cover the evaluator, policy config and candidate matrix.
+      evidence: Full repository validation, quality ratchet, publication-preflight
+        contracts, and exact changed-file/hash reconciliation cover the condition
+        and its docs.
     unit:
       applicable: true
-      evidence: version_policy_lifecycle.py checks empty/non-empty, missing, duplicate,
-        malformed and unavailable changelog input along with existing candidate/version/tag
-        cases.
+      evidence: publish_preflight_lifecycle.py exercises a plan with needs_browser=false,
+        asserts READY and NOT_REQUIRED, and asserts browser discovery/probing and
+        loopback checks are not called; its existing selected-browser failure case
+        remains blocking.
     integration:
       applicable: true
-      evidence: The public evaluator CLI reads the configured repository changelog
-        and emits BLOCKED for current main while Unreleased contains entries; exact-candidate
-        Integration Gate is required.
+      evidence: Exact-candidate Integration Gate must pass after the candidate is
+        committed; the required repository validator owns the lifecycle and contract
+        checks.
     contract:
       applicable: true
-      evidence: version_policy_contracts.py binds config flags, CLI changelog input,
-        read-only workflow and lifecycle behavior; Scenario 208 documents the fail-closed
-        contract.
+      evidence: publish_preflight_contracts.py and the lifecycle bind CI-plan interpretation,
+        optional environment status, and fail-closed behavior for selected browser
+        requirements.
     e2e:
       applicable: true
-      evidence: Full local AIPS Core publish preflight, normal PR checks and post-merge
-        main checks exercise the complete repository and read-only workflow contract.
+      evidence: Full local publication preflight plus required PR repository/JANITOR
+        checks exercise the exact candidate; main checks run after merge.
     security:
       applicable: true
-      evidence: 'Exact-candidate credential-free secret scan and contract assertion
-        that release-readiness workflow remains contents: read and contains no tag/release
-        write command.'
+      evidence: Exact-candidate credential-free strict secret scanning remains mandatory;
+        no credentials, permissions, publication writes, or secret handling change.
     migration_recovery:
       applicable: false
-      na_reason: No persistence/schema migration or tag history operation; rollback
-        is a code revert and tag state remains untouched.
+      na_reason: No persistence, schema, dependency, or release-state change; rollback
+        is a code/documentation revert.
     cli_harness:
       applicable: true
-      evidence: Lifecycle invokes evaluate directly; exact-candidate CLI smoke invokes
-        version_tag_policy.py with the repository changelog and checks exit status/report.
+      evidence: The publication lifecycle verifies a non-browser CI plan completes
+        without optional browser or loopback probes and that selected browser failures
+        remain blockers.
     docs_schema:
       applicable: true
-      evidence: CHANGELOG, Scenario 208, MAINTENANCE and RELEASE_READINESS describe
-        one empty canonical section and blocked malformed/non-empty cases; architecture
-        diagrams are N/A because no architecture or authority transition changes.
+      evidence: Recursive documentation preview and placement validation bind the
+        user, orchestrator, Integration Gate, scheduler, and Core Change testing guidance
+        to the changed behavior.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
   status: SELF_REVIEWED
   evidence:
-  - User approved exact Core Change scope fingerprint sha256:86deb7a2536ac509bef31071fb5a58043a882b8f149cef0f3cada67fc2bf3bc5.
-  - Current-main defect reproduced: exact candidate currently reports READY despite
-      non-empty Unreleased; zero tags/releases exist and no tag/release writes are
-      in scope.
-  - The user approved the two recursive documentation closure files; preview now reports
-    documentation complete with exactly 30 changed paths and no remaining additions.
-  - Documentation placement validator passes. Readiness CLI and lifecycle/contract
-    checks pass; no tag or Release objects are written.
-  - Full local AIPS repository validation PASS (222 scenarios); quality ratchet PASS;
-    focused tag-policy lifecycle/contracts and documentation placement PASS; current
-    main CLI is BLOCKED by its non-empty Unreleased section as required.
+  - User approved the exact 13-file Core Change scope and the explicitly documented
+    Impact Graph truncation/unmapped-seed limitation (2026-10-06).
+  - Full local aips validate passed 222 scenarios; focused publication-preflight lifecycle
+    and contracts passed; recursive documentation sync passed.
+  - Exact-candidate Integration Gate and publication preflight must still pass after
+    the candidate is committed; READY_FOR_GATE is not a PASS result.
 blockers: []
 status: READY

@@ -159,7 +159,7 @@ def environment_status() -> dict[str, Any]:
             })
     selection = discover_browser() if needs_browser else {"provider": "not_required"}
     browser_probe = probe_browser(selection.get("path"), provider=str(selection.get("provider") or "not_required")) if needs_browser else {"status": "NOT_REQUIRED", "provider": "not_required"}
-    if browser_probe["status"] != "READY":
+    if needs_browser and browser_probe["status"] != "READY":
         blockers.append(f"browser:{browser_probe['status']}")
         if browser_probe["status"] == "BROWSER_NOT_FOUND":
             next_step = "Install Playwright Chromium with `python -m playwright install chromium`, or configure a supported Chrome/Chromium binary."

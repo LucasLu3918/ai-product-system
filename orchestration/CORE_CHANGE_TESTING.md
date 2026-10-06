@@ -153,6 +153,8 @@ Its `run` lifecycle must also verify that fast preflight and Integration Gate re
 
 ## Conditional CI enforcement
 
+The exact-candidate toolchain plan defines which optional environment probes are required. Treat an unselected browser check's `NOT_REQUIRED` result as neutral; preserve blockers for selected browser prerequisites and every mandatory validation check.
+
 The publication preview reports the required Core Matrix base/hash binding and a synchronization command before commit. Synchronization resets the matrix to DRAFT and retains human scope/evidence review; it never grants READY automatically.
 
 AIPS CI resolves `standard | large | core` from explicit PR change-class labels. Large/Core candidates require the bound Core Change Test Matrix. Standard changes remain Matrix-optional unless a narrow Validation Profile path rule identifies a governance-core surface. Do not use broad rules such as all `scripts/**` or all `config/**` merely to force Matrix usage.
