@@ -375,7 +375,7 @@ Shared Python CI bootstrap callers must declare their requirement files, tested 
 
 `tests/evidence/publish_preflight_lifecycle.py` itself stays in the required aggregate under both plans. It runs OpenAPI action-level help and contract smoke only when both `openapi_spec_validator` and `jsonschema` are available; otherwise it checks top-level help and the clear missing-dependency error, with no traceback or output artifact.
 
-The document-size audit measures tracked documentation and evidence against a 50,000-byte threshold. Oversized items are reported as non-blocking `WARN`; use the measurements to inform a later Human layering decision. The audit does not archive or move files.
+The document-size audit measures tracked documentation and evidence against a 50,000-byte threshold. Oversized items are reported as non-blocking `WARN`; it never archives or moves files. Release history uses a manually maintained archive at `docs/history/changelog/`: keep Unreleased and the latest five full releases in `CHANGELOG.md`, retain every older version heading there as a stable link, and preserve full release sections in the version-band archive.
 
 Dependency updates can be classified with `python scripts/dependency_impact.py plan --ecosystem pip --name <package>`. The policy recommends evidence for each known dependency class; unknown packages default to `UNCLASSIFIED` / `HIGH`. Recommendations do not change Dependabot behavior, approve updates, or permit automatic merges.
 

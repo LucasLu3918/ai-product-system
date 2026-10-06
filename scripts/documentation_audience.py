@@ -32,6 +32,7 @@ def validate_config(config: dict[str, Any]) -> list[str]:
     human = config.get("human_documents")
     standalone = config.get("standalone_human_documents")
     legacy = config.get("legacy_paths")
+    human_roots = config.get("human_document_roots", [])
     if not isinstance(shared, list):
         errors.append("shared_docs must be a list")
     if not isinstance(human, list) or not human:
@@ -40,6 +41,13 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         errors.append("standalone_human_documents must be a list")
     if not isinstance(legacy, dict):
         errors.append("legacy_paths must be a mapping")
+    if not isinstance(human_roots, list):
+        errors.append("human_document_roots must be a list")
+        human_roots = []
+    for raw in human_roots:
+        value = Path(str(raw))
+        if value.is_absolute() or ".." in value.parts or not str(value).startswith("docs/") or str(value) == "docs/human":
+            errors.append(f"Human-only document root must be a safe docs/ path outside docs/human/: {raw}")
     if isinstance(human, list):
         for path in human:
             if not str(path).startswith("docs/human/"):
@@ -83,6 +91,11 @@ def validate_layout(root: Path, config: dict[str, Any]) -> list[str]:
         if not path.is_file():
             errors.append(f"Missing Human-only document: {raw}")
 
+    human_roots = {str(path) for path in config.get("human_document_roots") or []}
+    for raw in human_roots:
+        if not (root / raw).is_dir():
+            errors.append(f"Missing Human-only document root: {raw}")
+
     standalone = {str(path) for path in config.get("standalone_human_documents") or []}
     for raw in standalone:
         path = root / raw
@@ -101,7 +114,7 @@ def validate_layout(root: Path, config: dict[str, Any]) -> list[str]:
             )
             if child.is_file() and child.name in {".DS_Store", "Thumbs.db", "desktop.ini"} or ignored.returncode == 0:
                 continue
-            if child.is_dir() and rel == "docs/human":
+            if child.is_dir() and (rel == "docs/human" or rel in human_roots):
                 continue
             if child.is_file() and rel in shared:
                 continue

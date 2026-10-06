@@ -5,6 +5,7 @@ Request: Human-only AIPS documentation must remain clearly separated from Agent/
 Expected:
 
 - permanent Human-only documentation lives under `docs/human/`;
+- explicitly classified historical Human-only release archives may live under `docs/history/` while current Human guidance stays under `docs/human/`;
 - `docs/ARCHITECTURE.md` may remain a shared canonical Human/Agent architecture reference;
 - repository-convention files such as root `README.md`, `CHANGELOG.md`, `SECURITY.md` and the short root `USER_GUIDE.md` redirect may remain outside `docs/human/` through an explicit allowlist;
 - a repository-persisted standalone Human-only artifact outside `docs/human/` must be explicitly registered and use the `HUMAN_` filename prefix;

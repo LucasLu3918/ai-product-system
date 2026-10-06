@@ -33,4 +33,4 @@ features:
 - **Reference**：Scenario Conformance、SAL、Technology Guide。
 - **Maintainers**：Documentation consistency 與 system maintenance。
 
-版本歷史請看 repository 的 CHANGELOG；驗證歷史請看 Scenario Conformance。
+版本歷史請看 repository 的 CHANGELOG；較早版本的完整內容位於 `docs/history/changelog/`，根目錄仍保留所有版本連結；驗證歷史請看 Scenario Conformance。
