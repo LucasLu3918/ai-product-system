@@ -1521,7 +1521,7 @@ Scenarios 211–213 cover GitHub supply-chain checks, evidence-gated validator g
 
 ### Scenarios 214–219 — Plan15 operational closure
 
-Scenarios 214–219 cover verified stable-channel installation, tested runtime constraints, touched-code quality ratchets, full-run validation observation, human-labeled Evolution relevance measurement, and validation policy taxonomy drift. The read-only observation collector installs PyYAML from `constraints/tested.txt` before collecting its bounded evidence. Empty human datasets remain `NOT_READY`; these controls do not authorize release, selective validation, or automatic policy changes.
+Scenarios 214–219 cover verified stable-channel installation, tested runtime constraints, touched-code quality ratchets, full-run validation observation, human-labeled Evolution relevance measurement, and validation policy taxonomy drift. The read-only observation collector installs its declared profile under `constraints/tested.txt` before collecting bounded evidence. Its 15-minute timeout is provisional because only two runs at about 31 seconds are available; no reliable P95 is claimed. Scheduled and manual evidence runs have no concurrency group that could replace pending work. Empty human datasets remain `NOT_READY`; these controls do not authorize release, selective validation, or automatic policy changes.
 Scenario 155 also verifies that missing weekly pre-analysis leaves source shortlist yield unavailable and that oversized Issue evidence is digest-checked before Radar and Effectiveness consumers parse it.
 
 

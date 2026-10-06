@@ -1,76 +1,74 @@
 version: 1
 change:
-  id: plan17-t07-required-files-parity
-  summary: Add a strict, versioned parallel mirror of the existing 148-entry required_files
-    policy and verify exact path-set and missing-file parity while static_contracts.py
-    remains authoritative.
+  id: plan17-t06-observation-timeout
+  summary: Bound the read-only daily/manual Validation Observation Collector to a
+    provisional 15-minute timeout from a two-run (~31-second) sample; preserve event
+    behavior, permissions, artifact retention and pending evidence. Defer the two
+    Issue-writing workflows to Batch C.
   boundary:
-  - config/repository-contract.yaml and strict parser; static_contracts.py legacy-authority
-    parity checks; isolated malformed/missing/mismatch/path-safety lifecycle fixtures;
-    required Human documentation and placement registration.
-  - No yaml_files, security_templates or planning_templates migration; no authority
-    cutover or behavior change to repository pass/fail decisions.
+  - Validation Observation Collector job timeout, scheduled/manual evidence lifecycle,
+    bounded graph traversal, required placement documentation and this candidate-bound
+    matrix.
 candidate:
-  base_sha: 3aa5482eea434b73e5796ccd5466545010be9b62
-  changed_files_hash: b55a0d1940192f61a5701047934934ba3f4f3c186e4174f0f53731a4e91b04a5
+  base_sha: b8e3e0a65a876cb99b945a7e0cbc35b2cd486074
+  changed_files_hash: 43fc370b5f7a935c3115a7faad7c1a310e6e39cf94429e841beb5f2e4f788ca9
 matrix:
-- boundary: required-files-policy-parity-pilot
-  reason: The legacy required_files list controls repository validation; the parallel
-    versioned policy must reject ambiguity and preserve exact current path and missing-file
-    semantics without taking over authority.
+- boundary: read-only-validation-observation-timeout
+  reason: A two-run timing sample (~31 seconds) is insufficient for a reliable P95.
+    A provisional 15-minute limit bounds a hung collector with a conservative margin;
+    scheduled/manual evidence runs retain existing triggers and are not put in a concurrency
+    group that can replace pending evidence.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff 0.16.8 checks the new policy parser and lifecycle fixture; the
-        complete repository quality ratchet runs in the exact-candidate Integration
-        Gate.
+      evidence: YAML contract verifies timeout, unchanged schedule/manual dispatch,
+        read-only token permissions and absence of concurrency cancellation.
     unit:
       applicable: true
-      evidence: tests/evidence/repository_contract_parity_lifecycle.py exercises valid,
-        malformed, missing, duplicate, unsafe and mismatched policy fixtures.
+      evidence: Existing validation-observation lifecycle PASS; observation contract
+        checks the new timeout and evidence-preserving trigger behavior.
     integration:
       applicable: true
-      evidence: Python 3.12 tests/validate_repository.py passed; static_contracts
-        runs the lifecycle once and compares required path sets and missing-file findings.
+      evidence: Exact-candidate AIPS standard publish preflight runs repository validation
+        and required aggregate before publication.
     contract:
       applicable: true
-      evidence: config/repository-contract.yaml is checked against all 148 legacy
-        required_files entries; legacy remains the only authority.
+      evidence: Scenario 217 and validation_observation_contracts.py enforce timeout,
+        trigger, permissions, artifact profile and no-concurrency policy.
     e2e:
-      applicable: false
-      na_reason: This pilot adds repository validation policy only and changes no
-        end-user product or runtime command behavior.
+      applicable: true
+      evidence: PR CI exercises the collector workflow contract; full repository validation
+        and required gate remain enabled.
     security:
       applicable: true
-      evidence: Parser rejects duplicate YAML keys, unknown schema keys, traversal,
-        absolute, Windows, glob and symlink-escape paths; secret scan is part of exact-candidate
-        Gate.
+      evidence: GitHub token remains actions:read/contents:read; timeout does not
+        modify permissions or release/security policy.
     migration_recovery:
-      applicable: false
-      na_reason: No canonical migration or authority cutover is in scope; the mirror
-        is reversible and legacy validation remains active.
+      applicable: true
+      evidence: The job-level timeout is isolated and revertible; interruption reports
+        existing artifact behavior and cannot enable selective execution.
     cli_harness:
       applicable: false
-      na_reason: No CLI or runtime Harness surface changes.
+      na_reason: No AIPS CLI or Harness command surface changes.
     docs_schema:
       applicable: true
-      evidence: Version-1 YAML schema is validated; placement preview passed and Maintenance,
-        Technology Guide, Architecture Overview, Documentation Map and Documentation
-        Sync were updated.
+      evidence: CHANGELOG and all placement-required canonical Human/Orchestration
+        references state the provisional bound and small-sample limitation.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
   status: SELF_REVIEWED
   evidence:
-  - 'Reviewed exact T07-only diff: 13 files, 477 insertions and 55 deletions; all
-    148 legacy required_files entries match the versioned mirror. No other legacy
-    lists or authority transitions changed.'
-  - Focused parity lifecycle, static contracts, Ruff on new modules, documentation
-    placement preview, diff check and full Python 3.12 repository validation passed
-    for the implementation; the final exact-candidate Integration Gate and remote
-    CI remain required.
-  - The candidate adds orchestration/DOCUMENTATION_SYNC.md to satisfy recursive documentation-platform
-    closure; every changed Human/Agent line is in the required canonical section.
+  - Reviewed all 15 candidate paths, the exact collector workflow event/job/bootstrap/report
+    topology, timeout calculation basis, read-only token boundary, and all required
+    documentation consumers.
+  - Lifecycle, validator contract, Ruff, diff check, documentation placement and AIPS
+    Change Impact reconciliation passed. Exact-candidate AIPS publish preflight remains
+    required before remote publication.
+  - Issue-writing repository-health and maintenance-reliability workflows were excluded
+    from read-only Batch A based on observed Issue create/edit/close behavior and
+    deferred to Batch C.
+  - Rebound to the current main after PR #240; the same reviewed 15-path timeout-only boundary remains, with T07 main changes preserved.
 blockers: []
 status: READY

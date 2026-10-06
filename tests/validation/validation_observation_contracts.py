@@ -22,6 +22,17 @@ if workflow.is_file():
     import yaml
     doc = yaml.safe_load(workflow.read_text(encoding="utf-8")) or {}
     permissions = doc.get("permissions") or {}
+    collect_job = (doc.get("jobs") or {}).get("collect") or {}
+    if collect_job.get("timeout-minutes") != 15:
+        errors.append("Validation observation collector must retain its 15-minute provisional timeout")
+    if "concurrency" in doc or "concurrency" in collect_job:
+        errors.append("Validation observation collector must not replace pending scheduled or manual evidence runs")
+    events = doc.get("on") or doc.get(True) or {}
+    schedule = events.get("schedule") or []
+    if len(schedule) != 1 or (schedule[0] or {}).get("cron") != "17 6 * * *":
+        errors.append("Validation observation collector schedule must remain daily at 06:17 UTC")
+    if "workflow_dispatch" not in events:
+        errors.append("Validation observation collector must retain manual dispatch")
     if permissions.get("actions") != "read" or permissions.get("contents") != "read":
         errors.append("Validation observation collector must use read-only GitHub permissions")
     if any(value in {"write", "write-all"} for value in permissions.values()):

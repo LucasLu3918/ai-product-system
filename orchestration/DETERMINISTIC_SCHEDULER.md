@@ -194,7 +194,7 @@ Validation planning may report exact candidate validators that would run or be s
 
 The repository validator may skip the focused Scheduler/Integration Gate lifecycle only when `AIPS_PROFILE_LIFECYCLE_ALREADY_EXECUTED=1` is injected by the deterministic Validation Profile after those checks already ran. Standalone repository validation must execute the lifecycle evidence normally.
 
-The read-only observation collector preserves full validation and records cohort readiness independently: normal `NOT_READY` returns success, `--require-ready` opts into strict readiness, and operational/API/artifact errors remain non-zero. Dependency Review shadow evidence is advisory until same-candidate parity is reviewed; it never skips or replaces a validator.
+The read-only observation collector preserves full validation and records cohort readiness independently: normal `NOT_READY` returns success, `--require-ready` opts into strict readiness, and operational/API/artifact errors remain non-zero. Its provisional 15-minute timeout reflects only two observed runs at about 31 seconds, not a reliable P95. No workflow concurrency group is used because replacing pending scheduled or manual work could lose evidence. Dependency Review shadow evidence is advisory until same-candidate parity is reviewed; it never skips or replaces a validator.
 
 
 ## Runtime resource requests
