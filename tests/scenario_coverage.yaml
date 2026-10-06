@@ -1725,3 +1725,12 @@ scenarios:
       - .github/workflows/validate.yml
       - scripts/repository_preflight.py
       - tests/validation/validation_observation_contracts.py
+  - id: "221"
+    path: tests/scenarios/221-dependency-update-risk-classification.md
+    coverage: lifecycle
+    evidence:
+      - config/dependency-policy.yaml
+      - scripts/dependency_impact.py
+      - tests/fixtures/dependency-impact/inventory.yaml
+      - tests/evidence/dependency_impact_lifecycle.py
+      - tests/validation/dependency_impact_contracts.py

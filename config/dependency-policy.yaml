@@ -1,0 +1,61 @@
+version: 1
+default_class: UNCLASSIFIED
+automatic_merge_authorized: false
+automatic_policy_changes_authorized: false
+classes:
+  DEV_TOOL:
+    risk: LOW
+    validation_plan: [targeted_tool_validation, full_repository_validation]
+    required_evidence: []
+  CI_ACTION:
+    risk: MEDIUM
+    validation_plan: [workflow_contracts, immutable_action_sha_review, integration_gate]
+    required_evidence: [action_reference_review]
+  CORE_RUNTIME:
+    risk: MEDIUM
+    validation_plan: [full_repository_validation, integration_gate, runtime_compatibility]
+    required_evidence: [runtime_compatibility]
+  OPTIONAL_RUNTIME:
+    risk: MEDIUM
+    validation_plan: [optional_dependency_contract, affected_scenario_lifecycle, full_repository_validation]
+    required_evidence: [optional_dependency_contract]
+  SEMANTIC_RUNTIME:
+    risk: HIGH
+    validation_plan: [retrieval_regression, semantic_trial, full_repository_validation]
+    required_evidence: [retrieval_regression, semantic_trial]
+  SECURITY_SENSITIVE:
+    risk: HIGH
+    validation_plan: [vulnerability_review, security_review, secret_scan, integration_gate]
+    required_evidence: [vulnerability_review, security_review]
+  UNCLASSIFIED:
+    risk: HIGH
+    validation_plan: [human_dependency_review, full_repository_validation, integration_gate]
+    required_evidence: [human_dependency_review]
+rules:
+  - ecosystem: pip
+    name: ruff
+    class: DEV_TOOL
+  - ecosystem: pip
+    name: sentence-transformers
+    class: SEMANTIC_RUNTIME
+  - ecosystem: pip
+    name: torch
+    class: SEMANTIC_RUNTIME
+  - ecosystem: pip
+    name: pyyaml
+    class: CORE_RUNTIME
+  - ecosystem: pip
+    name: mcp
+    class: CORE_RUNTIME
+  - ecosystem: pip
+    name: cryptography
+    class: SECURITY_SENSITIVE
+  - ecosystem: pip
+    name: pip
+    class: SECURITY_SENSITIVE
+  - ecosystem: pip
+    name: playwright
+    class: OPTIONAL_RUNTIME
+  - ecosystem: github-actions
+    name: '*'
+    class: CI_ACTION

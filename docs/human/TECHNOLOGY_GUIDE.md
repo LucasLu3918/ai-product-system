@@ -142,6 +142,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 Pull requests receive an early repository-preflight summary from a separate bounded job. The result is advisory and the complete required repository validation still runs independently.
 
+Dependency update planning uses `config/dependency-policy.yaml` and `scripts/dependency_impact.py`. `plan` recommends class-specific validation; semantic runtime changes include retrieval regression and a semantic trial, while unknown packages require human review. It is advisory and grants no automatic merge authority.
+
 CLI architecture: `bin/aips` resolves the checkout and forwards all arguments to the thin `scripts/aips_cli.sh` facade. The facade resolves its own checkout and loads implementation modules from `scripts/aips_cli/` before dispatch, preserving installed-symlink and source-checkout behavior independent of the caller working directory. Publication policy helpers in `scripts/publish_preflight_policy.py` are deterministic and receive the repository root explicitly; `scripts/publish_preflight.py` owns environment probes, Git reads, candidate evaluation, and CLI output. Repository validation imports the registered validator modules through `tests/validation/registry.py` in a declared order.
 
 The existing `evolution_analysis.py` CLI is a compatibility facade; deterministic local pre-analysis is implemented in `evolution_preanalysis.py` with the same outputs and authority boundaries.

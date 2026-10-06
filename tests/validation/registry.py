@@ -67,6 +67,7 @@ VALIDATORS = (
     ValidatorSpec("validation.validation_graduation_contracts", False, ("config/validation-scope.yaml", "config/validation-graduation.yaml", "scripts/validation_shadow_plan.py", "scripts/validation_graduation.py", "tests/evidence/validation_graduation_lifecycle.py", "tests/validation/validation_graduation_contracts.py"), False),
     ValidatorSpec("validation.validation_observation_contracts", False, ("scripts/validation_observation.py", ".github/workflows/validate.yml", ".github/workflows/validation-observation-collector.yml", "tests/evidence/validation_observation_lifecycle.py", "tests/validation/validation_observation_contracts.py"), False),
     ValidatorSpec("validation.evolution_relevance_contracts", False, ("scripts/evolution_relevance.py", "config/evolution-relevance-labels.yaml", "tests/evidence/evolution_relevance_lifecycle.py", "tests/validation/evolution_relevance_contracts.py"), False),
+    ValidatorSpec("validation.dependency_impact_contracts", False, ("scripts/dependency_impact.py", "config/dependency-policy.yaml", "tests/evidence/dependency_impact_lifecycle.py", "tests/validation/dependency_impact_contracts.py"), False),
     ValidatorSpec("validation.validation_taxonomy_contracts", False, ("scripts/validation_taxonomy.py", "config/validation-scope.yaml", "config/validation-graduation.yaml", "tests/evidence/validation_taxonomy_lifecycle.py", "tests/validation/validation_taxonomy_contracts.py"), False),
 )
 

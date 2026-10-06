@@ -93,6 +93,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [### Scenario 210 — Python runtime support policy](CONFORMANCE.md#scenario-210-python-runtime-support-policy) | Current Human guidance |
 | [## Scenario 218 — Evolution Human Relevance Evaluation](CONFORMANCE.md#scenario-218-evolution-human-relevance-evaluation) | Current Human guidance |
 | [## Scenario 220 — Parallel advisory fast feedback](CONFORMANCE.md#scenario-220-parallel-advisory-fast-feedback) | Current Human guidance |
+| [## Scenario 221 — Dependency Update Risk Classification](CONFORMANCE.md#scenario-221-dependency-update-risk-classification) | Current Human guidance |
 | [# Scenario Conformance](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-conformance) | Normative rule |
 | [## Purpose](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#purpose) | Normative rule |
 | [## Registry](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#registry) | Normative rule |
@@ -156,6 +157,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 201 — Monthly maintenance reliability evidence](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-201-monthly-maintenance-reliability-evidence) | Normative rule |
 | [## Scenario 218 — Evolution Human Relevance Evaluation](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-218-evolution-human-relevance-evaluation) | Normative rule |
 | [## Scenario 220 — Parallel advisory fast feedback](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-220-parallel-advisory-fast-feedback) | Normative rule |
+| [## Scenario 221 — Dependency Update Risk Classification](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-221-dependency-update-risk-classification) | Normative rule |
 | [## Scenarios 202–209 — Plan13 current and provenance evidence](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenarios-202209-plan13-current-and-provenance-evidence) | Normative rule |
 | [### Scenarios 214–219 — Plan15 operational closure](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenarios-214219-plan15-operational-closure) | Normative rule |
 | [## Scenario 210 — Python runtime support policy](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-210-python-runtime-support-policy) | Normative rule |

@@ -825,6 +825,10 @@ Scenario 218 uses deterministic monthly fingerprint sampling and complete Human 
 
 The pull-request workflow runs the bounded repository preflight in a separate job against the exact candidate. Findings are visible but advisory; the complete Janitor Integration Gate and required repository validation remain independent and unchanged. Label-only events skip this job.
 
+## Scenario 221 — Dependency Update Risk Classification
+
+`scripts/dependency_impact.py` classifies dependency updates from `config/dependency-policy.yaml` and recommends evidence by class. Unknown packages are `UNCLASSIFIED` / `HIGH`; semantic runtime changes require retrieval regression and semantic trial evidence. The CLI is advisory, requires a human decision, and never authorizes automatic merges or policy edits.
+
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
 The public AIPS shell CLI keeps `bin/aips` as its thin launcher and `scripts/aips_cli.sh` as the checkout-resolving facade; implementation modules are loaded relative to that resolved checkout. `tests/evidence/aips_cli_module_extraction_lifecycle.py` covers source and symlink entrypoints from an unrelated working directory.

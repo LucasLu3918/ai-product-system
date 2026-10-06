@@ -137,6 +137,8 @@ The runtime architecture inventory and System Reference are regenerated from can
 
 The pull-request advisory preflight is documented with the required full repository gate and its Scenario 220 contract; changes to either surface update the Human and Agent conformance records together.
 
+Dependency update classification stays advisory and maps each package class to recommended evidence. Preserve unknown-package high-risk behavior, human decision authority, and the explicit prohibition on automatic merges and policy edits across the classifier, Scenario 221 and published guidance.
+
 New behavior-bearing scripts and workflows must receive an explicit source-to-topic placement before Human documentation changes. Validation and release additions also update their registered Scenario evidence and current conformance projection.
 
 When maintenance validation behavior changes, keep scenario registration, full-run shadow safeguards, quality ratchets, and human-facing Gate descriptions synchronized. Reports may describe future selective behavior but cannot imply validators are skipped before a separate Human decision.
