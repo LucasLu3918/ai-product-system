@@ -1,0 +1,17 @@
+version: 1
+hot_document_max_bytes: 50000
+scan_roots:
+  - CHANGELOG.md
+  - docs/human
+  - orchestration
+  - config
+  - tests/evidence
+extensions:
+  - .md
+  - .py
+  - .json
+  - .yaml
+  - .yml
+threshold_behavior: WARN
+gate_blocking: false
+archive_or_move: false

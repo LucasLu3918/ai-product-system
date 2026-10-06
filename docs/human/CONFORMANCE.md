@@ -1540,3 +1540,7 @@ Pull requests run the bounded repository preflight concurrently against the exac
 ## Scenario 221 — Dependency Update Risk Classification
 
 Dependency updates receive an explicit class, risk and recommended validation plan. Unknown dependencies are high risk and require human review; semantic runtime updates include retrieval regression evaluation and a semantic trial. Classification never authorizes automatic merges or policy changes.
+
+## Scenario 222 — Large Document Measurement Only
+
+The measurement-only audit records tracked documentation/evidence byte sizes. Files above 50,000 bytes produce `WARN` with exit code 0; size results do not block Gate or authorize file moves or archival.

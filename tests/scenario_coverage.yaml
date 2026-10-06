@@ -1734,3 +1734,12 @@ scenarios:
       - tests/fixtures/dependency-impact/inventory.yaml
       - tests/evidence/dependency_impact_lifecycle.py
       - tests/validation/dependency_impact_contracts.py
+  - id: "222"
+    path: tests/scenarios/222-large-document-measurement-only.md
+    coverage: lifecycle
+    evidence:
+      - config/document-size-policy.yaml
+      - scripts/document_size_audit.py
+      - reports/document-size-baseline.yaml
+      - tests/evidence/document_size_audit_lifecycle.py
+      - tests/validation/document_size_audit_contracts.py

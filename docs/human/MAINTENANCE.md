@@ -363,6 +363,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+The document-size audit measures tracked documentation and evidence against a 50,000-byte threshold. Oversized items are reported as non-blocking `WARN`; use the measurements to inform a later Human layering decision. The audit does not archive or move files.
+
 Dependency updates can be classified with `python scripts/dependency_impact.py plan --ecosystem pip --name <package>`. The policy recommends evidence for each known dependency class; unknown packages default to `UNCLASSIFIED` / `HIGH`. Recommendations do not change Dependabot behavior, approve updates, or permit automatic merges.
 
 Post-merge 的本地 `main` 與 managed installation 同步位於 `scripts/publish_post_merge.py`；`scripts/publish_preflight.py` 維持舊 CLI facade。維護此邊界時，執行 publication-preflight 與 module-extraction lifecycle，再跑完整 Core Integration Gate。

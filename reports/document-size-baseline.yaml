@@ -1,0 +1,26 @@
+version: 1
+measured_at: 2026-10-06
+base_revision: 5eda403d85250bc2215163858091d1384f3ed562
+snapshot: tracked files from the working tree, measured before any file layering or archival
+threshold_bytes: 50000
+status: WARN
+gate_blocking: false
+archive_or_move: false
+files_scanned: 202
+oversized_count: 5
+oversized_files:
+  - path: CHANGELOG.md
+    bytes: 181672
+    status: WARN
+  - path: docs/human/CONFORMANCE.md
+    bytes: 88089
+    status: WARN
+  - path: config/documentation-placement.yaml
+    bytes: 57285
+    status: WARN
+  - path: orchestration/CONFORMANCE.md
+    bytes: 54474
+    status: WARN
+  - path: docs/human/MAINTENANCE.md
+    bytes: 51260
+    status: WARN

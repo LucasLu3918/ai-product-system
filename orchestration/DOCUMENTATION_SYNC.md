@@ -152,6 +152,8 @@ Monthly Human relevance evaluation also includes deterministic fingerprint sampl
 
 Dependency risk classification adds an advisory policy and CLI mapping package classes to recommended validation plans. Keep the class behaviors, unknown-package fail-closed default, human decision requirement and no-auto-merge authority aligned with Maintenance, Technology Guide and Scenario 221.
 
+The large-document baseline is measurement evidence only. Keep the 50,000-byte `WARN` threshold and no-gate/no-archive behavior aligned across the policy, report, Human maintenance guidance and Scenario 222.
+
 The `evolution-radar` mapping includes the deterministic effectiveness script, policy config and monthly GitHub workflow. Changes to metric definitions, thresholds, source review flags, Issue publication behavior or authority fields must synchronize the canonical Evolution Radar / Execution Isolation Human and Agent docs plus the Technology Guide.
 
 `scripts/evolution_preanalysis.py` is an internal implementation behind the unchanged `scripts/evolution_analysis.py` facade. Its source inventory and module-identity lifecycle belong to the `evolution-radar` documentation closure; user command and authority behavior remain unchanged.

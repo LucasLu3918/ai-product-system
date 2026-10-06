@@ -123,6 +123,8 @@ Evolution Radar 人工相關性抽樣與評估行為以 `EVOLUTION_RADAR.md` / `
 
 Dependency Update risk classification 的使用方式位於 Maintenance 與 Technology Guide；Agent 契約由 Scenario 221 定義，placement 登錄於 `config/documentation-placement.yaml`。
 
+大型歷史文件僅由 report-only size audit 量測，超過門檻時標示 WARN；目前不移動或封存，文件分層由 Human 依量測結果決定。
+
 執行環境恢復的操作說明分別由 Installation、Project Intelligence 與 Maintenance 承載；Technology Guide 提供共用工具位置，來源對應由既有 canonical placement 規則約束。
 
 VitePress renders the canonical Markdown files directly; local publication preflight uses the installed bundle and does not create or install a second documentation source.
