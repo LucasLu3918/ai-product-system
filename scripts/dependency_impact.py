@@ -144,7 +144,7 @@ def classify_dependency(
     return result
 
 
-def build_report(document: dict[str, Any], policy: dict[str, Any]) -> dict[str, Any]:
+def build_dependency_report(document: dict[str, Any], policy: dict[str, Any]) -> dict[str, Any]:
     if document.get("version") != 1:
         return {"version": 1, "status": "BLOCKED", "errors": ["inventory version must be 1"], "items": []}
     dependencies = document.get("dependencies")
@@ -181,7 +181,7 @@ def build_report(document: dict[str, Any], policy: dict[str, Any]) -> dict[str, 
     }
 
 
-def main() -> int:
+def dependency_impact_main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     subparsers = parser.add_subparsers(dest="command", required=True)
     for command in ("classify", "plan"):
@@ -205,7 +205,7 @@ def main() -> int:
             document = yaml.safe_load(args.input.read_text(encoding="utf-8")) or {}
             if not isinstance(document, dict):
                 raise TypeError("inventory must be a mapping")
-            report = build_report(document, policy)
+            report = build_dependency_report(document, policy)
         else:
             report = classify_dependency(
                 {"name": args.name, "ecosystem": args.ecosystem, "current_version": args.current_version,
@@ -223,4 +223,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    raise SystemExit(main())
+    raise SystemExit(dependency_impact_main())
