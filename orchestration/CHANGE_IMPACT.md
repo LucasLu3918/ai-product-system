@@ -4,6 +4,8 @@ CI workflow seeds are included in deterministic discovery while global graph cov
 
 Retrieval extractions preserve the legacy `retrieval_intelligence.py` facade and output contracts. Treat index-derived relation edges as lexical candidates; incomplete traversal remains explicit and cannot support repository-wide completeness claims.
 
+The Project Intelligence facade now delegates filesystem-backed cache operations to `project_intelligence_storage.py`; preserve public imports, cache paths and recovery behavior when changing either module.
+
 Use before mutating an existing project.
 
 ## Purpose

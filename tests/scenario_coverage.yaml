@@ -8,6 +8,39 @@ policy:
     no_uncovered: true
 
 scenarios:
+  - id: "226"
+    path: tests/scenarios/226-capability-registry-single-source.md
+    coverage: lifecycle
+    evidence:
+      - config/capability-registry.yaml
+      - scripts/capability_registry.py
+      - scripts/repository_health.py
+      - tests/validation/repository_health_contracts.py
+      - tests/evidence/repository_health_lifecycle.py
+  - id: "227"
+    path: tests/scenarios/227-codex-native-hook-enforcement-probe.md
+    coverage: lifecycle
+    evidence:
+      - harness/adapters/codex/hooks/hooks.json
+      - harness/adapters/codex/hooks/pre_tool_use_policy.py
+      - tests/evidence/codex_hooks_lifecycle.py
+      - tests/validation/codex_hooks_contracts.py
+  - id: "228"
+    path: tests/scenarios/228-progressive-quality-ratchet.md
+    coverage: lifecycle
+    evidence:
+      - config/quality-ratchet.yaml
+      - scripts/quality_ratchet.py
+      - tests/evidence/quality_ratchet_lifecycle.py
+      - tests/validation/quality_ratchet_contracts.py
+  - id: "229"
+    path: tests/scenarios/229-agent-eval-freshness.md
+    coverage: lifecycle
+    evidence:
+      - config/eval-freshness.yaml
+      - scripts/agent_eval_freshness.py
+      - tests/evidence/agent_eval_freshness_lifecycle.py
+      - tests/validation/agent_eval_freshness_contracts.py
   - id: "224"
     path: tests/scenarios/224-runtime-preferred-primary-model.md
     coverage: manual

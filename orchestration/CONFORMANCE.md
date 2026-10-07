@@ -869,6 +869,7 @@ The Human current summary and Human/Agent history crosswalk are generated from t
 These lifecycle scenarios bind release-channel readiness, runtime constraints, quality debt, full-run validation observations, human Evolution relevance labels, and validation taxonomy alignment to focused evidence. The read-only observation collector installs its declared profile under `constraints/tested.txt` before importing the collector; missing dependency or incomplete evidence remains `NOT_READY`. Its 15-minute timeout is provisional from only two runs at about 31 seconds, so it is not a reliable P95. It has no concurrency group that could replace pending scheduled or manual evidence. These scenarios retain full validation, human decision authority, and fail-closed behavior when evidence is incomplete.
 
 - Scenario 208 requires exactly one empty canonical `## Unreleased` section before release readiness; malformed or pending entries block.
+Plan19's module-extraction lifecycle continues to verify the Project Intelligence facade and stable imports; freshness selection reports affected Eval cases while preserving manual scenarios 192, 193 and 224.
 ### Scenario 223 — Evolution Radar exclusion attribution
 
 Verifies deterministic pre-analysis exclusion reasons and counts without changing Human decision authority.

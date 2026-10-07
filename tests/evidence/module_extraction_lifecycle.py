@@ -5,6 +5,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
@@ -13,6 +15,7 @@ import evolution_preanalysis as evolution_impl
 import project_intelligence as project_facade
 import project_intelligence_impact_graph as project_impl
 import project_intelligence_promotion as project_promotion_impl
+import project_intelligence_storage as project_storage_impl
 import project_intelligence_temporal as project_temporal_impl
 import publish_post_merge as publish_post_merge_impl
 import publish_preflight as publish_facade
@@ -24,6 +27,8 @@ import retrieval_structural_graph as retrieval_impl
 
 
 def main() -> int:
+    for name in ("atomic_text", "atomic_yaml", "writer_lock"):
+        assert getattr(project_facade, name) is getattr(project_storage_impl, name), name
     assert project_facade.traverse_architecture_impact_graph is project_impl.traverse_architecture_impact_graph
     assert project_facade.temporal_query is project_temporal_impl.temporal_query
     assert project_facade._promotion_candidate is project_promotion_impl.promotion_candidate
@@ -31,6 +36,9 @@ def main() -> int:
     assert callable(publish_facade.post_merge)
     assert callable(publish_facade.sync_installed)
     assert health_facade.run_scenario_conformance is health_impl.run_scenario_conformance
+    assert project_facade.atomic_text is project_storage_impl.atomic_text
+    assert project_facade.atomic_yaml is project_storage_impl.atomic_yaml
+    assert project_facade.writer_lock is project_storage_impl.writer_lock
     assert retrieval_facade.structural_relation_boosts is retrieval_impl.structural_relation_boosts
     for name in ("open_db", "open_read_db", "metadata_get", "metadata_set"):
         assert getattr(retrieval_facade, name) is getattr(retrieval_storage_impl, name), name
@@ -66,6 +74,21 @@ def main() -> int:
         assert callable(function)
     with tempfile.TemporaryDirectory() as temporary:
         base = Path(temporary)
+        storage = base / "storage"
+        text_path = storage / "atomic.txt"
+        project_facade.atomic_text(text_path, "atomic evidence\n")
+        assert text_path.read_text(encoding="utf-8") == "atomic evidence\n"
+        yaml_path = storage / "atomic.yaml"
+        project_facade.atomic_yaml(yaml_path, {"status": "PASS"})
+        assert yaml.safe_load(yaml_path.read_text(encoding="utf-8")) == {"status": "PASS"}
+        with project_facade.writer_lock(storage):
+            assert (storage / ".writer.lock").is_file()
+            try:
+                with project_facade.writer_lock(storage):
+                    raise AssertionError("nested writer lock unexpectedly succeeded")
+            except RuntimeError as exc:
+                assert "writer lock is active" in str(exc)
+        assert not (storage / ".writer.lock").exists()
         derived = base / "store" / "topics" / "architecture.md"
         derived.parent.mkdir(parents=True)
         derived.write_text("architecture evidence", encoding="utf-8")

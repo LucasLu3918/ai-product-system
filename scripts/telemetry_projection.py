@@ -21,6 +21,7 @@ SECRET_VALUE = re.compile(r"(?i)(bearer[\s_-]+|gh[pousr]_[A-Za-z0-9]{12,}|sk-[A-
 ALLOWED_TELEMETRY_KEYS = {
     "operation_id", "parent_operation_id", "related_operation_id", "name",
     "provider", "model", "input_tokens", "output_tokens", "status",
+    "usage_source", "usage_confidence", "cost_status",
 }
 EVENT_RE = re.compile(r"^aips\.telemetry\.(phase|gate|model|tool)\.(started|waiting|resumed|completed)$")
 
@@ -109,7 +110,8 @@ def _read_event_records(events_path: Path) -> tuple[list[dict], list[str]]:
         if action == "completed" and attrs.get("status") not in {"OK", "ERROR"} and kind in {"model", "tool"}:
             issues.append(f"invalid_outcome:{line_number}")
             continue
-        if kind != "model" and any(k in attrs for k in ("provider", "model", "input_tokens", "output_tokens")):
+        model_fields = ("provider", "model", "input_tokens", "output_tokens", "usage_source", "usage_confidence", "cost_status")
+        if kind != "model" and any(k in attrs for k in model_fields):
             issues.append(f"invalid_model_fields:{line_number}")
             continue
         if kind == "model" and (not SAFE_VALUE.fullmatch(str(attrs.get("provider") or "")) or not SAFE_VALUE.fullmatch(str(attrs.get("model") or ""))):
@@ -117,6 +119,19 @@ def _read_event_records(events_path: Path) -> tuple[list[dict], list[str]]:
             continue
         if any(k in attrs and (isinstance(attrs[k], bool) or not isinstance(attrs[k], int) or not 0 <= attrs[k] <= 1_000_000_000) for k in ("input_tokens", "output_tokens")):
             issues.append(f"invalid_token_count:{line_number}")
+            continue
+        if attrs.get("usage_source", "unavailable") not in {"runtime_observed", "unavailable"}:
+            issues.append(f"invalid_usage_source:{line_number}")
+            continue
+        if attrs.get("usage_confidence", "unknown") not in {"observed", "estimated", "unknown"}:
+            issues.append(f"invalid_usage_confidence:{line_number}")
+            continue
+        if attrs.get("cost_status", "unknown") != "unknown":
+            issues.append(f"unsupported_cost_status:{line_number}")
+            continue
+        has_usage = any(key in attrs for key in ("input_tokens", "output_tokens"))
+        if has_usage and (attrs.get("usage_source") != "runtime_observed" or attrs.get("usage_confidence") not in {"observed", "estimated"}):
+            issues.append(f"unbound_usage_value:{line_number}")
             continue
         if any(k in attrs and not SAFE_ID.fullmatch(str(attrs[k])) for k in ("parent_operation_id", "related_operation_id")):
             issues.append(f"invalid_correlation_id:{line_number}")
@@ -197,6 +212,9 @@ def _build_spans(run_id: str, events: list[dict], issues: list[str]) -> list[dic
                 span_attrs.append(_attribute("gen_ai.usage.input_tokens", last["input_tokens"]))
             if "output_tokens" in last:
                 span_attrs.append(_attribute("gen_ai.usage.output_tokens", last["output_tokens"]))
+            span_attrs.append(_attribute("aips.usage.source", last.get("usage_source", "runtime_observed" if any(key in last for key in ("input_tokens", "output_tokens")) else "unavailable")))
+            span_attrs.append(_attribute("aips.usage.confidence", last.get("usage_confidence", "observed" if any(key in last for key in ("input_tokens", "output_tokens")) else "unknown")))
+            span_attrs.append(_attribute("aips.cost.status", last.get("cost_status", "unknown")))
         elif kind == "tool":
             span_attrs.append(_attribute("aips.tool.name", name))
         parent = first.get("parent_operation_id")

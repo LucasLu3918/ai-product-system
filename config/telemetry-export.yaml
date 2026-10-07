@@ -1,5 +1,11 @@
 version: 1
 enabled: false
+usage:
+  source_values: [runtime_observed, unavailable]
+  confidence_values: [observed, estimated, unknown]
+  cost_status_values: [unknown]
+  price_inference: false
+  cost_estimation: false
 endpoint: http://127.0.0.1:4318
 authorization_env: AIPS_OTLP_AUTHORIZATION
 timeout_seconds: 3

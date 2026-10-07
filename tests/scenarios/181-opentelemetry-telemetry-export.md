@@ -18,6 +18,8 @@ Export privacy-safe, replayable traces for one AIPS run while preserving canonic
 ## Then
 
 - complete marker pairs yield deterministically identified spans with observed timestamps only;
+- token counts are accepted only when marked runtime-observed, with explicit usage source/confidence; absent counts remain unavailable;
+- cost status remains `unknown` without a verified price source; advisory budget values are not sent in telemetry;
 - Gate waiting/resumed yields a separate duration span;
 - independent review may link to implementation while inheriting no runtime context;
 - exact pinned GenAI attributes are emitted only for recorded provider/model/token values;
@@ -28,4 +30,4 @@ Export privacy-safe, replayable traces for one AIPS run while preserving canonic
 
 ## Evidence
 
-`tests/evidence/telemetry_export_lifecycle.py` exercises actual CLI recording, projection, replay, local OTLP receiver delivery, privacy rejection, endpoint policy, and transport failure. `tests/validation/telemetry_export_contracts.py` verifies the exact schema snapshot, command routing, docs and scenario registration.
+`tests/evidence/telemetry_export_lifecycle.py` exercises actual CLI recording, projection, replay, local OTLP receiver delivery, unknown-price state, privacy rejection, endpoint policy, and transport failure. `tests/validation/telemetry_export_contracts.py` verifies the exact schema snapshot, command routing, docs and scenario registration.

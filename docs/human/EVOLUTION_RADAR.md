@@ -73,6 +73,8 @@ Task ownership leases and dashboard projections are operational coordination evi
 
 Runtime evidence changes preserve provenance: evaluation results state whether they match the current system, and operational spans reflect measured stage boundaries. Historical unbound results remain historical signals and cannot claim current effectiveness.
 
+Plan19 的 2026-09 月報快照（`.aips/review/PLAN19_EVOLUTION_EFFECTIVENESS.yaml`）觀測到 100 筆 raw／unique signals、0 shortlist；100 筆仍為 `ANALYSIS_PENDING`，4 份 weekly Issue 缺少 pre-analysis，留下 5 個 source review flags。資料覆蓋不完整，這份報告不支持調整來源分數或權重。
+
 GitHub Actions workflows 使用固定 Ubuntu 24.04 runner；Node runtime 相容性依賴各 action 的官方版本支援，artifact action 使用完整 SHA pin 並需在升級時重新驗證。
 
 Trajectory Quality Gate 的 deterministic trace evidence 可作為 Agent 行為品質的觀測輸入，但不會自動產生演進採用決策；任何 provider 或 LLM Judge 建議仍須經 Human Decision 與既有受控 Trial 流程。

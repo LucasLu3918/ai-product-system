@@ -156,6 +156,8 @@ Skill 路由 metadata 以 `SKILL.md` frontmatter 為唯一來源；修改後執�
 
 品質債務 ratchet 追蹤 Ruff 與 mypy 基線，修改大型 facade 時要求債務下降；coverage 目前仍為 report-only。
 
+Plan19 將 quality budgets 綁定每個模組，讓 touched-code findings 不增加；coverage 只回報 direct coverage baseline。Capability Registry 生成相容的 surface inventory 與 Capability Map；Agent Eval freshness 依行為依賴列出 stale cases，不會自動執行 Eval。
+
 Plan17 regression evidence covers numeric diff headers, four browser/OpenAPI combinations, mandatory aggregates, reusable caller keys/permissions, explicit Python and isolated children, recursive placement, signed identity/immutable proposal rejection and atomic deletion races. Missing or malformed capability plans retain the full profile. A latest cancelled check stays INCOMPLETE; replaced old checks are reported as SUPERSEDED.
 
 Shared Python workflow bootstrap accepts an explicit import profile, checks imports and runs `pip check` under the repository tested constraints.
@@ -272,6 +274,8 @@ Implementation Resolution 先釐清 REST/OpenAPI authority，再依既有專案�
 Evolution Radar deterministic pre-analysis 會輸出 shortlist 與排除原因計數；採納與 trial 仍須遵循既有人工決策政策。
 
 Evolution relevance evaluation uses a reproducible monthly sample of 20 signal fingerprints and explicit Human labels. It reports shortlist precision/recall, actionable yield and source yield offline; incomplete labels remain `NOT_READY`, and policy changes still require a Human decision.
+
+Plan19 的月報將未分析 signals 與缺少 pre-analysis 的 Issue 列為 coverage gaps；結果不改變 source scores 或 ranking。
 
 ### Evolution Radar
 

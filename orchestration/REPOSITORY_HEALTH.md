@@ -6,7 +6,7 @@ Detect deterministic drift between the architecture AIPS declares and the reposi
 
 ## Reuse boundaries
 
-- references/evolution/CAPABILITY_MAP.yaml remains the capability identity and canonical documentation index.
+- config/capability-registry.yaml is the canonical capability and architecture-surface source. scripts/capability_registry.py generates the compatible Capability Map and architecture-surface indexes.
 - scripts/scenario_conformance.py remains the Scenario registry/evidence authority; Repository Health calls it instead of reimplementing Scenario semantics.
 - config/integration-gate.yaml and scripts/integration_gate.py remain the exact-candidate validation path.
 - Documentation Consistency remains responsible for changed-file documentation impact.
@@ -18,6 +18,7 @@ Detect deterministic drift between the architecture AIPS declares and the reposi
 Run:
 
     python scripts/repository_health.py audit --config config/repository-health.yaml
+    python scripts/capability_registry.py check
 
 The detector reports missing_capability_targets, architecture_surface_drift, orphan_capability_surfaces, stale_documentation_links, scenario_evidence_drift, and workflow_contract_drift.
 
@@ -27,21 +28,22 @@ The first v1 baseline reconciles one already-observed drift rather than suppress
 
 ## Explicit Architecture Surface Inventory
 
-`config/architecture-surfaces.yaml` is the deterministic major-surface inventory. It groups every Capability Map entry into exactly one architecture surface and binds that surface to required repository paths, canonical documentation and validation paths.
+`config/capability-registry.yaml` owns capability metadata and the deterministic major-surface inventory. `references/evolution/CAPABILITY_MAP.yaml` and `config/architecture-surfaces.yaml` retain their v1 consumer formats and are generated projections. The default check is read-only; run `python scripts/capability_registry.py generate` only after editing the canonical registry.
 
 Repository Health verifies:
 
-- every current Capability Map ID is classified exactly once;
+- registry metadata is valid and both generated projections exactly match it;
+- every current capability ID is classified exactly once;
 - every declared required path exists;
 - every canonical document exists and is actually declared by one of the surface's Capability Map entries;
 - every validation path exists and is bound either by Scenario Conformance evidence or by the top-level repository validator;
-- bounded guard/gate discovery still catches newly introduced guard/gate scripts that were not added to the inventory.
+- bounded discovery catches newly introduced guard, gate, scheduler, ratchet, export and hygiene scripts that were not added to the inventory.
 
-This removes the previous blind spot where a non-guard/gate subsystem could exist without deterministic architecture accounting. The inventory remains explicit rather than semantic: adding a genuinely new architecture capability requires updating the Capability Map and inventory together.
+This removes the previous blind spot where an important subsystem could exist without deterministic architecture accounting. The inventory remains explicit rather than semantic: adding a genuinely new architecture capability requires updating the canonical registry and regenerating both compatibility indexes.
 
 ## False-positive / false-negative boundary
 
-The detector still avoids semantic inference over arbitrary source files. Architecture coverage is complete relative to the source-controlled Capability Map plus explicit surface inventory, while bounded guard/gate discovery remains a secondary safety net. Repository Health does not infer whether an arbitrary file is a new subsystem.
+The detector still avoids semantic inference over arbitrary source files. Architecture coverage is complete relative to the source-controlled canonical registry and explicit surface inventory, while bounded discovery remains a secondary safety net. Repository Health does not infer whether an arbitrary file is a new subsystem.
 
 ## Evidence and Human review
 
@@ -54,7 +56,7 @@ Every report keeps credential_required=false, external_network_required=false, a
 Repository Health builds a deterministic input manifest for every configured file that can affect the audit:
 
 - the Repository Health config itself;
-- Capability Map plus canonical capability documentation targets;
+- canonical Capability Registry, generated Capability Map, generated surface inventory, capability documentation and validation evidence;
 - configured core capability surfaces and bounded discovered guard/gate files;
 - documentation binding sources and required targets;
 - the Scenario registry, Scenario inventory, Scenario checker and non-external evidence references;

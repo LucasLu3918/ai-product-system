@@ -2,6 +2,8 @@
 
 AI Product System（AIPS）是一套跨 Agent 的 Software Engineering Harness。它把 Roles、Skills、Project Intelligence、deterministic orchestration、security / quality governance 與 MCP interoperability 組合成可重用的工程系統。
 
+主要能力與架構面以 `config/capability-registry.yaml` 為單一來源；既有 Capability Map 與 architecture-surface YAML 由確定性工具生成，Repository Health 會偵測過期輸出。Codex PreToolUse 僅有一個隔離的實驗性探針，整體治理仍為 `ADVISORY`。
+
 ## Install
 
 ### macOS / Linux

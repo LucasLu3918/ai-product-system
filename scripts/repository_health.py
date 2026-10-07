@@ -4,12 +4,13 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-from pathlib import Path
 import subprocess
-import sys
+from pathlib import Path
 from typing import Any
 
 import yaml
+from capability_registry import projections as registry_projections
+from capability_registry import validate as validate_capability_registry
 
 ROOT = Path(__file__).resolve().parents[1]
 DRIFT_KEYS = (
@@ -150,6 +151,8 @@ def build_input_manifest(
     root: Path,
     config_path: Path,
     config: dict[str, Any],
+    capability_registry_path: Path | None,
+    capability_registry: dict[str, Any] | None,
     capability_map_path: Path,
     capability_map: dict[str, Any],
     architecture_inventory_path: Path,
@@ -162,6 +165,8 @@ def build_input_manifest(
 ) -> dict[str, Any]:
     paths: dict[str, set[str]] = {}
     add_manifest_path(paths, root, config_path, "repository_health_config")
+    if capability_registry_path is not None:
+        add_manifest_path(paths, root, capability_registry_path, "capability_registry")
     add_manifest_path(paths, root, capability_map_path, "capability_map")
     add_manifest_path(
         paths,
@@ -177,6 +182,19 @@ def build_input_manifest(
         repository_validator_path,
         "repository_validator",
     )
+
+    for item in as_list((capability_registry or {}).get("capabilities"), "capability_registry.capabilities"):
+        if not isinstance(item, dict):
+            continue
+        for field in ("docs", "validation_evidence"):
+            for raw in as_list(item.get(field), f"capability_registry.{field}"):
+                add_manifest_path(paths, root, str(raw), "capability_target")
+
+    for raw_surface in as_list((capability_registry or {}).get("surfaces"), "capability_registry.surfaces"):
+        if isinstance(raw_surface, dict):
+            for field in ("required_paths", "canonical_docs", "validation_paths"):
+                for raw in as_list(raw_surface.get(field), f"capability_registry.surface.{field}"):
+                    add_manifest_path(paths, root, str(raw), "capability_registry_surface")
 
     for item in as_list(capability_map.get("capabilities"), "capability_map.capabilities"):
         if not isinstance(item, dict):
@@ -289,6 +307,10 @@ def analyze(root: Path, config_path: Path) -> dict[str, Any]:
         )
 
     truth = as_mapping(config.get("truth_sources"), "truth_sources")
+    capability_registry_rel = str(truth.get("capability_registry") or "").strip()
+    capability_registry_path = (
+        resolve(root, capability_registry_rel) if capability_registry_rel else None
+    )
     capability_map_path = resolve(
         root,
         str(
@@ -322,14 +344,35 @@ def analyze(root: Path, config_path: Path) -> dict[str, Any]:
             or "tests/validate_repository.py"
         ),
     )
-    for required in (capability_map_path, scenario_registry_path):
+    required_paths = [capability_map_path, scenario_registry_path]
+    if capability_registry_path is not None:
+        required_paths.append(capability_registry_path)
+    for required in required_paths:
         if not required.exists():
             raise ValueError(
                 f"truth source missing: {relative_path(root, required)}"
             )
 
     drift: dict[str, list[str]] = {key: [] for key in DRIFT_KEYS}
+    capability_registry = (
+        load_yaml(capability_registry_path)
+        if capability_registry_path is not None
+        else None
+    )
+    if capability_registry is not None:
+        registry_issues = validate_capability_registry(root, capability_registry)
+        if registry_issues:
+            drift["architecture_surface_drift"].extend(
+                f"capability registry invalid: {issue}" for issue in registry_issues
+            )
     capability_map = load_yaml(capability_map_path)
+    expected_map = expected_architecture = None
+    if capability_registry is not None:
+        expected_map, expected_architecture = registry_projections(capability_registry)
+        if capability_map != expected_map:
+            drift["architecture_surface_drift"].append(
+                "Capability Map is stale relative to config/capability-registry.yaml"
+            )
     capabilities = as_list(
         capability_map.get("capabilities"),
         "capability_map.capabilities",
@@ -411,6 +454,10 @@ def analyze(root: Path, config_path: Path) -> dict[str, Any]:
     architecture_inventory: dict[str, Any] = {}
     if architecture_inventory_path.exists():
         architecture_inventory = load_yaml(architecture_inventory_path)
+        if expected_architecture is not None and architecture_inventory != expected_architecture:
+            drift["architecture_surface_drift"].append(
+                "architecture-surface inventory is stale relative to config/capability-registry.yaml"
+            )
     else:
         drift["architecture_surface_drift"].append(
             "architecture surface inventory missing: "
@@ -705,6 +752,8 @@ def analyze(root: Path, config_path: Path) -> dict[str, Any]:
         root,
         config_path,
         config,
+        capability_registry_path,
+        capability_registry,
         capability_map_path,
         capability_map,
         architecture_inventory_path,
@@ -745,6 +794,14 @@ def analyze(root: Path, config_path: Path) -> dict[str, Any]:
                 "path": relative_path(root, capability_map_path),
                 "digest": file_digest(capability_map_path),
             },
+            "capability_registry": (
+                {
+                    "path": relative_path(root, capability_registry_path),
+                    "digest": file_digest(capability_registry_path),
+                }
+                if capability_registry_path is not None
+                else None
+            ),
             "architecture_surface_inventory": {
                 "path": relative_path(root, architecture_inventory_path),
                 "digest": (

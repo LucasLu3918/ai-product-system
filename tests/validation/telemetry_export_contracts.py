@@ -26,6 +26,12 @@ if schema.get("privacy", {}).get("unknown_attributes") != "reject":
     errors.append("unknown telemetry attributes must reject")
 if schema.get("privacy", {}).get("raw_runtime_payload_persisted") is not False:
     errors.append("raw runtime payload must not be persisted")
+if schema.get("mapping", {}).get("cost_estimation") != "disabled_without_verified_price_source":
+    errors.append("telemetry must not estimate cost without a verified price source")
+if not {"usage_source", "usage_confidence", "cost_status"}.issubset(schema.get("recording", {}).get("attributes", {}).get("optional", [])):
+    errors.append("telemetry schema must carry provider-neutral usage confidence and unknown cost status")
+if (config.get("usage") or {}).get("price_inference") is not False or (config.get("usage") or {}).get("cost_estimation") is not False:
+    errors.append("telemetry config must not infer prices or estimate cost")
 if not scenario.is_file():
     errors.append("Scenario 181 is missing")
 elif "TELEMETRY_DEGRADED" not in scenario.read_text(encoding="utf-8"):

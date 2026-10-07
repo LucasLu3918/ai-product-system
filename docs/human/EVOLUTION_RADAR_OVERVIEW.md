@@ -51,6 +51,9 @@ The monthly Effectiveness report leaves shortlist yield unavailable when a sourc
 
 If archive verification fails, the monthly report names that unreadable Issue and keeps it under Human review; it is not silently omitted from the cohort.
 
+Plan19 的 2026-09 effectiveness snapshot 記錄 100 筆 signals、無 shortlist，並明確保留 100 筆未分析與 4 份缺少 pre-analysis 的 weekly Issues；覆蓋不完整，不據此調整 source ranking 或權重。
+Scenario-by-scenario 的演進與數值證據放在 [Scenario Conformance](CONFORMANCE.md)，不再把每個版本/Scenario追加到本頁尾端。
+
 
 Task ownership leases and Dashboard projection are execution operations, not Radar decisions. They cannot adopt a candidate, approve a Trial, or grant publication authority.
 
@@ -66,5 +69,3 @@ Monthly / quarterly roll-up量測 collected → shortlist → semantic → actio
 Portable Command Core 的 Registry、renderer、ownership conflict 與 MCP read-only contract 沿用既有 Harness capability；Host-native integration 維持後續候選。
 
 ## Verification History
-
-Scenario-by-scenario 的演進與數值證據放在 [Scenario Conformance](CONFORMANCE.md)，不再把每個版本/Scenario追加到本頁尾端。

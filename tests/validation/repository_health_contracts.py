@@ -7,9 +7,11 @@ import sys
 from .static_contracts import ROOT, errors
 
 required = (
+    ROOT / "config/capability-registry.yaml",
     ROOT / "config/repository-health.yaml",
     ROOT / "config/architecture-surfaces.yaml",
     ROOT / "scripts/repository_health.py",
+    ROOT / "scripts/capability_registry.py",
     ROOT / "orchestration/REPOSITORY_HEALTH.md",
     ROOT / "tests/evidence/repository_health_lifecycle.py",
     ROOT / "tests/scenarios/147-repository-health-architecture-drift.md",
@@ -36,6 +38,7 @@ if script.exists():
         ],
         capture_output=True,
         text=True,
+        check=False,
     )
     if compiled.returncode:
         errors.append(
@@ -54,6 +57,7 @@ if script.exists():
             cwd=ROOT,
             capture_output=True,
             text=True,
+            check=False,
         )
         if result.returncode:
             errors.append(
@@ -78,15 +82,15 @@ if script.exists():
                     "Repository Health architecture inventory must "
                     "contain 10 major surfaces"
                 )
-            if architecture.get("capability_count") != 31:
+            if architecture.get("capability_count") != 45:
                 errors.append(
                     "Repository Health architecture inventory must "
-                    "observe all 31 Capability Map entries"
+                    "observe all 45 canonical capability entries"
                 )
-            if architecture.get("capability_accounted") != 31:
+            if architecture.get("capability_accounted") != 45:
                 errors.append(
                     "Repository Health architecture inventory must "
-                    "classify all 31 Capability Map entries"
+                    "classify all 45 canonical capability entries"
                 )
             if architecture.get("unclassified_capabilities"):
                 errors.append(
@@ -109,6 +113,20 @@ if script.exists():
                         f"Repository Health {key} must be "
                         "empty on baseline"
                     )
+
+            registry = (report.get("inputs") or {}).get("capability_registry") or {}
+            if registry.get("path") != "config/capability-registry.yaml" or not str(registry.get("digest") or "").startswith("sha256:"):
+                errors.append("Repository Health must bind the canonical capability registry digest")
+
+            generated = subprocess.run(
+                [sys.executable, str(ROOT / "scripts/capability_registry.py"), "check"],
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if generated.returncode:
+                errors.append("Capability Registry projections must be current: " + generated.stderr.strip() + generated.stdout.strip())
 
             manifest = (
                 (report.get("inputs") or {})
@@ -250,6 +268,7 @@ if lifecycle.exists():
         ],
         capture_output=True,
         text=True,
+        check=False,
     )
     if compiled.returncode:
         errors.append(
@@ -262,6 +281,7 @@ if lifecycle.exists():
             cwd=ROOT,
             capture_output=True,
             text=True,
+            check=False,
         )
         if result.returncode:
             errors.append(

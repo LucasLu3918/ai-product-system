@@ -18,11 +18,11 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+from observed_stage import observed_stage
+from run_state import append_event as append_run_event
 from telemetry_export import _endpoint_allowed, export
 from telemetry_projection import build_projection
 from telemetry_record import record
-from run_state import append_event as append_run_event
-from observed_stage import observed_stage
 
 
 class Receiver(BaseHTTPRequestHandler):
@@ -44,12 +44,17 @@ class Receiver(BaseHTTPRequestHandler):
 
 
 def marker(root: Path, run_id: str, kind: str, action: str, operation_id: str, name: str, **extra):
+    input_tokens = extra.pop("input_tokens", None)
+    output_tokens = extra.pop("output_tokens", None)
+    has_usage = input_tokens is not None or output_tokens is not None
     args = SimpleNamespace(
         project=str(root), run_id=run_id, kind=kind, action=action,
         operation_id=operation_id, parent_operation_id=extra.pop("parent_operation_id", None),
         related_operation_id=extra.pop("related_operation_id", None), name=name,
         provider=extra.pop("provider", None), model=extra.pop("model", None),
-        input_tokens=extra.pop("input_tokens", None), output_tokens=extra.pop("output_tokens", None),
+        input_tokens=input_tokens, output_tokens=output_tokens,
+        usage_source=extra.pop("usage_source", "runtime_observed" if has_usage else "unavailable"),
+        usage_confidence=extra.pop("usage_confidence", "observed" if has_usage else "unknown"),
         outcome=extra.pop("outcome", "OK"),
     )
     assert not extra, f"unexpected test input keys: {sorted(extra)}"
@@ -87,6 +92,8 @@ def main() -> int:
         marker(root, run_id, "gate", "completed", "gate-op", "integration")
         marker(root, run_id, "model", "started", "model-op", "chat", provider="openai", model="test-model", parent_operation_id="plan-op")
         marker(root, run_id, "model", "completed", "model-op", "chat", provider="openai", model="test-model", input_tokens=12, output_tokens=7, parent_operation_id="plan-op")
+        marker(root, run_id, "model", "started", "model-unknown", "chat", provider="openai", model="test-model-unknown")
+        marker(root, run_id, "model", "completed", "model-unknown", "chat", provider="openai", model="test-model-unknown")
         marker(root, run_id, "tool", "started", "tool-op", "read_file", parent_operation_id="plan-op")
         marker(root, run_id, "tool", "completed", "tool-op", "read_file", parent_operation_id="plan-op")
 
@@ -103,6 +110,11 @@ def main() -> int:
         model_attrs = {x["key"]: x["value"] for x in by_name["chat test-model"]["attributes"]}
         assert model_attrs["gen_ai.usage.input_tokens"]["intValue"] == "12"
         assert model_attrs["gen_ai.usage.output_tokens"]["intValue"] == "7"
+        assert model_attrs["aips.usage.source"]["stringValue"] == "runtime_observed"
+        assert model_attrs["aips.usage.confidence"]["stringValue"] == "observed"
+        assert model_attrs["aips.cost.status"]["stringValue"] == "unknown"
+        unknown_attrs = {x["key"]: x["value"] for x in by_name["chat test-model-unknown"]["attributes"]}
+        assert unknown_attrs["aips.cost.status"]["stringValue"] == "unknown"
         payload_text = json.dumps(first["otlp"])
         for forbidden in ("prompt", "private reasoning", "tool arguments", "AIPS_OTLP_AUTHORIZATION"):
             assert forbidden not in payload_text
@@ -123,7 +135,7 @@ def main() -> int:
 
         events_path = run_dir / "EVENTS.jsonl"
         existing = events_path.read_text(encoding="utf-8")
-        rejected = SimpleNamespace(project=str(root), run_id=run_id, kind="model", action="completed", operation_id="bad-op", parent_operation_id=None, related_operation_id=None, name="chat", provider="openai", model="Bearer-secret-value", input_tokens=1, output_tokens=1, outcome="OK")
+        rejected = SimpleNamespace(project=str(root), run_id=run_id, kind="model", action="completed", operation_id="bad-op", parent_operation_id=None, related_operation_id=None, name="chat", provider="openai", model="Bearer-secret-value", input_tokens=1, output_tokens=1, usage_source="runtime_observed", usage_confidence="observed", outcome="OK")
         try:
             record(rejected)
             raise AssertionError("unsafe model identifier must reject")

@@ -199,6 +199,8 @@ Review actual:
 
 Publication scanning excludes only validated numeric Git index/mode metadata; paths, added/removed/context lines and unknown headers remain scanned. Branch deletion verifies GitHub RS256 issuer, repository, protected main, workflow SHA, dispatch event and a proposal-bound audience. Runner flags alone grant no authority; tokens remain in memory.
 
+Release readiness checks bind version, changelog, installer and tag policy to an exact candidate but do not create a release or tag; release publication requires separate Human authorization.
+
 The shared CI bootstrap validates module names as Python identifiers before import, uses checked-in requirement files and constraints, and fails on inconsistent dependencies.
 
 Scheduled reporting workflows keep repository/content permissions read-only except for narrowly scoped Issue reconciliation. A timeout bounds resource use but does not grant authority; concurrency may serialize identical-revision or same-cohort work, while distinct observation evidence remains independently reviewable. Evolution Effectiveness queues only writes to the same period Issue and preserves every pending report.

@@ -1,35 +1,275 @@
 version: 1
-purpose: Compact current-AIPS capability index for Evolution Radar semantic comparison; canonical behavior remains in referenced protocols.
+purpose: Compact current-AIPS capability index for Evolution Radar semantic comparison; canonical behavior remains in referenced
+  protocols.
 capabilities:
-  - {id: unified-runtime-path-resolution, name_en: Unified Runtime Path Resolution, name_zh: 共用執行環境路徑解析, docs: [orchestration/RUNTIME_CONTEXT.md, docs/human/ARCHITECTURE_OVERVIEW.md]}
-  - {id: validation-interpreter-capability-selection, name_en: Validation Interpreter Capability Selection, name_zh: 驗證直譯器能力選擇, docs: [orchestration/RUNTIME_CONTEXT.md, docs/human/TECHNOLOGY_GUIDE.md]}
-  - {id: runtime-invariant-matrix, name_en: Runtime Invariant Matrix, name_zh: 執行環境不變條件矩陣, docs: [orchestration/RUNTIME_CONTEXT.md, orchestration/CONFORMANCE.md, docs/human/CONFORMANCE.md]}
-  - {id: turn-aware-global-harness, name_en: Turn-Aware Global Harness, name_zh: 回合感知全域代理框架, docs: [harness/HARNESS_PROTOCOL.md, orchestration/TURN_HARNESS.md, docs/human/HARNESS.md, harness/PORTABLE_COMMANDS.md]}
-  - {id: project-intelligence, name_en: Project Intelligence, name_zh: 專案智慧, docs: [orchestration/PROJECT_INTELLIGENCE.md, docs/human/PROJECT_INTELLIGENCE.md]}
-  - {id: canonical-project-identity, name_en: Canonical Project Identity, name_zh: 標準專案身分識別, docs: [orchestration/PROJECT_IDENTITY.md]}
-  - {id: change-impact-guard, name_en: Change Impact Guard, name_zh: 變更影響防護, docs: [orchestration/CHANGE_IMPACT.md]}
-  - {id: enforceable-governance, name_en: Enforceable Governance, name_zh: 可執行治理, docs: [core/GOVERNANCE.md, orchestration/SYSTEM_SELF_IMPROVEMENT.md]}
-  - {id: runtime-policy-enforcement, name_en: Runtime Policy Enforcement, name_zh: 執行階段政策強制執行, docs: [orchestration/RUNTIME_POLICY_ENFORCEMENT.md, orchestration/RESOURCE_AUTHORIZATION.md, orchestration/EXECUTION_ISOLATION.md, docs/human/SECURITY_ASSURANCE.md]}
-  - {id: durable-run-state, name_en: Durable Run State, name_zh: 可持久化執行狀態, docs: [orchestration/RUN_RESUME.md, orchestration/RUN_DASHBOARD.md, orchestration/WORKSPACE_STATE.md]}
-  - {id: scenario-conformance, name_en: Scenario Conformance, name_zh: 情境符合性驗證, docs: [orchestration/CONFORMANCE.md, docs/human/CONFORMANCE.md, orchestration/TRAJECTORY_EVAL.md]}
-  - {id: agent-eval, name_en: Agent Evaluation, name_zh: 代理評估, docs: [orchestration/AGENT_EVAL.md, orchestration/TRAJECTORY_EVAL.md]}
-  - {id: execution-isolation, name_en: Execution Isolation, name_zh: 執行隔離, docs: [orchestration/EXECUTION_ISOLATION.md]}
-  - {id: deterministic-automation, name_en: Deterministic Automation, name_zh: 決定性自動化, docs: [orchestration/DETERMINISTIC_AUTOMATION.md]}
-  - {id: security-assurance, name_en: Security Assurance Level, name_zh: 安全保證等級, docs: [docs/human/SECURITY_ASSURANCE.md]}
-  - {id: secret-handling, name_en: Secret Handling, name_zh: 機密資訊處理, docs: [orchestration/SECRET_HANDLING.md]}
-  - {id: product-delivery, name_en: Product Delivery Lifecycle, name_zh: 產品交付生命週期, docs: [orchestration/PRODUCT_DELIVERY.md]}
-  - {id: evolution-radar, name_en: Evolution Radar, name_zh: 持續演化雷達, docs: [orchestration/EVOLUTION_RADAR.md, docs/human/EVOLUTION_RADAR.md]}
-  - {id: documentation-consistency, name_en: Documentation Consistency Contract, name_zh: 文件一致性契約, docs: [orchestration/DOCUMENTATION_SYNC.md, docs/human/DOCUMENTATION_SYNC.md]}
-  - {id: controlled-evolution-trial, name_en: Controlled Evolution Trial, name_zh: 受控演化實驗, docs: [orchestration/EVOLUTION_RADAR.md, orchestration/EXECUTION_ISOLATION.md, docs/human/EVOLUTION_RADAR.md]}
-  - {id: human-documentation-namespace, name_en: Human Documentation Namespace, name_zh: 人類文件命名空間, docs: [orchestration/DOCUMENTATION_SYNC.md, docs/human/DOCUMENTATION_SYNC.md, docs/human/DOCUMENTATION_MAP.md]}
-  - {id: trial-adoption-binding, name_en: Trial-to-ADOPT Evidence Binding, name_zh: 實驗採用證據綁定, docs: [orchestration/EVOLUTION_RADAR.md, docs/human/EVOLUTION_RADAR.md]}
-  - {id: resource-authorization, name_en: Resource-Scoped Agent Authorization, name_zh: 資源範圍代理授權, docs: [orchestration/RESOURCE_AUTHORIZATION.md, orchestration/EXECUTION_ISOLATION.md, docs/human/ARCHITECTURE_OVERVIEW.md, docs/human/USER_GUIDE.md]}
-  - {id: agent-anomaly-evaluation, name_en: Agent Anomaly Evidence Evaluation, name_zh: 代理異常證據評估, docs: [orchestration/AGENT_ANOMALY_EVALUATION.md, orchestration/EVOLUTION_RADAR.md, docs/human/EVOLUTION_RADAR.md]}
-  - {id: agent-observable-event-trial-evidence, name_en: Observable-Event Integration Trial Evidence, name_zh: 可觀測事件整合實驗證據, docs: [orchestration/AGENT_ANOMALY_EVALUATION.md, orchestration/EVOLUTION_RADAR.md, docs/human/EVOLUTION_RADAR.md]}
-  - {id: gemini-cli-observable-event-capture-trial, name_en: Gemini CLI Observable-Event Capture Trial, name_zh: Gemini CLI 可觀測事件捕捉實驗, docs: [harness/adapters/gemini-cli/GEMINI.md, orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md, docs/human/EVOLUTION_RADAR.md]}
-  - {id: gemini-cli-real-runtime-verification, name_en: Gemini CLI Real-Runtime Verification, name_zh: Gemini CLI 真實執行階段驗證, docs: [orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md, harness/adapters/gemini-cli/GEMINI.md, docs/human/HARNESS.md]}
-  - {id: external-credential-dependency-guard, name_en: External Credential Dependency Guard, name_zh: 外部憑證依賴防護, docs: [orchestration/EXTERNAL_CREDENTIAL_DEPENDENCY_GUARD.md, orchestration/SECRET_HANDLING.md, docs/human/SECURITY_ASSURANCE.md]}
-  - {id: evolution-local-deterministic-preanalysis, name_en: Evolution Local Deterministic Pre-analysis, name_zh: 演化雷達本機決定性預分析, docs: [orchestration/EVOLUTION_RADAR.md, docs/human/EVOLUTION_RADAR.md, docs/human/EVOLUTION_RADAR_OVERVIEW.html]}
-
-  - {id: integration-gate, name_en: Exact-Candidate Integration Gate, name_zh: 精確候選整合閘門, docs: [orchestration/INTEGRATION_GATE.md, docs/human/ARCHITECTURE_OVERVIEW.md]}
-  - {id: repository-health-architecture-drift, name_en: Repository Health / Architecture Drift, name_zh: 儲存庫健康與架構漂移偵測, docs: [orchestration/REPOSITORY_HEALTH.md, docs/ARCHITECTURE.md, docs/human/MAINTENANCE.md]}
+- id: unified-runtime-path-resolution
+  name_en: Unified Runtime Path Resolution
+  name_zh: 共用執行環境路徑解析
+  docs:
+  - orchestration/RUNTIME_CONTEXT.md
+  - docs/human/ARCHITECTURE_OVERVIEW.md
+- id: validation-interpreter-capability-selection
+  name_en: Validation Interpreter Capability Selection
+  name_zh: 驗證直譯器能力選擇
+  docs:
+  - orchestration/RUNTIME_CONTEXT.md
+  - docs/human/TECHNOLOGY_GUIDE.md
+- id: runtime-invariant-matrix
+  name_en: Runtime Invariant Matrix
+  name_zh: 執行環境不變條件矩陣
+  docs:
+  - orchestration/RUNTIME_CONTEXT.md
+  - orchestration/CONFORMANCE.md
+  - docs/human/CONFORMANCE.md
+- id: turn-aware-global-harness
+  name_en: Turn-Aware Global Harness
+  name_zh: 回合感知全域代理框架
+  docs:
+  - harness/HARNESS_PROTOCOL.md
+  - orchestration/TURN_HARNESS.md
+  - docs/human/HARNESS.md
+  - harness/PORTABLE_COMMANDS.md
+- id: project-intelligence
+  name_en: Project Intelligence
+  name_zh: 專案智慧
+  docs:
+  - orchestration/PROJECT_INTELLIGENCE.md
+  - docs/human/PROJECT_INTELLIGENCE.md
+- id: canonical-project-identity
+  name_en: Canonical Project Identity
+  name_zh: 標準專案身分識別
+  docs:
+  - orchestration/PROJECT_IDENTITY.md
+- id: change-impact-guard
+  name_en: Change Impact Guard
+  name_zh: 變更影響防護
+  docs:
+  - orchestration/CHANGE_IMPACT.md
+- id: enforceable-governance
+  name_en: Enforceable Governance
+  name_zh: 可執行治理
+  docs:
+  - core/GOVERNANCE.md
+  - orchestration/SYSTEM_SELF_IMPROVEMENT.md
+- id: runtime-policy-enforcement
+  name_en: Runtime Policy Enforcement
+  name_zh: 執行階段政策強制執行
+  docs:
+  - orchestration/RUNTIME_POLICY_ENFORCEMENT.md
+  - orchestration/RESOURCE_AUTHORIZATION.md
+  - orchestration/EXECUTION_ISOLATION.md
+  - docs/human/SECURITY_ASSURANCE.md
+- id: durable-run-state
+  name_en: Durable Run State
+  name_zh: 可持久化執行狀態
+  docs:
+  - orchestration/RUN_RESUME.md
+  - orchestration/RUN_DASHBOARD.md
+  - orchestration/WORKSPACE_STATE.md
+- id: scenario-conformance
+  name_en: Scenario Conformance
+  name_zh: 情境符合性驗證
+  docs:
+  - orchestration/CONFORMANCE.md
+  - docs/human/CONFORMANCE.md
+  - orchestration/TRAJECTORY_EVAL.md
+- id: agent-eval
+  name_en: Agent Evaluation
+  name_zh: 代理評估
+  docs:
+  - orchestration/AGENT_EVAL.md
+  - orchestration/TRAJECTORY_EVAL.md
+- id: execution-isolation
+  name_en: Execution Isolation
+  name_zh: 執行隔離
+  docs:
+  - orchestration/EXECUTION_ISOLATION.md
+- id: deterministic-automation
+  name_en: Deterministic Automation
+  name_zh: 決定性自動化
+  docs:
+  - orchestration/DETERMINISTIC_AUTOMATION.md
+- id: security-assurance
+  name_en: Security Assurance Level
+  name_zh: 安全保證等級
+  docs:
+  - docs/human/SECURITY_ASSURANCE.md
+- id: secret-handling
+  name_en: Secret Handling
+  name_zh: 機密資訊處理
+  docs:
+  - orchestration/SECRET_HANDLING.md
+- id: product-delivery
+  name_en: Product Delivery Lifecycle
+  name_zh: 產品交付生命週期
+  docs:
+  - orchestration/PRODUCT_DELIVERY.md
+- id: evolution-radar
+  name_en: Evolution Radar
+  name_zh: 持續演化雷達
+  docs:
+  - orchestration/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR.md
+- id: documentation-consistency
+  name_en: Documentation Consistency Contract
+  name_zh: 文件一致性契約
+  docs:
+  - orchestration/DOCUMENTATION_SYNC.md
+  - docs/human/DOCUMENTATION_SYNC.md
+- id: controlled-evolution-trial
+  name_en: Controlled Evolution Trial
+  name_zh: 受控演化實驗
+  docs:
+  - orchestration/EVOLUTION_RADAR.md
+  - orchestration/EXECUTION_ISOLATION.md
+  - docs/human/EVOLUTION_RADAR.md
+- id: human-documentation-namespace
+  name_en: Human Documentation Namespace
+  name_zh: 人類文件命名空間
+  docs:
+  - orchestration/DOCUMENTATION_SYNC.md
+  - docs/human/DOCUMENTATION_SYNC.md
+  - docs/human/DOCUMENTATION_MAP.md
+- id: trial-adoption-binding
+  name_en: Trial-to-ADOPT Evidence Binding
+  name_zh: 實驗採用證據綁定
+  docs:
+  - orchestration/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR.md
+- id: resource-authorization
+  name_en: Resource-Scoped Agent Authorization
+  name_zh: 資源範圍代理授權
+  docs:
+  - orchestration/RESOURCE_AUTHORIZATION.md
+  - orchestration/EXECUTION_ISOLATION.md
+  - docs/human/ARCHITECTURE_OVERVIEW.md
+  - docs/human/USER_GUIDE.md
+- id: agent-anomaly-evaluation
+  name_en: Agent Anomaly Evidence Evaluation
+  name_zh: 代理異常證據評估
+  docs:
+  - orchestration/AGENT_ANOMALY_EVALUATION.md
+  - orchestration/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR.md
+- id: agent-observable-event-trial-evidence
+  name_en: Observable-Event Integration Trial Evidence
+  name_zh: 可觀測事件整合實驗證據
+  docs:
+  - orchestration/AGENT_ANOMALY_EVALUATION.md
+  - orchestration/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR.md
+- id: gemini-cli-observable-event-capture-trial
+  name_en: Gemini CLI Observable-Event Capture Trial
+  name_zh: Gemini CLI 可觀測事件捕捉實驗
+  docs:
+  - harness/adapters/gemini-cli/GEMINI.md
+  - orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md
+  - docs/human/EVOLUTION_RADAR.md
+- id: gemini-cli-real-runtime-verification
+  name_en: Gemini CLI Real-Runtime Verification
+  name_zh: Gemini CLI 真實執行階段驗證
+  docs:
+  - orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md
+  - harness/adapters/gemini-cli/GEMINI.md
+  - docs/human/HARNESS.md
+- id: external-credential-dependency-guard
+  name_en: External Credential Dependency Guard
+  name_zh: 外部憑證依賴防護
+  docs:
+  - orchestration/EXTERNAL_CREDENTIAL_DEPENDENCY_GUARD.md
+  - orchestration/SECRET_HANDLING.md
+  - docs/human/SECURITY_ASSURANCE.md
+- id: evolution-local-deterministic-preanalysis
+  name_en: Evolution Local Deterministic Pre-analysis
+  name_zh: 演化雷達本機決定性預分析
+  docs:
+  - orchestration/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR_OVERVIEW.html
+- id: integration-gate
+  name_en: Exact-Candidate Integration Gate
+  name_zh: 精確候選整合閘門
+  docs:
+  - orchestration/INTEGRATION_GATE.md
+  - docs/human/ARCHITECTURE_OVERVIEW.md
+- id: repository-health-architecture-drift
+  name_en: Repository Health / Architecture Drift
+  name_zh: 儲存庫健康與架構漂移偵測
+  docs:
+  - orchestration/REPOSITORY_HEALTH.md
+  - docs/ARCHITECTURE.md
+  - docs/human/MAINTENANCE.md
+- id: model-routing
+  name_en: Model Routing
+  name_zh: 模型路由
+  docs:
+  - orchestration/MODEL_ROUTING.md
+- id: planning-package
+  name_en: Planning Package
+  name_zh: 規劃套件
+  docs:
+  - orchestration/PLANNING_PACKAGE.md
+- id: implementation-resolution
+  name_en: Implementation Resolution
+  name_zh: 實作解析
+  docs:
+  - orchestration/IMPLEMENTATION_RESOLUTION.md
+- id: telemetry-export
+  name_en: Telemetry Export
+  name_zh: 遙測匯出
+  docs:
+  - orchestration/TELEMETRY_EXPORT.md
+- id: deterministic-scheduler
+  name_en: Deterministic Scheduler
+  name_zh: 決定性排程器
+  docs:
+  - orchestration/DETERMINISTIC_SCHEDULER.md
+- id: release-channel
+  name_en: Release Channel Readiness
+  name_zh: 發布通道就緒度
+  docs:
+  - orchestration/RELEASE_READINESS.md
+- id: branch-hygiene
+  name_en: Branch Hygiene Evidence
+  name_zh: 分支衛生證據
+  docs:
+  - docs/human/MAINTENANCE.md
+- id: quality-ratchet
+  name_en: Progressive Quality Ratchet
+  name_zh: 漸進式品質門檻
+  docs:
+  - orchestration/QUALITY_PLANNING.md
+- id: skill-registry
+  name_en: Skill Registry
+  name_zh: 技能登錄表
+  docs:
+  - AGENTS.md
+- id: mcp-gateway
+  name_en: MCP Interoperability Gateway
+  name_zh: MCP 互通閘道
+  docs:
+  - harness/MCP_GATEWAY.md
+- id: codex-native-hooks
+  name_en: Codex Native PreToolUse Hook Probe
+  name_zh: Codex 原生工具前置 Hook 探針
+  docs:
+  - harness/adapters/codex/hooks/README.md
+- id: agent-eval-freshness
+  name_en: Change-aware Agent Eval Freshness
+  name_zh: 依變更選取代理評估新鮮度
+  docs:
+  - orchestration/AGENT_EVAL.md
+  - tests/scenarios/229-agent-eval-freshness.md
+- id: provider-neutral-cost-budgets
+  name_en: Provider-neutral Advisory Cost Budgets
+  name_zh: 供應者中立的建議成本預算
+  docs:
+  - orchestration/MODEL_ROUTING.md
+  - orchestration/schemas/execution-profile.yaml
+  - orchestration/schemas/telemetry-export.yaml
+- id: evolution-effectiveness
+  name_en: Evolution Radar Effectiveness Evidence
+  name_zh: 演化雷達效能證據
+  docs:
+  - orchestration/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR.md

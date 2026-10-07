@@ -145,6 +145,8 @@ Sandbox provider selection reads a provider-neutral capability registry and a fr
 
 Validation evidence 與 source checkout 分離保存。Gate 報告和 Repository Health 報告使用 runner 暫存路徑，完成後才上傳 artifact，讓 repository validation 看到的仍是 exact clean revision。
 
+`config/capability-registry.yaml` 統一能力 metadata 與 major architecture surface；確定性生成保留既有 Capability Map 與 architecture-surface v1 消費介面。Repository Health 同時核對 registry、生成檔、文件、驗證證據及 bounded major-script discovery。
+
 驗證時間資料也屬於 CI evidence：`repository-validation` 仍在 PR 與 main 的完整 Gate 中執行，並將 contract 模組與 lifecycle 的耗時寫到 runner 暫存檔後上傳 artifact。本機相同候選只需一次完整 Gate；此調整不改變檢查範圍或架構層級。
 
 受保護分支會以 exact candidate 的 Gate 結果作為 `repository` aggregate 的合併前條件。

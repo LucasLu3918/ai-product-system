@@ -35,6 +35,8 @@ Managed AIPS installation channel selection controls system updates only. It doe
 
 以 persistent managed instruction 提供 CONTEXT_ALWAYS；安裝器會先檢查 `codex` 命令，再檢查 `CODEX_CLI_PATH`、`AIPS_CODEX_CLI_PATH` 與 macOS ChatGPT app 內建路徑。治理強度依實際可驗證能力回報，不因 MCP 存在而升級。
 
+Codex PreToolUse 的 Plan19 probe 僅拒絕無害的本機合成命令；unsupported、malformed、timeout 與 error 路徑不構成完整 enforcement 證據，aggregate governance 維持 advisory。
+
 ### Claude Code
 
 可安全安裝時使用 UserPromptSubmit + PreToolUse；成功驗證後可提供 TURN_NATIVE / TOOL_GUARDED。

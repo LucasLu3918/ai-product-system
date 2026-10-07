@@ -20,7 +20,7 @@ any compatible observability backend
 
 Use `aips telemetry record` to add lifecycle markers to the existing event stream. Only bounded identifiers and allowlisted metadata are accepted. Supported kinds are phase, gate, model, and tool. A started/completed pair produces a duration span. A gate waiting/resumed pair produces a separate wait span; report each wait segment with a distinct operation ID.
 
-For independent review, use a separate review operation and set `--related-operation-id` to the implementation operation. The exporter uses a SpanLink and common AIPS run correlation. It never forwards trace context into a reviewer runtime. Runtime metadata is evidence only: a provider, model, or token count may be recorded only when the adapter genuinely observed it.
+For independent review, use a separate review operation and set `--related-operation-id` to the implementation operation. The exporter uses a SpanLink and common AIPS run correlation. It never forwards trace context into a reviewer runtime. Runtime metadata is evidence only: a provider, model, or token count may be recorded only when the adapter genuinely observed it. Execution Profiles may retain advisory per-run cost budgets with currency and an optional verified price source. Missing usage and prices remain unknown; the system adds no price lookup, inferred provider costs, Gateway, or vendor SDK.
 
 Missing start/end markers, invalid timestamps, unpaired events, malformed records, or unavailable usage data are surfaced as `DEGRADED`; the exporter does not invent duration or token counts. The synthetic `aips.run` span covers only the observed lifecycle interval and is labeled `observed_lifecycle_only`.
 

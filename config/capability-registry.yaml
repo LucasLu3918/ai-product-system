@@ -1,0 +1,884 @@
+version: 1
+purpose: Canonical repository inventory for capability metadata and architecture surfaces. Legacy indexes are deterministic
+  projections.
+surface_policy:
+  capability_accounting: complete
+  validation_binding: scenario_or_repository_validator
+capabilities:
+- id: unified-runtime-path-resolution
+  name_en: Unified Runtime Path Resolution
+  name_zh: 共用執行環境路徑解析
+  surface_id: runtime-context
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/RUNTIME_CONTEXT.md
+  - docs/human/ARCHITECTURE_OVERVIEW.md
+  validation_evidence:
+  - tests/evidence/runtime_context_lifecycle.py
+  - tests/evidence/aips_cli_module_extraction_lifecycle.py
+- id: validation-interpreter-capability-selection
+  name_en: Validation Interpreter Capability Selection
+  name_zh: 驗證直譯器能力選擇
+  surface_id: runtime-context
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/RUNTIME_CONTEXT.md
+  - docs/human/TECHNOLOGY_GUIDE.md
+  validation_evidence:
+  - tests/evidence/runtime_context_lifecycle.py
+  - tests/evidence/aips_cli_module_extraction_lifecycle.py
+- id: runtime-invariant-matrix
+  name_en: Runtime Invariant Matrix
+  name_zh: 執行環境不變條件矩陣
+  surface_id: runtime-context
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/RUNTIME_CONTEXT.md
+  - orchestration/CONFORMANCE.md
+  - docs/human/CONFORMANCE.md
+  validation_evidence:
+  - tests/evidence/runtime_context_lifecycle.py
+  - tests/evidence/aips_cli_module_extraction_lifecycle.py
+- id: turn-aware-global-harness
+  name_en: Turn-Aware Global Harness
+  name_zh: 回合感知全域代理框架
+  surface_id: harness-runtime
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - harness/HARNESS_PROTOCOL.md
+  - orchestration/TURN_HARNESS.md
+  - docs/human/HARNESS.md
+  - harness/PORTABLE_COMMANDS.md
+  validation_evidence:
+  - tests/evidence/harness_runtime_lifecycle.py
+  - tests/evidence/mcp_interoperability_lifecycle.py
+- id: project-intelligence
+  name_en: Project Intelligence
+  name_zh: 專案智慧
+  surface_id: project-intelligence
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/PROJECT_INTELLIGENCE.md
+  - docs/human/PROJECT_INTELLIGENCE.md
+  validation_evidence:
+  - tests/evidence/project_intelligence_lifecycle.py
+  - tests/evidence/change_impact_resolution_lifecycle.py
+- id: canonical-project-identity
+  name_en: Canonical Project Identity
+  name_zh: 標準專案身分識別
+  surface_id: project-intelligence
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/PROJECT_IDENTITY.md
+  validation_evidence:
+  - tests/evidence/project_intelligence_lifecycle.py
+  - tests/evidence/change_impact_resolution_lifecycle.py
+- id: change-impact-guard
+  name_en: Change Impact Guard
+  name_zh: 變更影響防護
+  surface_id: project-intelligence
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/CHANGE_IMPACT.md
+  validation_evidence:
+  - tests/evidence/project_intelligence_lifecycle.py
+  - tests/evidence/change_impact_resolution_lifecycle.py
+- id: enforceable-governance
+  name_en: Enforceable Governance
+  name_zh: 可執行治理
+  surface_id: governance-security
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - core/GOVERNANCE.md
+  - orchestration/SYSTEM_SELF_IMPROVEMENT.md
+  validation_evidence:
+  - tests/evidence/governance_command_guard.py
+  - tests/evidence/repository_governance_snapshot_lifecycle.py
+- id: runtime-policy-enforcement
+  name_en: Runtime Policy Enforcement
+  name_zh: 執行階段政策強制執行
+  surface_id: governance-security
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/RUNTIME_POLICY_ENFORCEMENT.md
+  - orchestration/RESOURCE_AUTHORIZATION.md
+  - orchestration/EXECUTION_ISOLATION.md
+  - docs/human/SECURITY_ASSURANCE.md
+  validation_evidence:
+  - tests/evidence/governance_command_guard.py
+  - tests/evidence/repository_governance_snapshot_lifecycle.py
+- id: durable-run-state
+  name_en: Durable Run State
+  name_zh: 可持久化執行狀態
+  surface_id: project-intelligence
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/RUN_RESUME.md
+  - orchestration/RUN_DASHBOARD.md
+  - orchestration/WORKSPACE_STATE.md
+  validation_evidence:
+  - tests/evidence/project_intelligence_lifecycle.py
+  - tests/evidence/change_impact_resolution_lifecycle.py
+- id: scenario-conformance
+  name_en: Scenario Conformance
+  name_zh: 情境符合性驗證
+  surface_id: scenario-conformance
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/CONFORMANCE.md
+  - docs/human/CONFORMANCE.md
+  - orchestration/TRAJECTORY_EVAL.md
+  validation_evidence:
+  - scripts/scenario_conformance.py
+  - tests/evidence/agent_eval_framework.py
+- id: agent-eval
+  name_en: Agent Evaluation
+  name_zh: 代理評估
+  surface_id: scenario-conformance
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/AGENT_EVAL.md
+  - orchestration/TRAJECTORY_EVAL.md
+  validation_evidence:
+  - scripts/scenario_conformance.py
+  - tests/evidence/agent_eval_framework.py
+- id: execution-isolation
+  name_en: Execution Isolation
+  name_zh: 執行隔離
+  surface_id: harness-runtime
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/EXECUTION_ISOLATION.md
+  validation_evidence:
+  - tests/evidence/harness_runtime_lifecycle.py
+  - tests/evidence/mcp_interoperability_lifecycle.py
+- id: deterministic-automation
+  name_en: Deterministic Automation
+  name_zh: 決定性自動化
+  surface_id: governance-security
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/DETERMINISTIC_AUTOMATION.md
+  validation_evidence:
+  - tests/evidence/governance_command_guard.py
+  - tests/evidence/repository_governance_snapshot_lifecycle.py
+- id: security-assurance
+  name_en: Security Assurance Level
+  name_zh: 安全保證等級
+  surface_id: governance-security
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - docs/human/SECURITY_ASSURANCE.md
+  validation_evidence:
+  - tests/evidence/governance_command_guard.py
+  - tests/evidence/repository_governance_snapshot_lifecycle.py
+- id: secret-handling
+  name_en: Secret Handling
+  name_zh: 機密資訊處理
+  surface_id: governance-security
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/SECRET_HANDLING.md
+  validation_evidence:
+  - tests/evidence/governance_command_guard.py
+  - tests/evidence/repository_governance_snapshot_lifecycle.py
+- id: product-delivery
+  name_en: Product Delivery Lifecycle
+  name_zh: 產品交付生命週期
+  surface_id: product-delivery
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/PRODUCT_DELIVERY.md
+  validation_evidence:
+  - tests/evidence/product_delivery_lifecycle.py
+- id: evolution-radar
+  name_en: Evolution Radar
+  name_zh: 持續演化雷達
+  surface_id: evolution-radar
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR.md
+  validation_evidence:
+  - tests/evidence/evolution_radar_lifecycle.py
+  - tests/evidence/module_extraction_lifecycle.py
+- id: documentation-consistency
+  name_en: Documentation Consistency Contract
+  name_zh: 文件一致性契約
+  surface_id: documentation-consistency
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/DOCUMENTATION_SYNC.md
+  - docs/human/DOCUMENTATION_SYNC.md
+  validation_evidence:
+  - tests/validation/documentation_sync_contracts.py
+  - tests/validation/documentation_placement_contracts.py
+- id: controlled-evolution-trial
+  name_en: Controlled Evolution Trial
+  name_zh: 受控演化實驗
+  surface_id: evolution-radar
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/EVOLUTION_RADAR.md
+  - orchestration/EXECUTION_ISOLATION.md
+  - docs/human/EVOLUTION_RADAR.md
+  validation_evidence:
+  - tests/evidence/evolution_radar_lifecycle.py
+  - tests/evidence/module_extraction_lifecycle.py
+- id: human-documentation-namespace
+  name_en: Human Documentation Namespace
+  name_zh: 人類文件命名空間
+  surface_id: documentation-consistency
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/DOCUMENTATION_SYNC.md
+  - docs/human/DOCUMENTATION_SYNC.md
+  - docs/human/DOCUMENTATION_MAP.md
+  validation_evidence:
+  - tests/validation/documentation_sync_contracts.py
+  - tests/validation/documentation_placement_contracts.py
+- id: trial-adoption-binding
+  name_en: Trial-to-ADOPT Evidence Binding
+  name_zh: 實驗採用證據綁定
+  surface_id: evolution-radar
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR.md
+  validation_evidence:
+  - tests/evidence/evolution_radar_lifecycle.py
+  - tests/evidence/module_extraction_lifecycle.py
+- id: resource-authorization
+  name_en: Resource-Scoped Agent Authorization
+  name_zh: 資源範圍代理授權
+  surface_id: harness-runtime
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/RESOURCE_AUTHORIZATION.md
+  - orchestration/EXECUTION_ISOLATION.md
+  - docs/human/ARCHITECTURE_OVERVIEW.md
+  - docs/human/USER_GUIDE.md
+  validation_evidence:
+  - tests/evidence/harness_runtime_lifecycle.py
+  - tests/evidence/mcp_interoperability_lifecycle.py
+- id: agent-anomaly-evaluation
+  name_en: Agent Anomaly Evidence Evaluation
+  name_zh: 代理異常證據評估
+  surface_id: evolution-radar
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/AGENT_ANOMALY_EVALUATION.md
+  - orchestration/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR.md
+  validation_evidence:
+  - tests/evidence/evolution_radar_lifecycle.py
+  - tests/evidence/module_extraction_lifecycle.py
+- id: agent-observable-event-trial-evidence
+  name_en: Observable-Event Integration Trial Evidence
+  name_zh: 可觀測事件整合實驗證據
+  surface_id: evolution-radar
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/AGENT_ANOMALY_EVALUATION.md
+  - orchestration/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR.md
+  validation_evidence:
+  - tests/evidence/evolution_radar_lifecycle.py
+  - tests/evidence/module_extraction_lifecycle.py
+- id: gemini-cli-observable-event-capture-trial
+  name_en: Gemini CLI Observable-Event Capture Trial
+  name_zh: Gemini CLI 可觀測事件捕捉實驗
+  surface_id: harness-runtime
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - harness/adapters/gemini-cli/GEMINI.md
+  - orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md
+  - docs/human/EVOLUTION_RADAR.md
+  validation_evidence:
+  - tests/evidence/harness_runtime_lifecycle.py
+  - tests/evidence/mcp_interoperability_lifecycle.py
+- id: gemini-cli-real-runtime-verification
+  name_en: Gemini CLI Real-Runtime Verification
+  name_zh: Gemini CLI 真實執行階段驗證
+  surface_id: harness-runtime
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md
+  - harness/adapters/gemini-cli/GEMINI.md
+  - docs/human/HARNESS.md
+  validation_evidence:
+  - tests/evidence/harness_runtime_lifecycle.py
+  - tests/evidence/mcp_interoperability_lifecycle.py
+- id: external-credential-dependency-guard
+  name_en: External Credential Dependency Guard
+  name_zh: 外部憑證依賴防護
+  surface_id: governance-security
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/EXTERNAL_CREDENTIAL_DEPENDENCY_GUARD.md
+  - orchestration/SECRET_HANDLING.md
+  - docs/human/SECURITY_ASSURANCE.md
+  validation_evidence:
+  - tests/evidence/governance_command_guard.py
+  - tests/evidence/repository_governance_snapshot_lifecycle.py
+- id: evolution-local-deterministic-preanalysis
+  name_en: Evolution Local Deterministic Pre-analysis
+  name_zh: 演化雷達本機決定性預分析
+  surface_id: evolution-radar
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR_OVERVIEW.html
+  validation_evidence:
+  - tests/evidence/evolution_radar_lifecycle.py
+  - tests/evidence/module_extraction_lifecycle.py
+- id: integration-gate
+  name_en: Exact-Candidate Integration Gate
+  name_zh: 精確候選整合閘門
+  surface_id: integration-gate
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/INTEGRATION_GATE.md
+  - docs/human/ARCHITECTURE_OVERVIEW.md
+  validation_evidence:
+  - tests/evidence/integration_gate_lifecycle.py
+  - tests/evidence/publish_preflight_lifecycle.py
+- id: repository-health-architecture-drift
+  name_en: Repository Health / Architecture Drift
+  name_zh: 儲存庫健康與架構漂移偵測
+  surface_id: repository-health
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/REPOSITORY_HEALTH.md
+  - docs/ARCHITECTURE.md
+  - docs/human/MAINTENANCE.md
+  validation_evidence:
+  - tests/evidence/repository_health_lifecycle.py
+  - tests/validation/repository_health_contracts.py
+- id: model-routing
+  name_en: Model Routing
+  name_zh: 模型路由
+  surface_id: runtime-context
+  maturity: DOCUMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/MODEL_ROUTING.md
+  validation_evidence:
+  - tests/scenarios/224-runtime-preferred-primary-model.md
+- id: planning-package
+  name_en: Planning Package
+  name_zh: 規劃套件
+  surface_id: project-intelligence
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/PLANNING_PACKAGE.md
+  validation_evidence:
+  - tests/evidence/planning_package_lifecycle.py
+- id: implementation-resolution
+  name_en: Implementation Resolution
+  name_zh: 實作解析
+  surface_id: project-intelligence
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/IMPLEMENTATION_RESOLUTION.md
+  validation_evidence:
+  - tests/evidence/implementation_resolution_lifecycle.py
+- id: telemetry-export
+  name_en: Telemetry Export
+  name_zh: 遙測匯出
+  surface_id: evolution-radar
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/TELEMETRY_EXPORT.md
+  validation_evidence:
+  - tests/evidence/telemetry_export_lifecycle.py
+- id: deterministic-scheduler
+  name_en: Deterministic Scheduler
+  name_zh: 決定性排程器
+  surface_id: harness-runtime
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/DETERMINISTIC_SCHEDULER.md
+  validation_evidence:
+  - tests/evidence/deterministic_scheduler_lifecycle.py
+- id: release-channel
+  name_en: Release Channel Readiness
+  name_zh: 發布通道就緒度
+  surface_id: product-delivery
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/RELEASE_READINESS.md
+  validation_evidence:
+  - tests/evidence/release_channel_lifecycle.py
+- id: branch-hygiene
+  name_en: Branch Hygiene Evidence
+  name_zh: 分支衛生證據
+  surface_id: product-delivery
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - docs/human/MAINTENANCE.md
+  validation_evidence:
+  - tests/evidence/branch_hygiene_lifecycle.py
+- id: quality-ratchet
+  name_en: Progressive Quality Ratchet
+  name_zh: 漸進式品質門檻
+  surface_id: scenario-conformance
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/QUALITY_PLANNING.md
+  validation_evidence:
+  - tests/evidence/quality_ratchet_lifecycle.py
+- id: skill-registry
+  name_en: Skill Registry
+  name_zh: 技能登錄表
+  surface_id: harness-runtime
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - AGENTS.md
+  validation_evidence:
+  - tests/evidence/skill_index_lifecycle.py
+- id: mcp-gateway
+  name_en: MCP Interoperability Gateway
+  name_zh: MCP 互通閘道
+  surface_id: harness-runtime
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - harness/MCP_GATEWAY.md
+  validation_evidence:
+  - tests/evidence/mcp_interoperability_lifecycle.py
+- id: codex-native-hooks
+  name_en: Codex Native PreToolUse Hook Probe
+  name_zh: Codex 原生工具前置 Hook 探針
+  surface_id: harness-runtime
+  maturity: EXPERIMENTAL
+  runtime_support: ADVISORY
+  docs:
+  - harness/adapters/codex/hooks/README.md
+  validation_evidence:
+  - tests/evidence/codex_hooks_lifecycle.py
+  - tests/validation/codex_hooks_contracts.py
+- id: agent-eval-freshness
+  name_en: Change-aware Agent Eval Freshness
+  name_zh: 依變更選取代理評估新鮮度
+  surface_id: scenario-conformance
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/AGENT_EVAL.md
+  - tests/scenarios/229-agent-eval-freshness.md
+  validation_evidence:
+  - tests/evidence/agent_eval_freshness_lifecycle.py
+  - tests/validation/agent_eval_freshness_contracts.py
+- id: provider-neutral-cost-budgets
+  name_en: Provider-neutral Advisory Cost Budgets
+  name_zh: 供應者中立的建議成本預算
+  surface_id: evolution-radar
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/MODEL_ROUTING.md
+  - orchestration/schemas/execution-profile.yaml
+  - orchestration/schemas/telemetry-export.yaml
+  validation_evidence:
+  - tests/evidence/telemetry_export_lifecycle.py
+  - tests/validation/telemetry_export_contracts.py
+- id: evolution-effectiveness
+  name_en: Evolution Radar Effectiveness Evidence
+  name_zh: 演化雷達效能證據
+  surface_id: evolution-radar
+  maturity: IMPLEMENTED
+  runtime_support: NOT_ASSESSED
+  docs:
+  - orchestration/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR.md
+  validation_evidence:
+  - tests/evidence/evolution_effectiveness_lifecycle.py
+  - tests/validation/evolution_effectiveness_contracts.py
+surfaces:
+- id: runtime-context
+  capabilities:
+  - unified-runtime-path-resolution
+  - validation-interpreter-capability-selection
+  - runtime-invariant-matrix
+  - model-routing
+  required_paths:
+  - scripts/runtime_context.py
+  - scripts/runtime_cache.py
+  - scripts/runtime_invariant_matrix.py
+  - config/runtime-invariants.yaml
+  - orchestration/RUNTIME_CONTEXT.md
+  - templates/runtime/RUNTIME_CONTEXT.yaml
+  - bin/aips
+  - scripts/aips_cli.sh
+  - scripts/aips_cli/help.sh
+  - scripts/aips_cli/runtime.sh
+  - scripts/aips_cli/harness.sh
+  - scripts/aips_cli/commands.sh
+  - scripts/aips_cli/project.sh
+  - scripts/aips_cli/shell.sh
+  - scripts/aips_cli/installation.sh
+  - scripts/aips_cli/maintenance.sh
+  - scripts/aips_cli/dispatch.sh
+  - bin/prepare-local-validation
+  - config/integration-gate.yaml
+  - tests/scenarios/198-runtime-context-invariant-matrix.md
+  - orchestration/MODEL_ROUTING.md
+  canonical_docs:
+  - orchestration/RUNTIME_CONTEXT.md
+  - orchestration/MODEL_ROUTING.md
+  validation_paths:
+  - tests/evidence/runtime_context_lifecycle.py
+  - tests/evidence/aips_cli_module_extraction_lifecycle.py
+  - scripts/runtime_invariant_matrix.py
+  - tests/validate_repository.py
+  - tests/scenarios/224-runtime-preferred-primary-model.md
+- id: harness-runtime
+  capabilities:
+  - turn-aware-global-harness
+  - execution-isolation
+  - resource-authorization
+  - gemini-cli-observable-event-capture-trial
+  - gemini-cli-real-runtime-verification
+  - deterministic-scheduler
+  - skill-registry
+  - mcp-gateway
+  - codex-native-hooks
+  required_paths:
+  - harness/HARNESS_PROTOCOL.md
+  - harness/MCP_GATEWAY.md
+  - harness/PORTABLE_COMMANDS.md
+  - harness/commands/REGISTRY.yaml
+  - scripts/harness_resolve.py
+  - scripts/mcp_server.py
+  - scripts/execution_isolation.py
+  - scripts/sandbox_providers.py
+  - scripts/e2b_sandbox_verification.py
+  - config/sandbox-providers.yaml
+  - requirements-sandbox.txt
+  - .github/workflows/e2b-sandbox-verification.yml
+  - scripts/portable_commands.py
+  - orchestration/EXECUTION_ISOLATION.md
+  - orchestration/RESOURCE_AUTHORIZATION.md
+  - orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md
+  - scripts/deterministic_scheduler.py
+  - orchestration/DETERMINISTIC_SCHEDULER.md
+  - scripts/skill_index.py
+  - AGENTS.md
+  - harness/adapters/codex/hooks/hooks.json
+  - harness/adapters/codex/hooks/pre_tool_use_policy.py
+  - harness/adapters/codex/hooks/README.md
+  canonical_docs:
+  - harness/HARNESS_PROTOCOL.md
+  - orchestration/EXECUTION_ISOLATION.md
+  - orchestration/RESOURCE_AUTHORIZATION.md
+  - orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md
+  - harness/PORTABLE_COMMANDS.md
+  - orchestration/DETERMINISTIC_SCHEDULER.md
+  - AGENTS.md
+  - harness/MCP_GATEWAY.md
+  validation_paths:
+  - tests/evidence/harness_runtime_lifecycle.py
+  - tests/evidence/mcp_interoperability_lifecycle.py
+  - tests/evidence/resource_authorization_lifecycle.py
+  - tests/evidence/runtime_port_isolation_lifecycle.py
+  - tests/validation/conformance_isolation.py
+  - tests/evidence/deterministic_scheduler_lifecycle.py
+  - tests/evidence/skill_index_lifecycle.py
+  - tests/evidence/codex_hooks_lifecycle.py
+  - tests/validation/codex_hooks_contracts.py
+- id: project-intelligence
+  capabilities:
+  - project-intelligence
+  - canonical-project-identity
+  - change-impact-guard
+  - durable-run-state
+  - planning-package
+  - implementation-resolution
+  required_paths:
+  - scripts/project_intelligence.py
+  - scripts/project_intelligence_promotion.py
+  - scripts/project_intelligence_temporal.py
+  - scripts/retrieval_intelligence.py
+  - scripts/retrieval_relations.py
+  - orchestration/PROJECT_INTELLIGENCE.md
+  - orchestration/PROJECT_IDENTITY.md
+  - orchestration/CHANGE_IMPACT.md
+  - orchestration/RUN_RESUME.md
+  - orchestration/RUN_DASHBOARD.md
+  - scripts/run_state.py
+  - scripts/run_projection.py
+  - scripts/run_dashboard.py
+  - tests/evidence/change_impact_resolution_lifecycle.py
+  - tests/evidence/retrieval_relations_extraction_lifecycle.py
+  - tests/validation/change_impact_resolution_contracts.py
+  - tests/validation/conformance_isolation.py
+  - tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md
+  - scripts/planning_package_validate.py
+  - orchestration/PLANNING_PACKAGE.md
+  - scripts/implementation_profile_validate.py
+  - orchestration/IMPLEMENTATION_RESOLUTION.md
+  canonical_docs:
+  - orchestration/PROJECT_INTELLIGENCE.md
+  - orchestration/PROJECT_IDENTITY.md
+  - orchestration/CHANGE_IMPACT.md
+  - orchestration/RUN_RESUME.md
+  - orchestration/RUN_DASHBOARD.md
+  - orchestration/PLANNING_PACKAGE.md
+  - orchestration/IMPLEMENTATION_RESOLUTION.md
+  validation_paths:
+  - tests/evidence/project_intelligence_lifecycle.py
+  - tests/evidence/change_impact_resolution_lifecycle.py
+  - tests/evidence/module_extraction_lifecycle.py
+  - tests/validation/change_impact_resolution_contracts.py
+  - tests/validation/conformance_isolation.py
+  - tests/evidence/identity_resume_isolation.py
+  - tests/evidence/run_dashboard_lifecycle.py
+  - tests/evidence/planning_package_lifecycle.py
+  - tests/evidence/implementation_resolution_lifecycle.py
+- id: governance-security
+  capabilities:
+  - enforceable-governance
+  - runtime-policy-enforcement
+  - deterministic-automation
+  - security-assurance
+  - secret-handling
+  - external-credential-dependency-guard
+  required_paths:
+  - scripts/governance_guard.py
+  - scripts/repository_governance_snapshot.py
+  - scripts/runtime_policy.py
+  - scripts/semantic_guard.py
+  - scripts/governance_audit.py
+  - scripts/governance_audit_retention.py
+  - config/governance-audit-retention.yaml
+  - templates/governance/AUDIT_CATALOG_ENTRY.yaml
+  - core/GOVERNANCE.md
+  - orchestration/GOVERNANCE_AUDIT.md
+  - orchestration/RUNTIME_POLICY_ENFORCEMENT.md
+  - orchestration/DETERMINISTIC_AUTOMATION.md
+  - docs/human/SECURITY_ASSURANCE.md
+  - orchestration/SECRET_HANDLING.md
+  - scripts/external_credential_guard.py
+  - config/external-credentials.yaml
+  - .github/workflows/e2b-sandbox-verification.yml
+  - orchestration/EXTERNAL_CREDENTIAL_DEPENDENCY_GUARD.md
+  canonical_docs:
+  - core/GOVERNANCE.md
+  - orchestration/DETERMINISTIC_AUTOMATION.md
+  - docs/human/SECURITY_ASSURANCE.md
+  - orchestration/SECRET_HANDLING.md
+  - orchestration/EXTERNAL_CREDENTIAL_DEPENDENCY_GUARD.md
+  validation_paths:
+  - tests/evidence/governance_command_guard.py
+  - tests/evidence/repository_governance_snapshot_lifecycle.py
+  - tests/test_runtime_policy.py
+  - tests/evidence/runtime_policy_lifecycle.py
+  - tests/evidence/governance_audit_lifecycle.py
+  - tests/evidence/governance_audit_retention_lifecycle.py
+  - tests/evidence/external_credential_guard_lifecycle.py
+- id: scenario-conformance
+  capabilities:
+  - scenario-conformance
+  - agent-eval
+  - quality-ratchet
+  - agent-eval-freshness
+  required_paths:
+  - scripts/scenario_conformance.py
+  - scripts/agent_eval.py
+  - scripts/eval_interop.py
+  - scripts/trajectory_eval.py
+  - tests/scenario_coverage.yaml
+  - config/eval-profiles.yaml
+  - orchestration/EVAL_INTEROPERABILITY.md
+  - orchestration/schemas/external-eval-evidence.yaml
+  - orchestration/schemas/eval-profile.yaml
+  - orchestration/schemas/red-team-finding.yaml
+  - orchestration/CONFORMANCE.md
+  - orchestration/AGENT_EVAL.md
+  - orchestration/EVAL_INTEROPERABILITY.md
+  - orchestration/TRAJECTORY_EVAL.md
+  - docs/ARCHITECTURE.md
+  - docs/human/assets/system-overview.svg
+  - scripts/quality_ratchet.py
+  - orchestration/QUALITY_PLANNING.md
+  - config/eval-freshness.yaml
+  - scripts/agent_eval_freshness.py
+  - tests/scenarios/229-agent-eval-freshness.md
+  canonical_docs:
+  - orchestration/CONFORMANCE.md
+  - orchestration/AGENT_EVAL.md
+  - orchestration/TRAJECTORY_EVAL.md
+  - orchestration/QUALITY_PLANNING.md
+  - tests/scenarios/229-agent-eval-freshness.md
+  validation_paths:
+  - scripts/scenario_conformance.py
+  - tests/evidence/agent_eval_framework.py
+  - tests/test_eval_interop.py
+  - tests/evidence/eval_interop_lifecycle.py
+  - tests/validation/eval_interop_contracts.py
+  - tests/evidence/trajectory_quality_gate_lifecycle.py
+  - tests/evidence/quality_ratchet_lifecycle.py
+  - tests/evidence/agent_eval_freshness_lifecycle.py
+  - tests/validation/agent_eval_freshness_contracts.py
+- id: product-delivery
+  capabilities:
+  - product-delivery
+  - release-channel
+  - branch-hygiene
+  required_paths:
+  - orchestration/PRODUCT_DELIVERY.md
+  - tests/evidence/product_delivery_lifecycle.py
+  - scripts/release_channel.py
+  - orchestration/RELEASE_READINESS.md
+  - scripts/branch_hygiene.py
+  - docs/human/MAINTENANCE.md
+  canonical_docs:
+  - orchestration/PRODUCT_DELIVERY.md
+  - orchestration/RELEASE_READINESS.md
+  - docs/human/MAINTENANCE.md
+  validation_paths:
+  - tests/evidence/product_delivery_lifecycle.py
+  - tests/evidence/release_channel_lifecycle.py
+  - tests/evidence/branch_hygiene_lifecycle.py
+- id: evolution-radar
+  capabilities:
+  - evolution-radar
+  - controlled-evolution-trial
+  - trial-adoption-binding
+  - agent-anomaly-evaluation
+  - agent-observable-event-trial-evidence
+  - evolution-local-deterministic-preanalysis
+  - telemetry-export
+  - provider-neutral-cost-budgets
+  - evolution-effectiveness
+  required_paths:
+  - scripts/evolution_radar.py
+  - scripts/evolution_analysis.py
+  - scripts/evolution_preanalysis.py
+  - scripts/evolution_trial.py
+  - scripts/evolution_adoption.py
+  - scripts/evolution_effectiveness.py
+  - config/evolution-effectiveness.yaml
+  - .github/workflows/evolution-effectiveness.yml
+  - orchestration/EVOLUTION_RADAR.md
+  - orchestration/AGENT_ANOMALY_EVALUATION.md
+  - docs/human/EVOLUTION_RADAR.md
+  - scripts/telemetry_export.py
+  - orchestration/TELEMETRY_EXPORT.md
+  - scripts/telemetry_record.py
+  - scripts/telemetry_projection.py
+  - config/telemetry-export.yaml
+  - scripts/evolution_radar_rollup.py
+  - .aips/review/PLAN19_EVOLUTION_EFFECTIVENESS.yaml
+  canonical_docs:
+  - orchestration/EVOLUTION_RADAR.md
+  - orchestration/AGENT_ANOMALY_EVALUATION.md
+  - docs/human/EVOLUTION_RADAR.md
+  - orchestration/TELEMETRY_EXPORT.md
+  validation_paths:
+  - tests/evidence/evolution_radar_lifecycle.py
+  - tests/evidence/module_extraction_lifecycle.py
+  - tests/evidence/evolution_governance_lifecycle.py
+  - tests/evidence/evolution_effectiveness_lifecycle.py
+  - tests/validation/evolution_effectiveness_contracts.py
+  - tests/evidence/telemetry_export_lifecycle.py
+  - tests/validation/telemetry_export_contracts.py
+- id: documentation-consistency
+  capabilities:
+  - documentation-consistency
+  - human-documentation-namespace
+  required_paths:
+  - scripts/documentation_sync.py
+  - scripts/documentation_placement.py
+  - config/documentation-sync.yaml
+  - config/documentation-placement.yaml
+  - docs/human/.vitepress/config.mts
+  - orchestration/DOCUMENTATION_SYNC.md
+  - docs/human/DOCUMENTATION_SYNC.md
+  canonical_docs:
+  - orchestration/DOCUMENTATION_SYNC.md
+  - docs/human/DOCUMENTATION_SYNC.md
+  validation_paths:
+  - tests/validation/documentation_sync_contracts.py
+  - tests/validation/documentation_placement_contracts.py
+- id: integration-gate
+  capabilities:
+  - integration-gate
+  required_paths:
+  - scripts/integration_gate.py
+  - scripts/publish_preflight.py
+  - scripts/publish_post_merge.py
+  - scripts/publish_preflight_policy.py
+  - scripts/repository_preflight.py
+  - config/integration-gate.yaml
+  - orchestration/INTEGRATION_GATE.md
+  - .github/workflows/validate.yml
+  canonical_docs:
+  - orchestration/INTEGRATION_GATE.md
+  validation_paths:
+  - tests/evidence/integration_gate_lifecycle.py
+  - tests/evidence/publish_preflight_lifecycle.py
+  - tests/evidence/module_extraction_lifecycle.py
+  - tests/validation/publish_preflight_contracts.py
+  - tests/evidence/validator_registry_lifecycle.py
+- id: repository-health
+  capabilities:
+  - repository-health-architecture-drift
+  required_paths:
+  - scripts/repository_health.py
+  - config/repository-health.yaml
+  - config/architecture-surfaces.yaml
+  - orchestration/REPOSITORY_HEALTH.md
+  - docs/ARCHITECTURE.md
+  - docs/human/MAINTENANCE.md
+  - .github/workflows/repository-health.yml
+  - config/capability-registry.yaml
+  - scripts/capability_registry.py
+  canonical_docs:
+  - orchestration/REPOSITORY_HEALTH.md
+  - docs/ARCHITECTURE.md
+  - docs/human/MAINTENANCE.md
+  validation_paths:
+  - tests/evidence/repository_health_lifecycle.py
+  - tests/validation/repository_health_contracts.py

@@ -74,7 +74,6 @@ rules:
   - id: system-facts
     triggers:
       - config/system-facts.yaml
-      - config/architecture-surfaces.yaml
       - scripts/system_facts.py
       - tests/validation/system_facts_contracts.py
       - tests/evidence/system_facts_lifecycle.py
@@ -87,6 +86,22 @@ rules:
       - docs/human/TECHNOLOGY_GUIDE.md
     agent_docs:
       - orchestration/CONFORMANCE.md
+
+  - id: capability-registry
+    triggers:
+      - config/capability-registry.yaml
+      - config/architecture-surfaces.yaml
+      - references/evolution/CAPABILITY_MAP.yaml
+      - scripts/capability_registry.py
+      - scripts/repository_health.py
+      - tests/validation/repository_health_contracts.py
+      - tests/evidence/repository_health_lifecycle.py
+    human_docs:
+      - docs/human/SYSTEM_REFERENCE.md
+      - docs/human/ARCHITECTURE_OVERVIEW.md
+      - docs/human/MAINTENANCE.md
+    agent_docs:
+      - orchestration/REPOSITORY_HEALTH.md
 
   - id: evolution-radar
     triggers:
@@ -102,7 +117,7 @@ rules:
       - config/evolution-analyzer.yaml
       - config/evolution-trial.yaml
       - config/evolution-effectiveness.yaml
-      - references/evolution/**
+      - references/evolution/ISSUE_79_*.yaml
       - templates/evolution/**
       - .github/workflows/evolution-radar.yml
       - .github/workflows/evolution-decision.yml
@@ -133,7 +148,7 @@ rules:
     human_docs: [docs/human/HARNESS.md]
     agent_docs: [harness/HARNESS_PROTOCOL.md]
   - id: project-intelligence
-    triggers: [scripts/project_intelligence.py, scripts/project_intelligence_promotion.py, scripts/project_intelligence_temporal.py, scripts/retrieval_intelligence.py, scripts/retrieval_relations.py, scripts/retrieval_storage.py, scripts/retrieval_evaluation.py, scripts/structural_retrieval_trial.py, scripts/retrieval_embedding_trial.py, scripts/retrieval_embedding_trial_summary.py, tests/evidence/retrieval_relations_extraction_lifecycle.py, scripts/turn_context_hook.py, config/retrieval-embedding-trial.yaml, requirements-semantic-trial.txt, templates/intelligence/**, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, .github/workflows/retrieval-semantic-trial.yml]
+    triggers: [scripts/project_intelligence.py, scripts/project_intelligence_storage.py, scripts/project_intelligence_promotion.py, scripts/project_intelligence_temporal.py, scripts/retrieval_intelligence.py, scripts/retrieval_relations.py, scripts/retrieval_storage.py, scripts/retrieval_evaluation.py, scripts/structural_retrieval_trial.py, scripts/retrieval_embedding_trial.py, scripts/retrieval_embedding_trial_summary.py, tests/evidence/retrieval_relations_extraction_lifecycle.py, scripts/turn_context_hook.py, config/retrieval-embedding-trial.yaml, requirements-semantic-trial.txt, templates/intelligence/**, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, .github/workflows/retrieval-semantic-trial.yml]
     human_docs: [docs/human/PROJECT_INTELLIGENCE.md, docs/human/ARCHITECTURE_OVERVIEW.md, docs/human/TECHNOLOGY_GUIDE.md, docs/human/CONFORMANCE.md]
     agent_docs: [orchestration/PROJECT_INTELLIGENCE.md, orchestration/CHANGE_IMPACT.md]
   - id: repository-governance-snapshot
@@ -148,7 +163,6 @@ rules:
       - scripts/execution_isolation.py
       - scripts/sandbox_providers.py
       - scripts/e2b_sandbox_verification.py
-      - orchestration/schemas/execution-profile.yaml
       - config/sandbox-providers.yaml
       - config/external-credentials.yaml
       - requirements-sandbox.txt
@@ -184,7 +198,6 @@ rules:
       - .github/workflows/validate.yml
       - config/integration-gate.yaml
       - tests/evidence/publish_preflight_lifecycle.py
-      - tests/evidence/module_extraction_lifecycle.py
       - tests/validation/publish_preflight_contracts.py
     human_docs:
       - docs/human/MAINTENANCE.md
@@ -200,7 +213,6 @@ rules:
       - scripts/resource_authorization.py
       - orchestration/RESOURCE_AUTHORIZATION.md
       - orchestration/schemas/resource-authorization-profile.yaml
-      - orchestration/schemas/execution-profile.yaml
       - templates/automation/RESOURCE_AUTHORIZATION_PROFILE.yaml
       - tests/validation/resource_authorization_contracts.py
     human_docs:

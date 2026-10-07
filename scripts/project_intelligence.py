@@ -13,8 +13,6 @@ import re
 import shutil
 import subprocess
 import sys
-import tempfile
-from collections.abc import Iterator
 from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
@@ -34,6 +32,7 @@ from git_paths import GitPathsError, run_git_paths
 from observed_stage import observed_stage
 from project_intelligence_promotion import promotion_candidate as _promotion_candidate
 from project_intelligence_promotion import promotion_target as _promotion_target_impl
+from project_intelligence_storage import atomic_text, atomic_yaml, writer_lock
 from project_intelligence_temporal import temporal_query
 from retrieval_evaluation import (
     evaluate_suite as retrieval_evaluate_suite,
@@ -199,41 +198,6 @@ def load_yaml(path: Path, default: Any) -> Any:
         return default
     with path.open("r", encoding="utf-8") as f:
         return yaml.safe_load(f) or default
-
-
-def atomic_text(path: Path, text: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fd, temp_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=str(path.parent))
-    try:
-        with os.fdopen(fd, "w", encoding="utf-8") as f:
-            f.write(text)
-            f.flush()
-            os.fsync(f.fileno())
-        os.replace(temp_name, path)
-    finally:
-        with contextlib.suppress(FileNotFoundError):
-            os.unlink(temp_name)
-
-
-def atomic_yaml(path: Path, data: Any) -> None:
-    atomic_text(path, yaml.safe_dump(data, sort_keys=False, allow_unicode=True))
-
-
-@contextlib.contextmanager
-def writer_lock(store: Path) -> Iterator[None]:
-    store.mkdir(parents=True, exist_ok=True)
-    lock = store / ".writer.lock"
-    try:
-        fd = os.open(lock, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-    except FileExistsError:
-        raise RuntimeError(f"Project Intelligence writer lock is active: {lock}")
-    try:
-        os.write(fd, f"pid={os.getpid()}\ncreated_at={utc_now()}\n".encode())
-        os.close(fd)
-        yield
-    finally:
-        with contextlib.suppress(FileNotFoundError):
-            lock.unlink()
 
 
 def rel(root: Path, path: Path) -> str:
@@ -1470,9 +1434,7 @@ def topic_is_complete(store: Path, name: str, topic: Any) -> bool:
         return False
     if topic.get("type") != "FACT" and topic.get("confidence") not in {"low", "medium", "high"}:
         return False
-    if not topic.get("evidence"):
-        return False
-    return True
+    return bool(topic.get("evidence"))
 
 
 def finalize(root: Path) -> dict[str, Any]:

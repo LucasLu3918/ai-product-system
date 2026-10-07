@@ -16,6 +16,18 @@ budget:
   reasoning: low | medium | high
   max_parallel_subagents: 1
   prefer_cost_efficient: true
+  cost:
+    amount: null
+    currency: null
+    period: per_run
+    enforcement: advisory
+    price_source: null
+observed_usage:
+  input_tokens: null
+  output_tokens: null
+  source: runtime_observed | unavailable
+  confidence: observed | estimated | unknown
+  cost_status: unknown
 isolation:
   mode: shared | worktree | sandbox
   required: false

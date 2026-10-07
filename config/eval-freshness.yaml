@@ -1,0 +1,68 @@
+version: 1
+case_dir: tests/agent_eval/cases
+result_dir: tests/agent_eval/results
+base_ref: origin/main
+manual_scenarios: ["192", "193", "224"]
+authority:
+  automatic_case_execution: false
+  automatic_case_or_result_mutation: false
+behaviors:
+  - id: core-change-governance
+    path_patterns:
+      - config/capability-registry.yaml
+      - config/architecture-surfaces.yaml
+      - scripts/capability_registry.py
+      - scripts/repository_health.py
+      - scripts/project_intelligence.py
+      - scripts/project_intelligence_storage.py
+      - orchestration/CHANGE_IMPACT.md
+      - core/GOVERNANCE.md
+      - SYSTEM.md
+      - AGENTS.md
+    case_ids: [009-capability-gap, 017-core-change-approval, 019-system-self-improvement, 052-project-intelligence-discovery, 084-change-impact-before-mutation, 092-core-change-impact-test-matrix, 093-core-change-scope-expansion-retests]
+  - id: runtime-security-and-hooks
+    path_patterns:
+      - harness/adapters/codex/hooks/**
+      - harness/adapters/REGISTRY.yaml
+      - harness/adapters/codex/AGENTS.md
+      - orchestration/RUNTIME_POLICY_ENFORCEMENT.md
+    case_ids: [015-low-impact-frontend-security, 030-security-design-and-release]
+  - id: quality-planning
+    path_patterns:
+      - config/quality-ratchet.yaml
+      - scripts/quality_ratchet.py
+      - orchestration/QUALITY_PLANNING.md
+    case_ids: [045-quality-class-baseline, 046-quality-target-derivation]
+  - id: release-readiness
+    path_patterns:
+      - scripts/release_channel.py
+      - scripts/check_release_readiness.py
+      - scripts/version_tag_policy.py
+      - scripts/publish_preflight.py
+      - orchestration/RELEASE_READINESS.md
+      - .github/workflows/release-readiness.yml
+    case_ids: [018-git-publish-approval, 031-release-readiness-blocks-production, 091-secret-exposure-release-block]
+  - id: telemetry-cost
+    path_patterns:
+      - orchestration/schemas/execution-profile.yaml
+      - orchestration/schemas/telemetry-export.yaml
+      - config/telemetry-export.yaml
+      - scripts/telemetry_record.py
+      - scripts/telemetry_projection.py
+      - scripts/telemetry_export.py
+      - orchestration/MODEL_ROUTING.md
+    case_ids: [006-infrastructure-cost, 049-observability-before-vendor]
+  - id: branch-reconciliation
+    path_patterns:
+      - config/branch-cleanup-manifest.yaml
+      - scripts/branch_hygiene.py
+      - orchestration/BRANCH_HYGIENE.md
+      - .github/workflows/branch-hygiene.yml
+    case_ids: [018-git-publish-approval, 093-core-change-scope-expansion-retests]
+  - id: evolution-effectiveness
+    path_patterns:
+      - scripts/evolution_effectiveness.py
+      - scripts/evolution_radar_rollup.py
+      - config/evolution-effectiveness.yaml
+      - orchestration/EVOLUTION_RADAR.md
+    case_ids: [009-capability-gap, 043-review-learning-feedback]

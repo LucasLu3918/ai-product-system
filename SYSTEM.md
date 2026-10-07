@@ -43,6 +43,10 @@ Agent Session / User Request
 
 For required independent reviews, use a fresh read-only reviewer execution over an allowlisted, fingerprinted evidence packet. `SELF_CHECK` is not independent review; unavailable runtime evidence stays `UNVERIFIED` and cannot pass a required review.
 
+## Architecture and runtime evidence
+
+`config/capability-registry.yaml` is canonical for capability metadata and major architecture surfaces; deterministic generation preserves the v1 Capability Map and surface-inventory consumer formats. Codex native hooks are a narrow experimental capability and do not upgrade overall governance beyond `ADVISORY`. Advisory quality, usage/cost, Eval freshness, release readiness, branch reconciliation and Evolution Effectiveness reports do not create approval, merge, release or deletion authority.
+
 ## System Update Preflight
 
 Before any **mutating implementation session**, run:

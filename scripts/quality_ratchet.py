@@ -140,6 +140,14 @@ def main() -> int:
     count = len(findings)
     report = summarize(findings)
     if args.command == "report":
+        coverage = config.get("coverage") or {}
+        report["coverage"] = {
+            "policy": coverage.get("policy", "report_only"),
+            "branch_measurement": coverage.get("branch_measurement", True),
+            "minimum_percent": coverage.get("minimum_percent"),
+            "module_baselines": coverage.get("module_baselines") or {},
+            "baseline_scope": "report_only_not_a_repository_wide_threshold",
+        }
         print(json.dumps(report, indent=2, sort_keys=True))
         return 0
     print(f"Ruff findings: {count}; allowed baseline: {baseline}; auto-fixable: {report['fixable']}; manual: {report['manual']}")

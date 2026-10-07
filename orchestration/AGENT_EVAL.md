@@ -1,5 +1,9 @@
 # Agent Eval Conformance
 
+## Change-aware freshness selection
+
+`config/eval-freshness.yaml` links behavior IDs and affected source-path patterns to stable Eval case IDs. Run `python scripts/agent_eval_freshness.py report --base origin/main` to produce a deterministic, privacy-safe list of cases that need fresh evidence after a change. The report flags missing or stale results but does not execute evaluations or modify cases/results. It does not copy prompts into the report. Scenarios 192, 193 and 224 remain manual until provider-neutral runtime behavior is attested.
+
 Scenario 198 is deterministic lifecycle evidence for runtime resolution and invariant coverage; it does not represent model behavior or grant publication authority.
 
 External producers and Human-confirmed finding promotion are defined by [Eval / Red-Team Interoperability](EVAL_INTEROPERABILITY.md). Imported runs stay advisory; only current canonical Case/Result evidence is eligible for deterministic regression scoring.

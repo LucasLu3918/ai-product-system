@@ -1,0 +1,55 @@
+version: 1
+captured_at: "2026-10-07"
+repository: LucasLu3918/ai-product-system
+base:
+  branch: main
+  sha: 65b99c16871804afe82c11e1ab97fbd2000a5bb1
+  version: 0.74.0
+architecture:
+  capability_map_entries: 31
+  architecture_surfaces: 10
+  canonical_registry: absent
+quality:
+  ruff_findings: 758
+  ruff_policy: never_increase
+  module_budgets:
+    scripts/project_intelligence.py: {current: 10, next_target: 9}
+    scripts/retrieval_intelligence.py: {current: 6, next_target: 5}
+  mypy_zero_finding_modules: 7
+  coverage_policy: report_only
+  coverage_minimum_percent: null
+conformance:
+  total: 225
+  lifecycle: 131
+  deterministic: 37
+  agent_eval: 54
+  manual: 3
+  uncovered: 0
+  automated_percent: 98.7
+  manual_scenarios: ["192", "193", "224"]
+release:
+  github_releases: 0
+  git_tags: 0
+  version: 0.74.0
+  readiness: no_verified_stable_release_anchor
+branch_hygiene:
+  remote_branch_count: 88
+  cleanup_authority: exact_human_approved_manifest_required
+cost:
+  telemetry_exports_cost: false
+  execution_budget: qualitative
+evolution_radar:
+  latest_observed_month: "2026-09"
+  raw_signals: 100
+  unique_signals: 100
+  shortlist: 0
+  semantic: 0
+  actionable: 0
+  interpretation: "Existing exclusion attribution is recent; collect a fresh cohort before changing ranking."
+evidence:
+  - "git rev-parse origin/main"
+  - "references/evolution/CAPABILITY_MAP.yaml"
+  - "config/architecture-surfaces.yaml"
+  - "config/quality-ratchet.yaml"
+  - "aips conformance report --format yaml"
+  - "GitHub release, tag, branch, and pull request read-only queries on 2026-10-07"
