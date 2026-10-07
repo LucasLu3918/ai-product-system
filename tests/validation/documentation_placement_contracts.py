@@ -1,9 +1,80 @@
+import importlib
 import subprocess
 import sys
+import tempfile
+from pathlib import Path
 
 import yaml
 
 from .static_contracts import ROOT, errors
+
+sys.path.insert(0, str(ROOT / "scripts"))
+placement_helper = importlib.import_module("documentation_placement")
+
+
+def verify_batched_added_lines() -> None:
+    with tempfile.TemporaryDirectory(prefix="aips-placement-batch-") as temp_dir:
+        repo = Path(temp_dir)
+
+        def git(*args: str) -> str:
+            proc = subprocess.run(
+                ["git", *args], cwd=repo, text=True, capture_output=True, check=True
+            )
+            return proc.stdout.strip()
+
+        git("init", "-q")
+        git("config", "user.email", "aips-test")
+        git("config", "user.name", "AIPS Test")
+        docs = repo / "docs" / "human"
+        docs.mkdir(parents=True)
+        paths = ["docs/human/one.md", "docs/human/name with spaces.md"]
+        for path in paths:
+            target = repo / path
+            target.write_text("# Doc\n\n## Topic\n\nBefore.\n", encoding="utf-8")
+        git("add", "docs")
+        git("commit", "-qm", "base")
+        base = git("rev-parse", "HEAD")
+        for path in paths:
+            target = repo / path
+            target.write_text(target.read_text(encoding="utf-8") + "\nAdded.\n", encoding="utf-8")
+        untracked = "docs/human/new untracked.md"
+        (repo / untracked).write_text("# New\n\n## Topic\n\nAdded.\n", encoding="utf-8")
+
+        previous_root, previous_sync = placement_helper.ROOT, placement_helper.SYNC_CONFIG
+        placement_helper.ROOT = repo
+        placement_helper.SYNC_CONFIG = repo / "sync.yaml"
+        try:
+            expected = {
+                path: placement_helper.added_line_numbers(base, path, working_tree=True)
+                for path in paths + [untracked]
+            }
+            actual = placement_helper.added_line_numbers_many(
+                base, paths + [untracked], working_tree=True
+            )
+            if actual != expected:
+                raise AssertionError(f"working-tree batch mismatch: expected {expected}, got {actual}")
+
+            git("add", "docs")
+            git("commit", "-qm", "candidate")
+            committed_expected = {
+                path: placement_helper.added_line_numbers(base, path)
+                for path in paths + [untracked]
+            }
+            committed_actual = placement_helper.added_line_numbers_many(
+                base, paths + [untracked]
+            )
+            if committed_actual != committed_expected:
+                raise AssertionError(
+                    f"commit-range batch mismatch: expected {committed_expected}, got {committed_actual}"
+                )
+        finally:
+            placement_helper.ROOT, placement_helper.SYNC_CONFIG = previous_root, previous_sync
+
+
+try:
+    verify_batched_added_lines()
+except (AssertionError, OSError, subprocess.SubprocessError, TypeError, ValueError) as exc:
+    errors.append(f"batched documentation diff equivalence failed: {exc}")
 
 required = [
     ROOT / "config/documentation-placement.yaml",
