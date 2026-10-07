@@ -199,6 +199,7 @@ rules:
       - config/integration-gate.yaml
       - tests/evidence/publish_preflight_lifecycle.py
       - tests/validation/publish_preflight_contracts.py
+      - tests/scenarios/165-ci-parity-publication-preflight.md
     human_docs:
       - docs/human/MAINTENANCE.md
       - docs/human/USER_GUIDE.md

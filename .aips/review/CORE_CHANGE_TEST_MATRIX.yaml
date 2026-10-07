@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 6016723622d649b5b61d04d2b4082c2fcb2de75c
-  changed_files_hash: 7386dc7c1bc31a74835c4b11d803e9da3cfd8d99f1a98f57c9c7757d35b26b11
+  changed_files_hash: 2827bdd4fa0c23d4c4d13224aed92794b9d0779e4032c140bea1eea9b4120c13
 change:
   id: plan20-phase2-system-core
   summary: Compact fixed system context, route canonical protocols per task, and correct
@@ -12,6 +12,7 @@ change:
   - context-manifest-and-runtime-hook
   - retrieval-relations-and-impact-traversal
   - documentation-and-conformance
+  - external-vitepress-resolution
 matrix:
 - boundary: fixed-system-core
   reason: Reduce fixed system context while preserving authority, compatibility routing,
@@ -68,6 +69,44 @@ matrix:
   reason: Keep canonical Human/Agent guidance, diagrams, route scenario, generated
     views, and exact-candidate evidence aligned.
   checks: *id001
+- boundary: external-vitepress-resolution
+  reason: Allow a clean candidate to use an explicit external VitePress installation
+    only when its installed version matches the candidate lockfile exactly.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff critical lint and quality ratchet run in the exact-candidate Integration Gate.
+    unit:
+      applicable: true
+      evidence: tests/evidence/publish_preflight_lifecycle.py covers external resolution,
+        local default resolution, absent packages, and lockfile-version mismatch.
+    integration:
+      applicable: true
+      evidence: Exact-candidate Integration Gate builds changed documentation through
+        the external VitePress path while the candidate checkout stays clean.
+    contract:
+      applicable: true
+      evidence: tests/validation/publish_preflight_contracts.py asserts explicit path,
+        exact lockfile version, and no-install/no-registry behavior.
+    security:
+      applicable: true
+      evidence: External package paths are explicit and read-only; mismatched package
+        metadata fails before invoking Node; no package install or registry request occurs.
+    migration_recovery:
+      applicable: true
+      evidence: Existing checkout-local node_modules remains the default; external
+        resolution is opt-in and needs no persisted state or migration.
+    cli_harness:
+      applicable: true
+      evidence: Publication preview and Gate inherit the explicit
+        AIPS_VITEPRESS_NODE_MODULES environment setting.
+    docs_schema:
+      applicable: true
+      evidence: Scenario 165, Integration Gate, Maintenance, and Technology Guide
+        describe version matching and the clean-checkout workflow.
+    e2e:
+      applicable: false
+      na_reason: No deployed UI or user-facing product flow changes.
 review_evidence:
   required: false
 scope_recomputed_after_expansion: true
@@ -80,4 +119,9 @@ verification:
   intelligence_context_lifecycle: PASS
   static_and_documentation_contracts: PASS
   scenario_conformance: PASS
-  pre_gate_full_repository_validation: PASS
+  focused_publication_contracts: PASS
+  documentation_sync_contracts: PASS
+  documentation_placement: PASS
+  external_vitepress_docs_build: PASS
+  focused_ruff: PASS
+  exact_candidate_integration_gate: REQUIRED_ON_BOUND_COMMIT

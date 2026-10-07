@@ -292,7 +292,7 @@ Before promoting legacy manual coverage: reconcile the Scenario to current canon
 
 ## Execution Isolation consistency
 
-The local Integration Gate selects a complete Python 3.12 validation environment and reports missing dependencies before candidate scanning. For documentation changes it requires Node 24+ and the already-installed VitePress bundle, invokes that bundle directly, and never installs packages or contacts a registry. The E2B artifact workflow pins the Node 24 upload action; its existing synthetic-data and least-privilege boundaries remain in force.
+The local Integration Gate selects a complete Python 3.12 validation environment and reports missing dependencies before candidate scanning. For documentation changes it requires Node 24+ and VitePress at the exact version pinned by the candidate's `package-lock.json`. It uses the checkout's `node_modules` by default; `AIPS_VITEPRESS_NODE_MODULES` may point to an absolute external dependency directory for a clean checkout. The preflight invokes that bundle directly and never installs packages or contacts a registry. The E2B artifact workflow pins the Node 24 upload action; its existing synthetic-data and least-privilege boundaries remain in force.
 
 When Execution Isolation behavior changes, review together:
 
@@ -451,7 +451,7 @@ Internal Retrieval Intelligence module extraction must preserve the `retrieval_i
 
 Phase 3 enforcement changes also update `scripts/implementation_enforcement.py`, its versioned report schema, Scenario 195 and the existing Integration Gate profile/lifecycle evidence. Check report-only behavior before enabling path-scoped enforcement in a project; a missing current-run command report or stale generated/OpenAPI hash must not turn into PASS. Generated hashes verify recorded provenance, not generator execution.
 
-Keep the local publication route on one explicit checkout. Its preflight checks Python/Ruff, loopback and browser readiness before lifecycle validation, then checks changed Markdown links and builds VitePress for documentation candidates. Use `--project-root <repo>` when the installed CLI validates a separate source checkout. Core/Large labels belong on the initial PR creation request when using `gh`; a connector that cannot set labels atomically requires the label event and its own fresh CI result. After merge, update a clean local `main` with fast-forward-only when it is behind `origin/main`; preserve a backup before reconciliation and block dirty or divergent histories.
+Keep the local publication route on one explicit checkout. Its preflight checks Python/Ruff, loopback and browser readiness before lifecycle validation, then checks changed Markdown links and builds VitePress for documentation candidates. An external VitePress directory is accepted only when its installed version equals the candidate lockfile's exact version; the repository checkout remains clean and no install or registry access occurs. Use `--project-root <repo>` when the installed CLI validates a separate source checkout. Core/Large labels belong on the initial PR creation request when using `gh`; a connector that cannot set labels atomically requires the label event and its own fresh CI result. After merge, update a clean local `main` with fast-forward-only when it is behind `origin/main`; preserve a backup before reconciliation and block dirty or divergent histories.
 
 
 Preview 對 Core Matrix 套用與 Gate 相同的就緒條件：可執行狀態、無 blockers、實際差異已核對、base/hash 相符。同步後若仍是 DRAFT 或有待處理項目，先完成審查並清除已解決的 blocker；`READY_FOR_GATE` 不是正式 Gate PASS。

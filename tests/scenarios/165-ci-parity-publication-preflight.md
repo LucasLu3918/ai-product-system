@@ -23,7 +23,7 @@ The maintainer previews a working tree, binds the reviewed Core Matrix, then run
 - changed Markdown local links and the local VitePress build fail before the full publication Gate;
 - missing Python, Ruff, loopback or browser prerequisites return remediation before candidate scanning and lifecycle execution;
 - the Integration Gate selects an explicitly configured or complete prepared Python 3.12 venv; it rejects incomplete dependencies, including a missing OpenAPI validator, before candidate checks start;
-- local docs preflight uses Node 24+ from `PATH` or `AIPS_NODE_BINARY` and invokes the installed VitePress bundle directly; it does not install packages or contact a registry;
+- local docs preflight uses Node 24+ from `PATH` or `AIPS_NODE_BINARY` and invokes the installed VitePress bundle directly; an explicit `AIPS_VITEPRESS_NODE_MODULES` can point outside a clean candidate, but its installed VitePress version must exactly match `package-lock.json`; no packages are installed and no registry is contacted;
 - missing Change Impact final dispositions show allowed choices while unknown and high-risk findings remain blocking;
 - the Core/Large classification label is present in the initial PR creation request, and missing GitHub CLI authentication is reported without raw stderr;
 - protected main routes through a pull request;
