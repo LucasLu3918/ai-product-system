@@ -80,5 +80,4 @@ verification:
   intelligence_context_lifecycle: PASS
   static_and_documentation_contracts: PASS
   scenario_conformance: PASS
-  full_repository_validation: PASS
-  exact_candidate_integration_gate: PENDING_FINAL_CANDIDATE
+  pre_gate_full_repository_validation: PASS
