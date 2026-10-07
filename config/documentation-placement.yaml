@@ -78,8 +78,35 @@ legacy_append_forbidden:
   - docs/human/EVOLUTION_RADAR_OVERVIEW.html
 
 placement_rules:
+  - id: capability-registry
+    triggers: [config/capability-registry.yaml, scripts/capability_registry.py, config/architecture-surfaces.yaml, references/evolution/CAPABILITY_MAP.yaml, config/repository-health.yaml, scripts/repository_health.py, orchestration/REPOSITORY_HEALTH.md, tests/validation/repository_health_contracts.py, tests/evidence/repository_health_lifecycle.py]
+    placements:
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution]
+      docs/human/SYSTEM_REFERENCE.md: [Public commands, Capability surfaces]
+      docs/human/MAINTENANCE.md: [Repository Health / Architecture Drift consistency]
+      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+
+  - id: agent-eval-freshness
+    triggers: [config/eval-freshness.yaml, scripts/agent_eval_freshness.py, orchestration/AGENT_EVAL.md, tests/validation/agent_eval_freshness_contracts.py, tests/evidence/agent_eval_freshness_lifecycle.py, tests/scenarios/229-agent-eval-freshness.md]
+    placements:
+      docs/human/USER_GUIDE.md: [Quality 與 Review]
+      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+      docs/human/CONFORMANCE.md: [Scenario 229 — Agent Eval Freshness Selection]
+
+  - id: quality-ratchet
+    triggers: [config/quality-ratchet.yaml, scripts/quality_ratchet.py, orchestration/QUALITY_PLANNING.md, tests/validation/quality_ratchet_contracts.py, tests/evidence/quality_ratchet_lifecycle.py, tests/scenarios/228-progressive-quality-ratchet.md]
+    placements:
+      docs/human/MAINTENANCE.md: [Validation architecture consistency]
+      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+      docs/human/CONFORMANCE.md: [Scenario 228 — Progressive Quality Ratchet]
+
+  - id: branch-hygiene
+    triggers: [config/branch-cleanup-manifest.yaml, scripts/branch_hygiene.py, orchestration/BRANCH_HYGIENE.md, .github/workflows/branch-hygiene.yml, tests/validation/branch_hygiene_contracts.py, tests/evidence/branch_hygiene_lifecycle.py]
+    placements:
+      docs/human/MAINTENANCE.md: [Branch lifecycle hygiene, Controlled branch cleanup]
+
   - id: system-facts
-    triggers: [config/system-facts.yaml, config/architecture-surfaces.yaml, scripts/system_facts.py, tests/validation/system_facts_contracts.py, .github/workflows/python-compatibility.yml]
+    triggers: [config/system-facts.yaml, scripts/system_facts.py, tests/validation/system_facts_contracts.py, .github/workflows/python-compatibility.yml]
     placements:
       docs/human/SYSTEM_REFERENCE.md: [Public commands, Capability surfaces, Runtime support]
       docs/human/DOCUMENTATION_MAP.md: [Shared canonical 文件, 文件角色, Agent / machine canonical 文件]
@@ -95,7 +122,7 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
       docs/human/CONFORMANCE.md: [Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Scenario 201 — Monthly maintenance reliability evidence, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
   - id: maintenance-reliability
-    triggers: [scripts/maintenance_reliability.py, config/maintenance-reliability.yaml, .github/workflows/maintenance-reliability.yml, tests/evidence/maintenance_reliability_lifecycle.py, tests/validation/maintenance_reliability_contracts.py, tests/scenarios/201-monthly-maintenance-reliability.md, tests/scenario_coverage.yaml, tests/validate_repository.py, tests/validation/conformance_isolation.py]
+    triggers: [scripts/maintenance_reliability.py, config/maintenance-reliability.yaml, .github/workflows/maintenance-reliability.yml, tests/evidence/maintenance_reliability_lifecycle.py, tests/validation/maintenance_reliability_contracts.py, tests/scenarios/201-monthly-maintenance-reliability.md, tests/validate_repository.py]
     placements:
       docs/human/MAINTENANCE.md: [Monthly maintenance reliability, Validation architecture consistency, Versioning, Controlled branch cleanup, Public repository / CI consistency, Documentation Impact Gate, Architecture Diagram Impact Check]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Documentation Architecture, Planning 與 Product Delivery, Maintenance governance]
@@ -155,7 +182,7 @@ placement_rules:
       docs/human/CONFORMANCE.md: [Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
 
   - id: telemetry-export
-    triggers: [config/telemetry-export.yaml, orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md, orchestration/TELEMETRY_EXPORT.md, orchestration/schemas/telemetry-export.yaml, scripts/telemetry_export.py, scripts/telemetry_projection.py, scripts/telemetry_record.py, scripts/run_event_stream.py, scripts/observed_stage.py]
+    triggers: [config/telemetry-export.yaml, orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md, orchestration/TELEMETRY_EXPORT.md, orchestration/schemas/telemetry-export.yaml, orchestration/schemas/execution-profile.yaml, scripts/telemetry_export.py, scripts/telemetry_projection.py, scripts/telemetry_record.py, scripts/run_event_stream.py, scripts/observed_stage.py]
     placements:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Scenario Conformance 與 Agent Eval, Maintenance governance]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
@@ -163,7 +190,7 @@ placement_rules:
       docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 181 — OpenTelemetry Telemetry Projection & Export]
 
   - id: execution-isolation
-    triggers: [scripts/execution_isolation.py, scripts/sandbox_providers.py, scripts/e2b_sandbox_verification.py, config/sandbox-providers.yaml, config/external-credentials.yaml, orchestration/schemas/execution-profile.yaml, requirements-sandbox.txt, .github/workflows/e2b-sandbox-verification.yml]
+    triggers: [scripts/execution_isolation.py, scripts/sandbox_providers.py, scripts/e2b_sandbox_verification.py, config/sandbox-providers.yaml, config/external-credentials.yaml, requirements-sandbox.txt, .github/workflows/e2b-sandbox-verification.yml]
     placements:
       docs/human/USER_GUIDE.md: [Execution Isolation 與 Runtime Resource, Git Publication 與 Release]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Security & Governance, Quality & Verification]
@@ -193,7 +220,7 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification, Runtime Content Safety Boundary, Security & Governance]
 
   - id: publication-preflight
-    triggers: [scripts/github_workflow_validation.py, scripts/github_execution_identity.py, scripts/dependency_review_evidence.py, scripts/runtime_cache.py, scripts/publish_preflight.py, scripts/publish_post_merge.py, scripts/publish_preflight_policy.py, scripts/browser_runtime.py, scripts/repository_preflight.py, scripts/integration_gate.py, scripts/check_secret_leakage.py, config/integration-gate.yaml, config/secret-scan.yaml, config/git-publication.yaml, .github/workflows/validate.yml, .github/workflows/branch-hygiene.yml, .github/workflows/gemini-provider-session-verification.yml, .github/workflows/gemini-runtime-verification.yml, .github/workflows/mcp-codex-interop.yml, .github/workflows/repository-health.yml, .github/workflows/retrieval-semantic-trial.yml, orchestration/CORE_CHANGE_TESTING.md, orchestration/SECRET_HANDLING.md, tests/evidence/integration_gate_lifecycle.py, tests/evidence/publish_preflight_lifecycle.py, tests/evidence/module_extraction_lifecycle.py, tests/evidence/secret_scan_publication_lifecycle.py, tests/validation/publish_preflight_contracts.py, tests/scenarios/176-mandatory-candidate-secret-scanning.md]
+    triggers: [scripts/github_workflow_validation.py, scripts/github_execution_identity.py, scripts/dependency_review_evidence.py, scripts/runtime_cache.py, scripts/publish_preflight.py, scripts/publish_post_merge.py, scripts/publish_preflight_policy.py, scripts/browser_runtime.py, scripts/repository_preflight.py, scripts/integration_gate.py, scripts/check_secret_leakage.py, config/integration-gate.yaml, config/secret-scan.yaml, config/git-publication.yaml, .github/workflows/validate.yml, .github/workflows/branch-hygiene.yml, .github/workflows/gemini-provider-session-verification.yml, .github/workflows/gemini-runtime-verification.yml, .github/workflows/mcp-codex-interop.yml, .github/workflows/repository-health.yml, .github/workflows/retrieval-semantic-trial.yml, orchestration/SECRET_HANDLING.md, tests/evidence/integration_gate_lifecycle.py, tests/evidence/publish_preflight_lifecycle.py, tests/evidence/secret_scan_publication_lifecycle.py, tests/validation/publish_preflight_contracts.py, tests/scenarios/176-mandatory-candidate-secret-scanning.md]
     placements:
       docs/human/MAINTENANCE.md:
         - Versioning
@@ -219,7 +246,7 @@ placement_rules:
       docs/human/USER_GUIDE.md: [Git Publication 與 Release]
 
   - id: project-intelligence
-    triggers: [scripts/project_intelligence.py, scripts/project_intelligence_promotion.py, scripts/project_intelligence_temporal.py, scripts/retrieval_intelligence.py, scripts/retrieval_relations.py, scripts/retrieval_storage.py, scripts/temporal_intelligence.py, scripts/turn_context_hook.py, scripts/turn_intent.py, scripts/git_paths.py, orchestration/PROJECT_INTELLIGENCE.md, orchestration/CHANGE_IMPACT.md, orchestration/TURN_HARNESS.md, templates/intelligence/**, tests/evidence/change_impact_resolution_lifecycle.py, tests/evidence/retrieval_relations_extraction_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md]
+    triggers: [scripts/project_intelligence.py, scripts/project_intelligence_storage.py, scripts/project_intelligence_promotion.py, scripts/project_intelligence_temporal.py, scripts/retrieval_intelligence.py, scripts/retrieval_relations.py, scripts/retrieval_storage.py, scripts/temporal_intelligence.py, scripts/turn_context_hook.py, scripts/turn_intent.py, scripts/git_paths.py, orchestration/PROJECT_INTELLIGENCE.md, orchestration/CHANGE_IMPACT.md, orchestration/TURN_HARNESS.md, templates/intelligence/**, tests/evidence/change_impact_resolution_lifecycle.py, tests/evidence/retrieval_relations_extraction_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md]
     placements:
       docs/human/PROJECT_INTELLIGENCE.md: [第一次 Existing Project, 不重複正式文件, 四份核心 Machine-readable 檔, 三軸狀態, Human Review HTML, Freshness, Attach / Detach, Change Impact, Preserve Valid Native Conventions, Sensitive Data, Monorepo, Retrieval Intelligence：即時按需檢索, Retrieval Quality Evaluation：先量測，再決定下一項技術, Structural Retrieval：已採用的跨檔關係檢索, Semantic Alias Expansion Candidate Trial：HOLD, Remote Embedding Retrieval Trial Readiness（Scenario 133）, Provider-Neutral Local-First Embedding Trial（Scenario 134）, Debug, Identity namespace, Runtime Content Safety Boundary]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary, Maintenance governance]
@@ -229,7 +256,7 @@ placement_rules:
   - id: repository-health
     triggers: [scripts/repository_health.py, config/architecture-surfaces.yaml, config/repository-health.yaml, orchestration/REPOSITORY_HEALTH.md]
     placements:
-      docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency, Deterministic Scheduler / Integration Gate consistency, Durable Run State consistency, Execution Isolation consistency, Impact-derived regression testing, Controlled branch cleanup, Versioning]
+      docs/human/MAINTENANCE.md: [Public repository / CI consistency, Validation architecture consistency, Deterministic Scheduler / Integration Gate consistency, Durable Run State consistency, Execution Isolation consistency, Impact-derived regression testing, Controlled branch cleanup, Repository Health / Architecture Drift consistency, Versioning]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
 
   - id: security
@@ -311,7 +338,7 @@ placement_rules:
       orchestration/ORCHESTRATOR.md: [Checkpoint and resume, Context expansion]
 
   - id: evolution
-    triggers: [scripts/evolution_*.py, config/evolution-*.yaml, references/evolution/**, .github/workflows/evolution-*.yml, orchestration/EVOLUTION_RADAR.md]
+    triggers: [scripts/evolution_*.py, config/evolution-*.yaml, references/evolution/ISSUE_79_*.yaml, .github/workflows/evolution-*.yml, orchestration/EVOLUTION_RADAR.md]
     placements:
       docs/human/EVOLUTION_RADAR.md: [Weekly Signal Scan, Evidence Quality, Deterministic Pre-analysis, Semantic Analysis, Human Decision Binding, Controlled Trial, Trial → ADOPT, Effectiveness Feedback, Current Boundaries]
       docs/human/EVOLUTION_RADAR_OVERVIEW.md: [Signal Collection, Deterministic Pre-analysis, Semantic Analysis, Human Decision, Controlled Trial, Trial → Adoption, Effectiveness Feedback]
@@ -374,7 +401,7 @@ placement_rules:
     placements:
       docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 165 — CI-Parity Publication Preflight, Scenario 218 — Evolution Human Relevance Evaluation, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification]
       docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 165 — CI-Parity Publication Preflight, Scenario 218 — Evolution Human Relevance Evaluation, Scenario 220 — Parallel advisory fast feedback]
-      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Scenario 201 — Monthly maintenance reliability evidence, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 165 — CI-Parity Publication Preflight, Scenario 218 — Evolution Human Relevance Evaluation, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification, Scenario 222 — Large Document Measurement Only]
+      docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 180 — External Eval / Red-Team Interoperability, Scenario 181 — OpenTelemetry Telemetry Projection & Export, Scenario 182 — Deterministic Execution Ownership, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Scenario 201 — Monthly maintenance reliability evidence, Execution Isolation Conformance, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 165 — CI-Parity Publication Preflight, Scenario 218 — Evolution Human Relevance Evaluation, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification, Scenario 222 — Large Document Measurement Only, Scenario 226 — Capability Registry Single Source, Scenario 227 — Codex Native Hook Enforcement Probe, Scenario 228 — Progressive Quality Ratchet, Scenario 229 — Agent Eval Freshness Selection]
       docs/human/TECHNOLOGY_GUIDE.md: [Product Delivery, Execution, Quality & Verification, Evolution & Maintenance, Security & Governance]
 
   - id: eval-interoperability
@@ -543,7 +570,6 @@ placement_rules:
       - tests/evidence/validation_taxonomy_lifecycle.py
       - tests/validation/validation_taxonomy_contracts.py
       - tests/scenarios/219-validation-policy-taxonomy-drift.md
-      - tests/scenario_coverage.yaml
     placements:
       docs/human/MAINTENANCE.md: [Validation architecture consistency]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]

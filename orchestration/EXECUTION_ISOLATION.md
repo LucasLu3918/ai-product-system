@@ -345,7 +345,3 @@ Task ownership binds the dispatched task lease to its active AIPS-managed worktr
 - The release-readiness changelog check is local and read-only; it adds no execution resource, credential, or tag-writing capability.
 
 Sparse delegation does not relax isolation requirements: each justified auxiliary task retains its declared read/write scope and required execution isolation; primary preference does not select an isolation provider.
-
-**Plan19 architecture and runtime closure.**
-
-The Plan19 Codex hook experiment uses a local fixture and a harmless synthetic command only; it does not install global runtime configuration. Evidence for branch cleanup remains a proposal bound to exact SHAs and never invokes deletion.

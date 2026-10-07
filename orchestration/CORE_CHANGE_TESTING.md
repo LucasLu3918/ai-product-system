@@ -177,7 +177,3 @@ Runtime Content Safety Boundary changes require detector, sink, publication, pro
 Runtime Policy Enforcement Core Changes also reconcile action and policy digest binding, approval expiry/scope drift, runtime capability truthfulness, high-risk sandbox fail-closed behavior, semantic deny/escalate monotonicity, audit redaction and the exact candidate file-set binding.
 
 For CLI and validation modularization, the boundary matrix must cover direct source-checkout invocation, installed symlink invocation, argument and exit-status compatibility, validator import order and timing labels, error aggregation order, single-owner lifecycle execution, and publication-policy output equivalence.
-
-**Plan19 architecture and runtime closure.**
-
-The Plan19 candidate uses the canonical `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`, bound to the exact base SHA and changed-path digest. Lifecycle, secret-scan and exact-candidate Gate outcomes must remain attached to that candidate; the matrix cannot authorize publication or release.

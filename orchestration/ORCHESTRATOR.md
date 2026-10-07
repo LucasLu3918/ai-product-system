@@ -387,7 +387,3 @@ After merge, use the updated checkout CLI `publish post-merge --fetch --sync-ins
 The orchestrator routes AIPS-owned persistence through `safe_emit` and keeps content safety separate from publish authorization. Untrusted external content carries provenance and cannot grant protected tool authority.
 
 `bin/aips` is the public thin launcher: it resolves the repository root and forwards arguments to `scripts/aips_cli.sh`. Keep command dispatch, installed-link behavior, exit status, and user-visible output compatible while implementation modules are extracted incrementally.
-
-**Plan19 architecture and runtime closure.**
-
-For the approved Plan19 core change, keep the Capability Registry, change-aware Eval report, runtime-observed usage fields and report-only maintenance evidence within one exact-candidate review. Final Git publication still requires candidate-bound human approval after local validation.

@@ -1436,6 +1436,8 @@ Traversal findings name the affected path and allowed final dispositions; they d
 
 Lifecycle evidence checks append-only telemetry recording, allowlist and bounds, deterministic trace/span replay IDs, phase/Gate/model/tool pairing, Gate wait spans, independent-review links, exact pinned GenAI attributes, content/credential exclusion, loopback/HTTPS endpoint validation, disabled-by-default configuration, local OTLP receiver delivery and non-blocking export degradation.
 
+Plan19 extends the allowlist with optional runtime-observed token usage, provenance/confidence and unknown-cost status. Missing values remain absent or unknown and do not trigger price lookup or affect Gate outcomes.
+
 目前 Scenario inventory：
 
 - deterministic：27
@@ -1539,6 +1541,7 @@ Scenarios 211–213 cover GitHub supply-chain checks, evidence-gated validator g
 
 Scenarios 214–219 cover verified stable-channel installation, tested runtime constraints, touched-code quality ratchets, full-run validation observation, human-labeled Evolution relevance measurement, and validation policy taxonomy drift. The read-only observation collector installs its declared profile under `constraints/tested.txt` before collecting bounded evidence. Its 15-minute timeout is provisional because only two runs at about 31 seconds are available; no reliable P95 is claimed. Scheduled and manual evidence runs have no concurrency group that could replace pending work. Empty human datasets remain `NOT_READY`; these controls do not authorize release, selective validation, or automatic policy changes.
 Scenario 155 also verifies that missing weekly pre-analysis leaves source shortlist yield unavailable and that oversized Issue evidence is digest-checked before Radar and Effectiveness consumers parse it.
+Plan19's Project Intelligence storage extraction preserves the public facade and object identity; behavior-based Eval freshness reports affected cases without automatically executing them.
 
 
 Current counts and the Human/Agent history crosswalk are generated in [Current Scenario Conformance](CONFORMANCE_CURRENT.md) and [Conformance History Index](CONFORMANCE_HISTORY_INDEX.md). This document retains versioned baselines as historical records; normative Agent rules remain in `orchestration/CONFORMANCE.md`. Scenarios 202–209 cover Evolution completeness, validation shadow/replay, compatible module extraction, branch proposal freshness, conformance views, shared workflow bootstrap, version-tag provenance, and GitHub ruleset policy comparison. Scenario 205's current branch cleanup contract also binds apply to the current main baseline and rejects absent refs as replay or partial-state evidence.
@@ -1577,6 +1580,20 @@ Dependency updates receive an explicit class, risk and recommended validation pl
 
 The measurement-only audit records tracked documentation/evidence byte sizes. Files above 50,000 bytes produce `WARN` with exit code 0; size results do not block Gate or authorize file moves or archival.
 
-**Plan19 architecture and runtime closure.**
+## Scenario 226 — Capability Registry Single Source
 
-Plan19 adds scenarios 226–229 for the canonical Capability Registry, the bounded Codex hook probe, progressive quality reporting, and change-aware Eval freshness. The three runtime-dependent scenarios 192, 193 and 224 remain manual; current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md).
+The lifecycle verifies canonical capability metadata, deterministic generated compatibility views, and drift detection by Repository Health.
+
+## Scenario 227 — Codex Native Hook Enforcement Probe
+
+The probe denies only a harmless synthetic local Bash command. Unsupported, malformed, timeout and error paths remain advisory; this evidence does not claim live dispatch enforcement.
+
+## Scenario 228 — Progressive Quality Ratchet
+
+Per-module findings and direct coverage are measured without increasing a repository-wide threshold; debt must not grow in a touched module.
+
+## Scenario 229 — Agent Eval Freshness Selection
+
+Declared behavior dependencies select potentially stale Eval cases for review. The report does not execute cases or alter results; scenarios 192, 193 and 224 remain manual.
+
+Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md).

@@ -381,7 +381,7 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
-Skill metadata 修改後須重建 INDEX 並執行 `tests/evidence/skill_index_lifecycle.py`；完整 repository validation 也會執行此 lifecycle。Scenario 224 是人工語意驗收，225 是 registry lifecycle 證據，不可互換。
+Skill metadata 修改後須重建 INDEX 並執行 `tests/evidence/skill_index_lifecycle.py`；完整 repository validation 也會執行此 lifecycle。Scenario 224 是人工語意驗收，225 是 registry lifecycle 證據，不可互換。Plan19 增加 per-module quality budgets、behavior-based Eval freshness 與 canonical capability projections；各報告仍是 evidence，不能代替完整 Gate 或擴張批准範圍。
 
 Shared Python CI bootstrap callers must declare their requirement files, tested constraints, and import smoke tests; the action runs `pip check` and does not own package versions.
 
@@ -474,7 +474,7 @@ Do not let the Scheduler make semantic scope decisions, and do not let Integrati
 
 ## Branch lifecycle hygiene
 
-Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanup. Persistent operational branches are preserved; common short-lived prefixes are classified as ephemeral; unclassified branches are preserved by default. The report includes current SHA, matching merged PR state, branch age, integration status and a cleanup review recommendation. Integration recognition is conservative and squash-aware: direct ancestry is checked first, then per-commit patch equivalence, then a clean synthetic `git merge-tree --write-tree` whose result must be identical to the target tree. The policy is `report_only`; scheduled and main-push reports publish proposals and never delete refs. Cleanup requires a separate explicit workflow dispatch on protected `main` with `apply_cleanup=true`, plus the exact one-time reviewed manifest.
+Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanup. Persistent operational branches are preserved; common short-lived prefixes are classified as ephemeral; unclassified branches are preserved by default. The report includes current SHA, matching merged PR state, branch age, integration status and a cleanup review recommendation. Integration recognition is conservative and squash-aware: direct ancestry is checked first, then per-commit patch equivalence, then a clean synthetic `git merge-tree --write-tree` whose result must be identical to the target tree. The policy is `report_only`; scheduled and main-push reports publish proposals and never delete refs. Cleanup requires a separate explicit workflow dispatch on protected `main` with `apply_cleanup=true`, plus the exact one-time reviewed manifest. The Plan19 branch snapshot is a timestamped proposal and remains unauthorized until separately reviewed against current exact SHAs.
 
 
 ## Repository Health / Architecture Drift consistency

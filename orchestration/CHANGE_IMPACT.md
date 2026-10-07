@@ -4,6 +4,8 @@ CI workflow seeds are included in deterministic discovery while global graph cov
 
 Retrieval extractions preserve the legacy `retrieval_intelligence.py` facade and output contracts. Treat index-derived relation edges as lexical candidates; incomplete traversal remains explicit and cannot support repository-wide completeness claims.
 
+The Project Intelligence facade now delegates filesystem-backed cache operations to `project_intelligence_storage.py`; preserve public imports, cache paths and recovery behavior when changing either module.
+
 Use before mutating an existing project.
 
 ## Purpose
@@ -177,7 +179,3 @@ Traversal records its policy version, required/reached depth, visited nodes/edge
 Before READY, review each affected-but-unchanged node and record `reviewed_safe`, `requires_change` or `unknown`. Required changes must be in the approved target path set and match the actual diff. Unknown or incomplete evidence blocks high-risk READY. The exact diff digest and changed-path reconciliation remain mandatory; traversal evidence supplements rather than replaces semantic review.
 
 For a multi-perspective review, include the seeds, risk policy, budgets, index freshness, graph coverage, exact versus inferred edges, unresolved/truncated evidence and affected-but-unchanged dispositions. Reviewers assess whether the evidence supports the implementation and diff; traversal does not prove compiler-resolved completeness.
-
-**Plan19 architecture and runtime closure.**
-
-For behavior-changing paths, use the Agent Eval freshness dependency map to select affected cases and report stale evidence. Treat canonical capability metadata and generated projections as separate source/consumer paths; reconcile the exact changed-file set after implementation.

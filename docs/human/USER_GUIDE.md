@@ -226,6 +226,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 
 主要實作保留合格的 Runtime／使用者模型；Skill frontmatter 產生相容 v1 INDEX，決定性 lifecycle 與人工模型政策驗收分開記錄。
 
+Agent Eval freshness 依變更路徑與明確的行為依賴挑選受影響案例，只標示需要更新 evidence 的案例，不會自動執行 Eval；Scenario 192、193、224 仍為人工驗收。
+
 Plan17 regression evidence covers numeric diff headers, four browser/OpenAPI combinations, mandatory aggregates, reusable caller keys/permissions, explicit Python and isolated children, recursive placement, signed identity/immutable proposal rejection and atomic deletion races. Missing or malformed capability plans retain the full profile. A latest cancelled check stays INCOMPLETE; replaced old checks are reported as SUPERSEDED.
 
 The shared Python CI bootstrap checks each caller-declared import profile and dependency consistency; it complements the required full repository Gate.
@@ -306,6 +308,8 @@ Observation reports help people judge evidence quality; `NOT_READY` means the co
 
 ## Logging、Observability 與 Operations
 Monthly Effectiveness names weekly Issues missing local pre-analysis and leaves their complete-cohort shortlist yield unavailable. Oversized Radar Issues keep the full original evidence in a verified archive for scheduled rollups.
+
+Execution Profile 的 per-run cost budget 是 advisory metadata。Telemetry 只記錄 runtime 實際提供的 usage/source/confidence；缺少 token 數或可驗證價格時保留 unknown，不呼叫 provider、不估算成本。
 
 
 已有 AIPS Run checkpoint 時，可對 `aips intelligence context`、`aips intelligence retrieve` 或 Integration Gate 加上 `--observe-run-id <id>`，自動記錄 AIPS 自己實際觀察到的操作起迄。這些紀錄不推算模型 token 或成本；記錄失敗會標示降級，不改變主要指令的判定。
@@ -485,7 +489,3 @@ Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-
 ## Runtime Content Safety Boundary
 
 Commit, pull request and release content is scanned before durable/public publication. A blocked result requires regenerating safe content; it is not silently rewritten. Runtime capability remains truthful: AIPS-owned sinks are enforced, native hooks may be tool-guarded, and unsupported host tools are advisory.
-
-**Plan19 architecture and runtime closure.**
-
-Change-aware Agent Eval selects cases from declared behavior dependencies and reports stale evidence without executing cases automatically. Manual scenarios 192, 193 and 224 stay manual. Usage budgets remain advisory, and unknown prices are never estimated.

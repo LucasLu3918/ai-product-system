@@ -240,7 +240,3 @@ Content safety decisions used by deterministic execution and publication preflig
 Runtime action authorization is evaluated at the native tool boundary by Runtime Policy Enforcement; task dispatch metadata does not grant action approval or network-egress isolation.
 
 Publication preflight policy calculations are isolated in `scripts/publish_preflight_policy.py` and remain deterministic; repository filesystem inputs are rooted at an explicit `Path`. `scripts/publish_preflight.py` remains responsible for Git, runtime probes, candidate orchestration, and publication evidence.
-
-**Plan19 architecture and runtime closure.**
-
-Execution Profile cost budgets are advisory per-run metadata. Telemetry may carry token usage only when observed from the runtime, records missing values as unknown, and does not infer provider prices or add a provider call.

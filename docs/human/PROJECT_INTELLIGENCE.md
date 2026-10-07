@@ -69,6 +69,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 Promotion eligibility 與目標路徑限制已抽至 `project_intelligence_promotion.py`；原 facade 保留相容入口，Human approval 與禁止覆寫既有檔案的界線不變。
 
+Project Intelligence 的 atomic text/YAML storage 與 writer locking 已拆至 `project_intelligence_storage.py`；公開 facade、匯入物件身分與既有行為維持相容。
+
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
 
 Changes to a shared Python workflow bootstrap must reconcile every caller, declared requirement file, tested constraint, import profile, and lifecycle test.
@@ -354,7 +356,3 @@ Publication scanning excludes only validated numeric Git index/mode metadata; pa
 Run Dashboard projections consume only sanitized, allowlisted operational facts; prompts, reasoning, raw output, secrets and raw workspace paths remain excluded.
 
 Project Intelligence outputs are AIPS-owned durable content and must pass the Runtime Content Safety Boundary before persistence. Secret findings remain fingerprint-only and never include the detected value.
-
-**Plan19 architecture and runtime closure.**
-
-The bounded storage extraction is behind the existing `project_intelligence` facade. Public import symbols and atomic-write/lock behavior remain compatible; the extracted module has a report-only lifecycle coverage measurement, with no repository-wide threshold.

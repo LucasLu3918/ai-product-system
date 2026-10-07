@@ -199,6 +199,8 @@ Review actual:
 
 Publication scanning excludes only validated numeric Git index/mode metadata; paths, added/removed/context lines and unknown headers remain scanned. Branch deletion verifies GitHub RS256 issuer, repository, protected main, workflow SHA, dispatch event and a proposal-bound audience. Runner flags alone grant no authority; tokens remain in memory.
 
+Release readiness checks bind version, changelog, installer and tag policy to an exact candidate but do not create a release or tag; release publication requires separate Human authorization.
+
 The shared CI bootstrap validates module names as Python identifiers before import, uses checked-in requirement files and constraints, and fails on inconsistent dependencies.
 
 Scheduled reporting workflows keep repository/content permissions read-only except for narrowly scoped Issue reconciliation. A timeout bounds resource use but does not grant authority; concurrency may serialize identical-revision or same-cohort work, while distinct observation evidence remains independently reviewable. Evolution Effectiveness queues only writes to the same period Issue and preserves every pending report.
@@ -373,7 +375,3 @@ Independent review evidence is accepted only for the exact candidate and bounded
 Publication Preflight 的環境診斷 lifecycle 會隔離 Python module probe，並獨立驗證 loopback/browser capability blockers；主機限制不會被記成 policy enforcement 或產品安全行為變更。
 
 Repository validation 的時間 artifact 只記錄檢查名稱、結果和耗時，不儲存測試輸出或秘密。早期候選秘密掃描、Gate 內的強制掃描及 PR/main 的完整驗證均維持必要條件。
-
-**Plan19 architecture and runtime closure.**
-
-The Codex native hook evidence is limited to one harmless synthetic Bash probe. Unsupported, malformed, timeout and error paths remain outside verified enforcement; cost fields use runtime-observed usage only, leave unknown prices unknown, and introduce no provider calls or external export.

@@ -158,7 +158,3 @@ budget:
 ```
 
 Increase budget only when evidence shows the current allocation is insufficient.
-
-## Provider-neutral usage and cost budgets
-
-Execution Profiles may carry a per-run cost budget with an explicit currency and price source. Budgets are advisory and do not change the host runtime's model choice or tool permissions. Runtime-reported token usage may be recorded with its source and confidence; missing values stay unavailable. Cost remains `UNKNOWN` unless a verified price source is supplied. The system does not fetch prices, infer provider costs, or add a central LLM Gateway. Telemetry export carries observed token counts and an unknown cost status only; configured budget amounts stay in the local profile.

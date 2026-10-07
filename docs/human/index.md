@@ -37,10 +37,6 @@ Prospective `aips docs impact --base HEAD --planned-path <path>` resolves sync a
 - **Reference**：Scenario Conformance、SAL、Technology Guide。
 - **Maintainers**：Documentation consistency 與 system maintenance。
 
-版本歷史請看 repository 的 CHANGELOG；較早版本的完整內容位於 `docs/history/changelog/`，根目錄仍保留所有版本連結。維護者的 release readiness 與 tag approval 流程見 Maintenance；驗證歷史請看 Scenario Conformance。
+版本歷史請看 repository 的 CHANGELOG；較早版本的完整內容位於 `docs/history/changelog/`，根目錄仍保留所有版本連結。最新的 capability registry、runtime telemetry、quality ratchet 與 Agent Eval freshness 架構說明見 [Architecture Overview](ARCHITECTURE_OVERVIEW.md) 與 [Scenario Conformance](CONFORMANCE.md)。維護者的 release readiness 與 tag approval 流程見 Maintenance；驗證歷史請看 Scenario Conformance。
 
 目前主要實作遵循 Runtime 模型偏好，Skill registry 由 frontmatter 決定性產生。詳見 [技術指南](TECHNOLOGY_GUIDE.md) 與 [Conformance](CONFORMANCE.md)。
-
-**Plan19 architecture and runtime closure.**
-
-For current system facts and conformance totals, see [System Reference](SYSTEM_REFERENCE.md) and [Current Scenario Conformance](CONFORMANCE_CURRENT.md). Plan19 capability, branch and evolution evidence is indexed from `config/capability-registry.yaml` and the `.aips/review/PLAN19_*` records.
