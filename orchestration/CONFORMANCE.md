@@ -785,7 +785,7 @@ Lifecycle evidence checks supported ephemeral prefixes, PR state, branch age, in
 
 ## Scenario 200 — Demand-driven CI toolchain planning
 
-Lifecycle evidence checks exact-path optional tooling, full provisioning for unknown or sensitive paths, and preservation of mandatory validation stages.
+Lifecycle evidence checks exact-path optional tooling, full provisioning for unknown or sensitive paths and `tests/validation/mcp_interoperability_contracts.py`, and preservation of mandatory validation stages.
 
 ## Scenario 193 — Evidence-driven Implementation Resolution
 

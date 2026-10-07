@@ -117,7 +117,7 @@ Before readiness, move finalized release notes under the heading matching `VERSI
 
 `config/system-facts.yaml` and `config/architecture-surfaces.yaml` are the source for factual command/capability tables in `docs/human/SYSTEM_REFERENCE.md`. Run `python scripts/system_facts.py --write` after changing those facts and `--check` in validation. Keep explanatory prose in its canonical topic documents.
 
-CI derives optional Node, browser and OpenAPI provisioning from exact candidate paths using `scripts/ci_validation_plan.py`. Unknown paths select the full toolchain. The plan only skips unrelated optional setup and its isolated lifecycle evidence; mandatory secret scanning, fast preflight, repository validation and the exact-candidate Integration Gate remain required.
+CI derives optional Node, browser and OpenAPI provisioning from exact candidate paths using `scripts/ci_validation_plan.py`. Unknown paths select the full toolchain. `tests/validation/mcp_interoperability_contracts.py` also selects the full toolchain because required repository lifecycle preflight checks need the complete environment. The plan only skips unrelated optional setup and its isolated lifecycle evidence; mandatory secret scanning, fast preflight, repository validation and the exact-candidate Integration Gate remain required.
 
 ## Documentation audience
 
