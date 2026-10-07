@@ -1,112 +1,55 @@
 version: 1
 candidate:
-  base_sha: 6016723622d649b5b61d04d2b4082c2fcb2de75c
-  changed_files_hash: 2827bdd4fa0c23d4c4d13224aed92794b9d0779e4032c140bea1eea9b4120c13
+  base_sha: e507ba1fc3842ac40e41ecabec481828a6d78916
+  changed_files_hash: 788c6122bb42352c55eb8d623a25ff6a1452b1d73d66e7c6b1ebda87b8957ef4
 change:
-  id: plan20-phase2-system-core
-  summary: Compact fixed system context, route canonical protocols per task, and correct
-    bounded Python relation extraction for Change Impact.
+  id: plan21-phase0-contract-baseline
+  summary: Pin pre-hardening digest, CLI, installer, and validation timing contracts.
   boundary:
-  - fixed-system-core
-  - task-specific-protocol-routing
-  - context-manifest-and-runtime-hook
-  - retrieval-relations-and-impact-traversal
-  - documentation-and-conformance
-  - external-vitepress-resolution
+  - public-cli-contract
+  - canonical-digest-contract
+  - path-matching-compatibility
+  - validation-timing-baseline
 matrix:
-- boundary: fixed-system-core
-  reason: Reduce fixed system context while preserving authority, compatibility routing,
-    and all existing gates.
-  checks: &id001
+- boundary: public-cli-contract
+  reason: Preserve the exact public CLI stdout, stderr, and exit behavior before later phases intentionally repair command-group help.
+  checks: &baseline
     static_lint:
       applicable: true
-      evidence: Ruff E4/E7/E9/F on routing, hook, and lifecycle files; full changed-file
-        lint findings reviewed against baseline.
+      evidence: Focused Ruff E4/E7/E9/F on the new lifecycle and touched validation entry point.
     unit:
       applicable: true
-      evidence: tests/evidence/retrieval_relations_extraction_lifecycle.py and route
-        classifier assertions in tests/evidence/intelligence_context_lifecycle.py.
+      evidence: tests/evidence/plan21_contract_baseline.py verifies the pinned CLI and canonical digest vectors.
     integration:
       applicable: true
-      evidence: tests/evidence/intelligence_context_lifecycle.py and tests/evidence/change_impact_traversal_lifecycle.py;
-        exact-candidate Integration Gate required.
+      evidence: Exact-candidate Integration Gate and repository validation entry point.
     contract:
       applicable: true
-      evidence: tests/validation/static_contracts.py and tests/validation/change_impact_traversal_contracts.py;
-        compact manifest and hook contract assertions.
+      evidence: Golden stdout/stderr hashes and exit codes for public CLI commands; version output validated by shape.
     security:
       applicable: true
-      evidence: Missing required protocol sources fail closed for mutation; route
-        output excludes prompt text and core retains Human/publication gates.
+      evidence: Baseline invokes only local help/version/unknown-command paths and contains no credentials or external writes.
     migration_recovery:
       applicable: true
-      evidence: Retrieval index schema v5 is rebuildable; retrieval lifecycle and
-        stale-index behavior remain covered.
+      evidence: No state migration in Phase 0; installer recovery lifecycle is recorded as a future Phase 1 boundary.
     cli_harness:
       applicable: true
-      evidence: Turn Context CLI and runtime hook lifecycle verify the selected route
-        manifest and diagnostics.
+      evidence: CLI golden vectors capture current behavior, including known command-group help exit code 1 for later repair.
     docs_schema:
       applicable: true
-      evidence: Canonical protocol, Human documentation closure, two architecture
-        diagrams, Scenario 230 and generated conformance view.
+      evidence: Validation timing baseline records the exact base candidate and observed per-check durations.
     e2e:
       applicable: false
-      na_reason: No product UI, deployed service, or end-user runtime behavior changes.
-- boundary: task-specific-protocol-routing
-  reason: Resolve and combine canonical protocol pointers for every supported task
-    category with conservative fallback.
-  checks: *id001
-- boundary: context-manifest-and-runtime-hook
-  reason: Keep full/compact manifests and hook output additive, privacy-safe, and
-    fail closed when required sources are missing.
-  checks: *id001
-- boundary: retrieval-relations-and-impact-traversal
-  reason: Use syntactic Python calls and bounded caller/consumer traversal without
-    claiming compiler-grade or repository-wide completeness.
-  checks: *id001
-- boundary: documentation-and-conformance
-  reason: Keep canonical Human/Agent guidance, diagrams, route scenario, generated
-    views, and exact-candidate evidence aligned.
-  checks: *id001
-- boundary: external-vitepress-resolution
-  reason: Allow a clean candidate to use an explicit external VitePress installation
-    only when its installed version matches the candidate lockfile exactly.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Ruff critical lint and quality ratchet run in the exact-candidate Integration Gate.
-    unit:
-      applicable: true
-      evidence: tests/evidence/publish_preflight_lifecycle.py covers external resolution,
-        local default resolution, absent packages, and lockfile-version mismatch.
-    integration:
-      applicable: true
-      evidence: Exact-candidate Integration Gate builds changed documentation through
-        the external VitePress path while the candidate checkout stays clean.
-    contract:
-      applicable: true
-      evidence: tests/validation/publish_preflight_contracts.py asserts explicit path,
-        exact lockfile version, and no-install/no-registry behavior.
-    security:
-      applicable: true
-      evidence: External package paths are explicit and read-only; mismatched package
-        metadata fails before invoking Node; no package install or registry request occurs.
-    migration_recovery:
-      applicable: true
-      evidence: Existing checkout-local node_modules remains the default; external
-        resolution is opt-in and needs no persisted state or migration.
-    cli_harness:
-      applicable: true
-      evidence: Publication preview and Gate inherit the explicit
-        AIPS_VITEPRESS_NODE_MODULES environment setting.
-    docs_schema:
-      applicable: true
-      evidence: Scenario 165, Integration Gate, Maintenance, and Technology Guide
-        describe version matching and the clean-checkout workflow.
-    e2e:
-      applicable: false
-      na_reason: No deployed UI or user-facing product flow changes.
+      na_reason: No deployed UI, service, or user flow changes.
+- boundary: canonical-digest-contract
+  reason: Freeze byte-level canonical JSON digest behavior across duplicated raw and prefixed helpers before consolidation.
+  checks: *baseline
+- boundary: path-matching-compatibility
+  reason: Record deliberately different glob behavior so shared primitives retain caller-specific semantics.
+  checks: *baseline
+- boundary: validation-timing-baseline
+  reason: Capture a reproducible same-host baseline before validation optimization work.
+  checks: *baseline
 review_evidence:
   required: false
 scope_recomputed_after_expansion: true
@@ -114,14 +57,6 @@ actual_diff_reconciled: true
 blockers: []
 status: READY
 verification:
-  retrieval_relations_extraction_lifecycle: PASS
-  change_impact_traversal_lifecycle: PASS
-  intelligence_context_lifecycle: PASS
-  static_and_documentation_contracts: PASS
-  scenario_conformance: PASS
-  focused_publication_contracts: PASS
-  documentation_sync_contracts: PASS
-  documentation_placement: PASS
-  external_vitepress_docs_build: PASS
-  focused_ruff: PASS
+  exact_base_repository_validation: PASS
+  plan21_contract_baseline_lifecycle: REQUIRED_ON_BOUND_COMMIT
   exact_candidate_integration_gate: REQUIRED_ON_BOUND_COMMIT

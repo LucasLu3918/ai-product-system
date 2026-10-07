@@ -1,0 +1,73 @@
+version: 1
+canonical_hashes:
+  raw:
+  - name: sorted-ascii-object
+    value: {b: 2, a: 1}
+    digest: 43258cff783fe7036d8a43033f830adfc60ec037382473548ac742b888292777
+  - name: unicode-nested-value
+    value: {名稱: 台灣, items: [1, true, null]}
+    digest: 5f728572e8b04998e9fee89aced312c559c5342a5579880bf08137e5ae100eab
+  prefixed:
+  - name: sorted-ascii-object
+    value: {b: 2, a: 1}
+    digest: sha256:43258cff783fe7036d8a43033f830adfc60ec037382473548ac742b888292777
+  - name: unicode-nested-value
+    value: {名稱: 台灣, items: [1, true, null]}
+    digest: sha256:5f728572e8b04998e9fee89aced312c559c5342a5579880bf08137e5ae100eab
+  domain_specific:
+  - name: governance-fingerprint
+    value: {files: [b, a], boundaries: [runtime, network], operation: external_data_egress}
+    digest: sha256:e25a797607538c903592ef23f9d9ad26fa6784064aa6ea7fe7d9182904bd8af4
+  - name: runtime-action-digest
+    value: {action: external_data_egress, tool: Bash, resource: https://example.test}
+    digest: sha256:52621022301b8a8d8157493c8cce9996993b853f61bb4eaa5d52e272f57cfd90
+cli:
+- argv: [--help]
+  exit_code: 0
+  stdout_sha256: 624c0272c6630fe3aea23d6bde1b5aa1a278c89403fdd73864fe2f683aa75e48
+  stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+- argv: [help]
+  exit_code: 0
+  stdout_sha256: 624c0272c6630fe3aea23d6bde1b5aa1a278c89403fdd73864fe2f683aa75e48
+  stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+- argv: [not-a-command]
+  exit_code: 1
+  stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  stderr_sha256: ee5df7955141cfb7833454ce5bebdf5b7b698cd8c2c0d7f8daf9f18d2f4c5b20
+- argv: [install, --help]
+  exit_code: 1
+  stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  stderr_sha256: 1c00098f11c15074b15866e9ee0ffe3df86f240c7d42282dba34bfbf381c9b0b
+- argv: [harness, --help]
+  exit_code: 1
+  stdout_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+  stderr_sha256: 9bdab8cc0e3afc65dbb7608f1309748cb6af627118368d783918d5108cdd0051
+- argv: [intelligence, --help]
+  exit_code: 0
+  stdout_sha256: 0e1ff902edfef018821ada5d29d64dbad1f06524fee62a67af97c4343be496ba
+  stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+- argv: [publish, --help]
+  exit_code: 0
+  stdout_sha256: bba588ccccac58434bc7ecd6f6ca30b69d1fd34151294b7369b7effc4c0dc722
+  stderr_sha256: ignored-dynamic-startup-diagnostics
+- argv: [version]
+  exit_code: 0
+  stdout_pattern: '^\d+\.\d+\.\d+ \([0-9a-f]{40}\)\n$'
+  stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+path_matching:
+- helper: check_secret_leakage.glob_matches
+  path: foo.py
+  pattern: '**/*.py'
+  expected: true
+- helper: project_intelligence.path_matches
+  path: foo.py
+  pattern: '**/*.py'
+  expected: true
+- helper: documentation_placement.matches_any
+  path: foo.py
+  patterns: ['**/*.py']
+  expected: false
+- helper: visual_profile.path_matches
+  path: foo.py
+  patterns: ['**/*.py']
+  expected: false
