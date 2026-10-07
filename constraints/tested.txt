@@ -1,4 +1,4 @@
-# Exact transitive dependency set exercised by the Python 3.12 repository Integration Gate.
+# Exact transitive dependency set exercised by the Python 3.12 repository Integration Gate and focused pytest CI.
 # Runtime compatibility ranges remain in requirements*.txt; update this tested set only from a verified full environment.
 annotated-types==0.8.0
 anyio==4.15.1
@@ -14,6 +14,7 @@ hypothesis==6.155.2
 httpcore2==2.13.1
 httpx2==2.13.1
 idna==3.20
+iniconfig==2.3.1
 jsonschema==4.26.0
 jsonschema-path==0.5.0
 jsonschema-specifications==2025.9.1
@@ -26,10 +27,13 @@ mypy_extensions==1.1.0
 openapi-schema-validator==0.9.0
 openapi-spec-validator==0.9.0
 opentelemetry-api==1.45.0
+packaging==26.3
 pathable==0.6.0
 pathspec==1.1.1
 playwright==1.63.0
+pluggy==1.6.0
 pycparser==3.0
+Pygments==2.21.0
 pydantic==2.13.5
 pydantic-settings==2.15.0
 pydantic_core==2.46.5
@@ -38,6 +42,7 @@ PyJWT==2.15.1
 python-dotenv==1.2.4
 python-multipart==0.0.32
 PyYAML==6.0.3
+pytest==9.1.1
 referencing==0.37.0
 rfc3339-validator==0.1.4
 rpds-py==2026.6.3
