@@ -4,6 +4,8 @@ The publication CLI/import facade remains `scripts/publish_preflight.py`; post-m
 
 This page lists factual command, capability and runtime data. Explanatory policy remains in the linked canonical documentation.
 
+Shared deterministic primitives live in `scripts/aips_common/`; existing modules keep their public compatibility wrappers, and capability projections continue to be generated from the canonical registry.
+
 The established Retrieval Intelligence command/import facade remains `scripts/retrieval_intelligence.py`; internal lexical relation extraction lives in `scripts/retrieval_relations.py`. No public command or installation dependency is added.
 
 <!-- AIPS-SYSTEM-FACTS:BEGIN -->
