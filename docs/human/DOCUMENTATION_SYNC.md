@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Changes to runtime hook input validation, resolver diagnostics or installer locking update the matching Harness, Security Assurance and Installation topics together with this map; machine-readable output stays documented alongside the canonical Harness protocol.
+
 固定 AIPS system context 由 `SYSTEM_CORE.md` 與任務專屬 orchestration pointers 組成；`SYSTEM.md` 是相容入口。Turn Context 或 protocol routing 行為變更時，同步更新 Harness、Architecture、Technology Guide、Scenario Conformance 與核心測試矩陣。
 
 主要模型／Skill metadata 變更同步更新模型路由、架構、技術指南、維護與 Conformance；REST／visual Skill 精簡仍須保留 canonical orchestration 指標與原有 evidence 規則。

@@ -76,6 +76,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+Runtime hook input and resolver failure contracts are canonical in the Harness protocol; user-facing behavior and recovery guidance live in HARNESS.md, SECURITY_ASSURANCE.md and INSTALLATION.md.
+
 `SYSTEM_CORE.md` 是固定載入的精簡 AIPS 核心；`SYSTEM.md` 保留相容入口，任務所需協定由 Turn Context 指向 `orchestration/` 中的 canonical 文件。
 
 主要模型與辅助路由規則見 `../../orchestration/MODEL_ROUTING.md`；Skill registry 維護見 `TECHNOLOGY_GUIDE.md`，可觀測覆蓋見 `CONFORMANCE.md`。
