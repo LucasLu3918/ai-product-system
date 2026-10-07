@@ -128,6 +128,8 @@ Do not create a permanent/high-authority role without user approval.
 
 ## Context expansion
 
+Load `SYSTEM_CORE.md` as the fixed policy layer and resolve only the canonical protocols applicable to the task; for unclassified mutation include Orchestrator, Change Impact and Quality Planning, and fail closed if a required source is unavailable.
+
 
 For behavior-preserving AIPS CLI extraction, keep `bin/aips` as the public launcher and `scripts/aips_cli.sh` as the resolved-checkout facade. Split internal modules incrementally, preserve existing CLI contracts and validate source plus installed-symlink invocation before publication.
 
@@ -302,6 +304,8 @@ approved proposal/scope
 Do not infer machine-bound approval from vague context. Runtime guards are enforcement transport; architectural/security reasoning remains in orchestration/review.
 
 ## Checkpoint and resume
+
+Persist task progress without copying the original prompt into route telemetry; on resume, recompute relevant protocol routes from the current request and workspace state.
 
 When parallel Task Graph execution is enabled, claim only scheduler-dispatched work inside its active AIPS worktree. Preserve the task lease and base revision across recovery; reconcile the actual Git diff before marking completion. Resource authorization remains advisory until a native write guard is verified.
 

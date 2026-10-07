@@ -31,6 +31,8 @@ When Phase 3 enforcement changes, derive separate boundaries for ownership and g
 
 For Turn Context, run-event, retrieval, Agent Eval freshness, observed-stage telemetry and review-attestation changes, bind separate boundaries to executable lifecycle evidence. A trusted review matrix stays disabled until its external issuer is configured; tests with fixture keys do not establish a production trust root.
 
+For fixed-system-context or protocol-routing changes, verify every supported task route, compact and hook manifest compatibility, missing-source fail-closed behavior, the fixed-core byte ceiling, and the measured reduction against the base fixed layer. Keep `SYSTEM.md` compatibility pointers and canonical protocol ownership in the same candidate.
+
 Before implementation, start from `templates/review/CORE_CHANGE_TEST_MATRIX.yaml` and maintain the active candidate at `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`.
 
 Assess each materially affected boundary against applicable evidence:

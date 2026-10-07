@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import importlib
 import json
 import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from unittest.mock import patch
 
 import yaml
 
@@ -100,6 +102,19 @@ def source_registry_runtime_dedup(base: Path, env: dict[str, str]) -> None:
             ],
             env,
         )
+        context = ctx.get("context") or {}
+        always = context.get("always") or []
+        require(always == [str(ROOT / "harness" / "BOOTSTRAP.md"), str(ROOT / "SYSTEM_CORE.md")],
+                "fixed AIPS context must use the compact core while preserving bootstrap")
+        require(str(ROOT / "SYSTEM.md") not in always, "compatibility router must no longer occupy the fixed context layer")
+        routes = context.get("system_protocol_routes") or {}
+        require(routes.get("status") == "READY", "Turn Context must resolve canonical protocol routes")
+        require(routes.get("system_core", {}).get("bytes", 99999) <= 8192, "Turn Context must report bounded core size")
+        from project_intelligence import compact_context_manifest
+        compact = compact_context_manifest(ctx)
+        compact_routes = (compact.get("context") or {}).get("system_protocol_routes") or {}
+        require(compact_routes == routes, "compact Turn Context must preserve additive system route metadata")
+        require("prompt" not in json.dumps(compact_routes), "route metadata must not persist or expose prompt text")
         runtime_native = [str(Path(p).resolve()) for p in (ctx.get("context") or {}).get("runtime_native", [])]
         project_native = [str(Path(p).resolve()) for p in (ctx.get("context") or {}).get("project_native", [])]
         native_path = str((project / native_name).resolve())
@@ -240,6 +255,8 @@ def normal_chat_no_bootstrap(base: Path, env: dict[str, str]) -> None:
     require(hook.returncode == 0, f"Turn Context hook failed: {hook.stdout} {hook.stderr}")
     require("AIPS TURN CONTEXT" in hook.stdout, "normal chat may still receive compact Harness context")
     require("mutation_likely=False" in hook.stdout, "normal chat context must remain non-mutating")
+    require("system_protocol_route=general_read status=READY" in hook.stdout, "hook must expose the selected route")
+    require("system_core=" + str(ROOT / "SYSTEM_CORE.md") in hook.stdout, "hook must expose compact system core path")
     require(not (project / ".ai").exists(), "Turn Context hook must not auto-attach normal chat project")
     require(not config_projects.exists(), "Turn Context hook must not create external Intelligence for normal chat")
 
@@ -254,7 +271,7 @@ def normal_chat_no_bootstrap(base: Path, env: dict[str, str]) -> None:
             "non-Git context must keep its bounded core capsule")
 
     sys.path.insert(0, str(ROOT / "scripts"))
-    from turn_intent import classify_prompt
+    from turn_intent import classify_prompt, route_system_protocols
     for prompt, expected in (
         ("不要修改程式碼", False),
         ("請解釋 update 指令", False),
@@ -265,8 +282,58 @@ def normal_chat_no_bootstrap(base: Path, env: dict[str, str]) -> None:
     require(classify_prompt("Explain the build system")[0] == "general", "build must not trigger UI routing")
     require(classify_prompt("不要修改程式碼", "write")[1] is True, "explicit write intent must be honored")
 
+    route_cases = (
+        ("Open a PR and merge it", False, "publish"),
+        ("Plan end-to-end product delivery", True, "product_delivery"),
+        ("Improve UI layout and visual style", True, "visual"),
+        ("Review security credentials", False, "security"),
+        ("Run conformance tests", True, "testing"),
+        ("Change the API schema and data flow", True, "api_data"),
+        ("Create the product roadmap plan", True, "planning"),
+        ("Update documentation and README", True, "documentation"),
+        ("Explain this codebase", False, "general_read"),
+        ("Implement an unspecified change", True, "general_mutation"),
+    )
+    for prompt, mutation, expected_category in route_cases:
+        route = route_system_protocols(prompt, mutation, str(ROOT))
+        require(route["category"] == expected_category, f"incorrect protocol route for {prompt}: {route}")
+        require(route["status"] == "READY", f"canonical route sources missing for {prompt}: {route}")
+        require(route["system_core"]["path"] == str(ROOT / "SYSTEM_CORE.md"), "route must point at compact system core")
+        require(all(Path(item["path"]).is_file() for item in route["protocols"]), f"route source missing for {prompt}")
+
+    general_mutation = route_system_protocols("Implement an unspecified change", True, str(ROOT))
+    require([item["id"] for item in general_mutation["protocols"]] == ["orchestrator", "change_impact", "quality_planning"],
+            "general mutation must retain conservative protocol fallback")
+    mixed_route = route_system_protocols("Update the security API schema and open a PR", True, str(ROOT))
+    require(set(mixed_route["matched_categories"]) == {"publish", "security", "api_data"},
+            "mixed tasks must retain every matched task route")
+    mixed_ids = {item["id"] for item in mixed_route["protocols"]}
+    require({"release_readiness", "secret_handling", "change_impact"}.issubset(mixed_ids),
+            "mixed tasks must load all relevant publication, security, and API/data protocols")
+    missing_routes = route_system_protocols("Implement an unspecified change", True, str(base / "missing-system"))
+    require(missing_routes["status"] == "UNAVAILABLE" and "SYSTEM_CORE.md" in missing_routes["missing"],
+            "missing route sources must be explicit and unavailable")
+    pi = importlib.import_module("project_intelligence")
+    with patch.object(pi, "system_root", return_value=base / "missing-system"):
+        missing_context = pi.context_manifest(base / "plain-directory", "codex", "Implement an unspecified change")
+    require((missing_context.get("fail_policy") or {}).get("mode") == "closed",
+            "unavailable canonical routes must fail closed on mutation")
+    require("system_protocol_routes_unavailable" in (missing_context.get("fail_policy") or {}).get("reasons", []),
+            "route source failure must have an explicit fail-closed reason")
+    core_path = ROOT / "SYSTEM_CORE.md"
+    bootstrap_path = ROOT / "harness" / "BOOTSTRAP.md"
+    base_system_bytes = len(subprocess.run(
+        ["git", "show", "HEAD:SYSTEM.md"], cwd=ROOT, check=True, capture_output=True
+    ).stdout)
+    current_fixed_bytes = core_path.stat().st_size + bootstrap_path.stat().st_size
+    prior_fixed_bytes = base_system_bytes + bootstrap_path.stat().st_size
+    require(core_path.stat().st_size <= 8192, "fixed system core exceeds 8192 bytes")
+    require(1 - (current_fixed_bytes / prior_fixed_bytes) >= 0.60,
+            "fixed system layer must shrink by at least 60% against HEAD SYSTEM.md")
+
 
 def main() -> int:
+    sys.path.insert(0, str(ROOT / "scripts"))
     with tempfile.TemporaryDirectory() as tmp:
         base = Path(tmp)
         home = base / "home"

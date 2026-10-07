@@ -56,6 +56,31 @@ def main() -> int:
         row["target_name"] not in {"ignored_comment", "ignored_string"}
         for row in expected
     )
+    annotated_source = (
+        "from typing import Any\n"
+        "def annotated(value: Any) -> dict[str, Any]:\n"
+        "    message = 'normalize(value)'\n"
+        "    client.lookup(value)\n"
+        "    return normalize(value)\n"
+    )
+    annotated_rows = facade.extract_code_relations("annotated.py", annotated_source)
+    calls = {row["target_name"] for row in annotated_rows if row["relation"] == "calls"}
+    assert calls == {"normalize"}
+    assert not any(row["relation"] == "calls" and row["target_name"] in {"Any", "dict", "lookup"} for row in annotated_rows)
+    assert any(row["target_name"] == "lookup" and row["relation"] == "references" for row in annotated_rows)
+    capped_source = (
+        "def capped():\n"
+        "    alpha + beta + gamma + delta\n"
+        "    return normalize(value)\n"
+    )
+    capped_rows = implementation.relation_rows(
+        implementation.code_without_comments_or_strings(capped_source),
+        facade.extract_symbols("capped.py", capped_source),
+        max_rows=2,
+        call_names_by_line=implementation.python_call_names_by_line(capped_source),
+    )
+    assert any(row["target_name"] == "normalize" and row["relation"] == "calls" for row in capped_rows)
+    assert len(capped_rows) == 2
     assert facade.extract_code_relations("sample.txt", source) == []
     assert facade.extract_code_relations("config/credentials.json", source) == []
     print("RETRIEVAL RELATIONS EXTRACTION FACADE LIFECYCLE PASSED")

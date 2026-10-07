@@ -34,7 +34,15 @@ repository_preflight = (ROOT / "scripts/repository_preflight.py").read_text(enco
 for phrase in ("AIPS_VALIDATION_VENV", "AIPS_VALIDATION_PYTHON", "openapi_spec_validator"):
     if phrase not in cli + (ROOT / "scripts/publish_preflight.py").read_text(encoding="utf-8"):
         errors.append(f"local validation environment contract missing: {phrase}")
-for phrase in ("AIPS_NODE_BINARY", "Node.js 24 or newer", "node_modules/vitepress/bin/vitepress.js", "No package install or registry access is attempted"):
+for phrase in (
+    "AIPS_NODE_BINARY",
+    "AIPS_VITEPRESS_NODE_MODULES",
+    "Node.js 24 or newer",
+    "package-lock.json",
+    "installed VitePress version does not match",
+    "registerHooks",
+    "No package install or registry access is attempted",
+):
     if phrase not in repository_preflight:
         errors.append(f"offline documentation build contract missing: {phrase}")
 workflow_pins = {

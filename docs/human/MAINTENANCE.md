@@ -208,6 +208,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+Risk-adaptive traversal changes use AST-extracted direct Python calls with bounded caller/consumer depth; unresolved dynamic dispatch and repository-wide partial graph coverage remain visible in evidence.
+
 本次 Project Intelligence promotion helper 維持既有 facade、Human approval 與 no-overwrite 邊界；Scenario 223 證明 Evolution Radar 對候選排除原因提供決定性歸因。
 
 Phase 4 generator adapter 維護需同步檢查 Profile schema、OpenAPI evidence、命令執行邊界、allowlist、Phase 3 generation records、原子回復、Scenario 196 與 Integration Gate fixture。Gate 僅執行隔離的假 generator lifecycle，不呼叫專案設定的實際 generator。更換 generator 或 version 時應重新審查 executable hash、版本輸出、argv 與生成差異，並執行專案原生測試。Phase 5 的 `generator_reports` 是 Profile 自願啟用的未追蹤本機報告；維護時檢查 schema/fingerprint、Git 祖先、Profile 前後雜湊、工具版本與 argv、輸入與輸出及 generation records。執行 `tests/evidence/openapi_client_pilot_lifecycle.py` 確認本機服務、client、證據鏈及負面路徑；新增產品不自動複製 AIPS 範例。
@@ -249,6 +251,8 @@ Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverif
 
 ## Durable Run State consistency
 
+固定 Turn Context 或 task protocol routing 變更時，更新 canonical core/router、Runtime adapters、文件 placement、Scenario 與 impact-derived matrix；維持原有 Human approval 與 publication boundaries。
+
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
 
 Task ownership lease 與共用 Scheduler state 必須以同一 task/execution identity 維持一致。過期 dirty work 不可自動重派；recovery 保留原 base revision 和 write set，最終以該 base 的完整 Git diff 對帳。
@@ -288,7 +292,7 @@ Before promoting legacy manual coverage: reconcile the Scenario to current canon
 
 ## Execution Isolation consistency
 
-The local Integration Gate selects a complete Python 3.12 validation environment and reports missing dependencies before candidate scanning. For documentation changes it requires Node 24+ and the already-installed VitePress bundle, invokes that bundle directly, and never installs packages or contacts a registry. The E2B artifact workflow pins the Node 24 upload action; its existing synthetic-data and least-privilege boundaries remain in force.
+The local Integration Gate selects a complete Python 3.12 validation environment and reports missing dependencies before candidate scanning. For documentation changes it requires Node 24+ and VitePress at the exact version pinned by the candidate's `package-lock.json`. It uses the checkout's `node_modules` by default; `AIPS_VITEPRESS_NODE_MODULES` may point to an absolute external dependency directory for a clean checkout. The preflight invokes that bundle directly and never installs packages or contacts a registry. The E2B artifact workflow pins the Node 24 upload action; its existing synthetic-data and least-privilege boundaries remain in force.
 
 When Execution Isolation behavior changes, review together:
 
@@ -381,6 +385,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+固定 Turn Context 或 task protocol routing 變更時，更新 canonical core/router、Runtime adapters、文件 placement、Scenario 與 impact-derived matrix；維持原有 Human approval 與 publication boundaries。固定核心 route scenario 亦須列入 registry、Conformance current view 與 recursive docs placement checks。
+
 Skill metadata 修改後須重建 INDEX 並執行 `tests/evidence/skill_index_lifecycle.py`；完整 repository validation 也會執行此 lifecycle。Scenario 224 是人工語意驗收，225 是 registry lifecycle 證據，不可互換。Plan19 增加 per-module quality budgets、behavior-based Eval freshness 與 canonical capability projections；各報告仍是 evidence，不能代替完整 Gate 或擴張批准範圍。
 
 Shared Python CI bootstrap callers must declare their requirement files, tested constraints, and import smoke tests; the action runs `pip check` and does not own package versions.
@@ -445,7 +451,7 @@ Internal Retrieval Intelligence module extraction must preserve the `retrieval_i
 
 Phase 3 enforcement changes also update `scripts/implementation_enforcement.py`, its versioned report schema, Scenario 195 and the existing Integration Gate profile/lifecycle evidence. Check report-only behavior before enabling path-scoped enforcement in a project; a missing current-run command report or stale generated/OpenAPI hash must not turn into PASS. Generated hashes verify recorded provenance, not generator execution.
 
-Keep the local publication route on one explicit checkout. Its preflight checks Python/Ruff, loopback and browser readiness before lifecycle validation, then checks changed Markdown links and builds VitePress for documentation candidates. Use `--project-root <repo>` when the installed CLI validates a separate source checkout. Core/Large labels belong on the initial PR creation request when using `gh`; a connector that cannot set labels atomically requires the label event and its own fresh CI result. After merge, update a clean local `main` with fast-forward-only when it is behind `origin/main`; preserve a backup before reconciliation and block dirty or divergent histories.
+Keep the local publication route on one explicit checkout. Its preflight checks Python/Ruff, loopback and browser readiness before lifecycle validation, then checks changed Markdown links and builds VitePress for documentation candidates. An external VitePress directory is accepted only when its installed version equals the candidate lockfile's exact version; the repository checkout remains clean and no install or registry access occurs. Use `--project-root <repo>` when the installed CLI validates a separate source checkout. Core/Large labels belong on the initial PR creation request when using `gh`; a connector that cannot set labels atomically requires the label event and its own fresh CI result. After merge, update a clean local `main` with fast-forward-only when it is behind `origin/main`; preserve a backup before reconciliation and block dirty or divergent histories.
 
 
 Preview 對 Core Matrix 套用與 Gate 相同的就緒條件：可執行狀態、無 blockers、實際差異已核對、base/hash 相符。同步後若仍是 DRAFT 或有待處理項目，先完成審查並清除已解決的 blocker；`READY_FOR_GATE` 不是正式 Gate PASS。

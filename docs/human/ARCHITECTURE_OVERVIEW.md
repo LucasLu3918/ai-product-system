@@ -21,6 +21,8 @@ MCP 提供 portability；native adapters 提供可驗證的 runtime hook / guard
 
 ## Project Intelligence 與 Retrieval
 
+Turn Context 固定使用精簡 `SYSTEM_CORE.md`，並依任務分類附上 canonical protocol routes；缺少必要路徑時修改任務 fail-closed，路由本身不授予任何核准或發布權限。
+
 `aips intelligence temporal` 仍由 `scripts/project_intelligence.py` 提供；temporal query 的內部實作位於 `scripts/project_intelligence_temporal.py`，既有 facade、輸出與權限邊界不變。
 
 Promotion eligibility 與目標路徑限制位於 `scripts/project_intelligence_promotion.py`，由同一 facade 使用；實際提升仍要求明確核准，拒絕覆寫既有目標。
@@ -57,6 +59,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Planning 與 Product Delivery
 
+Turn Context 對規劃任務只選取相關 canonical planning 與 product-delivery protocols；任務路由不改變需求核准、Change Boundary 或 Human decision gates。
+
 主要實作保留符合政策與能力條件的 Runtime／使用者選定模型；有證據、風險分析、Context 隔離或必要獨立審查價值時才委派。Skill frontmatter 透過決定性產生器輸出相容的 v1 INDEX；架構流程見 `../ARCHITECTURE.md`。
 
 Runtime Context 共用驗證 Python 選擇與 runtime 路徑解析，讓 CLI、local validation 與 publication preflight 使用同一套能力判定。Scenario 198 以確定性矩陣覆蓋安裝型態、Python、cache、網路與平台組合。
@@ -85,6 +89,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+Runtime hook 與 compact Context Manifest 共用同一組路由結果，僅輸出選取的 protocol IDs/paths，不保存原始 prompt。
 
 主要實作保留合格的 Runtime／使用者模型；Skill frontmatter 產生相容 v1 INDEX，決定性 lifecycle 與人工模型政策驗收分開記錄。
 
@@ -158,6 +164,8 @@ Publication Preflight 將 Python module availability 與 loopback/browser capabi
 
 ## Security 與 Governance
 
+固定系統核心保留 Human Authority、Change Impact、驗證及 Git publication gates；一般修改的保守路由會載入 Orchestrator、Change Impact 與 Quality Planning。
+
 Security Assurance Level（SAL）依產品 baseline 與 change impact 決定 review 強度。高價值 business logic、authorization、financial integrity 等 protected boundary 使用更嚴格 evidence。
 
 Human Approval 維持最高決策權；machine-readable approval binding、resource authorization、audit chain / portable bundle / retention catalog 都只驗證與保存 authority evidence，不創造新的 authority。
@@ -167,6 +175,8 @@ Runtime Policy Enforcement 使用四種結果：`ALLOW`、`DENY`、`REQUIRE_APPR
 Validation Observation keeps evidence readiness separate from operational failure: a completed `NOT_READY` cohort does not fail collection, while API, artifact, missing-report and unknown-status errors remain failures. Dependency Review records exact-candidate shadow parity; the standalone high-severity check remains authoritative until a separate reviewed switch after the observation window.
 
 ## Scenario Conformance 與 Agent Eval
+
+Scenario 230 驗證任務路由、compact Manifest、hook 相容性、缺少路由來源時的 fail-closed 行為，以及固定核心大小與節省量。
 
 Agent Eval 的 rubric PASS 與受測系統新鮮度分開報告。舊結果標記為歷史未綁定；新結果可綁定 Case 指定的系統來源。獨立審查可驗證由外部可信執行環境簽發的 Ed25519 receipt，但沒有受信任簽發者時仍維持 `UNVERIFIED`。
 

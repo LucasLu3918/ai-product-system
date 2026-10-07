@@ -157,6 +157,8 @@ The durable Human surface is the original GitHub Issue containing Radar evidence
 
 ## Documentation consistency
 
+System-context routing evidence belongs to canonical Harness, Project Intelligence, Technology Guide and Conformance sections; diagrams must show the fixed core and selected route pointers without implying enforcement upgrades.
+
 Changes to run projection/dashboard or task-owner leases must preserve the observation-only dashboard boundary, legacy `UNASSIGNED` projection, and read-only status inspection; ownership decisions remain in Scheduler/run-state commands.
 
 Telemetry and evaluation evidence must state what the runtime actually observed. Current-system fingerprints bind Agent Eval results to declared source files, while unbound historical results remain identifiable and are never silently upgraded.

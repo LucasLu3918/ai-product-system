@@ -4,11 +4,13 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
@@ -76,6 +78,74 @@ def resolve_node_binary() -> str | None:
     return shutil.which("node")
 
 
+def resolve_vitepress_entrypoint(root: Path = ROOT) -> tuple[Path | None, list[str]]:
+    # This is read-only: no package install or registry access is attempted.
+    configured = os.environ.get("AIPS_VITEPRESS_NODE_MODULES")
+    node_modules = Path(configured).expanduser() if configured else root / "node_modules"
+    if configured and not node_modules.is_absolute():
+        return None, ["AIPS_VITEPRESS_NODE_MODULES must be an absolute path."]
+    try:
+        node_modules = node_modules.resolve(strict=True)
+    except OSError:
+        return None, ["VitePress dependencies are unavailable at the selected node_modules path."]
+    if not node_modules.is_dir():
+        return None, ["VitePress dependencies are unavailable at the selected node_modules path."]
+
+    try:
+        lock = json.loads((root / "package-lock.json").read_text(encoding="utf-8"))
+        locked_version = lock["packages"]["node_modules/vitepress"]["version"]
+    except (OSError, json.JSONDecodeError, KeyError, TypeError):
+        return None, ["package-lock.json must pin an exact VitePress version before building documentation."]
+
+    package_dir = node_modules / "vitepress"
+    try:
+        package = json.loads((package_dir / "package.json").read_text(encoding="utf-8"))
+        installed_version = package.get("version")
+    except (OSError, json.JSONDecodeError, AttributeError):
+        return None, ["VitePress package metadata is missing or invalid at the selected node_modules path."]
+    if package.get("name") != "vitepress" or not isinstance(locked_version, str) or not locked_version:
+        return None, ["package-lock.json or the installed VitePress package metadata is invalid."]
+    if installed_version != locked_version:
+        return None, ["installed VitePress version does not match the exact version pinned in package-lock.json."]
+
+    entrypoint = package_dir / "bin/vitepress.js"
+    if not entrypoint.is_file():
+        return None, ["VitePress is missing its bin/vitepress.js entrypoint."]
+    return entrypoint, []
+
+
+def external_vitepress_resolver(root: Path, node_modules: Path) -> str:
+    candidate_url = json.dumps(root.resolve().as_uri().rstrip("/") + "/")
+    anchor_urls = json.dumps([
+        (node_modules.parent / "__aips_resolver_anchor__.mjs").resolve().as_uri(),
+        (node_modules / ".pnpm" / "__aips_pnpm_resolver_anchor__.mjs").resolve().as_uri(),
+    ])
+    return f"""import {{ registerHooks }} from 'node:module';
+const candidateRoot = {candidate_url};
+const resolverAnchors = {anchor_urls};
+function isBarePackage(specifier) {{
+  return !specifier.startsWith('.') && !specifier.startsWith('/') && !specifier.startsWith('node:') && !specifier.startsWith('file:');
+}}
+registerHooks({{
+  resolve(specifier, context, nextResolve) {{
+    if (context.parentURL?.startsWith(candidateRoot) && isBarePackage(specifier)) {{
+      let lastError;
+      for (const parentURL of resolverAnchors) {{
+        try {{
+          return nextResolve(specifier, {{ ...context, parentURL }});
+        }} catch (error) {{
+          if (error.code !== 'ERR_MODULE_NOT_FOUND') throw error;
+          lastError = error;
+        }}
+      }}
+      throw lastError;
+    }}
+    return nextResolve(specifier, context);
+  }}
+}});
+"""
+
+
 def docs_build_prerequisites(root: Path = ROOT) -> tuple[str | None, list[str]]:
     node = resolve_node_binary()
     if not node:
@@ -85,19 +155,30 @@ def docs_build_prerequisites(root: Path = ROOT) -> tuple[str | None, list[str]]:
     if version.returncode or not match or int(match.group(1)) < 24:
         actual = version.stdout.strip() or "unavailable"
         return node, [f"documentation build requires Node.js 24 or newer; detected {actual}. Set AIPS_NODE_BINARY or update PATH."]
-    vitepress = root / "node_modules/vitepress/bin/vitepress.js"
-    if not vitepress.is_file():
-        return node, ["VitePress is not installed at node_modules/vitepress/bin/vitepress.js; install the locked docs dependencies explicitly, then rerun the preflight. No install is attempted automatically."]
-    return node, []
+    _vitepress, errors = resolve_vitepress_entrypoint(root)
+    return node, errors
 
 
 def build_docs_site(root: Path = ROOT) -> list[str]:
     node, errors = docs_build_prerequisites(root)
     if errors:
         return errors
-    vitepress = root / "node_modules/vitepress/bin/vitepress.js"
+    vitepress, errors = resolve_vitepress_entrypoint(root)
+    if errors or vitepress is None:
+        return errors
     command = [str(node), str(vitepress), "build", "docs/human"]
-    result = subprocess.run(command, cwd=root, capture_output=True, text=True)
+    configured = os.environ.get("AIPS_VITEPRESS_NODE_MODULES")
+    if configured:
+        node_modules = vitepress.parents[2]
+        with tempfile.TemporaryDirectory(prefix="aips-vitepress-resolver-") as temporary:
+            resolver = Path(temporary) / "resolver.mjs"
+            resolver.write_text(external_vitepress_resolver(root, node_modules), encoding="utf-8")
+            child_env = os.environ.copy()
+            import_option = f"--import={resolver.as_uri()}"
+            child_env["NODE_OPTIONS"] = " ".join(filter(None, [child_env.get("NODE_OPTIONS", "").strip(), import_option]))
+            result = subprocess.run(command, cwd=root, capture_output=True, text=True, env=child_env)
+    else:
+        result = subprocess.run(command, cwd=root, capture_output=True, text=True)
     if result.returncode:
         detail = (result.stdout + "\n" + result.stderr).strip().splitlines()[-12:]
         return ["documentation site build failed: " + " | ".join(detail)]
@@ -111,6 +192,7 @@ def run(base: str, head: str, docs_build: bool = False) -> list[str]:
         cwd=ROOT,
         capture_output=True,
         text=True,
+        check=False,
     )
     if diff.returncode:
         errors.append(f"git diff --check failed: {diff.stdout.strip() or diff.stderr.strip()}")

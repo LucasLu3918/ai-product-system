@@ -224,6 +224,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 
 ## Quality 與 Review
 
+Context routing 的 Scenario 230 驗證核心大小、路由涵蓋、hook/manifest 契約與缺少來源時 fail-closed；它不取代 exact-candidate Integration Gate。
+
 主要實作保留合格的 Runtime／使用者模型；Skill frontmatter 產生相容 v1 INDEX，決定性 lifecycle 與人工模型政策驗收分開記錄。
 
 Agent Eval freshness 依變更路徑與明確的行為依賴挑選受影響案例，只標示需要更新 evidence 的案例，不會自動執行 Eval；Scenario 192、193、224 仍為人工驗收。
@@ -307,6 +309,8 @@ The supported command remains `aips` (or `bin/aips` from a source checkout). The
 Observation reports help people judge evidence quality; `NOT_READY` means the cohort is incomplete, not that collection failed or that selective validation is approved. Dependency Review remains blocking through its standalone check while a separate shadow records parity before any reviewed required-path change.
 
 ## Logging、Observability 與 Operations
+
+Context diagnostics 只記錄 route categories、protocol IDs/paths 與解析狀態，不保存原始 prompt 或私有 reasoning。
 Monthly Effectiveness names weekly Issues missing local pre-analysis and leaves their complete-cohort shortlist yield unavailable. Oversized Radar Issues keep the full original evidence in a verified archive for scheduled rollups.
 
 Execution Profile 的 per-run cost budget 是 advisory metadata。Telemetry 只記錄 runtime 實際提供的 usage/source/confidence；缺少 token 數或可驗證價格時保留 unknown，不呼叫 provider、不估算成本。
@@ -357,6 +361,8 @@ Standalone and shadow dependency-review artifacts retain exact base/head, run ID
 舊聊天內容不是 authoritative run state；若 workspace fingerprint 已變，先 refresh / revalidate 再接續。
 
 ## Project Intelligence
+
+Turn Context 顯示固定核心與本回合選取的 canonical protocol routes；路由清單只提供指引，變更前仍須完成 Change Impact 與正式核准。
 
 `aips intelligence context --project . --runtime codex --prompt '...'` 預設顯示精簡 YAML；`--full` 顯示完整診斷。可用 `--target-path src/file.py` 限定指示範圍，或用 `--intent read|write` 明確標示本次意圖。JSON 輸出維持完整格式，供既有整合使用。
 

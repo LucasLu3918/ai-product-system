@@ -117,6 +117,8 @@ For shell CLI changes, include the stable launcher and facade, module load paths
 
 Project Intelligence 的 temporal query 可逐步抽至內部 adapter，但必須保留 `project_intelligence.py` 的同一函式物件、CLI dispatch 與結果契約；Scenario 204 提供回歸證據。
 
+For bounded traversal, use up to six hops, 150 nodes and 300 edges. Python call candidates come from AST `Call` nodes with direct names or explicitly imported module attributes; explicit local imports resolve to their source file. Annotations, variables, arbitrary object methods, builtins and external imports do not create local call edges. This improves candidate precision without upgrading lexical evidence to compiler-resolved completeness.
+
 Scoped traversal evidence may be complete for directly inspected callers while retrieval-index freshness or repository-wide graph coverage remains incomplete. Record the limitation and keep global coverage claims partial.
 
 Validation-scope hints remain conservative: unknown paths and validator/governance paths retain the full validator set, while the shadow report records proposed omissions without skipping execution.

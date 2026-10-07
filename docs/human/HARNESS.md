@@ -109,6 +109,8 @@ Runtime Content Safety Boundary 只在 AIPS-owned sink 或已驗證 native hook 
 - The release-readiness check is evidence only: it never grants runtime capability or tag-writing authority.
 ## Progressive disclosure
 
+Turn Context 固定載入精簡的 `SYSTEM_CORE.md`，再依任務選擇 canonical orchestration 路徑。Codex、Claude Code 與 Gemini hook 都取得路由指標；`SYSTEM.md` 保留相容索引，不是固定系統層。
+
 Workflow and Runtime adapters keep validation observation collection behind the existing repository Gate; their read-only artifact reports do not enable host actions, skip checks, or add Git publication authority.
 
 Repository mutation workflows resolve AIPS Turn Context before analysis, then use targeted intelligence refresh and Change Impact evidence before editing; commit-time publication gates additionally enforce public-repository identity and content-safety policy.

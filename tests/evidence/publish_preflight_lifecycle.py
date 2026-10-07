@@ -536,6 +536,10 @@ def main() -> int:
     with tempfile.TemporaryDirectory() as td:
         docs_root = Path(td)
         (docs_root / "docs").mkdir()
+        (docs_root / "package-lock.json").write_text(
+            json.dumps({"packages": {"node_modules/vitepress": {"version": "1.6.4"}}}),
+            encoding="utf-8",
+        )
         (docs_root / "docs/guide.md").write_text(
             "[valid](./target.md) [missing](./missing.md) [outside](../../outside.md)\n"
             "```md\n[ignored](./not-a-real-link.md)\n```\n"
@@ -554,18 +558,41 @@ def main() -> int:
             repository_preflight.subprocess,
             "run",
             return_value=subprocess.CompletedProcess(["/node24", "--version"], 0, "v24.1.0\n", ""),
-        ):
+        ), patch.dict(os.environ, {"AIPS_VITEPRESS_NODE_MODULES": ""}):
             _, missing_vitepress = repository_preflight.docs_build_prerequisites(docs_root)
-        assert missing_vitepress and "VitePress is not installed" in missing_vitepress[0]
+        assert missing_vitepress and "VitePress dependencies are unavailable" in missing_vitepress[0]
         (docs_root / "node_modules/vitepress/bin").mkdir(parents=True)
+        (docs_root / "node_modules/vitepress/package.json").write_text(
+            json.dumps({"name": "vitepress", "version": "1.6.4"}), encoding="utf-8"
+        )
         (docs_root / "node_modules/vitepress/bin/vitepress.js").write_text("// local fixture\n", encoding="utf-8")
         with patch.object(repository_preflight, "resolve_node_binary", return_value="/node24"), patch.object(
             repository_preflight.subprocess,
             "run",
             return_value=subprocess.CompletedProcess(["/node24", "--version"], 0, "v24.1.0\n", ""),
-        ):
+        ), patch.dict(os.environ, {"AIPS_VITEPRESS_NODE_MODULES": ""}):
             node, ready_errors = repository_preflight.docs_build_prerequisites(docs_root)
             assert node == "/node24" and ready_errors == []
+        (docs_root / "node_modules/vitepress/package.json").write_text(
+            json.dumps({"name": "vitepress", "version": "1.6.3"}), encoding="utf-8"
+        )
+        with patch.object(repository_preflight, "resolve_node_binary", return_value="/node24"), patch.object(
+            repository_preflight.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess(["/node24", "--version"], 0, "v24.1.0\n", ""),
+        ), patch.dict(os.environ, {"AIPS_VITEPRESS_NODE_MODULES": ""}):
+            _, mismatched_vitepress = repository_preflight.docs_build_prerequisites(docs_root)
+        assert mismatched_vitepress and "does not match" in mismatched_vitepress[0]
+        with patch.object(repository_preflight, "resolve_node_binary", return_value="/node24"), patch.object(
+            repository_preflight.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess(["/node24", "--version"], 0, "v24.1.0\n", ""),
+        ), patch.dict(os.environ, {"AIPS_VITEPRESS_NODE_MODULES": "relative/node_modules"}):
+            _, relative_vitepress = repository_preflight.docs_build_prerequisites(docs_root)
+        assert relative_vitepress and "absolute path" in relative_vitepress[0]
+        (docs_root / "node_modules/vitepress/package.json").write_text(
+            json.dumps({"name": "vitepress", "version": "1.6.4"}), encoding="utf-8"
+        )
         with patch.object(repository_preflight, "resolve_node_binary", return_value="/node24"), patch.object(
             repository_preflight.subprocess,
             "run",
@@ -573,11 +600,56 @@ def main() -> int:
                 subprocess.CompletedProcess(["/node24", "--version"], 0, "v24.1.0\n", ""),
                 subprocess.CompletedProcess(["/node24", "vitepress.js"], 0, "", ""),
             ],
-        ) as run_node:
+        ) as run_node, patch.dict(os.environ, {"AIPS_VITEPRESS_NODE_MODULES": ""}):
             assert repository_preflight.build_docs_site(docs_root) == []
             assert run_node.call_args_list[-1].args[0] == [
-                "/node24", str(docs_root / "node_modules/vitepress/bin/vitepress.js"), "build", "docs/human"
+                "/node24", str((docs_root / "node_modules/vitepress/bin/vitepress.js").resolve()), "build", "docs/human"
             ]
+
+        external_root = Path(td) / "external-project"
+        external_root.mkdir()
+        (external_root / "package-lock.json").write_text(
+            json.dumps({"packages": {"node_modules/vitepress": {"version": "1.6.4"}}}),
+            encoding="utf-8",
+        )
+        external_modules = Path(td) / "shared-node-modules"
+        external_package = external_modules / "vitepress"
+        (external_package / "bin").mkdir(parents=True)
+        (external_package / "package.json").write_text(
+            json.dumps({"name": "vitepress", "version": "1.6.4"}), encoding="utf-8"
+        )
+        (external_package / "bin/vitepress.js").write_text("// external fixture\n", encoding="utf-8")
+        with patch.object(repository_preflight, "resolve_node_binary", return_value="/node24"), patch.object(
+            repository_preflight.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess(["/node24", "--version"], 0, "v24.1.0\n", ""),
+        ), patch.dict(os.environ, {"AIPS_VITEPRESS_NODE_MODULES": str(external_modules)}):
+            node, external_errors = repository_preflight.docs_build_prerequisites(external_root)
+            assert node == "/node24" and external_errors == []
+        with patch.object(repository_preflight, "resolve_node_binary", return_value="/node24"), patch.object(
+            repository_preflight.subprocess,
+            "run",
+            side_effect=[
+                subprocess.CompletedProcess(["/node24", "--version"], 0, "v24.1.0\n", ""),
+                subprocess.CompletedProcess(["/node24", "vitepress.js"], 0, "", ""),
+            ],
+        ) as run_node, patch.dict(os.environ, {"AIPS_VITEPRESS_NODE_MODULES": str(external_modules)}):
+            assert repository_preflight.build_docs_site(external_root) == []
+            assert run_node.call_args_list[-1].args[0] == [
+                "/node24", str((external_package / "bin/vitepress.js").resolve()), "build", "docs/human"
+            ]
+            assert "--import=file://" in run_node.call_args_list[-1].kwargs["env"]["NODE_OPTIONS"]
+            assert not (external_root / "node_modules").exists()
+        (external_package / "package.json").write_text(
+            json.dumps({"name": "vitepress", "version": "1.6.3"}), encoding="utf-8"
+        )
+        with patch.object(repository_preflight, "resolve_node_binary", return_value="/node24"), patch.object(
+            repository_preflight.subprocess,
+            "run",
+            return_value=subprocess.CompletedProcess(["/node24", "--version"], 0, "v24.1.0\n", ""),
+        ), patch.dict(os.environ, {"AIPS_VITEPRESS_NODE_MODULES": str(external_modules)}):
+            _, external_mismatch = repository_preflight.docs_build_prerequisites(external_root)
+        assert external_mismatch and "does not match" in external_mismatch[0]
         with patch.object(repository_preflight, "resolve_node_binary", return_value="/node20"), patch.object(
             repository_preflight.subprocess,
             "run",

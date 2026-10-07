@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import ast
+import builtins
 import re
 from typing import Any
 
@@ -97,8 +99,14 @@ def relation_rows(
     definitions: list[tuple[str, str, int]],
     *,
     max_rows: int,
+    call_names_by_line: dict[int, set[str]] | None = None,
 ) -> list[dict[str, Any]]:
-    """Build bounded lexical call/reference rows from masked source text."""
+    """Build bounded call/reference rows from masked source text.
+
+    Python callers may supply AST-derived call names so annotations, attributes,
+    and local identifiers are not mistaken for function calls. Other languages
+    retain the bounded lexical candidate behavior.
+    """
     rows: list[dict[str, Any]] = []
     for line_no, line in enumerate(masked_text.splitlines(), start=1):
         owner_name = "@file"
@@ -112,22 +120,76 @@ def relation_rows(
             for name, _kind, definition_line in definitions
         ):
             continue
-        call_names = {
-            match.group(1) for match in _CALL_PATTERN.finditer(line)
-            if match.group(1).lower() not in _CALL_KEYWORDS
-        }
-        names = set(_REFERENCE_PATTERN.findall(line))
+        call_names = (
+            call_names_by_line.get(line_no, set())
+            if call_names_by_line is not None
+            else {
+                match.group(1) for match in _CALL_PATTERN.finditer(line)
+                if match.group(1).lower() not in _CALL_KEYWORDS
+            }
+        )
+        names = set(_REFERENCE_PATTERN.findall(line)) | set(call_names)
         for name in sorted(names):
             if name.lower() in _CALL_KEYWORDS:
                 continue
             relation = "calls" if name in call_names else "references"
-            rows.append({
+            row = {
                 "source_name": owner_name,
                 "source_definition_line": owner_line,
                 "target_name": name,
                 "source_line": line_no,
                 "relation": relation,
-            })
-            if len(rows) >= max_rows:
+            }
+            if len(rows) < max_rows:
+                rows.append(row)
+                continue
+            if call_names_by_line is None:
                 return rows
+            if relation != "calls":
+                continue
+            reference_index = next(
+                (index for index, existing in enumerate(rows) if existing["relation"] == "references"),
+                None,
+            )
+            if reference_index is not None:
+                rows.pop(reference_index)
+                rows.append(row)
     return rows
+
+
+def python_call_names_by_line(source: str) -> dict[int, set[str]] | None:
+    """Return statically named Python calls, or None when parsing fails.
+
+    Only direct ``name(...)`` calls are indexed. Attribute calls such as
+    ``mapping.get(...)`` remain references because they do not identify a
+    repository function without type or dispatch resolution. Builtins are
+    excluded because they cannot be repository consumers.
+    """
+    try:
+        tree = ast.parse(source)
+    except SyntaxError:
+        return None
+    calls: dict[int, set[str]] = {}
+    builtin_names = vars(builtins)
+    imported_names: dict[str, str] = {}
+    imported_modules: set[str] = set()
+    for node in tree.body:
+        if isinstance(node, ast.ImportFrom):
+            for alias in node.names:
+                imported_names[alias.asname or alias.name] = alias.name
+        elif isinstance(node, ast.Import):
+            for alias in node.names:
+                imported_modules.add(alias.asname or alias.name.split(".", 1)[0])
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        if isinstance(node.func, ast.Name):
+            name = imported_names.get(node.func.id, node.func.id)
+        elif isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name) and node.func.value.id in imported_modules:
+            name = node.func.attr
+        else:
+            continue
+        if name in builtin_names:
+            continue
+        calls.setdefault(node.lineno, set()).add(name)
+    return calls

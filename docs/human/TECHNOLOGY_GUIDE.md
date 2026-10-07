@@ -29,6 +29,8 @@ Project Intelligence promotion 將候選資格與目標路徑限制拆成 helper
 
 ### Project Intelligence
 
+The fixed AIPS policy layer is the bounded `SYSTEM_CORE.md`; Turn Context selects canonical orchestration pointers by task and reports route status without storing prompt text. `SYSTEM.md` remains the compatibility entry. Mutation routing fails closed when a required protocol source is missing.
+
 Stable semantic cache 保存 Architecture、Data Flow、Modules、Contracts、Tests、Security、Operations、Source Registry 與 Impact Graph。
 
 每回合使用 bounded layered context：衍生的 Project Core capsule、task-relevant Recall 與按需 Archive pointers。Capsule 帶 source digest 且不是 canonical truth；缺少時回退到來源指標。唯讀 `aips intelligence context-audit` 可檢查 stale hash、孤兒指標、秘密路徑及 authority conflicts。
@@ -48,6 +50,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+Task-specific routes keep product-delivery, visual, security, testing, API/data, planning, documentation and publication procedures progressive; the general mutation fallback includes Orchestrator, Change Impact and Quality Planning.
 
 `scripts/repository_governance_snapshot.py` 是選擇性、唯讀的 operator snapshot；若 `gh` 不可讀取任一設定面，結果標為 UNKNOWN。
 
@@ -152,6 +156,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Scenario 230 and the exact-candidate Core Matrix cover route selection, hook/manifest compatibility, missing-source behavior, fixed-core byte ceiling and measured reduction against the base layer.
+
 Skill 路由 metadata 以 `SKILL.md` frontmatter 為唯一來源；修改後執行 `python scripts/skill_index.py --write`，預設不帶旗標只檢查 drift。tier 欄位仍保留供既有 consumers 使用，不會自動降低主要模型。REST／visual 執行細節按需載入既有 orchestration protocol。
 
 品質債務 ratchet 追蹤 Ruff 與 mypy 基線，修改大型 facade 時要求債務下降；coverage 目前仍為 report-only。
@@ -215,7 +221,7 @@ REST/OpenAPI evidence uses optional pinned dependencies from `requirements-opena
 
 Phase 3 uses `scripts/implementation_enforcement.py` and `templates/implementation/IMPLEMENTATION_ENFORCEMENT_REPORT.schema.json` for an exact-candidate, versioned evidence report. It reuses Python, PyYAML and JSON Schema dependencies already needed by repository validation. Explicit `run-command` collection uses argv, a declared timeout, a minimal environment and at most 1 MiB of hashed output; the Integration Gate calls inspection only. Command reports are current-run artifacts and must not be committed as proof of a later revision.
 
-Publication Preflight reports the script root and Git root, checks Python/Ruff and only the loopback/browser capabilities selected by the exact-candidate plan before expensive Gate work, and runs changed-Markdown link checks plus a VitePress build for documentation candidates. An unselected browser check returns `NOT_REQUIRED` without blocking; a selected probe still fails closed. `--project-root <repo>` binds an installed CLI to another source checkout. Post-merge reconciliation runs the installed script against that checkout so a stale target script cannot block a safe fast-forward; other candidate calculations run from the selected checkout.
+Publication Preflight reports the script root and Git root, checks Python/Ruff and only the loopback/browser capabilities selected by the exact-candidate plan before expensive Gate work, and runs changed-Markdown link checks plus a VitePress build for documentation candidates. VitePress normally resolves from the checkout; `AIPS_VITEPRESS_NODE_MODULES` may select an absolute external dependency directory, whose installed version must equal the candidate `package-lock.json` pin. In external mode, the build uses a temporary Node ESM resolver for package imports from candidate documentation configuration and removes it after the build. This keeps a clean candidate free of local dependency files and performs no install or registry access. An unselected browser check returns `NOT_REQUIRED` without blocking; a selected probe still fails closed. `--project-root <repo>` binds an installed CLI to another source checkout. Post-merge reconciliation runs the installed script against that checkout so a stale target script cannot block a safe fast-forward; other candidate calculations run from the selected checkout.
 
 `scripts/publication_transfer.py` adds a read-only GitHub API transfer boundary. `prepare` derives the exact changed Git blob identities and final tree from one clean local candidate commit, and checks the explicit destination against `origin`. `verify` compares a receipt of GitHub-created blob and tree SHAs with that same local candidate before any commit or ref mutation. It returns `BLOCKED` on missing, truncated, stale or mismatched identities and never contacts GitHub or updates refs itself. The existing strict candidate-history scanner remains the publication content gate.
 

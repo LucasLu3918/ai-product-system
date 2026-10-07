@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+固定 AIPS system context 由 `SYSTEM_CORE.md` 與任務專屬 orchestration pointers 組成；`SYSTEM.md` 是相容入口。Turn Context 或 protocol routing 行為變更時，同步更新 Harness、Architecture、Technology Guide、Scenario Conformance 與核心測試矩陣。
+
 主要模型／Skill metadata 變更同步更新模型路由、架構、技術指南、維護與 Conformance；REST／visual Skill 精簡仍須保留 canonical orchestration 指標與原有 evidence 規則。
 
 Keep exactly one canonical `Unreleased` heading empty when a release candidate is ready, and record finalized notes under the matching `VERSION` heading. Keep the latest five full releases and all stable version anchors in `CHANGELOG.md`; manually archive older full sections without loss under `docs/history/changelog/`. The document-size audit remains report-only and never moves files.
