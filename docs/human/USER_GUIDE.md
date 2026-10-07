@@ -434,7 +434,7 @@ Preview 也會在昂貴驗證前檢查候選內容安全與允許的 Git email �
 
 Release model 與版本歷史以 repository 的 current policy / CHANGELOG 為準。
 
-- A release candidate is not readiness evidence while `CHANGELOG.md` has entries under `## Unreleased`; tag publication remains a separate explicit decision.
+- A release candidate is not readiness evidence while `CHANGELOG.md` has entries under `## Unreleased`. After finalized notes move under the matching `VERSION` heading, the read-only check can establish readiness; tag publication remains a separate explicit decision.
 ## Evolution Radar
 
 Technology Intelligence 位於 maintenance plane，不在一般工程 Turn hot path。

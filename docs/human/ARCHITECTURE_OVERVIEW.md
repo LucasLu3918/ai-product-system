@@ -212,7 +212,7 @@ Evolution weekly evidence uses a bounded, digest-checked archive only when an Is
 
 Evolution data completeness、validator shadow/replay、branch cleanup proposal、version-tag readiness 與 GitHub protection comparison 都先產生可追溯 evidence。Branch cleanup apply 會綁定目前 `main` baseline，整批確認後才開始；已缺失分支會阻擋重播或部分狀態續跑。Selective execution、branch deletion、tag writing 和 ruleset activation 仍需分別依既有核准流程處理。
 
-- Release readiness now requires exactly one empty canonical `## Unreleased` section; this check is read-only and does not authorize tag or release writes.
+- Before release readiness, finalized notes are recorded under the matching `VERSION` heading, leaving exactly one empty canonical `## Unreleased` section. This read-only check does not authorize tag or release writes; those remain separate Human-approved actions.
 ## Documentation Architecture
 
 The canonical documentation placement registry maps Evolution Radar Human-label evaluation to its Human guides and Scenario 218 so future metric or authority changes remain synchronized.

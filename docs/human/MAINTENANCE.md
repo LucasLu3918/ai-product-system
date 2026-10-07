@@ -102,7 +102,7 @@ Major updates are not auto-applied by `aips preflight` without explicit `--allow
 
 `tests/validation/versioning_contracts.py` verifies one leading `Unreleased` heading, unique strictly descending SemVer release headings, and `VERSION` equal to the newest release. Keep runtime dependency ranges in requirements files; `constraints/tested.txt` records the exact CI-tested set. Python support is declared separately from the tested Python version in `pyproject.toml` and `config/system-facts.yaml`.
 
-`scripts/version_tag_policy.py` checks `VERSION`, exact candidate/main SHA, any existing tag destination, and that `CHANGELOG.md` has exactly one empty `## Unreleased` section. Missing, duplicate, malformed, or non-empty sections block readiness. READY still requires separate explicit release approval; merging a PR does not create a version tag or backfill historical tags.
+Before readiness, move finalized release notes under the heading matching `VERSION`, leaving exactly one empty `## Unreleased` section. `scripts/version_tag_policy.py` checks `VERSION`, exact candidate/main SHA, any existing tag destination, and that canonical section. Missing, duplicate, malformed, or non-empty sections block readiness. READY still requires separate explicit release approval; merging a PR does not create a version tag or backfill historical tags.
 
 ## System facts and validation planning
 
