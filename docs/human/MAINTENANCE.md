@@ -533,6 +533,8 @@ This is observational maintenance evidence. Any actual source-policy adjustment 
 
 Candidate validation derives optional browser provisioning from the exact changed paths. The repository validator skips browser-dependent render lifecycle checks only when a valid CI plan declares `needs_browser: false`; an absent or invalid plan retains the full validation profile. The required repository aggregate, secret scan, preflight and Integration Gate remain mandatory.
 
+Plan21 Phase 0 recorded a clean `origin/main` full-validation baseline at 165,754 ms across 230 scenarios and 86 timing entries on Python 3.12.14. This is a single observation for later comparison, not a timeout-setting sample or a claimed trend. The required runner now also checks pinned digest, CLI and path-matching contracts before shared-primitives consolidation.
+
 
 ## Controlled branch cleanup
 

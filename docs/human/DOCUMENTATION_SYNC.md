@@ -143,6 +143,8 @@ Getting Started / Installation / User Guide 以 task-oriented方式導覽；Arch
 
 主要實作保留合格的 Runtime／使用者模型；Skill frontmatter 產生相容 v1 INDEX，決定性 lifecycle 與人工模型政策驗收分開記錄。
 
+Plan21 Phase 0 compatibility fixtures and the one-run validation timing baseline are linked from Architecture Overview, Maintenance, Technology Guide and Conformance. Keep the exact candidate/environment, measurement-only interpretation and unchanged-runtime boundary aligned; do not promote the observation into a timeout or performance claim.
+
 新增 behavior-bearing helper 必須同步更新 placement 與 sync registry；Project Intelligence promotion 保留既有 approval facade，治理快照維持唯讀並在資料不可讀時回報 UNKNOWN。
 
 Prospective `aips docs impact --base HEAD --planned-path <path>` resolves sync and placement closure to a fixed point. Each triggered rule requires an update in its canonical topic; combined changes use the union of those topics. Validate every text anchor before applying the batch. Closure is scope evidence and never grants publication authority.

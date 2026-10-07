@@ -142,6 +142,8 @@ Dependency Update risk classification 的使用方式位於 Maintenance 與 Tech
 
 Release history keeps Unreleased and the latest five full releases in CHANGELOG.md; older complete sections live in docs/history/changelog/ while every version heading remains at the root as a stable link. Finalized notes move under the heading matching VERSION before readiness; a version heading alone does not prove a stable tag exists. The report-only size audit remains WARN-only and never moves files; archive placement is a manual, lossless documentation decision.
 
+Plan21 pre-hardening compatibility evidence is owned by `.aips/review/PLAN21_VALIDATION_TIMING_BASELINE.yaml` and `tests/evidence/plan21_contract_baseline.py`; the fixture and runner pin test contracts without becoming a runtime policy source.
+
 `tests/validate_repository.py` documents the required CI evidence boundary: exact-candidate selection may skip optional OpenAPI lifecycle checks, while the required repository aggregate and Integration Gate continue to run. The selection variable is consumed by the runner and kept out of isolated lifecycle subprocesses.
 
 The same exact-candidate plan controls browser-dependent visual and creative render validators. Keep the `needs_browser` decision, fail-closed full-profile default, explicit skipped timing evidence, and mandatory repository aggregate synchronized with the validator registry lifecycle.

@@ -1526,6 +1526,8 @@ Browser-dependent render validators follow the same exact-plan boundary: `needs_
 
 Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agent_eval = 199 automated; 2 manual; 201 total; 0 uncovered.
 
+Plan21 Phase 0 adds `tests/evidence/plan21_contract_baseline.py` to the required repository validation runner. It checks raw and `sha256:` canonical digest vectors, current CLI stdout/stderr and exit contracts, and caller-specific glob behavior. `.aips/review/PLAN21_VALIDATION_TIMING_BASELINE.yaml` records the one-run `origin/main` baseline (230 scenarios, 86 timing entries, 165,754 ms); it is observational evidence and does not establish a trend or alter the scenario inventory.
+
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
 Scenario 209 的唯讀 repository governance snapshot lifecycle 證據涵蓋完整回應、UNKNOWN 與穩定 fingerprint。
