@@ -26,7 +26,7 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
-Release history keeps Unreleased, the latest five full releases and all stable version anchors in `CHANGELOG.md`; older full sections are manually archived without loss under `docs/history/changelog/`. The document-size audit remains report-only and never moves files.
+Keep exactly one canonical `Unreleased` heading empty when a release candidate is ready, and record finalized notes under the matching `VERSION` heading. Keep the latest five full releases and all stable version anchors in `CHANGELOG.md`; manually archive older full sections without loss under `docs/history/changelog/`. The document-size audit remains report-only and never moves files.
 
 共用快取解析器歸既有 publication-preflight 主題，套件安裝診斷器歸 installation 主題；修正與文件閉包一起驗證，不建立重複的治理或文件層。
 
