@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 552b7e1e7087611fd46177715603ad464bfd4ada
-  changed_files_hash: 54c6f22e94da6419979277b4ecdb7f38f3b673c4e9b1015febbdfb48ca0412e2
+  changed_files_hash: 62f0df97c1547329772edff8feb0695504510941e69f4cca3a119afe1beba219
 change:
   id: plan21-final
   summary: Complete Plan21 failure semantics, shared primitives, public CLI help/error
@@ -17,6 +17,7 @@ change:
   - project-check-system-preflight
   - batched-documentation-diff
   - advisory-security-inventory
+  - generated-cli-system-facts-and-scoped-impact-proposal
 matrix:
 - boundary: malformed-governance-input
   reason: Invalid or structurally malformed hook input must never be interpreted as
@@ -354,6 +355,47 @@ matrix:
       applicable: false
       na_reason: The workflow is supplementary observation; required secret scan and
         repository Gate are retained.
+- boundary: generated-cli-system-facts-and-scoped-impact-proposal
+  reason: Canonical command facts and their generated reference table must cover the
+    new project/system routes, while source-backed Impact Graph candidates remain a
+    review-only proposal and repository-wide coverage stays partial.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: system_facts.py --check and system_facts_contracts pass; YAML facts
+        bind each route to its lifecycle validator and canonical documentation.
+    unit:
+      applicable: true
+      evidence: install_preflight_lifecycle.py covers read-only project status,
+        invalid paths and canonical preflight compatibility.
+    integration:
+      applicable: true
+      evidence: The final exact-candidate Integration Gate runs repository validation
+        and the core boundary matrix.
+    contract:
+      applicable: true
+      evidence: Generated SYSTEM_REFERENCE lists project check, system preflight,
+        and the legacy preflight alias from config/system-facts.yaml.
+    security:
+      applicable: true
+      evidence: project check remains read-only; the graph proposal does not modify
+        canonical graph data or upgrade global coverage.
+    migration_recovery:
+      applicable: false
+      na_reason: The command inventory and proposal do not migrate persistent data.
+    cli_harness:
+      applicable: true
+      evidence: Existing CLI routing and lifecycle evidence cover both namespaced
+        commands and the compatibility alias.
+    docs_schema:
+      applicable: true
+      evidence: INSTALLATION and GETTING_STARTED bind the routes; SYSTEM_REFERENCE
+        generated facts are kept in sync; the scoped graph proposal records exact
+        source-line evidence and pending Human review.
+    e2e:
+      applicable: false
+      na_reason: The routes are validated by isolated lifecycle fixtures and local
+        repository checks without external project mutation.
 review_evidence:
   required: false
 scope_recomputed_after_expansion: true

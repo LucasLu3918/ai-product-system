@@ -92,11 +92,11 @@ def main() -> int:
         rules = {"placement_rules": [{"id": "first", "triggers": ["a.py"], "placements": {"guide.md": ["First"]}},
                                      {"id": "second", "triggers": ["b.py"], "placements": {"guide.md": ["Second"]}}]}
         with patch.object(documentation_placement, "ROOT", root), patch.object(documentation_placement, "changed_files", return_value=["a.py", "b.py", "guide.md"]), patch.object(documentation_placement, "behavior_trigger_patterns", return_value=[]):
-            with patch.object(documentation_placement, "added_line_numbers", return_value=[3, 5]):
+            with patch.object(documentation_placement, "added_line_numbers_many", return_value={"guide.md": [3, 5]}):
                 assert not documentation_placement.placement_errors(rules, "base")
-            with patch.object(documentation_placement, "added_line_numbers", return_value=[3]):
+            with patch.object(documentation_placement, "added_line_numbers_many", return_value={"guide.md": [3]}):
                 assert any("no added content" in error for error in documentation_placement.placement_errors(rules, "base"))
-            with patch.object(documentation_placement, "added_line_numbers", return_value=[3, 5, 7]):
+            with patch.object(documentation_placement, "added_line_numbers_many", return_value={"guide.md": [3, 5, 7]}):
                 assert any("outside allowed" in error for error in documentation_placement.placement_errors(rules, "base"))
 
     checks = summarize_checks({"statusCheckRollup": [{"name": "repository", "workflowName": "validate", "startedAt": "1", "conclusion": "CANCELLED"}, {"name": "repository", "workflowName": "validate", "startedAt": "2", "conclusion": "SUCCESS"}]}, ["repository"])
