@@ -7,7 +7,12 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from project_intelligence import validate_traversal_evidence
-from retrieval_intelligence import IMPACT_MAX_DEPTH, IMPACT_MAX_EDGES, IMPACT_MAX_NODES, risk_adaptive_policy
+from retrieval_intelligence import (
+    IMPACT_MAX_DEPTH,
+    IMPACT_MAX_EDGES,
+    IMPACT_MAX_NODES,
+    risk_adaptive_policy,
+)
 
 
 def main() -> int:

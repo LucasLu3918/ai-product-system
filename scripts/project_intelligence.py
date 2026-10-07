@@ -1595,14 +1595,14 @@ def refresh(root: Path) -> dict[str, Any]:
 
 
 def impact_path(root: Path, change_id: str) -> Path:
-    store, mode, pid = intelligence_store(root, create=True)
+    store, mode, _pid = intelligence_store(root, create=True)
     if mode == "ATTACHED":
         return root / ".ai" / "runs" / change_id / "CHANGE_IMPACT.yaml"
     return store.parent / "changes" / f"{change_id}.yaml"
 
 
 def impact_init(root: Path, prompt: str, change_id: str | None, *, reset: bool = False) -> dict[str, Any]:
-    store, mode, pid = intelligence_store(root, create=True)
+    store, mode, _pid = intelligence_store(root, create=True)
     graph_path = store / "IMPACT_GRAPH.yaml"
     change_id = change_id or f"change-{sha(prompt)[:12]}"
     path = impact_path(root, change_id)
@@ -2066,7 +2066,7 @@ def redact_text(value: str) -> str:
 
 
 def render_review(root: Path) -> Path:
-    store, mode, pid = intelligence_store(root, create=True)
+    store, mode, _pid = intelligence_store(root, create=True)
     intel = load_yaml(store / "PROJECT_INTELLIGENCE.yaml", {})
     registry = load_yaml(store / "SOURCE_REGISTRY.yaml", {"sources": []})
     graph = load_yaml(store / "IMPACT_GRAPH.yaml", {"nodes": {}, "edges": []})

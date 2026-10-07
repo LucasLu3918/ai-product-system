@@ -3,19 +3,19 @@ from __future__ import annotations
 
 import re
 
-MUTATION_EN = re.compile(r"\b(?:modify|change|fix|implement|add|remove|refactor|update|create|delete|rename|repair)\b", re.I)
+MUTATION_EN = re.compile(r"\b(?:modify|change|fix|implement|add|remove|refactor|update|create|delete|rename|repair)\b", re.IGNORECASE)
 MUTATION_ZH = re.compile(r"修改|調整|實作|新增|刪除|重構|修正|更新|修好|加入|移除|建立|完成")
 NEGATED_ZH = re.compile(r"(?:不要|不用|不需|無須|勿|禁止|不得|別)\s*(?:對[^，。；]*?)?(?:修改|調整|實作|新增|刪除|重構|修正|更新|建立)")
-NEGATED_EN = re.compile(r"\b(?:do not|don't|never|without|no need to)\s+(?:\w+\s+){0,2}?(?:modify|change|fix|implement|add|remove|refactor|update|create|delete|rename)\b", re.I)
-EXPLANATION_EN = re.compile(r"\b(?:explain|describe|review|assess|analy[sz]e)\s+(?:the\s+)?(?:\w+\s+){0,2}?(?:update|change|implementation|build)\b", re.I)
-EXPLANATION_ZH = re.compile(r"(?:建議|說明|解釋|評估|分析|檢視|查看)[^，。；]{0,15}(?:實作方式|實作建議|更新指令|修改方式|\bupdate\b\s*指令)", re.I)
+NEGATED_EN = re.compile(r"\b(?:do not|don't|never|without|no need to)\s+(?:\w+\s+){0,2}?(?:modify|change|fix|implement|add|remove|refactor|update|create|delete|rename)\b", re.IGNORECASE)
+EXPLANATION_EN = re.compile(r"\b(?:explain|describe|review|assess|analy[sz]e)\s+(?:the\s+)?(?:\w+\s+){0,2}?(?:update|change|implementation|build)\b", re.IGNORECASE)
+EXPLANATION_ZH = re.compile(r"(?:建議|說明|解釋|評估|分析|檢視|查看)[^，。；]{0,15}(?:實作方式|實作建議|更新指令|修改方式|\bupdate\b\s*指令)", re.IGNORECASE)
 
 TOPICS = (
-    ("visual", re.compile(r"\b(?:css|ui|ux|button|tag|layout|visual|style)\b", re.I), re.compile(r"樣式|風格|按鈕|版面"), ["conventions", "modules"]),
-    ("data", re.compile(r"\b(?:database|schema|sql|migration|table|db)\b", re.I), re.compile(r"資料庫|欄位|遷移"), ["architecture", "data-flow", "modules"]),
-    ("security", re.compile(r"\b(?:auth|authorization|security|permission|token)\b", re.I), re.compile(r"權限|驗證|資安"), ["architecture", "security", "modules"]),
-    ("testing", re.compile(r"\b(?:test|spec|coverage|tests)\b", re.I), re.compile(r"測試"), ["testing", "modules", "conventions"]),
-    ("api", re.compile(r"\b(?:api|endpoint|request|response|handler|route)\b", re.I), re.compile(r"接口|介面|請求|回應"), ["architecture", "data-flow", "modules", "conventions"]),
+    ("visual", re.compile(r"\b(?:css|ui|ux|button|tag|layout|visual|style)\b", re.IGNORECASE), re.compile(r"樣式|風格|按鈕|版面"), ["conventions", "modules"]),
+    ("data", re.compile(r"\b(?:database|schema|sql|migration|table|db)\b", re.IGNORECASE), re.compile(r"資料庫|欄位|遷移"), ["architecture", "data-flow", "modules"]),
+    ("security", re.compile(r"\b(?:auth|authorization|security|permission|token)\b", re.IGNORECASE), re.compile(r"權限|驗證|資安"), ["architecture", "security", "modules"]),
+    ("testing", re.compile(r"\b(?:test|spec|coverage|tests)\b", re.IGNORECASE), re.compile(r"測試"), ["testing", "modules", "conventions"]),
+    ("api", re.compile(r"\b(?:api|endpoint|request|response|handler|route)\b", re.IGNORECASE), re.compile(r"接口|介面|請求|回應"), ["architecture", "data-flow", "modules", "conventions"]),
 )
 
 PROTOCOL_ROUTES = {
@@ -70,14 +70,14 @@ PROTOCOL_ROUTES = {
 }
 
 ROUTE_PATTERNS = (
-    ("publish", re.compile(r"\b(?:pull request|\bpr\b|merge|publish|publication|release|deploy|git push|remote branch)\b", re.I), re.compile(r"PR|合併|發布|上線|推送|遠端分支|發版")),
-    ("product_delivery", re.compile(r"\b(?:product delivery|end.to.end delivery|deliver (?:the )?(?:product|feature)|complete product)\b", re.I), re.compile(r"產品交付|端到端交付|完整交付|交付功能")),
-    ("visual", re.compile(r"\b(?:css|ui|ux|visual|design|layout|style|button)\b", re.I), re.compile(r"視覺|介面|使用者體驗|版面|樣式|按鈕|品牌")),
-    ("security", re.compile(r"\b(?:auth|authorization|security|permission|secret|credential|token)\b", re.I), re.compile(r"資安|安全|權限|憑證|密鑰|祕密|令牌")),
-    ("testing", re.compile(r"\b(?:test|testing|spec|coverage|conformance|validation)\b", re.I), re.compile(r"測試|驗證|涵蓋率|符合性")),
-    ("api_data", re.compile(r"\b(?:api|endpoint|request|response|handler|database|schema|sql|migration|table|data flow)\b", re.I), re.compile(r"API|端點|請求|回應|資料庫|資料流|資料|結構描述|遷移")),
-    ("planning", re.compile(r"\b(?:plan|planning|roadmap|requirements|blueprint)\b", re.I), re.compile(r"規劃|計畫|藍圖|需求")),
-    ("documentation", re.compile(r"\b(?:documentation|docs|readme|document)\b", re.I), re.compile(r"文件|文檔|說明文件|README")),
+    ("publish", re.compile(r"\b(?:pull request|\bpr\b|merge|publish|publication|release|deploy|git push|remote branch)\b", re.IGNORECASE), re.compile(r"PR|合併|發布|上線|推送|遠端分支|發版")),
+    ("product_delivery", re.compile(r"\b(?:product delivery|end.to.end delivery|deliver (?:the )?(?:product|feature)|complete product)\b", re.IGNORECASE), re.compile(r"產品交付|端到端交付|完整交付|交付功能")),
+    ("visual", re.compile(r"\b(?:css|ui|ux|visual|design|layout|style|button)\b", re.IGNORECASE), re.compile(r"視覺|介面|使用者體驗|版面|樣式|按鈕|品牌")),
+    ("security", re.compile(r"\b(?:auth|authorization|security|permission|secret|credential|token)\b", re.IGNORECASE), re.compile(r"資安|安全|權限|憑證|密鑰|祕密|令牌")),
+    ("testing", re.compile(r"\b(?:test|testing|spec|coverage|conformance|validation)\b", re.IGNORECASE), re.compile(r"測試|驗證|涵蓋率|符合性")),
+    ("api_data", re.compile(r"\b(?:api|endpoint|request|response|handler|database|schema|sql|migration|table|data flow)\b", re.IGNORECASE), re.compile(r"API|端點|請求|回應|資料庫|資料流|資料|結構描述|遷移")),
+    ("planning", re.compile(r"\b(?:plan|planning|roadmap|requirements|blueprint)\b", re.IGNORECASE), re.compile(r"規劃|計畫|藍圖|需求")),
+    ("documentation", re.compile(r"\b(?:documentation|docs|readme|document)\b", re.IGNORECASE), re.compile(r"文件|文檔|說明文件|README")),
 )
 
 

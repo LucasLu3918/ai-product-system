@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import datetime as dt
 import ast
+import datetime as dt
 import hashlib
 import json
 import math
@@ -21,6 +21,8 @@ from retrieval_relations import (
 )
 from retrieval_relations import (
     python_call_names_by_line as _python_call_names_by_line,
+)
+from retrieval_relations import (
     relation_rows as _build_relation_rows,
 )
 from retrieval_storage import metadata_get, metadata_set, open_db, open_read_db
@@ -445,7 +447,7 @@ def _local_import_target(root: Path, source_path: str, target_name: str) -> tupl
                     continue
                 resolved = module_file(alias.name)
                 imported_targets.append((target_name, resolved.relative_to(root).as_posix() if resolved else ""))
-    local_targets = sorted(set((symbol, rel_path) for symbol, rel_path in imported_targets if rel_path))
+    local_targets = sorted({(symbol, rel_path) for symbol, rel_path in imported_targets if rel_path})
     if len(local_targets) == 1:
         symbol, rel_path = local_targets[0]
         return ("local", symbol, rel_path)
@@ -1358,7 +1360,7 @@ def semantic_alias_boosts(
 def lexical_score(rank: Any) -> float:
     try:
         value = abs(float(rank))
-    except Exception:
+    except (TypeError, ValueError, OverflowError):
         return 0.2
     return max(0.05, min(0.75, 1.0 / (1.0 + value)))
 

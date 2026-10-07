@@ -192,6 +192,7 @@ def run(base: str, head: str, docs_build: bool = False) -> list[str]:
         cwd=ROOT,
         capture_output=True,
         text=True,
+        check=False,
     )
     if diff.returncode:
         errors.append(f"git diff --check failed: {diff.stdout.strip() or diff.stderr.strip()}")
