@@ -2,7 +2,7 @@ version: 1
 
 candidate:
   base_sha: 1438df8ccdac69de6b05659690ba804a5bf690b6
-  changed_files_hash: b358e7ab3d3b596713d68034e361b78197f7caac31e590629fca109e6130162a
+  changed_files_hash: 91f88ed4bb00829d4640c23552402b8073c05c38c1f4c119fd8b23f0f7ee71c7
 
 change:
   id: plan18-consolidation
@@ -74,7 +74,7 @@ matrix:
       security: {applicable: false, na_reason: No security-sensitive behavior changed}
       migration_recovery: {applicable: false, na_reason: Documentation-only references}
       cli_harness: {applicable: true, evidence: documentation placement CLI}
-      docs_schema: {applicable: true, evidence: canonical registry and Markdown link validation}
+      docs_schema: {applicable: true, evidence: canonical registry, Scenario Conformance lifecycle and generated Human current view}
       e2e: {applicable: false, na_reason: No product UI or deployment behavior changes}
   - boundary: existing-authority-boundaries
     reason: Confirm already-implemented release, validation shadow, branch lifecycle, Agent Eval, keyless handoff, and dependency-risk policies remain fail-closed and Human-controlled.

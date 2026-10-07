@@ -99,6 +99,9 @@ scenarios:
     evidence:
       - tests/evidence/version_policy_lifecycle.py
       - scripts/github_ruleset_policy.py
+      - scripts/repository_governance_snapshot.py
+      - tests/evidence/repository_governance_snapshot_lifecycle.py
+      - tests/validation/repository_governance_snapshot_contracts.py
       - config/github-ruleset-policy.yaml
       - scripts/repository_governance_snapshot.py
       - tests/evidence/repository_governance_snapshot_lifecycle.py
@@ -1753,10 +1756,3 @@ scenarios:
       - scripts/evolution_preanalysis.py
       - tests/evidence/evolution_radar_lifecycle.py
       - tests/validation/evolution_radar_contracts.py
-  - id: "223"
-    path: tests/scenarios/209-github-ruleset-policy-assessment.md
-    coverage: lifecycle
-    evidence:
-      - scripts/repository_governance_snapshot.py
-      - tests/evidence/repository_governance_snapshot_lifecycle.py
-      - tests/validation/repository_governance_snapshot_contracts.py
