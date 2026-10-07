@@ -9,6 +9,8 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from aips_common import canonical_hash as _aips_canonical_hash
+from aips_common import relative_path as _aips_relative_path
 from capability_registry import projections as registry_projections
 from capability_registry import validate as validate_capability_registry
 
@@ -31,8 +33,7 @@ def load_yaml(path: Path) -> dict[str, Any]:
 
 
 def canonical_hash(value: Any) -> str:
-    payload = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
-    return "sha256:" + hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return _aips_canonical_hash(value, prefix=True)
 
 
 def file_digest(path: Path) -> str:
@@ -49,10 +50,7 @@ def resolve(root: Path, value: str) -> Path:
 
 
 def relative_path(root: Path, path: Path) -> str:
-    try:
-        return path.resolve().relative_to(root.resolve()).as_posix()
-    except ValueError:
-        return str(path.resolve())
+    return _aips_relative_path(root, path)
 
 
 def git_output(root: Path, args: list[str]) -> str | None:

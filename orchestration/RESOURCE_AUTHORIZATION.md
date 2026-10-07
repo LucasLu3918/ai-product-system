@@ -51,6 +51,8 @@ Protected operations such as publication, administration and destructive deletio
 
 ## Enforcement truth
 
+Resource Authorization retains its raw canonical hash facade and existing decision contract; the shared helper does not grant resource access or change enforcement status.
+
 `scripts/resource_authorization.py` produces **PRE_EXECUTION_EVIDENCE**. It does not claim that every runtime can mechanically intercept every tool call.
 
 A runtime with a verified pre-tool guard may consume this evidence as an additional deny condition. A runtime without such a guard remains advisory and must not be represented as runtime-enforced.

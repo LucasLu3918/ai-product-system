@@ -5,12 +5,11 @@ from __future__ import annotations
 
 import argparse
 import datetime as dt
-import hashlib
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 from typing import Any, Iterable
 
 import yaml
@@ -21,7 +20,13 @@ if str(ROOT / "scripts") not in sys.path:
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from aips_identity import config_home, project_root, repository_identity, workspace_snapshot
+from aips_common import canonical_hash as _aips_canonical_hash
+from aips_identity import (
+    config_home,
+    project_root,
+    repository_identity,
+    workspace_snapshot,
+)
 from run_state import _freshness, load_yaml, safe_text
 from task_ownership import LEASE_FILE, project_ownership
 
@@ -31,8 +36,7 @@ MAX_RUNS = 200
 
 
 def canonical_hash(value: Any) -> str:
-    payload = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
-    return "sha256:" + hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return _aips_canonical_hash(value, prefix=True)
 
 
 def now() -> str:

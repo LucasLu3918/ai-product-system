@@ -268,7 +268,7 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Security & Governance, Execution, Quality & Verification, Runtime Content Safety Boundary, Security & Governance]
 
   - id: deterministic-execution
-    triggers: [scripts/deterministic_scheduler.py, scripts/integration_gate.py, scripts/execution_isolation.py, scripts/run_state.py, .github/workflows/installation-entrypoints.yml, orchestration/INTEGRATION_GATE.md, orchestration/DETERMINISTIC_SCHEDULER.md, orchestration/ORCHESTRATOR.md]
+    triggers: [scripts/aips_common/*.py, scripts/deterministic_scheduler.py, scripts/integration_gate.py, scripts/execution_isolation.py, scripts/run_state.py, scripts/visual_profile.py, .github/workflows/installation-entrypoints.yml, orchestration/INTEGRATION_GATE.md, orchestration/DETERMINISTIC_SCHEDULER.md, orchestration/ORCHESTRATOR.md]
     placements:
       docs/human/USER_GUIDE.md: [Deterministic Scheduler, Execution Isolation 與 Runtime Resource, Checkpoint / Resume, Quality 與 Review, Git Publication 與 Release, Runtime Content Safety Boundary, Logging、Observability 與 Operations, Project Intelligence]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary, Maintenance governance]

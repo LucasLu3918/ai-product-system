@@ -305,6 +305,8 @@ Do not infer machine-bound approval from vague context. Runtime guards are enfor
 
 ## Checkpoint and resume
 
+The read-only run projection retains canonical digest bytes through the shared helper; checkpoint state and resume authority remain unchanged.
+
 Persist task progress without copying the original prompt into route telemetry; on resume, recompute relevant protocol routes from the current request and workspace state.
 
 When parallel Task Graph execution is enabled, claim only scheduler-dispatched work inside its active AIPS worktree. Preserve the task lease and base revision across recovery; reconcile the actual Git diff before marking completion. Resource authorization remains advisory until a native write guard is verified.
@@ -326,6 +328,8 @@ When emitting a Structured Task Graph, treat tasks as writable by default. Set `
 For Evolution Radar semantic work, prefer the generated provider-neutral handoff when no scheduled provider is available rather than inventing a recommendation. For PR integration, stale target-base evidence must route back to refresh/revalidation rather than proceeding with an old PASS.
 
 ## Change-class handoff to Integration Gate
+
+Existing fingerprint facade imports remain stable over `scripts/aips_common`; the helper layer does not change change-class routing, publication authority, or Human approval.
 
 Preserve the eligible runtime/user-selected primary implementation model. Prefer solving bounded implementation with the primary agent and use deterministic tools for repeatable processing. Delegate only for material parallel evidence, specialized risk, context isolation or independent review. Skills supply model requirement hints for capability floors and auxiliary routing; the Model Router does not silently downshift the primary agent. Business importance, technical complexity, risk, privacy and failure cost are considered together. Critical risk may raise the minimum tier.
 

@@ -4,19 +4,19 @@
 from __future__ import annotations
 
 import argparse
-from datetime import date
-import fnmatch
 import hashlib
 import json
 import math
 import os
-from pathlib import Path, PurePosixPath
 import re
 import subprocess
-import sys
+from datetime import date
+from pathlib import Path, PurePosixPath
 from typing import Any, Iterable
 
 import yaml
+from aips_common import canonical_hash as _aips_canonical_hash
+from aips_common import glob_matches as _aips_glob_matches
 
 DEFAULT_POLICY = Path(__file__).resolve().parents[1] / "config" / "secret-scan.yaml"
 SKIP_DIRS = {
@@ -57,8 +57,7 @@ def sha256(value: bytes) -> str:
 
 
 def canonical_hash(value: Any) -> str:
-    payload = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
-    return sha256(payload.encode("utf-8"))
+    return _aips_canonical_hash(value)
 
 
 def load_policy(path: Path) -> tuple[dict[str, Any], str]:
@@ -119,8 +118,11 @@ def normalize_path(path: str) -> str:
 
 def glob_matches(path: str, pattern: str) -> bool:
     normalized = normalize_path(path)
-    return fnmatch.fnmatch(normalized, pattern) or (
-        pattern.startswith("**/") and fnmatch.fnmatch(normalized, pattern[3:])
+    return _aips_glob_matches(
+        normalized,
+        pattern,
+        path_mode="slash_prefix",
+        globstar_zero_directory=True,
     )
 
 

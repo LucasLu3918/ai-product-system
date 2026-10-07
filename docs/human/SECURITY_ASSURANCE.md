@@ -199,6 +199,8 @@ Review actual:
 
 ## Release Security Gate
 
+Plan21 shared hash/path helpers preserve existing evidence formats and do not change fail-closed policy, authorization decisions, or publication gates.
+
 `SYSTEM_CORE.md` 保留發布與合併邊界；Turn Context 路由和 hook 輸出皆為上下文指標，不得解讀為 publication authority。
 
 Publication scanning excludes only validated numeric Git index/mode metadata; paths, added/removed/context lines and unknown headers remain scanned. Branch deletion verifies GitHub RS256 issuer, repository, protected main, workflow SHA, dispatch event and a proposal-bound audience. Runner flags alone grant no authority; tokens remain in memory.

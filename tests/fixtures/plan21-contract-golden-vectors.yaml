@@ -71,3 +71,11 @@ path_matching:
   path: foo.py
   patterns: ['**/*.py']
   expected: false
+- helper: check_secret_leakage.glob_matches
+  path: .\\src\\entry.py
+  pattern: src/*.py
+  expected: true
+- helper: visual_profile.path_matches
+  path: .\\docs\\guide.md
+  patterns: [docs/**]
+  expected: true

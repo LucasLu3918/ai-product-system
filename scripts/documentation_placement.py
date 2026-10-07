@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import fnmatch
 import os
 import re
 import subprocess
@@ -9,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from aips_common import glob_matches as _aips_glob_matches
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "config" / "documentation-placement.yaml"
@@ -201,7 +201,7 @@ def added_line_numbers(base: str, path: str, *, working_tree: bool = False) -> l
 
 
 def matches_any(path: str, patterns: list[str]) -> bool:
-    return any(fnmatch.fnmatch(path, pattern) for pattern in patterns)
+    return any(_aips_glob_matches(path, pattern) for pattern in patterns)
 
 
 def behavior_trigger_patterns() -> list[str]:

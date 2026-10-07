@@ -53,6 +53,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+The shared helper package consolidates canonical hashes, repository-relative paths and caller-specific glob matching; existing module facades preserve current call sites and outputs.
+
 Task-specific routes keep product-delivery, visual, security, testing, API/data, planning, documentation and publication procedures progressive; the general mutation fallback includes Orchestrator, Change Impact and Quality Planning.
 
 `scripts/repository_governance_snapshot.py` 是選擇性、唯讀的 operator snapshot；若 `gh` 不可讀取任一設定面，結果標為 UNKNOWN。
@@ -159,6 +161,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Shared deterministic helpers live in `scripts/aips_common/`; existing consumers keep compatibility facades. Golden lifecycle evidence pins raw/prefixed digest bytes and the distinct path/glob normalization modes. This refactor does not establish complete caller/consumer graph coverage.
 
 Scenario 230 and the exact-candidate Core Matrix cover route selection, hook/manifest compatibility, missing-source behavior, fixed-core byte ceiling and measured reduction against the base layer.
 

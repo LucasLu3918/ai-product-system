@@ -4,15 +4,15 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
-from pathlib import Path
 import re
+from pathlib import Path
 from typing import Any
 
 import yaml
-from review_packet import ALLOWED_SOURCE_CLASSES
+from aips_common import canonical_hash as _aips_canonical_hash
 from review_evidence import evaluate_evidence
+from review_packet import ALLOWED_SOURCE_CLASSES
 
 TERMINAL_FAILURE = {"FAILED", "BLOCKED", "STALE", "CANCELLED"}
 ALLOWED_STATUS = {"PENDING", "RUNNING", "COMPLETE", *TERMINAL_FAILURE}
@@ -77,8 +77,7 @@ def load_yaml(path: Path) -> dict[str, Any]:
 
 
 def canonical_hash(value: Any) -> str:
-    payload = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
-    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return _aips_canonical_hash(value)
 
 
 def normalize_boundaries(raw: Any) -> tuple[str, ...]:

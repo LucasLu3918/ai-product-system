@@ -69,6 +69,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+Shared canonical hash/path/glob helpers preserve the existing Project Intelligence matching facade. Bounded source traversal still records unresolved edges and does not claim repository-wide completeness.
+
 Promotion eligibility 與目標路徑限制已抽至 `project_intelligence_promotion.py`；原 facade 保留相容入口，Human approval 與禁止覆寫既有檔案的界線不變。
 
 Project Intelligence 的 atomic text/YAML storage 與 writer locking 已拆至 `project_intelligence_storage.py`；公開 facade、匯入物件身分與既有行為維持相容。

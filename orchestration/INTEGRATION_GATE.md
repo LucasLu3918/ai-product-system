@@ -22,6 +22,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+The Gate keeps its existing raw canonical hash facade over shared JSON serialization; exact base/head and changed-file binding semantics remain unchanged.
+
 Before starting the full Gate, `aips publish preflight` checks the selected Python runtime, PyYAML, Ruff, OpenAPI validator, Node 24+, lockfile-matched VitePress, loopback binding and browser launch capability. `aips integration-gate` prefers `AIPS_VALIDATION_PYTHON`, `AIPS_VALIDATION_VENV`, the project venv, and the prepared temporary validation venv, in that order; it starts only when the complete Python 3.12 Gate dependency set is present. An environment blocker returns its exact check and remediation before candidate scans or lifecycle tests run. The repository preflight checks local links in changed Markdown files and invokes the VitePress JavaScript entrypoint directly with Node; it never calls npm/pnpm or accesses a package registry. Set `AIPS_NODE_BINARY` when Node 24+ is not on `PATH`. By default VitePress comes from the candidate checkout's `node_modules`; set `AIPS_VITEPRESS_NODE_MODULES` to an absolute dependency directory outside a clean checkout when needed. The installed package version must exactly match the version pinned in the candidate's `package-lock.json`; a mismatch blocks the preflight. In external mode, a temporary Node ESM resolver directs bare package imports from candidate documentation configuration to that selected dependency directory and is removed after the build.
 For system-context and protocol-routing changes, bind the fixed-core ceiling, route/hook lifecycle, missing-source negative path, documentation closure and measured baseline reduction to the same exact candidate.
 
@@ -108,8 +110,6 @@ The Gate calls the Phase 3 inspector on the checked-out base/head. It never exec
 For Phase 4, the Gate runs only the deterministic fake-generator lifecycle fixture when relevant paths change. It never executes a generator configured by a project Implementation Profile. Generator execution is local, opt-in and explicitly requested with `--execute`; the adapter report remains evidence of bounded execution and hashes, not semantic correctness or OS-level isolation.
 
 ## Core Change Test Matrix reuse
-
-
 
 For Large/Core changes, the Gate reuses `templates/review/CORE_CHANGE_TEST_MATRIX.yaml`; it does not introduce a parallel Janitor matrix.
 

@@ -137,7 +137,6 @@ Before release, check:
 - bootloader/README remain short entry documents;
 - deterministic data processing uses helpers when this materially reduces repeated model work.
 
-
 ## Product delivery consistency
 
 When end-to-end delivery behavior changes, verify together:
@@ -250,6 +249,8 @@ When Approval Binding / Governance Enforcement changes, review together:
 Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverifiable.
 
 ## Durable Run State consistency
+
+Read-only Run Dashboard and run projection fingerprints remain backed by shared canonical helpers; they introduce no second state source or write authority.
 
 固定 Turn Context 或 task protocol routing 變更時，更新 canonical core/router、Runtime adapters、文件 placement、Scenario 與 impact-derived matrix；維持原有 Human approval 與 publication boundaries。
 
@@ -385,6 +386,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+Plan21 Phase 2 keeps canonical JSON/hash and path/glob helpers in `scripts/aips_common/`; compatibility and caller-specific behavior are pinned by `tests/evidence/shared_primitives_lifecycle.py`, while graph coverage remains partial.
+
 固定 Turn Context 或 task protocol routing 變更時，更新 canonical core/router、Runtime adapters、文件 placement、Scenario 與 impact-derived matrix；維持原有 Human approval 與 publication boundaries。固定核心 route scenario 亦須列入 registry、Conformance current view 與 recursive docs placement checks。
 
 Skill metadata 修改後須重建 INDEX 並執行 `tests/evidence/skill_index_lifecycle.py`；完整 repository validation 也會執行此 lifecycle。Scenario 224 是人工語意驗收，225 是 registry lifecycle 證據，不可互換。Plan19 增加 per-module quality budgets、behavior-based Eval freshness 與 canonical capability projections；各報告仍是 evidence，不能代替完整 Gate 或擴張批准範圍。
@@ -484,6 +487,8 @@ Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanu
 
 
 ## Repository Health / Architecture Drift consistency
+
+Repository Health continues to treat generated capability projections as outputs of `config/capability-registry.yaml`; shared path/hash helpers do not become a second registry source.
 
 Repository-wide architecture consistency is checked by scripts/repository_health.py using config/repository-health.yaml. The detailed contract is orchestration/REPOSITORY_HEALTH.md.
 

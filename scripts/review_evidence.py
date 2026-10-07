@@ -7,16 +7,14 @@ import argparse
 import base64
 import binascii
 import hashlib
-import json
-from pathlib import Path
 import re
+from pathlib import Path
 from typing import Any, Callable
 
 import yaml
+from aips_common import canonical_hash as _aips_canonical_hash
 from review_attestation import verifier_from_store
-
 from review_packet import ALLOWED_SOURCE_CLASSES, FINGERPRINT_RE, SHA256_RE
-
 
 PROHIBITED_KEYS = {
     "chain_of_thought",
@@ -34,8 +32,7 @@ class ReviewEvidenceError(ValueError):
 
 
 def canonical_hash(value: Any) -> str:
-    payload = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
-    return "sha256:" + hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return _aips_canonical_hash(value, prefix=True)
 
 
 def prohibited_key_paths(value: Any, prefix: str = "") -> list[str]:

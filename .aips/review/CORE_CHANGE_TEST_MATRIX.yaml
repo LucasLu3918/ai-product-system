@@ -1,15 +1,16 @@
 version: 1
 candidate:
   base_sha: 552b7e1e7087611fd46177715603ad464bfd4ada
-  changed_files_hash: 6bdadda404dfba0d2d0afee560633167e9fa8bd55028f4a2e614af181c32b010
+  changed_files_hash: 6d890981ca2b6b6285eb38a97538341c1c605c64ac206a9a01727b30c65ef79b
 change:
-  id: plan21-p0
-  summary: Fail closed on malformed governance-hook input and make installation transactional,
-    serialized and retryable.
+  id: plan21-p2
+  summary: Preserve Plan21 failure semantics and installer recovery while extracting
+    byte-compatible shared deterministic primitives.
   boundary:
   - malformed-governance-input
   - failure-diagnostics
   - installer-transaction-and-lock
+  - shared-deterministic-primitives
 matrix:
 - boundary: malformed-governance-input
   reason: Invalid or structurally malformed hook input must never be interpreted as
@@ -120,6 +121,48 @@ matrix:
       applicable: true
       evidence: Local temporary Git source installed end-to-end to a separate test
         destination.
+- boundary: shared-deterministic-primitives
+  reason: Shared canonical serialization, path formatting and glob matching must preserve
+    every existing public facade contract while keeping domain-specific fingerprints
+    under their current owners.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Focused Ruff F401/I001/SIM102 checks pass for all changed modules; full
+        repository validator passes on this candidate branch.
+    unit:
+      applicable: true
+      evidence: tests/evidence/shared_primitives_lifecycle.py checks raw and prefixed
+        digest facades, in/outside relative paths, path/glob compatibility vectors and
+        domain digest contracts.
+    integration:
+      applicable: true
+      evidence: Full repository validation passes locally; the configured exact-candidate
+        Integration Gate must pass on the frozen commit before publication.
+    contract:
+      applicable: true
+      evidence: tests/fixtures/plan21-contract-golden-vectors.yaml pins canonical digest
+        bytes and caller-specific path/glob semantics.
+    security:
+      applicable: true
+      evidence: governance_guard and runtime_policy fingerprints remain domain-owned
+        and match frozen vectors; the shared package grants no authority.
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted data or installed state changes.
+    cli_harness:
+      applicable: false
+      na_reason: No CLI or runtime hook surface changes in this boundary.
+    docs_schema:
+      applicable: true
+      evidence: Human architecture, conformance, documentation map/sync, maintenance,
+        technology guide and Agent conformance/sync topics describe the shared owner
+        and limited evidence claim; docs/human/CONFORMANCE_HISTORY_INDEX.md is regenerated
+        from the updated Human/Agent section anchors.
+    e2e:
+      applicable: false
+      na_reason: The change is a deterministic helper extraction; facade behavior and
+        exact candidate are exercised by lifecycle and Integration Gate contracts.
 review_evidence:
   required: false
 scope_recomputed_after_expansion: true

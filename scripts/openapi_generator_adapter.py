@@ -18,9 +18,9 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 import yaml
-from jsonschema import validate as validate_json
-
+from aips_common import canonical_digest as _aips_canonical_digest
 from implementation_profile_validate import validate_profile
+from jsonschema import validate as validate_json
 from openapi_contracts import ContractError, verify_evidence
 
 REPORT_SCHEMA = Path(__file__).resolve().parents[1] / "templates/implementation/GENERATOR_ADAPTER_REPORT.schema.json"
@@ -40,7 +40,7 @@ def digest_file(path: Path) -> str:
 
 
 def canonical_digest(value: Any) -> str:
-    return digest(json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8"))
+    return _aips_canonical_digest(value)
 
 
 def git(root: Path, *args: str) -> str:

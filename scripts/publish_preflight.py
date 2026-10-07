@@ -21,8 +21,9 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
 
-import documentation_placement  # noqa: E402
-import repository_preflight  # noqa: E402
+import documentation_placement
+import repository_preflight
+from aips_common import canonical_hash as _aips_canonical_hash
 from integration_gate import load_yaml as load_matrix_yaml
 from integration_gate import matrix_readiness_issues
 from publish_post_merge import PreflightError
@@ -30,7 +31,6 @@ from publish_post_merge import post_merge as _post_merge
 from publish_post_merge import sync_installed as _sync_installed
 from publish_preflight_policy import (
     documentation_impact,
-    matches,
     matrix_required,
     pr_creation_plan,
     resolve_change_class,
@@ -80,10 +80,7 @@ def worktree_changed_files(base: str) -> list[str]:
 
 
 def canonical_hash(value: Any) -> str:
-    payload = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
-    import hashlib
-
-    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return _aips_canonical_hash(value)
 
 
 def environment_status() -> dict[str, Any]:

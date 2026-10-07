@@ -4,12 +4,12 @@
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 from pathlib import Path
 from typing import Any
 
 import yaml
+from aips_common import canonical_hash as _aips_canonical_hash
 
 KINDS = {"repository_path", "workspace", "runtime_tool", "connector", "external_service"}
 OPERATIONS = {"read", "search", "create", "update", "execute"}
@@ -28,8 +28,7 @@ def load_yaml(path: Path) -> dict[str, Any]:
 
 
 def canonical_hash(value: Any) -> str:
-    payload = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
-    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return _aips_canonical_hash(value)
 
 
 def validate_profile(profile: dict[str, Any]) -> None:

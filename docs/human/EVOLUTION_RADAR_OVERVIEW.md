@@ -20,6 +20,8 @@ Weekly scan 從 source-controlled allowlist 收集 bounded public evidence，保
 
 ## Deterministic Pre-analysis
 
+Deterministic pre-analysis retains its existing digest output through the shared canonical helper; this extraction does not change candidate ranking or Human decisions.
+
 本機預分析會為未入選候選記錄可重現的排除原因與彙總計數，供人工檢視 shortlist 的資料價值；語意判斷與採納決策仍由既有流程負責。
 
 本機 deterministic rules 做 category hint、capability mapping、near-duplicate grouping 與 review priority。這不是 semantic suitability 或 adoption recommendation。

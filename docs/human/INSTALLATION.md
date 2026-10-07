@@ -78,6 +78,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
+Run Dashboard output continues to use the existing read-only projection contract; the shared canonical helper changes no installed runtime or persisted state.
+
 安裝的 Runtime adapter 讀取固定 `SYSTEM_CORE.md` 和 Turn Context 的 task-specific protocol pointers；`SYSTEM.md` 相容入口仍保留，更新流程不得把完整 orchestration 文件加入常駐 context。
 
 本次新增的治理 snapshot 不增加安裝相依；只有 operator 主動執行時才使用既有 `gh` CLI 與其登入狀態。

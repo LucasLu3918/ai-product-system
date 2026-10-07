@@ -127,6 +127,8 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 ## Failure behavior
 
+The scheduler's public fingerprint helper remains a compatibility facade over `scripts/aips_common`; canonical bytes and its raw digest representation are pinned by `tests/evidence/shared_primitives_lifecycle.py`.
+
 If a required task protocol source is unavailable, mutating work fails closed before dispatch; read-only context remains limited to available sources.
 
 Publication preflight checks only optional environment capabilities selected by the exact candidate plan. `NOT_REQUIRED` browser status is accepted when browser validation is unselected; a selected browser probe failure remains blocking.
@@ -164,6 +166,8 @@ When the Execution Profile requires sandbox isolation, Scheduler dispatch must p
 The Scheduler never falls back to LLM coordination to make a blocked graph look executable.
 
 ## Read-only declaration and fail-closed boundary
+
+The scheduler keeps its public raw fingerprint facade over `scripts/aips_common`; golden vectors protect existing bytes without changing task ownership or fail-closed behavior.
 
 Protocol route metadata is advisory context only and is not a task capability, resource grant, or approval receipt.
 

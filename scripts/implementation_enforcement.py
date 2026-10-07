@@ -13,6 +13,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 import yaml
+from aips_common import canonical_digest as _aips_canonical_digest
 from implementation_profile_validate import validate_language_profile, validate_profile
 from jsonschema import validate as validate_json
 from openapi_contracts import ContractError, verify_evidence
@@ -37,7 +38,7 @@ def digest_file(path: Path) -> str:
 
 
 def canonical_digest(value: Any) -> str:
-    return digest_bytes(json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8"))
+    return _aips_canonical_digest(value)
 
 
 def validate_report(report: dict[str, Any]) -> None:

@@ -61,6 +61,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Planning 與 Product Delivery
 
+Plan21 Phase 2 centralizes deterministic JSON/hash, path and glob primitives behind existing facades; it does not change planning or product authority.
+
 Turn Context 對規劃任務只選取相關 canonical planning 與 product-delivery protocols；任務路由不改變需求核准、Change Boundary 或 Human decision gates。
 
 主要實作保留符合政策與能力條件的 Runtime／使用者選定模型；有證據、風險分析、Context 隔離或必要獨立審查價值時才委派。Skill frontmatter 透過決定性產生器輸出相容的 v1 INDEX；架構流程見 `../ARCHITECTURE.md`。
@@ -93,6 +95,8 @@ Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行
 ## Deterministic Execution
 
 Runtime hook 與 compact Context Manifest 共用同一組路由結果，僅輸出選取的 protocol IDs/paths，不保存原始 prompt。
+
+`scripts/aips_common/` 是共用 canonical JSON/hash、repository-relative path 與 glob primitives 的唯一實作；既有模組保留同名 facade，以維持呼叫介面與 digest 表示。Governance fingerprint 與 Runtime Policy action digest 仍由各自領域擁有，不納入通用 canonicalization。
 
 主要實作保留合格的 Runtime／使用者模型；Skill frontmatter 產生相容 v1 INDEX，決定性 lifecycle 與人工模型政策驗收分開記錄。
 
@@ -208,6 +212,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Shared deterministic helpers are canonical in `scripts/aips_common/`; their golden lifecycle protects existing consumers and leaves global Impact Graph coverage partial.
 
 Maintenance governance 持續以 exact-candidate Gate 驗證品質債務與文件同步；Validation Shadow 仍維持 report-only，只有累積政策要求的證據後才可升級。
 
