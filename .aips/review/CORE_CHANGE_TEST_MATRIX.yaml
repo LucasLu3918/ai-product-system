@@ -91,5 +91,7 @@ matrix:
 
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
+review_evidence:
+  required: false
 blockers: []
 status: READY
