@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 6016723622d649b5b61d04d2b4082c2fcb2de75c
-  changed_files_hash: null
+  changed_files_hash: 7386dc7c1bc31a74835c4b11d803e9da3cfd8d99f1a98f57c9c7757d35b26b11
 change:
   id: plan20-phase2-system-core
   summary: Compact fixed system context, route canonical protocols per task, and correct
@@ -71,7 +71,14 @@ matrix:
 review_evidence:
   required: false
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
+actual_diff_reconciled: true
 blockers: []
-status: DRAFT
-verification: {}
+status: READY
+verification:
+  retrieval_relations_extraction_lifecycle: PASS
+  change_impact_traversal_lifecycle: PASS
+  intelligence_context_lifecycle: PASS
+  static_and_documentation_contracts: PASS
+  scenario_conformance: PASS
+  full_repository_validation: PASS
+  exact_candidate_integration_gate: PENDING_FINAL_CANDIDATE
