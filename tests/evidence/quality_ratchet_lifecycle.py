@@ -18,6 +18,20 @@ def main() -> int:
     summary = quality_ratchet.summarize(old + added)
     assert summary["total"] == 2 and summary["fixable"] == 0 and summary["manual"] == 2
     assert summary["by_rule"]["F401"]["findings"] == 1
+    violations = quality_ratchet.module_debt_violations(
+        {"by_module": {"scripts/project_intelligence.py": {"findings": 13}}},
+        {"scripts/project_intelligence.py": {"current_findings": 13, "next_target": 11}},
+        touched={"scripts/project_intelligence.py"},
+        previous_counts={"scripts/project_intelligence.py": 20},
+    )
+    assert violations == []
+    violations = quality_ratchet.module_debt_violations(
+        {"by_module": {"scripts/project_intelligence.py": {"findings": 19}}},
+        {"scripts/project_intelligence.py": {"current_findings": 19, "next_target": 17}},
+        touched={"scripts/project_intelligence.py"},
+        previous_counts={"scripts/project_intelligence.py": 20},
+    )
+    assert violations and "10% burn-down target 18" in violations[0]
     print("QUALITY RATCHET LIFECYCLE PASSED")
     return 0
 

@@ -20,8 +20,15 @@ if config_path.is_file():
     touched = config.get("touched_code") or {}
     mypy = config.get("mypy") or {}
     coverage = config.get("coverage") or {}
-    if config.get("version") != 1 or ruff.get("baseline_findings") != 872 or ruff.get("policy") != "never_increase":
-        errors.append("Ruff must preserve the measured 872-finding baseline and prohibit debt growth")
+    if config.get("version") != 1 or ruff.get("baseline_findings") != 758 or ruff.get("policy") != "never_increase":
+        errors.append("Ruff must preserve the measured 758-finding baseline and prohibit debt growth")
+    module_budgets = ruff.get("module_budgets") or {}
+    if module_budgets.get("scripts/project_intelligence.py") != {"current_findings": 10, "next_target": 9}:
+        errors.append("Project Intelligence Ruff debt must retain its measured current count and lower next target")
+    if module_budgets.get("scripts/retrieval_intelligence.py") != {"current_findings": 6, "next_target": 5}:
+        errors.append("Retrieval Intelligence Ruff debt must retain its measured current count and lower next target")
+    if "scripts/project_intelligence_promotion.py" not in (mypy.get("modules") or []):
+        errors.append("The extracted Project Intelligence promotion module must remain in the zero-error mypy scope")
     if len(mypy.get("modules") or []) < 4 or mypy.get("policy") != "selected_module_ratchet":
         errors.append("Mypy must retain its existing selected-module gradual scope")
     if "scripts/validation_observation.py" not in (mypy.get("modules") or []):

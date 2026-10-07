@@ -24,6 +24,8 @@ For project work, context identifies project mode and stable instruction sources
 
 ## Verification
 
+Operator-only repository governance evidence is outside runtime context and does not alter adapter selection, project intelligence resolution, or runtime capability claims.
+
 Use `aips intelligence context --runtime <id> --project <path> --prompt <task>` to inspect the resolved view and `aips publish environment` / the repository validator to inspect local Gate prerequisites. Runtime lifecycle evidence binds results to exact project/runtime inputs; diagnostics do not substitute for the final candidate Integration Gate.
 
 - The release-readiness evaluator fails closed when the changelog is unavailable or its canonical Unreleased section is missing, duplicated, malformed, or non-empty.

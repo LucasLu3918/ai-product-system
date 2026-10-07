@@ -1,7 +1,9 @@
-from .static_contracts import ROOT, errors
 import subprocess
 import sys
+
 import yaml
+
+from .static_contracts import ROOT, errors
 
 required = [
     ROOT / "config/documentation-placement.yaml",
@@ -25,11 +27,12 @@ if script.exists():
         [sys.executable, "-m", "py_compile", str(script)],
         capture_output=True,
         text=True,
+        check=False,
     )
     if proc.returncode != 0:
         errors.append(f"documentation_placement.py syntax failed: {proc.stderr.strip()}")
 
-    proc = subprocess.run([sys.executable, str(script)], capture_output=True, text=True)
+    proc = subprocess.run([sys.executable, str(script)], capture_output=True, text=True, check=False)
     if proc.returncode != 0:
         errors.append(
             f"documentation placement static audit failed: {proc.stdout.strip()} {proc.stderr.strip()}"
@@ -102,6 +105,14 @@ for marker in (
 ):
     if marker not in placement_text:
         errors.append(f"documentation placement helper missing migration/install-copy safety contract: {marker}")
+
+for marker in (
+    "INLINE_DOC_PATH",
+    "config/documentation-placement.yaml current_behavior_docs",
+    "documentation impact path does not exist",
+):
+    if marker not in placement_text:
+        errors.append(f"documentation impact path audit missing registry-backed check: {marker}")
 
 if config_path.exists():
     config = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}

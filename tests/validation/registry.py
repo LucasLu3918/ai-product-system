@@ -71,6 +71,7 @@ VALIDATORS = (
     ValidatorSpec("validation.dependency_review_contracts", False, (".github/workflows/validate.yml", ".github/workflows/dependency-review.yml", "tests/validation/dependency_review_contracts.py"), False),
     ValidatorSpec("validation.evolution_relevance_contracts", False, ("scripts/evolution_relevance.py", "config/evolution-relevance-labels.yaml", "tests/evidence/evolution_relevance_lifecycle.py", "tests/validation/evolution_relevance_contracts.py"), False),
     ValidatorSpec("validation.dependency_impact_contracts", False, ("scripts/dependency_impact.py", "config/dependency-policy.yaml", "tests/evidence/dependency_impact_lifecycle.py", "tests/validation/dependency_impact_contracts.py"), False),
+    ValidatorSpec("validation.repository_governance_snapshot_contracts", False, ("scripts/repository_governance_snapshot.py", "tests/evidence/repository_governance_snapshot_lifecycle.py", "tests/validation/repository_governance_snapshot_contracts.py"), False),
     ValidatorSpec("validation.document_size_audit_contracts", False, ("scripts/document_size_audit.py", "config/document-size-policy.yaml", "tests/evidence/document_size_audit_lifecycle.py", "tests/validation/document_size_audit_contracts.py"), False),
     ValidatorSpec("validation.validation_taxonomy_contracts", False, ("scripts/validation_taxonomy.py", "config/validation-scope.yaml", "config/validation-graduation.yaml", "tests/evidence/validation_taxonomy_lifecycle.py", "tests/validation/validation_taxonomy_contracts.py"), False),
 )

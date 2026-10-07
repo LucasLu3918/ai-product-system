@@ -362,6 +362,8 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
+可用 `python scripts/repository_governance_snapshot.py --repo OWNER/REPOSITORY` 檢視 GitHub rulesets 與 branch protection；此快照唯讀，遇到不可讀設定會標示 UNKNOWN，不會替代 PR 核准或發布流程。
+
 Scheduled maintenance summaries are evidence, not permission to change source, merge, release or delete branches. When reviewing workflow reliability, distinguish an operational error from an incomplete observation cohort; inspect the run summary and bounded artifact, and retain separate observation runs for later comparison.
 
 Publication preflight 只檢查 exact candidate 所選的環境能力；候選未選 browser 驗證時 `NOT_REQUIRED` 不會阻擋，選用 browser 時 loopback 或瀏覽器檢查失敗仍會 fail closed。Required repository Gate 與 secret scan 維持必要條件。

@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+`CHANGELOG.md` 列出 0.74.0 候選內容；版本標籤與 release readiness 仍依 exact-main SHA 與獨立核准流程處理。
+
 Prospective `aips docs impact --base HEAD --planned-path <path>` resolves sync and placement closure to a fixed point. Each triggered rule requires an update in its canonical topic; combined changes use the union of those topics. Validate every text anchor before applying the batch. Closure is scope evidence and never grants publication authority.
 
 - **開始使用**：Install、First Project、Update、Uninstall。

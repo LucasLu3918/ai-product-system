@@ -10,10 +10,9 @@ import re
 import sqlite3
 import subprocess
 from pathlib import Path
-from typing import Any, Iterable
+from typing import Any
 
 import yaml
-from aips_identity import config_home as canonical_config_home
 from aips_identity import repository_identity as canonical_repository_identity
 from git_paths import GitPathsError, run_git_nul_output, run_git_paths
 from retrieval_relations import (
@@ -96,7 +95,7 @@ GENERIC_SYMBOL_PATTERN = re.compile(
 
 
 def utc_now() -> str:
-    return dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat()
+    return dt.datetime.now(dt.UTC).replace(microsecond=0).isoformat()
 
 
 def sha(text: str) -> str:
@@ -150,9 +149,7 @@ def is_secret_path(rel_path: str) -> bool:
     if low_name.endswith((".pem", ".key", ".p12", ".pfx")):
         return True
     lowered_parts = {part.lower() for part in path.parts}
-    if {"secrets", ".secrets"} & lowered_parts:
-        return True
-    return False
+    return bool({"secrets", ".secrets"} & lowered_parts)
 
 
 def is_indexable(rel_path: str) -> bool:
@@ -458,7 +455,7 @@ def traverse_change_impact(
     db_path = index_path(root)
     try:
         conn, _fts_available, snapshot = open_read_db(db_path)
-    except (OSError, sqlite3.Error) as exc:
+    except (OSError, sqlite3.Error):
         report["stop_reason"] = "retrieval_index_unavailable"
         report["unresolved"].append({"kind": "retrieval_index", "status": "INDEX_UNAVAILABLE"})
         report["resolution"]["unresolved"].append("retrieval_index")
@@ -1067,9 +1064,8 @@ def load_graph_boosts(store: Path, terms: list[str]) -> set[str]:
             continue
         source = str(node.get("source") or node.get("path") or "")
         haystack = f"{node_id} {source} {node.get('type', '')}".lower()
-        if any(term in haystack for term in terms):
-            if source:
-                boosts.add(source)
+        if source and any(term in haystack for term in terms):
+            boosts.add(source)
     return boosts
 
 

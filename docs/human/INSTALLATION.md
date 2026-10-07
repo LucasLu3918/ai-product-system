@@ -76,6 +76,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
+本次新增的治理 snapshot 不增加安裝相依；只有 operator 主動執行時才使用既有 `gh` CLI 與其登入狀態。
+
 The public `bin/aips` entrypoint remains a thin launcher. Its resolved checkout contains `scripts/aips_cli.sh` and the `scripts/aips_cli/` implementation modules; installed symlinks resolve those modules relative to the installed AIPS checkout, regardless of the caller working directory.
 
 Publication post-merge reconciliation 拆至 `scripts/publish_post_merge.py`，由既有 CLI facade 呼叫；使用相同 Python/Git runtime，不增加安裝步驟或相依套件。

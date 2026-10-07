@@ -72,6 +72,8 @@ Temporal Project Intelligence 的 historical query 由既有 deterministic CLI�
 
 ## Capability truth
 
+GitHub governance snapshot 是 repository operator 的唯讀工具，不是 runtime adapter 能力，也不擴張 Harness 的遠端寫入權限。
+
 The managed AIPS CLI support floor is Python 3.12, with a separate scheduled 3.12–3.14 compatibility smoke. Runtime support facts are generated into System Reference and remain distinct from host-specific adapter capability.
 The Evolution Radar maintenance capability preserves oversized Issue evidence in a bounded, digest-checked envelope; its monthly consumers restore the original body and report missing triage inputs as incomplete.
 

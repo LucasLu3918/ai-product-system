@@ -1,25 +1,26 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import copy
 import base64
+import copy
 import hashlib
-from pathlib import Path
 import socket
 import sys
 import tempfile
 import zlib
+from pathlib import Path
+
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPTS = ROOT / "scripts"
 sys.path.insert(0, str(SCRIPTS))
 
-import evolution_analysis as analysis  # noqa: E402
-import evolution_decision as decision  # noqa: E402
-import evolution_effectiveness as effectiveness  # noqa: E402
-import evolution_radar as radar  # noqa: E402
-import evolution_radar_rollup as rollup  # noqa: E402
+import evolution_analysis as analysis
+import evolution_decision as decision
+import evolution_effectiveness as effectiveness
+import evolution_radar as radar
+import evolution_radar_rollup as rollup
 
 
 def require(condition: bool, message: str) -> None:
@@ -474,6 +475,8 @@ def main() -> int:
     require(triage["summary"]["near_duplicate_groups"] == 1, "two near-identical agent titles must form one deterministic cluster")
     require(triage["summary"]["priority_counts"]["HIGH"] >= 2, "high-signal engineering titles should reach HIGH Human review priority")
     require(triage["summary"]["priority_counts"]["LOW"] >= 1, "unmatched titles should remain LOW Human review priority")
+    require(triage["summary"]["exclusion_reason_counts"].get("NO_CATEGORY_MATCH", 0) >= 1, "unmatched evidence must have an explicit reason code")
+    require(any(item["selection_status"] == "EXCLUDED" for item in triage["signals"]), "the deterministic queue must identify excluded signals")
     require(
         all(item["state"] == "ANALYSIS_PENDING" for item in triage_evidence["recommendations"]),
         "local preanalysis must leave semantic recommendations ANALYSIS_PENDING",
@@ -576,6 +579,13 @@ def main() -> int:
     preanalysis_markdown = analysis.preanalysis_markdown(triage)
     extracted_preanalysis = analysis.extract_preanalysis(preanalysis_markdown)
     require(extracted_preanalysis == triage, "preanalysis markdown must round-trip exact deterministic evidence")
+
+    tampered_reason = copy.deepcopy(triage)
+    tampered_reason["signals"][0]["exclusion_reasons"] = ["product_news_only"]
+    require(
+        analysis.validate_local_preanalysis(triage_evidence, analyzer_config, capability_map, tampered_reason),
+        "unsupported or altered exclusion reasons must fail deterministic validation",
+    )
 
     tampered = copy.deepcopy(triage)
     tampered["execution"]["semantic_suitability_inferred"] = True

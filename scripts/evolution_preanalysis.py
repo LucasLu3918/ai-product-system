@@ -205,6 +205,36 @@ def _build_review_queue(annotations: list[dict[str, Any]], local: dict[str, Any]
     }
 
 
+def _review_exclusion_reasons(
+    annotations: list[dict[str, Any]], local: dict[str, Any], queue: dict[str, Any]
+) -> dict[str, list[str]]:
+    """Attribute only deterministic shortlist and semantic-queue exclusions."""
+    shortlist = set(queue["shortlist_signal_fingerprints"])
+    semantic = set(queue["semantic_signal_fingerprints"])
+    semantic_limit = int(queue["semantic_analysis_limit"])
+    reasons: dict[str, list[str]] = {}
+    for item in annotations:
+        fingerprint = str(item["signal_fingerprint"])
+        codes: list[str] = []
+        if not item.get("category_ids"):
+            codes.append("NO_CATEGORY_MATCH")
+        if item.get("review_priority") == "LOW":
+            codes.append("LOW_PRIORITY")
+        if fingerprint not in shortlist:
+            codes.append("SHORTLIST_CAP")
+        elif fingerprint not in semantic:
+            if item.get("near_duplicate_group") and any(
+                other.get("near_duplicate_group") == item.get("near_duplicate_group")
+                and str(other.get("signal_fingerprint")) in semantic
+                for other in annotations
+            ):
+                codes.append("DUPLICATE_SUPPRESSED")
+            elif len(semantic) >= semantic_limit:
+                codes.append("SEMANTIC_CAP")
+        reasons[fingerprint] = codes
+    return reasons
+
+
 def build_local_preanalysis(
     evidence: dict[str, Any],
     analyzer_config: dict[str, Any],
@@ -282,8 +312,16 @@ def build_local_preanalysis(
             "near_duplicate_count": group_count,
         })
 
-    near_groups = len({item["near_duplicate_group"] for item in annotations if item["near_duplicate_group"] is not None})
     review_queue = _build_review_queue(annotations, local)
+    exclusion_reasons = _review_exclusion_reasons(annotations, local, review_queue)
+    reason_counts: dict[str, int] = {}
+    for annotation in annotations:
+        codes = exclusion_reasons[str(annotation["signal_fingerprint"])]
+        annotation["exclusion_reasons"] = codes
+        annotation["selection_status"] = "EXCLUDED" if codes else "SELECTED"
+        for code in codes:
+            reason_counts[code] = reason_counts.get(code, 0) + 1
+    near_groups = len({item["near_duplicate_group"] for item in annotations if item["near_duplicate_group"] is not None})
     return {
         "version": 1,
         "mode": "DETERMINISTIC_PREANALYSIS",
@@ -309,6 +347,7 @@ def build_local_preanalysis(
             "shortlist_count": len(review_queue["shortlist_signal_fingerprints"]),
             "semantic_candidate_count": len(review_queue["semantic_signal_fingerprints"]),
             "actionable_recommendations_limit": review_queue["actionable_recommendations_limit"],
+            "exclusion_reason_counts": dict(sorted(reason_counts.items())),
         },
         "review_queue": review_queue,
         "signals": annotations,
@@ -441,6 +480,21 @@ def validate_local_preanalysis(
     if preanalysis.get("review_queue") != expected_queue:
         errors.append("preanalysis review_queue must match deterministic ranked selection")
 
+    expected_reasons = _review_exclusion_reasons(annotations, local, expected_queue) if annotations else {}
+    expected_reason_counts: dict[str, int] = {}
+    for item in annotations:
+        if not isinstance(item, dict):
+            continue
+        fingerprint = str(item.get("signal_fingerprint"))
+        codes = expected_reasons.get(fingerprint, [])
+        if item.get("exclusion_reasons") != codes:
+            errors.append("preanalysis exclusion_reasons must match deterministic review selection")
+        expected_status = "EXCLUDED" if codes else "SELECTED"
+        if item.get("selection_status") != expected_status:
+            errors.append("preanalysis selection_status must match deterministic review selection")
+        for code in codes:
+            expected_reason_counts[code] = expected_reason_counts.get(code, 0) + 1
+
     summary = preanalysis.get("summary") or {}
     if summary.get("signal_count") != len(annotations):
         errors.append("preanalysis summary signal_count mismatch")
@@ -456,6 +510,8 @@ def validate_local_preanalysis(
         errors.append("preanalysis summary semantic_candidate_count mismatch")
     if summary.get("actionable_recommendations_limit") != expected_queue["actionable_recommendations_limit"]:
         errors.append("preanalysis summary actionable_recommendations_limit mismatch")
+    if summary.get("exclusion_reason_counts") != dict(sorted(expected_reason_counts.items())):
+        errors.append("preanalysis summary exclusion_reason_counts mismatch")
 
     authority = preanalysis.get("authority") or {}
     if authority.get("advisory_only") is not True:
@@ -489,6 +545,10 @@ def preanalysis_markdown(preanalysis: dict[str, Any]) -> str:
         f"- Shortlist: {summary.get('shortlist_count', 0)} / {queue.get('shortlist_limit', 0)}",
         f"- Semantic candidates: {summary.get('semantic_candidate_count', 0)} / {queue.get('semantic_analysis_limit', 0)}",
         f"- Actionable semantic recommendation budget: {queue.get('actionable_recommendations_limit', 0)}",
+        "- Exclusion reasons: " + (
+            ", ".join(f"{code}={count}" for code, count in (summary.get("exclusion_reason_counts") or {}).items())
+            or "none"
+        ),
         "- Semantic recommendation state remains: ANALYSIS_PENDING until validated semantic output is applied.",
         "",
         "Top review queue:",

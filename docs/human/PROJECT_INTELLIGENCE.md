@@ -8,6 +8,8 @@ Project Intelligence 是 AIPS 對既有專案建立的可重用理解層。
 
 ## 第一次 Existing Project
 
+
+
 Read-only Discovery 先建立 PARTIAL，再由 Agent 針對 Architecture、Data Flow、Modules、Contracts、DB/Events、Conventions、Testing、Security、Operations 做 evidence-based semantic enrichment；通過 finalize 才是 READY。
 
 Implementation planning may reuse runtime/framework, project rules, toolchain, architecture and API-contract evidence, testing conventions, generated ownership, and nearby examples. Record each source and scope. One local example does not establish a repository-wide rule, and a directory name alone does not prove DDD or Clean Architecture.
@@ -62,6 +64,8 @@ Architecture 摘要、核准覆寫與時序文字在進入 Runtime Context 前�
 Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Detach 先 validated sync 回 External Cache，再封存 `.ai/`。
 
 ## Change Impact
+
+Promotion eligibility 與目標路徑限制已抽至 `project_intelligence_promotion.py`；原 facade 保留相容入口，Human approval 與禁止覆寫既有檔案的界線不變。
 
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
 

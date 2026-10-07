@@ -22,6 +22,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+The plan18 candidate matrix covers exclusion attribution, quality debt ratchets, Project Intelligence extraction, governance snapshot read-only guarantees, canonical docs placement and existing authority boundaries.
+
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
 
 The exact candidate includes shared bootstrap and caller changes; absent declared imports or inconsistent installed requirements fail the applicable repository validation.
@@ -103,6 +105,8 @@ The Gate calls the Phase 3 inspector on the checked-out base/head. It never exec
 For Phase 4, the Gate runs only the deterministic fake-generator lifecycle fixture when relevant paths change. It never executes a generator configured by a project Implementation Profile. Generator execution is local, opt-in and explicitly requested with `--execute`; the adapter report remains evidence of bounded execution and hashes, not semantic correctness or OS-level isolation.
 
 ## Core Change Test Matrix reuse
+
+
 
 For Large/Core changes, the Gate reuses `templates/review/CORE_CHANGE_TEST_MATRIX.yaml`; it does not introduce a parallel Janitor matrix.
 

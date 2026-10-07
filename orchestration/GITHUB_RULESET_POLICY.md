@@ -4,6 +4,8 @@
 
 ## Inputs
 
+The read-only snapshot command captures rulesets and branch protection independently; an inaccessible surface remains UNKNOWN and must not be treated as compliant.
+
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
 
 The `repository` required context continues to cover full validation; the shared Python bootstrap is a caller-declared, fail-closed prerequisite within applicable workflows.

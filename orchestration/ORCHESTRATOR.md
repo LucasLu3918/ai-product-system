@@ -324,6 +324,10 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+Before remote publication, require the exact validated candidate proposal and explicit approval. A read-only governance snapshot is evidence only and grants no publication authority.
+
+
+
 When standardizing CI, classify workflows by effective permissions and side effects rather than names. Derive timeout bounds from observed per-job P95 with a recorded safety multiplier and rounding rule; add concurrency only when shared state or resource collisions require it and cancellation cannot erase needed evidence.
 
 Changes to shared CI bootstrap behavior require exact-candidate checks for every caller, import failure handling, tested constraints, and the required repository aggregate.

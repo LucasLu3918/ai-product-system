@@ -1520,6 +1520,8 @@ Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agen
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
+Scenario 209 的唯讀 repository governance snapshot lifecycle 證據涵蓋完整回應、UNKNOWN 與穩定 fingerprint。
+
 Publication scanning excludes only validated numeric Git index/mode metadata; paths, added/removed/context lines and unknown headers remain scanned. Branch deletion verifies GitHub RS256 issuer, repository, protected main, workflow SHA, dispatch event and a proposal-bound audience. Runner flags alone grant no authority; tokens remain in memory.
 
 Scenario 207 now verifies caller-declared Python imports, missing-module failure, shell-like input rejection, and dependency consistency through `pip check`; it also checks same-period Evolution Effectiveness queueing, pending-run retention and disabled cancellation.
@@ -1550,6 +1552,10 @@ Scenario 204’s internal-module extraction lifecycle also verifies the retrieva
 ## Scenario 218 — Evolution Human Relevance Evaluation
 
 The monthly evaluator deterministically samples up to 20 signal fingerprints and reports shortlist precision/recall, actionable yield, and per-source relevance yield from complete Human labels. Empty or incomplete labels remain `NOT_READY`; no source policy changes occur automatically.
+
+### Scenario 223 — Evolution Radar exclusion attribution
+
+驗證 deterministic pre-analysis 對候選排除原因與計數的可重現性，且不改變人工決策權。
 
 ## Scenario 220 — Parallel advisory fast feedback
 

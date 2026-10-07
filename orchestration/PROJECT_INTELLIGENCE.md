@@ -4,6 +4,8 @@ Repeated bootstrap preserves existing metadata, graph and temporal assertions. U
 
 `retrieval_intelligence.py` remains the compatibility facade for retrieval commands and imports. `retrieval_relations.py` owns comment/string masking and bounded lexical relation rows; these rebuildable candidates do not upgrade partial Impact Graph coverage or establish compiler-resolved completeness.
 
+`project_intelligence.py` remains the public CLI/import facade. Promotion eligibility and project-relative target validation live in `project_intelligence_promotion.py`; the facade re-exports the candidate helper so symbol identity and existing approval requirements remain covered by the module-extraction lifecycle.
+
 Project Intelligence is the reusable, evidence-grounded understanding layer for existing projects.
 
 It replaces Project Knowledge as the long-term cache model. Existing `.ai/knowledge/` remains readable for migration compatibility, but new reusable discovery belongs in Project Intelligence.
@@ -198,6 +200,8 @@ lock
 Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
+
+Promotion eligibility and target-path constraints are extracted to a helper while retaining the facade entry point, Human approval and no-overwrite behavior.
 
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
 

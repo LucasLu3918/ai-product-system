@@ -2,8 +2,15 @@
 
 ## Unreleased
 
-- Harden plan17 publication and validation: exclude numeric Git metadata false positives, isolate selected Python and capability plans, precheck local reusable workflow semantics, retain exact-candidate dependency findings and compute documentation scope to a fixed point.
-- Enforce signed protected-main cleanup from immutable proposal evidence with atomic expected-SHA deletion; preserve active local worktrees and classify Codex branches without granting deletion authority.
+## 0.74.0
+
+- Add deterministic Evolution Radar exclusion reasons and reject altered attribution without changing recommendation or adoption authority.
+- Reduce Ruff debt from 872 to 758 findings; add a 10% touched-facade burn-down ratchet and track the extracted Project Intelligence promotion module with mypy.
+- Validate canonical documentation paths against the placement registry and correct stale paths in the maintenance impact table.
+- Extract Project Intelligence promotion eligibility and target confinement behind the existing facade, preserving Human approval and no-overwrite behavior.
+- Add a fingerprinted, read-only GitHub ruleset and branch-protection snapshot command that reports incomplete access as UNKNOWN.
+- Preserve existing full-run Validation Shadow, report-only branch cleanup, impact-bound Agent Eval freshness, credential-free Evolution handoff, and dependency-risk classification.
+- Prepare the first stable release candidate as v0.74.0; tag creation and GitHub Release remain subject to exact-candidate readiness and explicit release approval.
 
 ## 0.73.0
 

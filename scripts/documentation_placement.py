@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import fnmatch
 import os
-from pathlib import Path
 import re
 import subprocess
+from pathlib import Path
 from typing import Any
 
 import yaml
@@ -15,14 +15,15 @@ CONFIG = ROOT / "config" / "documentation-placement.yaml"
 SYNC_CONFIG = ROOT / "config" / "documentation-sync.yaml"
 H2 = re.compile(r"^##\s+(.+?)\s*$")
 H1 = re.compile(r"^#\s+(.+?)\s*$")
-VERSION_HEADING = re.compile(r"^##+\s+(?:v?\d+\.\d+|Scenario\s+\d+)", re.I)
+VERSION_HEADING = re.compile(r"^##+\s+(?:v?\d+\.\d+|Scenario\s+\d+)", re.IGNORECASE)
 NUMERIC_H2 = re.compile(r"^##\s+(\d+[A-Z]?)\.\s+")
+INLINE_DOC_PATH = re.compile(r"`((?:docs|orchestration|harness|templates|tests)/[^`]+)`")
 
 
 def load_config() -> dict[str, Any]:
     data = yaml.safe_load(CONFIG.read_text(encoding="utf-8")) or {}
     if not isinstance(data, dict):
-        raise RuntimeError("documentation placement config must be a mapping")
+        raise TypeError("documentation placement config must be a mapping")
     return data
 
 
@@ -103,6 +104,29 @@ def static_errors(config: dict[str, Any]) -> list[str]:
                     f"{rule.get('id')}: {raw_path} placement refers to missing H2 {missing}; "
                     "use an existing ## heading or correct config/documentation-placement.yaml"
                 )
+
+    maintenance = ROOT / "docs/human/MAINTENANCE.md"
+    if maintenance.is_file():
+        canonical_docs = set((config.get("current_behavior_docs") or {}).keys())
+        text = maintenance.read_text(encoding="utf-8")
+        section = heading_ranges(text).get("Documentation Impact Gate")
+        if section:
+            lines = text.splitlines()
+            start, end = section
+            for number in range(start, end + 1):
+                for match in INLINE_DOC_PATH.finditer(lines[number - 1]):
+                    candidate = match.group(1)
+                    if "*" in candidate or "{" in candidate or "}" in candidate:
+                        continue
+                    if candidate.startswith("docs/human/") and candidate.endswith(".md") and candidate not in canonical_docs:
+                        errors.append(
+                            f"docs/human/MAINTENANCE.md:{number}: non-canonical Human doc path: {candidate}; "
+                            "use config/documentation-placement.yaml current_behavior_docs"
+                        )
+                    if not (ROOT / candidate).is_file():
+                        errors.append(
+                            f"docs/human/MAINTENANCE.md:{number}: documentation impact path does not exist: {candidate}"
+                        )
     return errors
 
 
@@ -112,6 +136,7 @@ def git_base_resolves(base: str) -> bool:
         cwd=ROOT,
         capture_output=True,
         text=True,
+        check=False,
     )
     return proc.returncode == 0
 
@@ -122,6 +147,7 @@ def changed_files(base: str) -> list[str]:
         cwd=ROOT,
         capture_output=True,
         text=True,
+        check=False,
     )
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.strip() or "git diff failed")
@@ -131,11 +157,11 @@ def changed_files(base: str) -> list[str]:
 def working_tree_changed_files(base: str) -> list[str]:
     tracked = subprocess.run(
         ["git", "diff", "--name-only", base, "--"],
-        cwd=ROOT, capture_output=True, text=True,
+        cwd=ROOT, capture_output=True, text=True, check=False,
     )
     untracked = subprocess.run(
         ["git", "ls-files", "--others", "--exclude-standard"],
-        cwd=ROOT, capture_output=True, text=True,
+        cwd=ROOT, capture_output=True, text=True, check=False,
     )
     if tracked.returncode or untracked.returncode:
         raise RuntimeError(tracked.stderr.strip() or untracked.stderr.strip() or "git working-tree scan failed")
@@ -146,7 +172,7 @@ def added_line_numbers(base: str, path: str, *, working_tree: bool = False) -> l
     if working_tree:
         tracked = subprocess.run(
             ["git", "ls-files", "--error-unmatch", "--", path],
-            cwd=ROOT, capture_output=True,
+            cwd=ROOT, capture_output=True, check=False,
         )
         if tracked.returncode:
             return list(range(1, len((ROOT / path).read_text(encoding="utf-8").splitlines()) + 1))
@@ -155,6 +181,7 @@ def added_line_numbers(base: str, path: str, *, working_tree: bool = False) -> l
         cwd=ROOT,
         capture_output=True,
         text=True,
+        check=False,
     )
     if proc.returncode != 0:
         raise RuntimeError(proc.stderr.strip() or f"git diff failed for {path}")

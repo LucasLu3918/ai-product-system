@@ -1,9 +1,16 @@
 version: 1
 ruff:
-  baseline_findings: 872
+  baseline_findings: 758
   policy: never_increase
   scope: scripts_and_tests
   report_dimensions: [rule, module, auto_fixable]
+  module_budgets:
+    scripts/project_intelligence.py:
+      current_findings: 10
+      next_target: 9
+    scripts/retrieval_intelligence.py:
+      current_findings: 6
+      next_target: 5
 touched_code:
   policy: no_new_findings
   base_ref: origin/main
@@ -19,6 +26,7 @@ mypy:
     - scripts/review_evidence.py
     - scripts/validation_observation.py
     - scripts/validation_taxonomy.py
+    - scripts/project_intelligence_promotion.py
   follow_imports: skip
   ignore_missing_imports: true
 coverage:

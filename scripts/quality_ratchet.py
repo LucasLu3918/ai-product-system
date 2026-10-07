@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import subprocess
 import sys
@@ -56,6 +57,32 @@ def summarize(findings: list[dict]) -> dict:
         "by_rule": {key: dict(value) for key, value in sorted(rules.items())},
         "by_module": {key: dict(value) for key, value in sorted(modules.items())},
     }
+
+
+def module_debt_violations(
+    report: dict,
+    budgets: dict[str, dict],
+    *,
+    touched: set[str] | None = None,
+    previous_counts: dict[str, int] | None = None,
+) -> list[str]:
+    modules = report.get("by_module") or {}
+    violations: list[str] = []
+    for path, budget in sorted(budgets.items()):
+        current = int((modules.get(path) or {}).get("findings", 0))
+        allowed = int(budget.get("current_findings", -1))
+        next_target = int(budget.get("next_target", -1))
+        if allowed < 0 or next_target < 0 or next_target >= allowed:
+            violations.append(f"{path}: module ledger must define a lower non-negative next_target")
+        if current > allowed:
+            violations.append(f"{path}: {current} findings exceed recorded current_findings {allowed}")
+        if touched and path in touched and previous_counts and path in previous_counts:
+            previous = previous_counts[path]
+            if previous > 0:
+                required = max(1, math.floor(previous * 0.9))
+                if current > required:
+                    violations.append(f"{path}: {current} findings exceed 10% burn-down target {required} from base {previous}")
+    return violations
 
 
 def run_ruff(files: list[str] | None = None, *, stdin_text: str | None = None, stdin_filename: str | None = None) -> tuple[list[dict] | None, str]:
@@ -136,6 +163,22 @@ def main() -> int:
             print(f"QUALITY_RATCHET_BLOCKED: new Ruff findings in touched code: {details}", file=sys.stderr)
             return 1
         print(f"Touched-code Ruff findings: no growth across {len(touched)} Python files (base {args.base})")
+        budgets = (config.get("ruff") or {}).get("module_budgets") or {}
+        previous_counts: dict[str, int] = {}
+        for path in budgets:
+            if path not in touched:
+                continue
+            previous = previous_file_findings(args.base, path)
+            if previous is None:
+                print(f"QUALITY_RATCHET_BLOCKED: cannot produce module debt baseline for {path}", file=sys.stderr)
+                return 2
+            previous_counts[path] = len(previous)
+        violations = module_debt_violations(report, budgets, touched=touched, previous_counts=previous_counts)
+        if violations:
+            print("QUALITY_RATCHET_BLOCKED: " + "; ".join(violations), file=sys.stderr)
+            return 1
+        if budgets:
+            print(f"Module Ruff debt: {len(budgets)} tracked budgets; changed facades must reduce findings by at least 10%")
     mypy = config.get("mypy") or {}
     modules = [str(path) for path in mypy.get("modules") or []]
     with tempfile.TemporaryDirectory(prefix="aips-quality-mypy-") as cache_dir:

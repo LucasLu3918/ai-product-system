@@ -133,9 +133,16 @@ rules:
     human_docs: [docs/human/HARNESS.md]
     agent_docs: [harness/HARNESS_PROTOCOL.md]
   - id: project-intelligence
-    triggers: [scripts/project_intelligence.py, scripts/project_intelligence_temporal.py, scripts/retrieval_intelligence.py, scripts/retrieval_relations.py, scripts/retrieval_storage.py, scripts/retrieval_evaluation.py, scripts/structural_retrieval_trial.py, scripts/retrieval_embedding_trial.py, scripts/retrieval_embedding_trial_summary.py, tests/evidence/retrieval_relations_extraction_lifecycle.py, scripts/turn_context_hook.py, config/retrieval-embedding-trial.yaml, requirements-semantic-trial.txt, templates/intelligence/**, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, .github/workflows/retrieval-semantic-trial.yml]
+    triggers: [scripts/project_intelligence.py, scripts/project_intelligence_promotion.py, scripts/project_intelligence_temporal.py, scripts/retrieval_intelligence.py, scripts/retrieval_relations.py, scripts/retrieval_storage.py, scripts/retrieval_evaluation.py, scripts/structural_retrieval_trial.py, scripts/retrieval_embedding_trial.py, scripts/retrieval_embedding_trial_summary.py, tests/evidence/retrieval_relations_extraction_lifecycle.py, scripts/turn_context_hook.py, config/retrieval-embedding-trial.yaml, requirements-semantic-trial.txt, templates/intelligence/**, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, .github/workflows/retrieval-semantic-trial.yml]
     human_docs: [docs/human/PROJECT_INTELLIGENCE.md, docs/human/ARCHITECTURE_OVERVIEW.md, docs/human/TECHNOLOGY_GUIDE.md, docs/human/CONFORMANCE.md]
     agent_docs: [orchestration/PROJECT_INTELLIGENCE.md, orchestration/CHANGE_IMPACT.md]
+  - id: repository-governance-snapshot
+    triggers:
+      - scripts/repository_governance_snapshot.py
+      - tests/evidence/repository_governance_snapshot_lifecycle.py
+      - tests/validation/repository_governance_snapshot_contracts.py
+    human_docs: [docs/human/SECURITY_ASSURANCE.md, docs/human/ARCHITECTURE_OVERVIEW.md, docs/human/TECHNOLOGY_GUIDE.md, docs/human/CONFORMANCE.md]
+    agent_docs: [orchestration/GITHUB_RULESET_POLICY.md, orchestration/CONFORMANCE.md]
   - id: execution-isolation
     triggers:
       - scripts/execution_isolation.py

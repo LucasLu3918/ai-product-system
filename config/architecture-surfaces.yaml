@@ -82,6 +82,7 @@ surfaces:
       - durable-run-state
     required_paths:
       - scripts/project_intelligence.py
+      - scripts/project_intelligence_promotion.py
       - scripts/project_intelligence_temporal.py
       - scripts/retrieval_intelligence.py
       - scripts/retrieval_relations.py
@@ -107,6 +108,7 @@ surfaces:
     validation_paths:
       - tests/evidence/project_intelligence_lifecycle.py
       - tests/evidence/change_impact_resolution_lifecycle.py
+      - tests/evidence/module_extraction_lifecycle.py
       - tests/validation/change_impact_resolution_contracts.py
       - tests/validation/conformance_isolation.py
       - tests/evidence/identity_resume_isolation.py
@@ -122,6 +124,7 @@ surfaces:
       - external-credential-dependency-guard
     required_paths:
       - scripts/governance_guard.py
+      - scripts/repository_governance_snapshot.py
       - scripts/runtime_policy.py
       - scripts/semantic_guard.py
       - scripts/governance_audit.py
@@ -146,6 +149,7 @@ surfaces:
       - orchestration/EXTERNAL_CREDENTIAL_DEPENDENCY_GUARD.md
     validation_paths:
       - tests/evidence/governance_command_guard.py
+      - tests/evidence/repository_governance_snapshot_lifecycle.py
       - tests/test_runtime_policy.py
       - tests/evidence/runtime_policy_lifecycle.py
       - tests/evidence/governance_audit_lifecycle.py
