@@ -1,10 +1,12 @@
 version: 1
 candidate:
   base_sha: 552b7e1e7087611fd46177715603ad464bfd4ada
-  changed_files_hash: ecfd586574b0062258391e5c9d55cf8cd2fcb3d7589bc3295b4bdda43a29a835
+  changed_files_hash: 54c6f22e94da6419979277b4ecdb7f38f3b673c4e9b1015febbdfb48ca0412e2
 change:
   id: plan21-final
-  summary: Complete Plan21 failure semantics, shared primitives, public CLI help/error contracts, focused quality, preflight routes, measured documentation performance, and advisory security inventory.
+  summary: Complete Plan21 failure semantics, shared primitives, public CLI help/error
+    contracts, focused quality, preflight routes, measured documentation performance,
+    and advisory security inventory.
   boundary:
   - malformed-governance-input
   - failure-diagnostics
@@ -132,21 +134,21 @@ matrix:
   checks:
     static_lint:
       applicable: true
-      evidence: Focused Ruff F401/I001/SIM102 checks pass for all changed modules; full
-        repository validator passes on this candidate branch.
+      evidence: Focused Ruff F401/I001/SIM102 checks pass for all changed modules;
+        full repository validator passes on this candidate branch.
     unit:
       applicable: true
       evidence: tests/evidence/shared_primitives_lifecycle.py checks raw and prefixed
-        digest facades, in/outside relative paths, path/glob compatibility vectors and
-        domain digest contracts.
+        digest facades, in/outside relative paths, path/glob compatibility vectors
+        and domain digest contracts.
     integration:
       applicable: true
       evidence: Full repository validation passes locally; the configured exact-candidate
         Integration Gate must pass on the frozen commit before publication.
     contract:
       applicable: true
-      evidence: tests/fixtures/plan21-contract-golden-vectors.yaml pins canonical digest
-        bytes and caller-specific path/glob semantics.
+      evidence: tests/fixtures/plan21-contract-golden-vectors.yaml pins canonical
+        digest bytes and caller-specific path/glob semantics.
     security:
       applicable: true
       evidence: governance_guard and runtime_policy fingerprints remain domain-owned
@@ -165,26 +167,32 @@ matrix:
         from the updated Human/Agent section anchors.
     e2e:
       applicable: false
-      na_reason: The change is a deterministic helper extraction; facade behavior and
-        exact candidate are exercised by lifecycle and Integration Gate contracts.
+      na_reason: The change is a deterministic helper extraction; facade behavior
+        and exact candidate are exercised by lifecycle and Integration Gate contracts.
 - boundary: focused-pytest-contract
-  reason: Focused pytest coverage must pin the shared primitive contracts while remaining a separate advisory workflow.
+  reason: Focused pytest coverage must pin the shared primitive contracts while remaining
+    a separate advisory workflow.
   checks:
     static_lint:
       applicable: true
-      evidence: Targeted Ruff and the repository quality ratchet validate changed Python modules.
+      evidence: Targeted Ruff and the repository quality ratchet validate changed
+        Python modules.
     unit:
       applicable: true
-      evidence: tests/test_aips_common_primitives.py passes under pytest; repository validation also runs the same cases directly.
+      evidence: tests/test_aips_common_primitives.py passes under pytest; repository
+        validation also runs the same cases directly.
     integration:
       applicable: true
-      evidence: Full repository validation exercises the focused test file; the standalone workflow installs only the pinned pytest dependency set.
+      evidence: Full repository validation exercises the focused test file; the standalone
+        workflow installs only the pinned pytest dependency set.
     contract:
       applicable: true
-      evidence: Workflow is separate from the required repository aggregate and uses pinned checkout/setup-python actions.
+      evidence: Workflow is separate from the required repository aggregate and uses
+        pinned checkout/setup-python actions.
     security:
       applicable: true
-      evidence: Workflow permissions remain contents read-only and the required candidate secret scan is unchanged.
+      evidence: Workflow permissions remain contents read-only and the required candidate
+        secret scan is unchanged.
     migration_recovery:
       applicable: false
       na_reason: No persisted state or installation changes.
@@ -193,88 +201,108 @@ matrix:
       na_reason: No public CLI or runtime hook behavior changes.
     docs_schema:
       applicable: true
-      evidence: Technology Guide and canonical documentation placement describe focused primitive verification.
+      evidence: Technology Guide and canonical documentation placement describe focused
+        primitive verification.
     e2e:
       applicable: false
-      na_reason: The new workflow is a supplementary test lane; the required repository Gate remains the end-to-end boundary.
+      na_reason: The new workflow is a supplementary test lane; the required repository
+        Gate remains the end-to-end boundary.
 - boundary: project-check-system-preflight
-  reason: New CLI routes must preserve read-only status semantics and legacy update-preflight compatibility.
+  reason: New CLI routes must preserve read-only status semantics and legacy update-preflight
+    compatibility.
   checks:
     static_lint:
       applicable: true
-      evidence: Repository quality ratchet and shell syntax checks cover the CLI facade changes.
+      evidence: Repository quality ratchet and shell syntax checks cover the CLI facade
+        changes.
     unit:
       applicable: true
       evidence: Static CLI contracts verify help routes and legacy command visibility.
     integration:
       applicable: true
-      evidence: tests/evidence/install_preflight_lifecycle.py passed both preflight routes and project status cases.
+      evidence: tests/evidence/install_preflight_lifecycle.py passed both preflight
+        routes and project status cases.
     contract:
       applicable: true
       evidence: Scenario 232 records exit semantics, no-write behavior and alias compatibility.
     security:
       applicable: true
-      evidence: project check invokes only read-only Intelligence status and rejects invalid paths before dispatch.
+      evidence: project check invokes only read-only Intelligence status and rejects
+        invalid paths before dispatch.
     migration_recovery:
       applicable: false
-      na_reason: Commands do not migrate project state; preflight behavior reuses the existing recovery path.
+      na_reason: Commands do not migrate project state; preflight behavior reuses
+        the existing recovery path.
     cli_harness:
       applicable: true
-      evidence: The isolated AIPS CLI lifecycle fixture exercises canonical and compatibility routes.
+      evidence: The isolated AIPS CLI lifecycle fixture exercises canonical and compatibility
+        routes.
     docs_schema:
       applicable: true
-      evidence: README, SYSTEM.md, Installation and Getting Started preserve canonical/compatibility guidance.
+      evidence: README, SYSTEM.md, Installation and Getting Started preserve canonical/compatibility
+        guidance.
     e2e:
       applicable: true
-      evidence: Local temporary Git repositories run system preflight update and post-update validation.
+      evidence: Local temporary Git repositories run system preflight update and post-update
+        validation.
 - boundary: public-cli-help-errors
-  reason: Public command groups need predictable success help and useful nonzero errors without converting internal libraries into CLI parsers.
+  reason: Public command groups need predictable success help and useful nonzero errors
+    without converting internal libraries into CLI parsers.
   checks:
     static_lint:
       applicable: true
       evidence: The existing quality ratchet covers the changed shell and Python surfaces.
     unit:
       applicable: true
-      evidence: Static contracts assert status and diagnostic snapshots for help and unknown-command routes.
+      evidence: Static contracts assert status and diagnostic snapshots for help and
+        unknown-command routes.
     integration:
       applicable: true
-      evidence: Full repository validation runs the CLI snapshots through the actual bin/aips launcher.
+      evidence: Full repository validation runs the CLI snapshots through the actual
+        bin/aips launcher.
     contract:
       applicable: true
       evidence: Scenario 233 records group usage and error-exit semantics.
     security:
       applicable: true
-      evidence: Unknown commands fail closed; help routes grant no additional operation authority.
+      evidence: Unknown commands fail closed; help routes grant no additional operation
+        authority.
     migration_recovery:
       applicable: false
       na_reason: No persisted state changes.
     cli_harness:
       applicable: true
-      evidence: Actual shell, harness, MCP, project, system and evolution group commands are exercised.
+      evidence: Actual shell, harness, MCP, project, system and evolution group commands
+        are exercised.
     docs_schema:
       applicable: true
       evidence: Human and Agent Conformance define the stable help/error behavior.
     e2e:
       applicable: false
-      na_reason: These contracts are CLI entrypoint-level and do not call external services.
+      na_reason: These contracts are CLI entrypoint-level and do not call external
+        services.
 - boundary: batched-documentation-diff
-  reason: Placement audit batches Git operations while preserving exact per-file added-line decisions.
+  reason: Placement audit batches Git operations while preserving exact per-file added-line
+    decisions.
   checks:
     static_lint:
       applicable: true
       evidence: Ruff passes for the placement implementation and its contract module.
     unit:
       applicable: true
-      evidence: The temporary Git fixture compares old and batched results for tracked, untracked and space-containing paths.
+      evidence: The temporary Git fixture compares old and batched results for tracked,
+        untracked and space-containing paths.
     integration:
       applicable: true
       evidence: Full documentation placement audit passes against the working tree.
     contract:
       applicable: true
-      evidence: Existing single-file helper remains available; untracked files retain whole-file line coverage.
+      evidence: Existing single-file helper remains available; untracked files retain
+        whole-file line coverage.
     security:
       applicable: true
-      evidence: Source paths remain explicit Git pathspec arguments and authoritative hashes are untouched.
+      evidence: Source paths remain explicit Git pathspec arguments and authoritative
+        hashes are untouched.
     migration_recovery:
       applicable: false
       na_reason: The placement check reads repository files only.
@@ -286,25 +314,32 @@ matrix:
       evidence: No placement policy or documentation output contract changed.
     e2e:
       applicable: false
-      na_reason: The bounded synthetic benchmark measures the same placement path at three repository sizes.
+      na_reason: The bounded synthetic benchmark measures the same placement path
+        at three repository sizes.
 - boundary: advisory-security-inventory
-  reason: Scheduled supply-chain inventory and Gitleaks shadow outcomes add supplementary evidence without changing release authority.
+  reason: Scheduled supply-chain inventory and Gitleaks shadow outcomes add supplementary
+    evidence without changing release authority.
   checks:
     static_lint:
       applicable: true
-      evidence: YAML parsing and security_workflow_contracts.py pass for the pinned workflow and permission controls.
+      evidence: YAML parsing and security_workflow_contracts.py pass for the pinned
+        workflow and permission controls.
     unit:
       applicable: true
-      evidence: Scenario Conformance checks the workflow triggers, advisory behavior and evidence registry.
+      evidence: Scenario Conformance checks the workflow triggers, advisory behavior
+        and evidence registry.
     integration:
       applicable: true
-      evidence: Full repository validation and exact-candidate Integration Gate remain required before publication.
+      evidence: Full repository validation and exact-candidate Integration Gate remain
+        required before publication.
     contract:
       applicable: true
-      evidence: Workflow contract pins the OSV reusable workflow and Gitleaks action, with scheduled/manual triggers only.
+      evidence: Workflow contract pins the OSV reusable workflow and Gitleaks action,
+        with scheduled/manual triggers only.
     security:
       applicable: true
-      evidence: Scanner outcomes are nonblocking; comments and Gitleaks artifacts are disabled; permissions are narrowly scoped.
+      evidence: Scanner outcomes are nonblocking; comments and Gitleaks artifacts
+        are disabled; permissions are narrowly scoped.
     migration_recovery:
       applicable: false
       na_reason: No repository or external state is changed by the scheduled observations.
@@ -313,14 +348,15 @@ matrix:
       na_reason: No CLI or runtime hook changes.
     docs_schema:
       applicable: true
-      evidence: Maintenance, Security Assurance, Technology Guide and Scenario 231 document the advisory boundary.
+      evidence: Maintenance, Security Assurance, Technology Guide and Scenario 231
+        document the advisory boundary.
     e2e:
       applicable: false
-      na_reason: The workflow is supplementary observation; required secret scan and repository Gate are retained.
+      na_reason: The workflow is supplementary observation; required secret scan and
+        repository Gate are retained.
 review_evidence:
   required: false
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
-blockers:
-  - candidate binding refreshed; review scope and evidence before marking READY
-status: DRAFT
+actual_diff_reconciled: true
+blockers: []
+status: READY
