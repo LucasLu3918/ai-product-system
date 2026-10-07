@@ -10,7 +10,7 @@ required = [
     ROOT / "tests/scenarios/162-mcp-interoperability-gateway.md",
     ROOT / "tests/evidence/mcp_interoperability_lifecycle.py",
     ROOT / ".github/workflows/mcp-codex-interop.yml",
-    ROOT / ".aips/review/V0.52.0_MCP_INTEROPERABILITY_GATEWAY.md",
+    ROOT / "docs/history/proposals/V0.52.0_MCP_INTEROPERABILITY_GATEWAY.md",
 ]
 for path in required:
     if not path.exists():
