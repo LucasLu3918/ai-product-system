@@ -96,6 +96,10 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 220 — Parallel advisory fast feedback](CONFORMANCE.md#scenario-220-parallel-advisory-fast-feedback) | Current Human guidance |
 | [## Scenario 221 — Dependency Update Risk Classification](CONFORMANCE.md#scenario-221-dependency-update-risk-classification) | Current Human guidance |
 | [## Scenario 222 — Large Document Measurement Only](CONFORMANCE.md#scenario-222-large-document-measurement-only) | Current Human guidance |
+| [## Scenario 226 — Capability Registry Single Source](CONFORMANCE.md#scenario-226-capability-registry-single-source) | Current Human guidance |
+| [## Scenario 227 — Codex Native Hook Enforcement Probe](CONFORMANCE.md#scenario-227-codex-native-hook-enforcement-probe) | Current Human guidance |
+| [## Scenario 228 — Progressive Quality Ratchet](CONFORMANCE.md#scenario-228-progressive-quality-ratchet) | Current Human guidance |
+| [## Scenario 229 — Agent Eval Freshness Selection](CONFORMANCE.md#scenario-229-agent-eval-freshness-selection) | Current Human guidance |
 | [# Scenario Conformance](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-conformance) | Normative rule |
 | [## Purpose](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#purpose) | Normative rule |
 | [## Registry](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#registry) | Normative rule |

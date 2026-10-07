@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 65b99c16871804afe82c11e1ab97fbd2000a5bb1
-  changed_files_hash: 65de9f6cbe1e02b3adb008dfc51c90301772a5e8542e764d46f15ee02487cff2
+  changed_files_hash: 34e33bfa17d4d12324558842c8bf27396b704478fd11734a71c4ea4ffa88badb
 change:
   id: plan19-architecture-truth-runtime-closure
   summary: Implement nine approved architecture-truth and runtime-closure improvements
