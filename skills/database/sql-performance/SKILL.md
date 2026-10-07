@@ -2,6 +2,14 @@
 id: sql-performance
 capability: database
 estimated_context_cost: low
+triggers:
+- sql_bottleneck_evidence
+model_requirements:
+  reasoning: high
+  coding: normal
+  reliability: high
+  minimum_tier: 2
+  preferred_tier: 3
 ---
 
 # Sql Performance

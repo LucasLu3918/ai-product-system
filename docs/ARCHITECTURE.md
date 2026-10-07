@@ -495,6 +495,20 @@ For Large/Core changes, architecture-diagram impact is mandatory. Update each af
 ## End-to-end product delivery
 
 ~~~mermaid
+flowchart LR
+    U[Runtime-selected eligible primary] --> P[Bounded primary implementation]
+    S[Canonical SKILL.md metadata] --> G[Deterministic registry generator]
+    G --> I[Compatible v1 INDEX]
+    I --> P
+    P --> V[Deterministic verification]
+    P --> D{Material auxiliary value or required independence?}
+    D -->|yes| A[Bounded helper or fresh reviewer]
+    A --> V
+~~~
+
+Primary model preference is preserved; auxiliary routing remains minimum-sufficient and risk-adaptive. This policy does not switch host models or create review authority. REST/OpenAPI and visual evidence plumbing stays in existing orchestration protocols and loads on demand.
+
+~~~mermaid
 flowchart TD
     U[User Request / Assets] --> Q[Q1/Q2/Q3 Quality Planning]
     Q --> PP[Planning Package: Research, Requirements, UX, Visual, Domain, API]

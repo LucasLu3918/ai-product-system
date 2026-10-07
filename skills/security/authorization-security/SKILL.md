@@ -2,6 +2,16 @@
 id: authorization-security
 capability: security
 estimated_context_cost: low
+triggers:
+- authz_change
+- privileged_operation
+- cross_account_access
+model_requirements:
+  reasoning: high
+  coding: normal
+  reliability: critical
+  minimum_tier: 3
+  preferred_tier: 3
 ---
 
 # Authorization Security

@@ -689,3 +689,5 @@ WHY <assertion>
 Use `aips intelligence temporal --project <path> --mode as-of --revision <sha>` for a deterministic historical query. `UNKNOWN` history must remain unknown; migration and reconstruction MUST NOT invent a validity start revision. `VERIFIED`, `INFERRED`, `PARTIAL` and `UNKNOWN` history quality must remain visible in output.
 
 `IMPACT_GRAPH.yaml` v2 may add optional revision validity and provenance to nodes or edges while v1 data remains readable. Retrieval SQLite may project temporal assertions, supersession links and ancestry cache, but it is rebuildable and never canonical.
+
+Canonical Skill routing metadata is resolved from frontmatter through the generated compatible v1 INDEX; Intelligence records source pointers rather than another routing metadata copy.

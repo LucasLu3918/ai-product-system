@@ -2,6 +2,16 @@
 id: visual-direction
 capability: design
 estimated_context_cost: low
+triggers:
+- visual_concepts
+- brand_direction
+- design_system
+model_requirements:
+  reasoning: medium
+  coding: none
+  reliability: normal
+  minimum_tier: 1
+  preferred_tier: 2
 ---
 
 # Visual Direction

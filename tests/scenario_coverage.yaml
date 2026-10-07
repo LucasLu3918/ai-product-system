@@ -8,6 +8,19 @@ policy:
     no_uncovered: true
 
 scenarios:
+  - id: "224"
+    path: tests/scenarios/224-runtime-preferred-primary-model.md
+    coverage: manual
+    evidence:
+      - orchestration/MODEL_ROUTING.md
+      - tests/scenarios/224-runtime-preferred-primary-model.md
+  - id: "225"
+    path: tests/scenarios/225-skill-metadata-single-source.md
+    coverage: lifecycle
+    evidence:
+      - scripts/skill_index.py
+      - tests/evidence/skill_index_lifecycle.py
+      - tests/validation/skill_index_contracts.py
   - id: "219"
     path: tests/scenarios/219-validation-policy-taxonomy-drift.md
     coverage: lifecycle

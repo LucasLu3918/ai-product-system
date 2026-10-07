@@ -69,6 +69,8 @@ The scheduler is stateless between invocations. Durable workflow state remains o
 
 ## CLI
 
+Sparse delegation does not require a Task Graph for primary-only bounded work. Existing CLI helpers perform repeatable checks; multiple justified writer tasks retain approved non-overlapping boundaries.
+
 Plan17 regression evidence covers numeric diff headers, four browser/OpenAPI combinations, mandatory aggregates, reusable caller keys/permissions, explicit Python and isolated children, recursive placement, signed identity/immutable proposal rejection and atomic deletion races. Missing or malformed capability plans retain the full profile. A latest cancelled check stays INCOMPLETE; replaced old checks are reported as SUPERSEDED.
 
 The public AIPS CLI launcher remains `bin/aips`; its facade resolves the checkout and loads implementation modules before dispatch. This packaging does not change scheduler command arguments or deterministic output.

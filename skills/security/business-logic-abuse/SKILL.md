@@ -2,6 +2,16 @@
 id: business-logic-abuse
 capability: security
 estimated_context_cost: medium
+triggers:
+- fraud_abuse
+- promotion_coupon_points
+- high_value_business_rule
+model_requirements:
+  reasoning: high
+  coding: normal
+  reliability: critical
+  minimum_tier: 3
+  preferred_tier: 3
 ---
 
 # Business Logic Abuse

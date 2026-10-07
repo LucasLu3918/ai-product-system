@@ -94,3 +94,5 @@ MCP is a standard access plane, not a native-adapter replacement. Resources prov
 For a new MCP-compatible Host, start with the MCP access plane. Add a runtime-native adapter only after a verified per-turn hook, pre-tool guard or runtime-specific event source demonstrates an enforcement/evidence requirement that MCP cannot satisfy.
 
 The gateway is local stdio, provider-neutral and credential-free. It emits review-only Cursor, Windsurf, GitHub Copilot CLI, Amp, Codex and generic configuration payloads, and does not silently register itself into client-owned configuration.
+
+The Codex managed block preserves eligible runtime primary model preference and bounded primary execution; it does not mutate host model settings or grant auxiliary permissions.

@@ -2,6 +2,16 @@
 id: creative-reference-research
 capability: design
 estimated_context_cost: medium
+triggers:
+- visual_reference_research
+- current_design_style
+- undefined_visual_direction
+model_requirements:
+  reasoning: medium
+  coding: none
+  reliability: high
+  minimum_tier: 1
+  preferred_tier: 2
 ---
 
 # Creative Reference Research

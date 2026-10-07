@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Preserve the eligible runtime-selected primary implementation model and delegate only for material evidence, risk, isolation or review value.
+- Generate the compatible Skill registry from canonical frontmatter; retain tier hints, reject drift and consolidate applicability aliases.
+- Move REST and visual execution plumbing behind on-demand protocols, clarify ordinary data modeling versus DDD, and retain centralized financial assurance authority.
+
 ## 0.74.0
 
 - Add deterministic Evolution Radar exclusion reasons and reject altered attribution without changing recommendation or adoption authority.

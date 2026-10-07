@@ -343,3 +343,5 @@ A lease is coordination evidence, not authority. It does not authorize network a
 Task ownership binds the dispatched task lease to its active AIPS-managed worktree and isolation ID. The scheduler state serializes competing claims across runs; lease expiry never transfers dirty work. Recovery is explicit and retains the original base revision and write set until final Git-diff reconciliation.
 
 - The release-readiness changelog check is local and read-only; it adds no execution resource, credential, or tag-writing capability.
+
+Sparse delegation does not relax isolation requirements: each justified auxiliary task retains its declared read/write scope and required execution isolation; primary preference does not select an isolation provider.

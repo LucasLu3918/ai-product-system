@@ -2,6 +2,18 @@
 id: financial-integrity
 capability: security
 estimated_context_cost: medium
+triggers:
+- payment
+- refund
+- settlement
+- stored_value
+- points_credit_coupon_redemption
+model_requirements:
+  reasoning: very_high
+  coding: strong
+  reliability: critical
+  minimum_tier: 3
+  preferred_tier: 4
 ---
 
 # Financial Integrity
@@ -23,4 +35,4 @@ Required review topics:
 - authorization across accounts/tenants;
 - failure/retry behavior.
 
-This skill implies a SAL 4 floor for the affected value boundary.
+Resolve the affected value boundary through `SYSTEM.md` and `docs/human/SECURITY_ASSURANCE.md`, which are authoritative for its SAL floor and required independent review.

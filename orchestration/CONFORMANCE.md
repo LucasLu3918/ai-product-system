@@ -773,6 +773,8 @@ Current automated inventory: 27 deterministic + 101 lifecycle + 54 agent_eval = 
 
 ## Scenario 183–192 — Planning Package v2
 
+Preserve eligible runtime primary preference and canonical Skill metadata; deterministic registry evidence does not prove semantic model selection or relax existing isolation, review or Human authority.
+
 Scenarios 183–192 cover optional manifest dependency graphs, stable requirement and acceptance traceability, separate Human approvals at Gate 1 and Gate 2, reuse of product and data-modeling capabilities, cross-artifact UX/visual/domain/API references, legacy package compatibility, on-demand e-commerce guidance, actionable structural diagnostics and an end-to-end planning journey. Structural and lifecycle contracts run locally; Scenario 192 remains manual because a real product-specific planning and approval journey requires human decisions.
 
 Current inventory after Scenario 192: 34 deterministic + 103 lifecycle + 54 agent_eval = 191 / 191 automated; 1 manual; 0 uncovered.
@@ -828,6 +830,8 @@ The central validator registry lifecycle also verifies exact-plan browser select
 Scenario 218 uses deterministic monthly fingerprint sampling and complete Human relevance/actionability labels. It reports shortlist precision/recall and source-level yield; empty, uncertain or incomplete cohorts remain `NOT_READY`, and results grant no source-policy mutation authority.
 
 ## Scenario 220 — Parallel advisory fast feedback
+
+Scenario 224 is manual semantic acceptance for runtime-preferred primary routing. Scenario 225 is executable Skill-index lifecycle evidence; it does not prove actual Agent model selection.
 
 Plan17 regression evidence covers numeric diff headers, four browser/OpenAPI combinations, mandatory aggregates, reusable caller keys/permissions, explicit Python and isolated children, recursive placement, signed identity/immutable proposal rejection and atomic deletion races. Missing or malformed capability plans retain the full profile. A latest cancelled check stays INCOMPLETE; replaced old checks are reported as SUPERSEDED.
 

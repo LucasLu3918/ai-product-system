@@ -12,7 +12,7 @@
 - Security-sensitive behavior may activate `security-engineer` + `secure-design` as an independent reviewer.
 - Each subagent receives only relevant project context and skills.
 - Skill metadata contributes model requirements but does not name a provider model.
-- Model tier is independently resolved per agent from business impact, complexity, risk, privacy and cost.
+- Preserve the eligible runtime/user-selected primary model; independently resolve auxiliary tiers from business impact, complexity, risk, privacy and cost.
 - Critical risk can raise the minimum tier.
 - Agents escalate instead of guessing when assigned intelligence/context is insufficient.
 - One writer owns the code change boundary.

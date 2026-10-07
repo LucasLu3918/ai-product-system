@@ -152,6 +152,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Skill 路由 metadata 以 `SKILL.md` frontmatter 為唯一來源；修改後執行 `python scripts/skill_index.py --write`，預設不帶旗標只檢查 drift。tier 欄位仍保留供既有 consumers 使用，不會自動降低主要模型。REST／visual 執行細節按需載入既有 orchestration protocol。
+
 品質債務 ratchet 追蹤 Ruff 與 mypy 基線，修改大型 facade 時要求債務下降；coverage 目前仍為 report-only。
 
 Plan17 regression evidence covers numeric diff headers, four browser/OpenAPI combinations, mandatory aggregates, reusable caller keys/permissions, explicit Python and isolated children, recursive placement, signed identity/immutable proposal rejection and atomic deletion races. Missing or malformed capability plans retain the full profile. A latest cancelled check stays INCOMPLETE; replaced old checks are reported as SUPERSEDED.

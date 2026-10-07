@@ -2,6 +2,14 @@
 id: characterization-testing
 capability: testing
 estimated_context_cost: low
+triggers:
+- legacy_change_without_coverage
+model_requirements:
+  reasoning: medium
+  coding: strong
+  reliability: high
+  minimum_tier: 2
+  preferred_tier: 2
 ---
 
 # Characterization Testing

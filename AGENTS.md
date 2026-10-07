@@ -1,6 +1,6 @@
 # AI Product System Bootloader
 
-Load minimally. Do not read the whole repository.
+Load minimally. Do not read the whole repository. Prefer a bounded implementation with the primary agent; delegate only when independent review, parallel evidence gathering, specialized risk analysis or context isolation materially improves the result.
 
 1. If entered through the Global Harness, resolve the current turn with the runtime Adapter / `aips intelligence context`; otherwise read `SYSTEM.md` directly.
 2. For applicable project/software work, read `SYSTEM.md` with minimal context. Before mutating a target project, run `aips preflight <project-path>`.

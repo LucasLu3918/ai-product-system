@@ -1,12 +1,21 @@
 ---
 id: domain-driven-design
 capability: software-architecture
-applies_when:
-  - business_domain_is_complex
-  - domain_language_or_boundaries_are_material
-  - aggregate_consistency_rules_exist
-  - cross_domain_interactions_need_clarity
 estimated_context_cost: medium
+triggers:
+- complex_domain
+- bounded_context
+- business_invariants
+- business_domain_is_complex
+- domain_language_or_boundaries_are_material
+- aggregate_consistency_rules_exist
+- cross_domain_interactions_need_clarity
+model_requirements:
+  reasoning: high
+  coding: normal
+  reliability: high
+  minimum_tier: 2
+  preferred_tier: 3
 ---
 
 # Domain-Driven Design

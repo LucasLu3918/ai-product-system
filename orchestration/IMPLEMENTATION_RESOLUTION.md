@@ -197,3 +197,5 @@ The adapter is a local subprocess boundary, not an OS sandbox: a malicious or co
 Phase 5 may opt in to `enforcement.generator_reports` with an adapter ID and an untracked report path. The Phase 3 inspector verifies a completed Phase 4 run against the current Profile, canonical spec, pinned executable/version/argv, input hashes, exact output set, generation records and candidate history. Inspection never runs the generator. The shared Widgets pilot demonstrates this evidence chain and exercises a generated client against a local service; each actual product must retain its own contract and semantic acceptance tests.
 
 Do not add language-specific Roles, framework Skills/Profiles, GraphQL/gRPC/AsyncAPI support, automatic migrations, or automatic framework modernization as part of Phases 1–4.
+
+The REST Skill loads this protocol on demand for OpenAPI evidence, Phase 3 ownership and Phase 4 generation. This protocol remains authoritative for report binding, provenance and explicit Human execution; Skill condensation does not remove these requirements.

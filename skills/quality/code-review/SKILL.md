@@ -2,6 +2,14 @@
 id: code-review
 capability: quality
 estimated_context_cost: low
+triggers:
+- material_code_review
+model_requirements:
+  reasoning: high
+  coding: normal
+  reliability: high
+  minimum_tier: 2
+  preferred_tier: 3
 ---
 
 # Code Review

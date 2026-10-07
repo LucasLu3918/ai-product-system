@@ -4,7 +4,7 @@ The system is provider-neutral. Skills describe capability needs; the Model Rout
 
 ## Principle
 
-Use **minimum sufficient intelligence**: choose the lowest-cost eligible model that can reliably complete the bounded task. Optimize total task cost, not single-call price.
+Preserve the eligible runtime/user-selected primary implementation model. Apply **minimum sufficient intelligence** to auxiliary work: choose the lowest-cost eligible helper/reviewer that can reliably complete its bounded task. Optimize total task cost, including context duplication and reconciliation. A capability or policy mismatch requires an explicit explanation; never silently downshift the primary implementer because a Skill has a lower preferred tier.
 
 ## Intelligence tiers
 
@@ -40,13 +40,15 @@ A selected skill may declare hints such as:
 ```yaml
 model_requirements:
   reasoning: high
-  coding: medium
+  coding: normal
   reliability: high
   minimum_tier: 2
   preferred_tier: 3
 ```
 
-Hints are aggregated across selected skills. They do not choose a concrete model and do not override privacy, risk or governance.
+Canonical routing metadata lives in each `SKILL.md` frontmatter. `scripts/skill_index.py --write` generates the compatible v1 `skills/INDEX.yaml`; its default read-only check rejects drift. Migrate positive `applies_when` aliases into `triggers`. Prose explains applicability and non-triggers; it is not a second machine routing rule.
+
+Hints are aggregated across selected skills. They do not choose a concrete model and do not override privacy, risk or governance. Retained `minimum_tier` / `preferred_tier` fields support existing consumers and auxiliary eligibility; a preference is not a ceiling on the selected primary model.
 
 ## Execution profile
 
@@ -67,11 +69,23 @@ preferred_tier: 3
 minimum_tier: 2
 ```
 
-See `schemas/execution-profile.yaml`.
+See `schemas/execution-profile.yaml`. The following optional policy fields document execution intent without changing host settings or naming providers:
+
+```yaml
+primary_execution_policy:
+  strategy: runtime_preferred
+  allow_downshift: false
+auxiliary_routing:
+  strategy: minimum_sufficient
+```
+
+Legacy profiles without these fields use the same primary-preserving policy. Privacy, tool eligibility and critical capability floors still apply. If the host cannot select an auxiliary model, report the limitation and use the eligible current model or a deterministic tool; do not claim a model switch.
 
 ## Primary agent and subagents
 
-Choose a model independently for the primary agent and each bounded subagent. Do not inherit the primary model automatically.
+Keep the runtime/user-selected primary implementation model when eligible. First solve a bounded implementation with the primary agent. File count or model availability alone does not justify delegation. Delegate only when parallel evidence gathering, specialized risk analysis, context isolation or required independent review materially improves the result. Prefer deterministic tools for listing files, parsing data and running checks.
+
+Resolve each justified auxiliary agent independently; do not inherit the primary model automatically. Preserve any host/user constraints on model selection.
 
 A subagent must have:
 
@@ -108,7 +122,7 @@ expected_output:
 
 ## Escalation and de-escalation
 
-Start at the resolved minimum sufficient tier. Escalate when new evidence shows insufficient reasoning, higher risk, larger context or repeated unreliable results. De-escalate after the difficult decision is resolved when the remaining work is routine.
+Auxiliary work starts at the resolved minimum sufficient tier. Escalate when new evidence shows insufficient reasoning, higher risk, larger context or repeated unreliable results. De-escalate auxiliary work after the difficult decision is resolved when the remainder is routine. Primary downshift requires an explicit user decision; a lower-cost hint is not permission. A policy/capability mismatch blocks affected work until an eligible route is resolved.
 
 A subagent must request escalation instead of guessing beyond its competence.
 
@@ -129,7 +143,7 @@ The Router still considers privacy, task complexity, tools, context and total co
 
 Reviewer tier is resolved independently from author tier. A simple implementation may still require a stronger reviewer when hidden failure modes are costly; documentation or cosmetic review may use a lower tier.
 
-For Multi-Perspective Review, route each reviewer independently by its bounded perspective. Do not copy the full author context to every reviewer. Prefer parallel read-only analysis and cap reviewer count to the smallest set covering the material risks. Targeted re-review should normally use smaller context/tier than the original broad review when the remaining question is narrow.
+For Multi-Perspective Review, route each reviewer independently by its bounded perspective. Do not copy the full author context to every reviewer. Prefer parallel read-only analysis and cap reviewer count to the smallest set covering the material risks. Targeted re-review may use smaller context and, only when the remaining risk/capability floor permits it, a lower tier. Required independence is preserved even when author and reviewer use the same model; author self-check is not independent review.
 
 ## Budget guidance
 

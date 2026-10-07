@@ -189,3 +189,5 @@ For a product workspace, prefer:
 `docs/quality/QUALITY_PROFILE.yaml`
 
 Link it from PRODUCT.yaml / planning index when applicable.
+
+Primary model preference does not prove quality or reduce required assurance. Deterministic registry evidence and manual primary-routing scenarios retain separate evidence classifications.

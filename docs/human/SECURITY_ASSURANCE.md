@@ -351,6 +351,8 @@ AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned cont
 
 ## Runtime Policy Enforcement
 
+主要模型偏好與輔助 tier 路由仍受既有 privacy、capability floor、SAL 與 reviewer independence 限制。Financial Integrity Skill 引用本文件的 SAL authority，不另外建立政策來源。
+
 Local environment diagnostics report missing runtime/module names and remediation without exposing credentials or invoking package installation. GitHub workflow action references remain pinned to immutable commit SHAs with their declared Node runtime reviewed.
 
 An opted-in Phase 5 generator report is ephemeral execution evidence. The inspector checks its fingerprint, revision ancestry, pinned tool and inputs, output hashes and ownership records; missing or stale evidence blocks that Profile. The shared Widgets pilot uses a local fixture token and does not establish authentication or security assurance for another product.

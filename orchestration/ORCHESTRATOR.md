@@ -163,7 +163,6 @@ For every subagent resolve:
 objective → scope → role/skills → minimal context → model tier → permissions → expected output
 ```
 
-Skills supply model requirement hints; the Model Router makes the final tier/model choice. Business importance, technical complexity, risk, privacy and failure cost are considered together. Critical risk may raise the minimum tier.
 
 Subagents do not inherit the full primary context or model automatically. They request context/model escalation when evidence shows the assigned profile is insufficient. The single-writer rule still applies.
 
@@ -323,6 +322,8 @@ When emitting a Structured Task Graph, treat tasks as writable by default. Set `
 For Evolution Radar semantic work, prefer the generated provider-neutral handoff when no scheduled provider is available rather than inventing a recommendation. For PR integration, stale target-base evidence must route back to refresh/revalidation rather than proceeding with an old PASS.
 
 ## Change-class handoff to Integration Gate
+
+Preserve the eligible runtime/user-selected primary implementation model. Prefer solving bounded implementation with the primary agent and use deterministic tools for repeatable processing. Delegate only for material parallel evidence, specialized risk, context isolation or independent review. Skills supply model requirement hints for capability floors and auxiliary routing; the Model Router does not silently downshift the primary agent. Business importance, technical complexity, risk, privacy and failure cost are considered together. Critical risk may raise the minimum tier.
 
 Before remote publication, require the exact validated candidate proposal and explicit approval. A read-only governance snapshot is evidence only and grants no publication authority.
 

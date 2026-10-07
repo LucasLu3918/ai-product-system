@@ -2,6 +2,16 @@
 id: delivery-planning
 capability: delivery-planning
 estimated_context_cost: low
+triggers:
+- execution_plan
+- milestones
+- dependencies
+model_requirements:
+  reasoning: medium
+  coding: none
+  reliability: high
+  minimum_tier: 1
+  preferred_tier: 2
 ---
 
 # Delivery Planning

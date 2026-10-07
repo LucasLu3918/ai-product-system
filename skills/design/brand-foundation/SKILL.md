@@ -2,6 +2,16 @@
 id: brand-foundation
 capability: design
 estimated_context_cost: medium
+triggers:
+- create_brand
+- brand_strategy
+- brand_guide
+model_requirements:
+  reasoning: high
+  coding: none
+  reliability: high
+  minimum_tier: 2
+  preferred_tier: 2
 ---
 
 # Brand Foundation

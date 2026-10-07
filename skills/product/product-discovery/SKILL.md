@@ -2,6 +2,15 @@
 id: product-discovery
 capability: product
 estimated_context_cost: low
+triggers:
+- new_product
+- unclear_product_goal
+model_requirements:
+  reasoning: medium
+  coding: none
+  reliability: high
+  minimum_tier: 1
+  preferred_tier: 2
 ---
 
 # Product Discovery

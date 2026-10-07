@@ -1,97 +1,127 @@
 version: 1
-
 candidate:
-  base_sha: 1438df8ccdac69de6b05659690ba804a5bf690b6
-  changed_files_hash: 4741832122cfadda920acf240ec879d4d6d386e8e3cf70fa071d14fcdd543fda
-
+  base_sha: e49edd81fd57d31e4471ee570ff203a47d25cf1c
+  changed_files_hash: 5f5b1d4013f89be654b3854c47a3a6b2eeef96c2cb98ceb628dc7af4a3cb1279
 change:
-  id: plan18-consolidation
-  summary: Consolidate release, Evolution Radar, quality debt, documentation, facade, validation-shadow, branch lifecycle, Agent Eval, credential, governance, and dependency-risk improvements while preserving Human authority.
+  id: primary-skill-optimization
+  summary: Preserve runtime primary preference and canonical Skill metadata with compatible
+    auxiliary routing
   boundary:
-    - evolution-radar-diagnostics
-    - quality-debt-burn-down
-    - intelligence-facade-maintainability
-    - governance-read-only-evidence
-    - documentation-canonical-paths
-    - existing-authority-boundaries
-
+  - primary-routing
+  - skill-registry
+  - leaf-skill-context
+  - documentation-scenarios
 matrix:
-  - boundary: evolution-radar-diagnostics
-    reason: Explain why signals do not enter the bounded shortlist using evidence-backed reasons.
-    checks:
-      static_lint: {applicable: true, evidence: Ruff touched-code ratchet}
-      unit: {applicable: true, evidence: tests/evidence/evolution_radar_lifecycle.py}
-      integration: {applicable: true, evidence: Evolution Radar lifecycle and repository Integration Gate}
-      contract: {applicable: true, evidence: tests/validation/evolution_radar_contracts.py}
-      security: {applicable: true, evidence: local deterministic metadata-only analysis and no credential/network requirement}
-      migration_recovery: {applicable: false, na_reason: Additive report fields; no persisted database or migration}
-      cli_harness: {applicable: true, evidence: evolution radar CLI lifecycle}
-      docs_schema: {applicable: true, evidence: canonical docs placement and Evolution Radar documentation}
-      e2e: {applicable: false, na_reason: No UI or deployment behavior changes}
-  - boundary: quality-debt-burn-down
-    reason: Replace the stale repository count with a measured baseline and enforce small module-level reductions.
-    checks:
-      static_lint: {applicable: true, evidence: measured Ruff report plus no-growth touched-code ratchet}
-      unit: {applicable: true, evidence: tests/evidence/quality_ratchet_lifecycle.py}
-      integration: {applicable: true, evidence: exact-candidate Integration Gate}
-      contract: {applicable: true, evidence: tests/validation/quality_ratchet_contracts.py}
-      security: {applicable: true, evidence: secret scan and no external credential dependency}
-      migration_recovery: {applicable: false, na_reason: Policy-only quality baseline change}
-      cli_harness: {applicable: true, evidence: quality_ratchet report and check commands}
-      docs_schema: {applicable: true, evidence: maintenance quality policy documentation}
-      e2e: {applicable: false, na_reason: No product UI or deployment behavior changes}
-  - boundary: intelligence-facade-maintainability
-    reason: Keep public facades stable while extracting one bounded implementation unit and preserving symbol identity.
-    checks:
-      static_lint: {applicable: true, evidence: Ruff and selected mypy module ratchet}
-      unit: {applicable: true, evidence: tests/evidence/module_extraction_lifecycle.py}
-      integration: {applicable: true, evidence: Project/Retrieval Intelligence lifecycle and exact-candidate Integration Gate}
-      contract: {applicable: true, evidence: facade symbol identity and result-shape lifecycle}
-      security: {applicable: true, evidence: retrieval redaction, secret-path exclusion, and cache integrity lifecycles}
-      migration_recovery: {applicable: true, evidence: retrieval index rebuild and read-only snapshot lifecycle}
-      cli_harness: {applicable: true, evidence: AIPS intelligence CLI from source and installed entrypoints}
-      docs_schema: {applicable: true, evidence: architecture surfaces and Project Intelligence docs}
-      e2e: {applicable: false, na_reason: No product UI or deployment behavior changes}
-  - boundary: governance-read-only-evidence
-    reason: Acquire a Human-authenticated, read-only GitHub ruleset/protection snapshot with explicit UNKNOWN outcomes and deterministic fingerprints.
-    checks:
-      static_lint: {applicable: true, evidence: Ruff touched-code ratchet}
-      unit: {applicable: true, evidence: tests/evidence/repository_governance_snapshot_lifecycle.py}
-      integration: {applicable: true, evidence: mocked gh acquisition lifecycle and exact-candidate Integration Gate}
-      contract: {applicable: true, evidence: governance snapshot schema and existing policy comparator}
-      security: {applicable: true, evidence: read-only endpoints, secret-free output, and no mutation scopes}
-      migration_recovery: {applicable: false, na_reason: Disposable operator-generated evidence only}
-      cli_harness: {applicable: true, evidence: repository governance snapshot CLI}
-      docs_schema: {applicable: true, evidence: Security Assurance and maintenance guidance}
-      e2e: {applicable: false, na_reason: No UI or deployment behavior changes}
-  - boundary: documentation-canonical-paths
-    reason: Validate canonical Human documentation references against the configured registry.
-    checks:
-      static_lint: {applicable: true, evidence: Ruff touched-code ratchet}
-      unit: {applicable: true, evidence: tests/validation/documentation_placement_contracts.py}
-      integration: {applicable: true, evidence: documentation placement audit and VitePress build}
-      contract: {applicable: true, evidence: documentation placement gate}
-      security: {applicable: false, na_reason: No security-sensitive behavior changed}
-      migration_recovery: {applicable: false, na_reason: Documentation-only references}
-      cli_harness: {applicable: true, evidence: documentation placement CLI}
-      docs_schema: {applicable: true, evidence: canonical registry, Scenario Conformance lifecycle and generated Human current view}
-      e2e: {applicable: false, na_reason: No product UI or deployment behavior changes}
-  - boundary: existing-authority-boundaries
-    reason: Confirm already-implemented release, validation shadow, branch lifecycle, Agent Eval, keyless handoff, and dependency-risk policies remain fail-closed and Human-controlled.
-    checks:
-      static_lint: {applicable: true, evidence: Ruff touched-code ratchet}
-      unit: {applicable: true, evidence: existing lifecycle contracts for release, validation graduation, branch hygiene, Agent Eval, credentials, and dependency impact}
-      integration: {applicable: true, evidence: exact-candidate Core Integration Gate}
-      contract: {applicable: true, evidence: existing policy and authority contracts}
-      security: {applicable: true, evidence: preserved release approval, selective_execution_enabled false, report_only branch cleanup, and optional credentials}
-      migration_recovery: {applicable: true, evidence: stable installer and branch lifecycle recovery contracts}
-      cli_harness: {applicable: true, evidence: publish, branch hygiene, Agent Eval, and evolution handoff CLIs}
-      docs_schema: {applicable: true, evidence: release readiness, maintenance, and security docs}
-      e2e: {applicable: true, evidence: exact-candidate release readiness and full Core Integration Gate}
-
-scope_recomputed_after_expansion: true
-actual_diff_reconciled: true
+- boundary: primary-routing
+  reason: Primary preference versus auxiliary routing and unchanged safety/reviewer
+    floors
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff touched-code check
+    unit:
+      applicable: false
+      na_reason: Host model selection is semantic policy; Scenario 224 is manual acceptance,
+        no claimed Agent eval
+    integration:
+      applicable: true
+      evidence: full repository validation
+    contract:
+      applicable: true
+      evidence: v1 registry wire shape and existing catalog consumers
+    security:
+      applicable: true
+      evidence: duplicate metadata and path/symlink rejection; unchanged authority
+        floors
+    migration_recovery:
+      applicable: true
+      evidence: frontmatter migration and deterministic regeneration
+    cli_harness:
+      applicable: true
+      evidence: read-only check and explicit --write lifecycle
+    docs_schema:
+      applicable: true
+      evidence: documentation impact, Scenario Conformance and VitePress build
+    e2e:
+      applicable: false
+      na_reason: No product UI, deployment or service behavior changes
+- boundary: skill-registry
+  reason: Canonical frontmatter generation and v1 consumer compatibility
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff touched-code check
+    unit:
+      applicable: true
+      evidence: tests/evidence/skill_index_lifecycle.py
+    integration:
+      applicable: true
+      evidence: full repository validation
+    contract:
+      applicable: true
+      evidence: v1 registry wire shape and existing catalog consumers
+    security:
+      applicable: true
+      evidence: duplicate metadata and path/symlink rejection; unchanged authority
+        floors
+    migration_recovery:
+      applicable: true
+      evidence: frontmatter migration and deterministic regeneration
+    cli_harness:
+      applicable: true
+      evidence: read-only check and explicit --write lifecycle
+    docs_schema:
+      applicable: true
+      evidence: documentation impact, Scenario Conformance and VitePress build
+    e2e:
+      applicable: false
+      na_reason: No product UI, deployment or service behavior changes
+- boundary: leaf-skill-context
+  reason: Move execution plumbing to existing on-demand authorities without deleting
+    requirements
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff touched-code check
+    unit:
+      applicable: true
+      evidence: tests/evidence/skill_index_lifecycle.py
+    integration:
+      applicable: true
+      evidence: full repository validation
+    contract:
+      applicable: true
+      evidence: v1 registry wire shape and existing catalog consumers
+    security:
+      applicable: true
+      evidence: duplicate metadata and path/symlink rejection; unchanged authority
+        floors
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted service data or schema migration
+    cli_harness:
+      applicable: true
+      evidence: read-only check and explicit --write lifecycle
+    docs_schema:
+      applicable: true
+      evidence: documentation impact, Scenario Conformance and VitePress build
+    e2e:
+      applicable: false
+      na_reason: No product UI, deployment or service behavior changes
 review_evidence:
   required: false
+scope_recomputed_after_expansion: true
+actual_diff_reconciled: true
 blockers: []
 status: READY
+verification:
+  repository_validation: 'PASS: 12 roles, 27 skills, 225 scenarios'
+  metadata_lifecycle: PASS
+  consumer_compatibility: 'PASS: all 27 existing contracts retained'
+  documentation: 'PASS: placement, impact closure, Conformance summary and VitePress
+    build'
+  secret_scan: 'PASS: strict working-tree scan; exact tree/history scan still runs
+    in Gate'
+  review_class: SELF_CHECK
+  independent_review: UNVERIFIED; trusted runtime attestation is not configured; baseline
+    enforcement remains disabled

@@ -403,7 +403,7 @@ Do not automate subjective/complex reasoning solely to reduce tokens.
 
 ## Agent/model routing
 
-Selected skills describe reasoning/coding/reliability needs; they never hard-code a provider model. Build one Execution Profile for the primary task and one for each bounded subagent. Resolve model tier independently using business impact, technical complexity, risk, privacy, context and expected total cost.
+Selected skills describe reasoning/coding/reliability needs; they never hard-code a provider model. Build one Execution Profile for the primary task and one for each bounded subagent. Preserve the eligible runtime/user-selected primary implementation model; independently resolve auxiliary tiers using business impact, technical complexity, risk, privacy, context and expected total cost. Prefer bounded primary execution and deterministic tools; delegate only for material specialty, evidence, isolation or independent-review value.
 
 Subagents receive only the context required for their objective. Do not delegate vague work or duplicate the full primary context. Escalate tier/context when evidence shows the assignment is insufficient; de-escalate after the difficult portion is complete. See `orchestration/MODEL_ROUTING.md`.
 

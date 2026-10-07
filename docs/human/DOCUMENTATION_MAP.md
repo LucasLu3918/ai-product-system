@@ -76,6 +76,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+主要模型與辅助路由規則見 `../../orchestration/MODEL_ROUTING.md`；Skill registry 維護見 `TECHNOLOGY_GUIDE.md`，可觀測覆蓋見 `CONFORMANCE.md`。
+
 Pull-request validation policy and the advisory fast-feedback boundary are documented in [Maintenance](MAINTENANCE.md#validation-architecture-consistency) and [Scenario Conformance](CONFORMANCE.md#scenario-220--parallel-advisory-fast-feedback).
 
 

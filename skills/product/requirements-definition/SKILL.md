@@ -2,6 +2,15 @@
 id: requirements-definition
 capability: product
 estimated_context_cost: low
+triggers:
+- acceptance_criteria
+- product_scope
+model_requirements:
+  reasoning: medium
+  coding: none
+  reliability: high
+  minimum_tier: 1
+  preferred_tier: 2
 ---
 
 # Requirements Definition
