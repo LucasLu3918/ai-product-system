@@ -104,6 +104,7 @@ placement_rules:
     triggers: [config/branch-cleanup-manifest.yaml, scripts/branch_hygiene.py, orchestration/BRANCH_HYGIENE.md, .github/workflows/branch-hygiene.yml, tests/validation/branch_hygiene_contracts.py, tests/evidence/branch_hygiene_lifecycle.py]
     placements:
       docs/human/MAINTENANCE.md: [Branch lifecycle hygiene, Controlled branch cleanup]
+      docs/human/TECHNOLOGY_GUIDE.md: [Evolution & Maintenance]
 
   - id: system-facts
     triggers: [config/system-facts.yaml, scripts/system_facts.py, tests/validation/system_facts_contracts.py, .github/workflows/python-compatibility.yml]
