@@ -136,12 +136,11 @@ status_project() {
 
 validate_repo() {
   local py
-  py="$(python_bin)"
-  [ -n "$py" ] || die "python3 is required."
-  if ! "$py" -c 'import yaml' >/dev/null 2>&1; then
-    die "PyYAML is missing. Run: $SYSTEM_DIR/bin/aips install"
-  fi
-  AIPS_VALIDATION_PYTHON="$py" "$py" "$SYSTEM_DIR/tests/validate_repository.py"
+  py="$(validation_python_for_root "$SYSTEM_DIR" true || true)"
+  [ -n "$py" ] || die "No complete Python 3.12 validation environment found. Run python3.12 bin/prepare-local-validation or set AIPS_VALIDATION_PYTHON; inspect aips publish environment before full validation."
+  "$py" -m pip check >/dev/null || die "Selected validation Python has inconsistent dependencies. Rebuild the pinned validation environment."
+  "$py" -c 'import socket; probe=socket.socket(); probe.bind(("127.0.0.1", 0)); probe.close()' >/dev/null 2>&1 || die "Full validation requires permitted loopback binding; use an authorized validation runtime before starting lifecycle checks."
+  PATH="$(dirname "$py"):$PATH" AIPS_VALIDATION_PYTHON="$py" "$py" "$SYSTEM_DIR/tests/validate_repository.py"
 }
 
 validate_installation() {

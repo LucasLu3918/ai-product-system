@@ -2,21 +2,21 @@
 """Exercise permission, download, installed-sync and linked-worktree recovery."""
 from __future__ import annotations
 
-from argparse import Namespace
 import json
 import os
-from pathlib import Path
-import subprocess
 import shlex
+import subprocess
 import sys
 import tempfile
+from argparse import Namespace
+from pathlib import Path
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
-import runtime_cache as cache
 import package_install as packages
 import publish_preflight as publish
+import runtime_cache as cache
 
 
 def git(root: Path, *args: str) -> str:
@@ -73,7 +73,7 @@ def main() -> int:
             f'#!/bin/sh\nreal={shlex.quote(sys.executable)}\n'
             'if [ "$1" = "-c" ]; then\n'
             '  case "$2" in\n'
-            "    *'import importlib.util,json,sys;'*) printf '%s\\n' '{\"version\":[3,12,0],\"modules\":{\"yaml\":true,\"ruff\":true,\"mypy\":true,\"playwright\":true,\"openapi_spec_validator\":true,\"jsonschema\":true,\"cryptography\":true}}'; exit 0 ;;\n"
+            "    *'import importlib.util,json,sys;'*) printf '%s\\n' '{\"version\":[3,12,0],\"modules\":{\"yaml\":true,\"ruff\":true,\"mypy\":true,\"playwright\":true,\"openapi_spec_validator\":true,\"jsonschema\":true,\"cryptography\":true,\"coverage\":true,\"hypothesis\":true}}'; exit 0 ;;\n"
             '    *"import yaml, ruff, mypy, playwright, openapi_spec_validator, jsonschema, cryptography;"*) exit 0 ;;\n'
             '  esac\n'
             'fi\n'
@@ -84,12 +84,17 @@ def main() -> int:
         partial.write_text('#!/bin/sh\nif [ "$1" = -c ] && [ "$2" = "import yaml" ]; then exit 0; fi\nexit 1\n')
         partial.chmod(0o755)
         (project / "scripts/publish_preflight.py").write_text('print("complete environment selected")\n')
-        isolated_env = {**os.environ, "AIPS_VALIDATION_PYTHON": str(partial)}
+        isolated_env = dict(os.environ)
+        isolated_env.pop("AIPS_VALIDATION_PYTHON", None)
         isolated_env.pop("AIPS_VALIDATION_VENV", None)
         routed = subprocess.run(["bash", str(ROOT / "bin/aips"), "publish", "plan", "--project-root", str(project)],
                                 env=isolated_env, capture_output=True, text=True)
         assert routed.returncode == 0 and "complete environment selected" in routed.stdout, routed.stderr
         assert f"python={complete.parent.resolve() / complete.name}" in routed.stderr, routed.stderr
+        for selected in (str(partial), str(base / "missing python")):
+            denied = subprocess.run(["bash", str(ROOT / "bin/aips"), "publish", "plan", "--project-root", str(project)],
+                                    env={**isolated_env, "AIPS_VALIDATION_PYTHON": selected}, capture_output=True, text=True, check=False)
+            assert denied.returncode != 0 and "complete environment selected" not in denied.stdout
 
         source = base / "source"
         source.mkdir()

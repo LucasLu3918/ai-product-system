@@ -24,3 +24,5 @@ AIPS MAY delete integrated ephemeral remote branches only when an explicit Human
 ## Rationale
 
 Repository branch residue should be removable without turning a read-only classifier into broad autonomous deletion authority.
+
+Protected-main deletion verifies the GitHub RS256 OIDC issuer and exact workflow/candidate/proposal audience. Dispatch approves an immutable successful main proposal artifact by run ID and fingerprint; the manifest is generated at runtime. An atomic expected-SHA transaction rejects a moved ref without deleting any other approved ref; unsupported atomic pushes have no sequential fallback.

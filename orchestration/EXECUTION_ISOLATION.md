@@ -278,6 +278,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+Explicit validation Python/venv selection cannot silently fall back. Verify coverage, Hypothesis, mandatory JSON Schema and pip consistency before full validation; telemetry requires loopback even without browser. Child executors preserve HOME/credential lookup while removing inherited plan/import overrides and binding PATH to the selected Python.
+
 Each workflow job installs only its declared Python requirement profile under tested constraints and verifies its own imports and dependency consistency.
 
 The AIPS CLI facade loads its internal modules from the resolved checkout before dispatch. Module extraction does not change worktree ownership, execution isolation mode or runtime resource policy.

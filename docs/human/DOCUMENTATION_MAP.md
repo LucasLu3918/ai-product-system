@@ -20,6 +20,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+Prospective `aips docs impact --base HEAD --planned-path <path>` resolves sync and placement closure to a fixed point. Each triggered rule requires an update in its canonical topic; combined changes use the union of those topics. Validate every text anchor before applying the batch. Closure is scope evidence and never grants publication authority.
+
 Publication preflight 保留 `scripts/publish_preflight.py` CLI facade；post-merge reconciliation 位於 `scripts/publish_post_merge.py`，由 Scenario 165 lifecycle evidence 驗證。
 
 Project Intelligence 的 temporal query 維持原有 CLI 與 `project_intelligence.py` facade；內部 adapter 位於 `scripts/project_intelligence_temporal.py`，相容性由 Scenario 204 驗證。

@@ -199,6 +199,8 @@ Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
 
+Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
+
 Treat the shared Python bootstrap as a consumer boundary: follow its workflow callers and declared requirements/import profiles before changing it.
 
 AIPS shell CLI impact review must supplement the lexical graph with the exact dispatcher branches and direct source/fixture consumers because shell calls are not represented in the current structural graph.

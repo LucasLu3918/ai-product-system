@@ -1520,6 +1520,8 @@ Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agen
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
+Publication scanning excludes only validated numeric Git index/mode metadata; paths, added/removed/context lines and unknown headers remain scanned. Branch deletion verifies GitHub RS256 issuer, repository, protected main, workflow SHA, dispatch event and a proposal-bound audience. Runner flags alone grant no authority; tokens remain in memory.
+
 Scenario 207 now verifies caller-declared Python imports, missing-module failure, shell-like input rejection, and dependency consistency through `pip check`; it also checks same-period Evolution Effectiveness queueing, pending-run retention and disabled cancellation.
 It also verifies Maintenance Reliability uses the shared bootstrap, Repository Health's provisional ten-minute bound and same-revision serialization, and Validation Observation's retained 15-minute bound without concurrency that could replace pending evidence.
 

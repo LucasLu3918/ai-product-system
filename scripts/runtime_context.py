@@ -6,14 +6,26 @@ import argparse
 import hashlib
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
-from typing import Any, Mapping
+from collections.abc import Mapping
+from pathlib import Path
+from typing import Any
+
+BASE_VALIDATION_MODULES = ("yaml", "ruff", "mypy", "coverage", "hypothesis", "jsonschema", "cryptography")
+FULL_MODULES = (*BASE_VALIDATION_MODULES, "playwright", "openapi_spec_validator")
 
 
-FULL_MODULES = ("yaml", "ruff", "mypy", "playwright", "openapi_spec_validator", "jsonschema", "cryptography")
+def validation_environment(python: str, env: Mapping[str, str] | None = None) -> dict[str, str]:
+    """Preserve host identity while isolating validation control variables."""
+    result = dict(os.environ if env is None else env)
+    for key in ("PYTHONHOME", "PYTHONPATH", "VIRTUAL_ENV", "AIPS_PYTHON",
+                "AIPS_VALIDATION_VENV", "AIPS_CI_VALIDATION_PLAN", "AIPS_VALIDATION_TIMING_REPORT"):
+        result.pop(key, None)
+    result["AIPS_VALIDATION_PYTHON"] = python
+    result["PATH"] = str(Path(python).parent) + os.pathsep + result.get("PATH", os.defpath)
+    return result
 
 
 def default_validation_venv(project_root: Path) -> Path:
@@ -27,9 +39,9 @@ def candidate_python_paths(system_root: Path, project_root: Path, env: Mapping[s
     root = project_root.expanduser().resolve()
     candidates: list[Path] = []
     if values.get("AIPS_VALIDATION_PYTHON"):
-        candidates.append(Path(values["AIPS_VALIDATION_PYTHON"]).expanduser())
+        return [Path(values["AIPS_VALIDATION_PYTHON"]).expanduser()]
     if values.get("AIPS_VALIDATION_VENV"):
-        candidates.append(Path(values["AIPS_VALIDATION_VENV"]).expanduser() / "bin/python")
+        return [Path(values["AIPS_VALIDATION_VENV"]).expanduser() / "bin/python"]
     candidates.extend((root / ".venv/bin/python", default_validation_venv(root) / "bin/python"))
     candidates.extend((system_root / ".venv/bin/python", Path(sys.executable)))
     resolved: list[Path] = []

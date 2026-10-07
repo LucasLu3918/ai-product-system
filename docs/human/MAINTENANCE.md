@@ -92,6 +92,8 @@ Multi-file changes should normally be assembled into one coherent remote branch 
 
 ## Versioning
 
+Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
+
 Python support facts live in `config/system-facts.yaml` and are mirrored in `pyproject.toml`. The required PR Gate tests Python 3.12; the weekly compatibility workflow smoke-tests 3.12, 3.13, and 3.14. Runtime-floor changes must keep System Reference, installation guidance, Technology Guide, and Scenario 210 aligned.
 
 - MAJOR: incompatible governance/protocol/contract changes.
@@ -238,6 +240,8 @@ When Approval Binding / Governance Enforcement changes, review together:
 Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverifiable.
 
 ## Durable Run State consistency
+
+Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
 
 Task ownership lease 與共用 Scheduler state 必須以同一 task/execution identity 維持一致。過期 dirty work 不可自動重派；recovery 保留原 base revision 和 write set，最終以該 base 的完整 Git diff 對帳。
 
@@ -518,7 +522,7 @@ Candidate validation derives optional browser provisioning from the exact change
 
 一般 Branch Hygiene 仍是 `report_only`。只有在 repository maintainer 明確批准的 one-time manifest 中，AIPS 才可刪除 remote branch。
 
-`config/branch-cleanup-manifest.yaml` 會逐筆綁定 branch name、exact expected SHA 與 merged PR evidence。Protected-main 人工 dispatch cleanup job 在刪除前會重新驗證：
+Runtime manifest 由人工核准的 immutable proposal artifact（run ID + fingerprint）產生，逐筆綁定 branch name、exact expected SHA 與 merged PR evidence；`config/branch-cleanup-manifest.yaml` 僅保留歷史相容紀錄，不再需要為 cleanup 提交新的 main commit。Protected-main 人工 dispatch cleanup job 在刪除前會重新驗證：
 
 - branch 仍存在且 SHA 沒有漂移；
 - manifest 的 `baseline_main_sha` 必須等於此次檢查的目前 `main` tip；
@@ -526,7 +530,7 @@ Candidate validation derives optional browser provisioning from the exact change
 - branch 已由 local Git integration proof，或 GitHub merged PR 的 exact head SHA/ref/base 證據，確認整合進 `main`；
 - manifest authorization 是 `explicit_user_request + exact_manifest_only + one_time`。
 
-若使用 GitHub merged-PR fallback，workflow 會重新讀取該 PR，確認 `merged_at`、head SHA、head ref 與 base ref 全部符合 manifest。任何一筆失敗都會在第一個 delete 前 block 整批。清單中已有缺失的 branch 也會使整批拒絕，作為重播或上次部分執行的訊號；刪除途中若遇遠端錯誤，報告會列出已完成項目並停止，後續必須重新檢查 refs 並取得新的人類審核 manifest。Persistent、unclassified、pending 或 manifest 外 branch 一律不刪。排程、push 與未啟用 cleanup 的人工 dispatch 都只有 `contents: read`；只有 protected-main 上明確啟用 cleanup 的 job 在這份 exact manifest 範圍內取得 `contents: write`。
+Protected dispatch 會逐筆重新讀取 merged PR，確認 `merged_at`、head SHA、head ref 與 base ref 全部符合 manifest。任何一筆失敗都會在第一個 delete 前 block 整批。清單中已有缺失的 branch 也會使整批拒絕，作為重播或上次部分執行的訊號；遠端拒絕任一 expected-SHA lease 或不支援 atomic push 時，整批停止，不採逐筆 fallback；後續必須重新檢查 refs 並取得新的人類 dispatch 核准。Persistent、unclassified、pending 或 manifest 外 branch 一律不刪。排程、push 與未啟用 cleanup 的人工 dispatch 都只有 `contents: read`；只有 protected-main 上明確啟用 cleanup 的 job 在這份 exact manifest 範圍內取得 `contents: write`。
 一般 cleanup report 另外產生 fingerprint-bound proposal，列出 branch SHA、merged PR、merged date 與產生報告時的 main SHA。Proposal 本身不會擴大既有 exact-manifest authority；main baseline 或 branch 狀態變更後須重新產生並 review。
 
 

@@ -89,6 +89,12 @@ def canonical_hash(value: Any) -> str:
 def environment_status() -> dict[str, Any]:
     blockers: list[str] = []
     diagnostics: list[dict[str, str]] = []
+    from github_workflow_validation import validate_workflows
+
+    workflow_errors = validate_workflows(ROOT)
+    if workflow_errors:
+        blockers.append("workflow_semantics:invalid")
+        diagnostics.append({"check": "workflow_semantics", "status": "BLOCKED", "detail": "; ".join(workflow_errors), "next_step": "Correct reusable workflow structure and permissions before the full Gate."})
     python_version = subprocess.run([sys.executable, "--version"], capture_output=True, text=True)
     plan_path = os.environ.get("AIPS_CI_VALIDATION_PLAN")
     plan = None
@@ -102,11 +108,18 @@ def environment_status() -> dict[str, Any]:
     needs_browser = plan is None or plan.get("needs_browser") is True
     needs_openapi = plan is None or plan.get("needs_openapi") is True
     needs_node = plan is None or plan.get("needs_node") is True
-    required_modules = ["yaml", "ruff", "mypy", "cryptography"]
+    from hashlib import sha256
+
+    from ci_validation_plan import validation_capabilities
+    from runtime_context import BASE_VALIDATION_MODULES
+
+    capabilities = validation_capabilities(plan)
+    needs_browser, needs_openapi, needs_node = (capabilities[name] for name in ("browser", "openapi", "node"))
+    required_modules = list(BASE_VALIDATION_MODULES)
     if needs_browser:
         required_modules.append("playwright")
     if needs_openapi:
-        required_modules.extend(("openapi_spec_validator", "jsonschema"))
+        required_modules.append("openapi_spec_validator")
     missing_modules = []
     for module in required_modules:
         check = subprocess.run(
@@ -122,6 +135,10 @@ def environment_status() -> dict[str, Any]:
             "detail": ",".join(missing_modules),
             "next_step": "Run `python3.12 bin/prepare-local-validation` to install the pinned Gate dependencies, then rerun `aips publish environment`.",
         })
+    dependency_check = subprocess.run([sys.executable, "-m", "pip", "check"], capture_output=True, text=True, check=False)
+    if dependency_check.returncode:
+        blockers.append("python_dependencies:inconsistent")
+        diagnostics.append({"check": "pip_check", "status": "BLOCKED", "detail": "selected executor has inconsistent dependencies", "next_step": "Rebuild the pinned validation environment, then rerun the environment probe."})
     if python_version.returncode:
         blockers.append("python_runtime:unavailable")
         diagnostics.append({
@@ -140,23 +157,22 @@ def environment_status() -> dict[str, Any]:
             "detail": message.split(";", 1)[0],
             "next_step": message,
         })
-    localhost = "NOT_REQUIRED"
-    if needs_browser:
-        try:
-            probe = socket.socket()
-            probe.bind(("127.0.0.1", 0))
-            probe.close()
-            localhost = "READY"
-        except OSError as exc:
-            localhost = "BLOCKED"
-            blocker = f"localhost_bind:{exc.__class__.__name__}"
-            blockers.append(blocker)
-            diagnostics.append({
-                "check": "localhost_bind",
-                "status": "BLOCKED",
-                "detail": exc.__class__.__name__,
-                "next_step": "Run in an environment that permits loopback socket binding; rerun `aips publish environment` to verify.",
-            })
+    # Telemetry lifecycle always requires loopback, independently of browser selection.
+    try:
+        probe = socket.socket()
+        probe.bind(("127.0.0.1", 0))
+        probe.close()
+        localhost = "READY"
+    except OSError as exc:
+        localhost = "BLOCKED"
+        blocker = f"localhost_bind:{exc.__class__.__name__}"
+        blockers.append(blocker)
+        diagnostics.append({
+            "check": "localhost_bind",
+            "status": "BLOCKED",
+            "detail": exc.__class__.__name__,
+            "next_step": "Run in an environment that permits loopback socket binding; rerun `aips publish environment` to verify.",
+        })
     selection = discover_browser() if needs_browser else {"provider": "not_required"}
     browser_probe = probe_browser(selection.get("path"), provider=str(selection.get("provider") or "not_required")) if needs_browser else {"status": "NOT_REQUIRED", "provider": "not_required"}
     if needs_browser and browser_probe["status"] != "READY":
@@ -186,6 +202,13 @@ def environment_status() -> dict[str, Any]:
         "cache_diagnostics": cache_diagnostics(),
         "python": {"executable": Path(sys.executable).name, "version": python_version.stdout.strip() or python_version.stderr.strip()},
         "python_modules": {"status": "READY" if not missing_modules else "BLOCKED", "missing": missing_modules},
+        "toolchain": {
+            "selected_capabilities": capabilities,
+            "required_modules": required_modules,
+            "pip_check": "PASS" if dependency_check.returncode == 0 else "FAIL",
+            "requirements_sha256": {name: "sha256:" + sha256((ROOT / name).read_bytes()).hexdigest() for name in
+                                    ("requirements.txt", "requirements-validation.txt", "requirements-visual.txt", "requirements-openapi.txt", "constraints/tested.txt") if (ROOT / name).is_file()},
+        },
         "localhost": localhost,
         "browser": {
             "status": browser_probe["status"],
@@ -467,7 +490,9 @@ def content_safety_plan(args: argparse.Namespace, base: str, head: str) -> dict[
     messages = git("log", "--format=%B", f"{base}..{head}")
     check("git_commit", messages, "commit_messages")
     diff = git("diff", "--no-ext-diff", "--unified=0", base, head)
-    check("source_artifact", diff, "candidate_diff")
+    from content_safety import git_diff_payload
+
+    check("source_artifact", git_diff_payload(diff), "candidate_diff")
     if args.commit_message:
         check("git_commit", args.commit_message, "explicit_commit_message")
     if args.body:
@@ -597,6 +622,7 @@ def build_plan(args: argparse.Namespace, environment: dict[str, Any] | None = No
 def summarize_checks(payload: dict[str, Any], required: list[str]) -> dict[str, Any]:
     latest: dict[tuple[str, str], dict[str, Any]] = {}
     cancelled = 0
+    superseded = []
     for check in payload.get("statusCheckRollup") or []:
         if check.get("conclusion") == "CANCELLED":
             cancelled += 1
@@ -605,7 +631,11 @@ def summarize_checks(payload: dict[str, Any], required: list[str]) -> dict[str, 
         previous_stamp = str(latest.get(key, {}).get("startedAt") or latest.get(key, {}).get("createdAt") or "")
         tied_unsuccessful = stamp == previous_stamp and check.get("conclusion") not in {"SUCCESS", "NEUTRAL"}
         if key not in latest or stamp > previous_stamp or tied_unsuccessful:
+            if key in latest:
+                superseded.append({"name": key[1], "status": "SUPERSEDED", "conclusion": latest[key].get("conclusion")})
             latest[key] = check
+        else:
+            superseded.append({"name": key[1], "status": "SUPERSEDED", "conclusion": check.get("conclusion")})
     failures, pending, incomplete, skipped, passed = [], [], [], [], []
     required_pass = set()
     for (_, name), check in sorted(latest.items()):
@@ -627,6 +657,7 @@ def summarize_checks(payload: dict[str, Any], required: list[str]) -> dict[str, 
     return {"status": status, "head_sha": payload.get("headRefOid"), "failures": failures,
             "pending": pending, "incomplete": incomplete, "skipped": skipped, "passed": passed,
             "required_not_passed": missing, "cancelled_run_checks": cancelled,
+            "superseded_checks": superseded,
             "merge_authority": False}
 
 
@@ -736,6 +767,7 @@ def main() -> int:
     docs.add_argument("--base", required=True)
     docs.add_argument("--head", default="HEAD")
     docs.add_argument("--require-complete", action="store_true")
+    docs.add_argument("--planned-path", action="append", default=[], help="Prospective repository-relative path for pre-implementation closure review; grants no mutation authority")
     docs.add_argument("--summary-file", help="Append bounded diagnostics to a GitHub Step Summary")
     docs.add_argument("--format", choices=("yaml", "json"), default="yaml")
     matrix_sync = subs.add_parser("matrix-sync")
@@ -763,7 +795,12 @@ def main() -> int:
     args = parser.parse_args()
     try:
         if args.command == "docs-impact":
-            impact = documentation_impact(changed_files(resolve_commit(args.base), resolve_commit(args.head)), ROOT)
+            for planned in args.planned_path:
+                if Path(planned).is_absolute() or ".." in Path(planned).parts or not planned or "\0" in planned:
+                    raise PreflightError("planned documentation scope must contain safe repository-relative paths")
+            files = sorted(set(changed_files(resolve_commit(args.base), resolve_commit(args.head))) | set(args.planned_path))
+            impact = documentation_impact(files, ROOT)
+            impact["prospective_paths"] = args.planned_path
             emit(impact, args.format)
             if args.summary_file:
                 with Path(args.summary_file).open("a", encoding="utf-8") as summary:

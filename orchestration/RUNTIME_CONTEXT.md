@@ -4,6 +4,8 @@ Runtime Context is the bounded, deterministic view of the active AIPS runtime, t
 
 ## Interpreter resolution
 
+Explicit validation Python/venv selection cannot silently fall back. Verify coverage, Hypothesis, mandatory JSON Schema and pip consistency before full validation; telemetry requires loopback even without browser. Child executors preserve HOME/credential lookup while removing inherited plan/import overrides and binding PATH to the selected Python.
+
 The shared CI bootstrap uses the caller-selected pinned Python version, declared requirement files, tested constraints, and explicit import modules.
 
 The public shell CLI remains a thin `bin/aips` launcher into `scripts/aips_cli.sh`. The facade resolves its real checkout and sources the implementation modules from `scripts/aips_cli/` before command dispatch, so installed symlinks and unrelated caller working directories use the matching runtime implementation.

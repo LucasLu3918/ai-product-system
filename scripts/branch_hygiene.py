@@ -6,15 +6,88 @@ from __future__ import annotations
 import argparse
 import fnmatch
 import hashlib
+import io
 import json
 import os
 import re
 import subprocess
+import zipfile
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 import yaml
+
+
+def active_branches() -> set[str]:
+    """Only local Git worktrees are observable; other clones are not inferred."""
+    return {line.removeprefix("branch refs/heads/") for line in git("worktree", "list", "--porcelain").stdout.splitlines()
+            if line.startswith("branch refs/heads/")}
+
+
+def github_remote_repository(url: str) -> str | None:
+    if url.startswith("git@"):
+        host, separator, path = url[4:].partition(":")
+        return path.removesuffix(".git") if host == "github.com" and separator else None
+    parsed = urlparse(url)
+    if (parsed.hostname != "github.com" or parsed.scheme not in {"https", "ssh"}
+            or parsed.password or parsed.query or parsed.fragment
+            or parsed.username not in (None, "git")):
+        return None
+    return parsed.path.lstrip("/").removesuffix(".git")
+
+
+def github_json(repository: str, endpoint: str) -> dict[str, Any]:
+    proc = subprocess.run(["gh", "api", f"repos/{repository}/{endpoint}"], capture_output=True, text=True, check=False)
+    if proc.returncode:
+        raise BranchHygieneError("GitHub cleanup evidence is unavailable")
+    value = json.loads(proc.stdout)
+    if not isinstance(value, dict):
+        raise BranchHygieneError("GitHub cleanup evidence must be a mapping")
+    return value
+
+
+def manifest_from_proposal(proposal: dict[str, Any], fingerprint: str, actor: str) -> dict[str, Any]:
+    validate_proposal(proposal)
+    if proposal["proposal_fingerprint"] != fingerprint:
+        raise BranchHygieneError("dispatch approval fingerprint mismatch")
+    return {"version": 1, "cleanup_id": "dispatch-" + fingerprint.removeprefix("sha256:")[:16],
+            "baseline_main_sha": proposal["generated_against_main_sha"], "proposal_fingerprint": fingerprint,
+            "authorization": {"type": "explicit_user_request", "scope": "exact_manifest_only", "one_time": True,
+                              "approved_by": actor, "approved_at": datetime.now(UTC).isoformat()},
+            "branches": [{key: row[key] for key in ("branch", "expected_sha", "merged_pr")} for row in proposal["branches"]]}
+
+
+def download_proposal(repository: str, run_id: str, fingerprint: str) -> dict[str, Any]:
+    if not re.fullmatch(r"[\w.-]+/[\w.-]+", repository) or not re.fullmatch(r"[1-9]\d{0,19}", run_id):
+        raise BranchHygieneError("invalid proposal repository or run ID")
+    if not re.fullmatch(r"sha256:[0-9a-f]{64}", fingerprint):
+        raise BranchHygieneError("exact proposal fingerprint is required")
+    run = github_json(repository, f"actions/runs/{run_id}")
+    if (run.get("status") != "completed" or run.get("conclusion") != "success"
+            or run.get("head_branch") != "main" or run.get("path") != ".github/workflows/branch-hygiene.yml"
+            or run.get("event") not in {"push", "schedule", "workflow_dispatch"}):
+        raise BranchHygieneError("proposal must come from a successful main branch-hygiene run")
+    artifacts = github_json(repository, f"actions/runs/{run_id}/artifacts?per_page=100").get("artifacts", [])
+    matches = [a for a in artifacts if a.get("name") == f"branch-cleanup-proposal-{run_id}" and not a.get("expired")]
+    if len(matches) != 1 or matches[0].get("size_in_bytes", 0) > 5_000_000:
+        raise BranchHygieneError("immutable proposal artifact is missing, ambiguous or oversized")
+    proc = subprocess.run(["gh", "api", f"repos/{repository}/actions/artifacts/{int(matches[0]['id'])}/zip"], capture_output=True, check=False)
+    if proc.returncode or len(proc.stdout) > 5_000_000:
+        raise BranchHygieneError("proposal artifact download failed or exceeded size limit")
+    with zipfile.ZipFile(io.BytesIO(proc.stdout)) as archive:
+        members = archive.infolist()
+        if len(members) != 1 or members[0].filename != "branch-hygiene.yaml" or members[0].file_size > 5_000_000:
+            raise BranchHygieneError("proposal archive has unexpected entries")
+        report = yaml.safe_load(archive.read(members[0]))
+    proposal = report["cleanup_proposal"]
+    validate_proposal(proposal)
+    if proposal["generated_against_main_sha"] != run.get("head_sha"):
+        raise BranchHygieneError("proposal baseline does not match its source run")
+    if proposal["proposal_fingerprint"] != fingerprint:
+        raise BranchHygieneError("dispatch approval fingerprint mismatch")
+    return proposal
 
 
 class BranchHygieneError(ValueError):
@@ -117,6 +190,7 @@ def build_report(
     except ValueError as exc:
         raise BranchHygieneError("generated_at must be a valid ISO-8601 timestamp") from exc
     rows = []
+    checked_out = active_branches()
     for name, ref in refs:
         lifecycle = classify(name, config)
         is_integrated = integrated(ref, target_ref)
@@ -124,18 +198,19 @@ def build_report(
         committed_at = datetime.fromisoformat(git("show", "-s", "--format=%cI", ref).stdout.strip())
         age_days = max(0, (now - committed_at).days)
         merged_pr, merged_status, merged_at = _pull_request_state(name, target, sha, prs)
-        action = "REVIEW_FOR_CLEANUP" if lifecycle == "EPHEMERAL" and is_integrated else "PRESERVE"
+        action = "REVIEW_FOR_CLEANUP" if lifecycle == "EPHEMERAL" and is_integrated and name not in checked_out else "PRESERVE"
         rows.append({
             "branch": name,
             "lifecycle": lifecycle,
             "current_sha": sha,
+            "active_checkout": name in checked_out,
             "merged_pr": merged_pr,
             "merged_status": merged_status,
             "merged_at": merged_at,
             "age_days": age_days,
             "integrated_into_target": is_integrated,
             "recommended_action": action,
-            "recommendation_reason": "ephemeral_and_integrated" if action == "REVIEW_FOR_CLEANUP" else "persistent_unclassified_or_not_integrated",
+            "recommendation_reason": "active_local_checkout" if name in checked_out else "ephemeral_and_integrated" if action == "REVIEW_FOR_CLEANUP" else "persistent_unclassified_or_not_integrated",
         })
     main_sha = git("rev-parse", target_ref).stdout.strip()
     proposal_rows = [
@@ -173,6 +248,7 @@ def build_report(
         "version": 2,
         "target": target,
         "ref_scope": f"remote:{remote}" if remote else "local",
+        "checkout_observation_scope": "local_git_worktrees_only",
         "policy": "report_only",
         "generated_at": now.isoformat(),
         "generated_against_main_sha": main_sha,
@@ -288,9 +364,26 @@ def apply_cleanup(
     validate_cleanup_manifest(manifest)
     target_ref, refs = branch_refs(target, remote)
     current_baseline = git("rev-parse", target_ref).stdout.strip()
+    protected_dispatch = False
+    remote_url = git("remote", "get-url", remote).stdout.strip()
+    local_fixture = Path(remote_url.removeprefix("file://")).is_dir()
+    if (config.get("deletion") or {}).get("apply_only_on_protected_main_dispatch", False) or not local_fixture:
+        from github_execution_identity import IdentityError, cleanup_identity
+
+        if not github_repository or github_remote_repository(remote_url) != github_repository:
+            raise BranchHygieneError("cleanup repository identity does not match the remote")
+        binding = str(manifest.get("proposal_fingerprint") or "sha256:" + hashlib.sha256(json.dumps(manifest, sort_keys=True).encode()).hexdigest())
+        try:
+            identity = cleanup_identity(github_repository, manifest["baseline_main_sha"], binding)
+        except IdentityError as exc:
+            raise BranchHygieneError(str(exc)) from exc
+        if manifest["authorization"].get("approved_by") != identity["actor"]:
+            raise BranchHygieneError("manifest approval actor does not match signed dispatch identity")
+        protected_dispatch = True
     ref_map = dict(refs)
     preflight: list[dict[str, Any]] = []
     blockers: list[str] = []
+    checked_out = active_branches()
 
     if manifest["baseline_main_sha"] != current_baseline:
         blockers.append(
@@ -305,7 +398,7 @@ def apply_cleanup(
         if ref is None:
             blockers.append(f"{name}: branch is absent; manifest is consumed, replayed, or partially applied")
             continue
-        if name == target or classify(name, config) != "EPHEMERAL":
+        if name == target or classify(name, config) != "EPHEMERAL" or name in checked_out:
             blockers.append(f"{name}: branch is not an EPHEMERAL cleanup target")
             continue
         current = git("rev-parse", ref).stdout.strip()
@@ -314,8 +407,11 @@ def apply_cleanup(
             continue
         local_integrated = integrated(ref, target_ref)
         pr_integrated = False
-        if not local_integrated and github_repository:
+        if (protected_dispatch or not local_integrated) and github_repository:
             pr_integrated = github_pr_integrated(row, repository=github_repository, target=target)
+        if protected_dispatch and not pr_integrated:
+            blockers.append(f"{name}: exact merged PR evidence is missing or mismatched")
+            continue
         if not (local_integrated or pr_integrated):
             blockers.append(
                 f"{name}: no integration proof; local Git integration failed and exact merged-PR evidence was unavailable or mismatched"
@@ -331,24 +427,25 @@ def apply_cleanup(
     if blockers:
         raise BranchHygieneError("cleanup preflight blocked: " + "; ".join(blockers))
 
-    results: list[dict[str, Any]] = []
-    for row in preflight:
-        name = row["branch"]
-        proc = git("push", remote, "--delete", name, check=False)
-        if proc.returncode != 0:
-            deleted = [result["branch"] for result in results]
-            raise BranchHygieneError(
-                "cleanup stopped at a deletion failure; verify remote refs and create a newly reviewed "
-                "manifest before retrying; branches deleted before failure: "
-                f"{deleted or 'none'}; {proc.stderr.strip() or f'failed to delete {name}'}"
-            )
-        results.append({**row, "status": "DELETED"})
+    live_refs = {ref.removeprefix("refs/heads/"): sha for sha, ref in
+                 (line.split() for line in git("ls-remote", "--heads", remote).stdout.splitlines())}
+    if live_refs.get(target) != manifest["baseline_main_sha"] or any(live_refs.get(row["branch"]) != row["expected_sha"] for row in preflight):
+        raise BranchHygieneError("live remote refs moved after approval; cleanup blocked")
+
+    # The server compares each approved SHA; no sequential fallback is permitted.
+    leases = [f"--force-with-lease=refs/heads/{row['branch']}:{row['expected_sha']}" for row in preflight]
+    deletions = [f":refs/heads/{row['branch']}" for row in preflight]
+    proc = git("push", "--atomic", *leases, remote, *deletions, check=False)
+    if proc.returncode != 0:
+        raise BranchHygieneError("cleanup stopped at a deletion failure; atomic transaction rejected; no sequential fallback; verify remote refs before a newly reviewed dispatch")
+    results = [{**row, "status": "DELETED"} for row in preflight]
 
     return {
         "version": 1,
         "cleanup_id": manifest.get("cleanup_id"),
         "target": target,
         "remote": remote,
+        "atomic": True,
         "baseline_main_sha": manifest.get("baseline_main_sha"),
         "results": results,
         "summary": {
@@ -372,6 +469,9 @@ def main() -> int:
     parser.add_argument("--pull-requests", type=Path, help="Read-only JSON from `gh pr list` for the branch proposal report.")
     parser.add_argument("--generated-at", help="Fixed ISO-8601 report time for deterministic replay.")
     parser.add_argument("--apply-cleanup", type=Path, help="Apply one exact Human-authorized cleanup manifest.")
+    parser.add_argument("--proposal-run-id", help="Successful main report run approved by this protected dispatch.")
+    parser.add_argument("--proposal-fingerprint", help="Exact proposal fingerprint approved by the maintainer.")
+    parser.add_argument("--verify-dispatch-only", action="store_true", help="Verify the GitHub issuer and main execution without deleting any refs.")
     parser.add_argument(
         "--github-repository",
         help="Optional owner/repo used to verify exact merged-PR evidence when local squash integration is no longer reproducible.",
@@ -381,10 +481,26 @@ def main() -> int:
     try:
         config = load_yaml(args.config)
         target = args.target or str(config.get("default_branch") or "main")
-        if args.apply_cleanup:
+        if args.verify_dispatch_only:
+            from github_execution_identity import cleanup_identity
+
+            if args.apply_cleanup or args.proposal_run_id or not args.github_repository:
+                raise BranchHygieneError("identity-only verification requires a repository and no deletion input")
+            identity = cleanup_identity(args.github_repository, git("rev-parse", "HEAD").stdout.strip(), "identity-probe")
+            print(yaml.safe_dump({"status": "VERIFIED", "identity": identity, "branch_deletion_authorized": False}))
+            return 0
+        if args.apply_cleanup or args.proposal_run_id:
             if not args.remote:
                 raise BranchHygieneError("--apply-cleanup requires --remote")
-            manifest = load_yaml(args.apply_cleanup)
+            if args.apply_cleanup and args.proposal_run_id:
+                raise BranchHygieneError("select exactly one cleanup input")
+            if args.proposal_run_id:
+                if not args.github_repository:
+                    raise BranchHygieneError("proposal dispatch requires a GitHub repository")
+                proposal = download_proposal(args.github_repository, args.proposal_run_id, args.proposal_fingerprint or "")
+                manifest = manifest_from_proposal(proposal, args.proposal_fingerprint, os.environ.get("GITHUB_ACTOR", ""))
+            else:
+                manifest = load_yaml(args.apply_cleanup)
             payload = apply_cleanup(
                 config,
                 manifest,
@@ -397,7 +513,7 @@ def main() -> int:
             if not isinstance(prs, list) or any(not isinstance(row, dict) for row in prs):
                 raise BranchHygieneError("pull request report input must be a JSON list of mappings")
             payload = build_report(config, target, args.remote, prs, args.generated_at)
-    except (OSError, yaml.YAMLError, BranchHygieneError) as exc:
+    except (OSError, ValueError, KeyError, zipfile.BadZipFile, yaml.YAMLError, BranchHygieneError) as exc:
         print(f"BRANCH HYGIENE BLOCKED: {exc}")
         return 2
     print(yaml.safe_dump(payload, sort_keys=False, allow_unicode=True), end="")

@@ -1,72 +1,286 @@
 version: 1
 change:
-  id: plan17-t08-retrieval-storage
-  summary: Extract private SQLite persistence helpers behind the stable Retrieval
-    Intelligence facade.
+  id: plan17-reliability-hardening
+  summary: Correct publication/validation failures and enforce exact protected-main
+    branch cleanup without changing release or shadow authority.
   boundary:
-  - Keep retrieval_storage private; preserve the exact helper objects re-exported
-    by retrieval_intelligence.
-  - Preserve existing SQLite schema, FTS fallback, read-only and WAL snapshot behavior,
-    integrity checks, and return shapes.
-  - No public API, canonical data migration, event, scheduler, secret, network, or
-    publication authority change.
-candidate:
-  base_sha: f17b4f0da3480ceed2b566c99918ae7753de61f2
-  changed_files_hash: 5458bcaae601f769d19e4bdfdc8dc903e4c5f3fbe0c9c0f6efc146a8561821f4
+  - publication-safety
+  - validation-runtime
+  - capability-and-workflow
+  - dependency-parity
+  - documentation-closure
+  - branch-cleanup
+  - github-execution-trust
 matrix:
-- boundary: retrieval-storage-private-module-and-facade-compatibility
-  reason: The refactor moves SQLite helper implementations behind the existing module
-    facade; callers and persisted index behavior must remain compatible.
+- boundary: publication-safety
+  reason: Numeric Git metadata false-positive regression and unchanged body/secret
+    blocking
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff passes for the new storage module; baseline comparison for the
-        changed facade shows no new finding; documentation placement passes.
+      evidence: Ruff touched-code ratchet and critical compile checks
     unit:
       applicable: true
-      evidence: tests/evidence/module_extraction_lifecycle.py verifies exact facade
-        object re-exports and writable/read-only helper behavior.
+      evidence: tests/evidence/reliability_hardening_lifecycle.py
     integration:
       applicable: true
-      evidence: 'Full tests/validate_repository.py passed on the exact code candidate:
-        12 roles, 27 skills, 222 scenarios.'
+      evidence: Exact-candidate Integration Gate; full repository validator retains
+        all mandatory checks
     contract:
       applicable: true
-      evidence: Existing retrieval lifecycle validation passes for schema, FTS fallback,
-        WAL refusal, verified snapshot, integrity, source stability, and compatibility
-        facade.
-    e2e:
-      applicable: true
-      evidence: Exact-candidate AIPS Integration Gate and required PR checks must
-        pass before merge; verify main after merge.
+      evidence: tests/evidence/reliability_hardening_lifecycle.py
     security:
       applicable: true
-      evidence: Read-only SQL remains query_only; live WAL is refused before snapshot;
-        snapshots are source-stability and integrity checked; no credentials or external
-        authority added.
+      evidence: Negative fixture paths, mandatory candidate secret scanning; OIDC
+        issuer verification in report-only main dispatch
     migration_recovery:
-      applicable: false
-      na_reason: The SQLite retrieval index remains disposable, local, revision-scoped
-        cache data; schema and persisted canonical project data do not change.
+      applicable: true
+      evidence: Atomic transaction failure preserves all approved refs; historical
+        manifests remain readable but require trusted dispatch for remote deletion
     cli_harness:
-      applicable: false
-      na_reason: No CLI, runtime adapter, or Harness command behavior changes.
+      applicable: true
+      evidence: Source and installed-symlink CLI lifecycle, explicit invalid Python
+        rejection
     docs_schema:
       applicable: true
-      evidence: AIPS preview confirms placement PASS, no missing additions, and recursive
-        closure for all 22 exact candidate paths.
+      evidence: Complete fixed-point documentation and canonical topic validation
+    e2e:
+      applicable: false
+      na_reason: No product UI or deployment changes; local bare Git plus post-merge
+        read-only production identity verification cover the affected interfaces
+- boundary: validation-runtime
+  reason: Explicit executor, required dependencies, loopback and isolated child control
+    variables
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff touched-code ratchet and critical compile checks
+    unit:
+      applicable: true
+      evidence: tests/evidence/runtime_context_lifecycle.py
+    integration:
+      applicable: true
+      evidence: Exact-candidate Integration Gate; full repository validator retains
+        all mandatory checks
+    contract:
+      applicable: true
+      evidence: tests/evidence/runtime_context_lifecycle.py
+    security:
+      applicable: true
+      evidence: Negative fixture paths, mandatory candidate secret scanning; OIDC
+        issuer verification in report-only main dispatch
+    migration_recovery:
+      applicable: true
+      evidence: Atomic transaction failure preserves all approved refs; historical
+        manifests remain readable but require trusted dispatch for remote deletion
+    cli_harness:
+      applicable: true
+      evidence: Source and installed-symlink CLI lifecycle, explicit invalid Python
+        rejection
+    docs_schema:
+      applicable: true
+      evidence: Complete fixed-point documentation and canonical topic validation
+    e2e:
+      applicable: false
+      na_reason: No product UI or deployment changes; local bare Git plus post-merge
+        read-only production identity verification cover the affected interfaces
+- boundary: capability-and-workflow
+  reason: Fail-closed capability plans, browser/OpenAPI combinations and valid reusable
+    workflow permissions
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff touched-code ratchet and critical compile checks
+    unit:
+      applicable: true
+      evidence: tests/evidence/reliability_hardening_lifecycle.py
+    integration:
+      applicable: true
+      evidence: Exact-candidate Integration Gate; full repository validator retains
+        all mandatory checks
+    contract:
+      applicable: true
+      evidence: tests/evidence/reliability_hardening_lifecycle.py
+    security:
+      applicable: true
+      evidence: Negative fixture paths, mandatory candidate secret scanning; OIDC
+        issuer verification in report-only main dispatch
+    migration_recovery:
+      applicable: true
+      evidence: Atomic transaction failure preserves all approved refs; historical
+        manifests remain readable but require trusted dispatch for remote deletion
+    cli_harness:
+      applicable: true
+      evidence: Source and installed-symlink CLI lifecycle, explicit invalid Python
+        rejection
+    docs_schema:
+      applicable: true
+      evidence: Complete fixed-point documentation and canonical topic validation
+    e2e:
+      applicable: false
+      na_reason: No product UI or deployment changes; local bare Git plus post-merge
+        read-only production identity verification cover the affected interfaces
+- boundary: dependency-parity
+  reason: Exact candidate findings artifacts and UNKNOWN/mismatch semantics; shadow
+    authority unchanged
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff touched-code ratchet and critical compile checks
+    unit:
+      applicable: true
+      evidence: tests/evidence/reliability_hardening_lifecycle.py
+    integration:
+      applicable: true
+      evidence: Exact-candidate Integration Gate; full repository validator retains
+        all mandatory checks
+    contract:
+      applicable: true
+      evidence: tests/evidence/reliability_hardening_lifecycle.py
+    security:
+      applicable: true
+      evidence: Negative fixture paths, mandatory candidate secret scanning; OIDC
+        issuer verification in report-only main dispatch
+    migration_recovery:
+      applicable: true
+      evidence: Atomic transaction failure preserves all approved refs; historical
+        manifests remain readable but require trusted dispatch for remote deletion
+    cli_harness:
+      applicable: true
+      evidence: Source and installed-symlink CLI lifecycle, explicit invalid Python
+        rejection
+    docs_schema:
+      applicable: true
+      evidence: Complete fixed-point documentation and canonical topic validation
+    e2e:
+      applicable: false
+      na_reason: No product UI or deployment changes; local bare Git plus post-merge
+        read-only production identity verification cover the affected interfaces
+- boundary: documentation-closure
+  reason: Recursive placement/sync fixed point, each rule topical coverage and illegal
+    topic rejection
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff touched-code ratchet and critical compile checks
+    unit:
+      applicable: true
+      evidence: tests/evidence/reliability_hardening_lifecycle.py
+    integration:
+      applicable: true
+      evidence: Exact-candidate Integration Gate; full repository validator retains
+        all mandatory checks
+    contract:
+      applicable: true
+      evidence: tests/evidence/reliability_hardening_lifecycle.py
+    security:
+      applicable: true
+      evidence: Negative fixture paths, mandatory candidate secret scanning; OIDC
+        issuer verification in report-only main dispatch
+    migration_recovery:
+      applicable: true
+      evidence: Atomic transaction failure preserves all approved refs; historical
+        manifests remain readable but require trusted dispatch for remote deletion
+    cli_harness:
+      applicable: true
+      evidence: Source and installed-symlink CLI lifecycle, explicit invalid Python
+        rejection
+    docs_schema:
+      applicable: true
+      evidence: Complete fixed-point documentation and canonical topic validation
+    e2e:
+      applicable: false
+      na_reason: No product UI or deployment changes; local bare Git plus post-merge
+        read-only production identity verification cover the affected interfaces
+- boundary: branch-cleanup
+  reason: Dispatch identity, immutable exact proposal, local-checkout preservation
+    and atomic expected-SHA race rejection
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff touched-code ratchet and critical compile checks
+    unit:
+      applicable: true
+      evidence: tests/evidence/branch_hygiene_lifecycle.py
+    integration:
+      applicable: true
+      evidence: Exact-candidate Integration Gate; full repository validator retains
+        all mandatory checks
+    contract:
+      applicable: true
+      evidence: tests/evidence/branch_hygiene_lifecycle.py
+    security:
+      applicable: true
+      evidence: Negative fixture paths, mandatory candidate secret scanning; OIDC
+        issuer verification in report-only main dispatch
+    migration_recovery:
+      applicable: true
+      evidence: Atomic transaction failure preserves all approved refs; historical
+        manifests remain readable but require trusted dispatch for remote deletion
+    cli_harness:
+      applicable: true
+      evidence: Source and installed-symlink CLI lifecycle, explicit invalid Python
+        rejection
+    docs_schema:
+      applicable: true
+      evidence: Complete fixed-point documentation and canonical topic validation
+    e2e:
+      applicable: false
+      na_reason: No product UI or deployment changes; local bare Git plus post-merge
+        read-only production identity verification cover the affected interfaces
+- boundary: github-execution-trust
+  reason: RS256 issuer/signature/claims, invalid context, expiry, proposal archive
+    and fingerprint denial
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff touched-code ratchet and critical compile checks
+    unit:
+      applicable: true
+      evidence: tests/evidence/github_execution_identity_lifecycle.py
+    integration:
+      applicable: true
+      evidence: Exact-candidate Integration Gate; full repository validator retains
+        all mandatory checks
+    contract:
+      applicable: true
+      evidence: tests/evidence/github_execution_identity_lifecycle.py
+    security:
+      applicable: true
+      evidence: Negative fixture paths, mandatory candidate secret scanning; OIDC
+        issuer verification in report-only main dispatch
+    migration_recovery:
+      applicable: true
+      evidence: Atomic transaction failure preserves all approved refs; historical
+        manifests remain readable but require trusted dispatch for remote deletion
+    cli_harness:
+      applicable: true
+      evidence: Source and installed-symlink CLI lifecycle, explicit invalid Python
+        rejection
+    docs_schema:
+      applicable: true
+      evidence: Complete fixed-point documentation and canonical topic validation
+    e2e:
+      applicable: false
+      na_reason: No product UI or deployment changes; local bare Git plus post-merge
+        read-only production identity verification cover the affected interfaces
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
   status: SELF_REVIEWED
   evidence:
-  - User authorized implementation of all plan17 recommendations, local verification,
-    PR publication, and merge to main after checks.
-  - Reviewed the complete 22-path diff against the private storage extraction boundary
-    and recursive canonical documentation closure.
-  - Direct caller edges are recorded in the ephemeral AIPS impact graph; lifecycle
-    tests confirm stable facade exports and read/write guarantees. Full repository
-    validation passed.
+  - User authorized all eight audit recommendations and publication/merge after checks.
+  - Bounded security review covers issuer, immutable proposal, exact SHA leases, child
+    environment and candidate findings binding.
+  - Required full repository and exact-candidate Gates remain mandatory; this is not
+    independent review evidence.
+  - Runtime recovery fixture verifies automatic selection separately from explicit
+    invalid executor refusal; dependency artifact variants fail closed.
 blockers: []
 status: READY
+candidate:
+  base_sha: 386f7cbe29910d6b545bd1845beaf8b705769920
+  changed_files_hash: 3f063114c408dd8736c764cdecaf79fcfd5b2dea64273346ec5274843f6d6871
+human_scope_approval: User requested all recommendations from the plan17 errors/blockers/CI
+  report implemented, locally validated, published as PR and merged after checks.

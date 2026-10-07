@@ -195,6 +195,9 @@ publish_preflight_cmd() {
   else
     py="$(python_bin)"
   fi
+  if [ -z "$py" ] && [ -n "${AIPS_VALIDATION_PYTHON:-}${AIPS_VALIDATION_VENV:-}" ]; then
+    die "Explicit validation Python is unavailable or invalid; repair the selected environment before publication."
+  fi
   [ -n "$py" ] || py="$(python_bin)"
   [ -n "$py" ] || die "python3 is required."
   local script_root="$command_root"

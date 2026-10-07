@@ -63,6 +63,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
+
 Changes to a shared Python workflow bootstrap must reconcile every caller, declared requirement file, tested constraint, import profile, and lifecycle test.
 
 The shell CLI impact boundary includes the public `bin/aips` launcher, the resolved-checkout `scripts/aips_cli.sh` facade, its source modules, and direct CLI contract and install/update lifecycle consumers. The shell call graph remains a manually reviewed partial graph.
@@ -338,6 +340,8 @@ Scenario 134 不改 production Retrieval / Turn Context。Local Trial PASS 也�
 
 Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL storage is workspace-scoped by canonical `workspace_id`; repository-wide writer coordination belongs to the isolation layer and uses `repository_id`.
 ## Runtime Content Safety Boundary
+
+Publication scanning excludes only validated numeric Git index/mode metadata; paths, added/removed/context lines and unknown headers remain scanned. Branch deletion verifies GitHub RS256 issuer, repository, protected main, workflow SHA, dispatch event and a proposal-bound audience. Runner flags alone grant no authority; tokens remain in memory.
 
 明確的 `XDG_CACHE_HOME` 會原樣保留。預設快取不可寫時，AIPS 可使用目前使用者擁有、權限為 0700 的可重建暫存快取；symlink 與其他使用者擁有的快取會拒絕。外部 Intelligence metadata 不可寫時，可重建 metadata 保存在快取旁並回報 `CACHE_ONLY`；索引 freshness 仍由實際候選比對，canonical 來源與 graph 不會被替代。資料庫被清理後，保留的 metadata 只回報 `MISSING/ORPHANED`；執行 `aips intelligence index --project <path>` 即可重建，不需 `--force`。
 

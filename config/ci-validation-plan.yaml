@@ -8,6 +8,7 @@ full_validation_paths:
   - scripts/repository_preflight.py
   - scripts/runtime_context.py
   - tests/validate_repository.py
+  - tests/validation/registry.py
 known_path_prefixes:
   - .github/
   - bin/
@@ -50,12 +51,18 @@ capabilities:
     - package-lock.json
     - scripts/docs_site.py
   browser:
+    - scripts/creative_
+    - config/creative-
+    - tests/evidence/creative_
+    - tests/validation/visual_render_contracts.py
+    - tests/validation/creative_evidence_contracts.py
     - scripts/visual_
     - scripts/browser_
     - config/project-visual-profile.yaml
     - tests/evidence/visual_
     - tests/evidence/browser_
   openapi:
+    - tests/evidence/implementation_enforcement_lifecycle.py
     - scripts/openapi_
     - examples/openapi/
     - requirements-openapi.txt

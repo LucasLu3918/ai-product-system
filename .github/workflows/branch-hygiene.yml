@@ -10,6 +10,16 @@ on:
         required: false
         default: false
         type: boolean
+      proposal_run_id:
+        description: Successful main branch-hygiene report run containing the approved proposal
+        type: string
+        required: false
+        default: ''
+      proposal_fingerprint:
+        description: Exact sha256 proposal fingerprint explicitly approved for this one-time cleanup
+        type: string
+        required: false
+        default: ''
   push:
     branches:
       - main
@@ -114,6 +124,34 @@ jobs:
           assert authority.get("human_authority_preserved") is True
           PY
 
+  dispatch-identity:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.apply_cleanup == false
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - uses: ./.github/actions/aips-python-bootstrap
+        with:
+          python-version: "3.12"
+          requirements-files: |
+            requirements.txt
+            requirements-validation.txt
+          constraints-file: constraints/tested.txt
+          cache-dependency-path: |
+            requirements.txt
+            requirements-validation.txt
+            constraints/tested.txt
+          verification-modules: |
+            yaml
+            cryptography
+      - name: Verify issuer without deleting refs
+        run: python scripts/branch_hygiene.py --verify-dispatch-only --github-repository "$GITHUB_REPOSITORY" >> "$GITHUB_STEP_SUMMARY"
+
   cleanup:
     if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.apply_cleanup == true
     needs: report
@@ -121,6 +159,8 @@ jobs:
     permissions:
       contents: write
       pull-requests: read
+      actions: read
+      id-token: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -130,7 +170,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - run: python -m pip install -c constraints/tested.txt -r requirements.txt
+      - run: python -m pip install -c constraints/tested.txt -r requirements.txt -r requirements-validation.txt
 
       - name: Refresh exact remote branch refs
         shell: bash
@@ -139,12 +179,15 @@ jobs:
       - name: Apply exact Human-authorized cleanup manifest
         env:
           GH_TOKEN: ${{ github.token }}
+          APPROVED_PROPOSAL_RUN_ID: ${{ inputs.proposal_run_id }}
+          APPROVED_PROPOSAL_FINGERPRINT: ${{ inputs.proposal_fingerprint }}
         run: >-
           python scripts/branch_hygiene.py
           --config config/branch-lifecycle.yaml
           --target main
           --remote origin
-          --apply-cleanup config/branch-cleanup-manifest.yaml
+          --proposal-run-id "$APPROVED_PROPOSAL_RUN_ID"
+          --proposal-fingerprint "$APPROVED_PROPOSAL_FINGERPRINT"
           --github-repository "$GITHUB_REPOSITORY"
           > branch-cleanup-result.yaml
 
@@ -170,3 +213,10 @@ jobs:
               out.write("- authorization scope: **exact_manifest_only**\n")
               out.write("- human authority preserved: **true**\n")
           PY
+      - name: Retain cleanup audit and recovery refs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: branch-cleanup-result-${{ github.run_id }}
+          path: branch-cleanup-result.yaml
+          retention-days: 90

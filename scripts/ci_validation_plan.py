@@ -5,18 +5,34 @@ from __future__ import annotations
 
 import argparse
 import json
-from pathlib import Path
 import subprocess
+from pathlib import Path
 from typing import Any
 
 import yaml
-
 
 DEFAULT_ROOT = Path(__file__).resolve().parents[1]
 
 
 class PlanError(ValueError):
     pass
+
+
+EVIDENCE_CAPABILITIES = {
+    "implementation_enforcement_lifecycle.py": "openapi",
+    "openapi_contracts_lifecycle.py": "openapi",
+    "openapi_generator_adapter_lifecycle.py": "openapi",
+    "openapi_client_pilot_lifecycle.py": "openapi",
+    "openapi_cli_install_lifecycle.py": "openapi",
+}
+
+
+def validation_capabilities(plan: Any) -> dict[str, bool]:
+    """Missing or malformed plans select every capability, never implicit skips."""
+    names = ("node", "browser", "openapi")
+    valid = (isinstance(plan, dict) and plan.get("version") == 1
+             and all(type(plan.get(f"needs_{name}")) is bool for name in names))
+    return {name: plan[f"needs_{name}"] if valid else True for name in names}
 
 
 def changed_paths(root: Path, base: str, head: str) -> list[str]:

@@ -19,7 +19,8 @@ def main() -> None:
     assert runtime_context.default_validation_venv(ROOT).name.startswith("aips-validation-")
     cases = runtime_context.candidate_python_paths(ROOT, ROOT, {"AIPS_VALIDATION_PYTHON": "/explicit/python", "AIPS_VALIDATION_VENV": "/explicit/venv"})
     assert str(cases[0]) == "/explicit/python"
-    assert str(cases[1]) == "/explicit/venv/bin/python"
+    assert len(cases) == 1, "explicit Python selection is authoritative; no venv fallback"
+    assert str(runtime_context.candidate_python_paths(ROOT, ROOT, {"AIPS_VALIDATION_VENV": "/explicit/venv"})[0]) == "/explicit/venv/bin/python"
     context = runtime_context.collect_runtime_context(ROOT, ROOT, env={"HOME": "/private/home", "XDG_CACHE_HOME": "/private/cache", "XDG_CONFIG_HOME": "/private/config", "GITHUB_TOKEN": "must-not-be-returned"})
     serialized = json.dumps(context, sort_keys=True)
     assert "must-not-be-returned" not in serialized and "GITHUB_TOKEN" not in serialized

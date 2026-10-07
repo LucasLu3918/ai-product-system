@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+Prospective `aips docs impact --base HEAD --planned-path <path>` resolves sync and placement closure to a fixed point. Each triggered rule requires an update in its canonical topic; combined changes use the union of those topics. Validate every text anchor before applying the batch. Closure is scope evidence and never grants publication authority.
+
 - **開始使用**：Install、First Project、Update、Uninstall。
 - **使用指南**：產品交付、Existing Project、Security、Quality。
 - **Agent 整合**：Global Harness、native adapters、MCP。

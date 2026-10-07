@@ -20,6 +20,12 @@ jobs:
     name: dependency-review
     runs-on: ubuntu-24.04
     steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
       - name: Review dependency changes
         id: review
         continue-on-error: ${{ inputs.shadow }}
@@ -36,3 +42,22 @@ jobs:
           else
             echo "Standalone Dependency Review outcome: ${REVIEW_OUTCOME:-unavailable} (authoritative)." >> "$GITHUB_STEP_SUMMARY"
           fi
+      - name: Capture exact-candidate findings
+        if: always()
+        env:
+          REVIEW_OUTCOME: ${{ steps.review.outcome }}
+          IS_SHADOW: ${{ inputs.shadow }}
+          CANDIDATE_HEAD: ${{ github.event.pull_request.head.sha }}
+          CANDIDATE_BASE: ${{ github.event.pull_request.base.sha }}
+          DEPENDENCY_CHANGES: ${{ steps.review.outputs.dependency-changes }}
+          VULNERABLE_CHANGES: ${{ steps.review.outputs.vulnerable-changes }}
+          INVALID_LICENSE_CHANGES: ${{ steps.review.outputs.invalid-license-changes }}
+          DENIED_CHANGES: ${{ steps.review.outputs.denied-changes }}
+        run: python scripts/dependency_review_evidence.py --output dependency-review-evidence.json
+      - name: Retain parity evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: dependency-review-evidence-${{ inputs.shadow && 'shadow' || 'standalone' }}-${{ github.run_id }}
+          path: dependency-review-evidence.json
+          retention-days: 90

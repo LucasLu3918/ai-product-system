@@ -10,6 +10,8 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 ## Minimal algorithm
 
+Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
+
 When a task requires client generation, resolve the canonical OpenAPI contract, local tool/version, ownership and native verification first. The adapter preview does not execute; invoke its local `--execute` path only on the user's explicit instruction. The Gate remains inspection-only.
 
 發布前先執行快速 documentation-impact gate；CI 再依序執行強制候選秘密掃描與 repository preflight，才安裝完整驗證相依套件並進入 Integration Gate。候選的每筆 commit message 與 author/committer identity 均需符合公開發布政策。
