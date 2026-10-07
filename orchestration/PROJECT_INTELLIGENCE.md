@@ -269,6 +269,8 @@ Active authority conflicts are included in the Turn Context Manifest. Material m
 
 ## Context loading
 
+The Turn Context Manifest keeps `SYSTEM_CORE.md` in the fixed layer and returns task-specific canonical protocol routes as bounded pointers. Compact output and runtime hooks expose route IDs, paths and resolution status without storing the prompt; required missing routes fail closed for mutation.
+
 Every turn resolves the Intelligence index, but does not reload every topic.
 
 ~~~text

@@ -69,6 +69,8 @@ The scheduler is stateless between invocations. Durable workflow state remains o
 
 ## CLI
 
+Turn Context task routes are resolved before scheduling and never grant Scheduler write authority; the task's approved boundary and lease remain authoritative.
+
 Sparse delegation does not require a Task Graph for primary-only bounded work. Existing CLI helpers perform repeatable checks; multiple justified writer tasks retain approved non-overlapping boundaries.
 
 Plan17 regression evidence covers numeric diff headers, four browser/OpenAPI combinations, mandatory aggregates, reusable caller keys/permissions, explicit Python and isolated children, recursive placement, signed identity/immutable proposal rejection and atomic deletion races. Missing or malformed capability plans retain the full profile. A latest cancelled check stays INCOMPLETE; replaced old checks are reported as SUPERSEDED.
@@ -125,6 +127,8 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 ## Failure behavior
 
+If a required task protocol source is unavailable, mutating work fails closed before dispatch; read-only context remains limited to available sources.
+
 Publication preflight checks only optional environment capabilities selected by the exact candidate plan. `NOT_REQUIRED` browser status is accepted when browser validation is unselected; a selected browser probe failure remains blocking.
 
 Bound GitHub Actions job runtimes from observed per-job P95 multiplied by an explicit safety factor, then round upward; record the sample window and factor in candidate evidence. Do not add concurrency merely for consistency: independent jobs with unique runner state should remain independently observable, and cancellation must not discard required evidence. Installation entrypoint jobs use a 15× factor rounded up to five-minute increments (5/10/10 minutes), based on ten successful runs from 2026-10-06 02:53–11:34 UTC.
@@ -160,6 +164,8 @@ When the Execution Profile requires sandbox isolation, Scheduler dispatch must p
 The Scheduler never falls back to LLM coordination to make a blocked graph look executable.
 
 ## Read-only declaration and fail-closed boundary
+
+Protocol route metadata is advisory context only and is not a task capability, resource grant, or approval receipt.
 
 The repository governance snapshot declares read-only behavior and reports inaccessible ruleset or branch-protection data as UNKNOWN; it grants no mutation capability.
 

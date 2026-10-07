@@ -22,6 +22,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+For system-context and protocol-routing changes, bind the fixed-core ceiling, route/hook lifecycle, missing-source negative path, documentation closure and measured baseline reduction to the same exact candidate.
+
 The plan18 candidate matrix covers exclusion attribution, quality debt ratchets, Project Intelligence extraction, governance snapshot read-only guarantees, canonical docs placement and existing authority boundaries.
 
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
@@ -153,6 +155,8 @@ Local reports may store bounded command output tails plus fingerprints/status. C
 PASS means deterministic validation evidence is green. It does **not** authorize merge, publication, release, scope expansion or risk acceptance.
 
 ## Independent review evidence
+
+Selected protocol pointers and synthetic route tests are not independent review attestation; the existing trusted-runtime requirement and Human review boundaries remain unchanged.
 
 Ed25519 runtime receipts are accepted only when verified against a trust store supplied outside the candidate repository. The active matrix leaves mandatory review disabled until a real host-managed issuer is configured; an absent issuer yields `UNVERIFIED` and cannot satisfy a required review.
 

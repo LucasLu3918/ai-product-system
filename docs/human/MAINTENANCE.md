@@ -208,6 +208,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+Risk-adaptive traversal changes use AST-extracted direct Python calls with bounded caller/consumer depth; unresolved dynamic dispatch and repository-wide partial graph coverage remain visible in evidence.
+
 本次 Project Intelligence promotion helper 維持既有 facade、Human approval 與 no-overwrite 邊界；Scenario 223 證明 Evolution Radar 對候選排除原因提供決定性歸因。
 
 Phase 4 generator adapter 維護需同步檢查 Profile schema、OpenAPI evidence、命令執行邊界、allowlist、Phase 3 generation records、原子回復、Scenario 196 與 Integration Gate fixture。Gate 僅執行隔離的假 generator lifecycle，不呼叫專案設定的實際 generator。更換 generator 或 version 時應重新審查 executable hash、版本輸出、argv 與生成差異，並執行專案原生測試。Phase 5 的 `generator_reports` 是 Profile 自願啟用的未追蹤本機報告；維護時檢查 schema/fingerprint、Git 祖先、Profile 前後雜湊、工具版本與 argv、輸入與輸出及 generation records。執行 `tests/evidence/openapi_client_pilot_lifecycle.py` 確認本機服務、client、證據鏈及負面路徑；新增產品不自動複製 AIPS 範例。
@@ -248,6 +250,8 @@ When Approval Binding / Governance Enforcement changes, review together:
 Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverifiable.
 
 ## Durable Run State consistency
+
+固定 Turn Context 或 task protocol routing 變更時，更新 canonical core/router、Runtime adapters、文件 placement、Scenario 與 impact-derived matrix；維持原有 Human approval 與 publication boundaries。
 
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
 
@@ -380,6 +384,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+固定 Turn Context 或 task protocol routing 變更時，更新 canonical core/router、Runtime adapters、文件 placement、Scenario 與 impact-derived matrix；維持原有 Human approval 與 publication boundaries。固定核心 route scenario 亦須列入 registry、Conformance current view 與 recursive docs placement checks。
 
 Skill metadata 修改後須重建 INDEX 並執行 `tests/evidence/skill_index_lifecycle.py`；完整 repository validation 也會執行此 lifecycle。Scenario 224 是人工語意驗收，225 是 registry lifecycle 證據，不可互換。Plan19 增加 per-module quality budgets、behavior-based Eval freshness 與 canonical capability projections；各報告仍是 evidence，不能代替完整 Gate 或擴張批准範圍。
 

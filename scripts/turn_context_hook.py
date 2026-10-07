@@ -45,6 +45,15 @@ def compact_context(data: dict) -> str:
         f"intelligence_store={project.get('intelligence_store')}",
         f"readiness={intelligence.get('readiness')} freshness={intelligence.get('freshness')}",
         f"mutation_likely={(data.get('task') or {}).get('mutation_likely')}",
+        f"system_core={(ctx.get('system_protocol_routes') or {}).get('system_core', {}).get('path')}",
+        f"system_protocol_route={(ctx.get('system_protocol_routes') or {}).get('category')} status={(ctx.get('system_protocol_routes') or {}).get('status')}",
+        "system_protocol_matches=" + ",".join((ctx.get("system_protocol_routes") or {}).get("matched_categories") or []),
+        "system_protocols=" + ",".join(
+            f"{item.get('id')}:{item.get('path')}"
+            for item in ((ctx.get("system_protocol_routes") or {}).get("protocols") or [])
+        ),
+        *(["system_protocol_missing=" + ",".join((ctx.get("system_protocol_routes") or {}).get("missing") or [])]
+          if (ctx.get("system_protocol_routes") or {}).get("missing") else []),
         f"initialize_intelligence={req.get('initialize_intelligence')}",
         f"semantic_enrichment_required={req.get('semantic_enrichment_required')}",
         f"change_impact_required={req.get('change_impact_required')}",

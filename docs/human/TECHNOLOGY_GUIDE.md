@@ -29,6 +29,8 @@ Project Intelligence promotion 將候選資格與目標路徑限制拆成 helper
 
 ### Project Intelligence
 
+The fixed AIPS policy layer is the bounded `SYSTEM_CORE.md`; Turn Context selects canonical orchestration pointers by task and reports route status without storing prompt text. `SYSTEM.md` remains the compatibility entry. Mutation routing fails closed when a required protocol source is missing.
+
 Stable semantic cache 保存 Architecture、Data Flow、Modules、Contracts、Tests、Security、Operations、Source Registry 與 Impact Graph。
 
 每回合使用 bounded layered context：衍生的 Project Core capsule、task-relevant Recall 與按需 Archive pointers。Capsule 帶 source digest 且不是 canonical truth；缺少時回退到來源指標。唯讀 `aips intelligence context-audit` 可檢查 stale hash、孤兒指標、秘密路徑及 authority conflicts。
@@ -48,6 +50,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+Task-specific routes keep product-delivery, visual, security, testing, API/data, planning, documentation and publication procedures progressive; the general mutation fallback includes Orchestrator, Change Impact and Quality Planning.
 
 `scripts/repository_governance_snapshot.py` 是選擇性、唯讀的 operator snapshot；若 `gh` 不可讀取任一設定面，結果標為 UNKNOWN。
 
@@ -151,6 +155,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Scenario 230 and the exact-candidate Core Matrix cover route selection, hook/manifest compatibility, missing-source behavior, fixed-core byte ceiling and measured reduction against the base layer.
 
 Skill 路由 metadata 以 `SKILL.md` frontmatter 為唯一來源；修改後執行 `python scripts/skill_index.py --write`，預設不帶旗標只檢查 drift。tier 欄位仍保留供既有 consumers 使用，不會自動降低主要模型。REST／visual 執行細節按需載入既有 orchestration protocol。
 

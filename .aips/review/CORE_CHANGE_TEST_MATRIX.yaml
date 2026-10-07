@@ -1,146 +1,77 @@
 version: 1
 candidate:
-  base_sha: 65b99c16871804afe82c11e1ab97fbd2000a5bb1
-  changed_files_hash: 34e33bfa17d4d12324558842c8bf27396b704478fd11734a71c4ea4ffa88badb
+  base_sha: 6016723622d649b5b61d04d2b4082c2fcb2de75c
+  changed_files_hash: null
 change:
-  id: plan19-architecture-truth-runtime-closure
-  summary: Implement nine approved architecture-truth and runtime-closure improvements
+  id: plan20-phase2-system-core
+  summary: Compact fixed system context, route canonical protocols per task, and correct
+    bounded Python relation extraction for Change Impact.
   boundary:
-    - capability-registry
-    - codex-hook-probe
-    - quality-ratchet
-    - project-intelligence-module-extraction
-    - agent-eval-freshness
-    - release-channel-readiness
-    - provider-neutral-cost-telemetry
-    - branch-reconciliation-evidence
-    - evolution-radar-effectiveness
+  - fixed-system-core
+  - task-specific-protocol-routing
+  - context-manifest-and-runtime-hook
+  - retrieval-relations-and-impact-traversal
+  - documentation-and-conformance
 matrix:
-  - boundary: capability-registry
-    reason: Canonical source must deterministically produce both existing indexes and retain consumer compatibility.
-    checks:
-      static_lint: {applicable: true, evidence: Ruff touched-code check}
-      unit: {applicable: true, evidence: Registry validation and deterministic generation}
-      integration: {applicable: true, evidence: Repository Health lifecycle and repository validation}
-      contract: {applicable: true, evidence: Generated v1 Capability Map and surface compatibility}
-      security: {applicable: true, evidence: Path confinement, duplicate/unknown refs, unchanged Human Authority}
-      migration_recovery: {applicable: true, evidence: Reconcile/check behavior against current indexes}
-      cli_harness: {applicable: true, evidence: Read-only check and deterministic generation}
-      docs_schema: {applicable: true, evidence: Docs, scenario coverage, VitePress build}
-      e2e: {applicable: false, na_reason: No hosted product UI or service behavior}
-  - boundary: codex-hook-probe
-    reason: Native hook denial must be measured without overstating coverage or changing user-global settings.
-    checks:
-      static_lint: {applicable: true, evidence: Ruff touched-code check}
-      unit: {applicable: true, evidence: Harmless synthetic command allow/deny and malformed/timeout behavior}
-      integration: {applicable: true, evidence: Documented Codex hook event envelope and probe report}
-      contract: {applicable: true, evidence: ADVISORY capability registration unless specific denial is verified}
-      security: {applicable: true, evidence: Synthetic command only; unsupported/fail-open paths remain unguarded}
-      migration_recovery: {applicable: false, na_reason: Prototype does not modify installed user configuration}
-      cli_harness: {applicable: true, evidence: Isolated plugin fixture}
-      docs_schema: {applicable: true, evidence: Codex adapter docs and scenario}
-      e2e: {applicable: false, na_reason: No production Codex policy installation}
-  - boundary: quality-ratchet
-    reason: Establish representative module budgets without tightening required thresholds.
-    checks:
-      static_lint: {applicable: true, evidence: Baseline and touched-code Ruff}
-      unit: {applicable: true, evidence: Quality Ratchet lifecycle}
-      integration: {applicable: true, evidence: Repository validation}
-      contract: {applicable: true, evidence: Report-only and per-module budget schema}
-      security: {applicable: true, evidence: Quality changes cannot bypass required checks}
-      migration_recovery: {applicable: true, evidence: Backward-compatible config defaults}
-      cli_harness: {applicable: true, evidence: Quality report CLI compatibility}
-      docs_schema: {applicable: true, evidence: Quality planning docs and scenario}
-      e2e: {applicable: false, na_reason: No product UI/deployment/service changes}
-  - boundary: project-intelligence-module-extraction
-    reason: One cohesive extraction must preserve facade symbols, CLI, persistence, and error behavior.
-    checks:
-      static_lint: {applicable: true, evidence: Ruff touched-code check}
-      unit: {applicable: true, evidence: Focused storage/import tests}
-      integration: {applicable: true, evidence: Module extraction and Project Intelligence lifecycles}
-      contract: {applicable: true, evidence: Facade symbol identity and CLI output}
-      security: {applicable: true, evidence: Atomic writes, locks, path confinement, and cache privacy}
-      migration_recovery: {applicable: true, evidence: Cache read/write and recovery behavior}
-      cli_harness: {applicable: true, evidence: Source and installed entrypoint compatibility}
-      docs_schema: {applicable: true, evidence: Architecture/module documentation}
-      e2e: {applicable: false, na_reason: No product UI/deployment behavior}
-  - boundary: agent-eval-freshness
-    reason: Behavior-changing paths select affected cases and stale evidence without automatically claiming current behavior.
-    checks:
-      static_lint: {applicable: true, evidence: Ruff touched-code check}
-      unit: {applicable: true, evidence: Exact dependency matching and stale-reason tests}
-      integration: {applicable: true, evidence: Freshness lifecycle and Scenario Conformance}
-      contract: {applicable: true, evidence: Dependency map and stable scenario IDs}
-      security: {applicable: true, evidence: No prompts/transcripts/private reasoning persisted}
-      migration_recovery: {applicable: true, evidence: Older case/result metadata remains readable}
-      cli_harness: {applicable: true, evidence: Deterministic report/check command}
-      docs_schema: {applicable: true, evidence: Agent Eval docs; scenarios 192/193/224 remain manual}
-      e2e: {applicable: false, na_reason: No product UI/service behavior}
-  - boundary: release-channel-readiness
-    reason: Installer/version/candidate/tag readiness must reconcile while release authority remains human.
-    checks:
-      static_lint: {applicable: true, evidence: Ruff touched-code check}
-      unit: {applicable: true, evidence: Version/tag lifecycle and property tests}
-      integration: {applicable: true, evidence: Release-readiness workflow and exact-candidate preflight}
-      contract: {applicable: true, evidence: Stable installer compatibility and no historical tag backfill}
-      security: {applicable: true, evidence: Strict candidate scan; release blocked absent separate approval}
-      migration_recovery: {applicable: true, evidence: Existing channel fallback behavior}
-      cli_harness: {applicable: true, evidence: Installer and readiness CLI compatibility}
-      docs_schema: {applicable: true, evidence: Version/changelog/install docs and VitePress}
-      e2e: {applicable: true, evidence: Isolated stable-installer dry-run; no publish}
-  - boundary: provider-neutral-cost-telemetry
-    reason: Emit only runtime-observed usage; unknown rates remain unknown and no Gateway/provider calls are introduced.
-    checks:
-      static_lint: {applicable: true, evidence: Ruff touched-code check}
-      unit: {applicable: true, evidence: Usage-present/absent/confidence normalization}
-      integration: {applicable: true, evidence: Telemetry Export lifecycle and replay compatibility}
-      contract: {applicable: true, evidence: Additive Execution Profile and telemetry schema}
-      security: {applicable: true, evidence: No secret, prompt, or private reasoning fields exported}
-      migration_recovery: {applicable: true, evidence: Old event/profile fixtures remain valid}
-      cli_harness: {applicable: true, evidence: Telemetry record/export CLI compatibility}
-      docs_schema: {applicable: true, evidence: Model routing/schema/cost docs}
-      e2e: {applicable: false, na_reason: No provider integration/Gateway}
-  - boundary: branch-reconciliation-evidence
-    reason: Branches are classified and SHA-bound; deletion requires later Human approval of an exact manifest.
-    checks:
-      static_lint: {applicable: true, evidence: Ruff touched-code check}
-      unit: {applicable: true, evidence: Classifier/proposal and stale-SHA rejection tests}
-      integration: {applicable: true, evidence: Branch Hygiene lifecycle and read-only snapshot}
-      contract: {applicable: true, evidence: Manifest schema and human approval requirements}
-      security: {applicable: true, evidence: No delete/apply operation in this candidate}
-      migration_recovery: {applicable: false, na_reason: No remote ref mutation}
-      cli_harness: {applicable: true, evidence: Proposal generation without apply}
-      docs_schema: {applicable: true, evidence: Branch Hygiene instructions and report status}
-      e2e: {applicable: false, na_reason: No remote branch deletion}
-  - boundary: evolution-radar-effectiveness
-    reason: Reuse exclusion attribution and report evidence without changing ranking policy.
-    checks:
-      static_lint: {applicable: true, evidence: Ruff touched-code check}
-      unit: {applicable: true, evidence: Exclusion-reason aggregation invariants}
-      integration: {applicable: true, evidence: Effectiveness lifecycle and latest monthly report}
-      contract: {applicable: true, evidence: Report-only status and unchanged scoring policy}
-      security: {applicable: true, evidence: No external writes or credentials}
-      migration_recovery: {applicable: true, evidence: Old monthly reports remain readable}
-      cli_harness: {applicable: true, evidence: Effectiveness CLI compatibility}
-      docs_schema: {applicable: true, evidence: Evolution Radar docs/report}
-      e2e: {applicable: false, na_reason: No external research-source changes}
+- boundary: fixed-system-core
+  reason: Reduce fixed system context while preserving authority, compatibility routing,
+    and all existing gates.
+  checks: &id001
+    static_lint:
+      applicable: true
+      evidence: Ruff E4/E7/E9/F on routing, hook, and lifecycle files; full changed-file
+        lint findings reviewed against baseline.
+    unit:
+      applicable: true
+      evidence: tests/evidence/retrieval_relations_extraction_lifecycle.py and route
+        classifier assertions in tests/evidence/intelligence_context_lifecycle.py.
+    integration:
+      applicable: true
+      evidence: tests/evidence/intelligence_context_lifecycle.py and tests/evidence/change_impact_traversal_lifecycle.py;
+        exact-candidate Integration Gate required.
+    contract:
+      applicable: true
+      evidence: tests/validation/static_contracts.py and tests/validation/change_impact_traversal_contracts.py;
+        compact manifest and hook contract assertions.
+    security:
+      applicable: true
+      evidence: Missing required protocol sources fail closed for mutation; route
+        output excludes prompt text and core retains Human/publication gates.
+    migration_recovery:
+      applicable: true
+      evidence: Retrieval index schema v5 is rebuildable; retrieval lifecycle and
+        stale-index behavior remain covered.
+    cli_harness:
+      applicable: true
+      evidence: Turn Context CLI and runtime hook lifecycle verify the selected route
+        manifest and diagnostics.
+    docs_schema:
+      applicable: true
+      evidence: Canonical protocol, Human documentation closure, two architecture
+        diagrams, Scenario 230 and generated conformance view.
+    e2e:
+      applicable: false
+      na_reason: No product UI, deployed service, or end-user runtime behavior changes.
+- boundary: task-specific-protocol-routing
+  reason: Resolve and combine canonical protocol pointers for every supported task
+    category with conservative fallback.
+  checks: *id001
+- boundary: context-manifest-and-runtime-hook
+  reason: Keep full/compact manifests and hook output additive, privacy-safe, and
+    fail closed when required sources are missing.
+  checks: *id001
+- boundary: retrieval-relations-and-impact-traversal
+  reason: Use syntactic Python calls and bounded caller/consumer traversal without
+    claiming compiler-grade or repository-wide completeness.
+  checks: *id001
+- boundary: documentation-and-conformance
+  reason: Keep canonical Human/Agent guidance, diagrams, route scenario, generated
+    views, and exact-candidate evidence aligned.
+  checks: *id001
 review_evidence:
   required: false
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: true
+actual_diff_reconciled: false
 blockers: []
-status: READY
-verification:
-  repository_validation: PASS
-  module_extraction: PASS
-  runtime_hook_probe: "PASS_SYNTHETIC_ONLY; live dispatch unverified"
-  capability_registry: PASS
-  quality_ratchet: PASS
-  eval_freshness: PASS
-  release_readiness: PASS
-  cost_telemetry: PASS
-  branch_reconciliation: PASS
-  evolution_effectiveness: PASS
-  documentation: PASS
-  secret_scan: PASS
-  exact_candidate_integration_gate: PASS
+status: DRAFT
+verification: {}

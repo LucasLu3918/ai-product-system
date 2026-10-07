@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import datetime as dt
+import ast
 import hashlib
 import json
 import math
@@ -18,12 +19,15 @@ from git_paths import GitPathsError, run_git_nul_output, run_git_paths
 from retrieval_relations import (
     code_without_comments_or_strings as _mask_relations_source,
 )
-from retrieval_relations import relation_rows as _build_relation_rows
+from retrieval_relations import (
+    python_call_names_by_line as _python_call_names_by_line,
+    relation_rows as _build_relation_rows,
+)
 from retrieval_storage import metadata_get, metadata_set, open_db, open_read_db
 from temporal_intelligence import load_temporal, temporal_digest
 from temporal_intelligence import validate_document as validate_temporal_document
 
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 DEFAULT_TOKEN_BUDGET = 6000
 DEFAULT_RESULT_LIMIT = 12
 MAX_FILE_BYTES = 1_000_000
@@ -33,9 +37,9 @@ STRUCTURAL_MAX_BRIDGES = 120
 STRUCTURAL_MAX_IDENTIFIERS_PER_BRIDGE = 200
 STRUCTURAL_MAX_TARGET_DEFINITIONS = 200
 STRUCTURAL_MAX_TEST_CHUNKS = 500
-IMPACT_MAX_DEPTH = 4
-IMPACT_MAX_NODES = 100
-IMPACT_MAX_EDGES = 250
+IMPACT_MAX_DEPTH = 6
+IMPACT_MAX_NODES = 150
+IMPACT_MAX_EDGES = 300
 IMPACT_MAX_RELATIONS_PER_FILE = 5000
 SEMANTIC_ALIAS_LIMIT = 32
 SEMANTIC_ALIAS_PATH = Path(__file__).resolve().parents[1] / "templates/intelligence/SEMANTIC_ALIASES.yaml"
@@ -357,13 +361,142 @@ def code_without_comments_or_strings(text: str) -> str:
 
 
 def extract_code_relations(rel_path: str, text: str) -> list[dict[str, Any]]:
-    """Extract bounded lexical call/reference candidates, never compiler semantics."""
+    """Extract bounded call/reference candidates, never compiler semantics."""
     ext = Path(rel_path).suffix.lower()
     if ext not in SYMBOL_PATTERNS or is_secret_path(rel_path):
         return []
     definitions = extract_symbols(rel_path, text)
     masked = code_without_comments_or_strings(text)
-    return _build_relation_rows(masked, definitions, max_rows=IMPACT_MAX_RELATIONS_PER_FILE)
+    call_names = _python_call_names_by_line(text) if ext == ".py" else None
+    return _build_relation_rows(
+        masked,
+        definitions,
+        max_rows=IMPACT_MAX_RELATIONS_PER_FILE,
+        call_names_by_line=call_names,
+    )
+
+
+def _local_import_target(root: Path, source_path: str, target_name: str) -> tuple[str, str, str] | None:
+    """Resolve an explicitly imported Python call to a repository source file.
+
+    Returns (status, symbol, path): status is ``local`` for a repository import,
+    ``external`` for a declared import outside this repository, or ``ambiguous``
+    when multiple local imports can provide the same called name. ``None`` means
+    the source does not declare an import for the target.
+    """
+    if Path(source_path).suffix.lower() != ".py":
+        return None
+    path = root / source_path
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
+    except (OSError, SyntaxError):
+        return None
+
+    package_dir = Path(source_path).parent
+
+    def module_file(module: str | None, level: int = 0) -> Path | None:
+        parts: list[str] = []
+        if level:
+            parts = list(package_dir.parts)
+            parts = parts[: max(0, len(parts) - level + 1)]
+        if module:
+            parts.extend(module.split("."))
+        candidates = [
+            root.joinpath(*parts).with_suffix(".py"),
+            root.joinpath(*parts, "__init__.py"),
+        ]
+        if module and level == 0:
+            module_parts = module.split(".")
+            candidates.extend([
+                root.joinpath("scripts", *module_parts).with_suffix(".py"),
+                root.joinpath("scripts", *module_parts, "__init__.py"),
+            ])
+        for candidate in candidates:
+            try:
+                if not candidate.is_file():
+                    continue
+                return candidate.resolve().relative_to(root.resolve()) and candidate
+            except (ValueError, OSError):
+                continue
+        return None
+
+    imported_targets: list[tuple[str, str]] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.ImportFrom):
+            for alias in node.names:
+                if alias.name != target_name and alias.asname != target_name:
+                    continue
+                resolved = module_file(node.module, node.level)
+                if resolved is not None:
+                    imported_targets.append((alias.name, resolved.relative_to(root).as_posix()))
+                else:
+                    imported_targets.append((alias.name, ""))
+        elif isinstance(node, ast.Import):
+            for alias in node.names:
+                local_name = alias.asname or alias.name.split(".", 1)[0]
+                if not any(
+                    isinstance(call, ast.Call)
+                    and isinstance(call.func, ast.Attribute)
+                    and call.func.attr == target_name
+                    and isinstance(call.func.value, ast.Name)
+                    and call.func.value.id == local_name
+                    for call in ast.walk(tree)
+                ):
+                    continue
+                resolved = module_file(alias.name)
+                imported_targets.append((target_name, resolved.relative_to(root).as_posix() if resolved else ""))
+    local_targets = sorted(set((symbol, rel_path) for symbol, rel_path in imported_targets if rel_path))
+    if len(local_targets) == 1:
+        symbol, rel_path = local_targets[0]
+        return ("local", symbol, rel_path)
+    if len(local_targets) > 1:
+        return ("ambiguous", target_name, "")
+    if imported_targets:
+        return ("external", target_name, "")
+    return None
+
+
+def _resolve_call_target(
+    root: Path,
+    conn: sqlite3.Connection,
+    source_path: str,
+    target_name: str,
+) -> tuple[list[sqlite3.Row], str | None, bool]:
+    """Resolve a call to a local symbol, returning error and external flags."""
+    if Path(source_path).suffix.lower() == ".py":
+        imported = _local_import_target(root, source_path, target_name)
+        if imported and imported[0] == "external":
+            return [], None, True
+        if imported and imported[0] == "ambiguous":
+            return [], "ambiguous_consumer_target", False
+        if imported and imported[0] == "local":
+            target_name, target_path = imported[1], imported[2]
+            rows = conn.execute(
+                "SELECT path, line FROM symbols WHERE name = ? AND path = ? ORDER BY line LIMIT 9",
+                (target_name, target_path),
+            ).fetchall()
+            if len(rows) == 1:
+                return list(rows), None, False
+            return list(rows), "unresolved_consumer_target", False
+
+        local_rows = conn.execute(
+            "SELECT path, line FROM symbols WHERE name = ? AND path = ? ORDER BY line LIMIT 9",
+            (target_name, source_path),
+        ).fetchall()
+        if local_rows:
+            if len(local_rows) == 1:
+                return list(local_rows), None, False
+            return list(local_rows), "ambiguous_consumer_target", False
+
+    rows = conn.execute(
+        "SELECT path, line FROM symbols WHERE name = ? ORDER BY path, line LIMIT 9",
+        (target_name,),
+    ).fetchall()
+    if not rows:
+        return [], "unresolved_consumer_target", False
+    if len(rows) > 1:
+        return list(rows), "ambiguous_consumer_target", False
+    return list(rows), None, False
 
 
 def risk_adaptive_policy(risk_class: str) -> dict[str, Any]:
@@ -524,13 +657,20 @@ def traverse_change_impact(
                     else:
                         more = conn.execute(
                             "SELECT target_name, source_path, source_definition_line FROM relations "
-                            "WHERE source_name = ? AND source_path = ? LIMIT ?",
+                            "WHERE source_name = ? AND source_path = ? AND relation = 'calls' LIMIT ?",
                             (current["symbol"], str(current.get("path") or ""), max_nodes + 1),
                         ).fetchall()
-                        unseen = any(
-                            conn.execute("SELECT 1 FROM symbols WHERE name = ? LIMIT 1", (str(row["target_name"]),)).fetchone()
-                            for row in more
-                        )
+                        unseen = False
+                        for row in more:
+                            candidates, _error, external = _resolve_call_target(
+                                root, conn, str(row["source_path"]), str(row["target_name"])
+                            )
+                            if external or not candidates:
+                                continue
+                            key = (str(row["target_name"]), str(candidates[0]["path"]), int(candidates[0]["line"]))
+                            if key not in visited:
+                                unseen = True
+                                break
                     if unseen or len(more) > max_nodes:
                         report["truncated"] = True
                         report["stop_reason"] = "max_depth"
@@ -545,7 +685,7 @@ def traverse_change_impact(
                 else:
                     rows = conn.execute(
                         "SELECT source_name, source_path, source_definition_line, target_name, source_line, relation "
-                        "FROM relations WHERE source_name = ? AND source_path = ? "
+                        "FROM relations WHERE source_name = ? AND source_path = ? AND relation = 'calls' "
                         "ORDER BY source_line LIMIT ?",
                         (current["symbol"], str(current.get("path") or ""), max_edges - len(edge_rows) + 1),
                     ).fetchall()
@@ -573,22 +713,39 @@ def traverse_change_impact(
                     source_definition_line = int(row["source_definition_line"])
                     source_line = int(row["source_line"])
                     if direction == "callers":
+                        if Path(source_path).suffix.lower() == ".py":
+                            targets, target_error, external = _resolve_call_target(
+                                root, conn, source_path, str(row["target_name"])
+                            )
+                            if external:
+                                continue
+                            if target_error:
+                                report["unresolved"].append({
+                                    "kind": target_error, "symbol": str(row["target_name"]), "path": source_path,
+                                    "candidate_count": len(targets), "line": source_line,
+                                })
+                                report["resolution"]["unresolved"].append(str(row["target_name"]))
+                                continue
+                            if targets and current.get("path") and str(targets[0]["path"]) != str(current["path"]):
+                                continue
                         next_name, next_path, next_line = source_name, source_path, source_definition_line
                         from_ref = {"symbol": source_name, "path": source_path, "line": source_definition_line or None}
                         to_ref = {"symbol": current["symbol"], "path": current.get("path"), "line": current.get("line")}
                     else:
                         next_name = str(row["target_name"])
-                        target_definitions = conn.execute(
-                            "SELECT path, line FROM symbols WHERE name = ? ORDER BY path, line LIMIT 9",
-                            (next_name,),
-                        ).fetchall()
+                        target_definitions, target_error, external = _resolve_call_target(
+                            root, conn, source_path, next_name
+                        )
+                        if external:
+                            continue
                         if not target_definitions:
-                            report["unresolved"].append({"kind": "unresolved_consumer_target", "symbol": next_name, "path": source_path, "line": source_line})
+                            report["unresolved"].append({"kind": target_error or "unresolved_consumer_target", "symbol": next_name, "path": source_path, "line": source_line})
                             report["resolution"]["unresolved"].append(next_name)
                             continue
-                        if len(target_definitions) > 1:
-                            report["unresolved"].append({"kind": "ambiguous_consumer_target", "symbol": next_name, "candidate_count": len(target_definitions), "path": source_path, "line": source_line})
+                        if target_error:
+                            report["unresolved"].append({"kind": target_error, "symbol": next_name, "candidate_count": len(target_definitions), "path": source_path, "line": source_line})
                             report["resolution"]["unresolved"].append(next_name)
+                            continue
                         next_path, next_line = str(target_definitions[0]["path"]), int(target_definitions[0]["line"])
                         from_ref = {"symbol": source_name, "path": source_path, "line": source_definition_line or None}
                         to_ref = {"symbol": next_name, "path": next_path, "line": next_line}
@@ -890,7 +1047,7 @@ def index_repository(root: Path, store: Path, force: bool = False) -> dict[str, 
             },
             "providers": {
                 "lexical": "sqlite-fts5" if fts_available else "sqlite-like-fallback",
-                "symbols": "language-aware-regex",
+                "symbols": "language-aware-regex+python-ast-calls",
                 "graph": "project-intelligence-impact-graph",
                 "history": "git",
                 "temporal": {

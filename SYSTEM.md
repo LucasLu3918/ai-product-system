@@ -1,5 +1,24 @@
 # System Router
 
+`SYSTEM_CORE.md` is the compact fixed AIPS policy layer. `SYSTEM.md` is retained for compatibility and progressive protocol discovery; canonical workflow details live in `orchestration/` and the protocols below are loaded only when selected by Turn Context.
+
+## Compatibility routing index
+
+| Task | Canonical protocol pointers |
+|---|---|
+| Unknown/general mutation | `orchestration/ORCHESTRATOR.md`, `orchestration/CHANGE_IMPACT.md`, `orchestration/QUALITY_PLANNING.md` |
+| Publish / PR / merge | `orchestration/ORCHESTRATOR.md`, `orchestration/RELEASE_READINESS.md`, `orchestration/BRANCH_HYGIENE.md` |
+| Product delivery | `orchestration/PRODUCT_DELIVERY.md`, `orchestration/REQUIREMENT_CLARIFICATION.md`, `orchestration/QUALITY_PLANNING.md` |
+| Visual / brand | `orchestration/VISUAL_POLISH.md`, `orchestration/CREATIVE_DIRECTION.md`, `orchestration/BRAND_SYSTEM.md` |
+| Security | `orchestration/SECRET_HANDLING.md`, `docs/human/SECURITY_ASSURANCE.md`, `orchestration/CONTENT_SAFETY_BOUNDARY.md` |
+| Testing | `orchestration/QUALITY_PLANNING.md`, `orchestration/CONFORMANCE.md`, `orchestration/CORE_CHANGE_TESTING.md` |
+| API / data | `orchestration/CHANGE_IMPACT.md`, `orchestration/PROJECT_INTELLIGENCE.md`, `orchestration/QUALITY_PLANNING.md` |
+| Planning | `orchestration/PLANNING_PACKAGE.md`, `orchestration/REQUIREMENT_CLARIFICATION.md`, `orchestration/PROJECT_IDENTITY.md` |
+| Documentation | `orchestration/DOCUMENTATION_SYNC.md`, `orchestration/CONFORMANCE.md`, `orchestration/MAINTENANCE.md` |
+| General read | `orchestration/ORCHESTRATOR.md` |
+
+The Turn Context manifest is authoritative for the route selected on a turn. A pointer does not grant approval or tool authority. The detailed sections retained below are compatibility references; do not preload this file when `SYSTEM_CORE.md` and selected routes are available.
+
 ## Main pipeline
 
 ```text

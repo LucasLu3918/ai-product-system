@@ -2,6 +2,7 @@ version: 1
 required_files:
 - AGENTS.md
 - SYSTEM.md
+- SYSTEM_CORE.md
 - README.md
 - USER_GUIDE.md
 - CHANGELOG.md

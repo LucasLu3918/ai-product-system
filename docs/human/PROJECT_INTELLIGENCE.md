@@ -22,6 +22,8 @@ Phase 5 的 Widgets 案例可重用的是 OpenAPI client 生成與驗證流程�
 
 Turn Context 依 `--target-path` 與 Runtime 選取適用指示；根目錄工作不會套用子目錄的 Adapter 範本。`--intent read|write` 可在語意不明時提供明確任務方向。非 Git 資料夾及尚無首筆 commit 的專案仍可取得基本 Context，歷史查詢則維持不可用。
 
+Turn Context 固定回傳 `SYSTEM_CORE.md`，並提供不含原始 prompt 的 `system_protocol_routes`，包含分類、canonical protocol IDs/paths 與解析狀態。Hook 僅顯示這些指標；一般修改的保守回退載入 Orchestrator、Change Impact 與 Quality Planning。必要路徑缺失時修改任務 fail-closed。
+
 ## 四份核心 Machine-readable 檔
 
 - `PROJECT_INTELLIGENCE.yaml`：Identity / Branch / Worktree / State / Topic pointers。

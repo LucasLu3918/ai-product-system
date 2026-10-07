@@ -105,6 +105,8 @@ The Security Engineer records the floor and rationale.
 
 ## Product baseline vs change impact
 
+Task routing 只縮小本回合載入的 canonical 協定範圍，不會降低 SAL、授權需求、Change Impact 深度、必要測試或 Human approval。
+
 Repository governance snapshot 透過已驗證的 `gh` 讀取 repository rulesets 與 branch protection，保留完整回應與明確 UNKNOWN 狀態；它不修改 GitHub 設定，也不代替發布核准。
 
 Changes to validation orchestration preserve candidate secret scanning and required aggregate checks; removing redundant syntax or lifecycle invocations does not reduce security coverage.
@@ -197,6 +199,8 @@ Review actual:
 
 ## Release Security Gate
 
+`SYSTEM_CORE.md` 保留發布與合併邊界；Turn Context 路由和 hook 輸出皆為上下文指標，不得解讀為 publication authority。
+
 Publication scanning excludes only validated numeric Git index/mode metadata; paths, added/removed/context lines and unknown headers remain scanned. Branch deletion verifies GitHub RS256 issuer, repository, protected main, workflow SHA, dispatch event and a proposal-bound audience. Runner flags alone grant no authority; tokens remain in memory.
 
 Release readiness checks bind version, changelog, installer and tag policy to an exact candidate but do not create a release or tag; release publication requires separate Human authorization.
@@ -256,6 +260,8 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 
 ## Secret and credential safety
+
+Turn Context route resolution 不記錄原始 prompt；路由錯誤不得透過序列化診斷輸出敏感輸入。
 
 Evolution local pre-analysis remains credential-free, external-network-free, read-only advisory evidence. Moving its implementation behind the existing facade adds no execution, publication, or Human-decision authority.
 Public Radar Issue archives are treated as untrusted input. Restoration verifies SHA-256, limits decompressed output to 8 MiB and rejects malformed payloads before evidence parsers consume them; no credential data is included in the archive.

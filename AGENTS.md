@@ -2,8 +2,8 @@
 
 Load minimally. Do not read the whole repository. Prefer a bounded implementation with the primary agent; delegate only when independent review, parallel evidence gathering, specialized risk analysis or context isolation materially improves the result.
 
-1. If entered through the Global Harness, resolve the current turn with the runtime Adapter / `aips intelligence context`; otherwise read `SYSTEM.md` directly.
-2. For applicable project/software work, read `SYSTEM.md` with minimal context. Before mutating a target project, run `aips preflight <project-path>`.
+1. If entered through the Global Harness, resolve the current turn with the runtime Adapter / `aips intelligence context`; otherwise read `SYSTEM_CORE.md` and follow only the relevant `SYSTEM.md` compatibility pointers.
+2. For applicable project/software work, load the compact core and task-selected canonical protocols, not the whole system index. Before mutating a target project, run `aips preflight <project-path>`.
 3. If changing this AI Product System, use `orchestration/SYSTEM_SELF_IMPROVEMENT.md`.
 4. If the change is large/core, obtain Core Change Approval before implementation.
 5. Resolve requirement readiness, external-source needs, then the smallest Work Mode, project state, risk/assurance and planning/creative/brand/product-delivery needs.

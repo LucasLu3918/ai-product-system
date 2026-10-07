@@ -12,6 +12,8 @@ Evolution Radar 是 AIPS 的 maintenance plane，用來研究外部技術變化�
 
 ## Signal Collection
 
+Context-routing evidence is collected from deterministic route classification and lifecycle outputs; prompts and model reasoning are excluded.
+
 Offline relevance evaluation compares selected/rejected signals with explicit Human labels. Unlabeled or uncertain records produce `NOT_READY`; the evaluator reports metrics but never changes source policy.
 
 Weekly scan 從 source-controlled allowlist 收集 bounded public evidence，保存 provenance、publication time、dedup identity 與 source class。
@@ -46,6 +48,8 @@ External provider credential 永遠是 optional enhancement，不得變成普通
 
 ## Effectiveness Feedback
 
+Review fixed-core size and route-selection tests together; a smaller context is useful only while required gates remain reachable and missing routes fail closed.
+
 每月由 deterministic fingerprint 排序抽取 20 筆 signal 供 Human 標註；離線評估 shortlist precision/recall、actionable yield 與來源 relevance yield。資料不完整時維持 `NOT_READY`，結果只提供來源政策檢視建議，不會自動調整來源權重或 shortlist。
 The monthly Effectiveness report leaves shortlist yield unavailable when a source-bearing weekly Issue lacks pre-analysis. Oversized weekly Issue bodies use a bounded SHA-256 checked archive restored before the monthly rollup reads evidence.
 
@@ -69,3 +73,5 @@ Monthly / quarterly roll-up量測 collected → shortlist → semantic → actio
 Portable Command Core 的 Registry、renderer、ownership conflict 與 MCP read-only contract 沿用既有 Harness capability；Host-native integration 維持後續候選。
 
 ## Verification History
+
+Scenario 230 is the current route/core baseline; its measurements remain candidate-bound and do not establish runtime enforcement beyond the tested adapters.

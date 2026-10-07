@@ -18,6 +18,7 @@ behaviors:
       - orchestration/CHANGE_IMPACT.md
       - core/GOVERNANCE.md
       - SYSTEM.md
+      - SYSTEM_CORE.md
       - AGENTS.md
     case_ids: [009-capability-gap, 017-core-change-approval, 019-system-self-improvement, 052-project-intelligence-discovery, 084-change-impact-before-mutation, 092-core-change-impact-test-matrix, 093-core-change-scope-expansion-retests]
   - id: runtime-security-and-hooks

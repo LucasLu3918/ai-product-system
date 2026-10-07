@@ -42,4 +42,4 @@ When native runtime precedence differs, follow the runtime's mandatory precedenc
 
 The bootstrap points into AIPS; it is not a request to read all files.
 
-Start with `AGENTS.md` and `SYSTEM.md` only when AIPS engineering orchestration is applicable.
+Start with `AGENTS.md` and `SYSTEM_CORE.md` only when AIPS engineering orchestration is applicable. `SYSTEM.md` is a compatibility router; use the current Turn Context's selected protocol paths and do not load its full legacy index by default.

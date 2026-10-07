@@ -165,6 +165,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+Compact system context changes map to Human Harness, Architecture Overview, Technology Guide and Scenario Conformance; task-specific protocol routing is described at the allowed canonical H2s and never copied into a second policy source.
+
 Register each new behavior-bearing helper in the placement and synchronization maps before expanding Human documentation. Project Intelligence promotion and governance snapshots retain their canonical topic mappings and authority boundaries.
 
 The shared Python bootstrap action owns dependency installation mechanics; workflows declare the import profile, while requirements and tested constraints remain canonical.
@@ -184,6 +186,8 @@ The new `scripts/retrieval_storage.py` helper belongs to the existing Project In
 The advisory fast-feedback workflow is documented with the validation scenario and the Integration Gate required-check boundary; it remains independent of complete validation.
 
 ## Maintenance reliability mapping
+
+Changes to Turn Context routing retain the small fixed core, route-source ownership and fail-closed missing-source behavior across Human and Agent documents.
 
 Project Intelligence extraction and repository governance snapshots map to their canonical Human security, architecture, technology and conformance topics; update the map when their source or boundaries change.
 

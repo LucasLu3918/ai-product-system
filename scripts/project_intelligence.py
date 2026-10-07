@@ -72,7 +72,7 @@ from temporal_intelligence import (
 from temporal_intelligence import (
     validate_document as validate_temporal_document,
 )
-from turn_intent import classify_prompt
+from turn_intent import classify_prompt, route_system_protocols
 
 SCHEMA_VERSION = 1
 
@@ -1178,6 +1178,7 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
                      target_path: str | None = None, intent: str = "auto") -> dict[str, Any]:
     store, mode, pid = intelligence_store(root)
     category, mutation, desired_topics = classify_prompt(prompt, intent)
+    system_protocol_routes = route_system_protocols(prompt, mutation, str(system_root()))
     fr = freshness(root)
     intel = load_yaml(store / "PROJECT_INTELLIGENCE.yaml", {}) if (store / "PROJECT_INTELLIGENCE.yaml").exists() else {}
     registry = load_yaml(store / "SOURCE_REGISTRY.yaml", {"sources": []}) if store.exists() else {"sources": []}
@@ -1280,6 +1281,8 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
 
     fail_closed_reasons: list[str] = []
     if mutation:
+        if system_protocol_routes.get("status") != "READY":
+            fail_closed_reasons.append("system_protocol_routes_unavailable")
         if initialize:
             fail_closed_reasons.append("intelligence_missing")
         if fr["status"] == "STALE":
@@ -1310,8 +1313,9 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
         "context": {
             "always": [
                 str(system_root() / "harness" / "BOOTSTRAP.md"),
-                str(system_root() / "SYSTEM.md"),
+                str(system_root() / "SYSTEM_CORE.md"),
             ],
+            "system_protocol_routes": system_protocol_routes,
             "runtime_native": runtime_visible[:30],
             "project_native": project_native[:30],
             "source_scope": {"target_path": target_scope, "excluded_instruction_sources": excluded_sources},
@@ -1360,6 +1364,7 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             "explained": explain,
             "decisions": ([
                 {"subject": "task.category", "selected": category, "reasons": ["prompt_classification"]},
+                {"subject": "system_protocol_routes", "selected": system_protocol_routes, "reasons": ["canonical_task_specific_protocols"]},
                 {"subject": "change_impact", "selected": mutation, "reasons": ["existing_project_mutation"] if mutation else ["read_only_or_non_mutating"]},
                 {"subject": "intelligence_topics", "selected": selected, "reasons": ["task_relevant_topics_only"]},
                 {
@@ -1396,6 +1401,7 @@ def compact_context_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
         "task": manifest.get("task"),
         "context": {
             "always": context.get("always") or [],
+            "system_protocol_routes": context.get("system_protocol_routes") or {},
             "runtime_native": context.get("runtime_native") or [],
             "project_native": project_instructions,
             "source_scope": context.get("source_scope") or {},
@@ -2197,8 +2203,8 @@ def main() -> int:
     p.add_argument("--risk-class", required=True)
     p.add_argument("--direction", action="append", choices=["callers", "consumers"])
     p.add_argument("--max-depth", type=int)
-    p.add_argument("--max-nodes", type=int, default=100)
-    p.add_argument("--max-edges", type=int, default=250)
+    p.add_argument("--max-nodes", type=int, default=150)
+    p.add_argument("--max-edges", type=int, default=300)
     p.add_argument("--changed-path", action="append", default=[])
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
 

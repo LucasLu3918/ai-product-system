@@ -280,6 +280,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+Task-specific protocol routing precedes isolated execution but grants no worktree or sandbox capability; isolation still resolves from the declared risk and supported provider evidence.
+
 Repository governance snapshots are read-only operator evidence and do not acquire write credentials or alter branch protection.
 
 Explicit validation Python/venv selection cannot silently fall back. Verify coverage, Hypothesis, mandatory JSON Schema and pip consistency before full validation; telemetry requires loopback even without browser. Child executors preserve HOME/credential lookup while removing inherited plan/import overrides and binding PATH to the selected Python.

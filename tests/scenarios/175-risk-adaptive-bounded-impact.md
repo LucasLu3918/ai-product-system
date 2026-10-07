@@ -15,6 +15,8 @@ When an agent changes an existing project, it must discover likely callers and c
 - Higher-risk policies use selective bounded history evidence; low-risk documentation/private leaf changes avoid unnecessary history work.
 - READY validation rejects missing evidence, insufficient depth, truncation, unresolved high-risk relationships, out-of-scope required changes and dispositions that disagree with the exact diff.
 - The feature adds no runtime role, governance gate, external service or mandatory parser dependency.
+- Python call candidates use AST direct names and explicitly imported module attributes; annotations, variables, arbitrary object methods, and builtins do not become call edges. Other supported languages retain lexical candidates.
+- Default hard bounds are six hops, 150 nodes and 300 edges; remaining unvisited relationships at a bound stay `TRUNCATED`.
 
 ## Evidence
 

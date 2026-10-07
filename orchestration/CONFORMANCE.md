@@ -16,6 +16,8 @@ Make AIPS behavioral regression coverage measurable without conflating specifica
 
 ## Registry
 
+Scenario 230 binds compact fixed-context and task-route behavior to the intelligence context lifecycle and static contracts; route pointers never imply governance authority.
+
 `tests/scenario_coverage.yaml` is the canonical mapping from Scenario ID/path to coverage classification and evidence.
 
 Allowed coverage:

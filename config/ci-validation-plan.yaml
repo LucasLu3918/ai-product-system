@@ -7,6 +7,8 @@ full_validation_paths:
   - scripts/publish_preflight.py
   - scripts/repository_preflight.py
   - scripts/runtime_context.py
+  - scripts/turn_intent.py
+  - scripts/turn_context_hook.py
   - tests/validate_repository.py
   - tests/validation/registry.py
   - tests/validation/mcp_interoperability_contracts.py
@@ -35,6 +37,7 @@ known_root_paths:
   - CHANGELOG.md
   - README.md
   - SYSTEM.md
+  - SYSTEM_CORE.md
   - USER_GUIDE.md
   - VERSION
   - package.json

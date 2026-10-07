@@ -70,6 +70,8 @@ aips commands list
 
 ## Existing Project
 
+每回合先取得精簡固定核心與任務相關協定指標；修改既有專案前仍須依其原生規範取得 Project Intelligence、Change Impact 與驗證要求。
+
 平行實作時，先由 Deterministic Scheduler 派送 Task Graph，再在 AIPS worktree 綁定 task owner。Owner 狀態、lease 與實際變更路徑可從 Run Dashboard 檢視；enforcement 只有在 runtime guard 經驗證後才會提升。
 
 For parallel local work, `aips run dashboard` provides a read-only repository-scoped view of known runs on `127.0.0.1`; it cannot mutate, approve, merge or publish.

@@ -242,6 +242,32 @@ unknowns: []
         self.assertGreaterEqual(report["reached_depth"]["consumers"], 1)
         self.assertIn("src/api.py", {node.get("path") for node in report["nodes"]})
 
+    def test_python_consumer_walk_ignores_annotations_variables_and_attribute_calls(self) -> None:
+        self.write(
+            "src/service.py",
+            "from typing import Any\n"
+            "from src.api import get_products\n"
+            "def load_products(query: Any) -> dict[str, Any]:\n"
+            "    message = 'cache.get(query)'\n"
+            "    cache.get(query)\n"
+            "    return get_products()\n",
+        )
+        self.git("add", "-A")
+        self.git("-c", "user.name=AIPS Test", "-c", "user.email=" + chr(64) + "example.invalid", "commit", "-qm", "python call extraction")
+        index_repository(self.repo, self.store)
+        report = traverse_change_impact(
+            self.repo,
+            self.store,
+            [{"symbol": "load_products", "path": "src/service.py"}],
+            "private_leaf",
+            directions=["consumers"],
+            max_depth=1,
+        )
+        self.assertEqual(report["status"], "COMPLETE")
+        consumers = {node.get("path") for node in report["nodes"] if node.get("kind") == "consumer"}
+        self.assertEqual(consumers, {"src/api.py"})
+        self.assertFalse(report["unresolved"])
+
     def test_comments_strings_and_secret_paths_do_not_create_relation_edges(self) -> None:
         report = self.traverse()
         self.assertNotIn(".env", {node.get("path") for node in report["nodes"]})

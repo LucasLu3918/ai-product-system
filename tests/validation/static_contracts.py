@@ -135,7 +135,7 @@ for skill_id, meta in (skills.get("skills") or {}).items():
         errors.append(f"Skill {skill_id}: minimum_tier exceeds preferred_tier")
 
 required_files = [
-    "AGENTS.md", "SYSTEM.md", "README.md", "USER_GUIDE.md", "CHANGELOG.md", "VERSION",
+    "AGENTS.md", "SYSTEM.md", "SYSTEM_CORE.md", "README.md", "USER_GUIDE.md", "CHANGELOG.md", "VERSION",
     "core/CONSTITUTION.md", "core/PRINCIPLES.md", "core/GOVERNANCE.md", "core/DECISIONS.md",
     "orchestration/ORCHESTRATOR.md", "orchestration/MODEL_ROUTING.md", "orchestration/EXECUTION_ISOLATION.md",
     "orchestration/INSTRUCTION_RESOLUTION.md", "orchestration/WORKSPACE_STATE.md",
@@ -408,6 +408,25 @@ system = (ROOT / "SYSTEM.md").read_text(encoding="utf-8") if (ROOT / "SYSTEM.md"
 for phrase in ("Global Agent Harness", "System Update Preflight", "System Self-Improvement", "Core Change Approval Gate", "Git Publish Approval Gate", "Primary Planning Detection", "Security / Reliability Assurance", "Project Intelligence", "Quality planning", "Creative and Brand routing", "External context", "Visual implementation polish", "Multi-perspective review", "Deterministic automation", "End-to-end product delivery", "Documentation Impact Gate"):
     if phrase not in system:
         errors.append(f"SYSTEM.md missing required behavior: {phrase}")
+
+system_core_path = ROOT / "SYSTEM_CORE.md"
+system_core = system_core_path.read_text(encoding="utf-8") if system_core_path.exists() else ""
+if not system_core:
+    errors.append("SYSTEM_CORE.md is required as the compact fixed policy layer")
+if system_core_path.exists() and system_core_path.stat().st_size > 8192:
+    errors.append("SYSTEM_CORE.md exceeds the 8192-byte fixed context ceiling")
+for phrase in ("Authority and truth", "Human approval", "Change Impact", "Git Publish Approval Gate", "SYSTEM.md"):
+    if phrase not in system_core:
+        errors.append(f"SYSTEM_CORE.md missing essential behavior: {phrase}")
+for phrase in ("Compatibility routing index", "general mutation", "product delivery", "security", "documentation", "Turn Context manifest"):
+    if phrase not in system:
+        errors.append(f"SYSTEM.md compatibility router missing: {phrase}")
+
+project_intelligence = (ROOT / "scripts/project_intelligence.py").read_text(encoding="utf-8")
+if '"SYSTEM_CORE.md"' not in project_intelligence or '"system_protocol_routes"' not in project_intelligence:
+    errors.append("Turn Context must expose SYSTEM_CORE.md and additive system_protocol_routes")
+if 'system_protocol_routes_unavailable' not in project_intelligence:
+    errors.append("missing task-specific protocol routes must fail closed for mutation")
 
 planning = (ROOT / "orchestration/PLANNING_PACKAGE.md").read_text(encoding="utf-8") if (ROOT / "orchestration/PLANNING_PACKAGE.md").exists() else ""
 for phrase in ("Workspace first", "Gate 1", "Gate 2", "Reproducibility standard"):

@@ -108,6 +108,8 @@ Identity/Resume evidence 同時驗證跨 worktree repository identity、dirty wo
 
 ## v0.16 Agent Eval Conformance
 
+Scenario 230 checks fixed-core size/reduction, task-specific route selection, compact Manifest and hook output, conservative mutation fallback, and fail-closed missing route sources.
+
 恢復生命週期證據涵蓋 worktree 安裝、macOS Bash 3.2 無選項呼叫、不完整 Python 環境、快取權限與索引清理、安裝版分歧拒絕及 CI 取消判讀。這些是 AIPS 工具驗收，不能作為真實 REST 產品驗收，也不能將情境清單數量等同所有端到端測試通過。
 
 Agent Eval may bind a case to repository-relative system dependencies. Reports distinguish `CURRENT`, `STALE`, and historical `UNBOUND` evidence so an old rubric PASS cannot imply that the current system was evaluated.
@@ -1353,6 +1355,8 @@ Deterministic evidence validates the optional Planning Package requirements regi
 
 ## Scenario 175 — Risk-adaptive bounded Change Impact
 
+Python direct-call extraction uses AST call nodes and resolves supported local imports; non-call identifiers remain excluded, while dynamic dispatch and partial repository-wide graph coverage stay explicit limitations.
+
 Validation-only changes may record a bounded Impact Graph limitation when the repository validator and Integration Gate consumers are verified directly; the evidence and approval must remain bound to the candidate.
 
 Lifecycle evidence exercises bounded lexical caller/reference indexing, canonical architecture graph traversal, risk-specific depth and history policy, cycle handling, dynamic-dispatch unknowns, stale/truncated evidence, changed versus unchanged affected paths, and READY evidence validation. Lexical relations remain explicitly inferred; the traversal does not claim compiler-level resolution.
@@ -1564,6 +1568,8 @@ The monthly evaluator deterministically samples up to 20 signal fingerprints and
 
 ## Scenario 220 — Parallel advisory fast feedback
 
+Scenario 230 checks fixed-core size/reduction, task-specific route selection, compact Manifest and hook output, conservative mutation fallback, and fail-closed missing route sources.
+
 Scenario 224 驗收主要模型保留與稀疏委派，目前登錄為 manual；Scenario 225 以 lifecycle 驗證 metadata 唯一來源、v1 相容、drift 與失敗路徑。決定性 registry 測試不代表已驗證 Agent 實際模型選擇。
 
 Pull requests run the bounded repository preflight concurrently against the exact candidate. Its findings are reported for early feedback and do not replace or gate the required full repository validation; unrelated label-only events skip the advisory job.
@@ -1593,6 +1599,8 @@ The probe denies only a harmless synthetic local Bash command. Unsupported, malf
 Per-module findings and direct coverage are measured without increasing a repository-wide threshold; debt must not grow in a touched module.
 
 ## Scenario 229 — Agent Eval Freshness Selection
+
+Scenario 230 also confirms that adding a route scenario updates the canonical registry and generated current conformance view without changing manual coverage claims.
 
 Declared behavior dependencies select potentially stale Eval cases for review. The report does not execute cases or alter results; scenarios 192, 193 and 224 remain manual.
 

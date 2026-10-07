@@ -9,7 +9,8 @@ flowchart TD
     S[User Prompt] --> RA[Runtime Adapter]
     RA --> RC[Shared Runtime Context]
     RA --> TC[Compact Turn Context]
-    TC --> SCOPE[Resolve advisory intent + scoped instructions]
+    TC --> ROUTES[Select fixed System Core + task-specific canonical protocol pointers]
+    ROUTES --> SCOPE[Resolve advisory intent + scoped instructions]
     SCOPE --> ENG{Engineering / Project task?}
     ENG -->|no| CHAT[Normal conversation]
     ENG -->|yes| ID[Resolve repository_id + workspace_id]\n    ID --> P[Resolve Project Mode + Intelligence Store; basic context without Git HEAD]

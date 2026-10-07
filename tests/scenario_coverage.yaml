@@ -1802,3 +1802,11 @@ scenarios:
       - scripts/evolution_preanalysis.py
       - tests/evidence/evolution_radar_lifecycle.py
       - tests/validation/evolution_radar_contracts.py
+  - id: "230"
+    path: tests/scenarios/230-system-context-routing.md
+    coverage: lifecycle
+    evidence:
+      - tests/evidence/intelligence_context_lifecycle.py
+      - tests/validation/static_contracts.py
+      - scripts/project_intelligence.py
+      - scripts/turn_context_hook.py

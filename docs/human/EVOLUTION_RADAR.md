@@ -10,6 +10,8 @@ Weekly collection 只讀 source-controlled allowlist 中的 public sources，保
 
 ## Evidence Quality
 
+Turn Context routing 的變更應以 route lifecycle、compact Manifest、hook compatibility 與 fixed-core measurements 作為可重現證據；route coverage 不表示治理圖完整。
+
 Community signal 主要用於 discovery；較高強度的 recommendation 需要 primary-source corroboration。Deterministic evidence level 不可被 semantic analyzer自行提高。
 
 ## Deterministic Pre-analysis
@@ -69,6 +71,8 @@ Monthly / quarterly roll-up 量測 collected → shortlist → semantic → acti
 - Release readiness is a separate deterministic evidence gate; Evolution metrics do not imply an empty Unreleased section or authorize a tag.
 ## Current Boundaries
 
+`SYSTEM_CORE.md` 為固定核心；協定依 task classification 漸進載入。任務 route resolution 不代表完整 enforcement，也不改變各 Runtime 已驗證的治理強度。
+
 Task ownership leases and dashboard projections are operational coordination evidence, not Radar signals or Human adoption decisions. They cannot promote a candidate or grant publication authority.
 
 Runtime evidence changes preserve provenance: evaluation results state whether they match the current system, and operational spans reflect measured stage boundaries. Historical unbound results remain historical signals and cannot claim current effectiveness.
@@ -91,5 +95,7 @@ Evolution Radar 不做：
 - 以 deterministic keyword score 冒充 semantic adoption decision。
 
 ## Verification History
+
+Scenario 230 保留固定核心 byte limit、相對 base 的縮減比例，以及十種分類和混合任務路由的驗證紀錄。
 
 Scenario-by-scenario 的歷史與數值證據集中在 [Scenario Conformance](CONFORMANCE.md)。Current behavior 不再以 vX.Y / Scenario append 形式堆在本頁尾端。

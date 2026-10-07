@@ -32,7 +32,7 @@ ATTACHED projects use `.ai/intelligence/`. EPHEMERAL projects remain source-clea
 
 ## Context budget
 
-Load minimal Harness rules, critical native/project instructions, task-relevant Intelligence, then optional evidence on demand.
+Load `SYSTEM_CORE.md` with minimal Harness rules and critical native/project instructions. Turn Context selects canonical task protocols by pointer; load only those protocols, then task-relevant Intelligence and optional evidence on demand. `SYSTEM.md` remains a compatibility router and is not part of the fixed system layer.
 
 ## Mutation safety
 

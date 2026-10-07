@@ -5,6 +5,7 @@ For every user turn involving software/product/project work, resolve the current
 `aips intelligence context --runtime codex --project "$PWD" --prompt "<current user request>"`
 
 Use returned pointers progressively. Preserve all existing user/project-native instructions.
+The fixed AIPS system layer is `harness/BOOTSTRAP.md` plus `SYSTEM_CORE.md`; follow only the canonical protocol paths selected in `context.system_protocol_routes`. `SYSTEM.md` remains a compatibility index.
 
 For an existing-project mutation:
 1. initialize Project Intelligence when missing;
