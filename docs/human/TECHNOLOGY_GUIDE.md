@@ -47,6 +47,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
+
 CLI 發布診斷優先選擇完整 Python 3.12 驗證環境，再以既有環境診斷一次列出缺少的 yaml、ruff、mypy、Playwright、OpenAPI、JSON Schema 與 cryptography。`runtime_cache.py` 同時服務 Retrieval 與發布工具的 gh 呼叫；`package_install.py` 提供明確安裝的安全錯誤分類。CI 只快取 pip 下載，不重用整個 Gate PASS。
 
 GitHub Actions job 的逾時依最近成功執行的 P95、明示安全倍數與向上取整方式設定；installation entrypoint 的 Unix/Linux/Windows jobs 目前採 5/10/10 分鐘，依 2026-10-06 02:53–11:34 UTC 最近十次成功執行計算。只在工作共用狀態且不會丟失必要證據時才設定 concurrency。
@@ -143,6 +145,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Plan17 regression evidence covers numeric diff headers, four browser/OpenAPI combinations, mandatory aggregates, reusable caller keys/permissions, explicit Python and isolated children, recursive placement, signed identity/immutable proposal rejection and atomic deletion races. Missing or malformed capability plans retain the full profile. A latest cancelled check stays INCOMPLETE; replaced old checks are reported as SUPERSEDED.
 
 Shared Python workflow bootstrap accepts an explicit import profile, checks imports and runs `pip check` under the repository tested constraints.
 

@@ -2,6 +2,8 @@
 
 ## Purpose
 
+Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
+
 The AIPS Runtime Content Safety Boundary is the common, sink-aware safety layer for content that is about to cross a persistence or publication boundary. It complements Secret Handling, Governance Audit, Publish Approval, native runtime hooks and repository-side secret protection; it does not replace any of them.
 
 The implementation is provider-neutral and does not require an external API credential. Deterministic detectors are authoritative for enforcement. Optional semantic detectors may provide advisory signals only.

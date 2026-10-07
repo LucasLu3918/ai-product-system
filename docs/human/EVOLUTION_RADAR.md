@@ -40,6 +40,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
+
 When an analysis workflow uses the shared Python bootstrap, its caller declares the import profile and tested dependency constraints so missing imports fail visibly.
 
 CLI module extraction preserves the existing public command surface; Evolution collection and effectiveness records remain unchanged by this internal refactor.

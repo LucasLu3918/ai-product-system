@@ -22,6 +22,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
+
 The exact candidate includes shared bootstrap and caller changes; absent declared imports or inconsistent installed requirements fail the applicable repository validation.
 
 Publication preflight checks only capabilities selected by the exact candidate CI plan. `NOT_REQUIRED` browser status is accepted when `needs_browser` is false; selected browser checks still fail closed on missing dependencies, loopback bind, or launch failure.

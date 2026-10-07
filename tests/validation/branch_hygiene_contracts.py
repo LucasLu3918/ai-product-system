@@ -35,7 +35,7 @@ if config_path.exists():
         errors.append("branch lifecycle must bind the exact approved cleanup manifest")
     if deletion.get("apply_only_on_protected_main_dispatch") is not True:
         errors.append("branch cleanup must require explicit protected-main dispatch")
-    expected_ephemeral = {"feat/*", "feature/*", "fix/*", "ci/*", "chore/*", "perf/*", "ops/*", "release/*"}
+    expected_ephemeral = {"codex/*", "feat/*", "feature/*", "fix/*", "ci/*", "chore/*", "perf/*", "ops/*", "release/*"}
     if not expected_ephemeral.issubset(set(config.get("ephemeral_patterns") or [])):
         errors.append("branch lifecycle must classify the supported short-lived prefix families")
     persistent = set(config.get("persistent_exact") or [])
@@ -55,6 +55,9 @@ if script.exists():
         "refs/remotes",
         "--apply-cleanup",
         "--github-repository",
+        "cleanup_identity",
+        "--atomic",
+        "--force-with-lease=",
         "GITHUB_MERGED_PR_EXACT_HEAD",
         "exact_manifest_only",
         "cleanup preflight blocked",
@@ -82,7 +85,9 @@ if workflow.exists():
         "github.ref == 'refs/heads/main'",
         "inputs.apply_cleanup == true",
         "contents: write",
-        "--apply-cleanup config/branch-cleanup-manifest.yaml",
+        "--proposal-run-id",
+        "--proposal-fingerprint",
+        "id-token: write",
         "--github-repository",
         "GH_TOKEN:",
         "github.token",

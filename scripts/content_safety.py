@@ -4,24 +4,51 @@
 from __future__ import annotations
 
 import argparse
-from dataclasses import dataclass
 import hashlib
 import json
-from pathlib import Path
 import re
 import sys
+from dataclasses import dataclass
+from pathlib import Path
 from typing import Any
 
 import yaml
 
 try:
-    from check_secret_leakage import ASSIGNMENT, PATTERNS, entropy, placeholder, scan_text
+    from check_secret_leakage import (
+        ASSIGNMENT,
+        PATTERNS,
+        entropy,
+        placeholder,
+        scan_text,
+    )
 except ModuleNotFoundError:  # imported as a repository module
-    from scripts.check_secret_leakage import ASSIGNMENT, PATTERNS, entropy, placeholder, scan_text
+    from scripts.check_secret_leakage import (
+        ASSIGNMENT,
+        PATTERNS,
+        entropy,
+        placeholder,
+        scan_text,
+    )
 
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CONFIG = ROOT / "config/content-safety.yaml"
+GIT_DIFF_METADATA = re.compile(
+    r"(?:index [0-9a-f]{4,64}\.\.[0-9a-f]{4,64}(?: [0-7]{6})?"
+    r"|(?:old|new|deleted file|new file) mode [0-7]{6}"
+    r"|(?:dis)?similarity index \d{1,3}%)\Z"
+)
+
+
+def git_diff_payload(diff: str) -> list[str]:
+    """Exclude numeric Git headers; paths, added, removed and context lines remain scanned.
+
+    Hunk lines retain their prefix, so body text resembling metadata is not excluded.
+    """
+    return [line for line in diff.splitlines() if not GIT_DIFF_METADATA.fullmatch(line)]
+
+
 EMAIL_RE = re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.I)
 PHONE_RE = re.compile(r"(?<!\d)(?:\+886[- ]?|0)9\d{2}[- ]?\d{3}[- ]?\d{3}(?!\d)")
 # Do not treat the numeric prefix of a hexadecimal Git SHA as a payment card.

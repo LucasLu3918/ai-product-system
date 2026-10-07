@@ -5,6 +5,7 @@ persistent_exact:
   - feature/retrieval-embedding-trial
 persistent_patterns: []
 ephemeral_patterns:
+  - codex/*
   - feat/*
   - feature/*
   - fix/*

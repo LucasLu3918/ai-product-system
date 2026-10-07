@@ -135,6 +135,8 @@ Getting Started / Installation / User Guide 以 task-oriented方式導覽；Arch
 
 ## Deterministic protection
 
+Prospective `aips docs impact --base HEAD --planned-path <path>` resolves sync and placement closure to a fixed point. Each triggered rule requires an update in its canonical topic; combined changes use the union of those topics. Validate every text anchor before applying the batch. Closure is scope evidence and never grants publication authority.
+
 Document the shared Python bootstrap caller-declared import profile and dependency check alongside the canonical requirements and tested constraints.
 
 The `tests/validate_repository.py` runner is part of the maintenance reliability closure: keep its exact-candidate optional-toolchain selection, OpenAPI evidence classification and subprocess environment isolation documented with the required repository aggregate boundary.

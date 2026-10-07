@@ -733,11 +733,11 @@ def main() -> int:
             publish.repository_preflight, "docs_build_prerequisites", side_effect=AssertionError("Node is not required")
         ), patch.object(publish, "discover_browser", side_effect=AssertionError("browser is not required")), patch.object(
             publish, "probe_browser", side_effect=AssertionError("browser is not required")
-        ), patch.object(publish.socket, "socket", side_effect=AssertionError("loopback is not required")):
+        ), patch.object(publish.socket, "socket", return_value=Mock()):
             optional_environment = publish.environment_status()
     assert optional_environment["status"] == "READY"
     assert optional_environment["blockers"] == []
-    assert optional_environment["localhost"] == "NOT_REQUIRED"
+    assert optional_environment["localhost"] == "READY", "telemetry loopback is mandatory even without browser"
     assert optional_environment["browser"]["status"] == "NOT_REQUIRED"
     with patch.object(publish, "environment_status", return_value=blocked_environment), patch.object(
         publish, "build_plan", side_effect=AssertionError("full plan must not run after an environment blocker")

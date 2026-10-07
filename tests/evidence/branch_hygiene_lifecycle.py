@@ -93,7 +93,7 @@ def main() -> int:
 default_branch: main
 persistent_exact: [main, feature/retrieval-embedding-trial]
 persistent_patterns: []
-ephemeral_patterns: [feat/*, feature/*, fix/*, ci/*, chore/*, perf/*, ops/*, release/*]
+ephemeral_patterns: [codex/*, feat/*, feature/*, fix/*, ci/*, chore/*, perf/*, ops/*, release/*]
 deletion:
   mode: report_only
   require_integrated_into_default: true
@@ -101,7 +101,7 @@ deletion:
 """
         config.write_text(config_data, encoding="utf-8")
         parsed_config = yaml.safe_load(config_data)
-        for prefix in ("feat/x", "feature/x", "fix/x", "ci/x", "chore/x", "perf/x", "ops/x", "release/x"):
+        for prefix in ("codex/x", "feat/x", "feature/x", "fix/x", "ci/x", "chore/x", "perf/x", "ops/x", "release/x"):
             assert classify(prefix, parsed_config) == "EPHEMERAL", prefix
         assert classify("customer/keep-forever", parsed_config) == "UNCLASSIFIED"
 
@@ -198,6 +198,20 @@ deletion:
         assert blocked.returncode != 0
         assert remote_exists(repo, "feature/merged"), "batch preflight must prevent partial deletion"
 
+        git(repo, "remote", "set-url", "origin", "https://github.com/owner/repo.git")
+        denied = subprocess.run(
+            [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin",
+             "--apply-cleanup", str(blocked_manifest), "--github-repository", "owner/repo"],
+            cwd=repo, env={**__import__("os").environ, "GITHUB_ACTIONS": "false"}, text=True, capture_output=True, check=False,
+        )
+        assert denied.returncode != 0 and "protected-main workflow dispatch" in denied.stdout
+        git(repo, "remote", "set-url", "origin", str(remote))
+        git(repo, "checkout", "-q", "feature/merged")
+        active = subprocess.run([sys.executable, str(SCRIPT), "--config", str(config), "--target", "main"], cwd=repo, text=True, capture_output=True, check=True)
+        active_row = next(row for row in yaml.safe_load(active.stdout)["branches"] if row["branch"] == "feature/merged")
+        assert active_row["active_checkout"] and active_row["recommended_action"] == "PRESERVE"
+        git(repo, "checkout", "-q", "main")
+
         fake_bin = root / "fake-bin"
         fake_bin.mkdir()
         fake_gh = fake_bin / "gh"
@@ -270,12 +284,17 @@ raise SystemExit(1)
         }, sort_keys=False), encoding="utf-8")
         failing_git = fake_bin / "git"
         real_git = shutil.which("git")
-        assert real_git, "git executable must be available for failure-injection test"
+        assert real_git
+        failing_git = fake_bin / "git"
+        # Move one server-side ref AFTER the local/live preflight but BEFORE push.
+        # The expected-SHA lease must reject the entire atomic batch.
         failing_git.write_text(
             "#!/bin/sh\n"
             "if [ \"$1\" = push ]; then\n"
             "  for arg in \"$@\"; do\n"
-            "    if [ \"$arg\" = feature/partial-two ]; then echo 'simulated remote failure' >&2; exit 1; fi\n"
+            "    if [ \"$arg\" = :refs/heads/feature/partial-two ]; then\n"
+            f"      {real_git!r} -C {str(remote)!r} update-ref refs/heads/feature/partial-two {pending_sha}\n"
+            "    fi\n"
             "  done\n"
             "fi\n"
             f"exec {real_git!r} \"$@\"\n",
@@ -286,19 +305,19 @@ raise SystemExit(1)
         partial_env["PATH"] = str(fake_bin) + __import__("os").pathsep + partial_env["PATH"]
         partial = subprocess.run(
             [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin", "--apply-cleanup", str(partial_manifest)],
-            cwd=repo, text=True, capture_output=True, env=partial_env,
-            check=False,
+            cwd=repo, text=True, capture_output=True, env=partial_env, check=False,
         )
-        assert partial.returncode != 0 and "branches deleted before failure: ['feature/partial-one']" in partial.stdout
-        assert not remote_exists(repo, "feature/partial-one")
-        assert remote_exists(repo, "feature/partial-two"), "deletion failure must stop before later branches"
+        assert partial.returncode != 0 and "atomic transaction rejected" in partial.stdout, partial.stdout
+        assert remote_exists(repo, "feature/partial-one"), "atomic failure must retain every unaffected ref"
+        assert remote_exists(repo, "feature/partial-two"), "moved remote ref must not be deleted"
+        assert git(remote, "rev-parse", "refs/heads/feature/partial-two") == pending_sha
+        failing_git.unlink()
         partial_replay = subprocess.run(
             [sys.executable, str(SCRIPT), "--config", str(config), "--target", "main", "--remote", "origin", "--apply-cleanup", str(partial_manifest)],
-            cwd=repo, text=True, capture_output=True,
-            check=False,
+            cwd=repo, text=True, capture_output=True, check=False,
         )
-        assert partial_replay.returncode != 0 and "consumed, replayed, or partially applied" in partial_replay.stdout
-        assert remote_exists(repo, "feature/partial-two"), "partial manifests must not resume on replay"
+        assert partial_replay.returncode != 0 and "live remote refs moved" in partial_replay.stdout
+        assert remote_exists(repo, "feature/partial-one")
 
         cleanup_manifest.write_text(yaml.safe_dump({
             "version": 1,

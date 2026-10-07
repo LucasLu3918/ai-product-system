@@ -47,20 +47,25 @@ def documentation_impact(files: list[str], root: Path = DEFAULT_ROOT) -> dict[st
     triggered: dict[str, dict[str, Any]] = {}
     required_by: dict[str, set[str]] = {}
     placement_hits = []
-    for rule in placement.get("placement_rules") or []:
-        patterns = [str(item) for item in rule.get("triggers") or []]
-        if not matches(files, patterns):
-            continue
-        placements = rule.get("placements") or {}
-        placement_hits.append({"id": rule.get("id"), "placements": placements})
-        for path in placements:
-            target = str(path)
-            required_by.setdefault(target, set()).add(f"placement:{rule.get('id')}")
-            closure.add(target)
+    placement_seen: set[str] = set()
     changed = True
     while changed:
         changed = False
         current = sorted(closure)
+        for rule in placement.get("placement_rules") or []:
+            if not matches(current, [str(item) for item in rule.get("triggers") or []]):
+                continue
+            rule_id = str(rule.get("id"))
+            placements = rule.get("placements") or {}
+            if rule_id not in placement_seen:
+                placement_hits.append({"id": rule_id, "placements": placements})
+                placement_seen.add(rule_id)
+            for path in placements:
+                target = str(path)
+                required_by.setdefault(target, set()).add(f"placement:{rule_id}")
+                if target not in closure:
+                    closure.add(target)
+                    changed = True
         technology = sync.get("technology_guide") or {}
         if matches(current, [str(item) for item in technology.get("triggers") or []]):
             target = str(technology.get("path") or "")
@@ -83,6 +88,7 @@ def documentation_impact(files: list[str], root: Path = DEFAULT_ROOT) -> dict[st
     required = sorted(closure - set(files))
     return {
         "changed_files": files,
+        "closure": sorted(closure),
         "triggered_rules": triggered,
         "required_additions": required,
         "required_by": {path: sorted(required_by.get(path, set())) for path in required},

@@ -105,6 +105,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+Plan17 regression evidence covers numeric diff headers, four browser/OpenAPI combinations, mandatory aggregates, reusable caller keys/permissions, explicit Python and isolated children, recursive placement, signed identity/immutable proposal rejection and atomic deletion races. Missing or malformed capability plans retain the full profile. A latest cancelled check stays INCOMPLETE; replaced old checks are reported as SUPERSEDED.
+
 For shared Python bootstrap changes, reconcile every composite-action caller, each declared import profile, dependency constraints, and lifecycle evidence.
 
 For shell CLI changes, include the stable launcher and facade, module load paths, installed/source-checkout consumers and lifecycle tests. The lexical graph does not resolve shell calls; preserve any accepted partial-coverage limitation and review direct dispatch/source consumers explicitly.

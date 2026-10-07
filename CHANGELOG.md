@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Harden plan17 publication and validation: exclude numeric Git metadata false positives, isolate selected Python and capability plans, precheck local reusable workflow semantics, retain exact-candidate dependency findings and compute documentation scope to a fixed point.
+- Enforce signed protected-main cleanup from immutable proposal evidence with atomic expected-SHA deletion; preserve active local worktrees and classify Codex branches without granting deletion authority.
+
 ## 0.73.0
 
 - Bound installation-entrypoint CI jobs using observed per-platform runtime percentiles.

@@ -829,6 +829,8 @@ Scenario 218 uses deterministic monthly fingerprint sampling and complete Human 
 
 ## Scenario 220 — Parallel advisory fast feedback
 
+Plan17 regression evidence covers numeric diff headers, four browser/OpenAPI combinations, mandatory aggregates, reusable caller keys/permissions, explicit Python and isolated children, recursive placement, signed identity/immutable proposal rejection and atomic deletion races. Missing or malformed capability plans retain the full profile. A latest cancelled check stays INCOMPLETE; replaced old checks are reported as SUPERSEDED.
+
 The pull-request workflow runs the bounded repository preflight in a separate job against the exact candidate. Findings are visible but advisory; the complete Janitor Integration Gate and required repository validation remain independent and unchanged. Label-only events skip this job.
 
 Scenarios 211 and 217 also verify that dependency-review shadow evidence cannot change the required repository outcome and that completed `NOT_READY` observation evidence remains distinct from operational errors.

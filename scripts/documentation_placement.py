@@ -212,46 +212,36 @@ def placement_errors(config: dict[str, Any], base: str, *, working_tree: bool = 
                 "map it in config/documentation-placement.yaml before updating Human docs"
             )
 
-    for rule in rules:
-        if not any(matches_any(path, rule.get("triggers") or []) for path in files):
-            continue
-
+    triggered = [rule for rule in rules if any(matches_any(path, rule.get("triggers") or []) for path in files)]
+    owners: dict[str, list[tuple[str, list[str]]]] = {}
+    for rule in triggered:
         for doc, allowed in (rule.get("placements") or {}).items():
-            if doc not in files:
-                errors.append(f"{rule['id']}: required canonical Human doc was not changed: {doc}")
-                continue
-
-            if not (ROOT / doc).is_file():
-                errors.append(f"{rule['id']}: required canonical Human doc is missing: {doc}")
-                continue
-
-            text = (ROOT / doc).read_text(encoding="utf-8")
-            lines = text.splitlines()
-            ranges = heading_ranges(text)
-            missing = [name for name in allowed if name not in ranges]
+            owners.setdefault(doc, []).append((str(rule["id"]), allowed))
+    for doc, requirements in owners.items():
+        if doc not in files:
+            errors.append(f"{doc}: required canonical Human doc was not changed; rules={[name for name, _ in requirements]}")
+            continue
+        if not (ROOT / doc).is_file():
+            errors.append(f"required canonical Human doc is missing: {doc}")
+            continue
+        text = (ROOT / doc).read_text(encoding="utf-8")
+        lines, ranges = text.splitlines(), heading_ranges(text)
+        added = [number for number in added_line_numbers(base, doc, working_tree=working_tree) if line_has_content(lines, number)]
+        first_h2 = min((start for start, _ in ranges.values()), default=len(lines) + 1)
+        allowed_union: set[str] = set()
+        for rule_id, allowed in requirements:
+            missing = sorted(set(allowed) - set(ranges))
             if missing:
-                errors.append(
-                    f"{rule['id']}: configured canonical H2 sections missing from {doc}: {missing}; "
-                    "use an existing ## heading or correct config/documentation-placement.yaml"
-                )
+                errors.append(f"{rule_id}: configured canonical H2 sections missing from {doc}: {missing}")
                 continue
-
-            allowed_ranges = [ranges[name] for name in allowed]
-            first_h2_line = min((start for start, _ in ranges.values()), default=len(lines) + 1)
-            added = [number for number in added_line_numbers(base, doc, working_tree=working_tree) if line_has_content(lines, number)]
-            misplaced = [
-                number
-                for number in added
-                if number >= first_h2_line
-                and not any(start <= number <= end for start, end in allowed_ranges)
-            ]
-            if misplaced:
-                preview = ", ".join(str(number) for number in misplaced[:12])
-                errors.append(
-                    f"{rule['id']}: {doc} has added content outside allowed canonical sections "
-                    f"(lines {preview}); allowed H2: {allowed}; move the explanation into its topic section or update "
-                    "config/documentation-placement.yaml when introducing a genuine new topic"
-                )
+            allowed_union.update(allowed)
+            if not any(start <= number <= end for heading in allowed for start, end in [ranges[heading]] for number in added):
+                errors.append(f"{rule_id}: {doc} has no added content in its required canonical topic")
+        allowed_ranges = [ranges[heading] for heading in allowed_union]
+        misplaced = [number for number in added if number >= first_h2 and not any(start <= number <= end for start, end in allowed_ranges)]
+        if misplaced:
+            preview = ", ".join(str(number) for number in misplaced[:12])
+            errors.append(f"{doc} has added content outside allowed canonical sections (lines {preview}); allowed H2: {sorted(allowed_union)}")
 
     return errors
 

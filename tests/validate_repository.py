@@ -7,6 +7,7 @@ import time
 from pathlib import Path
 
 _validation_started = time.monotonic()
+_timing_destination = os.environ.pop("AIPS_VALIDATION_TIMING_REPORT", None)
 _timings: list[dict[str, object]] = []
 
 
@@ -19,7 +20,7 @@ def _record_timing(name: str, started: float, status: str) -> None:
 
 
 def _write_timing_report(status: str) -> None:
-    destination = os.environ.get("AIPS_VALIDATION_TIMING_REPORT")
+    destination = _timing_destination
     if destination:
         Path(destination).write_text(json.dumps({
             "version": 1,
@@ -64,13 +65,11 @@ _append_validation_git_config("gc.autoDetach", "false")
 _append_validation_git_config("maintenance.auto", "false")
 _append_validation_git_config("maintenance.autoDetach", "false")
 
-_OPENAPI_EVIDENCE = {
-    "implementation_enforcement_lifecycle.py",
-    "openapi_contracts_lifecycle.py",
-    "openapi_generator_adapter_lifecycle.py",
-    "openapi_client_pilot_lifecycle.py",
-    "openapi_cli_install_lifecycle.py",
-}
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
+from ci_validation_plan import EVIDENCE_CAPABILITIES, validation_capabilities
+from runtime_context import validation_environment
+
+_OPENAPI_EVIDENCE = {name for name, capability in EVIDENCE_CAPABILITIES.items() if capability == "openapi"}
 _ci_plan = None
 if os.environ.get("AIPS_CI_VALIDATION_PLAN"):
     try:
@@ -81,11 +80,19 @@ if os.environ.get("AIPS_CI_VALIDATION_PLAN"):
         _ci_plan = None
     os.environ.pop("AIPS_CI_VALIDATION_PLAN", None)
 
+_capabilities = validation_capabilities(_ci_plan)
+_child_environment = validation_environment(sys.executable)
+# Normalize before contract imports, which also start lifecycle children.
+for _key in ("PYTHONHOME", "PYTHONPATH", "VIRTUAL_ENV", "AIPS_PYTHON", "AIPS_VALIDATION_VENV"):
+    os.environ.pop(_key, None)
+os.environ["AIPS_VALIDATION_PYTHON"] = sys.executable
+os.environ["PATH"] = _child_environment["PATH"]
+
 from validation.registry import ERROR_AGGREGATION_ORDER, load_validators
 
 validation_modules = load_validators(
     lambda name, started, status: _record_timing(name, started, status),
-    needs_browser=_ci_plan is None or _ci_plan.get("needs_browser") is not False,
+    needs_browser=_capabilities["browser"],
 )
 static_contracts = validation_modules["validation.static_contracts"]
 implementation_profile_contracts = validation_modules["validation.implementation_profile_contracts"]
@@ -114,6 +121,8 @@ for evidence in (
     Path(__file__).parent / "evidence/validator_registry_lifecycle.py",
     Path(__file__).parent / "evidence/system_facts_lifecycle.py",
     Path(__file__).parent / "evidence/ci_validation_plan_lifecycle.py",
+    Path(__file__).parent / "evidence/reliability_hardening_lifecycle.py",
+    Path(__file__).parent / "evidence/github_execution_identity_lifecycle.py",
     Path(__file__).parent / "evidence/validation_shadow_plan_lifecycle.py",
     Path(__file__).parent / "evidence/conformance_summary_lifecycle.py",
     Path(__file__).parent / "evidence/python_bootstrap_action_lifecycle.py",
@@ -123,12 +132,11 @@ for evidence in (
     Path(__file__).parent / "evidence/maintenance_reliability_lifecycle.py",
     Path(__file__).parent / "evidence/release_channel_lifecycle.py",
 ):
-    if evidence.name in _OPENAPI_EVIDENCE and _ci_plan is not None and _ci_plan.get("needs_openapi") is False:
+    if evidence.name in _OPENAPI_EVIDENCE and not _capabilities["openapi"]:
         _record_timing(str(evidence.relative_to(Path(__file__).resolve().parents[1])), time.monotonic(), "SKIPPED: exact-path plan does not require OpenAPI")
         continue
     started = time.monotonic()
-    evidence_env = os.environ.copy()
-    evidence_env.pop("AIPS_CI_VALIDATION_PLAN", None)
+    evidence_env = validation_environment(sys.executable)
     result = subprocess.run([sys.executable, str(evidence)], cwd=Path(__file__).resolve().parents[1], env=evidence_env, capture_output=True, text=True, check=False)
     _record_timing(str(evidence.relative_to(Path(__file__).resolve().parents[1])), started,
                    "PASS" if result.returncode == 0 else "FAIL")
