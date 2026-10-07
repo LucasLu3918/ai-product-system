@@ -193,6 +193,8 @@ Project Intelligence extraction and repository governance snapshots map to their
 
 Prospective `aips docs impact --base HEAD --planned-path <path>` resolves sync and placement closure to a fixed point. Each triggered rule requires an update in its canonical topic; combined changes use the union of those topics. Validate every text anchor before applying the batch. Closure is scope evidence and never grants publication authority.
 
+Plan21 Phase 0 baseline changes synchronize the exact candidate, environment and measurement-only interpretation across the validation timing artifact, lifecycle runner, Human Architecture/Maintenance/Technology/Conformance guidance and this mapping. The baseline is not a timeout or performance trend, and its lifecycle adds no numbered scenario.
+
 The central repository validator is part of this closure: use the exact-candidate plan to skip OpenAPI-dependent lifecycle evidence only when `needs_openapi` is false, keep the full profile when no valid plan is available, and remove the plan variable before contract or lifecycle subprocesses run. Preserve the mandatory repository aggregate, secret scan and Integration Gate.
 
 Workflow bootstrap, timeout or concurrency changes also update Scenario 207 evidence and the Human Maintenance, Architecture, Technology, Security, User Guide, Documentation Map and Documentation Sync placements returned by publication preview. Use observed durations when available, disclose small samples, and leave bounds unset when no successful baseline supports a defensible limit. Use GitHub's bounded pending queue when same-cohort issue writes must be serialized; never serialize distinct observation evidence into one replaceable pending run.

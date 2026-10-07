@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: e507ba1fc3842ac40e41ecabec481828a6d78916
-  changed_files_hash: 788c6122bb42352c55eb8d623a25ff6a1452b1d73d66e7c6b1ebda87b8957ef4
+  changed_files_hash: d84a6670e980375390e28b0c52e8fdaa96dd6f4b558a11fa0eab8c1abc9fe4bd
 change:
   id: plan21-phase0-contract-baseline
   summary: Pin pre-hardening digest, CLI, installer, and validation timing contracts.
@@ -16,7 +16,7 @@ matrix:
   checks: &baseline
     static_lint:
       applicable: true
-      evidence: Focused Ruff E4/E7/E9/F on the new lifecycle and touched validation entry point.
+      evidence: Focused Ruff E4/E7/E9/F on the new lifecycle; the validation-runner wiring is covered by the full repository validation lifecycle.
     unit:
       applicable: true
       evidence: tests/evidence/plan21_contract_baseline.py verifies the pinned CLI and canonical digest vectors.
@@ -58,5 +58,6 @@ blockers: []
 status: READY
 verification:
   exact_base_repository_validation: PASS
-  plan21_contract_baseline_lifecycle: REQUIRED_ON_BOUND_COMMIT
+  plan21_contract_baseline_lifecycle: PASS
+  documentation_closure_preview: PASS
   exact_candidate_integration_gate: REQUIRED_ON_BOUND_COMMIT

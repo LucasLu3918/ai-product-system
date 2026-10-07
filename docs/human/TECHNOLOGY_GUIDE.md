@@ -300,6 +300,8 @@ Community signal 可用於 discovery，但高強度 adoption recommendation需�
 
 The monthly reliability workflow measures validation outcomes and runtime distributions, explicit hotfix labels, repeated change surfaces, bounded operational failure hints, exact-SHA escaped regressions and files per merged change. Incomplete history stays UNKNOWN and prompts Human review. GitHub Actions uses read-only Actions, contents and pull-request access plus Issue write access to publish a bounded report; it has no remediation, source change, PR, merge or release authority.
 
+Plan21 Phase 0 records one exact-main full-validation timing observation and pins existing digest, CLI and glob contracts. Treat the timing as a baseline sample only; future optimization claims require comparable candidate and environment evidence.
+
 ## Documentation Platform
 
 ### Human Documentation Source

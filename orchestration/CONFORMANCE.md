@@ -825,6 +825,8 @@ The shared repository evidence runner uses the exact-candidate CI plan to skip o
 
 Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agent_eval = 199 automated; 2 manual; 201 total; 0 uncovered.
 
+Plan21 Phase 0 adds a required lifecycle for canonical digest vectors, public CLI byte/exit behavior, and intentionally different path-glob semantics. Its checked-in timing artifact records one exact-main observation only; it changes no runtime behavior and does not add a numbered scenario.
+
 The central validator registry lifecycle also verifies exact-plan browser selection: only a valid `needs_browser: false` plan skips visual and creative render validators, and full validation imports them when no skip is declared.
 
 ## Scenario 218 — Evolution Human Relevance Evaluation
