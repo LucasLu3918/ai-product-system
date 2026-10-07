@@ -100,6 +100,11 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
       docs/human/CONFORMANCE.md: [Scenario 228 — Progressive Quality Ratchet]
 
+  - id: focused-primitive-tests
+    triggers: [.github/workflows/focused-pytest.yml, requirements-pytest.txt, tests/test_aips_common_primitives.py]
+    placements:
+      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+
   - id: branch-hygiene
     triggers: [config/branch-cleanup-manifest.yaml, scripts/branch_hygiene.py, orchestration/BRANCH_HYGIENE.md, .github/workflows/branch-hygiene.yml, tests/validation/branch_hygiene_contracts.py, tests/evidence/branch_hygiene_lifecycle.py]
     placements:
@@ -177,10 +182,16 @@ placement_rules:
   - id: publication-cli
     triggers: [bin/aips, scripts/aips_cli.sh, scripts/aips_cli/**]
     placements:
+      README.md: [Install, Start using AIPS, Update]
+      docs/human/INSTALLATION.md: [驗證, Runtime integration]
+      docs/human/GETTING_STARTED.md: [驗證安裝, Existing Project, 更新]
+      docs/human/MAINTENANCE.md: [Versioning]
       docs/human/USER_GUIDE.md: [Deterministic Scheduler, Execution Isolation 與 Runtime Resource, Quality 與 Review, Git Publication 與 Release, Logging、Observability 與 Operations, Checkpoint / Resume, Project Intelligence]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Quality & Verification, Security & Governance]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Planning 與 Product Delivery, Maintenance governance]
-      docs/human/CONFORMANCE.md: [Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback]
+      docs/human/CONFORMANCE.md: [Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow, Scenario 232 — Project Check and System Preflight, Scenario 233 — Public CLI Help and Error Contracts]
+      orchestration/CONFORMANCE.md: [Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow, Scenario 232 — Project Check and System Preflight, Scenario 233 — Public CLI Help and Error Contracts]
+      orchestration/ORCHESTRATOR.md: [Minimal algorithm, System Update Preflight]
 
   - id: telemetry-export
     triggers: [config/telemetry-export.yaml, orchestration/AGENT_OBSERVABLE_EVENT_CAPTURE_DESIGN.md, orchestration/TELEMETRY_EXPORT.md, orchestration/schemas/telemetry-export.yaml, orchestration/schemas/execution-profile.yaml, scripts/telemetry_export.py, scripts/telemetry_projection.py, scripts/telemetry_record.py, scripts/run_event_stream.py, scripts/observed_stage.py]
@@ -548,6 +559,7 @@ placement_rules:
     triggers:
       - .github/workflows/dependency-review.yml
       - .github/workflows/scorecard.yml
+      - .github/workflows/security-inventory.yml
       - config/quality-ratchet.yaml
       - config/validation-graduation.yaml
       - scripts/quality_ratchet.py
@@ -558,8 +570,8 @@ placement_rules:
       docs/human/MAINTENANCE.md: [Versioning, Public repository / CI consistency, Validation architecture consistency]
       docs/human/SECURITY_ASSURANCE.md: [Release Security Gate]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification, Evolution & Maintenance]
-      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification, Scenario 222 — Large Document Measurement Only]
-      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification, Scenario 222 — Large Document Measurement Only]
+      docs/human/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification, Scenario 222 — Large Document Measurement Only, Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow, Scenario 232 — Project Check and System Preflight, Scenario 233 — Public CLI Help and Error Contracts]
+      orchestration/CONFORMANCE.md: [Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 221 — Dependency Update Risk Classification, Scenario 222 — Large Document Measurement Only, Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow, Scenario 232 — Project Check and System Preflight, Scenario 233 — Public CLI Help and Error Contracts]
 
   - id: p15-validation-taxonomy
     triggers:

@@ -71,8 +71,11 @@ aips update
 Existing Project mutation 前可使用：
 
 ~~~bash
-aips preflight /path/to/project
+aips project check /path/to/project
+aips system preflight /path/to/project
 ~~~
+
+`aips project check` 是唯讀狀態檢查；`aips system preflight` 會更新並驗證 AIPS system checkout。既有 `aips preflight` 命令仍作為相容 alias 支援。
 
 ## Uninstall
 

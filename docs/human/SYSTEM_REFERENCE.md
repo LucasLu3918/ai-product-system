@@ -23,6 +23,8 @@ The established Retrieval Intelligence command/import facade remains `scripts/re
 
 ## Capability surfaces
 
+Shared deterministic helpers are exercised by a separate focused pytest workflow; their existing module facades and generated capability projections remain stable.
+
 | Surface | Capabilities | Canonical documentation | Validation bindings |
 |---|---|---|---|
 | `runtime-context` | unified-runtime-path-resolution, validation-interpreter-capability-selection, runtime-invariant-matrix, model-routing | orchestration/RUNTIME_CONTEXT.md, orchestration/MODEL_ROUTING.md | tests/evidence/runtime_context_lifecycle.py, tests/evidence/aips_cli_module_extraction_lifecycle.py, scripts/runtime_invariant_matrix.py, tests/validate_repository.py, tests/scenarios/224-runtime-preferred-primary-model.md |

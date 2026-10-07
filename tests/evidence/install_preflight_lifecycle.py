@@ -149,6 +149,14 @@ def preflight_and_project_lifecycle() -> None:
         require(dirty_result.returncode != 0 and "local changes" in dirty_result.stderr, "Preflight must stop for dirty system worktree")
         dirty.unlink()
 
+        project_check = cli(system, ["project", "check", str(project)], env)
+        require(project_check.returncode == 0, f"project check failed for valid EPHEMERAL project: {project_check.stdout} {project_check.stderr}")
+        require("Project mode: EPHEMERAL" in project_check.stdout, "project check must report EPHEMERAL without attaching")
+        require("Project Intelligence freshness:" in project_check.stdout, "project check must report freshness or UNKNOWN")
+        require(not (project / ".ai").exists(), "project check must not create a workspace")
+        invalid_project_check = cli(system, ["project", "check", str(base / "missing-project")], env)
+        require(invalid_project_check.returncode != 0, "project check must reject a missing project path")
+
         first = cli(system, ["preflight", str(project)], env)
         require(first.returncode == 0, f"clean main preflight failed: {first.stdout} {first.stderr}")
         require("Project mode: EPHEMERAL" in first.stdout, "Preflight must report EPHEMERAL without .ai")
@@ -158,10 +166,16 @@ def preflight_and_project_lifecycle() -> None:
         require(git(project, "rev-parse", "HEAD").stdout.strip() == product_head, "Preflight must not pull target product repository")
         require((project / "app.txt").read_text(encoding="utf-8") == product_text, "Preflight changed target product source")
 
+        canonical_preflight = cli(system, ["system", "preflight", str(project)], env)
+        require(canonical_preflight.returncode == 0, f"system preflight alias failed: {canonical_preflight.stdout} {canonical_preflight.stderr}")
+        require("Update Preflight passed." in canonical_preflight.stdout, "system preflight must delegate to the existing preflight lifecycle")
+
         attached = cli(system, ["attach", str(project)], env)
         require(attached.returncode == 0 and (project / ".ai").is_dir(), f"attach failed: {attached.stdout} {attached.stderr}")
         status = cli(system, ["status", str(project)], env)
         require(status.returncode == 0 and "Project attached: yes" in status.stdout and "Project mode: ATTACHED" in status.stdout, "status must report attached provenance")
+        attached_check = cli(system, ["project", "check", str(project)], env)
+        require(attached_check.returncode == 0 and "Project mode: ATTACHED" in attached_check.stdout, "project check must report attached mode")
 
         old_version = (system / "VERSION").read_text(encoding="utf-8").strip()
         upgraded_version = next_patch(old_version)

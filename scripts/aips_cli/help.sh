@@ -5,6 +5,9 @@ AI Product System CLI
 Usage:
   aips install [--configure-shell|--no-configure-shell]
   aips uninstall [--remove-venv] [--remove-cache] [--remove-shell-integration]
+  aips system preflight <project-path> [--allow-major]
+  aips project check <project-path>
+  aips preflight <project-path> [--allow-major]  (compatibility alias)
 
   aips shell install
   aips shell uninstall

@@ -106,7 +106,7 @@ Python support facts live in `config/system-facts.yaml` and are mirrored in `pyp
 - MINOR: backward-compatible new behavior, role, skill, work mode, CLI capability or schema/planning extension.
 - PATCH: backward-compatible bug fix, hardening, clarification, typo or non-behavioral documentation/evidence correction.
 
-Major updates are not auto-applied by `aips preflight` without explicit `--allow-major`.
+Major updates are not auto-applied by `aips system preflight` without explicit `--allow-major`. The legacy `aips preflight` command remains a compatible alias.
 
 `tests/validation/versioning_contracts.py` verifies one leading `Unreleased` heading, unique strictly descending SemVer release headings, and `VERSION` equal to the newest release. Keep runtime dependency ranges in requirements files; `constraints/tested.txt` records the exact CI-tested set. Python support is declared separately from the tested Python version in `pyproject.toml` and `config/system-facts.yaml`.
 
@@ -316,6 +316,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 Evolution Effectiveness reports incomplete pre-analysis coverage instead of calling absent triage a zero shortlist. Oversized scheduled Radar Issues preserve the full UTF-8 body in a bounded digest-checked archive restored before monthly parsing.
 
 外部 Intelligence metadata 不可寫時，可重建 metadata 保存在快取旁並回報 `CACHE_ONLY`；索引 freshness 仍由實際候選比對，canonical 來源與 graph 不會被替代。以 `aips publish checks --pr <number> --head <sha>` 查看最新 workflow/check 結果：舊 `CANCELLED` 不覆蓋較新的成功；目前取消、缺少必要 `repository`、等待或失敗均不會成為 PASS。PR 與 main 的 Gate 仍綁定各自候選；CI pip 快取以 requirements 雜湊作鍵，安裝與完整 Gate 每輪照常執行。合併後另核對註冊安裝版的 commit。
+
+Weekly/manual `advisory-security-inventory` runs the pinned OSV Scanner reusable workflow and compares the existing project secret scanner's outcome with a full-history Gitleaks shadow scan. It is supplementary evidence only; the required candidate secret scan and repository Gate remain unchanged. Review findings or outcome differences before considering any future enforcement change.
 
 `installation-entrypoints` jobs are independent and retain their existing PR paths and read-only permissions. Review their 5/10/10-minute limits when runtime evidence changes; the limits use 15× per-job P95 from the ten latest successful runs and upward five-minute rounding. Do not add cancellation concurrency unless shared state requires it and required evidence remains observable.
 

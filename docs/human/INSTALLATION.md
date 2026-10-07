@@ -63,6 +63,7 @@ aips version
 aips doctor
 aips harness status
 aips mcp inspect
+aips project check /path/to/project
 ~~~
 
 Maintainer 的發布前入口為 `aips docs impact` 與 `aips publish plan|preflight|post-merge`。一般使用者安裝不會自動執行 GitHub 查詢、重寫 branch 或取得 publication authority。
@@ -193,8 +194,10 @@ AIPS 只在 managed system checkout clean、history 可 fast-forward 時自動�
 Existing Project mutation 前：
 
 ~~~bash
-aips preflight /path/to/project
+aips system preflight /path/to/project
 ~~~
+
+`aips preflight /path/to/project` remains a backward-compatible alias. `aips project check /path/to/project` is read-only and reports attachment mode plus Project Intelligence freshness (`CURRENT`, `STALE` or `UNKNOWN`); it does not refresh or attach the Project.
 
 ## 解除安裝
 

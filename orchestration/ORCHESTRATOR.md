@@ -18,7 +18,7 @@ When a task requires client generation, resolve the canonical OpenAPI contract, 
 
 1. Resolve current runtime/project/turn context through the Global Harness when installed.
 2. If the request is unrelated to product/project/software work, continue normal conversation without heavy AIPS context.
-3. Before mutating a target project, run System Update Preflight (`aips preflight <project>`).
+3. Before mutating a target project, run System Update Preflight (`aips system preflight <project>`); `aips preflight <project>` remains a compatibility alias.
 4. Resolve project mode and Intelligence store: ATTACHED uses `.ai/intelligence/`; EPHEMERAL may use external AIPS cache without writing into the repository.
 5. If the target is AIPS itself, run System Self-Improvement Review and Constitution Impact Check.
 6. Detect large/core change and obtain Core Change Approval before implementation.
@@ -63,7 +63,7 @@ Resolve bounded Context before implementation: prove selected-path relevance, al
 
 The orchestrator must not implement project mutations using an unverified stale local system.
 
-Use `aips preflight <project>`, which:
+Use `aips system preflight <project>` (or the compatible `aips preflight <project>` alias), which:
 
 - requires the system repo to be clean/on `main`;
 - fetches `origin/main` and uses only fast-forward pulls;

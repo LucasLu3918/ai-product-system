@@ -18,6 +18,18 @@ Make AIPS behavioral regression coverage measurable without conflating specifica
 
 Scenario 230 binds compact fixed-context and task-route behavior to the intelligence context lifecycle and static contracts; route pointers never imply governance authority.
 
+## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
+
+The weekly/manual workflow runs the pinned OSV Scanner reusable workflow and a full-history Gitleaks shadow scan. Both scan outcomes are advisory evidence; the existing required candidate secret scan and `repository` Gate remain unchanged. The workflow has no PR, merge, or publication authority and leaves CodeQL default setup as remotely configured evidence.
+
+## Scenario 232 — Project Check and System Preflight
+
+`aips project check <path>` reports attachment mode and Project Intelligence freshness without mutation; freshness problems remain informational and only an invalid path fails. `aips system preflight <path>` delegates to the existing update and repository-validation lifecycle. The legacy `aips preflight` route remains supported.
+
+## Scenario 233 — Public CLI Help and Error Contracts
+
+Public command groups expose help with status 0 and return nonzero for unknown subcommands. Keep routing in the shell facade and preserve internal library modules as libraries.
+
 `tests/scenario_coverage.yaml` is the canonical mapping from Scenario ID/path to coverage classification and evidence.
 
 Allowed coverage:

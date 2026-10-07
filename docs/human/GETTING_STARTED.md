@@ -70,7 +70,7 @@ aips commands list
 
 ## Existing Project
 
-The Run Dashboard is a read-only view over existing run state; shared projection fingerprints do not create or migrate project data.
+The Dashboard is a read-only view backed by current task state; shared projection fingerprints do not create or migrate project records.
 
 每回合先取得精簡固定核心與任務相關協定指標；修改既有專案前仍須依其原生規範取得 Project Intelligence、Change Impact 與驗證要求。
 
@@ -97,8 +97,11 @@ aips update
 Existing Project mutation 前建議：
 
 ~~~bash
-aips preflight /path/to/project
+aips project check /path/to/project
+aips system preflight /path/to/project
 ~~~
+
+`project check` reports Project mode and Intelligence freshness without changing project state. `system preflight` updates and validates the AIPS system checkout before implementation; the legacy `aips preflight` command remains compatible.
 
 需要查詢歷史架構時，可使用 `aips intelligence temporal --mode as-of --revision <sha>`；一般任務不需要載入完整 temporal history。
 

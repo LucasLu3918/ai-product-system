@@ -71,8 +71,10 @@ For required independent reviews, use a fresh read-only reviewer execution over 
 Before any **mutating implementation session**, run:
 
 ```bash
-aips preflight <target-project-path>
+aips system preflight <target-project-path>
 ```
+
+`aips preflight <target-project-path>` remains a backward-compatible alias.
 
 The preflight updates the **AI Product System repository**, not the target project's Git repository.
 
@@ -89,7 +91,7 @@ Rules:
 
 If update cannot be completed safely, stop implementation and surface the reason.
 
-Read-only explanation/research that does not mutate a project does not need to modify local state solely to satisfy this rule.
+Read-only explanation/research that does not mutate a project does not need to modify local state solely to satisfy this rule. `aips project check <path>` reports project attachment mode and Project Intelligence freshness without writing, refreshing, or attaching the Project.
 
 ## Global Agent Harness
 

@@ -162,7 +162,9 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
-Shared deterministic helpers live in `scripts/aips_common/`; existing consumers keep compatibility facades. Golden lifecycle evidence pins raw/prefixed digest bytes and the distinct path/glob normalization modes. This refactor does not establish complete caller/consumer graph coverage.
+Shared deterministic helpers live in `scripts/aips_common/`; existing consumers keep compatibility facades. Golden lifecycle evidence pins raw/prefixed digest bytes and the distinct path/glob normalization modes. A separate focused pytest workflow checks those contracts without changing the required repository Gate. This refactor does not establish complete caller/consumer graph coverage.
+
+Scenario 231 adds a weekly/manual, pinned OSV dependency inventory and nonblocking full-history Gitleaks comparison with the existing project scanner. These observations do not replace the exact-candidate required secret scan or repository Gate; repository-wide Impact Graph coverage remains partial.
 
 Scenario 230 and the exact-candidate Core Matrix cover route selection, hook/manifest compatibility, missing-source behavior, fixed-core byte ceiling and measured reduction against the base layer.
 

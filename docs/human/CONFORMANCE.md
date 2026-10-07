@@ -1618,6 +1618,18 @@ Per-module findings and direct coverage are measured without increasing a reposi
 
 Scenario 230 also confirms that adding a route scenario updates the canonical registry and generated current conformance view without changing manual coverage claims.
 
+## Scenario 232 — Project Check and System Preflight
+
+`aips project check` reports Project mode and Project Intelligence freshness without writes; stale or unavailable Intelligence is visible but does not make a valid path fail. `aips system preflight` uses the existing update/validation path, while `aips preflight` remains compatible.
+
+## Scenario 233 — Public CLI Help and Error Contracts
+
+The public command groups return concise help with status 0 and reject unknown subcommands with a useful nonzero result. The compatibility shell facade remains thin; internal library modules keep their current role.
+
+## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
+
+The scheduled/manual workflow runs a pinned OSV dependency inventory and compares the existing project secret scanner with a full-history Gitleaks shadow. Its failures and parity differences are advisory; the required candidate secret scan and repository Gate remain the release controls. CodeQL configuration is read from GitHub's default setup.
+
 Declared behavior dependencies select potentially stale Eval cases for review. The report does not execute cases or alter results; scenarios 192, 193 and 224 remain manual.
 
 Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md).
