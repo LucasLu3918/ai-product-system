@@ -1508,7 +1508,7 @@ Lifecycle evidence checks supported short-lived prefixes, unclassified preservat
 
 ## Scenario 200 — Demand-driven CI toolchain planning
 
-Lifecycle evidence checks exact-path Node, browser and OpenAPI selection, full provisioning for sensitive paths and unknown paths, and explicit skips for optional OpenAPI evidence. `publish_preflight_lifecycle.py` remains required in every plan: it exercises action-level OpenAPI help and contract behavior when both validator modules exist, and otherwise verifies top-level routing plus the clear missing-dependency failure without a traceback or output artifact. Secret scanning, preflight, repository validation and the exact-candidate Integration Gate remain mandatory. Without a valid CI plan, local checks retain the full toolchain profile.
+Lifecycle evidence checks exact-path Node, browser and OpenAPI selection, full provisioning for sensitive paths, the MCP interoperability contract path and unknown paths, and explicit skips for optional OpenAPI evidence. `publish_preflight_lifecycle.py` remains required in every plan: it exercises action-level OpenAPI help and contract behavior when both validator modules exist, and otherwise verifies top-level routing plus the clear missing-dependency failure without a traceback or output artifact. Secret scanning, preflight, repository validation and the exact-candidate Integration Gate remain mandatory. Without a valid CI plan, local checks retain the full toolchain profile.
 
 ## Scenario 201 — Monthly maintenance reliability evidence
 

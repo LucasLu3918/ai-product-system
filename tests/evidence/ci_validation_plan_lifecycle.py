@@ -23,6 +23,8 @@ def main() -> int:
     assert visual["needs_browser"] and not visual["needs_openapi"]
     sensitive = build_plan(config, [".github/workflows/validate.yml"], base="a", head="b")
     assert sensitive["full_validation"] and all(sensitive[key] for key in ("needs_node", "needs_browser", "needs_openapi"))
+    full_validation = build_plan(config, ["tests/validation/mcp_interoperability_contracts.py"], base="a", head="b")
+    assert full_validation["full_validation"] and all(full_validation[key] for key in ("needs_node", "needs_browser", "needs_openapi"))
     unknown = build_plan(config, ["mystery/file.bin"], base="a", head="b")
     assert unknown["full_validation"] and unknown["unknown_paths"] == ["mystery/file.bin"]
     ordinary = build_plan(config, ["scripts/aips_identity.py"], base="a", head="b")

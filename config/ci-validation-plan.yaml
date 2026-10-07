@@ -9,6 +9,7 @@ full_validation_paths:
   - scripts/runtime_context.py
   - tests/validate_repository.py
   - tests/validation/registry.py
+  - tests/validation/mcp_interoperability_contracts.py
 known_path_prefixes:
   - .github/
   - bin/
