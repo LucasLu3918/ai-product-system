@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: e507ba1fc3842ac40e41ecabec481828a6d78916
-  changed_files_hash: bf7882d842368707106f8b017d10070dae072a9d2dcc3e186006f0d380ba678d
+  changed_files_hash: 1761dd30d5a83cd2e21b974e2839da40d948364d43dcf1f4c5e95ffa0bdcdc90
 change:
   id: plan21-p0
   summary: Fail closed on malformed governance-hook input and make installation transactional,

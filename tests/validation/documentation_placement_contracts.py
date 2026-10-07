@@ -77,7 +77,7 @@ for marker in ('"vitepress": "1.6.4"', '"docs:build": "vitepress build docs/huma
         errors.append(f"package.json missing docs-site contract: {marker}")
 
 install = (ROOT / "scripts/install.sh").read_text(encoding="utf-8") if (ROOT / "scripts/install.sh").exists() else ""
-for marker in ("AIPS_INSTALL_DIR", "git clone", 'exec "$INSTALL_DIR/bin/aips" install'):
+for marker in ("AIPS_INSTALL_DIR", "git clone", '"$INSTALL_DIR/bin/aips" install'):
     if marker not in install:
         errors.append(f"install.sh missing managed-install contract: {marker}")
 
