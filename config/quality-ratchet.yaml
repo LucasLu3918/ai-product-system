@@ -33,5 +33,14 @@ coverage:
   policy: report_only
   branch_measurement: true
   minimum_percent: null
-  module_baselines: {}
-  note: Keep coverage report-only until module baselines are established from representative lifecycle evidence.
+  module_baselines:
+    scripts/project_intelligence_storage.py:
+      covered_lines: 37
+      total_statements: 37
+      percent: 100.0
+      covered_branches: 0
+      total_branches: 0
+      measurement_scope: bounded_storage_lifecycle
+      evidence: tests/evidence/module_extraction_lifecycle.py
+      measurement_command: coverage run --branch --source=project_intelligence_storage tests/evidence/module_extraction_lifecycle.py
+  note: This is a bounded lifecycle baseline, not repository-wide coverage. Keep it report-only until multiple representative modules and workflows are measured.

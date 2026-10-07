@@ -175,3 +175,7 @@ Node documentation dependencies are locked by `package-lock.json` and installed 
 Temporal Project Intelligence 的 Human 說明由 `PROJECT_INTELLIGENCE.md` 負責；其 current/as-of/between/why 查詢、Git revision provenance、validity interval 與 supersession 語義，必須與 Agent protocol、Technology Guide 及 Conformance evidence 一起維護。
 
 Execution Isolation provider changes map to Architecture Overview and Security Assurance, with usage in User Guide, optional dependency and runtime details in Technology Guide, verification history in Conformance, and canonical behavior in `orchestration/EXECUTION_ISOLATION.md` / `orchestration/ORCHESTRATOR.md`. The E2B registry stays disabled until source-transfer scope and adapter readiness are explicitly resolved.
+
+**Plan19 architecture and runtime closure.**
+
+Plan19 machine-readable authorities are `config/capability-registry.yaml` and `config/eval-freshness.yaml`; generated compatibility views are `config/architecture-surfaces.yaml` and `references/evolution/CAPABILITY_MAP.yaml`. Branch and monthly effectiveness evidence lives under `.aips/review/` and remains report-only.

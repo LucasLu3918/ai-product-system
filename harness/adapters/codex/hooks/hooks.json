@@ -1,0 +1,18 @@
+{
+  "description": "Plan19 isolated PreToolUse denial probe. This file is not installed or trusted globally.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "^Bash$",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"$(git rev-parse --show-toplevel)/harness/adapters/codex/hooks/pre_tool_use_policy.py\"",
+            "timeout": 3,
+            "statusMessage": "Checking Plan19 synthetic hook probe"
+          }
+        ]
+      }
+    ]
+  }
+}

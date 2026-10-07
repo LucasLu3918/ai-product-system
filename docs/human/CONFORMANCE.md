@@ -1576,3 +1576,7 @@ Dependency updates receive an explicit class, risk and recommended validation pl
 ## Scenario 222 — Large Document Measurement Only
 
 The measurement-only audit records tracked documentation/evidence byte sizes. Files above 50,000 bytes produce `WARN` with exit code 0; size results do not block Gate or authorize file moves or archival.
+
+**Plan19 architecture and runtime closure.**
+
+Plan19 adds scenarios 226–229 for the canonical Capability Registry, the bounded Codex hook probe, progressive quality reporting, and change-aware Eval freshness. The three runtime-dependent scenarios 192, 193 and 224 remain manual; current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md).

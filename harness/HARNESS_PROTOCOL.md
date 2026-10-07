@@ -96,3 +96,7 @@ For a new MCP-compatible Host, start with the MCP access plane. Add a runtime-na
 The gateway is local stdio, provider-neutral and credential-free. It emits review-only Cursor, Windsurf, GitHub Copilot CLI, Amp, Codex and generic configuration payloads, and does not silently register itself into client-owned configuration.
 
 The Codex managed block preserves eligible runtime primary model preference and bounded primary execution; it does not mutate host model settings or grant auxiliary permissions.
+
+**Plan19 architecture and runtime closure.**
+
+Codex PreToolUse support remains `EXPERIMENTAL` and `ADVISORY`: the local probe denies only its harmless synthetic command. Do not infer live runtime coverage or change user-global hook configuration from this evidence.

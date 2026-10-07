@@ -481,7 +481,7 @@ Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanu
 
 Repository-wide architecture consistency is checked by scripts/repository_health.py using config/repository-health.yaml. The detailed contract is orchestration/REPOSITORY_HEALTH.md.
 
-It reuses the Capability Map, Scenario Conformance and Integration Gate. The explicit major-subsystem inventory lives in config/architecture-surfaces.yaml and must account for every Capability Map entry exactly once. Review inventory required paths, canonical docs, validation bindings, bounded guard/gate discovery, tests/scenario_coverage.yaml evidence, and .github/workflows/validate.yml plus config/integration-gate.yaml wiring.
+It reuses the Capability Registry, Scenario Conformance and Integration Gate. `config/capability-registry.yaml` is canonical for capability metadata and major surfaces; run `python scripts/capability_registry.py check` to detect stale generated indexes, and use `generate` only after an approved registry edit. The v1 Capability Map and `config/architecture-surfaces.yaml` remain generated consumer views. Review required paths, canonical docs, validation bindings, bounded major-script discovery, tests/scenario_coverage.yaml evidence, and .github/workflows/validate.yml plus config/integration-gate.yaml wiring.
 
 Run:
 

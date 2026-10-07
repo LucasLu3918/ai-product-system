@@ -1,0 +1,201 @@
+version: 1
+run:
+  mode: monthly_effectiveness
+  period: 2026-09
+  generated_at: '2026-10-07T06:05:32Z'
+  repository_revision: 65b99c16871804afe82c11e1ab97fbd2000a5bb1
+baseline:
+  cohort_issue_count: 4
+  cohort_issue_numbers:
+  - 50
+  - 78
+  - 79
+  - 84
+  input_manifest:
+  - issue_number: 50
+    issue_digest: sha256:70b5bb9d56339509dc75acc9ff6a76dcd42865974c569d9b8d96c984a08f364b
+  - issue_number: 78
+    issue_digest: sha256:36e0157b15d441baa29ab7255dddf90a4852244d113f9b3c3267dd02d1c88a93
+  - issue_number: 79
+    issue_digest: sha256:857486a1ed95c0655ff9444b69a46f3e773d390d31c0648a4d5b87d6b6a945d0
+  - issue_number: 84
+    issue_digest: sha256:ff24399bc34fdb12be7f5597112e419d228de958f831ef4d3c4ca2def90555da
+  input_digest: sha256:f241125e6e5ec3292fb863afe36b9e6e90cfb957b9b4ff83efc7f3ed49860477
+summary:
+  raw_signal_count: 100
+  unique_signal_count: 100
+  duplicate_count: 0
+  duplicate_rate_basis_points: 0
+  shortlist_count: 0
+  semantic_signal_count: 0
+  actionable_recommendation_count: 0
+  semantic_state_counts:
+    COVERED: 0
+    HOLD: 0
+    ASSESS: 0
+    TRIAL: 0
+    ADOPT: 0
+    ANALYSIS_PENDING: 100
+  human_decision_counts:
+    REJECT: 0
+    HOLD: 0
+    ASSESS: 0
+    TRIAL: 0
+    ADOPT: 0
+  trial_handoff_ready_count: 0
+  trial_status_counts:
+    PASS: 0
+    FAIL: 0
+    BLOCKED: 0
+  adoption_count: 0
+  preanalysis_issue_count: 0
+  preanalysis_missing_issue_count: 4
+  preanalysis_missing_issue_numbers:
+  - 50
+  - 78
+  - 79
+  - 84
+  unreadable_archive_issue_count: 0
+  unreadable_archive_issue_numbers: []
+sources:
+- source_id: cloudflare-blog
+  configured_runs: 4
+  attempted_runs: 4
+  failure_count: 0
+  collected_signal_count: 20
+  shortlist_signal_count: 0
+  semantic_signal_count: 0
+  actionable_recommendation_count: 0
+  trial_decision_count: 0
+  trial_pass_count: 0
+  adoption_count: 0
+  preanalysis_expected_run_count: 4
+  preanalysis_observed_run_count: 0
+  ratios:
+    shortlist_yield_basis_points: null
+    observed_shortlist_yield_basis_points: 0
+    preanalysis_coverage_basis_points: 0
+    semantic_yield_basis_points: 0
+    actionable_from_semantic_basis_points: null
+    trial_from_actionable_basis_points: null
+    adoption_from_trial_pass_basis_points: null
+    failure_rate_basis_points: 0
+  review_flags: &id001
+  - REVIEW_INCOMPLETE_PREANALYSIS_COVERAGE
+- source_id: github-blog
+  configured_runs: 4
+  attempted_runs: 4
+  failure_count: 0
+  collected_signal_count: 20
+  shortlist_signal_count: 0
+  semantic_signal_count: 0
+  actionable_recommendation_count: 0
+  trial_decision_count: 0
+  trial_pass_count: 0
+  adoption_count: 0
+  preanalysis_expected_run_count: 4
+  preanalysis_observed_run_count: 0
+  ratios:
+    shortlist_yield_basis_points: null
+    observed_shortlist_yield_basis_points: 0
+    preanalysis_coverage_basis_points: 0
+    semantic_yield_basis_points: 0
+    actionable_from_semantic_basis_points: null
+    trial_from_actionable_basis_points: null
+    adoption_from_trial_pass_basis_points: null
+    failure_rate_basis_points: 0
+  review_flags: &id002
+  - REVIEW_INCOMPLETE_PREANALYSIS_COVERAGE
+- source_id: google-developers-blog
+  configured_runs: 4
+  attempted_runs: 4
+  failure_count: 0
+  collected_signal_count: 20
+  shortlist_signal_count: 0
+  semantic_signal_count: 0
+  actionable_recommendation_count: 0
+  trial_decision_count: 0
+  trial_pass_count: 0
+  adoption_count: 0
+  preanalysis_expected_run_count: 4
+  preanalysis_observed_run_count: 0
+  ratios:
+    shortlist_yield_basis_points: null
+    observed_shortlist_yield_basis_points: 0
+    preanalysis_coverage_basis_points: 0
+    semantic_yield_basis_points: 0
+    actionable_from_semantic_basis_points: null
+    trial_from_actionable_basis_points: null
+    adoption_from_trial_pass_basis_points: null
+    failure_rate_basis_points: 0
+  review_flags: &id003
+  - REVIEW_INCOMPLETE_PREANALYSIS_COVERAGE
+- source_id: hacker-news
+  configured_runs: 4
+  attempted_runs: 4
+  failure_count: 0
+  collected_signal_count: 20
+  shortlist_signal_count: 0
+  semantic_signal_count: 0
+  actionable_recommendation_count: 0
+  trial_decision_count: 0
+  trial_pass_count: 0
+  adoption_count: 0
+  preanalysis_expected_run_count: 4
+  preanalysis_observed_run_count: 0
+  ratios:
+    shortlist_yield_basis_points: null
+    observed_shortlist_yield_basis_points: 0
+    preanalysis_coverage_basis_points: 0
+    semantic_yield_basis_points: 0
+    actionable_from_semantic_basis_points: null
+    trial_from_actionable_basis_points: null
+    adoption_from_trial_pass_basis_points: null
+    failure_rate_basis_points: 0
+  review_flags: &id004
+  - REVIEW_INCOMPLETE_PREANALYSIS_COVERAGE
+- source_id: hugging-face-blog
+  configured_runs: 4
+  attempted_runs: 4
+  failure_count: 0
+  collected_signal_count: 20
+  shortlist_signal_count: 0
+  semantic_signal_count: 0
+  actionable_recommendation_count: 0
+  trial_decision_count: 0
+  trial_pass_count: 0
+  adoption_count: 0
+  preanalysis_expected_run_count: 4
+  preanalysis_observed_run_count: 0
+  ratios:
+    shortlist_yield_basis_points: null
+    observed_shortlist_yield_basis_points: 0
+    preanalysis_coverage_basis_points: 0
+    semantic_yield_basis_points: 0
+    actionable_from_semantic_basis_points: null
+    trial_from_actionable_basis_points: null
+    adoption_from_trial_pass_basis_points: null
+    failure_rate_basis_points: 0
+  review_flags: &id005
+  - REVIEW_INCOMPLETE_PREANALYSIS_COVERAGE
+review_flags:
+- source_id: cloudflare-blog
+  flags: *id001
+- source_id: github-blog
+  flags: *id002
+- source_id: google-developers-blog
+  flags: *id003
+- source_id: hacker-news
+  flags: *id004
+- source_id: hugging-face-blog
+  flags: *id005
+authority:
+  automatic_source_weight_changes: false
+  automatic_source_enable_disable: false
+  automatic_config_mutation: false
+  code_change_authorized: false
+  branch_or_pr_authorized: false
+  merge_authorized: false
+  release_authorized: false
+  human_review_required_for_source_changes: true
+effectiveness_fingerprint: sha256:9552d01ae577dfee44fb03ad85f82ffffcdd12f3610c41b9f4accd677efdde7e

@@ -485,3 +485,7 @@ Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-
 ## Runtime Content Safety Boundary
 
 Commit, pull request and release content is scanned before durable/public publication. A blocked result requires regenerating safe content; it is not silently rewritten. Runtime capability remains truthful: AIPS-owned sinks are enforced, native hooks may be tool-guarded, and unsupported host tools are advisory.
+
+**Plan19 architecture and runtime closure.**
+
+Change-aware Agent Eval selects cases from declared behavior dependencies and reports stale evidence without executing cases automatically. Manual scenarios 192, 193 and 224 stay manual. Usage budgets remain advisory, and unknown prices are never estimated.

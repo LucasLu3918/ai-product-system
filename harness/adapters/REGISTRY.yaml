@@ -7,6 +7,8 @@ adapters:
     strategy: managed_global_instruction_block
     capability: CONTEXT_ALWAYS
     governance_enforcement: ADVISORY
+    hook_probe: EXPERIMENTAL
+    hook_probe_scope: single_synthetic_Bash_command
     source: harness/adapters/codex/AGENTS.md
 
   claude-code:

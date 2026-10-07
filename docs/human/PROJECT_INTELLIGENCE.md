@@ -354,3 +354,7 @@ Publication scanning excludes only validated numeric Git index/mode metadata; pa
 Run Dashboard projections consume only sanitized, allowlisted operational facts; prompts, reasoning, raw output, secrets and raw workspace paths remain excluded.
 
 Project Intelligence outputs are AIPS-owned durable content and must pass the Runtime Content Safety Boundary before persistence. Secret findings remain fingerprint-only and never include the detected value.
+
+**Plan19 architecture and runtime closure.**
+
+The bounded storage extraction is behind the existing `project_intelligence` facade. Public import symbols and atomic-write/lock behavior remain compatible; the extracted module has a report-only lifecycle coverage measurement, with no repository-wide threshold.

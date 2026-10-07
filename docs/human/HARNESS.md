@@ -135,3 +135,7 @@ aips commands status
 ~~~
 
 這些 projections 是薄包裝，不取代 Constitution、System 或 orchestration canonical sources，也不提供 Runtime-native enforcement、Git publish、merge、release、production 或 Human approval authority。使用者修改過的 projection 會保留並回報 `CONFLICT`。
+
+**Plan19 architecture and runtime closure.**
+
+The Codex PreToolUse prototype is registered as experimental. Only the harmless local synthetic command is denied by the probe; live dispatch, unsupported paths, and error behavior do not establish complete enforcement, so aggregate governance remains advisory.

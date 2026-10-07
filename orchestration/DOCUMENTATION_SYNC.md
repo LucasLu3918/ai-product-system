@@ -224,3 +224,7 @@ Do not satisfy documentation impact by appending a version/scenario note at the 
 Before editing Human docs for a new behavior-bearing source, add its path to `config/documentation-placement.yaml` and name the exact canonical sections. Keep the source mapping, documentation-sync closure, and Agent protocol updates in one candidate so preflight can verify changed lines against the declared topics.
 
 `config/system-facts.yaml` is the canonical registry for stable CLI, platform, runtime, dependency and validation facts; `scripts/system_facts.py` generates only the marked reference table. CI changed-path planning is documented with the publication-preflight and maintenance topics, while `orchestration/INTEGRATION_GATE.md` remains explicit that optional setup selection cannot waive mandatory checks.
+
+**Plan19 architecture and runtime closure.**
+
+Plan19 keeps `config/capability-registry.yaml` authoritative and regenerates the existing surface inventory and Capability Map formats. Human and Agent references must preserve the experimental/advisory hook boundary and report-only release, branch and effectiveness evidence.

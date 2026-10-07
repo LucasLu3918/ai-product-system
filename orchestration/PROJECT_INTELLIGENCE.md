@@ -691,3 +691,7 @@ Use `aips intelligence temporal --project <path> --mode as-of --revision <sha>` 
 `IMPACT_GRAPH.yaml` v2 may add optional revision validity and provenance to nodes or edges while v1 data remains readable. Retrieval SQLite may project temporal assertions, supersession links and ancestry cache, but it is rebuildable and never canonical.
 
 Canonical Skill routing metadata is resolved from frontmatter through the generated compatible v1 INDEX; Intelligence records source pointers rather than another routing metadata copy.
+
+**Plan19 architecture and runtime closure.**
+
+The Plan19 storage extraction is bounded to atomic text/YAML writes and writer locking. The existing facade continues to expose the same objects and behavior; verify symbol identity and persistence lifecycle before changing further Project Intelligence boundaries.

@@ -68,3 +68,7 @@ Portable Command Core 的 Registry、renderer、ownership conflict 與 MCP read-
 ## Verification History
 
 Scenario-by-scenario 的演進與數值證據放在 [Scenario Conformance](CONFORMANCE.md)，不再把每個版本/Scenario追加到本頁尾端。
+
+**Plan19 architecture and runtime closure.**
+
+The September 2026 effectiveness snapshot is recorded in [PLAN19_EVOLUTION_EFFECTIVENESS.yaml](../../.aips/review/PLAN19_EVOLUTION_EFFECTIVENESS.yaml). It reports 100 unique signals, no shortlist, and incomplete pre-analysis coverage; this is coverage evidence, not a source-quality score or ranking change.

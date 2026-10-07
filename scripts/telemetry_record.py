@@ -31,6 +31,7 @@ MODEL_OPERATIONS = {"chat", "generate_content", "text_completion", "embeddings",
 ALLOWED_ATTRIBUTES = {
     "operation_id", "parent_operation_id", "related_operation_id", "name",
     "provider", "model", "input_tokens", "output_tokens", "status",
+    "usage_source", "usage_confidence", "cost_status",
 }
 MAX_EVENT_BYTES = 4096
 
@@ -84,6 +85,14 @@ def record(args: argparse.Namespace) -> dict:
                     raise ValueError(f"{key} must be an integer from 0 to 1000000000")
                 if value is not None:
                     attrs[key] = value
+            has_usage = args.input_tokens is not None or args.output_tokens is not None
+            if has_usage and args.usage_source != "runtime_observed":
+                raise ValueError("token usage must be explicitly marked runtime_observed")
+            if has_usage and args.usage_confidence not in {"observed", "estimated"}:
+                raise ValueError("reported token usage requires observed or estimated confidence")
+            attrs["usage_source"] = args.usage_source if has_usage else "unavailable"
+            attrs["usage_confidence"] = args.usage_confidence if has_usage else "unknown"
+            attrs["cost_status"] = "unknown"
             attrs["status"] = args.outcome
     elif kind == "tool" and action == "completed":
         attrs["status"] = args.outcome
@@ -91,7 +100,7 @@ def record(args: argparse.Namespace) -> dict:
         raise ValueError("provider/model/token values are allowed only on model events")
 
     attrs = {k: v for k, v in attrs.items() if k in ALLOWED_ATTRIBUTES and v is not None}
-    now = dt.datetime.now(dt.timezone.utc).isoformat(timespec="microseconds").replace("+00:00", "Z")
+    now = dt.datetime.now(dt.UTC).isoformat(timespec="microseconds").replace("+00:00", "Z")
     event = {
         "timestamp": now,
         "event": f"aips.telemetry.{kind}.{action}",
@@ -118,6 +127,8 @@ def main() -> int:
     p.add_argument("--model")
     p.add_argument("--input-tokens", type=int)
     p.add_argument("--output-tokens", type=int)
+    p.add_argument("--usage-source", choices=["runtime_observed", "unavailable"], default="unavailable")
+    p.add_argument("--usage-confidence", choices=["observed", "estimated", "unknown"], default="unknown")
     p.add_argument("--outcome", choices=["OK", "ERROR"], default="OK")
     args = p.parse_args()
     try:

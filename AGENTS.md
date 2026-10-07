@@ -36,6 +36,10 @@ Key protocol pointers:
 - scenario conformance: `orchestration/CONFORMANCE.md`
 - agent eval conformance: `orchestration/AGENT_EVAL.md`
 - model routing: `orchestration/MODEL_ROUTING.md`
+- capability and architecture truth: `config/capability-registry.yaml`, `orchestration/REPOSITORY_HEALTH.md`
+- release, branch and evolution evidence: `orchestration/RELEASE_READINESS.md`, `orchestration/BRANCH_HYGIENE.md`, `orchestration/EVOLUTION_RADAR.md`
 - Constitution: `core/CONSTITUTION.md`
 
 Human-facing documentation starts at `README.md`; agent routing starts here.
+
+`references/evolution/CAPABILITY_MAP.yaml` and `config/architecture-surfaces.yaml` are generated projections of `config/capability-registry.yaml`. Check projection drift with `python scripts/capability_registry.py check`; do not edit generated files as independent truth. The Codex hook probe under `harness/adapters/codex/hooks/` is experimental, local and `ADVISORY`; it does not represent global or complete enforcement.

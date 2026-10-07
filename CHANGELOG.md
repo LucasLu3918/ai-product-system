@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Add a canonical Capability Registry with deterministic v1 consumer projections and Repository Health drift/orphan detection.
+- Add an isolated Codex PreToolUse probe that blocks only one harmless synthetic Bash command; keep unsupported/error paths and aggregate governance `ADVISORY`.
+- Add change-aware Agent Eval freshness selection, a facade-preserving Project Intelligence storage seam, and measured report-only coverage evidence without tightening required thresholds.
+- Record provider-neutral runtime usage with explicit provenance, advisory per-run cost budgets and an unknown-price state; export no budget amount or inferred cost.
+- Add exact-SHA branch reconciliation and fresh Evolution Effectiveness evidence; keep branch deletion and release/tag creation separately Human-authorized.
 - Preserve the eligible runtime-selected primary implementation model and delegate only for material evidence, risk, isolation or review value.
 - Generate the compatible Skill registry from canonical frontmatter; retain tier hints, reject drift and consolidate applicability aliases.
 - Move REST and visual execution plumbing behind on-demand protocols, clarify ordinary data modeling versus DDD, and retain centralized financial assurance authority.

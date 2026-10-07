@@ -952,8 +952,12 @@ The new paths add fail-closed evidence and handoff behavior beneath existing top
 
 ~~~mermaid
 flowchart LR
-    CM[Capability Map] --> RH[Deterministic Repository Health]
-    ASI[Architecture Surface Inventory] --> RH
+    CR[Canonical Capability Registry] --> GEN[Deterministic generator]
+    GEN --> CM[Compatible Capability Map]
+    GEN --> ASI[Compatible Architecture Surface Inventory]
+    CR --> RH[Deterministic Repository Health]
+    CM --> RH
+    ASI --> RH
     GD[Bounded guard/gate discovery] --> RH
     SC[Scenario Conformance] --> RH
     DOC[Canonical documentation bindings] --> RH
@@ -963,7 +967,7 @@ flowchart LR
     DRIFT --> HUMAN[Human review]
 ~~~
 
-Repository Health is credential-free consistency evidence over existing truths. The explicit Architecture Surface Inventory classifies every Capability Map entry into a major subsystem and binds repository paths, canonical docs and validation evidence. It calls Scenario Conformance, verifies Integration Gate wiring, and emits an exact-candidate CI evidence artifact; it does not create a second Change Impact system or repair drift automatically.
+Repository Health is credential-free consistency evidence over existing truths. `config/capability-registry.yaml` is canonical; `references/evolution/CAPABILITY_MAP.yaml` and `config/architecture-surfaces.yaml` are deterministic v1 projections, and stale projections are drift. The registry accounts for every Capability Map entry exactly once and binds repository paths, canonical docs and validation evidence. Bounded guard, gate, scheduler, ratchet, export and hygiene discovery flags newly introduced unregistered major scripts. Repository Health calls Scenario Conformance, verifies Integration Gate wiring, and emits an exact-candidate CI evidence artifact; it does not create a second Change Impact system or repair drift automatically.
 
 
 ## Governance Audit Retention and Verification Policy

@@ -229,3 +229,7 @@ Windows + WSL 可從 WSL terminal 執行相同 aips uninstall；repository 亦�
 ~~~
 
 這些只保留給既有 checkout / recovery。新文件與新使用者一律使用 Install / Uninstall terminology。
+
+**Plan19 architecture and runtime closure.**
+
+Plan19 keeps `VERSION` at `0.74.0` and records readiness checks without creating a release or tag. A future release still requires exact-candidate version, tag, changelog and installer consistency plus separate human authorization.

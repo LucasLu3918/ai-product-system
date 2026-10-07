@@ -875,3 +875,7 @@ Verifies deterministic pre-analysis exclusion reasons and counts without changin
 ## Scenario 210 — Python runtime support policy
 
 Scenario 210 is lifecycle-covered by `tests/evidence/install_preflight_lifecycle.py` and `tests/evidence/system_facts_lifecycle.py`. It verifies the Python >=3.12 floor across explicit selection, old managed venv repair, doctor diagnostics, canonical facts, and the scheduled 3.12–3.14 compatibility workflow.
+
+**Plan19 architecture and runtime closure.**
+
+Scenarios 226–229 cover registry-backed architecture truth, the bounded local Codex hook probe, report-only quality baselines, and behavior-based Eval freshness. The hook scenario does not attest live runtime dispatch; runtime-dependent scenarios 192, 193 and 224 remain manual.

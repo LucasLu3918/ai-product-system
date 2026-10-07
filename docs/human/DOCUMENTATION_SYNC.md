@@ -184,3 +184,7 @@ Exact-candidate browser toolchain selection is documented under the current-beha
 - Version-tag readiness changes also require the canonical release-readiness and Scenario 208 documentation placements; readiness remains separate from tag publication.
 
 `scripts/retrieval_storage.py` shares the existing Project Intelligence placement and documentation-sync closure with `scripts/retrieval_intelligence.py`; new helper modules must be added to both canonical trigger lists before publication.
+
+**Plan19 architecture and runtime closure.**
+
+Plan19 architecture and runtime claims use the canonical Capability Registry; the surface inventory and legacy Capability Map are generated views. Hook support remains advisory unless the exact local synthetic path is verified, and monthly effectiveness reports do not change source weights.

@@ -10,6 +10,7 @@ evidence_binding:
   manifest: complete
   dirty_workspace: report_non_reproducible
 truth_sources:
+  capability_registry: config/capability-registry.yaml
   capability_map: references/evolution/CAPABILITY_MAP.yaml
   architecture_surfaces: config/architecture-surfaces.yaml
   repository_validator: tests/validate_repository.py
@@ -17,13 +18,19 @@ truth_sources:
   scenario_dir: tests/scenarios
   scenario_helper: scripts/scenario_conformance.py
 surface_discovery:
-  patterns: [scripts/*_guard.py, scripts/*_gate.py]
+  patterns:
+    - scripts/*_guard.py
+    - scripts/*_gate.py
+    - scripts/*_scheduler.py
+    - scripts/*_ratchet.py
+    - scripts/*_export.py
+    - scripts/*_hygiene.py
   ignore: []
 documentation_bindings:
   - source: orchestration/REPOSITORY_HEALTH.md
-    required_references: [config/repository-health.yaml, config/architecture-surfaces.yaml, scripts/repository_health.py, references/evolution/CAPABILITY_MAP.yaml, scripts/scenario_conformance.py, config/integration-gate.yaml, .github/workflows/repository-health.yml]
+    required_references: [config/repository-health.yaml, config/capability-registry.yaml, config/architecture-surfaces.yaml, scripts/capability_registry.py, scripts/repository_health.py, references/evolution/CAPABILITY_MAP.yaml, scripts/scenario_conformance.py, config/integration-gate.yaml, .github/workflows/repository-health.yml]
   - source: docs/human/MAINTENANCE.md
-    required_references: [orchestration/REPOSITORY_HEALTH.md, config/architecture-surfaces.yaml, scripts/repository_health.py, .github/workflows/repository-health.yml]
+    required_references: [orchestration/REPOSITORY_HEALTH.md, config/capability-registry.yaml, config/architecture-surfaces.yaml, scripts/capability_registry.py, scripts/repository_health.py, .github/workflows/repository-health.yml]
 contract_files:
   - path: .github/workflows/validate.yml
     required_strings: [scripts/publish_preflight.py, config/integration-gate.yaml, scripts/repository_health.py, repository-health-report.json, "actions/upload-artifact@", "repository:", "needs: janitor"]
