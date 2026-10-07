@@ -2,6 +2,16 @@
 id: security-testing
 capability: security
 estimated_context_cost: medium
+triggers:
+- sal_3_or_4
+- security_review
+- high_value_change
+model_requirements:
+  reasoning: high
+  coding: strong
+  reliability: critical
+  minimum_tier: 3
+  preferred_tier: 3
 ---
 
 # Security Testing

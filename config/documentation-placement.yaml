@@ -644,3 +644,14 @@ placement_rules:
     placements:
       docs/human/MAINTENANCE.md: [Validation architecture consistency]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+
+  - id: primary-skill-routing
+    triggers:
+      - orchestration/MODEL_ROUTING.md
+      - orchestration/VISUAL_POLISH.md
+      - scripts/skill_index.py
+    placements:
+      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution]
+      docs/human/MAINTENANCE.md: [Validation architecture consistency]
+      docs/ARCHITECTURE.md: [End-to-end product delivery]

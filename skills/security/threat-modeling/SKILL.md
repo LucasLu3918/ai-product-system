@@ -2,6 +2,16 @@
 id: threat-modeling
 capability: security
 estimated_context_cost: medium
+triggers:
+- sal_3_or_4
+- new_trust_boundary
+- sensitive_exposure
+model_requirements:
+  reasoning: high
+  coding: normal
+  reliability: critical
+  minimum_tier: 3
+  preferred_tier: 3
 ---
 
 # Threat Modeling

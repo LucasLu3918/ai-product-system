@@ -2,6 +2,16 @@
 id: performance-profiling
 capability: performance
 estimated_context_cost: low
+triggers:
+- latency_target
+- throughput_target
+- resource_optimization
+model_requirements:
+  reasoning: high
+  coding: normal
+  reliability: high
+  minimum_tier: 2
+  preferred_tier: 3
 ---
 
 # Performance Profiling

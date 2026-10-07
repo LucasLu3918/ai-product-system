@@ -2,6 +2,16 @@
 id: visual-quality-review
 capability: design
 estimated_context_cost: medium
+triggers:
+- visual_review
+- brand_consistency_review
+- creative_direction_review
+model_requirements:
+  reasoning: high
+  coding: none
+  reliability: high
+  minimum_tier: 2
+  preferred_tier: 3
 ---
 
 # Visual Quality Review
@@ -40,27 +50,8 @@ For V2:
 - do not PASS with unexplained material findings;
 - verify Project Visual Profile freshness when reusable visual knowledge changed.
 
-## Rendered evidence integrity
+## Evidence protocol
 
-Use `templates/design/VISUAL_AUDIT.yaml` as the existing audit/evidence container rather than creating a parallel visual-evidence subsystem.
-
-For every material rendered capture, record:
-
-- target route/artifact;
-- viewport dimensions and label;
-- interaction state;
-- captured artifact path;
-- relevant input assets;
-- provider-neutral capture provenance including provider, source revision and capture time.
-
-Record the independent Visual Quality Review decision and observable checks separately from deterministic evidence integrity. A screenshot file existing is never equivalent to a visual-quality PASS.
-
-When the project can provide rendered artifacts, validate the evidence envelope with:
-
-~~~text
-python scripts/visual_evidence.py <VISUAL_AUDIT.yaml> --project <project>
-~~~
-
-This helper may reject missing artifacts, incomplete provenance, missing required viewport/state coverage, a PASS without before/after evidence, or a closed finding without implementation root-cause evidence. It does **not** inspect pixels or infer visual quality; quality remains a Visual Quality Review judgment backed by the rendered evidence.
+Load the rendered evidence integrity section of `orchestration/VISUAL_POLISH.md` when reviewing rendered captures or closing material findings. A screenshot file or deterministic envelope PASS does not prove visual quality. Keep the independent review decision separate.
 
 Return PASS / PASS WITH COMMENTS / REQUEST CHANGES / BLOCK with concrete evidence and recommendations.

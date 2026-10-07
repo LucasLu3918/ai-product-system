@@ -381,6 +381,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+Skill metadata 修改後須重建 INDEX 並執行 `tests/evidence/skill_index_lifecycle.py`；完整 repository validation 也會執行此 lifecycle。Scenario 224 是人工語意驗收，225 是 registry lifecycle 證據，不可互換。
+
 Shared Python CI bootstrap callers must declare their requirement files, tested constraints, and import smoke tests; the action runs `pip check` and does not own package versions.
 
 `tests/validate_repository.py` classifies every OpenAPI-dependent lifecycle, including `implementation_enforcement_lifecycle.py`, under the exact candidate's optional-toolchain plan. When `needs_openapi` is false it skips those optional checks; an absent or invalid plan retains the full validation profile. The runner consumes `AIPS_CI_VALIDATION_PLAN` itself and removes it before loading contracts or launching lifecycle subprocesses, so selection metadata cannot change isolated test behavior. Secret scanning, the required repository aggregate and the Integration Gate remain mandatory.

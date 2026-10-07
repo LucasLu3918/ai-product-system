@@ -141,6 +141,8 @@ Do not select an ELK/Prometheus/Grafana/etc. stack merely because observability 
 
 ## API_SPEC.md
 
+Data modeling describes domain concepts, ownership, relationships and lifecycle first. Bounded contexts, aggregates and value objects apply when DDD is selected, rather than being mandatory for every Domain Model.
+
 
 When applicable define operations, auth/authz, request/response, validation/errors, pagination/filtering/idempotency/versioning/examples/compatibility. Prefer machine-readable contracts where appropriate.
 

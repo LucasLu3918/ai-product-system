@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+主要模型／Skill metadata 變更同步更新模型路由、架構、技術指南、維護與 Conformance；REST／visual Skill 精簡仍須保留 canonical orchestration 指標與原有 evidence 規則。
+
 Keep exactly one canonical `Unreleased` heading empty when a release candidate is ready, and record finalized notes under the matching `VERSION` heading. Keep the latest five full releases and all stable version anchors in `CHANGELOG.md`; manually archive older full sections without loss under `docs/history/changelog/`. The document-size audit remains report-only and never moves files.
 
 共用快取解析器歸既有 publication-preflight 主題，套件安裝診斷器歸 installation 主題；修正與文件閉包一起驗證，不建立重複的治理或文件層。
@@ -136,6 +138,8 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+主要實作保留合格的 Runtime／使用者模型；Skill frontmatter 產生相容 v1 INDEX，決定性 lifecycle 與人工模型政策驗收分開記錄。
 
 新增 behavior-bearing helper 必須同步更新 placement 與 sync registry；Project Intelligence promotion 保留既有 approval facade，治理快照維持唯讀並在資料不可讀時回報 UNKNOWN。
 

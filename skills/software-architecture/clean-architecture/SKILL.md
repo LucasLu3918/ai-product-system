@@ -1,11 +1,18 @@
 ---
 id: clean-architecture
 capability: software-architecture
-applies_when:
-  - dependency_boundaries_matter
-  - domain_logic_should_be_framework_independent
-  - architecture_review
 estimated_context_cost: low
+triggers:
+- dependency_boundary
+- architecture_review
+- dependency_boundaries_matter
+- domain_logic_should_be_framework_independent
+model_requirements:
+  reasoning: high
+  coding: normal
+  reliability: high
+  minimum_tier: 2
+  preferred_tier: 3
 ---
 
 # Clean Architecture

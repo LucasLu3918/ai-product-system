@@ -14,3 +14,5 @@ For an existing-project mutation:
 5. verify input/output/data/event/consumer impact after the diff.
 
 General conversation does not require heavy project initialization.
+
+The runtime/user-selected primary implementation model remains the default unless policy or capability requires another route. Skill tiers must not silently downshift it. Prefer bounded primary execution; delegate only for material evidence, specialty, isolation or independent-review value.

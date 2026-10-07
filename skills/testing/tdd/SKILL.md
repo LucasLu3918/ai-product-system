@@ -1,11 +1,18 @@
 ---
 id: tdd
 capability: testing
-applies_when:
-  - modifying_testable_behavior
-  - implementing_business_rules
-  - implementing_api_or_service_behavior
 estimated_context_cost: low
+triggers:
+- testable_behavior_change
+- modifying_testable_behavior
+- implementing_business_rules
+- implementing_api_or_service_behavior
+model_requirements:
+  reasoning: medium
+  coding: strong
+  reliability: high
+  minimum_tier: 2
+  preferred_tier: 2
 ---
 
 # Test-Driven Development

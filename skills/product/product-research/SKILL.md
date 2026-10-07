@@ -2,6 +2,19 @@
 id: product-research
 capability: product
 estimated_context_cost: medium
+triggers:
+- market_research
+- competitor_research
+- product_benchmark
+- user_problem_research
+- industry_research
+- product_strategy_evidence
+model_requirements:
+  reasoning: high
+  coding: none
+  reliability: high
+  minimum_tier: 2
+  preferred_tier: 2
 ---
 
 # Product Research

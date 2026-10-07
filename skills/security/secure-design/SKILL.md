@@ -2,6 +2,17 @@
 id: secure-design
 capability: security
 estimated_context_cost: low
+triggers:
+- auth
+- authorization
+- sensitive_data
+- security_boundary
+model_requirements:
+  reasoning: high
+  coding: normal
+  reliability: critical
+  minimum_tier: 3
+  preferred_tier: 3
 ---
 
 # Secure Design

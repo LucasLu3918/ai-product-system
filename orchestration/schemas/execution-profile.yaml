@@ -33,3 +33,10 @@ authorization:
   status: NOT_EVALUATED | ALLOW | DENY | BLOCKED
   enforcement: PRE_EXECUTION_EVIDENCE | RUNTIME_GUARDED
 subagents: []
+
+# Optional policy intent; does not alter host model settings.
+primary_execution_policy:
+  strategy: runtime_preferred
+  allow_downshift: false
+auxiliary_routing:
+  strategy: minimum_sufficient

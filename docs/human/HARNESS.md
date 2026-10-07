@@ -72,6 +72,8 @@ Temporal Project Intelligence 的 historical query 由既有 deterministic CLI�
 
 ## Capability truth
 
+Codex managed block 保留 Runtime／使用者選定的合格主要模型，並指向 bounded primary execution；不更改模型設定或擴大 tool guard 權限。
+
 GitHub governance snapshot 是 repository operator 的唯讀工具，不是 runtime adapter 能力，也不擴張 Harness 的遠端寫入權限。
 
 The managed AIPS CLI support floor is Python 3.12, with a separate scheduled 3.12–3.14 compatibility smoke. Runtime support facts are generated into System Reference and remain distinct from host-specific adapter capability.

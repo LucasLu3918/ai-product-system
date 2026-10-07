@@ -77,3 +77,5 @@ External research may inform generator selection, but executable binaries, remot
 The shared Phase 5 Widgets example is workflow evidence only. When onboarding a real product, resolve that product's contract authority and supported generator version from its own repository and applicable official sources; do not carry the example's contract or tool choice into the product by inference.
 
 Connections and actions still follow provider permissions, privacy, least privilege and existing tool/governance rules.
+
+Primary model preference and sparse delegation preserve the existing external-source and data-transfer boundaries; independent evidence gathering requires a bounded authorized source scope.

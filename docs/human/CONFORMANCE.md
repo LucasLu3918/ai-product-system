@@ -1460,6 +1460,8 @@ Lifecycle evidence covers scheduler-serialized ownership claims, active worktree
 
 ## Scenario 183–192 — Planning Package v2
 
+主要實作保留合格的 Runtime／使用者模型；Skill frontmatter 產生相容 v1 INDEX，決定性 lifecycle 與人工模型政策驗收分開記錄。
+
 Scenarios 183–192 cover optional manifest dependency graphs, stable requirement and acceptance traceability, separate Human approvals at Gate 1 and Gate 2, reuse of product and data-modeling capabilities, cross-artifact UX/visual/domain/API references, legacy package compatibility, on-demand e-commerce guidance, actionable structural diagnostics and an end-to-end planning journey. Structural and lifecycle contracts run locally; Scenario 192 remains manual because a real product-specific planning and approval journey requires human decisions.
 
 Current inventory after Scenario 192: 34 deterministic + 103 lifecycle + 54 agent_eval = 191 / 191 automated; 1 manual; 0 uncovered.
@@ -1558,6 +1560,8 @@ The monthly evaluator deterministically samples up to 20 signal fingerprints and
 驗證 deterministic pre-analysis 對候選排除原因與計數的可重現性，且不改變人工決策權。
 
 ## Scenario 220 — Parallel advisory fast feedback
+
+Scenario 224 驗收主要模型保留與稀疏委派，目前登錄為 manual；Scenario 225 以 lifecycle 驗證 metadata 唯一來源、v1 相容、drift 與失敗路徑。決定性 registry 測試不代表已驗證 Agent 實際模型選擇。
 
 Pull requests run the bounded repository preflight concurrently against the exact candidate. Its findings are reported for early feedback and do not replace or gate the required full repository validation; unrelated label-only events skip the advisory job.
 

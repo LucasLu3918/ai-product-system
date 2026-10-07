@@ -150,6 +150,8 @@ Generated Conformance views must retain a deterministic path from the canonical 
 
 ## Evolution Effectiveness mapping
 
+Primary-routing and Skill-metadata changes reconcile canonical model policy, architecture, Human maintenance/technology guidance and Scenario coverage; metadata generation does not replace semantic review.
+
 Monthly Human relevance evaluation also includes deterministic fingerprint sampling, actionable yield and per-source relevance yield. Keep these metric and authority statements aligned across the Human Radar guides, Scenario 218 and the Technology Guide; incomplete labels remain `NOT_READY`.
 
 Dependency risk classification adds an advisory policy and CLI mapping package classes to recommended validation plans. Keep the class behaviors, unknown-package fail-closed default, human decision requirement and no-auto-merge authority aligned with Maintenance, Technology Guide and Scenario 221.

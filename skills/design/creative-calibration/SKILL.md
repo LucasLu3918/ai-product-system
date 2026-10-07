@@ -2,6 +2,16 @@
 id: creative-calibration
 capability: design
 estimated_context_cost: low
+triggers:
+- vague_visual_request
+- user_reference_assets
+- style_calibration
+model_requirements:
+  reasoning: medium
+  coding: none
+  reliability: high
+  minimum_tier: 1
+  preferred_tier: 2
 ---
 
 # Creative Calibration

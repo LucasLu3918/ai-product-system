@@ -1,7 +1,16 @@
 ---
 id: capacity-cost
 capability: infrastructure
-estimated_context_cost: low
+estimated_context_cost: medium
+triggers:
+- infrastructure_sizing
+- hosting_cost
+model_requirements:
+  reasoning: high
+  coding: none
+  reliability: high
+  minimum_tier: 2
+  preferred_tier: 3
 ---
 
 # Capacity Cost

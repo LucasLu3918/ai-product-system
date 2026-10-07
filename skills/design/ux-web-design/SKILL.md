@@ -2,6 +2,16 @@
 id: ux-web-design
 capability: design
 estimated_context_cost: low
+triggers:
+- ux_flow
+- web_ui
+- interaction_design
+model_requirements:
+  reasoning: medium
+  coding: none
+  reliability: normal
+  minimum_tier: 1
+  preferred_tier: 2
 ---
 
 # Ux Web Design

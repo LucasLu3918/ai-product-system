@@ -2,20 +2,30 @@
 id: rest-api
 capability: engineering
 estimated_context_cost: low
+triggers:
+- rest_api_change
+- endpoint_design
+model_requirements:
+  reasoning: medium
+  coding: strong
+  reliability: high
+  minimum_tier: 2
+  preferred_tier: 2
 ---
 
-# Rest Api
+# REST API
 
-Inspect the existing API contract first. Preserve compatibility unless change is approved. For planning, derive each operation from a consumer need and domain behavior, then specify stable `OP-NNN` ID, requirement references, authorization, request/response, validation, errors, pagination/filtering, concurrency, idempotency, retry behavior, compatibility and observability.
+Inspect the existing API contract and consumer needs first. Project contracts, scoped instructions and the approved Implementation Profile take precedence.
 
-Use a machine-readable contract when it improves consumer validation. Choose OpenAPI for useful HTTP contracts and AsyncAPI or an equivalent for event/message contracts. Resolve specification version against the target toolchain; do not hard-code a version in AIPS Core. A structural API contract does not establish security or architecture quality. Project contracts and scoped instructions outrank this generic Skill.
+## Semantic checks
 
-For REST/OpenAPI implementation, resolve contract authority before changing behavior: `canonical`, `descriptive`, `proposed`, or `unresolved`. Existing-project specs are not automatically canonical. Compare the approved contract with implementation, tests and available runtime evidence; classify drift instead of silently normalizing it. An unresolved authority blocks contract-affecting implementation, and canonical status does not authorize an unapproved breaking change. Keep transport DTOs separate from domain models unless the project architecture explicitly says otherwise. Follow the Implementation Profile and protect files whose ownership is generated or unresolved.
+- Derive operations from domain behavior and consumer needs; use stable `OP-NNN` IDs and requirement references when planning.
+- Specify request/response shapes, validation, authorization, errors, pagination/filtering, state transitions, concurrency, idempotency, retry behavior and observability.
+- Preserve compatibility unless a breaking change is explicitly approved. Compare implementation, tests and runtime evidence with the approved contract; classify drift instead of silently normalizing it.
+- Resolve contract authority as `canonical`, `descriptive`, `proposed` or `unresolved`. Existing specs are not automatically canonical; unresolved authority blocks contract-affecting implementation. Canonical status does not authorize a breaking change.
+- Keep transport DTOs separate from domain models unless project architecture explicitly permits sharing. Protect generated or unresolved ownership boundaries.
+- Choose a machine-readable contract when useful: OpenAPI for HTTP, AsyncAPI or an equivalent for events. Resolve specification version against the target toolchain rather than fixing a version in AIPS Core. Structural validity does not prove security or semantic correctness.
 
-When OpenAPI evidence is needed, use `scripts/openapi_contracts.py` with dependencies from `requirements-openapi.txt`. Validate offline with repository-confined local references; compare compatibility only against a declared canonical baseline; run the project-native contract test command as argv and bind its JUnit operation coverage, spec/report digests and Git revision. Treat unknown changes, stale evidence and unavailable tests as non-PASS, and do not infer assertion quality from operation-name coverage.
+## On-demand implementation protocol
 
-When the Implementation Profile enables Phase 3, keep each changed API path within its declared ownership scope, preserve generated-file provenance and provide fresh quality/contract evidence for the exact candidate. Run declared project commands explicitly; the Integration Gate inspects their reports and does not execute them. A matching generated hash does not authorize an edit to an unresolved boundary or decide API business behavior.
-
-Phase 4 client generation is optional and requires a canonical OpenAPI source plus current validation evidence. Preview the configured local adapter before execution; only an explicit Human `--execute` runs its pinned repository-local tool. Review generated diffs and run project-native compile, contract and integration tests. The Integration Gate never executes the Profile generator, and adapter hashes do not prove semantic correctness or OS-level isolation.
-
-When `enforcement.generator_reports` is configured, retain the untracked Phase 4 report and let Phase 3 verify it against the exact Profile, inputs, outputs and candidate history. Use the shared Widgets reference pilot to understand the workflow; each real product still requires its own service-level success, error, serialization and authorization checks.
+Load `orchestration/IMPLEMENTATION_RESOLUTION.md` when OpenAPI validation/compatibility, contract-test evidence, Phase 3 ownership enforcement or optional Phase 4 client generation is needed. It owns tool invocation, report freshness, generated-file provenance and Integration Gate inspection. Project-native tests verify service success/error, serialization and authorization behavior. The Gate never runs a project generator; explicit Human execution authority remains required.

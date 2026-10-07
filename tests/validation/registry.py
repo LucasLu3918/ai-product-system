@@ -20,6 +20,7 @@ class ValidatorSpec:
 
 VALIDATORS = (
     ValidatorSpec("validation.static_contracts", True),
+    ValidatorSpec("validation.skill_index_contracts", False),
     ValidatorSpec("validation.versioning_contracts", True),
     ValidatorSpec("validation.system_facts_contracts", True),
     ValidatorSpec("validation.runtime_contracts", False),

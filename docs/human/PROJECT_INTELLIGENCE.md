@@ -61,6 +61,8 @@ Architecture 摘要、核准覆寫與時序文字在進入 Runtime Context 前�
 
 ## Attach / Detach
 
+Skill frontmatter 為 routing source，INDEX 為 generated view；Intelligence 保留 source pointers，EPHEMERAL 仍使用 external cache。
+
 Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Detach 先 validated sync 回 External Cache，再封存 `.ai/`。
 
 ## Change Impact
