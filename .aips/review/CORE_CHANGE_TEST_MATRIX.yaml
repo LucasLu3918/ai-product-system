@@ -143,4 +143,4 @@ verification:
   evolution_effectiveness: PASS
   documentation: PASS
   secret_scan: PASS
-  exact_candidate_integration_gate: PENDING
+  exact_candidate_integration_gate: PASS
