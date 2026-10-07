@@ -166,7 +166,6 @@ matrix:
 review_evidence:
   required: false
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
-blockers:
-  - candidate binding refreshed; review scope and evidence before marking READY
-status: DRAFT
+actual_diff_reconciled: true
+blockers: []
+status: READY
