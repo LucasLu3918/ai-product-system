@@ -199,6 +199,8 @@ Review actual:
 
 ## Release Security Gate
 
+Plan21 shared hash/path helpers preserve existing evidence formats and do not change fail-closed policy, authorization decisions, or publication gates.
+
 `SYSTEM_CORE.md` 保留發布與合併邊界；Turn Context 路由和 hook 輸出皆為上下文指標，不得解讀為 publication authority。
 
 Publication scanning excludes only validated numeric Git index/mode metadata; paths, added/removed/context lines and unknown headers remain scanned. Branch deletion verifies GitHub RS256 issuer, repository, protected main, workflow SHA, dispatch event and a proposal-bound audience. Runner flags alone grant no authority; tokens remain in memory.
@@ -226,6 +228,8 @@ Post-merge reconciliation retains its clean-worktree, remote ancestry and fast-f
 Remote Git candidates receive a credential-free strict scan over the exact final tree and complete candidate history. Release readiness checks are read-only; signed tag trust and the first release decision remain separate Human-controlled steps.
 
 The public repository runs GitHub Dependency Review on pull requests (blocking newly introduced high or critical vulnerabilities) as an exact-candidate shadow alongside the required `repository` aggregate. Its standalone check remains authoritative until parity is observed and a separate reviewed change switches the canonical required path. CodeQL default setup for `actions` and `python`, and scheduled OpenSSF Scorecard reporting complement candidate secret scanning: dependency review detects vulnerable dependency deltas, CodeQL analyzes source vulnerabilities, and Scorecard reports repository supply-chain posture. Scorecard remains advisory; none of these workflows can merge, publish, or change source. Dependency Review and Scorecard actions are pinned to immutable commits with read-only permissions except the narrowly scoped SARIF upload token.
+
+The weekly/manual security inventory adds a pinned OSV Scanner cross-ecosystem inventory and a full-history Gitleaks shadow comparison against the existing project scanner. It reports outcomes for maintainer review without PR comments or a Gitleaks artifact; failures and mismatches stay advisory. The existing required candidate secret scan and repository Gate remain the release controls, and CodeQL configuration is verified through GitHub's default setup.
 
 The scheduled Python compatibility workflow uses `contents: read` and pinned checkout/setup-python actions. Its smoke result is supplementary; it cannot replace the exact-candidate PR Gate or grant publication authority.
 
@@ -358,6 +362,8 @@ The Parallel Run Dashboard is loopback-only and read-only. Its projection cannot
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.
 
 ## Runtime Policy Enforcement
+
+Native hook adapters reject malformed input explicitly and fail closed if policy evaluation or audit persistence fails. Diagnostic logging goes to stderr; response envelopes contain a stable failure code without exposing exception text or other sensitive details.
 
 主要模型偏好與輔助 tier 路由仍受既有 privacy、capability floor、SAL 與 reviewer independence 限制。Financial Integrity Skill 引用本文件的 SAL authority，不另外建立政策來源。
 

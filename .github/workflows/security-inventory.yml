@@ -1,0 +1,64 @@
+name: advisory-security-inventory
+
+on:
+  schedule:
+    - cron: "12 12 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  osv-inventory:
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: google/osv-scanner-action/.github/workflows/osv-scanner-reusable.yml@c7c7bcb0773cc4678a674ada03a66cc5c4325476
+    with:
+      scan-args: |-
+        --include-git-root -r ./
+
+  gitleaks-shadow:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+      - name: Install the project scanner dependency
+        run: python -m pip install -c constraints/tested.txt PyYAML
+      - name: Project scanner observation
+        id: project-scan
+        continue-on-error: true
+        run: |
+          python scripts/check_secret_leakage.py --root . --policy config/secret-scan.yaml --strict --json > "$RUNNER_TEMP/project-secret-scan.json"
+      - name: Compare with Gitleaks shadow scan
+        id: gitleaks
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          GITLEAKS_ENABLE_COMMENTS: "false"
+          GITLEAKS_ENABLE_UPLOAD_ARTIFACT: "false"
+      - name: Record advisory outcome comparison
+        if: always()
+        env:
+          PROJECT_SCAN_OUTCOME: ${{ steps.project-scan.outcome }}
+          GITLEAKS_OUTCOME: ${{ steps.gitleaks.outcome }}
+        run: |
+          {
+            echo "## Advisory secret-scanner comparison"
+            echo "- Existing project scanner: `${PROJECT_SCAN_OUTCOME:-unknown}`"
+            echo "- Gitleaks shadow scan: `${GITLEAKS_OUTCOME:-unknown}`"
+            if [ "${PROJECT_SCAN_OUTCOME:-unknown}" = "${GITLEAKS_OUTCOME:-unknown}" ]; then
+              echo "- Outcome parity: matched"
+            else
+              echo "- Outcome parity: differs; review both scanner logs"
+            fi
+            echo "- This scheduled/manual observation is advisory and does not alter the required repository Gate."
+          } >> "$GITHUB_STEP_SUMMARY"

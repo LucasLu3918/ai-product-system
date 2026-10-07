@@ -228,6 +228,10 @@ docs_cmd() {
 
 evolution_cmd() {
   local action="${1:-}"
+  if [ "$action" = "help" ] || [ "$action" = "-h" ] || [ "$action" = "--help" ]; then
+    say "Usage: aips evolution <package|analyze|apply> [evolution analysis options]"
+    return 0
+  fi
   [ -n "$action" ] || die "Usage: aips evolution <package|analyze|apply> [evolution analysis options]"
   shift || true
   case "$action" in

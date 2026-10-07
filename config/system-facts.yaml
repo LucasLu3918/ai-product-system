@@ -37,6 +37,30 @@ commands:
     optional_dependencies: []
     validation_bindings: [tests/evidence/project_intelligence_lifecycle.py, tests/evidence/change_impact_resolution_lifecycle.py]
     documentation_bindings: [docs/human/PROJECT_INTELLIGENCE.md, docs/human/USER_GUIDE.md]
+  - id: project-check
+    command: aips project check
+    surfaces: [project-intelligence]
+    platforms: [linux, macos, windows-wsl]
+    runtime_requirement: Python ">=3.12"
+    optional_dependencies: []
+    validation_bindings: [tests/evidence/install_preflight_lifecycle.py]
+    documentation_bindings: [docs/human/INSTALLATION.md, docs/human/GETTING_STARTED.md]
+  - id: system-preflight
+    command: aips system preflight
+    surfaces: [runtime-context]
+    platforms: [linux, macos, windows-wsl]
+    runtime_requirement: Python ">=3.12"
+    optional_dependencies: []
+    validation_bindings: [tests/evidence/install_preflight_lifecycle.py]
+    documentation_bindings: [docs/human/INSTALLATION.md, docs/human/GETTING_STARTED.md]
+  - id: preflight-compatibility
+    command: aips preflight
+    surfaces: [runtime-context]
+    platforms: [linux, macos, windows-wsl]
+    runtime_requirement: Python ">=3.12"
+    optional_dependencies: []
+    validation_bindings: [tests/evidence/install_preflight_lifecycle.py]
+    documentation_bindings: [docs/human/INSTALLATION.md, docs/human/GETTING_STARTED.md]
   - id: publish
     command: aips publish
     surfaces: [runtime-context, scenario-conformance]

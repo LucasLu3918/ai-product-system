@@ -1,0 +1,110 @@
+version: 1
+proposal:
+  id: plan21-cli-scoped-impact-graph
+  status: PROPOSED_PENDING_HUMAN_REVIEW
+  purpose: Source-backed caller and consumer edges for the additive project/system CLI routes.
+  canonical_graph_updated: false
+  requires_explicit_human_approval: true
+  global_coverage_change: none
+  global_coverage_remains:
+    api: partial
+    data: partial
+    events: partial
+    consumers: unknown
+  scope:
+    id: plan21-project-system-cli
+    candidate_seed_ids:
+      - p21_project_check
+      - p21_system_preflight
+      - p21_preflight_compatibility
+    coverage:
+      api: partial
+      data: partial
+      events: partial
+      consumers: partial
+  candidate_nodes:
+    - id: p21_project_check
+      type: cli_command
+      symbol: aips project check
+      source: scripts/aips_cli/dispatch.sh
+    - id: p21_project_check_handler
+      type: cli_handler
+      symbol: project_check
+      source: scripts/aips_cli/project.sh
+    - id: p21_system_preflight
+      type: cli_command
+      symbol: aips system preflight
+      source: scripts/aips_cli/dispatch.sh
+    - id: p21_preflight_compatibility
+      type: cli_command
+      symbol: aips preflight
+      source: scripts/aips_cli/dispatch.sh
+    - id: p21_preflight_handler
+      type: cli_handler
+      symbol: preflight
+      source: scripts/aips_cli/maintenance.sh
+    - id: p21_preflight_lifecycle
+      type: contract_test
+      symbol: install_preflight_lifecycle
+      source: tests/evidence/install_preflight_lifecycle.py
+    - id: p21_cli_docs
+      type: documentation
+      symbol: CLI installation and getting started guidance
+      sources:
+        - docs/human/INSTALLATION.md
+        - docs/human/GETTING_STARTED.md
+  candidate_edges:
+    - from: p21_project_check
+      to: p21_project_check_handler
+      relation: dispatches_to
+      provenance:
+        - scripts/aips_cli/dispatch.sh:77-88
+        - scripts/aips_cli/project.sh:137-157
+    - from: p21_project_check_handler
+      to: p21_project_check
+      relation: reports_attachment_and_intelligence_freshness
+      provenance:
+        - scripts/aips_cli/project.sh:142-157
+    - from: p21_system_preflight
+      to: p21_preflight_handler
+      relation: dispatches_to
+      provenance:
+        - scripts/aips_cli/dispatch.sh:91-98
+        - scripts/aips_cli/maintenance.sh:108-124
+    - from: p21_preflight_compatibility
+      to: p21_preflight_handler
+      relation: compatibility_alias_dispatches_to
+      provenance:
+        - scripts/aips_cli/dispatch.sh:200-216
+        - scripts/aips_cli/maintenance.sh:108-124
+    - from: p21_preflight_handler
+      to: p21_preflight_lifecycle
+      relation: contract_tested_by
+      provenance:
+        - tests/evidence/install_preflight_lifecycle.py:152-171
+    - from: p21_project_check
+      to: p21_preflight_lifecycle
+      relation: contract_tested_by
+      provenance:
+        - tests/evidence/install_preflight_lifecycle.py:152-158
+    - from: p21_system_preflight
+      to: p21_cli_docs
+      relation: documented_by
+      provenance:
+        - config/system-facts.yaml:41-69
+        - docs/human/GETTING_STARTED.md:96-108
+        - docs/human/INSTALLATION.md:190-200
+    - from: p21_project_check
+      to: p21_cli_docs
+      relation: documented_by
+      provenance:
+        - config/system-facts.yaml:41-49
+        - docs/human/GETTING_STARTED.md:96-104
+        - docs/human/INSTALLATION.md:64-73
+  review:
+    decision: pending
+    requested_decision: Approve, revise, or reject each candidate node and edge before any canonical graph update.
+    limitations:
+      - Evidence is direct source inspection; repository Retrieval Intelligence is stale and its current traversal did not map these seeds.
+      - Dynamic shell dispatch beyond the listed exact branches is not claimed complete.
+      - The proposal does not establish complete API, data, or event coverage.

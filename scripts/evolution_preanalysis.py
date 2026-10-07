@@ -2,26 +2,19 @@
 from __future__ import annotations
 
 import copy
-import hashlib
-import json
 import re
 from datetime import UTC, datetime
 from typing import Any
 
 import yaml
+from aips_common import canonical_digest as _aips_canonical_digest
 from evolution_radar import validate_evidence
 
 PREANALYSIS_START = "<!-- AIPS_EVOLUTION_PREANALYSIS_START -->"
 PREANALYSIS_END = "<!-- AIPS_EVOLUTION_PREANALYSIS_END -->"
 
 def canonical_digest(value: Any) -> str:
-    payload = json.dumps(
-        value,
-        sort_keys=True,
-        ensure_ascii=False,
-        separators=(",", ":"),
-    ).encode("utf-8")
-    return "sha256:" + hashlib.sha256(payload).hexdigest()
+    return _aips_canonical_digest(value)
 
 
 def evidence_digest(evidence: dict[str, Any]) -> str:

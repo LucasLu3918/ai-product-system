@@ -1355,6 +1355,8 @@ Deterministic evidence validates the optional Planning Package requirements regi
 
 ## Scenario 175 — Risk-adaptive bounded Change Impact
 
+Plan21 Phase 2 consolidates deterministic hash/path/glob helpers behind compatibility facades. Its lifecycle evidence pins covered contracts only; repository-wide caller/consumer graph coverage remains partial.
+
 Python direct-call extraction uses AST call nodes and resolves supported local imports; non-call identifiers remain excluded, while dynamic dispatch and partial repository-wide graph coverage stay explicit limitations.
 
 Validation-only changes may record a bounded Impact Graph limitation when the repository validator and Integration Gate consumers are verified directly; the evidence and approval must remain bound to the candidate.
@@ -1403,6 +1405,8 @@ Lifecycle and deterministic evidence check deny-by-default policy evaluation, ex
 - automated：**178 / 178**
 
 ## Scenario 179 — Evidence-backed Change Impact Unknown Dispositions
+
+Shared helper golden contracts cover selected wrapper behavior only; unresolved caller/consumer edges remain explicit partial graph evidence.
 
 Intelligence recovery preserves existing bootstrap metadata and keeps unreviewed source hashes STALE after finalize. Read-only `refresh-plan` exposes affected sources without approving them. Workflow graph seeds remain discovery evidence with partial coverage; final Impact evidence and Matrix review are still required. Scenario 165 executes the workflow evidence resolver with passing, failed, cancelled, unfinished, skipped and stale candidate cases.
 
@@ -1453,6 +1457,8 @@ Plan19 extends the allowlist with optional runtime-observed token usage, provena
 
 ## Scenario 182 — Deterministic Execution Ownership
 
+The shared path/hash extraction preserves scheduler and run projection facade outputs; it does not change ownership, locking or resume behavior.
+
 Lifecycle evidence covers scheduler-serialized ownership claims, active worktree/isolation binding, overlapping boundary rejection, heartbeat expiry, explicit dirty recovery, rename-aware diff reconciliation, out-of-scope blocking and read-only ownership projection. Task Graph v1 and legacy run records remain compatible; unverified runtime enforcement remains `ADVISORY`.
 
 目前 Scenario inventory：
@@ -1486,6 +1492,8 @@ Current inventory after Scenario 194: 34 deterministic + 104 lifecycle + 54 agen
 
 ## Scenario 195 — Implementation Resolution deterministic enforcement
 
+Implementation enforcement retains its prefixed canonical digest facade over the shared helper; digest equality remains evidence integrity, not semantic correctness.
+
 Lifecycle evidence checks exact-candidate Profile and language fingerprints, changed-file ownership, generated source/output hashes, fresh project-command evidence, OpenAPI report binding, stable report fingerprints and report/enforce Integration Gate behavior. Negative cases include unknown ownership, modified generated output, missing or stale quality evidence, command timeout, shell refusal, stale OpenAPI evidence and a Profile scope narrower than the Gate. Hash agreement is not generator execution proof or semantic test review.
 
 Current inventory after Scenario 195: 34 deterministic + 105 lifecycle + 54 agent_eval = 193 automated; 2 manual; 195 total; 0 uncovered.
@@ -1504,6 +1512,8 @@ Current inventory after Scenario 197: 34 deterministic + 107 lifecycle + 54 agen
 
 ## Scenario 198 — Runtime Context and invariant matrix
 
+Runtime Context retains its existing canonical hash output through the compatibility facade; routing and source selection remain unchanged.
+
 `tests/evidence/runtime_context_lifecycle.py` 驗證共用驗證環境路徑、interpreter 優先序、credential-free Context 報告與 deterministic invariant matrix。矩陣涵蓋每組維度值對並檢查上限及高風險案例。
 
 ## Scenario 199 — Branch cleanup proposal evidence
@@ -1515,6 +1525,8 @@ Lifecycle evidence checks supported short-lived prefixes, unclassified preservat
 Lifecycle evidence checks exact-path Node, browser and OpenAPI selection, full provisioning for sensitive paths, the MCP interoperability contract path and unknown paths, and explicit skips for optional OpenAPI evidence. `publish_preflight_lifecycle.py` remains required in every plan: it exercises action-level OpenAPI help and contract behavior when both validator modules exist, and otherwise verifies top-level routing plus the clear missing-dependency failure without a traceback or output artifact. Secret scanning, preflight, repository validation and the exact-candidate Integration Gate remain mandatory. Without a valid CI plan, local checks retain the full toolchain profile.
 
 ## Scenario 201 — Monthly maintenance reliability evidence
+
+Maintenance digest wrappers keep byte-compatible canonical output through the shared helper and remain covered by the deterministic lifecycle fixture.
 
 `tests/evidence/maintenance_reliability_lifecycle.py` verifies monthly validation pass-rate and runtime statistics, nearest-rank percentiles, explicit hotfix labels, repeated paths, failure-category hints, exact merge-SHA linkage and UNKNOWN results when bounded history or required timestamps/file counts are incomplete. The scheduled workflow persists normalized metadata and changed paths, publishes a bounded report and review Issue using Actions/contents/pull-request read and Issue write permissions, and grants no automatic remediation or code-change authority. Failure categories are hints, and exact-SHA correlation is limited to available main-push runs.
 
@@ -1529,6 +1541,8 @@ Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agen
 Plan21 Phase 0 adds `tests/evidence/plan21_contract_baseline.py` to the required repository validation runner. It checks raw and `sha256:` canonical digest vectors, current CLI stdout/stderr and exit contracts, and caller-specific glob behavior. `.aips/review/PLAN21_VALIDATION_TIMING_BASELINE.yaml` records the one-run `origin/main` baseline (230 scenarios, 86 timing entries, 165,754 ms); it is observational evidence and does not establish a trend or alter the scenario inventory.
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
+
+Plan21 helper consolidation preserves existing source fingerprints and keeps global Impact Graph coverage partial.
 
 Scenario 209 的唯讀 repository governance snapshot lifecycle 證據涵蓋完整回應、UNKNOWN 與穩定 fingerprint。
 
@@ -1603,6 +1617,18 @@ Per-module findings and direct coverage are measured without increasing a reposi
 ## Scenario 229 — Agent Eval Freshness Selection
 
 Scenario 230 also confirms that adding a route scenario updates the canonical registry and generated current conformance view without changing manual coverage claims.
+
+## Scenario 232 — Project Check and System Preflight
+
+`aips project check` reports Project mode and Project Intelligence freshness without writes; stale or unavailable Intelligence is visible but does not make a valid path fail. `aips system preflight` uses the existing update/validation path, while `aips preflight` remains compatible.
+
+## Scenario 233 — Public CLI Help and Error Contracts
+
+The public command groups return concise help with status 0 and reject unknown subcommands with a useful nonzero result. The compatibility shell facade remains thin; internal library modules keep their current role.
+
+## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
+
+The scheduled/manual workflow runs a pinned OSV dependency inventory and compares the existing project secret scanner with a full-history Gitleaks shadow. Its failures and parity differences are advisory; the required candidate secret scan and repository Gate remain the release controls. CodeQL configuration is read from GitHub's default setup.
 
 Declared behavior dependencies select potentially stale Eval cases for review. The report does not execute cases or alter results; scenarios 192, 193 and 224 remain manual.
 

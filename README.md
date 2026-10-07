@@ -13,13 +13,15 @@ AI Product System（AIPS）是一套跨 Agent 的 Software Engineering Harness�
   set -e
   installer="$(mktemp)"
   trap 'rm -f "$installer"' EXIT
-  curl -fsSL --output "$installer" https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh
+  curl -fsSL --retry 3 --retry-delay 2 --connect-timeout 15 --max-time 60 --output "$installer" https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh
   test -s "$installer"
   bash "$installer" --configure-shell
 )
 ~~~
 
 `--configure-shell` 會為 zsh 或 bash 寫入具有 AIPS ownership 標記的 `PATH` 區塊；解除安裝可安全辨識並移除。若要自行管理 shell profile，改用 `--no-configure-shell`。
+
+Installer 會以跨 macOS／WSL 可用的目錄鎖序列化 install/update；新 checkout 會先在旁邊的暫存目錄完成 clone 與驗證，再提升至正式路徑。遇到 stale lock 時，請先確認沒有安裝或更新程序後再依錯誤訊息手動移除鎖目錄。
 
 Stable 安裝需要已驗證的版本標籤；第一個 stable release 尚未發布時，預設安裝會停止，不會改抓可變動的 `main`。需要開發版時，Linux/macOS 可將安裝命令改為 `bash "$installer" --configure-shell --channel main`；Windows WSL 安裝器可明確使用 `-Channel main`。
 
@@ -69,8 +71,11 @@ aips update
 Existing Project mutation 前可使用：
 
 ~~~bash
-aips preflight /path/to/project
+aips project check /path/to/project
+aips system preflight /path/to/project
 ~~~
+
+`aips project check` 是唯讀狀態檢查；`aips system preflight` 會更新並驗證 AIPS system checkout。既有 `aips preflight` 命令仍作為相容 alias 支援。
 
 ## Uninstall
 

@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from aips_common import canonical_digest as _aips_canonical_digest
 
 EVIDENCE_START = "<!-- AIPS_EVOLUTION_EVIDENCE_START -->"
 EVIDENCE_END = "<!-- AIPS_EVOLUTION_EVIDENCE_END -->"
@@ -62,8 +63,7 @@ def load_mapping(path: str | Path) -> dict[str, Any]:
 
 
 def canonical_digest(value: Any) -> str:
-    raw = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
-    return "sha256:" + hashlib.sha256(raw).hexdigest()
+    return _aips_canonical_digest(value)
 
 
 def _strip_fence(payload: str) -> str:

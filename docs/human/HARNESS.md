@@ -8,9 +8,13 @@ Runtime Context 統一解析驗證 Python 與 cache/config 路徑；它將 Playw
 
 ## Integration model
 
+Runtime resolution keeps machine-readable results on stdout and diagnostics on stderr. Invalid adapter-state YAML is reported as an error; an unavailable Intelligence subprocess has a stable reason code instead of being confused with a successful empty result.
+
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
 
 The public `bin/aips` command remains a thin launcher into the checkout-resolving `scripts/aips_cli.sh` facade. That facade loads the Harness, runtime, command and other shell modules from `scripts/aips_cli/` before dispatch, keeping installed symlink and source checkout behavior aligned.
+
+Runtime resolution keeps machine-readable results on stdout and diagnostics on stderr. Invalid adapter-state YAML is reported as an error; an unavailable Intelligence subprocess has a stable reason code instead of being confused with a successful empty result.
 
 GitHub-hosted maintenance workflows remain owned by repository CI outside a local Agent task or worktree lease. When they reconcile one monthly Issue, a repository/cohort queue preserves same-period runs without adding token scope or publication authority.
 

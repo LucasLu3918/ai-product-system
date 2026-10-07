@@ -33,7 +33,7 @@ Prospective `aips docs impact --base HEAD --planned-path <path>` resolves sync a
 - **開始使用**：Install、First Project、Update、Uninstall。
 - **使用指南**：產品交付、Existing Project、Security、Quality。
 - **Agent 整合**：Global Harness、native adapters、MCP。
-- **核心概念 / 架構**：Project Intelligence、Scheduler、Isolation、Governance。
+- **核心概念 / 架構**：Project Intelligence、Scheduler、Isolation、Governance；共用 deterministic hash/path/glob helper 維護於 `scripts/aips_common/`，相容輸出見 [Architecture Overview](ARCHITECTURE_OVERVIEW.md)。
 - **Reference**：Scenario Conformance、SAL、Technology Guide。
 - **Maintainers**：Documentation consistency 與 system maintenance。
 

@@ -134,6 +134,29 @@ status_project() {
   fi
 }
 
+project_check() {
+  local project="${1:-}"
+  [ -n "$project" ] || die "Usage: aips project check <project-path>"
+  [ -d "$project" ] || die "Project path does not exist: $project"
+
+  say "Project check"
+  say "Project: $project"
+  if [ -d "$project/.ai" ]; then
+    say "Project mode: ATTACHED"
+  else
+    say "Project mode: EPHEMERAL"
+  fi
+
+  local report freshness py
+  if report="$(intelligence_cmd status --project "$project" --format json 2>/dev/null)"; then
+    py="$(python_bin)"
+    freshness="$(printf '%s' "$report" | "$py" -c 'import json,sys; report=json.load(sys.stdin); print((report.get("freshness") or {}).get("status") or "UNKNOWN")' 2>/dev/null || echo UNKNOWN)"
+    say "Project Intelligence freshness: $freshness"
+  else
+    say "Project Intelligence freshness: UNKNOWN (status unavailable)"
+  fi
+}
+
 validate_repo() {
   local py
   py="$(validation_python_for_root "$SYSTEM_DIR" true || true)"

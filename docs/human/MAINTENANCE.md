@@ -106,7 +106,7 @@ Python support facts live in `config/system-facts.yaml` and are mirrored in `pyp
 - MINOR: backward-compatible new behavior, role, skill, work mode, CLI capability or schema/planning extension.
 - PATCH: backward-compatible bug fix, hardening, clarification, typo or non-behavioral documentation/evidence correction.
 
-Major updates are not auto-applied by `aips preflight` without explicit `--allow-major`.
+Major updates are not auto-applied by `aips system preflight` without explicit `--allow-major`. The legacy `aips preflight` command remains a compatible alias.
 
 `tests/validation/versioning_contracts.py` verifies one leading `Unreleased` heading, unique strictly descending SemVer release headings, and `VERSION` equal to the newest release. Keep runtime dependency ranges in requirements files; `constraints/tested.txt` records the exact CI-tested set. Python support is declared separately from the tested Python version in `pyproject.toml` and `config/system-facts.yaml`.
 
@@ -136,7 +136,6 @@ Before release, check:
 - repeated rules live in one authoritative protocol and are referenced elsewhere;
 - bootloader/README remain short entry documents;
 - deterministic data processing uses helpers when this materially reduces repeated model work.
-
 
 ## Product delivery consistency
 
@@ -251,6 +250,8 @@ Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverif
 
 ## Durable Run State consistency
 
+Read-only Run Dashboard and run projection fingerprints remain backed by shared canonical helpers; they introduce no second state source or write authority.
+
 固定 Turn Context 或 task protocol routing 變更時，更新 canonical core/router、Runtime adapters、文件 placement、Scenario 與 impact-derived matrix；維持原有 Human approval 與 publication boundaries。
 
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
@@ -315,6 +316,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 Evolution Effectiveness reports incomplete pre-analysis coverage instead of calling absent triage a zero shortlist. Oversized scheduled Radar Issues preserve the full UTF-8 body in a bounded digest-checked archive restored before monthly parsing.
 
 外部 Intelligence metadata 不可寫時，可重建 metadata 保存在快取旁並回報 `CACHE_ONLY`；索引 freshness 仍由實際候選比對，canonical 來源與 graph 不會被替代。以 `aips publish checks --pr <number> --head <sha>` 查看最新 workflow/check 結果：舊 `CANCELLED` 不覆蓋較新的成功；目前取消、缺少必要 `repository`、等待或失敗均不會成為 PASS。PR 與 main 的 Gate 仍綁定各自候選；CI pip 快取以 requirements 雜湊作鍵，安裝與完整 Gate 每輪照常執行。合併後另核對註冊安裝版的 commit。
+
+Weekly/manual `advisory-security-inventory` runs the pinned OSV Scanner reusable workflow and compares the existing project secret scanner's outcome with a full-history Gitleaks shadow scan. It is supplementary evidence only; the required candidate secret scan and repository Gate remain unchanged. Review findings or outcome differences before considering any future enforcement change.
 
 `installation-entrypoints` jobs are independent and retain their existing PR paths and read-only permissions. Review their 5/10/10-minute limits when runtime evidence changes; the limits use 15× per-job P95 from the ten latest successful runs and upward five-minute rounding. Do not add cancellation concurrency unless shared state requires it and required evidence remains observable.
 
@@ -384,6 +387,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+Plan21 Phase 2 keeps canonical JSON/hash and path/glob helpers in `scripts/aips_common/`; compatibility and caller-specific behavior are pinned by `tests/evidence/shared_primitives_lifecycle.py`, while graph coverage remains partial.
 
 固定 Turn Context 或 task protocol routing 變更時，更新 canonical core/router、Runtime adapters、文件 placement、Scenario 與 impact-derived matrix；維持原有 Human approval 與 publication boundaries。固定核心 route scenario 亦須列入 registry、Conformance current view 與 recursive docs placement checks。
 
@@ -484,6 +489,8 @@ Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanu
 
 
 ## Repository Health / Architecture Drift consistency
+
+Repository Health continues to treat generated capability projections as outputs of `config/capability-registry.yaml`; shared path/hash helpers do not become a second registry source.
 
 Repository-wide architecture consistency is checked by scripts/repository_health.py using config/repository-health.yaml. The detailed contract is orchestration/REPOSITORY_HEALTH.md.
 

@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Changes to runtime hook input validation, resolver diagnostics or installer locking update the matching Harness, Security Assurance and Installation topics together with this map; machine-readable output stays documented alongside the canonical Harness protocol.
+
 固定 AIPS system context 由 `SYSTEM_CORE.md` 與任務專屬 orchestration pointers 組成；`SYSTEM.md` 是相容入口。Turn Context 或 protocol routing 行為變更時，同步更新 Harness、Architecture、Technology Guide、Scenario Conformance 與核心測試矩陣。
 
 主要模型／Skill metadata 變更同步更新模型路由、架構、技術指南、維護與 Conformance；REST／visual Skill 精簡仍須保留 canonical orchestration 指標與原有 evidence 規則。
@@ -144,6 +146,8 @@ Getting Started / Installation / User Guide 以 task-oriented方式導覽；Arch
 主要實作保留合格的 Runtime／使用者模型；Skill frontmatter 產生相容 v1 INDEX，決定性 lifecycle 與人工模型政策驗收分開記錄。
 
 Plan21 Phase 0 compatibility fixtures and the one-run validation timing baseline are linked from Architecture Overview, Maintenance, Technology Guide and Conformance. Keep the exact candidate/environment, measurement-only interpretation and unchanged-runtime boundary aligned; do not promote the observation into a timeout or performance claim.
+
+Plan21 Phase 2 records `scripts/aips_common/` as the single implementation for shared canonical JSON/hash, relative-path and glob primitives. Keep facade compatibility and the separate governance/runtime digest ownership aligned across Architecture Overview, Documentation Map, Technology Guide, Maintenance and the lifecycle evidence; source graph coverage remains partial unless independently reviewed.
 
 新增 behavior-bearing helper 必須同步更新 placement 與 sync registry；Project Intelligence promotion 保留既有 approval facade，治理快照維持唯讀並在資料不可讀時回報 UNKNOWN。
 

@@ -18,6 +18,18 @@ Make AIPS behavioral regression coverage measurable without conflating specifica
 
 Scenario 230 binds compact fixed-context and task-route behavior to the intelligence context lifecycle and static contracts; route pointers never imply governance authority.
 
+## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
+
+The weekly/manual workflow runs the pinned OSV Scanner reusable workflow and a full-history Gitleaks shadow scan. Both scan outcomes are advisory evidence; the existing required candidate secret scan and `repository` Gate remain unchanged. The workflow has no PR, merge, or publication authority and leaves CodeQL default setup as remotely configured evidence.
+
+## Scenario 232 — Project Check and System Preflight
+
+`aips project check <path>` reports attachment mode and Project Intelligence freshness without mutation; freshness problems remain informational and only an invalid path fails. `aips system preflight <path>` delegates to the existing update and repository-validation lifecycle. The legacy `aips preflight` route remains supported.
+
+## Scenario 233 — Public CLI Help and Error Contracts
+
+Public command groups expose help with status 0 and return nonzero for unknown subcommands. Keep routing in the shell facade and preserve internal library modules as libraries.
+
 `tests/scenario_coverage.yaml` is the canonical mapping from Scenario ID/path to coverage classification and evidence.
 
 Allowed coverage:
@@ -771,6 +783,8 @@ Current automated inventory: 27 deterministic + 100 lifecycle + 54 agent_eval = 
 
 Lifecycle evidence covers scheduler-serialized task claims, active AIPS worktree binding, lease heartbeat/stale/recovery states, actual Git-diff reconciliation, out-of-scope blocking and read-only owner projection. Legacy Task Graph v1 and checkpoints remain valid; current Resource Authorization enforcement stays `ADVISORY`.
 
+The shared deterministic helper extraction keeps caller facades and digest/path/glob contracts stable; its lifecycle evidence does not claim complete repository caller/consumer graph coverage.
+
 Current automated inventory: 27 deterministic + 101 lifecycle + 54 agent_eval = 182 / 182; manual 0; uncovered 0.
 
 ## Scenario 183–192 — Planning Package v2
@@ -823,6 +837,8 @@ The workflow uses the shared Python bootstrap and queues up to 100 same-cohort I
 
 The shared repository evidence runner uses the exact-candidate CI plan to skip optional OpenAPI-dependent lifecycle checks only when OpenAPI is not selected; it removes that plan from contract and lifecycle subprocess environments. Secret scanning, the required repository aggregate and Integration Gate remain mandatory.
 
+Plan21 Phase 2 uses `tests/evidence/shared_primitives_lifecycle.py` to pin deterministic helper compatibility and retains partial graph coverage.
+
 Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agent_eval = 199 automated; 2 manual; 201 total; 0 uncovered.
 
 Plan21 Phase 0 adds a required lifecycle for canonical digest vectors, public CLI byte/exit behavior, and intentionally different path-glob semantics. Its checked-in timing artifact records one exact-main observation only; it changes no runtime behavior and does not add a numbered scenario.
@@ -854,6 +870,8 @@ The size audit measures tracked text/evidence files against 50,000 bytes and rep
 
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
+
+Plan21 helper consolidation preserves covered canonical fingerprints and keeps unresolved source relationships partial.
 
 Scenario 209 also covers the read-only repository governance snapshot lifecycle, including UNKNOWN surfaces and stable fingerprints.
 

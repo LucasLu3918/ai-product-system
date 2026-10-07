@@ -6,6 +6,8 @@ Detect deterministic drift between the architecture AIPS declares and the reposi
 
 ## Reuse boundaries
 
+Repository Health keeps path and digest facade signatures stable over shared primitives; generated Architecture Surface projections continue to derive from the canonical Capability Registry.
+
 - config/capability-registry.yaml is the canonical capability and architecture-surface source. scripts/capability_registry.py generates the compatible Capability Map and architecture-surface indexes.
 - scripts/scenario_conformance.py remains the Scenario registry/evidence authority; Repository Health calls it instead of reimplementing Scenario semantics.
 - config/integration-gate.yaml and scripts/integration_gate.py remain the exact-candidate validation path.

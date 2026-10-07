@@ -11,7 +11,7 @@ macOS / Linux：
   set -e
   installer="$(mktemp)"
   trap 'rm -f "$installer"' EXIT
-  curl -fsSL --output "$installer" https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh
+  curl -fsSL --retry 3 --retry-delay 2 --connect-timeout 15 --max-time 60 --output "$installer" https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh
   test -s "$installer"
   bash "$installer" --configure-shell
 )
@@ -70,6 +70,8 @@ aips commands list
 
 ## Existing Project
 
+The Dashboard is a read-only view backed by current task state; shared projection fingerprints do not create or migrate project records.
+
 每回合先取得精簡固定核心與任務相關協定指標；修改既有專案前仍須依其原生規範取得 Project Intelligence、Change Impact 與驗證要求。
 
 平行實作時，先由 Deterministic Scheduler 派送 Task Graph，再在 AIPS worktree 綁定 task owner。Owner 狀態、lease 與實際變更路徑可從 Run Dashboard 檢視；enforcement 只有在 runtime guard 經驗證後才會提升。
@@ -95,8 +97,11 @@ aips update
 Existing Project mutation 前建議：
 
 ~~~bash
-aips preflight /path/to/project
+aips project check /path/to/project
+aips system preflight /path/to/project
 ~~~
+
+`project check` reports Project mode and Intelligence freshness without changing project state. `system preflight` updates and validates the AIPS system checkout before implementation; the legacy `aips preflight` command remains compatible.
 
 需要查詢歷史架構時，可使用 `aips intelligence temporal --mode as-of --revision <sha>`；一般任務不需要載入完整 temporal history。
 

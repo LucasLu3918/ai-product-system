@@ -16,6 +16,8 @@ User Prompt
 
 Every turn may resolve current context. Every turn must not rescan the repository.
 
+Adapter-facing machine-readable output stays on stdout and diagnostics stay on stderr. Invalid state and unavailable subprocesses use explicit failure status/reason codes; malformed hook input must fail closed rather than being treated as an empty valid request.
+
 ## Non-invasive invariant
 
 AIPS does not replace or delete user-owned Agent instructions, Skills, project source or unrelated runtime settings.

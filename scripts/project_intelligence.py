@@ -13,11 +13,11 @@ import re
 import shutil
 import subprocess
 import sys
-from fnmatch import fnmatch
 from pathlib import Path
 from typing import Any
 
 import yaml
+from aips_common import glob_matches as _aips_glob_matches
 from aips_identity import (
     config_home as canonical_config_home,
 )
@@ -118,7 +118,7 @@ def run_git(project: Path, args: list[str]) -> str | None:
             capture_output=True, text=True, check=True,
         )
         return r.stdout.strip()
-    except Exception:
+    except (OSError, subprocess.CalledProcessError):
         return None
 
 
@@ -699,7 +699,7 @@ def topic_watch_map(intel: dict[str, Any]) -> dict[str, list[str]]:
 
 
 def path_matches(path: str, pattern: str) -> bool:
-    return fnmatch(path, pattern) or fnmatch(path, pattern.replace("**/", "*"))
+    return _aips_glob_matches(path, pattern, globstar_as_star=True)
 
 
 def relevant_change(path: str, source_paths: set[str], watches: dict[str, list[str]]) -> tuple[bool, list[str]]:

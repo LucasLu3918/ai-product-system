@@ -691,9 +691,34 @@ cli_text = (ROOT / "bin/aips").read_text(encoding="utf-8") + "\n" + cli_implemen
 launcher_lines = (ROOT / "bin/aips").read_text(encoding="utf-8").splitlines() if (ROOT / "bin/aips").exists() else []
 if len(launcher_lines) > 24 or 'exec "$BASH" "$SYSTEM_DIR/scripts/aips_cli.sh" "$@"' not in "\n".join(launcher_lines):
     errors.append("bin/aips must stay a thin argument-preserving dispatcher to scripts/aips_cli.sh")
-for phrase in ("aips attach <project-path>", "aips detach <project-path>", "aips status <project-path>", "aips harness install", "aips harness uninstall", "aips harness status", "aips harness doctor", "aips harness resolve", "aips intelligence bootstrap", "aips intelligence status", "aips intelligence context", "aips intelligence render"):
+for phrase in ("aips attach <project-path>", "aips detach <project-path>", "aips status <project-path>", "aips project check <project-path>", "aips system preflight <project-path>", "aips preflight <project-path>", "aips harness install", "aips harness uninstall", "aips harness status", "aips harness doctor", "aips harness resolve", "aips intelligence bootstrap", "aips intelligence status", "aips intelligence context", "aips intelligence render"):
     if phrase not in cli_text:
         errors.append(f"bin/aips missing lifecycle command: {phrase}")
+
+help_cases = (
+    (["shell", "--help"], "Usage: aips shell"),
+    (["harness", "--help"], "Usage: aips harness"),
+    (["mcp", "--help"], "usage:"),
+    (["project", "--help"], "Usage: aips project"),
+    (["system", "--help"], "Usage: aips system"),
+    (["evolution", "--help"], "Usage: aips evolution"),
+)
+for args, expected in help_cases:
+    result = subprocess.run(["bash", str(ROOT / "bin/aips"), *args], capture_output=True, text=True, check=False)
+    if result.returncode != 0 or expected.lower() not in result.stdout.lower():
+        errors.append(f"aips {' '.join(args)} help failed: {result.stdout.strip()} {result.stderr.strip()}")
+
+error_cases = (
+    (["shell", "unknown"], "Unknown shell command"),
+    (["harness", "unknown"], "Unknown harness command"),
+    (["project", "unknown"], "Unknown project command"),
+    (["system", "unknown"], "Unknown system command"),
+    (["evolution", "unknown"], "Unsupported Evolution action"),
+)
+for args, expected in error_cases:
+    result = subprocess.run(["bash", str(ROOT / "bin/aips"), *args], capture_output=True, text=True, check=False)
+    if result.returncode == 0 or expected not in result.stderr:
+        errors.append(f"aips {' '.join(args)} must fail with a useful diagnostic: {result.stdout.strip()} {result.stderr.strip()}")
 
 with tempfile.TemporaryDirectory() as tmp:
     project = Path(tmp) / "project"

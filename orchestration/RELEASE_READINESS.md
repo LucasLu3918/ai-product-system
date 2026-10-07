@@ -52,6 +52,8 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+Candidate path and digest helpers preserve existing output formats through compatibility facades; exact base/head binding and unresolved Impact Graph policy remain unchanged.
+
 The repository governance snapshot can provide read-only ruleset and branch-protection evidence, but never changes GitHub settings or substitutes for Human release approval.
 
 Plan17 regression evidence covers numeric diff headers, four browser/OpenAPI combinations, mandatory aggregates, reusable caller keys/permissions, explicit Python and isolated children, recursive placement, signed identity/immutable proposal rejection and atomic deletion races. Missing or malformed capability plans retain the full profile. A latest cancelled check stays INCOMPLETE; replaced old checks are reported as SUPERSEDED.

@@ -118,8 +118,8 @@ def main() -> int:
         "docs/human/TECHNOLOGY_GUIDE.md",
     ):
         assert required in impact["required_additions"]
-    assert "docs/human/INSTALLATION.md" not in impact["required_additions"]
-    assert "docs/human/GETTING_STARTED.md" not in impact["required_additions"]
+    assert "docs/human/INSTALLATION.md" in impact["required_additions"]
+    assert "docs/human/GETTING_STARTED.md" in impact["required_additions"]
     assert not impact["complete"]
 
     with tempfile.TemporaryDirectory(prefix="aips-docs-summary-") as summary_dir:

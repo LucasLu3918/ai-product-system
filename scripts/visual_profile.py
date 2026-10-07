@@ -2,13 +2,13 @@
 from __future__ import annotations
 
 import argparse
-import fnmatch
 import json
-from pathlib import Path
 import subprocess
+from pathlib import Path
 from typing import Any
 
 import yaml
+from aips_common import glob_matches as _aips_glob_matches
 
 
 def run_git(project: Path, *args: str) -> subprocess.CompletedProcess[str]:
@@ -39,14 +39,14 @@ def normalize_path(path: str) -> str:
 
 
 def path_matches(path: str, patterns: list[str]) -> bool:
-    normalized = normalize_path(path)
     for raw in patterns:
-        pattern = normalize_path(str(raw))
-        if not pattern:
-            continue
-        if fnmatch.fnmatch(normalized, pattern):
-            return True
-        if pattern.endswith("/**") and normalized.startswith(pattern[:-3].rstrip("/") + "/"):
+        if _aips_glob_matches(
+            path,
+            str(raw),
+            path_mode="slash_lstrip",
+            pattern_mode="slash_lstrip",
+            directory_suffix=True,
+        ):
             return True
     return False
 

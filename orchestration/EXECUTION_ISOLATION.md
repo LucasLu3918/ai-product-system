@@ -233,8 +233,6 @@ Its inputs are bounded to committed configuration/Capability Map plus the alread
 
 ## Repository Health interaction
 
-
-
 Repository Conformance counts include the registered isolation lifecycle cases; changing that inventory requires updating its shared validation assertion and current Human/Agent Conformance records. Count registration proves coverage bookkeeping, not sandbox isolation.
 
 Trajectory traces 與 evidence bundle 應在既有 execution boundary 內產生；評估器為 post-execution evidence，不建立新的 writer boundary、不執行自動 remediation，也不授予 publication authority。
@@ -279,6 +277,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 
 ## Parallel runtime resource isolation
+
+Run Dashboard path and digest projections preserve their existing facades over shared primitives; isolation, port leasing and authorization boundaries do not change.
 
 Task-specific protocol routing precedes isolated execution but grants no worktree or sandbox capability; isolation still resolves from the declared risk and supported provider evidence.
 

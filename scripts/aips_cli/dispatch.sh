@@ -11,6 +11,9 @@ case "${1:-help}" in
     sub="${2:-status}"
     shift 2 || true
     case "$sub" in
+      help|-h|--help)
+        say "Usage: aips shell <install|uninstall|status>"
+        ;;
       install) shell_install "$@" ;;
       uninstall) shell_uninstall true ;;
       status) shell_status ;;
@@ -28,6 +31,9 @@ case "${1:-help}" in
         ;;
       status)
         harness_status
+        ;;
+      help|-h|--help)
+        say "Usage: aips harness <install|uninstall|status|doctor|resolve> [options]"
         ;;
       doctor)
         harness_doctor
@@ -48,6 +54,9 @@ case "${1:-help}" in
       serve|inspect)
         mcp_cmd "$sub" "$@"
         ;;
+      help|-h|--help)
+        mcp_cmd --help
+        ;;
       config)
         mcp_cmd config "$@"
         ;;
@@ -64,6 +73,29 @@ case "${1:-help}" in
     sub="${2:-status}"
     shift 2 || true
     intelligence_cmd "$sub" "$@"
+    ;;
+  project)
+    sub="${2:-}"
+    shift 2 || true
+    case "$sub" in
+      help|-h|--help)
+        say "Usage: aips project check <project-path>"
+        ;;
+      check)
+        [ "$#" -eq 1 ] || die "Usage: aips project check <project-path>"
+        project_check "$1"
+        ;;
+      *) die "Unknown project command: $sub" ;;
+    esac
+    ;;
+  system)
+    sub="${2:-}"
+    shift 2 || true
+    case "$sub" in
+      preflight) preflight "$@" ;;
+      help|-h|--help) say "Usage: aips system preflight <project-path> [--allow-major]" ;;
+      *) die "Unknown system command: $sub" ;;
+    esac
     ;;
   run)
     sub="${2:-status}"

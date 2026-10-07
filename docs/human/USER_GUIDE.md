@@ -162,6 +162,8 @@ Architecture trade-off、Threat Model、視覺方向等主觀專業判斷不應�
 
 ## Deterministic Scheduler
 
+Scheduler fingerprints retain their existing raw digest format through the shared canonical helper; task graph ordering and execution ownership are unchanged.
+
 LLM 負責 semantic planning；Scheduler 只接受已形成的 Task Graph，依 dependency、boundary、authorization、state 與 deterministic ordering 決定 dispatch，不自行發明 task、scope 或 approval。
 
 Parallel task 必須先證明可安全並行；同一 change boundary 的 competing writer 不因想提高速度就被放行。
@@ -223,6 +225,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+Review packet and evidence fingerprints preserve their established `sha256:` representation; the shared helper extraction adds no approval authority.
 
 Context routing 的 Scenario 230 驗證核心大小、路由涵蓋、hook/manifest 契約與缺少來源時 fail-closed；它不取代 exact-candidate Integration Gate。
 
@@ -354,6 +358,8 @@ The dashboard is an observation surface. It shows workflow state, gate, last act
 
 ## Checkpoint / Resume
 
+Run projection fingerprints preserve their existing facade and canonical digest bytes after helper consolidation; run state and resume authority remain governed by the existing contracts.
+
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
 
 長流程在 material step 保存 durable checkpoint / event evidence。Resume 時重新比較 repository/workspace identity、HEAD、branch、dirty state 與 relevant approvals。
@@ -375,6 +381,8 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 Retrieval index persistence is an internal, rebuildable cache boundary in `scripts/retrieval_storage.py`; existing commands and imports continue through the `retrieval_intelligence.py` compatibility facade.
 
 ## Git Publication 與 Release
+
+Publication preflight retains its existing CLI and raw canonical hash output through the shared helper; exact-candidate and Human merge authority boundaries remain unchanged.
 
 可用 `python scripts/repository_governance_snapshot.py --repo OWNER/REPOSITORY` 檢視 GitHub rulesets 與 branch protection；此快照唯讀，遇到不可讀設定會標示 UNKNOWN，不會替代 PR 核准或發布流程。
 

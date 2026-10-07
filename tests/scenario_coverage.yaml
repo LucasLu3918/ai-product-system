@@ -1810,3 +1810,25 @@ scenarios:
       - tests/validation/static_contracts.py
       - scripts/project_intelligence.py
       - scripts/turn_context_hook.py
+  - id: "231"
+    path: tests/scenarios/231-advisory-security-inventory-shadow.md
+    coverage: deterministic
+    evidence:
+      - .github/workflows/security-inventory.yml
+      - tests/validation/security_workflow_contracts.py
+      - config/documentation-placement.yaml
+  - id: "232"
+    path: tests/scenarios/232-project-check-and-system-preflight.md
+    coverage: lifecycle
+    evidence:
+      - scripts/aips_cli/project.sh
+      - scripts/aips_cli/dispatch.sh
+      - tests/evidence/install_preflight_lifecycle.py
+      - tests/validation/static_contracts.py
+  - id: "233"
+    path: tests/scenarios/233-public-cli-help-error-contracts.md
+    coverage: deterministic
+    evidence:
+      - scripts/aips_cli/dispatch.sh
+      - scripts/aips_cli/commands.sh
+      - tests/validation/static_contracts.py

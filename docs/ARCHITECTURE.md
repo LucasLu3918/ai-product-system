@@ -1009,6 +1009,8 @@ Worktree state and runtime resource state share the existing Execution Isolation
 
 ## Deterministic task execution ownership
 
+Plan21 shared deterministic helpers preserve scheduler and Integration Gate facade outputs while centralizing canonical bytes and path/glob rules; golden lifecycle evidence is compatibility evidence, not a complete caller graph.
+
 ~~~mermaid
 flowchart LR
     TG[Task Graph v1] --> DS[Deterministic dispatch]

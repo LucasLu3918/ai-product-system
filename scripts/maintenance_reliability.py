@@ -3,24 +3,23 @@
 from __future__ import annotations
 
 import argparse
-from datetime import date, datetime, timedelta, timezone
-import hashlib
 import json
 import math
-from pathlib import Path
 import re
 import subprocess
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
 from typing import Any, Callable
 
 import yaml
+from aips_common import canonical_digest as _aips_canonical_digest
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "config/maintenance-reliability.yaml"
 
 
 def canonical_digest(value: Any) -> str:
-    raw = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
-    return "sha256:" + hashlib.sha256(raw).hexdigest()
+    return _aips_canonical_digest(value)
 
 
 def load_mapping(path: str | Path) -> dict[str, Any]:

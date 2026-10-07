@@ -16,8 +16,9 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-from review_evidence import validate_report
+from aips_common import canonical_hash as _aips_canonical_hash
 from observed_stage import observed_stage
+from review_evidence import validate_report
 
 
 class GateError(ValueError):
@@ -32,8 +33,7 @@ def load_yaml(path: Path) -> dict[str, Any]:
 
 
 def canonical_hash(value: Any) -> str:
-    payload = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
-    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return _aips_canonical_hash(value)
 
 
 def file_hash(path: Path) -> str:

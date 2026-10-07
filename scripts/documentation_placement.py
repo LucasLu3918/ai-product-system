@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-import fnmatch
 import os
 import re
 import subprocess
@@ -9,6 +8,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from aips_common import glob_matches as _aips_glob_matches
 
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG = ROOT / "config" / "documentation-placement.yaml"
@@ -200,8 +200,78 @@ def added_line_numbers(base: str, path: str, *, working_tree: bool = False) -> l
     return result
 
 
+def added_line_numbers_many(
+    base: str,
+    paths: list[str],
+    *,
+    working_tree: bool = False,
+    chunk_size: int = 100,
+) -> dict[str, list[int]]:
+    """Read added line ranges for many docs with bounded Git subprocesses."""
+    result = {path: [] for path in paths}
+    if not paths:
+        return result
+
+    candidates = list(dict.fromkeys(paths))
+    tracked = set(candidates)
+    if working_tree:
+        listed = subprocess.run(
+            ["git", "ls-files", "-z", "--", *candidates],
+            cwd=ROOT,
+            capture_output=True,
+            check=False,
+        )
+        if listed.returncode != 0:
+            raise RuntimeError(listed.stderr.decode(errors="replace").strip() or "git ls-files failed")
+        tracked = {
+            item.decode(errors="surrogateescape")
+            for item in listed.stdout.split(b"\0")
+            if item
+        }
+        for path in candidates:
+            if path not in tracked:
+                full_path = ROOT / path
+                if full_path.is_file():
+                    result[path] = list(range(1, len(full_path.read_text(encoding="utf-8").splitlines()) + 1))
+
+    revision = base if working_tree else f"{base}...HEAD"
+    tracked_paths = [path for path in candidates if path in tracked]
+    for start in range(0, len(tracked_paths), max(1, chunk_size)):
+        chunk = tracked_paths[start : start + max(1, chunk_size)]
+        proc = subprocess.run(
+            ["git", "-c", "core.quotePath=false", "diff", "--no-ext-diff", "--no-color", "--no-renames", "--unified=0", revision, "--", *chunk],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if proc.returncode != 0:
+            raise RuntimeError(proc.stderr.strip() or "batched git diff failed")
+
+        current: str | None = None
+        for line in proc.stdout.splitlines():
+            if line.startswith("+++ "):
+                header = line[4:].removesuffix("\t")
+                if header == "/dev/null":
+                    current = None
+                    continue
+                header = header.removeprefix("b/")
+                current = header if header in result else None
+                continue
+            if current is None or not line.startswith("@@"):
+                continue
+            match = re.search(r"\+(\d+)(?:,(\d+))?", line)
+            if not match:
+                continue
+            line_start = int(match.group(1))
+            count = int(match.group(2) or "1")
+            if count > 0:
+                result[current].extend(range(line_start, line_start + count))
+    return result
+
+
 def matches_any(path: str, patterns: list[str]) -> bool:
-    return any(fnmatch.fnmatch(path, pattern) for pattern in patterns)
+    return any(_aips_glob_matches(path, pattern) for pattern in patterns)
 
 
 def behavior_trigger_patterns() -> list[str]:
@@ -244,6 +314,7 @@ def placement_errors(config: dict[str, Any], base: str, *, working_tree: bool = 
     for rule in triggered:
         for doc, allowed in (rule.get("placements") or {}).items():
             owners.setdefault(doc, []).append((str(rule["id"]), allowed))
+    added_by_doc = added_line_numbers_many(base, list(owners), working_tree=working_tree)
     for doc, requirements in owners.items():
         if doc not in files:
             errors.append(f"{doc}: required canonical Human doc was not changed; rules={[name for name, _ in requirements]}")
@@ -253,7 +324,7 @@ def placement_errors(config: dict[str, Any], base: str, *, working_tree: bool = 
             continue
         text = (ROOT / doc).read_text(encoding="utf-8")
         lines, ranges = text.splitlines(), heading_ranges(text)
-        added = [number for number in added_line_numbers(base, doc, working_tree=working_tree) if line_has_content(lines, number)]
+        added = [number for number in added_by_doc.get(doc, []) if line_has_content(lines, number)]
         first_h2 = min((start for start, _ in ranges.values()), default=len(lines) + 1)
         allowed_union: set[str] = set()
         for rule_id, allowed in requirements:

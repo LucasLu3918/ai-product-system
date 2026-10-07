@@ -107,6 +107,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+Shared-helper changes declare direct wrapper consumers and preserve unresolved graph relationships explicitly; golden helper coverage must not be treated as complete caller/consumer traversal.
+
 Changes to extracted Project Intelligence promotion helpers preserve the facade and approval boundary; governance snapshots are read-only and report UNKNOWN for inaccessible surfaces.
 
 Plan17 regression evidence covers numeric diff headers, four browser/OpenAPI combinations, mandatory aggregates, reusable caller keys/permissions, explicit Python and isolated children, recursive placement, signed identity/immutable proposal rejection and atomic deletion races. Missing or malformed capability plans retain the full profile. A latest cancelled check stays INCOMPLETE; replaced old checks are reported as SUPERSEDED.

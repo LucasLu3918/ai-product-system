@@ -11,13 +11,15 @@ Evolution deterministic pre-analysis ships as an internal Python module with the
   set -e
   installer="$(mktemp)"
   trap 'rm -f "$installer"' EXIT
-  curl -fsSL --output "$installer" https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh
+  curl -fsSL --retry 3 --retry-delay 2 --connect-timeout 15 --max-time 60 --output "$installer" https://raw.githubusercontent.com/LucasLu3918/ai-product-system/main/scripts/install.sh
   test -s "$installer"
   bash "$installer" --configure-shell
 )
 ~~~
 
 Installer 會自行管理 AIPS system checkout、Python virtual environment、CLI 與可安全安裝的 Runtime integrations。`--configure-shell` 會在 zsh／bash profile 寫入可辨識、可逆的 AIPS-owned `PATH` 區塊；使用者不需要先建立目錄、cd 或手動 git clone。若要自行管理 profile，使用 `--no-configure-shell`。
+
+Install/update 會透過目錄鎖避免併發寫入，並對 Git clone/fetch 做有限次重試。首次 clone 先寫入安裝路徑旁的暫存目錄，只有在 channel 與 commit 驗證完成後才會提升。若鎖資訊顯示 stale，先確認沒有其他 AIPS install/update 程序，再手動清除錯誤訊息指出的 lock directory。
 
 預設 managed system path：
 
@@ -61,6 +63,7 @@ aips version
 aips doctor
 aips harness status
 aips mcp inspect
+aips project check /path/to/project
 ~~~
 
 Maintainer 的發布前入口為 `aips docs impact` 與 `aips publish plan|preflight|post-merge`。一般使用者安裝不會自動執行 GitHub 查詢、重寫 branch 或取得 publication authority。
@@ -75,6 +78,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
+
+Run Dashboard output continues to use the existing read-only projection contract; the shared canonical helper changes no installed runtime or persisted state.
 
 安裝的 Runtime adapter 讀取固定 `SYSTEM_CORE.md` 和 Turn Context 的 task-specific protocol pointers；`SYSTEM.md` 相容入口仍保留，更新流程不得把完整 orchestration 文件加入常駐 context。
 
@@ -189,8 +194,10 @@ AIPS 只在 managed system checkout clean、history 可 fast-forward 時自動�
 Existing Project mutation 前：
 
 ~~~bash
-aips preflight /path/to/project
+aips system preflight /path/to/project
 ~~~
+
+`aips preflight /path/to/project` remains a backward-compatible alias. `aips project check /path/to/project` is read-only and reports attachment mode plus Project Intelligence freshness (`CURRENT`, `STALE` or `UNKNOWN`); it does not refresh or attach the Project.
 
 ## 解除安裝
 

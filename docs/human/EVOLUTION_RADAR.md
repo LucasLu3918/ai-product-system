@@ -16,6 +16,8 @@ Community signal 主要用於 discovery；較高強度的 recommendation 需要 
 
 ## Deterministic Pre-analysis
 
+Evolution evidence keeps its existing digest facade while using the shared canonical JSON/hash implementation; the frozen lifecycle vectors protect stable fingerprints without changing Human relevance decisions.
+
 The `evolution_analysis.py` command remains the entry point. Its deterministic, credential-free title and metadata pre-analysis is implemented in `evolution_preanalysis.py`; this internal split preserves existing outputs and review boundaries.
 
 Pre-analysis now records deterministic exclusion reasons for signals that do not reach the shortlist or semantic queue (`NO_CATEGORY_MATCH`, `LOW_PRIORITY`, `SHORTLIST_CAP`, `DUPLICATE_SUPPRESSED`, and `SEMANTIC_CAP`). These explain the local classifier and queue behavior only; they do not assert that a signal is product news, already covered, or outside AIPS scope. Monthly source-yield flags still require complete pre-analysis evidence and Human review.
@@ -43,6 +45,8 @@ Trial PASS 只提供 adoption review evidence。正式 ADOPT 必須是新的 Hum
 External Agent/provider credentials 永遠是 optional enhancement；缺少 credential 不得阻擋 unrelated baseline/release。Secret 不進 Git、Issue body、Prompt、logs 或 ordinary evidence artifact。
 
 ## Effectiveness Feedback
+
+Effectiveness evidence retains the existing digest facade over shared canonical JSON hashing; no trial ranking or Human disposition changes.
 
 本機預分析會為未入選候選記錄可重現的排除原因與彙總計數，供人工檢視 shortlist 的資料價值；語意判斷與採納決策仍由既有流程負責。
 

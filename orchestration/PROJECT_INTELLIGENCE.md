@@ -201,6 +201,8 @@ Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
 
+Shared path/glob wrappers preserve existing Project Intelligence matching behavior; bounded traversal continues to report unresolved edges and partial coverage rather than infer completeness.
+
 Promotion eligibility and target-path constraints are extracted to a helper while retaining the facade entry point, Human approval and no-overwrite behavior.
 
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.

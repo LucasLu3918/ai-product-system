@@ -1,8 +1,18 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, hashlib, json, os, re, shlex, subprocess, sys
+
+import argparse
+import hashlib
+import json
+import logging
+import os
+import re
+import shlex
+import subprocess
+import sys
 from pathlib import Path
 from typing import Any
+
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -16,6 +26,7 @@ except ModuleNotFoundError:  # imported as a repository module
 
 PROTECTED = ("git_push", "git_tag", "gh_pr_create", "gh_release_create")
 CONTENT_SENSITIVE = ("git_commit", "git_push", "git_tag", "gh_pr_create", "gh_release_create")
+logger = logging.getLogger(__name__)
 SET_LIKE_KEYS = {"files", "boundaries", "operations"}
 ASSIGNMENT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
 CONTROL_TOKENS = {";", ";;", "&", "&&", "|", "||"}
@@ -232,12 +243,41 @@ def operation_for(command: str):
     return operations[0] if operations else None
 
 
+def deny_hook_input(runtime: str, reason: str) -> int:
+    """Return the runtime's normal deny envelope without echoing input data."""
+    if runtime == "claude-code":
+        result = {"hookSpecificOutput": {
+            "hookEventName": "PreToolUse",
+            "permissionDecision": "deny",
+            "permissionDecisionReason": "AIPS blocked: invalid hook input (" + reason + ")",
+        }}
+    else:
+        result = {"decision": "deny", "reason": "AIPS blocked: invalid hook input (" + reason + ")"}
+    print(json.dumps(result))
+    return 0
+
+
 def hook(runtime: str) -> int:
     try:
         payload = json.load(sys.stdin)
-    except Exception:
-        payload = {}
-    command = str((payload.get("tool_input") or {}).get("command") or "")
+    except (json.JSONDecodeError, UnicodeDecodeError):
+        logger.warning("Hook input could not be parsed as JSON")
+        return deny_hook_input(runtime, "invalid_json")
+    if not isinstance(payload, dict):
+        logger.warning("Hook input must be a JSON object")
+        return deny_hook_input(runtime, "invalid_payload")
+    tool_input = payload.get("tool_input")
+    if not isinstance(tool_input, dict) and not isinstance(payload.get("aips_runtime_action"), dict):
+        logger.warning("Hook input is missing a valid tool_input object")
+        return deny_hook_input(runtime, "missing_tool_input")
+    if tool_input is not None and not isinstance(tool_input, dict):
+        logger.warning("Hook tool_input must be a JSON object")
+        return deny_hook_input(runtime, "invalid_tool_input")
+    command_value = (tool_input or {}).get("command", "")
+    if not isinstance(command_value, str):
+        logger.warning("Hook command must be a string")
+        return deny_hook_input(runtime, "invalid_command")
+    command = command_value
     try:
         from runtime_policy import action_from_hook, evaluate, load_policy
 
@@ -253,8 +293,9 @@ def hook(runtime: str) -> int:
             ledger = os.environ.get("AIPS_GOVERNANCE_AUDIT_LEDGER")
             if ledger:
                 try:
-                    from governance_audit import append_event
                     from datetime import datetime, timezone
+
+                    from governance_audit import append_event
                     append_event(Path(ledger), {
                         "event_type": event.get("event_type", "RUNTIME_ACTION_BLOCKED"),
                         "occurred_at": datetime.now(timezone.utc).isoformat(),
@@ -267,7 +308,8 @@ def hook(runtime: str) -> int:
                                     "evidence_digests": [event.get("action_digest")] if event.get("action_digest") else []},
                         "metadata": {"correlation_id": None, "notes": "Runtime policy decision; action payload omitted."},
                     })
-                except Exception:
+                except Exception as exc:
+                    logger.exception("Required governance audit append failed: %s", type(exc).__name__)
                     if decision.get("decision") == "ALLOW":
                         decision["decision"] = "BLOCKED"
                         decision["reason"] = "required governance audit append failed"
@@ -279,6 +321,7 @@ def hook(runtime: str) -> int:
                     print(json.dumps({"decision": "deny", "reason": reason}))
                 return 0
     except Exception as exc:
+        logger.exception("Runtime policy evaluation failed closed: %s", type(exc).__name__)
         reason = "AIPS runtime policy BLOCKED: policy evaluation failed (" + type(exc).__name__ + ")"
         if runtime == "claude-code":
             print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": reason}}))
@@ -325,7 +368,8 @@ def hook(runtime: str) -> int:
             ok = not failures
             reason = "approval binding valid" if ok else "; ".join(failures)
         except Exception as exc:
-            reason = "approval verification failed: " + str(exc)
+            logger.exception("Approval verification failed closed: %s", type(exc).__name__)
+            reason = "approval verification failed (" + type(exc).__name__ + ")"
 
     if runtime == "claude-code":
         print(json.dumps({"hookSpecificOutput": {

@@ -4,6 +4,8 @@ The Parallel Run Dashboard is a read-only Human Operations View over existing AI
 
 ## Contract
 
+The read-only run projection keeps its canonical digest facade and stable bytes over the shared helper; the dashboard remains a projection with no independent state or authority.
+
 `scripts/run_projection.py` combines `CHECKPOINT.yaml`, append-only `EVENTS.jsonl`, workspace identity/fingerprint, optional execution/gate metadata and task ownership lease state into one normalized snapshot. CLI and browser consumers use this same projection.
 
 The default scope is `repository_id`, so runs in the main workspace and parallel worktrees are visible together. A missing or changed workspace is reported as `WORKSPACE_MISSING` or `STALE`; the projection never infers that `ACTIVE` means the Agent process is live.

@@ -5,15 +5,13 @@ from __future__ import annotations
 
 import argparse
 import hashlib
-import json
-from pathlib import Path
 import re
+from pathlib import Path
 from typing import Any
 
 import yaml
-
+from aips_common import canonical_hash as _aips_canonical_hash
 from content_safety import scan_payload
-
 
 ALLOWED_SOURCE_CLASSES = {
     "specification",
@@ -39,8 +37,7 @@ class ReviewPacketError(ValueError):
 
 
 def canonical_hash(value: Any) -> str:
-    payload = json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
-    return "sha256:" + hashlib.sha256(payload.encode("utf-8")).hexdigest()
+    return _aips_canonical_hash(value, prefix=True)
 
 
 def file_hash(value: bytes) -> str:

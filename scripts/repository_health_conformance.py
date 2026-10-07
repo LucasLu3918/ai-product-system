@@ -1,16 +1,15 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
+
+from aips_common import relative_path as _aips_relative_path
 
 
 def relative_path(root: Path, path: Path) -> str:
-    try:
-        return path.resolve().relative_to(root.resolve()).as_posix()
-    except ValueError:
-        return str(path.resolve())
+    return _aips_relative_path(root, path)
 
 
 def run_scenario_conformance(

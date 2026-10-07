@@ -132,6 +132,8 @@ for evidence in (
     Path(__file__).parent / "evidence/maintenance_reliability_lifecycle.py",
     Path(__file__).parent / "evidence/release_channel_lifecycle.py",
     Path(__file__).parent / "evidence/plan21_contract_baseline.py",
+    Path(__file__).parent / "evidence/shared_primitives_lifecycle.py",
+    Path(__file__).parent / "test_aips_common_primitives.py",
 ):
     if evidence.name in _OPENAPI_EVIDENCE and not _capabilities["openapi"]:
         _record_timing(str(evidence.relative_to(Path(__file__).resolve().parents[1])), time.monotonic(), "SKIPPED: exact-path plan does not require OpenAPI")

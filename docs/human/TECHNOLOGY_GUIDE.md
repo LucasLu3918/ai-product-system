@@ -13,6 +13,8 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 AIPS 將 Runtime/User instructions、Project rules、Project Intelligence 與 AIPS protocol 組合成 bounded context。不同 Runtime 使用各自可驗證的 integration strategy。
 
+Adapter resolvers keep JSON/YAML results on stdout and diagnostics on stderr. Invalid adapter-state data is an explicit error; unavailable optional Intelligence subprocesses use a stable reason code and are not reported as an empty successful result.
+
 ### MCP Interoperability Gateway
 
 MCP 提供 local stdio portable access plane，公開 Resources / Prompts / deterministic Tools。Tool-only Hosts 另以 read-only catalog/read/workflow Tools 取得相同 canonical capability context；所有 Tools 都宣告 non-destructive、idempotent、closed-world hints。Host model 負責 semantic reasoning；MCP Server 不呼叫第二個 LLM。
@@ -50,6 +52,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+The shared helper package consolidates canonical hashes, repository-relative paths and caller-specific glob matching; existing module facades preserve current call sites and outputs.
 
 Task-specific routes keep product-delivery, visual, security, testing, API/data, planning, documentation and publication procedures progressive; the general mutation fallback includes Orchestrator, Change Impact and Quality Planning.
 
@@ -146,6 +150,8 @@ Agent mutation 只在 approved resource boundary 中有效；default deny 與 ev
 
 ### Enforceable Governance
 
+Malformed hook envelopes fail closed with the adapter-specific denial response. Broad exception handling at enforcement boundaries records the exception chain to stderr and returns a sanitized failure; it never converts an enforcement failure into an allow decision.
+
 可驗證 native Runtime hooks 可以在 protected operation 前檢查 approval binding；MCP-only 不宣稱攔截 Host native tools。
 
 Runtime Policy Enforcement uses a versioned action envelope and deny-by-default policy. Claude/Gemini hooks are `TOOL_GUARDED` only for normalized actions they receive; Codex remains `ADVISORY`, and high-risk external egress additionally requires a verified sandbox boundary.
@@ -155,6 +161,10 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Shared deterministic helpers live in `scripts/aips_common/`; existing consumers keep compatibility facades. Golden lifecycle evidence pins raw/prefixed digest bytes and the distinct path/glob normalization modes. A separate focused pytest workflow checks those contracts without changing the required repository Gate. This refactor does not establish complete caller/consumer graph coverage.
+
+Scenario 231 adds a weekly/manual, pinned OSV dependency inventory and nonblocking full-history Gitleaks comparison with the existing project scanner. These observations do not replace the exact-candidate required secret scan or repository Gate; repository-wide Impact Graph coverage remains partial.
 
 Scenario 230 and the exact-candidate Core Matrix cover route selection, hook/manifest compatibility, missing-source behavior, fixed-core byte ceiling and measured reduction against the base layer.
 

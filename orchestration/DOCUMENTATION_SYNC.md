@@ -183,9 +183,13 @@ The new `scripts/retrieval_storage.py` helper belongs to the existing Project In
 
 ## Scenario 220 — Parallel advisory fast feedback
 
+Plan21 Phase 2 shared canonical JSON/hash, relative-path and glob behavior is pinned by `tests/evidence/shared_primitives_lifecycle.py`; synchronize Human guidance while retaining partial graph coverage.
+
 The advisory fast-feedback workflow is documented with the validation scenario and the Integration Gate required-check boundary; it remains independent of complete validation.
 
 ## Maintenance reliability mapping
+
+The Phase 2 helper lifecycle remains part of the required repository aggregate and pins existing digest/path/glob behavior; it does not replace the monthly reliability evidence or its UNKNOWN handling.
 
 Changes to Turn Context routing retain the small fixed core, route-source ownership and fail-closed missing-source behavior across Human and Agent documents.
 
