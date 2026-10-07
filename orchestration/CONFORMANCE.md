@@ -841,9 +841,9 @@ Scenarios 211 and 217 also verify that dependency-review shadow evidence cannot 
 
 ## Scenario 222 — Large Document Measurement Only
 
-Scenario 223 — Evolution Radar exclusion attribution verifies deterministic reasons and counts without changing Human decision authority.
-
 The size audit measures tracked text/evidence files against 50,000 bytes and reports oversized items as non-blocking `WARN`. It never blocks a Gate and does not archive or move files.
+
+
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
@@ -865,6 +865,9 @@ The Human current summary and Human/Agent history crosswalk are generated from t
 These lifecycle scenarios bind release-channel readiness, runtime constraints, quality debt, full-run validation observations, human Evolution relevance labels, and validation taxonomy alignment to focused evidence. The read-only observation collector installs its declared profile under `constraints/tested.txt` before importing the collector; missing dependency or incomplete evidence remains `NOT_READY`. Its 15-minute timeout is provisional from only two runs at about 31 seconds, so it is not a reliable P95. It has no concurrency group that could replace pending scheduled or manual evidence. These scenarios retain full validation, human decision authority, and fail-closed behavior when evidence is incomplete.
 
 - Scenario 208 requires exactly one empty canonical `## Unreleased` section before release readiness; malformed or pending entries block.
+### Scenario 223 — Evolution Radar exclusion attribution
+
+Verifies deterministic pre-analysis exclusion reasons and counts without changing Human decision authority.
 ## Scenario 210 — Python runtime support policy
 
 Scenario 210 is lifecycle-covered by `tests/evidence/install_preflight_lifecycle.py` and `tests/evidence/system_facts_lifecycle.py`. It verifies the Python >=3.12 floor across explicit selection, old managed venv repair, doctor diagnostics, canonical facts, and the scheduled 3.12–3.14 compatibility workflow.

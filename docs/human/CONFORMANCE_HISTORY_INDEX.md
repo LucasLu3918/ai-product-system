@@ -92,6 +92,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [### Scenarios 214–219 — Plan15 operational closure](CONFORMANCE.md#scenarios-214219-plan15-operational-closure) | Current Human guidance |
 | [### Scenario 210 — Python runtime support policy](CONFORMANCE.md#scenario-210-python-runtime-support-policy) | Current Human guidance |
 | [## Scenario 218 — Evolution Human Relevance Evaluation](CONFORMANCE.md#scenario-218-evolution-human-relevance-evaluation) | Current Human guidance |
+| [### Scenario 223 — Evolution Radar exclusion attribution](CONFORMANCE.md#scenario-223-evolution-radar-exclusion-attribution) | Current Human guidance |
 | [## Scenario 220 — Parallel advisory fast feedback](CONFORMANCE.md#scenario-220-parallel-advisory-fast-feedback) | Current Human guidance |
 | [## Scenario 221 — Dependency Update Risk Classification](CONFORMANCE.md#scenario-221-dependency-update-risk-classification) | Current Human guidance |
 | [## Scenario 222 — Large Document Measurement Only](CONFORMANCE.md#scenario-222-large-document-measurement-only) | Current Human guidance |
@@ -162,6 +163,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 222 — Large Document Measurement Only](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-222-large-document-measurement-only) | Normative rule |
 | [## Scenarios 202–209 — Plan13 current and provenance evidence](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenarios-202209-plan13-current-and-provenance-evidence) | Normative rule |
 | [### Scenarios 214–219 — Plan15 operational closure](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenarios-214219-plan15-operational-closure) | Normative rule |
+| [### Scenario 223 — Evolution Radar exclusion attribution](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-223-evolution-radar-exclusion-attribution) | Normative rule |
 | [## Scenario 210 — Python runtime support policy](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-210-python-runtime-support-policy) | Normative rule |
 
 The crosswalk preserves source anchors. Edit the source documents for content changes, then regenerate this index.

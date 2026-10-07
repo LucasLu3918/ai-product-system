@@ -1553,6 +1553,10 @@ Scenario 204’s internal-module extraction lifecycle also verifies the retrieva
 
 The monthly evaluator deterministically samples up to 20 signal fingerprints and reports shortlist precision/recall, actionable yield, and per-source relevance yield from complete Human labels. Empty or incomplete labels remain `NOT_READY`; no source policy changes occur automatically.
 
+### Scenario 223 — Evolution Radar exclusion attribution
+
+驗證 deterministic pre-analysis 對候選排除原因與計數的可重現性，且不改變人工決策權。
+
 ## Scenario 220 — Parallel advisory fast feedback
 
 Pull requests run the bounded repository preflight concurrently against the exact candidate. Its findings are reported for early feedback and do not replace or gate the required full repository validation; unrelated label-only events skip the advisory job.
@@ -1566,7 +1570,5 @@ Related security and observation contracts are covered by Scenarios 211 and 217:
 Dependency updates receive an explicit class, risk and recommended validation plan. Unknown dependencies are high risk and require human review; semantic runtime updates include retrieval regression evaluation and a semantic trial. Classification never authorizes automatic merges or policy changes.
 
 ## Scenario 222 — Large Document Measurement Only
-
-Scenario 223 — Evolution Radar exclusion attribution 驗證排除理由與計數可重現，且不改變人工決策權。
 
 The measurement-only audit records tracked documentation/evidence byte sizes. Files above 50,000 bytes produce `WARN` with exit code 0; size results do not block Gate or authorize file moves or archival.
