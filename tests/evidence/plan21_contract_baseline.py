@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import importlib
 import re
 import subprocess
 import sys
@@ -11,20 +12,6 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT / "scripts"))
-
-import check_secret_leakage  # noqa: E402
-import deterministic_scheduler  # noqa: E402
-import documentation_placement  # noqa: E402
-import integration_gate  # noqa: E402
-import project_intelligence  # noqa: E402
-import repository_health  # noqa: E402
-import repository_health_conformance  # noqa: E402
-import resource_authorization  # noqa: E402
-import review_evidence  # noqa: E402
-import review_packet  # noqa: E402
-import run_projection  # noqa: E402
-import visual_profile  # noqa: E402
 
 
 def sha256(data: bytes) -> str:
@@ -32,6 +19,19 @@ def sha256(data: bytes) -> str:
 
 
 def main() -> int:
+    sys.path.insert(0, str(ROOT / "scripts"))
+    check_secret_leakage = importlib.import_module("check_secret_leakage")
+    deterministic_scheduler = importlib.import_module("deterministic_scheduler")
+    documentation_placement = importlib.import_module("documentation_placement")
+    integration_gate = importlib.import_module("integration_gate")
+    project_intelligence = importlib.import_module("project_intelligence")
+    repository_health = importlib.import_module("repository_health")
+    repository_health_conformance = importlib.import_module("repository_health_conformance")
+    resource_authorization = importlib.import_module("resource_authorization")
+    review_evidence = importlib.import_module("review_evidence")
+    review_packet = importlib.import_module("review_packet")
+    run_projection = importlib.import_module("run_projection")
+    visual_profile = importlib.import_module("visual_profile")
     fixture = yaml.safe_load((ROOT / "tests/fixtures/plan21-contract-golden-vectors.yaml").read_text(encoding="utf-8"))
     raw_helpers = (
         resource_authorization.canonical_hash,
