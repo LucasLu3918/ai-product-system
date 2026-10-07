@@ -21,6 +21,8 @@ The established Retrieval Intelligence command/import facade remains `scripts/re
 
 ## Capability surfaces
 
+Operator 可選擇執行唯讀 GitHub governance snapshot；它不屬於 AIPS runtime adapter 或公開 `aips` 命令，也不改變安裝需求。
+
 | Surface | Capabilities | Canonical documentation | Validation bindings |
 |---|---|---|---|
 | `runtime-context` | unified-runtime-path-resolution, validation-interpreter-capability-selection, runtime-invariant-matrix | orchestration/RUNTIME_CONTEXT.md | tests/evidence/runtime_context_lifecycle.py, tests/evidence/aips_cli_module_extraction_lifecycle.py, scripts/runtime_invariant_matrix.py, tests/validate_repository.py |

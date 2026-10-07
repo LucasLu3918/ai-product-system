@@ -25,6 +25,8 @@ Role、Skill、Protocol 與 Project evidence 只在 task relevant 時載入，�
 
 ## Project Understanding
 
+Project Intelligence promotion 將候選資格與目標路徑限制拆成 helper，並由 facade 維持舊呼叫介面及人工核准邊界。
+
 ### Project Intelligence
 
 Stable semantic cache 保存 Architecture、Data Flow、Modules、Contracts、Tests、Security、Operations、Source Registry 與 Impact Graph。
@@ -46,6 +48,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+`scripts/repository_governance_snapshot.py` 是選擇性、唯讀的 operator snapshot；若 `gh` 不可讀取任一設定面，結果標為 UNKNOWN。
 
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
 
@@ -121,6 +125,8 @@ The Retrieval Intelligence SQLite persistence boundary is `scripts/retrieval_sto
 
 ## Security & Governance
 
+GitHub governance snapshot 只呼叫讀取 API，輸出完整設定證據與穩定 fingerprint，不具設定修改或發布權限。
+
 ### Security Assurance Level
 
 SAL 0–4 依 product baseline 與 current change boundary 決定 assurance 強度。
@@ -145,6 +151,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+品質債務 ratchet 追蹤 Ruff 與 mypy 基線，修改大型 facade 時要求債務下降；coverage 目前仍為 report-only。
 
 Plan17 regression evidence covers numeric diff headers, four browser/OpenAPI combinations, mandatory aggregates, reusable caller keys/permissions, explicit Python and isolated children, recursive placement, signed identity/immutable proposal rejection and atomic deletion races. Missing or malformed capability plans retain the full profile. A latest cancelled check stays INCOMPLETE; replaced old checks are reported as SUPERSEDED.
 
@@ -258,6 +266,8 @@ Planning Package 可用 EARS 結構表達適合的功能需求，並以 optional
 Implementation Resolution 先釐清 REST/OpenAPI authority，再依既有專案證據或新專案的 Human-confirmed 選型建立 Implementation Profile。Go、PHP、Python、.NET 語言 Profile 提供穩定基線，專案規則與工具鏈仍優先。結構驗證器只檢查欄位、來源和 ownership 衝突，不判斷架構或技術建議是否正確；未取得驗證證據時回報 `UNVERIFIED`。
 
 ## Evolution & Maintenance
+
+Evolution Radar deterministic pre-analysis 會輸出 shortlist 與排除原因計數；採納與 trial 仍須遵循既有人工決策政策。
 
 Evolution relevance evaluation uses a reproducible monthly sample of 20 signal fingerprints and explicit Human labels. It reports shortlist precision/recall, actionable yield and source yield offline; incomplete labels remain `NOT_READY`, and policy changes still require a Human decision.
 

@@ -1520,6 +1520,8 @@ Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agen
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
+Scenario 209 的唯讀 repository governance snapshot lifecycle 證據涵蓋完整回應、UNKNOWN 與穩定 fingerprint。
+
 Publication scanning excludes only validated numeric Git index/mode metadata; paths, added/removed/context lines and unknown headers remain scanned. Branch deletion verifies GitHub RS256 issuer, repository, protected main, workflow SHA, dispatch event and a proposal-bound audience. Runner flags alone grant no authority; tokens remain in memory.
 
 Scenario 207 now verifies caller-declared Python imports, missing-module failure, shell-like input rejection, and dependency consistency through `pip check`; it also checks same-period Evolution Effectiveness queueing, pending-run retention and disabled cancellation.
@@ -1564,5 +1566,7 @@ Related security and observation contracts are covered by Scenarios 211 and 217:
 Dependency updates receive an explicit class, risk and recommended validation plan. Unknown dependencies are high risk and require human review; semantic runtime updates include retrieval regression evaluation and a semantic trial. Classification never authorizes automatic merges or policy changes.
 
 ## Scenario 222 — Large Document Measurement Only
+
+Scenario 223 — Evolution Radar exclusion attribution 驗證排除理由與計數可重現，且不改變人工決策權。
 
 The measurement-only audit records tracked documentation/evidence byte sizes. Files above 50,000 bytes produce `WARN` with exit code 0; size results do not block Gate or authorize file moves or archival.

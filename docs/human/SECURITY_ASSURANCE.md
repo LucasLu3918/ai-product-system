@@ -105,6 +105,8 @@ The Security Engineer records the floor and rationale.
 
 ## Product baseline vs change impact
 
+Repository governance snapshot 透過已驗證的 `gh` 讀取 repository rulesets 與 branch protection，保留完整回應與明確 UNKNOWN 狀態；它不修改 GitHub 設定，也不代替發布核准。
+
 Changes to validation orchestration preserve candidate secret scanning and required aggregate checks; removing redundant syntax or lifecycle invocations does not reduce security coverage.
 
 Change Impact unknown dispositions are security-relevant evidence: closed records require current in-repository or complete scoped traversal evidence and explicit Human review. Legacy strings, stale hashes, out-of-root paths, incomplete traversals and mismatched scopes remain unresolved and fail closed.
@@ -221,7 +223,7 @@ The public repository runs GitHub Dependency Review on pull requests (blocking n
 
 The scheduled Python compatibility workflow uses `contents: read` and pinned checkout/setup-python actions. Its smoke result is supplementary; it cannot replace the exact-candidate PR Gate or grant publication authority.
 
-Repository protection assessments are evidence-only: incomplete Admin/bypass snapshots remain UNKNOWN, and the comparator cannot weaken branch protection or activate a ruleset. Candidate publication continues to run the mandatory secret scan and existing required `repository` Gate.
+Repository protection assessments are evidence-only: `scripts/repository_governance_snapshot.py` reads the GitHub rulesets and branch-protection endpoints with the local `gh` identity, fingerprints the returned evidence, and marks either unreadable endpoint `UNKNOWN`. The snapshot command has no API write path, and the comparator cannot weaken branch protection or activate a ruleset. The candidate publication flow still performs the mandatory secret scan and preserves the required `repository` Gate.
 
 Changed-path CI planning can omit unrelated optional tools, but every publication candidate still runs the mandatory candidate secret scan, repository validation and exact-candidate Integration Gate. Unknown paths select the full toolchain.
 

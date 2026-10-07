@@ -14,9 +14,10 @@ import shutil
 import subprocess
 import sys
 import tempfile
+from collections.abc import Iterator
 from fnmatch import fnmatch
 from pathlib import Path
-from typing import Any, Iterator
+from typing import Any
 
 import yaml
 from aips_identity import (
@@ -31,6 +32,8 @@ from aips_identity import (
 from content_safety import safe_emit as safe_context_emit
 from git_paths import GitPathsError, run_git_paths
 from observed_stage import observed_stage
+from project_intelligence_promotion import promotion_candidate as _promotion_candidate
+from project_intelligence_promotion import promotion_target as _promotion_target_impl
 from project_intelligence_temporal import temporal_query
 from retrieval_evaluation import (
     evaluate_suite as retrieval_evaluate_suite,
@@ -66,6 +69,8 @@ from retrieval_intelligence import (
 )
 from temporal_intelligence import (
     active_assertions as temporal_active_assertions,
+)
+from temporal_intelligence import (
     validate_document as validate_temporal_document,
 )
 from turn_intent import classify_prompt
@@ -104,7 +109,7 @@ REDACTION_PATTERNS = (
 
 
 def utc_now() -> str:
-    return dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat()
+    return dt.datetime.now(dt.UTC).replace(microsecond=0).isoformat()
 
 
 def run_git(project: Path, args: list[str]) -> str | None:
@@ -240,7 +245,7 @@ def rel(root: Path, path: Path) -> str:
 
 def is_secret_filename(name: str) -> bool:
     low = name.lower()
-    return low in SECRET_NAMES or low.startswith(".env.") or low.endswith(".pem") or low.endswith(".key")
+    return low in SECRET_NAMES or low.startswith(".env.") or low.endswith((".pem", ".key"))
 
 
 def safe_walk(root: Path, max_files: int = 8000) -> list[Path]:
@@ -267,7 +272,7 @@ def discover_sources(root: Path, files: list[Path]) -> list[dict[str, Any]]:
         rp = rel(root, p)
         name = p.name
         if name not in SOURCE_NAMES and not (
-            (rp.startswith("docs/") or rp.startswith("doc/")) and p.suffix.lower() in DOC_EXT
+            rp.startswith(("docs/", "doc/")) and p.suffix.lower() in DOC_EXT
         ):
             continue
         try:
@@ -545,7 +550,7 @@ def context_audit(root: Path) -> dict[str, Any]:
     paths = [str(item.get("path")) for item in (registry.get("sources") or []) if item.get("path")]
     for path in sorted({p for p in paths if paths.count(p) > 1}):
         issues.append({"kind": "duplicate_source_pointer", "path": path})
-    for name, topic in (intel.get("topics") or {}).items():
+    for topic in (intel.get("topics") or {}).values():
         p = str(topic.get("path", "")) if isinstance(topic, dict) else ""
         if p and not (store / p).exists():
             issues.append({"kind": "missing_topic", "path": p})
@@ -997,36 +1002,6 @@ def reconcile_overrides(root: Path) -> dict[str, Any]:
 
 
 
-def _promotion_candidate(store: Path, intel: dict[str, Any], topic_name: str) -> tuple[dict[str, Any], Path]:
-    topic = (intel.get("topics") or {}).get(topic_name)
-    if not isinstance(topic, dict):
-        raise RuntimeError(f"Unknown Project Intelligence topic: {topic_name}")
-    path_value = topic.get("path")
-    if not path_value:
-        raise RuntimeError(f"Project Intelligence topic has no derived content path: {topic_name}")
-    derived_path = store / str(path_value)
-    if not derived_path.is_file():
-        raise RuntimeError(f"Project Intelligence topic content is missing: {path_value}")
-    promotion = topic.get("promotion") or {}
-    confirmations = [str(value) for value in (promotion.get("confirmations") or []) if str(value).strip()]
-    confirmations = list(dict.fromkeys(confirmations))
-    eligible = (
-        len(confirmations) >= 2
-        and topic.get("type") in {"FACT", "INTERPRETATION", "OBSERVED_CONVENTION"}
-        and bool(topic.get("evidence"))
-    )
-    return {
-        "topic": topic_name,
-        "status": "RECOMMENDED" if eligible else "NOT_READY",
-        "approval_required": True,
-        "mutation_performed": False,
-        "confirmations": confirmations,
-        "confirmation_count": len(confirmations),
-        "reason": "repeated_confirmed_derived_invariant" if eligible else "insufficient_confirmation_or_evidence",
-        "allowed_targets": ["AGENTS.md", "AGENTS.override.md", "docs/<official-project-rule>.md"],
-    }, derived_path
-
-
 def promotion_plan(root: Path, topic_name: str) -> dict[str, Any]:
     store, mode, pid = intelligence_store(root)
     intel_path = store / "PROJECT_INTELLIGENCE.yaml"
@@ -1038,18 +1013,7 @@ def promotion_plan(root: Path, topic_name: str) -> dict[str, Any]:
 
 
 def _promotion_target(root: Path, target: str) -> Path:
-    raw = Path(target)
-    if raw.is_absolute():
-        raise RuntimeError("Promotion target must be project-relative")
-    resolved = (root / raw).resolve()
-    try:
-        relative = resolved.relative_to(root.resolve()).as_posix()
-    except ValueError as exc:
-        raise RuntimeError("Promotion target escapes project root") from exc
-    allowed = raw.name in SOURCE_NAMES or (relative.startswith("docs/") and raw.suffix.lower() in DOC_EXT)
-    if not allowed:
-        raise RuntimeError("Promotion target must be AGENTS*/runtime instruction source or an official docs/* document")
-    return resolved
+    return _promotion_target_impl(root, target, SOURCE_NAMES, DOC_EXT)
 
 
 def promotion_apply(root: Path, topic_name: str, target: str, approval_id: str) -> dict[str, Any]:
@@ -1699,7 +1663,7 @@ def impact_init(root: Path, prompt: str, change_id: str | None, *, reset: bool =
                     f"Change Impact record already exists: {path} "
                     f"(status: {existing.get('status', 'UNKNOWN')}); use a new --change-id or --reset"
                 )
-            stamp = dt.datetime.now(dt.timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+            stamp = dt.datetime.now(dt.UTC).strftime("%Y%m%dT%H%M%S%fZ")
             backup = path.with_name(f"{path.stem}.backup-{stamp}.yaml")
             with path.open("rb") as source, backup.open("xb") as target:
                 shutil.copyfileobj(source, target)
@@ -1831,8 +1795,8 @@ def validate_traversal_evidence(doc: dict[str, Any], changed_files: list[str] | 
     unresolved = traversal.get("unresolved") or []
     if high_risk and (traversal.get("status") != "COMPLETE" or unresolved):
         errors.append("high-risk change has unresolved traversal relationships")
-    declared_paths = set(str(path) for path in change.get("target_paths") or [])
-    actual_paths = set(str(path) for path in (changed_files or []))
+    declared_paths = {str(path) for path in change.get("target_paths") or []}
+    actual_paths = {str(path) for path in (changed_files or [])}
     for node in traversal.get("nodes") or []:
         if not isinstance(node, dict) or node.get("kind") == "seed":
             continue

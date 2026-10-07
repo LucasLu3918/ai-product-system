@@ -12,6 +12,7 @@ import evolution_analysis as evolution_facade
 import evolution_preanalysis as evolution_impl
 import project_intelligence as project_facade
 import project_intelligence_impact_graph as project_impl
+import project_intelligence_promotion as project_promotion_impl
 import project_intelligence_temporal as project_temporal_impl
 import publish_post_merge as publish_post_merge_impl
 import publish_preflight as publish_facade
@@ -25,6 +26,7 @@ import retrieval_structural_graph as retrieval_impl
 def main() -> int:
     assert project_facade.traverse_architecture_impact_graph is project_impl.traverse_architecture_impact_graph
     assert project_facade.temporal_query is project_temporal_impl.temporal_query
+    assert project_facade._promotion_candidate is project_promotion_impl.promotion_candidate
     assert publish_facade.PreflightError is publish_post_merge_impl.PreflightError
     assert callable(publish_facade.post_merge)
     assert callable(publish_facade.sync_installed)
@@ -64,6 +66,28 @@ def main() -> int:
         assert callable(function)
     with tempfile.TemporaryDirectory() as temporary:
         base = Path(temporary)
+        derived = base / "store" / "topics" / "architecture.md"
+        derived.parent.mkdir(parents=True)
+        derived.write_text("architecture evidence", encoding="utf-8")
+        candidate, candidate_path = project_facade._promotion_candidate(
+            base / "store",
+            {"topics": {"architecture": {
+                "path": "topics/architecture.md",
+                "type": "FACT",
+                "evidence": [{"source": "tests"}],
+                "promotion": {"confirmations": ["reviewer-one", "reviewer-two"]},
+            }}},
+            "architecture",
+        )
+        assert candidate_path == derived and candidate["status"] == "RECOMMENDED"
+        assert candidate["approval_required"] is True and candidate["mutation_performed"] is False
+        assert project_facade._promotion_target(base, "docs/rules.md").is_relative_to(base.resolve())
+        try:
+            project_facade._promotion_target(base, "../outside.md")
+        except RuntimeError:
+            pass
+        else:
+            raise AssertionError("promotion target must remain confined to the project")
         result = project_facade.temporal_query(base / "no-git-repository", base / "store", "current", None, None, None, None)
         assert result["mode"] == "CURRENT"
         assert result["availability"] == "GIT_HEAD_UNAVAILABLE"

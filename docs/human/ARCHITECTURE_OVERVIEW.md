@@ -23,6 +23,8 @@ MCP 提供 portability；native adapters 提供可驗證的 runtime hook / guard
 
 `aips intelligence temporal` 仍由 `scripts/project_intelligence.py` 提供；temporal query 的內部實作位於 `scripts/project_intelligence_temporal.py`，既有 facade、輸出與權限邊界不變。
 
+Promotion eligibility 與目標路徑限制位於 `scripts/project_intelligence_promotion.py`，由同一 facade 使用；實際提升仍要求明確核准，拒絕覆寫既有目標。
+
 
 執行環境恢復延伸既有 CLI 與 Retrieval：`runtime_cache.py` 共用可寫快取解析，`package_install.py` 回報安全的下載失敗分類；沒有新增遠端服務或治理權限，既有架構拓樸與圖不需改動。
 
@@ -186,6 +188,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Maintenance governance 持續以 exact-candidate Gate 驗證品質債務與文件同步；Validation Shadow 仍維持 report-only，只有累積政策要求的證據後才可升級。
 
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
 

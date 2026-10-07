@@ -841,9 +841,13 @@ Scenarios 211 and 217 also verify that dependency-review shadow evidence cannot 
 
 ## Scenario 222 — Large Document Measurement Only
 
+Scenario 223 — Evolution Radar exclusion attribution verifies deterministic reasons and counts without changing Human decision authority.
+
 The size audit measures tracked text/evidence files against 50,000 bytes and reports oversized items as non-blocking `WARN`. It never blocks a Gate and does not archive or move files.
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
+
+Scenario 209 also covers the read-only repository governance snapshot lifecycle, including UNKNOWN surfaces and stable fingerprints.
 
 Scenario 207 verifies declared bootstrap imports and dependency consistency, and confirms malformed or missing modules fail closed.
 It also verifies Maintenance Reliability's shared bootstrap, Repository Health's provisional timeout and exact-revision serialization, Evolution Effectiveness's same-period non-cancelling queue, and Validation Observation's retained timeout without coalescing independent evidence runs.

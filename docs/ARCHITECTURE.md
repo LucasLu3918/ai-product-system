@@ -754,6 +754,8 @@ The impact flow combines three distinct layers: canonical `IMPACT_GRAPH.yaml` re
 
 Canonical reusable state is PROJECT_INTELLIGENCE + SOURCE_REGISTRY + IMPACT_GRAPH + PROJECT_OVERRIDES. Generated HTML is a deterministic Human Review View, not another source of truth. Core / Recall estimates enforce a 1,600 / 6,000 token split within a 7,600 total estimate. Retrieval failure keeps canonical source pointers and exposes a stable diagnostic code. Legacy .ai/knowledge/ is migration input only.
 
+Promotion candidate eligibility and target confinement are kept in `scripts/project_intelligence_promotion.py`; the existing `scripts/project_intelligence.py` facade retains CLI compatibility and the explicit approval/no-overwrite boundary. The overall Project Intelligence flow above is unchanged.
+
 ## Visual consistency repair
 
 ~~~mermaid

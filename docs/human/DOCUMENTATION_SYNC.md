@@ -118,6 +118,8 @@ Docs deployment 不取得 code merge、release 或 product production authority�
 
 ## Technology Guide
 
+Project Intelligence promotion 與 repository governance snapshot 的行為說明，分別維護在 Project Intelligence 與 Security Assurance canonical topic，Technology Guide 僅摘要導覽。
+
 Post-merge reconciliation is implemented in `scripts/publish_post_merge.py`; `scripts/publish_preflight.py` remains the compatible CLI facade. Keep both modules, lifecycle coverage and integration inventory synchronized when changing this boundary.
 
 內部模組抽離若保留既有 CLI facade 與輸出，仍同步更新架構／文件觸發索引；操作說明只描述使用者可觀察的 current behavior。
@@ -134,6 +136,8 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+新增 behavior-bearing helper 必須同步更新 placement 與 sync registry；Project Intelligence promotion 保留既有 approval facade，治理快照維持唯讀並在資料不可讀時回報 UNKNOWN。
 
 Prospective `aips docs impact --base HEAD --planned-path <path>` resolves sync and placement closure to a fixed point. Each triggered rule requires an update in its canonical topic; combined changes use the union of those topics. Validate every text anchor before applying the batch. Closure is scope evidence and never grants publication authority.
 

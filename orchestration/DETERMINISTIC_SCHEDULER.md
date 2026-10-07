@@ -159,6 +159,8 @@ The Scheduler never falls back to LLM coordination to make a blocked graph look 
 
 ## Read-only declaration and fail-closed boundary
 
+The repository governance snapshot declares read-only behavior and reports inaccessible ruleset or branch-protection data as UNKNOWN; it grants no mutation capability.
+
 The Evolution pre-analysis module split stays behind the existing CLI and does not change scheduler task definitions, dispatch, or authority.
 
 Task Graphs now include explicit `read_only` intent.

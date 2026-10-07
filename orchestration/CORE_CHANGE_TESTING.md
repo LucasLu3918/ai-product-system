@@ -22,6 +22,8 @@ When a shared module-extraction lifecycle gains another facade, retain identity 
 
 ## Impact-derived Test Matrix
 
+For plan18, the matrix records Evolution Radar attribution, quality debt burn-down, facade maintainability, read-only governance evidence, canonical documentation paths and preserved authority boundaries.
+
 
 REST/OpenAPI core changes should include lifecycle evidence for supported-spec validation, local-reference confinement, canonical-baseline comparison, project-native command execution, JUnit operation coverage and revision-bound report freshness.
 

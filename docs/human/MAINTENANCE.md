@@ -4,9 +4,13 @@ Runtime Context 或 Integration Gate 改動時，執行 Scenario 198、完整 re
 
 Retrieval relation extraction changes preserve the legacy `retrieval_intelligence.py` entry points. Run the focused extraction lifecycle, retrieval lifecycle and full repository Gate; lexical traversal uncertainty remains explicit.
 
+Project Intelligence promotion eligibility and target confinement are implemented in `project_intelligence_promotion.py`; keep `project_intelligence.py` as the compatibility facade and preserve its Human approval and no-overwrite behavior with `tests/evidence/module_extraction_lifecycle.py`.
+
 Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as its CLI/import facade. The focused Radar lifecycle and module-identity checks preserve deterministic output and Human decision authority.
 
 ## Documentation Impact Gate
+
+行為來源 `scripts/project_intelligence_promotion.py`、`scripts/repository_governance_snapshot.py` 已登錄 canonical Human 文件落點；GitHub governance snapshot 僅讀取 rulesets 與 branch protection，無遠端寫入能力。
 
 Every system change must assess downstream documentation and behavior before completion.
 
@@ -16,12 +20,12 @@ Every system change must assess downstream documentation and behavior before com
 | `orchestration/*` | detailed execution/model/instruction/planning behavior changes |
 | `docs/ARCHITECTURE.md` | runtime flow, planning flow, boundaries or update lifecycle changes |
 | `README.md` | Human first-entry behavior changes |
-| `docs/GETTING_STARTED.md` | Human quick-start changes |
-| `docs/USER_GUIDE.md` | Human-facing workflows/commands change |
-| `docs/INSTALLATION.md` | Human installation/update lifecycle changes |
-| `docs/ARCHITECTURE_OVERVIEW.md` | Human architecture overview changes |
-| `docs/assets/*.svg` | Human-facing architecture/lifecycle diagram changes |
-| `docs/HARNESS.md` | Global Harness / Adapter / ownership behavior changes |
+| `docs/human/GETTING_STARTED.md` | Human quick-start changes |
+| `docs/human/USER_GUIDE.md` | Human-facing workflows/commands change |
+| `docs/human/INSTALLATION.md` | Human installation/update lifecycle changes |
+| `docs/human/ARCHITECTURE_OVERVIEW.md` | Human architecture overview changes |
+| `docs/human/assets/*.svg` | Human-facing architecture/lifecycle diagram changes |
+| `docs/human/HARNESS.md` | Global Harness / Adapter / ownership behavior changes |
 | `harness/*` | Global Harness / Adapter contract changes |
 | `AGENTS.md` | Agent bootloader changes |
 | `examples/*` | a new behavior needs a practical example |
@@ -44,6 +48,8 @@ If an item is not affected, mark it N/A during change review rather than editing
 
 ## Architecture Diagram Impact Check
 
+本次更新 Project Intelligence 局部圖；頂層 runtime、Harness、Product Delivery 與安裝生命週期圖評估為 N/A，因沒有改變其流程或邊界。
+
 Every Large/Core Change must explicitly assess architecture-diagram impact as part of the existing Documentation Impact Gate. This is not a new approval gate.
 
 Trigger examples: Runtime/Routing/Context-loading flow changes; Harness/Adapter/instruction precedence changes; Project persistence/workspace lifecycle changes; complete-product/Release lifecycle changes; major Security/Quality/Review lifecycle changes; Install/Update/Uninstall behavior changes; a major new subsystem or boundary.
@@ -51,12 +57,12 @@ Trigger examples: Runtime/Routing/Context-loading flow changes; Harness/Adapter/
 Required review set:
 
 - docs/ARCHITECTURE.md Mermaid;
-- docs/ARCHITECTURE_OVERVIEW.md;
-- docs/assets/system-overview.svg;
-- docs/assets/harness-overview.svg when Harness is affected;
-- docs/assets/product-delivery-overview.svg when delivery is affected;
-- docs/assets/project-intelligence-overview.svg when Turn Context / Project Intelligence / Change Impact is affected;
-- docs/assets/system-lifecycle.svg when install/project lifecycle is affected.
+- docs/human/ARCHITECTURE_OVERVIEW.md;
+- docs/human/assets/system-overview.svg;
+- docs/human/assets/harness-overview.svg when Harness is affected;
+- docs/human/assets/product-delivery-overview.svg when delivery is affected;
+- docs/human/assets/project-intelligence-overview.svg when Turn Context / Project Intelligence / Change Impact is affected;
+- docs/human/assets/system-lifecycle.svg when install/project lifecycle is affected.
 
 For every relevant diagram: Affected → update diagram + explanation; Not affected → record N/A + concrete reason.
 
@@ -201,6 +207,8 @@ Legacy Project Knowledge remains compatibility input only. New reusable understa
 Focused Intelligence context evidence must distinguish storage deduplication from runtime-context deduplication. Do not promote conflict/override/change-impact/monorepo/migration Scenarios until their full contracts are actually enforced and directly exercised.
 
 ## Impact-derived regression testing
+
+本次 Project Intelligence promotion helper 維持既有 facade、Human approval 與 no-overwrite 邊界；Scenario 223 證明 Evolution Radar 對候選排除原因提供決定性歸因。
 
 Phase 4 generator adapter 維護需同步檢查 Profile schema、OpenAPI evidence、命令執行邊界、allowlist、Phase 3 generation records、原子回復、Scenario 196 與 Integration Gate fixture。Gate 僅執行隔離的假 generator lifecycle，不呼叫專案設定的實際 generator。更換 generator 或 version 時應重新審查 executable hash、版本輸出、argv 與生成差異，並執行專案原生測試。Phase 5 的 `generator_reports` 是 Profile 自願啟用的未追蹤本機報告；維護時檢查 schema/fingerprint、Git 祖先、Profile 前後雜湊、工具版本與 argv、輸入與輸出及 generation records。執行 `tests/evidence/openapi_client_pilot_lifecycle.py` 確認本機服務、client、證據鏈及負面路徑；新增產品不自動複製 AIPS 範例。
 
@@ -393,7 +401,7 @@ Selective Validation remains in `FULL_RUN_SHADOW` until an exact-artifact cohort
 
 `config/repository-contract.yaml` is a versioned parallel mirror of the legacy `required_files` list in `tests/validation/static_contracts.py`. The strict parser and lifecycle fixture require exact path-set parity and identical missing-file findings; the legacy list remains authoritative during this pilot. Other lists and authority cutover require a separate reviewed change.
 
-The validation environment records exact Coverage.py and Hypothesis versions. Coverage reports branch measurements for the stable release selector without enforcing a percentage until touched-module baselines are established. Hypothesis property checks use deterministic settings. Ruff may not exceed its measured repository baseline of 872 findings; selected mypy modules keep the existing zero-error bound. Expand either scope only with a measured baseline and a small reviewed ratchet.
+The validation environment records exact Coverage.py and Hypothesis versions. Coverage reports branch measurements for the stable release selector without enforcing a percentage until touched-module baselines are established. Hypothesis property checks use deterministic settings. Ruff may not exceed its measured repository baseline of 758 findings; selected mypy modules keep the existing zero-error bound. The current Ruff debt ledger records 10 Project Intelligence facade findings (next target 9) and 6 Retrieval Intelligence facade findings (next target 5). A touched facade must reduce its findings by at least 10% from the base revision while introducing no new touched-code findings. Coverage remains report-only until representative module baselines exist.
 
 Repository Health reports advisory counts for workflows, validation modules, policy files and Integration Gate steps. These counts provide governance-complexity trend context and never affect health status or create a new gate. Monthly reliability reports continue collecting bounded evidence; SLO thresholds remain deferred until at least three complete monthly cohorts exist, then require human review and can only raise review flags.
 
