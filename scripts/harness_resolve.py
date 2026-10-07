@@ -3,15 +3,15 @@ from __future__ import annotations
 
 import argparse
 import json
+import logging
 import os
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 
-try:
-    import yaml
-except Exception:
-    yaml = None
+import yaml
+
+logger = logging.getLogger(__name__)
 
 
 def git_output(args: list[str], cwd: Path | None = None) -> str | None:
@@ -24,7 +24,8 @@ def git_output(args: list[str], cwd: Path | None = None) -> str | None:
             check=True,
         )
         return result.stdout.strip()
-    except Exception:
+    except (OSError, subprocess.CalledProcessError) as exc:
+        logger.debug("Git probe unavailable: %s", type(exc).__name__, exc_info=True)
         return None
 
 
@@ -52,13 +53,14 @@ def config_home() -> Path:
 
 def adapter_state(runtime: str) -> dict:
     path = config_home() / "harness" / "adapters" / f"{runtime}.yaml"
-    if not path.exists() or yaml is None:
+    if not path.exists():
         return {}
     try:
         with path.open("r", encoding="utf-8") as f:
             return yaml.safe_load(f) or {}
-    except Exception:
-        return {}
+    except yaml.YAMLError as exc:
+        logger.error("Adapter state is invalid YAML: %s", path)
+        raise ValueError(f"invalid adapter state: {path}") from exc
 
 
 def hierarchy(root: Path, cwd: Path) -> list[Path]:
@@ -121,17 +123,16 @@ def run_intelligence(system_dir: Path, project: Path) -> dict:
             capture_output=True, text=True, check=True, timeout=5,
         )
         return json.loads(r.stdout)
-    except Exception:
-        return {}
+    except (OSError, subprocess.CalledProcessError, subprocess.TimeoutExpired, json.JSONDecodeError) as exc:
+        logger.debug("Project Intelligence unavailable: %s", type(exc).__name__, exc_info=True)
+        return {"status": "UNAVAILABLE", "reason_code": "intelligence_unavailable"}
 
 
 def output(data: dict, fmt: str) -> None:
     if fmt == "json":
         print(json.dumps(data, ensure_ascii=False, indent=2))
-    elif yaml is not None:
-        print(yaml.safe_dump(data, sort_keys=False, allow_unicode=True).rstrip())
     else:
-        print(json.dumps(data, ensure_ascii=False, indent=2))
+        print(yaml.safe_dump(data, sort_keys=False, allow_unicode=True).rstrip())
 
 
 def main() -> int:
@@ -166,7 +167,11 @@ def main() -> int:
     version_path = system_dir / "VERSION"
     version = version_path.read_text(encoding="utf-8").strip() if version_path.exists() else "unknown"
     commit = git_output(["-C", str(system_dir), "rev-parse", "HEAD"]) or "unknown"
-    adapter = adapter_state(runtime) if runtime != "unknown" else {}
+    try:
+        adapter = adapter_state(runtime) if runtime != "unknown" else {}
+    except ValueError:
+        output({"status": "ERROR", "reason_code": "invalid_adapter_state"}, args.format)
+        return 2
 
     data = {
         "version": 2,
@@ -200,6 +205,7 @@ def main() -> int:
             "readiness": (intel.get("state") or {}).get("readiness"),
             "review": (intel.get("state") or {}).get("review"),
             "freshness": (intel.get("freshness") or {}).get("status"),
+            "reason_code": intel.get("reason_code"),
             "review_html": intel.get("review_html"),
         },
         "state": {

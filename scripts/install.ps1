@@ -19,7 +19,7 @@ set -euo pipefail
 command -v curl >/dev/null
 installer="$(mktemp)"
 trap 'rm -f -- "$installer"' EXIT
-curl -fsSL --output "$installer" __INSTALLER_URL__
+curl -fsSL --retry 3 --retry-delay 2 --connect-timeout 15 --max-time 60 --output "$installer" __INSTALLER_URL__
 test -s "$installer"
 bash "$installer" --configure-shell --channel __CHANNEL__
 '@

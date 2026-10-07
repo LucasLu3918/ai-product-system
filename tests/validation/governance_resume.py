@@ -1,4 +1,3 @@
-from pathlib import Path
 import importlib.util
 import json
 import os
@@ -6,9 +5,11 @@ import re
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
+
 import yaml
 
-from .static_contracts import ROOT, errors, load_yaml, roles, skills, scenarios, version
+from .static_contracts import ROOT, errors, load_yaml, roles, scenarios, skills, version
 
 # v0.11 enforceable governance contract
 approval_template = ROOT / "templates/governance/APPROVAL_RECORD.yaml"
@@ -46,6 +47,24 @@ else:
     scope_b = {"operations":["git_push"],"boundaries":["governance"],"files":["a.txt","b.txt"],"candidate_commit":"abc123","remote":"origin","branch":"release/test"}
     if gg.fingerprint(scope_a) != gg.fingerprint(scope_b):
         errors.append("Approval fingerprint must be deterministic for set-like ordering")
+    for runtime, payload in (("gemini-cli", "{"), ("claude-code", "[]"), ("gemini-cli", "{}"), ("claude-code", '{"tool_input":[]}')):
+        result = subprocess.run(
+            [sys.executable, str(guard), "hook", "--runtime", runtime],
+            input=payload, capture_output=True, text=True, check=False,
+        )
+        try:
+            response = json.loads(result.stdout)
+        except json.JSONDecodeError:
+            errors.append(f"Malformed {runtime} hook input did not return a JSON deny envelope")
+            continue
+        if result.returncode != 0:
+            errors.append(f"Malformed {runtime} hook input returned a nonzero process status")
+        if runtime == "claude-code":
+            decision = ((response.get("hookSpecificOutput") or {}).get("permissionDecision"))
+            if decision != "deny":
+                errors.append("Malformed Claude hook input must fail closed with deny")
+        elif response.get("decision") != "deny":
+            errors.append("Malformed Gemini hook input must fail closed with deny")
     with tempfile.TemporaryDirectory() as tmp:
         ap = Path(tmp) / "approval.yaml"
         record = {"version":1,"approval":{"id":"test","type":"git_publish","status":"APPROVED","approved_by":"human","approved_at":"test"},"proposal":{"fingerprint":"sha256:test"},"scope":dict(scope_a),"evidence":{"validation":[],"unresolved":[]}}

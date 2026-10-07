@@ -1,4 +1,3 @@
-from pathlib import Path
 import importlib.util
 import json
 import os
@@ -6,9 +5,11 @@ import re
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
+
 import yaml
 
-from .static_contracts import ROOT, errors, load_yaml, roles, skills, scenarios, version
+from .static_contracts import ROOT, errors, load_yaml, roles, scenarios, skills, version
 
 visual_profile_helper = ROOT / "scripts/visual_profile.py"
 visual_profile_evidence = ROOT / "tests/evidence/visual_profile_lifecycle.py"
@@ -34,7 +35,14 @@ else:
 
 install_preflight_evidence = ROOT / "tests/evidence/install_preflight_lifecycle.py"
 install_download_evidence = ROOT / "tests/evidence/install_download_lifecycle.py"
+installer_reliability_evidence = ROOT / "tests/evidence/installer_reliability_lifecycle.py"
 runtime_lock_evidence = ROOT / "tests/evidence/runtime_dependency_lock_lifecycle.py"
+if not installer_reliability_evidence.exists():
+    errors.append("Missing installer reliability lifecycle evidence")
+else:
+    focused = subprocess.run([sys.executable, str(installer_reliability_evidence)], capture_output=True, text=True, check=False)
+    if focused.returncode != 0:
+        errors.append(f"Installer reliability lifecycle evidence failed: {focused.stdout.strip()} {focused.stderr.strip()}")
 if not runtime_lock_evidence.exists():
     errors.append("Missing runtime dependency lock lifecycle evidence")
 else:

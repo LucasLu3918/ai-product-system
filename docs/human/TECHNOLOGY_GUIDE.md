@@ -13,6 +13,8 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 AIPS 將 Runtime/User instructions、Project rules、Project Intelligence 與 AIPS protocol 組合成 bounded context。不同 Runtime 使用各自可驗證的 integration strategy。
 
+Adapter resolvers keep JSON/YAML results on stdout and diagnostics on stderr. Invalid adapter-state data is an explicit error; unavailable optional Intelligence subprocesses use a stable reason code and are not reported as an empty successful result.
+
 ### MCP Interoperability Gateway
 
 MCP 提供 local stdio portable access plane，公開 Resources / Prompts / deterministic Tools。Tool-only Hosts 另以 read-only catalog/read/workflow Tools 取得相同 canonical capability context；所有 Tools 都宣告 non-destructive、idempotent、closed-world hints。Host model 負責 semantic reasoning；MCP Server 不呼叫第二個 LLM。
@@ -145,6 +147,8 @@ Credentials 只能來自安全 runtime source；不進 Git、Prompt、logs、Pro
 Agent mutation 只在 approved resource boundary 中有效；default deny 與 evidence binding 不等於 Human decision。
 
 ### Enforceable Governance
+
+Malformed hook envelopes fail closed with the adapter-specific denial response. Broad exception handling at enforcement boundaries records the exception chain to stderr and returns a sanitized failure; it never converts an enforcement failure into an allow decision.
 
 可驗證 native Runtime hooks 可以在 protected operation 前檢查 approval binding；MCP-only 不宣稱攔截 Host native tools。
 

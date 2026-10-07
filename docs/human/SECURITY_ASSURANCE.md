@@ -359,6 +359,8 @@ AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned cont
 
 ## Runtime Policy Enforcement
 
+Native hook adapters reject malformed input explicitly and fail closed if policy evaluation or audit persistence fails. Diagnostic logging goes to stderr; response envelopes contain a stable failure code without exposing exception text or other sensitive details.
+
 主要模型偏好與輔助 tier 路由仍受既有 privacy、capability floor、SAL 與 reviewer independence 限制。Financial Integrity Skill 引用本文件的 SAL authority，不另外建立政策來源。
 
 Local environment diagnostics report missing runtime/module names and remediation without exposing credentials or invoking package installation. GitHub workflow action references remain pinned to immutable commit SHAs with their declared Node runtime reviewed.

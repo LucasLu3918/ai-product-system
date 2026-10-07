@@ -1,63 +1,128 @@
 version: 1
 candidate:
   base_sha: e507ba1fc3842ac40e41ecabec481828a6d78916
-  changed_files_hash: d84a6670e980375390e28b0c52e8fdaa96dd6f4b558a11fa0eab8c1abc9fe4bd
+  changed_files_hash: bf7882d842368707106f8b017d10070dae072a9d2dcc3e186006f0d380ba678d
 change:
-  id: plan21-phase0-contract-baseline
-  summary: Pin pre-hardening digest, CLI, installer, and validation timing contracts.
+  id: plan21-p0
+  summary: Fail closed on malformed governance-hook input and make installation transactional,
+    serialized and retryable.
   boundary:
-  - public-cli-contract
-  - canonical-digest-contract
-  - path-matching-compatibility
-  - validation-timing-baseline
+  - malformed-governance-input
+  - failure-diagnostics
+  - installer-transaction-and-lock
 matrix:
-- boundary: public-cli-contract
-  reason: Preserve the exact public CLI stdout, stderr, and exit behavior before later phases intentionally repair command-group help.
-  checks: &baseline
+- boundary: malformed-governance-input
+  reason: Invalid or structurally malformed hook input must never be interpreted as
+    an empty harmless command.
+  checks:
     static_lint:
       applicable: true
-      evidence: Focused Ruff E4/E7/E9/F on the new lifecycle; the validation-runner wiring is covered by the full repository validation lifecycle.
+      evidence: Ruff compared changed modules with origin/main; zero findings added.
     unit:
       applicable: true
-      evidence: tests/evidence/plan21_contract_baseline.py verifies the pinned CLI and canonical digest vectors.
+      evidence: tests/evidence/governance_command_guard.py passed.
     integration:
       applicable: true
-      evidence: Exact-candidate Integration Gate and repository validation entry point.
+      evidence: tests/validation/governance_resume.py passed malformed JSON, non-object
+        payload, missing tool_input, and invalid tool_input cases.
     contract:
       applicable: true
-      evidence: Golden stdout/stderr hashes and exit codes for public CLI commands; version output validated by shape.
+      evidence: Both Claude and Gemini deny envelopes were parsed and asserted by
+        governance_resume.py.
     security:
       applicable: true
-      evidence: Baseline invokes only local help/version/unknown-command paths and contains no credentials or external writes.
+      evidence: Invalid input returns deny and does not echo the input payload.
     migration_recovery:
-      applicable: true
-      evidence: No state migration in Phase 0; installer recovery lifecycle is recorded as a future Phase 1 boundary.
+      applicable: false
+      na_reason: No persisted state changes.
     cli_harness:
       applicable: true
-      evidence: CLI golden vectors capture current behavior, including known command-group help exit code 1 for later repair.
+      evidence: Governance hook entrypoint lifecycle passed.
     docs_schema:
-      applicable: true
-      evidence: Validation timing baseline records the exact base candidate and observed per-check durations.
+      applicable: false
+      na_reason: Hook response shape remains unchanged; malformed input is now explicitly
+        denied.
     e2e:
       applicable: false
-      na_reason: No deployed UI, service, or user flow changes.
-- boundary: canonical-digest-contract
-  reason: Freeze byte-level canonical JSON digest behavior across duplicated raw and prefixed helpers before consolidation.
-  checks: *baseline
-- boundary: path-matching-compatibility
-  reason: Record deliberately different glob behavior so shared primitives retain caller-specific semantics.
-  checks: *baseline
-- boundary: validation-timing-baseline
-  reason: Capture a reproducible same-host baseline before validation optimization work.
-  checks: *baseline
+      na_reason: Hook entrypoint and runtime-specific response contracts are exercised
+        in local fixtures.
+- boundary: failure-diagnostics
+  reason: Optional Git/Intelligence probes remain distinguishable from invalid adapter
+    state and internal/policy errors fail closed.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff compared changed modules with origin/main; zero findings added.
+    unit:
+      applicable: true
+      evidence: Changed Python modules imported and governance_resume.py passed.
+    integration:
+      applicable: true
+      evidence: Runtime resolver/policy callers remain covered by repository validation;
+        exact-candidate Gate pending.
+    contract:
+      applicable: true
+      evidence: Optional Git/Intelligence probes are distinguished from invalid adapter
+        state; approval/policy errors remain fail-closed.
+    security:
+      applicable: true
+      evidence: Policy and approval exceptions return deny/ERROR; exception diagnostics
+        avoid raw hook payloads.
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted state changes.
+    cli_harness:
+      applicable: true
+      evidence: harness_resolve.py emits an explicit invalid_adapter_state error and
+        nonzero status.
+    docs_schema:
+      applicable: false
+      na_reason: No user-facing output schema change beyond explicit error status.
+    e2e:
+      applicable: false
+      na_reason: Runtime resolver and policy failure paths are tested as bounded local
+        process contracts.
+- boundary: installer-transaction-and-lock
+  reason: Install/update must serialize concurrent writers, retry transient Git operations,
+    remove partial staging state and promote only a verified checkout.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: bash -n scripts/install.sh passed; Ruff changed-file baseline comparison
+        has zero added findings.
+    unit:
+      applicable: true
+      evidence: tests/evidence/installer_reliability_lifecycle.py passed.
+    integration:
+      applicable: true
+      evidence: Source-checkout install lifecycle promoted verified checkout and invoked
+        CLI fixture.
+    contract:
+      applicable: true
+      evidence: tests/evidence/install_download_lifecycle.py passed with bounded curl
+        retry options in Unix/WSL snippets.
+    security:
+      applicable: true
+      evidence: Active locks are preserved; stale locks are reported for explicit
+        recovery; partial clones are not promoted.
+    migration_recovery:
+      applicable: true
+      evidence: Active lock, stale lock, success promotion and partial clone cleanup
+        lifecycle cases passed.
+    cli_harness:
+      applicable: true
+      evidence: Installer preserved install arguments and source-checkout CLI entrypoint.
+    docs_schema:
+      applicable: true
+      evidence: Installer snippet parity and WSL contract passed; docs now describe
+        bounded retry and recovery.
+    e2e:
+      applicable: true
+      evidence: Local temporary Git source installed end-to-end to a separate test
+        destination.
 review_evidence:
   required: false
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 status: READY
-verification:
-  exact_base_repository_validation: PASS
-  plan21_contract_baseline_lifecycle: PASS
-  documentation_closure_preview: PASS
-  exact_candidate_integration_gate: REQUIRED_ON_BOUND_COMMIT
