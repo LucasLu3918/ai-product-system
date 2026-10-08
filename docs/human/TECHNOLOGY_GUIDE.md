@@ -8,6 +8,8 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ## Runtime & Integration
 
+OpenCode V2 registers a bounded creative tool that requires explicit intent and a successful Bundle preflight.
+
 
 ### Turn-Aware Global Harness
 
@@ -57,11 +59,13 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+Local creative execution supports MFLUX through fixed argv and ComfyUI through a loopback-only allowlisted workflow. It is explicit, create-only, and never downloads weights.
+
 System changes keep the exact-candidate repository Gate enabled while any selective-validation proposal remains report-only until its complete observation cohort is reviewed.
 
 ### Local character artwork
 
-The optional local character-art helper accepts Comfy MCP or MFLUX provenance, verifies SVG/PNG bytes and project-confined paths, then composes a new deterministic SVG sheet. It does not install a runtime, fetch model weights, or call cloud services. The official local Comfy MCP is preferred when already installed; MFLUX remains an optional Apple Silicon route.
+The optional local character-art executor accepts an already-installed MFLUX CLI or a loopback ComfyUI API workflow restricted to built-in nodes. It disables HTTP proxying and redirects, uses offline model-hub flags, scopes create-only PNG/JPEG/WEBP output to a non-Git EPHEMERAL bundle, and records profile/workflow/input/output hashes, model revision, runtime version and license source. Preflight does not generate; missing local engines return `BLOCKED_NO_ENGINE`. No runtime or weights are installed, and no image is sent to a cloud provider. Existing Comfy MCP guidance remains available when that user-managed route better fits the project.
 
 The shared helper package consolidates canonical hashes, repository-relative paths and caller-specific glob matching; existing module facades preserve current call sites and outputs.
 
@@ -143,6 +147,8 @@ The Retrieval Intelligence SQLite persistence boundary is `scripts/retrieval_sto
 
 ## Security & Governance
 
+Creative traces omit prompts, local absolute paths, image bytes, credentials, and workflow bodies; the configured ComfyUI adapter disables proxies and redirects.
+
 GitHub governance snapshot 只呼叫讀取 API，輸出完整設定證據與穩定 fingerprint，不具設定修改或發布權限。
 
 ### Security Assurance Level
@@ -171,6 +177,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Scenario 236 and the creative lifecycle verify provider boundaries, provenance, rollback, trace privacy, and pending human review; synthetic output does not establish visual quality.
 
 OpenCode validation separates install and discovery from Session Context delivery and permission-hook execution; claims remain limited to the tested host and version.
 

@@ -58,8 +58,11 @@ case "${1:-help}" in
       scan|next-version)
         "$(python_bin)" "$SYSTEM_DIR/scripts/creative_workspace_profile.py" "$sub" "$@"
         ;;
+      preflight|execute|review|trace)
+        "$(python_bin)" "$SYSTEM_DIR/scripts/creative_execution.py" "$sub" "$@"
+        ;;
       help|-h|--help)
-        say "Usage: aips creative <scan|next-version> --project <path> [--target <relative-asset-path>]"
+        say "Usage: aips creative <scan|next-version|preflight|execute|review|trace> [options]"
         ;;
       *) die "Unknown creative command: $sub" ;;
     esac

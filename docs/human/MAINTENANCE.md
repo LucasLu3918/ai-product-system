@@ -10,7 +10,7 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
-Local character-art behavior is mapped through `config/documentation-placement.yaml` and `config/documentation-sync.yaml`; changes to its validator, profile templates or creative protocol keep the User Guide, Technology Guide, architecture overview, Scenario Conformance and Agent guidance in the same candidate.
+Local character-art behavior is mapped through `config/documentation-placement.yaml` and `config/documentation-sync.yaml`; changes to its validator, Bundle, profile templates, OpenCode adapter or creative protocol keep the User Guide, Harness, Technology Guide, architecture overview, Scenario Conformance and Agent guidance in the same candidate. The synthetic execution lifecycle uses fake providers only; exact-candidate validation never runs a project-configured engine, and a missing local engine remains `BLOCKED_NO_ENGINE`.
 
 行為來源 `scripts/project_intelligence_promotion.py`、`scripts/repository_governance_snapshot.py` 已登錄 canonical Human 文件落點；GitHub governance snapshot 僅讀取 rulesets 與 branch protection，無遠端寫入能力。
 
@@ -99,6 +99,8 @@ Multi-file changes should normally be assembled into one coherent remote branch 
 15. Prefer independent review/PR for material system changes.
 
 ## Versioning
+
+The local creative execution and bounded Shell diagnostics ship in v0.75.0; they do not install providers or models.
 
 OpenCode V2 lifecycle now verifies active Session-root Context, bounded creative asset metadata, version-aware recovery, effect-aware Shell decisions and privacy-limited trace; native v2.0.24 acceptance remains scoped to the tested host, with global governance ADVISORY.
 
@@ -510,6 +512,8 @@ Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanu
 
 
 ## Repository Health / Architecture Drift consistency
+
+The canonical Capability Registry lists `scripts/creative_execution.py`, its Bundle, lifecycle, and Scenario under the existing Harness runtime surface; generated architecture projections are checked from that registry.
 
 OpenCode remains an adapter within the existing Harness capability; generated architecture projections continue to derive from the Capability Registry.
 

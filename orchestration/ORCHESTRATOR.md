@@ -10,6 +10,8 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 ## Minimal algorithm
 
+For local creative execution, preflight the scoped Bundle and require explicit create/modify intent before invoking the structured tool; never route through arbitrary Shell.
+
 OpenCode dispatch resolves the existing AIPS Turn Context and preserves project-native instruction authority before runtime hooks act.
 
 For OpenCode, resolve the turn with `--runtime opencode`, then progressively load selected canonical pointers. Preserve Human gates, selected models and project-native instructions while reporting projection conflicts.
@@ -61,6 +63,8 @@ For a candidate built in a shared workspace, first snapshot the intended head an
 27. Persist state/provenance only in permitted stores and before remote publication run Git Publish Approval.
 
 ## System Update Preflight
+
+The AIPS CLI adds fixed read-only diagnostics and creative Bundle preflight; generation itself remains an explicit action outside preflight.
 
 
 Resolve bounded Context before implementation: prove selected-path relevance, allocate Recall from the shared Core/Recall/temporal budget, preserve canonical source pointers on index failure, and apply runtime content safety before emitting derived or retrieved text.

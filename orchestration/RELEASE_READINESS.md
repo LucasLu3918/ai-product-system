@@ -52,6 +52,8 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+A creative execution candidate must bind its Core Matrix to the exact changed files and include no-egress, create-only output, provenance, and privacy trace evidence.
+
 OpenCode v2.0.24 loopback evidence verifies Context delivery and native file Allow/Deny only for that host/version; it does not establish production-provider, V1/Linux, arbitrary Shell or MCP write safety.
 
 OpenCode release evidence separates ownership-safe projection lifecycle from version-bound native runtime acceptance; unknown operating systems and provider behavior remain explicitly unverified.

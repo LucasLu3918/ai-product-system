@@ -1516,6 +1516,8 @@ Current inventory after Scenario 197: 34 deterministic + 107 lifecycle + 54 agen
 
 ## Scenario 198 — Runtime Context and invariant matrix
 
+The creative CLI uses the resolved AIPS runtime and reports unavailable local providers as `BLOCKED_NO_ENGINE` without fallback.
+
 Runtime Context retains its existing canonical hash output through the compatibility facade; routing and source selection remain unchanged.
 
 `tests/evidence/runtime_context_lifecycle.py` 驗證共用驗證環境路徑、interpreter 優先序、credential-free Context 報告與 deterministic invariant matrix。矩陣涵蓋每組維度值對並檢查上限及高風險案例。
@@ -1590,6 +1592,8 @@ The monthly evaluator deterministically samples up to 20 signal fingerprints and
 
 ## Scenario 220 — Parallel advisory fast feedback
 
+Current Scenario conformance and current Human-facing command documentation remain separate evidence; the creative execution Scenario is registered and generated in `CONFORMANCE_CURRENT.md`.
+
 OpenCode native acceptance is recorded separately from setup and provider claims, with the tested version and unsupported effects stated in Scenario 235.
 
 OpenCode 投影檔案檢查是 focused evidence；完整 Integration Gate 仍驗證固定候選，不能由原生檔案存在取代。
@@ -1636,6 +1640,8 @@ Scenario 230 also confirms that adding a route scenario updates the canonical re
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+Scenario 236 adds the bounded `creative preflight`, `execute`, `review`, and `trace` command contracts; only the explicit execution command starts a configured local engine.
+
 The public command groups return concise help with status 0 and reject unknown subcommands with a useful nonzero result. The compatibility shell facade remains thin; internal library modules keep their current role.
 
 ## Scenario 234 — Local Character Artwork Provenance and Composition
@@ -1644,9 +1650,17 @@ The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-c
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
 
+The V2 creative tool additionally requires a create/modify intent and a successful preflight before execution; this boundary is covered by Scenario 236.
+
 This Scenario is the canonical evidence pointer for OpenCode V2 context routing, action readiness, plugin lifecycle, and explicit unsupported boundaries.
 
 The lifecycle covers separate prompt dimensions, Chinese creative-asset routing, Project Intelligence readiness, session-root binding, direct native path/symlink decisions, Shell argument effects, V2 plugin ownership, private EPHEMERAL asset metadata cache, bounded privacy trace, performance measurement, and version-aware install/repair/removal. OpenCode v2.0.24 acceptance uses a loopback mock model to verify actual Context delivery, a new EPHEMERAL creative asset native write Allow, and an existing-asset edit Deny with incomplete Project Intelligence. No provider credentials are needed. Linux/WSL, V1, production-provider behavior, MCP/custom-tool writes, arbitrary Shell effects and writes outside OpenCode remain unverified or out of scope; overall governance stays ADVISORY.
+
+## Scenario 236 — Local Creative Bundle Execution
+
+Scenario 236 covers local MFLUX and loopback ComfyUI generation/edit, create-only EPHEMERAL output, provenance, finite retry, privacy-bounded trace, and separate human visual review.
+
+The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, edits use a hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
 
 ## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
 

@@ -38,6 +38,8 @@ AIPS runtime 需要 Python 3.12 以上；若系統同時安裝多個 Python，�
 
 ## 驗證安裝
 
+本機創作 Bundle 可先用 `aips creative preflight --project <project> --bundle <bundle.yaml>` 檢查環境；只有明確執行 `aips creative execute` 才會呼叫已設定的本機引擎。
+
 已安裝 OpenCode 時，執行 `aips harness install` 後以 `aips harness doctor` 檢查受管理指示與技能投影；衝突須先檢查使用者修改。
 
 驗證安裝更新時，除了主線 repository SHA，也需核對註冊的安裝版 SHA。從已更新的 AIPS checkout 執行 `./bin/aips publish post-merge --fetch --sync-installed --apply` 可安全快轉兩者；髒工作樹、不同遠端或分歧的安裝版會停止並回報。
@@ -58,6 +60,7 @@ aips commands list
 需要跨 Host 使用治理工作流時，可先預覽或安裝 Portable Command projection：`aips commands render aips.plan --host cursor`、`aips commands install --host cursor`。生成檔案由 AIPS ownership 管理，使用者修改後會保留並回報衝突。
 
 ## 開始工作
+
 
 平常直接開啟你的 Agent / IDE。AIPS 會依 Runtime 能力使用 native adapter 或 MCP access plane。
 

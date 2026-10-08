@@ -17,10 +17,13 @@ rules:
       - orchestration/CREATIVE_DIRECTION.md
       - scripts/character_artifacts.py
       - scripts/creative_evidence.py
+      - scripts/creative_execution.py
       - templates/creative/CHARACTER_PROFILE.yaml
       - templates/creative/STYLE_PROFILE.yaml
       - templates/creative/CHARACTER_ARTWORK_MANIFEST.yaml
       - templates/creative/CREATIVE_EVIDENCE.yaml
+      - templates/creative/CREATIVE_BUNDLE.yaml
+      - tests/scenarios/236-local-creative-execution.md
     human_docs:
       - docs/human/USER_GUIDE.md
       - docs/human/TECHNOLOGY_GUIDE.md
@@ -37,6 +40,7 @@ rules:
     evidence:
       - tests/scenario_coverage.yaml
       - tests/evidence/character_artifacts_lifecycle.py
+      - tests/evidence/creative_execution_lifecycle.py
 
   - id: maintenance-planning
     triggers:
@@ -170,7 +174,7 @@ rules:
     agent_docs:
       - orchestration/DOCUMENTATION_SYNC.md
   - id: harness
-    triggers: [scripts/manage_runtime_adapter.py, scripts/harness_resolve.py, scripts/opencode_skill_projection.py, scripts/opencode_native_guard.py, scripts/opencode_trace.py, scripts/creative_workspace_profile.py, scripts/turn_intent.py, scripts/project_intelligence.py, scripts/aips_cli/dispatch.sh, scripts/aips_cli/help.sh, harness/adapters/**, templates/harness/**, tests/scenarios/235-opencode-native-context-guard.md]
+    triggers: [scripts/manage_runtime_adapter.py, scripts/harness_resolve.py, scripts/opencode_skill_projection.py, scripts/opencode_native_guard.py, scripts/opencode_trace.py, scripts/creative_workspace_profile.py, scripts/creative_execution.py, scripts/turn_intent.py, scripts/project_intelligence.py, scripts/aips_cli/dispatch.sh, scripts/aips_cli/help.sh, harness/adapters/**, templates/harness/**, tests/scenarios/235-opencode-native-context-guard.md, tests/scenarios/236-local-creative-execution.md]
     human_docs: [docs/human/HARNESS.md, docs/human/INSTALLATION.md, docs/human/USER_GUIDE.md, docs/human/ARCHITECTURE_OVERVIEW.md, docs/human/TECHNOLOGY_GUIDE.md, docs/human/CONFORMANCE.md]
     agent_docs: [harness/HARNESS_PROTOCOL.md, harness/adapters/opencode/AGENTS.md, harness/adapters/opencode/COMPATIBILITY.md, orchestration/CONFORMANCE.md]
   - id: project-intelligence

@@ -12,6 +12,13 @@ flowchart TD
     RA --> RC[Shared Runtime Context]
     RA -->|OpenCode V2 only| OP[OpenCode plugin: context injection + supported native guard]
     OP --> RC
+    OP -->|explicit creative_execution tool| CP{Creative Preflight}
+    CP -->|engine unavailable / invalid bundle| CBL[BLOCKED_NO_ENGINE or policy reason]
+    CP -->|explicit execute action only| CE[Scoped EPHEMERAL Creative Executor]
+    CE -->|offline argv process| MF[MFLUX local CLI]
+    CE -->|loopback HTTP, built-in nodes| CU[ComfyUI local API]
+    MF -->|new raster + manifest| CR[Independent Human visual review]
+    CU -->|new raster + manifest| CR
     RA --> TC[Compact Turn Context]
     TC --> ROUTES[Select fixed System Core + task-specific canonical protocol pointers]
     ROUTES --> SCOPE[Resolve advisory intent + scoped instructions]
@@ -60,7 +67,7 @@ The synchronous Turn Hook resolves identity/freshness plus bounded evidence from
 
 All writers of `EVENTS.jsonl` share one sequence lock. Optional observed operation spans use an existing Run checkpoint and remain evidence only. External review trust anchors may verify signed runtime receipts, while an absent trusted issuer preserves the required-review block.
 
-OpenCode V2 receives transient compact Context from the existing CLI. Its native permission hook applies a second check to supported direct file resources, and Shell creation applies a bounded read-only allowlist; MCP/custom tools and out-of-process writes remain outside this evidence boundary. Runtime governance stays ADVISORY until actual permission-hook acceptance is verified.
+OpenCode V2 receives transient compact Context from the existing CLI. Its native permission hook applies a second check to supported direct file resources, and Shell creation applies a bounded read-only allowlist including fixed AIPS diagnostics. One structured Creative tool is separately bound to the active EPHEMERAL Session and create-only Bundle scope; other MCP/custom tools and out-of-process writes remain outside this evidence boundary. Runtime governance stays ADVISORY until actual permission-hook acceptance is verified.
 
 ## Parallel run observation flow
 

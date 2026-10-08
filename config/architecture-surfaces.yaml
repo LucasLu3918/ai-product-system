@@ -63,11 +63,15 @@ surfaces:
   - scripts/opencode_native_guard.py
   - scripts/opencode_trace.py
   - scripts/creative_workspace_profile.py
+  - scripts/creative_execution.py
   - scripts/turn_intent.py
   - scripts/project_intelligence.py
   - harness/adapters/opencode/AGENTS.md
   - harness/adapters/opencode/plugin.ts
   - harness/adapters/opencode/COMPATIBILITY.md
+  - templates/creative/CREATIVE_BUNDLE.yaml
+  - tests/evidence/creative_execution_lifecycle.py
+  - tests/scenarios/236-local-creative-execution.md
   - scripts/mcp_server.py
   - scripts/execution_isolation.py
   - scripts/sandbox_providers.py

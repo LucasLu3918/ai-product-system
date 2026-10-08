@@ -45,11 +45,11 @@ V2 Plugin 依每個 Session 的實際目錄解析 Harness 與 Project Intelligen
 
 EPHEMERAL 創意工作會唯讀掃描圖片與 SVG 的路徑、格式及檔案中繼資料，快取存放在專案外的使用者快取，且不建立 `.ai/`。可用 `aips creative scan --project PATH` 更新素材索引，用 `aips creative next-version --project PATH --target RELATIVE_ASSET` 建議下一個未使用的版本路徑；它不會寫入或覆蓋素材。執行證據可用 `aips harness trace --limit 20` 查看，事件檔不保存 prompt、憑證、素材內容、完整路徑或模型推理。
 
-Shell 只放行可界定的唯讀命令形式，會阻擋已知寫檔、子程序執行、設定注入及路徑逃逸選項。字串檢查不是程序沙箱；MCP/custom tools 與外部程序副作用不在此 Hook 保護範圍。OpenCode v2.0.24 的隔離原生驗收已驗證 Context 請求與檔案 Allow/Deny；整體治理仍為 ADVISORY，因為 Shell 子程序、MCP/custom tools 與外部程序不在 Hook 保護範圍。
+Shell 只放行可界定的唯讀命令形式，包含固定參數的 AIPS 診斷，會阻擋已知寫檔、子程序執行、設定注入及路徑逃逸選項。字串檢查不是程序沙箱；一般 MCP/custom tools 與外部程序副作用不在此 Hook 保護範圍。唯一例外是綁定目前 EPHEMERAL Session 的 `creative_execution`：它只讀取限定 Bundle，預檢後才可明確執行，輸出受限於宣告的新素材路徑。OpenCode v2.0.24 的隔離原生驗收已驗證 Context 請求與檔案 Allow/Deny；整體治理仍為 ADVISORY。
 
 V2 plugin 會在每次 primary model dispatch 前呼叫既有 AIPS CLI，依 session、prompt、專案狀態、目標路徑和 instruction fingerprints 快取精簡 Context。`write/edit/patch` 權限再以實際資源路徑做第二階段檢查：L1 僅允許非 Git 資料夾中尚不存在且路徑受限的新創意資產；L2 需要 Project Intelligence `READY`、freshness `CURRENT` 且沒有未解權威衝突；L3 外部操作仍使用既有 Human approval gate。Shell 只允許受限唯讀命令；未知命令會被替換成失敗命令。
 
-安裝狀態會分別回報 plugin、context hook 與 guard 狀態。成功安裝及 plugin registry 發現不代表每台主機的模型 Context 或 permission hook 都已執行；需依相符 runtime acceptance 判讀。MCP/custom tools、任意 Shell 子程序、其他程式直接寫檔都不在已驗證範圍，因此整體治理維持 ADVISORY。解除安裝只移除 digest 一致的 AIPS-owned plugin 和既有投影，使用者 JSON/JSONC 不變。
+安裝狀態會分別回報 plugin、context hook 與 guard 狀態。成功安裝及 plugin registry 發現不代表每台主機的模型 Context 或 permission hook 都已執行；需依相符 runtime acceptance 判讀。任意 Shell 子程序、其他 MCP/custom tools、其他程式直接寫檔都不在已驗證範圍；Creative tool 的獨立 lifecycle evidence 不代表其他工具受保護，因此整體治理維持 ADVISORY。解除安裝只移除 digest 一致的 AIPS-owned plugin 和既有投影，使用者 JSON/JSONC 不變。
 
 
 Managed AIPS installation channel selection controls system updates only. It does not change which Runtime Adapter is installed or grant a Host capability; continue to validate each adapter through its existing ownership manifest and capability evidence.

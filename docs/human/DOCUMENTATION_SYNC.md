@@ -28,9 +28,11 @@ SYSTEM.md / orchestration / roles / skills
 
 OpenCode Harness 行為變更需同步 adapter contract、Human 安裝／使用說明、Scenario 235、Capability Registry 與架構 surface；exact-candidate 文件閉包由 publish resolver 檢查。
 
+The scoped EPHEMERAL Creative Bundle tool updates the OpenCode compatibility contract, Creative Direction, User Guide, Harness, Technology Guide, Architecture Overview, Scenario 236 and the existing design Skills. Other MCP/custom tools remain outside the guard.
+
 OpenCode native Context and guard limits are maintained in the adapter compatibility contract and Scenario 235; capability and architecture views derive from the canonical Capability Registry.
 
-Character-art validator, profile/manifest and creative-protocol changes map to the existing Creative Direction User Guide topic, the Technology Guide Execution topic, the dedicated Architecture Overview Creative Workflow topic, Scenario 234 and the canonical Agent protocol. A deterministic manifest result never substitutes for visual review.
+Creative-artifact validation, local execution bundles, model provenance and creative-protocol changes map to the existing Creative Direction User Guide topic, Technology Guide Execution topic, Architecture Overview Creative Workflow, Scenario 234/236 and canonical Agent protocol. OpenCode adapter changes also update the Harness compatibility boundary. A deterministic manifest result never substitutes for independent visual review.
 
 OpenCode 操作指引歸於 Harness 的 Native Runtime Adapters、MCP Interoperability 與 Ownership 章節；canonical Skill description 維持在原始 SKILL.md。
 
@@ -152,6 +154,8 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+Creative execution behavior is documented in the Creative Workflow and execution topics, with Scenario 236 and the generated current conformance summary kept in sync.
 
 OpenCode behavior remains documented in the Harness contract and Scenario 235; exact-candidate closure and canonical placement are checked before publication.
 

@@ -6,6 +6,8 @@ Security review depth is proportional to the actual product/feature risk. The sy
 
 ## Core model
 
+The creative executor confines writes to a declared non-Git EPHEMERAL output directory, uses create-only raster outputs, and contacts only an explicitly configured local engine.
+
 The OpenCode native guard is a narrow runtime check, not an operating-system sandbox. Claims remain ADVISORY until direct permission-hook execution is verified; MCP/custom tools and other processes remain outside its boundary.
 
 
@@ -205,6 +207,8 @@ Review actual:
 
 ## Release Security Gate
 
+The creative execution manifest and trace are covered by the candidate review; local image bytes and raw prompts are excluded from trace, and no external image endpoint is supported.
+
 OpenCode evidence is host/version-scoped and does not establish OS sandboxing, MCP/custom-tool safety, or arbitrary Shell effect control; Core publication still requires the exact-candidate gate.
 
 A blocked Unreleased/changelog check keeps the candidate out of release publication even when an unrelated maintenance PR is valid.
@@ -372,6 +376,8 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
+
+Creative traces and tool responses exclude raw prompts, image bytes, credentials, arbitrary workflow bodies, and absolute local paths; remote image egress is not supported.
 
 Publication scanning excludes only validated numeric Git index/mode metadata; paths, added/removed/context lines and unknown headers remain scanned. Branch deletion verifies GitHub RS256 issuer, repository, protected main, workflow SHA, dispatch event and a proposal-bound audience. Runner flags alone grant no authority; tokens remain in memory.
 

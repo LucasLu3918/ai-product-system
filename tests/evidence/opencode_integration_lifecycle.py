@@ -228,6 +228,11 @@ def native_guard_cases(base):
         assert native_guard.evaluate_shell(command=command, cwd=str(git_root), root=str(git_root))["decision"] == "DENY", command
     assert native_guard.evaluate_shell(command="cat /etc/passwd", cwd=str(git_root), root=str(git_root))["decision"] == "DENY"
     assert native_guard.evaluate_shell(command="ls ../outside", cwd=str(git_root), root=str(git_root))["decision"] == "DENY"
+    diag = native_guard.evaluate_shell(command="aips creative preflight --project . --bundle creative.yaml", cwd=str(root), root=str(root))
+    assert diag["decision"] == "ALLOW" and diag["reason_code"] == "shell_aips_readonly"
+    assert native_guard.evaluate_shell(command="aips creative execute --project . --bundle creative.yaml", cwd=str(root), root=str(root))["reason_code"] == "shell_aips_command_unsupported"
+    assert native_guard.evaluate_shell(command="aips creative trace --limit 20", cwd=str(root), root=str(root))["decision"] == "ALLOW"
+    assert native_guard.evaluate_shell(command="python3 -c print(1)", cwd=str(root), root=str(root))["decision"] == "DENY"
 
 
 def creative_profile_cases(base):
@@ -260,6 +265,10 @@ def trace_cases(base):
     assert opencode_trace.read_events(path)["events"] == [], "trace reader accepted a non-allowlisted field"
     path.write_text(json.dumps({"runtime": "opencode", "event": "permission", "decision": "ALLOW", "session_root_source": "location_directory", "project_mode": "EPHEMERAL", "project": "0123456789abcdef"}) + "\n")
     assert opencode_trace.read_events(path)["events"][0]["session_root_source"] == "location_directory"
+    path.write_text(json.dumps({"runtime": "opencode", "event": "creative_execution", "decision": "ALLOW", "provider": "mflux_local", "operation": "generate", "duration_ms": 900, "project": "0123456789abcdef", "reason_code": "creative_tool_result"}) + "\n")
+    assert opencode_trace.read_events(path)["events"][0]["provider"] == "mflux_local"
+    path.write_text(json.dumps({"runtime": "opencode", "event": "creative_execution", "decision": "ALLOW", "provider": "mflux_local", "operation": "generate", "prompt": "private"}) + "\n")
+    assert opencode_trace.read_events(path)["events"] == [], "creative trace accepted prompt content"
     try:
         opencode_trace.read_events(path, 101)
     except ValueError:
@@ -283,6 +292,9 @@ def classification_cases():
 
 
 def main():
+    plugin_source = (ROOT / "harness/adapters/opencode/plugin.ts").read_text(encoding="utf-8")
+    assert 'ctx.tool.transform((editor)' in plugin_source and 'name: "creative_execution"' in plugin_source
+    assert 'toolContext.signal' in plugin_source and 'shell: false' in plugin_source
     desired = projection.skill_files()
     assert len(desired) == 27 and desired == projection.skill_files()
     for text in desired.values():

@@ -1855,3 +1855,11 @@ scenarios:
       - tests/evidence/opencode_integration_lifecycle.py
       - tests/evidence/opencode_native_acceptance.py
       - tests/validation/opencode_integration_contracts.py
+  - id: "236"
+    path: tests/scenarios/236-local-creative-execution.md
+    coverage: lifecycle
+    evidence:
+      - scripts/creative_execution.py
+      - templates/creative/CREATIVE_BUNDLE.yaml
+      - tests/evidence/creative_execution_lifecycle.py
+      - tests/validation/creative_execution_contracts.py

@@ -1,0 +1,46 @@
+version: 1
+mode: EPHEMERAL
+
+# The provider only reads this prompt when `aips creative execute` is explicitly called.
+# Preflight never starts an image generation job and does not store prompt text in traces.
+operation: generate # generate | edit
+provider: auto # auto prefers configured MFLUX, then a local ComfyUI server
+prompt: "Describe the requested image here."
+output_scope: creative-output
+output_path: creative-output/asset-v1.png
+input_image: null # Required for edit; an existing in-project PNG/JPEG/WEBP path.
+
+width: 1024
+height: 1024
+steps: 20
+seed: 42
+max_retries: 1 # Transient timeout retries only; maximum is 2.
+timeout_seconds: 900
+runtime: mflux-generate # Record the actual selected runtime in this per-run bundle.
+runtime_version: "Record the observed runtime version."
+
+model:
+  id: dev
+  revision: "Record the exact model revision."
+  local_path: /absolute/path/to/an/already-cached-model-directory
+  license: "Record the actual model license."
+  license_source: "Record the URL or local source that verifies the license."
+
+# MFLUX is argv-only, offline, and limited to the fixed options above.
+mflux_executable: /absolute/path/to/mflux-generate
+
+# For ComfyUI, configure an API-format workflow containing only AIPS allowlisted built-in nodes.
+# For edit, stage the same reference under ComfyUI's local input folder and set input_image_name;
+# preflight compares its bytes against input_image before any workflow is submitted.
+comfyui:
+  base_url: http://127.0.0.1:8188
+  workflow_path: workflows/creative-api.json
+  checkpoint_node_id: "4"
+  checkpoint_name: model.safetensors
+  model_id: model.safetensors
+  prompt_node_id: "6"
+  latent_node_id: "1"
+  sampler_node_id: "3"
+  save_node_id: "9"
+  # For edit only, add input_image_node_id and input_image_name after staging
+  # the matching reference under the ComfyUI local input folder.

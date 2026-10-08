@@ -71,6 +71,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+Creative executor changes are reviewed across CLI dispatch, OpenCode tool registration, Bundle/profile inputs, output manifests, trace consumers, Scenario coverage, and documentation projections.
+
 OpenCode resolves Context from the active Session project root and rechecks current Intelligence at supported native file targets; implementation still follows the approved Change Impact boundary.
 
 OpenCode V2 consumes the compact Context Manifest on each primary dispatch and rechecks current readiness for supported direct file actions; this runtime check does not replace project-level Change Impact before implementation.

@@ -30,6 +30,8 @@ The first v1 baseline reconciles one already-observed drift rather than suppress
 
 ## Explicit Architecture Surface Inventory
 
+The existing Harness runtime surface owns the creative executor, its Bundle template, Scenario, and lifecycle evidence; generated projections must remain in sync with the canonical registry.
+
 The Harness runtime surface includes the OpenCode native plugin, direct-action guard, creative metadata profile, privacy trace and their lifecycle/native acceptance evidence; generated inventory remains derived from the Capability Registry.
 
 The harness-runtime surface includes OpenCode native guard decisions and the managed V2 plugin projection; architecture projections remain generated from the Capability Registry.

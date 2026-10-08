@@ -32,13 +32,18 @@ OpenCode integration retains system preflight and existing-host lifecycle checks
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+Scenario 236 adds fixed creative CLI routes; preflight and Gate inspection do not launch a provider.
+
 Public command groups expose help with status 0 and return nonzero for unknown subcommands. Keep routing in the shell facade and preserve internal library modules as libraries.
 
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
+Scenario 236 adds a separate explicit execution boundary for local MFLUX and loopback ComfyUI; character identity and style review remain independent.
+
 The fixture lifecycle covers safe local profile/reference paths, SVG and PNG validation, exact hashes, verified provider/runtime/license provenance, and deterministic non-overwriting SVG composition with correctly typeset Unicode labels. A passing helper or manifest never proves generated character identity fidelity, model execution, or device performance; those require actual assets and separate human visual review.
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
+
 
 Prompt classification keeps its legacy tuple and adds domain, intent, effect, and L0-L3 readiness. A managed V2 plugin resolves the active Session directory, injects a bounded Context before primary model dispatch, and rechecks current Context and target confinement before supported native file permissions. L1 is limited to new creative assets in non-Git workspaces; L2 requires READY/CURRENT project evidence; external actions retain existing Human approval. EPHEMERAL creative sessions receive read-only asset metadata from a private external cache with versioned no-overwrite suggestions. Shell rejects known command/argument side effects but is not a process sandbox. Optional native acceptance uses an isolated loopback mock model to verify actual Context delivery and native file Allow/Deny. Host discovery and execution remain UNVERIFIED without that evidence, so governance remains ADVISORY. `aips harness trace` provides an allowlisted privacy-limited event view. MCP/custom tools and out-of-process writes are outside the guard.
 
@@ -865,6 +870,8 @@ Scenario 218 uses deterministic monthly fingerprint sampling and complete Human 
 
 ## Scenario 220 — Parallel advisory fast feedback
 
+The current creative execution Scenario is registered in the canonical coverage file and represented in the generated Human conformance summary.
+
 Scenario 224 is manual semantic acceptance for runtime-preferred primary routing. Scenario 225 is executable Skill-index lifecycle evidence; it does not prove actual Agent model selection.
 
 Plan17 regression evidence covers numeric diff headers, four browser/OpenAPI combinations, mandatory aggregates, reusable caller keys/permissions, explicit Python and isolated children, recursive placement, signed identity/immutable proposal rejection and atomic deletion races. Missing or malformed capability plans retain the full profile. A latest cancelled check stays INCOMPLETE; replaced old checks are reported as SUPERSEDED.
@@ -886,6 +893,12 @@ The size audit measures tracked text/evidence files against 50,000 bytes and rep
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
 OpenCode runtime changes retain existing Plan13 provenance and maintenance governance; host discovery alone is not enforcement evidence.
+
+## Scenario 236 — Local Creative Bundle Execution
+
+Scenario 236 extends the adapter with explicit intent, preflight, and a local-only creative tool.
+
+The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, edits use a hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
 
 Required install/preflight and legacy-migration lifecycles need all Python validation requirements even for docs-only candidates. Provisioning contracts reject conditional or missing Python requirements and unconditional Chromium downloads; exact-plan optional evidence and browser-download selection remain unchanged.
 

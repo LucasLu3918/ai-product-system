@@ -56,6 +56,8 @@ PowerShell launcher 會把安裝交給 WSL 內相同的 Linux installer，因此
 
 ## 驗證
 
+AIPS 不會安裝影像引擎或模型。若已自行設定本機 MFLUX 或 loopback ComfyUI，可用 `aips creative preflight` 檢查 Bundle；檢查不會產生影像。
+
 安裝後可用 `aips trajectory evaluate --trace <trace.yaml> --mode shadow` 驗證 trajectory evidence CLI；此命令不需要外部 provider API key。
 
 ~~~bash
@@ -78,6 +80,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
+
+OpenCode V2 可提供受限的 creative execution tool；它只在明確創作／修改意圖下先做 preflight，再呼叫本機設定的引擎。
 
 OpenCode 安裝流程自動偵測執行檔，建立受管理全域 `AGENTS.md`、Skills、三個 `aips-*` Commands；確認 V2 後另安裝受管理 AIPS plugin。設定根目錄依 `OPENCODE_CONFIG_DIR`、`XDG_CONFIG_HOME` 或預設 `~/.config/opencode`；既有同名或改動過的檔案保留並回報 CONFLICT。稍後安裝 OpenCode 可重新執行 `aips harness install`；MCP 另以 `aips mcp config --client opencode` 預覽。
 

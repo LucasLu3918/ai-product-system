@@ -201,6 +201,8 @@ Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
 
+The creative execution Change Impact boundary includes its Shell guard, CLI dispatch, OpenCode tool consumer, Bundle, provenance manifest, privacy trace, lifecycle evidence, and documentation projections.
+
 OpenCode V2 derives each Context and supported native write decision from the active `Session.Info` directory, preserving the existing Project Intelligence readiness and freshness contract.
 
 OpenCode consumes the shared Context resolver and rechecks the active Session target; traversal evidence includes both the projection writer and native Harness consumers.
@@ -613,6 +615,7 @@ Architecture and DDD classifications require behavioral/dependency evidence, not
 The CLI commands are deterministic building blocks used by the Agent/Harness and remain available for debugging.
 
 ## Change-impact artifacts
+
 
 Structured unknown dispositions preserve the original description and require a verifiable repository-file or complete scoped traversal evidence item plus explicit Human review. Legacy strings, stale evidence, out-of-root paths and mismatched scope remain blocking; they do not alter repository-wide coverage.
 

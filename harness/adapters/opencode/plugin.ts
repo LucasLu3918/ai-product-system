@@ -2,13 +2,14 @@ import { createHash } from "node:crypto"
 import { appendFile, chmod, mkdir, stat, writeFile } from "node:fs/promises"
 import { homedir } from "node:os"
 import { dirname, join, resolve } from "node:path"
-import { spawnSync } from "node:child_process"
+import { spawn, spawnSync } from "node:child_process"
 
 const SYSTEM_ROOT = __AIPS_SYSTEM_ROOT__
 const MAX_CONTEXT_BYTES = 12000
 const MAX_TRACE_BYTES = 512 * 1024
 
 type ContextEntry = { key: string; at: number; root: string; prompt: string; manifest: Record<string, any> | null; reason?: string; durationMs: number }
+type CreativeToolInput = { action: "preflight" | "execute"; bundle: string }
 
 function lastUserText(messages: any[]): string {
   for (let i = messages.length - 1; i >= 0; i -= 1) {
@@ -27,6 +28,34 @@ function invoke(binary: string, args: string[], cwd: string, timeout: number): {
   const result = spawnSync(binary, args, { cwd, encoding: "utf8", timeout, maxBuffer: 2 * 1024 * 1024, shell: false })
   if (result.error) return { status: result.status, stdout: "", error: result.error.message }
   return { status: result.status, stdout: result.stdout ?? "", error: result.stderr?.slice(0, 600) }
+}
+
+function invokeAsync(binary: string, args: string[], cwd: string, timeout: number, signal?: AbortSignal): Promise<{ status: number | null; stdout: string; error?: string }> {
+  return new Promise((resolvePromise) => {
+    const child = spawn(binary, args, { cwd, stdio: ["ignore", "pipe", "pipe"], shell: false })
+    const chunks: Buffer[] = []
+    let size = 0
+    let settled = false
+    let outputError = ""
+    const finish = (value: { status: number | null; stdout: string; error?: string }) => {
+      if (settled) return
+      settled = true
+      clearTimeout(timer)
+      signal?.removeEventListener("abort", abort)
+      resolvePromise(value)
+    }
+    const abort = () => { child.kill("SIGTERM"); finish({ status: null, stdout: "", error: "Creative execution was cancelled" }) }
+    const timer = setTimeout(() => { child.kill("SIGTERM"); finish({ status: null, stdout: "", error: "Creative execution timed out" }) }, timeout)
+    signal?.addEventListener("abort", abort, { once: true })
+    child.stdout.on("data", (chunk: Buffer) => {
+      size += chunk.length
+      if (size > 64 * 1024) { child.kill("SIGTERM"); finish({ status: null, stdout: "", error: "AIPS creative response exceeded its output limit" }); return }
+      chunks.push(chunk)
+    })
+    child.stderr.on("data", (chunk: Buffer) => { outputError += chunk.toString("utf8").slice(0, 512 - outputError.length) })
+    child.on("error", (error) => finish({ status: null, stdout: "", error: error.name }))
+    child.on("close", (status) => finish({ status, stdout: Buffer.concat(chunks).toString("utf8"), error: outputError.slice(0, 512) || undefined }))
+  })
 }
 
 function hash(value: string): string { return createHash("sha256").update(value).digest("hex").slice(0, 16) }
@@ -93,6 +122,7 @@ function invokeGuard(python: string, guard: string, kind: "write" | "shell", inp
 }
 
 function policyReasonCode(decision: Record<string, any>): string {
+  if (typeof decision.reason_code === "string") return decision.reason_code
   if (decision.decision === "ALLOW") return "policy_allow"
   const reason = String(decision.reason ?? "").toLowerCase()
   if (reason.includes("missing or ambiguous")) return "target_missing"
@@ -237,6 +267,55 @@ export default {
         event.command = "false"
       }
       await trace({ event: "shell", decision: decision.decision, level: decision.level ?? "L0", project: hash(cwd), reason_code: policyReasonCode(decision) })
+    })
+    await ctx.tool.transform((editor) => {
+      editor.add({
+        name: "creative_execution",
+        description: "Run AIPS Creative Preflight or explicitly execute one scoped local Creative Bundle in a non-Git EPHEMERAL workspace. Execution writes only the declared create-only image output and provenance manifest; no cloud provider or model download is used. Human visual review remains required.",
+        input: {
+          type: "object",
+          properties: {
+            action: { type: "string", enum: ["preflight", "execute"] },
+            bundle: { type: "string", minLength: 1, maxLength: 240 },
+          },
+          required: ["action", "bundle"],
+          additionalProperties: false,
+        },
+        async execute(input, toolContext) {
+          const request = input as CreativeToolInput
+          if (!request || !["preflight", "execute"].includes(request.action) || typeof request.bundle !== "string" || request.bundle.length > 240 || request.bundle.startsWith("/") || request.bundle.split(/[\\/]/).includes("..")) {
+            return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_bundle_invalid" }) }
+          }
+          const resolvedSession = await sessionRoot(toolContext.sessionID)
+          if (!resolvedSession) return { content: JSON.stringify({ status: "BLOCKED", reason_code: "session_directory_unavailable" }) }
+          const { root } = resolvedSession
+          const entry = await contextFor(toolContext.sessionID, await ctx.session.context({ sessionID: toolContext.sessionID }) as any[], root, root, true)
+          if (!entry.manifest || entry.manifest.project?.mode !== "EPHEMERAL") {
+            await trace({ event: "creative_execution", decision: "DENY", project: hash(root), reason_code: "creative_ephemeral_required" })
+            return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_ephemeral_required" }) }
+          }
+          const classification = entry.manifest.task?.classification ?? {}
+          if (classification.domain !== "creative" || !["create", "modify"].includes(classification.intent)) {
+            return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_intent_required" }) }
+          }
+          if (request.action === "execute") {
+            const preflight = await invokeAsync(aips, ["creative", "preflight", "--project", root, "--bundle", request.bundle], root, 20_000, toolContext.signal)
+            let check: Record<string, any> = { status: "BLOCKED", reason_code: "creative_preflight_failed" }
+            try { check = JSON.parse(preflight.stdout) } catch { /* fail closed */ }
+            if (preflight.status !== 0 || check.status !== "READY") return { content: JSON.stringify(check) }
+          }
+          const executable = request.action === "execute"
+          const maximum = executable ? 3_600_000 : 20_000
+          const command = ["creative", request.action, "--project", root, "--bundle", request.bundle]
+          const started = performance.now()
+          const result = await invokeAsync(aips, command, root, maximum, toolContext.signal)
+          let payload: Record<string, any>
+          try { payload = JSON.parse(result.stdout) } catch { payload = { status: "BLOCKED", reason_code: "creative_response_invalid" } }
+          if (result.status !== 0 && payload.status !== "BLOCKED") payload = { status: "BLOCKED", reason_code: result.error?.includes("timed out") ? "creative_timeout" : "creative_execution_failed" }
+          await trace({ event: "creative_execution", decision: payload.status === "BLOCKED" ? "BLOCKED" : "ALLOW", project: hash(root), reason_code: "creative_tool_result", duration_ms: Math.min(600000, Math.round(performance.now() - started)), provider: payload.provider ?? "unknown", operation: payload.operation ?? "unknown" })
+          return { content: JSON.stringify(payload) }
+        },
+      })
     })
     await trace({ event: "plugin", status: "ready" })
   },

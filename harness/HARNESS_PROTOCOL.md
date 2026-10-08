@@ -95,6 +95,8 @@ Provider credentials must not be injected into unmerged PR code. A secure provid
 
 ## MCP interoperability access plane
 
+The OpenCode V2 adapter exposes local creative execution as an explicit, preflight-gated tool; this path does not grant MCP or arbitrary Shell write authority.
+
 Use `harness/MCP_GATEWAY.md` when a compatible host can connect through MCP.
 
 MCP is a standard access plane, not a native-adapter replacement. Resources provide progressive disclosure over canonical AIPS sources; Prompts provide reusable host-model context; Tools expose bounded deterministic helpers. Tool-only Hosts use the read-only capability catalog/read/workflow Tools over the same canonical sources. MCP-only clients report governance enforcement as ADVISORY because the server cannot generally intercept host-native tools. Existing Runtime adapters remain responsible for verified TURN_NATIVE / TOOL_GUARDED behavior.

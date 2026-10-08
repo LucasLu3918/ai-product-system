@@ -6,7 +6,9 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
-OpenCode V2 的 AIPS Plugin 以 Session directory 裝載精簡 Turn Context，並在原生檔案權限前重查目標；創作素材索引留在專案外私有快取，MCP 與任意 Shell 子程序不宣稱受保護。
+OpenCode V2 exposes the creative executor as an explicit, preflight-gated tool; the CLI remains the shared execution boundary.
+
+OpenCode V2 的 AIPS Plugin 以 Session directory 裝載精簡 Turn Context，並在原生檔案權限前重查目標；另提供綁定 EPHEMERAL Session 的 Creative 工具。任意 Shell 子程序仍不宣稱受保護。
 
 Runtime adapters distinguish malformed hook input from a valid request with no applicable action. Resolution failures carry stable machine-readable status and reason codes, while diagnostics remain on stderr so callers can safely parse stdout.
 
@@ -23,7 +25,7 @@ User Prompt
 
 MCP 提供 portability；native adapters 提供 runtime hook / guard。兩者共用 canonical Roles、Skills、Orchestration 與 Project Intelligence。完整 MCP Host 使用 Resources／Prompts／Tools；tool-only Host 透過唯讀 capability/workflow Tools 取得同一 canonical context。各 runtime 的 enforcement 依實際覆蓋證據分開標示。
 
-OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn Context，並在 permission evaluation 階段檢查支援的直接檔案操作。L1 僅允許非 Git workspace 中受限路徑的新創意資產；L2 需要 Project Intelligence READY、freshness CURRENT 與無待解權威衝突；L3 外部效果沿用既有 Human approval gate。Shell 僅保留有限唯讀命令，MCP/custom tools 和繞過 OpenCode 的寫入仍不在 guard 範圍。Plugin 安裝與 hook discovery 不足以證明執行防護；完成 runtime permission acceptance 前，治理保持 ADVISORY。
+OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn Context，並在 permission evaluation 階段檢查支援的直接檔案操作。L1 僅允許非 Git workspace 中受限路徑的新創意資產；L2 需要 Project Intelligence READY、freshness CURRENT 與無待解權威衝突；L3 外部效果沿用既有 Human approval gate。Shell 僅保留有限唯讀命令，並額外提供固定參數的 AIPS 診斷。`creative_execution` 是唯一有界自訂工具：它綁定當前 EPHEMERAL Session、先執行唯讀預檢，且只允許使用者明確要求的本機 Creative Bundle 寫入指定新素材。其他 MCP/custom tools 和繞過 OpenCode 的寫入仍不在 guard 範圍。Plugin 安裝與 hook discovery 不足以證明執行防護；完成 runtime permission acceptance 前，治理保持 ADVISORY。
 
 ## Project Intelligence 與 Retrieval
 
@@ -67,7 +69,7 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
-Reusable character artwork extends the existing Creative Direction path: hashed local identity/style profiles feed an optional local ComfyUI MCP or MFLUX engine, separate SVG/PNG assets receive provenance validation, and a deterministic composer typesets the character sheet. An independent visual review checks identity and style fidelity. The helper does not infer quality or install/download image models.
+Reusable character artwork extends the existing Creative Direction path: hashed local identity/style profiles feed optional installed MFLUX or loopback ComfyUI built-in workflows, separate create-only raster assets receive provenance validation, and a deterministic composer typesets the character sheet. Preflight never starts generation; unavailable engines return `BLOCKED_NO_ENGINE`. An independent human visual review checks identity and style fidelity. The helper does not infer quality or install/download image models.
 
 ## Planning 與 Product Delivery
 
@@ -105,6 +107,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+The capability registry maps the local creative executor, Bundle template, lifecycle evidence, and Scenario to the existing Harness runtime surface. Execution is opt-in and output is create-only.
 
 OpenCode is an existing Harness capability: its generated Skills, Session-root Context, native permission decisions, and lifecycle checks remain represented by the canonical Capability Registry and conformance evidence.
 
@@ -234,6 +238,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+The v0.75.0 creative execution change is mapped to the existing Harness runtime surface and its generated architecture projection.
 
 OpenCode Core changes retain the reviewed Core Matrix, full repository validation, exact-candidate publication gate, and required remote checks.
 
