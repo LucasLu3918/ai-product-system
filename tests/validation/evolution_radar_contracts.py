@@ -1,4 +1,3 @@
-from pathlib import Path
 import subprocess
 import sys
 
@@ -29,7 +28,7 @@ for path in (
 ):
     if not path.exists():
         continue
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(path)], capture_output=True, text=True)
+    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(path)], capture_output=True, text=True, check=False)
     if compiled.returncode != 0:
         errors.append(f"Evolution Radar syntax failed: {path.relative_to(ROOT)}: {compiled.stderr.strip()}")
 
@@ -39,6 +38,7 @@ if config_check.exists():
         [sys.executable, str(config_check), "validate-config", "--config", str(ROOT / "config/evolution-sources.yaml")],
         capture_output=True,
         text=True,
+        check=False,
     )
     if result.returncode != 0:
         errors.append(f"Evolution Radar source config failed: {result.stdout.strip()} {result.stderr.strip()}")
@@ -81,7 +81,7 @@ if source_config.exists():
 lifecycle = ROOT / "tests/evidence/evolution_radar_lifecycle.py"
 if lifecycle.exists():
     try:
-        result = subprocess.run([sys.executable, str(lifecycle)], capture_output=True, text=True, timeout=45)
+        result = subprocess.run([sys.executable, str(lifecycle)], capture_output=True, text=True, timeout=45, check=False)
     except subprocess.TimeoutExpired:
         errors.append("Evolution Radar lifecycle timed out after 45 seconds")
     else:
@@ -128,7 +128,7 @@ if workflow_path.exists():
         "--handoff evolution-analysis-handoff.md",
         "selected=\"handoff\"",
         "quarterly",
-        "0 2 1 1,4,7,10 *",
+        "0 3 3 1,4,7,10 *",
         "quarterly-rollup",
     ):
         if contract not in workflow_text:

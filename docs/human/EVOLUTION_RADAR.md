@@ -62,6 +62,8 @@ Maintenance suggestions about selective validation use the shadow cohort as evid
 
 Monthly/quarterly reports separate pipeline completeness from content value. Missing source cohorts or incomplete periods remain UNKNOWN/incomplete; a complete period with no actionable recommendation is a valid zero-yield result. Validated analysis is persisted in the GitHub Issue body so scheduled runs retain the reviewed state.
 
+The quarterly Radar rollup runs on day 3 of January, April, July and October, after the monthly Radar and Effectiveness reports have time to publish. Missing monthly evidence remains explicitly incomplete.
+
 Monthly Effectiveness also tracks pre-analysis coverage for source-bearing weekly Issues. When a weekly Issue lacks pre-analysis, per-source shortlist yield is unavailable and the report names the missing Issue; it never interprets absent triage evidence as a zero shortlist. If a complete Issue body exceeds GitHub's size limit, the workflow stores a bounded, lossless zlib/Base64 envelope with a SHA-256 digest. Roll-up consumers restore and verify the complete original body before reading evidence; invalid or oversized archives are not accepted as evidence.
 
 An unreadable archived weekly Issue remains visible in its title-derived monthly cohort and raises a separate Human-review flag. Oversized Issue bodies keep the summary readable while preserving the complete original report in the verified archive.

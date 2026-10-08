@@ -225,6 +225,8 @@ Shared deterministic helpers are canonical in `scripts/aips_common/`; their gold
 
 Maintenance governance 持續以 exact-candidate Gate 驗證品質債務與文件同步；Validation Shadow 仍維持 report-only，只有累積政策要求的證據後才可升級。
 
+Plan22 keeps the cross-runtime capability registry authoritative, treats one-run validation timings as observations, and retains full CI execution until the complete Shadow graduation cohort and Human decision exist.
+
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
 
 The shared Python CI bootstrap verifies caller-declared imports and dependency consistency while requirement files and tested constraints remain the package-version authority.

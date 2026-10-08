@@ -324,7 +324,7 @@ The Evolution Capability Map includes integration-gate and repository-health-arc
 
 ## Quarterly Deterministic Review
 
-Quarterly Review reuses durable monthly Radar evidence and does not perform a second external source collection. On the first day of January, April, July and October, the scheduled workflow reviews the previous calendar quarter.
+Quarterly Review reuses durable monthly Radar evidence and does not perform a second external source collection. On the third day of January, April, July and October, the scheduled workflow reviews the previous calendar quarter. This runs after the monthly Radar rollup and monthly Effectiveness report have had time to publish their durable Issues; if any expected month is still missing, the report remains `INCOMPLETE_INPUT`.
 
 The deterministic rollup binds the quarter and its three calendar months, aggregates recurrence by signal fingerprint, records the number of valid monthly evidence bundles and emits a new Human-review Issue. Monthly semantic recommendation states are not promoted: quarterly recommendations return to `ANALYSIS_PENDING` until a validated semantic result is separately bound.
 

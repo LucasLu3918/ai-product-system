@@ -1,273 +1,82 @@
 version: 1
 change:
-  id: opencode-integration-20261008
-  summary: Approved OpenCode native Host integration and ownership-safe lifecycle
+  id: plan22-system-improvements-20261008
+  summary: Evidence-backed Plan22 maintenance improvements with post-monthly Evolution Radar quarterly scheduling
   boundary:
-  - opencode-host
-  - native-skill-projection
-  - portable-commands
-  - mcp-config
-  - existing-host-compatibility
-  - documentation-and-publication
+    - evolution-radar-quarterly-schedule
+    - workflow-contract-and-lifecycle
+    - scenario-and-documentation
+    - canonical-documentation-closure
+    - validation-source-parity-and-progressive-quality-debt
+    - approved-git-publish-proposal
+candidate:
+  base_sha: 2e9fa74ffb7f74034f921b4535d4a55b6e93fca5
+  changed_files_hash: 34d0ab279a655b1c07aab688196864913de8baba29d9b6f9b825b3e9dac23973
 matrix:
-- boundary: opencode-host
-  reason: Approved OpenCode Host interfaces, ownership and consumer compatibility
-  checks:
-    static_lint:
-      applicable: true
-      evidence: quality_ratchet.py check --base origin/main PASS; native acceptance
-        Ruff PASS; final critical lint in exact-candidate Gate
-    unit:
-      applicable: true
-      evidence: 'opencode_integration_lifecycle.py PASS: digest ownership, corruption,
-        symlink/path escape, interrupted checkpoints'
-    integration:
-      applicable: true
-      evidence: harness_runtime_lifecycle.py and mcp_interoperability_lifecycle.py
-        PASS; opencode integration lifecycle PASS
-    contract:
-      applicable: true
-      evidence: skill_index_lifecycle.py PASS; capability_registry.py check PASS;
-        V1/V2 config shapes and user JSONC preservation verified
-    e2e:
-      applicable: true
-      evidence: 'Optional opencode_native_acceptance.py on macOS/OpenCode v2.0.24
-        PASS: 27 Skills, tdd body load, 3 Commands, local MCP connection; model execution/Linux/WSL/V1
-        remain UNVERIFIED'
-    security:
-      applicable: true
-      evidence: OpenCode lifecycle negative paths PASS; exact-candidate mandatory
-        final-tree/history secret scan remains required in Gate
-    migration_recovery:
-      applicable: true
-      evidence: 'OpenCode lifecycle PASS: reinstall/update, user conflict preservation,
-        stale cleanup, manifest interruption/retry and safe removal; no user JSONC
-        migration'
-    cli_harness:
-      applicable: true
-      evidence: OpenCode and existing Harness lifecycle PASS; runtime_invariant_matrix.py
-        --check PASS (108 cases, 67 pairs)
-    docs_schema:
-      applicable: true
-      evidence: Publication preview docs closure/placement/content safety PASS; final
-        repository preflight builds lockfile-pinned VitePress and checks schema/links
-        in Gate
-- boundary: native-skill-projection
-  reason: Approved OpenCode Host interfaces, ownership and consumer compatibility
-  checks:
-    static_lint:
-      applicable: true
-      evidence: quality_ratchet.py check --base origin/main PASS; native acceptance
-        Ruff PASS; final critical lint in exact-candidate Gate
-    unit:
-      applicable: true
-      evidence: 'opencode_integration_lifecycle.py PASS: digest ownership, corruption,
-        symlink/path escape, interrupted checkpoints'
-    integration:
-      applicable: true
-      evidence: harness_runtime_lifecycle.py and mcp_interoperability_lifecycle.py
-        PASS; opencode integration lifecycle PASS
-    contract:
-      applicable: true
-      evidence: skill_index_lifecycle.py PASS; capability_registry.py check PASS;
-        V1/V2 config shapes and user JSONC preservation verified
-    e2e:
-      applicable: true
-      evidence: 'Optional opencode_native_acceptance.py on macOS/OpenCode v2.0.24
-        PASS: 27 Skills, tdd body load, 3 Commands, local MCP connection; model execution/Linux/WSL/V1
-        remain UNVERIFIED'
-    security:
-      applicable: true
-      evidence: OpenCode lifecycle negative paths PASS; exact-candidate mandatory
-        final-tree/history secret scan remains required in Gate
-    migration_recovery:
-      applicable: true
-      evidence: 'OpenCode lifecycle PASS: reinstall/update, user conflict preservation,
-        stale cleanup, manifest interruption/retry and safe removal; no user JSONC
-        migration'
-    cli_harness:
-      applicable: true
-      evidence: OpenCode and existing Harness lifecycle PASS; runtime_invariant_matrix.py
-        --check PASS (108 cases, 67 pairs)
-    docs_schema:
-      applicable: true
-      evidence: Publication preview docs closure/placement/content safety PASS; final
-        repository preflight builds lockfile-pinned VitePress and checks schema/links
-        in Gate
-- boundary: portable-commands
-  reason: Approved OpenCode Host interfaces, ownership and consumer compatibility
-  checks:
-    static_lint:
-      applicable: true
-      evidence: quality_ratchet.py check --base origin/main PASS; native acceptance
-        Ruff PASS; final critical lint in exact-candidate Gate
-    unit:
-      applicable: true
-      evidence: 'opencode_integration_lifecycle.py PASS: digest ownership, corruption,
-        symlink/path escape, interrupted checkpoints'
-    integration:
-      applicable: true
-      evidence: harness_runtime_lifecycle.py and mcp_interoperability_lifecycle.py
-        PASS; opencode integration lifecycle PASS
-    contract:
-      applicable: true
-      evidence: skill_index_lifecycle.py PASS; capability_registry.py check PASS;
-        V1/V2 config shapes and user JSONC preservation verified
-    e2e:
-      applicable: true
-      evidence: 'Optional opencode_native_acceptance.py on macOS/OpenCode v2.0.24
-        PASS: 27 Skills, tdd body load, 3 Commands, local MCP connection; model execution/Linux/WSL/V1
-        remain UNVERIFIED'
-    security:
-      applicable: true
-      evidence: OpenCode lifecycle negative paths PASS; exact-candidate mandatory
-        final-tree/history secret scan remains required in Gate
-    migration_recovery:
-      applicable: true
-      evidence: 'OpenCode lifecycle PASS: reinstall/update, user conflict preservation,
-        stale cleanup, manifest interruption/retry and safe removal; no user JSONC
-        migration'
-    cli_harness:
-      applicable: true
-      evidence: OpenCode and existing Harness lifecycle PASS; runtime_invariant_matrix.py
-        --check PASS (108 cases, 67 pairs)
-    docs_schema:
-      applicable: true
-      evidence: Publication preview docs closure/placement/content safety PASS; final
-        repository preflight builds lockfile-pinned VitePress and checks schema/links
-        in Gate
-- boundary: mcp-config
-  reason: Approved OpenCode Host interfaces, ownership and consumer compatibility
-  checks:
-    static_lint:
-      applicable: true
-      evidence: quality_ratchet.py check --base origin/main PASS; native acceptance
-        Ruff PASS; final critical lint in exact-candidate Gate
-    unit:
-      applicable: true
-      evidence: 'opencode_integration_lifecycle.py PASS: digest ownership, corruption,
-        symlink/path escape, interrupted checkpoints'
-    integration:
-      applicable: true
-      evidence: harness_runtime_lifecycle.py and mcp_interoperability_lifecycle.py
-        PASS; opencode integration lifecycle PASS
-    contract:
-      applicable: true
-      evidence: skill_index_lifecycle.py PASS; capability_registry.py check PASS;
-        V1/V2 config shapes and user JSONC preservation verified
-    e2e:
-      applicable: true
-      evidence: 'Optional opencode_native_acceptance.py on macOS/OpenCode v2.0.24
-        PASS: 27 Skills, tdd body load, 3 Commands, local MCP connection; model execution/Linux/WSL/V1
-        remain UNVERIFIED'
-    security:
-      applicable: true
-      evidence: OpenCode lifecycle negative paths PASS; exact-candidate mandatory
-        final-tree/history secret scan remains required in Gate
-    migration_recovery:
-      applicable: true
-      evidence: 'OpenCode lifecycle PASS: reinstall/update, user conflict preservation,
-        stale cleanup, manifest interruption/retry and safe removal; no user JSONC
-        migration'
-    cli_harness:
-      applicable: true
-      evidence: OpenCode and existing Harness lifecycle PASS; runtime_invariant_matrix.py
-        --check PASS (108 cases, 67 pairs)
-    docs_schema:
-      applicable: true
-      evidence: Publication preview docs closure/placement/content safety PASS; final
-        repository preflight builds lockfile-pinned VitePress and checks schema/links
-        in Gate
-- boundary: existing-host-compatibility
-  reason: Approved OpenCode Host interfaces, ownership and consumer compatibility
-  checks:
-    static_lint:
-      applicable: true
-      evidence: quality_ratchet.py check --base origin/main PASS; native acceptance
-        Ruff PASS; final critical lint in exact-candidate Gate
-    unit:
-      applicable: true
-      evidence: 'opencode_integration_lifecycle.py PASS: digest ownership, corruption,
-        symlink/path escape, interrupted checkpoints'
-    integration:
-      applicable: true
-      evidence: harness_runtime_lifecycle.py and mcp_interoperability_lifecycle.py
-        PASS; opencode integration lifecycle PASS
-    contract:
-      applicable: true
-      evidence: skill_index_lifecycle.py PASS; capability_registry.py check PASS;
-        V1/V2 config shapes and user JSONC preservation verified
-    e2e:
-      applicable: true
-      evidence: 'Optional opencode_native_acceptance.py on macOS/OpenCode v2.0.24
-        PASS: 27 Skills, tdd body load, 3 Commands, local MCP connection; model execution/Linux/WSL/V1
-        remain UNVERIFIED'
-    security:
-      applicable: true
-      evidence: OpenCode lifecycle negative paths PASS; exact-candidate mandatory
-        final-tree/history secret scan remains required in Gate
-    migration_recovery:
-      applicable: true
-      evidence: 'OpenCode lifecycle PASS: reinstall/update, user conflict preservation,
-        stale cleanup, manifest interruption/retry and safe removal; no user JSONC
-        migration'
-    cli_harness:
-      applicable: true
-      evidence: OpenCode and existing Harness lifecycle PASS; runtime_invariant_matrix.py
-        --check PASS (108 cases, 67 pairs)
-    docs_schema:
-      applicable: true
-      evidence: Publication preview docs closure/placement/content safety PASS; final
-        repository preflight builds lockfile-pinned VitePress and checks schema/links
-        in Gate
-- boundary: documentation-and-publication
-  reason: Approved OpenCode Host interfaces, ownership and consumer compatibility
-  checks:
-    static_lint:
-      applicable: true
-      evidence: quality_ratchet.py check --base origin/main PASS; native acceptance
-        Ruff PASS; final critical lint in exact-candidate Gate
-    unit:
-      applicable: true
-      evidence: 'opencode_integration_lifecycle.py PASS: digest ownership, corruption,
-        symlink/path escape, interrupted checkpoints'
-    integration:
-      applicable: true
-      evidence: harness_runtime_lifecycle.py and mcp_interoperability_lifecycle.py
-        PASS; opencode integration lifecycle PASS
-    contract:
-      applicable: true
-      evidence: skill_index_lifecycle.py PASS; capability_registry.py check PASS;
-        V1/V2 config shapes and user JSONC preservation verified
-    e2e:
-      applicable: true
-      evidence: 'Optional opencode_native_acceptance.py on macOS/OpenCode v2.0.24
-        PASS: 27 Skills, tdd body load, 3 Commands, local MCP connection; model execution/Linux/WSL/V1
-        remain UNVERIFIED'
-    security:
-      applicable: true
-      evidence: OpenCode lifecycle negative paths PASS; exact-candidate mandatory
-        final-tree/history secret scan remains required in Gate
-    migration_recovery:
-      applicable: true
-      evidence: 'OpenCode lifecycle PASS: reinstall/update, user conflict preservation,
-        stale cleanup, manifest interruption/retry and safe removal; no user JSONC
-        migration'
-    cli_harness:
-      applicable: true
-      evidence: OpenCode and existing Harness lifecycle PASS; runtime_invariant_matrix.py
-        --check PASS (108 cases, 67 pairs)
-    docs_schema:
-      applicable: true
-      evidence: Publication preview docs closure/placement/content safety PASS; final
-        repository preflight builds lockfile-pinned VitePress and checks schema/links
-        in Gate
-review_evidence:
-  required: false
+  - boundary: evolution-radar-quarterly-schedule
+    reason: Quarterly reports must run after monthly source reports have time to publish; incomplete inputs must remain visible.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: Ruff + quality_ratchet check --base origin/main PASS; Ruff baseline 697/758, no touched-file growth; selected mypy findings 0.
+      unit:
+        applicable: false
+        na_reason: The change is schedule routing and deterministic workflow/lifecycle contract behavior; it adds no isolated algorithm requiring a new unit test.
+      integration:
+        applicable: true
+        evidence: tests/evidence/evolution_radar_lifecycle.py PASS; full tests/validate_repository.py PASS (233 scenarios).
+      contract:
+        applicable: true
+        evidence: tests/validation/evolution_radar_contracts.py PASS; schedule cron and quarterly mode routing asserted.
+      e2e:
+        applicable: false
+        na_reason: GitHub-hosted cron dispatch cannot be triggered faithfully by local tests; local lifecycle verifies schedule declaration and mode routing, and PR/main Actions verify workflow execution.
+      security:
+        applicable: false
+        na_reason: No secret, credential, permission, network access, or security policy changes; the exact-candidate secret scan remains mandatory in the Integration Gate.
+      migration_recovery:
+        applicable: false
+        na_reason: No schema, durable data, installation state, or migration behavior changes.
+      cli_harness:
+        applicable: false
+        na_reason: No CLI or runtime adapter behavior changes.
+      docs_schema:
+        applicable: true
+        evidence: publication preview documentation_placement PASS; all required canonical additions present.
+  - boundary: validation-source-parity-and-progressive-quality-debt
+    reason: Preserve distinct validation policy sources while detecting shared safety-anchor drift read-only; reduce only verified touched-file Ruff debt.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: Ruff + quality_ratchet check --base origin/main PASS; safely removed five touched-file findings.
+      unit:
+        applicable: true
+        evidence: CI validation source parity contract PASS; negative fixture detects a missing shared registry anchor.
+      integration:
+        applicable: true
+        evidence: full tests/validate_repository.py PASS (233 scenarios).
+      contract:
+        applicable: true
+        evidence: tests/validation/ci_validation_plan_contracts.py PASS; shared fail-closed anchors and registered module files verified read-only.
+      e2e:
+        applicable: false
+        na_reason: This boundary adds a local read-only validator contract and changes no platform execution behavior.
+      security:
+        applicable: false
+        na_reason: The parity audit is read-only and changes no credentials, network access, authorization or security policy.
+      migration_recovery:
+        applicable: false
+        na_reason: No schema or stored-data changes.
+      cli_harness:
+        applicable: false
+        na_reason: No CLI or Runtime adapter behavior changes.
+      docs_schema:
+        applicable: false
+        na_reason: The existing Evolution Radar documentation boundary covers the candidate’s documentation closure; this local validation-source contract changes no user-facing behavior.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
+review_evidence:
+  required: false
+  reason: No trusted runtime-attestation verifier is connected; independent-review evidence remains disabled by default under current repository policy.
 blockers: []
 status: READY
-candidate:
-  base_sha: d6b6c934486c73fbd421e56875961a35ecfa3ea0
-  changed_files_hash: 4de228ea49963144d47a8b23245aa4423ab157878d969fd1e3d0d6a030a02e9a

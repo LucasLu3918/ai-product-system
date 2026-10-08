@@ -19,6 +19,7 @@ Evolution Radar MUST measure which research sources and downstream decisions act
 - attribute collected/shortlisted/semantic/actionable/Trial/PASS/adoption observations back to exact source provenance;
 - compute deterministic basis-point ratios for source shortlist yield, semantic yield, actionable conversion, Trial conversion, adoption conversion, and source failure rate;
 - emit Human-review flags for sufficiently observed low-yield, high-failure, or zero-actionable sources;
+- run the quarterly Radar rollup after the monthly Radar and Effectiveness reports have time to publish, while retaining `INCOMPLETE_INPUT` for genuinely missing monthly bundles;
 - never automatically reweight, enable, disable, replace, or mutate a research source or source configuration;
 - publish/update a durable monthly effectiveness Issue using `contents: read` + `issues: write` only;
 - close a metrics Issue when no source review flag exists and leave/reopen it when deterministic Human-review flags exist;

@@ -116,6 +116,8 @@ Before readiness, move finalized release notes under the heading matching `VERSI
 
 ## System facts and validation planning
 
+The validator registry, exact-path CI provisioning plan, full-run Shadow Plan, and Integration Gate profile have separate responsibilities; none may silently omit required validators. Promotion of selective execution requires the complete reviewed shadow cohort.
+
 
 `config/system-facts.yaml` and `config/architecture-surfaces.yaml` are the source for factual command/capability tables in `docs/human/SYSTEM_REFERENCE.md`. Run `python scripts/system_facts.py --write` after changing those facts and `--check` in validation. Keep explanatory prose in its canonical topic documents.
 
@@ -490,6 +492,8 @@ Large/Core candidate 使用唯一 canonical `.aips/review/CORE_CHANGE_TEST_MATRI
 Do not let the Scheduler make semantic scope decisions, and do not let Integration Gate PASS create merge/release authority.
 
 ## Branch lifecycle hygiene
+
+Branch cleanup inventory is read-only by default; a proposed exact-SHA candidate never authorizes deletion without separate Human approval.
 
 Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanup. Persistent operational branches are preserved; common short-lived prefixes are classified as ephemeral; unclassified branches are preserved by default. The report includes current SHA, matching merged PR state, branch age, integration status and a cleanup review recommendation. Integration recognition is conservative and squash-aware: direct ancestry is checked first, then per-commit patch equivalence, then a clean synthetic `git merge-tree --write-tree` whose result must be identical to the target tree. The policy is `report_only`; scheduled and main-push reports publish proposals and never delete refs. Cleanup requires a separate explicit workflow dispatch on protected `main` with `apply_cleanup=true`, plus the exact one-time reviewed manifest. The Plan19 branch snapshot is a timestamped proposal and remains unauthorized until separately reviewed against current exact SHAs.
 
