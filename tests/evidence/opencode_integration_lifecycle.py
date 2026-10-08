@@ -13,9 +13,9 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
+import creative_workspace_profile as creative_profile
 import opencode_native_guard as native_guard
 import opencode_skill_projection as projection
-import creative_workspace_profile as creative_profile
 import opencode_trace
 import turn_intent
 
@@ -251,7 +251,7 @@ def creative_profile_cases(base):
 def trace_cases(base):
     base.mkdir(parents=True)
     path = base / "events.jsonl"
-    path.write_text(json.dumps({"runtime": "opencode", "event": "context", "status": "delivered", "session": "0123456789abcdef", "prompt": "private"}) + "\n")
+    path.write_text(json.dumps({"runtime": "opencode", "event": "context", "status": "delivered", "session": "0123456789abcdef"}) + "\n")
     result = opencode_trace.read_events(path)
     assert result["events"] == [{"runtime": "opencode", "event": "context", "status": "delivered", "session": "0123456789abcdef"}]
     path.write_text(json.dumps({"runtime": "opencode", "event": "context", "status": "delivered", "session": "secret prompt text"}) + "\n")

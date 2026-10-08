@@ -8,7 +8,6 @@ import re
 from pathlib import Path
 from typing import Any
 
-
 ALLOWED_FIELDS = {
     "at", "runtime", "event", "status", "decision", "level", "session", "project",
     "domain", "intent", "effect", "readiness", "workflow_count", "duration_ms",

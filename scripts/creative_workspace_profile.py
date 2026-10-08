@@ -9,7 +9,6 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
-
 ASSETS = {".svg", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".avif"}
 PROFILES = {"character_profile.yaml", "style_profile.yaml", "character_artwork_manifest.yaml", "creative_direction.yaml"}
 SKIP = {".git", ".ai", "node_modules", ".venv", "venv", "vendor", "dist", "build", "target"}

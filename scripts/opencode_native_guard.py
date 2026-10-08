@@ -170,9 +170,10 @@ def evaluate_shell(*, command: str, cwd: str, root: str) -> dict[str, Any]:
             continue
         # Refuse ambiguous explicit paths, including options that are joined to
         # their values. Non-path search patterns remain valid for grep/rg.
-        if word.startswith(("./", "../", "~/", "/")) or "/" in word:
-            if not _check_operand_path(word, cwd=cwd_path, root=root_path):
-                return {"decision": "DENY", "level": "L2", "reason": "Shell path operand escapes project root"}
+        if (word.startswith(("./", "../", "~/", "/")) or "/" in word) and not _check_operand_path(
+            word, cwd=cwd_path, root=root_path
+        ):
+            return {"decision": "DENY", "level": "L2", "reason": "Shell path operand escapes project root"}
     if skip_value:
         return {"decision": "DENY", "level": "L2", "reason": "Shell path option is missing its value"}
     return {"decision": "ALLOW", "level": "L1", "reason": "bounded read-only command policy; external process effects remain outside the guard", "cwd": normalized}

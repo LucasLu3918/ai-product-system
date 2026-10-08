@@ -16,12 +16,13 @@ import time
 import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from typing import Any, ClassVar
 
 ROOT = Path(__file__).resolve().parents[2]
 
 
 class MockModelHandler(BaseHTTPRequestHandler):
-    requests = []
+    requests: ClassVar[list[dict[str, Any]]] = []
 
     def log_message(self, *_args):
         return
@@ -34,7 +35,6 @@ class MockModelHandler(BaseHTTPRequestHandler):
         payload = json.loads(self.rfile.read(int(self.headers.get('Content-Length', '0'))))
         type(self).requests.append(payload)
         messages = payload.get('messages', [])
-        prompt = json.dumps(messages, ensure_ascii=False)
         user_prompt = '\n'.join(str(item.get('content', '')) for item in messages if isinstance(item, dict) and item.get('role') == 'user')
         previous_tool = any(item.get('role') == 'tool' or item.get('tool_call_id') for item in messages if isinstance(item, dict))
         body = None
@@ -274,6 +274,7 @@ def main() -> None:
                             [binary, '--log-level', 'debug', '--print-logs', 'run', '--standalone', '--model', 'aips-mock/fixture', '--format', 'json', 'What is 2 + 2?'],
                             env=dict(env, PWD=str(workspace), OPENCODE_CONFIG_DIR=str(cli_config), XDG_DATA_HOME=str(base / 'cli-data'), XDG_CACHE_HOME=str(base / 'cli-cache'), AIPS_CLI=str(ROOT / 'bin/aips'), AIPS_GUARD_PYTHON=sys.executable),
                             cwd=workspace, capture_output=True, text=True, timeout=90,
+                            check=False,
                         )
                     except subprocess.TimeoutExpired as timeout_error:
                         trace_path = base / 'state/aips/opencode/events.jsonl'
@@ -323,6 +324,7 @@ def main() -> None:
                         [binary, '--log-level', 'error', 'run', '--standalone', '--model', 'aips-mock/fixture', '--auto', '--format', 'json', text],
                         env=dict(env, PWD=str(workspace), OPENCODE_CONFIG_DIR=str(cli_config), XDG_DATA_HOME=str(base / 'cli-data'), XDG_CACHE_HOME=str(base / 'cli-cache'), AIPS_CLI=str(ROOT / 'bin/aips'), AIPS_GUARD_PYTHON=sys.executable),
                         cwd=workspace, capture_output=True, text=True, timeout=60,
+                        check=False,
                     )
                     if result.returncode != 0:
                         error = re.sub(r'(?i)(password|token|authorization|api[_ -]?key)(["\'=: ]+)[^\s,}]+', r'\1\2[redacted]', result.stderr)[:300]

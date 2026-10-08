@@ -82,7 +82,7 @@ placement_rules:
     triggers: [config/capability-registry.yaml, scripts/capability_registry.py, config/architecture-surfaces.yaml, references/evolution/CAPABILITY_MAP.yaml, config/repository-health.yaml, scripts/repository_health.py, orchestration/REPOSITORY_HEALTH.md, tests/validation/repository_health_contracts.py, tests/evidence/repository_health_lifecycle.py]
     placements:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution]
-      docs/human/SYSTEM_REFERENCE.md: [Public commands, Capability surfaces]
+      docs/human/SYSTEM_REFERENCE.md: [Public commands, Capability surfaces, Runtime support]
       docs/human/MAINTENANCE.md: [Repository Health / Architecture Drift consistency]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
 
