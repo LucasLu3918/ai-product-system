@@ -314,6 +314,10 @@ Plan21 Phase 0 records one exact-main full-validation timing observation and pin
 
 ## Documentation Platform
 
+文件網站固定使用 VitePress 1.6.4；`package.json` 只覆寫 `vitepress` 引入的 Vite 為 6.4.4，由 Vite 自身宣告的 `esbuild ^0.25.0` 提供修補版本，不另行強制覆寫 esbuild。這個 Vite 版本超出 VitePress 1.6.4 原本宣告的 Vite 5 範圍，因此更新時必須重新驗證相容性；上游穩定版原生支援已修補工具鏈後，再評估移除覆寫。
+
+以 Node 24 執行 `npm ci --no-audit --no-fund --ignore-scripts`、`npm audit` 與 `npm run docs:build`，並確認 `npm ls vite esbuild`、開發、預覽與熱更新。`npm run docs:dev` 綁定 `127.0.0.1`，停用跨來源 HTTP 存取並保留 Vite 主機檢查。VitePress 1.6.4 的靜態預覽忽略 host 設定，因此 `npm run docs:preview` 改由已修補的 `vite preview` 提供 `.vitepress/dist`，明確綁定 `127.0.0.1` 並保留 Vite 預設 Host／CORS 限制；網站 base 仍是 `/ai-product-system/`，clean URLs、搜尋與導覽需一併驗證。勿以 `--host 0.0.0.0`、對外 port mapping、tunnel、`cors: true` 或 `allowedHosts: true` 放寬存取；確有遠端開發需求時，另行評估存取控制與明確允許清單。正式網站只部署 build 後的靜態產物。
+
 ### Human Documentation Source
 
 docs/human/*.md 是 Human canonical source。Current behavior 依 domain section維護；CHANGELOG 保留 Unreleased 與最近五個完整版本，較早的完整 release sections 由 `docs/history/changelog/` 人工封存並保留根目錄版本錨點。Stable tag 僅在 exact-candidate readiness 通過且取得獨立 Human 核准後建立；Conformance 保存驗證歷史。

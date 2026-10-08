@@ -10,6 +10,8 @@ Human Docs 依使用目的組織，而不是依版本號堆疊。
 
 ## Official Docs Site
 
+文件開發工具的安全版本、限定覆寫與本機伺服器操作見 [Technology Guide](TECHNOLOGY_GUIDE.md#documentation-platform)；相依套件與鎖定檔變更的同步要求見 [Documentation Consistency](DOCUMENTATION_SYNC.md#official-docs-site)。
+
 The docs-site workflow uses pinned setup-node v7 and upload-pages-artifact v5 on GitHub-hosted Ubuntu 24.04. Action upgrades include architecture, technology and documentation-sync updates; dependency PRs are subject to the same documentation closure as manual changes.
 
 docs/human/ 是 canonical Human source，也是 VitePress site root。首頁為 index.md，網站提供 sidebar、local search 與 page outline。

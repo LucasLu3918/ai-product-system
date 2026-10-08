@@ -114,6 +114,8 @@ Behavior-bearing source changes must first map every new source path in `config/
 
 ## Official Docs Site
 
+文件工具鏈安全修補需同步 `package.json` 的限定 Vite 覆寫與 npm lockfile。保留 VitePress 穩定版時，跨 Vite 主要版本的覆寫必須驗證乾淨安裝、audit、build、開發／預覽及熱更新；本機存取設定與操作限制維護在 Technology Guide 的 Documentation Platform。
+
 Pinned Actions updates require synchronized operational documentation. setup-node v7 executes with Node 24; upload-pages-artifact v5 uses upload-artifact v7. GitHub-hosted Ubuntu 24.04 supplies the runner; PR builds keep deployment skipped and main retains the configured Pages-state guard.
 
 docs/human/ 同時是 Official Docs Site 的 source；VitePress 只是 renderer。Website build output 不提交為 canonical content。

@@ -7,6 +7,9 @@ export default defineConfig({
   base: '/ai-product-system/',
   cleanUrls: true,
   lastUpdated: true,
+  vite: {
+    server: { host: '127.0.0.1', cors: false, allowedHosts: [] }
+  },
   themeConfig: {
     nav: [
       { text: '開始使用', link: '/GETTING_STARTED' },

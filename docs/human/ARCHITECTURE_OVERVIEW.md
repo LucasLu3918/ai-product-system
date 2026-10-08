@@ -285,6 +285,8 @@ Standalone HTML 不再是新增功能的 canonical target。Current behavior 必
 
 ## Official Docs Site
 
+文件工具鏈保留穩定版 VitePress 1.6.4，僅將其 Vite 間接依賴固定至 6.4.4，以帶入 Vite 與 esbuild 安全修補。開發伺服器只綁定 `127.0.0.1`、停用 CORS 並保留主機檢查；預覽命令另以 `--host 127.0.0.1` 限制靜態預覽存取。GitHub Pages 仍只提供靜態產物。
+
 VitePress 只渲染 Human documentation。Agent canonical protocols 仍留在 SYSTEM.md、orchestration/、roles/、skills/，不因網站而複製。
 
 Docs build 與 Pages hosting 分開驗證：PR / main 都能證明 VitePress build；只有 repository 已啟用 GitHub Pages（Source = GitHub Actions）時才 deploy。尚未啟用時 workflow 明確記錄 `SKIPPED_NOT_CONFIGURED`，不把「hosting 尚未設定」誤報成文件 build failure。
