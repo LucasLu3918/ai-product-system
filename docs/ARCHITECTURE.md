@@ -12,7 +12,9 @@ flowchart TD
     RA --> RC[Shared Runtime Context]
     RA -->|OpenCode V2 only| OP[OpenCode plugin: context injection + supported native guard]
     OP --> RC
-    OP -->|explicit creative_execution tool| CP{Creative Preflight}
+    OP -->|explicit creative_execution tool| WP[Prepare versioned Profiles + Bundle in EPHEMERAL scope]
+    WP -->|unconfigured local engine| CP{Creative Preflight}
+    OP -->|existing Bundle| CP
     CP -->|engine unavailable / invalid bundle| CBL[BLOCKED_NO_ENGINE or policy reason]
     CP -->|explicit execute action only| CE[Scoped EPHEMERAL Creative Executor]
     CE -->|offline argv process| MF[MFLUX local CLI]

@@ -20,6 +20,7 @@ Usage:
   aips harness resolve [--runtime <id>] [--cwd <path>] [--project <path>] [--format yaml|json]
   aips harness trace [--limit 1..100]
 
+  aips creative prepare --project <path> --scope <relative-path> --character-id <slug> --character-name <name> --summary <text> --style-intent <text> --prompt <text> --identity-feature <text> [--identity-feature <text> ...]
   aips creative scan --project <path>
   aips creative next-version --project <path> --target <relative-asset-path>
   aips creative preflight --project <path> --bundle <relative-yaml>

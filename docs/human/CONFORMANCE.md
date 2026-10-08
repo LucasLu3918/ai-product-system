@@ -1658,9 +1658,9 @@ The lifecycle covers separate prompt dimensions, Chinese creative-asset routing,
 
 ## Scenario 236 — Local Creative Bundle Execution
 
-Scenario 236 covers local MFLUX and loopback ComfyUI generation/edit, create-only EPHEMERAL output, provenance, finite retry, privacy-bounded trace, and separate human visual review.
+Scenario 236 covers versioned no-overwrite Profile/Bundle preparation, fixed MFLUX model/operation CLI mapping, single-reference FLUX.1 edit, bounded multi-reference FLUX.2/Qwen edit, loopback ComfyUI with single-reference edit, create-only EPHEMERAL output, provenance, finite retry, privacy-bounded trace, and separate human visual review.
 
-The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, edits use a hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
+The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies concurrent preparation allocates distinct versions, unconfigured engines remain blocked, preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, MFLUX commands match the fixed capability registry, batch references remain bounded, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, edits use exactly one hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
 
 ## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
 

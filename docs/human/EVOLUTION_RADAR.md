@@ -50,6 +50,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 Local creative provider support is an explicit execution adapter, not an adopted external provider. Engine quality and hardware performance remain unknown until locally measured and independently reviewed.
 
+Synthetic Creative Bundle lifecycle evidence verifies adapter contracts only; it is not model-quality or provider-effectiveness evidence.
+
 OpenCode native acceptance is implementation evidence for the tested Harness boundary, not adoption, provider, or production-readiness evidence.
 
 OpenCode adapter 的採用證據分開記錄 projection lifecycle 與指定版本的 native discovery；未知平台與模型使用行為保持 UNVERIFIED。

@@ -28,6 +28,8 @@ The local creative execution capability does not change protected-branch or merg
 
 Core Harness changes use the `aips:core-change` label on initial PR creation and require exact-candidate Integration Gate evidence; ruleset inspection remains read-only and separate from merge authority.
 
+The creative Bundle change adds no ruleset or branch-protection mutation; the PR remains subject to the repository's existing Core checks and explicit publication/merge approvals.
+
 The current policy path compares a complete read-only repository snapshot and reports `NO_CHANGE` or `NOT_READY`; it does not activate rulesets or alter branch protection. Any future transition requires a fresh settings snapshot, recovery plan and explicit approval.
 
 This assessment creates no ruleset and does not activate one. Before a future transition, retrieve the full current configuration again, inspect the exact policy diff and rollback path, verify account/API feature availability, and obtain approval for that exact candidate. Where GitHub's policy evaluation endpoint is unavailable to the account, keep evaluation as an operational review step and do not report an API evaluation result.

@@ -1,6 +1,6 @@
 # AIPS Global Turn Harness
 
-For creative execution, invoke the structured tool only for an explicit create/modify request and require its Bundle preflight to return READY before execution. Shell diagnostics remain limited to the fixed AIPS read-only allowlist.
+For creative execution, invoke the structured tool only for an explicit create/modify request. `prepare` creates a versioned Character Profile, Style Profile, README and draft Bundle under a project-relative EPHEMERAL scope, uses create-only writes, and cannot launch a generator; require a READY Bundle preflight before explicit execution. Shell diagnostics remain limited to the fixed AIPS read-only allowlist.
 
 For software/product/project work, resolve the current Turn Context before analysis or mutation:
 

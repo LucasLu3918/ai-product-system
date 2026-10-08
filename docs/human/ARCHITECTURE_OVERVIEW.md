@@ -25,9 +25,11 @@ User Prompt
 
 MCP 提供 portability；native adapters 提供 runtime hook / guard。兩者共用 canonical Roles、Skills、Orchestration 與 Project Intelligence。完整 MCP Host 使用 Resources／Prompts／Tools；tool-only Host 透過唯讀 capability/workflow Tools 取得同一 canonical context。各 runtime 的 enforcement 依實際覆蓋證據分開標示。
 
-OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn Context，並在 permission evaluation 階段檢查支援的直接檔案操作。L1 僅允許非 Git workspace 中受限路徑的新創意資產；L2 需要 Project Intelligence READY、freshness CURRENT 與無待解權威衝突；L3 外部效果沿用既有 Human approval gate。Shell 僅保留有限唯讀命令，並額外提供固定參數的 AIPS 診斷。`creative_execution` 是唯一有界自訂工具：它綁定當前 EPHEMERAL Session、先執行唯讀預檢，且只允許使用者明確要求的本機 Creative Bundle 寫入指定新素材。其他 MCP/custom tools 和繞過 OpenCode 的寫入仍不在 guard 範圍。Plugin 安裝與 hook discovery 不足以證明執行防護；完成 runtime permission acceptance 前，治理保持 ADVISORY。
+OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn Context，並在 permission evaluation 階段檢查支援的直接檔案操作。L1 僅允許非 Git workspace 中受限路徑的新創意資產；L2 需要 Project Intelligence READY、freshness CURRENT 與無待解權威衝突；L3 外部效果沿用既有 Human approval gate。Shell 僅保留有限唯讀命令，並額外提供固定參數的 AIPS 診斷。`creative_execution` 是唯一有界自訂工具：它綁定當前 EPHEMERAL Session，可建立不覆寫的角色／風格 Profile 與未設定引擎的 Creative Bundle，也可對既有 Bundle 執行唯讀預檢及明確要求的本機生成。其他 MCP/custom tools 和繞過 OpenCode 的寫入仍不在 guard 範圍。Plugin 安裝與 hook discovery 不足以證明執行防護；完成 runtime permission acceptance 前，治理保持 ADVISORY。
 
 ## Project Intelligence 與 Retrieval
+
+Creative Bundle preparation adds versioned, project-scoped outputs and does not mutate the target project's reusable Intelligence.
 
 OpenCode V2 receives compact Turn Context from the existing Project Intelligence CLI; the plugin caches only derived context using bounded fingerprints and does not persist prompts.
 
@@ -71,6 +73,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 Reusable character artwork extends the existing Creative Direction path: hashed local identity/style profiles feed optional installed MFLUX or loopback ComfyUI built-in workflows, separate create-only raster assets receive provenance validation, and a deterministic composer typesets the character sheet. Preflight never starts generation; unavailable engines return `BLOCKED_NO_ENGINE`. An independent human visual review checks identity and style fidelity. The helper does not infer quality or install/download image models.
 
+The `creative_execution` path can prepare versioned Character/Style Profiles and an unconfigured Bundle before any engine is selected; its closed MFLUX registry fixes model/operation commands and bounds multi-reference edits to supported FLUX.2/Qwen operations. ComfyUI and FLUX.1 edits remain single-reference.
+
 ## Planning 與 Product Delivery
 
 OpenCode 的 `aips-plan` Command 使用既有 Planning 工作流與 Human Approval；原生入口不建立第二份規劃規則。
@@ -107,6 +111,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+Image generation remains a separate explicit action; the CLI preparation path is not scheduled as an autonomous task or retry loop.
 
 The capability registry maps the local creative executor, Bundle template, lifecycle evidence, and Scenario to the existing Harness runtime surface. Execution is opt-in and output is create-only.
 
@@ -194,6 +200,8 @@ Publication Preflight 將 Python module availability 與 loopback/browser capabi
 
 ## Security 與 Governance
 
+Creative preparation stays within a non-Git EPHEMERAL scope and does not install model weights or contact a cloud image provider.
+
 Runtime governance hooks classify malformed requests as explicit denials and fail closed when policy or audit evaluation fails. The response contains a stable failure code; diagnostic details stay on stderr.
 
 固定系統核心保留 Human Authority、Change Impact、驗證及 Git publication gates；一般修改的保守路由會載入 Orchestrator、Change Impact 與 Quality Planning。
@@ -207,6 +215,8 @@ Runtime Policy Enforcement 使用四種結果：`ALLOW`、`DENY`、`REQUIRE_APPR
 Validation Observation keeps evidence readiness separate from operational failure: a completed `NOT_READY` cohort does not fail collection, while API, artifact, missing-report and unknown-status errors remain failures. Dependency Review records exact-candidate shadow parity; the standalone high-severity check remains authoritative until a separate reviewed switch after the observation window.
 
 ## Scenario Conformance 與 Agent Eval
+
+Scenario 236 uses fake local engines to verify the preparation and reference-boundary contracts; it does not establish visual quality or live-provider behavior.
 
 Scenario 235 records OpenCode V2 setup as verified while keeping Context delivery and permission-hook execution UNVERIFIED; governance therefore remains ADVISORY.
 
@@ -238,6 +248,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+The exact-candidate Core Matrix binds the local creative lifecycle and its documentation closure; real MFLUX inference remains unverified when the engine is unavailable.
 
 The v0.75.0 creative execution change is mapped to the existing Harness runtime surface and its generated architecture projection.
 

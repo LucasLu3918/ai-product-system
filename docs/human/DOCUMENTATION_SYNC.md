@@ -30,6 +30,8 @@ OpenCode Harness 行為變更需同步 adapter contract、Human 安裝／使用�
 
 The scoped EPHEMERAL Creative Bundle tool updates the OpenCode compatibility contract, Creative Direction, User Guide, Harness, Technology Guide, Architecture Overview, Scenario 236 and the existing design Skills. Other MCP/custom tools remain outside the guard.
 
+The `creative_execution.prepare` CLI and OpenCode routes share the same create-only Profile/Bundle contract; Scenario 236 records version allocation, supported reference bounds and synthetic engine coverage.
+
 OpenCode native Context and guard limits are maintained in the adapter compatibility contract and Scenario 235; capability and architecture views derive from the canonical Capability Registry.
 
 Creative-artifact validation, local execution bundles, model provenance and creative-protocol changes map to the existing Creative Direction User Guide topic, Technology Guide Execution topic, Architecture Overview Creative Workflow, Scenario 234/236 and canonical Agent protocol. OpenCode adapter changes also update the Harness compatibility boundary. A deterministic manifest result never substitutes for independent visual review.
@@ -154,6 +156,8 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+The creative CLI and OpenCode tool share one mapped behavior contract; keep their preparation scope, create-only writes, and explicit execution boundary synchronized with Scenario 236.
 
 Creative execution behavior is documented in the Creative Workflow and execution topics, with Scenario 236 and the generated current conformance summary kept in sync.
 

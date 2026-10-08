@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+Creative Bundle 的操作方式見 [User Guide](USER_GUIDE.md#creative-directionstyle-與-brand)，技術限制見 [Technology Guide](TECHNOLOGY_GUIDE.md#local-character-artwork)；OpenCode adapter 的 canonical contract 位於 Agent 文件與 Conformance Scenario 236。
+
 OpenCode 安裝、Session Context、creative asset profile、trace 與原生 acceptance 的操作說明集中於 [Harness](HARNESS.md)。
 
 OpenCode Runtime Adapter 的使用方式見 [Harness](HARNESS.md)，執行邊界與 Scenario 235 見 [Conformance](CONFORMANCE.md)。

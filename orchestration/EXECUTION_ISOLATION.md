@@ -15,6 +15,7 @@ Execution isolation is a capability of the existing Execution Profile. It is not
 
 Resolve isolation before mutation when independent writer state, risky experimentation, or concurrent read/review work makes workspace separation useful.
 
+
 Truthful capability reporting is mandatory:
 
 - shared → AVAILABLE, isolated=false;
@@ -281,6 +282,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 
 ## Parallel runtime resource isolation
+
+The optional local MFLUX adapter is not a verified sandbox: its fixed child-process command and offline flags restrict behavior, but do not claim host-process isolation. It is never installed or executed by preflight or the Integration Gate.
 
 Creative Bundle output is restricted to a non-Git EPHEMERAL project root and a declared create-only output directory; it does not create an execution sandbox or install an engine.
 

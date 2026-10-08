@@ -9,7 +9,17 @@ const MAX_CONTEXT_BYTES = 12000
 const MAX_TRACE_BYTES = 512 * 1024
 
 type ContextEntry = { key: string; at: number; root: string; prompt: string; manifest: Record<string, any> | null; reason?: string; durationMs: number }
-type CreativeToolInput = { action: "preflight" | "execute"; bundle: string }
+type CreativeToolInput = {
+  action: "prepare" | "preflight" | "execute"
+  bundle?: string
+  scope?: string
+  character_id?: string
+  character_name?: string
+  summary?: string
+  style_intent?: string
+  prompt?: string
+  identity_features?: string[]
+}
 
 function lastUserText(messages: any[]): string {
   for (let i = messages.length - 1; i >= 0; i -= 1) {
@@ -271,19 +281,36 @@ export default {
     await ctx.tool.transform((editor) => {
       editor.add({
         name: "creative_execution",
-        description: "Run AIPS Creative Preflight or explicitly execute one scoped local Creative Bundle in a non-Git EPHEMERAL workspace. Execution writes only the declared create-only image output and provenance manifest; no cloud provider or model download is used. Human visual review remains required.",
+        description: "Prepare a versioned local character asset workspace, run Creative Preflight, or explicitly execute one scoped local Creative Bundle in a non-Git EPHEMERAL workspace. Preparation creates only fixed new README/Profile/Bundle files; execution writes only the declared create-only image output and provenance manifest. No cloud provider or model download is used. Human visual review remains required.",
         input: {
           type: "object",
           properties: {
-            action: { type: "string", enum: ["preflight", "execute"] },
+            action: { type: "string", enum: ["prepare", "preflight", "execute"] },
             bundle: { type: "string", minLength: 1, maxLength: 240 },
+            scope: { type: "string", minLength: 1, maxLength: 240 },
+            character_id: { type: "string", minLength: 1, maxLength: 64, pattern: "^[a-z0-9][a-z0-9_-]{0,63}$" },
+            character_name: { type: "string", minLength: 1, maxLength: 120 },
+            summary: { type: "string", minLength: 1, maxLength: 600 },
+            style_intent: { type: "string", minLength: 1, maxLength: 600 },
+            prompt: { type: "string", minLength: 1, maxLength: 4000 },
+            identity_features: { type: "array", minItems: 1, maxItems: 12, items: { type: "string", minLength: 1, maxLength: 160 } },
           },
-          required: ["action", "bundle"],
+          required: ["action"],
           additionalProperties: false,
         },
         async execute(input, toolContext) {
           const request = input as CreativeToolInput
-          if (!request || !["preflight", "execute"].includes(request.action) || typeof request.bundle !== "string" || request.bundle.length > 240 || request.bundle.startsWith("/") || request.bundle.split(/[\\/]/).includes("..")) {
+          const validAction = request && ["prepare", "preflight", "execute"].includes(request.action)
+          const validBundle = typeof request?.bundle === "string" && request.bundle.length > 0 && request.bundle.length <= 240 && !request.bundle.startsWith("/") && !request.bundle.split(/[\\/]/).includes("..")
+          const validPrepare = typeof request?.scope === "string" && request.scope.length > 0 && request.scope.length <= 240 && !request.scope.startsWith("/") && !request.scope.split(/[\\/]/).includes("..")
+            && typeof request.character_id === "string" && /^[a-z0-9][a-z0-9_-]{0,63}$/.test(request.character_id)
+            && typeof request.character_name === "string" && request.character_name.length > 0 && request.character_name.length <= 120
+            && typeof request.summary === "string" && request.summary.length > 0 && request.summary.length <= 600
+            && typeof request.style_intent === "string" && request.style_intent.length > 0 && request.style_intent.length <= 600
+            && typeof request.prompt === "string" && request.prompt.length > 0 && request.prompt.length <= 4000
+            && Array.isArray(request.identity_features) && request.identity_features.length > 0 && request.identity_features.length <= 12
+            && request.identity_features.every((item) => typeof item === "string" && item.length > 0 && item.length <= 160)
+          if (!validAction || (request.action === "prepare" ? (!validPrepare || validBundle) : (!validBundle || request.scope !== undefined))) {
             return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_bundle_invalid" }) }
           }
           const resolvedSession = await sessionRoot(toolContext.sessionID)
@@ -295,7 +322,7 @@ export default {
             return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_ephemeral_required" }) }
           }
           const classification = entry.manifest.task?.classification ?? {}
-          if (classification.domain !== "creative" || !["create", "modify"].includes(classification.intent)) {
+          if (classification.domain !== "creative" || (request.action === "prepare" ? classification.intent !== "create" : !["create", "modify"].includes(classification.intent))) {
             return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_intent_required" }) }
           }
           if (request.action === "execute") {
@@ -306,7 +333,9 @@ export default {
           }
           const executable = request.action === "execute"
           const maximum = executable ? 3_600_000 : 20_000
-          const command = ["creative", request.action, "--project", root, "--bundle", request.bundle]
+          const command = request.action === "prepare"
+            ? ["creative", "prepare", "--project", root, "--scope", request.scope!, "--character-id", request.character_id!, "--character-name", request.character_name!, "--summary", request.summary!, "--style-intent", request.style_intent!, "--prompt", request.prompt!, ...request.identity_features!.flatMap((item) => ["--identity-feature", item])]
+            : ["creative", request.action, "--project", root, "--bundle", request.bundle!]
           const started = performance.now()
           const result = await invokeAsync(aips, command, root, maximum, toolContext.signal)
           let payload: Record<string, any>

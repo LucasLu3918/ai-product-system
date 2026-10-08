@@ -10,7 +10,9 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
-Local character-art behavior is mapped through `config/documentation-placement.yaml` and `config/documentation-sync.yaml`; changes to its validator, Bundle, profile templates, OpenCode adapter or creative protocol keep the User Guide, Harness, Technology Guide, architecture overview, Scenario Conformance and Agent guidance in the same candidate. The synthetic execution lifecycle uses fake providers only; exact-candidate validation never runs a project-configured engine, and a missing local engine remains `BLOCKED_NO_ENGINE`.
+Local character-art behavior is mapped through `config/documentation-placement.yaml` and `config/documentation-sync.yaml`; changes to its validator, Bundle, profile templates, OpenCode adapter, creative CLI routing or creative protocol keep the User Guide, Harness, Technology Guide, architecture overview, Scenario Conformance and Agent guidance in the same candidate. The synthetic lifecycle covers versioned no-overwrite preparation, fixed MFLUX capability/argv mapping, single-reference FLUX.1 edit, bounded multi-reference FLUX.2/Qwen edit, single-reference ComfyUI edit and fake providers only; exact-candidate validation never runs a project-configured engine, and a missing local engine remains `BLOCKED_NO_ENGINE`.
+
+Version 0.76.0 adds no-overwrite Profile/Bundle preparation and fixed MFLUX CLI mapping; these changes do not install providers or models.
 
 行為來源 `scripts/project_intelligence_promotion.py`、`scripts/repository_governance_snapshot.py` 已登錄 canonical Human 文件落點；GitHub governance snapshot 僅讀取 rulesets 與 branch protection，無遠端寫入能力。
 
@@ -99,6 +101,8 @@ Multi-file changes should normally be assembled into one coherent remote branch 
 15. Prefer independent review/PR for material system changes.
 
 ## Versioning
+
+Version 0.76.0 adds no-overwrite Profile/Bundle preparation and fixed MFLUX CLI mapping without installing providers or models.
 
 The local creative execution and bounded Shell diagnostics ship in v0.75.0; they do not install providers or models.
 
@@ -404,6 +408,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+The creative lifecycle is owned once by repository validation; exact-candidate validation uses synthetic engines and never runs a user-configured generator.
 
 OpenCode ownership、Skill description 與 Host 安裝生命週期由 `tests/evidence/opencode_integration_lifecycle.py` 驗證；既有 Host 與 MCP 回歸仍需通過。
 

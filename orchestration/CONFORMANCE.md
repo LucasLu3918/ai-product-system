@@ -894,9 +894,11 @@ The size audit measures tracked text/evidence files against 50,000 bytes and rep
 
 OpenCode runtime changes retain existing Plan13 provenance and maintenance governance; host discovery alone is not enforcement evidence.
 
+Scenario 236's exact-candidate Core Matrix records synthetic creative lifecycle and documentation evidence; it does not claim live engine inference or visual-quality acceptance.
+
 ## Scenario 236 — Local Creative Bundle Execution
 
-Scenario 236 extends the adapter with explicit intent, preflight, and a local-only creative tool.
+Scenario 236 extends the adapter with explicit intent, versioned Profile/Bundle preparation, preflight and a local-only creative tool. Its MFLUX capability map fixes model/operation commands; FLUX.1 edit is single-reference, FLUX.2/Qwen multi-reference edit is bounded, and ComfyUI edit remains single-reference.
 
 The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, edits use a hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
 

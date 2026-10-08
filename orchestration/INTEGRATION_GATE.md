@@ -24,6 +24,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 Gate inspection and preview validate the creative Bundle contract without executing MFLUX or ComfyUI; actual generation remains an explicit user action.
 
+The `prepare` lifecycle is checked with fake local executables and creates only versioned Profile/Bundle files; exact-candidate validation never invokes a configured image engine.
+
 Core runtime candidates bind the reviewed Change Matrix, Session-root native acceptance, documentation closure and strict secret scan to the exact base/head; local PASS does not grant publication or merge authority.
 
 OpenCode V2 acceptance records plugin registry setup separately from model-context and permission-hook execution; unknown provider execution remains UNVERIFIED.

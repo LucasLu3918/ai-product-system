@@ -209,6 +209,8 @@ Review actual:
 
 The creative execution manifest and trace are covered by the candidate review; local image bytes and raw prompts are excluded from trace, and no external image endpoint is supported.
 
+The new preparation path writes only fixed, new files within a non-Git EPHEMERAL scope and does not install an engine, select model weights, or perform image inference.
+
 OpenCode evidence is host/version-scoped and does not establish OS sandboxing, MCP/custom-tool safety, or arbitrary Shell effect control; Core publication still requires the exact-candidate gate.
 
 A blocked Unreleased/changelog check keeps the candidate out of release publication even when an unrelated maintenance PR is valid.

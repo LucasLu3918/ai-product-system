@@ -1,83 +1,77 @@
 version: 1
+
 candidate:
-  base_sha: 0099f85ea9876c30de84c725b54f75c01c84086c
-  changed_files_hash: 2e8577d58a412a59dd4f1e59c1d78eb8416fe31569c253a2808800703cd4ed16
+  base_sha: f0005f116b04eda5d7f9fff1c660f53f567f2ace
+  changed_files_hash: f18f1b483d16a44ca683bfb5eaa9d7e0753fb436b87ee6bf7096f69e0a3f096d
+
 change:
-  id: creative-execution-20261008
-  summary: Scoped local creative execution with bounded OpenCode diagnostics, preflight, MFLUX/ComfyUI adapters, provenance, human review, and privacy-safe trace.
+  id: creative-bundle-mflux-20261008
+  summary: Safe versioned creative Bundle/Profile preparation and fixed MFLUX model/operation CLI mapping.
   boundary:
-    - Fixed AIPS read-only Shell diagnostic allowlist and stable reason codes
-    - EPHEMERAL non-Git Bundle scope, preflight, create-only output/manifest, fixed raster types, no path escape
-    - Local MFLUX argv/shell-false execution and loopback-only ComfyUI generation/edit over allowlisted core nodes
-    - Profile/model/runtime/license/workflow/input/output hashes, bounded trace, finite transient retries, no prompt/image persistence
-    - OpenCode V2 explicit creative invocation and preflight enforcement
-    - Scenario, contracts, documentation, architecture projection, version, and changelog
+    - Non-Git EPHEMERAL prepare action, version allocation, create-only files, scope/path/symlink protections, and unconfigured engine state
+    - Fixed FLUX.1, FLUX.2 Klein and Qwen Edit MFLUX executable/argument mapping; FLUX.1 edit is single-reference, while FLUX.2/Qwen multi-reference edit is bounded; ComfyUI edit is single-reference
+    - AIPS CLI and OpenCode creative tool schema, intent/session binding, preflight and explicit execute boundaries
+    - Scenario 236, evidence, docs, diagrams, documentation placement/sync, release version/changelog
+
 matrix:
-  - boundary: Shell diagnostics and denial reasons
-    reason: Useful diagnostics must work without admitting general-purpose shell or Python execution.
+  - boundary: Versioned preparation and local executor safety
+    reason: Preparation creates persistent files while the executor consumes local references and may call installed local engines.
     checks:
-      static_lint: {applicable: true, evidence: Pending exact-candidate Gate}
-      unit: {applicable: true, evidence: Guard allowlist and per-command option positive/negative cases}
-      integration: {applicable: true, evidence: OpenCode lifecycle validates stable reason codes and unsupported command denial}
-      contract: {applicable: true, evidence: CLI contract exposes only fixed AIPS read-only commands}
-      security: {applicable: true, evidence: Reject shell operators, arbitrary executables, unsafe operands, and unbounded options}
-      migration_recovery: {applicable: false, na_reason: No persisted guard state or schema migration}
-      cli_harness: {applicable: true, evidence: OpenCode integration lifecycle}
-      docs_schema: {applicable: true, evidence: Shell guard compatibility docs and repository validation}
-      e2e: {applicable: true, evidence: Deterministic guard lifecycle; no external runtime required}
-  - boundary: Bundle preflight, local provider execution, and provenance
-    reason: A provider execution tool creates user assets and contacts a local runtime, so confinement, explicit opt-in, and failure rollback are required.
+      static_lint: {applicable: true, evidence: Ruff on changed Python files and repository lint contracts}
+      unit: {applicable: true, evidence: Path confinement, input bounds, model/operation capability mapping, collision and reason-code cases}
+      integration: {applicable: true, evidence: Synthetic creative lifecycle with fake MFLUX and loopback ComfyUI}
+      contract: {applicable: true, evidence: Creative execution contracts and Bundle template validation}
+      security: {applicable: true, evidence: Git/traversal/symlink refusal, no overwrite, offline argv-only command, local-only image handling}
+      migration_recovery: {applicable: true, evidence: Concurrent prepare allocation, interrupted staged write cleanup, executor timeout and manifest rollback}
+      cli_harness: {applicable: true, evidence: AIPS creative prepare/preflight/execute CLI lifecycle and bounded Shell denial}
+      docs_schema: {applicable: true, evidence: Scenario 236, Bundle template, docs placement/sync and schema validation}
+      e2e: {applicable: true, evidence: Synthetic prepare/generate/edit/review path; real models and visual quality remain explicitly unverified}
+  - boundary: OpenCode creative tool and command routing
+    reason: The adapter exposes preparation and execution to a model and must preserve explicit intent, active-session confinement and action separation.
     checks:
-      static_lint: {applicable: true, evidence: Pending exact-candidate Gate}
-      unit: {applicable: true, evidence: Bundle/schema, path, format, provider, retry and reason-code contracts}
-      integration: {applicable: true, evidence: Fake MFLUX executable and isolated loopback ComfyUI generation/edit lifecycle}
-      contract: {applicable: true, evidence: CLI preflight/execute/review/trace and manifest schema checks}
-      security: {applicable: true, evidence: No Git target, traversal/symlink/overwrite rejected, no shell, no proxy/redirect/remote host, Comfy node allowlist, edit input hash, no prompt/image trace}
-      migration_recovery: {applicable: true, evidence: Provider failure, timeout, manifest rollback and output cleanup lifecycle}
-      cli_harness: {applicable: true, evidence: AIPS creative CLI lifecycle and OpenCode explicit invocation}
-      docs_schema: {applicable: true, evidence: Bundle template, Scenario, schema/static contracts, docs closure}
-      e2e: {applicable: true, evidence: Synthetic generation/edit/review lifecycle; real engine and visual quality remain unavailable and are not inferred}
-  - boundary: OpenCode V2 tool registration and invocation
-    reason: Runtime registration must remain bounded, session-rooted and action-gated.
+      static_lint: {applicable: true, evidence: Node 24 syntax/type checks in exact-candidate Gate}
+      unit: {applicable: true, evidence: Prepare schema limits, create-intent requirement, unsupported Shell command denial}
+      integration: {applicable: true, evidence: OpenCode lifecycle and CLI route lifecycle}
+      contract: {applicable: true, evidence: Tool schema and AIPS command help/dispatch contracts}
+      security: {applicable: true, evidence: Session-root and EPHEMERAL checks; prepare cannot invoke execute or escape scope}
+      migration_recovery: {applicable: false, na_reason: Existing plugin ownership and state formats are unchanged}
+      cli_harness: {applicable: true, evidence: OpenCode tool and AIPS dispatcher lifecycle}
+      docs_schema: {applicable: true, evidence: OpenCode compatibility documentation and placement closure}
+      e2e: {applicable: true, evidence: Synthetic tool contract/lifecycle only; no model request or image provider is used}
+  - boundary: Documentation, scenario and release consistency
+    reason: Core workflow, supported CLI matrix, runtime boundary and versioned behavior must be represented consistently.
     checks:
-      static_lint: {applicable: true, evidence: Node syntax/type checks in exact-candidate Gate}
-      unit: {applicable: true, evidence: Action/provider and explicit creative-intent guard contracts}
-      integration: {applicable: true, evidence: OpenCode V2 plugin lifecycle and existing projection regression}
-      contract: {applicable: true, evidence: V2 transform tool schema, abort handling, CLI protocol contracts}
-      security: {applicable: true, evidence: Non-creative intent denial and preflight-before-execute behavior}
-      migration_recovery: {applicable: false, na_reason: No plugin ownership/install state is changed by this tool registration}
-      cli_harness: {applicable: true, evidence: Existing OpenCode lifecycle and AIPS command dispatch}
-      docs_schema: {applicable: true, evidence: Adapter compatibility and user/harness docs}
-      e2e: {applicable: true, evidence: Local synthetic executor invocation; no model or external service}
-  - boundary: Docs, Scenario, architecture projection, and publication
-    reason: Core functionality and capability ownership must be discoverable and exact candidate claims must match evidence.
-    checks:
-      static_lint: {applicable: true, evidence: Pending exact-candidate Gate}
-      unit: {applicable: false, na_reason: Behavior is covered by focused contracts above}
-      integration: {applicable: true, evidence: Scenario conformance and docs placement/sync}
-      contract: {applicable: true, evidence: Capability registry generated projections and documentation sync}
-      security: {applicable: true, evidence: Credential-free strict candidate scan on final tree and base..head history}
-      migration_recovery: {applicable: false, na_reason: No persistent schema or deployment state}
-      cli_harness: {applicable: true, evidence: Exact-candidate local Integration Gate}
-      docs_schema: {applicable: true, evidence: Changed Markdown links, VitePress build, placement, sync and SVG/XML validation}
-      e2e: {applicable: true, evidence: Full repository validator and exact-candidate Gate}
+      static_lint: {applicable: true, evidence: Repository static contracts and changed-file checks}
+      unit: {applicable: false, na_reason: Behavior-specific checks are listed in the first two matrix rows}
+      integration: {applicable: true, evidence: Documentation placement/sync, Scenario 236 coverage, generated Conformance views}
+      contract: {applicable: true, evidence: Versioning contracts, capability projection and architecture/documentation contracts}
+      security: {applicable: true, evidence: Strict candidate secret scan against exact base and candidate}
+      migration_recovery: {applicable: false, na_reason: No existing persisted data schema or deployment migration changes}
+      cli_harness: {applicable: true, evidence: Exact-candidate Integration Gate}
+      docs_schema: {applicable: true, evidence: Markdown links, VitePress build, SVG/XML validation and documentation placement}
+      e2e: {applicable: true, evidence: Full repository validation and exact-candidate Gate}
+
 review_evidence:
   required: false
-  system_improvement_review: .aips/review/CREATIVE_EXECUTION_SYSTEM_IMPROVEMENT_REVIEW.md
-  core_change_proposal: .aips/review/CREATIVE_EXECUTION_CORE_CHANGE_PROPOSAL.md
+  system_improvement_review: .aips/review/CREATIVE_BUNDLE_MFLUX_SYSTEM_IMPROVEMENT_REVIEW.md
+  core_change_proposal: .aips/review/CREATIVE_BUNDLE_MFLUX_CORE_CHANGE_PROPOSAL.md
+
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 status: READY
 verification:
-  focused_creative_lifecycle: PASS — tests/evidence/creative_execution_lifecycle.py (local fake providers; loopback fixture executed with required local socket access)
-  opencode_lifecycle: PASS — tests/evidence/opencode_integration_lifecycle.py
-  creative_static_contracts: PASS — tests/validation/creative_execution_contracts.py
-  touched_new_code_ruff: PASS — scripts/creative_execution.py, tests/evidence/creative_execution_lifecycle.py, tests/validation/creative_execution_contracts.py
-  plugin_syntax: PASS — Node 24.19.0 `--check --experimental-strip-types` on harness/adapters/opencode/plugin.ts
-  capability_projection: PASS — scripts/capability_registry.py check (45 capabilities, 10 surfaces)
-  scenario_conformance: PASS — Scenario 236; 236 registered, 0 missing, 0 uncovered
-  documentation: PASS — placement closure and VitePress 1.6.4 build
-  system_facts: PASS — scripts/system_facts.py --check and tests/evidence/system_facts_lifecycle.py
-  impact_reconciliation: PASS — external Change Impact scoped traversal is complete (22 nodes, 43 edges); final Git-bound READY reconciliation follows commit for the 62-path candidate
-  exact_candidate_gate: PENDING — run on the final committed matrix-bound candidate
+  creative_execution_lifecycle: PASS_SYNTHETIC_FIXTURES
+  opencode_integration_lifecycle: PASS
+  creative_execution_contracts: PASS
+  full_repository_validation: PASS_EXACT_CANDIDATE_GATE
+  documentation_placement_and_sync: PASS
+  vitepress_build: PASS_REPOSITORY_PREFLIGHT
+  versioning_contracts: PASS
+  capability_registry_projection: PASS
+  ruff_and_mypy: PASS
+  node_plugin_syntax: PASS
+  secret_scan: PASS_EXACT_CANDIDATE_GATE
+  exact_candidate_integration_gate: PASS_PENDING_FINAL_MATRIX_COMMIT_RECHECK
+  live_mflux_inference: NOT_RUN_ENGINE_NOT_INSTALLED
+  real_model_visual_quality: NOT_VERIFIED
