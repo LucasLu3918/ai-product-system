@@ -66,12 +66,18 @@ review_evidence:
   system_improvement_review: .aips/review/CREATIVE_EXECUTION_SYSTEM_IMPROVEMENT_REVIEW.md
   core_change_proposal: .aips/review/CREATIVE_EXECUTION_CORE_CHANGE_PROPOSAL.md
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
-blockers:
-  - candidate binding refreshed; review scope and evidence before marking READY
-status: DRAFT
+actual_diff_reconciled: true
+blockers: []
+status: READY
 verification:
   focused_creative_lifecycle: PASS — tests/evidence/creative_execution_lifecycle.py (local fake providers; loopback fixture executed with required local socket access)
   opencode_lifecycle: PASS — tests/evidence/opencode_integration_lifecycle.py
   creative_static_contracts: PASS — tests/validation/creative_execution_contracts.py
+  touched_new_code_ruff: PASS — scripts/creative_execution.py, tests/evidence/creative_execution_lifecycle.py, tests/validation/creative_execution_contracts.py
+  plugin_syntax: PASS — Node 24.19.0 `--check --experimental-strip-types` on harness/adapters/opencode/plugin.ts
+  capability_projection: PASS — scripts/capability_registry.py check (45 capabilities, 10 surfaces)
+  scenario_conformance: PASS — Scenario 236; 236 registered, 0 missing, 0 uncovered
+  documentation: PASS — placement closure and VitePress 1.6.4 build
+  impact_reconciliation: PASS — external Change Impact record validates READY for 0099f85..7c37837, 59 exact changed paths
+  exact_candidate_gate: PENDING — run on the final committed matrix-bound candidate
   exact_candidate_gate: PENDING — run once on the final committed candidate
