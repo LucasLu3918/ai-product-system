@@ -621,7 +621,7 @@ surfaces:
   - AGENTS.md
   - harness/MCP_GATEWAY.md
   validation_paths:
-  - tests/evidence/opencode_integration_lifecycle.py
+  - tests/validation/opencode_integration_contracts.py
   - tests/evidence/harness_runtime_lifecycle.py
   - tests/evidence/mcp_interoperability_lifecycle.py
   - tests/evidence/resource_authorization_lifecycle.py
