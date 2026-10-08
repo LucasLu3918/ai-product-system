@@ -69,6 +69,8 @@ The scheduler is stateless between invocations. Durable workflow state remains o
 
 ## CLI
 
+Creative generation is an explicit user action through `aips creative execute`; scheduler inspection, validation, and Gate runs never launch a configured image engine.
+
 Turn Context task routes are resolved before scheduling and never grant Scheduler write authority; the task's approved boundary and lease remain authoritative.
 
 Sparse delegation does not require a Task Graph for primary-only bounded work. Existing CLI helpers perform repeatable checks; multiple justified writer tasks retain approved non-overlapping boundaries.

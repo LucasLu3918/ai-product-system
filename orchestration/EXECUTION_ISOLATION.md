@@ -6,6 +6,7 @@ Execution isolation is a capability of the existing Execution Profile. It is not
 
 ## Modes
 
+
 - `shared` — use the existing project workspace. Available by default, but it is not an isolation boundary.
 - `worktree` — use a real Git worktree managed by AIPS. This is the default isolated writer workspace when Git worktree support is available.
 - `sandbox` — use a verified external sandbox provider. AIPS core does not emulate sandboxing with a temporary directory. A provider is eligible only when a current registry-bound record proves the required observed controls.
@@ -280,6 +281,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 
 ## Parallel runtime resource isolation
+
+Creative Bundle output is restricted to a non-Git EPHEMERAL project root and a declared create-only output directory; it does not create an execution sandbox or install an engine.
 
 The OpenCode Shell hook uses semantic command/effect checks and is not an OS process sandbox; MCP/custom tools and other processes remain outside its observed boundary.
 

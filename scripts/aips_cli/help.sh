@@ -22,6 +22,10 @@ Usage:
 
   aips creative scan --project <path>
   aips creative next-version --project <path> --target <relative-asset-path>
+  aips creative preflight --project <path> --bundle <relative-yaml>
+  aips creative execute --project <path> --bundle <relative-yaml>
+  aips creative review --project <path> --manifest <relative-json> --reviewer <name> --decision <PASS|REVISE>
+  aips creative trace [--limit 1..100]
 
   aips mcp serve
   aips mcp inspect

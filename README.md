@@ -53,6 +53,8 @@ aips mcp inspect
 
 ## Start using AIPS
 
+For a scoped local creative bundle, run `aips creative preflight --project <project> --bundle <bundle.yaml>` before an explicit `aips creative execute`; preflight never starts a generator.
+
 安裝完成後，直接使用原本的 Codex、Claude Code、Gemini CLI，或把 AIPS MCP Server 接到支援 MCP 的 Host。
 
 ~~~bash

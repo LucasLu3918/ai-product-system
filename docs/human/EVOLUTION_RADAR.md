@@ -48,6 +48,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+Local creative provider support is an explicit execution adapter, not an adopted external provider. Engine quality and hardware performance remain unknown until locally measured and independently reviewed.
+
 OpenCode native acceptance is implementation evidence for the tested Harness boundary, not adoption, provider, or production-readiness evidence.
 
 OpenCode adapter 的採用證據分開記錄 projection lifecycle 與指定版本的 native discovery；未知平台與模型使用行為保持 UNVERIFIED。
@@ -82,6 +84,7 @@ Monthly / quarterly roll-up 量測 collected → shortlist → semantic → acti
 
 - Release readiness is a separate deterministic evidence gate; Evolution metrics do not imply an empty Unreleased section or authorize a tag.
 ## Current Boundaries
+
 
 OpenCode adapter 的 Session Context 與 native permission acceptance 屬 Harness 與 Core Change Gate 證據，不構成 Evolution Radar 的 adoption、provider 或 production readiness 證據。
 

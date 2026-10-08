@@ -28,6 +28,8 @@ For project work, context identifies project mode and stable instruction sources
 
 ## Verification
 
+The creative CLI resolves the standard AIPS runtime; preflight checks local engine availability without launching generation, while execution is a separate explicit command.
+
 Runtime Context validation remains bound to exact selected sources; shared hash helpers preserve the existing raw digest representation and do not alter routing.
 
 Operator-only repository governance evidence is outside runtime context and does not alter adapter selection, project intelligence resolution, or runtime capability claims.

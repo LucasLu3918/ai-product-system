@@ -29,7 +29,9 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
-Character artwork behavior is mapped through `config/documentation-sync.yaml` and `config/documentation-placement.yaml`: keep the Creative Direction protocol, Scenario 234, User Guide Creative Direction topic, Technology Guide Execution topic, and dedicated Architecture Overview Creative Workflow topic synchronized. Deterministic provenance checks do not replace visual review.
+Character artwork behavior is mapped through `config/documentation-sync.yaml` and `config/documentation-placement.yaml`: keep the Creative Direction protocol, Scenarios 234/236, User Guide Creative Direction topic, Technology Guide Execution topic, and dedicated Architecture Overview Creative Workflow topic synchronized. Deterministic provenance checks do not replace visual review.
+
+The scoped EPHEMERAL Creative Bundle tool also updates the OpenCode compatibility contract and Harness topic. Its exact-candidate lifecycle uses fake local engines and never runs a project-configured generator; generic MCP/custom tools remain outside its guard.
 
 Portable Command Registry、CLI 與 MCP renderer 屬 Harness current behavior；同步 Human 文件時沿用既有 Harness、Architecture、Installation、Maintenance 與 Technology topic，不建立第二套文件樹。
 Phase 5 的共用 OpenAPI client 案例沿用 Implementation Resolution、Quality 與 Conformance topic。同步 Scenario 197 的 lifecycle、Human 操作說明及多產品證據邊界，不為每個產品建立 AIPS 共用文件。
@@ -168,6 +170,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 
 ## Human documentation placement
+
+The creative execution boundary maps to the existing Harness, creative workflow, execution, security, and Scenario topics; documentation impact preview verifies required canonical destinations.
 
 OpenCode adapter changes route to Harness, Installation, User Guide, Architecture Overview, Technology Guide and Conformance, alongside the adapter contract and Scenario 235 evidence.
 

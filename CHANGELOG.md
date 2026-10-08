@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add a scoped local creative execution pipeline for MFLUX and loopback ComfyUI generation/editing, with preflight, create-only raster outputs, provenance manifests, explicit human visual review, bounded privacy-safe traces, and no model downloads or external image egress.
+- Extend the OpenCode Shell Guard with fixed read-only AIPS diagnostics and stable denial reason codes; arbitrary shell commands remain blocked.
 - Complete all eight OpenCode AIPS reliability recommendations with Session-rooted V2 Context and permission hooks, effect-aware Shell decisions, private EPHEMERAL creative profiles, version-aware repair guidance, bounded performance and privacy trace; verify native allow/deny behavior with an isolated loopback mock.
 - Add independent task domain/intent/effect routing, Chinese creative-asset context, and a version-aware OpenCode V2 plugin for transient Context and narrowly scoped native file/Shell decisions; arbitrary Shell effects and MCP/custom-tool writes remain outside the guard.
 - Add local-first character-art profiles, provenance-bound SVG/PNG validation, deterministic typeset character sheets, and independent visual-review guidance without installing image models or using cloud APIs.

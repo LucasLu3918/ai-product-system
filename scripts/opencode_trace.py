@@ -13,9 +13,10 @@ ALLOWED_FIELDS = {
     "domain", "intent", "effect", "readiness", "workflow_count", "duration_ms",
     "context_bytes", "context_command_ms", "creative_asset_count", "truncated", "action", "reason_code", "project_mode",
     "session_root_source",
+    "provider", "operation",
 }
 ENUMS = {
-    "event": {"plugin", "context", "permission", "shell"},
+    "event": {"plugin", "context", "permission", "shell", "creative_execution"},
     "status": {"ready", "entered", "delivered", "unavailable"},
     "decision": {"ALLOW", "DENY", "UNSUPPORTED", "BLOCKED"},
     "level": {"L0", "L1", "L2", "L3"},
@@ -25,8 +26,10 @@ ENUMS = {
     "readiness": {"READY", "PARTIAL", "UNREVIEWED", "unknown"},
     "project_mode": {"EPHEMERAL", "ATTACHED", "UNKNOWN"},
     "action": {"edit", "write", "patch", "apply_patch"},
-    "reason_code": {"policy_allow", "policy_deny", "target_missing", "target_escape", "creative_target_exists", "creative_target_unsupported", "creative_git_workspace", "intelligence_not_ready", "intelligence_stale", "instruction_conflict", "action_unsupported", "external_approval_required", "session_directory_unavailable", "read_only_scan_failed"},
+    "reason_code": {"policy_allow", "policy_deny", "target_missing", "target_escape", "creative_target_exists", "creative_target_unsupported", "creative_git_workspace", "intelligence_not_ready", "intelligence_stale", "instruction_conflict", "action_unsupported", "external_approval_required", "session_directory_unavailable", "read_only_scan_failed", "shell_readonly_allow", "shell_aips_readonly", "shell_aips_command_unsupported", "shell_aips_arguments_unsupported", "shell_path_escape", "shell_operators_unsupported", "shell_command_unsupported", "shell_find_effect_unsupported", "shell_sed_effect_unsupported", "shell_git_command_unsupported", "shell_option_unsupported", "shell_policy_denied", "creative_ephemeral_required", "creative_bundle_invalid", "creative_timeout", "creative_execution_failed", "creative_response_invalid", "creative_tool_result"},
     "session_root_source": {"directory", "location_directory", "worktree"},
+    "provider": {"mflux_local", "comfyui_local", "unknown"},
+    "operation": {"generate", "edit", "unknown"},
 }
 HEX_IDS = re.compile(r"[0-9a-f]{16}")
 

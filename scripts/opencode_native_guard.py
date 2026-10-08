@@ -12,6 +12,7 @@ from typing import Any
 WRITE_TOOLS = {"write", "edit", "patch", "apply_patch"}
 ASSET_SUFFIXES = {".svg", ".png", ".jpg", ".jpeg", ".webp", ".gif"}
 READ_ONLY_COMMANDS = {"pwd", "ls", "cat", "head", "tail", "sed", "rg", "grep", "find", "git", "stat", "file", "wc"}
+SAFE_AIPS_COMMANDS = {("doctor",), ("harness", "status"), ("intelligence", "status"), ("creative", "preflight"), ("creative", "next-version"), ("creative", "trace"), ("project", "check")}
 SHELL_META = re.compile(r"[;&|><`$\n\r]")
 FIND_SIDE_EFFECTS = {"-delete", "-exec", "-execdir", "-ok", "-okdir", "-fprint", "-fprint0", "-fprintf", "-fls"}
 SENSITIVE_OPTIONS = {"-c", "--config-env", "--git-dir", "--work-tree", "--namespace", "--exec-path", "--config", "--files0-from", "--pre", "--pre-glob"}
@@ -103,6 +104,69 @@ def _check_operand_path(word: str, *, cwd: Path, root: Path) -> bool:
     return True
 
 
+def _aips_read_only(words: list[str], *, cwd: Path, root: Path) -> tuple[bool, str, str]:
+    """Allow only fixed, read-only AIPS diagnostics; this is not a general CLI exemption."""
+    command = tuple(words[1:3]) if len(words) >= 3 and words[1] in {"harness", "intelligence", "creative", "project"} else tuple(words[1:2])
+    if command not in SAFE_AIPS_COMMANDS:
+        return False, "shell_aips_command_unsupported", "AIPS command is outside the bounded read-only diagnostic allowlist"
+    if command == ("project", "check"):
+        if len(words) != 4 or not _check_operand_path(words[3], cwd=cwd, root=root):
+            return False, "shell_aips_arguments_unsupported", "AIPS project check accepts one confined path"
+        return True, "shell_aips_readonly", "bounded read-only AIPS diagnostic"
+    command_options = {
+        ("creative", "preflight"): {"--project", "--bundle"},
+        ("creative", "next-version"): {"--project", "--target"},
+        ("creative", "trace"): {"--limit"},
+    }
+    allowed_options = command_options.get(command, set())
+    values: dict[str, str] = {}
+    index = 1 + len(command)
+    while index < len(words):
+        option = words[index]
+        if option not in allowed_options or index + 1 >= len(words) or words[index + 1].startswith("-"):
+            return False, "shell_aips_arguments_unsupported", "AIPS diagnostic accepts only its bounded path and format arguments"
+        value = words[index + 1]
+        if option in {"--project", "--bundle", "--target"} and not _check_operand_path(value, cwd=cwd, root=root):
+            return False, "shell_path_escape", "AIPS diagnostic path escapes the project root"
+        if option == "--limit" and (not value.isdigit() or not 1 <= int(value) <= 100):
+            return False, "shell_aips_arguments_unsupported", "AIPS trace limit must be between 1 and 100"
+        if option in values:
+            return False, "shell_aips_arguments_unsupported", "AIPS diagnostic path option was repeated"
+        values[option] = value
+        index += 2
+    required = {
+        ("creative", "preflight"): {"--project", "--bundle"},
+        ("creative", "next-version"): {"--project", "--target"},
+        ("project", "check"): set(),
+    }.get(command, set())
+    if not required.issubset(values):
+        return False, "shell_aips_arguments_unsupported", "AIPS diagnostic is missing a required bounded path"
+    if command == ("creative", "trace") and any(option != "--limit" for option in values):
+        return False, "shell_aips_arguments_unsupported", "AIPS creative trace accepts only --limit"
+    return True, "shell_aips_readonly", "bounded read-only AIPS diagnostic"
+
+
+def _shell_reason_code(reason: str, decision: str) -> str:
+    if decision == "ALLOW":
+        return "shell_readonly_allow"
+    lowered = reason.lower()
+    if "working directory escapes" in lowered or "path escapes" in lowered or "path operand escapes" in lowered:
+        return "shell_path_escape"
+    if "operators and substitutions" in lowered:
+        return "shell_operators_unsupported"
+    if "outside the bounded read-only allowlist" in lowered:
+        return "shell_command_unsupported"
+    if "find actions" in lowered:
+        return "shell_find_effect_unsupported"
+    if "sed" in lowered:
+        return "shell_sed_effect_unsupported"
+    if "git" in lowered:
+        return "shell_git_command_unsupported"
+    if "option" in lowered:
+        return "shell_option_unsupported"
+    return "shell_policy_denied"
+
+
 def evaluate_shell(*, command: str, cwd: str, root: str) -> dict[str, Any]:
     """Allow a small, effect-aware read-only Shell subset.
 
@@ -119,6 +183,11 @@ def evaluate_shell(*, command: str, cwd: str, root: str) -> dict[str, Any]:
         words = shlex.split(command)
     except ValueError:
         words = []
+    if words and Path(words[0]).name == "aips":
+        allowed, reason_code, reason = _aips_read_only(words, cwd=Path(normalized), root=Path(root).resolve(strict=True))
+        if not allowed:
+            return {"decision": "DENY", "level": "L2", "reason_code": reason_code, "reason": reason}
+        return {"decision": "ALLOW", "level": "L1", "reason_code": reason_code, "reason": reason, "cwd": normalized}
     if not words or Path(words[0]).name not in READ_ONLY_COMMANDS:
         return {"decision": "DENY", "level": "L2", "reason": "Shell command is outside the bounded read-only allowlist"}
     executable = Path(words[0]).name
@@ -176,7 +245,7 @@ def evaluate_shell(*, command: str, cwd: str, root: str) -> dict[str, Any]:
             return {"decision": "DENY", "level": "L2", "reason": "Shell path operand escapes project root"}
     if skip_value:
         return {"decision": "DENY", "level": "L2", "reason": "Shell path option is missing its value"}
-    return {"decision": "ALLOW", "level": "L1", "reason": "bounded read-only command policy; external process effects remain outside the guard", "cwd": normalized}
+    return {"decision": "ALLOW", "level": "L1", "reason_code": "shell_readonly_allow", "reason": "bounded read-only command policy; external process effects remain outside the guard", "cwd": normalized}
 
 
 def main() -> int:
@@ -197,6 +266,7 @@ def main() -> int:
             result = evaluate_write(tool=args.tool, resources=json.loads(args.resources), root=args.root, manifest=json.loads(args.manifest))
         else:
             result = evaluate_shell(command=args.command, cwd=args.cwd, root=args.root)
+            result.setdefault("reason_code", _shell_reason_code(str(result.get("reason", "")), str(result.get("decision", "DENY"))))
     except (OSError, ValueError, TypeError, subprocess.SubprocessError) as exc:
         result = {"decision": "DENY", "level": "L2", "reason": f"guard unavailable: {type(exc).__name__}"}
     print(json.dumps(result, ensure_ascii=False))

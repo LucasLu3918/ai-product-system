@@ -60,3 +60,5 @@ Load the rendered evidence integrity section of `orchestration/VISUAL_POLISH.md`
 Return PASS / PASS WITH COMMENTS / REQUEST CHANGES / BLOCK with concrete evidence and recommendations.
 
 For character-art manifests, separately inspect identity-feature consistency, pose/expression variation boundaries, style adherence, Chinese label rendering, source lineage, crop/presentation, and model-license suitability. Deterministic manifest or hash PASS proves evidence integrity only; compare the actual generated assets to the approved Character and Style Profiles before making a quality decision. Treat generation failures and unavailable local runtimes as explicit limitations, not visual PASS.
+
+For local generated assets, inspect each rendered output against the approved Character Profile, Style Profile and Creative Direction. A valid hash, completed execution, or deterministic lifecycle test does not establish visual quality. Keep the execution manifest review `PENDING` until an independent human has inspected the image; record PASS or REVISE with concrete evidence.

@@ -32,6 +32,8 @@ OpenCode Runtime Adapter 的使用方式見 [Harness](HARNESS.md)，執行邊界
 
 OpenCode 全域指示、原生 Skills／Commands、MCP 預覽與保守 ownership 操作見 [Harness](HARNESS.md)。
 
+Creative Direction、EPHEMERAL 本機生成 Bundle、預檢、素材 provenance 與人工視覺審查流程見 [User Guide](USER_GUIDE.md#creative-directionstylebrand)；其執行邊界與 Scenario 236 見 [Conformance](CONFORMANCE.md#scenario-236--local-creative-bundle-execution)。
+
 `CHANGELOG.md` 列出 0.74.0 候選內容；版本標籤與 release readiness 仍依 exact-main SHA 與獨立核准流程處理。
 
 Prospective `aips docs impact --base HEAD --planned-path <path>` resolves sync and placement closure to a fixed point. Each triggered rule requires an update in its canonical topic; combined changes use the union of those topics. Validate every text anchor before applying the batch. Closure is scope evidence and never grants publication authority.

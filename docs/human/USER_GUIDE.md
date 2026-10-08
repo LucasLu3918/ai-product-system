@@ -98,6 +98,8 @@ Brand System 可涵蓋 Brand Intent、Audience / Positioning、Purpose / Mission
 
 使用 `python scripts/character_artifacts.py validate MANIFEST --project PROJECT` 驗證檔案、路徑、尺寸、雜湊和來源；使用 `compose` 以 SVG 組成設定表並排上繁體中文標籤。輸出不覆寫既有檔案。這些檢查不會判斷角色是否一致或畫面是否合格，仍需人工依核准的角色與風格設定逐張審查；效能數據只有實際量測後才能填入。
 
+若要直接執行本機生成，可複製 `templates/creative/CREATIVE_BUNDLE.yaml`，填入已安裝 MFLUX 或本機 ComfyUI 的模型、版本、授權來源與輸出路徑，再執行 `aips creative preflight --project PROJECT --bundle BUNDLE.yaml`。預檢不會生成素材；缺少引擎會回報 `BLOCKED_NO_ENGINE`。確認後，以 `aips creative execute` 明確執行。輸出限於 EPHEMERAL 非 Git workspace 中指定 scope 的新 PNG/JPEG/WEBP 與 provenance manifest，不覆寫現有檔案、不下載模型。ComfyUI 僅連線 loopback，工作流程只接受核准的內建節點；編輯時須先將參考圖放入 ComfyUI 本機 input，且預檢會核對位元組雜湊。生成結果的視覺審查初始為 `PENDING`，請由獨立人工對照角色與風格規範檢查後，才用 `aips creative review` 記錄 PASS 或 REVISE；`aips creative trace` 只顯示原因碼、耗時、重試次數與雜湊。
+
 ## 需求釐清與 Planning
 
 需求不足時採 progressive clarification：先問會改變產品方向、architecture、安全或交付成本的高資訊量問題，不為了流程而問全部細節。
@@ -125,7 +127,9 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
-OpenCode V2 may use the managed plugin for Session-scoped Context and supported direct-file checks. In EPHEMERAL creative projects, `aips creative scan --project PATH` indexes existing image/SVG metadata in the user cache without adding project files; `aips creative next-version --project PATH --target RELATIVE_ASSET` suggests a new path and never writes it. `aips harness trace` shows privacy-limited Context and permission events. MCP/custom tools and arbitrary Shell effects are not covered by that guard; inspect adapter status before relying on runtime enforcement.
+OpenCode V2 的 creative execution tool 只接受明確創作或修改意圖，並在執行前要求 Bundle preflight 通過。
+
+OpenCode V2 may use the managed plugin for Session-scoped Context, supported direct-file checks, and the structured `creative_execution` tool. In EPHEMERAL creative projects, `aips creative scan --project PATH` indexes existing image/SVG metadata in the user cache; `aips creative next-version --project PATH --target RELATIVE_ASSET` suggests a new path and never writes it. `aips creative preflight` checks a local bundle without starting generation; `execute` is explicit and create-only. `aips harness trace` and `aips creative trace` show privacy-limited events. Arbitrary Shell effects and other MCP/custom tools remain outside the guard; inspect adapter status before relying on runtime enforcement.
 
 Native Adapter 用來取得 runtime-specific hook / guard；MCP 提供跨 Host 標準接入。兩者共用 canonical Roles、Skills、Orchestration 與 Project Intelligence。
 
@@ -233,6 +237,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+每個 creative manifest 初始 review 狀態為 `PENDING`；請由獨立人工檢視輸出與角色／風格設定後，再記錄 `PASS` 或 `REVISE`。
 
 Validation Shadow records proposed skips while every required validator still runs; current evidence is not sufficient to activate selective execution.
 

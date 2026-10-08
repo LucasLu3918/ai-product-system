@@ -225,7 +225,7 @@ placement_rules:
       orchestration/RUN_DASHBOARD.md: [Contract, CLI and local API, Failure and security behavior]
 
   - id: harness
-    triggers: [harness/**, scripts/harness_resolve.py, scripts/manage_runtime_adapter.py, scripts/opencode_skill_projection.py, scripts/opencode_native_guard.py, scripts/opencode_trace.py, scripts/creative_workspace_profile.py, scripts/turn_intent.py, scripts/project_intelligence.py, scripts/mcp_server.py, scripts/portable_commands.py, templates/harness/**, orchestration/EXECUTION_ISOLATION.md]
+    triggers: [harness/**, scripts/harness_resolve.py, scripts/manage_runtime_adapter.py, scripts/opencode_skill_projection.py, scripts/opencode_native_guard.py, scripts/opencode_trace.py, scripts/creative_workspace_profile.py, scripts/creative_execution.py, scripts/turn_intent.py, scripts/project_intelligence.py, scripts/mcp_server.py, scripts/portable_commands.py, templates/harness/**, orchestration/EXECUTION_ISOLATION.md]
     placements:
       docs/ARCHITECTURE.md: [Runtime flow, Installation and project lifecycle, End-to-end product delivery]
       docs/human/HARNESS.md: [Integration model, Native Runtime Adapters, MCP Interoperability, Portable Commands, Capability truth, Progressive disclosure, Ownership 與解除]
@@ -233,7 +233,7 @@ placement_rules:
       docs/human/USER_GUIDE.md: [Global Harness 與 MCP, Quality 與 Review]
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Quality & Verification]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Runtime 與接入層, Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Deterministic Execution, Security 與 Governance, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary, Maintenance governance]
-      docs/human/CONFORMANCE.md: [Scenario 235 — OpenCode Native Context and Action Guard]
+      docs/human/CONFORMANCE.md: [Scenario 235 — OpenCode Native Context and Action Guard, Scenario 236 — Local Creative Bundle Execution]
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification, Runtime Content Safety Boundary, Security & Governance]
 
   - id: publication-preflight
@@ -414,7 +414,7 @@ placement_rules:
       docs/human/CONFORMANCE.md: [Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Execution Isolation Conformance]
 
   - id: character-artwork
-    triggers: [orchestration/CREATIVE_DIRECTION.md, scripts/character_artifacts.py, scripts/creative_evidence.py, templates/creative/CHARACTER_PROFILE.yaml, templates/creative/STYLE_PROFILE.yaml, templates/creative/CHARACTER_ARTWORK_MANIFEST.yaml, templates/creative/CREATIVE_EVIDENCE.yaml]
+    triggers: [orchestration/CREATIVE_DIRECTION.md, scripts/character_artifacts.py, scripts/creative_evidence.py, scripts/creative_execution.py, templates/creative/CHARACTER_PROFILE.yaml, templates/creative/STYLE_PROFILE.yaml, templates/creative/CHARACTER_ARTWORK_MANIFEST.yaml, templates/creative/CREATIVE_EVIDENCE.yaml, templates/creative/CREATIVE_BUNDLE.yaml, tests/scenarios/236-local-creative-execution.md]
     placements:
       docs/human/USER_GUIDE.md: [Creative Direction、Style 與 Brand]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution]
@@ -423,9 +423,9 @@ placement_rules:
       docs/human/DOCUMENTATION_MAP.md: [Agent / machine canonical 文件]
       docs/human/DOCUMENTATION_SYNC.md: [Current-behavior placement contract]
       docs/human/index.md: [文件如何組織]
-      docs/human/CONFORMANCE.md: [Scenario 234 — Local Character Artwork Provenance and Composition]
+      docs/human/CONFORMANCE.md: [Scenario 234 — Local Character Artwork Provenance and Composition, Scenario 236 — Local Creative Bundle Execution]
       orchestration/CREATIVE_DIRECTION.md: [Local character artwork]
-      orchestration/CONFORMANCE.md: [Scenario 234 — Local Character Artwork Provenance and Composition]
+      orchestration/CONFORMANCE.md: [Scenario 234 — Local Character Artwork Provenance and Composition, Scenario 236 — Local Creative Bundle Execution]
       orchestration/DOCUMENTATION_SYNC.md: [Audience synchronization]
 
   - id: scenario-conformance

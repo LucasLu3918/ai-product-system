@@ -108,6 +108,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+For local creative execution, include the Bundle/profile, provider adapter, CLI, OpenCode consumer, output manifest and trace, Scenario, and canonical documentation projections in the affected boundary.
+
 Runtime adapters must resolve existing-project Context from the active Session directory and preserve project-native instruction authority; OpenCode native write checks re-evaluate the target with current Intelligence.
 
 OpenCode reconciliation includes canonical descriptions, generated Skill projections, adapter consumers, and ownership manifests derived from the approved source diff.
