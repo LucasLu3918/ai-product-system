@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 23ef82acc4ed66af07fe3ed730b8ef769ee71fcd
-  changed_files_hash: 826a4219cc18ea919a4f2e63c6198e37c74cb56c94b02448a50300b6982f6bab
+  changed_files_hash: 0fdd50d600cfaa60e74333cdde610e21b199b95dfcc615c38a587ee96d23ab7c
 change:
   id: character-image-workflow-20261008
   summary: Add a local-first reusable character-art workflow with safe asset validation and deterministic typeset
