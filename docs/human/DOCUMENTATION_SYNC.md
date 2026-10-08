@@ -26,7 +26,7 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
-Z-Image Turbo 的 generate-only 能力說明放在 Creative／Execution／Runtime 主題內；不把專用命令支持描述為任意 Z-Image editing 或 ComfyUI 節點支持。
+Z-Image Turbo 的 generate-only 能力說明放在 Creative／Execution／Runtime 主題內；ComfyUI 支持只涵蓋固定 split-loader API 工作流與可由本機 API 核對的三項權重，不延伸為任意節點或 editing 支持。
 
 角色圖片保留要求的媒材；以受限 configure 建立新的 Bundle，並載入校準、方向與視覺審查 skill。執行、圖片容器、人工審查與使用者接受分開回報。
 

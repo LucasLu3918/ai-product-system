@@ -8,6 +8,7 @@ import subprocess
 import sys
 import tempfile
 import threading
+import zlib
 from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
@@ -22,6 +23,9 @@ import opencode_native_guard as guard
 from creative_request_policy_lifecycle import main as request_policy_cases
 
 PNG = bytes.fromhex("89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000b49444154789c6360000200000500017a5eab3f0000000049454e44ae426082")
+_prompt_text = b"prompt\x00private creative prompt"
+_text_chunk = len(_prompt_text).to_bytes(4, "big") + b"tEXt" + _prompt_text + zlib.crc32(b"tEXt" + _prompt_text).to_bytes(4, "big")
+PNG_WITH_PROMPT = PNG[:-12] + _text_chunk + PNG[-12:]
 
 
 def require(condition: bool, message: str) -> None:
@@ -73,6 +77,7 @@ class FakeComfyHandler(BaseHTTPRequestHandler):
     workflow = None
     staged_reference = PNG
     prompt_id = "fixture-job"
+    missing_vae = False
 
     def log_message(self, *_args):
         return
@@ -89,10 +94,17 @@ class FakeComfyHandler(BaseHTTPRequestHandler):
             return self.send_bytes(b"{}")
         if self.path == "/object_info/CheckpointLoaderSimple":
             return self.send_bytes(json.dumps({"CheckpointLoaderSimple": {"input": {"required": {"ckpt_name": [["model.safetensors"]]}}}}).encode())
+        if self.path == "/object_info/UNETLoader":
+            return self.send_bytes(json.dumps({"UNETLoader": {"input": {"required": {"unet_name": [["z_image_turbo_bf16.safetensors"]]}}}}).encode())
+        if self.path == "/object_info/CLIPLoader":
+            return self.send_bytes(json.dumps({"CLIPLoader": {"input": {"required": {"clip_name": [["qwen_3_4b.safetensors"]], "type": [["lumina2"]]}}}}).encode())
+        if self.path == "/object_info/VAELoader":
+            choices = [] if type(self).missing_vae else ["ae.safetensors"]
+            return self.send_bytes(json.dumps({"VAELoader": {"input": {"required": {"vae_name": [choices]}}}}).encode())
         if self.path.startswith("/view?"):
             from urllib.parse import parse_qs, urlsplit
             query = parse_qs(urlsplit(self.path).query)
-            body = self.staged_reference if query.get("type") == ["input"] else PNG
+            body = self.staged_reference if query.get("type") == ["input"] else PNG_WITH_PROMPT
             return self.send_bytes(body, "image/png")
         if self.path == "/history/fixture-job":
             item = {self.prompt_id: {"status": {"status_str": "success", "completed": True}, "outputs": {"9": {"images": [{"filename": "generated.png", "subfolder": "", "type": "output"}]}}}}
@@ -131,6 +143,24 @@ def comfy_workflow(project: Path, *, edit: bool = False, custom: bool = False) -
     if custom:
         workflow["99"] = {"class_type": "CustomNode", "inputs": {}}
     path = project / "workflow.json"
+    path.write_text(json.dumps(workflow), encoding="utf-8")
+    return path
+
+
+def zimage_workflow(project: Path) -> Path:
+    workflow = {
+        "28": {"class_type": "UNETLoader", "inputs": {"unet_name": "z_image_turbo_bf16.safetensors", "weight_dtype": "default"}},
+        "30": {"class_type": "CLIPLoader", "inputs": {"clip_name": "qwen_3_4b.safetensors", "type": "lumina2", "device": "default"}},
+        "29": {"class_type": "VAELoader", "inputs": {"vae_name": "ae.safetensors"}},
+        "27": {"class_type": "CLIPTextEncode", "inputs": {"text": "placeholder", "clip": ["30", 0]}},
+        "33": {"class_type": "ConditioningZeroOut", "inputs": {"conditioning": ["27", 0]}},
+        "13": {"class_type": "EmptySD3LatentImage", "inputs": {"width": 1024, "height": 1024, "batch_size": 1}},
+        "11": {"class_type": "ModelSamplingAuraFlow", "inputs": {"model": ["28", 0], "shift": 3}},
+        "3": {"class_type": "KSampler", "inputs": {"model": ["11", 0], "positive": ["27", 0], "negative": ["33", 0], "latent_image": ["13", 0], "seed": 0, "steps": 8, "cfg": 1, "sampler_name": "res_multistep", "scheduler": "simple", "denoise": 1}},
+        "8": {"class_type": "VAEDecode", "inputs": {"samples": ["3", 0], "vae": ["29", 0]}},
+        "9": {"class_type": "SaveImage", "inputs": {"images": ["8", 0], "filename_prefix": "old"}},
+    }
+    path = project / "zimage-workflow.json"
     path.write_text(json.dumps(workflow), encoding="utf-8")
     return path
 
@@ -322,6 +352,8 @@ def comfy_cases(base: Path):
         require(result["status"] == "READY" and FakeComfyHandler.prompts == 0, "ComfyUI preflight submitted a workflow")
         executed = creative.execute(project, bundle_path.name)
         require(executed["status"] == "COMPLETE" and FakeComfyHandler.workflow["6"]["inputs"]["text"] == "private creative prompt", "ComfyUI workflow did not receive the explicit prompt")
+        saved_png = (project / executed["output"]).read_bytes()
+        require(b"private creative prompt" not in saved_png and saved_png == PNG, "ComfyUI prompt metadata was retained in the AIPS output")
         require(FakeComfyHandler.workflow["1"]["inputs"]["width"] == 64 and FakeComfyHandler.workflow["3"]["inputs"]["steps"] == 2, "ComfyUI generation settings escaped Bundle limits")
         require(json.loads((project / executed["manifest"]).read_text())["workflow_sha256"].startswith("sha256:"), "ComfyUI workflow hash missing")
 
@@ -348,6 +380,32 @@ def comfy_cases(base: Path):
         else:
             raise AssertionError("custom ComfyUI node was accepted")
         require(FakeComfyHandler.prompts >= 2, "expected only the explicit execution calls to submit jobs")
+
+        zimage_project = fixture_project(base / "zimage")
+        zimage_path = zimage_workflow(zimage_project)
+        zimage_config = {"base_url": url, "workflow_path": zimage_path.name, "model_profile": "z-image-turbo", "model_id": "z-image-turbo", "unet_name": "z_image_turbo_bf16.safetensors", "clip_name": "qwen_3_4b.safetensors", "vae_name": "ae.safetensors", "prompt_node_id": "27", "latent_node_id": "13", "sampler_node_id": "3", "save_node_id": "9"}
+        zimage_bundle, _ = write_bundle(zimage_project, provider="comfyui_local", model={"id": "z-image-turbo", "revision": "local-model-files", "license": "Apache-2.0", "license_source": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"}, runtime="ComfyUI", runtime_version="fixture-1", comfyui=zimage_config, steps=8)
+        ready = creative.preflight(zimage_project, zimage_bundle.name)
+        require(ready["status"] == "READY" and FakeComfyHandler.prompts == 2, "Z-Image Turbo preflight submitted a workflow or did not become ready")
+        zimage_result = creative.execute(zimage_project, zimage_bundle.name)
+        require(zimage_result["status"] == "COMPLETE" and FakeComfyHandler.workflow["13"]["inputs"]["width"] == 64 and FakeComfyHandler.workflow["3"]["inputs"]["steps"] == 8, "Z-Image Turbo settings were not applied to the registered workflow")
+        FakeComfyHandler.missing_vae = True
+        try:
+            expect_blocked(lambda: creative.preflight(zimage_project, zimage_bundle.name), "Z-Image Turbo accepted a VAE absent from the local inventory")
+        finally:
+            FakeComfyHandler.missing_vae = False
+        zimage_edit_project = fixture_project(base / "zimage-edit")
+        zimage_edit_path = zimage_workflow(zimage_edit_project)
+        (zimage_edit_project / "reference.png").write_bytes(PNG)
+        edit_config = {**zimage_config, "workflow_path": zimage_edit_path.name}
+        edit_bundle, _ = write_bundle(zimage_edit_project, operation="edit", input_image="reference.png", provider="comfyui_local", model={"id": "z-image-turbo", "revision": "local-model-files", "license": "Apache-2.0", "license_source": "local model card"}, runtime="ComfyUI", runtime_version="fixture-1", comfyui=edit_config, steps=8)
+        expect_blocked(lambda: creative.preflight(zimage_edit_project, edit_bundle.name), "Z-Image Turbo ComfyUI profile accepted image editing")
+        bad_topology = json.loads(zimage_path.read_text())
+        bad_topology["3"]["inputs"]["negative"] = ["27", 0]
+        zimage_path.write_text(json.dumps(bad_topology))
+        expect_blocked(lambda: creative.preflight(zimage_project, zimage_bundle.name), "Z-Image Turbo accepted a malformed conditioning topology")
+        zimage_path.write_text(json.dumps(json.loads(zimage_path.read_text()) | {"99": {"class_type": "CustomNode", "inputs": {}}}))
+        expect_blocked(lambda: creative.preflight(zimage_project, zimage_bundle.name), "Z-Image Turbo accepted a custom node")
     finally:
         server.shutdown()
         server.server_close()

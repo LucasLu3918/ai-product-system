@@ -14,4 +14,4 @@ Creative tool lifecycle: `discover` and `preflight` are read-only and do not req
 
 On OpenCode V2, the custom creative tool is exposed in the Code Mode catalog as `tools.creative_execution`; call that exact catalog signature through the native `execute` tool. Use active-dispatch user messages bound to the Session root; native session snapshots may use `type: user` and `text` rather than `role` and `parts`.
 
-For local Z-Image Turbo generation, use the shared creative_execution capability mapping to `mflux-generate-z-image-turbo`; edit and other Z-Image variants remain unsupported.
+For local Z-Image Turbo generation, use the shared creative_execution capability mapping to the dedicated MFLUX command or the fixed ComfyUI split-loader workflow; the latter verifies local UNET, Qwen `lumina2` CLIP and VAE files and strips prompt-bearing PNG text metadata. Edit and other Z-Image variants remain unsupported.

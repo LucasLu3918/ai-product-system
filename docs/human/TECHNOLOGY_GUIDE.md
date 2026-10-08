@@ -59,7 +59,7 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
-MFLUX 固定命令表新增 Z-Image Turbo generate：`mflux-generate-z-image-turbo`。CLI 不傳任意額外參數；步數沿用明確 Bundle 設定，模型與 tokenizer 仍須預先完整安裝，本流程不下載。
+MFLUX 固定命令表新增 Z-Image Turbo generate：`mflux-generate-z-image-turbo`。CLI 不傳任意額外參數；步數沿用明確 Bundle 設定，模型與 tokenizer 仍須預先完整安裝，本流程不下載。ComfyUI 也支援限定的 Z-Image Turbo generate profile：固定 UNETLoader、CLIPLoader (`lumina2`)、VAELoader 與 AIPS 內建 API 拓樸，preflight 逐項核對本機模型清單；不支援任意 split-loader 工作流或 edit。
 
 本機創作支援 discover/prepare/configure/preflight/execute：設定採 allowlist 與 create-only Bundle，native Context envelope 經正規化再作使用者授權。PNG 容器檢查涵蓋 CRC、終止與 bounded decompression；JPEG/WEBP 僅作 bounded container checks，不能代替實際看圖或完整解碼。
 
@@ -69,7 +69,7 @@ System changes keep the exact-candidate repository Gate enabled while any select
 
 ### Local character artwork
 
-The optional local character-art executor accepts an already-installed MFLUX CLI or a loopback ComfyUI API workflow restricted to built-in nodes. A closed model/operation registry maps FLUX.1, FLUX.2 Klein and Qwen Image Edit 2511 to fixed executable names and argument shapes; FLUX.1 edit accepts one reference, while FLUX.2/Qwen edit commands with `--image-paths` accept up to eight bounded references. ComfyUI edit accepts one staged hash-checked reference. It disables HTTP proxying and redirects, uses offline model-hub flags, scopes create-only PNG/JPEG/WEBP output to a non-Git EPHEMERAL bundle, and records profile/workflow/input/output hashes, model revision, runtime version and license source. Preparation creates versioned fixed Profile/Bundle files without overwrite and leaves engine provenance unconfigured. Preflight does not generate; missing local engines return `BLOCKED_NO_ENGINE`. No runtime or weights are installed, and no image is sent to a cloud provider. Existing Comfy MCP guidance remains available when that user-managed route better fits the project.
+The optional local character-art executor accepts an already-installed MFLUX CLI or a loopback ComfyUI API workflow restricted to built-in nodes. A closed model/operation registry maps FLUX.1, FLUX.2 Klein, Qwen Image Edit 2511 and Z-Image Turbo to fixed executable arguments or the registered split-loader topology. FLUX.1 edit accepts one reference, while FLUX.2/Qwen edit commands with `--image-paths` accept up to eight bounded references. ComfyUI edit accepts one staged hash-checked reference; the Z-Image Turbo profile is generate-only and checks its UNET, CLIP and VAE against the local API inventory. It disables HTTP proxying and redirects, uses offline model-hub flags, scopes create-only PNG/JPEG/WEBP output to a non-Git EPHEMERAL bundle, strips ComfyUI text metadata that can contain prompts, and records profile/workflow/input/output hashes, model revision, runtime version and license source. Preparation creates versioned fixed Profile/Bundle files without overwrite and leaves engine provenance unconfigured. Preflight does not generate; missing local engines return `BLOCKED_NO_ENGINE`. No runtime or weights are installed, and no image is sent to a cloud provider. Existing Comfy MCP guidance remains available when that user-managed route better fits the project.
 
 The shared helper package consolidates canonical hashes, repository-relative paths and caller-specific glob matching; existing module facades preserve current call sites and outputs.
 

@@ -72,7 +72,9 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
-已安裝 Z-Image Turbo 權重時，選用 model.id `z-image-turbo` 與 `mflux-generate-z-image-turbo`，透過 configure 記錄版本、授權來源與本機路徑，再 preflight／execute。建議先明確設定 8 步；此配對只支援 generate，不支援 edit、ControlNet 或其他 Z-Image 變體。
+已安裝 Z-Image Turbo 權重時，可使用 MFLUX 專用 generate 命令。建議 8 步；此配對不支援 edit、ControlNet 或其他 Z-Image 變體。
+
+ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需明列 UNET、Qwen CLIP、VAE 權重檔名，並使用 AIPS 隨附的固定 API 工作流。Preflight 會向 loopback ComfyUI 核對三項本機模型清單；此配對僅支援 generate。
 
 先用 `aips creative discover --project PROJECT` 盤點，再由工具 prepare 建立角色規範。`aips creative configure --project PROJECT --bundle RELATIVE.yaml` 從 stdin 接收 allowlisted JSON，回傳新的 Bundle 路徑；以該路徑 preflight，通過後才 execute。OpenCode 可直接使用相同 action。缺少模型或生成失敗時回報受阻，不改交 SVG；精緻插畫先校準代表性樣圖，完成後逐張檢查身份、人物結構、材質、光影與風格。
 
@@ -102,7 +104,7 @@ Brand System 可涵蓋 Brand Intent、Audience / Positioning、Purpose / Mission
 
 使用 `python scripts/character_artifacts.py validate MANIFEST --project PROJECT` 驗證檔案、路徑、尺寸、雜湊和來源；使用 `compose` 以 SVG 組成設定表並排上繁體中文標籤。輸出不覆寫既有檔案。這些檢查不會判斷角色是否一致或畫面是否合格，仍需人工依核准的角色與風格設定逐張審查；效能數據只有實際量測後才能填入。
 
-若要直接執行本機生成，可先用 OpenCode `creative_execution` 工具的 `prepare` 動作，或 `aips creative prepare` 建立版本化工作目錄，內含 README、Character Profile、Style Profile 與草稿 Bundle。準備流程只在明確素材 scope 建立固定的新檔，不覆寫；先補上已安裝引擎、模型版本與授權來源，再執行 `aips creative preflight --project PROJECT --bundle BUNDLE.yaml`。MFLUX Adapter 依固定能力表呼叫 FLUX.1、FLUX.2 Klein 或 Qwen Image Edit 的專用命令；FLUX.1 一次一張參考圖，只有支援 `--image-paths` 的 FLUX.2/Qwen edit 才接受最多八張專案內參考圖。預檢不會生成素材；缺少引擎會回報 `BLOCKED_NO_ENGINE`。確認後，以 `aips creative execute` 明確執行。輸出限於 EPHEMERAL 非 Git workspace 中指定 scope 的新 PNG/JPEG/WEBP 與 provenance manifest，不覆寫現有檔案、不下載模型。ComfyUI 僅連線 loopback，工作流程只接受核准的內建節點；編輯時須先將單張參考圖放入 ComfyUI 本機 input，且預檢會核對位元組雜湊。生成結果的視覺審查初始為 `PENDING`，請由獨立人工對照角色與風格規範檢查後，才用 `aips creative review` 記錄 PASS 或 REVISE；`aips creative trace` 只顯示原因碼、耗時、重試次數與雜湊。
+若要直接執行本機生成，可先用 OpenCode `creative_execution` 工具的 `prepare` 動作，或 `aips creative prepare` 建立版本化工作目錄，內含 README、Character Profile、Style Profile 與草稿 Bundle。準備流程只在明確素材 scope 建立固定的新檔，不覆寫；先補上已安裝引擎、模型版本與授權來源，再執行 `aips creative preflight --project PROJECT --bundle BUNDLE.yaml`。MFLUX Adapter 依固定能力表呼叫 FLUX.1、FLUX.2 Klein、Qwen Image Edit 2511 或 Z-Image Turbo 專用命令；FLUX.1 一次一張參考圖，只有支援 `--image-paths` 的 FLUX.2/Qwen edit 才接受最多八張專案內參考圖。ComfyUI 僅連線 loopback；一般 checkpoint 工作流維持既有限制，Z-Image Turbo 使用固定分離載入器工作流，兩者都拒絕自訂節點。預檢會核對本機工作流與模型清單，不會生成素材；缺少引擎會回報 `BLOCKED_NO_ENGINE`。確認後，以 `aips creative execute` 明確執行。輸出限於 EPHEMERAL 非 Git workspace 中指定 scope 的新 PNG/JPEG/WEBP 與 provenance manifest，不覆寫現有檔案、不下載模型。ComfyUI 編輯時須先將單張參考圖放入本機 input，且預檢會核對位元組雜湊。生成結果的視覺審查初始為 `PENDING`，請由獨立人工對照角色與風格規範檢查後，才用 `aips creative review` 記錄 PASS 或 REVISE；`aips creative trace` 只顯示原因碼、耗時、重試次數與雜湊。
 
 ## 需求釐清與 Planning
 
@@ -130,6 +132,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 新專案若尚未選擇技術，AIPS 會先檢查硬性限制，再依團隊、產品、既有系統、交付與維護需求提出少量候選和取捨；語言與框架分開選擇。架構建議同時看複雜度訊號與反向訊號，並分開說明 Clean Architecture、DDD 與部署方式。重要選擇由使用者確認後，才會整理到 Implementation Profile。
 
 ## Global Harness 與 MCP
+
+OpenCode `creative_execution` tool 與 `aips creative` CLI 共用本機執行器；ComfyUI Z-Image Turbo 需使用固定 API workflow 與已安裝權重，preflight 只查核，不會產生圖片。
 
 OpenCode 創作 tool 支援 discover/configure，產圖意圖、原生檔案 guard 與 Shell effect policy 維持不同檢查；重新投影後仍須驗證實際 host hooks。
 

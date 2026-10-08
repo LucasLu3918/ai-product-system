@@ -39,11 +39,13 @@ MAX_PROMPT_CHARS = 4000
 MAX_RETRIES = 2
 MAX_TIMEOUT_SECONDS = 3600
 TRACE_LIMIT_BYTES = 512 * 1024
-COMFY_CORE_NODES = {
+COMFY_CHECKPOINT_NODES = {
     "CheckpointLoaderSimple", "CLIPTextEncode", "EmptyLatentImage", "KSampler",
     "VAEDecode", "SaveImage", "LoadImage", "VAEEncode", "VAEEncodeForInpaint",
     "SetLatentNoiseMask", "ImageScale", "ImageCrop",
 }
+COMFY_ZIMAGE_NODES = {"UNETLoader", "CLIPLoader", "VAELoader", "CLIPTextEncode", "ConditioningZeroOut", "EmptySD3LatentImage", "ModelSamplingAuraFlow", "KSampler", "VAEDecode", "SaveImage"}
+COMFY_CORE_NODES = COMFY_CHECKPOINT_NODES | COMFY_ZIMAGE_NODES
 MFLUX_CAPABILITIES: dict[str, dict[str, dict[str, str | None]]] = {
     # Keep executable names and argument shapes fixed. Model IDs never become
     # command fragments, and unsupported model/operation pairs fail closed.
@@ -310,23 +312,75 @@ def load_comfy_workflow(root: Path, config: Any) -> tuple[str, dict[str, Any]]:
         raise Blocked("comfy_save_node_invalid", "Workflow must contain exactly one built-in SaveImage node.")
     if config.get("save_node_id"):
         save_nodes = [str(config["save_node_id"])]
-    checkpoint_node_id = str(config.get("checkpoint_node_id", ""))
-    checkpoint_node = workflow.get(checkpoint_node_id)
-    checkpoint_name = config.get("checkpoint_name")
-    if not isinstance(checkpoint_node, dict) or checkpoint_node.get("class_type") != "CheckpointLoaderSimple" or not isinstance(checkpoint_name, str) or not checkpoint_name.strip():
-        raise Blocked("comfy_checkpoint_invalid", "checkpoint_node_id and checkpoint_name must identify a built-in local checkpoint node.")
+    model_profile = config.get("model_profile")
     bundle_model_id = config.get("model_id")
-    if checkpoint_node["inputs"].get("ckpt_name") != checkpoint_name:
-        raise Blocked("comfy_checkpoint_invalid", "Workflow checkpoint must match the explicitly declared local model.")
-    if bundle_model_id and checkpoint_name != bundle_model_id:
-        raise Blocked("comfy_checkpoint_invalid", "ComfyUI model id must match the selected workflow checkpoint.")
-    checkpoint_nodes = [key for key, node in workflow.items() if node.get("class_type") == "CheckpointLoaderSimple"]
-    if checkpoint_nodes != [checkpoint_node_id] or Path(checkpoint_name).name != checkpoint_name:
-        raise Blocked("comfy_checkpoint_invalid", "Workflow may use only the explicitly declared local checkpoint node and filename.")
-    latent_node_id = str(config.get("latent_node_id", ""))
-    sampler_node_id = str(config.get("sampler_node_id", ""))
-    if not isinstance(workflow.get(latent_node_id), dict) or workflow[latent_node_id].get("class_type") != "EmptyLatentImage":
-        raise Blocked("comfy_generation_node_invalid", "latent_node_id must identify a built-in EmptyLatentImage node.")
+    checkpoint_name = config.get("checkpoint_name")
+    if model_profile == "z-image-turbo":
+        if bundle_model_id != "z-image-turbo":
+            raise Blocked("comfy_model_profile_invalid", "The Z-Image Turbo profile requires model_id z-image-turbo.")
+        model_fields = {"unet_name", "clip_name", "vae_name"}
+        if any(not isinstance(config.get(key), str) or not config[key].strip() or Path(config[key]).name != config[key] for key in model_fields):
+            raise Blocked("comfy_model_profile_invalid", "Z-Image Turbo requires explicit local UNET, CLIP and VAE filenames.")
+        expected_types = {"UNETLoader", "CLIPLoader", "VAELoader", "CLIPTextEncode", "ConditioningZeroOut", "EmptySD3LatentImage", "ModelSamplingAuraFlow", "KSampler", "VAEDecode", "SaveImage"}
+        if len(workflow) != len(expected_types) or {node["class_type"] for node in workflow.values()} != expected_types:
+            raise Blocked("comfy_workflow_topology_invalid", "Z-Image Turbo accepts only its exact built-in split-loader workflow topology.")
+        by_type = {node["class_type"]: (key, node["inputs"]) for key, node in workflow.items()}
+        expected_inputs = {
+            "UNETLoader": {"unet_name", "weight_dtype"}, "CLIPLoader": {"clip_name", "type", "device"},
+            "VAELoader": {"vae_name"}, "CLIPTextEncode": {"text", "clip"}, "ConditioningZeroOut": {"conditioning"},
+            "EmptySD3LatentImage": {"width", "height", "batch_size"}, "ModelSamplingAuraFlow": {"model", "shift"},
+            "KSampler": {"model", "positive", "negative", "latent_image", "seed", "steps", "cfg", "sampler_name", "scheduler", "denoise"},
+            "VAEDecode": {"samples", "vae"}, "SaveImage": {"images", "filename_prefix"},
+        }
+        if any(set(by_type[node_type][1]) != keys for node_type, keys in expected_inputs.items()):
+            raise Blocked("comfy_workflow_topology_invalid", "Z-Image Turbo workflow inputs do not match the registered built-in topology.")
+        unet_id, unet = by_type["UNETLoader"]
+        clip_id, clip = by_type["CLIPLoader"]
+        vae_id, vae = by_type["VAELoader"]
+        text_id, text = by_type["CLIPTextEncode"]
+        zero_id, zero = by_type["ConditioningZeroOut"]
+        latent_node_id, latent = by_type["EmptySD3LatentImage"]
+        sampling_id, sampling = by_type["ModelSamplingAuraFlow"]
+        sampler_node_id, sampler = by_type["KSampler"]
+        decode_id, decode = by_type["VAEDecode"]
+        save_id, save = by_type["SaveImage"]
+        if (unet["unet_name"] != config["unet_name"] or unet["weight_dtype"] != "default"
+                or clip["clip_name"] != config["clip_name"] or clip["type"] != "lumina2" or clip["device"] != "default"
+                or vae["vae_name"] != config["vae_name"] or sampling["shift"] != 3 or latent.get("batch_size") != 1
+                or sampler.get("cfg") != 1 or sampler.get("sampler_name") != "res_multistep"
+                or sampler.get("scheduler") != "simple" or sampler.get("denoise") != 1):
+            raise Blocked("comfy_model_profile_invalid", "Z-Image Turbo workflow model files or fixed sampler profile do not match configuration.")
+        link = lambda node_id: [node_id, 0]
+        links = ((sampling, "model", link(unet_id)), (sampler, "model", link(sampling_id)), (text, "clip", link(clip_id)),
+                 (zero, "conditioning", link(text_id)), (sampler, "positive", link(text_id)), (sampler, "negative", link(zero_id)),
+                 (sampler, "latent_image", link(latent_node_id)), (decode, "samples", link(sampler_node_id)),
+                 (decode, "vae", link(vae_id)), (save, "images", link(decode_id)))
+        if any(inputs.get(name) != value for inputs, name, value in links):
+            raise Blocked("comfy_workflow_topology_invalid", "Z-Image Turbo workflow connections do not match the registered built-in topology.")
+        if prompt_id != text_id or (config.get("save_node_id") and str(config["save_node_id"]) != save_id):
+            raise Blocked("comfy_workflow_topology_invalid", "Configured prompt or save node does not match the Z-Image Turbo topology.")
+        checkpoint_node_id = None
+        save_nodes = [save_id]
+    elif model_profile is None:
+        if any(node["class_type"] not in COMFY_CHECKPOINT_NODES for node in workflow.values()):
+            raise Blocked("comfy_custom_node_blocked", "Split-loader nodes are accepted only in the registered Z-Image Turbo profile.")
+        checkpoint_node_id = str(config.get("checkpoint_node_id", ""))
+        checkpoint_node = workflow.get(checkpoint_node_id)
+        if not isinstance(checkpoint_node, dict) or checkpoint_node.get("class_type") != "CheckpointLoaderSimple" or not isinstance(checkpoint_name, str) or not checkpoint_name.strip():
+            raise Blocked("comfy_checkpoint_invalid", "checkpoint_node_id and checkpoint_name must identify a built-in local checkpoint node.")
+        if checkpoint_node["inputs"].get("ckpt_name") != checkpoint_name:
+            raise Blocked("comfy_checkpoint_invalid", "Workflow checkpoint must match the explicitly declared local model.")
+        if bundle_model_id and checkpoint_name != bundle_model_id:
+            raise Blocked("comfy_checkpoint_invalid", "ComfyUI model id must match the selected workflow checkpoint.")
+        checkpoint_nodes = [key for key, node in workflow.items() if node.get("class_type") == "CheckpointLoaderSimple"]
+        if checkpoint_nodes != [checkpoint_node_id] or Path(checkpoint_name).name != checkpoint_name:
+            raise Blocked("comfy_checkpoint_invalid", "Workflow may use only the explicitly declared local checkpoint node and filename.")
+        latent_node_id = str(config.get("latent_node_id", ""))
+        sampler_node_id = str(config.get("sampler_node_id", ""))
+        if not isinstance(workflow.get(latent_node_id), dict) or workflow[latent_node_id].get("class_type") != "EmptyLatentImage":
+            raise Blocked("comfy_generation_node_invalid", "latent_node_id must identify a built-in EmptyLatentImage node.")
+    else:
+        raise Blocked("comfy_model_profile_invalid", "Unsupported ComfyUI model profile.")
     if not isinstance(workflow.get(sampler_node_id), dict) or workflow[sampler_node_id].get("class_type") != "KSampler":
         raise Blocked("comfy_generation_node_invalid", "sampler_node_id must identify a built-in KSampler node.")
     image_nodes = [key for key, node in workflow.items() if node.get("class_type") == "LoadImage"]
@@ -335,23 +389,43 @@ def load_comfy_workflow(root: Path, config: Any) -> tuple[str, dict[str, Any]]:
         raise Blocked("comfy_input_node_invalid", "Workflow may read only the explicitly declared local edit input.")
     if not image_nodes and input_node_id is not None:
         raise Blocked("comfy_input_node_invalid", "input_image_node_id must match one built-in LoadImage node.")
+    if model_profile == "z-image-turbo" and (image_nodes or input_node_id is not None):
+        raise Blocked("comfy_workflow_topology_invalid", "Z-Image Turbo generate workflows do not accept input-image nodes.")
     return base, {"path": path, "workflow": workflow, "prompt_id": prompt_id, "save_nodes": save_nodes, "checkpoint_node_id": checkpoint_node_id, "latent_node_id": latent_node_id, "sampler_node_id": sampler_node_id, "config": config}
 
 
 def verify_comfy(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str, Any]]:
     base, info = load_comfy_workflow(root, bundle.get("comfyui"))
-    if bundle["model"]["id"] != info["config"]["checkpoint_name"]:
+    config = info["config"]
+    profile = config.get("model_profile")
+    if profile == "z-image-turbo":
+        if bundle["operation"] != "generate" or bundle["model"]["id"] != "z-image-turbo":
+            raise Blocked("comfy_model_profile_invalid", "The Z-Image Turbo ComfyUI profile supports generate only.")
+    elif bundle["model"]["id"] != config["checkpoint_name"]:
         raise Blocked("comfy_checkpoint_invalid", "Bundle model id must match the selected ComfyUI checkpoint.")
     try:
         local_request(base + "/system_stats", timeout=2, max_bytes=256 * 1024)
-        object_info = json.loads(local_request(base + "/object_info/CheckpointLoaderSimple", timeout=3, max_bytes=1024 * 1024))
+        if profile == "z-image-turbo":
+            inventories = {}
+            for node_type in ("UNETLoader", "CLIPLoader", "VAELoader"):
+                inventories[node_type] = json.loads(local_request(base + "/object_info/" + node_type, timeout=3, max_bytes=1024 * 1024)).get(node_type, {})
+        else:
+            object_info = json.loads(local_request(base + "/object_info/CheckpointLoaderSimple", timeout=3, max_bytes=1024 * 1024))
     except TransientProviderError as exc:
         raise Blocked("comfy_unavailable", "Configured local ComfyUI is unavailable.") from exc
-    node_info = object_info.get("CheckpointLoaderSimple", {})
-    required = ((node_info.get("input") or {}).get("required") or {})
-    choices = required.get("ckpt_name", [[]])[0]
-    if not isinstance(choices, list) or info["config"]["checkpoint_name"] not in choices:
-        raise Blocked("comfy_model_unavailable", "Selected ComfyUI checkpoint is not present in the local server model list.")
+    if profile == "z-image-turbo":
+        fields = (("UNETLoader", "unet_name", config["unet_name"]), ("CLIPLoader", "clip_name", config["clip_name"]), ("CLIPLoader", "type", "lumina2"), ("VAELoader", "vae_name", config["vae_name"]))
+        for node_type, field, selected in fields:
+            required = ((inventories[node_type].get("input") or {}).get("required") or {})
+            choices = required.get(field, [[]])[0]
+            if not isinstance(choices, list) or selected not in choices:
+                raise Blocked("comfy_model_unavailable", "A configured Z-Image Turbo model component is not present in the local ComfyUI model list.")
+    else:
+        node_info = object_info.get("CheckpointLoaderSimple", {})
+        required = ((node_info.get("input") or {}).get("required") or {})
+        choices = required.get("ckpt_name", [[]])[0]
+        if not isinstance(choices, list) or config["checkpoint_name"] not in choices:
+            raise Blocked("comfy_model_unavailable", "Selected ComfyUI checkpoint is not present in the local server model list.")
     if bundle["operation"] == "edit":
         input_images = bundle_input_images(root, bundle)
         if len(input_images) != 1:
@@ -472,7 +546,8 @@ def configure(project: Path, bundle_path: str, settings: dict[str, Any]) -> dict
     mapping_fields = {
         "model": {"id", "revision", "local_path", "license", "license_source"},
         "comfyui": {"base_url", "workflow_path", "checkpoint_node_id", "checkpoint_name", "model_id",
-                    "prompt_node_id", "latent_node_id", "sampler_node_id", "save_node_id", "input_image_node_id", "input_image_name"},
+                    "prompt_node_id", "latent_node_id", "sampler_node_id", "save_node_id", "input_image_node_id", "input_image_name",
+                    "model_profile", "unet_name", "clip_name", "vae_name"},
     }
     for key, keys in mapping_fields.items():
         value = settings.get(key)
@@ -661,6 +736,31 @@ def output_magic(path: Path) -> bool:
     return valid_raster(path)
 
 
+def strip_png_text_metadata(data: bytes) -> bytes:
+    """Remove ComfyUI's prompt-bearing PNG text chunks while preserving image chunks."""
+    signature = b"\x89PNG\r\n\x1a\n"
+    if not data.startswith(signature):
+        return data
+    output = bytearray(signature)
+    offset = len(signature)
+    found_iend = False
+    while offset + 12 <= len(data):
+        size = int.from_bytes(data[offset:offset + 4], "big")
+        end = offset + size + 12
+        if end > len(data):
+            raise Blocked("comfy_output_invalid", "ComfyUI returned a malformed PNG chunk stream.")
+        kind = data[offset + 4:offset + 8]
+        if kind not in {b"tEXt", b"zTXt", b"iTXt"}:
+            output.extend(data[offset:end])
+        offset = end
+        if kind == b"IEND":
+            found_iend = True
+            break
+    if not found_iend:
+        raise Blocked("comfy_output_invalid", "ComfyUI returned a PNG without a complete IEND chunk.")
+    return bytes(output)
+
+
 def mflux_command(root: Path, bundle: dict[str, Any], executable: Path, temp_output: Path) -> list[str]:
     model = bundle["model"]
     model_id = model.get("id")
@@ -745,7 +845,8 @@ def comfy_execute(bundle: dict[str, Any], provider: dict[str, Any], temp_output:
                     if not isinstance(image, dict) or image.get("type") != "output":
                         raise Blocked("comfy_output_invalid", "ComfyUI returned an unsupported output reference.")
                     query = urllib.parse.urlencode({"filename": str(image.get("filename", "")), "subfolder": str(image.get("subfolder", "")), "type": "output"})
-                    temp_output.write_bytes(local_request(provider["base_url"] + "/view?" + query, timeout=30, max_bytes=MAX_IMAGE_BYTES))
+                    image_bytes = local_request(provider["base_url"] + "/view?" + query, timeout=30, max_bytes=MAX_IMAGE_BYTES)
+                    temp_output.write_bytes(strip_png_text_metadata(image_bytes))
                     return
             time.sleep(0.25)
     except TransientProviderError:
