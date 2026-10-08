@@ -208,6 +208,7 @@ def mflux_capability_cases(base: Path):
     require(command[0] == str(executable) and command[command.index("--model") + 1] == "flux2-klein-4b", "FLUX.2 edit capability used the wrong CLI mapping")
     require(command[command.index("--image-paths") + 1:command.index("--image-paths") + 3] == [str(first.resolve()), str(second.resolve())], "multiple edit references were not mapped to --image-paths")
     cases = [
+        ("z-image-turbo", "generate", "mflux-generate-z-image-turbo", None),
         ("flux2-klein-4b", "generate", "mflux-generate-flux2", None),
         ("flux2-klein-9b", "generate", "mflux-generate-flux2", None),
         ("flux2-klein-9b-kv", "edit", "mflux-generate-flux2-edit", "--image-paths"),
@@ -217,6 +218,27 @@ def mflux_capability_cases(base: Path):
     for model_id, operation, command_name, image_option in cases:
         capability = creative.MFLUX_CAPABILITIES[model_id][operation]
         require(capability["command"] == command_name and capability["image_option"] == image_option, f"incorrect registered MFLUX capability for {model_id}/{operation}")
+    turbo_executable = project / "bin/mflux-generate-z-image-turbo"
+    turbo = {**bundle, "operation": "generate", "model": {"id": "z-image-turbo", "local_path": str(project / "model")}, "input_images": [], "steps": 8}
+    turbo_command = creative.mflux_command(project.resolve(), turbo, turbo_executable, project / "turbo.png")
+    require(turbo_command[0] == str(turbo_executable) and turbo_command[turbo_command.index("--base-model") + 1] == "z-image-turbo", "Turbo used the wrong fixed command or base model")
+    require(turbo_command[turbo_command.index("--model") + 1] == str(project / "model") and "--model-path" not in turbo_command and "--no-exif" in turbo_command, "Turbo local weights or metadata policy did not match the installed CLI")
+    require(turbo_command[turbo_command.index("--steps") + 1] == "8" and not any(arg.startswith("--image-path") for arg in turbo_command), "Turbo generation changed explicit steps or accepted edit inputs")
+    expect_blocked(lambda: creative.mflux_command(project.resolve(), {**turbo, "operation": "edit"}, turbo_executable, project / "bad.png"), "Turbo edit was silently routed to generation")
+    expect_blocked(lambda: creative.mflux_command(project.resolve(), {**turbo, "model": {"id": "z-image"}}, turbo_executable, project / "bad.png"), "non-Turbo Z-Image was accepted")
+    expect_blocked(lambda: creative.mflux_command(project.resolve(), turbo, project / "bin/mflux-generate", project / "bad.png"), "Turbo accepted the generic FLUX command")
+    mflux_fixture(project, command_name=turbo_executable.name)
+    turbo_args = base / "turbo-args.txt"
+    os.environ["FAKE_MFLUX_ARGS"] = str(turbo_args)
+    turbo_path, _ = write_bundle(
+        project, runtime=turbo_executable.name, mflux_executable=str(turbo_executable), steps=8,
+        model={"id": "z-image-turbo", "revision": "fixture-sha", "local_path": str(project / "model"), "license": "fixture", "license_source": "https://example.test/license"},
+        output_scope="creative-output/turbo-v1", output_path="creative-output/turbo-v1/image.png",
+    )
+    turbo_result = creative.execute(project, turbo_path.name)
+    turbo_manifest = json.loads((project / turbo_result["manifest"]).read_text())
+    require(turbo_result["status"] == "COMPLETE" and turbo_manifest["model"]["id"] == "z-image-turbo" and turbo_result["review_status"] == "PENDING", "Turbo execution lost model provenance or pending review")
+    require("--base-model\nz-image-turbo" in turbo_args.read_text() and "--no-exif" in turbo_args.read_text(), "Turbo execute did not use the registered local command shape")
     expect_blocked(lambda: creative.mflux_command(project.resolve(), {**bundle, "model": {"id": []}}, executable, project / "bad.png"), "non-string MFLUX model id was accepted")
     expect_blocked(lambda: creative.mflux_command(project.resolve(), bundle, project / "bin/mflux-generate", project / "bad.png"), "mismatched fixed MFLUX executable was accepted")
     expect_blocked(lambda: creative.bundle_input_images(project.resolve(), {"input_images": [first.name] * 9}), "reference batch count limit was not enforced")

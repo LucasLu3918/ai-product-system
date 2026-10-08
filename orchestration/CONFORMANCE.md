@@ -902,6 +902,8 @@ Scenario 236's exact-candidate Core Matrix records synthetic creative lifecycle 
 
 ## Scenario 236 — Local Creative Bundle Execution
 
+Z-Image Turbo generate evidence verifies its fixed dedicated executable, explicit step preservation and rejection of edit, non-Turbo variants and the generic FLUX executable. Existing offline execution, scoped provenance and pending human review apply unchanged.
+
 Scenario 236 extends the existing lifecycle with create-only configuration/discovery, native tool callback envelopes, user-only grant revocation, medium mismatch and corrupt raster rejection. Synthetic fixtures cannot claim installed-model inference, visual acceptance or hardware performance.
 
 Scenario 236 extends the adapter with explicit intent, versioned Profile/Bundle preparation, preflight and a local-only creative tool. Its MFLUX capability map fixes model/operation commands; FLUX.1 edit is single-reference, FLUX.2/Qwen multi-reference edit is bounded, and ComfyUI edit remains single-reference.

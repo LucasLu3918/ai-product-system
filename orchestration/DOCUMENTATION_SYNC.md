@@ -29,6 +29,8 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+For the bounded Z-Image Turbo registry addition, synchronize generate-only command support and preinstalled-weight prerequisites across creative, execution and Runtime docs. Do not claim broader Z-Image or ComfyUI split-model support.
+
 Creative reliability closure includes native Context envelopes, user-only revocation, allowlisted Bundle configuration and distinct file/visual/user acceptance. Human instructions must expose the new Bundle path and missing-weight limitation; Agent protocols must prohibit silent medium fallback.
 
 Character artwork behavior is mapped through `config/documentation-sync.yaml` and `config/documentation-placement.yaml`: keep the Creative Direction protocol, Scenarios 234/236, User Guide Creative Direction topic, Technology Guide Execution topic, and dedicated Architecture Overview Creative Workflow topic synchronized. Deterministic provenance checks do not replace visual review.

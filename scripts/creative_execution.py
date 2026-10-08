@@ -55,6 +55,9 @@ MFLUX_CAPABILITIES: dict[str, dict[str, dict[str, str | None]]] = {
         "generate": {"command": "mflux-generate", "cli_model": "schnell", "image_option": None},
         "edit": {"command": "mflux-generate", "cli_model": "schnell", "image_option": "--image-path"},
     },
+    "z-image-turbo": {
+        "generate": {"command": "mflux-generate-z-image-turbo", "cli_model": "z-image-turbo", "image_option": None},
+    },
     "flux2-klein-4b": {
         "generate": {"command": "mflux-generate-flux2", "cli_model": "flux2-klein-4b", "image_option": None},
         "edit": {"command": "mflux-generate-flux2-edit", "cli_model": "flux2-klein-4b", "image_option": "--image-paths"},
@@ -670,8 +673,13 @@ def mflux_command(root: Path, bundle: dict[str, Any], executable: Path, temp_out
         raise Blocked("mflux_model_operation_unsupported", "Registered MFLUX command metadata is invalid.")
     if executable.name != command_name:
         raise Blocked("mflux_command_mismatch", "Configured MFLUX executable does not match the registered model/operation command.")
+    local_model = str(Path(model["local_path"]).expanduser())
+    # MFLUX 0.22's Turbo parser accepts a local --model plus its fixed base;
+    # it no longer exposes the legacy --model-path argument.
+    model_arguments = (["--model", local_model, "--base-model", cli_model, "--no-exif"]
+                       if model_id == "z-image-turbo" else ["--model", cli_model, "--model-path", local_model])
     command: list[str] = [
-        str(executable), "--model", cli_model, "--model-path", str(Path(model["local_path"]).expanduser()),
+        str(executable), *model_arguments,
         "--prompt", str(bundle["prompt"]), "--output", str(temp_output), "--steps", str(bundle.get("steps", 20)),
         "--seed", str(bundle.get("seed", 0)), "--width", str(bundle.get("width", 1024)), "--height", str(bundle.get("height", 1024)),
     ]

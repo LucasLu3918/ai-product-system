@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+已安裝 Z-Image Turbo 權重時，選用 model.id `z-image-turbo` 與 `mflux-generate-z-image-turbo`，透過 configure 記錄版本、授權來源與本機路徑，再 preflight／execute。建議先明確設定 8 步；此配對只支援 generate，不支援 edit、ControlNet 或其他 Z-Image 變體。
+
 先用 `aips creative discover --project PROJECT` 盤點，再由工具 prepare 建立角色規範。`aips creative configure --project PROJECT --bundle RELATIVE.yaml` 從 stdin 接收 allowlisted JSON，回傳新的 Bundle 路徑；以該路徑 preflight，通過後才 execute。OpenCode 可直接使用相同 action。缺少模型或生成失敗時回報受阻，不改交 SVG；精緻插畫先校準代表性樣圖，完成後逐張檢查身份、人物結構、材質、光影與風格。
 
 Creative Direction 適用 Website、Landing Page、Banner、Hero、Social Post、Presentation、Product Page、UI、Campaign Visual 等工作。
@@ -245,6 +247,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+本機 Z-Image Turbo 產圖也須分開確認檔案有效性、角色／畫風品質與人工接受；引擎執行成功不會自動將人工審查改為 PASS。
 
 創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
 
