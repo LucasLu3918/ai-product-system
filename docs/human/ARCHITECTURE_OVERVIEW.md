@@ -61,6 +61,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Planning 與 Product Delivery
 
+OpenCode 的 `aips-plan` Command 使用既有 Planning 工作流與 Human Approval；原生入口不建立第二份規劃規則。
+
 Plan21 Phase 2 centralizes deterministic JSON/hash, path and glob primitives behind existing facades; it does not change planning or product authority.
 
 Turn Context 對規劃任務只選取相關 canonical planning 與 product-delivery protocols；任務路由不改變需求核准、Change Boundary 或 Human decision gates。
@@ -93,6 +95,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+OpenCode Skills 由 canonical Skill Registry 生成；description、source digest 與 ownership 的一致性由 deterministic lifecycle 驗證。
 
 CI 的 Python 驗證套件是完整 repository lifecycle 的固定執行前提，與精準路徑計畫選擇的 Node 設定、Chromium 下載及可選 evidence 分開。這只補齊執行環境；Scheduler、Gate、必要檢查及 Human 合併權限的拓樸與責任不變。
 
@@ -214,6 +218,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+OpenCode 升級／解除只處理 digest 一致的 AIPS-owned 投影；發現使用者修改或設定根目錄變更時保留檔案並回報衝突。
 
 Shared deterministic helpers are canonical in `scripts/aips_common/`; their golden lifecycle protects existing consumers and leaves global Impact Graph coverage partial.
 

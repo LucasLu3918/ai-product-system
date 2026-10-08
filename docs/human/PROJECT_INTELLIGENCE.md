@@ -69,6 +69,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+OpenCode 以 `--runtime opencode` 解析既有 Project Intelligence 與 Change Impact；managed 指示投影不覆蓋有效的 project-native conventions。
+
 Shared canonical hash/path/glob helpers preserve the existing Project Intelligence matching facade. Bounded source traversal still records unresolved edges and does not claim repository-wide completeness.
 
 Promotion eligibility 與目標路徑限制已抽至 `project_intelligence_promotion.py`；原 facade 保留相容入口，Human approval 與禁止覆寫既有檔案的界線不變。

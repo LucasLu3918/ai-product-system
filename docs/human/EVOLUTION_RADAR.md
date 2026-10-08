@@ -46,6 +46,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+OpenCode adapter 的採用證據分開記錄 projection lifecycle 與指定版本的 native discovery；未知平台與模型使用行為保持 UNVERIFIED。
+
 Effectiveness evidence retains the existing digest facade over shared canonical JSON hashing; no trial ranking or Human disposition changes.
 
 本機預分析會為未入選候選記錄可重現的排除原因與彙總計數，供人工檢視 shortlist 的資料價值；語意判斷與採納決策仍由既有流程負責。

@@ -1,5 +1,7 @@
 ---
 id: characterization-testing
+description: Capture existing behavior with characterization tests before changing legacy or insufficiently
+  tested code.
 capability: testing
 estimated_context_cost: low
 triggers:

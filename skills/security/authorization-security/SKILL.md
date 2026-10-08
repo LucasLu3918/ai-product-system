@@ -1,5 +1,7 @@
 ---
 id: authorization-security
+description: Design and review tenant isolation, object-level permissions and authorization boundaries
+  for APIs and workflows.
 capability: security
 estimated_context_cost: low
 triggers:

@@ -52,6 +52,8 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+OpenCode release evidence separates ownership-safe projection lifecycle from version-bound native runtime acceptance; unknown operating systems and provider behavior remain explicitly unverified.
+
 Candidate path and digest helpers preserve existing output formats through compatibility facades; exact base/head binding and unresolved Impact Graph policy remain unchanged.
 
 The repository governance snapshot can provide read-only ruleset and branch-protection evidence, but never changes GitHub settings or substitutes for Human release approval.

@@ -1,7 +1,15 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, json, os, re
+
+import argparse
+import datetime as dt
+import json
+import os
+import re
+import subprocess
 from pathlib import Path
+
+import yaml
 
 BEGIN = "<!-- AIPS-MANAGED-BEGIN -->"
 END = "<!-- AIPS-MANAGED-END -->"
@@ -14,7 +22,7 @@ def managed_block(source: str) -> str:
     return f"{BEGIN}\n{source.strip()}\n{END}"
 
 def extract(text: str) -> str | None:
-    m = re.search(re.escape(BEGIN) + r"\n?(.*?)\n?" + re.escape(END), text, flags=re.S)
+    m = re.search(re.escape(BEGIN) + r"\n?(.*?)\n?" + re.escape(END), text, flags=re.DOTALL)
     return m.group(0) if m else None
 
 def install_block(target: Path, source: Path, snapshot: Path):
@@ -125,13 +133,48 @@ def uninstall_claude_hook(settings: Path):
     save_json(settings, data)
     return "OK", str(settings)
 
+def host_ids(system: Path) -> list[str]:
+    registry = yaml.safe_load((system / "harness/adapters/REGISTRY.yaml").read_text())
+    return [key for key, value in registry["adapters"].items() if value.get("detect_command")]
+
+def write_manifest(system: Path, state: Path, owned: Path, binary: Path, target: Path):
+    adapters = {}
+    resources = []
+    for key in host_ids(system):
+        path = state / f"{key}.yaml"
+        adapters[key] = yaml.safe_load(path.read_text()) if path.exists() else {"status": "NOT_DETECTED", "capability": "UNSUPPORTED", "governance_enforcement": "UNSUPPORTED", "strategy": "", "resource": ""}
+        entry = adapters[key]
+        if entry.get("status") == "AUTOMATIC" and entry.get("resource"):
+            kind = {"codex": "runtime_managed_block", "claude-code": "runtime_composed_resources", "gemini-cli": "runtime_registration", "opencode": "runtime_owned_projections"}[key]
+            resource = {"type": kind, "runtime": key}
+            resource[{"codex": "path", "gemini-cli": "id"}.get(key, "resource")] = entry["resource"]
+            if key in {"codex", "claude-code"}:
+                resource["snapshot"] = str(owned / f"{key}.block")
+            if key == "opencode":
+                resource["manifest_directory"] = str(owned / key)
+            resources.append(resource)
+    link = binary / "aips"
+    if link.is_symlink() and os.readlink(link) == str(system / "bin/aips"):
+        resources.insert(0, {"type": "cli_symlink", "path": str(link)})
+    commit = subprocess.run(["git", "-C", str(system), "rev-parse", "HEAD"], capture_output=True, text=True, check=False).stdout.strip()
+    data = {"version": 1, "installed_at": dt.datetime.now(dt.UTC).isoformat(), "system": {"root": str(system), "version": (system / "VERSION").read_text().strip(), "commit": commit}, "harness": {"enabled": True, "bootstrap": str(system / "harness/BOOTSTRAP.md")}, "owned_resources": resources, "adapters": adapters, "preservation_policy": {key: "preserved" if key == "project_ai_workspace" else "untouched" for key in ("user_agent_instructions", "user_skills", "project_agent_instructions", "project_skills", "project_source", "project_ai_workspace")}}
+    from opencode_skill_projection import atomic_write
+    atomic_write(target, yaml.safe_dump(data, sort_keys=False))
+    return "OK", str(target)
+
 def main():
     p = argparse.ArgumentParser()
-    p.add_argument("action", choices=["install-block","uninstall-block","install-claude-hook","uninstall-claude-hook"])
+    p.add_argument("action", choices=["install-block","uninstall-block","install-claude-hook","uninstall-claude-hook","host-ids","write-manifest"])
     p.add_argument("--target"); p.add_argument("--source"); p.add_argument("--snapshot")
     p.add_argument("--settings"); p.add_argument("--command"); p.add_argument("--guard-command")
+    p.add_argument("--system-root"); p.add_argument("--state-home"); p.add_argument("--owned-home"); p.add_argument("--bin-home")
     a = p.parse_args()
-    if a.action == "install-block":
+    if a.action == "host-ids":
+        print("\n".join(host_ids(Path(a.system_root))))
+        return 0
+    if a.action == "write-manifest":
+        status, message = write_manifest(Path(a.system_root), Path(a.state_home), Path(a.owned_home), Path(a.bin_home), Path(a.target))
+    elif a.action == "install-block":
         status, message = install_block(Path(a.target), Path(a.source), Path(a.snapshot))
     elif a.action == "uninstall-block":
         status, message = uninstall_block(Path(a.target), Path(a.snapshot))

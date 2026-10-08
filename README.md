@@ -64,6 +64,8 @@ AIPS 不取代既有 AGENTS.md、CLAUDE.md、GEMINI.md 或 custom Skills；只�
 
 ## Update
 
+OpenCode 已安裝時，`aips update` 會更新由 AIPS 擁有的全域指示、Skills 與 Commands；使用者修改的投影會保留並回報衝突。詳見 [Harness](docs/human/HARNESS.md)。
+
 ~~~bash
 aips update
 ~~~

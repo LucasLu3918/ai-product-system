@@ -61,6 +61,8 @@ The Planning Package validator is deterministic and structural. It cannot assess
 
 ## Discovery and research
 
+OpenCode `aips-plan` invokes the same canonical planning artifacts and approval boundaries; the Host projection supplies access, not a second planning contract.
+
 Proceed one material decision group at a time. Use a safe professional default when it resolves a non-blocking detail and record it as an assumption. Offer a small set of understandable options with a recommendation when the user must decide. Do not ask users to design schemas, APIs or infrastructure before those choices are required.
 
 Use `PRODUCT_RESEARCH.md` when current external product, user, market or competitor evidence materially informs a product decision. Record sources, observed dates, geography, evidence type, confidence, freshness and limitations. Keep facts/observations distinct from inference, recommendation, assumption and unknown. Visual reference research remains under `creative-reference-research`.

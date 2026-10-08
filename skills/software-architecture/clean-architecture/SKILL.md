@@ -1,5 +1,7 @@
 ---
 id: clean-architecture
+description: Separate domain rules, use cases and infrastructure through dependency boundaries
+  suited to the existing project.
 capability: software-architecture
 estimated_context_cost: low
 triggers:

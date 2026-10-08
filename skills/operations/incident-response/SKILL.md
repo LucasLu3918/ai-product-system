@@ -1,5 +1,7 @@
 ---
 id: incident-response
+description: Triage incidents, contain impact, recover service and document evidence and follow-up
+  actions.
 capability: operations
 estimated_context_cost: low
 triggers:

@@ -201,6 +201,8 @@ Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
 
+OpenCode shares the existing runtime resolver and CLI consumers. Traversal evidence must include both the native projection writer and Harness/Command consumers before READY reconciliation.
+
 Shared path/glob wrappers preserve existing Project Intelligence matching behavior; bounded traversal continues to report unresolved edges and partial coverage rather than infer completeness.
 
 Promotion eligibility and target-path constraints are extracted to a helper while retaining the facade entry point, Human approval and no-overwrite behavior.

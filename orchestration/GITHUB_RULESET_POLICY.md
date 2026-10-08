@@ -4,6 +4,8 @@
 
 ## Inputs
 
+OpenCode integration candidates retain the Core classification and required repository checks. Native Host detection does not authorize remote publication or merge.
+
 The read-only governance snapshot keeps its domain-independent digest facade over shared canonical JSON; unreadable GitHub policy surfaces remain `UNKNOWN` and do not gain authority.
 
 The read-only snapshot command captures rulesets and branch protection independently; an inaccessible surface remains UNKNOWN and must not be treated as compliant.

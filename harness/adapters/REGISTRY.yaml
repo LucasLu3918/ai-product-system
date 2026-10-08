@@ -1,6 +1,16 @@
 version: 2
 
 adapters:
+  opencode:
+    runtime: OpenCode
+    detect_command: opencode
+    strategy: managed_global_instruction_block_and_native_projections
+    capability: CONTEXT_ALWAYS
+    governance_enforcement: ADVISORY
+    source: harness/adapters/opencode/AGENTS.md
+    native_verification: UNVERIFIED
+    pre_tool_guard: UNSUPPORTED
+
   codex:
     runtime: Codex CLI
     detect_command: codex

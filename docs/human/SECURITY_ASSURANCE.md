@@ -199,6 +199,8 @@ Review actual:
 
 ## Release Security Gate
 
+OpenCode 候選仍須 exact-candidate secret scanning、Core Matrix 與 required PR checks。ADVISORY instruction 不是原生 pre-tool enforcement 證據。
+
 文件候選的 CI 也固定安裝完整 Python 驗證套件，避免安裝／migration fixture 因缺少 Playwright 或 OpenAPI 模組而無法執行必要檢查。Chromium 仍依候選需求下載；候選秘密掃描、完整 repository Gate 與明確合併授權維持原順序及阻擋規則。
 
 Plan21 shared hash/path helpers preserve existing evidence formats and do not change fail-closed policy, authorization decisions, or publication gates.
@@ -266,6 +268,8 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 
 ## Secret and credential safety
+
+OpenCode MCP 設定只提供 review-only 預覽，不匯入憑證、不變更模型；server workspace 固定於產生設定時的專案路徑。
 
 Turn Context route resolution 不記錄原始 prompt；路由錯誤不得透過序列化診斷輸出敏感輸入。
 

@@ -38,6 +38,8 @@ AIPS runtime 需要 Python 3.12 以上；若系統同時安裝多個 Python，�
 
 ## 驗證安裝
 
+已安裝 OpenCode 時，執行 `aips harness install` 後以 `aips harness doctor` 檢查受管理指示與技能投影；衝突須先檢查使用者修改。
+
 驗證安裝更新時，除了主線 repository SHA，也需核對註冊的安裝版 SHA。從已更新的 AIPS checkout 執行 `./bin/aips publish post-merge --fetch --sync-installed --apply` 可安全快轉兩者；髒工作樹、不同遠端或分歧的安裝版會停止並回報。
 
 ~~~bash

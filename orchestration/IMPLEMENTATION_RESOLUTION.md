@@ -1,5 +1,7 @@
 # Implementation Resolution
 
+Canonical REST API Skill descriptions are portable discovery metadata used by OpenCode projections. The described implementation workflow still resolves the existing project-native contract and verification requirements.
+
 ## Purpose
 
 Resolve how a requested change should be implemented before existing implementation roles write code. Produce an evidence-backed `Implementation Profile` from the requirement, project mode, contract authority, repository evidence, Human decisions, architecture, language/framework, ownership and quality requirements.

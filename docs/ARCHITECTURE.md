@@ -495,6 +495,8 @@ For Large/Core changes, architecture-diagram impact is mandatory. Update each af
 
 ## End-to-end product delivery
 
+OpenCode joins the existing access plane: native AGENTS → runtime resolver; canonical Skills / Commands → planning and implementation; review-only MCP config → workspace-scoped AIPS server. All Human approval boundaries remain in the canonical workflow.
+
 ~~~mermaid
 flowchart LR
     U[Runtime-selected eligible primary] --> P[Bounded primary implementation]
@@ -677,6 +679,8 @@ flowchart TD
     DET --> C[Codex Managed Block / CONTEXT_ALWAYS]
     DET --> CL[Claude Hook + Managed Block]
     DET --> G[Gemini Extension + BeforeAgent]
+    DET --> OC[OpenCode AGENTS + Owned Skills / Commands]
+    OC -->|CONTEXT_ALWAYS / ADVISORY| USE
     C --> USE[Normal Agent Use]
     CL --> USE
     G --> USE

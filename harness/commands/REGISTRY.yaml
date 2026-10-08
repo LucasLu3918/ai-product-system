@@ -63,6 +63,11 @@ commands:
       slash: [/aips.impact, /aips-impact]
       skill: [$aips-impact]
 hosts:
+  opencode:
+    renderer: markdown-command
+    mode: global-native-or-mcp
+    capability: CONTEXT_ALWAYS
+    placement: ~/.config/opencode/commands
   codex:
     renderer: markdown-skill
     mode: global-native-or-mcp

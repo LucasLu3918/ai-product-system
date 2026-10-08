@@ -1,5 +1,7 @@
 ---
 id: tdd
+description: Implement testable behavior through failing tests, minimal passing changes and refactoring;
+  use characterization tests for legacy behavior.
 capability: testing
 estimated_context_cost: low
 triggers:

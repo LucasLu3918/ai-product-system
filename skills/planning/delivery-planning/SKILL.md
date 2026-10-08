@@ -1,5 +1,7 @@
 ---
 id: delivery-planning
+description: Plan implementation, dependencies, verification and delivery milestones with explicit
+  risks and approval boundaries.
 capability: delivery-planning
 estimated_context_cost: low
 triggers:

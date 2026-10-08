@@ -24,6 +24,8 @@ The weekly/manual workflow runs the pinned OSV Scanner reusable workflow and a f
 
 ## Scenario 232 — Project Check and System Preflight
 
+OpenCode integration retains system preflight and existing-host lifecycle checks; missing runtime detection is not native acceptance evidence.
+
 `aips project check <path>` reports attachment mode and Project Intelligence freshness without mutation; freshness problems remain informational and only an invalid path fails. `aips system preflight <path>` delegates to the existing update and repository-validation lifecycle. The legacy `aips preflight` route remains supported.
 
 ## Scenario 233 — Public CLI Help and Error Contracts
@@ -805,6 +807,8 @@ Lifecycle evidence checks exact-path optional tooling, full provisioning for unk
 
 ## Scenario 193 — Evidence-driven Implementation Resolution
 
+OpenCode Command and Skill projections preserve canonical source paths and planning authority; native entrypoints do not replace implementation readiness evidence.
+
 Scenario 193 covers REST/OpenAPI-first resolution across existing and new projects, four language profiles, technology/architecture decisions, evidence provenance, contract authority, ownership protection, version-aware knowledge, and verification status. Deterministic and lifecycle checks validate profile structure and validator boundaries. Semantic quality across 16 representative contexts remains manual; structural checks do not claim that an Agent recommendation is correct.
 
 Current inventory after Scenario 193: 34 deterministic + 103 lifecycle + 54 agent_eval = 191 automated; 2 manual; 193 total; 0 uncovered.
@@ -898,5 +902,7 @@ Plan19's module-extraction lifecycle continues to verify the Project Intelligenc
 
 Verifies deterministic pre-analysis exclusion reasons and counts without changing Human decision authority.
 ## Scenario 210 — Python runtime support policy
+
+The OpenCode lifecycle runs with the selected validation Python. OpenCode itself is detected separately and is never downloaded by Harness installation.
 
 Scenario 210 is lifecycle-covered by `tests/evidence/install_preflight_lifecycle.py` and `tests/evidence/system_facts_lifecycle.py`. It verifies the Python >=3.12 floor across explicit selection, old managed venv repair, doctor diagnostics, canonical facts, and the scheduled 3.12–3.14 compatibility workflow.

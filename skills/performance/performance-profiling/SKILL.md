@@ -1,5 +1,7 @@
 ---
 id: performance-profiling
+description: Profile performance bottlenecks and verify optimization claims with reproducible measurements
+  and raw samples.
 capability: performance
 estimated_context_cost: low
 triggers:

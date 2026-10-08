@@ -1,5 +1,7 @@
 ---
 id: threat-modeling
+description: Identify protected assets, trust boundaries, threats and mitigations for the affected
+  system design.
 capability: security
 estimated_context_cost: medium
 triggers:

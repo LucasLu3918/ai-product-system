@@ -1,5 +1,7 @@
 ---
 id: secure-design
+description: Design security boundaries, controls and secret handling proportionate to the system
+  and data risks.
 capability: security
 estimated_context_cost: low
 triggers:

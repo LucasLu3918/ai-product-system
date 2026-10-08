@@ -278,6 +278,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+OpenCode native acceptance uses isolated HOME/XDG/config directories and a private loopback server. Test infrastructure must not change the user daemon or import provider credentials.
+
 Run Dashboard path and digest projections preserve their existing facades over shared primitives; isolation, port leasing and authorization boundaries do not change.
 
 Task-specific protocol routing precedes isolated execution but grants no worktree or sandbox capability; isolation still resolves from the declared risk and supported provider evidence.

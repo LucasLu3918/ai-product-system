@@ -10,6 +10,8 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 ## Minimal algorithm
 
+For OpenCode, resolve the turn with `--runtime opencode`, then progressively load selected canonical pointers. Preserve Human gates, selected models and project-native instructions while reporting projection conflicts.
+
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
 
 When a task requires client generation, resolve the canonical OpenAPI contract, local tool/version, ownership and native verification first. The adapter preview does not execute; invoke its local `--execute` path only on the user's explicit instruction. The Gate remains inspection-only.

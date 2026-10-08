@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+OpenCode 全域指示、原生 Skills／Commands、MCP 預覽與保守 ownership 操作見 [Harness](HARNESS.md)。
+
 `CHANGELOG.md` 列出 0.74.0 候選內容；版本標籤與 release readiness 仍依 exact-main SHA 與獨立核准流程處理。
 
 Prospective `aips docs impact --base HEAD --planned-path <path>` resolves sync and placement closure to a fixed point. Each triggered rule requires an update in its canonical topic; combined changes use the union of those topics. Validate every text anchor before applying the batch. Closure is scope evidence and never grants publication authority.

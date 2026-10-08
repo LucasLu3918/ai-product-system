@@ -12,6 +12,8 @@ harness:
   bootstrap: null
 
 owned_resources: []
+# OpenCode runtime_owned_projections references digest-bound manifests under
+# harness/owned/opencode; only recorded, unchanged files/blocks may be removed.
 
 adapters: {}
 # runtime-id:

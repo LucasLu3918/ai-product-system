@@ -1,5 +1,7 @@
 ---
 id: domain-driven-design
+description: Model complex business domains using bounded contexts, aggregates, value objects and
+  domain invariants.
 capability: software-architecture
 estimated_context_cost: medium
 triggers:

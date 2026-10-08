@@ -188,7 +188,7 @@ def exercise_cli() -> None:
     )
     inspected = json.loads(inspect.stdout)
     assert inspected["tool_only_compatibility"]["all_tools_read_only"] is True
-    assert inspected["clients"] == ["cursor", "windsurf", "copilot", "amp", "codex", "generic"]
+    assert inspected["clients"] == ["opencode", "cursor", "windsurf", "copilot", "amp", "codex", "generic"]
     assert set(inspected["client_compatibility"]) == set(inspected["clients"])
     assert inspected["client_compatibility"]["copilot"]["limitation"] == "hosted-agent-and-code-review-surfaces-are-tool-only"
     assert all(

@@ -1,5 +1,7 @@
 ---
 id: security-testing
+description: Verify security controls with relevant negative tests for authentication, authorization,
+  abuse and data boundaries.
 capability: security
 estimated_context_cost: medium
 triggers:

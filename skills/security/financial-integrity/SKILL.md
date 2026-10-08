@@ -1,5 +1,7 @@
 ---
 id: financial-integrity
+description: Protect financial value, ledger invariants, reconciliation and replay-safe operations
+  in money-related workflows.
 capability: security
 estimated_context_cost: medium
 triggers:

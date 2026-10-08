@@ -23,6 +23,12 @@ bootstrap:
 
 verification:
   status: null
+  detected_version: null
+  projection_integrity: null # CURRENT is file evidence, not native runtime verification
+  native_instructions: UNVERIFIED
+  skill_discovery: UNVERIFIED
+  portable_commands: UNVERIFIED
+  mcp: NOT_CONFIGURED
   turn_context_verified: null
   governance_guard_verified: null
 
