@@ -115,4 +115,4 @@ The Codex managed block preserves eligible runtime primary model preference and 
 
 Codex PreToolUse support remains `EXPERIMENTAL` and `ADVISORY`: the local probe denies only its harmless synthetic command. Do not infer live runtime coverage or change user-global hook configuration from this evidence.
 
-Creative adapters share the closed executor registry, including Z-Image Turbo generate only; adding a registered local model does not grant generation authority or arbitrary command arguments.
+Creative adapters share the closed executor registry, including Z-Image Turbo generate only through fixed MFLUX argv or the built-in ComfyUI split-loader workflow; local model inventory checks do not grant broader generation authority or arbitrary command arguments.

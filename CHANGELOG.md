@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.79.0
+
+- Add a bounded ComfyUI Z-Image Turbo split-loader workflow with loopback validation of local UNET, Qwen CLIP and VAE inventories; preserve checkpoint workflows and keep Z-Image generate-only.
+- Strip prompt-bearing ComfyUI PNG text metadata before AIPS publishes create-only outputs; verify topology, inventory, privacy and execution through synthetic lifecycle and local inference.
+
 ## 0.78.0
 
 - Register local MFLUX Z-Image Turbo generation with a fixed dedicated command; preserve offline, generate-only and pending human-review boundaries.

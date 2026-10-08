@@ -55,6 +55,8 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+For local Z-Image Turbo in ComfyUI, use the registered API workflow template and verify the three locally installed model files during preflight; do not substitute custom nodes or treat this profile as image editing support. AIPS strips ComfyUI prompt-bearing PNG text chunks before publishing the output file.
+
 The closed MFLUX registry also supports `z-image-turbo` / `generate` through `mflux-generate-z-image-turbo`. The MFLUX 0.22 Turbo argv uses the existing local path as `--model`, the fixed `--base-model z-image-turbo`, and `--no-exif` to suppress prompt metadata. The installed Turbo runtime accepts explicit Bundle steps (8 is the recommended starting point); it supplies its own non-guided Turbo behavior. Do not route edit, non-Turbo Z-Image, or ControlNet through this pair. Complete model/tokenizer weights must already exist locally; visual quality and independent human acceptance remain separate from engine completion.
 
 OpenCode V2 exposes creative_execution through its native Code Mode catalog. Call the exact listed tools.creative_execution signature through execute; do not guess a direct model tool name. A short selected direction (A/B/C) or bounded style adjustment can continue an active request, while cancellation and unrelated tasks revoke it.

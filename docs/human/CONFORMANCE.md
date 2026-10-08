@@ -1660,13 +1660,13 @@ The lifecycle covers separate prompt dimensions, Chinese creative-asset routing,
 
 ## Scenario 236 — Local Creative Bundle Execution
 
-Z-Image Turbo 測試涵蓋專用 generate 命令、明確步數、拒絕 edit／非 Turbo 變體／通用 FLUX 命令；既有離線、create-only 與人工 PENDING 契約保持適用。
+Z-Image Turbo 測試涵蓋專用 MFLUX generate 命令與固定 ComfyUI split-loader 拓樸、模型清單核對及 prompt PNG metadata 清理；明確步數、拒絕 edit／非 Turbo 變體／通用 FLUX 命令，既有離線、create-only 與人工 PENDING 契約保持適用。
 
 Scenario 236 新增 Bundle 設定競爭／來源保留、native Context envelope、使用者授權撤銷、唯讀預檢、媒材不符與損壞 PNG 檢查。實際 tool callback 使用無憑證 fixture；這不等於真實模型品質或使用者接受。
 
 Scenario 236 covers versioned no-overwrite Profile/Bundle preparation, fixed MFLUX model/operation CLI mapping, single-reference FLUX.1 edit, bounded multi-reference FLUX.2/Qwen edit, loopback ComfyUI with single-reference edit, create-only EPHEMERAL output, provenance, finite retry, privacy-bounded trace, and separate human visual review.
 
-The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies concurrent preparation allocates distinct versions, unconfigured engines remain blocked, preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, MFLUX commands match the fixed capability registry, batch references remain bounded, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, edits use exactly one hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
+The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies concurrent preparation allocates distinct versions, unconfigured engines remain blocked, preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, MFLUX commands match the fixed capability registry, batch references remain bounded, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, the Z-Image Turbo split-loader graph and local model inventory are exact, prompt-bearing PNG text metadata is removed, edits use exactly one hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
 
 ## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
 

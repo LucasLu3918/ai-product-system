@@ -40,7 +40,7 @@ Public command groups expose help with status 0 and return nonzero for unknown s
 
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
-Scenario 236 adds a separate explicit execution boundary for local MFLUX and loopback ComfyUI; character identity and style review remain independent.
+Scenario 236 adds a separate explicit execution boundary for local MFLUX and loopback ComfyUI, including the fixed Z-Image Turbo split-loader graph and local model inventory checks; ComfyUI prompt PNG metadata is removed before AIPS output publication. Character identity and style review remain independent.
 
 The fixture lifecycle covers safe local profile/reference paths, SVG and PNG validation, exact hashes, verified provider/runtime/license provenance, and deterministic non-overwriting SVG composition with correctly typeset Unicode labels. A passing helper or manifest never proves generated character identity fidelity, model execution, or device performance; those require actual assets and separate human visual review.
 

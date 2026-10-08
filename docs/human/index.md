@@ -26,7 +26,7 @@ features:
 
 ## 文件如何組織
 
-本機 Z-Image Turbo 的設定與生成操作請由 User Guide 的 Creative Direction 主題進入；Technology Guide 說明固定執行邊界。
+本機 Z-Image Turbo 的 MFLUX 與固定 ComfyUI 工作流設定及生成操作請由 User Guide 的 Creative Direction 主題進入；Technology Guide 說明固定執行邊界。
 
 本機角色插畫設定與排查請見 User Guide 的 Creative Direction、Style 與 Brand；命令盤點、流程測試、真實生成及人工品質審查分開驗收。
 

@@ -9,6 +9,7 @@ from .static_contracts import ROOT, errors
 required = (
     ROOT / "scripts/creative_execution.py",
     ROOT / "templates/creative/CREATIVE_BUNDLE.yaml",
+    ROOT / "templates/creative/COMFYUI_Z_IMAGE_TURBO_API.json",
     ROOT / "tests/evidence/creative_execution_lifecycle.py",
     ROOT / "tests/scenarios/236-local-creative-execution.md",
     ROOT / "orchestration/CREATIVE_DIRECTION.md",
@@ -31,6 +32,9 @@ if all(path.is_file() for path in required):
         ("shell=False" in executor and "subprocess.run" in executor, "MFLUX must use argv-only process execution"),
         ("ProxyHandler({})" in executor and "class NoRedirect" in executor, "ComfyUI requests must block proxies and redirects"),
         ("COMFY_CORE_NODES" in executor and "comfy_custom_node_blocked" in executor, "ComfyUI workflow must reject non-core nodes"),
+        ('model_profile == "z-image-turbo"' in executor and '"lumina2"' in executor and "comfy_model_unavailable" in executor, "Z-Image Turbo ComfyUI must remain a fixed, local-inventory-verified profile"),
+        ("strip_png_text_metadata" in executor and "prompt-bearing PNG text chunks" in executor, "ComfyUI outputs must not persist prompt-bearing PNG metadata"),
+        ("UNETLoader" in required[2].read_text(encoding="utf-8") and "ConditioningZeroOut" in required[2].read_text(encoding="utf-8"), "Z-Image Turbo API template must retain its fixed split-loader topology"),
         ("creative-execution-manifest.json" in executor and "PENDING" in executor, "execution must retain provenance and pending human review"),
         ("aips creative preflight" in docs and "BLOCKED_NO_ENGINE" in docs, "Creative Direction must document preflight and missing-engine state"),
         ("MFLUX_CAPABILITIES" in executor and "mflux-generate-flux2-edit" in executor and "mflux-generate-qwen-edit" in executor, "MFLUX commands must use the closed capability registry"),
