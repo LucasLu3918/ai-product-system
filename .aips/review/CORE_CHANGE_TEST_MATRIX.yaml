@@ -4,11 +4,13 @@ candidate:
   changed_files_hash: a1d8752e83f27ec5ba9e698ad0c7e634d360271f2dfab88289854d7900820fce
 change:
   id: opencode-native-context-guard-20261008
-  summary: Add separate task routing dimensions and an owned OpenCode V2 plugin for fresh AIPS context and narrowly supported native action checks.
+  summary: "Complete all eight approved OpenCode AIPS recommendations: task routing, exact session roots, native V2 context and permission hooks, semantic Shell limits, EPHEMERAL creative profiles, version-aware lifecycle, bounded performance and privacy trace."
   boundary:
     - prompt domain, intent, effect classification and Chinese creative-asset routing
     - Project Intelligence Context Manifest additive readiness and classification contract
     - OpenCode V2 native plugin lifecycle, ownership, version handling, recovery and capability truth
+    - Session-scoped creative workspace discovery and safe non-overwrite output suggestions
+    - Bounded context performance evidence and privacy-limited local execution trace
     - path/symlink/evidence/cache boundary and explicit Shell/MCP unsupported behavior
     - Scenario, documentation, architecture projections and exact-candidate publication evidence
 matrix:
@@ -35,7 +37,7 @@ matrix:
       migration_recovery: {applicable: true, evidence: Plugin install/update/uninstall conflict and interrupted ownership checkpoint}
       cli_harness: {applicable: true, evidence: Install/status/doctor/uninstall and detected V1/V2/unknown version}
       docs_schema: {applicable: true, evidence: Adapter compatibility, capability registry and documentation sync}
-      e2e: {applicable: true, evidence: Locally installed OpenCode V2.0.24 isolated native hook acceptance; model execution separately UNVERIFIED absent provider}
+      e2e: {applicable: true, evidence: Locally installed OpenCode V2.0.24 isolated native CLI with loopback mock provider verifies AIPS Context delivery, creative SVG write ALLOW, existing SVG edit DENY, hook execution, MCP connection and no external provider use}
   - boundary: Readiness, path integrity, fingerprints and existing policy boundary
     reason: AIPS must reject affected writes when project context is missing/stale or target confinement is uncertain without inventing a local-write policy engine.
     checks:
@@ -47,7 +49,7 @@ matrix:
       migration_recovery: {applicable: true, evidence: Cache corruption/failure recovers by recomputation and never upgrades readiness}
       cli_harness: {applicable: true, evidence: Harness diagnostics report plugin/readiness status and unsupported boundaries}
       docs_schema: {applicable: true, evidence: Security and recovery guidance matches implemented enforcement}
-      e2e: {applicable: true, evidence: Synthetic project root and native tool action lifecycle}
+      e2e: {applicable: true, evidence: Non-Git isolated root, supported new creative asset ALLOW, existing asset DENY, symlink/root escape rejection and session-root hash bound to isolated workspace}
   - boundary: Lifecycle, adapter truth, conformance and documentation closure
     reason: Core runtime behavior must be installable, diagnosable, removable and accurately described across consumers.
     checks:
@@ -59,7 +61,7 @@ matrix:
       migration_recovery: {applicable: true, evidence: Idempotent install, preserved user files, interruption, safe retry and uninstall}
       cli_harness: {applicable: true, evidence: Full harness lifecycle and exact-candidate local Integration Gate}
       docs_schema: {applicable: true, evidence: Scenario conformance, placement/sync, link checks and VitePress build}
-      e2e: {applicable: false, na_reason: No hosted service or model provider calls; local isolated V2 native acceptance is included above}
+      e2e: {applicable: true, evidence: Credential-free local loopback mock exercises native model/context/action flow; hosted providers and MCP write claims remain out of scope}
 review_evidence:
   required: false
   system_improvement_review: .aips/review/OPENCODE_NATIVE_GUARD_SYSTEM_IMPROVEMENT_REVIEW.md
@@ -72,7 +74,7 @@ verification:
   scope_review: PASS — implementation paths, consumers, protocol routes, docs closure, and generated projections reconciled against the preview.
   prompt_lifecycle: PASS — tests/evidence/intelligence_context_lifecycle.py
   opencode_lifecycle: PASS — tests/evidence/opencode_integration_lifecycle.py
-  native_acceptance: PASS_SETUP_ONLY — OpenCode v2.0.24 plugin registry; model execution and permission-hook execution remain UNVERIFIED.
+  native_acceptance: PASS — OpenCode v2.0.24 isolated native CLI and loopback mock; Context delivery, creative write ALLOW, existing edit DENY and MCP connection verified.
   static_runtime: PASS — Node 24.19.0 syntax check for harness/adapters/opencode/plugin.ts.
   projections: PASS — scripts/capability_registry.py check.
   exact_candidate_gate: PENDING — run once on the final committed candidate.

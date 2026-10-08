@@ -13,6 +13,8 @@ WRITE_TOOLS = {"write", "edit", "patch", "apply_patch"}
 ASSET_SUFFIXES = {".svg", ".png", ".jpg", ".jpeg", ".webp", ".gif"}
 READ_ONLY_COMMANDS = {"pwd", "ls", "cat", "head", "tail", "sed", "rg", "grep", "find", "git", "stat", "file", "wc"}
 SHELL_META = re.compile(r"[;&|><`$\n\r]")
+FIND_SIDE_EFFECTS = {"-delete", "-exec", "-execdir", "-ok", "-okdir", "-fprint", "-fprint0", "-fprintf", "-fls"}
+SENSITIVE_OPTIONS = {"-c", "--config-env", "--git-dir", "--work-tree", "--namespace", "--exec-path", "--config", "--files0-from", "--pre", "--pre-glob"}
 
 
 def inside_root(path: str, root: str) -> tuple[bool, str]:
@@ -58,16 +60,18 @@ def evaluate_write(*, tool: str, resources: list[str], root: str, manifest: dict
 
     root_path = Path(root).resolve(strict=True)
     git_project = is_git_project(root_path)
-    new_creative_assets = (
-        tool == "write"
-        and
-        not git_project
+    creative_intent = (
+        tool in {"write", "edit"}
         and classification.get("domain") == "creative"
         and classification.get("intent") == "create"
-        and all(target.suffix.lower() in ASSET_SUFFIXES and not target.exists() for target in targets)
     )
-    if new_creative_assets:
-        return {"decision": "ALLOW", "level": "L1", "reason": "new local creative asset in a non-Git workspace; confined target only"}
+    if creative_intent and git_project:
+        return {"decision": "DENY", "level": "L2", "reason": "creative asset writes inside Git workspaces require current Project Intelligence"}
+    if creative_intent:
+        if all(target.suffix.lower() in ASSET_SUFFIXES and not target.exists() for target in targets):
+            return {"decision": "ALLOW", "level": "L1", "reason": "new local creative asset in a non-Git workspace; confined target only"}
+        reason = "creative output target already exists" if any(target.exists() for target in targets) else "creative output target must use a supported asset extension"
+        return {"decision": "DENY", "level": "L2", "reason": reason}
 
     reasons = []
     if intelligence.get("readiness") != "READY":
@@ -83,8 +87,29 @@ def evaluate_write(*, tool: str, resources: list[str], root: str, manifest: dict
     return {"decision": "ALLOW", "level": "L2", "reason": "current Project Intelligence and confined native target"}
 
 
+def _option_path(value: str) -> bool:
+    """Whether an argument is a path-bearing option that needs confinement."""
+    return value in {"-f", "--file", "--exclude-from", "--include-from", "--label"} or value.startswith(("--file=", "--exclude-from=", "--include-from="))
+
+
+def _check_operand_path(word: str, *, cwd: Path, root: Path) -> bool:
+    candidate = Path(word).expanduser()
+    if not candidate.is_absolute():
+        candidate = cwd / candidate
+    try:
+        candidate.resolve(strict=False).relative_to(root)
+    except ValueError:
+        return False
+    return True
+
+
 def evaluate_shell(*, command: str, cwd: str, root: str) -> dict[str, Any]:
-    """Allow only a bounded, metacharacter-free read-only shell subset."""
+    """Allow a small, effect-aware read-only Shell subset.
+
+    This is a command policy, not a complete sandbox: a host process may still
+    observe ambient filesystem/network permissions or invoke effects through
+    mechanisms outside this parsed command string.
+    """
     safe_cwd, normalized = inside_root(cwd, root)
     if not safe_cwd:
         return {"decision": "DENY", "level": "L2", "reason": "Shell working directory escapes project root"}
@@ -96,29 +121,61 @@ def evaluate_shell(*, command: str, cwd: str, root: str) -> dict[str, Any]:
         words = []
     if not words or Path(words[0]).name not in READ_ONLY_COMMANDS:
         return {"decision": "DENY", "level": "L2", "reason": "Shell command is outside the bounded read-only allowlist"}
-    if Path(words[0]).name == "find" and any(item in {"-delete", "-exec", "-execdir", "-ok", "-okdir"} for item in words[1:]):
+    executable = Path(words[0]).name
+    if any(word in SENSITIVE_OPTIONS or word.split("=", 1)[0] in SENSITIVE_OPTIONS for word in words[1:]):
+        return {"decision": "DENY", "level": "L2", "reason": "Shell option can change command execution or redirect its search root"}
+    if executable == "find" and any(item.split("=", 1)[0] in FIND_SIDE_EFFECTS for item in words[1:]):
         return {"decision": "DENY", "level": "L2", "reason": "Find actions that can execute or remove are unsupported"}
-    if Path(words[0]).name == "sed" and any(item == "-i" or item.startswith("-i") for item in words[1:]):
+    if executable == "sed" and any(item == "-i" or item.startswith("-i") for item in words[1:]):
         return {"decision": "DENY", "level": "L2", "reason": "in-place Sed edits are outside the read-only allowlist"}
-    if Path(words[0]).name == "git" and (len(words) < 2 or words[1] not in {"status", "log", "diff", "show", "branch", "rev-parse"}):
-        return {"decision": "DENY", "level": "L2", "reason": "Git command is outside the bounded read-only allowlist"}
-    # Constrain explicit path operands (including git -C and absolute paths) to
-    # the project. This is deliberately conservative for slash-containing
-    # arguments such as grep patterns: ambiguous inputs are denied.
+    if executable == "sed":
+        scripts = [value[2:] for value in words[1:] if value.startswith("-e") and len(value) > 2]
+        scripts.extend(words[index + 1] for index, value in enumerate(words[1:]) if value in {"-e", "--expression"} and index + 2 < len(words))
+        # Sed's e/w commands can execute programs or write files. Since parsing
+        # the full Sed language is not a security boundary, refuse these forms.
+        if any(re.search(r"(?<!\\)(?:^|[;}\n\r])\s*[0-9,$!~,/+*?\[\]().^-]*[ew](?:\s|$|;|})", script) or re.search(r"(?<!\\)/[a-zA-Z0-9_.-]*/(?:e|w)(?:\s|$|;)", script) for script in scripts):
+            return {"decision": "DENY", "level": "L2", "reason": "Sed scripts with execute or file-write commands are unsupported"}
+    if executable == "git":
+        # Parse only explicit, harmless global directory selection. Reject all
+        # other global configuration that can alter aliases, hooks or paths.
+        git_args = words[1:]
+        while git_args and git_args[0] in {"-C", "--literal-pathspecs", "--no-pager"}:
+            if git_args[0] == "-C":
+                if len(git_args) < 2 or not _check_operand_path(git_args[1], cwd=Path(normalized), root=Path(root).resolve(strict=True)):
+                    return {"decision": "DENY", "level": "L2", "reason": "Git directory selection escapes project root"}
+                git_args = git_args[2:]
+            else:
+                git_args = git_args[1:]
+        if not git_args or git_args[0] not in {"status", "log", "diff", "show", "branch", "rev-parse"}:
+            return {"decision": "DENY", "level": "L2", "reason": "Git command is outside the bounded read-only allowlist"}
+    # Path-valued options must be checked along with positional path operands.
     root_path = Path(root).resolve(strict=True)
+    cwd_path = Path(normalized)
+    skip_value = False
     for word in words[1:]:
+        if skip_value:
+            if not _check_operand_path(word, cwd=cwd_path, root=root_path):
+                return {"decision": "DENY", "level": "L2", "reason": "Shell option path escapes project root"}
+            skip_value = False
+            continue
+        if _option_path(word):
+            if "=" in word:
+                value = word.split("=", 1)[1]
+                if not _check_operand_path(value, cwd=cwd_path, root=root_path):
+                    return {"decision": "DENY", "level": "L2", "reason": "Shell option path escapes project root"}
+            else:
+                skip_value = True
+            continue
         if word.startswith("-"):
             continue
-        candidate = Path(word).expanduser()
-        if candidate.is_absolute() or word.startswith(("./", "../", "~/")) or "/" in word:
-            if not candidate.is_absolute():
-                candidate = Path(normalized) / candidate
-            resolved = candidate.resolve(strict=False)
-            try:
-                resolved.relative_to(root_path)
-            except ValueError:
+        # Refuse ambiguous explicit paths, including options that are joined to
+        # their values. Non-path search patterns remain valid for grep/rg.
+        if word.startswith(("./", "../", "~/", "/")) or "/" in word:
+            if not _check_operand_path(word, cwd=cwd_path, root=root_path):
                 return {"decision": "DENY", "level": "L2", "reason": "Shell path operand escapes project root"}
-    return {"decision": "ALLOW", "level": "L1", "reason": "bounded read-only Shell command", "cwd": normalized}
+    if skip_value:
+        return {"decision": "DENY", "level": "L2", "reason": "Shell path option is missing its value"}
+    return {"decision": "ALLOW", "level": "L1", "reason": "bounded read-only command policy; external process effects remain outside the guard", "cwd": normalized}
 
 
 def main() -> int:

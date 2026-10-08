@@ -21,9 +21,16 @@
 - L3 external actions retain the existing Human approval gate;
 - Shell permits only the bounded read-only allowlist and rejects operators, writes, and unsupported commands;
 - V2-only plugin ownership is digest-bound and preserves unowned, edited, or unknown-version files; V1 gets no V2 plugin;
-- MCP/custom tools, arbitrary Shell effects, and out-of-process writes are explicitly outside the guard;
-- installation and plugin discovery do not upgrade governance beyond ADVISORY without executed context and permission-hook acceptance.
+- each Context and native file decision resolves the active Session directory; plugin setup location is not reused across sessions;
+- Context delivery remains within a 12,000-byte UTF-8 budget, and permission decisions refresh the Context for the active target;
+- non-Git EPHEMERAL creative sessions receive a read-only asset/profile index from an external private cache; version suggestions never create or overwrite files or create `.ai/`;
+- installation diagnostics distinguish supported major, unknown version, projection integrity, host discovery, and Hook execution, with a restart/new-session remediation;
+- `aips harness trace` returns only allowlisted event fields and never prompt, credential, asset content, full path, or model reasoning;
+- the optional V2 native acceptance sends actual Context through a local loopback mock model, performs one new creative write (ALLOW), and confirms one existing-asset edit is denied (DENY);
+- the Shell policy rejects known command, argument, and path effects but is not represented as a complete process sandbox;
+- MCP/custom tools and out-of-process writes are explicitly outside the guard;
+- overall governance remains ADVISORY because arbitrary Shell effects, MCP/custom tools and out-of-process writes remain outside the guard, even when native hooks pass acceptance.
 
 ## Evidence boundaries
 
-Classification, direct-action decisions, path/symlink handling, Shell allowlisting, and install/update/doctor/uninstall lifecycle use deterministic local evidence. OpenCode v2.0.24 native acceptance verifies plugin registry discovery, Skills, Commands and MCP discovery. Context injection and an actual permission decision remain UNVERIFIED without a provider/model action; governance stays ADVISORY. No claim covers MCP/custom-tool writes or files changed outside OpenCode.
+Classification, direct-action decisions, path/symlink handling, Shell argument policy, private creative cache, bounded performance/privacy trace, and install/update/doctor/uninstall lifecycle use deterministic local evidence. OpenCode v2.0.24 native acceptance verifies plugin registry discovery, Skills, Commands, MCP connection, loopback mock model Context delivery, session-root binding, and actual native file Allow/Deny decisions. It runs only when a compatible binary is supplied; a skipped/unavailable binary remains UNVERIFIED and overall governance stays ADVISORY. Linux/WSL, V1, production-provider behavior, MCP/custom-tool writes, arbitrary Shell effects and writes outside OpenCode remain unverified or out of scope.

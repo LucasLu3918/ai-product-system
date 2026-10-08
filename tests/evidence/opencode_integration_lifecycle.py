@@ -15,6 +15,9 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 import opencode_native_guard as native_guard
 import opencode_skill_projection as projection
+import creative_workspace_profile as creative_profile
+import opencode_trace
+import turn_intent
 
 
 def run(args, env, *, ok=True):
@@ -193,7 +196,7 @@ def native_guard_cases(base):
              "intelligence": {"readiness": "PARTIAL"}, "freshness": {"status": "UNKNOWN"}, "fail_policy": {"mode": "soft"}}
     decision = native_guard.evaluate_write(tool="write", resources=[str(new_asset)], root=str(root), manifest=empty)
     assert decision["decision"] == "ALLOW" and decision["level"] == "L1", decision
-    assert native_guard.evaluate_write(tool="edit", resources=[str(new_asset)], root=str(root), manifest=empty)["decision"] == "DENY"
+    assert native_guard.evaluate_write(tool="edit", resources=[str(new_asset)], root=str(root), manifest=empty)["decision"] == "ALLOW"
     outside = base / "outside.svg"
     outside.write_text("safe")
     assert native_guard.evaluate_write(tool="write", resources=[str(outside)], root=str(root), manifest=empty)["decision"] == "DENY"
@@ -215,8 +218,68 @@ def native_guard_cases(base):
     assert native_guard.evaluate_shell(command="git status --short", cwd=str(git_root), root=str(git_root))["decision"] == "ALLOW"
     for command in ("rm -f x", "cat file > out", "find . -delete", "git push origin main", "echo ok; rm x", "sed -i s/a/b/ x"):
         assert native_guard.evaluate_shell(command=command, cwd=str(git_root), root=str(git_root))["decision"] == "DENY", command
+    for command in (
+        "find . -fprint /tmp/aips-out",
+        "grep -f /etc/passwd src.py",
+        "git --git-dir=/tmp/other/.git status",
+        "git -c alias.status=!touch\u0020owned status",
+        "rg --pre=sh -n secret .",
+    ):
+        assert native_guard.evaluate_shell(command=command, cwd=str(git_root), root=str(git_root))["decision"] == "DENY", command
     assert native_guard.evaluate_shell(command="cat /etc/passwd", cwd=str(git_root), root=str(git_root))["decision"] == "DENY"
     assert native_guard.evaluate_shell(command="ls ../outside", cwd=str(git_root), root=str(git_root))["decision"] == "DENY"
+
+
+def creative_profile_cases(base):
+    project = base / "playground"
+    project.mkdir(parents=True)
+    (project / "cat.svg").write_text("<svg/>")
+    (project / "ignored.png").symlink_to(base / "outside.png")
+    env_cache = base / "cache"
+    with patch.dict(os.environ, {"XDG_CACHE_HOME": str(env_cache)}):
+        profile = creative_profile.scan(project)
+        assert profile["mode"] == "EPHEMERAL" and profile["asset_count"] == 1
+        cache = Path(profile["cache"])
+        assert cache.is_relative_to(env_cache) and cache.stat().st_mode & 0o777 == 0o600
+        assert not (project / ".ai").exists()
+        (project / "cat-v1.svg").write_text("<svg/>")
+        suggestion = creative_profile.next_version(project, "cat.svg")
+        assert suggestion == {"status": "AVAILABLE", "path": "cat-v2.svg", "created": False, "overwrite": False}
+        assert not (project / "cat-v2.svg").exists()
+
+
+def trace_cases(base):
+    base.mkdir(parents=True)
+    path = base / "events.jsonl"
+    path.write_text(json.dumps({"runtime": "opencode", "event": "context", "status": "delivered", "session": "0123456789abcdef", "prompt": "private"}) + "\n")
+    result = opencode_trace.read_events(path)
+    assert result["events"] == [{"runtime": "opencode", "event": "context", "status": "delivered", "session": "0123456789abcdef"}]
+    path.write_text(json.dumps({"runtime": "opencode", "event": "context", "status": "delivered", "session": "secret prompt text"}) + "\n")
+    assert opencode_trace.read_events(path)["events"] == []
+    path.write_text(json.dumps({"runtime": "opencode", "event": "context", "status": "delivered", "prompt": "private"}) + "\n")
+    assert opencode_trace.read_events(path)["events"] == [], "trace reader accepted a non-allowlisted field"
+    path.write_text(json.dumps({"runtime": "opencode", "event": "permission", "decision": "ALLOW", "session_root_source": "location_directory", "project_mode": "EPHEMERAL", "project": "0123456789abcdef"}) + "\n")
+    assert opencode_trace.read_events(path)["events"][0]["session_root_source"] == "location_directory"
+    try:
+        opencode_trace.read_events(path, 101)
+    except ValueError:
+        pass
+    else:
+        raise AssertionError("trace query limit was not enforced")
+
+
+def classification_cases():
+    cases = {
+        "討論角色配色，不要產生任何素材": "discuss",
+        "規劃角色風格，先討論方向": "plan",
+        "生成角色 SVG": "create",
+        "修改既有角色圖片": "modify",
+        "查看現有角色 SVG": "read",
+    }
+    for prompt, expected in cases.items():
+        result = turn_intent.classify_task(prompt)
+        assert result["intent"] == expected, (prompt, result)
+    assert turn_intent.classify_task("討論角色配色，不要產生任何素材")["effect"] == "chat_only"
 
 
 def main():
@@ -230,6 +293,9 @@ def main():
         instruction_cases(base / "blocks")
         cli_cases(base / "cli")
         native_guard_cases(base / "guard")
+        creative_profile_cases(base / "creative")
+        trace_cases(base / "trace")
+        classification_cases()
     print("OpenCode lifecycle PASS: native projections, V2 plugin ownership, conflicts, drift, interrupted writes, path confinement, L0-L3 direct-action guard, bounded Shell policy, CLI install/doctor/uninstall, MCP JSONC preservation")
 
 

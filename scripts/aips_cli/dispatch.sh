@@ -33,7 +33,7 @@ case "${1:-help}" in
         harness_status
         ;;
       help|-h|--help)
-        say "Usage: aips harness <install|uninstall|status|doctor|resolve> [options]"
+        say "Usage: aips harness <install|uninstall|status|doctor|resolve|trace> [options]"
         ;;
       doctor)
         harness_doctor
@@ -42,9 +42,26 @@ case "${1:-help}" in
         shift 2
         harness_resolve "$@"
         ;;
+      trace)
+        shift 2
+        "$(python_bin)" "$SYSTEM_DIR/scripts/opencode_trace.py" "$@"
+        ;;
       *)
         die "Unknown harness command: $sub"
         ;;
+    esac
+    ;;
+  creative)
+    sub="${2:-help}"
+    shift 2 || true
+    case "$sub" in
+      scan|next-version)
+        "$(python_bin)" "$SYSTEM_DIR/scripts/creative_workspace_profile.py" "$sub" "$@"
+        ;;
+      help|-h|--help)
+        say "Usage: aips creative <scan|next-version> --project <path> [--target <relative-asset-path>]"
+        ;;
+      *) die "Unknown creative command: $sub" ;;
     esac
     ;;
   mcp)

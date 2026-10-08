@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-- Add independent task domain/intent/effect routing, Chinese creative-asset context, and a version-aware OpenCode V2 plugin for transient Context and narrowly scoped native write/read-only Shell checks; retain ADVISORY status until native action acceptance proves hook enforcement.
+- Complete all eight OpenCode AIPS reliability recommendations with Session-rooted V2 Context and permission hooks, effect-aware Shell decisions, private EPHEMERAL creative profiles, version-aware repair guidance, bounded performance and privacy trace; verify native allow/deny behavior with an isolated loopback mock.
+- Add independent task domain/intent/effect routing, Chinese creative-asset context, and a version-aware OpenCode V2 plugin for transient Context and narrowly scoped native file/Shell decisions; arbitrary Shell effects and MCP/custom-tool writes remain outside the guard.
 - Add local-first character-art profiles, provenance-bound SVG/PNG validation, deterministic typeset character sheets, and independent visual-review guidance without installing image models or using cloud APIs.
 - Add a canonical Capability Registry with deterministic v1 consumer projections and Repository Health drift/orphan detection.
 - Add an isolated Codex PreToolUse probe that blocks only one harmless synthetic Bash command; keep unsupported/error paths and aggregate governance `ADVISORY`.

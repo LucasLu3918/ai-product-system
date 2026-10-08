@@ -1847,6 +1847,9 @@ scenarios:
       - scripts/turn_intent.py
       - scripts/project_intelligence.py
       - scripts/opencode_native_guard.py
+      - scripts/opencode_trace.py
+      - scripts/creative_workspace_profile.py
+      - scripts/opencode_skill_projection.py
       - harness/adapters/opencode/plugin.ts
       - tests/evidence/intelligence_context_lifecycle.py
       - tests/evidence/opencode_integration_lifecycle.py

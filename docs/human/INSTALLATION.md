@@ -81,6 +81,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 
 OpenCode 安裝流程自動偵測執行檔，建立受管理全域 `AGENTS.md`、Skills、三個 `aips-*` Commands；確認 V2 後另安裝受管理 AIPS plugin。設定根目錄依 `OPENCODE_CONFIG_DIR`、`XDG_CONFIG_HOME` 或預設 `~/.config/opencode`；既有同名或改動過的檔案保留並回報 CONFLICT。稍後安裝 OpenCode 可重新執行 `aips harness install`；MCP 另以 `aips mcp config --client opencode` 預覽。
 
+執行 `aips harness doctor` 可檢查版本相容、投影完整性、Host discovery 與 Hook 執行證據。若 Plugin 更新後需重新載入，Doctor 會提示重跑 install、重啟 OpenCode 並建立新 Session；安裝和檔案存在不會被當成 Hook 已執行。V1 不會安裝 V2 Plugin，未知版本保留使用者設定並回報衝突。
+
 Run Dashboard output continues to use the existing read-only projection contract; the shared canonical helper changes no installed runtime or persisted state.
 
 安裝的 Runtime adapter 讀取固定 `SYSTEM_CORE.md` 和 Turn Context 的 task-specific protocol pointers；`SYSTEM.md` 相容入口仍保留，更新流程不得把完整 orchestration 文件加入常駐 context。

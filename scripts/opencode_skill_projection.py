@@ -200,7 +200,7 @@ def plugin_files(root: Path = ROOT) -> dict[str, str]:
 def probe() -> dict:
     command = shutil.which("opencode")
     if not command:
-        return {"status": "BLOCKED", "installation": "NOT_DETECTED", "version": None, "runtime_verification": "UNVERIFIED"}
+        return {"status": "BLOCKED", "installation": "NOT_DETECTED", "version": None, "runtime_verification": "UNVERIFIED", "host_discovery": "UNVERIFIED", "hook_execution": "UNVERIFIED", "repair_command": "Install OpenCode, then run `aips harness install` and `aips harness doctor`."}
     try:
         result = subprocess.run([command, "--version"], capture_output=True, text=True, timeout=10, check=False)
         match = re.fullmatch(r"(?:opencode\s+)?v?(\d+\.\d+\.\d+)\s*", result.stdout)
@@ -209,7 +209,20 @@ def probe() -> dict:
         version = None
     compatible = bool(version and version.split(".")[0] in {"1", "2"})
     v2 = bool(version and version.split(".")[0] == "2")
-    return {"status": "READY" if compatible else "BLOCKED", "compatibility": "KNOWN_MAJOR_CONTRACT" if compatible else "UNKNOWN_VERSION", "installation": "DETECTED" if version else "PROBE_FAILED", "version": version, "runtime_verification": "UNVERIFIED", "native_context_plugin": "AVAILABLE_UNVERIFIED" if v2 else "NOT_AVAILABLE", "pre_tool_guard": "AVAILABLE_UNVERIFIED" if v2 else "UNSUPPORTED", "mcp": "NOT_CONFIGURED"}
+    return {
+        "status": "READY" if compatible else "BLOCKED",
+        "compatibility": "KNOWN_MAJOR_CONTRACT" if compatible else "UNKNOWN_VERSION",
+        "installation": "DETECTED" if version else "PROBE_FAILED",
+        "binary": command,
+        "version": version,
+        "runtime_verification": "UNVERIFIED",
+        "host_discovery": "UNVERIFIED",
+        "hook_execution": "UNVERIFIED",
+        "native_context_plugin": "AVAILABLE_UNVERIFIED" if v2 else "NOT_AVAILABLE",
+        "pre_tool_guard": "AVAILABLE_UNVERIFIED" if v2 else "UNSUPPORTED",
+        "repair_command": "Run `aips harness install`, restart OpenCode, and start a new session; then run `aips harness doctor` and `aips harness trace`.",
+        "mcp": "NOT_CONFIGURED",
+    }
 
 
 def operate(action: str) -> dict:
@@ -225,7 +238,22 @@ def operate(action: str) -> dict:
         results = {name: manager.sync({}) for name, manager in managers.items()}
     else:
         results = {name: manager.status(desired[name]) for name, manager in managers.items()}
-    return {"status": "READY" if all(r["status"] == "READY" for r in results.values()) else "CONFLICT", "config_root": str(config_root()), "capability": "CONTEXT_ALWAYS", "governance_enforcement": "ADVISORY", "runtime_verification": "UNVERIFIED", "native_context_plugin": "INSTALLED_UNVERIFIED" if v2 and action in {"install", "status", "check", "doctor"} else "NOT_INSTALLED", "pre_tool_guard": "AVAILABLE_UNVERIFIED" if v2 and action in {"install", "status", "check", "doctor"} else "UNSUPPORTED", "probe": runtime, "projections": results}
+    files_ready = all(r["status"] == "READY" for r in results.values())
+    state = "READY" if files_ready and (runtime["status"] == "READY" or action == "uninstall") else "CONFLICT"
+    return {
+        "status": state,
+        "config_root": str(config_root()),
+        "capability": "CONTEXT_ALWAYS",
+        "governance_enforcement": "ADVISORY",
+        "runtime_verification": "UNVERIFIED",
+        "host_discovery": "UNVERIFIED",
+        "hook_execution": "UNVERIFIED",
+        "native_context_plugin": "INSTALLED_UNVERIFIED" if v2 and action in {"install", "status", "check", "doctor"} else "NOT_INSTALLED",
+        "pre_tool_guard": "AVAILABLE_UNVERIFIED" if v2 and action in {"install", "status", "check", "doctor"} else "UNSUPPORTED",
+        "repair_command": runtime.get("repair_command"),
+        "probe": runtime,
+        "projections": results,
+    }
 
 
 def main() -> int:

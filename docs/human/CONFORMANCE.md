@@ -1644,7 +1644,7 @@ The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-c
 
 This Scenario is the canonical evidence pointer for OpenCode V2 context routing, action readiness, plugin lifecycle, and explicit unsupported boundaries.
 
-The lifecycle covers separate prompt dimensions, Chinese creative-asset routing, Project Intelligence readiness, direct native path/symlink decisions, bounded Shell commands, V2 plugin ownership, and version-aware install/removal. OpenCode v2.0.24 verifies plugin registry discovery, native Skills/Commands, and MCP discovery. Model Context delivery and permission-hook execution remain UNVERIFIED without a provider action, so governance stays ADVISORY. MCP/custom tools and writes outside OpenCode are not covered.
+The lifecycle covers separate prompt dimensions, Chinese creative-asset routing, Project Intelligence readiness, session-root binding, direct native path/symlink decisions, Shell argument effects, V2 plugin ownership, private EPHEMERAL asset metadata cache, bounded privacy trace, performance measurement, and version-aware install/repair/removal. OpenCode v2.0.24 acceptance uses a loopback mock model to verify actual Context delivery, a new EPHEMERAL creative asset native write Allow, and an existing-asset edit Deny with incomplete Project Intelligence. No provider credentials are needed. Linux/WSL, V1, production-provider behavior, MCP/custom-tool writes, arbitrary Shell effects and writes outside OpenCode remain unverified or out of scope; overall governance stays ADVISORY.
 
 ## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
 

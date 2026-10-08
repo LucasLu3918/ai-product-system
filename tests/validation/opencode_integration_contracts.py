@@ -8,13 +8,13 @@ plugin = (ROOT / "harness/adapters/opencode/plugin.ts").read_text(encoding="utf-
 guard = (ROOT / "scripts/opencode_native_guard.py").read_text(encoding="utf-8")
 compatibility = (ROOT / "harness/adapters/opencode/COMPATIBILITY.md").read_text(encoding="utf-8")
 registry = (ROOT / "harness/adapters/REGISTRY.yaml").read_text(encoding="utf-8")
-for marker in ('Plugin.define', 'ctx.session.hook("context"', 'ctx.permission.hook("evaluate"', 'ctx.shell.hook("create.before"'):
+for marker in ('export default {', 'ctx.session.hook("context"', 'ctx.permission.hook("evaluate"', 'ctx.shell.hook("create.before"', 'ctx.session.get({ sessionID })', 'MAX_CONTEXT_BYTES', 'creative_workspace_profile.py', 'hook_execution: "UNVERIFIED"'):
     if marker not in plugin:
         errors.append(f"OpenCode V2 plugin is missing documented hook contract: {marker}")
 for marker in ('evaluate_write', 'evaluate_shell', 'Project Intelligence readiness is not READY', 'target escapes project root'):
     if marker not in guard:
         errors.append(f"OpenCode native guard is missing decision boundary: {marker}")
-if 'pre_tool_guard: AVAILABLE_UNVERIFIED' not in registry or 'remains **ADVISORY**' not in compatibility:
+if 'pre_tool_guard: AVAILABLE_UNVERIFIED' not in registry or 'remains **ADVISORY**' not in compatibility or 'MCP/custom tools' not in compatibility:
     errors.append("OpenCode guard verification truth or advisory governance was overstated")
 
 result = subprocess.run([sys.executable, str(ROOT / "tests/evidence/opencode_integration_lifecycle.py")], capture_output=True, text=True, check=False)
