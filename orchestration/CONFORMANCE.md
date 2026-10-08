@@ -32,6 +32,10 @@ OpenCode integration retains system preflight and existing-host lifecycle checks
 
 Public command groups expose help with status 0 and return nonzero for unknown subcommands. Keep routing in the shell facade and preserve internal library modules as libraries.
 
+## Scenario 234 — Local Character Artwork Provenance and Composition
+
+The fixture lifecycle covers safe local profile/reference paths, SVG and PNG validation, exact hashes, verified provider/runtime/license provenance, and deterministic non-overwriting SVG composition with correctly typeset Unicode labels. A passing helper or manifest never proves generated character identity fidelity, model execution, or device performance; those require actual assets and separate human visual review.
+
 `tests/scenario_coverage.yaml` is the canonical mapping from Scenario ID/path to coverage classification and evidence.
 
 Allowed coverage:

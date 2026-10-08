@@ -92,6 +92,12 @@ Style Profile 是資料，不是 Skill，例如 Quiet Premium、Editorial Minima
 
 Brand System 可涵蓋 Brand Intent、Audience / Positioning、Purpose / Mission / Vision、Values、Personality、Verbal Direction、Visual Direction、Logo System 與 Brand Application。未來做新素材時應先重用既有 Brand Profile，而不是重新猜風格。
 
+### 可重複使用的角色美術
+
+角色素材沿用 `creative-calibration`、`visual-direction` 與 `visual-quality-review`。以 `CHARACTER_PROFILE.yaml` 記錄身份特徵與本機參考圖雜湊，以 `STYLE_PROFILE.yaml` 記錄媒材、構圖和文字規則；姿勢、表情、配件分開產出，避免一次生成後難以替換。預設使用已存在的本機 ComfyUI MCP；Apple Silicon 可選用 MFLUX。流程不安裝引擎、不下載模型，也不使用雲端或付費 API。清單需記錄精確模型版本、Runtime、授權來源與本機執行狀態。
+
+使用 `python scripts/character_artifacts.py validate MANIFEST --project PROJECT` 驗證檔案、路徑、尺寸、雜湊和來源；使用 `compose` 以 SVG 組成設定表並排上繁體中文標籤。輸出不覆寫既有檔案。這些檢查不會判斷角色是否一致或畫面是否合格，仍需人工依核准的角色與風格設定逐張審查；效能數據只有實際量測後才能填入。
+
 ## 需求釐清與 Planning
 
 需求不足時採 progressive clarification：先問會改變產品方向、architecture、安全或交付成本的高資訊量問題，不為了流程而問全部細節。

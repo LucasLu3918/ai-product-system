@@ -15,8 +15,6 @@ AIPS 將 Runtime/User instructions、Project rules、Project Intelligence 與 AI
 
 Adapter resolvers keep JSON/YAML results on stdout and diagnostics on stderr. Invalid adapter-state data is an explicit error; unavailable optional Intelligence subprocesses use a stable reason code and are not reported as an empty successful result.
 
-Native Host support is reported per verified Host/version. Advisory discovery is not enforcement evidence; unsupported Linux/WSL behavior remains unverified.
-
 ### MCP Interoperability Gateway
 
 MCP 提供 local stdio portable access plane，公開 Resources / Prompts / deterministic Tools。Tool-only Hosts 另以 read-only catalog/read/workflow Tools 取得相同 canonical capability context；所有 Tools 都宣告 non-destructive、idempotent、closed-world hints。Host model 負責 semantic reasoning；MCP Server 不呼叫第二個 LLM。
@@ -56,6 +54,10 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 ## Execution
 
 System changes keep the exact-candidate repository Gate enabled while any selective-validation proposal remains report-only until its complete observation cohort is reviewed.
+
+### Local character artwork
+
+The optional local character-art helper accepts Comfy MCP or MFLUX provenance, verifies SVG/PNG bytes and project-confined paths, then composes a new deterministic SVG sheet. It does not install a runtime, fetch model weights, or call cloud services. The official local Comfy MCP is preferred when already installed; MFLUX remains an optional Apple Silicon route.
 
 The shared helper package consolidates canonical hashes, repository-relative paths and caller-specific glob matching; existing module facades preserve current call sites and outputs.
 
@@ -137,8 +139,6 @@ The Retrieval Intelligence SQLite persistence boundary is `scripts/retrieval_sto
 
 ## Security & Governance
 
-Advisory Runtime probes do not promote a Host to enforced governance; runtime-policy decisions remain in the deterministic policy boundary.
-
 GitHub governance snapshot 只呼叫讀取 API，輸出完整設定證據與穩定 fingerprint，不具設定修改或發布權限。
 
 ### Security Assurance Level
@@ -167,8 +167,6 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
-
-The current Ruff debt ratchet is non-increasing, selected mypy modules remain enforced, and coverage remains report-only until representative workflows are measured.
 
 OpenCode Adapter 使用 ownership digest、安全路徑檢查與原子寫入管理全域 AGENTS、canonical Skills 及 Commands。生命週期檢查涵蓋重裝、衝突、漂移、損壞 manifest、symlink、中斷恢復與解除；原生 runtime 驗證另依版本記錄。Governance 為 ADVISORY，pre-tool guard 為 UNSUPPORTED。
 
@@ -291,8 +289,6 @@ The observation collector reports readiness separately from collection health: `
 - Release-readiness changes require lifecycle cases for an empty, non-empty, missing, duplicated, malformed, and unavailable Unreleased section.
 ## Product Delivery
 
-Release readiness is evidence only: a non-empty `Unreleased` section can block a version tag, and a maintenance PR does not create release authority.
-
 Product Delivery 把 requirement、planning、implementation、security、quality、release readiness、staging / production verification串成可追蹤生命週期，但 Production Enablement 仍需要 Human authority。
 
 Planning Package 可用 EARS 結構表達適合的功能需求，並以 optional `REQUIREMENTS.yaml` 維護需求 ID、驗收條件與驗證方式的連結。`scripts/requirements_traceability.py` 支援 JSON PASS/FAIL 輸出與成功／失敗退出碼，供自動化工具判斷結構檢查結果。EARS 只約束敘述結構；semantic review 和實際驗證仍走既有澄清、品質規劃與 evidence 流程。 v2 package 可選 `PLANNING_MANIFEST.yaml` 與 `scripts/planning_package_validate.py` 檢查 artifact 狀態、適用性、依賴 DAG、穩定參照、requirements traceability 與雙階段人工核准證據；沒有 manifest 的舊 package 保持相容。`PRODUCT_RESEARCH.md`、`DOMAIN_MODEL.md`、experience、visual 與 API 範本形成跨文件契約。電商參考資料由 `references/domains/INDEX.yaml` 依觸發條件延遲載入；不適用於其他領域的規則不會變成全域前提。
@@ -310,8 +306,6 @@ Plan19 的月報將未分析 signals 與缺少 pre-analysis 的 Issue 列為 cov
 ### Evolution Radar
 
 定期收集 public-source technology evidence、dedup / provenance、deterministic pre-analysis、semantic handoff 與 Human Decision。
-
-Quarterly Radar aggregation runs on day 3 of January, April, July and October, after monthly reports have time to publish; incomplete monthly evidence remains explicitly incomplete.
 
 
 ### Controlled Trial
@@ -344,7 +338,5 @@ Official Docs Site 使用 VitePress 1.6.x stable line，提供 sidebar、local s
 
 Documentation Placement 將每個 behavior-bearing source 綁到 canonical Human topic；Technology Guide 的廣域 trigger surface若出現尚未映射的新 source，CI 會 fail closed，要求先更新 placement contract。每條已知 subsystem rule 也明確限制 Technology Guide 可修改的 domain，因此版本新增功能不能再任意 append 到文件尾端。
 ## Runtime Content Safety Boundary
-
-Plan22 maintenance evidence contains aggregate findings and public Issue references only; unavailable task-level token traces are not inferred or persisted.
 
 The provider-neutral `scripts/content_safety.py` kernel supplies deterministic secret and baseline PII detection, provenance-aware injection signals, and sink-aware `ALLOW`, `REDACT`, `BLOCK` and `REVIEW` decisions without requiring an external model or API credential.

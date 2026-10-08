@@ -12,6 +12,32 @@ technology_guide:
     - .github/workflows/**
     - requirements*.txt
 rules:
+  - id: character-artwork-workflow
+    triggers:
+      - orchestration/CREATIVE_DIRECTION.md
+      - scripts/character_artifacts.py
+      - scripts/creative_evidence.py
+      - templates/creative/CHARACTER_PROFILE.yaml
+      - templates/creative/STYLE_PROFILE.yaml
+      - templates/creative/CHARACTER_ARTWORK_MANIFEST.yaml
+      - templates/creative/CREATIVE_EVIDENCE.yaml
+    human_docs:
+      - docs/human/USER_GUIDE.md
+      - docs/human/TECHNOLOGY_GUIDE.md
+      - docs/human/ARCHITECTURE_OVERVIEW.md
+      - docs/human/MAINTENANCE.md
+      - docs/human/DOCUMENTATION_MAP.md
+      - docs/human/DOCUMENTATION_SYNC.md
+      - docs/human/index.md
+      - docs/human/CONFORMANCE.md
+    agent_docs:
+      - orchestration/CREATIVE_DIRECTION.md
+      - orchestration/CONFORMANCE.md
+      - orchestration/DOCUMENTATION_SYNC.md
+    evidence:
+      - tests/scenario_coverage.yaml
+      - tests/evidence/character_artifacts_lifecycle.py
+
   - id: maintenance-planning
     triggers:
       - config/ci-validation-plan.yaml

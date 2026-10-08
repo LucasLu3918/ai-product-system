@@ -59,6 +59,10 @@ repository_id
 
 EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才使用 project-local .ai/。
 
+## Creative Workflow
+
+Reusable character artwork extends the existing Creative Direction path: hashed local identity/style profiles feed an optional local ComfyUI MCP or MFLUX engine, separate SVG/PNG assets receive provenance validation, and a deterministic composer typesets the character sheet. An independent visual review checks identity and style fidelity. The helper does not infer quality or install/download image models.
+
 ## Planning 與 Product Delivery
 
 OpenCode 的 `aips-plan` Command 使用既有 Planning 工作流與 Human Approval；原生入口不建立第二份規劃規則。

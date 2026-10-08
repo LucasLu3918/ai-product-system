@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Local character-art behavior is mapped through `config/documentation-placement.yaml` and `config/documentation-sync.yaml`; changes to its validator, profile templates or creative protocol keep the User Guide, Technology Guide, architecture overview, Scenario Conformance and Agent guidance in the same candidate.
+
 行為來源 `scripts/project_intelligence_promotion.py`、`scripts/repository_governance_snapshot.py` 已登錄 canonical Human 文件落點；GitHub governance snapshot 僅讀取 rulesets 與 branch protection，無遠端寫入能力。
 
 Every system change must assess downstream documentation and behavior before completion.

@@ -1832,3 +1832,11 @@ scenarios:
       - scripts/aips_cli/dispatch.sh
       - scripts/aips_cli/commands.sh
       - tests/validation/static_contracts.py
+  - id: "234"
+    path: tests/scenarios/234-character-art-workflow.md
+    coverage: lifecycle
+    evidence:
+      - scripts/character_artifacts.py
+      - scripts/creative_evidence.py
+      - tests/evidence/character_artifacts_lifecycle.py
+      - tests/validation/character_artifacts_contracts.py

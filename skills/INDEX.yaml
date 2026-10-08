@@ -118,6 +118,7 @@ skills:
     - vague_visual_request
     - user_reference_assets
     - style_calibration
+    - character_artwork
     cost: low
     model_requirements:
       reasoning: medium
@@ -413,6 +414,7 @@ skills:
     - visual_concepts
     - brand_direction
     - design_system
+    - character_artwork
     cost: low
     model_requirements:
       reasoning: medium
@@ -429,6 +431,7 @@ skills:
     - visual_review
     - brand_consistency_review
     - creative_direction_review
+    - character_artwork_review
     cost: medium
     model_requirements:
       reasoning: high

@@ -1,0 +1,24 @@
+version: 1
+id: style-id
+name: Style display name
+intent: A concise description of the intended art direction.
+
+rendering:
+  medium: anime illustration
+  linework: fine, expressive linework
+  shading: soft cel shading with restrained watercolor texture
+  finish: polished character concept art
+  palette:
+    primary: []
+    secondary: []
+    accent: []
+
+composition:
+  background: warm, lightly textured paper with generous whitespace
+  framing: full-body hero plus separately generated expressions and accessories
+  text_policy: typeset labels after image generation; never ask the image model to render text
+
+reference_policy:
+  extract_traits_only: true
+  literal_copy: false
+must_avoid: []

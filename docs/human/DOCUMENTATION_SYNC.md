@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Character-art validator, profile/manifest and creative-protocol changes map to the existing Creative Direction User Guide topic, the Technology Guide Execution topic, the dedicated Architecture Overview Creative Workflow topic, Scenario 234 and the canonical Agent protocol. A deterministic manifest result never substitutes for visual review.
+
 OpenCode 操作指引歸於 Harness 的 Native Runtime Adapters、MCP Interoperability 與 Ownership 章節；canonical Skill description 維持在原始 SKILL.md。
 
 Changes to runtime hook input validation, resolver diagnostics or installer locking update the matching Harness, Security Assurance and Installation topics together with this map; machine-readable output stays documented alongside the canonical Harness protocol.

@@ -1636,6 +1636,10 @@ Scenario 230 also confirms that adding a route scenario updates the canonical re
 
 The public command groups return concise help with status 0 and reject unknown subcommands with a useful nonzero result. The compatibility shell facade remains thin; internal library modules keep their current role.
 
+## Scenario 234 — Local Character Artwork Provenance and Composition
+
+The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-content rejection, file dimensions and hashes, verified local-provider/license provenance, stable UTF-8 Traditional Chinese labels, non-overwriting deterministic sheet composition, and optional Creative Evidence manifest-digest binding. It does not invoke a model, download weights, attest identity consistency, or claim hardware performance; those require the user's local runtime and independent visual review.
+
 ## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
 
 The scheduled/manual workflow runs a pinned OSV dependency inventory and compares the existing project secret scanner with a full-history Gitleaks shadow. Its failures and parity differences are advisory; the required candidate secret scan and repository Gate remain the release controls. CodeQL configuration is read from GitHub's default setup.

@@ -96,8 +96,24 @@ flowchart LR
     TP --> SAN[Whitelist sanitizer + pinned mapping]
     SAN --> HOST[Optional host-side OTLP/HTTP JSON exporter]
     HOST --> OTLP[OTLP-compatible backend]
-    HOST -. failure .-> DEG[TELEMETRY_DEGRADED evidence only]
+HOST -. failure .-> DEG[TELEMETRY_DEGRADED evidence only]
 ~~~
+
+### Local character artwork
+
+~~~mermaid
+flowchart LR
+    CP[Character Profile + local reference hashes] --> CAL[Creative Calibration]
+    SP[Style Profile] --> CAL
+    CAL --> GEN[Optional local ComfyUI MCP or MFLUX]
+    GEN --> ASSETS[Separate SVG / PNG outputs + model/license provenance]
+    ASSETS --> VALIDATE[Manifest validation: paths, bytes, hashes, dimensions]
+    VALIDATE --> SHEET[Deterministic SVG sheet + typeset Chinese labels]
+    SHEET --> REVIEW[Independent visual-quality-review]
+    REVIEW --> EVIDENCE[Optional manifest digest in Creative Evidence]
+~~~
+
+Character assets remain local by default. Deterministic validation proves file/provenance integrity; independent visual review assesses identity and style consistency. The generation tools are optional, model weights are not downloaded by this workflow, and there is no cloud/paid API fallback.
 
 The telemetry projection is read-only with respect to canonical run state. Endpoint credentials stay on the host, runtime content is excluded, independent review uses correlation links only, and export failure cannot change workflow or Gate outcomes.
 
