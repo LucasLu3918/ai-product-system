@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 73ce8faef285a028d979d19f2292f909a75b0e5e
-  changed_files_hash: da9c090959305e38fc5cd0f57846998ed5b4fa6df35b4f347e80ee0ab4196361
+  changed_files_hash: 7a2305af5b3b631965ee75d43daf8a6c7f7a52d98d273fb1f4d0d23abeecc0ba
 change:
   id: opencode-native-context-guard-20261008
   summary: "Complete all eight approved OpenCode AIPS recommendations: task routing, exact session roots, native V2 context and permission hooks, semantic Shell limits, EPHEMERAL creative profiles, version-aware lifecycle, bounded performance and privacy trace."
@@ -71,12 +71,13 @@ actual_diff_reconciled: true
 blockers: []
 status: READY
 verification:
-  scope_review: PASS — implementation paths, consumers, protocol routes, docs closure, and generated projections reconciled against the preview.
+  scope_review: PASS — reviewed the final 56-path diff, including the CLI help contract fixture; implementation paths, consumers, protocol routes, documentation closure and generated projections remain covered.
   prompt_lifecycle: PASS — tests/evidence/intelligence_context_lifecycle.py
   opencode_lifecycle: PASS — tests/evidence/opencode_integration_lifecycle.py
   native_acceptance: PASS — OpenCode v2.0.24 isolated native CLI and loopback mock; Context delivery, creative write ALLOW, existing edit DENY and MCP connection verified.
   static_runtime: PASS — Node 24.19.0 syntax check for harness/adapters/opencode/plugin.ts.
   projections: PASS — scripts/capability_registry.py check.
-  documentation_closure: PASS — publish preview confirms 55 changed/closure paths and no required additions.
+  documentation_closure: PASS — publish preview confirms 56 changed/closure paths and no required additions.
   context_performance: PASS — observed initial AIPS Context command 326 ms; same-turn cache reuse 0 ms, compact Context 1,851 bytes.
+  cli_contracts: PASS — Plan21 golden vectors updated for the intentional public help additions.
   exact_candidate_gate: PENDING — run once on the final committed candidate.
