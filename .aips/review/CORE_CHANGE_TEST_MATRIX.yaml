@@ -168,4 +168,4 @@ verification:
   capability_registry: PASS
   scenario_conformance: PASS
   documentation_placement: PASS
-  exact_candidate_integration_gate: Pending committed-candidate Integration Gate
+  exact_candidate_integration_gate: PASS at candidate eab97644966760bcaa2c2b2d601fd5d901bb95dd (base 23ef82acc4ed66af07fe3ed730b8ef769ee71fcd)
