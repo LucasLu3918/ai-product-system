@@ -283,6 +283,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+Local creative configure is a confined persistent effect even though it does not generate. Discovery and preflight stay read-only; execute remains explicit and local-only. No action changes the existing Shell/MCP coverage limitation or grants model-download authority.
+
 The optional local MFLUX adapter is not a verified sandbox: its fixed child-process command and offline flags restrict behavior, but do not claim host-process isolation. It is never installed or executed by preflight or the Integration Gate.
 
 Creative Bundle output is restricted to a non-Git EPHEMERAL project root and a declared create-only output directory; it does not create an execution sandbox or install an engine.

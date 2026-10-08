@@ -203,7 +203,7 @@ def load_yaml(path: Path, default: Any) -> Any:
 def rel(root: Path, path: Path) -> str:
     try:
         return path.resolve().relative_to(root.resolve()).as_posix()
-    except Exception:
+    except (OSError, RuntimeError, ValueError):
         return str(path)
 
 
@@ -1315,7 +1315,7 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             "prompt_hash": sha(prompt),
             "category": category,
             "mutation_likely": mutation,
-            "classification": {**{key: task_classification[key] for key in ("domain", "intent", "effect")}, "readiness_level": task_level},
+            "classification": {**{key: task_classification[key] for key in ("domain", "intent", "effect", "creative_medium")}, "readiness_level": task_level},
         },
         "context": {
             "always": [

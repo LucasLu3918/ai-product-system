@@ -6,6 +6,10 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+OpenCode 創作 tool 支援 discover/configure，產圖意圖、原生檔案 guard 與 Shell effect policy 維持不同檢查；重新投影後仍須驗證實際 host hooks。
+
+Native Context envelope 驗證與 user-only 授權分開處理；只檢查設定的要求仍可執行 discover/preflight，不會啟動生成。
+
 OpenCode V2 exposes the creative executor as an explicit, preflight-gated tool; the CLI remains the shared execution boundary.
 
 OpenCode V2 的 AIPS Plugin 以 Session directory 裝載精簡 Turn Context，並在原生檔案權限前重查目標；另提供綁定 EPHEMERAL Session 的 Creative 工具。任意 Shell 子程序仍不宣稱受保護。
@@ -28,6 +32,16 @@ MCP 提供 portability；native adapters 提供 runtime hook / guard。兩者共
 OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn Context，並在 permission evaluation 階段檢查支援的直接檔案操作。L1 僅允許非 Git workspace 中受限路徑的新創意資產；L2 需要 Project Intelligence READY、freshness CURRENT 與無待解權威衝突；L3 外部效果沿用既有 Human approval gate。Shell 僅保留有限唯讀命令，並額外提供固定參數的 AIPS 診斷。`creative_execution` 是唯一有界自訂工具：它綁定當前 EPHEMERAL Session，可建立不覆寫的角色／風格 Profile 與未設定引擎的 Creative Bundle，也可對既有 Bundle 執行唯讀預檢及明確要求的本機生成。其他 MCP/custom tools 和繞過 OpenCode 的寫入仍不在 guard 範圍。Plugin 安裝與 hook discovery 不足以證明執行防護；完成 runtime permission acceptance 前，治理保持 ADVISORY。
 
 ## Project Intelligence 與 Retrieval
+
+創作 manifest 的 Human visual review 與軟體獨立 review evidence 是不同契約。圖片容器或 tool fixture 通過不會自動產生視覺 PASS 或使用者接受。
+
+創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
+
+discover/preflight 是唯讀操作；configure 會建立版本化檔案，execute 才會啟動 provider。排程與狀態不可將這些不同效果混為完成產圖。
+
+創作設定只允許固定欄位與 local provider，不修改來源 Bundle、不下載權重；取消要求後的短回覆不恢復生成授權。
+
+creative_medium 是媒材檢查的 advisory 輸入，不能取代生成授權。影響分析包含設定版本、CLI/plugin consumers 與真實模型尚未驗證限制。
 
 Creative Bundle preparation adds versioned, project-scoped outputs and does not mutate the target project's reusable Intelligence.
 
@@ -70,6 +84,8 @@ repository_id
 EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才使用 project-local .ai/。
 
 ## Creative Workflow
+
+角色插畫新增唯讀 `discover` 與建立新版本的 `configure`，補齊本機引擎設定路徑。OpenCode 先正規化 Context，再判斷使用者要求與取消狀態；要求點陣插畫時不能默默改交 SVG。生成、圖片容器檢查、人工視覺審查與使用者接受分開記錄；沒有模型權重時仍不能宣稱真實產圖驗收。
 
 Reusable character artwork extends the existing Creative Direction path: hashed local identity/style profiles feed optional installed MFLUX or loopback ComfyUI built-in workflows, separate create-only raster assets receive provenance validation, and a deterministic composer typesets the character sheet. Preflight never starts generation; unavailable engines return `BLOCKED_NO_ENGINE`. An independent human visual review checks identity and style fidelity. The helper does not infer quality or install/download image models.
 
@@ -248,6 +264,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
 
 The exact-candidate Core Matrix binds the local creative lifecycle and its documentation closure; real MFLUX inference remains unverified when the engine is unavailable.
 

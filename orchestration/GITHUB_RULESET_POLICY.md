@@ -24,6 +24,8 @@ The input must include branch protection, rulesets, bypass actors, and `source_c
 
 ## Transition procedure
 
+Creative runtime reliability candidates preserve the Core change label and exact-candidate required checks. Synthetic engine success does not waive native callback/hook evidence or authorize modifying repository rulesets.
+
 The local creative execution capability does not change protected-branch or merge policy; publish the exact reviewed candidate through the normal Integration Gate and Git Publish Approval flow.
 
 Core Harness changes use the `aips:core-change` label on initial PR creation and require exact-candidate Integration Gate evidence; ruleset inspection remains read-only and separate from merge authority.

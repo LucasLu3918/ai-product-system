@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
+import subprocess
 import sys
 import tempfile
 import threading
@@ -17,8 +19,9 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 import creative_execution as creative
 import opencode_native_guard as guard
+from creative_request_policy_lifecycle import main as request_policy_cases
 
-PNG = bytes.fromhex("89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000b49444154789c636000020000050001a5f645400000000049454e44ae426082")
+PNG = bytes.fromhex("89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000b49444154789c6360000200000500017a5eab3f0000000049454e44ae426082")
 
 
 def require(condition: bool, message: str) -> None:
@@ -352,6 +355,61 @@ def no_engine_case(base: Path):
         raise AssertionError("missing local engine was presented as READY")
 
 
+def configure_cases(base: Path):
+    project = fixture_project(base)
+    executable = mflux_fixture(project)
+    bundle_path, bundle = write_bundle(project)
+    before = bundle_path.read_bytes()
+    settings = {key: bundle[key] for key in ("provider", "model", "runtime", "runtime_version", "mflux_executable", "width", "height", "steps")}
+    args_path = base / "configure-args.txt"
+    os.environ["FAKE_MFLUX_ARGS"] = str(args_path)
+    configured = creative.configure(project, bundle_path.name, settings)
+    require(bundle_path.read_bytes() == before and not args_path.exists(), "configure changed source or launched engine")
+    require(configured["status"] == "CONFIGURED" and configured["generation_executed"] is False, "configure claimed generation")
+    require(creative.preflight(project, configured["bundle"])["status"] == "READY" and not args_path.exists(), "configured preflight launched engine")
+    output = creative.execute(project, configured["bundle"])
+    manifest = json.loads((project / output["manifest"]).read_text())
+    require(manifest["acceptance"] == {"file_validity": "PASS", "visual_quality": "PENDING", "user_acceptance": "NOT_RECORDED"}, "execution conflated acceptance states")
+    with ThreadPoolExecutor(max_workers=3) as executor:
+        results = list(executor.map(lambda _: creative.configure(project, bundle_path.name, settings), range(3)))
+    require(len({result["bundle"] for result in results}) == 3, "configuration collision overwrote another version")
+    for malicious in ({"output_path": "outside.png"}, {"provider": "cloud"}, {"model": {"id": []}}, {"comfyui": {"shell": "touch bad"}}, {"prompt": "x" * 4001}, {"width": True}):
+        expect_blocked(lambda malicious=malicious: creative.configure(project, bundle_path.name, malicious), "unsafe configuration accepted")
+    link = project / "linked.yaml"
+    link.symlink_to(bundle_path)
+    expect_blocked(lambda: creative.configure(project, link.name, settings), "symlink configuration source accepted")
+    require(not list(project.glob(".aips-configure-*")), "configuration left staging files")
+    inventory = creative.discover(project)
+    require(inventory["generation_executed"] is False and inventory["model_status"] == "NOT_VERIFIED", "inventory claimed model inference")
+    require(executable.is_file(), "discovery changed runtime")
+    prepared = creative.prepare(project, "art", "wizard", "Wizard", "A wizard", "Detailed anime", "Generate a wizard image", ["round glasses"])
+    profile_bundle = creative.configure(project, prepared["bundle"], settings)
+    style = project / prepared["scope"] / "STYLE_PROFILE.yaml"
+    style_before = style.read_bytes()
+    def mutate_profile(_root, _bundle, _provider, temporary, _timeout):
+        temporary.write_bytes(PNG)
+        style.write_text("changed during generation")
+    with patch.object(creative, "mflux_execute", side_effect=mutate_profile):
+        expect_blocked(lambda: creative.execute(project, profile_bundle["bundle"]), "profile changed during generation was accepted")
+    scoped = yaml.safe_load((project / profile_bundle["bundle"]).read_text())
+    require(not (project / scoped["output_path"]).exists(), "changed-profile output was published")
+    style.write_bytes(style_before)
+    generated = creative.execute(project, profile_bundle["bundle"])
+    provenance = json.loads((project / generated["manifest"]).read_text())
+    require(len(provenance["profiles"]) == 2, "prepared profiles were not bound to output")
+    style.write_text("changed after generation")
+    expect_blocked(lambda: creative.review(project, generated["manifest"], "Human", "PASS", "fixture"), "stale profile review was accepted")
+    corrupt = project / "corrupt.png"
+    for content in (PNG[:16], PNG[:-4], PNG[:48] + b"bad!" + PNG[52:], b"\x89PNG\r\n\x1a\n"):
+        corrupt.write_bytes(content)
+        require(not creative.output_magic(corrupt), "invalid raster container was accepted")
+    manifest_context = {"task": {"classification": {"domain": "creative", "intent": "create", "creative_medium": "raster"}}}
+    denied = guard.evaluate_write(tool="write", resources=["fallback.svg"], root=str(project), manifest=manifest_context)
+    require(denied["reason_code"] == "creative_medium_mismatch", "raster silently fell back to SVG")
+    manifest_context["task"]["classification"]["creative_medium"] = "vector"
+    require(guard.evaluate_write(tool="write", resources=["vector.svg"], root=str(project), manifest=manifest_context)["decision"] == "ALLOW", "explicit vector output blocked")
+
+
 def main() -> int:
     with tempfile.TemporaryDirectory(prefix="aips-creative-execution-") as tmp:
         base = Path(tmp)
@@ -359,6 +417,18 @@ def main() -> int:
         state.mkdir()
         os.environ["XDG_STATE_HOME"] = str(state)
         no_engine_case(base / "no-engine")
+        configure_cases(base / "configure")
+        request_policy_cases()
+        node = os.environ.get("AIPS_NODE_BINARY") or shutil.which("node")
+        if node:
+            tool_project = base / "native-tool"
+            tool_project.mkdir()
+            environment = {**os.environ, "AIPS_CLI": str(ROOT / "bin/aips"), "AIPS_GUARD_PYTHON": sys.executable,
+                           "AIPS_VALIDATION_PYTHON": sys.executable, "XDG_CONFIG_HOME": str(base / "native-config")}
+            native = subprocess.run([node, str(ROOT / "tests/evidence/creative_tool_harness.mjs"), str(ROOT), str(tool_project)],
+                                    env=environment, capture_output=True, text=True, timeout=60, check=False)
+            require(native.returncode == 0, "native creative tool fixture failed: " + native.stdout + native.stderr)
+            print(native.stdout.strip())
         mflux_cases(base / "mflux")
         mflux_capability_cases(base / "mflux-capabilities")
         prepare_cases(base / "prepare")

@@ -108,6 +108,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+Creative configuration changes include allowlisted settings, source preservation, output-version allocation, message-envelope normalization, user-only authorization and raster-medium consumers. Reconcile new validation helpers, native-tool fixtures, existing CLI/provider callers, profile provenance and the documentation closure; preserve partial repository-wide graph coverage.
+
 For local creative execution, include versioned Profile/Bundle creation, provider adapter, CLI dispatch, OpenCode consumer, output manifest and trace, Scenario, and canonical documentation projections in the affected boundary; distinguish no-generator preparation from explicit execution.
 
 Runtime adapters must resolve existing-project Context from the active Session directory and preserve project-native instruction authority; OpenCode native write checks re-evaluate the target with current Intelligence.

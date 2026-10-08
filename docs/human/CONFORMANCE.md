@@ -110,6 +110,8 @@ Identity/Resume evidence 同時驗證跨 worktree repository identity、dirty wo
 
 ## v0.16 Agent Eval Conformance
 
+創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
+
 Scenario 230 checks fixed-core size/reduction, task-specific route selection, compact Manifest and hook output, conservative mutation fallback, and fail-closed missing route sources.
 
 恢復生命週期證據涵蓋 worktree 安裝、macOS Bash 3.2 無選項呼叫、不完整 Python 環境、快取權限與索引清理、安裝版分歧拒絕及 CI 取消判讀。這些是 AIPS 工具驗收，不能作為真實 REST 產品驗收，也不能將情境清單數量等同所有端到端測試通過。
@@ -1657,6 +1659,8 @@ This Scenario is the canonical evidence pointer for OpenCode V2 context routing,
 The lifecycle covers separate prompt dimensions, Chinese creative-asset routing, Project Intelligence readiness, session-root binding, direct native path/symlink decisions, Shell argument effects, V2 plugin ownership, private EPHEMERAL asset metadata cache, bounded privacy trace, performance measurement, and version-aware install/repair/removal. OpenCode v2.0.24 acceptance uses a loopback mock model to verify actual Context delivery, a new EPHEMERAL creative asset native write Allow, and an existing-asset edit Deny with incomplete Project Intelligence. No provider credentials are needed. Linux/WSL, V1, production-provider behavior, MCP/custom-tool writes, arbitrary Shell effects and writes outside OpenCode remain unverified or out of scope; overall governance stays ADVISORY.
 
 ## Scenario 236 — Local Creative Bundle Execution
+
+Scenario 236 新增 Bundle 設定競爭／來源保留、native Context envelope、使用者授權撤銷、唯讀預檢、媒材不符與損壞 PNG 檢查。實際 tool callback 使用無憑證 fixture；這不等於真實模型品質或使用者接受。
 
 Scenario 236 covers versioned no-overwrite Profile/Bundle preparation, fixed MFLUX model/operation CLI mapping, single-reference FLUX.1 edit, bounded multi-reference FLUX.2/Qwen edit, loopback ComfyUI with single-reference edit, create-only EPHEMERAL output, provenance, finite retry, privacy-bounded trace, and separate human visual review.
 

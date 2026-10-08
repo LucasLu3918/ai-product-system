@@ -109,6 +109,8 @@ The Security Engineer records the floor and rationale.
 
 ## Product baseline vs change impact
 
+創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
+
 OpenCode local file admission is limited to directly intercepted native operations and confined resources. Readiness checks do not provide OS sandboxing and do not cover MCP/custom tools or out-of-process writes.
 
 Change Impact approval authorizes only its reviewed scope; partial graph coverage is recorded as a limitation and reconciled against the exact candidate before publication.
@@ -206,6 +208,8 @@ Review actual:
 - tests and failure paths.
 
 ## Release Security Gate
+
+創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
 
 The creative execution manifest and trace are covered by the candidate review; local image bytes and raw prompts are excluded from trace, and no external image endpoint is supported.
 
@@ -388,6 +392,8 @@ The Parallel Run Dashboard is loopback-only and read-only. Its projection cannot
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.
 
 ## Runtime Policy Enforcement
+
+Creative configure 僅接固定設定欄位並建立新版本，不開放一般 YAML 寫入。引擎仍受 local-only、offline 與 scope 限制；唯讀能力盤點不執行 provider。取消後不保留生成授權，外部工具寫入仍不在原生 guard 保證內。
 
 OpenCode direct file permissions have separate V2 acceptance evidence; the native file guard does not intercept MCP/custom tools, arbitrary Shell subprocesses, or writes from other programs, so overall adapter governance remains ADVISORY.
 

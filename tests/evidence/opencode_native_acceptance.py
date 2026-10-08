@@ -38,8 +38,18 @@ class MockModelHandler(BaseHTTPRequestHandler):
         user_prompt = '\n'.join(str(item.get('content', '')) for item in messages if isinstance(item, dict) and item.get('role') == 'user')
         previous_tool = any(item.get('role') == 'tool' or item.get('tool_call_id') for item in messages if isinstance(item, dict))
         body = None
+        if 'native-creative-prepare' in user_prompt and payload.get('tools') and not previous_tool:
+            creative_tool = next((item for item in payload['tools'] if item.get('function', {}).get('name') == 'creative_execution'), None)
+            code_tool = next((item for item in payload['tools'] if item.get('function', {}).get('name') == 'execute'), None)
+            catalog = '\n'.join(str(item.get('content', '')) for item in messages if isinstance(item, dict) and item.get('role') == 'system')
+            if creative_tool or (code_tool and 'tools.creative_execution(' in catalog):
+                arguments = {'action': 'prepare', 'scope': 'native-art', 'character_id': 'native-wizard', 'character_name': 'Wizard',
+                             'summary': 'A wizard character', 'style_intent': 'Detailed fantasy anime', 'prompt': 'Detailed wizard illustration', 'identity_features': ['round glasses']}
+                name = 'creative_execution' if creative_tool else 'execute'
+                invocation = arguments if creative_tool else {'code': 'return await tools.creative_execution(' + json.dumps(arguments) + ')'}
+                body = {"id": "chatcmpl-creative-fixture", "object": "chat.completion", "created": 1, "model": "fixture", "choices": [{"index": 0, "message": {"role": "assistant", "content": None, "tool_calls": [{"id": "call-creative-prepare", "type": "function", "function": {"name": name, "arguments": json.dumps(invocation)}}]}, "finish_reason": "tool_calls"}]}
         wants_asset = any(word in user_prompt.casefold() for word in ('建立', '創作', '修改', 'create', 'modify'))
-        if payload.get('tools') and not previous_tool and wants_asset:
+        if body is None and payload.get('tools') and not previous_tool and wants_asset:
             modifying = '修改' in user_prompt or 'modify' in user_prompt.casefold()
             preferred = 'edit' if modifying else 'write'
             tool = next((item for item in payload['tools'] if item.get('function', {}).get('name') == preferred), None)
@@ -372,7 +382,22 @@ def main() -> None:
                 decisions = {event.get('decision') for event in traces.get('events', []) if event.get('event') == 'permission'}
                 if not {'ALLOW', 'DENY'} <= decisions:
                     raise RuntimeError('native permission Allow/Deny decisions were not both observed in AIPS trace')
+                if model_execution_path == 'native_cli':
+                    cli_prompt('請建立精緻動漫角色 native-creative-prepare 圖片')
+                else:
+                    prompt('請建立精緻動漫角色 native-creative-prepare 圖片')
+                prepared = workspace / 'native-art/native-wizard-v1'
+                if not (prepared / 'bundles/CREATIVE_BUNDLE.yaml').is_file():
+                    tool_results = [str(item.get('content', ''))[:400] for request_data in MockModelHandler.requests
+                                    for item in request_data.get('messages', []) if isinstance(item, dict) and item.get('role') == 'tool']
+                    names = sorted({tool.get('function', {}).get('name', 'unknown') for request_data in MockModelHandler.requests for tool in request_data.get('tools', [])})
+                    execute_schema = next((tool['function'] for request_data in reversed(MockModelHandler.requests) for tool in request_data.get('tools', []) if tool.get('function', {}).get('name') == 'execute'), {})
+                    context_text = next((str(item.get('content', '')) for request_data in reversed(MockModelHandler.requests) for item in request_data.get('messages', []) if item.get('role') == 'system' and 'creative_execution' in str(item.get('content', ''))), '')
+                    location = context_text.find('creative_execution')
+                    raise RuntimeError('native creative prepare failed; tool_names=' + repr(names) + '; execute_schema=' + json.dumps(execute_schema)[:5000] + '; creative_documentation=' + context_text[max(0, location - 200):location + 800] + '; bounded tool results=' + repr(tool_results[-3:]))
+                assert not list((prepared / 'output').rglob('*.png')), 'native prepare launched generation'
                 print(json.dumps({'version': version, 'skills': len(expected), 'commands': 3, 'skill_load': 'VERIFIED', 'mcp': 'CONNECTED', 'plugin_setup': plugin_setup, 'runtime': 'DISCOVERY_VERIFIED', 'model_execution': model_delivery, 'model_execution_path': model_execution_path, 'context_delivery': 'VERIFIED', 'permission_hook_execution': 'VERIFIED', 'permission_decisions': ['ALLOW', 'DENY'], 'pre_tool_guard': 'VERIFIED'}))
+                print(json.dumps({'creative_prepare': 'VERIFIED_NATIVE_HOST', 'generation_executed': False}))
                 print(json.dumps({'global_instructions': 'OFFICIAL_CONTRACT', 'instruction_model_delivery': 'UNVERIFIED'}))
             finally:
                 server.terminate()

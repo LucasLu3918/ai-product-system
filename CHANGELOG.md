@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.77.0
+
+- Add read-only local creative discovery and allowlisted create-only Bundle configuration, retaining source files, offline execution and no model downloads.
+- Normalize OpenCode Context envelopes and separate user-only prepare/configure/generation authorization from read-only preflight; revoke cancelled or unrelated continuations and block silent raster-to-SVG downgrade.
+- Validate raster containers, bind prepared identity/style profiles to provenance, and separate file validity, Human visual review and user acceptance; extend synthetic native-tool and failure-path evidence.
+
 ## 0.76.0
 
 - Add safe, versioned character/style Profile and Creative Bundle preparation in non-Git EPHEMERAL workspaces, integrated with the OpenCode creative tool.

@@ -1,77 +1,164 @@
 version: 1
-
 candidate:
-  base_sha: f0005f116b04eda5d7f9fff1c660f53f567f2ace
-  changed_files_hash: f18f1b483d16a44ca683bfb5eaa9d7e0753fb436b87ee6bf7096f69e0a3f096d
-
+  base_sha: 7723c504d7787f6ed2f629efaaddd00821366046
+  changed_files_hash: 99c770cde2e32ef6b25ddd1df0ad7523b46e96629383705649121c1eccbee954
 change:
-  id: creative-bundle-mflux-20261008
-  summary: Safe versioned creative Bundle/Profile preparation and fixed MFLUX model/operation CLI mapping.
+  id: creative-workflow-reliability-20261009
+  summary: Complete bounded local creative configuration and reliable native user
+    authorization without silent media fallback.
   boundary:
-    - Non-Git EPHEMERAL prepare action, version allocation, create-only files, scope/path/symlink protections, and unconfigured engine state
-    - Fixed FLUX.1, FLUX.2 Klein and Qwen Edit MFLUX executable/argument mapping; FLUX.1 edit is single-reference, while FLUX.2/Qwen multi-reference edit is bounded; ComfyUI edit is single-reference
-    - AIPS CLI and OpenCode creative tool schema, intent/session binding, preflight and explicit execute boundaries
-    - Scenario 236, evidence, docs, diagrams, documentation placement/sync, release version/changelog
-
+  - User-only request authority, native snapshot/dispatch shapes, revocation, raster/vector
+    consumer
+  - Read-only discovery; allowlisted source-preserving configuration and version races
+  - Local executor container validation, profile provenance and separate visual/user
+    acceptance
+  - Canonical skills, CLI and native Code Mode consumer, regression fixtures and documentation
+    closure
 matrix:
-  - boundary: Versioned preparation and local executor safety
-    reason: Preparation creates persistent files while the executor consumes local references and may call installed local engines.
-    checks:
-      static_lint: {applicable: true, evidence: Ruff on changed Python files and repository lint contracts}
-      unit: {applicable: true, evidence: Path confinement, input bounds, model/operation capability mapping, collision and reason-code cases}
-      integration: {applicable: true, evidence: Synthetic creative lifecycle with fake MFLUX and loopback ComfyUI}
-      contract: {applicable: true, evidence: Creative execution contracts and Bundle template validation}
-      security: {applicable: true, evidence: Git/traversal/symlink refusal, no overwrite, offline argv-only command, local-only image handling}
-      migration_recovery: {applicable: true, evidence: Concurrent prepare allocation, interrupted staged write cleanup, executor timeout and manifest rollback}
-      cli_harness: {applicable: true, evidence: AIPS creative prepare/preflight/execute CLI lifecycle and bounded Shell denial}
-      docs_schema: {applicable: true, evidence: Scenario 236, Bundle template, docs placement/sync and schema validation}
-      e2e: {applicable: true, evidence: Synthetic prepare/generate/edit/review path; real models and visual quality remain explicitly unverified}
-  - boundary: OpenCode creative tool and command routing
-    reason: The adapter exposes preparation and execution to a model and must preserve explicit intent, active-session confinement and action separation.
-    checks:
-      static_lint: {applicable: true, evidence: Node 24 syntax/type checks in exact-candidate Gate}
-      unit: {applicable: true, evidence: Prepare schema limits, create-intent requirement, unsupported Shell command denial}
-      integration: {applicable: true, evidence: OpenCode lifecycle and CLI route lifecycle}
-      contract: {applicable: true, evidence: Tool schema and AIPS command help/dispatch contracts}
-      security: {applicable: true, evidence: Session-root and EPHEMERAL checks; prepare cannot invoke execute or escape scope}
-      migration_recovery: {applicable: false, na_reason: Existing plugin ownership and state formats are unchanged}
-      cli_harness: {applicable: true, evidence: OpenCode tool and AIPS dispatcher lifecycle}
-      docs_schema: {applicable: true, evidence: OpenCode compatibility documentation and placement closure}
-      e2e: {applicable: true, evidence: Synthetic tool contract/lifecycle only; no model request or image provider is used}
-  - boundary: Documentation, scenario and release consistency
-    reason: Core workflow, supported CLI matrix, runtime boundary and versioned behavior must be represented consistently.
-    checks:
-      static_lint: {applicable: true, evidence: Repository static contracts and changed-file checks}
-      unit: {applicable: false, na_reason: Behavior-specific checks are listed in the first two matrix rows}
-      integration: {applicable: true, evidence: Documentation placement/sync, Scenario 236 coverage, generated Conformance views}
-      contract: {applicable: true, evidence: Versioning contracts, capability projection and architecture/documentation contracts}
-      security: {applicable: true, evidence: Strict candidate secret scan against exact base and candidate}
-      migration_recovery: {applicable: false, na_reason: No existing persisted data schema or deployment migration changes}
-      cli_harness: {applicable: true, evidence: Exact-candidate Integration Gate}
-      docs_schema: {applicable: true, evidence: Markdown links, VitePress build, SVG/XML validation and documentation placement}
-      e2e: {applicable: true, evidence: Full repository validation and exact-candidate Gate}
-
+- boundary: Request and native runtime
+  reason: scripts/creative_request_policy.py; native type/user/text and active-dispatch
+    root binding; no model downshift
+  checks:
+    static_lint:
+      applicable: true
+      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
+        OpenCode 2.0.24 native loopback acceptance
+    unit:
+      applicable: true
+      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
+        OpenCode 2.0.24 native loopback acceptance
+    integration:
+      applicable: true
+      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
+        OpenCode 2.0.24 native loopback acceptance
+    contract:
+      applicable: true
+      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
+        OpenCode 2.0.24 native loopback acceptance
+    e2e:
+      applicable: true
+      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
+        OpenCode 2.0.24 native loopback acceptance
+    security:
+      applicable: true
+      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
+        OpenCode 2.0.24 native loopback acceptance
+    migration_recovery:
+      applicable: true
+      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
+        OpenCode 2.0.24 native loopback acceptance
+    cli_harness:
+      applicable: true
+      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
+        OpenCode 2.0.24 native loopback acceptance
+    docs_schema:
+      applicable: true
+      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
+        OpenCode 2.0.24 native loopback acceptance
+- boundary: Configuration and local execution
+  reason: scripts/creative_execution.py; no download/cloud, fixed provider registry,
+    source preservation, create-only scopes
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
+        invalid settings, no engine, offline argv, loopback nodes, container rejection
+        and rollback'
+    unit:
+      applicable: true
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
+        invalid settings, no engine, offline argv, loopback nodes, container rejection
+        and rollback'
+    integration:
+      applicable: true
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
+        invalid settings, no engine, offline argv, loopback nodes, container rejection
+        and rollback'
+    contract:
+      applicable: true
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
+        invalid settings, no engine, offline argv, loopback nodes, container rejection
+        and rollback'
+    e2e:
+      applicable: true
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
+        invalid settings, no engine, offline argv, loopback nodes, container rejection
+        and rollback'
+    security:
+      applicable: true
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
+        invalid settings, no engine, offline argv, loopback nodes, container rejection
+        and rollback'
+    migration_recovery:
+      applicable: true
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
+        invalid settings, no engine, offline argv, loopback nodes, container rejection
+        and rollback'
+    cli_harness:
+      applicable: true
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
+        invalid settings, no engine, offline argv, loopback nodes, container rejection
+        and rollback'
+    docs_schema:
+      applicable: true
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
+        invalid settings, no engine, offline argv, loopback nodes, container rejection
+        and rollback'
+- boundary: Canonical delivery and publication
+  reason: CLI, three existing creative Skills, native schema, canonical docs and exact
+    candidate
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
+        placement/sync, VitePress, candidate secret scan and exact Integration Gate
+    unit:
+      applicable: true
+      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
+        placement/sync, VitePress, candidate secret scan and exact Integration Gate
+    integration:
+      applicable: true
+      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
+        placement/sync, VitePress, candidate secret scan and exact Integration Gate
+    contract:
+      applicable: true
+      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
+        placement/sync, VitePress, candidate secret scan and exact Integration Gate
+    e2e:
+      applicable: true
+      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
+        placement/sync, VitePress, candidate secret scan and exact Integration Gate
+    security:
+      applicable: true
+      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
+        placement/sync, VitePress, candidate secret scan and exact Integration Gate
+    migration_recovery:
+      applicable: true
+      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
+        placement/sync, VitePress, candidate secret scan and exact Integration Gate
+    cli_harness:
+      applicable: true
+      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
+        placement/sync, VitePress, candidate secret scan and exact Integration Gate
+    docs_schema:
+      applicable: true
+      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
+        placement/sync, VitePress, candidate secret scan and exact Integration Gate
 review_evidence:
   required: false
-  system_improvement_review: .aips/review/CREATIVE_BUNDLE_MFLUX_SYSTEM_IMPROVEMENT_REVIEW.md
-  core_change_proposal: .aips/review/CREATIVE_BUNDLE_MFLUX_CORE_CHANGE_PROPOSAL.md
-
+  reason: Bounded primary implementation and evidence review; no independently attested
+    review requirement is introduced or waived.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 status: READY
 verification:
-  creative_execution_lifecycle: PASS_SYNTHETIC_FIXTURES
-  opencode_integration_lifecycle: PASS
-  creative_execution_contracts: PASS
-  full_repository_validation: PASS_EXACT_CANDIDATE_GATE
-  documentation_placement_and_sync: PASS
-  vitepress_build: PASS_REPOSITORY_PREFLIGHT
-  versioning_contracts: PASS
-  capability_registry_projection: PASS
-  ruff_and_mypy: PASS
-  node_plugin_syntax: PASS
-  secret_scan: PASS_EXACT_CANDIDATE_GATE
-  exact_candidate_integration_gate: PASS_PENDING_FINAL_MATRIX_COMMIT_RECHECK
-  live_mflux_inference: NOT_RUN_ENGINE_NOT_INSTALLED
-  real_model_visual_quality: NOT_VERIFIED
+  focused_creative_lifecycle: PASS_SYNTHETIC_FIXTURES
+  native_tool_callback: PASS
+  native_host: PASS_OPENCODE_2_0_24_LOOPBACK
+  local_command_discovery: PASS_RUNTIME_COMMANDS_AVAILABLE_MODEL_UNVERIFIED
+  real_model_inference: DEFERRED_EXPLICIT_USER_DECISION_NO_WEIGHTS
+  visual_quality: NOT_VERIFIED_REQUIRES_RENDERED_IMAGE_AND_HUMAN_REVIEW
+  complete_gate: REQUIRED_EXACT_CANDIDATE_NOT_YET_RUN
+  cli_golden: PASS_UPDATED_FOR_ADDITIVE_DISCOVER_CONFIGURE_HELP
+  touched_intelligence_lint: ONE_EXISTING_BLIND_EXCEPTION_FIXED_FOR_REQUIRED_BURN_DOWN

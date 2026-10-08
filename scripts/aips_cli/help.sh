@@ -22,6 +22,8 @@ Usage:
 
   aips creative prepare --project <path> --scope <relative-path> --character-id <slug> --character-name <name> --summary <text> --style-intent <text> --prompt <text> --identity-feature <text> [--identity-feature <text> ...]
   aips creative scan --project <path>
+  aips creative discover --project <path>
+  aips creative configure --project <path> --bundle <relative-yaml> [--settings-json <allowlisted-json>] (defaults to stdin)
   aips creative next-version --project <path> --target <relative-asset-path>
   aips creative preflight --project <path> --bundle <relative-yaml>
   aips creative execute --project <path> --bundle <relative-yaml>
