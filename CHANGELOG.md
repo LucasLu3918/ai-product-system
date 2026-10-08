@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.75.0
+
 - Add a scoped local creative execution pipeline for MFLUX and loopback ComfyUI generation/editing, with preflight, create-only raster outputs, provenance manifests, explicit human visual review, bounded privacy-safe traces, and no model downloads or external image egress.
 - Extend the OpenCode Shell Guard with fixed read-only AIPS diagnostics and stable denial reason codes; arbitrary shell commands remain blocked.
 - Complete all eight OpenCode AIPS reliability recommendations with Session-rooted V2 Context and permission hooks, effect-aware Shell decisions, private EPHEMERAL creative profiles, version-aware repair guidance, bounded performance and privacy trace; verify native allow/deny behavior with an isolated loopback mock.
