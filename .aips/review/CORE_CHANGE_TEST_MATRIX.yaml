@@ -1,7 +1,7 @@
 version: 1
 candidate:
-  base_sha: 07f60ea934b4e546954b40946fbd7381f81c7b5c
-  changed_files_hash: a1d8752e83f27ec5ba9e698ad0c7e634d360271f2dfab88289854d7900820fce
+  base_sha: 73ce8faef285a028d979d19f2292f909a75b0e5e
+  changed_files_hash: e566624e5755715fba50b881b276b21d3df0ef28fd10c3850e7a51a978b4e5a4
 change:
   id: opencode-native-context-guard-20261008
   summary: "Complete all eight approved OpenCode AIPS recommendations: task routing, exact session roots, native V2 context and permission hooks, semantic Shell limits, EPHEMERAL creative profiles, version-aware lifecycle, bounded performance and privacy trace."
@@ -77,4 +77,5 @@ verification:
   native_acceptance: PASS — OpenCode v2.0.24 isolated native CLI and loopback mock; Context delivery, creative write ALLOW, existing edit DENY and MCP connection verified.
   static_runtime: PASS — Node 24.19.0 syntax check for harness/adapters/opencode/plugin.ts.
   projections: PASS — scripts/capability_registry.py check.
+  context_performance: PASS — observed initial AIPS Context command 326 ms; same-turn cache reuse 0 ms, compact Context 1,851 bytes.
   exact_candidate_gate: PENDING — run once on the final committed candidate.
