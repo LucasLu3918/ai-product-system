@@ -333,6 +333,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+OpenCode adapter and native permission changes are Core boundaries: route them through the reviewed Core Change Matrix, full repository validation and exact-candidate Gate before requesting Git publication approval.
+
 Publication CI always provisions the complete Python validation dependency set; isolated required preflight fixtures cannot rely on optional-package selection. Exact-path plans still control Node, Chromium downloads and optional evidence. Required remote checks must pass on the exact candidate before an explicitly authorized merge.
 
 Existing fingerprint facade imports remain stable over `scripts/aips_common`; the helper layer does not change change-class routing, publication authority, or Human approval.

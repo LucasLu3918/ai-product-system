@@ -379,6 +379,8 @@ AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned cont
 
 ## Runtime Policy Enforcement
 
+OpenCode direct file permissions have separate V2 acceptance evidence; the native file guard does not intercept MCP/custom tools, arbitrary Shell subprocesses, or writes from other programs, so overall adapter governance remains ADVISORY.
+
 Synthetic or advisory Host probes remain explicitly advisory and do not establish native policy enforcement on another platform.
 
 Native hook adapters reject malformed input explicitly and fail closed if policy evaluation or audit persistence fails. Diagnostic logging goes to stderr; response envelopes contain a stable failure code without exposing exception text or other sensitive details.

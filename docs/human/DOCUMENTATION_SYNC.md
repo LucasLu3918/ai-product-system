@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+OpenCode Harness 行為變更需同步 adapter contract、Human 安裝／使用說明、Scenario 235、Capability Registry 與架構 surface；exact-candidate 文件閉包由 publish resolver 檢查。
+
 OpenCode native Context and guard limits are maintained in the adapter compatibility contract and Scenario 235; capability and architecture views derive from the canonical Capability Registry.
 
 Character-art validator, profile/manifest and creative-protocol changes map to the existing Creative Direction User Guide topic, the Technology Guide Execution topic, the dedicated Architecture Overview Creative Workflow topic, Scenario 234 and the canonical Agent protocol. A deterministic manifest result never substitutes for visual review.

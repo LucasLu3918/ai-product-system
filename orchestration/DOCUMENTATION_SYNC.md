@@ -169,6 +169,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+OpenCode adapter changes route to Harness, Installation, User Guide, Architecture Overview, Technology Guide and Conformance, alongside the adapter contract and Scenario 235 evidence.
+
 Native adapter capability claims must link to version-bound lifecycle evidence and preserve explicit UNVERIFIED states for model delivery and action-level hooks.
 
 OpenCode projection manager and ownership templates map to the existing Harness topic; stable Skill descriptions remain in canonical SKILL.md sources rather than duplicated Host definitions.

@@ -20,6 +20,8 @@ Managed AIPS CLI runtimes require Python >=3.12. An explicit `AIPS_PYTHON` is au
 
 ## Context contract
 
+OpenCode resolves project context from the active Session's directory rather than the plugin's setup location, enforces its compact UTF-8 budget and records only bounded privacy-safe timing metadata.
+
 OpenCode native projections use the existing resolved Python runtime. Version probing and file integrity remain distinct from native runtime verification; no model or provider configuration is selected by the adapter.
 
 For project work, context identifies project mode and stable instruction sources, then loads only relevant Intelligence topics. Missing/stale Intelligence and Retrieval remain explicit. A non-Git or no-HEAD workspace still receives basic context; Git-dependent history is reported unavailable. Turn Context does not persist prompts, tool arguments, secrets, or private reasoning.

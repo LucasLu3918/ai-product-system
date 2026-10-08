@@ -181,6 +181,8 @@ When product-delivery behavior changes, review together:
 
 ### Harness / Runtime adapters
 
+OpenCode V2 lifecycle now verifies active Session-root Context, bounded creative asset metadata, version-aware recovery, effect-aware Shell decisions and privacy-limited trace; native v2.0.24 acceptance remains scoped to the tested host, with global governance ADVISORY.
+
 When Harness behavior changes, review together:
 
 - harness/BOOTSTRAP + HARNESS_PROTOCOL + ADAPTER_CONTRACT;

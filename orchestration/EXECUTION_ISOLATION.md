@@ -147,6 +147,8 @@ Runtime Policy Enforcement may require provider-observed network allowlist evide
 
 ## Runtime-security assessment boundary
 
+The OpenCode Shell hook uses semantic command/effect checks and is not an OS process sandbox; MCP/custom tools and other processes remain outside its observed boundary.
+
 Issue #79 keeps out-of-band anomaly evidence and semantic intent governance outside the active Execution Isolation / Resource Authorization enforcement path. They remain assessment candidates only.
 
 If a future Human-approved Trial is created, anomaly analysis must consume bounded observable events rather than private chain-of-thought or secret values, and semantic intent output must be monotonic with Resource Authorization: it may DENY or ESCALATE an otherwise-allowed operation, but it must never widen a resource grant, Change Boundary, protected-operation authority or Human approval.

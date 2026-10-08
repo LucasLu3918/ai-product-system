@@ -41,6 +41,8 @@ The established Retrieval Intelligence command/import facade remains `scripts/re
 
 ## Runtime support
 
+OpenCode V2 adapter lifecycle, install/doctor repair guidance, Session-scoped Context and tested native permission boundaries are documented in [Harness](HARNESS.md); use `aips harness trace` for the bounded privacy-limited event view.
+
 - Supported Python: `>=3.12`
 - CI tested Python: `3.12`
 - CI compatibility smoke-tested Python: `3.12, 3.13, 3.14`

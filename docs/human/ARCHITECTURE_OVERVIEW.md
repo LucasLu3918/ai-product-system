@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+OpenCode V2 的 AIPS Plugin 以 Session directory 裝載精簡 Turn Context，並在原生檔案權限前重查目標；創作素材索引留在專案外私有快取，MCP 與任意 Shell 子程序不宣稱受保護。
+
 Runtime adapters distinguish malformed hook input from a valid request with no applicable action. Resolution failures carry stable machine-readable status and reason codes, while diagnostics remain on stderr so callers can safely parse stdout.
 
 Portable Commands 以 Canonical ID（例如 `aips.plan`）將同一治理工作流渲染為 Slash Command、Skill 或 generic MCP bootstrap；它是 advisory access plane，不取代 Runtime-native Adapter 的 turn hook 或 pre-tool guard。

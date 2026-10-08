@@ -230,6 +230,8 @@ The internal Retrieval Intelligence storage extraction preserves the facade and 
 
 ## Runtime resource requests
 
+OpenCode's Session-scoped file guard is a host hook, not scheduler ownership or process isolation; Shell subprocesses and MCP/custom-tool effects remain outside that boundary.
+
 Task Graph isolation metadata may declare bounded TCP port needs:
 
 ~~~yaml

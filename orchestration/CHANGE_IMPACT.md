@@ -55,6 +55,8 @@ N/A is allowed with reason.
 
 ## Project-native style
 
+Runtime adapters must resolve existing-project Context from the active Session directory and preserve project-native instruction authority; OpenCode native write checks re-evaluate the target with current Intelligence.
+
 Preserve valid native conventions in this order:
 
 ~~~text

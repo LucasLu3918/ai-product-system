@@ -30,6 +30,8 @@ The first v1 baseline reconciles one already-observed drift rather than suppress
 
 ## Explicit Architecture Surface Inventory
 
+The Harness runtime surface includes the OpenCode native plugin, direct-action guard, creative metadata profile, privacy trace and their lifecycle/native acceptance evidence; generated inventory remains derived from the Capability Registry.
+
 The harness-runtime surface includes OpenCode native guard decisions and the managed V2 plugin projection; architecture projections remain generated from the Capability Registry.
 
 `config/capability-registry.yaml` owns capability metadata and the deterministic major-surface inventory. `references/evolution/CAPABILITY_MAP.yaml` and `config/architecture-surfaces.yaml` retain their v1 consumer formats and are generated projections. The default check is read-only; run `python scripts/capability_registry.py generate` only after editing the canonical registry.

@@ -11,6 +11,8 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ### Turn-Aware Global Harness
 
+The OpenCode V2 adapter derives Context from the active Session root, caps the compact manifest at 12,000 bytes, and reports bounded hook timings without persisting prompts or file contents.
+
 AIPS 將 Runtime/User instructions、Project rules、Project Intelligence 與 AIPS protocol 組合成 bounded context。不同 Runtime 使用各自可驗證的 integration strategy。
 
 Adapter resolvers keep JSON/YAML results on stdout and diagnostics on stderr. Invalid adapter-state data is an explicit error; unavailable optional Intelligence subprocesses use a stable reason code and are not reported as an empty successful result.

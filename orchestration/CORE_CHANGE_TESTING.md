@@ -22,6 +22,8 @@ When a shared module-extraction lifecycle gains another facade, retain identity 
 
 ## Impact-derived Test Matrix
 
+OpenCode runtime changes require lifecycle, version/ownership recovery, Context/cache freshness, target confinement, direct Allow/Deny, effect-aware Shell limits and a credential-free native loopback acceptance when a supported binary is available.
+
 For native runtime adapters, test setup, version routing, ownership recovery, direct action decisions, cache freshness, and unsupported Shell/MCP paths separately; do not infer hook execution from registry discovery.
 
 CI provisioning matrices cover unconditional Python requirements, docs-only install/preflight and legacy-migration lifecycles, and retained conditional Chromium downloads. Exercise positive and negative provisioning contracts without weakening mandatory candidate scans, complete repository validation or remote aggregate checks.

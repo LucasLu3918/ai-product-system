@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+OpenCode V2 resolves Context and supported native file decisions from each active Session directory. EPHEMERAL creative asset metadata stays in a private external cache, and Shell/MCP effects remain outside the native file guard.
+
 ~~~mermaid
 flowchart TD
     S[User Prompt] --> RA[Runtime Adapter]

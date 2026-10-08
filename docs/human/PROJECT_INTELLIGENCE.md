@@ -45,6 +45,8 @@ ATTACHED 位於 `.ai/intelligence/reviews/PROJECT_INTELLIGENCE_REVIEW.html`；EP
 
 ## Freshness
 
+OpenCode V2 derives Project Intelligence from the active `Session.Info.location.directory`, limits transient Context to 12,000 UTF-8 bytes, and rechecks it against the native write target.
+
 `aips intelligence refresh-plan --project <project>` returns affected topics, changed source hashes and manual review steps without writing state. Review sources and update only reviewed registry hashes before finalize. Finalize records computed freshness rather than hiding stale authoritative sources. Repeated bootstrap preserves existing Intelligence and points to refresh-plan; workflow files appear as CI graph seeds with partial semantic coverage.
 
 不是任何 Commit 都全量 STALE。AIPS 比較 relevant Source Hash、watched paths、HEAD diff、dirty paths、Branch/Worktree 與 Schema，只 Targeted Refresh 受影響 Topic。

@@ -22,6 +22,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+Core runtime candidates bind the reviewed Change Matrix, Session-root native acceptance, documentation closure and strict secret scan to the exact base/head; local PASS does not grant publication or merge authority.
+
 OpenCode V2 acceptance records plugin registry setup separately from model-context and permission-hook execution; unknown provider execution remains UNVERIFIED.
 
 OpenCode candidates include canonical Skill generation, ownership-safe projection lifecycle and existing Host/MCP regression evidence. Native acceptance is version-bound and cannot be inferred from file integrity.

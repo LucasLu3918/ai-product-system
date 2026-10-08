@@ -80,4 +80,6 @@ Portable Command Core 的 Registry、renderer、ownership conflict 與 MCP read-
 
 ## Verification History
 
+Runtime adapter acceptance stays separate from Evolution Radar trial evidence; the OpenCode Harness contract records supported host/version and unsupported Shell/MCP effects.
+
 Scenario 230 is the current route/core baseline; its measurements remain candidate-bound and do not establish runtime enforcement beyond the tested adapters.

@@ -81,6 +81,8 @@ Monthly / quarterly roll-up 量測 collected → shortlist → semantic → acti
 - Release readiness is a separate deterministic evidence gate; Evolution metrics do not imply an empty Unreleased section or authorize a tag.
 ## Current Boundaries
 
+OpenCode adapter 的 Session Context 與 native permission acceptance 屬 Harness 與 Core Change Gate 證據，不構成 Evolution Radar 的 adoption、provider 或 production readiness 證據。
+
 `SYSTEM_CORE.md` 為固定核心；協定依 task classification 漸進載入。任務 route resolution 不代表完整 enforcement，也不改變各 Runtime 已驗證的治理強度。
 
 Task ownership leases and dashboard projections are operational coordination evidence, not Radar signals or Human adoption decisions. They cannot promote a candidate or grant publication authority.
