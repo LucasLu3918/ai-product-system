@@ -1500,6 +1500,8 @@ Current inventory after Scenario 195: 34 deterministic + 105 lifecycle + 54 agen
 
 ## Scenario 196 — Explicit OpenAPI client generator adapter
 
+OpenCode MCP config 同樣遵守 explicit adapter 邊界：只產生設定預覽，固定 workspace，不改寫使用者 JSONC 或模型設定。
+
 The lifecycle fixture verifies that preview and Integration Gate inspection never execute the configured generator. An explicit local run checks current canonical OpenAPI evidence and a pinned repository-local executable, stages inputs, bounds process/output resources, tests deterministic output, and applies only allowlisted files. Phase 3 ownership and input/output hashes are updated with the files; modified prior output is protected and a failed Profile update restores the prior output. Process output is not persisted. This evidence does not establish semantic client correctness or operating-system sandboxing.
 
 Current inventory after Scenario 196: 34 deterministic + 106 lifecycle + 54 agent_eval = 194 automated; 2 manual; 196 total; 0 uncovered.
@@ -1586,6 +1588,8 @@ The monthly evaluator deterministically samples up to 20 signal fingerprints and
 
 ## Scenario 220 — Parallel advisory fast feedback
 
+OpenCode 投影檔案檢查是 focused evidence；完整 Integration Gate 仍驗證固定候選，不能由原生檔案存在取代。
+
 Scenario 230 checks fixed-core size/reduction, task-specific route selection, compact Manifest and hook output, conservative mutation fallback, and fail-closed missing route sources.
 
 Scenario 224 驗收主要模型保留與稀疏委派，目前登錄為 manual；Scenario 225 以 lifecycle 驗證 metadata 唯一來源、v1 相容、drift 與失敗路徑。決定性 registry 測試不代表已驗證 Agent 實際模型選擇。
@@ -1613,6 +1617,8 @@ The lifecycle verifies canonical capability metadata, deterministic generated co
 The probe denies only a harmless synthetic local Bash command. Unsupported, malformed, timeout and error paths remain advisory; this evidence does not claim live dispatch enforcement.
 
 ## Scenario 228 — Progressive Quality Ratchet
+
+新增 OpenCode 投影與生命週期程式納入 touched-file quality ratchet；既有 lint debt 不因 Host 整合而擴大。
 
 Per-module findings and direct coverage are measured without increasing a repository-wide threshold; debt must not grow in a touched module.
 

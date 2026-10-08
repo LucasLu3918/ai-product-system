@@ -1,5 +1,7 @@
 # Global Agent Harness Protocol
 
+OpenCode composes a managed global instruction block and digest-owned native Skill/Command projections. Adapter Registry drives Host status and ownership; runtime verification remains separate from file integrity. Basic installation keeps MCP client configuration review-only and governance ADVISORY.
+
 AIPS Global Harness makes AIPS available to supported Agent runtimes while preserving the user's existing Agent ecosystem.
 
 ## Turn-aware flow

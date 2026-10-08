@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+OpenCode 操作指引歸於 Harness 的 Native Runtime Adapters、MCP Interoperability 與 Ownership 章節；canonical Skill description 維持在原始 SKILL.md。
+
 Changes to runtime hook input validation, resolver diagnostics or installer locking update the matching Harness, Security Assurance and Installation topics together with this map; machine-readable output stays documented alongside the canonical Harness protocol.
 
 固定 AIPS system context 由 `SYSTEM_CORE.md` 與任務專屬 orchestration pointers 組成；`SYSTEM.md` 是相容入口。Turn Context 或 protocol routing 行為變更時，同步更新 Harness、Architecture、Technology Guide、Scenario Conformance 與核心測試矩陣。
@@ -144,6 +146,8 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+OpenCode adapter、projection manager 與 ownership templates 共用 Harness 的文件 placement；原生驗證狀態需與 compatibility matrix 一致。
 
 主要實作保留合格的 Runtime／使用者模型；Skill frontmatter 產生相容 v1 INDEX，決定性 lifecycle 與人工模型政策驗收分開記錄。
 

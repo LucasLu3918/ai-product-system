@@ -1,5 +1,7 @@
 ---
 id: product-research
+description: Research product, market and domain evidence to support planning decisions and explicit
+  assumptions.
 capability: product
 estimated_context_cost: medium
 triggers:

@@ -167,6 +167,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+OpenCode projection manager and ownership templates map to the existing Harness topic; stable Skill descriptions remain in canonical SKILL.md sources rather than duplicated Host definitions.
+
 Compact system context changes map to Human Harness, Architecture Overview, Technology Guide and Scenario Conformance; task-specific protocol routing is described at the allowed canonical H2s and never copied into a second policy source.
 
 Register each new behavior-bearing helper in the placement and synchronization maps before expanding Human documentation. Project Intelligence promotion and governance snapshots retain their canonical topic mappings and authority boundaries.

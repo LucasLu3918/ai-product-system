@@ -59,6 +59,8 @@ surfaces:
   - harness/PORTABLE_COMMANDS.md
   - harness/commands/REGISTRY.yaml
   - scripts/harness_resolve.py
+  - scripts/opencode_skill_projection.py
+  - harness/adapters/opencode/AGENTS.md
   - scripts/mcp_server.py
   - scripts/execution_isolation.py
   - scripts/sandbox_providers.py
@@ -87,6 +89,7 @@ surfaces:
   - AGENTS.md
   - harness/MCP_GATEWAY.md
   validation_paths:
+  - tests/evidence/opencode_integration_lifecycle.py
   - tests/evidence/harness_runtime_lifecycle.py
   - tests/evidence/mcp_interoperability_lifecycle.py
   - tests/evidence/resource_authorization_lifecycle.py

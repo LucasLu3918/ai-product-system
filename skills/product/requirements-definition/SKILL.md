@@ -1,5 +1,7 @@
 ---
 id: requirements-definition
+description: Define traceable requirements, acceptance criteria and downstream planning artifact
+  relationships.
 capability: product
 estimated_context_cost: low
 triggers:

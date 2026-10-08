@@ -11,6 +11,8 @@ The established Retrieval Intelligence command/import facade remains `scripts/re
 <!-- AIPS-SYSTEM-FACTS:BEGIN -->
 ## Public commands
 
+OpenCode 使用 `aips harness install|status|doctor|uninstall` 與 `aips commands ... --host opencode` 管理原生投影；`aips mcp config --client opencode --opencode-version 2` 產生固定 workspace 的 review-only 設定。
+
 | Command | Capabilities | Platforms | Runtime | Optional dependencies | Validation | Documentation |
 |---|---|---|---|---|---|---|
 | `aips install` | codex-native-hooks, deterministic-scheduler, execution-isolation, gemini-cli-observable-event-capture-trial, gemini-cli-real-runtime-verification, mcp-gateway, resource-authorization, skill-registry, turn-aware-global-harness | linux, macos, windows-wsl | Python ">=3.12" | None | tests/evidence/install_preflight_lifecycle.py | docs/human/INSTALLATION.md, docs/human/USER_GUIDE.md |

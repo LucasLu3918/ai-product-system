@@ -1,5 +1,7 @@
 ---
 id: visual-quality-review
+description: Review rendered visual quality, consistency and usability with evidence and actionable
+  findings.
 capability: design
 estimated_context_cost: medium
 triggers:

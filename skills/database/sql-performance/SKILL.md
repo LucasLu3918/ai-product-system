@@ -1,5 +1,7 @@
 ---
 id: sql-performance
+description: Diagnose SQL query and database performance using query plans, indexes and measured
+  workload evidence.
 capability: database
 estimated_context_cost: low
 triggers:

@@ -167,6 +167,8 @@ The Scheduler never falls back to LLM coordination to make a blocked graph look 
 
 ## Read-only declaration and fail-closed boundary
 
+OpenCode projections expose existing workflows but grant no scheduler execution or pre-tool enforcement authority. Missing native runtime evidence remains UNVERIFIED.
+
 The scheduler keeps its public raw fingerprint facade over `scripts/aips_common`; golden vectors protect existing bytes without changing task ownership or fail-closed behavior.
 
 Protocol route metadata is advisory context only and is not a task capability, resource grant, or approval receipt.

@@ -1,5 +1,7 @@
 ---
 id: rest-api
+description: Design and implement REST APIs with contracts, validation, error behavior, authorization
+  and project-native tests.
 capability: engineering
 estimated_context_cost: low
 triggers:

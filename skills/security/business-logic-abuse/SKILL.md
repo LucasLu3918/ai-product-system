@@ -1,5 +1,7 @@
 ---
 id: business-logic-abuse
+description: Identify abuse of business workflows, limits, state transitions and incentives beyond
+  technical vulnerabilities.
 capability: security
 estimated_context_cost: medium
 triggers:

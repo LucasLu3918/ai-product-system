@@ -38,6 +38,8 @@ def detect_runtime(explicit: str | None) -> str:
     if explicit:
         return explicit
     env = os.environ
+    if env.get("OPENCODE"):
+        return "opencode"
     if env.get("GEMINI_CWD") or env.get("GEMINI_PROJECT_DIR"):
         return "gemini-cli"
     if env.get("CLAUDE_PROJECT_DIR") or env.get("CLAUDE_CODE"):
@@ -91,6 +93,9 @@ def project_agent_files(root: Path, cwd: Path) -> list[str]:
 def runtime_native_files(runtime: str, project_root: Path, cwd: Path) -> list[str]:
     home = Path.home()
     candidates: list[Path] = []
+    if runtime == "opencode":
+        from opencode_skill_projection import config_root
+        candidates.append(config_root() / "AGENTS.md")
     if runtime == "codex":
         codex_home = Path(os.environ.get("CODEX_HOME", home / ".codex"))
         candidates.append(codex_home / "AGENTS.md")
@@ -139,7 +144,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Resolve AIPS harness/runtime/project context")
     parser.add_argument("--cwd", default=os.getcwd())
     parser.add_argument("--project")
-    parser.add_argument("--runtime", choices=["codex", "claude-code", "gemini-cli", "unknown"])
+    parser.add_argument("--runtime", choices=["codex", "claude-code", "gemini-cli", "opencode", "unknown"])
     parser.add_argument("--format", choices=["yaml", "json"], default="yaml")
     args = parser.parse_args()
 

@@ -2,6 +2,8 @@
 version: 1
 skills:
   authorization-security:
+    description: Design and review tenant isolation, object-level permissions and
+      authorization boundaries for APIs and workflows.
     capability: security
     path: security/authorization-security/SKILL.md
     triggers:
@@ -16,6 +18,8 @@ skills:
       minimum_tier: 3
       preferred_tier: 3
   brand-foundation:
+    description: Define brand positioning, personality, voice and reusable visual
+      foundations before product design.
     capability: design
     path: design/brand-foundation/SKILL.md
     triggers:
@@ -30,6 +34,8 @@ skills:
       minimum_tier: 2
       preferred_tier: 2
   business-logic-abuse:
+    description: Identify abuse of business workflows, limits, state transitions and
+      incentives beyond technical vulnerabilities.
     capability: security
     path: security/business-logic-abuse/SKILL.md
     triggers:
@@ -44,6 +50,8 @@ skills:
       minimum_tier: 3
       preferred_tier: 3
   capacity-cost:
+    description: Estimate workload capacity and infrastructure cost from explicit
+      usage assumptions and measurable budgets.
     capability: infrastructure
     path: infrastructure/capacity-cost/SKILL.md
     triggers:
@@ -57,6 +65,8 @@ skills:
       minimum_tier: 2
       preferred_tier: 3
   characterization-testing:
+    description: Capture existing behavior with characterization tests before changing
+      legacy or insufficiently tested code.
     capability: testing
     path: testing/characterization-testing/SKILL.md
     triggers:
@@ -69,6 +79,8 @@ skills:
       minimum_tier: 2
       preferred_tier: 2
   clean-architecture:
+    description: Separate domain rules, use cases and infrastructure through dependency
+      boundaries suited to the existing project.
     capability: software-architecture
     path: software-architecture/clean-architecture/SKILL.md
     triggers:
@@ -84,6 +96,8 @@ skills:
       minimum_tier: 2
       preferred_tier: 3
   code-review:
+    description: Review changes for correctness, security, maintainability and evidence
+      against the declared change boundary.
     capability: quality
     path: quality/code-review/SKILL.md
     triggers:
@@ -96,6 +110,8 @@ skills:
       minimum_tier: 2
       preferred_tier: 3
   creative-calibration:
+    description: Calibrate creative references and visual directions with user feedback
+      before committing to design execution.
     capability: design
     path: design/creative-calibration/SKILL.md
     triggers:
@@ -110,6 +126,8 @@ skills:
       minimum_tier: 1
       preferred_tier: 2
   creative-reference-research:
+    description: Research and evaluate visual references to establish an evidence-based
+      creative direction.
     capability: design
     path: design/creative-reference-research/SKILL.md
     triggers:
@@ -124,6 +142,8 @@ skills:
       minimum_tier: 1
       preferred_tier: 2
   data-modeling:
+    description: Model domain data, ownership, relationships and invariants with suitable
+      persistence and migration boundaries.
     capability: database
     path: database/data-modeling/SKILL.md
     triggers:
@@ -140,6 +160,8 @@ skills:
       minimum_tier: 2
       preferred_tier: 3
   delivery-planning:
+    description: Plan implementation, dependencies, verification and delivery milestones
+      with explicit risks and approval boundaries.
     capability: delivery-planning
     path: planning/delivery-planning/SKILL.md
     triggers:
@@ -154,6 +176,8 @@ skills:
       minimum_tier: 1
       preferred_tier: 2
   domain-driven-design:
+    description: Model complex business domains using bounded contexts, aggregates,
+      value objects and domain invariants.
     capability: software-architecture
     path: software-architecture/domain-driven-design/SKILL.md
     triggers:
@@ -172,6 +196,8 @@ skills:
       minimum_tier: 2
       preferred_tier: 3
   financial-integrity:
+    description: Protect financial value, ledger invariants, reconciliation and replay-safe
+      operations in money-related workflows.
     capability: security
     path: security/financial-integrity/SKILL.md
     triggers:
@@ -188,6 +214,8 @@ skills:
       minimum_tier: 3
       preferred_tier: 4
   incident-response:
+    description: Triage incidents, contain impact, recover service and document evidence
+      and follow-up actions.
     capability: operations
     path: operations/incident-response/SKILL.md
     triggers:
@@ -201,6 +229,8 @@ skills:
       minimum_tier: 3
       preferred_tier: 3
   performance-profiling:
+    description: Profile performance bottlenecks and verify optimization claims with
+      reproducible measurements and raw samples.
     capability: performance
     path: performance/performance-profiling/SKILL.md
     triggers:
@@ -215,6 +245,8 @@ skills:
       minimum_tier: 2
       preferred_tier: 3
   product-discovery:
+    description: Clarify user problems, product value, assumptions and scope before
+      selecting a solution.
     capability: product
     path: product/product-discovery/SKILL.md
     triggers:
@@ -228,6 +260,8 @@ skills:
       minimum_tier: 1
       preferred_tier: 2
   product-research:
+    description: Research product, market and domain evidence to support planning
+      decisions and explicit assumptions.
     capability: product
     path: product/product-research/SKILL.md
     triggers:
@@ -245,6 +279,8 @@ skills:
       minimum_tier: 2
       preferred_tier: 2
   requirements-definition:
+    description: Define traceable requirements, acceptance criteria and downstream
+      planning artifact relationships.
     capability: product
     path: product/requirements-definition/SKILL.md
     triggers:
@@ -258,6 +294,8 @@ skills:
       minimum_tier: 1
       preferred_tier: 2
   rest-api:
+    description: Design and implement REST APIs with contracts, validation, error
+      behavior, authorization and project-native tests.
     capability: engineering
     path: engineering/rest-api/SKILL.md
     triggers:
@@ -271,6 +309,8 @@ skills:
       minimum_tier: 2
       preferred_tier: 2
   secure-design:
+    description: Design security boundaries, controls and secret handling proportionate
+      to the system and data risks.
     capability: security
     path: security/secure-design/SKILL.md
     triggers:
@@ -286,6 +326,8 @@ skills:
       minimum_tier: 3
       preferred_tier: 3
   security-testing:
+    description: Verify security controls with relevant negative tests for authentication,
+      authorization, abuse and data boundaries.
     capability: security
     path: security/security-testing/SKILL.md
     triggers:
@@ -300,6 +342,8 @@ skills:
       minimum_tier: 3
       preferred_tier: 3
   sql-performance:
+    description: Diagnose SQL query and database performance using query plans, indexes
+      and measured workload evidence.
     capability: database
     path: database/sql-performance/SKILL.md
     triggers:
@@ -312,6 +356,8 @@ skills:
       minimum_tier: 2
       preferred_tier: 3
   tdd:
+    description: Implement testable behavior through failing tests, minimal passing
+      changes and refactoring; use characterization tests for legacy behavior.
     capability: testing
     path: testing/tdd/SKILL.md
     triggers:
@@ -327,6 +373,8 @@ skills:
       minimum_tier: 2
       preferred_tier: 2
   threat-modeling:
+    description: Identify protected assets, trust boundaries, threats and mitigations
+      for the affected system design.
     capability: security
     path: security/threat-modeling/SKILL.md
     triggers:
@@ -341,6 +389,8 @@ skills:
       minimum_tier: 3
       preferred_tier: 3
   ux-web-design:
+    description: Design web user experiences, interaction flows and accessible layouts
+      grounded in product requirements.
     capability: design
     path: design/ux-web-design/SKILL.md
     triggers:
@@ -355,6 +405,8 @@ skills:
       minimum_tier: 1
       preferred_tier: 2
   visual-direction:
+    description: Establish a coherent visual direction using approved creative references,
+      style decisions and product constraints.
     capability: design
     path: design/visual-direction/SKILL.md
     triggers:
@@ -369,6 +421,8 @@ skills:
       minimum_tier: 1
       preferred_tier: 2
   visual-quality-review:
+    description: Review rendered visual quality, consistency and usability with evidence
+      and actionable findings.
     capability: design
     path: design/visual-quality-review/SKILL.md
     triggers:

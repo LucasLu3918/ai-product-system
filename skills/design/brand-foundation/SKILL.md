@@ -1,5 +1,7 @@
 ---
 id: brand-foundation
+description: Define brand positioning, personality, voice and reusable visual foundations before
+  product design.
 capability: design
 estimated_context_cost: medium
 triggers:

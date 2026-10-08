@@ -107,6 +107,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+OpenCode reconciliation includes canonical descriptions, generated Skill Index, adapter consumers and ownership manifests; projection outputs are derived from the approved source diff.
+
 Shared-helper changes declare direct wrapper consumers and preserve unresolved graph relationships explicitly; golden helper coverage must not be treated as complete caller/consumer traversal.
 
 Changes to extracted Project Intelligence promotion helpers preserve the facade and approval boundary; governance snapshots are read-only and report UNKNOWN for inaccessible surfaces.

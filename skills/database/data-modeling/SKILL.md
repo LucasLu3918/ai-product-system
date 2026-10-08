@@ -1,5 +1,7 @@
 ---
 id: data-modeling
+description: Model domain data, ownership, relationships and invariants with suitable persistence
+  and migration boundaries.
 capability: database
 estimated_context_cost: medium
 triggers:

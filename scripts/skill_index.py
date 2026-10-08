@@ -61,6 +61,9 @@ def generate(root: Path) -> dict:
             raise ValueError(f"duplicate Skill id: {sid}")
         if "applies_when" in meta:
             raise ValueError(f"{sid}: migrate applies_when into canonical triggers")
+        description = meta.get("description")
+        if not isinstance(description, str) or not 1 <= len(description.strip()) <= 1024:
+            raise ValueError(f"{sid}: description must contain 1-1024 characters")
         capability = meta.get("capability")
         cost = meta.get("estimated_context_cost")
         triggers = meta.get("triggers")
@@ -100,6 +103,7 @@ def generate(root: Path) -> dict:
         ):
             raise ValueError(f"{sid}: invalid model tiers")
         entries[sid] = {
+            "description": description,
             "capability": capability,
             "path": path.relative_to(skills_root).as_posix(),
             "triggers": triggers,

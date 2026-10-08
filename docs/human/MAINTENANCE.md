@@ -98,6 +98,8 @@ Multi-file changes should normally be assembled into one coherent remote branch 
 
 ## Versioning
 
+OpenCode 相容證據需記錄實際版本與作業系統；AIPS 檔案完整性成功不代表任意 OpenCode 版本已完成原生驗證。
+
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
 
 Python support facts live in `config/system-facts.yaml` and are mirrored in `pyproject.toml`. The required PR Gate tests Python 3.12; the weekly compatibility workflow smoke-tests 3.12, 3.13, and 3.14. Runtime-floor changes must keep System Reference, installation guidance, Technology Guide, and Scenario 210 aligned.
@@ -388,6 +390,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+OpenCode ownership、Skill description 與 Host 安裝生命週期由 `tests/evidence/opencode_integration_lifecycle.py` 驗證；既有 Host 與 MCP 回歸仍需通過。
+
 Validation Observation 的耗時或成功記錄不能取代必要 lifecycle 的執行環境：CI 固定安裝完整 Python 套件後，仍以同一候選的完整 Gate 和遠端 `repository` 彙總判定結果，Chromium 下載與可選 evidence 維持精準計畫控制。
 
 Plan21 Phase 2 keeps canonical JSON/hash and path/glob helpers in `scripts/aips_common/`; compatibility and caller-specific behavior are pinned by `tests/evidence/shared_primitives_lifecycle.py`, while graph coverage remains partial.
@@ -491,6 +495,8 @@ Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanu
 
 
 ## Repository Health / Architecture Drift consistency
+
+OpenCode 是既有 Harness Capability 的 Adapter；新投影與驗證路徑登錄於 capability registry，再生成架構投影。
 
 Repository Health continues to treat generated capability projections as outputs of `config/capability-registry.yaml`; shared path/hash helpers do not become a second registry source.
 

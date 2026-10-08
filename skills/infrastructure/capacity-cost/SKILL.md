@@ -1,5 +1,7 @@
 ---
 id: capacity-cost
+description: Estimate workload capacity and infrastructure cost from explicit usage assumptions
+  and measurable budgets.
 capability: infrastructure
 estimated_context_cost: medium
 triggers:

@@ -1,5 +1,6 @@
 ---
 id: creative-reference-research
+description: Research and evaluate visual references to establish an evidence-based creative direction.
 capability: design
 estimated_context_cost: medium
 triggers:

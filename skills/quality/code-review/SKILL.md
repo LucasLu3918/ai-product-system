@@ -1,5 +1,7 @@
 ---
 id: code-review
+description: Review changes for correctness, security, maintainability and evidence against the
+  declared change boundary.
 capability: quality
 estimated_context_cost: low
 triggers:

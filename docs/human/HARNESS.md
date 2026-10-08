@@ -33,6 +33,17 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+### OpenCode
+
+安裝時自動偵測 `opencode`，在設定根目錄建立受管理 `AGENTS.md`、27 個 canonical Skills 投影與三個原生 Commands。description 由 Skill frontmatter 維護；相對 canonical 參照轉為已安裝 AIPS 路徑，其他資源依 canonical source directory 解析。
+
+`aips harness install` 更新未遭使用者修改的投影；`aips harness doctor` 與 `python scripts/opencode_skill_projection.py check` 檢查 drift。重名、修改過的檔案、symlink、錯誤 manifest 均保留並回報衝突；解除安裝只移除已記錄且未改動的資源，失敗保留 ownership 供重試。使用者 JSON/JSONC、模型設定及專案內容保留。
+
+MCP 使用 `aips mcp config --client opencode` 產生 v2 `mcp.servers.aips` 預覽；v1 使用 `--opencode-version 1`。預覽的 `AIPS_MCP_WORKSPACE` 固定為產生時的工作目錄，須依專案審閱後自行註冊。基本安裝不寫入 MCP 設定。
+
+能力為 CONTEXT_ALWAYS／ADVISORY；檔案 CURRENT 表示 projection integrity，原生 instructions／skill／command／MCP 的 runtime acceptance 依版本另記。沒有 native pre-tool guard；Plugin 的採用依必要性與覆蓋證據評估。
+
+
 Managed AIPS installation channel selection controls system updates only. It does not change which Runtime Adapter is installed or grant a Host capability; continue to validate each adapter through its existing ownership manifest and capability evidence.
 
 ### Codex

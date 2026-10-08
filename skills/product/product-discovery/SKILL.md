@@ -1,5 +1,6 @@
 ---
 id: product-discovery
+description: Clarify user problems, product value, assumptions and scope before selecting a solution.
 capability: product
 estimated_context_cost: low
 triggers:

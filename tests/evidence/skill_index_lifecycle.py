@@ -27,6 +27,7 @@ def main():
     assert render(ROOT) == render(ROOT)
     for meta in current["skills"].values():
         assert set(meta) == {
+            "description",
             "capability",
             "path",
             "triggers",
@@ -37,6 +38,7 @@ def main():
     first_id, first = next(iter(current["skills"].items()))
     meta = {
         "id": first_id,
+        "description": first["description"],
         "capability": first["capability"],
         "estimated_context_cost": first["cost"],
         "triggers": first["triggers"],
@@ -77,6 +79,9 @@ def main():
         invalids = [
             {"applies_when": ["legacy"]},
             {"triggers": []},
+            {"description": ""},
+            {"description": "x" * 1025},
+            {"description": 1},
             {"triggers": ["x", "x"]},
             {"model_requirements": {}},
             {

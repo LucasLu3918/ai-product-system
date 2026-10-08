@@ -77,6 +77,14 @@ READ_ONLY_TOOL = ToolAnnotations(
     open_world_hint=False,
 )
 HOST_COMPATIBILITY = {
+    "opencode": {
+        "surface": "cli",
+        "transport": "stdio",
+        "tool_only_facade_available": True,
+        "native_guard_included": False,
+        "verification": "official-config-contract-and-mcp-protocol",
+        "native_runtime_verification": "UNVERIFIED",
+    },
     "cursor": {
         "surface": "editor-and-cli",
         "transport": "stdio",
@@ -546,8 +554,27 @@ def inspect_payload() -> dict[str, Any]:
     }
 
 
-def config_payload(client: str) -> dict[str, Any]:
+def config_payload(client: str, opencode_version: str = "2") -> dict[str, Any]:
     aips = str((ROOT / "bin" / "aips").resolve())
+    if client == "opencode":
+        workspace = str(Path.cwd().resolve())
+        server = {"type": "local", "command": [aips, "mcp", "serve"],
+                  "environment": {"AIPS_MCP_WORKSPACE": workspace}}
+        if opencode_version == "1":
+            server["enabled"] = True
+            config = {"mcp": {"aips": server}}
+        elif opencode_version == "2":
+            config = {"mcp": {"servers": {"aips": server}}}
+        else:
+            raise ValueError("unsupported OpenCode config major version")
+        return {
+            "client": "opencode", "opencode_config_version": opencode_version,
+            "automatic_change": False,
+            "config_path": "~/.config/opencode/opencode.json",
+            "config": config,
+            "note": "Review only; this entry pins the current workspace. Generate per project and review its scope before registration. AIPS does not rewrite JSON/JSONC or widen scope to the home directory.",
+        }
+
     if client == "cursor":
         return {
             "client": "cursor",
@@ -649,9 +676,10 @@ def main() -> int:
     config = sub.add_parser("config")
     config.add_argument(
         "--client",
-        choices=["cursor", "windsurf", "copilot", "amp", "codex", "generic"],
+        choices=["cursor", "windsurf", "copilot", "amp", "codex", "opencode", "generic"],
         default="generic",
     )
+    config.add_argument("--opencode-version", choices=["1", "2"], default="2", help="OpenCode config major version; default targets v2")
     args = parser.parse_args()
 
     if args.command == "serve":
@@ -660,7 +688,7 @@ def main() -> int:
     if args.command == "inspect":
         print(json.dumps(inspect_payload(), ensure_ascii=False, indent=2))
         return 0
-    print(json.dumps(config_payload(args.client), ensure_ascii=False, indent=2))
+    print(json.dumps(config_payload(args.client, args.opencode_version), ensure_ascii=False, indent=2))
     return 0
 
 

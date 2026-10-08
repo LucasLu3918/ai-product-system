@@ -22,6 +22,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+OpenCode candidates include canonical Skill generation, ownership-safe projection lifecycle and existing Host/MCP regression evidence. Native acceptance is version-bound and cannot be inferred from file integrity.
+
 CI always installs the four pinned Python validation requirement files before the complete Gate. Isolated install/preflight and legacy-migration fixtures require Playwright and OpenAPI modules even for docs-only plans. Node provisioning, Chromium downloads and optional evidence remain plan-selected; no required validation or secret scan is disabled.
 
 The Gate keeps its existing raw canonical hash facade over shared JSON serialization; exact base/head and changed-file binding semantics remain unchanged.

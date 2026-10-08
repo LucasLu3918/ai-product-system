@@ -38,111 +38,33 @@ updated_at: "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
 EOF
 }
 
+harness_host_ids() {
+  "$(python_bin)" "$SYSTEM_DIR/scripts/manage_runtime_adapter.py" host-ids --system-root "$SYSTEM_DIR"
+}
+
 write_ownership_manifest() {
-  mkdir -p "$HARNESS_HOME"
-  local codex_status claude_status gemini_status
-  local codex_strategy claude_strategy gemini_strategy
-  local codex_resource claude_resource gemini_resource
-  local codex_capability claude_capability gemini_capability
-  local codex_enforcement claude_enforcement gemini_enforcement
+  "$(python_bin)" "$SYSTEM_DIR/scripts/manage_runtime_adapter.py" write-manifest \
+    --system-root "$SYSTEM_DIR" --state-home "$ADAPTER_STATE_HOME" \
+    --owned-home "$OWNED_HOME" --bin-home "$BIN_HOME" --target "$OWNERSHIP_MANIFEST" >/dev/null
+}
 
-  codex_status="$(adapter_status_value codex 2>/dev/null || echo NOT_DETECTED)"
-  claude_status="$(adapter_status_value claude-code 2>/dev/null || echo NOT_DETECTED)"
-  gemini_status="$(adapter_status_value gemini-cli 2>/dev/null || echo NOT_DETECTED)"
-  codex_strategy="$(adapter_strategy_value codex 2>/dev/null || true)"
-  claude_strategy="$(adapter_strategy_value claude-code 2>/dev/null || true)"
-  gemini_strategy="$(adapter_strategy_value gemini-cli 2>/dev/null || true)"
-  codex_resource="$(adapter_resource_value codex 2>/dev/null || true)"
-  claude_resource="$(adapter_resource_value claude-code 2>/dev/null || true)"
-  gemini_resource="$(adapter_resource_value gemini-cli 2>/dev/null || true)"
-  codex_capability="$(adapter_state_value codex capability 2>/dev/null || echo MANUAL)"
-  claude_capability="$(adapter_state_value claude-code capability 2>/dev/null || echo MANUAL)"
-  gemini_capability="$(adapter_state_value gemini-cli capability 2>/dev/null || echo MANUAL)"
-  codex_enforcement="$(adapter_state_value codex governance_enforcement 2>/dev/null || echo ADVISORY)"
-  claude_enforcement="$(adapter_state_value claude-code governance_enforcement 2>/dev/null || echo ADVISORY)"
-  gemini_enforcement="$(adapter_state_value gemini-cli governance_enforcement 2>/dev/null || echo ADVISORY)"
-
-  {
-    cat <<EOF
-version: 1
-installed_at: "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-
-system:
-  root: "$SYSTEM_DIR"
-  version: "$(current_version)"
-  commit: "$(current_commit)"
-
-harness:
-  enabled: true
-  bootstrap: "$SYSTEM_DIR/harness/BOOTSTRAP.md"
-
-owned_resources:
-EOF
-
-    if [ -L "$BIN_HOME/aips" ] && [ "$(readlink "$BIN_HOME/aips" || true)" = "$SYSTEM_DIR/bin/aips" ]; then
-      cat <<EOF
-  - type: cli_symlink
-    path: "$BIN_HOME/aips"
-EOF
-    fi
-
-    if [ "$codex_status" = "AUTOMATIC" ] && [ -n "$codex_resource" ]; then
-      cat <<EOF
-  - type: runtime_managed_block
-    runtime: codex
-    path: "$codex_resource"
-    snapshot: "$OWNED_HOME/codex.block"
-EOF
-    fi
-
-    if [ "$claude_status" = "AUTOMATIC" ] && [ -n "$claude_resource" ]; then
-      cat <<EOF
-  - type: runtime_composed_resources
-    runtime: claude-code
-    resource: "$claude_resource"
-    snapshot: "$OWNED_HOME/claude-code.block"
-EOF
-    fi
-
-    if [ "$gemini_status" = "AUTOMATIC" ] && [ -n "$gemini_resource" ]; then
-      cat <<EOF
-  - type: runtime_registration
-    runtime: gemini-cli
-    id: "$gemini_resource"
-EOF
-    fi
-
-    cat <<EOF
-
-adapters:
-  codex:
-    status: "$codex_status"
-    capability: "$codex_capability"
-    governance_enforcement: "$codex_enforcement"
-    strategy: "$codex_strategy"
-    resource: "$codex_resource"
-  claude-code:
-    status: "$claude_status"
-    capability: "$claude_capability"
-    governance_enforcement: "$claude_enforcement"
-    strategy: "$claude_strategy"
-    resource: "$claude_resource"
-  gemini-cli:
-    status: "$gemini_status"
-    capability: "$gemini_capability"
-    governance_enforcement: "$gemini_enforcement"
-    strategy: "$gemini_strategy"
-    resource: "$gemini_resource"
-
-preservation_policy:
-  user_agent_instructions: untouched
-  user_skills: untouched
-  project_agent_instructions: untouched
-  project_skills: untouched
-  project_source: untouched
-  project_ai_workspace: preserved
-EOF
-  } > "$OWNERSHIP_MANIFEST"
+install_opencode_adapter() {
+  local py target
+  py="$(python_bin)"
+  if ! command -v opencode >/dev/null 2>&1; then
+    write_adapter_state "opencode" "NOT_DETECTED" "native_projections" "" "UNSUPPORTED"
+    return 0
+  fi
+  target="${OPENCODE_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/opencode}"
+  if "$py" "$SYSTEM_DIR/scripts/opencode_skill_projection.py" probe >/dev/null && \
+      "$py" "$SYSTEM_DIR/scripts/opencode_skill_projection.py" install >/dev/null && \
+      "$py" "$SYSTEM_DIR/scripts/portable_commands.py" install --host opencode >/dev/null; then
+    write_adapter_state "opencode" "AUTOMATIC" "native_projections" "$target" "CONTEXT_ALWAYS"
+    say "Harness adapter composed: opencode capability=CONTEXT_ALWAYS enforcement=ADVISORY -> $target"
+  else
+    write_adapter_state "opencode" "CONFLICT" "native_projections" "$target" "MANUAL"
+    warn "OpenCode native projections conflict or are unavailable; user files and ownership were preserved."
+  fi
 }
 
 install_codex_adapter() {
@@ -244,6 +166,7 @@ harness_install() {
   install_codex_adapter
   install_claude_adapter
   install_gemini_adapter
+  install_opencode_adapter
   write_ownership_manifest
   say "AIPS Global Harness installed."
   say "Run: aips harness status"
@@ -312,6 +235,14 @@ harness_uninstall() {
 
   if ! uninstall_gemini_adapter; then failed="true"; fi
 
+  if [ -d "$OWNED_HOME/opencode" ]; then
+    if ! "$py" "$SYSTEM_DIR/scripts/opencode_skill_projection.py" uninstall >/dev/null || \
+        ! "$py" "$SYSTEM_DIR/scripts/portable_commands.py" uninstall --host opencode >/dev/null; then
+      warn "OpenCode projections could not be removed safely; ownership preserved for retry."
+      failed="true"
+    fi
+  fi
+
   if [ "$failed" = "true" ]; then
     warn "Harness uninstall is incomplete. Ownership state was preserved at: $HARNESS_HOME"
     return 1
@@ -327,7 +258,7 @@ harness_status() {
   say "Harness: $([ -f "$OWNERSHIP_MANIFEST" ] && echo active || echo not-installed)"
   say "Bootstrap: $SYSTEM_DIR/harness/BOOTSTRAP.md"
   local id
-  for id in codex claude-code gemini-cli; do
+  for id in $(harness_host_ids); do
     local state status strategy resource capability enforcement
     state="$(adapter_state_file "$id")"
     if [ -f "$state" ]; then
@@ -337,6 +268,10 @@ harness_status() {
       capability="$(adapter_state_value "$id" capability 2>/dev/null || echo MANUAL)"
       enforcement="$(adapter_state_value "$id" governance_enforcement 2>/dev/null || echo ADVISORY)"
       say "$id: $status capability=$capability enforcement=$enforcement ($strategy)${resource:+ -> $resource}"
+      if [ "$id" = "opencode" ] && [ "$status" != "NOT_DETECTED" ]; then
+        "$(python_bin)" "$SYSTEM_DIR/scripts/opencode_skill_projection.py" status || true
+        "$(python_bin)" "$SYSTEM_DIR/scripts/portable_commands.py" status --host opencode || true
+      fi
     else
       say "$id: NOT_DETECTED capability=UNSUPPORTED enforcement=UNSUPPORTED"
     fi
@@ -350,7 +285,7 @@ harness_doctor() {
   [ -f "$OWNERSHIP_MANIFEST" ] && say "ownership manifest: OK" || { warn "ownership manifest missing (run aips harness install)"; failed="true"; }
 
   local id status capability
-  for id in codex claude-code gemini-cli; do
+  for id in $(harness_host_ids); do
     status="$(adapter_status_value "$id" 2>/dev/null || echo NOT_DETECTED)"
     capability="$(adapter_state_value "$id" capability 2>/dev/null || echo UNSUPPORTED)"
     say "$id: $status capability=$capability"
@@ -364,6 +299,10 @@ harness_doctor() {
   fi
   if [ "$(adapter_state_value gemini-cli capability 2>/dev/null || true)" = "TURN_NATIVE" ]; then
     command -v gemini >/dev/null 2>&1 && gemini extensions list 2>/dev/null | grep -q "aips-global-harness" || { warn "gemini TURN_NATIVE adapter not verifiable"; failed="true"; }
+  fi
+  if [ "$(adapter_status_value opencode 2>/dev/null || true)" != "NOT_DETECTED" ]; then
+    "$(python_bin)" "$SYSTEM_DIR/scripts/opencode_skill_projection.py" doctor || failed="true"
+    "$(python_bin)" "$SYSTEM_DIR/scripts/portable_commands.py" status --host opencode >/dev/null || failed="true"
   fi
   [ "$failed" = "false" ]
 }

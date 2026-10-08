@@ -64,6 +64,8 @@ Do not replace exact source content with generic web search when the user suppli
 
 ## Version-aware implementation knowledge
 
+OpenCode V1 and V2 configuration shapes differ. Resolve version-specific official contracts before rendering MCP configuration; runtime probes record the actual binary version without importing user credentials.
+
 For OpenAPI validation, use the pinned local validator and declared specification version; never resolve `$ref` through the network. Any external contract authority must be separately retrieved, identified and recorded before it is treated as a baseline.
 
 For a selected framework or runtime, use official documentation matching the project version when a material implementation question is not answered by current project evidence or a stable language profile. Record the exact source, applicable version and retrieved/reviewed date. Do not copy a framework's entire documentation set into AIPS. If official context is unavailable or conflicting, preserve the gap in the Implementation Profile and block only the decision-dependent work. Repeated, stable gaps may be proposed for Capability Incubation; they do not automatically create a Skill or Framework Profile.

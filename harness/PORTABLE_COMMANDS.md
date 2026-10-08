@@ -1,5 +1,7 @@
 # Portable Command Protocol
 
+The OpenCode renderer places canonical command projections in its native `commands/` directory, includes description frontmatter and forwards `$ARGUMENTS`. Its digest-bound ownership preserves collisions and user edits during upgrade/uninstall; model selection stays with the user.
+
 AIPS Portable Commands expose one canonical workflow through host-native renderers. The canonical ID is stable (`aips.plan`), while a host may present it as `/aips.plan`, `/aips-plan`, `$aips-plan`, MCP, or a generic bootstrap.
 
 The registry is `harness/commands/REGISTRY.yaml`; generated projections are thin wrappers and never replace `core/CONSTITUTION.md`, `SYSTEM.md`, or orchestration protocols.

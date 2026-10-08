@@ -9,7 +9,6 @@ import hashlib
 import json
 import os
 import subprocess
-import sys
 from pathlib import Path
 from typing import Any
 
@@ -21,7 +20,7 @@ SCHEMA_VERSION = 1
 
 
 def _now() -> str:
-    return dt.datetime.now(dt.timezone.utc).replace(microsecond=0).isoformat()
+    return dt.datetime.now(dt.UTC).replace(microsecond=0).isoformat()
 
 
 def _digest(value: str) -> str:
@@ -70,7 +69,15 @@ def render_command(command_id: str, host: str = "generic", objective: str = "") 
     authority_lines = "\n".join(f"- `{key}`: `{str(value).lower()}`" for key, value in authority.items())
     invocation = command["invocation"]["slash"] if renderer == "markdown-command" else command["invocation"]["skill"]
     invocation_text = ", ".join(f"`{item}`" for item in invocation)
-    return f"""# {command_id}\n\n<!-- AIPS-MANAGED-BEGIN -->\nCanonical ID: `{command_id}`\nRegistry version: `{registry['version']}`\nHost: `{host}`\nRenderer: `{renderer}`\nInvocation: {invocation_text}\n\n## Objective\n\n{objective}\n\n## Canonical sources\n\n{_source_lines(command)}\n\nRead the canonical sources from the installed AIPS system. This projection is a thin wrapper and is not a governance source of truth.\n\n## Required behavior\n\n- Preserve current project and runtime instructions.\n- Report evidence, assumptions, risks, unresolved questions and next actions.\n- Apply all listed gates before proposing a protected operation.\n- Do not claim private chain-of-thought.\n\n## Authority boundaries\n\n{authority_lines}\n\n## Inputs\n\n{', '.join(f'`{item}`' for item in command['inputs'])}\n\n## Outputs\n\n{', '.join(f'`{item}`' for item in command['outputs'])}\n\n<!-- AIPS-MANAGED-END -->\n"""
+    content = f"""# {command_id}\n\n<!-- AIPS-MANAGED-BEGIN -->\nCanonical ID: `{command_id}`\nRegistry version: `{registry['version']}`\nHost: `{host}`\nRenderer: `{renderer}`\nInvocation: {invocation_text}\n\n## Objective\n\n{objective}\n\n## Canonical sources\n\n{_source_lines(command)}\n\nRead the canonical sources from the installed AIPS system. This projection is a thin wrapper and is not a governance source of truth.\n\n## Required behavior\n\n- Preserve current project and runtime instructions.\n- Report evidence, assumptions, risks, unresolved questions and next actions.\n- Apply all listed gates before proposing a protected operation.\n- Do not claim private chain-of-thought.\n\n## Authority boundaries\n\n{authority_lines}\n\n## Inputs\n\n{', '.join(f'`{item}`' for item in command['inputs'])}\n\n## Outputs\n\n{', '.join(f'`{item}`' for item in command['outputs'])}\n\n<!-- AIPS-MANAGED-END -->\n"""
+
+    if host == "opencode":
+        for source in command["canonical_sources"]:
+            content = content.replace(f"`{source}`", f"`{ROOT / source}`")
+        objective = objective if objective != "Execute the canonical AIPS workflow for the current request." else "$ARGUMENTS"
+        content = content.replace("Execute the canonical AIPS workflow for the current request.", objective)
+        return "---\n" + yaml.safe_dump({"description": command["purpose"]}, sort_keys=False) + "---\n" + content
+    return content
 
 
 def config_home() -> Path:
@@ -83,6 +90,9 @@ def root_home() -> Path:
 
 def projection_path(host: str, command_id: str) -> Path:
     safe_id = command_id.replace(".", "-") + ".md"
+    if host == "opencode":
+        from opencode_skill_projection import config_root
+        return config_root() / "commands" / safe_id
     return root_home() / "projections" / host / safe_id
 
 
@@ -136,6 +146,10 @@ def _git_commit() -> str:
 def install(host: str, command_ids: list[str]) -> dict[str, Any]:
     registry = load_registry()
     _host(registry, host)
+    if host == "opencode":
+        from opencode_skill_projection import OwnedFiles
+        desired = {"commands/" + command_id.replace(".", "-") + ".md": render_command(command_id, host) for command_id in command_ids}
+        return OwnedFiles("commands").sync(desired, remove_stale=set(command_ids) == {c["id"] for c in registry["commands"]})
     ownership = load_ownership()
     artifacts = [item for item in ownership.get("artifacts", []) if item.get("host") != host or item.get("command_id") not in command_ids]
     results = []
@@ -157,8 +171,12 @@ def install(host: str, command_ids: list[str]) -> dict[str, Any]:
     return {"status": "CONFLICT" if any(item["status"] == "CONFLICT" for item in results) else "READY", "results": results}
 
 
-def status() -> dict[str, Any]:
+def status(host: str = "generic") -> dict[str, Any]:
     registry = load_registry()
+    if host == "opencode":
+        from opencode_skill_projection import OwnedFiles
+        desired = {"commands/" + item["id"].replace(".", "-") + ".md": render_command(item["id"], host) for item in registry["commands"]}
+        return OwnedFiles("commands").status(desired)
     ownership = load_ownership()
     results = []
     for item in ownership.get("artifacts", []):
@@ -172,10 +190,19 @@ def status() -> dict[str, Any]:
         item = dict(item)
         item["status"] = current
         results.append(item)
+    from opencode_skill_projection import OwnedFiles
+    manager = OwnedFiles("commands")
+    if manager.manifest.exists():
+        desired = {"commands/" + item["id"].replace(".", "-") + ".md": render_command(item["id"], "opencode") for item in registry["commands"]}
+        results.extend({**item, "host": "opencode"} for item in manager.status(desired)["results"])
     return {"status": "READY", "registry_version": registry["version"], "artifacts": results}
 
 
 def uninstall(host: str | None = None) -> dict[str, Any]:
+    from opencode_skill_projection import OwnedFiles
+    native = OwnedFiles("commands").sync({}) if host in {None, "opencode"} else {"status": "READY", "results": []}
+    if host == "opencode":
+        return native
     ownership = load_ownership()
     remaining = []
     results = []
@@ -192,6 +219,7 @@ def uninstall(host: str | None = None) -> dict[str, Any]:
             path.unlink()
         results.append({"path": str(path), "status": "REMOVED"})
     save_ownership({"version": 1, "artifacts": remaining})
+    results.extend(native["results"])
     return {"status": "CONFLICT" if any(item["status"] == "CONFLICT" for item in results) else "READY", "results": results}
 
 
@@ -228,13 +256,13 @@ def main(argv: list[str] | None = None) -> int:
             ids = [args.command_id] if args.command_id else [item["id"] for item in registry["commands"]]
             value = install(args.host, ids)
         elif args.action == "status":
-            value = status()
+            value = status(args.host)
         elif args.action == "uninstall":
             value = uninstall(None if args.all else args.host)
         else:
             raise AssertionError(args.action)
         _output(value, args.format)
-        return 1 if value.get("status") == "CONFLICT" else 0
+        return 1 if value.get("status") in {"CONFLICT", "DRIFT", "BLOCKED"} else 0
     except (OSError, ValueError, yaml.YAMLError) as exc:
         _output({"status": "BLOCKED", "reason": str(exc)}, args.format)
         return 2

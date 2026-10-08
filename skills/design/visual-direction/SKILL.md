@@ -1,5 +1,7 @@
 ---
 id: visual-direction
+description: Establish a coherent visual direction using approved creative references, style decisions
+  and product constraints.
 capability: design
 estimated_context_cost: low
 triggers:

@@ -1,5 +1,7 @@
 ---
 id: ux-web-design
+description: Design web user experiences, interaction flows and accessible layouts grounded in
+  product requirements.
 capability: design
 estimated_context_cost: low
 triggers:

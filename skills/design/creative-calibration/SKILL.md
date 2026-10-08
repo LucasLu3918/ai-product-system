@@ -1,5 +1,7 @@
 ---
 id: creative-calibration
+description: Calibrate creative references and visual directions with user feedback before committing
+  to design execution.
 capability: design
 estimated_context_cost: low
 triggers:
