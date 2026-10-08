@@ -22,6 +22,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
+
 新增的 `project_intelligence_promotion.py` 對應 Project Intelligence 文件；`repository_governance_snapshot.py` 對應 Security Assurance、Technology Guide 與 Scenario 209。
 
 Prospective `aips docs impact --base HEAD --planned-path <path>` resolves sync and placement closure to a fixed point. Each triggered rule requires an update in its canonical topic; combined changes use the union of those topics. Validate every text anchor before applying the batch. Closure is scope evidence and never grants publication authority.
@@ -77,6 +79,10 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 - SYSTEM_REFERENCE.md：由已驗證 system facts registry 衍生的 command、capability、platform 與 runtime 表格。
 
 ## Agent / machine canonical 文件
+
+角色圖片保留要求的媒材；以受限 configure 建立新的 Bundle，並載入校準、方向與視覺審查 skill。執行、圖片容器、人工審查與使用者接受分開回報。
+
+創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
 
 OpenCode adapter 的 runtime contract 與原生 acceptance 位於 [Harness 說明](HARNESS.md) 及 `harness/adapters/opencode/COMPATIBILITY.md`；治理仍保留 Shell/MCP 未覆蓋邊界。
 
@@ -151,6 +157,8 @@ docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGEL
 
 
 ## 文件一致性
+
+本機創作設定與交付狀態由 Creative Direction、OpenCode compatibility 與 Scenario 236 共同描述；User Guide 提供操作順序。合成測試、本機命令可用與真實圖片驗收是不同證據。
 
 Evolution Radar 人工相關性抽樣與評估行為以 `EVOLUTION_RADAR.md` / `EVOLUTION_RADAR_OVERVIEW.md` 為 Human 說明，`orchestration/CONFORMANCE.md` 與 Scenario 218 定義 Agent 驗證契約；placement 登錄於 `config/documentation-placement.yaml`。同月份 Issue reconciliation 的非取消排隊契約由 Scenario 207 lifecycle 驗證。
 

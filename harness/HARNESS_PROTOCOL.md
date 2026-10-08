@@ -46,6 +46,8 @@ Load `SYSTEM_CORE.md` with minimal Harness rules and critical native/project ins
 
 ## Mutation safety
 
+The creative tool normalizes native message envelopes and evaluates user-only requests independently of routing. Read-only discovery/preflight remain available without create intent. Configuration is an allowlisted create-only Bundle operation; revocation and requested-medium mismatch fail closed without generic YAML permission expansion.
+
 Existing-project mutations require current enough Intelligence, relevant native rules, Change Impact, valid project-native style preservation, and verification of declared inputs/outputs/data/events/consumers.
 
 Missing required context fails closed for the affected mutation; general conversation fails soft.

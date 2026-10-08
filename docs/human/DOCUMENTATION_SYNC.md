@@ -26,6 +26,10 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+角色圖片保留要求的媒材；以受限 configure 建立新的 Bundle，並載入校準、方向與視覺審查 skill。執行、圖片容器、人工審查與使用者接受分開回報。
+
+創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
+
 OpenCode Harness 行為變更需同步 adapter contract、Human 安裝／使用說明、Scenario 235、Capability Registry 與架構 surface；exact-candidate 文件閉包由 publish resolver 檢查。
 
 The scoped EPHEMERAL Creative Bundle tool updates the OpenCode compatibility contract, Creative Direction, User Guide, Harness, Technology Guide, Architecture Overview, Scenario 236 and the existing design Skills. Other MCP/custom tools remain outside the guard.
@@ -156,6 +160,8 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+創作流程同步須涵蓋 discover/configure、Context 正規化、取消後不沿用授權及媒材拒絕。文件與測試都須保留「執行成功不等於視覺合格」及真實引擎未驗證限制。
 
 The creative CLI and OpenCode tool share one mapped behavior contract; keep their preparation scope, create-only writes, and explicit execution boundary synchronized with Scenario 236.
 

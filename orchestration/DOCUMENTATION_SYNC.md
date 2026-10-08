@@ -29,6 +29,8 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+Creative reliability closure includes native Context envelopes, user-only revocation, allowlisted Bundle configuration and distinct file/visual/user acceptance. Human instructions must expose the new Bundle path and missing-weight limitation; Agent protocols must prohibit silent medium fallback.
+
 Character artwork behavior is mapped through `config/documentation-sync.yaml` and `config/documentation-placement.yaml`: keep the Creative Direction protocol, Scenarios 234/236, User Guide Creative Direction topic, Technology Guide Execution topic, and dedicated Architecture Overview Creative Workflow topic synchronized. Deterministic provenance checks do not replace visual review.
 
 The scoped EPHEMERAL Creative Bundle tool also updates the OpenCode compatibility contract and Harness topic. Its exact-candidate lifecycle uses fake local engines and never runs a project-configured generator; generic MCP/custom tools remain outside its guard.
@@ -172,6 +174,10 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 
 ## Human documentation placement
+
+創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
+
+創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
 
 The creative execution boundary maps to the existing Harness, creative workflow, execution, security, and Scenario topics; documentation impact preview verifies required canonical destinations.
 

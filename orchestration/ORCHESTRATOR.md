@@ -138,6 +138,8 @@ Do not create a permanent/high-authority role without user approval.
 
 ## Context expansion
 
+For detailed character illustrations, load calibration, direction and visual review progressively. Use read-only discovery, prepare, allowlisted configure and preflight before scoped execution. Normalize native Context and use user-only authorization; revoked requests and raster-medium fallback fail closed. Report execution, file validity, Human visual review and user acceptance separately.
+
 OpenCode plugin Context is bounded and session-rooted; load selected canonical protocols progressively and report unresolved authority conflicts.
 
 Task routing carries separate domain, intent, and effect dimensions; OpenCode V2 injects the resulting compact Context at runtime while existing project preflight and Change Impact remain authoritative.

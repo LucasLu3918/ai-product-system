@@ -52,6 +52,8 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+Creative reliability evidence separates versioned configuration/discovery, native callback/hook acceptance, raster container integrity and profile provenance from real-model quality. Unavailable local weights remain an explicit inference limitation; fixture PASS cannot close visual acceptance.
+
 A creative execution candidate must bind its Core Matrix to the exact changed files and include no-egress, create-only preparation/output, provenance, and privacy trace evidence. Synthetic lifecycle success does not claim installed-engine inference, hardware performance or visual quality.
 
 OpenCode v2.0.24 loopback evidence verifies Context delivery and native file Allow/Deny only for that host/version; it does not establish production-provider, V1/Linux, arbitrary Shell or MCP write safety.

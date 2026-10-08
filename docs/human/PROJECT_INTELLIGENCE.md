@@ -71,6 +71,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+創作分類附帶 advisory `creative_medium`（raster/vector/unspecified），供 OpenCode 檢查媒材不符；分類欄位不是執行授權。native tool 另確認使用者要求與取消狀態，保持唯讀預檢可用。
+
 Creative executor changes are reviewed across CLI dispatch, OpenCode tool registration, Bundle/profile inputs, output manifests, trace consumers, Scenario coverage, and documentation projections.
 
 The versioned `prepare` action adds create-only Profile/Bundle outputs to this boundary; its model/runtime/license fields remain unconfigured until the project selects an installed local engine.

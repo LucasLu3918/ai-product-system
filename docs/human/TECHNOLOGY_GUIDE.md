@@ -59,6 +59,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+本機創作支援 discover/prepare/configure/preflight/execute：設定採 allowlist 與 create-only Bundle，native Context envelope 經正規化再作使用者授權。PNG 容器檢查涵蓋 CRC、終止與 bounded decompression；JPEG/WEBP 僅作 bounded container checks，不能代替實際看圖或完整解碼。
+
 Local creative execution supports MFLUX through fixed argv and ComfyUI through a loopback-only allowlisted workflow. It is explicit, create-only, and never downloads weights.
 
 System changes keep the exact-candidate repository Gate enabled while any selective-validation proposal remains report-only until its complete observation cohort is reviewed.
@@ -177,6 +179,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
 
 Creative lifecycle checks use synthetic engines and loopback fixtures; they verify command contracts and confinement, not model quality, hardware performance or visual fidelity.
 

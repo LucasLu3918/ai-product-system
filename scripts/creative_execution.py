@@ -10,6 +10,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 import time
 import urllib.error
@@ -21,6 +22,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from creative_image_validation import valid_raster
 
 if os.name == "nt":
     msvcrt: Any = importlib.import_module("msvcrt")
@@ -438,6 +440,96 @@ def preflight(project: Path, bundle_path: str) -> dict[str, Any]:
     }
 
 
+def discover(project: Path) -> dict[str, Any]:
+    """Inventory fixed local commands without launching engines or downloads."""
+    root = project.expanduser().resolve(strict=True)
+    if not root.is_dir():
+        raise Blocked("project_not_directory", "Project must be a directory.")
+    commands = sorted({str(c["command"]) for operations in MFLUX_CAPABILITIES.values() for c in operations.values()})
+    runtimes = [{"command": command, "available": bool(shutil.which(command))} for command in commands]
+    return {"status": "DISCOVERED", "runtimes": runtimes, "supported_models": sorted(MFLUX_CAPABILITIES),
+            "model_status": "NOT_VERIFIED", "generation_executed": False,
+            "external_image_egress": False, "next_action": "configure_then_preflight",
+            "comfyui_status": "NOT_PROBED_REQUIRES_EXPLICIT_BUNDLE"}
+
+
+def configure(project: Path, bundle_path: str, settings: dict[str, Any]) -> dict[str, Any]:
+    """Create a validated configured Bundle version; never edit the source."""
+    allowed = {"provider", "model", "runtime", "runtime_version", "mflux_executable", "comfyui",
+               "width", "height", "steps", "seed", "max_retries", "timeout_seconds", "prompt",
+               "operation", "input_image", "input_images"}
+    if not isinstance(settings, dict) or not settings or set(settings) - allowed:
+        raise Blocked("creative_configuration_invalid", "Configuration contains unsupported fields.")
+    root, bundle = read_bundle(project, bundle_path)
+    source = confined(root, bundle_path, exists=True)
+    # Reject symlink components even when they resolve within the project.
+    relative = Path(bundle_path)
+    if ".." in relative.parts or "\\" in bundle_path or any((root / Path(*relative.parts[:i])).is_symlink() for i in range(1, len(relative.parts) + 1)):
+        raise Blocked("creative_configuration_invalid", "Configuration source may not use traversal or symlinks.")
+    mapping_fields = {
+        "model": {"id", "revision", "local_path", "license", "license_source"},
+        "comfyui": {"base_url", "workflow_path", "checkpoint_node_id", "checkpoint_name", "model_id",
+                    "prompt_node_id", "latent_node_id", "sampler_node_id", "save_node_id", "input_image_node_id", "input_image_name"},
+    }
+    for key, keys in mapping_fields.items():
+        value = settings.get(key)
+        if key in settings and (not isinstance(value, dict) or set(value) - keys):
+            raise Blocked("creative_configuration_invalid", f"Unsupported {key} configuration.")
+    configured = {**bundle, **settings}
+    if not isinstance(configured.get("provider"), str) or configured["provider"] not in {"mflux_local", "comfyui_local"}:
+        raise Blocked("provider_unsupported", "Configuration must explicitly select a local provider.")
+    if configured["provider"] == "mflux_local":
+        model_id = (configured.get("model") or {}).get("id")
+        if not isinstance(model_id, str) or configured.get("operation") not in MFLUX_CAPABILITIES.get(model_id, {}):
+            raise Blocked("mflux_operation_unsupported", "Unsupported local model/operation pair.")
+        configured["comfyui"] = None
+    elif not isinstance(configured.get("comfyui"), dict):
+        raise Blocked("creative_configuration_invalid", "ComfyUI requires an explicit workflow configuration.")
+    else:
+        loopback_base(configured["comfyui"].get("base_url"))
+        configured["mflux_executable"] = None
+    # Bound input before serializing it, including model/runtime strings.
+    if len(json.dumps(configured, ensure_ascii=False)) > 32 * 1024:
+        raise Blocked("creative_configuration_invalid", "Configuration exceeds its size limit.")
+    for number in range(1, 10000):
+        target = source.with_name(f"{source.stem}-configured-v{number}.yaml")
+        if target.exists() or target.is_symlink():
+            continue
+        output_scope = f"{bundle['output_scope']}/{source.stem}-configured-v{number}"
+        configured.update(output_scope=output_scope, output_path=f"{output_scope}/image{Path(bundle['output_path']).suffix}")
+        fd, temp_name = tempfile.mkstemp(prefix=".aips-configure-", suffix=".yaml", dir=source.parent)
+        temporary = Path(temp_name)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as stream:
+                yaml.safe_dump(configured, stream, sort_keys=False, allow_unicode=True)
+                stream.flush()
+                os.fsync(stream.fileno())
+            read_bundle(root, temporary.relative_to(root).as_posix())
+            provenance = [configured["runtime"], configured["runtime_version"], *(configured["model"][key] for key in ("id", "revision", "license", "license_source"))]
+            if any(value.strip().upper() in {"UNCONFIGURED", "UNVERIFIED"} for value in provenance):
+                raise Blocked("model_provenance_missing", "Configure observed local model/runtime provenance before preflight.")
+            # Local contract checks only; no version command, HTTP, or generation.
+            if configured["provider"] == "mflux_local":
+                capability = MFLUX_CAPABILITIES[configured["model"]["id"]][configured["operation"]]
+                executable = configured.get("mflux_executable")
+                if not isinstance(executable, str) or not Path(executable).is_absolute() or Path(executable).name != capability["command"]:
+                    raise Blocked("mflux_command_mismatch", "Executable must match the fixed local model registry.")
+            else:
+                workflow = confined(root, str(configured["comfyui"].get("workflow_path", "")), exists=True)
+                if not workflow.is_file():
+                    raise Blocked("comfy_workflow_invalid", "A local workflow file is required.")
+            try:
+                os.link(temporary, target)
+            except FileExistsError:
+                continue
+            return {"status": "CONFIGURED", "bundle": target.relative_to(root).as_posix(), "source_sha256": digest(source),
+                    "bundle_sha256": digest(target), "output_scope": output_scope, "overwrite": False,
+                    "preflight_status": "NOT_RUN", "generation_executed": False}
+        finally:
+            temporary.unlink(missing_ok=True)
+    raise Blocked("creative_version_exhausted", "No available configuration version remains.")
+
+
 def prepare(
     project: Path,
     scope: str,
@@ -525,7 +617,7 @@ def prepare(
                         "This local creative workspace was prepared by AIPS.\n\n"
                         "## Next steps\n\n"
                         "1. Review `CHARACTER_PROFILE.yaml` and `STYLE_PROFILE.yaml`.\n"
-                        "2. Configure an already-installed local model/runtime in `bundles/CREATIVE_BUNDLE.yaml`.\n"
+                        "2. Use `aips creative discover`, then `aips creative configure` to create a configured Bundle version.\n"
                         "3. Run `aips creative preflight` before explicitly executing a generation.\n"
                         "4. Review generated images visually; file validity is not a quality PASS.\n"
                     ),
@@ -563,22 +655,7 @@ def prepare(
 
 
 def output_magic(path: Path) -> bool:
-    try:
-        size = path.stat().st_size
-        if size <= 0 or size > MAX_IMAGE_BYTES:
-            return False
-        with path.open("rb") as stream:
-            head = stream.read(16)
-        suffix = path.suffix.lower()
-        if suffix == ".png":
-            return head.startswith(b"\x89PNG\r\n\x1a\n")
-        if suffix in {".jpg", ".jpeg"}:
-            return head.startswith(b"\xff\xd8\xff")
-        if suffix == ".webp":
-            return head[:4] == b"RIFF" and head[8:12] == b"WEBP"
-    except OSError:
-        return False
-    return False
+    return valid_raster(path)
 
 
 def mflux_command(root: Path, bundle: dict[str, Any], executable: Path, temp_output: Path) -> list[str]:
@@ -745,6 +822,13 @@ def atomic_manifest(path: Path, value: dict[str, Any]) -> None:
 
 def execute(project: Path, bundle_path: str) -> dict[str, Any]:
     root, bundle = read_bundle(project, bundle_path)
+    bundle_file = confined(root, bundle_path, exists=True)
+    bundle_hash = digest(bundle_file)
+    profile_dir = bundle_file.parent.parent
+    profiles = [{"path": path.relative_to(root).as_posix(), "sha256": digest(path)}
+                for name in ("CHARACTER_PROFILE.yaml", "STYLE_PROFILE.yaml")
+                if bundle_file.parent.name == "bundles" and profile_dir.is_relative_to(root)
+                and (path := profile_dir / name).is_file() and not path.is_symlink()]
     provider_name, provider = resolve_provider(root, bundle)
     output = confined(root, bundle["output_path"])
     sources = bundle_input_images(root, bundle)
@@ -778,6 +862,8 @@ def execute(project: Path, bundle_path: str) -> dict[str, Any]:
             except TransientProviderError:
                 if attempts > bundle.get("max_retries", 0):
                     raise Blocked("provider_timeout", "Local image engine timed out after the configured finite retry limit.")
+        if digest(bundle_file) != bundle_hash or any(digest(confined(root, profile["path"], exists=True)) != profile["sha256"] for profile in profiles):
+            raise Blocked("creative_inputs_changed", "Bundle or identity/style profiles changed during generation; output was not published.")
         output_hash = digest(temp_output)
         os.link(temp_output, output)
         elapsed = round((time.monotonic() - started) * 1000)
@@ -785,7 +871,8 @@ def execute(project: Path, bundle_path: str) -> dict[str, Any]:
         manifest = {
             "version": 1, "status": "COMPLETE", "operation": bundle["operation"], "provider": provider_name,
             "model": {"id": bundle["model"]["id"], "revision": bundle["model"]["revision"], "runtime": bundle["runtime"], "runtime_version": bundle["runtime_version"], "license": bundle["model"]["license"], "license_source": bundle["model"]["license_source"], "location": "local"},
-            "bundle_sha256": digest(confined(root, bundle_path, exists=True)),
+            "bundle_sha256": bundle_hash,
+            "profiles": profiles,
             "workflow_sha256": digest(provider["path"]) if provider_name == "comfyui_local" else None,
             "input": input_records[0] if len(input_records) == 1 else None,
             "inputs": input_records if len(input_records) > 1 else [],
@@ -794,6 +881,8 @@ def execute(project: Path, bundle_path: str) -> dict[str, Any]:
             "prompt_sha256": "sha256:" + hashlib.sha256(bundle["prompt"].encode()).hexdigest(),
             "execution": {"attempts": attempts, "retry_count": attempts - 1, "elapsed_ms": elapsed, "completed_at": datetime.now(UTC).isoformat()},
             "review": {"status": "PENDING", "reviewer": None, "decision": None, "reviewed_at": None},
+            "acceptance": {"file_validity": "PASS", "visual_quality": "PENDING", "user_acceptance": "NOT_RECORDED"},
+            "validation_scope": "bounded_container_checks_not_visual_quality",
             "privacy": {"raw_prompt_stored": False, "image_bytes_stored_in_manifest": False, "external_image_egress": False},
         }
         try:
@@ -830,7 +919,12 @@ def review(project: Path, manifest_name: str, reviewer: str, decision: str, note
         raise Blocked("manifest_scope_invalid", "Generated output no longer matches its declared bundle scope.")
     if digest(output_path) != (data.get("output") or {}).get("sha256"):
         raise Blocked("manifest_hash_mismatch", "Generated output no longer matches its provenance hash.")
+    for profile in data.get("profiles", []):
+        if digest(confined(root, profile["path"], exists=True)) != profile["sha256"]:
+            raise Blocked("profile_hash_mismatch", "Reviewed identity/style profile changed after generation.")
     data["review"] = {"status": decision, "reviewer": reviewer.strip(), "decision": decision, "note": note.strip(), "reviewed_at": datetime.now(UTC).isoformat()}
+    if isinstance(data.get("acceptance"), dict):
+        data["acceptance"]["visual_quality"] = decision
     replacement = manifest.with_name(".creative-execution-manifest.review.tmp")
     replacement.write_text(json.dumps(data, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
     os.chmod(replacement, 0o600)
@@ -850,6 +944,12 @@ def main() -> int:
     prepare_parser.add_argument("--style-intent", required=True)
     prepare_parser.add_argument("--prompt", required=True)
     prepare_parser.add_argument("--identity-feature", action="append", default=[])
+    discover_parser = sub.add_parser("discover")
+    discover_parser.add_argument("--project", type=Path, required=True)
+    configure_parser = sub.add_parser("configure")
+    configure_parser.add_argument("--project", type=Path, required=True)
+    configure_parser.add_argument("--bundle", required=True)
+    configure_parser.add_argument("--settings-json", help="Bounded JSON settings; omitted means stdin (no prompt in argv).")
     for action in ("preflight", "execute"):
         command = sub.add_parser(action)
         command.add_argument("--project", type=Path, required=True)
@@ -866,6 +966,13 @@ def main() -> int:
     try:
         if args.action == "prepare":
             result = prepare(args.project, args.scope, args.character_id, args.character_name, args.summary, args.style_intent, args.prompt, args.identity_feature)
+        elif args.action == "discover":
+            result = discover(args.project)
+        elif args.action == "configure":
+            raw = args.settings_json if args.settings_json is not None else sys.stdin.read(32 * 1024 + 1)
+            if len(raw) > 32 * 1024:
+                raise Blocked("creative_configuration_invalid", "Configuration exceeds its size limit.")
+            result = configure(args.project, args.bundle, json.loads(raw))
         elif args.action == "preflight":
             result = preflight(args.project, args.bundle)
         elif args.action == "execute":
@@ -879,7 +986,7 @@ def main() -> int:
     except Blocked as exc:
         print(json.dumps({"status": "BLOCKED", "reason_code": exc.reason_code, "message": str(exc)}, ensure_ascii=False))
         return 2
-    except (OSError, ValueError, subprocess.SubprocessError) as exc:
+    except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as exc:
         print(json.dumps({"status": "BLOCKED", "reason_code": "creative_execution_error", "message": type(exc).__name__}, ensure_ascii=False))
         return 2
 

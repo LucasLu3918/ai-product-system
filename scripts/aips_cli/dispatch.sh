@@ -55,7 +55,7 @@ case "${1:-help}" in
     sub="${2:-help}"
     shift 2 || true
     case "$sub" in
-      prepare)
+      prepare|configure|discover)
         "$(python_bin)" "$SYSTEM_DIR/scripts/creative_execution.py" "$sub" "$@"
         ;;
       scan|next-version)

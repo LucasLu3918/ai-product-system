@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+角色圖片保留要求的媒材；以受限 configure 建立新的 Bundle，並載入校準、方向與視覺審查 skill。執行、圖片容器、人工審查與使用者接受分開回報。
+
 Local character-art behavior is mapped through `config/documentation-placement.yaml` and `config/documentation-sync.yaml`; changes to its validator, Bundle, profile templates, OpenCode adapter, creative CLI routing or creative protocol keep the User Guide, Harness, Technology Guide, architecture overview, Scenario Conformance and Agent guidance in the same candidate. The synthetic lifecycle covers versioned no-overwrite preparation, fixed MFLUX capability/argv mapping, single-reference FLUX.1 edit, bounded multi-reference FLUX.2/Qwen edit, single-reference ComfyUI edit and fake providers only; exact-candidate validation never runs a project-configured engine, and a missing local engine remains `BLOCKED_NO_ENGINE`.
 
 Version 0.76.0 adds no-overwrite Profile/Bundle preparation and fixed MFLUX CLI mapping; these changes do not install providers or models.
@@ -101,6 +103,8 @@ Multi-file changes should normally be assembled into one coherent remote branch 
 15. Prefer independent review/PR for material system changes.
 
 ## Versioning
+
+創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
 
 Version 0.76.0 adds no-overwrite Profile/Bundle preparation and fixed MFLUX CLI mapping without installing providers or models.
 
@@ -222,6 +226,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+創作 runtime 變更驗證 user-only 授權、Context envelope、設定欄位與版本競爭、取消／換任務、媒材拒絕、損壞圖片及 provenance。真實推論與人工品質驗收需分開回報，不能由 fake engine PASS 代替。
+
 Core adapter changes bind lifecycle, security-boundary, documentation-closure, and exact-candidate Gate evidence in `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`.
 
 Risk-adaptive traversal changes use AST-extracted direct Python calls with bounded caller/consumer depth; unresolved dynamic dispatch and repository-wide partial graph coverage remain visible in evidence.
@@ -266,6 +272,8 @@ When Approval Binding / Governance Enforcement changes, review together:
 Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverifiable.
 
 ## Durable Run State consistency
+
+創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
 
 OpenCode plugin recovery is version-aware and ownership-safe; doctor output distinguishes installation integrity from native runtime acceptance.
 

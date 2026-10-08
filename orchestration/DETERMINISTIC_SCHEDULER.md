@@ -130,6 +130,8 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 ## Failure behavior
 
+Creative discovery/preflight are read-only, while configure creates versioned files and execute launches a provider. Keep those effects distinct in scheduler declarations; a blocked engine cannot become a completed artwork task through an alternate medium.
+
 A native runtime hook failure must remain visible and must not be recorded as successful protection; unsupported Shell/MCP paths retain their declared unverified status.
 
 The scheduler's public fingerprint helper remains a compatibility facade over `scripts/aips_common`; canonical bytes and its raw digest representation are pinned by `tests/evidence/shared_primitives_lifecycle.py`.

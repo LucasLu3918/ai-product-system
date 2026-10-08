@@ -16,6 +16,10 @@ The owned `plugins/aips-opencode.ts` projection is installed only for a positive
 
 ## Readiness and enforcement boundary
 
+Native v2.0.24 creative preparation is verified through Code Mode `execute` calling the catalog-provided `tools.creative_execution`. Snapshot `type/user/text` and dispatch `role/parts` are separate supported formats. Configuration fields are explicitly represented in the catalog schema; no real model inference is part of this acceptance.
+
+Creative actions now include discover and configure. Context supports array/messages/data envelopes; only user messages can authorize mutations. A native-tool callback fixture covers action routing, while real OpenCode hook acceptance remains separately version-bound. Raster requests cannot silently become SVG; no local weights or real inference are implied by discovery.
+
 Prompt classification returns independent `domain`, `intent`, and `effect` dimensions while preserving the legacy category/mutation/topics tuple. L0 is chat-only; L1 allows a new local creative asset in a non-Git workspace when the target is confined and absent; L2 requires current, READY Project Intelligence for supported project writes; L3 external actions remain subject to the existing Human approval gate. Prompt classification selects context; the native action hook makes a second decision from the operation and target.
 
 Every Context and native write decision resolves the directory from `ctx.session.get({ sessionID })`; plugin `ctx.location` is not treated as the active Session root. Context is capped at 12,000 UTF-8 bytes. Permission decisions refresh Context against the current target immediately before evaluation. Context processing avoids synchronous Git status/diff fingerprinting; the bounded trace records observed Context command and hook durations.

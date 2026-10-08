@@ -37,7 +37,8 @@ if all(path.is_file() for path in required):
         ("MAX_REFERENCE_IMAGES = 8" in executor and "--image-paths" in executor, "MFLUX edit reference batches must be bounded and explicit"),
         ("def prepare(" in executor and "os.O_EXCL" in executor and "creative_ephemeral_required" in executor, "preparation must be confined, create-only and EPHEMERAL"),
         ("exactly one hash-checked reference" in compatibility, "ComfyUI compatibility docs must state the single-reference boundary"),
-        ('enum: ["prepare", "preflight", "execute"]' in plugin and 'classification.intent !== "create"' in plugin, "OpenCode preparation must remain explicit and intent-gated"),
+        ('enum: ["prepare", "configure", "discover", "preflight", "execute"]' in plugin and 'classification.intent !== "create"' in plugin, "OpenCode preparation must remain explicit and intent-gated"),
+        ('creative_request_policy.py' in plugin and 'contextMessages' in plugin, "OpenCode must normalize native context and use user-only request authorization"),
     )
     for condition, message in contracts:
         if not condition:

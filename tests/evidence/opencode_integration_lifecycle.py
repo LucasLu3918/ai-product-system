@@ -294,7 +294,7 @@ def classification_cases():
 def main():
     plugin_source = (ROOT / "harness/adapters/opencode/plugin.ts").read_text(encoding="utf-8")
     assert 'ctx.tool.transform((editor)' in plugin_source and 'name: "creative_execution"' in plugin_source
-    assert 'enum: ["prepare", "preflight", "execute"]' in plugin_source
+    assert 'enum: ["prepare", "configure", "discover", "preflight", "execute"]' in plugin_source
     assert 'classification.intent !== "create"' in plugin_source and '"creative", "prepare"' in plugin_source
     assert 'identity_features' in plugin_source and '"--identity-feature"' in plugin_source
     assert 'toolContext.signal' in plugin_source and 'shell: false' in plugin_source

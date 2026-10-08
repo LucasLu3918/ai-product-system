@@ -16,6 +16,8 @@ Make AIPS behavioral regression coverage measurable without conflating specifica
 
 ## Registry
 
+創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
+
 Scenario 230 binds compact fixed-context and task-route behavior to the intelligence context lifecycle and static contracts; route pointers never imply governance authority.
 
 ## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
@@ -892,11 +894,15 @@ The size audit measures tracked text/evidence files against 50,000 bytes and rep
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
+創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
+
 OpenCode runtime changes retain existing Plan13 provenance and maintenance governance; host discovery alone is not enforcement evidence.
 
 Scenario 236's exact-candidate Core Matrix records synthetic creative lifecycle and documentation evidence; it does not claim live engine inference or visual-quality acceptance.
 
 ## Scenario 236 — Local Creative Bundle Execution
+
+Scenario 236 extends the existing lifecycle with create-only configuration/discovery, native tool callback envelopes, user-only grant revocation, medium mismatch and corrupt raster rejection. Synthetic fixtures cannot claim installed-model inference, visual acceptance or hardware performance.
 
 Scenario 236 extends the adapter with explicit intent, versioned Profile/Bundle preparation, preflight and a local-only creative tool. Its MFLUX capability map fixes model/operation commands; FLUX.1 edit is single-reference, FLUX.2/Qwen multi-reference edit is bounded, and ComfyUI edit remains single-reference.
 

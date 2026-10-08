@@ -22,6 +22,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+The creative lifecycle runs only fake MFLUX, loopback ComfyUI and credential-free native tool callback fixtures. Discovery/configuration must not invoke engines; file container checks and profile hashes do not constitute visual PASS. User-configured model inference is outside deterministic Gate execution.
+
 Gate inspection and preview validate the creative Bundle contract without executing MFLUX or ComfyUI; actual generation remains an explicit user action.
 
 The `prepare` lifecycle is checked with fake local executables and creates only versioned Profile/Bundle files; exact-candidate validation never invokes a configured image engine.

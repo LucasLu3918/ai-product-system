@@ -30,6 +30,8 @@ For project work, context identifies project mode and stable instruction sources
 
 ## Verification
 
+Creative native-tool callback evidence normalizes array/messages/data Context envelopes and exercises user-only authority without provider credentials. The loopback native-host check remains a separate version-bound result; command discovery does not prove model readiness or image quality.
+
 The creative CLI resolves the standard AIPS runtime; preflight checks local engine availability without launching generation, while execution is a separate explicit command.
 
 Runtime Context validation remains bound to exact selected sources; shared hash helpers preserve the existing raw digest representation and do not alter routing.

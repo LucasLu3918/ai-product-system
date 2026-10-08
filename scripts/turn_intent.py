@@ -180,8 +180,10 @@ def classify_task(prompt: str, intent: str = "auto") -> dict[str, object]:
         selected_topics = ["architecture", "conventions", "modules"] if mutation else []
     if domain == "creative" and task_intent == "plan":
         effect = "chat_only"
+    medium_text = re.sub(r"(?:不要|不用|不使用|非|\bnot\s+|\bno\s+)\s*(?:SVG|向量|vector)", "", prompt, flags=re.IGNORECASE)
+    creative_medium = "vector" if asset and re.search(r"\b(?:svg|vector)\b|向量", medium_text, re.IGNORECASE) else "raster" if asset and re.search(r"\b(?:png|jpe?g|webp|illustration|portrait|anime)\b|圖片|插畫|圖像|動漫|精緻", prompt, re.IGNORECASE) else "unspecified"
     return {"category": selected_category, "mutation_likely": mutation, "topics": selected_topics,
-            "domain": domain, "intent": task_intent, "effect": effect}
+            "domain": domain, "intent": task_intent, "effect": effect, "creative_medium": creative_medium}
 
 
 def classify_prompt(prompt: str, intent: str = "auto") -> tuple[str, bool, list[str]]:

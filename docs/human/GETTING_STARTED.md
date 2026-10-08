@@ -75,6 +75,10 @@ aips commands list
 
 ## Existing Project
 
+角色插畫可先以 `aips creative discover --project PATH` 檢查支援命令。再準備角色規範、建立 configured Bundle 並預檢；命令存在不代表模型權重或圖片品質已可用。
+
+創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
+
 OpenCode 使用 V2 時，可執行 `aips harness install` 與 `aips harness doctor` 檢查投影和 Host 狀態；EPHEMERAL 創意工作可用 `aips creative scan` 查看外部快取的素材中繼資料。
 
 For OpenCode V2, `aips harness install` installs the owned global plugin after runtime-version detection; use `aips harness doctor` to inspect its setup status. Plugin discovery alone does not verify model-context delivery or permission-hook execution.

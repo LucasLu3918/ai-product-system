@@ -48,6 +48,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
+
 Local creative provider support is an explicit execution adapter, not an adopted external provider. Engine quality and hardware performance remain unknown until locally measured and independently reviewed.
 
 Synthetic Creative Bundle lifecycle evidence verifies adapter contracts only; it is not model-quality or provider-effectiveness evidence.
@@ -86,6 +88,8 @@ Monthly / quarterly roll-up 量測 collected → shortlist → semantic → acti
 
 - Release readiness is a separate deterministic evidence gate; Evolution metrics do not imply an empty Unreleased section or authorize a tag.
 ## Current Boundaries
+
+創作工具的合成驗證可證明設定與失敗處理契約，不能當作本機模型品質、效能或採用成效證據；仍需另外量測真實生成與人工驗收。
 
 
 OpenCode adapter 的 Session Context 與 native permission acceptance 屬 Harness 與 Core Change Gate 證據，不構成 Evolution Radar 的 adoption、provider 或 production readiness 證據。

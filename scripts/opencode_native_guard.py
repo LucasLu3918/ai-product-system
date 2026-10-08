@@ -12,7 +12,7 @@ from typing import Any
 WRITE_TOOLS = {"write", "edit", "patch", "apply_patch"}
 ASSET_SUFFIXES = {".svg", ".png", ".jpg", ".jpeg", ".webp", ".gif"}
 READ_ONLY_COMMANDS = {"pwd", "ls", "cat", "head", "tail", "sed", "rg", "grep", "find", "git", "stat", "file", "wc"}
-SAFE_AIPS_COMMANDS = {("doctor",), ("harness", "status"), ("intelligence", "status"), ("creative", "preflight"), ("creative", "next-version"), ("creative", "trace"), ("project", "check")}
+SAFE_AIPS_COMMANDS = {("doctor",), ("harness", "status"), ("intelligence", "status"), ("creative", "discover"), ("creative", "preflight"), ("creative", "next-version"), ("creative", "trace"), ("project", "check")}
 SHELL_META = re.compile(r"[;&|><`$\n\r]")
 FIND_SIDE_EFFECTS = {"-delete", "-exec", "-execdir", "-ok", "-okdir", "-fprint", "-fprint0", "-fprintf", "-fls"}
 SENSITIVE_OPTIONS = {"-c", "--config-env", "--git-dir", "--work-tree", "--namespace", "--exec-path", "--config", "--files0-from", "--pre", "--pre-glob"}
@@ -69,6 +69,8 @@ def evaluate_write(*, tool: str, resources: list[str], root: str, manifest: dict
     if creative_intent and git_project:
         return {"decision": "DENY", "level": "L2", "reason": "creative asset writes inside Git workspaces require current Project Intelligence"}
     if creative_intent:
+        if classification.get("creative_medium") == "raster" and any(target.suffix.lower() == ".svg" for target in targets):
+            return {"decision": "DENY", "level": "L1", "reason_code": "creative_medium_mismatch", "reason": "Requested raster artwork cannot silently fall back to SVG"}
         if all(target.suffix.lower() in ASSET_SUFFIXES and not target.exists() for target in targets):
             return {"decision": "ALLOW", "level": "L1", "reason": "new local creative asset in a non-Git workspace; confined target only"}
         reason = "creative output target already exists" if any(target.exists() for target in targets) else "creative output target must use a supported asset extension"
@@ -114,6 +116,7 @@ def _aips_read_only(words: list[str], *, cwd: Path, root: Path) -> tuple[bool, s
             return False, "shell_aips_arguments_unsupported", "AIPS project check accepts one confined path"
         return True, "shell_aips_readonly", "bounded read-only AIPS diagnostic"
     command_options = {
+        ("creative", "discover"): {"--project"},
         ("creative", "preflight"): {"--project", "--bundle"},
         ("creative", "next-version"): {"--project", "--target"},
         ("creative", "trace"): {"--limit"},

@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+先用 `aips creative discover --project PROJECT` 盤點，再由工具 prepare 建立角色規範。`aips creative configure --project PROJECT --bundle RELATIVE.yaml` 從 stdin 接收 allowlisted JSON，回傳新的 Bundle 路徑；以該路徑 preflight，通過後才 execute。OpenCode 可直接使用相同 action。缺少模型或生成失敗時回報受阻，不改交 SVG；精緻插畫先校準代表性樣圖，完成後逐張檢查身份、人物結構、材質、光影與風格。
+
 Creative Direction 適用 Website、Landing Page、Banner、Hero、Social Post、Presentation、Product Page、UI、Campaign Visual 等工作。
 
 風格判斷優先順序：
@@ -127,6 +129,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+OpenCode 創作 tool 支援 discover/configure，產圖意圖、原生檔案 guard 與 Shell effect policy 維持不同檢查；重新投影後仍須驗證實際 host hooks。
+
 OpenCode V2 的 creative execution tool 只接受明確創作或修改意圖，並在執行前要求 Bundle preflight 通過。
 
 OpenCode V2 may use the managed plugin for Session-scoped Context, supported direct-file checks, and the structured `creative_execution` tool. In EPHEMERAL creative projects, its explicit `prepare` action creates a versioned README/Profile/Bundle set in a selected scope; `preflight` checks a local Bundle without starting generation, and `execute` is explicit and create-only. `aips creative scan --project PATH` indexes existing image/SVG metadata in the user cache; `aips creative next-version --project PATH --target RELATIVE_ASSET` suggests a new path and never writes it. `aips harness trace` and `aips creative trace` show privacy-limited events. Arbitrary Shell effects and other MCP/custom tools remain outside the guard; inspect adapter status before relying on runtime enforcement.
@@ -173,6 +177,8 @@ Raw data
 Architecture trade-off、Threat Model、視覺方向等主觀專業判斷不應為了省 token 被強行 deterministic 化。
 
 ## Deterministic Scheduler
+
+discover/preflight 是唯讀操作；configure 會建立版本化檔案，execute 才會啟動 provider。排程與狀態不可將這些不同效果混為完成產圖。
 
 Creative Profile/Bundle setup is an explicit user action; image generation is never started as a background scheduled task.
 
@@ -239,6 +245,10 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
+
+創作 manifest 的 Human visual review 與軟體獨立 review evidence 是不同契約。圖片容器或 tool fixture 通過不會自動產生視覺 PASS 或使用者接受。
 
 Local synthetic checks cover preparation and adapter boundaries only. Review each generated image against the approved identity/style profiles before recording a visual PASS.
 
@@ -337,6 +347,8 @@ The supported command remains `aips` (or `bin/aips` from a source checkout). The
 Observation reports help people judge evidence quality; `NOT_READY` means the cohort is incomplete, not that collection failed or that selective validation is approved. Dependency Review remains blocking through its standalone check while a separate shadow records parity before any reviewed required-path change.
 
 ## Logging、Observability 與 Operations
+
+創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
 
 Context diagnostics 只記錄 route categories、protocol IDs/paths 與解析狀態，不保存原始 prompt 或私有 reasoning。
 Monthly Effectiveness names weekly Issues missing local pre-analysis and leaves their complete-cohort shortlist yield unavailable. Oversized Radar Issues keep the full original evidence in a verified archive for scheduled rollups.
