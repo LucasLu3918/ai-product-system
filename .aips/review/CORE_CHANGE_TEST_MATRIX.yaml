@@ -1,65 +1,160 @@
 version: 1
 candidate:
-  base_sha: 2e9fa74ffb7f74034f921b4535d4a55b6e93fca5
-  changed_files_hash: 756c9fc1a9c311330cbd7e4f925a1f2b95904aab4652b75a6aef1738637adfeb
+  base_sha: 23ef82acc4ed66af07fe3ed730b8ef769ee71fcd
+  changed_files_hash: 826a4219cc18ea919a4f2e63c6198e37c74cb56c94b02448a50300b6982f6bab
 change:
   id: character-image-workflow-20261008
-  summary: Add a local-first reusable character-art workflow with safe asset validation and deterministic typeset sheets.
+  summary: Add a local-first reusable character-art workflow with safe asset validation and deterministic typeset
+    sheets.
   boundary:
-    - character/style profiles and provenance manifest
-    - SVG/PNG path, content, dimension and hash validation
-    - deterministic SVG character sheet composition and Chinese labels
-    - existing creative Skills, evidence compatibility and local runtime guidance
-    - lifecycle evidence, Scenario 234, documentation and architecture closure
+  - character/style profiles and provenance manifest
+  - SVG/PNG path, content, dimension and hash validation
+  - deterministic SVG character sheet composition and Chinese labels
+  - existing creative Skills, evidence compatibility and local runtime guidance
+  - lifecycle evidence, Scenario 234, documentation and architecture closure
 matrix:
-  - boundary: Character/style profiles and provenance manifest
-    reason: Character identity, accepted variation, local references, model/runtime and license lineage must remain explicit.
-    checks:
-      static_lint: {applicable: true, evidence: Pending full candidate Gate}
-      unit: {applicable: true, evidence: Synthetic profile, manifest, hash and path lifecycle}
-      integration: {applicable: true, evidence: Repository validation and character artwork lifecycle}
-      contract: {applicable: true, evidence: Character profile, style profile and manifest contracts}
-      security: {applicable: true, evidence: Project-root confinement, local provider allowlist, egress and verified license checks}
-      migration_recovery: {applicable: false, na_reason: Additive template and no persistent application storage}
-      cli_harness: {applicable: true, evidence: JSON validate/compose CLI lifecycle}
-      docs_schema: {applicable: true, evidence: Creative protocol, scenario, Human docs and documentation validators}
-      e2e: {applicable: false, na_reason: Actual image generation requires a separately authorized local model/runtime; synthetic end-to-end lifecycle is covered}
-  - boundary: SVG/PNG validation and deterministic sheet composition
-    reason: User-owned image bytes are untrusted and must be preserved while outputs remain deterministic and non-overwriting.
-    checks:
-      static_lint: {applicable: true, evidence: Pending full candidate Gate}
-      unit: {applicable: true, evidence: Synthetic SVG/PNG dimensions, chunk CRC, hashes and active content}
-      integration: {applicable: true, evidence: Repeatable UTF-8 sheet bytes and CLI lifecycle}
-      contract: {applicable: true, evidence: Asset metadata, reference lineage and optional manifest digest binding}
-      security: {applicable: true, evidence: SVG active/external references rejected; traversal and overwrite cases rejected}
-      migration_recovery: {applicable: false, na_reason: No existing state migration; atomic create-only output}
-      cli_harness: {applicable: true, evidence: validate and compose command results use deterministic JSON status/codes}
-      docs_schema: {applicable: true, evidence: Scenario 234 and synchronized docs placement/current view}
-      e2e: {applicable: true, evidence: Synthetic fixture invokes validator, composer and Creative Evidence binding end to end}
-  - boundary: Existing creative Skills, evidence compatibility and local runtime guidance
-    reason: Reuse current calibration/direction/review entry points without adding a duplicate provider or changing existing evidence requirements.
-    checks:
-      static_lint: {applicable: true, evidence: Pending full candidate Gate}
-      unit: {applicable: true, evidence: Existing creative evidence contract and manifest hash cases}
-      integration: {applicable: true, evidence: Skill-index lifecycle, creative evidence lifecycle and repository validation}
-      contract: {applicable: true, evidence: Generated Skill index and additive optional creative_artwork evidence}
-      security: {applicable: true, evidence: No raw prompts, model downloads, external upload or cloud/paid fallback}
-      migration_recovery: {applicable: false, na_reason: Additive optional evidence field; existing records remain valid}
-      cli_harness: {applicable: true, evidence: Existing creative validator interface remains unchanged}
-      docs_schema: {applicable: true, evidence: Creative protocol, Skill guidance, User Guide and architecture closure}
-      e2e: {applicable: false, na_reason: ComfyUI/MFLUX runtime and model weights are intentionally not installed or invoked}
-  - boundary: Scenario, documentation, architecture and repository integration
-    reason: The Core workflow needs exact candidate evidence, consumer documentation and diagram consistency.
-    checks:
-      static_lint: {applicable: true, evidence: Pending full candidate Gate}
-      unit: {applicable: false, na_reason: No additional product computation in documentation artifacts}
-      integration: {applicable: true, evidence: Repository validation, Scenario Conformance and generated current summary}
-      contract: {applicable: true, evidence: Documentation placement, Skill registry and Impact binding checks}
-      security: {applicable: true, evidence: Candidate secret scan required in exact-candidate Gate}
-      migration_recovery: {applicable: false, na_reason: Documentation and diagram changes have no persistent state}
-      cli_harness: {applicable: true, evidence: Exact-candidate local Integration Gate pending}
-      docs_schema: {applicable: true, evidence: VitePress build and docs links pending exact-candidate Gate}
-      e2e: {applicable: false, na_reason: No hosted application, deployed service or production behavior changed}
+- boundary: Character/style profiles and provenance manifest
+  reason: Character identity, accepted variation, local references, model/runtime and license lineage must remain
+    explicit.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Pending full candidate Gate
+    unit:
+      applicable: true
+      evidence: Synthetic profile
+      manifest: null
+      hash and path lifecycle: null
+    integration:
+      applicable: true
+      evidence: Repository validation and character artwork lifecycle
+    contract:
+      applicable: true
+      evidence: Character profile
+      style profile and manifest contracts: null
+    security:
+      applicable: true
+      evidence: Project-root confinement
+      local provider allowlist: null
+      egress and verified license checks: null
+    migration_recovery:
+      applicable: false
+      na_reason: Additive template and no persistent application storage
+    cli_harness:
+      applicable: true
+      evidence: JSON validate/compose CLI lifecycle
+    docs_schema:
+      applicable: true
+      evidence: Creative protocol
+      scenario: null
+      Human docs and documentation validators: null
+    e2e:
+      applicable: false
+      na_reason: Actual image generation requires a separately authorized local model/runtime; synthetic end-to-end
+        lifecycle is covered
+- boundary: SVG/PNG validation and deterministic sheet composition
+  reason: User-owned image bytes are untrusted and must be preserved while outputs remain deterministic and non-overwriting.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Pending full candidate Gate
+    unit:
+      applicable: true
+      evidence: Synthetic SVG/PNG dimensions
+      chunk CRC: null
+      hashes and active content: null
+    integration:
+      applicable: true
+      evidence: Repeatable UTF-8 sheet bytes and CLI lifecycle
+    contract:
+      applicable: true
+      evidence: Asset metadata
+      reference lineage and optional manifest digest binding: null
+    security:
+      applicable: true
+      evidence: SVG active/external references rejected; traversal and overwrite cases rejected
+    migration_recovery:
+      applicable: false
+      na_reason: No existing state migration; atomic create-only output
+    cli_harness:
+      applicable: true
+      evidence: validate and compose command results use deterministic JSON status/codes
+    docs_schema:
+      applicable: true
+      evidence: Scenario 234 and synchronized docs placement/current view
+    e2e:
+      applicable: true
+      evidence: Synthetic fixture invokes validator
+      composer and Creative Evidence binding end to end: null
+- boundary: Existing creative Skills, evidence compatibility and local runtime guidance
+  reason: Reuse current calibration/direction/review entry points without adding a duplicate provider or changing
+    existing evidence requirements.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Pending full candidate Gate
+    unit:
+      applicable: true
+      evidence: Existing creative evidence contract and manifest hash cases
+    integration:
+      applicable: true
+      evidence: Skill-index lifecycle
+      creative evidence lifecycle and repository validation: null
+    contract:
+      applicable: true
+      evidence: Generated Skill index and additive optional creative_artwork evidence
+    security:
+      applicable: true
+      evidence: No raw prompts
+      model downloads: null
+      external upload or cloud/paid fallback: null
+    migration_recovery:
+      applicable: false
+      na_reason: Additive optional evidence field; existing records remain valid
+    cli_harness:
+      applicable: true
+      evidence: Existing creative validator interface remains unchanged
+    docs_schema:
+      applicable: true
+      evidence: Creative protocol
+      Skill guidance: null
+      User Guide and architecture closure: null
+    e2e:
+      applicable: false
+      na_reason: ComfyUI/MFLUX runtime and model weights are intentionally not installed or invoked
+- boundary: Scenario, documentation, architecture and repository integration
+  reason: The Core workflow needs exact candidate evidence, consumer documentation and diagram consistency.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Pending full candidate Gate
+    unit:
+      applicable: false
+      na_reason: No additional product computation in documentation artifacts
+    integration:
+      applicable: true
+      evidence: Repository validation
+      Scenario Conformance and generated current summary: null
+    contract:
+      applicable: true
+      evidence: Documentation placement
+      Skill registry and Impact binding checks: null
+    security:
+      applicable: true
+      evidence: Candidate secret scan required in exact-candidate Gate
+    migration_recovery:
+      applicable: false
+      na_reason: Documentation and diagram changes have no persistent state
+    cli_harness:
+      applicable: true
+      evidence: Exact-candidate local Integration Gate pending
+    docs_schema:
+      applicable: true
+      evidence: VitePress build and docs links pending exact-candidate Gate
+    e2e:
+      applicable: false
+      na_reason: No hosted application
+      deployed service or production behavior changed: null
 review_evidence:
   required: false
 scope_recomputed_after_expansion: true
