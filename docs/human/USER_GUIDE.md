@@ -226,6 +226,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 
 ## Quality 與 Review
 
+Validation Shadow records proposed skips while every required validator still runs; current evidence is not sufficient to activate selective execution.
+
 OpenCode 可用 `aips harness doctor` 檢查投影完整性與版本探測；CONFLICT 需先檢視保留下來的使用者內容。原生探索、MCP 使用與 pre-tool enforcement 各自回報，不能由檔案檢查推定。
 
 CI 固定準備完整 Python 驗證套件，文件變更也會執行必要安裝／preflight lifecycle。候選路徑仍決定 Node、Chromium 與可選 evidence；未通過 `repository` 必要檢查時，不可合併，不能用本地 PASS 或略過驗證代替。
@@ -385,6 +387,8 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 Retrieval index persistence is an internal, rebuildable cache boundary in `scripts/retrieval_storage.py`; existing commands and imports continue through the `retrieval_intelligence.py` compatibility facade.
 
 ## Git Publication 與 Release
+
+Release tagging, dependency PR merges, and branch deletion remain separate operations with their own evidence and Human approval; a successful maintenance report cannot perform them.
 
 Publication preflight retains its existing CLI and raw canonical hash output through the shared helper; exact-candidate and Human merge authority boundaries remain unchanged.
 

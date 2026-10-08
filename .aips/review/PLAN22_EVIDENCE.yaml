@@ -1,0 +1,82 @@
+version: 1
+plan: plan22
+candidate_base: 2e9fa74ffb7f74034f921b4535d4a55b6e93fca5
+evidence_date: 2026-10-08
+recommendations:
+  - id: release-readiness
+    disposition: blocked_by_existing_policy
+    evidence:
+      - scripts/version_tag_policy.py reports BLOCKED because CHANGELOG.md Unreleased is not empty.
+    action: No release or tag created; this task publishes the requested maintenance PR only.
+  - id: ci-validation-efficiency
+    disposition: preserve_full_validation
+    evidence:
+      - config/validation-graduation.yaml keeps full_run_shadow and selective_execution_enabled false.
+      - Recent main workflow timing cohort is observational and does not satisfy shadow graduation evidence.
+    action: Keep full PR and main validation; do not enable selective validator execution.
+  - id: evolution-radar-effectiveness
+    disposition: implemented
+    evidence:
+      - GitHub Issue 203 reports 100 raw/unique signals, 0 shortlist, and 100 ANALYSIS_PENDING for 2026-09.
+      - GitHub Issue 199 reports 0 monthly evidence bundles for 2026-Q3 and ran before monthly report publication.
+      - Quarterly schedule now runs on day 3 at 11:00 Asia/Taipei; lifecycle asserts its cron and mode routing.
+    action: Keep source weighting, recommendation state, and adoption thresholds unchanged.
+  - id: progressive-quality-debt
+    disposition: existing_ratchets_and_observation
+    evidence:
+      - Local quality_ratchet report decreased from 702 to 697 Ruff findings after four safe contract fixes and one import-order fix; current report is 505 auto-fixable and 192 manual.
+      - Existing config preserves selected-module mypy enforcement and report-only coverage.
+    action: No blanket autofix or repository-wide coverage threshold.
+  - id: large-module-maintainability
+    disposition: evidence_review_no_new_extraction
+    evidence:
+      - Existing project_intelligence, retrieval_intelligence, and publication facades already delegate to focused modules.
+      - No new consumer/call-graph evidence requires extraction for the schedule correction.
+    action: Preserve facades and avoid size-only refactoring.
+  - id: validation-source-parity
+    disposition: implemented_read_only_parity
+    evidence:
+      - tests/validation/ci_validation_plan_contracts.py verifies exact path selection and full fallback.
+      - Integration Gate tests/validation registry and validation-scope remain separate policy inputs.
+      - The new read-only contract checks shared fail-closed anchors, the required Integration Gate aggregate, and every registered validator module; a negative fixture confirms drift is detected.
+    action: Do not collapse provisioning, validator selection, ordered registry, or candidate Gate configuration.
+  - id: branch-lifecycle
+    disposition: read_only_inventory_complete
+    evidence:
+      - Read-only report examined 102 remote refs and emitted an empty cleanup proposal.
+    action: No branch deletion; exact-SHA cleanup still requires separate Human approval.
+  - id: dependency-maintenance
+    disposition: compatibility_evidence_incomplete
+    evidence:
+      - Seven open Dependabot PRs are behind main and latest janitor/repository checks fail.
+    action: No dependency PR merged.
+  - id: opencode-native-verification
+    disposition: platform_evidence_limited
+    evidence:
+      - Existing macOS native discovery evidence is recorded in the active Core Change proposal.
+      - Linux/WSL native behavior and model execution are unverified on this host.
+    action: Preserve UNVERIFIED status for unsupported host evidence.
+  - id: cross-runtime-governance
+    disposition: preserve_capability_truth
+    evidence:
+      - Existing capability registry and runtime invariant matrix remain canonical and covered by repository validation.
+      - Codex native hook probe remains explicitly advisory.
+    action: No cross-host enforcement claims upgraded.
+  - id: context-efficiency
+    disposition: measure_only
+    evidence:
+      - Existing Plan21 timing record is one exact-main observation, not a trend.
+      - Official usage metadata exposes account windows but no task/model token trace.
+    action: Do not infer or persist token counts.
+  - id: maintenance-effectiveness
+    disposition: reuse_existing_observations
+    evidence:
+      - Monthly Evolution Effectiveness, Validation Observation, and Maintenance Reliability reports already exist.
+    action: No new required gate or automatic policy tuning.
+authority:
+  release_authorized: false
+  dependency_pr_merge_authorized: false
+  branch_deletion_authorized: false
+  selective_validator_execution_enabled: false
+  automatic_source_policy_mutation: false
+  host_enforcement_upgrade: false

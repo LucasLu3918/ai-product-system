@@ -604,6 +604,7 @@ def main() -> int:
     for required in (
         'cron: "0 1 * * 1"',
         'cron: "30 1 1 * *"',
+        'cron: "0 3 3 1,4,7,10 *"',
         "contents: read",
         "issues: write",
         "gh issue create",
@@ -623,6 +624,18 @@ def main() -> int:
         'selected="handoff"',
     ):
         require(required in workflow, f"workflow missing contract: {required}")
+    workflow_document = yaml.safe_load(workflow)
+    workflow_triggers = workflow_document.get("on", workflow_document.get(True, {}))
+    quarterly_schedule = "0 3 3 1,4,7,10 *"
+    require(
+        quarterly_schedule in [item.get("cron") for item in workflow_triggers["schedule"]],
+        "quarterly rollup must run on day 3 after monthly Radar and Effectiveness reports",
+    )
+    require(
+        ('elif [[ "${{ github.event.schedule }}" == "' + quarterly_schedule + '" ]]; then') in workflow
+        and 'echo "value=quarterly"' in workflow,
+        "quarterly schedule must resolve to the quarterly workflow mode",
+    )
     for forbidden in ("contents: write", "pull-requests: write", "git push", "gh pr create", "gh pr merge", "releases: write"):
         require(forbidden not in workflow, f"workflow must not gain implementation authority: {forbidden}")
 

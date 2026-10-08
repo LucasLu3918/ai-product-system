@@ -497,6 +497,8 @@ For Large/Core changes, architecture-diagram impact is mandatory. Update each af
 
 OpenCode joins the existing access plane: native AGENTS → runtime resolver; canonical Skills / Commands → planning and implementation; review-only MCP config → workspace-scoped AIPS server. All Human approval boundaries remain in the canonical workflow.
 
+Scheduled governance reports are evidence consumers: they retain full repository validation, explicit Human decisions, and report-only boundaries for selective validation, release, dependency updates, and branch cleanup.
+
 ~~~mermaid
 flowchart LR
     U[Runtime-selected eligible primary] --> P[Bounded primary implementation]

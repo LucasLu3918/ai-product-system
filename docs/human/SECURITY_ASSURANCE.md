@@ -105,6 +105,8 @@ The Security Engineer records the floor and rationale.
 
 ## Product baseline vs change impact
 
+Change Impact approval authorizes only its reviewed scope; partial graph coverage is recorded as a limitation and reconciled against the exact candidate before publication.
+
 Task routing 只縮小本回合載入的 canonical 協定範圍，不會降低 SAL、授權需求、Change Impact 深度、必要測試或 Human approval。
 
 Repository governance snapshot 透過已驗證的 `gh` 讀取 repository rulesets 與 branch protection，保留完整回應與明確 UNKNOWN 狀態；它不修改 GitHub 設定，也不代替發布核准。
@@ -199,6 +201,8 @@ Review actual:
 
 ## Release Security Gate
 
+A blocked Unreleased/changelog check keeps the candidate out of release publication even when an unrelated maintenance PR is valid.
+
 OpenCode 候選仍須 exact-candidate secret scanning、Core Matrix 與 required PR checks。ADVISORY instruction 不是原生 pre-tool enforcement 證據。
 
 文件候選的 CI 也固定安裝完整 Python 驗證套件，避免安裝／migration fixture 因缺少 Playwright 或 OpenAPI 模組而無法執行必要檢查。Chromium 仍依候選需求下載；候選秘密掃描、完整 repository Gate 與明確合併授權維持原順序及阻擋規則。
@@ -268,6 +272,8 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 
 ## Secret and credential safety
+
+Account usage windows do not expose task/model token traces; record those values only when an official per-task source supplies them.
 
 OpenCode MCP 設定只提供 review-only 預覽，不匯入憑證、不變更模型；server workspace 固定於產生設定時的專案路徑。
 
@@ -368,6 +374,8 @@ The Parallel Run Dashboard is loopback-only and read-only. Its projection cannot
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.
 
 ## Runtime Policy Enforcement
+
+Synthetic or advisory Host probes remain explicitly advisory and do not establish native policy enforcement on another platform.
 
 Native hook adapters reject malformed input explicitly and fail closed if policy evaluation or audit persistence fails. Diagnostic logging goes to stderr; response envelopes contain a stable failure code without exposing exception text or other sensitive details.
 

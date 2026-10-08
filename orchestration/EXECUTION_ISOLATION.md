@@ -243,6 +243,8 @@ Repository Health / Architecture Drift is read-only validation evidence. It may 
 
 Quarterly Evolution Radar review is aggregation-only. It consumes durable monthly Issue evidence and MUST NOT initiate another public-source collection, provider/model execution, Trial workspace mutation or formal implementation branch. Its output remains evidence-only with protected-operation authority false.
 
+The scheduled quarterly run is on day 3 of January, April, July and October so monthly source reports can publish first. Missing monthly bundles remain incomplete evidence and do not authorize Trial or implementation.
+
 
 
 ## Technology Intelligence boundary
