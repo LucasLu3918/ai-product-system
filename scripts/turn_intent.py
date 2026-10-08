@@ -5,8 +5,8 @@ import re
 
 MUTATION_EN = re.compile(r"\b(?:modify|change|fix|implement|add|remove|refactor|update|create|delete|rename|repair|generate|draw|render|export|save|write|overwrite)\b", re.IGNORECASE)
 MUTATION_ZH = re.compile(r"修改|調整|實作|新增|刪除|重構|修正|更新|修好|加入|移除|建立|完成|生成|產生|繪製|畫|製作|輸出|儲存|存檔|寫入|覆寫")
-NEGATED_ZH = re.compile(r"(?:不要|不用|不需|無須|勿|禁止|不得|別)\s*(?:對[^，。；]*?)?(?:修改|調整|實作|新增|刪除|重構|修正|更新|建立)")
-NEGATED_EN = re.compile(r"\b(?:do not|don't|never|without|no need to)\s+(?:\w+\s+){0,2}?(?:modify|change|fix|implement|add|remove|refactor|update|create|delete|rename)\b", re.IGNORECASE)
+NEGATED_ZH = re.compile(r"(?:不要|不用|不需|無須|勿|禁止|不得|別)\s*(?:對[^，。；]*?)?(?:修改|調整|實作|新增|刪除|重構|修正|更新|建立|完成|生成|產生|繪製|畫|製作|輸出|儲存|存檔|寫入|覆寫)")
+NEGATED_EN = re.compile(r"\b(?:do not|don't|never|without|no need to)\s+(?:\w+\s+){0,2}?(?:modify|change|fix|implement|add|remove|refactor|update|create|delete|rename|generate|draw|render|export|save|write|overwrite)\b", re.IGNORECASE)
 EXPLANATION_EN = re.compile(r"\b(?:explain|describe|review|assess|analy[sz]e)\s+(?:the\s+)?(?:\w+\s+){0,2}?(?:update|change|implementation|build)\b", re.IGNORECASE)
 EXPLANATION_ZH = re.compile(r"(?:建議|說明|解釋|評估|分析|檢視|查看)[^，。；]{0,15}(?:實作方式|實作建議|更新指令|修改方式|\bupdate\b\s*指令)", re.IGNORECASE)
 

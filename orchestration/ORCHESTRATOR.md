@@ -10,6 +10,8 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 ## Minimal algorithm
 
+OpenCode dispatch resolves the existing AIPS Turn Context and preserves project-native instruction authority before runtime hooks act.
+
 For OpenCode, resolve the turn with `--runtime opencode`, then progressively load selected canonical pointers. Preserve Human gates, selected models and project-native instructions while reporting projection conflicts.
 
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
@@ -129,6 +131,8 @@ existing skill reuse → new narrow skill → new capability → new role
 Do not create a permanent/high-authority role without user approval.
 
 ## Context expansion
+
+OpenCode plugin Context is bounded and session-rooted; load selected canonical protocols progressively and report unresolved authority conflicts.
 
 Task routing carries separate domain, intent, and effect dimensions; OpenCode V2 injects the resulting compact Context at runtime while existing project preflight and Change Impact remain authoritative.
 
@@ -332,6 +336,8 @@ When emitting a Structured Task Graph, treat tasks as writable by default. Set `
 For Evolution Radar semantic work, prefer the generated provider-neutral handoff when no scheduled provider is available rather than inventing a recommendation. For PR integration, stale target-base evidence must route back to refresh/revalidation rather than proceeding with an old PASS.
 
 ## Change-class handoff to Integration Gate
+
+OpenCode adapter and native permission changes are Core boundaries: route them through the reviewed Core Change Matrix, full repository validation and exact-candidate Gate before requesting Git publication approval.
 
 Publication CI always provisions the complete Python validation dependency set; isolated required preflight fixtures cannot rely on optional-package selection. Exact-path plans still control Node, Chromium downloads and optional evidence. Required remote checks must pass on the exact candidate before an explicitly authorized merge.
 

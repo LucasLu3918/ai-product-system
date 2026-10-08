@@ -11,6 +11,8 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ### Turn-Aware Global Harness
 
+The OpenCode V2 adapter derives Context from the active Session root, caps the compact manifest at 12,000 bytes, and reports bounded hook timings without persisting prompts or file contents.
+
 AIPS 將 Runtime/User instructions、Project rules、Project Intelligence 與 AIPS protocol 組合成 bounded context。不同 Runtime 使用各自可驗證的 integration strategy。
 
 Adapter resolvers keep JSON/YAML results on stdout and diagnostics on stderr. Invalid adapter-state data is an explicit error; unavailable optional Intelligence subprocesses use a stable reason code and are not reported as an empty successful result.
@@ -169,6 +171,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+OpenCode validation separates install and discovery from Session Context delivery and permission-hook execution; claims remain limited to the tested host and version.
 
 OpenCode Adapter 使用 ownership digest、安全路徑檢查與原子寫入管理全域 AGENTS、canonical Skills、Commands 及 V2 plugin。V2 plugin 在 primary dispatch 注入 compact Turn Context，permission hook 檢查受支援的直接檔案資源，Shell 限制為 bounded read-only allowlist。L1 允許非 Git workspace 的 confined 新 creative asset；L2 要求 Project Intelligence READY/CURRENT；L3 外部動作沿用 Human approval。Lifecycle 涵蓋版本、重裝、衝突、漂移、損壞 manifest、symlink、中斷恢復與解除。Plugin discovery 已由 OpenCode 2.0.24 registry 驗證；模型 Context delivery 與 permission action 尚未驗證，Governance 維持 ADVISORY，MCP/custom tools 和 out-of-process writes 不在 guard 範圍。
 

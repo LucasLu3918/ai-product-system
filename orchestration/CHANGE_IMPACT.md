@@ -55,6 +55,7 @@ N/A is allowed with reason.
 
 ## Project-native style
 
+
 Preserve valid native conventions in this order:
 
 ~~~text
@@ -106,6 +107,10 @@ For retrieval-cache recovery, distinguish read-only access from stale-index refr
 When traversal validation reports `affected node lacks a final disposition`, inspect that node's callers and consumers and explicitly choose `reviewed_safe`, `requires_change` or `unknown`. Do not infer a disposition from the absence of a diff. `requires_change` must be included in the approved `target_paths`; high-risk `unknown` nodes remain blocking until the relationship is reviewed or the impact boundary is expanded. Rerun `aips intelligence impact-validate` after resolving each finding.
 
 ## Diff reconciliation
+
+Runtime adapters must resolve existing-project Context from the active Session directory and preserve project-native instruction authority; OpenCode native write checks re-evaluate the target with current Intelligence.
+
+OpenCode reconciliation includes canonical descriptions, generated Skill projections, adapter consumers, and ownership manifests derived from the approved source diff.
 
 An OpenCode pre-action readiness check is an additional runtime boundary; it does not replace approved Change Impact scope, consumer review, or final diff reconciliation.
 

@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+OpenCode 安裝、Session Context、creative asset profile、trace 與原生 acceptance 的操作說明集中於 [Harness](HARNESS.md)。
+
 OpenCode Runtime Adapter 的使用方式見 [Harness](HARNESS.md)，執行邊界與 Scenario 235 見 [Conformance](CONFORMANCE.md)。
 
 OpenCode 全域指示、原生 Skills／Commands、MCP 預覽與保守 ownership 操作見 [Harness](HARNESS.md)。

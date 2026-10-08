@@ -157,6 +157,8 @@ The durable Human surface is the original GitHub Issue containing Radar evidence
 
 ## Documentation consistency
 
+Native runtime acceptance is tracked by its adapter Scenario and exact-candidate Core Gate; it does not create Evolution Radar adoption evidence or change Human Decision authority.
+
 Runtime setup evidence and action-level enforcement evidence are separate signals; do not promote plugin discovery into a verified capability.
 
 Evolution digest facades preserve their existing prefixed output through shared canonical JSON hashing; the extraction does not alter candidate scoring or Human decision authority.

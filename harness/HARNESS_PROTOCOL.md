@@ -38,6 +38,8 @@ ATTACHED projects use `.ai/intelligence/`. EPHEMERAL projects remain source-clea
 
 ## Context budget
 
+OpenCode V2 applies a 12,000-byte UTF-8 cap to its transient AIPS Context and uses a session/prompt/target cache; the bounded trace records duration and size without prompt text.
+
 Load `SYSTEM_CORE.md` with minimal Harness rules and critical native/project instructions. Turn Context selects canonical task protocols by pointer; load only those protocols, then task-relevant Intelligence and optional evidence on demand. `SYSTEM.md` remains a compatibility router and is not part of the fixed system layer.
 
 ## Mutation safety

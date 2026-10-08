@@ -47,4 +47,6 @@ The established Retrieval Intelligence command/import facade remains `scripts/re
 - CI tested Node.js: `24`
 <!-- AIPS-SYSTEM-FACTS:END -->
 
+OpenCode V2 adapter lifecycle, install/doctor repair guidance, Session-scoped Context and tested native permission boundaries are documented in [Harness](HARNESS.md); use `aips harness trace` for the bounded privacy-limited event view.
+
 Temporal queries use the existing Python and Git runtime; the internal adapter adds no dependency or public command.

@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+OpenCode V2 的 AIPS Plugin 以 Session directory 裝載精簡 Turn Context，並在原生檔案權限前重查目標；創作素材索引留在專案外私有快取，MCP 與任意 Shell 子程序不宣稱受保護。
+
 Runtime adapters distinguish malformed hook input from a valid request with no applicable action. Resolution failures carry stable machine-readable status and reason codes, while diagnostics remain on stderr so callers can safely parse stdout.
 
 Portable Commands 以 Canonical ID（例如 `aips.plan`）將同一治理工作流渲染為 Slash Command、Skill 或 generic MCP bootstrap；它是 advisory access plane，不取代 Runtime-native Adapter 的 turn hook 或 pre-tool guard。
@@ -103,6 +105,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+OpenCode is an existing Harness capability: its generated Skills, Session-root Context, native permission decisions, and lifecycle checks remain represented by the canonical Capability Registry and conformance evidence.
 
 The OpenCode native helper uses L1 for confined new creative assets in non-Git workspaces, L2 for READY/CURRENT project mutations, and L3 for external effects under the existing Human approval gate.
 
@@ -230,6 +234,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+OpenCode Core changes retain the reviewed Core Matrix, full repository validation, exact-candidate publication gate, and required remote checks.
 
 OpenCode 升級／解除只處理 digest 一致的 AIPS-owned 投影；發現使用者修改或設定根目錄變更時保留檔案並回報衝突。
 

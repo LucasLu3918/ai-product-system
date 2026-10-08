@@ -1,6 +1,6 @@
 # OpenCode compatibility and acceptance
 
-The adapter uses native global AGENTS, canonical Skill/Command projections, a managed V2 plugin, and review-only MCP config. It does not select models, change user JSONC, download OpenCode or register MCP automatically. The plugin injects compact AIPS context before each primary model dispatch and uses the permission hook for supported native file actions. Runtime governance remains **ADVISORY** until action-level native acceptance proves enforcement.
+The adapter uses native global AGENTS, canonical Skill/Command projections, a managed V2 plugin, and review-only MCP config. It does not select models, change user JSONC, download OpenCode or register MCP automatically. The plugin injects compact AIPS context before each primary model dispatch and uses the permission hook for supported native file actions. Isolated macOS OpenCode v2.0.24 acceptance verifies those hooks; overall governance remains **ADVISORY** because arbitrary Shell effects, MCP/custom tools and out-of-process writes remain outside the guard.
 
 ## Contract profiles
 
@@ -12,13 +12,21 @@ The adapter uses native global AGENTS, canonical Skill/Command projections, a ma
 | MCP preview | `mcp.aips`, local command + environment + enabled | `mcp.servers.aips`, local command + environment |
 | Installation | detect executable; parsed major 1/2 required | unknown/probe-failed version preserves files and reports conflict |
 
-The owned `plugins/aips-opencode.ts` projection is installed only for a positively detected V2 runtime. V1 retains its instruction/Skill/Command projections. The plugin uses `Plugin.define` from `@opencode/plugin`; install/status/doctor/uninstall share digest-bound ownership and conflict behavior.
+The owned `plugins/aips-opencode.ts` projection is installed only for a positively detected V2 runtime. V1 retains its instruction/Skill/Command projections. The V2 plugin exports the documented `id`/`setup` shape directly so a global projection does not depend on resolving a package from the user’s plugin directory; install/status/doctor/uninstall share digest-bound ownership and conflict behavior.
 
 ## Readiness and enforcement boundary
 
 Prompt classification returns independent `domain`, `intent`, and `effect` dimensions while preserving the legacy category/mutation/topics tuple. L0 is chat-only; L1 allows a new local creative asset in a non-Git workspace when the target is confined and absent; L2 requires current, READY Project Intelligence for supported project writes; L3 external actions remain subject to the existing Human approval gate. Prompt classification selects context; the native action hook makes a second decision from the operation and target.
 
-The plugin checks native `edit`, `write`, and `patch` permission resources and limits Shell to a bounded read-only allowlist. Unknown Shell commands are replaced with a failing command. MCP/custom tools and writes outside OpenCode remain outside this guard. `AVAILABLE_UNVERIFIED` means the V2 plugin and helper are installed; it does not prove model context delivery or an executed permission decision. Do not describe the adapter as TOOL_GUARDED until runtime acceptance proves that boundary.
+Every Context and native write decision resolves the directory from `ctx.session.get({ sessionID })`; plugin `ctx.location` is not treated as the active Session root. Context is capped at 12,000 UTF-8 bytes. Permission decisions refresh Context against the current target immediately before evaluation. Context processing avoids synchronous Git status/diff fingerprinting; the bounded trace records observed Context command and hook durations.
+
+For EPHEMERAL creative sessions, the plugin runs a read-only scan of supported image/SVG metadata. At most 24 relative asset paths enter Context. The external cache is under `XDG_CACHE_HOME/aips/creative-workspaces/`, mode 0600, and does not store prompt or asset contents. Use `aips creative scan --project PATH` to refresh it and `aips creative next-version --project PATH --target RELATIVE_ASSET` to suggest an unoccupied versioned output path; the command never creates or overwrites the suggested file. EPHEMERAL remains the existing project mode and no `.ai/` folder is created.
+
+The Shell policy parses a small command subset and rejects known execution, file-output, redirection, configuration, and path-escape options. Unsupported commands are replaced with a failing command. This string-level command check is not a complete process sandbox and cannot cover effects initiated outside the parsed command. MCP/custom tools and out-of-process writes remain outside this guard. External actions stay within existing Human approval authority; the plugin itself does not grant them.
+
+`aips harness trace [--limit 1..100]` reads bounded events from `$XDG_STATE_HOME/aips/opencode/events.jsonl` (default `~/.local/state/aips/opencode/events.jsonl`). Trace records contain plugin setup, coarse task classification, readiness/decision, duration, byte count, and one-way session/project identifiers. They exclude prompts, credentials, asset contents, full paths, and model reasoning. The file is capped at 512 KiB; a full file is cleared before another event is appended.
+
+`AVAILABLE_UNVERIFIED` describes installations without a matching native acceptance result; it does not prove plugin host discovery, model Context delivery or permission execution on that machine. `aips harness doctor` reports these boundaries separately and gives install/restart/new-session repair steps. The verified result is limited to the listed macOS/OpenCode version and mock-provider actions; it does not make the overall adapter TOOL_GUARDED.
 
 MCP config defaults to V2; select `--opencode-version 1` for an explicit V1 preview. Both profiles bind `AIPS_MCP_WORKSPACE` to the configuration generation directory. Copying a preview into another project requires regenerating it there.
 
@@ -31,21 +39,21 @@ MCP config defaults to V2; select `--opencode-version 1` for an explicit V1 prev
 | Three native AIPS Commands discovered | VERIFIED | UNVERIFIED | UNVERIFIED |
 | AIPS MCP server connected | VERIFIED, isolated stdio server | UNVERIFIED | UNVERIFIED |
 | Global AGENTS delivery to model | official contract; model delivery UNVERIFIED | UNVERIFIED | UNVERIFIED |
-| Automatic Skill selection / model execution | UNVERIFIED (no provider calls) | UNVERIFIED | UNVERIFIED |
+| Automatic Skill selection / production-provider behavior | UNVERIFIED (mock only) | UNVERIFIED | UNVERIFIED |
 | V2 AIPS plugin setup/discovery | VERIFIED on local 2.0.24 registry | UNVERIFIED | NOT_INSTALLED |
-| Context injection hook execution | UNVERIFIED (no model provider call) | UNVERIFIED | NOT_INSTALLED |
-| Permission hook execution | UNVERIFIED (no native write attempted) | UNVERIFIED | NOT_INSTALLED |
-| Direct-action helper decisions | lifecycle VERIFIED; native permission propagation UNVERIFIED | deterministic only | NOT_INSTALLED |
+| Context injection hook execution | VERIFIED with loopback mock model | UNVERIFIED | NOT_INSTALLED |
+| Permission hook execution | VERIFIED: new creative write ALLOW; existing asset edit DENY | UNVERIFIED | NOT_INSTALLED |
+| Direct-action helper decisions | lifecycle and native permission propagation VERIFIED | deterministic only | NOT_INSTALLED |
 | Shell read-only allowlist | helper lifecycle VERIFIED; native replacement UNVERIFIED | deterministic only | NOT_INSTALLED |
 | MCP/custom-tool write protection | OUT OF SCOPE / UNVERIFIED | UNVERIFIED | UNVERIFIED |
 
-Reproduce deterministic ownership, conflict, corruption, symlink, interruption, drift and removal checks with `python3 tests/evidence/opencode_integration_lifecycle.py`. Optional native acceptance uses an explicitly supplied installed V2 binary:
+Reproduce deterministic ownership, conflict, corruption, symlink, interruption, drift, Shell side-effect, creative cache, trace privacy and removal checks with `python3 tests/evidence/opencode_integration_lifecycle.py`. Optional native acceptance uses an explicitly supplied installed V2 binary and a local loopback OpenAI-compatible mock model. It verifies the actual provider request contains AIPS Context, the native file tool allows a new EPHEMERAL creative asset, and it denies modification of an existing asset with incomplete Project Intelligence:
 
 ```sh
 python3 tests/evidence/opencode_native_acceptance.py --binary /absolute/path/to/opencode
 ```
 
-The native check uses temporary HOME/XDG/config/data, a private loopback server and transient server authentication. It loads a Skill with `resume: false`, inspects session evidence and connects local MCP without model execution. Plugin initialization is asynchronous, so discovery uses bounded polling. Test secrets and raw server logs are never emitted.
+The native check uses temporary HOME/XDG/config/data, a non-Git session workspace, private loopback servers and transient server authentication. It loads a Skill with `resume: false`, verifies session-root binding, connects local MCP, and sends model requests only to the local mock. Plugin initialization is asynchronous, so discovery uses bounded polling. Test secrets and raw server logs are never emitted. When no OpenCode V2 executable is supplied, native model and permission acceptance remain UNVERIFIED; deterministic lifecycle tests do not substitute for it.
 
 Installation/doctor report file integrity and version probing separately; merely detecting v2.0.24 on another machine cannot confer this acceptance result. Modified or unowned same-name files are preserved, damaged manifests/path escapes/symlinks block writes, and changing config roots requires reconciling the previous ownership state first. Interrupted checkpoints keep conservative ownership and may need manual review before retry.
 

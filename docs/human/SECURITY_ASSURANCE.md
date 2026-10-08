@@ -205,6 +205,8 @@ Review actual:
 
 ## Release Security Gate
 
+OpenCode evidence is host/version-scoped and does not establish OS sandboxing, MCP/custom-tool safety, or arbitrary Shell effect control; Core publication still requires the exact-candidate gate.
+
 A blocked Unreleased/changelog check keeps the candidate out of release publication even when an unrelated maintenance PR is valid.
 
 OpenCode 候選仍須 exact-candidate secret scanning、Core Matrix 與 required PR checks。ADVISORY instruction 不是原生 pre-tool enforcement 證據。
@@ -378,6 +380,8 @@ The Parallel Run Dashboard is loopback-only and read-only. Its projection cannot
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.
 
 ## Runtime Policy Enforcement
+
+OpenCode direct file permissions have separate V2 acceptance evidence; the native file guard does not intercept MCP/custom tools, arbitrary Shell subprocesses, or writes from other programs, so overall adapter governance remains ADVISORY.
 
 Synthetic or advisory Host probes remain explicitly advisory and do not establish native policy enforcement on another platform.
 

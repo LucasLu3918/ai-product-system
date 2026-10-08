@@ -201,6 +201,10 @@ Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
 
+OpenCode V2 derives each Context and supported native write decision from the active `Session.Info` directory, preserving the existing Project Intelligence readiness and freshness contract.
+
+OpenCode consumes the shared Context resolver and rechecks the active Session target; traversal evidence includes both the projection writer and native Harness consumers.
+
 OpenCode shares the existing runtime resolver and CLI consumers. Traversal evidence must include both the native projection writer and Harness/Command consumers before READY reconciliation.
 
 Shared path/glob wrappers preserve existing Project Intelligence matching behavior; bounded traversal continues to report unresolved edges and partial coverage rather than infer completeness.
@@ -272,6 +276,7 @@ Later semantic discovery may emit structured `DISCOVERY.yaml` inferences with an
 Active authority conflicts are included in the Turn Context Manifest. Material mutation fails closed with `unresolved_authority_conflict` until a human resolves or dismisses the conflict. This mechanism surfaces registered semantic contradictions; it does not guess conflicts by keyword-matching arbitrary Markdown.
 
 ## Context loading
+
 
 The OpenCode V2 plugin resolves compact Turn Context on primary dispatch and keys its in-memory cache to session, prompt digest, target, project state, and instruction fingerprints; raw prompts are not persisted.
 

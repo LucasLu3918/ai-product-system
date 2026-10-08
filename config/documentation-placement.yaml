@@ -82,7 +82,7 @@ placement_rules:
     triggers: [config/capability-registry.yaml, scripts/capability_registry.py, config/architecture-surfaces.yaml, references/evolution/CAPABILITY_MAP.yaml, config/repository-health.yaml, scripts/repository_health.py, orchestration/REPOSITORY_HEALTH.md, tests/validation/repository_health_contracts.py, tests/evidence/repository_health_lifecycle.py]
     placements:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution]
-      docs/human/SYSTEM_REFERENCE.md: [Public commands, Capability surfaces]
+      docs/human/SYSTEM_REFERENCE.md: [Public commands, Capability surfaces, Runtime support]
       docs/human/MAINTENANCE.md: [Repository Health / Architecture Drift consistency]
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
 
@@ -225,7 +225,7 @@ placement_rules:
       orchestration/RUN_DASHBOARD.md: [Contract, CLI and local API, Failure and security behavior]
 
   - id: harness
-    triggers: [harness/**, scripts/harness_resolve.py, scripts/manage_runtime_adapter.py, scripts/opencode_skill_projection.py, scripts/opencode_native_guard.py, scripts/turn_intent.py, scripts/project_intelligence.py, scripts/mcp_server.py, scripts/portable_commands.py, templates/harness/**, orchestration/EXECUTION_ISOLATION.md]
+    triggers: [harness/**, scripts/harness_resolve.py, scripts/manage_runtime_adapter.py, scripts/opencode_skill_projection.py, scripts/opencode_native_guard.py, scripts/opencode_trace.py, scripts/creative_workspace_profile.py, scripts/turn_intent.py, scripts/project_intelligence.py, scripts/mcp_server.py, scripts/portable_commands.py, templates/harness/**, orchestration/EXECUTION_ISOLATION.md]
     placements:
       docs/ARCHITECTURE.md: [Runtime flow, Installation and project lifecycle, End-to-end product delivery]
       docs/human/HARNESS.md: [Integration model, Native Runtime Adapters, MCP Interoperability, Portable Commands, Capability truth, Progressive disclosure, Ownership 與解除]

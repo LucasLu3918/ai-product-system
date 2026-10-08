@@ -48,6 +48,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+OpenCode native acceptance is implementation evidence for the tested Harness boundary, not adoption, provider, or production-readiness evidence.
+
 OpenCode adapter 的採用證據分開記錄 projection lifecycle 與指定版本的 native discovery；未知平台與模型使用行為保持 UNVERIFIED。
 
 Effectiveness evidence retains the existing digest facade over shared canonical JSON hashing; no trial ranking or Human disposition changes.
@@ -80,6 +82,8 @@ Monthly / quarterly roll-up 量測 collected → shortlist → semantic → acti
 
 - Release readiness is a separate deterministic evidence gate; Evolution metrics do not imply an empty Unreleased section or authorize a tag.
 ## Current Boundaries
+
+OpenCode adapter 的 Session Context 與 native permission acceptance 屬 Harness 與 Core Change Gate 證據，不構成 Evolution Radar 的 adoption、provider 或 production readiness 證據。
 
 `SYSTEM_CORE.md` 為固定核心；協定依 task classification 漸進載入。任務 route resolution 不代表完整 enforcement，也不改變各 Runtime 已驗證的治理強度。
 

@@ -24,11 +24,11 @@ canonical_hashes:
 cli:
 - argv: [--help]
   exit_code: 0
-  stdout_sha256: e8ecf54a930fa38961ca1dde480008e150fd21e0848fc603bc9bb2eb12792251
+  stdout_sha256: 1c5ee2314aad925ed41c2581d74fb68da5ad35bbd45978b04f3d8442c5aa9243
   stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 - argv: [help]
   exit_code: 0
-  stdout_sha256: e8ecf54a930fa38961ca1dde480008e150fd21e0848fc603bc9bb2eb12792251
+  stdout_sha256: 1c5ee2314aad925ed41c2581d74fb68da5ad35bbd45978b04f3d8442c5aa9243
   stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 - argv: [not-a-command]
   exit_code: 1
@@ -40,7 +40,7 @@ cli:
   stderr_sha256: 1c00098f11c15074b15866e9ee0ffe3df86f240c7d42282dba34bfbf381c9b0b
 - argv: [harness, --help]
   exit_code: 0
-  stdout_sha256: e19ef79313a53b34dc7d8cfbed6038b3473ea57653d9897a9e9995963293f1ec
+  stdout_sha256: 9eceae8acc556dbf79338051bd04cacf02775b9512915fa5b50555853f4c7c8e
   stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 - argv: [intelligence, --help]
   exit_code: 0

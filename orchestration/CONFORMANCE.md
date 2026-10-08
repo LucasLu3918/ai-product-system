@@ -20,6 +20,8 @@ Scenario 230 binds compact fixed-context and task-route behavior to the intellig
 
 ## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
 
+OpenCode setup evidence does not replace candidate secret scanning, Core Matrix review, or exact-candidate publication checks.
+
 The weekly/manual workflow runs the pinned OSV Scanner reusable workflow and a full-history Gitleaks shadow scan. Both scan outcomes are advisory evidence; the existing required candidate secret scan and `repository` Gate remain unchanged. The workflow has no PR, merge, or publication authority and leaves CodeQL default setup as remotely configured evidence.
 
 ## Scenario 232 — Project Check and System Preflight
@@ -38,7 +40,7 @@ The fixture lifecycle covers safe local profile/reference paths, SVG and PNG val
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
 
-Prompt classification keeps its legacy tuple and adds domain, intent, effect, and L0-L3 readiness. A managed V2 plugin injects compact context before primary model dispatch and rechecks supported native file permissions against target confinement and current Project Intelligence. L1 is limited to new creative assets in non-Git workspaces; L2 requires READY/CURRENT project evidence; external actions retain existing Human approval. Shell is bounded to a read-only allowlist. Plugin setup/discovery does not prove context delivery or permission-hook execution, so governance remains ADVISORY until action-level native acceptance. MCP/custom tools and out-of-process writes are outside the guard.
+Prompt classification keeps its legacy tuple and adds domain, intent, effect, and L0-L3 readiness. A managed V2 plugin resolves the active Session directory, injects a bounded Context before primary model dispatch, and rechecks current Context and target confinement before supported native file permissions. L1 is limited to new creative assets in non-Git workspaces; L2 requires READY/CURRENT project evidence; external actions retain existing Human approval. EPHEMERAL creative sessions receive read-only asset metadata from a private external cache with versioned no-overwrite suggestions. Shell rejects known command/argument side effects but is not a process sandbox. Optional native acceptance uses an isolated loopback mock model to verify actual Context delivery and native file Allow/Deny. Host discovery and execution remain UNVERIFIED without that evidence, so governance remains ADVISORY. `aips harness trace` provides an allowlisted privacy-limited event view. MCP/custom tools and out-of-process writes are outside the guard.
 
 `tests/scenario_coverage.yaml` is the canonical mapping from Scenario ID/path to coverage classification and evidence.
 
@@ -882,6 +884,8 @@ The size audit measures tracked text/evidence files against 50,000 bytes and rep
 
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
+
+OpenCode runtime changes retain existing Plan13 provenance and maintenance governance; host discovery alone is not enforcement evidence.
 
 Required install/preflight and legacy-migration lifecycles need all Python validation requirements even for docs-only candidates. Provisioning contracts reject conditional or missing Python requirements and unconditional Chromium downloads; exact-plan optional evidence and browser-download selection remain unchanged.
 

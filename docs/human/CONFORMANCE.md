@@ -1590,6 +1590,8 @@ The monthly evaluator deterministically samples up to 20 signal fingerprints and
 
 ## Scenario 220 — Parallel advisory fast feedback
 
+OpenCode native acceptance is recorded separately from setup and provider claims, with the tested version and unsupported effects stated in Scenario 235.
+
 OpenCode 投影檔案檢查是 focused evidence；完整 Integration Gate 仍驗證固定候選，不能由原生檔案存在取代。
 
 Scenario 230 checks fixed-core size/reduction, task-specific route selection, compact Manifest and hook output, conservative mutation fallback, and fail-closed missing route sources.
@@ -1644,7 +1646,7 @@ The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-c
 
 This Scenario is the canonical evidence pointer for OpenCode V2 context routing, action readiness, plugin lifecycle, and explicit unsupported boundaries.
 
-The lifecycle covers separate prompt dimensions, Chinese creative-asset routing, Project Intelligence readiness, direct native path/symlink decisions, bounded Shell commands, V2 plugin ownership, and version-aware install/removal. OpenCode v2.0.24 verifies plugin registry discovery, native Skills/Commands, and MCP discovery. Model Context delivery and permission-hook execution remain UNVERIFIED without a provider action, so governance stays ADVISORY. MCP/custom tools and writes outside OpenCode are not covered.
+The lifecycle covers separate prompt dimensions, Chinese creative-asset routing, Project Intelligence readiness, session-root binding, direct native path/symlink decisions, Shell argument effects, V2 plugin ownership, private EPHEMERAL asset metadata cache, bounded privacy trace, performance measurement, and version-aware install/repair/removal. OpenCode v2.0.24 acceptance uses a loopback mock model to verify actual Context delivery, a new EPHEMERAL creative asset native write Allow, and an existing-asset edit Deny with incomplete Project Intelligence. No provider credentials are needed. Linux/WSL, V1, production-provider behavior, MCP/custom-tool writes, arbitrary Shell effects and writes outside OpenCode remain unverified or out of scope; overall governance stays ADVISORY.
 
 ## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
 

@@ -52,6 +52,8 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+OpenCode v2.0.24 loopback evidence verifies Context delivery and native file Allow/Deny only for that host/version; it does not establish production-provider, V1/Linux, arbitrary Shell or MCP write safety.
+
 OpenCode release evidence separates ownership-safe projection lifecycle from version-bound native runtime acceptance; unknown operating systems and provider behavior remain explicitly unverified.
 
 Candidate path and digest helpers preserve existing output formats through compatibility facades; exact base/head binding and unresolved Impact Graph policy remain unchanged.
