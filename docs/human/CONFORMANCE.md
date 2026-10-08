@@ -1590,6 +1590,8 @@ The monthly evaluator deterministically samples up to 20 signal fingerprints and
 
 ## Scenario 220 — Parallel advisory fast feedback
 
+OpenCode native acceptance is recorded separately from setup and provider claims, with the tested version and unsupported effects stated in Scenario 235.
+
 OpenCode 投影檔案檢查是 focused evidence；完整 Integration Gate 仍驗證固定候選，不能由原生檔案存在取代。
 
 Scenario 230 checks fixed-core size/reduction, task-specific route selection, compact Manifest and hook output, conservative mutation fallback, and fail-closed missing route sources.

@@ -100,6 +100,8 @@ Multi-file changes should normally be assembled into one coherent remote branch 
 
 ## Versioning
 
+OpenCode V2 lifecycle now verifies active Session-root Context, bounded creative asset metadata, version-aware recovery, effect-aware Shell decisions and privacy-limited trace; native v2.0.24 acceptance remains scoped to the tested host, with global governance ADVISORY.
+
 OpenCode 相容證據需記錄實際版本與作業系統；AIPS 檔案完整性成功不代表任意 OpenCode 版本已完成原生驗證。
 
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
@@ -181,7 +183,6 @@ When product-delivery behavior changes, review together:
 
 ### Harness / Runtime adapters
 
-OpenCode V2 lifecycle now verifies active Session-root Context, bounded creative asset metadata, version-aware recovery, effect-aware Shell decisions and privacy-limited trace; native v2.0.24 acceptance remains scoped to the tested host, with global governance ADVISORY.
 
 When Harness behavior changes, review together:
 
@@ -259,6 +260,8 @@ When Approval Binding / Governance Enforcement changes, review together:
 Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverifiable.
 
 ## Durable Run State consistency
+
+OpenCode plugin recovery is version-aware and ownership-safe; doctor output distinguishes installation integrity from native runtime acceptance.
 
 Read-only Run Dashboard and run projection fingerprints remain backed by shared canonical helpers; they introduce no second state source or write authority.
 
@@ -507,6 +510,8 @@ Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanu
 
 
 ## Repository Health / Architecture Drift consistency
+
+OpenCode remains an adapter within the existing Harness capability; generated architecture projections continue to derive from the Capability Registry.
 
 The Capability Registry now lists the OpenCode native guard helper and plugin lifecycle as harness-runtime surfaces; generated architecture projections must be regenerated from that registry.
 

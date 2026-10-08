@@ -147,7 +147,6 @@ Runtime Policy Enforcement may require provider-observed network allowlist evide
 
 ## Runtime-security assessment boundary
 
-The OpenCode Shell hook uses semantic command/effect checks and is not an OS process sandbox; MCP/custom tools and other processes remain outside its observed boundary.
 
 Issue #79 keeps out-of-band anomaly evidence and semantic intent governance outside the active Execution Isolation / Resource Authorization enforcement path. They remain assessment candidates only.
 
@@ -281,6 +280,10 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 
 ## Parallel runtime resource isolation
+
+The OpenCode Shell hook uses semantic command/effect checks and is not an OS process sandbox; MCP/custom tools and other processes remain outside its observed boundary.
+
+The OpenCode Shell hook performs semantic command/effect checks; it does not isolate processes, MCP/custom tools, or effects from other programs.
 
 The OpenCode native file guard confines supported direct resources but is not an OS sandbox and does not constrain arbitrary subprocess, MCP, or out-of-process effects.
 

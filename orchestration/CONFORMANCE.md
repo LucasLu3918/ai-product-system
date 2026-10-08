@@ -20,6 +20,8 @@ Scenario 230 binds compact fixed-context and task-route behavior to the intellig
 
 ## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
 
+OpenCode setup evidence does not replace candidate secret scanning, Core Matrix review, or exact-candidate publication checks.
+
 The weekly/manual workflow runs the pinned OSV Scanner reusable workflow and a full-history Gitleaks shadow scan. Both scan outcomes are advisory evidence; the existing required candidate secret scan and `repository` Gate remain unchanged. The workflow has no PR, merge, or publication authority and leaves CodeQL default setup as remotely configured evidence.
 
 ## Scenario 232 — Project Check and System Preflight
@@ -882,6 +884,8 @@ The size audit measures tracked text/evidence files against 50,000 bytes and rep
 
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
+
+OpenCode runtime changes retain existing Plan13 provenance and maintenance governance; host discovery alone is not enforcement evidence.
 
 Required install/preflight and legacy-migration lifecycles need all Python validation requirements even for docs-only candidates. Provisioning contracts reject conditional or missing Python requirements and unconditional Chromium downloads; exact-plan optional evidence and browser-download selection remain unchanged.
 

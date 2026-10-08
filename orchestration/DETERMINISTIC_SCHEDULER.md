@@ -169,6 +169,8 @@ The Scheduler never falls back to LLM coordination to make a blocked graph look 
 
 ## Read-only declaration and fail-closed boundary
 
+OpenCode's Session-scoped file guard is a host hook, not scheduler ownership or process isolation; Shell subprocesses and MCP/custom-tool effects remain outside that boundary.
+
 OpenCode projections expose existing workflows but grant no scheduler execution or pre-tool enforcement authority. Missing native runtime evidence remains UNVERIFIED.
 
 The scheduler keeps its public raw fingerprint facade over `scripts/aips_common`; golden vectors protect existing bytes without changing task ownership or fail-closed behavior.
@@ -230,7 +232,6 @@ The internal Retrieval Intelligence storage extraction preserves the facade and 
 
 ## Runtime resource requests
 
-OpenCode's Session-scoped file guard is a host hook, not scheduler ownership or process isolation; Shell subprocesses and MCP/custom-tool effects remain outside that boundary.
 
 Task Graph isolation metadata may declare bounded TCP port needs:
 

@@ -48,6 +48,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+OpenCode native acceptance is implementation evidence for the tested Harness boundary, not adoption, provider, or production-readiness evidence.
+
 OpenCode adapter 的採用證據分開記錄 projection lifecycle 與指定版本的 native discovery；未知平台與模型使用行為保持 UNVERIFIED。
 
 Effectiveness evidence retains the existing digest facade over shared canonical JSON hashing; no trial ranking or Human disposition changes.

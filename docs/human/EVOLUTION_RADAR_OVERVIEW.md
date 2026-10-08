@@ -42,6 +42,8 @@ TRIAL 使用 approved scope / paths 與 AIPS-owned isolation。執行後檢查 f
 
 ## Trial → Adoption
 
+OpenCode Harness acceptance remains version-scoped evidence; Evolution Radar promotion still requires its own Human decision and effectiveness evidence.
+
 Trial PASS 只表示 trial evidence 可供 review。正式 ADOPT 必須是新的 Human Decision，綁定 exact PASS fingerprint，再回到正常 System Self-Improvement / Core Change / Git Publish 流程。
 
 GitHub Actions 的 Ubuntu runner 固定在 24.04，artifact upload action 維持已驗證的完整 SHA pin；runtime 升級需先驗證 action 與 runner 相容性。

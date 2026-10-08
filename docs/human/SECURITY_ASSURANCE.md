@@ -205,6 +205,8 @@ Review actual:
 
 ## Release Security Gate
 
+OpenCode evidence is host/version-scoped and does not establish OS sandboxing, MCP/custom-tool safety, or arbitrary Shell effect control; Core publication still requires the exact-candidate gate.
+
 A blocked Unreleased/changelog check keeps the candidate out of release publication even when an unrelated maintenance PR is valid.
 
 OpenCode 候選仍須 exact-candidate secret scanning、Core Matrix 與 required PR checks。ADVISORY instruction 不是原生 pre-tool enforcement 證據。

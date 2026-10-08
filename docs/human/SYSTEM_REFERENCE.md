@@ -26,6 +26,8 @@ The established Retrieval Intelligence command/import facade remains `scripts/re
 
 ## Capability surfaces
 
+OpenCode V2 adapter lifecycle, install/doctor repair guidance, Session-scoped Context and tested native permission boundaries are documented in [Harness](HARNESS.md); use `aips harness trace` for the bounded privacy-limited event view.
+
 | Surface | Capabilities | Canonical documentation | Validation bindings |
 |---|---|---|---|
 | `runtime-context` | unified-runtime-path-resolution, validation-interpreter-capability-selection, runtime-invariant-matrix, model-routing | orchestration/RUNTIME_CONTEXT.md, orchestration/MODEL_ROUTING.md | tests/evidence/runtime_context_lifecycle.py, tests/evidence/aips_cli_module_extraction_lifecycle.py, scripts/runtime_invariant_matrix.py, tests/validate_repository.py, tests/scenarios/224-runtime-preferred-primary-model.md |
@@ -41,7 +43,6 @@ The established Retrieval Intelligence command/import facade remains `scripts/re
 
 ## Runtime support
 
-OpenCode V2 adapter lifecycle, install/doctor repair guidance, Session-scoped Context and tested native permission boundaries are documented in [Harness](HARNESS.md); use `aips harness trace` for the bounded privacy-limited event view.
 
 - Supported Python: `>=3.12`
 - CI tested Python: `3.12`

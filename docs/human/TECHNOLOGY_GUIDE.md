@@ -172,6 +172,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+OpenCode validation separates install and discovery from Session Context delivery and permission-hook execution; claims remain limited to the tested host and version.
+
 OpenCode Adapter 使用 ownership digest、安全路徑檢查與原子寫入管理全域 AGENTS、canonical Skills、Commands 及 V2 plugin。V2 plugin 在 primary dispatch 注入 compact Turn Context，permission hook 檢查受支援的直接檔案資源，Shell 限制為 bounded read-only allowlist。L1 允許非 Git workspace 的 confined 新 creative asset；L2 要求 Project Intelligence READY/CURRENT；L3 外部動作沿用 Human approval。Lifecycle 涵蓋版本、重裝、衝突、漂移、損壞 manifest、symlink、中斷恢復與解除。Plugin discovery 已由 OpenCode 2.0.24 registry 驗證；模型 Context delivery 與 permission action 尚未驗證，Governance 維持 ADVISORY，MCP/custom tools 和 out-of-process writes 不在 guard 範圍。
 
 必要的 repository lifecycle 會在隔離 fixture 中重新解析完整 Python 3.12 環境，所以 CI 固定安裝四份驗證 requirements，包含 Playwright 與 OpenAPI Python 模組。精準路徑計畫仍控制 Node 設定、Chromium 下載及可選 OpenAPI evidence；`ci_validation_plan_contracts.py` 另驗證文件變更也不可省略 Python 套件，並拒絕條件安裝、漏裝及無條件下載 Chromium 的回歸。

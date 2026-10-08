@@ -106,6 +106,8 @@ Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行
 
 ## Deterministic Execution
 
+OpenCode is an existing Harness capability: its generated Skills, Session-root Context, native permission decisions, and lifecycle checks remain represented by the canonical Capability Registry and conformance evidence.
+
 The OpenCode native helper uses L1 for confined new creative assets in non-Git workspaces, L2 for READY/CURRENT project mutations, and L3 for external effects under the existing Human approval gate.
 
 OpenCode Skills 由 canonical Skill Registry 生成；description、source digest 與 ownership 的一致性由 deterministic lifecycle 驗證。
@@ -232,6 +234,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+OpenCode Core changes retain the reviewed Core Matrix, full repository validation, exact-candidate publication gate, and required remote checks.
 
 OpenCode 升級／解除只處理 digest 一致的 AIPS-owned 投影；發現使用者修改或設定根目錄變更時保留檔案並回報衝突。
 

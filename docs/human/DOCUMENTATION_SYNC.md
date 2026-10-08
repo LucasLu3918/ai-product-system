@@ -153,6 +153,8 @@ Getting Started / Installation / User Guide 以 task-oriented方式導覽；Arch
 
 ## Deterministic protection
 
+OpenCode behavior remains documented in the Harness contract and Scenario 235; exact-candidate closure and canonical placement are checked before publication.
+
 OpenCode adapter、projection manager 與 ownership templates 共用 Harness 的文件 placement；原生驗證狀態需與 compatibility matrix 一致。
 
 主要實作保留合格的 Runtime／使用者模型；Skill frontmatter 產生相容 v1 INDEX，決定性 lifecycle 與人工模型政策驗收分開記錄。

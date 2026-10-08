@@ -64,6 +64,8 @@ AIPS 不取代既有 AGENTS.md、CLAUDE.md、GEMINI.md 或 custom Skills；只�
 
 ## Update
 
+OpenCode V2 uses the managed AIPS Harness adapter for Session-scoped Context, supported native file decisions, and explicit Shell/MCP boundaries; Core changes require the exact-candidate Gate before publication.
+
 OpenCode 已安裝時，`aips update` 會更新由 AIPS 擁有的全域指示、Skills 與 Commands；使用者修改的投影會保留並回報衝突。詳見 [Harness](docs/human/HARNESS.md)。
 
 ~~~bash
@@ -89,7 +91,6 @@ aips uninstall
 
 ## Documentation
 
-OpenCode V2 uses the managed AIPS Harness adapter for Session-scoped Context, supported native file decisions, and explicit Shell/MCP boundaries; Core changes require the exact-candidate Gate before publication.
 
 正式 Human Documentation source 位於 docs/human/，並由 VitePress 建置為 Official Docs Site。
 
