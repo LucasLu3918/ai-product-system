@@ -8,6 +8,7 @@ triggers:
 - visual_concepts
 - brand_direction
 - design_system
+- character_artwork
 model_requirements:
   reasoning: medium
   coding: none
@@ -30,3 +31,7 @@ Develop a visual system from product context and approved UX, then carry the sel
 6. Check responsive behavior, contrast and repeated-component consistency.
 
 Extend this Skill before considering a separate design-system Skill. Treat references as inspiration, not proof that a product needs a feature.
+
+## Character art
+
+For reusable character work, use the existing `creative-calibration` flow and the `CHARACTER_PROFILE.yaml`, `STYLE_PROFILE.yaml`, and `CHARACTER_ARTWORK_MANIFEST.yaml` templates. Generate each pose, expression, and accessory as a separate image; typeset Chinese labels in the deterministic sheet composer rather than in the image model. Prefer the official local ComfyUI MCP when already available; MFLUX is an optional Apple Silicon local engine. Do not add another MCP server or download model weights as part of setup. Record exact model/runtime/license provenance and local-only execution. The composer checks bytes and layout; it does not assess identity fidelity or visual quality.

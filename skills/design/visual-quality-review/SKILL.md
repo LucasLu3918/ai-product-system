@@ -8,6 +8,7 @@ triggers:
 - visual_review
 - brand_consistency_review
 - creative_direction_review
+- character_artwork_review
 model_requirements:
   reasoning: high
   coding: none
@@ -57,3 +58,5 @@ For V2:
 Load the rendered evidence integrity section of `orchestration/VISUAL_POLISH.md` when reviewing rendered captures or closing material findings. A screenshot file or deterministic envelope PASS does not prove visual quality. Keep the independent review decision separate.
 
 Return PASS / PASS WITH COMMENTS / REQUEST CHANGES / BLOCK with concrete evidence and recommendations.
+
+For character-art manifests, separately inspect identity-feature consistency, pose/expression variation boundaries, style adherence, Chinese label rendering, source lineage, crop/presentation, and model-license suitability. Deterministic manifest or hash PASS proves evidence integrity only; compare the actual generated assets to the approved Character and Style Profiles before making a quality decision. Treat generation failures and unavailable local runtimes as explicit limitations, not visual PASS.

@@ -1,0 +1,30 @@
+version: 1
+id: character-id
+name: Character display name
+summary: A concise, neutral description of the character.
+
+# Stable traits that every generated or edited asset must preserve.
+identity_features:
+  - distinctive face or silhouette
+  - defining hair, eyes, clothing, or accessory
+must_preserve: []
+allowed_variations:
+  expressions: [joyful, thoughtful, surprised, determined]
+  poses: [front, three-quarter, profile]
+  outfit_variants: []
+must_avoid: []
+
+palette:
+  primary: []
+  secondary: []
+  accent: []
+
+# Paths are relative to the project root. Record the exact original bytes.
+references:
+  - path: assets/character-reference.svg
+    sha256: sha256:<64 lowercase hexadecimal characters>
+    role: identity-reference
+
+privacy:
+  raw_prompt_persistence: forbidden
+  external_upload: forbidden_by_default

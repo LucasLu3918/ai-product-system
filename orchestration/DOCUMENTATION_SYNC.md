@@ -29,6 +29,8 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+Character artwork behavior is mapped through `config/documentation-sync.yaml` and `config/documentation-placement.yaml`: keep the Creative Direction protocol, Scenario 234, User Guide Creative Direction topic, Technology Guide Execution topic, and dedicated Architecture Overview Creative Workflow topic synchronized. Deterministic provenance checks do not replace visual review.
+
 Portable Command Registry、CLI 與 MCP renderer 屬 Harness current behavior；同步 Human 文件時沿用既有 Harness、Architecture、Installation、Maintenance 與 Technology topic，不建立第二套文件樹。
 Phase 5 的共用 OpenAPI client 案例沿用 Implementation Resolution、Quality 與 Conformance topic。同步 Scenario 197 的 lifecycle、Human 操作說明及多產品證據邊界，不為每個產品建立 AIPS 共用文件。
 When a configured behavior-bearing source path changes, the same change MUST update the mapped documentation surfaces:

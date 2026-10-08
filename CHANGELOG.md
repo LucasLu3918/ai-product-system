@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add local-first character-art profiles, provenance-bound SVG/PNG validation, deterministic typeset character sheets, and independent visual-review guidance without installing image models or using cloud APIs.
 - Add a canonical Capability Registry with deterministic v1 consumer projections and Repository Health drift/orphan detection.
 - Add an isolated Codex PreToolUse probe that blocks only one harmless synthetic Bash command; keep unsupported/error paths and aggregate governance `ADVISORY`.
 - Add change-aware Agent Eval freshness selection, a facade-preserving Project Intelligence storage seam, and measured report-only coverage evidence without tightening required thresholds.

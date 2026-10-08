@@ -28,6 +28,7 @@ VALIDATORS = (
     ValidatorSpec("validation.visual_render_contracts", False, ("scripts/visual_*", "scripts/browser_*", "tests/evidence/visual_*", "tests/evidence/browser_*", "config/project-visual-profile.yaml"), False, requires_browser=True),
     ValidatorSpec("validation.performance_evidence_contracts", False, ("scripts/performance_*", "tests/evidence/performance_*", "config/performance-*"), False),
     ValidatorSpec("validation.creative_evidence_contracts", False, ("scripts/creative_*", "tests/evidence/creative_*", "config/creative-*"), False, requires_browser=True),
+    ValidatorSpec("validation.character_artifacts_contracts", False, ("scripts/character_artifacts.py", "templates/creative/CHARACTER_*", "templates/creative/STYLE_PROFILE.yaml", "tests/evidence/character_artifacts_lifecycle.py", "tests/validation/character_artifacts_contracts.py", "orchestration/CREATIVE_DIRECTION.md"), False),
     ValidatorSpec("validation.product_delivery_contracts", False, ("scripts/product_delivery*", "tests/evidence/product_delivery*", "orchestration/PRODUCT_DELIVERY.md"), False),
     ValidatorSpec("validation.evolution_radar_contracts", False, ("scripts/evolution_*", "config/evolution-*", "tests/evidence/evolution_*", "tests/validation/evolution_*", "orchestration/EVOLUTION_RADAR.md", "docs/human/EVOLUTION_RADAR.md", ".github/workflows/evolution-*"), False),
     ValidatorSpec("validation.evolution_governance_contracts", False),

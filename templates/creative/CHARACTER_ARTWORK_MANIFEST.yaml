@@ -1,0 +1,55 @@
+version: 1
+status: DRAFT # DRAFT | COMPLETE | REJECTED
+character_profile: CHARACTER_PROFILE.yaml
+style_profile: STYLE_PROFILE.yaml
+
+execution:
+  provider_id: comfy_mcp_local # comfy_mcp_local | mflux_local
+  model_id: model-name-and-revision
+  runtime:
+    name: ComfyUI or MFLUX
+    version: null
+  model_license:
+    name: Exact license name from the model source
+    spdx: null # Record only when verified; unknown is not permissive.
+    source_url: https://example.invalid/model-card
+  prompt_fingerprint: null # Optional digest only. Do not store the raw prompt here.
+  external_egress: false
+  performance:
+    measured: false
+    device: null
+    elapsed_ms: null
+    peak_memory_bytes: null
+
+assets:
+  - id: main-portrait
+    role: full_body
+    label: 全身立繪
+    path: output/character/full-body.png
+    format: png
+    width: 1024
+    height: 1536
+    sha256: sha256:<64 lowercase hexadecimal characters>
+    source_assets:
+      - path: assets/character-reference.svg
+        sha256: sha256:<64 lowercase hexadecimal characters>
+  - id: expression-joyful
+    role: expression
+    label: 喜悅表情
+    path: output/character/expression-joyful.png
+    format: png
+    width: 768
+    height: 768
+    sha256: sha256:<64 lowercase hexadecimal characters>
+    source_assets:
+      - path: assets/character-reference.svg
+        sha256: sha256:<64 lowercase hexadecimal characters>
+
+sheet:
+  title: 角色設定
+  output: output/character/character-sheet.svg
+
+review:
+  decision: PENDING # PENDING | PASS | PASS WITH COMMENTS | REQUEST CHANGES | BLOCK
+  assessed_by: visual-quality-review
+  notes: []

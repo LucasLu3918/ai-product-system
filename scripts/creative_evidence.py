@@ -24,6 +24,21 @@ def _path(project: Path, value: object) -> Path:
     return project / str(value or "")
 
 
+def _confined_file(project: Path, value: object) -> Path:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError("path must be a non-empty project-relative string")
+    candidate = Path(value)
+    if candidate.is_absolute() or ".." in candidate.parts or "\\" in value:
+        raise ValueError("absolute paths and parent traversal are not allowed")
+    root = project.resolve()
+    resolved = (root / candidate).resolve(strict=True)
+    if resolved != root and root not in resolved.parents:
+        raise ValueError("symlink target escapes the project root")
+    if not resolved.is_file():
+        raise ValueError("path must reference a file")
+    return resolved
+
+
 def validate(document: dict, project: Path) -> dict:
     errors: list[str] = []
     if document.get("version") != 1:
@@ -165,6 +180,23 @@ def validate(document: dict, project: Path) -> dict:
 
     if status == "PASS" and decision not in PASS_DECISIONS:
         errors.append("PASS requires a passing Visual Quality Review decision")
+
+    character_artwork = document.get("character_artwork")
+    if character_artwork is not None:
+        if not isinstance(character_artwork, dict):
+            errors.append("character_artwork must be a mapping")
+        else:
+            manifest_value = character_artwork.get("manifest")
+            digest_value = character_artwork.get("sha256")
+            if (manifest_value is None) != (digest_value is None):
+                errors.append("character_artwork.manifest and sha256 must be provided together")
+            elif manifest_value is not None:
+                try:
+                    manifest_path = _confined_file(project, manifest_value)
+                    if digest_value != sha256_file(manifest_path):
+                        errors.append("character_artwork manifest digest does not match its exact bytes")
+                except (OSError, RuntimeError, ValueError) as exc:
+                    errors.append(f"character_artwork.manifest is invalid: {exc}")
 
     return {
         "valid": not errors,

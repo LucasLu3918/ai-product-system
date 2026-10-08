@@ -39,6 +39,10 @@ assets: []
 # For required user-owned assets record type/path, required=true,
 # sha256_before/sha256_after, used_in_render, visible and crop_reviewed.
 
+character_artwork:
+  manifest: null # Optional project-relative CHARACTER_ARTWORK_MANIFEST.yaml path.
+  sha256: null # Digest of the reviewed manifest bytes; this proves identity, not image quality.
+
 renders:
   captures: []
   checks:

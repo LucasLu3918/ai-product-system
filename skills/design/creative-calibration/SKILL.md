@@ -8,6 +8,7 @@ triggers:
 - vague_visual_request
 - user_reference_assets
 - style_calibration
+- character_artwork
 model_requirements:
   reasoning: medium
   coding: none
@@ -29,3 +30,5 @@ Priority:
 6. generic design knowledge.
 
 Use progressive calibration: show 2–3 directions, learn what the user likes/dislikes, allow aspect-level mixing, record must-have/must-avoid traits, then lock the direction before broad implementation when visual mismatch would be costly.
+
+For recurring characters, capture stable identity traits and hashed local references in `templates/creative/CHARACTER_PROFILE.yaml`; capture rendering and text-composition rules in `templates/creative/STYLE_PROFILE.yaml`. Preserve identity features across allowed pose/expression variations, and never persist raw prompts or upload references by default.
