@@ -21,7 +21,7 @@ class ValidatorSpec:
 VALIDATORS = (
     ValidatorSpec("validation.static_contracts", True),
     ValidatorSpec("validation.skill_index_contracts", False),
-    ValidatorSpec("validation.opencode_integration_contracts", False, ("scripts/opencode_skill_projection.py", "harness/adapters/opencode/*", "tests/evidence/opencode_integration_lifecycle.py"), False),
+    ValidatorSpec("validation.opencode_integration_contracts", False, ("scripts/opencode_skill_projection.py", "scripts/opencode_native_guard.py", "scripts/turn_intent.py", "scripts/project_intelligence.py", "harness/adapters/opencode/*", "tests/evidence/opencode_integration_lifecycle.py", "tests/evidence/opencode_native_acceptance.py", "tests/evidence/intelligence_context_lifecycle.py"), False),
     ValidatorSpec("validation.versioning_contracts", True),
     ValidatorSpec("validation.system_facts_contracts", True),
     ValidatorSpec("validation.runtime_contracts", False),

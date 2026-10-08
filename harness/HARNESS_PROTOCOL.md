@@ -6,6 +6,8 @@ AIPS Global Harness makes AIPS available to supported Agent runtimes while prese
 
 ## Turn-aware flow
 
+OpenCode V2 installs an owned plugin that injects compact Context before primary dispatch and evaluates supported direct file permissions. Plugin setup remains distinct from verified action-level enforcement.
+
 ~~~text
 User Prompt
 → runtime-native Turn/Context mechanism

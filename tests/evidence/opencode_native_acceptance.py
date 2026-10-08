@@ -38,6 +38,7 @@ def main() -> None:
             [sys.executable, str(ROOT / 'scripts/portable_commands.py'), 'install', '--host', 'opencode'],
         ]:
             subprocess.run(command, env=env, cwd=base, capture_output=True, check=True)
+        assert (config / 'plugins/aips-opencode.ts').is_file(), 'verified V2 install did not project the native plugin'
         payload = json.loads(subprocess.check_output([sys.executable, str(ROOT / 'scripts/mcp_server.py'), 'config', '--client', 'opencode'], env=env, cwd=base, text=True))
         (config / 'opencode.json').write_text(json.dumps(payload['config']))
         with socket.socket() as sock:
@@ -67,6 +68,20 @@ def main() -> None:
 
                 spec = request('/openapi.json')
                 ops = {v.get('operationId'): (method, path) for path, methods in spec['paths'].items() for method, v in methods.items() if isinstance(v, dict)}
+                plugin_setup = 'UNVERIFIED'
+                if 'plugin.list' in ops:
+                    plugin_result = request(ops['plugin.list'][1])
+                    if 'aips-opencode' in json.dumps(plugin_result):
+                        plugin_setup = 'VERIFIED'
+                    else:
+                        diagnostics = []
+                        for log_path in (base / 'state').rglob('*.log'):
+                            contents = log_path.read_text(errors='replace')
+                            contents = re.sub(r'(?i)(password|token|authorization|api[_ -]?key)([\"\'=: ]+)[^\s,}]+', r'\1\2[redacted]', contents)
+                            diagnostics.extend(line[:400] for line in contents.splitlines()
+                                               if 'plugin' in line.casefold() or 'aips' in line.casefold())
+                        raise RuntimeError('OpenCode plugin registry did not report aips-opencode; response_keys='
+                                           + repr(sorted(plugin_result.keys())) + '; diagnostics=' + repr(diagnostics[:8]))
                 expected = {p.parent.name for p in config.glob('skills/*/SKILL.md')}
                 found = {}
                 for op, names in [('skill.list', expected), ('command.list', {'aips-plan', 'aips-impact', 'aips-constitution'})]:
@@ -96,7 +111,7 @@ def main() -> None:
                     if time.monotonic() >= deadline:
                         raise RuntimeError('native MCP connection incomplete')
                     time.sleep(.5)
-                print(json.dumps({'version': version, 'skills': len(expected), 'commands': 3, 'skill_load': 'VERIFIED', 'mcp': 'CONNECTED', 'runtime': 'DISCOVERY_VERIFIED', 'model_execution': 'UNVERIFIED', 'pre_tool_guard': 'UNSUPPORTED'}))
+                print(json.dumps({'version': version, 'skills': len(expected), 'commands': 3, 'skill_load': 'VERIFIED', 'mcp': 'CONNECTED', 'plugin_setup': plugin_setup, 'runtime': 'DISCOVERY_VERIFIED', 'model_execution': 'UNVERIFIED', 'permission_hook_execution': 'UNVERIFIED', 'pre_tool_guard': 'AVAILABLE_UNVERIFIED'}))
                 print(json.dumps({'global_instructions': 'OFFICIAL_CONTRACT', 'instruction_model_delivery': 'UNVERIFIED'}))
             finally:
                 server.terminate()

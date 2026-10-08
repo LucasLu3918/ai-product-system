@@ -22,6 +22,8 @@ When a shared module-extraction lifecycle gains another facade, retain identity 
 
 ## Impact-derived Test Matrix
 
+For native runtime adapters, test setup, version routing, ownership recovery, direct action decisions, cache freshness, and unsupported Shell/MCP paths separately; do not infer hook execution from registry discovery.
+
 CI provisioning matrices cover unconditional Python requirements, docs-only install/preflight and legacy-migration lifecycles, and retained conditional Chromium downloads. Exercise positive and negative provisioning contracts without weakening mandatory candidate scans, complete repository validation or remote aggregate checks.
 
 Shared deterministic helper extraction uses golden vectors for byte-level digest compatibility and explicit caller-specific path/glob cases; the exact-candidate Gate remains required for the frozen file set.

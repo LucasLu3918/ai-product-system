@@ -65,7 +65,7 @@ class OwnedFiles:
     """A separate manifest per namespace; never trust arbitrary stored paths."""
 
     def __init__(self, namespace: str, root: Path | None = None, state: Path | None = None):
-        if namespace not in {"skills", "commands", "instructions"}:
+        if namespace not in {"skills", "commands", "instructions", "plugins"}:
             raise ValueError("invalid projection namespace")
         self.namespace = namespace
         self.root = root or config_root()
@@ -73,7 +73,7 @@ class OwnedFiles:
         self.manifest = self.state / f"{namespace}.json"
 
     def target(self, rel: str) -> Path:
-        valid = {"instructions": r"AGENTS\.md", "skills": r"skills/[a-z0-9]+(?:-[a-z0-9]+)*/SKILL\.md", "commands": r"commands/aips-[a-z0-9-]+\.md"}
+        valid = {"instructions": r"AGENTS\.md", "skills": r"skills/[a-z0-9]+(?:-[a-z0-9]+)*/SKILL\.md", "commands": r"commands/aips-[a-z0-9-]+\.md", "plugins": r"plugins/aips-opencode\.ts"}
         if not isinstance(rel, str) or not re.fullmatch(valid[self.namespace], rel):
             raise ValueError("invalid owned path")
         path = self.root / rel
@@ -191,6 +191,12 @@ def instructions() -> dict[str, str]:
     return {"AGENTS.md": BEGIN + "\n" + source.read_text().strip() + "\n" + END}
 
 
+def plugin_files(root: Path = ROOT) -> dict[str, str]:
+    source = root / "harness/adapters/opencode/plugin.ts"
+    body = source.read_text()
+    return {"plugins/aips-opencode.ts": body.replace("__AIPS_SYSTEM_ROOT__", json.dumps(str(root.resolve())))}
+
+
 def probe() -> dict:
     command = shutil.which("opencode")
     if not command:
@@ -202,21 +208,24 @@ def probe() -> dict:
     except (OSError, subprocess.TimeoutExpired):
         version = None
     compatible = bool(version and version.split(".")[0] in {"1", "2"})
-    return {"status": "READY" if compatible else "BLOCKED", "compatibility": "KNOWN_MAJOR_CONTRACT" if compatible else "UNKNOWN_VERSION", "installation": "DETECTED" if version else "PROBE_FAILED", "version": version, "runtime_verification": "UNVERIFIED", "pre_tool_guard": "UNSUPPORTED", "mcp": "NOT_CONFIGURED"}
+    v2 = bool(version and version.split(".")[0] == "2")
+    return {"status": "READY" if compatible else "BLOCKED", "compatibility": "KNOWN_MAJOR_CONTRACT" if compatible else "UNKNOWN_VERSION", "installation": "DETECTED" if version else "PROBE_FAILED", "version": version, "runtime_verification": "UNVERIFIED", "native_context_plugin": "AVAILABLE_UNVERIFIED" if v2 else "NOT_AVAILABLE", "pre_tool_guard": "AVAILABLE_UNVERIFIED" if v2 else "UNSUPPORTED", "mcp": "NOT_CONFIGURED"}
 
 
 def operate(action: str) -> dict:
     if action == "probe":
         return probe()
-    managers = {"instructions": OwnedFiles("instructions"), "skills": OwnedFiles("skills")}
-    desired = {} if action == "uninstall" else {"instructions": instructions(), "skills": skill_files()}
+    managers = {"instructions": OwnedFiles("instructions"), "skills": OwnedFiles("skills"), "plugins": OwnedFiles("plugins")}
+    runtime = probe()
+    v2 = bool(runtime.get("version") and runtime["version"].split(".")[0] == "2")
+    desired = {} if action == "uninstall" else {"instructions": instructions(), "skills": skill_files(), "plugins": plugin_files() if v2 else {}}
     if action == "install":
         results = {name: manager.sync(desired[name]) for name, manager in managers.items()}
     elif action == "uninstall":
         results = {name: manager.sync({}) for name, manager in managers.items()}
     else:
         results = {name: manager.status(desired[name]) for name, manager in managers.items()}
-    return {"status": "READY" if all(r["status"] == "READY" for r in results.values()) else "CONFLICT", "config_root": str(config_root()), "capability": "CONTEXT_ALWAYS", "governance_enforcement": "ADVISORY", "runtime_verification": "UNVERIFIED", "probe": probe(), "projections": results}
+    return {"status": "READY" if all(r["status"] == "READY" for r in results.values()) else "CONFLICT", "config_root": str(config_root()), "capability": "CONTEXT_ALWAYS", "governance_enforcement": "ADVISORY", "runtime_verification": "UNVERIFIED", "native_context_plugin": "INSTALLED_UNVERIFIED" if v2 and action in {"install", "status", "check", "doctor"} else "NOT_INSTALLED", "pre_tool_guard": "AVAILABLE_UNVERIFIED" if v2 and action in {"install", "status", "check", "doctor"} else "UNSUPPORTED", "probe": runtime, "projections": results}
 
 
 def main() -> int:

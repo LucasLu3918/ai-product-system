@@ -72,6 +72,8 @@ aips commands list
 
 ## Existing Project
 
+For OpenCode V2, `aips harness install` installs the owned global plugin after runtime-version detection; use `aips harness doctor` to inspect its setup status. Plugin discovery alone does not verify model-context delivery or permission-hook execution.
+
 The Dashboard is a read-only view backed by current task state; shared projection fingerprints do not create or migrate project records.
 
 每回合先取得精簡固定核心與任務相關協定指標；修改既有專案前仍須依其原生規範取得 Project Intelligence、Change Impact 與驗證要求。

@@ -78,6 +78,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+OpenCode V2 adapter behavior is defined by `harness/adapters/opencode/AGENTS.md`, `COMPATIBILITY.md`, and `plugin.ts`; user-facing setup and capability limits are summarized in the Harness guide.
+
 The character-art workflow is canonical in `orchestration/CREATIVE_DIRECTION.md`, the three existing design Skills, `scripts/character_artifacts.py`, its profile/manifest templates and Scenario 234. User workflow and technical limits are described in USER_GUIDE.md and TECHNOLOGY_GUIDE.md; no second Skill or provider adapter is introduced.
 
 OpenCode 的 managed 指示來源為 `harness/adapters/opencode/AGENTS.md`；原生驗證範圍見 [Harness](HARNESS.md)，canonical 紀錄為 `harness/adapters/opencode/COMPATIBILITY.md`。Skills 與 Commands 仍以原有 canonical registry 為準。

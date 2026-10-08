@@ -592,7 +592,12 @@ surfaces:
   - harness/commands/REGISTRY.yaml
   - scripts/harness_resolve.py
   - scripts/opencode_skill_projection.py
+  - scripts/opencode_native_guard.py
+  - scripts/turn_intent.py
+  - scripts/project_intelligence.py
   - harness/adapters/opencode/AGENTS.md
+  - harness/adapters/opencode/plugin.ts
+  - harness/adapters/opencode/COMPATIBILITY.md
   - scripts/mcp_server.py
   - scripts/execution_isolation.py
   - scripts/sandbox_providers.py
@@ -622,6 +627,9 @@ surfaces:
   - harness/MCP_GATEWAY.md
   validation_paths:
   - tests/validation/opencode_integration_contracts.py
+  - tests/evidence/opencode_integration_lifecycle.py
+  - tests/evidence/opencode_native_acceptance.py
+  - tests/evidence/intelligence_context_lifecycle.py
   - tests/evidence/harness_runtime_lifecycle.py
   - tests/evidence/mcp_interoperability_lifecycle.py
   - tests/evidence/resource_authorization_lifecycle.py

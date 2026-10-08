@@ -4,10 +4,10 @@ from __future__ import annotations
 import importlib
 import json
 import os
-from pathlib import Path
 import subprocess
 import sys
 import tempfile
+from pathlib import Path
 from unittest.mock import patch
 
 import yaml
@@ -253,7 +253,7 @@ def normal_chat_no_bootstrap(base: Path, env: dict[str, str]) -> None:
         input_text=json.dumps({"prompt": "Explain Python dictionaries."}),
     )
     require(hook.returncode == 0, f"Turn Context hook failed: {hook.stdout} {hook.stderr}")
-    require("AIPS TURN CONTEXT" in hook.stdout, "normal chat may still receive compact Harness context")
+    require("AIPS TURN CONTEXT" in hook.stdout, "normal chat may still receive compact Harness context: " + hook.stdout + hook.stderr)
     require("mutation_likely=False" in hook.stdout, "normal chat context must remain non-mutating")
     require("system_protocol_route=general_read status=READY" in hook.stdout, "hook must expose the selected route")
     require("system_core=" + str(ROOT / "SYSTEM_CORE.md") in hook.stdout, "hook must expose compact system core path")
@@ -271,7 +271,7 @@ def normal_chat_no_bootstrap(base: Path, env: dict[str, str]) -> None:
             "non-Git context must keep its bounded core capsule")
 
     sys.path.insert(0, str(ROOT / "scripts"))
-    from turn_intent import classify_prompt, route_system_protocols
+    from turn_intent import classify_prompt, classify_task, route_system_protocols
     for prompt, expected in (
         ("不要修改程式碼", False),
         ("請解釋 update 指令", False),
@@ -281,6 +281,22 @@ def normal_chat_no_bootstrap(base: Path, env: dict[str, str]) -> None:
         require(classify_prompt(prompt)[1] is expected, f"incorrect task intent: {prompt}")
     require(classify_prompt("Explain the build system")[0] == "general", "build must not trigger UI routing")
     require(classify_prompt("不要修改程式碼", "write")[1] is True, "explicit write intent must be honored")
+    creative_cases = [
+        ("幫我畫一隻貓，存成 SVG", "creative", "create", "filesystem_write"),
+        ("產生三張角色圖片", "creative", "create", "filesystem_write"),
+        ("修改既有角色 SVG", "creative", "modify", "filesystem_write"),
+        ("調整角色風格", "creative", "modify", "filesystem_write"),
+        ("幫我介紹 SVG 格式", "general", "read", "chat_only"),
+        ("先規劃角色，不要實作", "creative", "plan", "chat_only"),
+    ]
+    for prompt_text, domain, task_intent, effect in creative_cases:
+        classified = classify_task(prompt_text)
+        require((classified["domain"], classified["intent"], classified["effect"]) == (domain, task_intent, effect),
+                f"incorrect task dimensions for: {prompt_text}: {classified}")
+    require(classify_task("建立產品設計文件") ["domain"] == "document", "document task domain must be classified independently")
+    require(classify_task("幫我畫一隻貓，存成 SVG")["category"] == "creative", "creative asset task must select creative context")
+    require(route_system_protocols("幫我畫一隻貓，存成 SVG", True)["category"] == "creative_asset", "creative asset protocol route missing")
+    require(route_system_protocols("幫我介紹 SVG 格式", False)["category"] == "general_read", "SVG format discussion must remain general read")
 
     route_cases = (
         ("Open a PR and merge it", False, "publish"),

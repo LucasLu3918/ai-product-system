@@ -13,6 +13,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
+import opencode_native_guard as native_guard
 import opencode_skill_projection as projection
 
 
@@ -137,6 +138,8 @@ def cli_cases(base):
         meta = yaml.safe_load(path.read_text().split("---", 2)[1])
         assert meta["name"] == path.parent.name and meta["description"]
     assert len(list(root.glob("commands/aips-*.md"))) == 3
+    plugin = root / "plugins/aips-opencode.ts"
+    assert plugin.is_file() and str(ROOT.resolve()) in plugin.read_text()
     assert "$ARGUMENTS" in (root / "commands/aips-plan.md").read_text()
     jsonc = (root / "opencode.jsonc").read_bytes()
     before = {p: p.read_bytes() for p in native}
@@ -165,6 +168,11 @@ def cli_cases(base):
     changed.write_text(original)
     run(cli + ["harness", "uninstall"], env)
     assert not list(root.glob("skills/*/SKILL.md"))
+    assert not plugin.exists()
+    fake.write_text("#!/bin/sh\nprintf 'opencode v1.18.29\\n'\n"); fake.chmod(0o755)
+    run(cli + ["harness", "install"], env)
+    assert not plugin.exists(), "V2 plugin must not be projected into a V1 runtime"
+    run(cli + ["harness", "uninstall"], env)
     fake.write_text("#!/bin/sh\nprintf '99.0.0\\n'\n")
     run(cli + ["harness", "install"], env)
     assert yaml.safe_load(state.read_text())["status"] == "CONFLICT"
@@ -177,6 +185,40 @@ def cli_cases(base):
     assert (root / "opencode.jsonc").read_bytes() == jsonc
 
 
+def native_guard_cases(base):
+    root = base / "playground"
+    root.mkdir(parents=True)
+    new_asset = root / "cat.svg"
+    empty = {"task": {"classification": {"domain": "creative", "intent": "create", "effect": "filesystem_write"}},
+             "intelligence": {"readiness": "PARTIAL"}, "freshness": {"status": "UNKNOWN"}, "fail_policy": {"mode": "soft"}}
+    decision = native_guard.evaluate_write(tool="write", resources=[str(new_asset)], root=str(root), manifest=empty)
+    assert decision["decision"] == "ALLOW" and decision["level"] == "L1", decision
+    assert native_guard.evaluate_write(tool="edit", resources=[str(new_asset)], root=str(root), manifest=empty)["decision"] == "DENY"
+    outside = base / "outside.svg"
+    outside.write_text("safe")
+    assert native_guard.evaluate_write(tool="write", resources=[str(outside)], root=str(root), manifest=empty)["decision"] == "DENY"
+    link = root / "linked.svg"
+    link.symlink_to(outside)
+    assert native_guard.evaluate_write(tool="write", resources=[str(link)], root=str(root), manifest=empty)["decision"] == "DENY"
+    ready = {"task": {"classification": {"domain": "software", "intent": "modify", "effect": "filesystem_write"}},
+             "intelligence": {"readiness": "READY"}, "freshness": {"status": "CURRENT"}, "fail_policy": {"mode": "soft"},
+             "instruction_resolution": {"requires_resolution": False}}
+    git_root = base / "repo"
+    git_root.mkdir()
+    subprocess.run(["git", "init", "-q", str(git_root)], check=True)
+    target = git_root / "src.py"
+    assert native_guard.evaluate_write(tool="edit", resources=[str(target)], root=str(git_root), manifest=ready)["decision"] == "ALLOW"
+    ready["freshness"] = {"status": "STALE"}
+    assert native_guard.evaluate_write(tool="edit", resources=[str(target)], root=str(git_root), manifest=ready)["decision"] == "DENY"
+    ready["freshness"] = {"status": "CURRENT"}
+    assert native_guard.evaluate_write(tool="external_action", resources=[str(target)], root=str(git_root), manifest=ready)["level"] == "L3"
+    assert native_guard.evaluate_shell(command="git status --short", cwd=str(git_root), root=str(git_root))["decision"] == "ALLOW"
+    for command in ("rm -f x", "cat file > out", "find . -delete", "git push origin main", "echo ok; rm x", "sed -i s/a/b/ x"):
+        assert native_guard.evaluate_shell(command=command, cwd=str(git_root), root=str(git_root))["decision"] == "DENY", command
+    assert native_guard.evaluate_shell(command="cat /etc/passwd", cwd=str(git_root), root=str(git_root))["decision"] == "DENY"
+    assert native_guard.evaluate_shell(command="ls ../outside", cwd=str(git_root), root=str(git_root))["decision"] == "DENY"
+
+
 def main():
     desired = projection.skill_files()
     assert len(desired) == 27 and desired == projection.skill_files()
@@ -187,7 +229,8 @@ def main():
         ownership_cases(base / "files")
         instruction_cases(base / "blocks")
         cli_cases(base / "cli")
-    print("OpenCode lifecycle PASS: native projections, ownership, conflicts, drift, interrupted writes, path confinement, CLI install/doctor/uninstall, MCP JSONC preservation")
+        native_guard_cases(base / "guard")
+    print("OpenCode lifecycle PASS: native projections, V2 plugin ownership, conflicts, drift, interrupted writes, path confinement, L0-L3 direct-action guard, bounded Shell policy, CLI install/doctor/uninstall, MCP JSONC preservation")
 
 
 if __name__ == "__main__":

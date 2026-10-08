@@ -125,6 +125,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+OpenCode V2 may use the managed plugin for Context and supported direct-file checks. MCP/custom tools and arbitrary Shell effects are not covered by that guard; inspect adapter status before relying on runtime enforcement.
+
 Native Adapter 用來取得 runtime-specific hook / guard；MCP 提供跨 Host 標準接入。兩者共用 canonical Roles、Skills、Orchestration 與 Project Intelligence。
 
 MCP-compatible Host 可以讀取 AIPS Roles / Skills / selected orchestration，並呼叫 bounded deterministic helpers。MCP Server 不執行第二個 LLM，也不取得 Human approval、Git publish、merge、release、production 或 host-native tool interception authority。
@@ -234,7 +236,7 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 
 Validation Shadow records proposed skips while every required validator still runs; current evidence is not sufficient to activate selective execution.
 
-OpenCode 可用 `aips harness doctor` 檢查投影完整性與版本探測；CONFLICT 需先檢視保留下來的使用者內容。原生探索、MCP 使用與 pre-tool enforcement 各自回報，不能由檔案檢查推定。
+OpenCode 可用 `aips harness doctor` 檢查投影完整性、版本探測與 V2 plugin 狀態；CONFLICT 需先檢視保留下來的使用者內容。Plugin install/discovery、context hook execution、permission hook execution 與 pre-tool enforcement 各自回報，不能由檔案檢查推定。治理在實際 permission hook acceptance 前維持 ADVISORY；MCP/custom tools 和任意 Shell effects 不宣稱受保護。
 
 CI 固定準備完整 Python 驗證套件，文件變更也會執行必要安裝／preflight lifecycle。候選路徑仍決定 Node、Chromium 與可選 evidence；未通過 `repository` 必要檢查時，不可合併，不能用本地 PASS 或略過驗證代替。
 

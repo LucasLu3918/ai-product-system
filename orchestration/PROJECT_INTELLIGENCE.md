@@ -273,6 +273,8 @@ Active authority conflicts are included in the Turn Context Manifest. Material m
 
 ## Context loading
 
+The OpenCode V2 plugin resolves compact Turn Context on primary dispatch and keys its in-memory cache to session, prompt digest, target, project state, and instruction fingerprints; raw prompts are not persisted.
+
 The Turn Context Manifest keeps `SYSTEM_CORE.md` in the fixed layer and returns task-specific canonical protocol routes as bounded pointers. Compact output and runtime hooks expose route IDs, paths and resolution status without storing the prompt; required missing routes fail closed for mutation.
 
 Every turn resolves the Intelligence index, but does not reload every topic.

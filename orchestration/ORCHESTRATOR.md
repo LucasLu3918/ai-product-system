@@ -130,6 +130,8 @@ Do not create a permanent/high-authority role without user approval.
 
 ## Context expansion
 
+Task routing carries separate domain, intent, and effect dimensions; OpenCode V2 injects the resulting compact Context at runtime while existing project preflight and Change Impact remain authoritative.
+
 Load `SYSTEM_CORE.md` as the fixed policy layer and resolve only the canonical protocols applicable to the task; for unclassified mutation include Orchestrator, Change Impact and Quality Planning, and fail closed if a required source is unavailable.
 
 

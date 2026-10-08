@@ -79,7 +79,7 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
-OpenCode 安裝流程自動偵測執行檔，建立受管理全域 `AGENTS.md`、Skills 與三個 `aips-*` Commands。設定根目錄依 `OPENCODE_CONFIG_DIR`、`XDG_CONFIG_HOME` 或預設 `~/.config/opencode`；既有同名或改動過的檔案保留並回報 CONFLICT。稍後安裝 OpenCode 可重新執行 `aips harness install`；MCP 另以 `aips mcp config --client opencode` 預覽。
+OpenCode 安裝流程自動偵測執行檔，建立受管理全域 `AGENTS.md`、Skills、三個 `aips-*` Commands；確認 V2 後另安裝受管理 AIPS plugin。設定根目錄依 `OPENCODE_CONFIG_DIR`、`XDG_CONFIG_HOME` 或預設 `~/.config/opencode`；既有同名或改動過的檔案保留並回報 CONFLICT。稍後安裝 OpenCode 可重新執行 `aips harness install`；MCP 另以 `aips mcp config --client opencode` 預覽。
 
 Run Dashboard output continues to use the existing read-only projection contract; the shared canonical helper changes no installed runtime or persisted state.
 

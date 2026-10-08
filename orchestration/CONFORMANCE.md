@@ -36,6 +36,10 @@ Public command groups expose help with status 0 and return nonzero for unknown s
 
 The fixture lifecycle covers safe local profile/reference paths, SVG and PNG validation, exact hashes, verified provider/runtime/license provenance, and deterministic non-overwriting SVG composition with correctly typeset Unicode labels. A passing helper or manifest never proves generated character identity fidelity, model execution, or device performance; those require actual assets and separate human visual review.
 
+## Scenario 235 — OpenCode Native Context and Action Guard
+
+Prompt classification keeps its legacy tuple and adds domain, intent, effect, and L0-L3 readiness. A managed V2 plugin injects compact context before primary model dispatch and rechecks supported native file permissions against target confinement and current Project Intelligence. L1 is limited to new creative assets in non-Git workspaces; L2 requires READY/CURRENT project evidence; external actions retain existing Human approval. Shell is bounded to a read-only allowlist. Plugin setup/discovery does not prove context delivery or permission-hook execution, so governance remains ADVISORY until action-level native acceptance. MCP/custom tools and out-of-process writes are outside the guard.
+
 `tests/scenario_coverage.yaml` is the canonical mapping from Scenario ID/path to coverage classification and evidence.
 
 Allowed coverage:

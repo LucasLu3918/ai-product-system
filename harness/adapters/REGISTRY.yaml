@@ -4,12 +4,15 @@ adapters:
   opencode:
     runtime: OpenCode
     detect_command: opencode
-    strategy: managed_global_instruction_block_and_native_projections
+    strategy: managed_global_instruction_block_native_projections_and_v2_plugin
     capability: CONTEXT_ALWAYS
     governance_enforcement: ADVISORY
     source: harness/adapters/opencode/AGENTS.md
     native_verification: UNVERIFIED
-    pre_tool_guard: UNSUPPORTED
+    native_context_plugin: AVAILABLE_UNVERIFIED
+    pre_tool_guard: AVAILABLE_UNVERIFIED
+    shell_guard: READ_ONLY_ALLOWLIST_UNVERIFIED
+    enforcement_boundary: direct_native_file_permissions_only
 
   codex:
     runtime: Codex CLI
