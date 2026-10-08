@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 0099f85ea9876c30de84c725b54f75c01c84086c
-  changed_files_hash: e49fb66bf039bd1fee099e64fc9a7e3c14218a9913836572f400ad5d587f75f8
+  changed_files_hash: 696a0438cff4b67f15a5a4900908e24f8e306d0a32b35bfc8a5fb3189d982a64
 change:
   id: creative-execution-20261008
   summary: Scoped local creative execution with bounded OpenCode diagnostics, preflight, MFLUX/ComfyUI adapters, provenance, human review, and privacy-safe trace.
@@ -78,6 +78,6 @@ verification:
   capability_projection: PASS — scripts/capability_registry.py check (45 capabilities, 10 surfaces)
   scenario_conformance: PASS — Scenario 236; 236 registered, 0 missing, 0 uncovered
   documentation: PASS — placement closure and VitePress 1.6.4 build
-  impact_reconciliation: PASS — external Change Impact record validates READY for 0099f85..7c37837, 59 exact changed paths
+  system_facts: PASS — scripts/system_facts.py --check and tests/evidence/system_facts_lifecycle.py
+  impact_reconciliation: PASS — external Change Impact record validates READY for the final 60-path candidate
   exact_candidate_gate: PENDING — run on the final committed matrix-bound candidate
-  exact_candidate_gate: PENDING — run once on the final committed candidate

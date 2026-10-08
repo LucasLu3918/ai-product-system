@@ -21,6 +21,14 @@ commands:
     optional_dependencies: []
     validation_bindings: [tests/evidence/harness_runtime_lifecycle.py]
     documentation_bindings: [docs/human/HARNESS.md, docs/human/USER_GUIDE.md]
+  - id: creative
+    command: aips creative
+    surfaces: [harness-runtime]
+    platforms: [linux, macos, windows-wsl]
+    runtime_requirement: Python ">=3.12"
+    optional_dependencies: []
+    validation_bindings: [tests/evidence/creative_execution_lifecycle.py]
+    documentation_bindings: [docs/human/USER_GUIDE.md, orchestration/CREATIVE_DIRECTION.md]
   - id: commands
     command: aips commands
     surfaces: [harness-runtime]

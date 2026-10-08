@@ -11,12 +11,11 @@ The established Retrieval Intelligence command/import facade remains `scripts/re
 <!-- AIPS-SYSTEM-FACTS:BEGIN -->
 ## Public commands
 
-`aips creative preflight|execute|review|trace` provides local Bundle checks, explicit generation/edit, human review recording, and privacy-bounded trace output.
-
 | Command | Capabilities | Platforms | Runtime | Optional dependencies | Validation | Documentation |
 |---|---|---|---|---|---|---|
 | `aips install` | codex-native-hooks, deterministic-scheduler, execution-isolation, gemini-cli-observable-event-capture-trial, gemini-cli-real-runtime-verification, mcp-gateway, resource-authorization, skill-registry, turn-aware-global-harness | linux, macos, windows-wsl | Python ">=3.12" | None | tests/evidence/install_preflight_lifecycle.py | docs/human/INSTALLATION.md, docs/human/USER_GUIDE.md |
 | `aips harness` | codex-native-hooks, deterministic-scheduler, execution-isolation, gemini-cli-observable-event-capture-trial, gemini-cli-real-runtime-verification, mcp-gateway, resource-authorization, skill-registry, turn-aware-global-harness | linux, macos, windows-wsl | Python ">=3.12" | None | tests/evidence/harness_runtime_lifecycle.py | docs/human/HARNESS.md, docs/human/USER_GUIDE.md |
+| `aips creative` | codex-native-hooks, deterministic-scheduler, execution-isolation, gemini-cli-observable-event-capture-trial, gemini-cli-real-runtime-verification, mcp-gateway, resource-authorization, skill-registry, turn-aware-global-harness | linux, macos, windows-wsl | Python ">=3.12" | None | tests/evidence/creative_execution_lifecycle.py | docs/human/USER_GUIDE.md, orchestration/CREATIVE_DIRECTION.md |
 | `aips commands` | codex-native-hooks, deterministic-scheduler, execution-isolation, gemini-cli-observable-event-capture-trial, gemini-cli-real-runtime-verification, mcp-gateway, resource-authorization, skill-registry, turn-aware-global-harness | linux, macos, windows-wsl | Python ">=3.12" | None | tests/evidence/harness_runtime_lifecycle.py | harness/PORTABLE_COMMANDS.md, docs/human/HARNESS.md |
 | `aips intelligence` | canonical-project-identity, change-impact-guard, durable-run-state, implementation-resolution, planning-package, project-intelligence | linux, macos, windows-wsl | Python ">=3.12" | None | tests/evidence/project_intelligence_lifecycle.py, tests/evidence/change_impact_resolution_lifecycle.py | docs/human/PROJECT_INTELLIGENCE.md, docs/human/USER_GUIDE.md |
 | `aips project check` | canonical-project-identity, change-impact-guard, durable-run-state, implementation-resolution, planning-package, project-intelligence | linux, macos, windows-wsl | Python ">=3.12" | None | tests/evidence/install_preflight_lifecycle.py | docs/human/INSTALLATION.md, docs/human/GETTING_STARTED.md |
@@ -27,8 +26,6 @@ The established Retrieval Intelligence command/import facade remains `scripts/re
 | `aips validate` | agent-eval, agent-eval-freshness, quality-ratchet, scenario-conformance | linux, macos, windows-wsl | Python ">=3.12"; CI tested Python 3.12 | requirements-validation.txt, requirements-visual.txt, requirements-openapi.txt | tests/validate_repository.py, config/integration-gate.yaml | docs/human/MAINTENANCE.md, docs/human/CONFORMANCE.md |
 
 ## Capability surfaces
-
-Local creative execution is an optional Harness surface backed by an explicitly configured MFLUX executable or loopback ComfyUI endpoint.
 
 | Surface | Capabilities | Canonical documentation | Validation bindings |
 |---|---|---|---|
@@ -44,8 +41,6 @@ Local creative execution is an optional Harness surface backed by an explicitly 
 | `repository-health` | repository-health-architecture-drift | orchestration/REPOSITORY_HEALTH.md, docs/ARCHITECTURE.md, docs/human/MAINTENANCE.md | tests/evidence/repository_health_lifecycle.py, tests/validation/repository_health_contracts.py |
 
 ## Runtime support
-
-The creative executor uses local MFLUX argv invocation or loopback-only ComfyUI; AIPS installs neither engine nor model weights and does not send images to external services.
 
 - Supported Python: `>=3.12`
 - CI tested Python: `3.12`
