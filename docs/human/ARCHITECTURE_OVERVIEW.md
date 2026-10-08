@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+OpenCode 與 CLI 共用本機模型能力表；Z-Image Turbo 的新增 generate 配對會同時出現在 discovery、configure 與 preflight。
+
 OpenCode 創作 tool 支援 discover/configure，產圖意圖、原生檔案 guard 與 Shell effect policy 維持不同檢查；重新投影後仍須驗證實際 host hooks。
 
 Native Context envelope 驗證與 user-only 授權分開處理；只檢查設定的要求仍可執行 discover/preflight，不會啟動生成。
@@ -84,6 +86,8 @@ repository_id
 EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才使用 project-local .ai/。
 
 ## Creative Workflow
+
+Z-Image Turbo 使用 MFLUX 專用命令 `mflux-generate-z-image-turbo`，僅支援文字產圖；8 步可由 Bundle 明確設定，實際品質與人工驗收仍獨立記錄。
 
 角色插畫新增唯讀 `discover` 與建立新版本的 `configure`，補齊本機引擎設定路徑。OpenCode 先正規化 Context，再判斷使用者要求與取消狀態；要求點陣插畫時不能默默改交 SVG。生成、圖片容器檢查、人工視覺審查與使用者接受分開記錄；沒有模型權重時仍不能宣稱真實產圖驗收。
 

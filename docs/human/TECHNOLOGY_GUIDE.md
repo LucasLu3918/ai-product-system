@@ -59,6 +59,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+MFLUX 固定命令表新增 Z-Image Turbo generate：`mflux-generate-z-image-turbo`。CLI 不傳任意額外參數；步數沿用明確 Bundle 設定，模型與 tokenizer 仍須預先完整安裝，本流程不下載。
+
 本機創作支援 discover/prepare/configure/preflight/execute：設定採 allowlist 與 create-only Bundle，native Context envelope 經正規化再作使用者授權。PNG 容器檢查涵蓋 CRC、終止與 bounded decompression；JPEG/WEBP 僅作 bounded container checks，不能代替實際看圖或完整解碼。
 
 Local creative execution supports MFLUX through fixed argv and ComfyUI through a loopback-only allowlisted workflow. It is explicit, create-only, and never downloads weights.

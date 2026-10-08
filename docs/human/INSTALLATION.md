@@ -81,6 +81,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
+選用 Z-Image Turbo 時，另外確認本機 MFLUX 提供 `mflux-generate-z-image-turbo` 且模型、tokenizer 權重完整；AIPS 安裝不會替你下載模型。
+
 產圖流程新增 discover/configure，不安裝引擎或下載模型。更新 canonical AIPS 後重新執行 Harness 安裝並重啟 OpenCode，新 plugin 與創作 skill 才會重新投影；使用者自行修改的投影仍依 ownership 規則保留。
 
 OpenCode V2 可提供受限的 creative execution tool；它只在明確創作／修改意圖下先做 preflight，再呼叫本機設定的引擎。

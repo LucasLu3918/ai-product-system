@@ -1,149 +1,66 @@
 version: 1
 candidate:
-  base_sha: 7723c504d7787f6ed2f629efaaddd00821366046
-  changed_files_hash: 99c770cde2e32ef6b25ddd1df0ad7523b46e96629383705649121c1eccbee954
+  base_sha: a18f336188aae522a07650d0038ed10fdf1c6904
+  changed_files_hash: 5fa8cdabfee280cf707d9e2259f9e2715a92d8cf6ef5c6470ccc41ea46a6d5d4
 change:
-  id: creative-workflow-reliability-20261009
-  summary: Complete bounded local creative configuration and reliable native user
-    authorization without silent media fallback.
+  id: mflux-zimage-turbo-20261009
+  summary: Add generate-only Z-Image Turbo support matching the installed MFLUX 0.22
+    local-model CLI.
   boundary:
-  - User-only request authority, native snapshot/dispatch shapes, revocation, raster/vector
-    consumer
-  - Read-only discovery; allowlisted source-preserving configuration and version races
-  - Local executor container validation, profile provenance and separate visual/user
-    acceptance
-  - Canonical skills, CLI and native Code Mode consumer, regression fixtures and documentation
-    closure
+  - Closed registry and dedicated local model/base-model argv; no EXIF prompt metadata
+  - Shared discovery/configure/preflight/execute consumers; no authority or Bundle
+    schema change
+  - Positive and negative lifecycle evidence, offline local inference and required
+    documentation closure
 matrix:
-- boundary: Request and native runtime
-  reason: scripts/creative_request_policy.py; native type/user/text and active-dispatch
-    root binding; no model downshift
+- boundary: Local provider adapter and shared consumers
+  reason: Dedicated generate-only capability, existing Bundle provenance and fixed
+    argv; legacy pairs unchanged
   checks:
     static_lint:
       applicable: true
-      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
-        OpenCode 2.0.24 native loopback acceptance
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: existing offline
+        execute/rollback/configure and added Turbo command, explicit steps, no EXIF,
+        wrong command, edit and non-Turbo rejection; complete exact-candidate Gate'
     unit:
       applicable: true
-      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
-        OpenCode 2.0.24 native loopback acceptance
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: existing offline
+        execute/rollback/configure and added Turbo command, explicit steps, no EXIF,
+        wrong command, edit and non-Turbo rejection; complete exact-candidate Gate'
     integration:
       applicable: true
-      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
-        OpenCode 2.0.24 native loopback acceptance
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: existing offline
+        execute/rollback/configure and added Turbo command, explicit steps, no EXIF,
+        wrong command, edit and non-Turbo rejection; complete exact-candidate Gate'
     contract:
       applicable: true
-      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
-        OpenCode 2.0.24 native loopback acceptance
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: existing offline
+        execute/rollback/configure and added Turbo command, explicit steps, no EXIF,
+        wrong command, edit and non-Turbo rejection; complete exact-candidate Gate'
     e2e:
       applicable: true
-      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
-        OpenCode 2.0.24 native loopback acceptance
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: existing offline
+        execute/rollback/configure and added Turbo command, explicit steps, no EXIF,
+        wrong command, edit and non-Turbo rejection; complete exact-candidate Gate'
     security:
       applicable: true
-      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
-        OpenCode 2.0.24 native loopback acceptance
-    migration_recovery:
-      applicable: true
-      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
-        OpenCode 2.0.24 native loopback acceptance
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: existing offline
+        execute/rollback/configure and added Turbo command, explicit steps, no EXIF,
+        wrong command, edit and non-Turbo rejection; complete exact-candidate Gate'
     cli_harness:
       applicable: true
-      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
-        OpenCode 2.0.24 native loopback acceptance
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: existing offline
+        execute/rollback/configure and added Turbo command, explicit steps, no EXIF,
+        wrong command, edit and non-Turbo rejection; complete exact-candidate Gate'
     docs_schema:
       applicable: true
-      evidence: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_tool_harness.mjs;
-        OpenCode 2.0.24 native loopback acceptance
-- boundary: Configuration and local execution
-  reason: scripts/creative_execution.py; no download/cloud, fixed provider registry,
-    source preservation, create-only scopes
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
-        invalid settings, no engine, offline argv, loopback nodes, container rejection
-        and rollback'
-    unit:
-      applicable: true
-      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
-        invalid settings, no engine, offline argv, loopback nodes, container rejection
-        and rollback'
-    integration:
-      applicable: true
-      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
-        invalid settings, no engine, offline argv, loopback nodes, container rejection
-        and rollback'
-    contract:
-      applicable: true
-      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
-        invalid settings, no engine, offline argv, loopback nodes, container rejection
-        and rollback'
-    e2e:
-      applicable: true
-      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
-        invalid settings, no engine, offline argv, loopback nodes, container rejection
-        and rollback'
-    security:
-      applicable: true
-      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
-        invalid settings, no engine, offline argv, loopback nodes, container rejection
-        and rollback'
+      evidence: 'tests/evidence/creative_execution_lifecycle.py: existing offline
+        execute/rollback/configure and added Turbo command, explicit steps, no EXIF,
+        wrong command, edit and non-Turbo rejection; complete exact-candidate Gate'
     migration_recovery:
       applicable: true
-      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
-        invalid settings, no engine, offline argv, loopback nodes, container rejection
-        and rollback'
-    cli_harness:
-      applicable: true
-      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
-        invalid settings, no engine, offline argv, loopback nodes, container rejection
-        and rollback'
-    docs_schema:
-      applicable: true
-      evidence: 'tests/evidence/creative_execution_lifecycle.py: configuration races,
-        invalid settings, no engine, offline argv, loopback nodes, container rejection
-        and rollback'
-- boundary: Canonical delivery and publication
-  reason: CLI, three existing creative Skills, native schema, canonical docs and exact
-    candidate
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
-        placement/sync, VitePress, candidate secret scan and exact Integration Gate
-    unit:
-      applicable: true
-      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
-        placement/sync, VitePress, candidate secret scan and exact Integration Gate
-    integration:
-      applicable: true
-      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
-        placement/sync, VitePress, candidate secret scan and exact Integration Gate
-    contract:
-      applicable: true
-      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
-        placement/sync, VitePress, candidate secret scan and exact Integration Gate
-    e2e:
-      applicable: true
-      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
-        placement/sync, VitePress, candidate secret scan and exact Integration Gate
-    security:
-      applicable: true
-      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
-        placement/sync, VitePress, candidate secret scan and exact Integration Gate
-    migration_recovery:
-      applicable: true
-      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
-        placement/sync, VitePress, candidate secret scan and exact Integration Gate
-    cli_harness:
-      applicable: true
-      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
-        placement/sync, VitePress, candidate secret scan and exact Integration Gate
-    docs_schema:
-      applicable: true
-      evidence: Ruff, OpenCode projection lifecycle, repository validation, documentation
-        placement/sync, VitePress, candidate secret scan and exact Integration Gate
+      evidence: Existing source-preserving configure and rollback lifecycle; no schema
+        migration; legacy pair mapping regression
 review_evidence:
   required: false
   reason: Bounded primary implementation and evidence review; no independently attested
@@ -153,12 +70,7 @@ actual_diff_reconciled: true
 blockers: []
 status: READY
 verification:
-  focused_creative_lifecycle: PASS_SYNTHETIC_FIXTURES
-  native_tool_callback: PASS
-  native_host: PASS_OPENCODE_2_0_24_LOOPBACK
-  local_command_discovery: PASS_RUNTIME_COMMANDS_AVAILABLE_MODEL_UNVERIFIED
-  real_model_inference: DEFERRED_EXPLICIT_USER_DECISION_NO_WEIGHTS
-  visual_quality: NOT_VERIFIED_REQUIRES_RENDERED_IMAGE_AND_HUMAN_REVIEW
+  focused_creative_lifecycle: PASS
+  real_model_inference: PASS_LOCAL_MFLUX_0_22_ZIMAGE_TURBO_1024X1536_8_STEPS
+  visual_quality: AGENT_INSPECTED_RENDERED_DRAFTS_INDEPENDENT_HUMAN_PENDING
   complete_gate: REQUIRED_EXACT_CANDIDATE_NOT_YET_RUN
-  cli_golden: PASS_UPDATED_FOR_ADDITIVE_DISCOVER_CONFIGURE_HELP
-  touched_intelligence_lint: ONE_EXISTING_BLIND_EXCEPTION_FIXED_FOR_REQUIRED_BURN_DOWN

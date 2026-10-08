@@ -1660,6 +1660,8 @@ The lifecycle covers separate prompt dimensions, Chinese creative-asset routing,
 
 ## Scenario 236 — Local Creative Bundle Execution
 
+Z-Image Turbo 測試涵蓋專用 generate 命令、明確步數、拒絕 edit／非 Turbo 變體／通用 FLUX 命令；既有離線、create-only 與人工 PENDING 契約保持適用。
+
 Scenario 236 新增 Bundle 設定競爭／來源保留、native Context envelope、使用者授權撤銷、唯讀預檢、媒材不符與損壞 PNG 檢查。實際 tool callback 使用無憑證 fixture；這不等於真實模型品質或使用者接受。
 
 Scenario 236 covers versioned no-overwrite Profile/Bundle preparation, fixed MFLUX model/operation CLI mapping, single-reference FLUX.1 edit, bounded multi-reference FLUX.2/Qwen edit, loopback ComfyUI with single-reference edit, create-only EPHEMERAL output, provenance, finite retry, privacy-bounded trace, and separate human visual review.

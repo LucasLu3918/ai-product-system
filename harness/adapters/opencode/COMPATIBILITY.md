@@ -64,3 +64,5 @@ The native check uses temporary HOME/XDG/config/data, a non-Git session workspac
 Installation/doctor report file integrity and version probing separately; merely detecting v2.0.24 on another machine cannot confer this acceptance result. Modified or unowned same-name files are preserved, damaged manifests/path escapes/symlinks block writes, and changing config roots requires reconciling the previous ownership state first. Interrupted checkpoints keep conservative ownership and may need manual review before retry.
 
 Official contracts: [V2 Skills](https://opencode.ai/v2/docs/skills/), [V2 Commands](https://opencode.ai/v2/docs/commands/), [V2 Instructions](https://opencode.ai/v2/docs/instructions/), [V2 MCP](https://opencode.ai/v2/docs/mcp/). V1 compatibility follows the explicitly selected [V1 documentation](https://opencode.ai/docs/).
+
+The local creative executor additionally registers Z-Image Turbo generate via its dedicated MFLUX command. Existing native request authority and configure/preflight/execute contracts apply without a new permission surface.

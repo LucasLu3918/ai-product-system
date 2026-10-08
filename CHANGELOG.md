@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 0.78.0
+
+- Register local MFLUX Z-Image Turbo generation with a fixed dedicated command; preserve offline, generate-only and pending human-review boundaries.
+- Verify Turbo argument mapping and reject editing, unsupported variants and mismatched executables.
+
 ## 0.77.0
 
 - Add read-only local creative discovery and allowlisted create-only Bundle configuration, retaining source files, offline execution and no model downloads.

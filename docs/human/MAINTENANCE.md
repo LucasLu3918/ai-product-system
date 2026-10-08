@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+固定模型配對新增 Z-Image Turbo generate 時，同步更新創意流程、Runtime 接入說明與 Scenario 236；執行證據與人工視覺接受仍分開。
+
 角色圖片保留要求的媒材；以受限 configure 建立新的 Bundle，並載入校準、方向與視覺審查 skill。執行、圖片容器、人工審查與使用者接受分開回報。
 
 Local character-art behavior is mapped through `config/documentation-placement.yaml` and `config/documentation-sync.yaml`; changes to its validator, Bundle, profile templates, OpenCode adapter, creative CLI routing or creative protocol keep the User Guide, Harness, Technology Guide, architecture overview, Scenario Conformance and Agent guidance in the same candidate. The synthetic lifecycle covers versioned no-overwrite preparation, fixed MFLUX capability/argv mapping, single-reference FLUX.1 edit, bounded multi-reference FLUX.2/Qwen edit, single-reference ComfyUI edit and fake providers only; exact-candidate validation never runs a project-configured engine, and a missing local engine remains `BLOCKED_NO_ENGINE`.

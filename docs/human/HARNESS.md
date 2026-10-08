@@ -33,6 +33,8 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+OpenCode creative_execution 使用共享 executor 的 Z-Image Turbo generate 配對；新增模型不擴大 session authority 或允許任意命令。
+
 OpenCode creative tool 接受 array、messages 與 data envelope 格式；只取使用者文字作授權。prepare/configure/execute 與 read-only discover/preflight 分開判斷；取消或切換任務後，短回覆不能恢復舊生成要求。
 
 OpenCode's explicit `creative_execution.prepare` action creates versioned Profiles and a draft Bundle under the active EPHEMERAL Session scope. It cannot execute generation; preflight stays read-only and execution requires an explicit creative intent and a ready Bundle.

@@ -80,6 +80,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+Z-Image Turbo generate 的命令映射真實來源是 `scripts/creative_execution.py`；本機產圖與人工審查流程由 `orchestration/CREATIVE_DIRECTION.md` 說明。
+
 角色圖片保留要求的媒材；以受限 configure 建立新的 Bundle，並載入校準、方向與視覺審查 skill。執行、圖片容器、人工審查與使用者接受分開回報。
 
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
