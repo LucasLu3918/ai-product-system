@@ -94,6 +94,8 @@ Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行
 
 ## Deterministic Execution
 
+CI 的 Python 驗證套件是完整 repository lifecycle 的固定執行前提，與精準路徑計畫選擇的 Node 設定、Chromium 下載及可選 evidence 分開。這只補齊執行環境；Scheduler、Gate、必要檢查及 Human 合併權限的拓樸與責任不變。
+
 Runtime hook 與 compact Context Manifest 共用同一組路由結果，僅輸出選取的 protocol IDs/paths，不保存原始 prompt。
 
 `scripts/aips_common/` 是共用 canonical JSON/hash、repository-relative path 與 glob primitives 的唯一實作；既有模組保留同名 facade，以維持呼叫介面與 digest 表示。Governance fingerprint 與 Runtime Policy action digest 仍由各自領域擁有，不納入通用 canonicalization。

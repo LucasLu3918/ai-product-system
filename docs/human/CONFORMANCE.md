@@ -1542,6 +1542,8 @@ Plan21 Phase 0 adds `tests/evidence/plan21_contract_baseline.py` to the required
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
+驗證契約另涵蓋固定安裝全部 Python 驗證 requirements，以及完整、條件安裝、漏裝和無條件 Chromium 下載的正／負案例。隔離的安裝／preflight 與 legacy migration lifecycle 在文件候選中仍需完整 Python 模組；下載 Chromium 和可選 OpenAPI evidence 維持精準計畫選擇。
+
 Plan21 helper consolidation preserves existing source fingerprints and keeps global Impact Graph coverage partial.
 
 Scenario 209 的唯讀 repository governance snapshot lifecycle 證據涵蓋完整回應、UNKNOWN 與穩定 fingerprint。

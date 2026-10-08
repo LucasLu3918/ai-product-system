@@ -162,6 +162,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+必要的 repository lifecycle 會在隔離 fixture 中重新解析完整 Python 3.12 環境，所以 CI 固定安裝四份驗證 requirements，包含 Playwright 與 OpenAPI Python 模組。精準路徑計畫仍控制 Node 設定、Chromium 下載及可選 OpenAPI evidence；`ci_validation_plan_contracts.py` 另驗證文件變更也不可省略 Python 套件，並拒絕條件安裝、漏裝及無條件下載 Chromium 的回歸。
+
 Shared deterministic helpers live in `scripts/aips_common/`; existing consumers keep compatibility facades. Golden lifecycle evidence pins raw/prefixed digest bytes and the distinct path/glob normalization modes. A separate focused pytest workflow checks those contracts without changing the required repository Gate. This refactor does not establish complete caller/consumer graph coverage.
 
 Scenario 231 adds a weekly/manual, pinned OSV dependency inventory and nonblocking full-history Gitleaks comparison with the existing project scanner. These observations do not replace the exact-candidate required secret scan or repository Gate; repository-wide Impact Graph coverage remains partial.

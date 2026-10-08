@@ -202,6 +202,8 @@ Execution IDs and runtime attestation are produced by the execution runtime and 
 - Release readiness also fails closed when `CHANGELOG.md` is unavailable or its canonical `## Unreleased` section is missing, duplicated, malformed, or non-empty; the check remains read-only.
 ## Validation de-duplication boundary
 
+CI provisioning always supplies all Python validation requirements for required repository lifecycles. Exact-path planning still selects Node setup, Chromium downloads and optional evidence; required lifecycles retain single-owner execution and cannot be skipped or grant Scheduler merge authority.
+
 Bootstrap verification imports each caller-declared module and runs `pip check`; missing modules fail the workflow before its validation job proceeds.
 
 GitHub Actions may run an advisory repository preflight as a separate job while the required validation workflow continues; it has no dependency edge into the required aggregate and cannot suppress or de-duplicate full validation.

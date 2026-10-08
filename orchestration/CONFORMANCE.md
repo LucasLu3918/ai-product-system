@@ -871,6 +871,8 @@ The size audit measures tracked text/evidence files against 50,000 bytes and rep
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
+Required install/preflight and legacy-migration lifecycles need all Python validation requirements even for docs-only candidates. Provisioning contracts reject conditional or missing Python requirements and unconditional Chromium downloads; exact-plan optional evidence and browser-download selection remain unchanged.
+
 Plan21 helper consolidation preserves covered canonical fingerprints and keeps unresolved source relationships partial.
 
 Scenario 209 also covers the read-only repository governance snapshot lifecycle, including UNKNOWN surfaces and stable fingerprints.
