@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 0099f85ea9876c30de84c725b54f75c01c84086c
-  changed_files_hash: c13847ada7d3591a35234ed1af4c935fb13f137e4883c7837fcd1c8a0f8bd2ac
+  changed_files_hash: 2e8577d58a412a59dd4f1e59c1d78eb8416fe31569c253a2808800703cd4ed16
 change:
   id: creative-execution-20261008
   summary: Scoped local creative execution with bounded OpenCode diagnostics, preflight, MFLUX/ComfyUI adapters, provenance, human review, and privacy-safe trace.
@@ -79,5 +79,5 @@ verification:
   scenario_conformance: PASS — Scenario 236; 236 registered, 0 missing, 0 uncovered
   documentation: PASS — placement closure and VitePress 1.6.4 build
   system_facts: PASS — scripts/system_facts.py --check and tests/evidence/system_facts_lifecycle.py
-  impact_reconciliation: PASS — external Change Impact scoped traversal is complete (22 nodes, 43 edges); final Git-bound READY reconciliation follows commit for the 61-path candidate
+  impact_reconciliation: PASS — external Change Impact scoped traversal is complete (22 nodes, 43 edges); final Git-bound READY reconciliation follows commit for the 62-path candidate
   exact_candidate_gate: PENDING — run on the final committed matrix-bound candidate
