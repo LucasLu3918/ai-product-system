@@ -117,7 +117,7 @@ Before readiness, move finalized release notes under the heading matching `VERSI
 
 `config/system-facts.yaml` and `config/architecture-surfaces.yaml` are the source for factual command/capability tables in `docs/human/SYSTEM_REFERENCE.md`. Run `python scripts/system_facts.py --write` after changing those facts and `--check` in validation. Keep explanatory prose in its canonical topic documents.
 
-CI derives optional Node, browser and OpenAPI provisioning from exact candidate paths using `scripts/ci_validation_plan.py`. Unknown paths select the full toolchain. `tests/validation/mcp_interoperability_contracts.py` also selects the full toolchain because required repository lifecycle preflight checks need the complete environment. The plan only skips unrelated optional setup and its isolated lifecycle evidence; mandatory secret scanning, fast preflight, repository validation and the exact-candidate Integration Gate remain required.
+CI derives Node setup, Chromium downloads and optional OpenAPI evidence selection from exact candidate paths using `scripts/ci_validation_plan.py`. Python packages from all four validation requirement files are always installed under the tested constraints: install/preflight and legacy-migration fixtures require the complete Python environment even for documentation-only candidates. Unknown and sensitive paths select the full toolchain. The plan only skips unrelated browser downloads and optional lifecycle evidence; mandatory secret scanning, fast preflight, repository validation and the exact-candidate Integration Gate remain required.
 
 ## Documentation audience
 
@@ -387,6 +387,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+Validation Observation 的耗時或成功記錄不能取代必要 lifecycle 的執行環境：CI 固定安裝完整 Python 套件後，仍以同一候選的完整 Gate 和遠端 `repository` 彙總判定結果，Chromium 下載與可選 evidence 維持精準計畫控制。
 
 Plan21 Phase 2 keeps canonical JSON/hash and path/glob helpers in `scripts/aips_common/`; compatibility and caller-specific behavior are pinned by `tests/evidence/shared_primitives_lifecycle.py`, while graph coverage remains partial.
 

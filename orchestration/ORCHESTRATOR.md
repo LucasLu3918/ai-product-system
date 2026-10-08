@@ -329,6 +329,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+Publication CI always provisions the complete Python validation dependency set; isolated required preflight fixtures cannot rely on optional-package selection. Exact-path plans still control Node, Chromium downloads and optional evidence. Required remote checks must pass on the exact candidate before an explicitly authorized merge.
+
 Existing fingerprint facade imports remain stable over `scripts/aips_common`; the helper layer does not change change-class routing, publication authority, or Human approval.
 
 Preserve the eligible runtime/user-selected primary implementation model. Prefer solving bounded implementation with the primary agent and use deterministic tools for repeatable processing. Delegate only for material parallel evidence, specialized risk, context isolation or independent review. Skills supply model requirement hints for capability floors and auxiliary routing; the Model Router does not silently downshift the primary agent. Business importance, technical complexity, risk, privacy and failure cost are considered together. Critical risk may raise the minimum tier.

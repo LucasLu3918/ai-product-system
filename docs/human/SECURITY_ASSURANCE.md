@@ -199,6 +199,8 @@ Review actual:
 
 ## Release Security Gate
 
+文件候選的 CI 也固定安裝完整 Python 驗證套件，避免安裝／migration fixture 因缺少 Playwright 或 OpenAPI 模組而無法執行必要檢查。Chromium 仍依候選需求下載；候選秘密掃描、完整 repository Gate 與明確合併授權維持原順序及阻擋規則。
+
 Plan21 shared hash/path helpers preserve existing evidence formats and do not change fail-closed policy, authorization decisions, or publication gates.
 
 `SYSTEM_CORE.md` 保留發布與合併邊界；Turn Context 路由和 hook 輸出皆為上下文指標，不得解讀為 publication authority。

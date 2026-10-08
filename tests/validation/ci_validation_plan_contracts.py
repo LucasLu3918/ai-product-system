@@ -1,8 +1,42 @@
 from __future__ import annotations
 
+import shlex
 import sys
 
 from .static_contracts import ROOT, errors, load_yaml
+
+
+def _python_provisioning_errors(steps: list[dict]) -> list[str]:
+    required = {"requirements.txt", "requirements-validation.txt", "requirements-visual.txt", "requirements-openapi.txt"}
+    installed = set()
+    chromium_conditions = []
+    for step in steps:
+        argv = shlex.split(str(step.get("run", "")))
+        if "pip" in argv and "install" in argv and not step.get("if"):
+            installed.update(argv[i + 1] for i, token in enumerate(argv[:-1]) if token == "-r")
+        if "playwright" in argv and "install" in argv and "chromium" in argv:
+            chromium_conditions.append(step.get("if"))
+    issues = [f"Required CI Python requirements must be installed unconditionally: {name}" for name in sorted(required - installed)]
+    if chromium_conditions != ["steps.validation_plan.outputs.needs_browser == 'true'"]:
+        issues.append("Chromium download must retain exact-plan browser selection")
+    return issues
+
+
+workflow = load_yaml(ROOT / ".github/workflows/validate.yml") or {}
+errors.extend(_python_provisioning_errors(workflow.get("jobs", {}).get("janitor", {}).get("steps", [])))
+fixture = [
+    {"run": "python -m pip install -r requirements.txt -r requirements-validation.txt -r requirements-visual.txt -r requirements-openapi.txt"},
+    {"run": "python -m playwright install chromium", "if": "steps.validation_plan.outputs.needs_browser == 'true'"},
+]
+if _python_provisioning_errors(fixture):
+    errors.append("CI Python provisioning contract rejected a complete environment")
+for negative in (
+    [{**fixture[0], "if": "steps.validation_plan.outputs.needs_openapi == 'true'"}, fixture[1]],
+    [{"run": fixture[0]["run"].replace(" -r requirements-openapi.txt", "")}, fixture[1]],
+    [fixture[0], {"run": fixture[1]["run"]}],
+):
+    if not _python_provisioning_errors(negative):
+        errors.append("CI provisioning contract accepted conditional/missing Python requirements or unconditional Chromium")
 
 config_path = ROOT / "config/ci-validation-plan.yaml"
 script_path = ROOT / "scripts/ci_validation_plan.py"
@@ -31,6 +65,6 @@ if shadow_script.is_file():
         if token not in text:
             errors.append(f"Validation shadow planner missing contract token: {token}")
     import subprocess
-    result = subprocess.run([sys.executable, str(evidence_path)], cwd=ROOT, text=True, capture_output=True)
+    result = subprocess.run([sys.executable, str(evidence_path)], cwd=ROOT, text=True, capture_output=True, check=False)
     if result.returncode:
         errors.append(f"CI validation planner lifecycle failed: {result.stdout.strip()} {result.stderr.strip()}")

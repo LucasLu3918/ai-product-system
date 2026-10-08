@@ -94,6 +94,8 @@ Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行
 
 ## Deterministic Execution
 
+CI 的 Python 驗證套件是完整 repository lifecycle 的固定執行前提，與精準路徑計畫選擇的 Node 設定、Chromium 下載及可選 evidence 分開。這只補齊執行環境；Scheduler、Gate、必要檢查及 Human 合併權限的拓樸與責任不變。
+
 Runtime hook 與 compact Context Manifest 共用同一組路由結果，僅輸出選取的 protocol IDs/paths，不保存原始 prompt。
 
 `scripts/aips_common/` 是共用 canonical JSON/hash、repository-relative path 與 glob primitives 的唯一實作；既有模組保留同名 facade，以維持呼叫介面與 digest 表示。Governance fingerprint 與 Runtime Policy action digest 仍由各自領域擁有，不納入通用 canonicalization。
@@ -284,6 +286,8 @@ Standalone HTML 不再是新增功能的 canonical target。Current behavior 必
 新增的 publication transfer guard 由 `config/documentation-placement.yaml` 指向既有 Git Publication、Maintenance 與 Technology Guide topic；發佈流程變更不建立平行的 Human 文件來源。
 
 ## Official Docs Site
+
+文件工具鏈保留穩定版 VitePress 1.6.4，僅將其 Vite 間接依賴固定至 6.4.4，以帶入 Vite 與 esbuild 安全修補。開發伺服器只綁定 `127.0.0.1`、停用 CORS 並保留主機檢查；預覽命令另以 `--host 127.0.0.1` 限制靜態預覽存取。GitHub Pages 仍只提供靜態產物。
 
 VitePress 只渲染 Human documentation。Agent canonical protocols 仍留在 SYSTEM.md、orchestration/、roles/、skills/，不因網站而複製。
 

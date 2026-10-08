@@ -57,6 +57,8 @@ Current release history and stable version anchors belong in `CHANGELOG.md`. Bef
 
 ## Validation behavior
 
+Documentation dependency security fixes keep stable VitePress 1.6.4 with a scoped Vite 6.4.4 override and Vite's native esbuild dependency. This exceeds VitePress's declared Vite 5 range: validate clean npm installation, audit, build, dev/preview and HMR before publishing; reassess the override when a stable upstream release supports the patched toolchain. Keep dev loopback binding, disabled CORS and host checks aligned with the Human Documentation Platform guidance. VitePress 1.6.4's static preview ignores host settings, so docs:preview uses patched Vite preview for .vitepress/dist with explicit loopback binding and default Host/CORS restrictions. Verify the site base, clean URLs, search and navigation. Pages deployment continues to serve static output.
+
 Publication Preflight uses Node 24+ and the installed VitePress entrypoint for a local docs build. Keep this behavior aligned with the Node 24 GitHub workflow pins, Python environment selection and Scenario 165; local preflight does not access a package registry.
 
 Validation workflows keep generated Gate and Repository Health reports outside the checkout until the validation steps finish. Artifact upload preserves evidence without making generated files part of the documentation or revision binding.

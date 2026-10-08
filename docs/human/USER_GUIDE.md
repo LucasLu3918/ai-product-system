@@ -226,6 +226,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 
 ## Quality 與 Review
 
+CI 固定準備完整 Python 驗證套件，文件變更也會執行必要安裝／preflight lifecycle。候選路徑仍決定 Node、Chromium 與可選 evidence；未通過 `repository` 必要檢查時，不可合併，不能用本地 PASS 或略過驗證代替。
+
 Review packet and evidence fingerprints preserve their established `sha256:` representation; the shared helper extraction adds no approval authority.
 
 Context routing 的 Scenario 230 驗證核心大小、路由涵蓋、hook/manifest 契約與缺少來源時 fail-closed；它不取代 exact-candidate Integration Gate。

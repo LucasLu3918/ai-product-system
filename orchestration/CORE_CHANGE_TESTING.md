@@ -22,6 +22,8 @@ When a shared module-extraction lifecycle gains another facade, retain identity 
 
 ## Impact-derived Test Matrix
 
+CI provisioning matrices cover unconditional Python requirements, docs-only install/preflight and legacy-migration lifecycles, and retained conditional Chromium downloads. Exercise positive and negative provisioning contracts without weakening mandatory candidate scans, complete repository validation or remote aggregate checks.
+
 Shared deterministic helper extraction uses golden vectors for byte-level digest compatibility and explicit caller-specific path/glob cases; the exact-candidate Gate remains required for the frozen file set.
 
 For plan18, the matrix records Evolution Radar attribution, quality debt burn-down, facade maintainability, read-only governance evidence, canonical documentation paths and preserved authority boundaries.

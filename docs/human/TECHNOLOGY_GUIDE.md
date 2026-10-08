@@ -162,6 +162,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+必要的 repository lifecycle 會在隔離 fixture 中重新解析完整 Python 3.12 環境，所以 CI 固定安裝四份驗證 requirements，包含 Playwright 與 OpenAPI Python 模組。精準路徑計畫仍控制 Node 設定、Chromium 下載及可選 OpenAPI evidence；`ci_validation_plan_contracts.py` 另驗證文件變更也不可省略 Python 套件，並拒絕條件安裝、漏裝及無條件下載 Chromium 的回歸。
+
 Shared deterministic helpers live in `scripts/aips_common/`; existing consumers keep compatibility facades. Golden lifecycle evidence pins raw/prefixed digest bytes and the distinct path/glob normalization modes. A separate focused pytest workflow checks those contracts without changing the required repository Gate. This refactor does not establish complete caller/consumer graph coverage.
 
 Scenario 231 adds a weekly/manual, pinned OSV dependency inventory and nonblocking full-history Gitleaks comparison with the existing project scanner. These observations do not replace the exact-candidate required secret scan or repository Gate; repository-wide Impact Graph coverage remains partial.
@@ -313,6 +315,10 @@ The monthly reliability workflow measures validation outcomes and runtime distri
 Plan21 Phase 0 records one exact-main full-validation timing observation and pins existing digest, CLI and glob contracts. Treat the timing as a baseline sample only; future optimization claims require comparable candidate and environment evidence.
 
 ## Documentation Platform
+
+文件網站固定使用 VitePress 1.6.4；`package.json` 只覆寫 `vitepress` 引入的 Vite 為 6.4.4，由 Vite 自身宣告的 `esbuild ^0.25.0` 提供修補版本，不另行強制覆寫 esbuild。這個 Vite 版本超出 VitePress 1.6.4 原本宣告的 Vite 5 範圍，因此更新時必須重新驗證相容性；上游穩定版原生支援已修補工具鏈後，再評估移除覆寫。
+
+以 Node 24 執行 `npm ci --no-audit --no-fund --ignore-scripts`、`npm audit` 與 `npm run docs:build`，並確認 `npm ls vite esbuild`、開發、預覽與熱更新。`npm run docs:dev` 綁定 `127.0.0.1`，停用跨來源 HTTP 存取並保留 Vite 主機檢查。VitePress 1.6.4 的靜態預覽忽略 host 設定，因此 `npm run docs:preview` 改由已修補的 `vite preview` 提供 `.vitepress/dist`，明確綁定 `127.0.0.1` 並保留 Vite 預設 Host／CORS 限制；網站 base 仍是 `/ai-product-system/`，clean URLs、搜尋與導覽需一併驗證。勿以 `--host 0.0.0.0`、對外 port mapping、tunnel、`cors: true` 或 `allowedHosts: true` 放寬存取；確有遠端開發需求時，另行評估存取控制與明確允許清單。正式網站只部署 build 後的靜態產物。
 
 ### Human Documentation Source
 

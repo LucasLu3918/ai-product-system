@@ -1,401 +1,131 @@
 version: 1
 candidate:
-  base_sha: 552b7e1e7087611fd46177715603ad464bfd4ada
-  changed_files_hash: 62f0df97c1547329772edff8feb0695504510941e69f4cca3a119afe1beba219
+  base_sha: 46cb1c3cf459fe9189f94f89591ce831718e1346
+  changed_files_hash: 81c2ad9bc59522de5c0b9124289e124cf628f2534cdcc3fceb99a46d211bbd0f
 change:
-  id: plan21-final
-  summary: Complete Plan21 failure semantics, shared primitives, public CLI help/error
-    contracts, focused quality, preflight routes, measured documentation performance,
-    and advisory security inventory.
+  id: docs-dev-security-ci-provisioning-20261008
+  summary: Patch docs Vite/esbuild and supply complete Python dependencies for required
+    CI lifecycles while keeping Chromium selective.
   boundary:
-  - malformed-governance-input
-  - failure-diagnostics
-  - installer-transaction-and-lock
-  - shared-deterministic-primitives
-  - focused-pytest-contract
-  - public-cli-help-errors
-  - project-check-system-preflight
-  - batched-documentation-diff
-  - advisory-security-inventory
-  - generated-cli-system-facts-and-scoped-impact-proposal
+  - docs-dev-security
+  - ci-python-provisioning
+  - publication-integrity
 matrix:
-- boundary: malformed-governance-input
-  reason: Invalid or structurally malformed hook input must never be interpreted as
-    an empty harmless command.
+- boundary: docs-dev-security
+  reason: Existing alerts and VitePress preview network exposure require patched compatible
+    tools and loopback restrictions.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff compared changed modules with origin/main; zero findings added.
+      evidence: npm lockfile version 3 root parity and git diff --check PASS.
     unit:
-      applicable: true
-      evidence: tests/evidence/governance_command_guard.py passed.
+      applicable: false
+      na_reason: No product code or application logic is changed; dependency/renderer
+        compatibility is verified through actual build and browser smoke.
     integration:
       applicable: true
-      evidence: tests/validation/governance_resume.py passed malformed JSON, non-object
-        payload, missing tool_input, and invalid tool_input cases.
+      evidence: Clean npm ci --ignore-scripts, npm ls Vite 6.4.4/esbuild 0.25.12,
+        and VitePress build PASS.
     contract:
       applicable: true
-      evidence: Both Claude and Gemini deny envelopes were parsed and asserted by
-        governance_resume.py.
+      evidence: Scoped Vite override, stable VitePress 1.6.4, native esbuild dependency
+        and static Pages contract verified.
     security:
       applicable: true
-      evidence: Invalid input returns deny and does not echo the input payload.
+      evidence: npm audit zero vulnerabilities; dev and preview loopback-only, untrusted
+        Host 403 and no untrusted CORS headers PASS.
     migration_recovery:
       applicable: false
-      na_reason: No persisted state changes.
+      na_reason: No data/schema migration; scoped dependencies and preview command
+        can be reverted together.
     cli_harness:
-      applicable: true
-      evidence: Governance hook entrypoint lifecycle passed.
+      applicable: false
+      na_reason: AIPS CLI behavior is unchanged by documentation renderer dependencies.
     docs_schema:
-      applicable: false
-      na_reason: Hook response shape remains unchanged; malformed input is now explicitly
-        denied.
+      applicable: true
+      evidence: Canonical Human/Agent documentation closure and placement PASS.
     e2e:
-      applicable: false
-      na_reason: Hook entrypoint and runtime-specific response contracts are exercised
-        in local fixtures.
-- boundary: failure-diagnostics
-  reason: Optional Git/Intelligence probes remain distinguishable from invalid adapter
-    state and internal/policy errors fail closed.
+      applicable: true
+      evidence: 'Real browser smoke PASS: dev HMR update, preview clean URL, render
+        and local search, zero JavaScript errors.'
+- boundary: ci-python-provisioning
+  reason: Required isolated preflight lifecycles resolve all Python modules even when
+    optional CI capabilities are false.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff compared changed modules with origin/main; zero findings added.
+      evidence: Ruff passes tests/validation/ci_validation_plan_contracts.py; git
+        diff --check passes.
     unit:
       applicable: true
-      evidence: Changed Python modules imported and governance_resume.py passed.
+      evidence: 'ci_validation_plan_contracts import PASS: complete environment plus
+        conditional install, missing OpenAPI and unconditional Chromium negatives.'
     integration:
       applicable: true
-      evidence: Runtime resolver/policy callers remain covered by repository validation;
-        exact-candidate Gate pending.
+      evidence: tests/evidence/install_preflight_lifecycle.py and legacy_harness_migration_lifecycle.py
+        PASS with complete Python 3.12.
     contract:
       applicable: true
-      evidence: Optional Git/Intelligence probes are distinguished from invalid adapter
-        state; approval/policy errors remain fail-closed.
+      evidence: tests/evidence/ci_validation_plan_lifecycle.py runs through ci_validation_plan_contracts;
+        exact-path positive selectors, unknown/malformed plans and optional evidence
+        semantics preserved.
     security:
       applicable: true
-      evidence: Policy and approval exceptions return deny/ERROR; exception diagnostics
-        avoid raw hook payloads.
+      evidence: Publication Preview content safety PASS; mandatory candidate scan
+        order, permissions, actions/runner pins and blocking repository checks are
+        unchanged.
     migration_recovery:
-      applicable: false
-      na_reason: No persisted state changes.
+      applicable: true
+      evidence: 'legacy_harness_migration_lifecycle.py PASS: installed legacy refresh,
+        recovery and confinement.'
     cli_harness:
       applicable: true
-      evidence: harness_resolve.py emits an explicit invalid_adapter_state error and
-        nonzero status.
+      evidence: install_preflight_lifecycle.py PASS exercises actual isolated source/installed
+        CLI preflight routes.
     docs_schema:
-      applicable: false
-      na_reason: No user-facing output schema change beyond explicit error status.
+      applicable: true
+      evidence: Publication Preview confirms required documentation closure and canonical
+        H2 placement PASS.
     e2e:
-      applicable: false
-      na_reason: Runtime resolver and policy failure paths are tested as bounded local
-        process contracts.
-- boundary: installer-transaction-and-lock
-  reason: Install/update must serialize concurrent writers, retry transient Git operations,
-    remove partial staging state and promote only a verified checkout.
+      applicable: true
+      evidence: Local temporary Git/installed-system fixtures pass; PR and main exact-candidate
+        acceptance are separately required before completion.
+- boundary: publication-integrity
+  reason: Core CI change must retain scans, required checks, exact base/head and explicit
+    Human merge authority.
   checks:
     static_lint:
       applicable: true
-      evidence: bash -n scripts/install.sh passed; Ruff changed-file baseline comparison
-        has zero added findings.
+      evidence: Publication Preview Git identity and content safety PASS.
     unit:
-      applicable: true
-      evidence: tests/evidence/installer_reliability_lifecycle.py passed.
+      applicable: false
+      na_reason: No publication helper, policy or merge method changes.
     integration:
       applicable: true
-      evidence: Source-checkout install lifecycle promoted verified checkout and invoked
-        CLI fixture.
+      evidence: Local focused lifecycle evidence and docs placement PASS; complete
+        exact-candidate Core Gate will run for final committed candidate.
     contract:
       applicable: true
-      evidence: tests/evidence/install_download_lifecycle.py passed with bounded curl
-        retry options in Unix/WSL snippets.
+      evidence: Main protection requires repository with strict base freshness and
+        no review bypass; merge-commit policy retained.
     security:
       applicable: true
-      evidence: Active locks are preserved; stale locks are reported for explicit
-        recovery; partial clones are not promoted.
-    migration_recovery:
-      applicable: true
-      evidence: Active lock, stale lock, success promotion and partial clone cleanup
-        lifecycle cases passed.
-    cli_harness:
-      applicable: true
-      evidence: Installer preserved install arguments and source-checkout CLI entrypoint.
-    docs_schema:
-      applicable: true
-      evidence: Installer snippet parity and WSL contract passed; docs now describe
-        bounded retry and recovery.
-    e2e:
-      applicable: true
-      evidence: Local temporary Git source installed end-to-end to a separate test
-        destination.
-- boundary: shared-deterministic-primitives
-  reason: Shared canonical serialization, path formatting and glob matching must preserve
-    every existing public facade contract while keeping domain-specific fingerprints
-    under their current owners.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Focused Ruff F401/I001/SIM102 checks pass for all changed modules;
-        full repository validator passes on this candidate branch.
-    unit:
-      applicable: true
-      evidence: tests/evidence/shared_primitives_lifecycle.py checks raw and prefixed
-        digest facades, in/outside relative paths, path/glob compatibility vectors
-        and domain digest contracts.
-    integration:
-      applicable: true
-      evidence: Full repository validation passes locally; the configured exact-candidate
-        Integration Gate must pass on the frozen commit before publication.
-    contract:
-      applicable: true
-      evidence: tests/fixtures/plan21-contract-golden-vectors.yaml pins canonical
-        digest bytes and caller-specific path/glob semantics.
-    security:
-      applicable: true
-      evidence: governance_guard and runtime_policy fingerprints remain domain-owned
-        and match frozen vectors; the shared package grants no authority.
+      evidence: Credential-free preview passes; mandatory secret scan and protected
+        required remote checks retained.
     migration_recovery:
       applicable: false
-      na_reason: No persisted data or installed state changes.
+      na_reason: No persistent publication state migration or branch deletion.
     cli_harness:
       applicable: false
-      na_reason: No CLI or runtime hook surface changes in this boundary.
+      na_reason: Publication command facade unchanged.
     docs_schema:
       applicable: true
-      evidence: Human architecture, conformance, documentation map/sync, maintenance,
-        technology guide and Agent conformance/sync topics describe the shared owner
-        and limited evidence claim; docs/human/CONFORMANCE_HISTORY_INDEX.md is regenerated
-        from the updated Human/Agent section anchors.
+      evidence: Required CI/Core policy documentation updated within existing canonical
+        sections; architecture topology unchanged, diagrams N/A.
     e2e:
       applicable: false
-      na_reason: The change is a deterministic helper extraction; facade behavior
-        and exact candidate are exercised by lifecycle and Integration Gate contracts.
-- boundary: focused-pytest-contract
-  reason: Focused pytest coverage must pin the shared primitive contracts while remaining
-    a separate advisory workflow.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Targeted Ruff and the repository quality ratchet validate changed
-        Python modules.
-    unit:
-      applicable: true
-      evidence: tests/test_aips_common_primitives.py passes under pytest; repository
-        validation also runs the same cases directly.
-    integration:
-      applicable: true
-      evidence: Full repository validation exercises the focused test file; the standalone
-        workflow installs only the pinned pytest dependency set.
-    contract:
-      applicable: true
-      evidence: Workflow is separate from the required repository aggregate and uses
-        pinned checkout/setup-python actions.
-    security:
-      applicable: true
-      evidence: Workflow permissions remain contents read-only and the required candidate
-        secret scan is unchanged.
-    migration_recovery:
-      applicable: false
-      na_reason: No persisted state or installation changes.
-    cli_harness:
-      applicable: false
-      na_reason: No public CLI or runtime hook behavior changes.
-    docs_schema:
-      applicable: true
-      evidence: Technology Guide and canonical documentation placement describe focused
-        primitive verification.
-    e2e:
-      applicable: false
-      na_reason: The new workflow is a supplementary test lane; the required repository
-        Gate remains the end-to-end boundary.
-- boundary: project-check-system-preflight
-  reason: New CLI routes must preserve read-only status semantics and legacy update-preflight
-    compatibility.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Repository quality ratchet and shell syntax checks cover the CLI facade
-        changes.
-    unit:
-      applicable: true
-      evidence: Static CLI contracts verify help routes and legacy command visibility.
-    integration:
-      applicable: true
-      evidence: tests/evidence/install_preflight_lifecycle.py passed both preflight
-        routes and project status cases.
-    contract:
-      applicable: true
-      evidence: Scenario 232 records exit semantics, no-write behavior and alias compatibility.
-    security:
-      applicable: true
-      evidence: project check invokes only read-only Intelligence status and rejects
-        invalid paths before dispatch.
-    migration_recovery:
-      applicable: false
-      na_reason: Commands do not migrate project state; preflight behavior reuses
-        the existing recovery path.
-    cli_harness:
-      applicable: true
-      evidence: The isolated AIPS CLI lifecycle fixture exercises canonical and compatibility
-        routes.
-    docs_schema:
-      applicable: true
-      evidence: README, SYSTEM.md, Installation and Getting Started preserve canonical/compatibility
-        guidance.
-    e2e:
-      applicable: true
-      evidence: Local temporary Git repositories run system preflight update and post-update
-        validation.
-- boundary: public-cli-help-errors
-  reason: Public command groups need predictable success help and useful nonzero errors
-    without converting internal libraries into CLI parsers.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: The existing quality ratchet covers the changed shell and Python surfaces.
-    unit:
-      applicable: true
-      evidence: Static contracts assert status and diagnostic snapshots for help and
-        unknown-command routes.
-    integration:
-      applicable: true
-      evidence: Full repository validation runs the CLI snapshots through the actual
-        bin/aips launcher.
-    contract:
-      applicable: true
-      evidence: Scenario 233 records group usage and error-exit semantics.
-    security:
-      applicable: true
-      evidence: Unknown commands fail closed; help routes grant no additional operation
-        authority.
-    migration_recovery:
-      applicable: false
-      na_reason: No persisted state changes.
-    cli_harness:
-      applicable: true
-      evidence: Actual shell, harness, MCP, project, system and evolution group commands
-        are exercised.
-    docs_schema:
-      applicable: true
-      evidence: Human and Agent Conformance define the stable help/error behavior.
-    e2e:
-      applicable: false
-      na_reason: These contracts are CLI entrypoint-level and do not call external
-        services.
-- boundary: batched-documentation-diff
-  reason: Placement audit batches Git operations while preserving exact per-file added-line
-    decisions.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Ruff passes for the placement implementation and its contract module.
-    unit:
-      applicable: true
-      evidence: The temporary Git fixture compares old and batched results for tracked,
-        untracked and space-containing paths.
-    integration:
-      applicable: true
-      evidence: Full documentation placement audit passes against the working tree.
-    contract:
-      applicable: true
-      evidence: Existing single-file helper remains available; untracked files retain
-        whole-file line coverage.
-    security:
-      applicable: true
-      evidence: Source paths remain explicit Git pathspec arguments and authoritative
-        hashes are untouched.
-    migration_recovery:
-      applicable: false
-      na_reason: The placement check reads repository files only.
-    cli_harness:
-      applicable: false
-      na_reason: No public CLI surface changes.
-    docs_schema:
-      applicable: true
-      evidence: No placement policy or documentation output contract changed.
-    e2e:
-      applicable: false
-      na_reason: The bounded synthetic benchmark measures the same placement path
-        at three repository sizes.
-- boundary: advisory-security-inventory
-  reason: Scheduled supply-chain inventory and Gitleaks shadow outcomes add supplementary
-    evidence without changing release authority.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: YAML parsing and security_workflow_contracts.py pass for the pinned
-        workflow and permission controls.
-    unit:
-      applicable: true
-      evidence: Scenario Conformance checks the workflow triggers, advisory behavior
-        and evidence registry.
-    integration:
-      applicable: true
-      evidence: Full repository validation and exact-candidate Integration Gate remain
-        required before publication.
-    contract:
-      applicable: true
-      evidence: Workflow contract pins the OSV reusable workflow and Gitleaks action,
-        with scheduled/manual triggers only.
-    security:
-      applicable: true
-      evidence: Scanner outcomes are nonblocking; comments and Gitleaks artifacts
-        are disabled; permissions are narrowly scoped.
-    migration_recovery:
-      applicable: false
-      na_reason: No repository or external state is changed by the scheduled observations.
-    cli_harness:
-      applicable: false
-      na_reason: No CLI or runtime hook changes.
-    docs_schema:
-      applicable: true
-      evidence: Maintenance, Security Assurance, Technology Guide and Scenario 231
-        document the advisory boundary.
-    e2e:
-      applicable: false
-      na_reason: The workflow is supplementary observation; required secret scan and
-        repository Gate are retained.
-- boundary: generated-cli-system-facts-and-scoped-impact-proposal
-  reason: Canonical command facts and their generated reference table must cover the
-    new project/system routes, while source-backed Impact Graph candidates remain a
-    review-only proposal and repository-wide coverage stays partial.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: system_facts.py --check and system_facts_contracts pass; YAML facts
-        bind each route to its lifecycle validator and canonical documentation.
-    unit:
-      applicable: true
-      evidence: install_preflight_lifecycle.py covers read-only project status,
-        invalid paths and canonical preflight compatibility.
-    integration:
-      applicable: true
-      evidence: The final exact-candidate Integration Gate runs repository validation
-        and the core boundary matrix.
-    contract:
-      applicable: true
-      evidence: Generated SYSTEM_REFERENCE lists project check, system preflight,
-        and the legacy preflight alias from config/system-facts.yaml.
-    security:
-      applicable: true
-      evidence: project check remains read-only; the graph proposal does not modify
-        canonical graph data or upgrade global coverage.
-    migration_recovery:
-      applicable: false
-      na_reason: The command inventory and proposal do not migrate persistent data.
-    cli_harness:
-      applicable: true
-      evidence: Existing CLI routing and lifecycle evidence cover both namespaced
-        commands and the compatibility alias.
-    docs_schema:
-      applicable: true
-      evidence: INSTALLATION and GETTING_STARTED bind the routes; SYSTEM_REFERENCE
-        generated facts are kept in sync; the scoped graph proposal records exact
-        source-line evidence and pending Human review.
-    e2e:
-      applicable: false
-      na_reason: The routes are validated by isolated lifecycle fixtures and local
-        repository checks without external project mutation.
+      na_reason: PR/main acceptance are separate live candidate Gates, not a new product
+        end-to-end surface; verify them before final completion.
 review_evidence:
   required: false
 scope_recomputed_after_expansion: true
