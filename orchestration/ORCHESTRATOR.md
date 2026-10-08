@@ -12,6 +12,8 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 For local creative execution, preflight the scoped Bundle and require explicit create/modify intent before invoking the structured tool; never route through arbitrary Shell.
 
+Use `prepare` only for the explicit user-directed setup action. Keep preparation, read-only preflight and explicit generation as separate steps; validation and review never trigger image inference.
+
 OpenCode dispatch resolves the existing AIPS Turn Context and preserves project-native instruction authority before runtime hooks act.
 
 For OpenCode, resolve the turn with `--runtime opencode`, then progressively load selected canonical pointers. Preserve Human gates, selected models and project-native instructions while reporting projection conflicts.

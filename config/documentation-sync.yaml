@@ -15,9 +15,13 @@ rules:
   - id: character-artwork-workflow
     triggers:
       - orchestration/CREATIVE_DIRECTION.md
+      - scripts/aips_cli/dispatch.sh
+      - scripts/aips_cli/help.sh
       - scripts/character_artifacts.py
       - scripts/creative_evidence.py
       - scripts/creative_execution.py
+      - harness/adapters/opencode/plugin.ts
+      - harness/adapters/opencode/COMPATIBILITY.md
       - templates/creative/CHARACTER_PROFILE.yaml
       - templates/creative/STYLE_PROFILE.yaml
       - templates/creative/CHARACTER_ARTWORK_MANIFEST.yaml
@@ -41,6 +45,7 @@ rules:
       - tests/scenario_coverage.yaml
       - tests/evidence/character_artifacts_lifecycle.py
       - tests/evidence/creative_execution_lifecycle.py
+      - tests/validation/creative_execution_contracts.py
 
   - id: maintenance-planning
     triggers:

@@ -33,6 +33,8 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+OpenCode's explicit `creative_execution.prepare` action creates versioned Profiles and a draft Bundle under the active EPHEMERAL Session scope. It cannot execute generation; preflight stays read-only and execution requires an explicit creative intent and a ready Bundle.
+
 ### OpenCode
 
 安裝時自動偵測 `opencode`，在設定根目錄建立受管理 `AGENTS.md`、27 個 canonical Skills 投影、三個原生 Commands；只在確認 OpenCode V2 後才安裝 `plugins/aips-opencode.ts`。description 由 Skill frontmatter 維護；相對 canonical 參照轉為已安裝 AIPS 路徑，其他資源依 canonical source directory 解析。

@@ -6,6 +6,7 @@ import os
 import sys
 import tempfile
 import threading
+from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from unittest.mock import patch
@@ -49,8 +50,8 @@ def fixture_project(base: Path) -> Path:
     return project
 
 
-def mflux_fixture(project: Path, *, sleep_seconds: float = 0) -> Path:
-    executable = project / "bin/mflux-generate"
+def mflux_fixture(project: Path, *, sleep_seconds: float = 0, command_name: str = "mflux-generate") -> Path:
+    executable = project / "bin" / command_name
     executable.write_text(
         "#!/usr/bin/env python3\n"
         "import os, pathlib, sys, time\n"
@@ -137,7 +138,7 @@ def guard_cases(project: Path):
     require(allowed["decision"] == "ALLOW" and allowed["reason_code"] == "shell_aips_readonly", "bounded Creative Preflight was not allowed")
     denied = guard.evaluate_shell(command="aips creative execute --project . --bundle creative-bundle.yaml", cwd=inside, root=inside)
     require(denied["decision"] == "DENY" and denied["reason_code"] == "shell_aips_command_unsupported", "Creative execution leaked into the Shell allowlist")
-    for command in ("python3 -c print(1)", "aips publish push", "aips creative preflight --project /tmp --bundle x.yaml", "aips creative trace --limit 1000", "aips creative preflight --project . --bundle x.yaml && pwd"):
+    for command in ("aips creative prepare --project . --scope assets", "python3 -c print(1)", "aips publish push", "aips creative preflight --project /tmp --bundle x.yaml", "aips creative trace --limit 1000", "aips creative preflight --project . --bundle x.yaml && pwd"):
         result = guard.evaluate_shell(command=command, cwd=inside, root=inside)
         require(result["decision"] != "ALLOW", f"unsafe diagnostic command was allowed: {command}")
 
@@ -187,6 +188,101 @@ def mflux_cases(base: Path):
     else:
         raise AssertionError("finite MFLUX timeout unexpectedly completed")
     require(not (timeout / "creative-output/run-v1/image-v1.png").exists(), "timeout left an output behind")
+
+
+def mflux_capability_cases(base: Path):
+    project = fixture_project(base)
+    first = project / "reference-one.png"
+    second = project / "reference-two.webp"
+    first.write_bytes(PNG)
+    second.write_bytes(PNG)
+    bundle = {
+        "operation": "edit", "model": {"id": "flux2-klein-4b", "local_path": str(project / "model")},
+        "prompt": "edit", "input_images": [first.name, second.name], "steps": 2,
+    }
+    executable = project / "bin/mflux-generate-flux2-edit"
+    command = creative.mflux_command(project.resolve(), bundle, executable, project / "out.png")
+    require(command[0] == str(executable) and command[command.index("--model") + 1] == "flux2-klein-4b", "FLUX.2 edit capability used the wrong CLI mapping")
+    require(command[command.index("--image-paths") + 1:command.index("--image-paths") + 3] == [str(first.resolve()), str(second.resolve())], "multiple edit references were not mapped to --image-paths")
+    cases = [
+        ("flux2-klein-4b", "generate", "mflux-generate-flux2", None),
+        ("flux2-klein-9b", "generate", "mflux-generate-flux2", None),
+        ("flux2-klein-9b-kv", "edit", "mflux-generate-flux2-edit", "--image-paths"),
+        ("qwen-image-edit-2511", "edit", "mflux-generate-qwen-edit", "--image-paths"),
+        ("schnell", "edit", "mflux-generate", "--image-path"),
+    ]
+    for model_id, operation, command_name, image_option in cases:
+        capability = creative.MFLUX_CAPABILITIES[model_id][operation]
+        require(capability["command"] == command_name and capability["image_option"] == image_option, f"incorrect registered MFLUX capability for {model_id}/{operation}")
+    expect_blocked(lambda: creative.mflux_command(project.resolve(), {**bundle, "model": {"id": []}}, executable, project / "bad.png"), "non-string MFLUX model id was accepted")
+    expect_blocked(lambda: creative.mflux_command(project.resolve(), bundle, project / "bin/mflux-generate", project / "bad.png"), "mismatched fixed MFLUX executable was accepted")
+    expect_blocked(lambda: creative.bundle_input_images(project.resolve(), {"input_images": [first.name] * 9}), "reference batch count limit was not enforced")
+    single_reference_capability = creative.MFLUX_CAPABILITIES["dev"]["edit"]
+    require(single_reference_capability["image_option"] == "--image-path", "legacy MFLUX edit did not retain its single-reference CLI option")
+    expect_blocked(lambda: creative.mflux_command(project.resolve(), {**bundle, "model": {"id": "dev", "local_path": str(project / "model")}}, project / "bin/mflux-generate", project / "bad.png"), "single-reference MFLUX CLI accepted multiple input images")
+
+    mflux_fixture(project, command_name="mflux-generate-flux2-edit")
+    args_path = base / "mflux-multi-args.txt"
+    os.environ["FAKE_MFLUX_ARGS"] = str(args_path)
+    bundle_path, _ = write_bundle(
+        project, operation="edit", input_images=[first.name, second.name], provider="mflux_local",
+        runtime="mflux-generate-flux2-edit", model={"id": "flux2-klein-4b", "revision": "fixture-sha", "local_path": str(project / "model"), "license": "fixture", "license_source": "https://example.test/license"},
+        mflux_executable=str(project / "bin/mflux-generate-flux2-edit"),
+    )
+    result = creative.execute(project, bundle_path.name)
+    manifest = json.loads((project / result["manifest"]).read_text())
+    require(result["status"] == "COMPLETE" and len(manifest["inputs"]) == 2, "multi-reference MFLUX execution did not record both local inputs")
+    require(args_path.read_text().count("reference-") == 2, "multi-reference fake MFLUX did not receive both staged paths")
+
+
+def prepare_cases(base: Path):
+    project = base / "ephemeral-project"
+    project.mkdir(parents=True)
+    kwargs = {
+        "project": project, "scope": "art", "character_id": "mira-7", "character_name": "Mira",
+        "summary": "A traveling botanist", "style_intent": "Soft ink and watercolor", "prompt": "A full-body character sheet",
+        "identity_features": ["copper bob", "round glasses"],
+    }
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        results = list(pool.map(lambda _: creative.prepare(**kwargs), range(2)))
+    require({item["version"] for item in results} == {"mira-7-v1", "mira-7-v2"}, "concurrent preparation overwrote a versioned workspace")
+    prepared = project / results[0]["scope"]
+    for relative in results[0]["files"]:
+        require((project / relative).is_file(), f"prepared file missing: {relative}")
+    require((prepared / "README.md").stat().st_mode & 0o777 == 0o600, "prepared README permissions were not private")
+    require((prepared / "bundles/CREATIVE_BUNDLE.yaml").is_file(), "prepared Bundle was missing")
+    require((prepared / "output/character-v1").stat().st_mode & 0o777 == 0o700, "prepared output scope permissions were not private")
+    try:
+        creative.preflight(prepared, "bundles/CREATIVE_BUNDLE.yaml")
+    except creative.Blocked as exc:
+        require(exc.reason_code == "BLOCKED_NO_ENGINE", "unconfigured prepared workspace had the wrong preflight result")
+    else:
+        raise AssertionError("prepared workspace without an installed engine was presented as READY")
+    expect_blocked(lambda: creative.prepare(**{**kwargs, "scope": "../outside"}), "preparation path traversal was accepted")
+    expect_blocked(lambda: creative.prepare(**{**kwargs, "prompt": "x" * (creative.MAX_PROMPT_CHARS + 1)}), "oversized preparation prompt was accepted")
+    expect_blocked(lambda: creative.prepare(**{**kwargs, "identity_features": []}), "empty identity features were accepted")
+    linked = project / "linked"
+    linked.symlink_to(project / "art", target_is_directory=True)
+    expect_blocked(lambda: creative.prepare(**{**kwargs, "scope": "linked"}), "symlinked preparation scope was accepted")
+    git_project = base / "git-project"
+    git_project.mkdir()
+    (git_project / ".git").mkdir()
+    expect_blocked(lambda: creative.prepare(**{**kwargs, "project": git_project}), "Git workspace preparation was accepted")
+
+
+def cli_prepare_case(base: Path):
+    project = base / "cli-ephemeral"
+    project.mkdir(parents=True)
+    command = [
+        str(ROOT / "bin/aips"), "creative", "prepare", "--project", str(project), "--scope", "characters",
+        "--character-id", "cli-mira", "--character-name", "Mira", "--summary", "A test character",
+        "--style-intent", "Watercolor", "--prompt", "Full-body reference", "--identity-feature", "copper hair",
+    ]
+    env = {**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable}
+    result = __import__("subprocess").run(command, capture_output=True, text=True, env=env, check=False, timeout=20)
+    require(result.returncode == 0, "aips creative prepare dispatcher failed: " + result.stderr)
+    payload = json.loads(result.stdout)
+    require(payload["status"] == "PREPARED" and (project / payload["bundle"]).is_file(), "CLI prepare did not return its created Bundle")
 
 
 def comfy_cases(base: Path):
@@ -264,6 +360,9 @@ def main() -> int:
         os.environ["XDG_STATE_HOME"] = str(state)
         no_engine_case(base / "no-engine")
         mflux_cases(base / "mflux")
+        mflux_capability_cases(base / "mflux-capabilities")
+        prepare_cases(base / "prepare")
+        cli_prepare_case(base / "cli")
         comfy_cases(base / "comfy")
         trace = creative.read_trace(100)
         require(trace["status"] == "READY", "privacy-limited creative trace was not readable")
@@ -272,7 +371,7 @@ def main() -> int:
             stream.write(json.dumps({"provider": "mflux_local", "operation": "generate", "status": "COMPLETE", "prompt": "private"}) + "\n")
         filtered = creative.read_trace(100)
         require(filtered["invalid_records"] >= 1 and "prompt" not in json.dumps(filtered), "trace reader accepted a sensitive field")
-    print("Creative execution lifecycle PASS: EPHEMERAL scope, preflight, MFLUX argv/offline, ComfyUI loopback/edit hash, create-only output, finite retry, provenance, human review and trace privacy")
+    print("Creative execution lifecycle PASS: EPHEMERAL preparation/versioning, preflight, fixed MFLUX CLI mapping and multi-reference edit, ComfyUI loopback/single-reference edit hash, create-only output, finite retry, provenance, human review and trace privacy")
     return 0
 
 

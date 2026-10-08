@@ -201,7 +201,7 @@ Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
 
-The creative execution Change Impact boundary includes its Shell guard, CLI dispatch, OpenCode tool consumer, Bundle, provenance manifest, privacy trace, lifecycle evidence, and documentation projections.
+The creative execution Change Impact boundary includes versioned Profile/Bundle creation, its Shell guard, CLI dispatch, OpenCode tool consumer, Bundle inputs, provenance manifest, privacy trace, lifecycle evidence, and documentation projections.
 
 OpenCode V2 derives each Context and supported native write decision from the active `Session.Info` directory, preserving the existing Project Intelligence readiness and freshness contract.
 

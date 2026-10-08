@@ -84,6 +84,8 @@ OpenCode V2 adapter behavior is defined by `harness/adapters/opencode/AGENTS.md`
 
 The character-art workflow is canonical in `orchestration/CREATIVE_DIRECTION.md`, the three existing design Skills, `scripts/character_artifacts.py`, the Creative Bundle executor/templates and Scenarios 234/236. User workflow and technical limits are described in USER_GUIDE.md and TECHNOLOGY_GUIDE.md; no duplicate Skill or provider integration surface is introduced.
 
+Versioned creative preparation and fixed MFLUX operation mapping are documented in the User Guide and Technology Guide; the OpenCode tool boundary is recorded in Harness and `harness/adapters/opencode/COMPATIBILITY.md`.
+
 OpenCode 的 managed 指示來源為 `harness/adapters/opencode/AGENTS.md`；原生驗證範圍見 [Harness](HARNESS.md)，canonical 紀錄為 `harness/adapters/opencode/COMPATIBILITY.md`。Skills 與 Commands 仍以原有 canonical registry 為準。
 
 Runtime hook input and resolver failure contracts are canonical in the Harness protocol; user-facing behavior and recovery guidance live in HARNESS.md, SECURITY_ASSURANCE.md and INSTALLATION.md.

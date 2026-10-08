@@ -8,7 +8,7 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ## Runtime & Integration
 
-OpenCode V2 registers a bounded creative tool that requires explicit intent and a successful Bundle preflight.
+OpenCode V2 registers a bounded creative tool that requires explicit intent. Its `prepare` action creates versioned character/style Profiles and an unconfigured Bundle in a non-Git EPHEMERAL scope; `preflight` remains read-only and `execute` requires a ready Bundle.
 
 
 ### Turn-Aware Global Harness
@@ -65,7 +65,7 @@ System changes keep the exact-candidate repository Gate enabled while any select
 
 ### Local character artwork
 
-The optional local character-art executor accepts an already-installed MFLUX CLI or a loopback ComfyUI API workflow restricted to built-in nodes. It disables HTTP proxying and redirects, uses offline model-hub flags, scopes create-only PNG/JPEG/WEBP output to a non-Git EPHEMERAL bundle, and records profile/workflow/input/output hashes, model revision, runtime version and license source. Preflight does not generate; missing local engines return `BLOCKED_NO_ENGINE`. No runtime or weights are installed, and no image is sent to a cloud provider. Existing Comfy MCP guidance remains available when that user-managed route better fits the project.
+The optional local character-art executor accepts an already-installed MFLUX CLI or a loopback ComfyUI API workflow restricted to built-in nodes. A closed model/operation registry maps FLUX.1, FLUX.2 Klein and Qwen Image Edit 2511 to fixed executable names and argument shapes; FLUX.1 edit accepts one reference, while FLUX.2/Qwen edit commands with `--image-paths` accept up to eight bounded references. ComfyUI edit accepts one staged hash-checked reference. It disables HTTP proxying and redirects, uses offline model-hub flags, scopes create-only PNG/JPEG/WEBP output to a non-Git EPHEMERAL bundle, and records profile/workflow/input/output hashes, model revision, runtime version and license source. Preparation creates versioned fixed Profile/Bundle files without overwrite and leaves engine provenance unconfigured. Preflight does not generate; missing local engines return `BLOCKED_NO_ENGINE`. No runtime or weights are installed, and no image is sent to a cloud provider. Existing Comfy MCP guidance remains available when that user-managed route better fits the project.
 
 The shared helper package consolidates canonical hashes, repository-relative paths and caller-specific glob matching; existing module facades preserve current call sites and outputs.
 
@@ -177,6 +177,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Creative lifecycle checks use synthetic engines and loopback fixtures; they verify command contracts and confinement, not model quality, hardware performance or visual fidelity.
 
 Scenario 236 and the creative lifecycle verify provider boundaries, provenance, rollback, trace privacy, and pending human review; synthetic output does not establish visual quality.
 

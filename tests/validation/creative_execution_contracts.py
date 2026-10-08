@@ -23,6 +23,8 @@ if all(path.is_file() for path in required):
     bundle = yaml.safe_load(required[1].read_text(encoding="utf-8")) or {}
     executor = required[0].read_text(encoding="utf-8")
     docs = required[4].read_text(encoding="utf-8")
+    plugin = (ROOT / "harness/adapters/opencode/plugin.ts").read_text(encoding="utf-8")
+    compatibility = (ROOT / "harness/adapters/opencode/COMPATIBILITY.md").read_text(encoding="utf-8")
     contracts = (
         (bundle.get("mode") == "EPHEMERAL", "Bundle template must default to EPHEMERAL"),
         ("BLOCKED_NO_ENGINE" in executor, "missing engines must fail closed"),
@@ -31,6 +33,11 @@ if all(path.is_file() for path in required):
         ("COMFY_CORE_NODES" in executor and "comfy_custom_node_blocked" in executor, "ComfyUI workflow must reject non-core nodes"),
         ("creative-execution-manifest.json" in executor and "PENDING" in executor, "execution must retain provenance and pending human review"),
         ("aips creative preflight" in docs and "BLOCKED_NO_ENGINE" in docs, "Creative Direction must document preflight and missing-engine state"),
+        ("MFLUX_CAPABILITIES" in executor and "mflux-generate-flux2-edit" in executor and "mflux-generate-qwen-edit" in executor, "MFLUX commands must use the closed capability registry"),
+        ("MAX_REFERENCE_IMAGES = 8" in executor and "--image-paths" in executor, "MFLUX edit reference batches must be bounded and explicit"),
+        ("def prepare(" in executor and "os.O_EXCL" in executor and "creative_ephemeral_required" in executor, "preparation must be confined, create-only and EPHEMERAL"),
+        ("exactly one hash-checked reference" in compatibility, "ComfyUI compatibility docs must state the single-reference boundary"),
+        ('enum: ["prepare", "preflight", "execute"]' in plugin and 'classification.intent !== "create"' in plugin, "OpenCode preparation must remain explicit and intent-gated"),
     )
     for condition, message in contracts:
         if not condition:

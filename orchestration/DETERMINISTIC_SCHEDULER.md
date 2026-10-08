@@ -8,6 +8,7 @@ Use after planning when one approved change is decomposed into multiple bounded 
 
 The Scheduler is deterministic code, not a Role, Agent, approval gate or architecture decision-maker.
 
+
 ## Separation of responsibilities
 
 
@@ -170,6 +171,8 @@ When the Execution Profile requires sandbox isolation, Scheduler dispatch must p
 The Scheduler never falls back to LLM coordination to make a blocked graph look executable.
 
 ## Read-only declaration and fail-closed boundary
+
+Creative Profile/Bundle preparation and image generation remain explicit user-directed CLI/tool actions; do not infer or schedule generation as a background Task Graph effect.
 
 OpenCode's Session-scoped file guard is a host hook, not scheduler ownership or process isolation; Shell subprocesses and MCP/custom-tool effects remain outside that boundary.
 

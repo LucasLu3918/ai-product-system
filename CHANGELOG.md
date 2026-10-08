@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+## 0.76.0
+
+- Add safe, versioned character/style Profile and Creative Bundle preparation in non-Git EPHEMERAL workspaces, integrated with the OpenCode creative tool.
+- Map supported MFLUX model/operation pairs to fixed FLUX.1, FLUX.2 Klein and Qwen Edit CLI commands; allow bounded multi-reference MFLUX edits while keeping ComfyUI edits to one hash-checked reference.
+- Extend Scenario 236 and local lifecycle evidence for preparation races, path boundaries, fixed CLI mappings, batch limits, and unconfigured-engine blocking; no runtime or model weights are installed.
+
 ## 0.75.0
 
 - Add a scoped local creative execution pipeline for MFLUX and loopback ComfyUI generation/editing, with preflight, create-only raster outputs, provenance manifests, explicit human visual review, bounded privacy-safe traces, and no model downloads or external image egress.

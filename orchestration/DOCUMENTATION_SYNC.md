@@ -33,6 +33,8 @@ Character artwork behavior is mapped through `config/documentation-sync.yaml` an
 
 The scoped EPHEMERAL Creative Bundle tool also updates the OpenCode compatibility contract and Harness topic. Its exact-candidate lifecycle uses fake local engines and never runs a project-configured generator; generic MCP/custom tools remain outside its guard.
 
+The shared `creative_execution.prepare` and `aips creative prepare` routes create versioned Profile/Bundle sets only; keep their explicit intent, scope and no-overwrite guarantees aligned with Scenario 236 and the Human Harness/Installation topics.
+
 Portable Command Registry、CLI 與 MCP renderer 屬 Harness current behavior；同步 Human 文件時沿用既有 Harness、Architecture、Installation、Maintenance 與 Technology topic，不建立第二套文件樹。
 Phase 5 的共用 OpenAPI client 案例沿用 Implementation Resolution、Quality 與 Conformance topic。同步 Scenario 197 的 lifecycle、Human 操作說明及多產品證據邊界，不為每個產品建立 AIPS 共用文件。
 When a configured behavior-bearing source path changes, the same change MUST update the mapped documentation surfaces:
@@ -172,6 +174,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 ## Human documentation placement
 
 The creative execution boundary maps to the existing Harness, creative workflow, execution, security, and Scenario topics; documentation impact preview verifies required canonical destinations.
+
+The approved Scenario 236 scope includes versioned Profile/Bundle preparation and fixed MFLUX operations; keep its bounded reference rules and non-executing validation limits in the same documented closure.
 
 OpenCode adapter changes route to Harness, Installation, User Guide, Architecture Overview, Technology Guide and Conformance, alongside the adapter contract and Scenario 235 evidence.
 

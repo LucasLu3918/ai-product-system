@@ -3,9 +3,12 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import importlib
 import ipaddress
 import json
 import os
+import re
+import shutil
 import subprocess
 import tempfile
 import time
@@ -19,10 +22,17 @@ from typing import Any
 
 import yaml
 
+if os.name == "nt":
+    msvcrt: Any = importlib.import_module("msvcrt")
+else:
+    import fcntl
+
 ROOT = Path(__file__).resolve().parents[1]
 RASTER_SUFFIXES = {".png", ".jpg", ".jpeg", ".webp"}
 MAX_IMAGE_BYTES = 25 * 1024 * 1024
 MAX_REFERENCE_BYTES = 12 * 1024 * 1024
+MAX_REFERENCE_BATCH_BYTES = 25 * 1024 * 1024
+MAX_REFERENCE_IMAGES = 8
 MAX_PROMPT_CHARS = 4000
 MAX_RETRIES = 2
 MAX_TIMEOUT_SECONDS = 3600
@@ -32,6 +42,34 @@ COMFY_CORE_NODES = {
     "VAEDecode", "SaveImage", "LoadImage", "VAEEncode", "VAEEncodeForInpaint",
     "SetLatentNoiseMask", "ImageScale", "ImageCrop",
 }
+MFLUX_CAPABILITIES: dict[str, dict[str, dict[str, str | None]]] = {
+    # Keep executable names and argument shapes fixed. Model IDs never become
+    # command fragments, and unsupported model/operation pairs fail closed.
+    "dev": {
+        "generate": {"command": "mflux-generate", "cli_model": "dev", "image_option": None},
+        "edit": {"command": "mflux-generate", "cli_model": "dev", "image_option": "--image-path"},
+    },
+    "schnell": {
+        "generate": {"command": "mflux-generate", "cli_model": "schnell", "image_option": None},
+        "edit": {"command": "mflux-generate", "cli_model": "schnell", "image_option": "--image-path"},
+    },
+    "flux2-klein-4b": {
+        "generate": {"command": "mflux-generate-flux2", "cli_model": "flux2-klein-4b", "image_option": None},
+        "edit": {"command": "mflux-generate-flux2-edit", "cli_model": "flux2-klein-4b", "image_option": "--image-paths"},
+    },
+    "flux2-klein-9b": {
+        "generate": {"command": "mflux-generate-flux2", "cli_model": "flux2-klein-9b", "image_option": None},
+        "edit": {"command": "mflux-generate-flux2-edit", "cli_model": "flux2-klein-9b", "image_option": "--image-paths"},
+    },
+    "flux2-klein-9b-kv": {
+        "generate": {"command": "mflux-generate-flux2", "cli_model": "flux2-klein-9b-kv", "image_option": None},
+        "edit": {"command": "mflux-generate-flux2-edit", "cli_model": "flux2-klein-9b-kv", "image_option": "--image-paths"},
+    },
+    "qwen-image-edit-2511": {
+        "edit": {"command": "mflux-generate-qwen-edit", "cli_model": "qwen-image-edit", "image_option": "--image-paths"},
+    },
+}
+CHARACTER_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9_-]{0,63}$")
 OFFLINE_ENV = {
     "HF_HUB_OFFLINE": "1", "TRANSFORMERS_OFFLINE": "1", "HF_DATASETS_OFFLINE": "1",
     "DIFFUSERS_OFFLINE": "1", "NO_PROXY": "127.0.0.1,localhost,::1",
@@ -47,6 +85,25 @@ class Blocked(ValueError):
 
 class TransientProviderError(RuntimeError):
     pass
+
+
+def lock_prepare_scope(fd: int) -> None:
+    if os.name == "nt":
+        os.lseek(fd, 0, os.SEEK_END)
+        if os.lseek(fd, 0, os.SEEK_CUR) == 0:
+            os.write(fd, b"\0")
+        os.lseek(fd, 0, os.SEEK_SET)
+        msvcrt.locking(fd, msvcrt.LK_LOCK, 1)
+    else:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+
+
+def unlock_prepare_scope(fd: int) -> None:
+    if os.name == "nt":
+        os.lseek(fd, 0, os.SEEK_SET)
+        msvcrt.locking(fd, msvcrt.LK_UNLCK, 1)
+    else:
+        fcntl.flock(fd, fcntl.LOCK_UN)
 
 
 def digest(path: Path) -> str:
@@ -81,6 +138,35 @@ def is_git_workspace(root: Path) -> bool:
         return result.returncode == 0
     except (OSError, subprocess.SubprocessError):
         return False
+
+
+def bundle_input_images(root: Path, value: dict[str, Any]) -> list[Path]:
+    multiple = value.get("input_images")
+    single = value.get("input_image")
+    if multiple not in (None, []) and single not in (None, ""):
+        raise Blocked("input_image_ambiguous", "Use either input_image or input_images, not both.")
+    if multiple is None or multiple == []:
+        raw_paths = [single] if isinstance(single, str) and single else []
+    elif isinstance(multiple, list) and 1 <= len(multiple) <= MAX_REFERENCE_IMAGES:
+        raw_paths = multiple
+    else:
+        raise Blocked("input_image_invalid", f"input_images must contain between 1 and {MAX_REFERENCE_IMAGES} project-relative paths.")
+    if any(not isinstance(raw, str) or not raw for raw in raw_paths):
+        raise Blocked("input_image_invalid", "Every reference image path must be a non-empty string.")
+    paths: list[Path] = []
+    total_size = 0
+    for raw in raw_paths:
+        path = confined(root, raw, exists=True)
+        if not path.is_file() or path.is_symlink() or path.suffix.lower() not in RASTER_SUFFIXES:
+            raise Blocked("input_image_invalid", "Reference images must be regular in-project PNG, JPEG, or WEBP files.")
+        size = path.stat().st_size
+        if size > MAX_REFERENCE_BYTES:
+            raise Blocked("input_image_too_large", "A reference image exceeds the 12 MiB limit.")
+        total_size += size
+        if total_size > MAX_REFERENCE_BATCH_BYTES:
+            raise Blocked("input_images_too_large", "Combined reference images exceed the 25 MiB limit.")
+        paths.append(path)
+    return paths
 
 
 def read_bundle(project: Path, bundle_path: str) -> tuple[Path, dict[str, Any]]:
@@ -131,15 +217,11 @@ def read_bundle(project: Path, bundle_path: str) -> tuple[Path, dict[str, Any]]:
             raise Blocked("generation_setting_invalid", f"{key} must be an integer between {low} and {high}.")
     if value.get("seed", 0) is not None and (not isinstance(value.get("seed", 0), int) or isinstance(value.get("seed", 0), bool)):
         raise Blocked("generation_setting_invalid", "seed must be an integer.")
-    if operation == "edit":
-        source = value.get("input_image")
-        if not isinstance(source, str) or not source:
-            raise Blocked("input_image_missing", "Edit bundles require an in-project input_image.")
-        source_path = confined(root, source, exists=True)
-        if not source_path.is_file() or source_path.is_symlink() or source_path.suffix.lower() not in RASTER_SUFFIXES:
-            raise Blocked("input_image_invalid", "Input image must be a regular in-project PNG, JPEG, or WEBP file.")
-        if source_path.stat().st_size > MAX_REFERENCE_BYTES:
-            raise Blocked("input_image_too_large", "Input image exceeds the 12 MiB limit.")
+    input_images = bundle_input_images(root, value)
+    if operation == "edit" and not input_images:
+        raise Blocked("input_image_missing", "Edit bundles require an in-project input_image or input_images list.")
+    if operation == "generate" and input_images:
+        raise Blocked("input_image_unsupported", "Reference images are only supported for edit operations.")
     model = value.get("model")
     if not isinstance(model, dict) or not all(isinstance(model.get(key), str) and model[key].strip() for key in ("id", "license")):
         raise Blocked("model_provenance_missing", "Bundle must declare a model id and license.")
@@ -266,13 +348,16 @@ def verify_comfy(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str, Any
     if not isinstance(choices, list) or info["config"]["checkpoint_name"] not in choices:
         raise Blocked("comfy_model_unavailable", "Selected ComfyUI checkpoint is not present in the local server model list.")
     if bundle["operation"] == "edit":
+        input_images = bundle_input_images(root, bundle)
+        if len(input_images) != 1:
+            raise Blocked("comfy_input_count_unsupported", "The bounded ComfyUI workflow accepts exactly one staged edit reference.")
         cfg = info["config"]
         node_id = str(cfg.get("input_image_node_id", ""))
         node = info["workflow"].get(node_id)
         image_name = cfg.get("input_image_name")
         if not isinstance(node, dict) or node.get("class_type") != "LoadImage" or not isinstance(image_name, str) or Path(image_name).name != image_name:
             raise Blocked("comfy_input_node_invalid", "Edit requires a LoadImage node and a filename already staged in ComfyUI input.")
-        source = confined(root, bundle["input_image"], exists=True)
+        source = input_images[0]
         if source.stat().st_size > MAX_REFERENCE_BYTES:
             raise Blocked("input_image_too_large", "Input image exceeds the 12 MiB limit.")
         query = urllib.parse.urlencode({"filename": image_name, "type": "input"})
@@ -290,11 +375,33 @@ def resolve_provider(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str,
     choices = [requested] if requested != "auto" else ["mflux_local", "comfyui_local"]
     for provider in choices:
         if provider == "mflux_local":
+            model_id = bundle["model"].get("id")
+            model_capabilities = MFLUX_CAPABILITIES.get(model_id, {}) if isinstance(model_id, str) else {}
+            capability = model_capabilities.get(bundle["operation"])
+            if capability is None:
+                checks.append((provider, "mflux_model_operation_unsupported"))
+                continue
+            command_name = capability.get("command")
+            if not isinstance(command_name, str):
+                checks.append((provider, "mflux_model_operation_unsupported"))
+                continue
+            if capability.get("image_option") == "--image-path" and len(bundle_input_images(root, bundle)) != 1:
+                checks.append((provider, "mflux_reference_count_unsupported"))
+                if requested != "auto":
+                    raise Blocked("mflux_reference_count_unsupported", "This MFLUX command accepts exactly one edit reference.")
+                continue
             executable = bundle.get("mflux_executable")
-            model_path_raw = bundle["model"].get("local_path")
+            if not isinstance(executable, str) or not executable:
+                executable = shutil.which(command_name)
             if not isinstance(executable, str) or not Path(executable).expanduser().is_absolute():
                 checks.append((provider, "executable_not_configured"))
                 continue
+            if Path(executable).name != command_name:
+                checks.append((provider, "mflux_command_mismatch"))
+                if requested != "auto":
+                    raise Blocked("mflux_command_mismatch", "Configured MFLUX executable does not match the registered model/operation command.")
+                continue
+            model_path_raw = bundle["model"].get("local_path")
             if not isinstance(model_path_raw, str) or not Path(model_path_raw).expanduser().is_dir():
                 checks.append((provider, "model_not_local"))
                 if requested != "auto":
@@ -304,7 +411,7 @@ def resolve_provider(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str,
             if not binary.is_file() or not os.access(binary, os.X_OK):
                 checks.append((provider, "executable_unavailable"))
                 continue
-            return provider, {"executable": binary}
+            return provider, {"executable": binary, "capability": capability}
         if provider == "comfyui_local":
             try:
                 base, info = verify_comfy(root, bundle)
@@ -331,6 +438,130 @@ def preflight(project: Path, bundle_path: str) -> dict[str, Any]:
     }
 
 
+def prepare(
+    project: Path,
+    scope: str,
+    character_id: str,
+    character_name: str,
+    summary: str,
+    style_intent: str,
+    prompt: str,
+    identity_features: list[str],
+) -> dict[str, Any]:
+    """Create a versioned, template-bound creative workspace without overwrites."""
+    root = project.expanduser().resolve(strict=True)
+    if not root.is_dir() or is_git_workspace(root):
+        raise Blocked("creative_ephemeral_required", "Creative preparation is restricted to a non-Git EPHEMERAL workspace.")
+    if not isinstance(scope, str) or not scope.strip() or Path(scope).is_absolute() or "\\" in scope or ".." in Path(scope).parts:
+        raise Blocked("output_scope_invalid", "Preparation scope must be a project-relative path without parent traversal.")
+    scope_path = confined(root, scope)
+    if scope_path == root:
+        raise Blocked("output_scope_invalid", "Preparation requires an explicit child directory as its output scope.")
+    current = root
+    for part in Path(scope).parts:
+        if part in {"", ".", ".."}:
+            raise Blocked("output_scope_invalid", "Preparation scope contains an invalid path component.")
+        current = current / part
+        if current.is_symlink():
+            raise Blocked("output_scope_symlink", "Preparation scope may not contain symlinks.")
+    if scope_path.exists() and not scope_path.is_dir():
+        raise Blocked("output_scope_invalid", "Preparation scope must be a directory.")
+    if not isinstance(character_id, str) or not CHARACTER_ID_PATTERN.fullmatch(character_id):
+        raise Blocked("character_id_invalid", "character_id must use 1-64 lowercase letters, numbers, hyphens, or underscores.")
+    for name, value, maximum in (
+        ("character_name", character_name, 120), ("summary", summary, 600),
+        ("style_intent", style_intent, 600), ("prompt", prompt, MAX_PROMPT_CHARS),
+    ):
+        if not isinstance(value, str) or not value.strip() or len(value) > maximum:
+            raise Blocked("creative_profile_invalid", f"{name} must be non-empty and at most {maximum} characters.")
+    if not isinstance(identity_features, list) or not 1 <= len(identity_features) <= 12 or any(
+        not isinstance(item, str) or not item.strip() or len(item) > 160 for item in identity_features
+    ):
+        raise Blocked("creative_profile_invalid", "identity_features must contain 1-12 non-empty entries of at most 160 characters.")
+    try:
+        character = yaml.safe_load((ROOT / "templates/creative/CHARACTER_PROFILE.yaml").read_text(encoding="utf-8"))
+        style = yaml.safe_load((ROOT / "templates/creative/STYLE_PROFILE.yaml").read_text(encoding="utf-8"))
+        bundle = yaml.safe_load((ROOT / "templates/creative/CREATIVE_BUNDLE.yaml").read_text(encoding="utf-8"))
+    except (OSError, yaml.YAMLError) as exc:
+        raise Blocked("creative_template_invalid", "AIPS creative templates could not be loaded safely.") from exc
+    if not all(isinstance(item, dict) for item in (character, style, bundle)):
+        raise Blocked("creative_template_invalid", "AIPS creative templates must be YAML mappings.")
+    character.update({"id": character_id, "name": character_name.strip(), "summary": summary.strip(), "identity_features": [item.strip() for item in identity_features], "references": []})
+    style.update({"id": f"{character_id}-style", "name": f"{character_name.strip()} style", "intent": style_intent.strip()})
+    bundle.update({
+        "operation": "generate", "provider": "auto", "prompt": prompt.strip(),
+        "model": {"id": "UNCONFIGURED", "revision": "UNVERIFIED", "local_path": None, "license": "UNVERIFIED", "license_source": "UNVERIFIED"},
+        "runtime": "UNCONFIGURED", "runtime_version": "UNVERIFIED", "mflux_executable": None,
+    })
+    scope_path.mkdir(parents=True, exist_ok=True, mode=0o700)
+    os.chmod(scope_path, 0o700)
+    lock_path = scope_path / ".aips-creative-prepare.lock"
+    try:
+        if lock_path.is_symlink():
+            raise OSError("scope lock may not be a symlink")
+        lock_fd = os.open(lock_path, os.O_CREAT | os.O_RDWR | getattr(os, "O_NOFOLLOW", 0), 0o600)
+        if hasattr(os, "fchmod"):
+            os.fchmod(lock_fd, 0o600)
+    except OSError as exc:
+        raise Blocked("creative_prepare_failed", "Could not safely lock the selected creative scope.") from exc
+    locked = False
+    try:
+        lock_prepare_scope(lock_fd)
+        locked = True
+        for version in range(1, 10000):
+            final = scope_path / f"{character_id}-v{version}"
+            if final.exists() or final.is_symlink():
+                continue
+            stage = Path(tempfile.mkdtemp(prefix=".aips-creative-prepare-", dir=scope_path))
+            try:
+                (stage / "bundles").mkdir(mode=0o700)
+                (stage / "output/character-v1").mkdir(parents=True, mode=0o700)
+                version_root = final.relative_to(root).as_posix()
+                bundle["output_scope"] = f"{version_root}/output/character-v1"
+                bundle["output_path"] = f"{version_root}/output/character-v1/full-body.png"
+                generated = {
+                    "README.md": (
+                        f"# {character_name.strip()}\n\n"
+                        "This local creative workspace was prepared by AIPS.\n\n"
+                        "## Next steps\n\n"
+                        "1. Review `CHARACTER_PROFILE.yaml` and `STYLE_PROFILE.yaml`.\n"
+                        "2. Configure an already-installed local model/runtime in `bundles/CREATIVE_BUNDLE.yaml`.\n"
+                        "3. Run `aips creative preflight` before explicitly executing a generation.\n"
+                        "4. Review generated images visually; file validity is not a quality PASS.\n"
+                    ),
+                    "CHARACTER_PROFILE.yaml": yaml.safe_dump(character, sort_keys=False, allow_unicode=True),
+                    "STYLE_PROFILE.yaml": yaml.safe_dump(style, sort_keys=False, allow_unicode=True),
+                    "bundles/CREATIVE_BUNDLE.yaml": yaml.safe_dump(bundle, sort_keys=False, allow_unicode=True),
+                }
+                for relative, content in generated.items():
+                    target = stage / relative
+                    fd = os.open(target, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600)
+                    with os.fdopen(fd, "w", encoding="utf-8") as stream:
+                        stream.write(content)
+                        stream.flush()
+                        os.fsync(stream.fileno())
+                os.rename(stage, final)
+                files = [f"{version_root}/{relative}" for relative in generated]
+                return {
+                    "status": "PREPARED", "reason_code": "creative_workspace_prepared",
+                    "version": final.name, "scope": version_root,
+                    "bundle": f"{version_root}/bundles/CREATIVE_BUNDLE.yaml",
+                    "files": files, "output_scope": f"{version_root}/output/character-v1",
+                    "engine_status": "UNCONFIGURED", "overwrite": False,
+                }
+            except FileExistsError:
+                shutil.rmtree(stage, ignore_errors=True)
+                continue
+            except OSError as exc:
+                shutil.rmtree(stage, ignore_errors=True)
+                raise Blocked("creative_prepare_failed", "Could not atomically create the versioned creative workspace.") from exc
+        raise Blocked("creative_version_exhausted", "No available version number remains in the selected scope.")
+    finally:
+        if locked:
+            unlock_prepare_scope(lock_fd)
+        os.close(lock_fd)
+
+
 def output_magic(path: Path) -> bool:
     try:
         size = path.stat().st_size
@@ -352,13 +583,28 @@ def output_magic(path: Path) -> bool:
 
 def mflux_command(root: Path, bundle: dict[str, Any], executable: Path, temp_output: Path) -> list[str]:
     model = bundle["model"]
-    command = [
-        str(executable), "--model", str(model["id"]), "--model-path", str(Path(model["local_path"]).expanduser()),
+    model_id = model.get("id")
+    capability = MFLUX_CAPABILITIES.get(model_id, {}).get(bundle["operation"]) if isinstance(model_id, str) else None
+    if not capability:
+        raise Blocked("mflux_model_operation_unsupported", "No registered MFLUX command supports this model and operation.")
+    command_name = capability.get("command")
+    cli_model = capability.get("cli_model")
+    if not isinstance(command_name, str) or not isinstance(cli_model, str):
+        raise Blocked("mflux_model_operation_unsupported", "Registered MFLUX command metadata is invalid.")
+    if executable.name != command_name:
+        raise Blocked("mflux_command_mismatch", "Configured MFLUX executable does not match the registered model/operation command.")
+    command: list[str] = [
+        str(executable), "--model", cli_model, "--model-path", str(Path(model["local_path"]).expanduser()),
         "--prompt", str(bundle["prompt"]), "--output", str(temp_output), "--steps", str(bundle.get("steps", 20)),
         "--seed", str(bundle.get("seed", 0)), "--width", str(bundle.get("width", 1024)), "--height", str(bundle.get("height", 1024)),
     ]
-    if bundle["operation"] == "edit":
-        command.extend(["--image-path", str(confined(root, bundle["input_image"], exists=True))])
+    image_option = capability["image_option"]
+    if image_option:
+        images = bundle_input_images(root, bundle)
+        if image_option == "--image-path" and len(images) != 1:
+            raise Blocked("mflux_reference_count_unsupported", "This MFLUX command accepts exactly one edit reference.")
+        command.append(image_option)
+        command.extend(str(path) for path in images)
     return command
 
 
@@ -501,7 +747,8 @@ def execute(project: Path, bundle_path: str) -> dict[str, Any]:
     root, bundle = read_bundle(project, bundle_path)
     provider_name, provider = resolve_provider(root, bundle)
     output = confined(root, bundle["output_path"])
-    source = confined(root, bundle["input_image"], exists=True) if bundle.get("input_image") else None
+    sources = bundle_input_images(root, bundle)
+    source = sources[0] if sources else None
     output.parent.mkdir(parents=True, exist_ok=True)
     if output.parent.is_symlink() or not output.parent.resolve().is_relative_to(confined(root, bundle["output_scope"])):
         raise Blocked("output_scope_escape", "Output directory escaped the declared bundle scope.")
@@ -534,12 +781,14 @@ def execute(project: Path, bundle_path: str) -> dict[str, Any]:
         output_hash = digest(temp_output)
         os.link(temp_output, output)
         elapsed = round((time.monotonic() - started) * 1000)
+        input_records = [{"sha256": digest(path), "path": path.relative_to(root).as_posix()} for path in sources]
         manifest = {
             "version": 1, "status": "COMPLETE", "operation": bundle["operation"], "provider": provider_name,
             "model": {"id": bundle["model"]["id"], "revision": bundle["model"]["revision"], "runtime": bundle["runtime"], "runtime_version": bundle["runtime_version"], "license": bundle["model"]["license"], "license_source": bundle["model"]["license_source"], "location": "local"},
             "bundle_sha256": digest(confined(root, bundle_path, exists=True)),
             "workflow_sha256": digest(provider["path"]) if provider_name == "comfyui_local" else None,
-            "input": {"sha256": digest(source), "path": bundle["input_image"]} if source else None,
+            "input": input_records[0] if len(input_records) == 1 else None,
+            "inputs": input_records if len(input_records) > 1 else [],
             "output": {"path": bundle["output_path"], "sha256": output_hash, "format": output.suffix.lower().lstrip("."), "bytes": output.stat().st_size},
             "output_scope": bundle["output_scope"],
             "prompt_sha256": "sha256:" + hashlib.sha256(bundle["prompt"].encode()).hexdigest(),
@@ -592,6 +841,15 @@ def review(project: Path, manifest_name: str, reviewer: str, decision: str, note
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     sub = parser.add_subparsers(dest="action", required=True)
+    prepare_parser = sub.add_parser("prepare")
+    prepare_parser.add_argument("--project", type=Path, required=True)
+    prepare_parser.add_argument("--scope", required=True)
+    prepare_parser.add_argument("--character-id", required=True)
+    prepare_parser.add_argument("--character-name", required=True)
+    prepare_parser.add_argument("--summary", required=True)
+    prepare_parser.add_argument("--style-intent", required=True)
+    prepare_parser.add_argument("--prompt", required=True)
+    prepare_parser.add_argument("--identity-feature", action="append", default=[])
     for action in ("preflight", "execute"):
         command = sub.add_parser(action)
         command.add_argument("--project", type=Path, required=True)
@@ -606,7 +864,9 @@ def main() -> int:
     trace_parser.add_argument("--limit", type=int, default=20)
     args = parser.parse_args()
     try:
-        if args.action == "preflight":
+        if args.action == "prepare":
+            result = prepare(args.project, args.scope, args.character_id, args.character_name, args.summary, args.style_intent, args.prompt, args.identity_feature)
+        elif args.action == "preflight":
             result = preflight(args.project, args.bundle)
         elif args.action == "execute":
             result = execute(args.project, args.bundle)

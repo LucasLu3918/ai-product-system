@@ -9,6 +9,7 @@ prompt: "Describe the requested image here."
 output_scope: creative-output
 output_path: creative-output/asset-v1.png
 input_image: null # Required for edit; an existing in-project PNG/JPEG/WEBP path.
+input_images: [] # Optional for MFLUX edit; up to 8 project-relative references. Use instead of input_image.
 
 width: 1024
 height: 1024
@@ -16,18 +17,22 @@ steps: 20
 seed: 42
 max_retries: 1 # Transient timeout retries only; maximum is 2.
 timeout_seconds: 900
-runtime: mflux-generate # Record the actual selected runtime in this per-run bundle.
+runtime: mflux-generate-flux2 # Record the actual selected runtime in this per-run bundle.
 runtime_version: "Record the observed runtime version."
 
 model:
-  id: dev
+  id: flux2-klein-4b
   revision: "Record the exact model revision."
   local_path: /absolute/path/to/an/already-cached-model-directory
   license: "Record the actual model license."
   license_source: "Record the URL or local source that verifies the license."
 
 # MFLUX is argv-only, offline, and limited to the fixed options above.
-mflux_executable: /absolute/path/to/mflux-generate
+mflux_executable: /absolute/path/to/mflux-generate-flux2
+
+# The executable basename must match the fixed capability registry:
+# FLUX.1: mflux-generate; FLUX.2 Klein: mflux-generate-flux2 or
+# mflux-generate-flux2-edit; Qwen Image Edit 2511: mflux-generate-qwen-edit.
 
 # For ComfyUI, configure an API-format workflow containing only AIPS allowlisted built-in nodes.
 # For edit, stage the same reference under ComfyUI's local input folder and set input_image_name;
