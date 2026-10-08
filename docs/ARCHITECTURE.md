@@ -8,6 +8,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 flowchart TD
     S[User Prompt] --> RA[Runtime Adapter]
     RA --> RC[Shared Runtime Context]
+    RA -->|OpenCode V2 only| OP[OpenCode plugin: context injection + supported native guard]
+    OP --> RC
     RA --> TC[Compact Turn Context]
     TC --> ROUTES[Select fixed System Core + task-specific canonical protocol pointers]
     ROUTES --> SCOPE[Resolve advisory intent + scoped instructions]
@@ -44,6 +46,10 @@ flowchart TD
     X --> V[Test / Review / Actual Impact Reconciliation]
     V --> IR[Targeted Intelligence Refresh]
     IR --> DONE[Persist / Complete]
+    OP --> ACT{Direct native file action?}
+    ACT -->|L1 new creative asset in non-Git workspace| ASSET[Confined create-only asset write]
+    ACT -->|L2 existing project mutation| GUARD[Ready/current Intelligence + target path + authority check]
+    ACT -->|L3 external effect| HUMAN[Existing Human approval gate]
 ~~~
 
 Runtime Context centralizes validation interpreter selection and runtime path reporting for source checkouts, linked worktrees and installed systems. Its deterministic invariant matrix exercises Python capability, cache, network and platform combinations.
@@ -51,6 +57,8 @@ Runtime Context centralizes validation interpreter selection and runtime path re
 The synchronous Turn Hook resolves identity/freshness plus bounded evidence from an already available Retrieval Index. Whole-project bootstrap, initial index construction, semantic enrichment, impact-graph rebuilding and HTML generation stay outside the hook latency path. Retrieval cache state is non-canonical and degrades truthfully to stable Project Intelligence when unavailable.
 
 All writers of `EVENTS.jsonl` share one sequence lock. Optional observed operation spans use an existing Run checkpoint and remain evidence only. External review trust anchors may verify signed runtime receipts, while an absent trusted issuer preserves the required-review block.
+
+OpenCode V2 receives transient compact Context from the existing CLI. Its native permission hook applies a second check to supported direct file resources, and Shell creation applies a bounded read-only allowlist; MCP/custom tools and out-of-process writes remain outside this evidence boundary. Runtime governance stays ADVISORY until actual permission-hook acceptance is verified.
 
 ## Parallel run observation flow
 

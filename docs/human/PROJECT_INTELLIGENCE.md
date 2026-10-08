@@ -69,6 +69,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+OpenCode V2 consumes the compact Context Manifest on each primary dispatch and rechecks current readiness for supported direct file actions; this runtime check does not replace project-level Change Impact before implementation.
+
 OpenCode 以 `--runtime opencode` 解析既有 Project Intelligence 與 Change Impact；managed 指示投影不覆蓋有效的 project-native conventions。
 
 Shared canonical hash/path/glob helpers preserve the existing Project Intelligence matching facade. Bounded source traversal still records unresolved edges and does not claim repository-wide completeness.

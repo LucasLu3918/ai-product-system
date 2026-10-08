@@ -12,6 +12,8 @@ Evolution Radar 是 AIPS 的 maintenance plane，用來研究外部技術變化�
 
 ## Signal Collection
 
+Runtime lifecycle observations separate plugin setup from action-level hook execution; unknown provider or MCP behavior remains unverified and cannot be promoted from setup evidence.
+
 Context-routing evidence is collected from deterministic route classification and lifecycle outputs; prompts and model reasoning are excluded.
 
 Offline relevance evaluation compares selected/rejected signals with explicit Human labels. Unlabeled or uncertain records produce `NOT_READY`; the evaluator reports metrics but never changes source policy.

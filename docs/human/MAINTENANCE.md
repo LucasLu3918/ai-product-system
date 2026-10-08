@@ -213,6 +213,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+Core adapter changes bind lifecycle, security-boundary, documentation-closure, and exact-candidate Gate evidence in `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`.
+
 Risk-adaptive traversal changes use AST-extracted direct Python calls with bounded caller/consumer depth; unresolved dynamic dispatch and repository-wide partial graph coverage remain visible in evidence.
 
 本次 Project Intelligence promotion helper 維持既有 facade、Human approval 與 no-overwrite 邊界；Scenario 223 證明 Evolution Radar 對候選排除原因提供決定性歸因。
@@ -318,6 +320,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 High-risk external runtime actions also require an exact, unexpired Approval Record and fresh verified network-egress enforcement. A hook alone is not a sandbox; missing provider proof blocks the action.
 
 ## Public repository / CI consistency
+
+The OpenCode native adapter is version-scoped to V2. CI and local acceptance distinguish plugin setup from model-context and permission-hook execution; unknown runtime behavior remains UNVERIFIED.
 
 Evolution Effectiveness reports incomplete pre-analysis coverage instead of calling absent triage a zero shortlist. Oversized scheduled Radar Issues preserve the full UTF-8 body in a bounded digest-checked archive restored before monthly parsing.
 
@@ -501,6 +505,8 @@ Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanu
 
 
 ## Repository Health / Architecture Drift consistency
+
+The Capability Registry now lists the OpenCode native guard helper and plugin lifecycle as harness-runtime surfaces; generated architecture projections must be regenerated from that registry.
 
 OpenCode 是既有 Harness Capability 的 Adapter；新投影與驗證路徑登錄於 capability registry，再生成架構投影。
 

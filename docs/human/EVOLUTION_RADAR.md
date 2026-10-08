@@ -10,6 +10,8 @@ Weekly collection 只讀 source-controlled allowlist 中的 public sources，保
 
 ## Evidence Quality
 
+OpenCode V2 plugin discovery is setup evidence only; Context delivery, native permission decisions, provider behavior, Shell, and MCP coverage remain separately unverified unless action-level evidence is recorded.
+
 Turn Context routing 的變更應以 route lifecycle、compact Manifest、hook compatibility 與 fixed-core measurements 作為可重現證據；route coverage 不表示治理圖完整。
 
 Community signal 主要用於 discovery；較高強度的 recommendation 需要 primary-source corroboration。Deterministic evidence level 不可被 semantic analyzer自行提高。

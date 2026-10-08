@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add independent task domain/intent/effect routing, Chinese creative-asset context, and a version-aware OpenCode V2 plugin for transient Context and narrowly scoped native write/read-only Shell checks; retain ADVISORY status until native action acceptance proves hook enforcement.
 - Add local-first character-art profiles, provenance-bound SVG/PNG validation, deterministic typeset character sheets, and independent visual-review guidance without installing image models or using cloud APIs.
 - Add a canonical Capability Registry with deterministic v1 consumer projections and Repository Health drift/orphan detection.
 - Add an isolated Codex PreToolUse probe that blocks only one harmless synthetic Bash command; keep unsupported/error paths and aggregate governance `ADVISORY`.

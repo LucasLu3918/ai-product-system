@@ -103,6 +103,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 232 — Project Check and System Preflight](CONFORMANCE.md#scenario-232-project-check-and-system-preflight) | Current Human guidance |
 | [## Scenario 233 — Public CLI Help and Error Contracts](CONFORMANCE.md#scenario-233-public-cli-help-and-error-contracts) | Current Human guidance |
 | [## Scenario 234 — Local Character Artwork Provenance and Composition](CONFORMANCE.md#scenario-234-local-character-artwork-provenance-and-composition) | Current Human guidance |
+| [## Scenario 235 — OpenCode Native Context and Action Guard](CONFORMANCE.md#scenario-235-opencode-native-context-and-action-guard) | Current Human guidance |
 | [## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow](CONFORMANCE.md#scenario-231-advisory-security-inventory-and-secret-scanner-shadow) | Current Human guidance |
 | [# Scenario Conformance](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-conformance) | Normative rule |
 | [## Purpose](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#purpose) | Normative rule |
@@ -111,6 +112,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 232 — Project Check and System Preflight](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-232-project-check-and-system-preflight) | Normative rule |
 | [## Scenario 233 — Public CLI Help and Error Contracts](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-233-public-cli-help-and-error-contracts) | Normative rule |
 | [## Scenario 234 — Local Character Artwork Provenance and Composition](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-234-local-character-artwork-provenance-and-composition) | Normative rule |
+| [## Scenario 235 — OpenCode Native Context and Action Guard](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-235-opencode-native-context-and-action-guard) | Normative rule |
 | [## Admission rules](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#admission-rules) | Normative rule |
 | [## Release behavior](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#release-behavior) | Normative rule |
 | [## Reporting](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#reporting) | Normative rule |

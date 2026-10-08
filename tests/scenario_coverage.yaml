@@ -1840,3 +1840,15 @@ scenarios:
       - scripts/creative_evidence.py
       - tests/evidence/character_artifacts_lifecycle.py
       - tests/validation/character_artifacts_contracts.py
+  - id: "235"
+    path: tests/scenarios/235-opencode-native-context-guard.md
+    coverage: lifecycle
+    evidence:
+      - scripts/turn_intent.py
+      - scripts/project_intelligence.py
+      - scripts/opencode_native_guard.py
+      - harness/adapters/opencode/plugin.ts
+      - tests/evidence/intelligence_context_lifecycle.py
+      - tests/evidence/opencode_integration_lifecycle.py
+      - tests/evidence/opencode_native_acceptance.py
+      - tests/validation/opencode_integration_contracts.py

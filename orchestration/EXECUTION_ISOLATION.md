@@ -280,6 +280,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+The OpenCode native file guard confines supported direct resources but is not an OS sandbox and does not constrain arbitrary subprocess, MCP, or out-of-process effects.
+
 OpenCode native acceptance uses isolated HOME/XDG/config directories and a private loopback server. Test infrastructure must not change the user daemon or import provider credentials.
 
 Run Dashboard path and digest projections preserve their existing facades over shared primitives; isolation, port leasing and authorization boundaries do not change.

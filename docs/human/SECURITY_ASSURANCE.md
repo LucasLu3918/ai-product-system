@@ -6,6 +6,8 @@ Security review depth is proportional to the actual product/feature risk. The sy
 
 ## Core model
 
+The OpenCode native guard is a narrow runtime check, not an operating-system sandbox. Claims remain ADVISORY until direct permission-hook execution is verified; MCP/custom tools and other processes remain outside its boundary.
+
 
 ~~~text
 Product / Feature
@@ -104,6 +106,8 @@ Examples:
 The Security Engineer records the floor and rationale.
 
 ## Product baseline vs change impact
+
+OpenCode local file admission is limited to directly intercepted native operations and confined resources. Readiness checks do not provide OS sandboxing and do not cover MCP/custom tools or out-of-process writes.
 
 Change Impact approval authorizes only its reviewed scope; partial graph coverage is recorded as a limitation and reconciled against the exact candidate before publication.
 

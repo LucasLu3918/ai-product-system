@@ -1640,6 +1640,12 @@ The public command groups return concise help with status 0 and reject unknown s
 
 The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-content rejection, file dimensions and hashes, verified local-provider/license provenance, stable UTF-8 Traditional Chinese labels, non-overwriting deterministic sheet composition, and optional Creative Evidence manifest-digest binding. It does not invoke a model, download weights, attest identity consistency, or claim hardware performance; those require the user's local runtime and independent visual review.
 
+## Scenario 235 — OpenCode Native Context and Action Guard
+
+This Scenario is the canonical evidence pointer for OpenCode V2 context routing, action readiness, plugin lifecycle, and explicit unsupported boundaries.
+
+The lifecycle covers separate prompt dimensions, Chinese creative-asset routing, Project Intelligence readiness, direct native path/symlink decisions, bounded Shell commands, V2 plugin ownership, and version-aware install/removal. OpenCode v2.0.24 verifies plugin registry discovery, native Skills/Commands, and MCP discovery. Model Context delivery and permission-hook execution remain UNVERIFIED without a provider action, so governance stays ADVISORY. MCP/custom tools and writes outside OpenCode are not covered.
+
 ## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
 
 The scheduled/manual workflow runs a pinned OSV dependency inventory and compares the existing project secret scanner with a full-history Gitleaks shadow. Its failures and parity differences are advisory; the required candidate secret scan and repository Gate remain the release controls. CodeQL configuration is read from GitHub's default setup.

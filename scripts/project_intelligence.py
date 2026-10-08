@@ -72,7 +72,7 @@ from temporal_intelligence import (
 from temporal_intelligence import (
     validate_document as validate_temporal_document,
 )
-from turn_intent import classify_prompt, route_system_protocols
+from turn_intent import classify_prompt, classify_task, route_system_protocols
 
 SCHEMA_VERSION = 1
 
@@ -1177,7 +1177,9 @@ def retrieval_failure_remediation(exc: BaseException) -> str:
 def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = False, component: str | None = None,
                      target_path: str | None = None, intent: str = "auto") -> dict[str, Any]:
     store, mode, pid = intelligence_store(root)
+    task_classification = classify_task(prompt, intent)
     category, mutation, desired_topics = classify_prompt(prompt, intent)
+    mutation = mutation or task_classification.get("effect") == "external_action"
     system_protocol_routes = route_system_protocols(prompt, mutation, str(system_root()))
     fr = freshness(root)
     intel = load_yaml(store / "PROJECT_INTELLIGENCE.yaml", {}) if (store / "PROJECT_INTELLIGENCE.yaml").exists() else {}
@@ -1278,6 +1280,10 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
     initialize = fr["status"] == "MISSING"
     readiness = state.get("readiness", "PARTIAL") if not initialize else "PARTIAL"
     refresh = fr.get("affected_topics", []) if fr["status"] == "STALE" else []
+    task_effect = str(task_classification.get("effect") or "chat_only")
+    task_level = "L0" if task_effect == "chat_only" else "L3" if task_effect == "external_action" else "L2"
+    if task_effect == "filesystem_write" and task_classification.get("domain") == "creative" and task_classification.get("intent") == "create":
+        task_level = "L2" if run_git(root, ["rev-parse", "--show-toplevel"]) else "L1"
 
     fail_closed_reasons: list[str] = []
     if mutation:
@@ -1309,6 +1315,7 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
             "prompt_hash": sha(prompt),
             "category": category,
             "mutation_likely": mutation,
+            "classification": {**{key: task_classification[key] for key in ("domain", "intent", "effect")}, "readiness_level": task_level},
         },
         "context": {
             "always": [
@@ -1917,7 +1924,7 @@ def validate_impact_unknown_dispositions(doc: dict[str, Any], root: Path | None 
                 errors.append(f"{label} review requires reviewed_at")
             else:
                 try:
-                    reviewed_at = dt.datetime.fromisoformat(review["reviewed_at"].replace("Z", "+00:00"))
+                    reviewed_at = dt.datetime.fromisoformat(review["reviewed_at"])
                     if reviewed_at.tzinfo is None:
                         raise ValueError("timezone is required")
                 except ValueError:
@@ -2170,6 +2177,7 @@ def main() -> int:
     p.add_argument("--target-path", help="File or directory whose scoped project instructions apply")
     p.add_argument("--intent", choices=("auto", "read", "write"), default="auto")
     p.add_argument("--full", action="store_true", help="Include complete Turn Context diagnostics")
+    p.add_argument("--compact", action="store_true", help="Emit the bounded compact manifest in the selected output format")
     p.add_argument("--observe-run-id", help="Record this Context operation in an existing AIPS run")
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
     p.add_argument("--explain", action="store_true")
@@ -2267,7 +2275,7 @@ def main() -> int:
                 result = context_manifest(root, args.runtime, args.prompt, args.explain, args.component,
                                           args.target_path or args.project, args.intent)
             result["observation"] = observation
-            if args.format == "yaml" and not args.full:
+            if args.compact or (args.format == "yaml" and not args.full):
                 result = compact_context_manifest(result)
         elif args.command == "promotion-plan":
             result = promotion_plan(root, args.topic)

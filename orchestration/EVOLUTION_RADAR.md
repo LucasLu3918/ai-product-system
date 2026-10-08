@@ -157,6 +157,8 @@ The durable Human surface is the original GitHub Issue containing Radar evidence
 
 ## Documentation consistency
 
+Runtime setup evidence and action-level enforcement evidence are separate signals; do not promote plugin discovery into a verified capability.
+
 Evolution digest facades preserve their existing prefixed output through shared canonical JSON hashing; the extraction does not alter candidate scoring or Human decision authority.
 
 System-context routing evidence belongs to canonical Harness, Project Intelligence, Technology Guide and Conformance sections; diagrams must show the fixed core and selected route pointers without implying enforcement upgrades.
