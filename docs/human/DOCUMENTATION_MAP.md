@@ -78,7 +78,7 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
-OpenCode 的 managed 指示來源為 `harness/adapters/opencode/AGENTS.md`；原生驗證範圍見 [Compatibility](../../harness/adapters/opencode/COMPATIBILITY.md)。Skills 與 Commands 仍以原有 canonical registry 為準。
+OpenCode 的 managed 指示來源為 `harness/adapters/opencode/AGENTS.md`；原生驗證範圍見 [Harness](HARNESS.md)，canonical 紀錄為 `harness/adapters/opencode/COMPATIBILITY.md`。Skills 與 Commands 仍以原有 canonical registry 為準。
 
 Runtime hook input and resolver failure contracts are canonical in the Harness protocol; user-facing behavior and recovery guidance live in HARNESS.md, SECURITY_ASSURANCE.md and INSTALLATION.md.
 
