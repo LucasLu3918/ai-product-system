@@ -919,6 +919,8 @@ The size audit measures tracked text/evidence files against 50,000 bytes and rep
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
+CI always installs Python packages from all four validation requirement files because mandatory full-repository lifecycle fixtures exercise the complete CLI preflight. Candidate-path selection still controls Node and Playwright Chromium installation.
+
 Candidate evidence stays bound to exact paths and reports missing facts as unknown.
 
 

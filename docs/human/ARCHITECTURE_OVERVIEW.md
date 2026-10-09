@@ -167,6 +167,8 @@ Creative 延續狀態只容許有限回合與輸出數，不建立排程、背�
 
 The shared path inventory classifies safe roots and prefixes; planner-specific risk semantics remain independent and unknown paths select full validation.
 
+CI 每次都安裝四份驗證 requirements 在 tested constraints 下鎖定的 Python 套件，因為必要的 repository lifecycle fixtures 會執行完整 CLI preflight。精確候選路徑仍決定是否安裝 Node、文件建置套件及 Playwright Chromium。
+
 
 The Creative batch executor preflights each configured Bundle, records per-item results and verifies output/provenance hashes before resuming.
 

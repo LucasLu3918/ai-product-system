@@ -8,7 +8,12 @@ from .static_contracts import ROOT, errors, load_yaml
 
 
 def _python_provisioning_errors(steps: list[dict]) -> list[str]:
-    required = {"requirements.txt", "requirements-validation.txt"}
+    required = {
+        "requirements.txt",
+        "requirements-validation.txt",
+        "requirements-visual.txt",
+        "requirements-openapi.txt",
+    }
     installed = set()
     chromium_conditions = []
     visual_conditions = []
@@ -24,10 +29,10 @@ def _python_provisioning_errors(steps: list[dict]) -> list[str]:
         if "playwright" in argv and "install" in argv and "chromium" in argv:
             chromium_conditions.append(step.get("if"))
     issues = [f"Required CI Python requirements must be installed unconditionally: {name}" for name in sorted(required - installed)]
-    if visual_conditions != ["steps.validation_plan.outputs.needs_browser == 'true'"]:
-        issues.append("Browser validation dependencies must follow exact-plan browser selection")
-    if openapi_conditions != ["steps.validation_plan.outputs.needs_openapi == 'true'"]:
-        issues.append("OpenAPI validation dependencies must follow exact-plan OpenAPI selection")
+    if visual_conditions != [None]:
+        issues.append("Python browser-validation modules must be installed unconditionally for full repository fixtures")
+    if openapi_conditions != [None]:
+        issues.append("Python OpenAPI-validation modules must be installed unconditionally for full repository fixtures")
     if chromium_conditions != ["steps.validation_plan.outputs.needs_browser == 'true'"]:
         issues.append("Chromium download must retain exact-plan browser selection")
     return issues
@@ -78,8 +83,7 @@ workflow = load_yaml(ROOT / ".github/workflows/validate.yml") or {}
 errors.extend(_python_provisioning_errors(workflow.get("jobs", {}).get("janitor", {}).get("steps", [])))
 fixture = [
     {"run": "python -m pip install -r requirements.txt -r requirements-validation.txt"},
-    {"run": "python -m pip install -r requirements-visual.txt", "if": "steps.validation_plan.outputs.needs_browser == 'true'"},
-    {"run": "python -m pip install -r requirements-openapi.txt", "if": "steps.validation_plan.outputs.needs_openapi == 'true'"},
+    {"run": "python -m pip install -r requirements-visual.txt -r requirements-openapi.txt"},
     {"run": "python -m playwright install chromium", "if": "steps.validation_plan.outputs.needs_browser == 'true'"},
 ]
 if _python_provisioning_errors(fixture):
@@ -87,10 +91,12 @@ if _python_provisioning_errors(fixture):
 for negative in (
     [{**fixture[0], "if": "steps.validation_plan.outputs.needs_openapi == 'true'"}, *fixture[1:]],
     [{"run": fixture[0]["run"].replace(" -r requirements-validation.txt", "")}, *fixture[1:]],
-    [fixture[0], {**fixture[1], "if": None}, *fixture[2:]],
-    [fixture[0], fixture[1], {**fixture[2], "if": None}, fixture[3]],
-    [fixture[0], fixture[1], {**fixture[2], "if": "steps.validation_plan.outputs.needs_browser == 'true'"}, fixture[3]],
-    [fixture[0], fixture[1], {"run": fixture[2]["run"]}, fixture[3]],
+    [fixture[0], {"run": fixture[1]["run"].replace(" -r requirements-visual.txt", "")}, fixture[2]],
+    [fixture[0], {"run": fixture[1]["run"].replace(" -r requirements-openapi.txt", "")}, fixture[2]],
+    [fixture[0], {**fixture[1], "if": "steps.validation_plan.outputs.needs_browser == 'true'"}, fixture[2]],
+    [fixture[0], {**fixture[1], "if": "steps.validation_plan.outputs.needs_openapi == 'true'"}, fixture[2]],
+    [fixture[0], fixture[1], {"run": fixture[2]["run"], "if": None}],
+    [fixture[0], fixture[1], {**fixture[2], "if": "steps.validation_plan.outputs.needs_openapi == 'true'"}],
 ):
     if not _python_provisioning_errors(negative):
         errors.append("CI provisioning contract accepted missing required dependencies or unplanned browser dependencies")

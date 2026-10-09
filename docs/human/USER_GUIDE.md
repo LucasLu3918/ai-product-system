@@ -273,6 +273,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 
 ## Quality 與 Review
 
+CI 會依候選安裝完整 Python 驗證套件以執行必要的 repository fixtures；只有 Node、文件建置與 Chromium 等執行工具依變更路徑安裝。
+
 創作授權、Bundle／輸出 provenance、人工視覺審查與使用者接受是不同證據；通過程式 Gate 不代表角色品質已驗收，也不會自動取得 Git 合併權限。
 
 Creative output integrity, human visual review and user acceptance remain separate states; a successful local batch does not mark image quality as approved.

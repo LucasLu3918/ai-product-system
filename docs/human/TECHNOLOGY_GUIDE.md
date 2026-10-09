@@ -199,7 +199,7 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
-CI may omit optional browser or OpenAPI toolchain setup when the exact candidate plan does not require it. Required base dependencies, candidate secret scanning, repository validation and Integration Gate checks remain mandatory; coverage stays report-only without module baselines.
+CI 在 tested constraints 下安裝四份驗證 requirements 的完整 Python 套件，供必要 repository lifecycle fixtures 使用。精確候選計畫可以省略 Node、文件建置及 Chromium 執行環境；候選秘密掃描、repository validation 與 Integration Gate 仍是必要檢查。沒有模組基準時，coverage 僅供報告。
 
 When isolated validation fixtures need the optional Python modules, the workflow passes the provisioned interpreter through `AIPS_VALIDATION_PYTHON` before running the deterministic Gate; a workflow contract protects this handoff.
 

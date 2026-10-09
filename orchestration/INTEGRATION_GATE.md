@@ -148,6 +148,8 @@ The shared module-extraction lifecycle verifies retrieval storage helper exports
 
 The required repository aggregate continues to carry the complete Integration Gate result.
 
+Its always-run repository lifecycle fixtures receive Python packages from all four validation requirement files under tested constraints. The candidate plan continues to select Node and Chromium runtime installation independently.
+
 The required workflow's candidate fixtures inherit the provisioned Python interpreter via `AIPS_VALIDATION_PYTHON`; the workflow regression contract protects that handoff without changing the stable required repository context.
 
 

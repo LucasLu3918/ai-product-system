@@ -1539,7 +1539,7 @@ Lifecycle evidence checks supported short-lived prefixes, unclassified preservat
 
 ## Scenario 200 — Demand-driven CI toolchain planning
 
-Only optional browser and OpenAPI setup follows candidate selection; required scans and the full repository Gate remain enabled.
+CI 永遠安裝四份驗證 requirements 在 tested constraints 下的完整 Python 套件，供必要 repository lifecycle fixtures 使用。候選路徑仍選擇 Node、文件建置與 Chromium 執行環境；必要掃描及完整 repository Gate 一律執行。
 
 
 Lifecycle evidence checks exact-path Node, browser and OpenAPI selection, full provisioning for sensitive paths, the MCP interoperability contract path and unknown paths, and explicit skips for optional OpenAPI evidence. `publish_preflight_lifecycle.py` remains required in every plan: it exercises action-level OpenAPI help and contract behavior when both validator modules exist, and otherwise verifies top-level routing plus the clear missing-dependency failure without a traceback or output artifact. Secret scanning, preflight, repository validation and the exact-candidate Integration Gate remain mandatory. Without a valid CI plan, local checks retain the full toolchain profile.
@@ -1564,6 +1564,8 @@ Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agen
 Plan21 Phase 0 adds `tests/evidence/plan21_contract_baseline.py` to the required repository validation runner. It checks raw and `sha256:` canonical digest vectors, current CLI stdout/stderr and exit contracts, and caller-specific glob behavior. `.aips/review/PLAN21_VALIDATION_TIMING_BASELINE.yaml` records the one-run `origin/main` baseline (230 scenarios, 86 timing entries, 165,754 ms); it is observational evidence and does not establish a trend or alter the scenario inventory.
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
+
+必要的 repository lifecycle fixtures 使用 CI 一律提供的完整 Python 驗證套件；此設定不會改變候選路徑對 Node 與 Chromium 執行環境的選擇。
 
 Exact-candidate planning continues to distinguish observed evidence from unknown status.
 
