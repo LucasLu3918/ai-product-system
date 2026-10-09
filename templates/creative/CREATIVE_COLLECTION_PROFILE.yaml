@@ -1,0 +1,13 @@
+version: 1
+collection_id: example-collection
+title: Example character collection
+visual_direction: "Shared high-level direction; each character may have its own style profile."
+characters:
+  - id: character-one
+    name: Character One
+    summary: "Stable identity and story role."
+    bundle: characters/character-one-v1/bundles/CREATIVE_BUNDLE.yaml
+  - id: character-two
+    name: Character Two
+    summary: "Stable identity and story role."
+    bundle: characters/character-two-v1/bundles/CREATIVE_BUNDLE.yaml

@@ -900,6 +900,12 @@ OpenCode runtime changes retain existing Plan13 provenance and maintenance gover
 
 Scenario 236's exact-candidate Core Matrix records synthetic creative lifecycle and documentation evidence; it does not claim live engine inference or visual-quality acceptance.
 
+## Scenario 238 — Creative Task Authorization and Multi-item Execution
+
+Native OpenCode V2 prompt admission issues an in-memory grant bound to the active session, workspace, actions and bounded output count; unrelated prompts revoke it, and truncated transcript context cannot restore authority. Read-only discovery and preflight remain available without a grant.
+
+The synthetic multi-item lifecycle verifies per-item preflight, continue-on-failure, hash-verified resume and recovery after an output succeeds before its checkpoint. Version-only local engine discovery never starts generation. Native OpenCode acceptance verifies grant admission and revocation without invoking image generation; no real model quality or visual acceptance is claimed.
+
 ## Scenario 236 — Local Creative Bundle Execution
 
 Project Diagnostics remains a separate read-only command and does not configure or execute the Creative Bundle lifecycle.

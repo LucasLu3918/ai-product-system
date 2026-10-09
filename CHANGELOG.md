@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Bind OpenCode creative mutation to the current V2 prompt-admission grant, Session root, allowed actions and bounded output count; store only a prompt digest and revoke grants on each new prompt.
+- Add local Creative generate-set manifests with per-item preflight, continue-on-failure, hash-verified resume and bounded version-only engine health probes.
 - Add read-only `aips project diagnose` to aggregate Project Intelligence, Runtime/Harness and MCP static status with privacy-bounded recovery guidance; preserve explicit repair actions and `UNVERIFIED` native Host limits.
 
 ## 0.79.0

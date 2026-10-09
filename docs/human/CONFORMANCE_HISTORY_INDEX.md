@@ -104,6 +104,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 233 — Public CLI Help and Error Contracts](CONFORMANCE.md#scenario-233-public-cli-help-and-error-contracts) | Current Human guidance |
 | [## Scenario 234 — Local Character Artwork Provenance and Composition](CONFORMANCE.md#scenario-234-local-character-artwork-provenance-and-composition) | Current Human guidance |
 | [## Scenario 235 — OpenCode Native Context and Action Guard](CONFORMANCE.md#scenario-235-opencode-native-context-and-action-guard) | Current Human guidance |
+| [## Scenario 238 — Creative Task Authorization and Multi-item Execution](CONFORMANCE.md#scenario-238-creative-task-authorization-and-multi-item-execution) | Current Human guidance |
 | [## Scenario 236 — Local Creative Bundle Execution](CONFORMANCE.md#scenario-236-local-creative-bundle-execution) | Current Human guidance |
 | [## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance](CONFORMANCE.md#scenario-237-read-only-project-diagnostics-and-recovery-guidance) | Current Human guidance |
 | [## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow](CONFORMANCE.md#scenario-231-advisory-security-inventory-and-secret-scanner-shadow) | Current Human guidance |
@@ -178,6 +179,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 221 — Dependency Update Risk Classification](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-221-dependency-update-risk-classification) | Normative rule |
 | [## Scenario 222 — Large Document Measurement Only](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-222-large-document-measurement-only) | Normative rule |
 | [## Scenarios 202–209 — Plan13 current and provenance evidence](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenarios-202209-plan13-current-and-provenance-evidence) | Normative rule |
+| [## Scenario 238 — Creative Task Authorization and Multi-item Execution](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-238-creative-task-authorization-and-multi-item-execution) | Normative rule |
 | [## Scenario 236 — Local Creative Bundle Execution](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-236-local-creative-bundle-execution) | Normative rule |
 | [### Scenarios 214–219 — Plan15 operational closure](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenarios-214219-plan15-operational-closure) | Normative rule |
 | [### Scenario 223 — Evolution Radar exclusion attribution](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-223-evolution-radar-exclusion-attribution) | Normative rule |

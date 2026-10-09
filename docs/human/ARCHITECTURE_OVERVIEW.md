@@ -16,7 +16,7 @@ OpenCode 創作 tool 支援 discover/configure，產圖意圖、原生檔案 gua
 
 Native Context envelope 驗證與 user-only 授權分開處理；只檢查設定的要求仍可執行 discover/preflight，不會啟動生成。
 
-OpenCode V2 exposes the creative executor as an explicit, preflight-gated tool; the CLI remains the shared execution boundary.
+OpenCode V2 derives creative mutation grants from the current native prompt admission; dispatch Context is advisory and never grants authority. Its explicit creative executor and resumable multi-item workflow share the CLI execution boundary.
 
 OpenCode V2 的 AIPS Plugin 以 Session directory 裝載精簡 Turn Context，並在原生檔案權限前重查目標；另提供綁定 EPHEMERAL Session 的 Creative 工具。任意 Shell 子程序仍不宣稱受保護。
 

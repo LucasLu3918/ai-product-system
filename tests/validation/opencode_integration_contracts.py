@@ -9,7 +9,7 @@ guard = (ROOT / "scripts/opencode_native_guard.py").read_text(encoding="utf-8")
 compatibility = (ROOT / "harness/adapters/opencode/COMPATIBILITY.md").read_text(encoding="utf-8")
 registry = (ROOT / "harness/adapters/REGISTRY.yaml").read_text(encoding="utf-8")
 projection = (ROOT / "scripts/opencode_skill_projection.py").read_text(encoding="utf-8")
-for marker in ('export default {', 'ctx.session.hook("context"', 'ctx.permission.hook("evaluate"', 'ctx.shell.hook("create.before"', 'ctx.session.get({ sessionID })', 'MAX_CONTEXT_BYTES', 'creative_workspace_profile.py'):
+for marker in ('export default {', 'ctx.session.hook("prompt"', 'ctx.session.hook("context"', 'creativeAdmissions', 'creative_admission_grant_missing', 'ctx.permission.hook("evaluate"', 'ctx.shell.hook("create.before"', 'ctx.session.get({ sessionID })', 'MAX_CONTEXT_BYTES', 'creative_workspace_profile.py', 'generate-set'):
     if marker not in plugin:
         errors.append(f"OpenCode V2 plugin is missing documented hook contract: {marker}")
 for marker in ('evaluate_write', 'evaluate_shell', 'Project Intelligence readiness is not READY', 'target escapes project root'):

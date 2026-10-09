@@ -176,7 +176,7 @@ def bundle_input_images(root: Path, value: dict[str, Any]) -> list[Path]:
     return paths
 
 
-def read_bundle(project: Path, bundle_path: str) -> tuple[Path, dict[str, Any]]:
+def read_bundle(project: Path, bundle_path: str, *, allow_existing_output: bool = False) -> tuple[Path, dict[str, Any]]:
     root = project.expanduser().resolve(strict=True)
     if not root.is_dir():
         raise Blocked("project_not_directory", "Project must be a directory.")
@@ -207,11 +207,12 @@ def read_bundle(project: Path, bundle_path: str) -> tuple[Path, dict[str, Any]]:
         raise Blocked("output_scope_invalid", "Output path must be a child of the declared output scope.")
     if output.suffix.lower() not in RASTER_SUFFIXES:
         raise Blocked("output_format_unsupported", "Generated output must use PNG, JPEG, or WEBP.")
-    if output.exists() or output.is_symlink():
-        raise Blocked("creative_target_exists", "Creative output already exists; choose a new versioned path.")
-    manifest = output.parent / "creative-execution-manifest.json"
-    if manifest.exists() or manifest.is_symlink():
-        raise Blocked("manifest_target_exists", "Execution manifest already exists; choose a new versioned output folder.")
+    if not allow_existing_output:
+        if output.exists() or output.is_symlink():
+            raise Blocked("creative_target_exists", "Creative output already exists; choose a new versioned path.")
+        manifest = output.parent / "creative-execution-manifest.json"
+        if manifest.exists() or manifest.is_symlink():
+            raise Blocked("manifest_target_exists", "Execution manifest already exists; choose a new versioned output folder.")
     retries = value.get("max_retries", 0)
     timeout = value.get("timeout_seconds", 900)
     if not isinstance(retries, int) or isinstance(retries, bool) or not 0 <= retries <= MAX_RETRIES:
@@ -518,15 +519,40 @@ def preflight(project: Path, bundle_path: str) -> dict[str, Any]:
 
 
 def discover(project: Path) -> dict[str, Any]:
-    """Inventory fixed local commands without launching engines or downloads."""
+    """Inventory fixed local commands and run bounded version-only health probes."""
     root = project.expanduser().resolve(strict=True)
     if not root.is_dir():
         raise Blocked("project_not_directory", "Project must be a directory.")
     commands = sorted({str(c["command"]) for operations in MFLUX_CAPABILITIES.values() for c in operations.values()})
-    runtimes = [{"command": command, "available": bool(shutil.which(command))} for command in commands]
+    runtimes = []
+    for command in commands:
+        executable = shutil.which(command)
+        record: dict[str, Any] = {"command": command, "available": bool(executable), "health_status": "UNAVAILABLE"}
+        if executable:
+            try:
+                result = subprocess.run(
+                    [executable, "--version"], cwd=root, capture_output=True, text=True,
+                    timeout=3, check=False, shell=False, env={**os.environ, **OFFLINE_ENV},
+                )
+                version = (result.stdout or result.stderr).strip().splitlines()
+                record["health_status"] = "HEALTHY" if result.returncode == 0 and bool(version) else "UNRESPONSIVE"
+                if record["health_status"] == "HEALTHY":
+                    match = re.search(r"(?<![A-Za-z0-9])v?\d+\.\d+(?:\.\d+)?", version[0])
+                    if match:
+                        record["version"] = match.group(0)[:32]
+                else:
+                    record["reason_code"] = "version_probe_failed"
+            except subprocess.TimeoutExpired:
+                record.update(health_status="UNRESPONSIVE", reason_code="version_probe_timeout")
+            except OSError:
+                record.update(health_status="UNAVAILABLE", reason_code="version_probe_failed")
+        runtimes.append(record)
+    healthy = sum(runtime["health_status"] == "HEALTHY" for runtime in runtimes)
     return {"status": "DISCOVERED", "runtimes": runtimes, "supported_models": sorted(MFLUX_CAPABILITIES),
             "model_status": "NOT_VERIFIED", "generation_executed": False,
-            "external_image_egress": False, "next_action": "configure_then_preflight",
+            "external_image_egress": False, "engine_probe": "bounded_version_only",
+            "health_summary": {"healthy_commands": healthy, "total_commands": len(runtimes)},
+            "next_action": "configure_then_preflight",
             "comfyui_status": "NOT_PROBED_REQUIRES_EXPLICIT_BUNDLE"}
 
 
@@ -1009,6 +1035,196 @@ def execute(project: Path, bundle_path: str) -> dict[str, Any]:
         temp_output.unlink(missing_ok=True)
 
 
+def _job_path(root: Path, raw: str, *, exists: bool = False) -> Path:
+    relative = Path(raw)
+    if relative.is_absolute() or "\\" in raw or any(part in {"", ".", ".."} for part in relative.parts):
+        raise Blocked("creative_job_manifest_invalid", "Job paths must be normalized project-relative paths.")
+    current = root
+    for part in relative.parts:
+        current = current / part
+        if current.is_symlink():
+            raise Blocked("creative_job_manifest_invalid", "Job paths may not traverse symlinks.")
+    return confined(root, raw, exists=exists)
+
+
+def _atomic_result(path: Path, value: dict[str, Any]) -> None:
+    fd, temporary = tempfile.mkstemp(prefix=".aips-creative-job-", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            json.dump(value, stream, ensure_ascii=False, sort_keys=True, indent=2)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.chmod(temporary, 0o600)
+        os.replace(temporary, path)
+    finally:
+        Path(temporary).unlink(missing_ok=True)
+
+
+def _verified_job_success(root: Path, entry: dict[str, Any], bundle_hash: str) -> bool:
+    if entry.get("status") != "COMPLETE" or entry.get("bundle_sha256") != bundle_hash:
+        return False
+    try:
+        output = confined(root, str(entry["output"]), exists=True)
+        manifest = confined(root, str(entry["manifest"]), exists=True)
+        output_hash = digest(output)
+        manifest_data = json.loads(manifest.read_text(encoding="utf-8"))
+        manifest_output = manifest_data.get("output") or {}
+        return (
+            output.is_file() and manifest.is_file()
+            and output_hash == entry.get("output_sha256")
+            and digest(manifest) == entry.get("manifest_sha256")
+            and manifest_data.get("status") == "COMPLETE"
+            and manifest_data.get("bundle_sha256") == bundle_hash
+            and manifest_output.get("path") == entry.get("output")
+            and manifest_output.get("sha256") == output_hash
+        )
+    except (KeyError, TypeError, AttributeError, json.JSONDecodeError, OSError, Blocked):
+        return False
+
+
+def _recover_job_success(root: Path, item_id: str, bundle_path: str, bundle_hash: str) -> dict[str, Any] | None:
+    """Recover a completed output if a process stopped before saving the batch checkpoint."""
+    try:
+        _, bundle = read_bundle(root, bundle_path, allow_existing_output=True)
+        output = confined(root, str(bundle["output_path"]), exists=True)
+        manifest = output.parent / "creative-execution-manifest.json"
+        if not output.is_file() or not manifest.is_file() or output.is_symlink() or manifest.is_symlink():
+            return None
+        manifest_data = json.loads(manifest.read_text(encoding="utf-8"))
+        output_hash = digest(output)
+        manifest_output = manifest_data.get("output") or {}
+        if (manifest_data.get("status") != "COMPLETE" or manifest_data.get("bundle_sha256") != bundle_hash
+            or manifest_output.get("path") != bundle["output_path"]
+            or manifest_output.get("sha256") != output_hash):
+            return None
+        return {
+            "id": item_id, "bundle": bundle_path, "bundle_sha256": bundle_hash,
+            "status": "COMPLETE", "reason_code": "recovered_execution_manifest",
+            "output": bundle["output_path"], "manifest": manifest.relative_to(root).as_posix(),
+            "output_sha256": output_hash, "manifest_sha256": digest(manifest),
+        }
+    except (Blocked, KeyError, TypeError, AttributeError, OSError, json.JSONDecodeError):
+        return None
+
+
+def generate_set(project: Path, manifest_path: str, max_items: int = 24) -> dict[str, Any]:
+    """Execute a bounded list of existing Bundles, continue failures, and resume safely."""
+    root = project.expanduser().resolve(strict=True)
+    if is_git_workspace(root):
+        raise Blocked("creative_ephemeral_required", "Creative generation sets are restricted to a non-Git EPHEMERAL workspace.")
+    manifest_file = _job_path(root, manifest_path, exists=True)
+    if not manifest_file.is_file() or manifest_file.stat().st_size > 64 * 1024:
+        raise Blocked("creative_job_manifest_invalid", "Job manifest must be a bounded regular project file.")
+    try:
+        job = yaml.safe_load(manifest_file.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, yaml.YAMLError) as exc:
+        raise Blocked("creative_job_manifest_invalid", "Job manifest could not be read as YAML.") from exc
+    if not isinstance(job, dict) or set(job) - {"version", "items", "collection_profile"} or job.get("version") != 1:
+        raise Blocked("creative_job_manifest_invalid", "Job manifest schema or version is unsupported.")
+    items = job.get("items")
+    if not isinstance(max_items, int) or isinstance(max_items, bool) or not 1 <= max_items <= 24:
+        raise Blocked("creative_output_limit_exceeded", "The output grant must allow 1 to 24 items.")
+    if not isinstance(items, list) or not 1 <= len(items) <= 24:
+        raise Blocked("creative_job_manifest_invalid", "A generation set must contain 1 to 24 items.")
+    if len(items) > max_items:
+        raise Blocked("creative_output_limit_exceeded", "Job item count exceeds the current prompt's output grant.")
+    normalized: list[dict[str, str]] = []
+    seen: set[str] = set()
+    for item in items:
+        if not isinstance(item, dict) or set(item) != {"id", "bundle"}:
+            raise Blocked("creative_job_manifest_invalid", "Each job item must contain only id and bundle.")
+        item_id, bundle_path = item.get("id"), item.get("bundle")
+        if not isinstance(item_id, str) or not CHARACTER_ID_PATTERN.fullmatch(item_id) or item_id in seen:
+            raise Blocked("creative_job_manifest_invalid", "Job item IDs must be unique lowercase slugs.")
+        if not isinstance(bundle_path, str) or len(bundle_path) > 1000 or "\\" in bundle_path:
+            raise Blocked("creative_job_manifest_invalid", "Each item must reference a bounded project-relative Bundle.")
+        bundle_file = _job_path(root, bundle_path, exists=True)
+        if not bundle_file.is_file():
+            raise Blocked("creative_job_manifest_invalid", "Job Bundles must be regular files without symlinks.")
+        seen.add(item_id)
+        normalized.append({"id": item_id, "bundle": bundle_file.relative_to(root).as_posix()})
+    profile_file = None
+    if "collection_profile" in job:
+        profile = job["collection_profile"]
+        if not isinstance(profile, str) or len(profile) > 1000 or "\\" in profile:
+            raise Blocked("creative_job_manifest_invalid", "Collection profile path is invalid.")
+        profile_file = _job_path(root, profile, exists=True)
+        if not profile_file.is_file():
+            raise Blocked("creative_job_manifest_invalid", "Collection profile must be a regular project file.")
+    profile_hash = digest(profile_file) if profile_file is not None else None
+    job_hash = hashlib.sha256(json.dumps(
+        {"manifest_sha256": digest(manifest_file), "collection_profile_sha256": profile_hash},
+        sort_keys=True, separators=(",", ":"),
+    ).encode("utf-8")).hexdigest()
+    result_file = manifest_file.with_name(manifest_file.stem + ".results.json")
+    lock_file = manifest_file.with_name(manifest_file.stem + ".results.lock")
+    if result_file.is_symlink() or lock_file.is_symlink():
+        raise Blocked("creative_job_result_invalid", "Job result and lock files may not be symlinks.")
+    lock_fd = os.open(lock_file, os.O_CREAT | os.O_RDWR | getattr(os, "O_NOFOLLOW", 0), 0o600)
+    try:
+        lock_prepare_scope(lock_fd)
+        if result_file.exists():
+            try:
+                result_data = json.loads(result_file.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError) as exc:
+                raise Blocked("creative_job_result_invalid", "Existing job result is unreadable; preserve it for inspection.") from exc
+            if not isinstance(result_data, dict) or result_data.get("version") != 1 or result_data.get("job_sha256") != job_hash:
+                raise Blocked("creative_job_result_invalid", "Existing job result belongs to different manifest contents.")
+        else:
+            result_data = {"version": 1, "job_sha256": job_hash, "items": {}}
+        prior = result_data.get("items")
+        if not isinstance(prior, dict):
+            raise Blocked("creative_job_result_invalid", "Existing job result has an invalid item map.")
+        outcomes: list[dict[str, Any]] = []
+        for item in normalized:
+            item_id, bundle_path = item["id"], item["bundle"]
+            old = prior.get(item_id)
+            bundle_hash = digest(_job_path(root, bundle_path, exists=True))
+            recovered = None if isinstance(old, dict) and _verified_job_success(root, old, bundle_hash) else _recover_job_success(root, item_id, bundle_path, bundle_hash)
+            if isinstance(old, dict) and _verified_job_success(root, old, bundle_hash):
+                outcome = {**old, "status": "SKIPPED_COMPLETE", "reason_code": "verified_prior_success"}
+            elif recovered is not None:
+                prior[item_id] = recovered
+                outcome = {**recovered, "status": "SKIPPED_COMPLETE"}
+            else:
+                try:
+                    readiness = preflight(root, bundle_path)
+                    if readiness.get("status") != "READY":
+                        raise Blocked("creative_preflight_failed", "Bundle preflight did not return READY.")
+                    execution = execute(root, bundle_path)
+                    output_path = str(execution["output"])
+                    execution_manifest = str(execution["manifest"])
+                    entry = {
+                        "id": item_id, "bundle": bundle_path, "bundle_sha256": bundle_hash,
+                        "status": "COMPLETE", "reason_code": execution["reason_code"],
+                        "output": output_path, "manifest": execution_manifest,
+                        "output_sha256": digest(confined(root, output_path, exists=True)),
+                        "manifest_sha256": digest(confined(root, execution_manifest, exists=True)),
+                    }
+                    outcome = entry
+                except Blocked as exc:
+                    outcome = {"id": item_id, "bundle": bundle_path, "bundle_sha256": bundle_hash,
+                               "status": "FAILED", "reason_code": exc.reason_code}
+                except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError):
+                    outcome = {"id": item_id, "bundle": bundle_path, "bundle_sha256": bundle_hash,
+                               "status": "FAILED", "reason_code": "creative_execution_error"}
+            prior[item_id] = {**outcome, "status": "COMPLETE" if outcome["status"] == "SKIPPED_COMPLETE" else outcome["status"]}
+            result_data.update(updated_at=datetime.now(UTC).isoformat(), items=prior)
+            _atomic_result(result_file, result_data)
+            outcomes.append(outcome)
+        completed = sum(item["status"] in {"COMPLETE", "SKIPPED_COMPLETE"} for item in outcomes)
+        failed = len(outcomes) - completed
+        return {"status": "COMPLETE" if not failed else ("PARTIAL" if completed else "FAILED"),
+                "reason_code": "creative_set_complete" if not failed else "creative_set_has_failures",
+                "items": outcomes, "completed": completed, "failed": failed,
+                "results": result_file.relative_to(root).as_posix(), "resumable": True,
+                "generation_executed": any(item["status"] == "COMPLETE" for item in outcomes)}
+    finally:
+        unlock_prepare_scope(lock_fd)
+        os.close(lock_fd)
+
+
 def review(project: Path, manifest_name: str, reviewer: str, decision: str, note: str) -> dict[str, Any]:
     root = project.expanduser().resolve(strict=True)
     manifest = confined(root, manifest_name, exists=True)
@@ -1063,6 +1279,10 @@ def main() -> int:
         command = sub.add_parser(action)
         command.add_argument("--project", type=Path, required=True)
         command.add_argument("--bundle", required=True)
+    set_parser = sub.add_parser("generate-set")
+    set_parser.add_argument("--project", type=Path, required=True)
+    set_parser.add_argument("--manifest", required=True)
+    set_parser.add_argument("--max-items", type=int, default=24)
     review_parser = sub.add_parser("review")
     review_parser.add_argument("--project", type=Path, required=True)
     review_parser.add_argument("--manifest", required=True)
@@ -1086,6 +1306,8 @@ def main() -> int:
             result = preflight(args.project, args.bundle)
         elif args.action == "execute":
             result = execute(args.project, args.bundle)
+        elif args.action == "generate-set":
+            result = generate_set(args.project, args.manifest, args.max_items)
         elif args.action == "review":
             result = review(args.project, args.manifest, args.reviewer, args.decision, args.note)
         else:

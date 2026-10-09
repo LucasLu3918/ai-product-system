@@ -16,9 +16,9 @@ ALLOWED_FIELDS = {
     "provider", "operation",
 }
 ENUMS = {
-    "event": {"plugin", "context", "permission", "shell", "creative_execution"},
+    "event": {"plugin", "context", "permission", "shell", "creative_admission", "creative_execution"},
     "status": {"ready", "entered", "delivered", "unavailable"},
-    "decision": {"ALLOW", "DENY", "UNSUPPORTED", "BLOCKED"},
+    "decision": {"ALLOW", "DENY", "GRANT", "UNSUPPORTED", "BLOCKED"},
     "level": {"L0", "L1", "L2", "L3"},
     "domain": {"creative", "software", "data", "document", "general", "unknown"},
     "intent": {"plan", "publish", "delete", "modify", "create", "read", "discuss", "unknown"},
@@ -26,7 +26,7 @@ ENUMS = {
     "readiness": {"READY", "PARTIAL", "UNREVIEWED", "unknown"},
     "project_mode": {"EPHEMERAL", "ATTACHED", "UNKNOWN"},
     "action": {"edit", "write", "patch", "apply_patch"},
-    "reason_code": {"policy_allow", "policy_deny", "target_missing", "target_escape", "creative_target_exists", "creative_target_unsupported", "creative_git_workspace", "intelligence_not_ready", "intelligence_stale", "instruction_conflict", "action_unsupported", "external_approval_required", "session_directory_unavailable", "read_only_scan_failed", "shell_readonly_allow", "shell_aips_readonly", "shell_aips_command_unsupported", "shell_aips_arguments_unsupported", "shell_path_escape", "shell_operators_unsupported", "shell_command_unsupported", "shell_find_effect_unsupported", "shell_sed_effect_unsupported", "shell_git_command_unsupported", "shell_option_unsupported", "shell_policy_denied", "creative_ephemeral_required", "creative_bundle_invalid", "creative_timeout", "creative_execution_failed", "creative_response_invalid", "creative_tool_result"},
+    "reason_code": {"policy_allow", "policy_deny", "target_missing", "target_escape", "creative_target_exists", "creative_target_unsupported", "creative_git_workspace", "intelligence_not_ready", "intelligence_stale", "instruction_conflict", "action_unsupported", "external_approval_required", "session_directory_unavailable", "read_only_scan_failed", "shell_readonly_allow", "shell_aips_readonly", "shell_aips_command_unsupported", "shell_aips_arguments_unsupported", "shell_path_escape", "shell_operators_unsupported", "shell_command_unsupported", "shell_find_effect_unsupported", "shell_sed_effect_unsupported", "shell_git_command_unsupported", "shell_option_unsupported", "shell_policy_denied", "creative_ephemeral_required", "creative_bundle_invalid", "creative_timeout", "creative_execution_failed", "creative_response_invalid", "creative_tool_result", "creative_authorization_unavailable", "creative_authorization_input_invalid", "creative_authorization_action_invalid", "creative_admission_grant_missing", "creative_intent_required", "creative_session_mismatch", "creative_output_limit_exceeded", "prompt_admitted"},
     "session_root_source": {"directory", "location_directory", "worktree"},
     "provider": {"mflux_local", "comfyui_local", "unknown"},
     "operation": {"generate", "edit", "unknown"},
