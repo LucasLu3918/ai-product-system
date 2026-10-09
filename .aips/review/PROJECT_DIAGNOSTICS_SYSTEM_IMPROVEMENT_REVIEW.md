@@ -20,9 +20,9 @@ Backward compatibility: Additive CLI and output contract. No migration, cache cr
 
 Scenario / test impact: Add Scenario 237 and a lifecycle evidence script covering missing/partial PI recovery guidance, structured formats, timeouts/failures, invalid project paths, privacy and no-write behavior.
 
-Human docs impact: Update Installation, Project Intelligence, Conformance and the generated System Reference command inventory.
+Human docs impact: The public command and recovery workflow are documented in Installation, Project Intelligence, Conformance and System Reference. The exact recursive documentation-impact closure also requires Architecture, Architecture Overview, Documentation Map/Sync, Evolution Radar, Harness, Maintenance, Security Assurance, Technology Guide, User Guide and index updates; these carry the diagnostic privacy, read-only, UNVERIFIED and validation boundaries in their mapped canonical topics.
 
-Agent docs impact: No bootstrap or global protocol change; keep the recovery behavior documented in the existing Project Intelligence guide.
+Agent docs impact: No bootstrap or global protocol change. The mapped Harness, OpenCode compatibility, Change Impact, Conformance, Creative Direction, Scheduler, Documentation Sync, Execution Isolation, GitHub Ruleset, Integration Gate, Orchestrator, Project Intelligence, Release Readiness, Repository Health and Runtime Context contracts state that diagnostics are observational and do not replace their authority or evidence.
 
 Architecture diagram impact: `docs/ARCHITECTURE.md`, `docs/human/ARCHITECTURE_OVERVIEW.md`, and lifecycle SVGs are **N/A**. The additive CLI composes existing read-only interfaces and introduces no new subsystem, data store, runtime authority or lifecycle transition.
 

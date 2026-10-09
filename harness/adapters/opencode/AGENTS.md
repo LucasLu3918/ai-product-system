@@ -1,5 +1,7 @@
 # AIPS Global Turn Harness
 
+The read-only `aips project diagnose <path>` command reports configured Runtime status and static MCP capability only; it does not prove this Host delivered Context or executed a Hook/Tool. Keep unsupported effects UNVERIFIED until native acceptance evidence exists.
+
 For creative execution, invoke the structured tool only for an explicit create/modify request. `prepare` creates a versioned Character Profile, Style Profile, README and draft Bundle under a project-relative EPHEMERAL scope, uses create-only writes, and cannot launch a generator; require a READY Bundle preflight before explicit execution. Shell diagnostics remain limited to the fixed AIPS read-only allowlist.
 
 For software/product/project work, resolve the current Turn Context before analysis or mutation:

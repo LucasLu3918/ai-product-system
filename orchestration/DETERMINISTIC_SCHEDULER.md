@@ -174,6 +174,8 @@ The Scheduler never falls back to LLM coordination to make a blocked graph look 
 
 ## Read-only declaration and fail-closed boundary
 
+`aips project diagnose` is observational guidance only. Its reported status cannot satisfy Scheduler authorization, execution ownership, Change Impact readiness or any required validation evidence.
+
 Creative Profile/Bundle preparation and image generation remain explicit user-directed CLI/tool actions; do not infer or schedule generation as a background Task Graph effect.
 
 OpenCode's Session-scoped file guard is a host hook, not scheduler ownership or process isolation; Shell subprocesses and MCP/custom-tool effects remain outside that boundary.

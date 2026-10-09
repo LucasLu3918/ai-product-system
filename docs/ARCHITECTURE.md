@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+The `aips project diagnose <path>` command is a read-only projection over existing Doctor, Project Intelligence, Harness and MCP inspection results. It does not bootstrap, refresh, attach, execute creative tools or change project state; unresolved host effects remain unverified.
+
 The shared creative executor registers Z-Image Turbo generation through the fixed `mflux-generate-z-image-turbo` command or the exact built-in ComfyUI split-loader API workflow. Discovery, configuration, preflight and OpenCode share the executor; ComfyUI verifies its UNET, CLIP and VAE inventory and rejects other workflow topology. Editing and other Z-Image variants remain unsupported.
 
 The local creative path is `discover → prepare → configure → preflight → execute → Human review`. Discovery is read-only; configuration creates a new allowlisted Bundle version. User-only authorization and explicit raster/vector intent are separate from advisory task routing. New model profiles do not change those authority boundaries or enable external providers.

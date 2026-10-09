@@ -177,6 +177,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+Project Diagnostics uses the existing Project Intelligence, System Reference, Harness and Conformance topics. Its report is a read-only projection with explicit UNVERIFIED Host effects; it creates no new state authority or remediation path.
+
 創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
 
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。

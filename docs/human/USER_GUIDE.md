@@ -412,6 +412,8 @@ Standalone and shadow dependency-review artifacts retain exact base/head, run ID
 
 ## Project Intelligence
 
+遇到 Project Intelligence 狀態不完整時，可先執行 `aips project diagnose <path>` 查看 reason code、下一步與重新驗證命令。診斷不會自動 bootstrap、refresh、attach 或修復；請先檢視建議，再明確執行相應操作。
+
 Turn Context 顯示固定核心與本回合選取的 canonical protocol routes；路由清單只提供指引，變更前仍須完成 Change Impact 與正式核准。
 
 `aips intelligence context --project . --runtime codex --prompt '...'` 預設顯示精簡 YAML；`--full` 顯示完整診斷。可用 `--target-path src/file.py` 限定指示範圍，或用 `--intent read|write` 明確標示本次意圖。JSON 輸出維持完整格式，供既有整合使用。

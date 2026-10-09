@@ -902,6 +902,8 @@ Scenario 236's exact-candidate Core Matrix records synthetic creative lifecycle 
 
 ## Scenario 236 — Local Creative Bundle Execution
 
+Scenario 237 is registered as lifecycle evidence for read-only Project Diagnostics. It pins reason-code and recovery outputs, output-format parity, privacy redaction and absence of project writes; it does not establish native Host execution.
+
 Z-Image Turbo generate evidence verifies its fixed dedicated executable, explicit step preservation and rejection of edit, non-Turbo variants and the generic FLUX executable. Existing offline execution, scoped provenance and pending human review apply unchanged.
 
 Scenario 236 extends the existing lifecycle with create-only configuration/discovery, native tool callback envelopes, user-only grant revocation, medium mismatch and corrupt raster rejection. Synthetic fixtures cannot claim installed-model inference, visual acceptance or hardware performance.

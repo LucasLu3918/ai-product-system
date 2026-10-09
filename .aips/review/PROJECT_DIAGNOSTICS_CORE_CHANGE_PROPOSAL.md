@@ -26,8 +26,9 @@ Add a single on-demand view over existing Project Intelligence, runtime/Harness 
 - `scripts/project_diagnostics.py`
 - `scripts/aips_cli/project.sh`, `scripts/aips_cli/dispatch.sh`, `scripts/aips_cli/help.sh`, `scripts/project_diagnostics.py`
 - `tests/evidence/project_diagnostics_lifecycle.py`, `tests/scenarios/237-read-only-project-diagnostics.md`, `tests/scenario_coverage.yaml`
-- `docs/human/PROJECT_INTELLIGENCE.md`, `docs/human/INSTALLATION.md`, `docs/human/CONFORMANCE.md`, generated `docs/human/SYSTEM_REFERENCE.md` and `docs/human/CONFORMANCE_CURRENT.md` / `CONFORMANCE_HISTORY_INDEX.md`
+- Canonical Human docs and generated references: `docs/ARCHITECTURE.md`; `docs/human/ARCHITECTURE_OVERVIEW.md`, `CONFORMANCE.md`, `CONFORMANCE_CURRENT.md`, `CONFORMANCE_HISTORY_INDEX.md`, `DOCUMENTATION_MAP.md`, `DOCUMENTATION_SYNC.md`, `EVOLUTION_RADAR.md`, `HARNESS.md`, `INSTALLATION.md`, `MAINTENANCE.md`, `PROJECT_INTELLIGENCE.md`, `SECURITY_ASSURANCE.md`, `SYSTEM_REFERENCE.md`, `TECHNOLOGY_GUIDE.md`, `USER_GUIDE.md`, and `index.md`
 - `config/capability-registry.yaml`, generated `config/architecture-surfaces.yaml`, and `config/system-facts.yaml`
+- `harness/HARNESS_PROTOCOL.md`, `harness/adapters/opencode/AGENTS.md`, `harness/adapters/opencode/COMPATIBILITY.md` and mapped Orchestration contracts: `CHANGE_IMPACT.md`, `CONFORMANCE.md`, `CREATIVE_DIRECTION.md`, `DETERMINISTIC_SCHEDULER.md`, `DOCUMENTATION_SYNC.md`, `EXECUTION_ISOLATION.md`, `GITHUB_RULESET_POLICY.md`, `INTEGRATION_GATE.md`, `ORCHESTRATOR.md`, `PROJECT_INTELLIGENCE.md`, `RELEASE_READINESS.md`, `REPOSITORY_HEALTH.md`, and `RUNTIME_CONTEXT.md`
 - `CHANGELOG.md`, active review artifacts, and `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`
 
 ## Impact
@@ -97,6 +98,6 @@ Implement the compact read-only CLI slice. Keep every broader plan23 recommendat
 Status: APPROVED FOR IMPLEMENTATION
 Approved by: Human user in this Codex task
 Approved at: 2026-10-09T10:20:34+08:00
-Approval record: User message “核准” after selecting the compact diagnostics slice.
+Approval record: User approved the compact diagnostics slice with “核准”; after the exact-candidate documentation gate exposed 27 additional mapped Human/Agent documents, the user explicitly approved synchronizing that full closure.
 Proposal fingerprint: pending exact-candidate reconciliation
 Scope fingerprint: pending exact-candidate reconciliation

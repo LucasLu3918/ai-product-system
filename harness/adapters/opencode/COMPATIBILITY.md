@@ -16,6 +16,8 @@ The owned `plugins/aips-opencode.ts` projection is installed only for a positive
 
 ## Readiness and enforcement boundary
 
+The cross-runtime `aips project diagnose` command reports configured status and static MCP capability only. It cannot establish that this OpenCode version loaded Context, invoked a Hook or executed a Tool; retain UNVERIFIED until the version-bound native acceptance evidence proves each effect.
+
 Native v2.0.24 creative preparation is verified through Code Mode `execute` calling the catalog-provided `tools.creative_execution`. Snapshot `type/user/text` and dispatch `role/parts` are separate supported formats. Configuration fields are explicitly represented in the catalog schema; no real model inference is part of this acceptance.
 
 Creative actions now include discover and configure. Context supports array/messages/data envelopes; only user messages can authorize mutations. A native-tool callback fixture covers action routing, while real OpenCode hook acceptance remains separately version-bound. Raster requests cannot silently become SVG; no local weights or real inference are implied by discovery.

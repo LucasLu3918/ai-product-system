@@ -149,6 +149,8 @@ Retrieval SQLite storage helpers are implemented in `scripts/retrieval_storage.p
 
 ## Shared canonical 文件
 
+Project Diagnostics 的操作與恢復流程以 [Project Intelligence](PROJECT_INTELLIGENCE.md) 為 Human canonical 文件；公開命令清單維持在 [System Reference](SYSTEM_REFERENCE.md)。
+
 The reusable Python CI bootstrap contract lives with its composite action; per-workflow import profiles live in the caller, and package versions remain in requirements and constraints.
 
 Shared deterministic JSON/hash, path and glob primitives are canonical in `scripts/aips_common/`; existing modules retain compatibility facades. Domain-owned governance fingerprints and runtime action digests remain outside this shared layer.

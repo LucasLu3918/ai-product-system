@@ -182,6 +182,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+`aips project diagnose <path>` 聚合既有只讀檢查，Lifecycle evidence 驗證 text/YAML/JSON、隱私遮蔽、失敗情境與不寫入行為。這份診斷不取代各 subsystem 的權威檢查或精確候選 Gate。
+
 創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
 
 Creative lifecycle checks use synthetic engines and loopback fixtures; they verify command contracts and confinement, not model quality, hardware performance or visual fidelity.

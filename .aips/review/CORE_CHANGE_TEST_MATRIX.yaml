@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 1f3ef8c5da9d071b455c25f612e76038091891da
-  changed_files_hash: f1195ef453bb01f5cebd10cc641c171b3f59cc37979619ad3df60c3c0804788c
+  changed_files_hash: e81fa7b1297d4bb99d643d7e0dd43b30621ff08a69bb393a27ed2b496131d37b
 change:
   id: plan23-project-diagnostics
   summary: Additive read-only project diagnostics with PI recovery guidance and explicit

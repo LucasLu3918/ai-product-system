@@ -37,6 +37,8 @@ OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn C
 
 ## Project Intelligence 與 Retrieval
 
+`aips project diagnose <path>` 聚合既有 Project Intelligence、Harness 與 MCP 靜態檢查，提供原因碼與恢復指引；它不會建立索引、刷新或修改專案。診斷中的 Host 能力仍依原生證據維持 UNVERIFIED。
+
 創作 manifest 的 Human visual review 與軟體獨立 review evidence 是不同契約。圖片容器或 tool fixture 通過不會自動產生視覺 PASS 或使用者接受。
 
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。

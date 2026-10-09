@@ -132,6 +132,8 @@ Before readiness, move finalized release notes under the heading matching `VERSI
 
 ## System facts and validation planning
 
+Project Diagnostics 的 Core 候選同步更新公開命令事實、Capability Registry、Scenario 237、Lifecycle evidence 與文件閉包；精確候選仍須執行完整 Integration Gate，診斷 PASS 不代表發布核准。
+
 The validator registry, exact-path CI provisioning plan, full-run Shadow Plan, and Integration Gate profile have separate responsibilities; none may silently omit required validators. Promotion of selective execution requires the complete reviewed shadow cohort.
 
 

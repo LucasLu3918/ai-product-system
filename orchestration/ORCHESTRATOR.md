@@ -287,6 +287,8 @@ After fixes, re-review only affected findings/diffs/tests unless scope expanded.
 
 ## Project Intelligence
 
+Use `aips project diagnose <path>` for a read-only summary of existing Doctor, Project Intelligence, Harness and MCP static status. Review the suggested recovery action before execution; diagnostics do not bootstrap, refresh, attach or authorize a mutation.
+
 Use `orchestration/PROJECT_INTELLIGENCE.md` and `orchestration/CHANGE_IMPACT.md`.
 
 Project Intelligence is the canonical existing-project reuse layer. Prefer SOURCE_REGISTRY pointers to authoritative instructions/docs, use IMPACT_GRAPH for dependency traversal, and preserve explicit human decisions in PROJECT_OVERRIDES.

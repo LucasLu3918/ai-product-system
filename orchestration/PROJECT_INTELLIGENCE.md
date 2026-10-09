@@ -595,6 +595,8 @@ Do not claim the project has been initialized merely from directory/file-name in
 
 ## Existing-project automatic behavior
 
+The `aips project diagnose <path>` command aggregates existing status surfaces and maps missing, partial, stale and blocked states to explicit recovery guidance. It never initializes or refreshes Project Intelligence automatically; static Host/MCP observations remain distinct from native execution evidence.
+
 The user should not need to run initialization commands during normal Agent use.
 
 For a material existing-project mutation:
