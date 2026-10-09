@@ -1,38 +1,38 @@
 version: 1
 change:
-  id: plan25-phase2-creative
-  summary: Record safe local creative-engine readiness and synthetic acceptance evidence; do not add a parallel execution path.
+  id: plan25-phase3-ci-quality
+  summary: Record actual full-run shadow and quality policy evidence; preserve disabled selective execution and existing ratchets.
   boundary:
-    - .aips/review/PLAN25_PHASE2_EVIDENCE.md
+    - .aips/review/PLAN25_PHASE3_EVIDENCE.md
     - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
 candidate:
-  base_sha: 9b563c8c3334887a6cb2d092b3d199010d88ae67
-  changed_files_hash: 144a659b29f4ac354a332e747e36b8d635dd4cb64c074add1bc697b900647fea
+  base_sha: a2315d96e4e4c20d73300ada351647448eda5dbb
+  changed_files_hash: cfa6e5ec1285837dc8a76aa752c5c00362440413122203ce44acf0d26cb2dd57
 matrix:
-  - boundary: Staged local creative-engine readiness
-    reason: Discovery, runtime health, model configuration, preflight and inference must remain separate evidence stages.
+  - boundary: Full-run shadow and selective validation graduation
+    reason: A shadow prediction must never skip execution; graduated behavior requires complete, measured PR history and Human authority.
     checks:
-      static_lint: {applicable: true, evidence: Repository validation and YAML/document checks.}
-      unit: {applicable: true, evidence: creative_execution_lifecycle command, version, model and readiness-state cases.}
-      integration: {applicable: true, evidence: Read-only creative_execution discover reports local MFLUX command/version and ComfyUI states.}
-      contract: {applicable: true, evidence: Stable readiness fields preserve RUNTIME_UNVERIFIED, MODEL_NOT_CONFIGURED, NOT_RUN and INFERENCE_UNVERIFIED.}
-      e2e: {applicable: true, evidence: Synthetic local lifecycle only; no real model execution.}
-      security: {applicable: true, evidence: No model download, provider credential, external image egress or telemetry export.}
-      migration_recovery: {applicable: false, na_reason: No saved creative bundle or model configuration changed.}
-      cli_harness: {applicable: true, evidence: Read-only discover command and existing create-only execution lifecycle.}
-      docs_schema: {applicable: true, evidence: Documentation closure and Scenario 236 acceptance stages.}
-  - boundary: Native creative preparation and human acceptance boundary
-    reason: A native mock-model session can verify preparation and authority handling but cannot establish real inference or visual quality.
+      static_lint: {applicable: true, evidence: YAML schema and repository validation.}
+      unit: {applicable: true, evidence: validation_shadow_plan_lifecycle and validation_graduation_lifecycle.}
+      integration: {applicable: true, evidence: Exact Core Gate executes all required repository validation.}
+      contract: {applicable: true, evidence: Core shadow plan selected 61 modules, fallback true, would_skip empty; 30-day/30-PR/zero-false-negative policy preserved.}
+      e2e: {applicable: false, na_reason: No CI workflow execution logic or user execution path changed.}
+      security: {applicable: true, evidence: No validator skip, credential flow or required-check policy change; exact candidate secret scan.}
+      migration_recovery: {applicable: false, na_reason: No stored validation artifacts or schema changed.}
+      cli_harness: {applicable: true, evidence: Shadow-plan CLI and Core Integration Gate candidate matrix.}
+      docs_schema: {applicable: true, evidence: Documentation closure and active matrix contract.}
+  - boundary: Quality debt, modules and coverage policy
+    reason: Quality changes must remain bounded by measured debt and representative evidence rather than introducing broad thresholds or unrelated refactors.
     checks:
-      static_lint: {applicable: true, evidence: Repository validation.}
-      unit: {applicable: true, evidence: Native acceptance and creative lifecycle contracts.}
-      integration: {applicable: true, evidence: OpenCode v2.0.24 isolated native mock-model acceptance.}
-      contract: {applicable: true, evidence: Native prepare/revocation, create-only output, provenance and explicit generation status.}
-      e2e: {applicable: true, evidence: Native preparation and authorization only; generation_executed remains false.}
-      security: {applicable: true, evidence: Isolated host config, secret-free environment and loopback-only model.}
-      migration_recovery: {applicable: false, na_reason: No user project or native host configuration is modified.}
-      cli_harness: {applicable: true, evidence: Native OpenCode host and AIPS creative tool lifecycle.}
-      docs_schema: {applicable: true, evidence: Real inference and visual acceptance explicitly remain UNVERIFIED.}
+      static_lint: {applicable: true, evidence: Exact Gate Ruff critical and quality debt ratchet.}
+      unit: {applicable: true, evidence: quality_ratchet_lifecycle.}
+      integration: {applicable: true, evidence: Exact Core Gate repository validation and quality ratchet.}
+      contract: {applicable: true, evidence: Ruff 689/758, selected Mypy 0/0, coverage report-only; no touched Python modules.}
+      e2e: {applicable: false, na_reason: Evidence-only review changes do not change a product workflow.}
+      security: {applicable: true, evidence: Strict candidate secret scan; no quality or security threshold was weakened.}
+      migration_recovery: {applicable: false, na_reason: No module, database, build cache or artifact schema changed.}
+      cli_harness: {applicable: true, evidence: Quality ratchet is consumed by the required Core Gate.}
+      docs_schema: {applicable: true, evidence: Documentation impact and placement checks.}
 scope_recomputed_after_expansion: false
 actual_diff_reconciled: true
 review_evidence:
