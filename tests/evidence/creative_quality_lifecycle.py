@@ -1,6 +1,7 @@
 """Deterministic evidence for creative prompts, model advice, and local visual review."""
 from __future__ import annotations
 
+import hashlib
 import json
 import sys
 import tempfile
@@ -30,6 +31,9 @@ def main() -> int:
                  "style_lock": {"id": "shared-cel", "must_match": ["consistent cel shading"], "must_avoid": ["photorealism"], "palette": ["indigo", "warm gold"]}}
     bundle = {"prompt": "A full-body spellcaster under cherry blossoms", "operation": "generate"}
     compiled = creative.compile_creative_prompt(bundle, {"character": character, "style": style, "collection": collection})
+    assert hashlib.sha256(compiled.encode("utf-8")).hexdigest() == (
+        "6c5fe61394b650ee3d502e404e77c4ad2b55e89851b42e74e35f736a0cfeafb0"
+    )
     for token in (bundle["prompt"], "green eyes", "scar above left eyebrow", "scar on cheek", "three-quarter", "soft cel shading", "consistent cel shading", "warm gold", "photographic skin"):
         assert token in compiled, token
 
@@ -41,6 +45,10 @@ def main() -> int:
          "availability": "UNVERIFIED", "license_status": "UNVERIFIED"},
     ]}
     advice = creative.model_recommendation(bundle, {"style": style, "model_capabilities": model_profile})
+    advice_fingerprint = hashlib.sha256(
+        json.dumps(advice, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    assert advice_fingerprint == "01fe5d7f43f46539fdde912ed7b96dc057a39898de0283fdeb12db45566021ab"
     assert advice["status"] == "RECOMMENDATIONS_AVAILABLE" and advice["selected_model_changed"] is False
     assert advice["models"][0]["id"] == "verified-anime" and advice["models"][0]["status"] == "EVIDENCE_BACKED"
     assert all(item["status"] == "INSUFFICIENT_EVIDENCE" for item in advice["models"] if item["id"] == "unverified")

@@ -21,6 +21,8 @@ required = (
     ROOT / "orchestration/CREATIVE_DIRECTION.md",
     ROOT / "docs/human/USER_GUIDE.md",
     ROOT / "docs/human/TECHNOLOGY_GUIDE.md",
+    ROOT / "scripts/creative_prompt_compiler.py",
+    ROOT / "scripts/creative_errors.py",
 )
 for path in required:
     if not path.is_file():
@@ -29,6 +31,7 @@ for path in required:
 if all(path.is_file() for path in required):
     bundle = yaml.safe_load(required[1].read_text(encoding="utf-8")) or {}
     executor = required[0].read_text(encoding="utf-8")
+    compiler = required[-2].read_text(encoding="utf-8")
     docs = required[9].read_text(encoding="utf-8")
     plugin = (ROOT / "harness/adapters/opencode/plugin.ts").read_text(encoding="utf-8")
     compatibility = (ROOT / "harness/adapters/opencode/COMPATIBILITY.md").read_text(encoding="utf-8")
@@ -48,9 +51,10 @@ if all(path.is_file() for path in required):
         ("def prepare(" in executor and "os.O_EXCL" in executor and "creative_ephemeral_required" in executor, "preparation must be confined, create-only and EPHEMERAL"),
         ("exactly one hash-checked reference" in compatibility, "ComfyUI compatibility docs must state the single-reference boundary"),
         ('"review-assist"' in plugin and 'classification.intent !== "create"' in plugin and '180_000' in plugin, "OpenCode preparation, generation, and advisory review must remain explicit and bounded"),
-        ('def compile_creative_prompt(' in executor and 'compiled_prompt_sha256' in executor and 'profile-driven-v1' in executor, "execution must compile profiles and record only the compiled prompt fingerprint"),
+        ('from creative_prompt_compiler import compile_creative_prompt, model_recommendation' in executor and 'from creative_errors import Blocked' in executor and 'compiled_prompt_sha256' in executor and 'profile-driven-v1' in executor, "execution must preserve compiler and exception facades and record only the compiled prompt fingerprint"),
+        ('from creative_errors import Blocked' in required[-2].read_text(encoding="utf-8"), "the pure prompt compiler must depend on the shared error module, not the execution facade"),
         ('DEFAULT_OLLAMA_BASE_URL = "http://127.0.0.1:11434"' in executor and 'ProxyHandler({})' in executor and 'NoRedirect' in executor, "vision review must remain local-only with redirects and proxies disabled"),
-        ('selected_model_changed": False' in executor and 'quality_or_local_evidence_missing' in executor, "model guidance must disclose missing evidence and cannot silently select a model"),
+        ('selected_model_changed": False' in compiler and 'quality_or_local_evidence_missing' in compiler, "model guidance must disclose missing evidence and cannot silently select a model"),
         ('ctx.session.hook("prompt"' in plugin and 'creativeAdmissions' in plugin and 'creative_admission_grant_missing' in plugin and 'slice(-64)' not in plugin, "OpenCode mutation authority must use current prompt admission, independent of transcript truncation"),
         ('def generate_set(' in executor and 'verified_prior_success' in executor and 'batch must continue after an item fails' in (ROOT / "tests/evidence/creative_generate_set_lifecycle.py").read_text(encoding="utf-8"), "multi-item execution must continue failures and verify resume evidence"),
         ('bounded_version_only' in executor and 'timeout=3' in executor, "engine discovery must use bounded version-only health probes"),

@@ -1,123 +1,63 @@
 version: 1
 change:
-  id: design6-quality-driven-creative
-  summary: Extend local creative execution with profile-driven prompts, evidence-backed model guidance, advisory local vision review, shared collection style constraints, and bounded OpenCode integration.
+  id: plan26-phase1-creative-prompt-compiler
+  summary: Extract deterministic prompt compilation and model advice into a pure internal
+    module while preserving the creative_execution facade, Blocked exception identity,
+    and exact outputs.
   boundary:
-    - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
-    - .aips/review/DESIGN6_CREATIVE_QUALITY_CORE_CHANGE_PROPOSAL.md
-    - CHANGELOG.md
-    - config/documentation-placement.yaml
-    - config/documentation-sync.yaml
-    - docs/ARCHITECTURE.md
-    - docs/human/ARCHITECTURE_OVERVIEW.md
-    - docs/human/CONFORMANCE.md
-    - docs/human/DOCUMENTATION_MAP.md
-    - docs/human/DOCUMENTATION_SYNC.md
-    - docs/human/EVOLUTION_RADAR.md
-    - docs/human/HARNESS.md
-    - docs/human/INSTALLATION.md
-    - docs/human/MAINTENANCE.md
-    - docs/human/PROJECT_INTELLIGENCE.md
-    - docs/human/SECURITY_ASSURANCE.md
-    - docs/human/TECHNOLOGY_GUIDE.md
-    - docs/human/USER_GUIDE.md
-    - docs/human/index.md
-    - harness/HARNESS_PROTOCOL.md
-    - harness/adapters/opencode/AGENTS.md
-    - harness/adapters/opencode/COMPATIBILITY.md
-    - harness/adapters/opencode/plugin.ts
-    - orchestration/CHANGE_IMPACT.md
-    - orchestration/CONFORMANCE.md
-    - orchestration/CREATIVE_DIRECTION.md
-    - orchestration/DETERMINISTIC_SCHEDULER.md
-    - orchestration/DOCUMENTATION_SYNC.md
-    - orchestration/EXECUTION_ISOLATION.md
-    - orchestration/GITHUB_RULESET_POLICY.md
-    - orchestration/INTEGRATION_GATE.md
-    - orchestration/ORCHESTRATOR.md
-    - orchestration/PROJECT_INTELLIGENCE.md
-    - orchestration/RELEASE_READINESS.md
-    - orchestration/RUNTIME_CONTEXT.md
-    - scripts/aips_cli/dispatch.sh
-    - scripts/aips_cli/help.sh
-    - scripts/character_artifacts.py
-    - scripts/creative_execution.py
-    - scripts/creative_request_policy.py
-    - skills/design/creative-calibration/SKILL.md
-    - skills/design/visual-quality-review/SKILL.md
-    - templates/creative/CHARACTER_ARTWORK_MANIFEST.yaml
-    - templates/creative/CHARACTER_PROFILE.yaml
-    - templates/creative/CREATIVE_BUNDLE.yaml
-    - templates/creative/CREATIVE_COLLECTION_PROFILE.yaml
-    - templates/creative/MODEL_CAPABILITY_PROFILE.yaml
-    - templates/creative/STYLE_PROFILE.yaml
-    - templates/creative/VISUAL_REVIEW_REPORT.schema.json
-    - tests/evidence/character_artifacts_lifecycle.py
-    - tests/evidence/creative_execution_lifecycle.py
-    - tests/evidence/creative_quality_lifecycle.py
-    - tests/evidence/creative_request_policy_lifecycle.py
-    - tests/evidence/creative_tool_harness.mjs
-    - tests/evidence/opencode_integration_lifecycle.py
-    - tests/fixtures/plan21-contract-golden-vectors.yaml
-    - tests/scenario_coverage.yaml
-    - tests/scenarios/234-character-art-workflow.md
-    - tests/scenarios/236-local-creative-execution.md
-    - tests/scenarios/238-creative-task-authorization-and-multi-item-execution.md
-    - tests/validation/creative_execution_contracts.py
-    - tests/validation/creative_quality_contracts.py
-    - tests/validation/registry.py
+  - .aips/review/PLAN26_PHASE1_CREATIVE_PROMPT_COMPILER_PROPOSAL.md
+  - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
+  - CHANGELOG.md
+  - docs/ARCHITECTURE.md
+  - scripts/creative_errors.py
+  - scripts/creative_execution.py
+  - scripts/creative_prompt_compiler.py
+  - tests/evidence/creative_quality_lifecycle.py
+  - tests/evidence/module_extraction_lifecycle.py
+  - tests/validation/creative_execution_contracts.py
+  - tests/validation/registry.py
 candidate:
-  base_sha: 62af5a9312756669ecfe0203ea8f468d94659d23
-  changed_files_hash: b69a03a3dc75c89588bca1bd5581d9b81171ae64e9166e9bf8ac479a239c9ce9
+  base_sha: b44cc28aa7b5ec687a7b49eaf77bed8434c1ce19
+  changed_files_hash: cc96aeba6b63c2d2ed5ecd7eb01838c540b54eb1b0b8cbbfd80504f646ccd127
 matrix:
-  - boundary: Profile-driven prompt compilation and provenance
-    reason: Style and identity constraints must reach local generation deterministically, while profile compatibility and prompt privacy remain intact.
-    checks:
-      static_lint: {applicable: true, evidence: Python 3.12 lint and type checks on the exact candidate.}
-      unit: {applicable: true, evidence: Tests cover compilation ordering, bounded fields, and identity/style/collection constraints.}
-      integration: {applicable: true, evidence: Creative execution lifecycle proves both local provider adapters receive only compiled input and provenance stores fingerprints only.}
-      contract: {applicable: true, evidence: Existing version-1 Character, Style, Collection, and Bundle fixtures remain readable.}
-      e2e: {applicable: false, na_reason: No production UI or browser workflow changes.}
-      security: {applicable: true, evidence: Raw prompt and profile text are absent from manifest/trace; no image egress or provider fallback.}
-      migration_recovery: {applicable: true, evidence: Existing manifests and output paths remain valid; changed Profile hashes invalidate stale reviews without overwriting prior outputs.}
-      cli_harness: {applicable: true, evidence: Existing creative CLI and OpenCode tool lifecycles exercise prepare/configure/preflight/execute.}
-      docs_schema: {applicable: true, evidence: Creative Profile/Bundle examples and schema/placement contracts are synchronized.}
-  - boundary: Model capability recommendations and optional local vision review
-    reason: Model selection must disclose evidence and uncertainty; optional local review may report suspected defects but cannot assert Human acceptance.
-    checks:
-      static_lint: {applicable: true, evidence: Python 3.12 lint and type checks on the exact candidate.}
-      unit: {applicable: true, evidence: Model recommendation ranks only declared locally observed capabilities and reports missing/unknown evidence.}
-      integration: {applicable: true, evidence: Mocked local vision API lifecycle verifies bounded request/response and create-only reports.}
-      contract: {applicable: true, evidence: Visual-review report schema and strict response validation reject malformed/model-authored authority claims.}
-      e2e: {applicable: false, na_reason: Real VLM inference and visual quality are not executed in CI.}
-      security: {applicable: true, evidence: Fixed loopback destination, proxy disabled, redirects refused, no credentials, model download, cloud access, or content traces.}
-      migration_recovery: {applicable: true, evidence: New report creation is atomic/create-only; interrupted or invalid review leaves manifests and images unchanged.}
-      cli_harness: {applicable: true, evidence: Explicit review-assist CLI and OpenCode action stay within Session root and user grant.}
-      docs_schema: {applicable: true, evidence: Capability evidence, advisory status, limitations, and model setup guidance are documented.}
-  - boundary: OpenCode authorization, output budget, and collection consistency
-    reason: New review action and shared Style Lock must reuse the existing prompt grant, output cap, collection contract, and Human decision separation.
-    checks:
-      static_lint: {applicable: true, evidence: TypeScript and Python checks cover modified adapters and validators.}
-      unit: {applicable: true, evidence: Authorization, collection lock, and character acceptance validation lifecycle coverage.}
-      integration: {applicable: true, evidence: Native creative tool fixture covers review authorization, revocation, Session root, and existing generation limits.}
-      contract: {applicable: true, evidence: Existing native action schemas and profile/artifact version-1 contracts remain compatible.}
-      e2e: {applicable: false, na_reason: Native OpenCode binary acceptance is an optional separately provisioned check; synthetic callback lifecycle is required.}
-      security: {applicable: true, evidence: No action grant from transcript/assistant messages; all paths are confined; image count and create-only guarantees remain unchanged.}
-      migration_recovery: {applicable: true, evidence: Older collection/profile versions remain valid and stale review reports cannot mutate reviewed manifests.}
-      cli_harness: {applicable: true, evidence: CLI dispatch and native tool contract fixture exercise every newly exposed action.}
-      docs_schema: {applicable: true, evidence: Scenario 234/236/238 and OpenCode/Human/Agent guidance remain aligned.}
-  - boundary: Documentation, scenarios, and repository governance
-    reason: New workflow steps and authority boundaries must appear in the canonical recursive documentation closure and exact Core candidate evidence.
-    checks:
-      static_lint: {applicable: true, evidence: Markdown link, documentation placement, and documentation sync checks.}
-      unit: {applicable: false, na_reason: Documentation-only contracts are exercised by repository validation; behavior unit evidence is in the creative boundaries above.}
-      integration: {applicable: true, evidence: Full exact-candidate Core Integration Gate and repository validation.}
-      contract: {applicable: true, evidence: Scenario and capability/profile documentation contracts match the implementation.}
-      e2e: {applicable: false, na_reason: No browser-backed product UI changes.}
-      security: {applicable: true, evidence: Mandatory candidate secret scan and documented privacy/authority invariants.}
-      migration_recovery: {applicable: false, na_reason: Documentation has no runtime persistence or migration behavior.}
-      cli_harness: {applicable: true, evidence: Full creative CLI/OpenCode lifecycle remains required for the core change.}
-      docs_schema: {applicable: true, evidence: Canonical documentation sync and placement gates plus diagrams are updated.}
+- boundary: Creative prompt compiler, shared error type, and compatibility facade
+  reason: Prompt bytes determine generation fingerprints. The extraction must preserve
+    exact outputs, shared exception semantics, and existing callers.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff, Python syntax, and full repository validation on the exact candidate.
+    unit:
+      applicable: true
+      evidence: Golden SHA-256 values verify exact prompt bytes and canonical model
+        recommendation output; invalid prompt preserves reason code.
+    integration:
+      applicable: true
+      evidence: Creative quality and execution lifecycles plus exact-candidate Core
+        Integration Gate.
+    contract:
+      applicable: true
+      evidence: Facade exports identical function/class objects; existing CLI, Bundle,
+        manifest, and version-1 data contracts remain unchanged.
+    e2e:
+      applicable: false
+      na_reason: No UI or browser workflow changes; native host acceptance is covered
+        by the CLI/Harness check.
+    security:
+      applicable: true
+      evidence: Mandatory credential-free strict candidate secret scan; compiler adds
+        no I/O, network, or external egress.
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted data, schemas, migrations, or recovery state change.
+    cli_harness:
+      applicable: true
+      evidence: Creative execution lifecycle and native OpenCode host acceptance exercise
+        existing facade consumers.
+    docs_schema:
+      applicable: true
+      evidence: Architecture source description and changelog updated; repository
+        documentation validation required.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
