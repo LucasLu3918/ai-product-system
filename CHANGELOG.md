@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Distinguish local creative command/runtime/model/preflight/inference readiness, probe only the fixed loopback ComfyUI service, preserve provider recovery reasons, and warn conservatively on static Apple Silicon FP8 evidence without claiming inference compatibility.
 - Make OpenCode AIPS hooks asynchronous and cancellable, bound per-Session Context reuse, and report host-version acceptance separately from hook setup.
 - Add backend/runtime/dtype diagnostics and richer creative provenance while keeping model inference, Human visual review, and user acceptance as separate evidence.
 - Share safe validation-path classification across CI planners, preserve unknown-path full validation, and conditionally provision only optional CI toolchains.
@@ -11,7 +12,7 @@
 - Add local Creative generate-set manifests with per-item preflight, continue-on-failure, hash-verified resume and bounded version-only engine health probes.
 - Add read-only `aips project diagnose` to aggregate Project Intelligence, Runtime/Harness and MCP static status with privacy-bounded recovery guidance; preserve explicit repair actions and `UNVERIFIED` native Host limits.
 
-## 0.79.0
+## 0.80.0
 
 - Add a bounded ComfyUI Z-Image Turbo split-loader workflow with loopback validation of local UNET, Qwen CLIP and VAE inventories; preserve checkpoint workflows and keep Z-Image generate-only.
 - Strip prompt-bearing ComfyUI PNG text metadata before AIPS publishes create-only outputs; verify topology, inventory, privacy and execution through synthetic lifecycle and local inference.

@@ -8,6 +8,8 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ## Runtime & Integration
 
+The OpenCode creative adapter exposes the shared Z-Image Turbo profile and component filenames. Discovery and failure recovery remain local-only; command, runtime, model inventory, preflight and inference readiness are distinct evidence.
+
 OpenCode V2 registers a bounded creative tool that requires explicit intent. Its `prepare` action creates versioned character/style Profiles and an unconfigured Bundle in a non-Git EPHEMERAL scope; `preflight` remains read-only and `execute` requires a ready Bundle.
 
 
@@ -75,6 +77,8 @@ MFLUX 固定命令表新增 Z-Image Turbo generate：`mflux-generate-z-image-tur
 本機創作支援 discover/prepare/configure/preflight/execute：設定採 allowlist 與 create-only Bundle，native Context envelope 經正規化再作使用者授權。PNG 容器檢查涵蓋 CRC、終止與 bounded decompression；JPEG/WEBP 僅作 bounded container checks，不能代替實際看圖或完整解碼。
 
 Local creative execution supports MFLUX through fixed argv and ComfyUI through a loopback-only allowlisted workflow. It is explicit, create-only, and never downloads weights.
+
+Ordinary ComfyUI discovery contacts only `127.0.0.1:8188`. An Apple Silicon FP8 metadata warning is advisory; only a separately observed real inference can establish backend compatibility.
 
 System changes keep the exact-candidate repository Gate enabled while any selective-validation proposal remains report-only until its complete observation cohort is reviewed.
 
@@ -196,6 +200,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 ## Quality & Verification
 
 CI may omit optional browser or OpenAPI toolchain setup when the exact candidate plan does not require it. Required base dependencies, candidate secret scanning, repository validation and Integration Gate checks remain mandatory; coverage stays report-only without module baselines.
+
+When isolated validation fixtures need the optional Python modules, the workflow passes the provisioned interpreter through `AIPS_VALIDATION_PYTHON` before running the deterministic Gate; a workflow contract protects this handoff.
 
 The Core Creative verification path covers native prompt admission and revocation, bounded multi-item recovery, local-only engine probes, documentation closure and the exact committed candidate.
 

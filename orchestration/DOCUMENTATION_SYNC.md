@@ -40,6 +40,8 @@ Project Diagnostics adds no creative generation behavior; shared CLI routing cha
 
 For Z-Image Turbo, synchronize generate-only MFLUX command and the single registered ComfyUI split-loader profile across creative, execution and Runtime docs. ComfyUI checks preinstalled UNET/CLIP/VAE files and strips prompt-bearing PNG text metadata; do not claim broader Z-Image, arbitrary split-model or edit support.
 
+For creative engine readiness, synchronize fixed-loopback ComfyUI discovery, MFLUX command/runtime/model stages, provider-specific recovery reason codes and advisory-only Apple Silicon FP8 warnings; real inference and performance remain separate evidence.
+
 Creative reliability closure includes native Context envelopes, user-only revocation, allowlisted Bundle configuration and distinct file/visual/user acceptance. Human instructions must expose the new Bundle path and missing-weight limitation; Agent protocols must prohibit silent medium fallback.
 
 Character artwork behavior is mapped through `config/documentation-sync.yaml` and `config/documentation-placement.yaml`: keep the Creative Direction protocol, Scenarios 234/236, User Guide Creative Direction topic, Technology Guide Execution topic, and dedicated Architecture Overview Creative Workflow topic synchronized. Deterministic provenance checks do not replace visual review.

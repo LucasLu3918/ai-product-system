@@ -18,6 +18,12 @@ await plugin.setup({
   permission: noHook, shell: noHook,
   tool: { transform: async (callback) => callback({ add: (value) => { tool = value } }) },
 })
+const comfySchema = tool.input.properties.settings.properties.comfyui
+assert.equal(comfySchema.additionalProperties, false)
+assert.deepEqual(comfySchema.properties.model_profile.enum, ["z-image-turbo"])
+for (const field of ["unet_name", "clip_name", "vae_name"]) {
+  assert.equal(comfySchema.properties[field].type, "string", `OpenCode schema omitted ${field}`)
+}
 const user = (text) => ({ info: { role: "user" }, parts: [{ type: "text", text }] })
 const original = user("請幫我建立角色資料夾並設計兩個動漫角色，圖片需精緻有質感")
 const call = async (request) => JSON.parse((await tool.execute(request, { sessionID: "creative-fixture" })).content)
@@ -48,10 +54,14 @@ assert.equal((await call({ action: "discover" })).generation_executed, false)
 await admit("繼續生成角色圖片")
 const missingEngine = await call({ action: "execute", bundle: configured.bundle })
 assert.equal(missingEngine.reason_code, "BLOCKED_NO_ENGINE")
+assert.equal(missingEngine.fallback_allowed, false)
+assert.equal(typeof missingEngine.details.providers, "object", "provider-specific recovery reasons were hidden")
+assert.match(missingEngine.next_action, /per-provider command, runtime, and model status/)
+assert.equal(JSON.stringify(missingEngine).includes(project), false, "provider recovery leaked a local path")
 await admit("取消產圖")
 await admit("繼續")
 assert.equal((await call({ action: "execute", bundle: configured.bundle })).reason_code, "creative_intent_required")
 current = [{ role: "assistant", content: "生成圖片" }]
 await admit("請繼續")
 assert.equal((await call({ action: "execute", bundle: configured.bundle })).reason_code, "creative_intent_required")
-console.log("Creative native tool fixture PASS: context envelope normalization, prepare/configure, read-only preflight/discovery, missing engine and revoked authority")
+console.log("Creative native tool fixture PASS: context envelope normalization, Z-Image schema, prepare/configure, read-only preflight/discovery, provider recovery and revoked authority")

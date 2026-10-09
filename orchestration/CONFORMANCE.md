@@ -888,6 +888,8 @@ Scenario 218 uses deterministic monthly fingerprint sampling and complete Human 
 
 Unknown paths continue to select the complete validation profile.
 
+The required validation workflow exports the provisioned Python interpreter to isolated subprocess fixtures before the deterministic Gate, and the publish preflight contract checks that exact step ordering.
+
 
 The current creative execution Scenario is registered in the canonical coverage file and represented in the generated Human conformance summary.
 
@@ -947,6 +949,8 @@ Project Diagnostics remains a separate read-only command and does not configure 
 Z-Image Turbo generate evidence verifies its fixed dedicated executable, explicit step preservation and rejection of edit, non-Turbo variants and the generic FLUX executable. Existing offline execution, scoped provenance and pending human review apply unchanged.
 
 Scenario 236 extends the existing lifecycle with create-only configuration/discovery, native tool callback envelopes, user-only grant revocation, medium mismatch and corrupt raster rejection. Synthetic fixtures cannot claim installed-model inference, visual acceptance or hardware performance.
+
+Creative readiness evidence also covers read-only fixed-loopback discovery, empty ComfyUI model catalogs, staged command/runtime/model/preflight/inference status, sanitized provider-specific recovery and an advisory Apple Silicon FP8 warning.
 
 Scenario 236 extends the adapter with explicit intent, versioned Profile/Bundle preparation, preflight and a local-only creative tool. Its MFLUX capability map fixes model/operation commands; FLUX.1 edit is single-reference, FLUX.2/Qwen multi-reference edit is bounded, and ComfyUI edit remains single-reference.
 

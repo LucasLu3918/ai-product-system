@@ -26,6 +26,8 @@ The creative workflow Core Matrix binds the exact candidate file set and covers 
 
 Optional browser/OpenAPI setup follows the exact candidate plan while required dependencies, strict secret scanning and repository validation remain mandatory.
 
+After installing selected optional Python dependencies, the GitHub validation workflow exports `sys.executable` as `AIPS_VALIDATION_PYTHON` for subprocess CLI fixtures. The workflow contract checks that the export occurs before the deterministic Gate; local environment probes and the exact candidate Gate still determine validation status.
+
 
 For Creative Core changes, bind the matrix to native prompt admission/revocation, bounded local batch execution and recovery evidence, then rerun the Gate against the committed file set.
 
@@ -145,6 +147,8 @@ The shared module-extraction lifecycle verifies retrieval storage helper exports
 ## GitHub required-check compatibility
 
 The required repository aggregate continues to carry the complete Integration Gate result.
+
+The required workflow's candidate fixtures inherit the provisioned Python interpreter via `AIPS_VALIDATION_PYTHON`; the workflow regression contract protects that handoff without changing the stable required repository context.
 
 
 AIPS keeps the existing protected-main required context `repository`.

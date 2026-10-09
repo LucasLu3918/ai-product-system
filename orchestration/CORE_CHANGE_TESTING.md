@@ -177,6 +177,8 @@ Its `run` lifecycle must also verify that fast preflight and Integration Gate re
 
 The exact-candidate toolchain plan defines which optional environment probes are required. Treat an unselected browser check's `NOT_REQUIRED` result as neutral; preserve blockers for selected browser prerequisites and every mandatory validation check. For mixed OpenAPI lifecycle evidence, keep the aggregate lifecycle active in both plans: run action-level contract smoke with the optional modules, or assert a clear fail-closed diagnostic and no output when they are absent.
 
+The validation workflow exports the fully provisioned Python executable through `AIPS_VALIDATION_PYTHON` after optional Python dependencies are installed and before the deterministic Gate. A workflow contract regression locks both the handoff and its ordering; this keeps isolated CLI fixture environments consistent with the required validation toolchain.
+
 The publication preview reports the required Core Matrix base/hash binding and a synchronization command before commit. Synchronization resets the matrix to DRAFT and retains human scope/evidence review; it never grants READY automatically.
 
 AIPS CI resolves `standard | large | core` from explicit PR change-class labels. Large/Core candidates require the bound Core Change Test Matrix. Standard changes remain Matrix-optional unless a narrow Validation Profile path rule identifies a governance-core surface. Do not use broad rules such as all `scripts/**` or all `config/**` merely to force Matrix usage.

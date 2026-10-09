@@ -17,6 +17,8 @@ The candidate report measures direct paths, closure additions, rule fan-in and r
 
 Creative executor, job-manifest, OpenCode prompt-grant or related scenario changes require synchronized Creative Direction, User Guide, Architecture Overview, Technology Guide and conformance evidence, plus the resolved documentation-placement closure.
 
+Creative readiness changes also keep fixed loopback discovery, sanitized provider recovery, and advisory-only Apple Silicon FP8 compatibility wording aligned across the adapter, Scenario 236 and canonical Human documentation.
+
 Shared CLI router 更新可能觸發 Creative Direction 文件審查；Project Diagnostics 只讀，不會執行 Creative Profile、Provider 或 Artwork lifecycle。
 
 固定模型配對新增 Z-Image Turbo generate 時，同步更新創意流程、Runtime 接入說明與 Scenario 236；執行證據與人工視覺接受仍分開。
@@ -437,6 +439,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 ## Validation architecture consistency
 
 The Creative matrix and lifecycle evidence cover prompt admission, revocation, output scope, local engine probing, batch recovery and the required documentation projections.
+
+GitHub validation exports the fully provisioned Python interpreter as `AIPS_VALIDATION_PYTHON` after optional dependency installation and before the exact-candidate Gate, so isolated CLI fixtures use the required validation environment.
 
 System Facts、Capability Registry、Scenario 237、文件放置與完整 Gate 都綁定同一精確候選；diagnose PASS 不是發布或獨立審查證據。
 

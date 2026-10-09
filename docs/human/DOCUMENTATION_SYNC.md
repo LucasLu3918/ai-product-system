@@ -33,6 +33,8 @@ Change-amplification metrics record direct paths, recursive closure, required ad
 
 Creative multi-item generation is documented in User Guide, Architecture Overview, Technology Guide and the Creative Direction protocol; its transient prompt grant, job manifest and resume behavior are verified by Scenario 238.
 
+Creative readiness changes synchronize command/runtime/model/preflight/inference evidence, fixed-loopback ComfyUI discovery and advisory Apple Silicon FP8 guidance across the executor, OpenCode, Scenario 236 and their canonical Human docs.
+
 Project Diagnostics 將 `aips project diagnose` 的唯讀行為、狀態 reason code、恢復建議與 UNVERIFIED Host 邊界放在 Human Project Intelligence、System Reference、Harness 與對應 Scenario；不可將靜態 MCP／設定檢查描述為實機執行證據。
 
 Z-Image Turbo 的 generate-only 能力說明放在 Creative／Execution／Runtime 主題內；ComfyUI 支持只涵蓋固定 split-loader API 工作流與可由本機 API 核對的三項權重，不延伸為任意節點或 editing 支持。

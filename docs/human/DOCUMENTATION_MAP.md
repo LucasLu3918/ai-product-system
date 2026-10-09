@@ -90,6 +90,8 @@ Behavior-bearing modules, schemas and scenarios remain the source references for
 
 Creative authorization and multi-item execution are specified in `orchestration/CREATIVE_DIRECTION.md`, implemented by the OpenCode adapter and shared executor, and covered by Scenario 238; the Human usage entry is in User Guide.
 
+Creative engine discovery and staged readiness are sourced from `scripts/creative_execution.py`; it checks installed MFLUX commands and the fixed loopback ComfyUI API without claiming model inference.
+
 Project Diagnostics 的 Agent-facing read-only 與 UNVERIFIED 邊界保留在 `orchestration/PROJECT_INTELLIGENCE.md`、`harness/HARNESS_PROTOCOL.md` 與 OpenCode Adapter 指示中。
 
 Z-Image Turbo generate 的 MFLUX 命令映射與固定 ComfyUI split-loader profile 真實來源是 `scripts/creative_execution.py` 和 `templates/creative/COMFYUI_Z_IMAGE_TURBO_API.json`；本機產圖與人工審查流程由 `orchestration/CREATIVE_DIRECTION.md` 說明。

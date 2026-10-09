@@ -79,6 +79,8 @@ class FakeComfyHandler(BaseHTTPRequestHandler):
     staged_reference = PNG
     prompt_id = "fixture-job"
     missing_vae = False
+    fp8_unet = False
+    unet_filename = None
 
     def log_message(self, *_args):
         return
@@ -96,7 +98,8 @@ class FakeComfyHandler(BaseHTTPRequestHandler):
         if self.path == "/object_info/CheckpointLoaderSimple":
             return self.send_bytes(json.dumps({"CheckpointLoaderSimple": {"input": {"required": {"ckpt_name": [["model.safetensors"]]}}}}).encode())
         if self.path == "/object_info/UNETLoader":
-            return self.send_bytes(json.dumps({"UNETLoader": {"input": {"required": {"unet_name": [["z_image_turbo_bf16.safetensors"]]}}}}).encode())
+            unet = type(self).unet_filename or ("z_image_turbo_fp8.safetensors" if type(self).fp8_unet else "z_image_turbo_bf16.safetensors")
+            return self.send_bytes(json.dumps({"UNETLoader": {"input": {"required": {"unet_name": [[unet]]}}}}).encode())
         if self.path == "/object_info/CLIPLoader":
             return self.send_bytes(json.dumps({"CLIPLoader": {"input": {"required": {"clip_name": [["qwen_3_4b.safetensors"]], "type": [["lumina2"]]}}}}).encode())
         if self.path == "/object_info/VAELoader":
@@ -358,6 +361,14 @@ def comfy_cases(base: Path):
         bundle_path, _ = write_bundle(project, provider="comfyui_local", model={"id": "model.safetensors", "revision": "local-checkpoint", "license": "fixture", "license_source": "local model card"}, runtime="ComfyUI", runtime_version="fixture-1", comfyui=comfy)
         result = creative.preflight(project, bundle_path.name)
         require(result["status"] == "READY" and FakeComfyHandler.prompts == 0, "ComfyUI preflight submitted a workflow")
+        require(result["backend_compatibility"]["status"] == "UNVERIFIED"
+                and result["backend_compatibility"]["warnings"] == []
+                and "Inspect model precision metadata" in result["backend_compatibility"]["recommended_action"],
+                "unknown model precision was promoted to compatible or produced an FP8 warning")
+        require(result["readiness"] == {"command": "LOCAL_SERVICE_REACHABLE", "runtime": "RUNTIME_VERIFIED",
+                                        "model": "MODEL_CONFIGURED_PRESENT", "preflight": "PREFLIGHT_READY",
+                                        "inference": "INFERENCE_UNVERIFIED"},
+                "ComfyUI staged readiness implied inference or hid model preflight")
         executed = creative.execute(project, bundle_path.name)
         require(executed["status"] == "COMPLETE" and FakeComfyHandler.workflow["6"]["inputs"]["text"] == "private creative prompt", "ComfyUI workflow did not receive the explicit prompt")
         saved_png = (project / executed["output"]).read_bytes()
@@ -396,6 +407,52 @@ def comfy_cases(base: Path):
         ready = creative.preflight(zimage_project, zimage_bundle.name)
         require(ready["status"] == "READY" and FakeComfyHandler.prompts == 2, "Z-Image Turbo preflight submitted a workflow or did not become ready")
         require(ready["backend_compatibility"]["status"] == "UNVERIFIED" and "default" in ready["backend_compatibility"]["weight_dtypes"], "ComfyUI dtype/backend evidence was not surfaced conservatively")
+        require(ready["readiness"]["model"] == "MODEL_CONFIGURED_PRESENT"
+                and ready["readiness"]["inference"] == "INFERENCE_UNVERIFIED",
+                "Z-Image preflight implied verified inference")
+        with patch.object(creative.platform, "system", return_value="Darwin"), patch.object(creative.platform, "machine", return_value="arm64"):
+            bf16_ready = creative.preflight(zimage_project, zimage_bundle.name)
+        require(bf16_ready["backend_compatibility"]["status"] == "UNVERIFIED"
+                and bf16_ready["backend_compatibility"]["warnings"] == []
+                and "FP16/BF16 metadata was observed" in bf16_ready["backend_compatibility"]["recommended_action"]
+                and bf16_ready["readiness"]["inference"] == "INFERENCE_UNVERIFIED",
+                "BF16 metadata implied runtime compatibility on Apple Silicon")
+        fp16_project = fixture_project(base / "zimage-fp16")
+        fp16_path = fp16_project / "fp16-workflow.json"
+        fp16_workflow = json.loads(zimage_path.read_text())
+        fp16_workflow["28"]["inputs"]["unet_name"] = "z_image_turbo_fp16.safetensors"
+        fp16_path.write_text(json.dumps(fp16_workflow), encoding="utf-8")
+        FakeComfyHandler.unet_filename = "z_image_turbo_fp16.safetensors"
+        try:
+            fp16_bundle, _ = write_bundle(fp16_project, provider="comfyui_local", model={"id": "z-image-turbo", "revision": "local-model-files", "license": "Apache-2.0", "license_source": "local model card"}, runtime="ComfyUI", runtime_version="fixture-1", comfyui={**zimage_config, "base_url": url, "workflow_path": fp16_path.name, "unet_name": "z_image_turbo_fp16.safetensors"}, steps=8)
+            with patch.object(creative.platform, "system", return_value="Darwin"), patch.object(creative.platform, "machine", return_value="arm64"):
+                fp16_ready = creative.preflight(fp16_project, fp16_bundle.name)
+            require(fp16_ready["backend_compatibility"]["status"] == "UNVERIFIED"
+                    and fp16_ready["backend_compatibility"]["warnings"] == []
+                    and "FP16/BF16 metadata was observed" in fp16_ready["backend_compatibility"]["recommended_action"]
+                    and fp16_ready["readiness"]["inference"] == "INFERENCE_UNVERIFIED"
+                    and FakeComfyHandler.prompts == 2,
+                    "FP16 metadata implied runtime compatibility or preflight launched inference")
+        finally:
+            FakeComfyHandler.unet_filename = None
+        fp8_project = fixture_project(base / "zimage-fp8")
+        fp8_path = fp8_project / "fp8-workflow.json"
+        fp8_workflow = json.loads(zimage_path.read_text())
+        fp8_workflow["28"]["inputs"]["unet_name"] = "z_image_turbo_fp8.safetensors"
+        fp8_path.write_text(json.dumps(fp8_workflow), encoding="utf-8")
+        FakeComfyHandler.fp8_unet = True
+        try:
+            fp8_bundle, _ = write_bundle(fp8_project, provider="comfyui_local", model={"id": "z-image-turbo", "revision": "local-model-files", "license": "Apache-2.0", "license_source": "local model card"}, runtime="ComfyUI", runtime_version="fixture-1", comfyui={**zimage_config, "base_url": url, "workflow_path": fp8_path.name, "unet_name": "z_image_turbo_fp8.safetensors"}, steps=8)
+            with patch.object(creative.platform, "system", return_value="Darwin"), patch.object(creative.platform, "machine", return_value="arm64"):
+                fp8_ready = creative.preflight(fp8_project, fp8_bundle.name)
+            require(fp8_ready["backend_compatibility"]["status"] == "WARNING"
+                    and fp8_ready["backend_compatibility"]["warnings"] == ["apple_mps_fp8_static_warning"]
+                    and "Prefer a locally installed FP16/BF16" in fp8_ready["backend_compatibility"]["recommended_action"]
+                    and fp8_ready["readiness"]["inference"] == "INFERENCE_UNVERIFIED"
+                    and FakeComfyHandler.prompts == 2,
+                    "Apple Silicon FP8 warning was not advisory or preflight launched inference")
+        finally:
+            FakeComfyHandler.fp8_unet = False
         zimage_result = creative.execute(zimage_project, zimage_bundle.name)
         require(zimage_result["status"] == "COMPLETE" and FakeComfyHandler.workflow["13"]["inputs"]["width"] == 64 and FakeComfyHandler.workflow["3"]["inputs"]["steps"] == 8, "Z-Image Turbo settings were not applied to the registered workflow")
         FakeComfyHandler.missing_vae = True
@@ -442,8 +499,11 @@ def no_engine_case(base: Path):
         require(exc.reason_code == "BLOCKED_NO_ENGINE", "missing engine did not return BLOCKED_NO_ENGINE")
         require(exc.diagnostics.get("generation_executed") is False and exc.diagnostics.get("external_image_egress") is False,
                 "missing-engine diagnostics implied inference or external image egress")
-        require(exc.diagnostics.get("comfyui", {}).get("status") == "NOT_CONFIGURED",
-                "unconfigured ComfyUI status was not explained")
+        require(exc.diagnostics.get("comfyui", {}).get("configured") is False
+                and exc.diagnostics.get("comfyui", {}).get("status") in {"UNAVAILABLE", "UNVERIFIED", "REACHABLE"},
+                "unconfigured ComfyUI discovery status was not explained")
+        require(exc.diagnostics.get("readiness", {}).get("inference") == "INFERENCE_UNVERIFIED",
+                "missing engine diagnostics implied inference readiness")
         require(isinstance(exc.diagnostics.get("mflux"), list), "missing-engine diagnostics omitted MFLUX probes")
     else:
         raise AssertionError("missing local engine was presented as READY")
@@ -459,21 +519,52 @@ def diagnostic_cases(base: Path):
          patch.object(creative.subprocess, "run", side_effect=subprocess.TimeoutExpired("mflux-generate", 3)):
         timed_out = creative.discover(project)
     timeout = next(item for item in timed_out["runtimes"] if item["command"] == "mflux-generate")
-    require(timeout["health_status"] == "UNRESPONSIVE" and timeout["version_status"] == "TIMEOUT"
+    require(timeout["health_status"] == "UNVERIFIED" and timeout["available"] is True
+            and timeout["capability_status"] == "COMMAND_PRESENT"
+            and timeout["readiness"]["runtime"] == "RUNTIME_UNVERIFIED" and timeout["version_status"] == "TIMEOUT"
             and timeout["reason_code"] == "version_probe_timeout", "version timeout was not classified precisely")
     require(timed_out["generation_executed"] is False and timed_out["external_image_egress"] is False,
             "health discovery performed inference or external egress")
+    server, thread = comfy_server()
+    try:
+        loopback = f"http://127.0.0.1:{server.server_port}"
+        with patch.object(creative, "DEFAULT_COMFYUI_BASE_URL", loopback), \
+             patch.object(creative.shutil, "which", return_value=None):
+            discovered = creative.discover(project)
+        require(discovered["comfyui"]["status"] == "REACHABLE"
+                and discovered["comfyui"]["readiness"]["runtime"] == "RUNTIME_VERIFIED"
+                and discovered["comfyui"]["readiness"]["inference"] == "INFERENCE_UNVERIFIED"
+                and all(value == "MODEL_CATALOG_AVAILABLE" for value in discovered["comfyui"]["node_capabilities"].values())
+                and FakeComfyHandler.prompts == 0,
+                "read-only loopback discovery did not report staged service/model readiness")
+        require(creative.discover_comfyui("http://127.0.0.1:8189")["reason_code"] == "default_loopback_only",
+                "ComfyUI discovery accepted a non-default service endpoint")
+        FakeComfyHandler.missing_vae = True
+        try:
+            with patch.object(creative, "DEFAULT_COMFYUI_BASE_URL", loopback):
+                empty_catalog = creative.discover_comfyui()
+            require(empty_catalog["readiness"]["model"] == "MODEL_CATALOG_INCOMPLETE"
+                    and empty_catalog["node_capabilities"]["VAELoader"] == "MODEL_CATALOG_EMPTY",
+                    "empty ComfyUI inventory was reported as an available model")
+        finally:
+            FakeComfyHandler.missing_vae = False
+    finally:
+        server.shutdown()
+        server.server_close()
+        thread.join(timeout=2)
     with patch.object(creative.shutil, "which", side_effect=which), \
          patch.object(creative.subprocess, "run", return_value=SimpleNamespace(returncode=7, stdout="", stderr="failed")):
         failed = creative.discover(project)
     nonzero = next(item for item in failed["runtimes"] if item["command"] == "mflux-generate")
-    require(nonzero["reason_code"] == "version_probe_nonzero_exit" and nonzero["exit_code"] == 7,
+    require(nonzero["available"] is True and nonzero["capability_status"] == "COMMAND_PRESENT"
+            and nonzero["health_status"] == "UNVERIFIED" and nonzero["reason_code"] == "version_probe_nonzero_exit" and nonzero["exit_code"] == 7,
             "nonzero version probe did not retain its safe failure category")
     with patch.object(creative.shutil, "which", side_effect=which), \
          patch.object(creative.subprocess, "run", return_value=SimpleNamespace(returncode=0, stdout="runtime ready", stderr="")):
         unparsed = creative.discover(project)
     responsive = next(item for item in unparsed["runtimes"] if item["command"] == "mflux-generate")
-    require(responsive["health_status"] == "HEALTHY" and responsive["version_status"] == "UNRECOGNIZED",
+    require(responsive["health_status"] == "HEALTHY" and responsive["readiness"]["runtime"] == "RUNTIME_VERIFIED"
+            and responsive["version_status"] == "UNRECOGNIZED",
             "responsive command with an unknown version was conflated with a failed health probe")
 
 

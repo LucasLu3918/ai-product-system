@@ -1614,6 +1614,8 @@ The monthly evaluator deterministically samples up to 20 signal fingerprints and
 
 Unknown and malformed paths retain complete validation selection.
 
+The required validation workflow exports its fully provisioned Python interpreter as `AIPS_VALIDATION_PYTHON` before the deterministic Gate; `publish_preflight_contracts` verifies the handoff and ordering for isolated CLI fixtures.
+
 
 Current Scenario conformance and current Human-facing command documentation remain separate evidence; the creative execution Scenario is registered and generated in `CONFORMANCE_CURRENT.md`.
 
@@ -1681,8 +1683,6 @@ Diagnostic recommendations remain read-only and conditional.
 The public Project Intelligence facade retains its existing command and symbol contract.
 
 
-Scenario 236 adds the bounded `creative preflight`, `execute`, `review`, and `trace` command contracts; only the explicit execution command starts a configured local engine.
-
 The public command groups return concise help with status 0 and reject unknown subcommands with a useful nonzero result. The compatibility shell facade remains thin; internal library modules keep their current role.
 
 ## Scenario 234 — Local Character Artwork Provenance and Composition
@@ -1708,6 +1708,8 @@ Native OpenCode V2 prompt admission issues a fresh in-memory grant bound to the 
 The synthetic multi-item lifecycle verifies per-item preflight, continue-on-failure, hash-verified resume and recovery after an output succeeds before its checkpoint. Version-only local engine discovery never starts generation. Native OpenCode acceptance verifies grant admission and revocation without invoking image generation; no real model quality or visual acceptance is claimed.
 
 ## Scenario 236 — Local Creative Bundle Execution
+
+Scenario 236 covers bounded `creative discover`, `preflight`, `execute`, `review`, and `trace` command contracts. Discovery probes installed MFLUX command/version status and only the fixed loopback ComfyUI service, separates command/runtime/model/preflight/inference evidence, and never starts a workflow. Static Apple Silicon FP8 warnings remain advisory; unavailable-engine recovery retains provider-specific reason codes without local path disclosure. Only explicit execution starts a configured local engine.
 
 Scenario 236's native-context checks are complemented by Scenario 238: the active prompt hook grants scoped actions and output count, and a later prompt or unrelated assistant Context cannot restore a revoked grant.
 
