@@ -48,6 +48,9 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+Pending assessments remain distinct from assessed or disqualified evidence; bounded candidates still require a Human adoption decision.
+
+
 Local creative grants and batch execution add no Evolution Radar provider, semantic analysis, trial, or adoption authority; their verification remains in the Creative lifecycle and Scenario 238.
 
 Project Diagnostics 是本機只讀診斷，不讀取或彙整 Evolution Radar 訊號，也不會改變研究、Trial 或採用狀態。
@@ -92,6 +95,7 @@ Monthly / quarterly roll-up 量測 collected → shortlist → semantic → acti
 
 - Release readiness is a separate deterministic evidence gate; Evolution metrics do not imply an empty Unreleased section or authorize a tag.
 ## Current Boundaries
+
 
 創作工具的合成驗證可證明設定與失敗處理契約，不能當作本機模型品質、效能或採用成效證據；仍需另外量測真實生成與人工驗收。
 

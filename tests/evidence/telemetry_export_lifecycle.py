@@ -52,6 +52,8 @@ def marker(root: Path, run_id: str, kind: str, action: str, operation_id: str, n
         operation_id=operation_id, parent_operation_id=extra.pop("parent_operation_id", None),
         related_operation_id=extra.pop("related_operation_id", None), name=name,
         provider=extra.pop("provider", None), model=extra.pop("model", None),
+        runtime=extra.pop("runtime", None), governance_decision=extra.pop("governance_decision", None),
+        quality_findings_delta=extra.pop("quality_findings_delta", None), result=extra.pop("result", None),
         input_tokens=input_tokens, output_tokens=output_tokens,
         usage_source=extra.pop("usage_source", "runtime_observed" if has_usage else "unavailable"),
         usage_confidence=extra.pop("usage_confidence", "observed" if has_usage else "unknown"),
@@ -90,6 +92,10 @@ def main() -> int:
         marker(root, run_id, "gate", "waiting", "gate-op", "integration")
         marker(root, run_id, "gate", "resumed", "gate-op", "integration")
         marker(root, run_id, "gate", "completed", "gate-op", "integration")
+        marker(root, run_id, "gate", "started", "security-op", "security", runtime="codex")
+        marker(root, run_id, "gate", "completed", "security-op", "security", runtime="codex", governance_decision="approved", result="accepted")
+        marker(root, run_id, "quality", "started", "quality-op", "lint", runtime="codex")
+        marker(root, run_id, "quality", "completed", "quality-op", "lint", runtime="codex", quality_findings_delta=-3, result="completed")
         marker(root, run_id, "model", "started", "model-op", "chat", provider="openai", model="test-model", parent_operation_id="plan-op")
         marker(root, run_id, "model", "completed", "model-op", "chat", provider="openai", model="test-model", input_tokens=12, output_tokens=7, parent_operation_id="plan-op")
         marker(root, run_id, "model", "started", "model-unknown", "chat", provider="openai", model="test-model-unknown")
@@ -113,6 +119,13 @@ def main() -> int:
         assert model_attrs["aips.usage.source"]["stringValue"] == "runtime_observed"
         assert model_attrs["aips.usage.confidence"]["stringValue"] == "observed"
         assert model_attrs["aips.cost.status"]["stringValue"] == "unknown"
+        security_attrs = {x["key"]: x["value"] for x in by_name["aips.gate.security"]["attributes"]}
+        assert security_attrs["aips.runtime.name"]["stringValue"] == "codex"
+        assert security_attrs["aips.governance.decision"]["stringValue"] == "approved"
+        assert security_attrs["aips.outcome"]["stringValue"] == "accepted"
+        quality_attrs = {x["key"]: x["value"] for x in by_name["aips.quality.lint"]["attributes"]}
+        assert quality_attrs["aips.quality.findings_delta"]["intValue"] == "-3"
+        assert quality_attrs["aips.runtime.name"]["stringValue"] == "codex"
         unknown_attrs = {x["key"]: x["value"] for x in by_name["chat test-model-unknown"]["attributes"]}
         assert unknown_attrs["aips.cost.status"]["stringValue"] == "unknown"
         payload_text = json.dumps(first["otlp"])

@@ -13,6 +13,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import evolution_analysis as evolution_facade
 import evolution_preanalysis as evolution_impl
 import project_intelligence as project_facade
+import project_intelligence_context as project_context_impl
 import project_intelligence_impact_graph as project_impl
 import project_intelligence_promotion as project_promotion_impl
 import project_intelligence_storage as project_storage_impl
@@ -31,6 +32,8 @@ def main() -> int:
         assert getattr(project_facade, name) is getattr(project_storage_impl, name), name
     assert project_facade.traverse_architecture_impact_graph is project_impl.traverse_architecture_impact_graph
     assert project_facade.temporal_query is project_temporal_impl.temporal_query
+    assert project_facade.compact_context_manifest is project_context_impl.compact_context_manifest
+    assert project_facade.SOURCE_NAMES is project_context_impl.SOURCE_NAMES
     assert project_facade._promotion_candidate is project_promotion_impl.promotion_candidate
     assert publish_facade.PreflightError is publish_post_merge_impl.PreflightError
     assert callable(publish_facade.post_merge)
@@ -61,6 +64,7 @@ def main() -> int:
         assert getattr(evolution_facade, name) is getattr(evolution_impl, name), name
     for function in (
         project_facade.traverse_architecture_impact_graph,
+        project_facade.compact_context_manifest,
         project_facade.temporal_query,
         publish_facade.post_merge,
         publish_facade.sync_installed,

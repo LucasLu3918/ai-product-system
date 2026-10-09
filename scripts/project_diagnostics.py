@@ -52,6 +52,7 @@ def _check(
     message: str,
     *,
     next_action: str | None = None,
+    next_actions: list[dict[str, str]] | None = None,
     verification_command: str | None = None,
 ) -> dict[str, Any]:
     return {
@@ -60,6 +61,7 @@ def _check(
         "reason_code": reason_code,
         "message": message,
         "next_action": next_action,
+        "next_actions": next_actions or [],
         "verification_command": verification_command,
     }
 
@@ -91,6 +93,12 @@ def _intelligence_check(report: dict[str, Any] | None, error: str | None, projec
             "project_intelligence", "WARN", "intelligence_missing",
             "Project Intelligence 尚未建立。診斷保持唯讀；建立後仍需補足必要語意主題並完成審查。",
             next_action=f"需要時手動執行 {bootstrap}，補足必要語意主題後再執行 {finalize}。",
+            next_actions=[
+                {"action": "bootstrap", "command": bootstrap, "when": "使用者決定開始使用專案 Intelligence 時"},
+                {"action": "complete_required_topics", "command": "依 bootstrap/status 顯示的必要主題補充經查證內容"},
+                {"action": "finalize", "command": finalize},
+                {"action": "verify", "command": status_command},
+            ],
             verification_command=status_command,
         )
     if readiness == "PARTIAL":
@@ -99,6 +107,12 @@ def _intelligence_check(report: dict[str, Any] | None, error: str | None, projec
             "project_intelligence", "WARN", "intelligence_partial",
             "Project Intelligence 尚未達到 READY；請補足缺少的必要主題與證據。",
             next_action=f"依 status 顯示補足必要語意主題，再執行 {finalize}。",
+            next_actions=[
+                {"action": "inspect_missing_topics", "command": status_command},
+                {"action": "complete_required_topics", "command": "依 status 顯示補足缺少的必要主題與證據"},
+                {"action": "finalize", "command": finalize},
+                {"action": "verify", "command": status_command},
+            ],
             verification_command=status_command,
         )
     if fresh == "STALE":
@@ -108,6 +122,11 @@ def _intelligence_check(report: dict[str, Any] | None, error: str | None, projec
             "project_intelligence", "WARN", "intelligence_stale",
             "Project Intelligence 已過期；先檢視刷新計畫，再由使用者決定是否更新。",
             next_action=f"執行 {plan} 檢視範圍；確認後再執行 {refresh}。",
+            next_actions=[
+                {"action": "review_refresh_scope", "command": plan},
+                {"action": "refresh_after_review", "command": refresh, "when": "使用者審閱刷新範圍並決定更新後"},
+                {"action": "verify", "command": status_command},
+            ],
             verification_command=status_command,
         )
     if readiness == "READY" and fresh == "CURRENT":
@@ -120,6 +139,12 @@ def _intelligence_check(report: dict[str, Any] | None, error: str | None, projec
         return _check(
             "project_intelligence", "WARN", "intelligence_blocked",
             "Project Intelligence 回報 BLOCKED；請先檢視原因，不要略過必要檢查。",
+            next_action=f"執行 {status_command} 檢視可恢復原因；只依明確原因選擇 bootstrap、refresh 或修正來源路徑。",
+            next_actions=[
+                {"action": "inspect_block_reason", "command": status_command},
+                {"action": "diagnose_recovery", "command": _command("aips", "project", "diagnose", str(project))},
+                {"action": "verify", "command": status_command},
+            ],
             verification_command=status_command,
         )
     return _check(
@@ -263,6 +288,9 @@ def _text(report: dict[str, Any]) -> str:
         lines.append(f"Reason: {item['reason_code']}")
         if item.get("next_action"):
             lines.append(f"Next: {item['next_action']}")
+        for action in item.get("next_actions") or []:
+            when = f"（{action['when']}）" if action.get("when") else ""
+            lines.append(f"Action: {action.get('action', 'next')} — {action.get('command', '')}{when}")
         if item.get("verification_command"):
             lines.append(f"Verify: {item['verification_command']}")
     lines.extend(["", "Limitations:", *[f"- {item}" for item in report["limitations"]]])

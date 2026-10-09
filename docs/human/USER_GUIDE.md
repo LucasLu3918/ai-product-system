@@ -72,6 +72,9 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Creative manifests keep model inference, Human visual review and user acceptance as distinct evidence.
+
+
 Project Diagnostics 只報告既有狀態，不會建立 Creative Bundle、啟動本地生成器或替代角色視覺驗收。
 
 已安裝 Z-Image Turbo 權重時，可使用 MFLUX 專用 generate 命令。建議 8 步；此配對不支援 edit、ControlNet 或其他 Z-Image 變體。
@@ -329,7 +332,7 @@ aips telemetry export --project . --run-id RUN --output /tmp/run-trace.json
 aips telemetry replay --project . --run-id RUN --config ./telemetry-export.yaml --send
 ```
 
-The shipped export config is disabled. Transmission requires a private config with `enabled: true`; HTTPS is required except for loopback testing. Keep optional authorization in the host environment variable named by `authorization_env`. Recorded values are limited to lifecycle IDs, fixed operation names, verified provider/model IDs, token counts and outcomes. Export omits prompt/output content, arguments, private reasoning and credentials. Unpaired markers show `TELEMETRY_DEGRADED`; this does not block the workflow. See [OpenTelemetry run export](./TECHNOLOGY_GUIDE.md#opentelemetry-run-export) for field limits and replay behavior; the canonical contract is `orchestration/TELEMETRY_EXPORT.md`.
+The shipped export config is disabled. Transmission requires a private config with `enabled: true`; HTTPS is required except for loopback testing. Keep optional authorization in the host environment variable named by `authorization_env`. Recorded values are limited to lifecycle IDs, fixed operation names, verified provider/model IDs, runtime, Human governance decision, bounded quality finding delta, coarse outcomes and token counts. Export omits prompt/output content, arguments, private reasoning and credentials. Unpaired markers show `TELEMETRY_DEGRADED`; this does not block the workflow. See [OpenTelemetry run export](./TECHNOLOGY_GUIDE.md#opentelemetry-run-export) for field limits and replay behavior; the canonical contract is `orchestration/TELEMETRY_EXPORT.md`.
 
 ### 外部 Eval / Red-Team 互通
 
@@ -425,6 +428,9 @@ Standalone and shadow dependency-review artifacts retain exact base/head, run ID
 舊聊天內容不是 authoritative run state；若 workspace fingerprint 已變，先 refresh / revalidate 再接續。
 
 ## Project Intelligence
+
+Project diagnose provides the next read-only inspection or recovery pointer; users choose whether to run a suggested repair.
+
 
 遇到 Project Intelligence 狀態不完整時，可先執行 `aips project diagnose <path>` 查看 reason code、下一步與重新驗證命令。診斷不會自動 bootstrap、refresh、attach 或修復；請先檢視建議，再明確執行相應操作。
 

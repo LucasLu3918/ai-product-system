@@ -110,6 +110,9 @@ Identity/Resume evidence 同時驗證跨 worktree repository identity、dirty wo
 
 ## v0.16 Agent Eval Conformance
 
+Telemetry remains content-free and additive; runtime and outcome fields do not capture model messages.
+
+
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
 
 Scenario 230 checks fixed-core size/reduction, task-specific route selection, compact Manifest and hook output, conservative mutation fallback, and fail-closed missing route sources.
@@ -1446,6 +1449,9 @@ Traversal findings name the affected path and allowed final dispositions; they d
 
 ## Scenario 181 — OpenTelemetry Telemetry Projection & Export
 
+Plan24 adds bounded runtime, governance, quality and outcome attributes while preserving the content-free allowlist.
+
+
 Lifecycle evidence checks append-only telemetry recording, allowlist and bounds, deterministic trace/span replay IDs, phase/Gate/model/tool pairing, Gate wait spans, independent-review links, exact pinned GenAI attributes, content/credential exclusion, loopback/HTTPS endpoint validation, disabled-by-default configuration, local OTLP receiver delivery and non-blocking export degradation.
 
 Plan19 extends the allowlist with optional runtime-observed token usage, provenance/confidence and unknown-cost status. Missing values remain absent or unknown and do not trigger price lookup or affect Gate outcomes.
@@ -1526,13 +1532,22 @@ Runtime Context retains its existing canonical hash output through the compatibi
 
 ## Scenario 199 — Branch cleanup proposal evidence
 
+The report remains read-only; no branch deletion is authorized by its recommendation.
+
+
 Lifecycle evidence checks supported short-lived prefixes, unclassified preservation, current SHA, merged PR status, branch age, target integration and cleanup recommendation. Routine reports remain read-only; deletion still requires a protected-main explicit dispatch and a one-time exact manifest.
 
 ## Scenario 200 — Demand-driven CI toolchain planning
 
+Only optional browser and OpenAPI setup follows candidate selection; required scans and the full repository Gate remain enabled.
+
+
 Lifecycle evidence checks exact-path Node, browser and OpenAPI selection, full provisioning for sensitive paths, the MCP interoperability contract path and unknown paths, and explicit skips for optional OpenAPI evidence. `publish_preflight_lifecycle.py` remains required in every plan: it exercises action-level OpenAPI help and contract behavior when both validator modules exist, and otherwise verifies top-level routing plus the clear missing-dependency failure without a traceback or output artifact. Secret scanning, preflight, repository validation and the exact-candidate Integration Gate remain mandatory. Without a valid CI plan, local checks retain the full toolchain profile.
 
 ## Scenario 201 — Monthly maintenance reliability evidence
+
+New outcome fields are bounded observations and do not establish an SLO or change a gate.
+
 
 Maintenance digest wrappers keep byte-compatible canonical output through the shared helper and remain covered by the deterministic lifecycle fixture.
 
@@ -1549,6 +1564,9 @@ Current inventory after Scenario 201: 34 deterministic + 111 lifecycle + 54 agen
 Plan21 Phase 0 adds `tests/evidence/plan21_contract_baseline.py` to the required repository validation runner. It checks raw and `sha256:` canonical digest vectors, current CLI stdout/stderr and exit contracts, and caller-specific glob behavior. `.aips/review/PLAN21_VALIDATION_TIMING_BASELINE.yaml` records the one-run `origin/main` baseline (230 scenarios, 86 timing entries, 165,754 ms); it is observational evidence and does not establish a trend or alter the scenario inventory.
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
+
+Exact-candidate planning continues to distinguish observed evidence from unknown status.
+
 
 驗證契約另涵蓋固定安裝全部 Python 驗證 requirements，以及完整、條件安裝、漏裝和無條件 Chromium 下載的正／負案例。隔離的安裝／preflight 與 legacy migration lifecycle 在文件候選中仍需完整 Python 模組；下載 Chromium 和可選 OpenAPI evidence 維持精準計畫選擇。
 
@@ -1594,6 +1612,9 @@ The monthly evaluator deterministically samples up to 20 signal fingerprints and
 
 ## Scenario 220 — Parallel advisory fast feedback
 
+Unknown and malformed paths retain complete validation selection.
+
+
 Current Scenario conformance and current Human-facing command documentation remain separate evidence; the creative execution Scenario is registered and generated in `CONFORMANCE_CURRENT.md`.
 
 OpenCode native acceptance is recorded separately from setup and provider claims, with the tested version and unsupported effects stated in Scenario 235.
@@ -1612,9 +1633,15 @@ Related security and observation contracts are covered by Scenarios 211 and 217:
 
 ## Scenario 221 — Dependency Update Risk Classification
 
+Dependency inventory remains evidence for Human review and does not merge unrelated PRs.
+
+
 Dependency updates receive an explicit class, risk and recommended validation plan. Unknown dependencies are high risk and require human review; semantic runtime updates include retrieval regression evaluation and a semantic trial. Classification never authorizes automatic merges or policy changes.
 
 ## Scenario 222 — Large Document Measurement Only
+
+Documentation amplification is reported as a measurement; no placement rule is removed on count alone.
+
 
 The measurement-only audit records tracked documentation/evidence byte sizes. Files above 50,000 bytes produce `WARN` with exit code 0; size results do not block Gate or authorize file moves or archival.
 
@@ -1628,19 +1655,31 @@ The probe denies only a harmless synthetic local Bash command. Unsupported, malf
 
 ## Scenario 228 — Progressive Quality Ratchet
 
+Coverage remains report-only and the selected mypy scope adds only the extracted context module.
+
+
 新增 OpenCode 投影與生命週期程式納入 touched-file quality ratchet；既有 lint debt 不因 Host 整合而擴大。
 
 Per-module findings and direct coverage are measured without increasing a repository-wide threshold; debt must not grow in a touched module.
 
 ## Scenario 229 — Agent Eval Freshness Selection
 
+The extracted context helper is added to core-change freshness coverage.
+
+
 Scenario 230 also confirms that adding a route scenario updates the canonical registry and generated current conformance view without changing manual coverage claims.
 
 ## Scenario 232 — Project Check and System Preflight
 
+Diagnostic recommendations remain read-only and conditional.
+
+
 `aips project check` reports Project mode and Project Intelligence freshness without writes; stale or unavailable Intelligence is visible but does not make a valid path fail. `aips system preflight` uses the existing update/validation path, while `aips preflight` remains compatible.
 
 ## Scenario 233 — Public CLI Help and Error Contracts
+
+The public Project Intelligence facade retains its existing command and symbol contract.
+
 
 Scenario 236 adds the bounded `creative preflight`, `execute`, `review`, and `trace` command contracts; only the explicit execution command starts a configured local engine.
 
@@ -1651,6 +1690,8 @@ The public command groups return concise help with status 0 and reject unknown s
 The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-content rejection, file dimensions and hashes, verified local-provider/license provenance, stable UTF-8 Traditional Chinese labels, non-overwriting deterministic sheet composition, and optional Creative Evidence manifest-digest binding. It does not invoke a model, download weights, attest identity consistency, or claim hardware performance; those require the user's local runtime and independent visual review.
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
+
+Plan24 acceptance was exercised against OpenCode v2.0.24 with a loopback mock: Context delivery and native file Allow/Deny hooks passed. Creative generation was not run; model inference and visual quality remain separate evidence.
 
 The V2 creative tool additionally requires a create/modify intent and a successful preflight before execution; this boundary is covered by Scenario 236.
 
@@ -1680,9 +1721,14 @@ The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies c
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
 
+The diagnostics lifecycle covers missing, stale, partial and blocked Intelligence states. Suggested recovery remains observational; bootstrap, refresh and finalization require their existing explicit actions.
+
 `aips project diagnose` aggregates existing `aips doctor`, Project Intelligence status, Harness resolution and MCP static inspection. It reports stable reason codes with safe next actions and verification commands while keeping bootstrap, refresh, indexing and attach as explicit user actions. Doctor and child-process output is not copied into the report. Lifecycle evidence verifies text/YAML/JSON output, missing/partial/stale/blocked guidance, bounded failures, privacy and no-write behavior. Harness and MCP Host execution remain `UNVERIFIED` unless separately evidenced.
 
 ## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
+
+The mandatory candidate secret scan remains independent of optional toolchain provisioning.
+
 
 The scheduled/manual workflow runs a pinned OSV dependency inventory and compares the existing project secret scanner with a full-history Gitleaks shadow. Its failures and parity differences are advisory; the required candidate secret scan and repository Gate remain the release controls. CodeQL configuration is read from GitHub's default setup.
 

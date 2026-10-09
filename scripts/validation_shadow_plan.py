@@ -7,16 +7,17 @@ import argparse
 import fnmatch
 import hashlib
 import json
-from pathlib import Path
 import subprocess
 import sys
+from pathlib import Path
 from typing import Any
 
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tests"))
-from validation.registry import VALIDATORS  # noqa: E402
+from validation.registry import VALIDATORS
+from validation_path_classification import unknown_paths
 
 
 class ShadowPlanError(ValueError):
@@ -41,17 +42,17 @@ def changed_paths(root: Path, base: str, head: str) -> list[str]:
         raise ShadowPlanError("candidate path list is not valid UTF-8") from exc
 
 
-def build_plan(config: dict[str, Any], paths: list[str], *, base: str, head: str, change_class: str) -> dict[str, Any]:
+def build_plan(config: dict[str, Any], paths: list[str], *, base: str, head: str, change_class: str, path_inventory: dict[str, Any] | None = None) -> dict[str, Any]:
     if not isinstance(config, dict) or config.get("version") != 1:
         raise ShadowPlanError("validation scope config must be version 1")
     if change_class not in {"standard", "large", "core", "release", "unknown"}:
         raise ShadowPlanError("change_class is invalid")
-    known_prefixes = tuple(config.get("known_path_prefixes") or [])
-    known_roots = set(config.get("known_root_paths") or [])
-    unknown_paths = [path for path in paths if path not in known_roots and not path.startswith(known_prefixes)]
+    if path_inventory is None:
+        path_inventory = yaml.safe_load((ROOT / "config/validation-path-inventory.yaml").read_text(encoding="utf-8")) or {}
+    unregistered = unknown_paths(paths, path_inventory)
     full_path_prefixes = tuple(config.get("full_validation_path_prefixes") or [])
     force_full = bool(
-        unknown_paths
+        unregistered
         or change_class in set(config.get("full_validation_classes") or [])
         or set(paths).intersection(config.get("full_validation_paths") or [])
         or any(path.startswith(full_path_prefixes) for path in paths)
@@ -91,7 +92,7 @@ def build_plan(config: dict[str, Any], paths: list[str], *, base: str, head: str
         "changed_paths_digest": _canonical_digest(sorted(set(paths))),
         "plan_fingerprint": _canonical_digest({"base": base, "head": head, "change_class": change_class, "paths": sorted(set(paths)), "validators": scoped}),
         "full_validation_fallback": force_full,
-        "unknown_paths": unknown_paths,
+        "unknown_paths": unregistered,
         "would_run": would_run,
         "would_skip": would_skip,
         "actual_modules_run": [spec.module for spec in VALIDATORS],
@@ -140,7 +141,8 @@ def main() -> int:
     config_path = args.config or root / "config/validation-scope.yaml"
     try:
         config = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
-        plan = build_plan(config, changed_paths(root, args.base, args.head), base=args.base, head=args.head, change_class=args.change_class)
+        inventory = yaml.safe_load((root / "config/validation-path-inventory.yaml").read_text(encoding="utf-8")) or {}
+        plan = build_plan(config, changed_paths(root, args.base, args.head), base=args.base, head=args.head, change_class=args.change_class, path_inventory=inventory)
         if args.replay_json:
             records = json.loads(args.replay_json.read_text(encoding="utf-8"))
             if not isinstance(records, list) or any(not isinstance(item, dict) for item in records):

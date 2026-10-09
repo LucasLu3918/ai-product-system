@@ -31,6 +31,9 @@ Role、Skill、Protocol 與 Project evidence 只在 task relevant 時載入，�
 
 ## Project Understanding
 
+The compact Project Intelligence Context projection remains behind the public facade; diagnostic recovery suggestions do not execute automatically.
+
+
 `aips project diagnose` aggregates existing Project Intelligence readiness, Runtime/Harness status and MCP static inspection. It reports safe recovery actions without invoking them.
 
 OpenCode V2 receives the existing compact Context Manifest before model dispatch. Its readiness and path checks consume Project Intelligence output without adding a separate Role, Skill, or local-write policy engine.
@@ -60,6 +63,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+The shared validation-path inventory classifies known roots and prefixes for both CI planners. Each planner keeps its own risk and validator-selection semantics; unknown or malformed paths continue to select full validation.
 
 The local Creative `generate-set` executor preflights configured Bundles one at a time, records per-item outcomes, and resumes only when prior output and provenance hashes still match. OpenCode V2 receives mutation authority from native prompt admission, not Context.
 
@@ -187,6 +192,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+CI may omit optional browser or OpenAPI toolchain setup when the exact candidate plan does not require it. Required base dependencies, candidate secret scanning, repository validation and Integration Gate checks remain mandatory; coverage stays report-only without module baselines.
 
 The Core Creative verification path covers native prompt admission and revocation, bounded multi-item recovery, local-only engine probes, documentation closure and the exact committed candidate.
 

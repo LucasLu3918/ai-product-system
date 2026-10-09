@@ -1,9 +1,27 @@
 import os
 import subprocess
 import sys
+
 import yaml
 
 from .static_contracts import ROOT, errors
+
+sys.path.insert(0, str(ROOT / 'scripts'))
+try:
+    from publish_preflight_policy import documentation_impact
+
+    impact = documentation_impact(['scripts/evolution_decision.py'], ROOT)
+    metrics = impact.get('amplification') or {}
+    if metrics.get('direct_path_count') != 1:
+        errors.append('Documentation impact amplification must count unique direct paths')
+    if metrics.get('closure_path_count') != len(impact.get('closure') or []):
+        errors.append('Documentation impact amplification must match the recursive closure')
+    if metrics.get('required_addition_count') != len(impact.get('required_additions') or []):
+        errors.append('Documentation impact amplification must match required additions')
+    if metrics.get('closure_to_direct_ratio') != round(metrics.get('closure_path_count', 0), 3):
+        errors.append('Documentation impact amplification ratio must be deterministic')
+except (ImportError, OSError, RuntimeError, TypeError, ValueError, KeyError, yaml.YAMLError) as exc:
+    errors.append(f'Documentation impact amplification contract failed: {exc}')
 
 required = (
     ROOT / 'config/documentation-sync.yaml',
@@ -52,7 +70,7 @@ if script.exists():
         if base and base != '0' * 40:
             for error in docs_sync.evaluate_changes(docs_sync.changed_files_from_git(base, 'HEAD'), config):
                 errors.append(f'Documentation consistency: {error}')
-    except Exception as exc:
+    except (ImportError, OSError, RuntimeError, TypeError, ValueError, KeyError, yaml.YAMLError) as exc:
         errors.append(f'Documentation sync validation failed: {exc}')
 
 workflow = ROOT / '.github/workflows/validate.yml'

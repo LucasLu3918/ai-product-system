@@ -18,20 +18,26 @@ SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$")
 SAFE_NAME = re.compile(r"^[A-Za-z][A-Za-z0-9_.:-]{0,63}$")
 SAFE_PROVIDER_MODEL = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,127}$")
 SECRET_VALUE = re.compile(r"(?i)(bearer[\s_-]+|gh[pousr]_[A-Za-z0-9]{12,}|sk-[A-Za-z0-9]{16,}|(?:api[_-]?key|secret|token)[=:])")
-KINDS = {"phase", "gate", "model", "tool"}
+KINDS = {"phase", "gate", "model", "tool", "quality"}
 ACTIONS = {
     "phase": {"started", "completed"},
     "gate": {"started", "waiting", "resumed", "completed"},
     "model": {"started", "completed"},
     "tool": {"started", "completed"},
+    "quality": {"started", "completed"},
 }
 PHASES = {"planning", "implementation", "review", "validation"}
 GATES = {"requirement", "core_change", "integration", "security", "janitor", "publish"}
+QUALITY_CHECKS = {"lint", "types", "branch_tests", "coverage"}
+RUNTIMES = {"codex", "opencode", "claude-code", "gemini-cli", "unknown"}
+GOVERNANCE_DECISIONS = {"approved", "rejected", "held", "pending", "not_applicable"}
+RESULTS = {"accepted", "revised", "blocked", "unverified", "completed", "failed"}
 MODEL_OPERATIONS = {"chat", "generate_content", "text_completion", "embeddings", "execute_tool"}
 ALLOWED_ATTRIBUTES = {
     "operation_id", "parent_operation_id", "related_operation_id", "name",
     "provider", "model", "input_tokens", "output_tokens", "status",
     "usage_source", "usage_confidence", "cost_status",
+    "runtime", "governance_decision", "quality_findings_delta", "outcome",
 }
 MAX_EVENT_BYTES = 4096
 
@@ -68,10 +74,32 @@ def record(args: argparse.Namespace) -> dict:
         raise ValueError("model operation is not in the pinned mapping profile")
     if kind == "tool" and (not isinstance(name, str) or not SAFE_NAME.fullmatch(name)):
         raise ValueError("tool name must be a bounded identifier")
+    if kind == "quality" and name not in QUALITY_CHECKS:
+        raise ValueError("quality check is not in the allowlist")
 
     attrs: dict = {"operation_id": _valid_id(args.operation_id, "operation_id", required=True), "name": name}
     attrs["parent_operation_id"] = _valid_id(args.parent_operation_id, "parent_operation_id")
     attrs["related_operation_id"] = _valid_id(args.related_operation_id, "related_operation_id")
+    runtime = getattr(args, "runtime", None)
+    governance_decision = getattr(args, "governance_decision", None)
+    quality_delta = getattr(args, "quality_findings_delta", None)
+    outcome = getattr(args, "result", None)
+    if runtime is not None:
+        if runtime not in RUNTIMES:
+            raise ValueError("runtime is not in the allowlist")
+        attrs["runtime"] = runtime
+    if governance_decision is not None:
+        if kind != "gate" or governance_decision not in GOVERNANCE_DECISIONS:
+            raise ValueError("governance decision is allowed only on a gate event and must be allowlisted")
+        attrs["governance_decision"] = governance_decision
+    if quality_delta is not None:
+        if kind != "quality" or action != "completed" or isinstance(quality_delta, bool) or not isinstance(quality_delta, int) or not -1_000_000 <= quality_delta <= 1_000_000:
+            raise ValueError("quality findings delta requires a completed quality event and a bounded integer")
+        attrs["quality_findings_delta"] = quality_delta
+    if outcome is not None:
+        if outcome not in RESULTS:
+            raise ValueError("result is not in the allowlist")
+        attrs["outcome"] = outcome
     if kind == "model" and action in {"started", "completed"}:
         if not SAFE_PROVIDER_MODEL.fullmatch(args.provider or "") or not SAFE_PROVIDER_MODEL.fullmatch(args.model or ""):
             raise ValueError("model events require bounded provider and model identifiers")
@@ -94,7 +122,7 @@ def record(args: argparse.Namespace) -> dict:
             attrs["usage_confidence"] = args.usage_confidence if has_usage else "unknown"
             attrs["cost_status"] = "unknown"
             attrs["status"] = args.outcome
-    elif kind == "tool" and action == "completed":
+    elif kind in {"tool", "quality"} and action == "completed":
         attrs["status"] = args.outcome
     elif args.input_tokens is not None or args.output_tokens is not None or args.provider or args.model:
         raise ValueError("provider/model/token values are allowed only on model events")
@@ -125,6 +153,10 @@ def main() -> int:
     p.add_argument("--name", required=True)
     p.add_argument("--provider")
     p.add_argument("--model")
+    p.add_argument("--runtime", choices=sorted(RUNTIMES))
+    p.add_argument("--governance-decision", choices=sorted(GOVERNANCE_DECISIONS))
+    p.add_argument("--quality-findings-delta", type=int)
+    p.add_argument("--result", choices=sorted(RESULTS))
     p.add_argument("--input-tokens", type=int)
     p.add_argument("--output-tokens", type=int)
     p.add_argument("--usage-source", choices=["runtime_observed", "unavailable"], default="unavailable")

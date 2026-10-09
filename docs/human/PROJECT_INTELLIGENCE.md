@@ -10,7 +10,7 @@ Project Intelligence 是 AIPS 對既有專案建立的可重用理解層。
 
 ### 唯讀診斷與恢復
 
-`aips project diagnose <project-path>` 會聚合 `aips doctor`、Project Intelligence、目前 Runtime/Harness 設定和本機 MCP 靜態能力，支援 `--format text|yaml|json`。報告包含狀態、穩定 reason code、下一步建議及重新驗證命令；診斷本身不會 bootstrap、refresh、建立索引、attach 或修復任何資料。Doctor 原始輸出不會複製到報告。
+`aips project diagnose <project-path>` 會聚合 `aips doctor`、Project Intelligence、目前 Runtime/Harness 設定和本機 MCP 靜態能力，支援 `--format text|yaml|json`。報告包含狀態、穩定 reason code、結構化 next-actions 及重新驗證命令；缺少／部分／過期狀態會先列唯讀檢查，刷新前標示使用者決策點；BLOCKED 狀態只建議查明原因，不猜測修復命令。診斷本身不會 bootstrap、refresh、建立索引、attach 或修復任何資料。Doctor 原始輸出不會複製到報告。
 
 常見 Project Intelligence 狀態的恢復方式：
 
@@ -83,6 +83,9 @@ Skill frontmatter 為 routing source，INDEX 為 generated view；Intelligence �
 Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Detach 先 validated sync 回 External Cache，再封存 `.ai/`。
 
 ## Change Impact
+
+Repository-wide graph coverage remains partial; inspect affected inputs, outputs, events and consumers and do not infer complete coverage from scoped retrieval.
+
 
 For OpenCode Creative mutations, Project Intelligence and Turn Context may inform routing but do not authorize writes; the grant comes from the current native user prompt and is bound to the active Session root.
 

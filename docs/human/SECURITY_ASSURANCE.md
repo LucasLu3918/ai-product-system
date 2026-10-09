@@ -211,6 +211,9 @@ Review actual:
 
 ## Release Security Gate
 
+Branch and release readiness reports do not grant branch deletion, release/tag creation or merge authority.
+
+
 Creative Core candidates also verify grant revocation, Session-root confinement, prompt privacy, local-only discovery and create-only output recovery before publication.
 
 Project Diagnostics PASS 不能提升 SAL、證明獨立審查或取代精確候選 Gate；未確認的 Runtime／MCP 效果維持 UNVERIFIED。
@@ -400,6 +403,8 @@ The Parallel Run Dashboard is loopback-only and read-only. Its projection cannot
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.
 
 ## Runtime Policy Enforcement
+
+OpenCode permission decisions refresh Context after session changes and retain fail-closed behavior on timeout or missing authorization evidence. Telemetry may record bounded runtime, governance, quality and outcome enums; prompts, images, credentials and reasoning are excluded.
 
 Creative configure 僅接固定設定欄位並建立新版本，不開放一般 YAML 寫入。引擎仍受 local-only、offline 與 scope 限制；唯讀能力盤點不執行 provider。取消後不保留生成授權，外部工具寫入仍不在原生 guard 保證內。
 

@@ -22,6 +22,9 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+Optional browser/OpenAPI setup follows the exact candidate plan while required dependencies, strict secret scanning and repository validation remain mandatory.
+
+
 For Creative Core changes, bind the matrix to native prompt admission/revocation, bounded local batch execution and recovery evidence, then rerun the Gate against the committed file set.
 
 Project Diagnostics Lifecycle evidence checks the read-only aggregate and its output/privacy contract. It does not replace exact base/head binding, candidate secret scanning, the required repository validation or the Gate result.
@@ -139,6 +142,9 @@ The shared module-extraction lifecycle verifies retrieval storage helper exports
 
 ## GitHub required-check compatibility
 
+The required repository aggregate continues to carry the complete Integration Gate result.
+
+
 AIPS keeps the existing protected-main required context `repository`.
 
 The validation workflow runs the exact-candidate `janitor` and a pinned dependency-review shadow for pull requests. During the observation window, the standalone dependency-review check remains authoritative and shadow failures do not change the required `repository` aggregate. A separate reviewed change may switch the aggregate only after same-candidate parity evidence and the observation criteria pass. Existing branch protection keeps the single stable required context `repository`; no branch-protection migration is needed.
@@ -224,6 +230,7 @@ When provided, `base_tip_sha` is included in candidate evidence/fingerprinting. 
 Core `READY` reconciliation is independently checked against Git: base must be an ancestor of current HEAD, the checkout must be clean and at the declared head, and the actual binary diff digest and changed path set must match the artifact and remain inside declared `target_paths`.
 
 ## Conditional Core Matrix enforcement
+
 
 Preview reports the same Matrix readiness failures as the Gate, including DRAFT status, remaining blockers, unreconciled actual diff and stale base/hash. A stale binding suggests `aips publish matrix-sync --base <sha>` before commit. The sync operation marks the matrix DRAFT for review; the final Gate evaluates only an exact, clean committed candidate.
 

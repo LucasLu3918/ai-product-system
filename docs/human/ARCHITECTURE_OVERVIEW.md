@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+OpenCode 的 Context、admission、permission 與 Shell hooks 使用非同步程序呼叫及有限輸出；同一 Session 的 Context 可短暫共用結果，permission 決策仍會重新讀取。Project Diagnostics 只提供下一步與復原指引，不會替人執行修復。
+
 OpenCode V2 captures Creative mutation authority at native prompt admission; its Session-root grant is independent of dispatch Context and is revoked by the next prompt.
 
 診斷回報的 Runtime/Harness 狀態是設定與靜態觀測；沒有版本綁定的原生測試時，不代表 Context、Hook 或 Tool 已在 Host 內生效。
@@ -40,6 +42,9 @@ MCP 提供 portability；native adapters 提供 runtime hook / guard。兩者共
 OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn Context，並在 permission evaluation 階段檢查支援的直接檔案操作。L1 僅允許非 Git workspace 中受限路徑的新創意資產；L2 需要 Project Intelligence READY、freshness CURRENT 與無待解權威衝突；L3 外部效果沿用既有 Human approval gate。Shell 僅保留有限唯讀命令，並額外提供固定參數的 AIPS 診斷。`creative_execution` 是唯一有界自訂工具：它綁定當前 EPHEMERAL Session，可建立不覆寫的角色／風格 Profile 與未設定引擎的 Creative Bundle，也可對既有 Bundle 執行唯讀預檢及明確要求的本機生成。其他 MCP/custom tools 和繞過 OpenCode 的寫入仍不在 guard 範圍。Plugin 安裝與 hook discovery 不足以證明執行防護；完成 runtime permission acceptance 前，治理保持 ADVISORY。
 
 ## Project Intelligence 與 Retrieval
+
+Project Diagnostics points to read-only inspection or a conditional recovery action without running it.
+
 
 Project Intelligence may route Creative work and identify affected consumers, but it cannot create or restore the native prompt grant used for file mutations.
 
@@ -97,6 +102,9 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Creative manifests distinguish workflow execution and raster validity from real model inference, Human visual review and user acceptance.
+
+
 `aips project diagnose` 不會呼叫創作工具或產生圖片；Creative Profile、Provider 與視覺驗收流程仍由既有明確授權路徑負責。
 
 Z-Image Turbo 可使用 MFLUX 專用命令 `mflux-generate-z-image-turbo`，或 ComfyUI 固定 split-loader 工作流；ComfyUI 會核對 UNET、CLIP、VAE 本機清單。兩種配對僅支援文字產圖，8 步可由 Bundle 明確設定，實際品質與人工驗收仍獨立記錄。
@@ -110,6 +118,9 @@ The `creative_execution` path can prepare versioned Character/Style Profiles and
 OpenCode V2 prompt admission issues transient creative grants bound to the Session root and output count; Context and retrieved Project Intelligence remain advisory. The local `generate-set` workflow records each Bundle outcome and resumes only after verifying saved provenance hashes.
 
 ## Planning 與 Product Delivery
+
+Creative generation provenance and Human review are separate from workflow and raster checks.
+
 
 OpenCode 的 `aips-plan` Command 使用既有 Planning 工作流與 Human Approval；原生入口不建立第二份規劃規則。
 
@@ -145,6 +156,9 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+The shared path inventory classifies safe roots and prefixes; planner-specific risk semantics remain independent and unknown paths select full validation.
+
 
 The Creative batch executor preflights each configured Bundle, records per-item results and verifies output/provenance hashes before resuming.
 
@@ -238,6 +252,9 @@ Publication Preflight 將 Python module availability 與 loopback/browser capabi
 
 ## Security 與 Governance
 
+Required repository checks and publication authority remain unchanged.
+
+
 Creative grants retain only action decisions, a bounded output count and a prompt digest in memory; batch results and traces omit raw prompts.
 
 Creative preparation stays within a non-Git EPHEMERAL scope and does not install model weights or contact a cloud image provider.
@@ -255,6 +272,9 @@ Runtime Policy Enforcement 使用四種結果：`ALLOW`、`DENY`、`REQUIRE_APPR
 Validation Observation keeps evidence readiness separate from operational failure: a completed `NOT_READY` cohort does not fail collection, while API, artifact, missing-report and unknown-status errors remain failures. Dependency Review records exact-candidate shadow parity; the standalone high-severity check remains authoritative until a separate reviewed switch after the observation window.
 
 ## Scenario Conformance 與 Agent Eval
+
+Synthetic lifecycle evidence does not establish real inference, model quality or acceptance.
+
 
 Scenario 236 uses fake local engines to verify the preparation and reference-boundary contracts; it does not establish visual quality or live-provider behavior.
 
@@ -288,6 +308,9 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Release and branch inventories remain advisory evidence and do not authorize cleanup, tag creation, release or unrelated merges.
+
 
 The Creative authorization change is tracked by Scenario 238 and its exact-candidate Core Matrix; real model quality remains a separate human review.
 
@@ -343,6 +366,9 @@ Evolution data completeness、validator shadow/replay、branch cleanup proposal�
 - Before release readiness, finalized notes are recorded under the matching `VERSION` heading, leaving exactly one empty canonical `## Unreleased` section. This read-only check does not authorize tag or release writes; those remain separate Human-approved actions.
 ## Documentation Architecture
 
+Recursive documentation impact reports closure size and repeated requirements; the report does not itself remove canonical placements.
+
+
 The canonical documentation placement registry maps Evolution Radar Human-label evaluation to its Human guides and Scenario 218 so future metric or authority changes remain synchronized.
 
 Release history keeps the active window in CHANGELOG.md and stores older complete sections in the manually maintained docs/history/changelog/ archive. The report-only document-size audit never moves files.
@@ -385,5 +411,8 @@ Docs build 與 Pages hosting 分開驗證：PR / main 都能證明 VitePress bui
 
 Documentation Placement 對 behavior-bearing source 採 fail-closed mapping：只要 source 落在 Technology Guide 的廣域同步 surface，就必須先命中 subsystem placement rule。這避免新功能以「文件最後補充說明」逃過 topic architecture。
 ## Runtime Content Safety Boundary
+
+Telemetry additions use bounded allowlisted fields and exclude prompts, images, credentials and private reasoning.
+
 
 Before AIPS persists or publishes content, the sink-aware Runtime Content Safety Boundary applies deterministic secret/PII detection and records untrusted-content provenance. Diagnostic sinks redact; durable or public sinks block. This boundary complements, and does not replace, Human Authority and Git Publish Approval.

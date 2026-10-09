@@ -32,6 +32,8 @@ For project work, context identifies project mode and stable instruction sources
 
 ## Verification
 
+Creative preflight may report host OS/architecture, backend, runtime, model and discovered dtype. This metadata is diagnostic only; report compatibility as unverified until a supported inference smoke establishes it, without downloads or silent backend fallback.
+
 Project Diagnostics reports allowlisted Runtime capability status and may leave effects UNVERIFIED. Only version-bound native lifecycle evidence can establish Context delivery or Hook/Tool execution.
 
 Creative native-tool callback evidence normalizes array/messages/data Context envelopes and exercises user-only authority without provider credentials. The loopback native-host check remains a separate version-bound result; command discovery does not prove model readiness or image quality.

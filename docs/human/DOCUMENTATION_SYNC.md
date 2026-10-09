@@ -26,6 +26,9 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Change-amplification metrics record direct paths, recursive closure, required additions and repeated requirements; repetition triggers review but does not authorize deleting canonical content.
+
+
 Creative multi-item generation is documented in User Guide, Architecture Overview, Technology Guide and the Creative Direction protocol; its transient prompt grant, job manifest and resume behavior are verified by Scenario 238.
 
 Project Diagnostics 將 `aips project diagnose` 的唯讀行為、狀態 reason code、恢復建議與 UNVERIFIED Host 邊界放在 Human Project Intelligence、System Reference、Harness 與對應 Scenario；不可將靜態 MCP／設定檢查描述為實機執行證據。
@@ -168,6 +171,9 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+Documentation tooling requires content in each mapped canonical topic and reports misplaced additions; a complete path closure alone does not satisfy topic placement.
+
 
 Creative prompt-grant behavior and resumable job schemas are maintained in the Creative Direction protocol, User Guide, Technology Guide, Architecture Overview and Scenario 238.
 

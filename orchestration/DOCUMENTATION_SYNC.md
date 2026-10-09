@@ -29,6 +29,9 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+Amplification metrics reveal repeated document requirements for review; only proven duplicate content can justify a future policy reduction.
+
+
 Creative job manifests and transient OpenCode prompt grants are described in the Creative Direction protocol and User Guide, with architecture and Scenario 238 evidence kept in sync.
 
 Project Diagnostics adds no creative generation behavior; shared CLI routing changes preserve the existing explicit creative lifecycle and its independent visual-review boundary.
@@ -160,6 +163,7 @@ Runtime Policy action schemas, deterministic decisions, hook capability claims a
 
 
 
+
 The `maintenance-reliability` sync rule binds the monthly collector, policy, workflow, lifecycle evidence, contract validator, Scenario 201 and its registry/runner wiring to the Human Maintenance, Conformance, Technology Guide and Documentation Map topics plus this Agent-facing protocol and `orchestration/CONFORMANCE.md`. Changes must preserve bounded collection, UNKNOWN for incomplete input, exact-SHA correlation limits and Human-only remediation.
 
 Generated Conformance views must retain a deterministic path from the canonical scenario registry to current Human counts and section-level Human/Agent history anchors. Regenerate them after inventory or heading changes; do not rewrite historical sections without an explicit content-mapping review.
@@ -180,6 +184,7 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 
 ## Human documentation placement
+
 
 Creative authorization and batch execution must remain synchronized across the OpenCode adapter contract, Creative Direction, Human usage/architecture docs and Scenario 238.
 
@@ -222,6 +227,9 @@ Plan21 Phase 2 shared canonical JSON/hash, relative-path and glob behavior is pi
 The advisory fast-feedback workflow is documented with the validation scenario and the Integration Gate required-check boundary; it remains independent of complete validation.
 
 ## Maintenance reliability mapping
+
+The report exposes repeated requirements and closure ratios for human review while keeping every current synchronization rule enforced.
+
 
 The Phase 2 helper lifecycle remains part of the required repository aggregate and pins existing digest/path/glob behavior; it does not replace the monthly reliability evidence or its UNKNOWN handling.
 

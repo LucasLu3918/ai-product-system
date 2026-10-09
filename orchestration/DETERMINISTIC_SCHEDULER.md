@@ -219,6 +219,8 @@ Execution IDs and runtime attestation are produced by the execution runtime and 
 - Release readiness also fails closed when `CHANGELOG.md` is unavailable or its canonical `## Unreleased` section is missing, duplicated, malformed, or non-empty; the check remains read-only.
 ## Validation de-duplication boundary
 
+Shared path classification supplies safe root/prefix inventory only. CI dependency planning and validator selection retain independent risk rules, and unknown or malformed paths preserve full-validation behavior.
+
 CI provisioning always supplies all Python validation requirements for required repository lifecycles. Exact-path planning still selects Node setup, Chromium downloads and optional evidence; required lifecycles retain single-owner execution and cannot be skipped or grant Scheduler merge authority.
 
 Bootstrap verification imports each caller-declared module and runs `pip check`; missing modules fail the workflow before its validation job proceeds.

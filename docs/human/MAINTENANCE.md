@@ -10,6 +10,9 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+The candidate report measures direct paths, closure additions, rule fan-in and repeated requirements. Repeated requirements are retained unless their content is shown to be redundant.
+
+
 Creative executor, job-manifest, OpenCode prompt-grant or related scenario changes require synchronized Creative Direction, User Guide, Architecture Overview, Technology Guide and conformance evidence, plus the resolved documentation-placement closure.
 
 Shared CLI router 更新可能觸發 Creative Direction 文件審查；Project Diagnostics 只讀，不會執行 Creative Profile、Provider 或 Artwork lifecycle。
@@ -366,7 +369,7 @@ Read-only scheduled workflow limits use observed run timing and an explicit safe
 
 Use `aips publish environment` from the intended checkout and inspect its source/target/Python diagnostic before validation. Reuse an existing environment with `python3.12 bin/prepare-local-validation --venv <path> --check-only`; a local `--wheelhouse <path>` supports offline Python dependency installation. Browser downloads remain separate prerequisites. GitHub logs/artifacts may redirect to external storage; keep domain approval explicit and use bounded Check summaries for initial diagnosis.
 
-The validation workflow installs the optional pinned `requirements-openapi.txt` set before running repository checks, so offline OpenAPI lifecycle tests use the same validator version in local and CI runs.
+The validation workflow derives optional browser and OpenAPI dependency installation from the exact-candidate plan. Its required base and validation requirements remain unconditional; the matching browser/OpenAPI lifecycle evidence runs when selected, while the repository aggregate, secret scan, preflight and Integration Gate remain required.
 
 Retrieval cache failures distinguish read access from stale-index refresh writes. A `RETRIEVAL_CACHE_WRITE_ACCESS_DENIED` result means SQLite could not open the rebuildable cache for update; allow cache and sidecar writes or set `XDG_CACHE_HOME` to a location writable by the current runtime, then retry. Keep invalid-index rebuilds (`--force`) for an index explicitly reported `INVALID`; do not use them to bypass ordinary sandbox write restrictions. Project Intelligence semantic refresh remains separate and must still re-read changed authoritative sources.
 
@@ -471,7 +474,7 @@ Supply-chain checks use Dependency Review on PRs to block newly introduced high 
 
 New installations request the stable channel by default and pin an exact `vX.Y.Z` tag only after verifying its commit and `VERSION`. Until a verified stable tag exists, stable installation fails closed with an explicit `--channel main` development-channel suggestion; source-checkout CI and development users pass that opt-in explicitly. Creating the first release tag remains governed by the separate signing and release approval policy.
 
-OpenAPI validation and evidence lifecycle checks are included in the repository validation entry point; installing `requirements-openapi.txt` is required for that full validation profile.
+OpenAPI evidence lifecycle checks run when the exact-candidate plan selects OpenAPI; the pinned dependency set is installed for those runs. Missing or invalid plans select the full profile, which retains OpenAPI evidence.
 
 Portable Command contract 位於 `tests/validation/portable_commands_contracts.py`，涵蓋 registry、projection install、status 與修改檔案 conflict；它不授予 merge 或 release authority。
 `tests/validate_repository.py` is the stable CI/user entrypoint. Internal validation is modular:
@@ -540,6 +543,9 @@ Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanu
 
 
 ## Repository Health / Architecture Drift consistency
+
+The Project Intelligence context helper is behind the existing facade and generated capability projections remain derived from the canonical registry.
+
 
 新增 CLI 能力時同步維護 Capability Registry 與 Architecture Surface projection；`aips project diagnose` 的靜態檢查不取代這些 canonical consistency checks。
 

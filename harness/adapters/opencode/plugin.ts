@@ -2,7 +2,7 @@ import { createHash } from "node:crypto"
 import { appendFile, chmod, mkdir, stat, writeFile } from "node:fs/promises"
 import { homedir } from "node:os"
 import { dirname, join, resolve } from "node:path"
-import { spawn, spawnSync } from "node:child_process"
+import { spawn } from "node:child_process"
 
 const SYSTEM_ROOT = __AIPS_SYSTEM_ROOT__
 const MAX_CONTEXT_BYTES = 12000
@@ -44,13 +44,7 @@ function lastUserText(value: any): string {
   return ""
 }
 
-function invoke(binary: string, args: string[], cwd: string, timeout: number, input?: string): { status: number | null; stdout: string; error?: string } {
-  const result = spawnSync(binary, args, { cwd, input, encoding: "utf8", timeout, maxBuffer: 2 * 1024 * 1024, shell: false })
-  if (result.error) return { status: result.status, stdout: "", error: result.error.message }
-  return { status: result.status, stdout: result.stdout ?? "", error: result.stderr?.slice(0, 600) }
-}
-
-function invokeAsync(binary: string, args: string[], cwd: string, timeout: number, signal?: AbortSignal, input?: string): Promise<{ status: number | null; stdout: string; error?: string }> {
+function invokeAsync(binary: string, args: string[], cwd: string, timeout: number, signal?: AbortSignal, input?: string, maxOutputBytes = 64 * 1024): Promise<{ status: number | null; stdout: string; error?: string }> {
   return new Promise((resolvePromise) => {
     const child = spawn(binary, args, { cwd, stdio: [input === undefined ? "ignore" : "pipe", "pipe", "pipe"], shell: false })
     child.stdin?.on("error", () => { /* process error/close owns failure reporting */ })
@@ -59,19 +53,27 @@ function invokeAsync(binary: string, args: string[], cwd: string, timeout: numbe
     let size = 0
     let settled = false
     let outputError = ""
+    let killTimer: NodeJS.Timeout | undefined
+    const terminate = () => {
+      child.kill("SIGTERM")
+      killTimer = setTimeout(() => child.kill("SIGKILL"), 250)
+      killTimer.unref()
+    }
     const finish = (value: { status: number | null; stdout: string; error?: string }) => {
       if (settled) return
       settled = true
       clearTimeout(timer)
+      if (killTimer) clearTimeout(killTimer)
       signal?.removeEventListener("abort", abort)
       resolvePromise(value)
     }
-    const abort = () => { child.kill("SIGTERM"); finish({ status: null, stdout: "", error: "Creative execution was cancelled" }) }
-    const timer = setTimeout(() => { child.kill("SIGTERM"); finish({ status: null, stdout: "", error: "Creative execution timed out" }) }, timeout)
-    signal?.addEventListener("abort", abort, { once: true })
+    const abort = () => { terminate(); finish({ status: null, stdout: "", error: "AIPS subprocess was cancelled" }) }
+    const timer = setTimeout(() => { terminate(); finish({ status: null, stdout: "", error: "AIPS subprocess timed out" }) }, timeout)
+    if (signal?.aborted) abort()
+    else signal?.addEventListener("abort", abort, { once: true })
     child.stdout.on("data", (chunk: Buffer) => {
       size += chunk.length
-      if (size > 64 * 1024) { child.kill("SIGTERM"); finish({ status: null, stdout: "", error: "AIPS creative response exceeded its output limit" }); return }
+      if (size > maxOutputBytes) { terminate(); finish({ status: null, stdout: "", error: "AIPS response exceeded its output limit" }); return }
       chunks.push(chunk)
     })
     child.stderr.on("data", (chunk: Buffer) => { outputError += chunk.toString("utf8").slice(0, 512 - outputError.length) })
@@ -132,11 +134,11 @@ async function trace(event: Record<string, any>): Promise<void> {
   }
 }
 
-function invokeGuard(python: string, guard: string, kind: "write" | "shell", input: Record<string, any>, cwd: string): Record<string, any> {
+async function invokeGuard(python: string, guard: string, kind: "write" | "shell", input: Record<string, any>, cwd: string, signal?: AbortSignal): Promise<Record<string, any>> {
   const args = kind === "write"
     ? [guard, "write", "--tool", String(input.action), "--resources", JSON.stringify(input.resources ?? []), "--root", String(input.root), "--manifest", JSON.stringify(input.manifest ?? {})]
     : [guard, "shell", "--command", String(input.command ?? ""), "--cwd", String(input.cwd ?? cwd), "--root", String(input.root)]
-  const result = invoke(python, args, cwd, 5000)
+  const result = await invokeAsync(python, args, cwd, 5000, signal, undefined, 16 * 1024)
   if (result.stdout) {
     try { return JSON.parse(result.stdout) } catch { /* fail closed below */ }
   }
@@ -167,11 +169,15 @@ export default {
     const python = process.env.AIPS_GUARD_PYTHON || "python3"
     const guard = join(SYSTEM_ROOT, "scripts/opencode_native_guard.py")
     const cache = new Map<string, ContextEntry>()
+    const contextFlights = new Map<string, Promise<ContextEntry>>()
     const creativeAdmissions = new Map<string, {
       grants: Record<string, any>; root: string; outputScope: string; messageID: string
       promptDigest: string; maxOutputs: number; usedOutputs: number
     }>()
     const maxCache = 32
+    const contextCacheTtlMs = 1000
+    void trace({ event: "host_capability", hook_delivery: "configured", permission_enforcement: "active_for_supported_native_actions",
+      host_version: process.env.OPENCODE_VERSION ?? "UNKNOWN", host_version_acceptance: "UNVERIFIED" })
 
     async function sessionRoot(sessionID: string): Promise<{ root: string; source: "directory" | "location_directory" | "worktree" } | null> {
       try {
@@ -190,32 +196,41 @@ export default {
       }
     }
 
-    async function contextFor(sessionID: string, messages: any[], root: string, targetPath = root, force = false, promptOverride?: string): Promise<ContextEntry> {
+    async function contextFor(sessionID: string, messages: any[], root: string, targetPath = root, force = false, promptOverride?: string, signal?: AbortSignal): Promise<ContextEntry> {
       const prompt = promptOverride ?? lastUserText(messages)
       const key = `${root}|${sessionID}|${hash(prompt)}|${targetPath}`
       const current = cache.get(sessionID)
-      if (!force && current && current.key === key) return current
-      const started = performance.now()
-      const result = invoke(aips, ["intelligence", "context", "--runtime", "opencode", "--project", root,
-        "--prompt", prompt, "--target-path", targetPath, "--format", "json", "--compact"], root, 15000)
-      let manifest: Record<string, any> | null = null
-      let reason = result.error || "AIPS context command failed"
-      if (result.status === 0) {
-        try {
-          const parsed = JSON.parse(result.stdout)
-          if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
-            manifest = parsed
-            reason = ""
-          } else reason = "AIPS context returned a non-object manifest"
-        } catch { reason = "AIPS context returned invalid JSON" }
-      }
-      const entry = { key, at: Date.now(), root, prompt, manifest, reason, durationMs: Math.round(performance.now() - started) }
-      cache.set(sessionID, entry)
-      while (cache.size > maxCache) cache.delete(cache.keys().next().value as string)
-      return entry
+      if (!force && current && current.key === key && Date.now() - current.at <= contextCacheTtlMs) return current
+      const flightKey = `${sessionID}|${key}`
+      const existingFlight = !force ? contextFlights.get(flightKey) : undefined
+      if (existingFlight) return existingFlight
+      const flight = (async (): Promise<ContextEntry> => {
+        const started = performance.now()
+        const result = await invokeAsync(aips, ["intelligence", "context", "--runtime", "opencode", "--project", root,
+          "--prompt", prompt, "--target-path", targetPath, "--format", "json", "--compact"], root, 15000, signal, undefined, 2 * 1024 * 1024)
+        let manifest: Record<string, any> | null = null
+        let reason = result.error || "AIPS context command failed"
+        if (result.status === 0) {
+          try {
+            const parsed = JSON.parse(result.stdout)
+            if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+              manifest = parsed
+              reason = ""
+            } else reason = "AIPS context returned a non-object manifest"
+          } catch { reason = "AIPS context returned invalid JSON" }
+        }
+        const entry = { key, at: Date.now(), root, prompt, manifest, reason, durationMs: Math.round(performance.now() - started) }
+        cache.set(sessionID, entry)
+        while (cache.size > maxCache) cache.delete(cache.keys().next().value as string)
+        return entry
+      })()
+      if (!force) contextFlights.set(flightKey, flight)
+      try { return await flight }
+      finally { if (contextFlights.get(flightKey) === flight) contextFlights.delete(flightKey) }
     }
 
     await ctx.session.hook("prompt", async (event: any) => {
+      const hookStarted = performance.now()
       const sessionID = event.sessionID
       if (typeof sessionID !== "string" || !sessionID) return
       // Revoke the previous prompt before deriving the new grant. A failed or
@@ -223,13 +238,13 @@ export default {
       creativeAdmissions.delete(sessionID)
       const session = await sessionRoot(sessionID)
       if (!session) {
-        void trace({ event: "creative_admission", decision: "DENY", session: hash(sessionID), reason_code: "session_directory_unavailable" })
+        void trace({ event: "creative_admission", decision: "DENY", session: hash(sessionID), reason_code: "session_directory_unavailable", duration_ms: Math.round(performance.now() - hookStarted) })
         return
       }
-      const result = invoke(python, [join(SYSTEM_ROOT, "scripts/creative_request_policy.py")], session.root, 5000,
-        JSON.stringify({ action: "admit", prompt: event.prompt?.text }))
+      const result = await invokeAsync(python, [join(SYSTEM_ROOT, "scripts/creative_request_policy.py")], session.root, 5000,
+        undefined, JSON.stringify({ action: "admit", prompt: event.prompt?.text }), 16 * 1024)
       if (result.status !== 0) {
-        void trace({ event: "creative_admission", decision: "DENY", session: hash(sessionID), reason_code: "creative_authorization_unavailable" })
+        void trace({ event: "creative_admission", decision: "DENY", session: hash(sessionID), reason_code: "creative_authorization_unavailable", duration_ms: Math.round(performance.now() - hookStarted) })
         return
       }
       try {
@@ -243,12 +258,12 @@ export default {
           })
           while (creativeAdmissions.size > maxCache) creativeAdmissions.delete(creativeAdmissions.keys().next().value as string)
           void trace({ event: "creative_admission", decision: admission.active === true ? "GRANT" : "DENY", session: hash(sessionID), project: hash(session.root),
-            reason_code: admission.active === true ? "prompt_admitted" : "creative_intent_required" })
+            reason_code: admission.active === true ? "prompt_admitted" : "creative_intent_required", duration_ms: Math.round(performance.now() - hookStarted) })
         } else {
-          void trace({ event: "creative_admission", decision: "DENY", session: hash(sessionID), reason_code: "creative_authorization_unavailable" })
+          void trace({ event: "creative_admission", decision: "DENY", session: hash(sessionID), reason_code: "creative_authorization_unavailable", duration_ms: Math.round(performance.now() - hookStarted) })
         }
       } catch {
-        void trace({ event: "creative_admission", decision: "DENY", session: hash(sessionID), reason_code: "creative_authorization_unavailable" })
+        void trace({ event: "creative_admission", decision: "DENY", session: hash(sessionID), reason_code: "creative_authorization_unavailable", duration_ms: Math.round(performance.now() - hookStarted) })
       }
     })
 
@@ -262,10 +277,10 @@ export default {
         return
       }
       const { root } = resolvedSession
-      const entry = await contextFor(event.sessionID, event.messages as any[], root)
+      const entry = await contextFor(event.sessionID, event.messages as any[], root, root, false, undefined, event.signal)
       const classification = entry.manifest?.task?.classification ?? {}
       if (entry.manifest && entry.manifest.project?.mode === "EPHEMERAL" && classification.domain === "creative") {
-        const profile = invoke(python, [join(SYSTEM_ROOT, "scripts/creative_workspace_profile.py"), "scan", "--project", root], root, 8000)
+        const profile = await invokeAsync(python, [join(SYSTEM_ROOT, "scripts/creative_workspace_profile.py"), "scan", "--project", root], root, 8000, event.signal, undefined, 128 * 1024)
         try {
           const result = JSON.parse(profile.stdout)
           entry.manifest.aips_creative_workspace = {
@@ -299,37 +314,39 @@ export default {
     })
     await ctx.permission.hook("evaluate", async (event) => {
       if (!["edit", "write", "patch", "apply_patch"].includes(event.action)) return
+      const hookStarted = performance.now()
       const resolvedSession = await sessionRoot(event.sessionID)
       if (!resolvedSession) {
         event.effect = "deny"
         event.message = "AIPS native write guard: active Session directory could not be resolved"
-        await trace({ event: "permission", decision: "DENY", level: "L2", session: hash(event.sessionID), action: event.action, reason_code: "session_directory_unavailable" })
+        await trace({ event: "permission", decision: "DENY", level: "L2", session: hash(event.sessionID), action: event.action, reason_code: "session_directory_unavailable", duration_ms: Math.round(performance.now() - hookStarted) })
         return
       }
       const { root } = resolvedSession
       const messages = await ctx.session.context({ sessionID: event.sessionID })
       const recent = cache.get(event.sessionID)
       const prompt = recent?.root === root ? recent.prompt : undefined
-      const entry = await contextFor(event.sessionID, messages as any[], root, event.resources[0] ?? root, true, prompt)
-      const decision = invokeGuard(python, guard, "write", { action: event.action, resources: [...event.resources], manifest: entry.manifest ?? {}, root }, root)
+      const entry = await contextFor(event.sessionID, messages as any[], root, event.resources[0] ?? root, true, prompt, event.signal)
+      const decision = await invokeGuard(python, guard, "write", { action: event.action, resources: [...event.resources], manifest: entry.manifest ?? {}, root }, root, event.signal)
       if (decision.decision !== "ALLOW") {
         event.effect = "deny"
         event.message = `AIPS ${decision.level ?? "L2"} native write guard: ${decision.reason ?? "context unavailable"}`
       }
       const task = entry.manifest?.task?.classification ?? {}
-      await trace({ event: "permission", decision: decision.decision, level: decision.level ?? "L0", session: hash(event.sessionID), project: hash(root), action: event.action, domain: task.domain ?? "unknown", intent: task.intent ?? "unknown", readiness: entry.manifest?.intelligence?.readiness ?? "unknown", project_mode: entry.manifest?.project?.mode ?? "UNKNOWN", session_root_source: resolvedSession.source, reason_code: policyReasonCode(decision) })
+      await trace({ event: "permission", decision: decision.decision, level: decision.level ?? "L0", session: hash(event.sessionID), project: hash(root), action: event.action, domain: task.domain ?? "unknown", intent: task.intent ?? "unknown", readiness: entry.manifest?.intelligence?.readiness ?? "unknown", project_mode: entry.manifest?.project?.mode ?? "UNKNOWN", session_root_source: resolvedSession.source, reason_code: policyReasonCode(decision), duration_ms: Math.round(performance.now() - hookStarted) })
     })
 
     await ctx.shell.hook("create.before", async (event) => {
+      const hookStarted = performance.now()
       const cwd = resolve(event.cwd || process.cwd())
       // This hook contract has no session ID; cwd is the narrowest live scope
       // available and prevents falling back to the plugin setup directory.
-      const decision = invokeGuard(python, guard, "shell", { command: event.command, cwd, root: cwd }, cwd)
+      const decision = await invokeGuard(python, guard, "shell", { command: event.command, cwd, root: cwd }, cwd, event.signal)
       if (decision.decision !== "ALLOW") {
         console.error(`AIPS native Shell guard: ${decision.reason ?? "unsupported command"}`)
         event.command = "false"
       }
-      await trace({ event: "shell", decision: decision.decision, level: decision.level ?? "L0", project: hash(cwd), reason_code: policyReasonCode(decision) })
+      await trace({ event: "shell", decision: decision.decision, level: decision.level ?? "L0", project: hash(cwd), reason_code: policyReasonCode(decision), duration_ms: Math.round(performance.now() - hookStarted) })
     })
     await ctx.tool.transform((editor) => {
       editor.add({

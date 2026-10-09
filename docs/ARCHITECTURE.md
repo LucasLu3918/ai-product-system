@@ -4,6 +4,9 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+OpenCode hooks run asynchronously with bounded output and cancellation. A short per-Session Context cache deduplicates reads; permission decisions refresh Context, and host-version acceptance remains separate from plugin discovery.
+
+
 The `aips project diagnose <path>` command is a read-only projection over existing Doctor, Project Intelligence, Harness and MCP inspection results. It does not bootstrap, refresh, attach, execute creative tools or change project state; unresolved host effects remain unverified.
 
 The shared creative executor registers Z-Image Turbo generation through the fixed `mflux-generate-z-image-turbo` command or the exact built-in ComfyUI split-loader API workflow. Discovery, configuration, preflight and OpenCode share the executor; ComfyUI verifies its UNET, CLIP and VAE inventory and rejects other workflow topology. Editing and other Z-Image variants remain unsupported.
@@ -536,6 +539,9 @@ For Large/Core changes, architecture-diagram impact is mandatory. Update each af
 
 ## End-to-end product delivery
 
+Creative provenance separates workflow execution, raster validity, model inference, Human visual review and user acceptance.
+
+
 OpenCode joins the existing access plane: native AGENTS → runtime resolver; canonical Skills / Commands → planning and implementation; review-only MCP config → workspace-scoped AIPS server. All Human approval boundaries remain in the canonical workflow.
 
 Scheduled governance reports are evidence consumers: they retain full repository validation, explicit Human decisions, and report-only boundaries for selective validation, release, dependency updates, and branch cleanup.
@@ -715,6 +721,9 @@ flowchart TD
 Multi-review is selected by semantic impact/risk, not LOC alone. Reviewers do not silently expand scope or modify permanent Agent capability.
 
 ## Installation and project lifecycle
+
+Project Diagnostics reports read-only next actions and recovery pointers; it does not bootstrap or refresh Intelligence automatically.
+
 
 ~~~mermaid
 flowchart TD
@@ -1075,6 +1084,7 @@ flowchart LR
 The task lease binds a task ID and execution ID to an active isolation/worktree, Change Boundary, write set and scheduler state. Its expiry never transfers dirty work. Final reconciliation preserves `ActualDiff ⊆ WriteSet ⊆ ChangeBoundary`; the lease remains coordination evidence and does not replace a verified runtime enforcement point.
 
 ## MCP interoperability access plane
+
 
 ~~~mermaid
 flowchart LR

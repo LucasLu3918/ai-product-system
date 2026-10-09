@@ -22,8 +22,12 @@ ALLOWED_TELEMETRY_KEYS = {
     "operation_id", "parent_operation_id", "related_operation_id", "name",
     "provider", "model", "input_tokens", "output_tokens", "status",
     "usage_source", "usage_confidence", "cost_status",
+    "runtime", "governance_decision", "quality_findings_delta", "outcome",
 }
-EVENT_RE = re.compile(r"^aips\.telemetry\.(phase|gate|model|tool)\.(started|waiting|resumed|completed)$")
+EVENT_RE = re.compile(r"^aips\.telemetry\.(phase|gate|model|tool|quality)\.(started|waiting|resumed|completed)$")
+ALLOWED_RUNTIMES = {"codex", "opencode", "claude-code", "gemini-cli", "unknown"}
+ALLOWED_GOVERNANCE_DECISIONS = {"approved", "rejected", "held", "pending", "not_applicable"}
+ALLOWED_OUTCOMES = {"accepted", "revised", "blocked", "unverified", "completed", "failed"}
 
 
 def _stable_id(value: str, length: int) -> str:
@@ -88,6 +92,7 @@ def _read_event_records(events_path: Path) -> tuple[list[dict], list[str]]:
             "gate": {"started", "waiting", "resumed", "completed"},
             "model": {"started", "completed"},
             "tool": {"started", "completed"},
+            "quality": {"started", "completed"},
         }
         if action not in allowed_actions[kind]:
             issues.append(f"invalid_action:{line_number}")
@@ -97,12 +102,25 @@ def _read_event_records(events_path: Path) -> tuple[list[dict], list[str]]:
             "phase": {"planning", "implementation", "review", "validation"},
             "gate": {"requirement", "core_change", "integration", "security", "janitor", "publish"},
             "model": {"chat", "generate_content", "text_completion", "embeddings", "execute_tool"},
+            "quality": {"lint", "types", "branch_tests", "coverage"},
         }
         if kind in allowed_names and name not in allowed_names[kind]:
             issues.append(f"invalid_name:{line_number}")
             continue
         if kind == "tool" and (not isinstance(name, str) or not SAFE_VALUE.fullmatch(name)):
             issues.append(f"invalid_name:{line_number}")
+            continue
+        if "runtime" in attrs and attrs["runtime"] not in ALLOWED_RUNTIMES:
+            issues.append(f"invalid_runtime:{line_number}")
+            continue
+        if "governance_decision" in attrs and (kind != "gate" or attrs["governance_decision"] not in ALLOWED_GOVERNANCE_DECISIONS):
+            issues.append(f"invalid_governance_decision:{line_number}")
+            continue
+        if "quality_findings_delta" in attrs and (kind != "quality" or action != "completed" or isinstance(attrs["quality_findings_delta"], bool) or not isinstance(attrs["quality_findings_delta"], int) or not -1_000_000 <= attrs["quality_findings_delta"] <= 1_000_000):
+            issues.append(f"invalid_quality_findings_delta:{line_number}")
+            continue
+        if "outcome" in attrs and attrs["outcome"] not in ALLOWED_OUTCOMES:
+            issues.append(f"invalid_outcome:{line_number}")
             continue
         if kind == "gate" and action == "waiting" and attrs.get("parent_operation_id"):
             issues.append(f"invalid_gate_parent:{line_number}")
@@ -188,6 +206,7 @@ def _build_spans(run_id: str, events: list[dict], issues: list[str]) -> list[dic
             "gate": f"aips.gate.{name}",
             "model": f"{name} {first.get('model', '')}".strip(),
             "tool": f"aips.tool.{name}",
+            "quality": f"aips.quality.{name}",
         }[kind]
         span_id = _span_id(run_id, kind, op)
         span_attrs = [
@@ -217,6 +236,13 @@ def _build_spans(run_id: str, events: list[dict], issues: list[str]) -> list[dic
             span_attrs.append(_attribute("aips.cost.status", last.get("cost_status", "unknown")))
         elif kind == "tool":
             span_attrs.append(_attribute("aips.tool.name", name))
+        elif kind == "quality":
+            span_attrs.append(_attribute("aips.quality.check", name))
+        for attribute, otel_name in (("runtime", "aips.runtime.name"), ("governance_decision", "aips.governance.decision"),
+                                     ("quality_findings_delta", "aips.quality.findings_delta"), ("outcome", "aips.outcome")):
+            value = last.get(attribute, first.get(attribute))
+            if value is not None:
+                span_attrs.append(_attribute(otel_name, value))
         parent = first.get("parent_operation_id")
         related = first.get("related_operation_id")
         span = {
@@ -227,7 +253,7 @@ def _build_spans(run_id: str, events: list[dict], issues: list[str]) -> list[dic
             "startTimeUnixNano": str(start_ns),
             "endTimeUnixNano": str(end_ns),
             "attributes": span_attrs,
-            "status": {"code": 2 if last.get("status") == "ERROR" else 1},
+            "status": {"code": 2 if last.get("status") == "ERROR" or last.get("outcome") == "failed" else 1},
         }
         if parent:
             span["parentSpanId"] = _span_id(run_id, "phase", parent)

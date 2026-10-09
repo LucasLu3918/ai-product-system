@@ -11,6 +11,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 from ci_validation_plan import PlanError, build_plan, changed_paths
+from validation_path_classification import unknown_paths
 
 
 def main() -> int:
@@ -27,6 +28,11 @@ def main() -> int:
     assert full_validation["full_validation"] and all(full_validation[key] for key in ("needs_node", "needs_browser", "needs_openapi"))
     unknown = build_plan(config, ["mystery/file.bin"], base="a", head="b")
     assert unknown["full_validation"] and unknown["unknown_paths"] == ["mystery/file.bin"]
+    inventory = yaml.safe_load((ROOT / "config/validation-path-inventory.yaml").read_text(encoding="utf-8"))
+    assert unknown_paths(["SYSTEM_CORE.md", "requirements-visual.txt"], inventory) == []
+    assert unknown_paths(["../outside.py", "/tmp/outside.py", "scripts/../outside.py", "unknown/file"], inventory) == ["../outside.py", "/tmp/outside.py", "scripts/../outside.py", "unknown/file"]
+    shared_root = build_plan(config, ["SYSTEM_CORE.md"], base="a", head="b", path_inventory=inventory)
+    assert not shared_root["full_validation"], "the shared inventory must recognize root documentation"
     ordinary = build_plan(config, ["scripts/aips_identity.py"], base="a", head="b")
     assert not ordinary["full_validation"] and not any(ordinary[key] for key in ("needs_node", "needs_browser", "needs_openapi"))
     with tempfile.TemporaryDirectory(prefix="aips-plan-git-") as temp:

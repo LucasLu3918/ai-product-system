@@ -1,0 +1,39 @@
+version: 1
+# Classification only. Validator selection and risk policy remain planner-owned.
+known_path_prefixes:
+  - .aips/
+  - .github/
+  - adapters/
+  - bin/
+  - capabilities/
+  - config/
+  - constraints/
+  - core/
+  - docs/
+  - docs-site/
+  - examples/
+  - harness/
+  - orchestration/
+  - references/
+  - roles/
+  - scripts/
+  - skills/
+  - templates/
+  - tests/
+  - work-modes/
+  - workflows/
+known_root_paths:
+  - AGENTS.md
+  - CHANGELOG.md
+  - README.md
+  - SYSTEM.md
+  - SYSTEM_CORE.md
+  - USER_GUIDE.md
+  - VERSION
+  - package.json
+  - package-lock.json
+  - pyproject.toml
+  - requirements.txt
+  - requirements-validation.txt
+  - requirements-visual.txt
+  - requirements-openapi.txt

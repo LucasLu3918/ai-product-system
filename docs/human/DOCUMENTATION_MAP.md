@@ -22,6 +22,9 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+The recursive impact report links source changes to required Human and Agent documents.
+
+
 創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
 
 新增的 `project_intelligence_promotion.py` 對應 Project Intelligence 文件；`repository_governance_snapshot.py` 對應 Security Assurance、Technology Guide 與 Scenario 209。
@@ -79,6 +82,9 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 - SYSTEM_REFERENCE.md：由已驗證 system facts registry 衍生的 command、capability、platform 與 runtime 表格。
 
 ## Agent / machine canonical 文件
+
+Behavior-bearing modules, schemas and scenarios remain the source references for detailed execution and evidence contracts.
+
 
 Creative authorization and multi-item execution are specified in `orchestration/CREATIVE_DIRECTION.md`, implemented by the OpenCode adapter and shared executor, and covered by Scenario 238; the Human usage entry is in User Guide.
 
@@ -153,6 +159,9 @@ Retrieval SQLite storage helpers are implemented in `scripts/retrieval_storage.p
 
 ## Shared canonical 文件
 
+Human-facing runtime, diagnostics and governance guidance follows canonical topic placement.
+
+
 Project Diagnostics 的操作與恢復流程以 [Project Intelligence](PROJECT_INTELLIGENCE.md) 為 Human canonical 文件；公開命令清單維持在 [System Reference](SYSTEM_REFERENCE.md)。
 
 The reusable Python CI bootstrap contract lives with its composite action; per-workflow import profiles live in the caller, and package versions remain in requirements and constraints.
@@ -165,6 +174,8 @@ docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGEL
 
 
 ## 文件一致性
+
+Runtime, diagnostics, creative provenance, CI planning, telemetry and governance changes follow the recursive Documentation Impact Gate. Its closure size is a review metric; it does not by itself authorize removing canonical placements.
 
 本機創作設定與交付狀態由 Creative Direction、OpenCode compatibility 與 Scenario 236 共同描述；User Guide 提供操作順序。合成測試、本機命令可用與真實圖片驗收是不同證據。
 

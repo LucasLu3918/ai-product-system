@@ -28,7 +28,7 @@ commands:
     runtime_requirement: Python ">=3.12"
     optional_dependencies: []
     validation_bindings: [tests/evidence/creative_execution_lifecycle.py]
-    documentation_bindings: [docs/human/USER_GUIDE.md, orchestration/CREATIVE_DIRECTION.md]
+    documentation_bindings: [docs/human/USER_GUIDE.md, docs/human/SYSTEM_REFERENCE.md, orchestration/CREATIVE_DIRECTION.md]
   - id: commands
     command: aips commands
     surfaces: [harness-runtime]
@@ -60,7 +60,7 @@ commands:
     runtime_requirement: Python ">=3.12"
     optional_dependencies: []
     validation_bindings: [tests/evidence/project_diagnostics_lifecycle.py]
-    documentation_bindings: [docs/human/PROJECT_INTELLIGENCE.md, docs/human/INSTALLATION.md]
+    documentation_bindings: [docs/human/PROJECT_INTELLIGENCE.md, docs/human/INSTALLATION.md, docs/human/SYSTEM_REFERENCE.md]
   - id: system-preflight
     command: aips system preflight
     surfaces: [runtime-context]
