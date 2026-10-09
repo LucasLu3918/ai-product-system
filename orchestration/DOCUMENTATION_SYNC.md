@@ -29,6 +29,8 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+Project Diagnostics adds no creative generation behavior; shared CLI routing changes preserve the existing explicit creative lifecycle and its independent visual-review boundary.
+
 For Z-Image Turbo, synchronize generate-only MFLUX command and the single registered ComfyUI split-loader profile across creative, execution and Runtime docs. ComfyUI checks preinstalled UNET/CLIP/VAE files and strips prompt-bearing PNG text metadata; do not claim broader Z-Image, arbitrary split-model or edit support.
 
 Creative reliability closure includes native Context envelopes, user-only revocation, allowlisted Bundle configuration and distinct file/visual/user acceptance. Human instructions must expose the new Bundle path and missing-weight limitation; Agent protocols must prohibit silent medium fallback.

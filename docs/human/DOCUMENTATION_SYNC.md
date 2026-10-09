@@ -146,6 +146,8 @@ Docs deployment 不取得 code merge、release 或 product production authority�
 
 ## Technology Guide
 
+System Facts 的公開命令與 Runtime 支援清單須同步更新；Project Diagnostics 的 Human 操作說明位於 Project Intelligence 與 Installation canonical topics。
+
 Project Intelligence promotion 與 repository governance snapshot 的行為說明，分別維護在 Project Intelligence 與 Security Assurance canonical topic，Technology Guide 僅摘要導覽。
 
 Post-merge reconciliation is implemented in `scripts/publish_post_merge.py`; `scripts/publish_preflight.py` remains the compatible CLI facade. Keep both modules, lifecycle coverage and integration inventory synchronized when changing this boundary.
@@ -164,6 +166,8 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+Documentation Impact Gate 以固定點映射確認 Project Diagnostics 的 Human／Agent canonical topics，並要求新行落在指定 H2；不得以文件尾端追加繞過放置檢查。
 
 創作流程同步須涵蓋 discover/configure、Context 正規化、取消後不沿用授權及媒材拒絕。文件與測試都須保留「執行成功不等於視覺合格」及真實引擎未驗證限制。
 

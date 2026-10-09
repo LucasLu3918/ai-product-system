@@ -27,7 +27,7 @@ Add a single on-demand view over existing Project Intelligence, runtime/Harness 
 - `scripts/aips_cli/project.sh`, `scripts/aips_cli/dispatch.sh`, `scripts/aips_cli/help.sh`, `scripts/project_diagnostics.py`
 - `tests/evidence/project_diagnostics_lifecycle.py`, `tests/scenarios/237-read-only-project-diagnostics.md`, `tests/scenario_coverage.yaml`
 - Canonical Human docs and generated references: `docs/ARCHITECTURE.md`; `docs/human/ARCHITECTURE_OVERVIEW.md`, `CONFORMANCE.md`, `CONFORMANCE_CURRENT.md`, `CONFORMANCE_HISTORY_INDEX.md`, `DOCUMENTATION_MAP.md`, `DOCUMENTATION_SYNC.md`, `EVOLUTION_RADAR.md`, `HARNESS.md`, `INSTALLATION.md`, `MAINTENANCE.md`, `PROJECT_INTELLIGENCE.md`, `SECURITY_ASSURANCE.md`, `SYSTEM_REFERENCE.md`, `TECHNOLOGY_GUIDE.md`, `USER_GUIDE.md`, and `index.md`
-- `config/capability-registry.yaml`, generated `config/architecture-surfaces.yaml`, and `config/system-facts.yaml`
+- `config/capability-registry.yaml`, generated `config/architecture-surfaces.yaml`, `config/system-facts.yaml`, and the explicit `project-diagnostics` source/anchor mapping in `config/documentation-placement.yaml`
 - `harness/HARNESS_PROTOCOL.md`, `harness/adapters/opencode/AGENTS.md`, `harness/adapters/opencode/COMPATIBILITY.md` and mapped Orchestration contracts: `CHANGE_IMPACT.md`, `CONFORMANCE.md`, `CREATIVE_DIRECTION.md`, `DETERMINISTIC_SCHEDULER.md`, `DOCUMENTATION_SYNC.md`, `EXECUTION_ISOLATION.md`, `GITHUB_RULESET_POLICY.md`, `INTEGRATION_GATE.md`, `ORCHESTRATOR.md`, `PROJECT_INTELLIGENCE.md`, `RELEASE_READINESS.md`, `REPOSITORY_HEALTH.md`, and `RUNTIME_CONTEXT.md`
 - `CHANGELOG.md`, active review artifacts, and `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`
 

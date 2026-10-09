@@ -902,7 +902,7 @@ Scenario 236's exact-candidate Core Matrix records synthetic creative lifecycle 
 
 ## Scenario 236 — Local Creative Bundle Execution
 
-Scenario 237 is registered as lifecycle evidence for read-only Project Diagnostics. It pins reason-code and recovery outputs, output-format parity, privacy redaction and absence of project writes; it does not establish native Host execution.
+Project Diagnostics remains a separate read-only command and does not configure or execute the Creative Bundle lifecycle.
 
 Z-Image Turbo generate evidence verifies its fixed dedicated executable, explicit step preservation and rejection of edit, non-Turbo variants and the generic FLUX executable. Existing offline execution, scoped provenance and pending human review apply unchanged.
 
@@ -943,3 +943,7 @@ Verifies deterministic pre-analysis exclusion reasons and counts without changin
 The OpenCode lifecycle runs with the selected validation Python. OpenCode itself is detected separately and is never downloaded by Harness installation.
 
 Scenario 210 is lifecycle-covered by `tests/evidence/install_preflight_lifecycle.py` and `tests/evidence/system_facts_lifecycle.py`. It verifies the Python >=3.12 floor across explicit selection, old managed venv repair, doctor diagnostics, canonical facts, and the scheduled 3.12–3.14 compatibility workflow.
+
+## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
+
+Scenario 237 binds reason-code recovery output, format parity, privacy redaction and no-write behavior to lifecycle evidence. It does not assert live Host or MCP execution.

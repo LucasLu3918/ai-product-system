@@ -211,6 +211,8 @@ Review actual:
 
 ## Release Security Gate
 
+Project Diagnostics PASS 不能提升 SAL、證明獨立審查或取代精確候選 Gate；未確認的 Runtime／MCP 效果維持 UNVERIFIED。
+
 創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
 
 The creative execution manifest and trace are covered by the candidate review; local image bytes and raw prompts are excluded from trace, and no external image endpoint is supported.
