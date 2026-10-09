@@ -1,0 +1,95 @@
+version: 1
+plan: plan25
+observed_at: '2026-10-09'
+source:
+  remote: origin/main
+  base_sha: a657b544b2431e55f7deec350e875a9c94ad293a
+  version: 0.80.0
+  worktree_clean: true
+  evidence:
+    - command: aips preflight <project>
+      result: up_to_date; AIPS runtime dependencies OK
+    - command: gh release list --repo LucasLu3918/ai-product-system
+      result: 0 releases
+    - command: git ls-remote --tags origin 'refs/tags/v*'
+      result: 0 version tags
+    - command: gh api --paginate repos/LucasLu3918/ai-product-system/branches
+      result: 113 remote branches
+    - command: gh pr list --repo LucasLu3918/ai-product-system --state open
+      result: 7 open pull requests; dependency updates; candidates are BEHIND or BLOCKED and recent repository checks fail
+    - command: gh issue list --repo LucasLu3918/ai-product-system --state open
+      result: 2 open Evolution Radar issues (#203 monthly effectiveness, #199 quarterly report)
+    - command: gh run list --repo LucasLu3918/ai-product-system --branch main
+      result: latest exact-main validation run succeeded
+
+existing_capabilities:
+  release:
+    readiness_workflow: .github/workflows/release-readiness.yml
+    tag_policy: config/version-tag-policy.yaml
+    stable_channel_requires_verified_tag: true
+    tag_or_release_published: false
+  runtime:
+    opencode_native_acceptance_scenario: tests/scenarios/235-opencode-native-context-guard.md
+    runtime_governance_claim: ADVISORY
+    unverified_host_versions_must_remain_unverified: true
+  creative:
+    execution_pipeline: scripts/creative_execution.py
+    real_local_model_inference_evidence: NOT_VERIFIED
+    human_visual_acceptance_evidence: NOT_VERIFIED
+  project_intelligence:
+    diagnostics: scripts/project_diagnostics.py
+    missing_or_stale_guidance_exists: true
+    initial_status: PARTIAL_UNREVIEWED
+  evolution:
+    effectiveness_workflow: .github/workflows/evolution-effectiveness.yml
+    radar_workflow: .github/workflows/evolution-radar.yml
+    open_review_issues: [203, 199]
+    semantic_adoption_authority: human
+  validation:
+    mode: full_run_shadow
+    selective_execution_enabled: false
+    graduation_days: 30
+    graduation_unique_prs: 30
+    graduation_max_false_negatives: 0
+    keep_core_release_unknown_full_run: true
+  quality:
+    ruff_historical_baseline_findings: 758
+    touched_code_policy: no_new_findings
+    coverage_policy: report_only
+    coverage_minimum_percent: null
+    selected_mypy_modules: 8
+  telemetry:
+    export_enabled: false
+    cost_status: unknown
+    price_inference: false
+    prompt_or_image_capture: false
+  branches:
+    hygiene_workflow: .github/workflows/branch-hygiene.yml
+    deletion_mode: report_only
+    remote_branch_count: 113
+  diagnostics:
+    doctor_exists: true
+    project_diagnose_exists: true
+    add_parallel_doctor: false
+  dependencies:
+    policy: config/dependency-policy.yaml
+    automatic_merge_authorized: false
+    open_dependency_prs: 7
+
+local_validation:
+  complete_python_312_integration_gate_environment: MISSING
+  real_model_inference: NOT_RUN
+  native_acceptance_across_all_hosts: NOT_VERIFIED
+
+scope_decisions:
+  include_official_tag_or_release_creation: false
+  include_dependency_pr_merges: false
+  include_branch_deletion: false
+  include_enabling_selective_validation: false
+  include_external_telemetry_transmission: false
+  include_model_download_or_paid_provider: false
+
+notes:
+  - Baseline is evidence for planning, not a claim that recommendations are implemented or validated end to end.
+  - Existing behavior should be extended only where a verified gap remains.
+  - Real inference, visual quality, host execution and complete validation remain separate evidence requirements.
