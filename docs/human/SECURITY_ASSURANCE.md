@@ -213,6 +213,8 @@ Review actual:
 
 ## Release Security Gate
 
+CI 在 tested constraints 下提供必要 lifecycle fixtures 使用的完整 Python 套件；候選秘密掃描及 `repository` 必要檢查不變，Node 與 Chromium 只在候選需要時安裝。
+
 Branch and release readiness reports do not grant branch deletion, release/tag creation or merge authority.
 
 Publication CI exports the fully provisioned Python executable as `AIPS_VALIDATION_PYTHON` after optional validation dependencies are installed, so isolated candidate fixtures use the intended environment. The workflow contract verifies this handoff precedes the deterministic Gate; strict candidate scanning and merge authority remain separate controls.

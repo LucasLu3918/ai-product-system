@@ -175,7 +175,7 @@ Its `run` lifecycle must also verify that fast preflight and Integration Gate re
 
 ## Conditional CI enforcement
 
-The exact-candidate toolchain plan defines which optional environment probes are required. Treat an unselected browser check's `NOT_REQUIRED` result as neutral; preserve blockers for selected browser prerequisites and every mandatory validation check. For mixed OpenAPI lifecycle evidence, keep the aggregate lifecycle active in both plans: run action-level contract smoke with the optional modules, or assert a clear fail-closed diagnostic and no output when they are absent.
+The exact-candidate toolchain plan selects Node and Chromium runtime installation. CI still installs Python packages from all four validation requirement files because mandatory full-repository lifecycle fixtures require the complete module set. Treat an unselected browser check's `NOT_REQUIRED` result as neutral; preserve blockers for selected browser prerequisites and every mandatory validation check. For mixed OpenAPI lifecycle evidence, keep the aggregate lifecycle active in both plans: run action-level contract smoke with the modules, or assert a clear fail-closed diagnostic and no output when they are absent in isolated fixtures.
 
 The validation workflow exports the fully provisioned Python executable through `AIPS_VALIDATION_PYTHON` after optional Python dependencies are installed and before the deterministic Gate. A workflow contract regression locks both the handoff and its ordering; this keeps isolated CLI fixture environments consistent with the required validation toolchain.
 

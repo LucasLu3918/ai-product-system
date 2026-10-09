@@ -438,6 +438,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+CI 對每個候選安裝 `requirements.txt`、`requirements-validation.txt`、`requirements-visual.txt` 與 `requirements-openapi.txt` 的 Python 套件，確保必要的完整 CLI lifecycle fixtures 可執行；Node、文件建置套件與 Playwright Chromium 仍依精確候選路徑選擇。
+
 The Creative matrix and lifecycle evidence cover prompt admission, revocation, output scope, local engine probing, batch recovery and the required documentation projections.
 
 GitHub validation exports the fully provisioned Python interpreter as `AIPS_VALIDATION_PYTHON` after optional dependency installation and before the exact-candidate Gate, so isolated CLI fixtures use the required validation environment.

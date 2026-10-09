@@ -360,7 +360,7 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 Protected publication still requires a clean exact candidate, reconciled Matrix, secret scan, documentation closure and passing repository aggregate.
 
-For the GitHub validation route, install selected optional Python dependencies first, then export the runner's `sys.executable` as `AIPS_VALIDATION_PYTHON` before invoking the exact-candidate Gate. The workflow contract verifies this order so isolated CLI fixtures receive the complete validation interpreter.
+For the GitHub validation route, install Python packages from all four validation requirement files under tested constraints because required lifecycle fixtures exercise the full CLI preflight. Then export the runner's `sys.executable` as `AIPS_VALIDATION_PYTHON` before invoking the exact-candidate Gate. The workflow contract verifies this handoff; Node and Chromium installation remain candidate-selected.
 
 
 OpenCode adapter and native permission changes are Core boundaries: route them through the reviewed Core Change Matrix, full repository validation and exact-candidate Gate before requesting Git publication approval.
