@@ -8,6 +8,19 @@ Project Intelligence 是 AIPS 對既有專案建立的可重用理解層。
 
 ## 第一次 Existing Project
 
+### 唯讀診斷與恢復
+
+`aips project diagnose <project-path>` 會聚合 `aips doctor`、Project Intelligence、目前 Runtime/Harness 設定和本機 MCP 靜態能力，支援 `--format text|yaml|json`。報告包含狀態、穩定 reason code、下一步建議及重新驗證命令；診斷本身不會 bootstrap、refresh、建立索引、attach 或修復任何資料。Doctor 原始輸出不會複製到報告。
+
+常見 Project Intelligence 狀態的恢復方式：
+
+- `intelligence_missing`：需要時手動執行 `aips intelligence bootstrap --project <path>`；補足必要語意主題並完成審查後，再執行 `aips intelligence finalize --project <path>`。
+- `intelligence_partial`：依 status 補足必要語意主題與證據，再 finalize。
+- `intelligence_stale`：先檢視 `aips intelligence refresh-plan --project <path>`；確認影響範圍後才執行 refresh。
+- `intelligence_blocked`：先處理阻擋原因，不略過 gate。
+
+重新執行 `aips intelligence status --project <path>` 或 `aips project diagnose <path>` 驗證結果。Runtime 設定與 MCP 靜態能力不證明 Host 中 Hook／工具確實執行；未取得原生實機證據時維持 `UNVERIFIED`。
+
 
 
 Read-only Discovery 先建立 PARTIAL，再由 Agent 針對 Architecture、Data Flow、Modules、Contracts、DB/Events、Conventions、Testing、Security、Operations 做 evidence-based semantic enrichment；通過 finalize 才是 READY。

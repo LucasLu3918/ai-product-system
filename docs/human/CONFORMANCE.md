@@ -1668,6 +1668,10 @@ Scenario 236 covers versioned no-overwrite Profile/Bundle preparation, fixed MFL
 
 The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies concurrent preparation allocates distinct versions, unconfigured engines remain blocked, preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, MFLUX commands match the fixed capability registry, batch references remain bounded, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, the Z-Image Turbo split-loader graph and local model inventory are exact, prompt-bearing PNG text metadata is removed, edits use exactly one hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
 
+## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
+
+`aips project diagnose` aggregates existing `aips doctor`, Project Intelligence status, Harness resolution and MCP static inspection. It reports stable reason codes with safe next actions and verification commands while keeping bootstrap, refresh, indexing and attach as explicit user actions. Doctor and child-process output is not copied into the report. Lifecycle evidence verifies text/YAML/JSON output, missing/partial/stale/blocked guidance, bounded failures, privacy and no-write behavior. Harness and MCP Host execution remain `UNVERIFIED` unless separately evidenced.
+
 ## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
 
 The scheduled/manual workflow runs a pinned OSV dependency inventory and compares the existing project secret scanner with a full-history Gitleaks shadow. Its failures and parity differences are advisory; the required candidate secret scan and repository Gate remain the release controls. CodeQL configuration is read from GitHub's default setup.

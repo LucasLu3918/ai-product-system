@@ -4,11 +4,11 @@
 This is a deterministic view of `tests/scenario_coverage.yaml` and the Scenario inventory. It is not a quality score.
 
 - Registry status: **PASS**
-- Scenarios: **236** (registered 236; missing 0)
-- Automated evidence: **233/236 (98.7%)**
+- Scenarios: **237** (registered 237; missing 0)
+- Automated evidence: **234/237 (98.7%)**
 - Automated denominator: `deterministic + lifecycle + agent_eval`; specifications alone do not count.
 - Deterministic: 39
-- Lifecycle: 140
+- Lifecycle: 141
 - Agent Eval: 54
 - Manual: 3 (224, 192, 193)
 - Uncovered: 0 (none)

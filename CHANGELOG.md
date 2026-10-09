@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add read-only `aips project diagnose` to aggregate Project Intelligence, Runtime/Harness and MCP static status with privacy-bounded recovery guidance; preserve explicit repair actions and `UNVERIFIED` native Host limits.
+
 ## 0.79.0
 
 - Add a bounded ComfyUI Z-Image Turbo split-loader workflow with loopback validation of local UNET, Qwen CLIP and VAE inventories; preserve checkpoint workflows and keep Z-Image generate-only.

@@ -53,6 +53,14 @@ commands:
     optional_dependencies: []
     validation_bindings: [tests/evidence/install_preflight_lifecycle.py]
     documentation_bindings: [docs/human/INSTALLATION.md, docs/human/GETTING_STARTED.md]
+  - id: project-diagnose
+    command: aips project diagnose
+    surfaces: [project-intelligence]
+    platforms: [linux, macos, windows-wsl]
+    runtime_requirement: Python ">=3.12"
+    optional_dependencies: []
+    validation_bindings: [tests/evidence/project_diagnostics_lifecycle.py]
+    documentation_bindings: [docs/human/PROJECT_INTELLIGENCE.md, docs/human/INSTALLATION.md]
   - id: system-preflight
     command: aips system preflight
     surfaces: [runtime-context]

@@ -12,6 +12,7 @@ surfaces:
   - runtime-invariant-matrix
   - model-routing
   required_paths:
+  - scripts/project_diagnostics.py
   - scripts/runtime_context.py
   - scripts/runtime_cache.py
   - scripts/runtime_invariant_matrix.py
@@ -37,6 +38,7 @@ surfaces:
   - orchestration/RUNTIME_CONTEXT.md
   - orchestration/MODEL_ROUTING.md
   validation_paths:
+  - tests/evidence/project_diagnostics_lifecycle.py
   - tests/evidence/runtime_context_lifecycle.py
   - tests/evidence/aips_cli_module_extraction_lifecycle.py
   - scripts/runtime_invariant_matrix.py

@@ -66,7 +66,10 @@ aips doctor
 aips harness status
 aips mcp inspect
 aips project check /path/to/project
+aips project diagnose /path/to/project --format text
 ~~~
+
+`aips project diagnose` 只讀彙整 `aips doctor`、專案智慧、Runtime/Harness 設定與 MCP 靜態能力，並提供 recovery next steps。它不會自動建立或更新快取；原生 Host 效果也不會因設定存在而被標記為已驗證。
 
 Maintainer 的發布前入口為 `aips docs impact` 與 `aips publish plan|preflight|post-merge`。一般使用者安裝不會自動執行 GitHub 查詢、重寫 branch 或取得 publication authority。
 

@@ -691,7 +691,7 @@ cli_text = (ROOT / "bin/aips").read_text(encoding="utf-8") + "\n" + cli_implemen
 launcher_lines = (ROOT / "bin/aips").read_text(encoding="utf-8").splitlines() if (ROOT / "bin/aips").exists() else []
 if len(launcher_lines) > 24 or 'exec "$BASH" "$SYSTEM_DIR/scripts/aips_cli.sh" "$@"' not in "\n".join(launcher_lines):
     errors.append("bin/aips must stay a thin argument-preserving dispatcher to scripts/aips_cli.sh")
-for phrase in ("aips attach <project-path>", "aips detach <project-path>", "aips status <project-path>", "aips project check <project-path>", "aips system preflight <project-path>", "aips preflight <project-path>", "aips harness install", "aips harness uninstall", "aips harness status", "aips harness doctor", "aips harness resolve", "aips intelligence bootstrap", "aips intelligence status", "aips intelligence context", "aips intelligence render"):
+for phrase in ("aips attach <project-path>", "aips detach <project-path>", "aips status <project-path>", "aips project check <project-path>", "aips project diagnose <project-path>", "aips system preflight <project-path>", "aips preflight <project-path>", "aips harness install", "aips harness uninstall", "aips harness status", "aips harness doctor", "aips harness resolve", "aips intelligence bootstrap", "aips intelligence status", "aips intelligence context", "aips intelligence render"):
     if phrase not in cli_text:
         errors.append(f"bin/aips missing lifecycle command: {phrase}")
 

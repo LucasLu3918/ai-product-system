@@ -1868,3 +1868,10 @@ scenarios:
       - tests/evidence/creative_tool_harness.mjs
       - tests/evidence/opencode_native_acceptance.py
       - tests/validation/creative_execution_contracts.py
+  - id: "237"
+    path: tests/scenarios/237-read-only-project-diagnostics.md
+    coverage: lifecycle
+    evidence:
+      - scripts/project_diagnostics.py
+      - tests/evidence/project_diagnostics_lifecycle.py
+      - tests/validation/static_contracts.py
