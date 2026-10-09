@@ -1,95 +1,41 @@
 version: 1
-candidate:
-  base_sha: 7463a0a3cd08c9578b007518d1d544bb4434b625
-  changed_files_hash: b114da29a80bb265d8b0db597c45aea053955df591a9e6421fa51bc56f05ca0f
 change:
-  id: design5-creative-readiness
-  summary: Align OpenCode creative configuration, improve local engine/readiness diagnostics, and add conservative Apple Silicon dtype guidance.
+  id: plan25-phase5-branch-dependencies
+  summary: Record read-only branch hygiene and dependency risk evidence while preserving report-only cleanup and disabled automatic merges.
   boundary:
-    - OpenCode configure schema parity with the shared executor
-    - MFLUX command/version and model readiness diagnostics
-    - Fixed-loopback ComfyUI read-only discovery
-    - Apple Silicon FP8 static warning and inference status
-    - Scenario 236, Human docs, changelog/version and exact-candidate publication
-    - CI full Python interpreter handoff for isolated CLI validation fixtures
-    - Regression contract for validate workflow interpreter selection and ordering
-    - Required Security Assurance and Core/CI protocol documentation closure
+    - .aips/review/PLAN25_PHASE5_EVIDENCE.md
+    - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
+candidate:
+  base_sha: 18bc33d0790a3369e16fa216f0dd617aed8f0d76
+  changed_files_hash: e928da3d84573f5471932eeff285070e3de4b59e24bb1eabdafefbbdce1f78db
 matrix:
-  - boundary: OpenCode creative configuration contract
-    reason: Agents must be able to pass every supported Z-Image Turbo setting while unknown fields remain rejected.
+  - boundary: Branch Hygiene proposal and authority
+    reason: The report may identify cleanup candidates, but must preserve exact-SHA checks, report-only policy and Human deletion authority.
     checks:
-      static_lint: {applicable: true, evidence: TypeScript syntax and repository validator}
-      unit: {applicable: true, evidence: Schema allowlist parity for model_profile/unet_name/clip_name/vae_name}
-      integration: {applicable: true, evidence: Native creative tool callback fixture accepts the four fields}
-      contract: {applicable: true, evidence: additionalProperties false and unknown-field negative case}
-      e2e: {applicable: true, evidence: End-to-end tool-to-configure fixture; no model inference}
-      security: {applicable: true, evidence: Existing allowlist, path confinement and no-download invariants}
-      migration_recovery: {applicable: false, na_reason: Optional additive tool schema fields; Bundle v1 remains unchanged}
-      cli_harness: {applicable: true, evidence: OpenCode plugin lifecycle and creative CLI adapter}
-      docs_schema: {applicable: true, evidence: Canonical schema/documentation impact checks}
-  - boundary: Local engine and staged readiness diagnostics
-    reason: Command discovery, version probes, configured model inventory, static preflight and real inference are distinct evidence levels.
+      static_lint: {applicable: true, evidence: Repository validation and YAML/document contracts.}
+      unit: {applicable: true, evidence: branch_hygiene_lifecycle.py.}
+      integration: {applicable: true, evidence: Read-only report built against fetched origin metadata; no cleanup dispatch.}
+      contract: {applicable: true, evidence: Branch lifecycle policy, exact manifest policy and deletion_authorized false.}
+      e2e: {applicable: false, na_reason: No branch cleanup or GitHub mutation is part of this candidate.}
+      security: {applicable: true, evidence: Branch report is read-only and cleanup authority remains false.}
+      migration_recovery: {applicable: false, na_reason: No branch lifecycle policy or persistent data changed.}
+      cli_harness: {applicable: true, evidence: branch_hygiene_lifecycle.py and report-only CLI contract.}
+      docs_schema: {applicable: true, evidence: Core Change Matrix validation and Phase 5 evidence review.}
+  - boundary: Dependency risk classification and merge authority
+    reason: Dependency PRs require their configured security/core evidence and must not be auto-merged from listing metadata.
     checks:
-      static_lint: {applicable: true, evidence: Creative execution contracts and repository lint}
-      unit: {applicable: true, evidence: Missing command, version timeout/nonzero/empty, ComfyUI unreachable/malformed, model missing and stage status cases}
-      integration: {applicable: true, evidence: Fake MFLUX and local loopback ComfyUI fixture; no workflow submission during discover}
-      contract: {applicable: true, evidence: Additive provider diagnostics and stable existing reason codes}
-      e2e: {applicable: true, evidence: Synthetic discover/configure/preflight/execute fixture; actual inference remains separately UNVERIFIED}
-      security: {applicable: true, evidence: Only fixed 127.0.0.1:8188 GET probes, bounded responses/timeouts, no redirects/proxies/downloads}
-      migration_recovery: {applicable: false, na_reason: No persisted engine state or Bundle migration}
-      cli_harness: {applicable: true, evidence: aips creative discover/preflight results consumed by OpenCode}
-      docs_schema: {applicable: true, evidence: Engine recovery guidance and readiness states}
-  - boundary: Apple Silicon dtype compatibility guidance
-    reason: FP8 dtype failures are backend/runtime specific; static evidence must be conservative and never claim inference readiness.
-    checks:
-      static_lint: {applicable: true, evidence: Creative contracts and repository validation}
-      unit: {applicable: true, evidence: Apple Silicon FP8, FP16/BF16, explicit compatible, and unknown metadata cases}
-      integration: {applicable: true, evidence: Dtype evidence flows from configured workflow into preflight warning}
-      contract: {applicable: true, evidence: Stable status/warning schema and INFERENCE_VERIFIED remains absent without execution evidence}
-      e2e: {applicable: true, evidence: Deterministic fixture only; hardware/model inference is not run by CI}
-      security: {applicable: true, evidence: No model file content or absolute local path emitted}
-      migration_recovery: {applicable: false, na_reason: No stored compatibility decisions}
-      cli_harness: {applicable: true, evidence: Preflight CLI status surfaced without implying successful generation}
-      docs_schema: {applicable: true, evidence: Apple Silicon troubleshooting wording and dated source check}
-  - boundary: Existing multi-item recovery and publication
-    reason: New diagnostics must preserve create-only output and hash-verified generate-set resume while the exact Core candidate passes repository gates.
-    checks:
-      static_lint: {applicable: true, evidence: Changed Python/TypeScript lint and repository validator}
-      unit: {applicable: true, evidence: Existing two-item partial failure and resume regression}
-      integration: {applicable: true, evidence: creative_execution_lifecycle and creative_generate_set_lifecycle}
-      contract: {applicable: true, evidence: Existing Bundle v1, manifest/trace and generate-set CLI contracts}
-      e2e: {applicable: true, evidence: Synthetic multi-item execution; real model output remains UNVERIFIED}
-      security: {applicable: true, evidence: No overwrite, prompt/secret/path leakage, downloads or non-loopback egress}
-      migration_recovery: {applicable: true, evidence: Resume skips only verified prior outputs}
-      cli_harness: {applicable: true, evidence: CLI and OpenCode lifecycle}
-      docs_schema: {applicable: true, evidence: Scenario 236, architecture, User Guide and Conformance}
-  - boundary: Documentation, version metadata and exact-candidate publication
-    reason: Core changes require canonical doc closure, a candidate-bound matrix, strict secret scanning, full local Gate, required PR checks and main reconciliation.
-    checks:
-      static_lint: {applicable: true, evidence: Documentation validators and complete repository validator}
-      unit: {applicable: true, evidence: Scenario/conformance and generated capability projection checks}
-      integration: {applicable: true, evidence: Python 3.12 exact-candidate Core Integration Gate}
-      contract: {applicable: true, evidence: Change Impact, matrix base/hash and exact file list reconcile}
-      e2e: {applicable: true, evidence: Required repository aggregate on PR and successful main checks after merge}
-      security: {applicable: true, evidence: Credential-free strict scan of final tree and base..head history}
-      migration_recovery: {applicable: false, na_reason: No durable data or schema migration}
-      cli_harness: {applicable: true, evidence: Publication environment, preflight and Integration Gate}
-      docs_schema: {applicable: true, evidence: Documentation closure/build and architecture impact check}
-scope_recomputed_after_expansion: true
+      static_lint: {applicable: true, evidence: Repository validation and YAML/document contracts.}
+      unit: {applicable: true, evidence: dependency_impact_lifecycle.py.}
+      integration: {applicable: true, evidence: Read-only GitHub PR state query; no PR updates or merges.}
+      contract: {applicable: true, evidence: dependency-policy.yaml keeps automatic_merge_authorized false.}
+      e2e: {applicable: false, na_reason: No dependency PR is updated, tested on a branch, or merged by this evidence-only candidate.}
+      security: {applicable: true, evidence: Existing dependency policy security/core requirements remain unchanged.}
+      migration_recovery: {applicable: false, na_reason: No dependency lockfile, package or policy changed.}
+      cli_harness: {applicable: true, evidence: dependency_impact_lifecycle.py and read-only PR state retrieval.}
+      docs_schema: {applicable: true, evidence: Core Change Matrix validation and Phase 5 evidence review.}
+scope_recomputed_after_expansion: false
 actual_diff_reconciled: true
 review_evidence:
   required: false
-verification:
-  focused_contracts: PASS — full worktree repository validator ran with Python 3.12 and all lifecycle contracts passed.
-  creative_execution_lifecycle: PASS — synthetic MFLUX, fixed-loopback ComfyUI, OpenCode schema/recovery, staged readiness and Apple Silicon FP8 advisory cases.
-  ci_validation_python_handoff: PASS — workflow regression contract checks the selected interpreter is exported after optional installs and before the deterministic Gate.
-  creative_generate_set_lifecycle: PASS — per-item preflight, continue-on-failure, verified resume and version-only health probe.
-  plugin_syntax: PASS — Node 24 imported and exercised the actual OpenCode plugin in the native tool harness.
-  documentation_impact: PASS — AIPS publish preview found complete 35-path closure and placement PASS.
-  capability_projection: PASS — 45 capabilities and 10 surfaces validated.
-  repository_validation: PASS — worktree bin/aips validate; version 0.80.0, 12 roles, 27 skills and 238 scenarios.
-  publication_environment: PASS — Python 3.12 Gate dependencies, Node 24, VitePress 1.6.4, Playwright, Chrome and loopback verified by the exact-candidate environment probe.
-  local_integration_gate: REQUIRED — rerun the exact-candidate Core Integration Gate after the approved CI interpreter handoff and regression contract; keep its report external to avoid self-referential commit evidence.
-  real_image_inference: UNVERIFIED — excluded from deterministic Gate and requires separate local authorization.
 blockers: []
 status: READY
