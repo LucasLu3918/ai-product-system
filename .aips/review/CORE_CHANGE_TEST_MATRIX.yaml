@@ -1,50 +1,38 @@
 version: 1
 change:
-  id: plan25-phase1-readiness
-  summary: Record verified existing release, Runtime, Project Intelligence and Doctor behavior; no product behavior change.
+  id: plan25-phase2-creative
+  summary: Record safe local creative-engine readiness and synthetic acceptance evidence; do not add a parallel execution path.
   boundary:
-    - .aips/review/PLAN25_PHASE1_EVIDENCE.md
+    - .aips/review/PLAN25_PHASE2_EVIDENCE.md
     - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
 candidate:
-  base_sha: fb0d63789e696e08cb65296b7e254b58c2d7171d
-  changed_files_hash: 92d88525eaaceda97b551199e7948b72aa018cfef59de1d836cd4073a28763cf
+  base_sha: 9b563c8c3334887a6cb2d092b3d199010d88ae67
+  changed_files_hash: 144a659b29f4ac354a332e747e36b8d635dd4cb64c074add1bc697b900647fea
 matrix:
-  - boundary: Stable release readiness and channel policy
-    reason: Readiness checks must reject inconsistent security and blocker states while stable installation remains tied to verified tags.
+  - boundary: Staged local creative-engine readiness
+    reason: Discovery, runtime health, model configuration, preflight and inference must remain separate evidence stages.
     checks:
-      static_lint: {applicable: true, evidence: Repository validation and YAML fixture parsing.}
-      unit: {applicable: true, evidence: release_channel_lifecycle and release readiness READY/BLOCKED fixtures.}
-      integration: {applicable: false, na_reason: No release service or installer state changed.}
-      contract: {applicable: true, evidence: check_release_readiness READY fixture passes and blocked fixture returns not_ready.}
-      e2e: {applicable: false, na_reason: No tag, Release, or stable artifact was published.}
-      security: {applicable: true, evidence: Existing policy and strict candidate secret scan; no credential or release token used.}
-      migration_recovery: {applicable: false, na_reason: No install, schema or persisted state changed.}
-      cli_harness: {applicable: true, evidence: Local release channel lifecycle and readiness checker.}
-      docs_schema: {applicable: true, evidence: Documentation impact and placement checks for review artifacts.}
-  - boundary: Available-host native Runtime acceptance
-    reason: A supported OpenCode host must demonstrate its version-bound native path while mock-model acceptance remains distinct from real generation and other hosts remain unverified.
-    checks:
-      static_lint: {applicable: true, evidence: Repository validation.}
-      unit: {applicable: true, evidence: Native acceptance contract and host version allowlist.}
-      integration: {applicable: true, evidence: OpenCode v2.0.24 isolated plugin, MCP and loopback mock-model execution.}
-      contract: {applicable: true, evidence: Actual Context delivery and native ALLOW/DENY permission decisions; governance stays ADVISORY.}
-      e2e: {applicable: true, evidence: Native host acceptance; creative generation was not executed.}
-      security: {applicable: true, evidence: Isolated HOME/XDG config, provider credentials removed, loopback-only mock model and temporary workspace.}
-      migration_recovery: {applicable: false, na_reason: No persistent runtime configuration changed.}
-      cli_harness: {applicable: true, evidence: OpenCode native acceptance and harness runtime lifecycle.}
-      docs_schema: {applicable: true, evidence: Scenario 235 host/version and evidence limitations reviewed.}
-  - boundary: Project Intelligence recovery and Doctor consistency
-    reason: First-use, partial, stale and blocked recovery must remain read-only and actionable; Project Diagnostics must reflect Doctor failure without copying unsafe child output.
+      static_lint: {applicable: true, evidence: Repository validation and YAML/document checks.}
+      unit: {applicable: true, evidence: creative_execution_lifecycle command, version, model and readiness-state cases.}
+      integration: {applicable: true, evidence: Read-only creative_execution discover reports local MFLUX command/version and ComfyUI states.}
+      contract: {applicable: true, evidence: Stable readiness fields preserve RUNTIME_UNVERIFIED, MODEL_NOT_CONFIGURED, NOT_RUN and INFERENCE_UNVERIFIED.}
+      e2e: {applicable: true, evidence: Synthetic local lifecycle only; no real model execution.}
+      security: {applicable: true, evidence: No model download, provider credential, external image egress or telemetry export.}
+      migration_recovery: {applicable: false, na_reason: No saved creative bundle or model configuration changed.}
+      cli_harness: {applicable: true, evidence: Read-only discover command and existing create-only execution lifecycle.}
+      docs_schema: {applicable: true, evidence: Documentation closure and Scenario 236 acceptance stages.}
+  - boundary: Native creative preparation and human acceptance boundary
+    reason: A native mock-model session can verify preparation and authority handling but cannot establish real inference or visual quality.
     checks:
       static_lint: {applicable: true, evidence: Repository validation.}
-      unit: {applicable: true, evidence: project_diagnostics_lifecycle missing, partial, stale, blocked, malformed and failure cases.}
-      integration: {applicable: true, evidence: harness_runtime_lifecycle and local read-only aips project diagnose / aips doctor comparison.}
-      contract: {applicable: true, evidence: Stable reason codes, read-only marker, safe next actions, output privacy and Doctor non-zero propagation.}
-      e2e: {applicable: false, na_reason: No project bootstrap, refresh, installation or repair was executed.}
-      security: {applicable: true, evidence: Diagnostic secret sentinel, no-write assertions and strict candidate secret scan.}
-      migration_recovery: {applicable: false, na_reason: No project cache or durable state changed.}
-      cli_harness: {applicable: true, evidence: Project Diagnostics and Doctor command lifecycle.}
-      docs_schema: {applicable: true, evidence: Existing canonical Installation, Project Intelligence and Security Assurance guidance reviewed.}
+      unit: {applicable: true, evidence: Native acceptance and creative lifecycle contracts.}
+      integration: {applicable: true, evidence: OpenCode v2.0.24 isolated native mock-model acceptance.}
+      contract: {applicable: true, evidence: Native prepare/revocation, create-only output, provenance and explicit generation status.}
+      e2e: {applicable: true, evidence: Native preparation and authorization only; generation_executed remains false.}
+      security: {applicable: true, evidence: Isolated host config, secret-free environment and loopback-only model.}
+      migration_recovery: {applicable: false, na_reason: No user project or native host configuration is modified.}
+      cli_harness: {applicable: true, evidence: Native OpenCode host and AIPS creative tool lifecycle.}
+      docs_schema: {applicable: true, evidence: Real inference and visual acceptance explicitly remain UNVERIFIED.}
 scope_recomputed_after_expansion: false
 actual_diff_reconciled: true
 review_evidence:
