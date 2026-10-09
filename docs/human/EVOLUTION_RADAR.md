@@ -96,6 +96,8 @@ Monthly / quarterly roll-up 量測 collected → shortlist → semantic → acti
 - Release readiness is a separate deterministic evidence gate; Evolution metrics do not imply an empty Unreleased section or authorize a tag.
 ## Current Boundaries
 
+Creative workflow reliability is validated through its exact-candidate Core Matrix and deterministic lifecycle evidence; it does not create an Evolution Radar trial or authorize autonomous code, publication or merge actions.
+
 
 創作工具的合成驗證可證明設定與失敗處理契約，不能當作本機模型品質、效能或採用成效證據；仍需另外量測真實生成與人工驗收。
 

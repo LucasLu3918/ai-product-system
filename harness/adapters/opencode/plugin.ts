@@ -84,6 +84,22 @@ function invokeAsync(binary: string, args: string[], cwd: string, timeout: numbe
 
 function hash(value: string): string { return createHash("sha256").update(value).digest("hex").slice(0, 16) }
 
+function creativeRecovery(reason: string, admission?: { maxOutputs?: number }, diagnostics?: Record<string, any>): { next_action: string; details?: Record<string, any> } {
+  switch (reason) {
+    case "creative_intent_required": return { next_action: "Ask for a new explicit creative request; a style choice alone is valid only during an active bounded clarification." }
+    case "creative_scope_expansion": return { next_action: "Confirm the changed creative scope in a new explicit request; the active continuation cannot expand its subject or output set." }
+    case "creative_admission_grant_missing": return { next_action: "Restate the requested creative action. Conversation history alone does not grant write or generation authority." }
+    case "creative_output_limit_exceeded": return { next_action: "Reduce the set to the already authorized output count or start a new explicit request.", details: { max_outputs: admission?.maxOutputs ?? 0 } }
+    case "BLOCKED_NO_ENGINE": return { next_action: "Review local engine diagnostics and configure an already installed compatible engine. No model was downloaded and no fallback was used.", details: diagnostics }
+    case "creative_target_exists": return { next_action: "Choose a new versioned output path; existing files are never overwritten." }
+    case "creative_ephemeral_required": return { next_action: "Use a non-Git EPHEMERAL workspace for local creative execution." }
+    case "version_probe_timeout":
+    case "version_probe_failed":
+    case "version_probe_nonzero_exit": return { next_action: "Run read-only discovery and inspect per-command probe status before selecting a local engine." }
+    default: return { next_action: "Use the reason code to correct the blocked input, then rerun the appropriate read-only preflight." }
+  }
+}
+
 function compactManifest(manifest: Record<string, any>): { body: string; truncated: boolean } {
   const full = JSON.stringify(manifest)
   if (Buffer.byteLength(full) <= MAX_CONTEXT_BYTES) return { body: full, truncated: false }
@@ -172,10 +188,12 @@ export default {
     const contextFlights = new Map<string, Promise<ContextEntry>>()
     const creativeAdmissions = new Map<string, {
       grants: Record<string, any>; root: string; outputScope: string; messageID: string
-      promptDigest: string; maxOutputs: number; usedOutputs: number
+      promptDigest: string; maxOutputs: number; usedOutputs: number; continued: boolean
+      continuation: Record<string, any> | null; issuedAt: number
     }>()
     const maxCache = 32
     const contextCacheTtlMs = 1000
+    const creativeContinuationTtlMs = 15 * 60 * 1000
     void trace({ event: "host_capability", hook_delivery: "configured", permission_enforcement: "active_for_supported_native_actions",
       host_version: process.env.OPENCODE_VERSION ?? "UNKNOWN", host_version_acceptance: "UNVERIFIED" })
 
@@ -235,14 +253,20 @@ export default {
       if (typeof sessionID !== "string" || !sessionID) return
       // Revoke the previous prompt before deriving the new grant. A failed or
       // unsupported admission must never inherit authority from an older turn.
+      const previous = creativeAdmissions.get(sessionID)
       creativeAdmissions.delete(sessionID)
       const session = await sessionRoot(sessionID)
       if (!session) {
         void trace({ event: "creative_admission", decision: "DENY", session: hash(sessionID), reason_code: "session_directory_unavailable", duration_ms: Math.round(performance.now() - hookStarted) })
         return
       }
+      const remainingOutputs = previous ? previous.maxOutputs - previous.usedOutputs : 0
+      const pending = previous && previous.root === session.root
+        && Date.now() - previous.issuedAt <= creativeContinuationTtlMs
+        && remainingOutputs > 0 && previous.continuation
+        ? { ...previous.continuation, max_outputs: remainingOutputs } : null
       const result = await invokeAsync(python, [join(SYSTEM_ROOT, "scripts/creative_request_policy.py")], session.root, 5000,
-        undefined, JSON.stringify({ action: "admit", prompt: event.prompt?.text }), 16 * 1024)
+        undefined, JSON.stringify({ action: "admit", prompt: event.prompt?.text, pending }), 16 * 1024)
       if (result.status !== 0) {
         void trace({ event: "creative_admission", decision: "DENY", session: hash(sessionID), reason_code: "creative_authorization_unavailable", duration_ms: Math.round(performance.now() - hookStarted) })
         return
@@ -250,15 +274,21 @@ export default {
       try {
         const admission = JSON.parse(result.stdout)
         if (admission?.grants && Number.isInteger(admission.max_outputs) && admission.max_outputs >= 0
-          && typeof admission.prompt_sha256 === "string" && /^[0-9a-f]{64}$/.test(admission.prompt_sha256)) {
+          && typeof admission.prompt_sha256 === "string" && /^[0-9a-f]{64}$/.test(admission.prompt_sha256)
+          && typeof admission.continued === "boolean"
+          && (admission.continuation === null || (admission.continuation && admission.continuation.version === 1
+            && Number.isInteger(admission.continuation.max_outputs) && admission.continuation.max_outputs >= 1
+            && Number.isInteger(admission.continuation.turns_remaining) && admission.continuation.turns_remaining >= 1
+            && Array.isArray(admission.continuation.allowed_actions)))) {
           creativeAdmissions.set(sessionID, {
             grants: admission.grants, root: session.root, outputScope: session.root,
             messageID: String(event.messageID ?? event.messageId ?? ""),
             promptDigest: admission.prompt_sha256, maxOutputs: admission.max_outputs, usedOutputs: 0,
+            continued: admission.continued, continuation: admission.continuation, issuedAt: Date.now(),
           })
           while (creativeAdmissions.size > maxCache) creativeAdmissions.delete(creativeAdmissions.keys().next().value as string)
           void trace({ event: "creative_admission", decision: admission.active === true ? "GRANT" : "DENY", session: hash(sessionID), project: hash(session.root),
-            reason_code: admission.active === true ? "prompt_admitted" : "creative_intent_required", duration_ms: Math.round(performance.now() - hookStarted) })
+            reason_code: admission.reason_code ?? (admission.active === true ? admission.continued ? "creative_request_continued" : "prompt_admitted" : "creative_intent_required"), duration_ms: Math.round(performance.now() - hookStarted) })
         } else {
           void trace({ event: "creative_admission", decision: "DENY", session: hash(sessionID), reason_code: "creative_authorization_unavailable", duration_ms: Math.round(performance.now() - hookStarted) })
         }
@@ -438,7 +468,8 @@ export default {
             : admission?.grants?.[request.action === "generate-set" ? "execute" : request.action] ?? { allowed: false, reason_code: "creative_admission_grant_missing" }
           if (authorization.allowed !== true) {
             await trace({ event: "creative_execution", decision: "DENY", project: hash(root), reason_code: authorization.reason_code })
-            return { content: JSON.stringify({ status: "BLOCKED", reason_code: authorization.reason_code, next_action: "clarify_current_creative_request", fallback_allowed: false,
+            const recovery = creativeRecovery(String(authorization.reason_code), admission)
+            return { content: JSON.stringify({ status: "BLOCKED", reason_code: authorization.reason_code, ...recovery, fallback_allowed: false,
               context_diagnostic: { source: admission ? "prompt_admission" : "no_current_admission" } }) }
           }
           const entry = await contextFor(toolContext.sessionID, messages, root, root, true)
@@ -447,7 +478,8 @@ export default {
             return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_ephemeral_required" }) }
           }
           const classification = entry.manifest.task?.classification ?? {}
-          if (!["preflight", "discover"].includes(request.action) && (classification.domain !== "creative" || (request.action === "prepare" ? classification.intent !== "create" : !["create", "modify"].includes(classification.intent)))) {
+          if (!["preflight", "discover"].includes(request.action) && !admission?.continued
+            && (classification.domain !== "creative" || (request.action === "prepare" ? classification.intent !== "create" : !["create", "modify"].includes(classification.intent)))) {
             return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_intent_required" }) }
           }
           if (["execute", "generate-set"].includes(request.action)) {
@@ -459,13 +491,22 @@ export default {
             if (request.action === "generate-set" && admission.usedOutputs > 0) {
               return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_output_limit_exceeded", fallback_allowed: false }) }
             }
-            admission.usedOutputs = request.action === "generate-set" ? admission.maxOutputs : admission.usedOutputs + 1
+            if (request.action === "generate-set") admission.usedOutputs = admission.maxOutputs
           }
           if (request.action === "execute") {
             const preflight = await invokeAsync(aips, ["creative", "preflight", "--project", root, "--bundle", request.bundle], root, 20_000, toolContext.signal)
             let check: Record<string, any> = { status: "BLOCKED", reason_code: "creative_preflight_failed" }
             try { check = JSON.parse(preflight.stdout) } catch { /* fail closed */ }
-            if (preflight.status !== 0 || check.status !== "READY") return { content: JSON.stringify(check) }
+            if (preflight.status !== 0 || check.status !== "READY") {
+              check.fallback_allowed = false
+              Object.assign(check, creativeRecovery(String(check.reason_code ?? "creative_preflight_failed"), admission, check.diagnostics))
+              return { content: JSON.stringify(check) }
+            }
+            if (!admission || admission.usedOutputs >= admission.maxOutputs) {
+              return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_output_limit_exceeded", fallback_allowed: false,
+                ...creativeRecovery("creative_output_limit_exceeded", admission) }) }
+            }
+            admission.usedOutputs += 1
           }
           const executable = ["execute", "generate-set"].includes(request.action)
           const maximum = executable ? 3_600_000 : 20_000
@@ -479,7 +520,10 @@ export default {
           let payload: Record<string, any>
           try { payload = JSON.parse(result.stdout) } catch { payload = { status: "BLOCKED", reason_code: "creative_response_invalid" } }
           if (result.status !== 0 && payload.status !== "BLOCKED") payload = { status: "BLOCKED", reason_code: result.error?.includes("timed out") ? "creative_timeout" : "creative_execution_failed" }
-          if (payload.status === "BLOCKED") payload.fallback_allowed = false
+          if (payload.status === "BLOCKED") {
+            payload.fallback_allowed = false
+            Object.assign(payload, creativeRecovery(String(payload.reason_code ?? "creative_execution_failed"), admission, payload.diagnostics))
+          }
           await trace({ event: "creative_execution", decision: payload.status === "BLOCKED" ? "BLOCKED" : "ALLOW", project: hash(root), reason_code: "creative_tool_result", duration_ms: Math.min(600000, Math.round(performance.now() - started)), provider: payload.provider ?? "unknown", operation: payload.operation ?? "unknown" })
           return { content: JSON.stringify(payload) }
         },

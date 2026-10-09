@@ -75,6 +75,8 @@ aips commands list
 
 ## Existing Project
 
+For local character artwork, an explicit creative request may continue through a bounded style clarification; cancellation or switching tasks revokes that continuation. See the [User Guide](USER_GUIDE.md#creative-directionstyle與brand).
+
 角色插畫可先以 `aips creative discover --project PATH` 檢查支援命令。再準備角色規範、建立 configured Bundle 並預檢；命令存在不代表模型權重或圖片品質已可用。
 
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。

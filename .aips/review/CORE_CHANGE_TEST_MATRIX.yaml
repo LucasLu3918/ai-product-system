@@ -1,185 +1,92 @@
 version: 1
 candidate:
-  base_sha: b8c430ab0edfb431a79aaaa999a415b2119ee489
-  changed_files_hash: bcc9eaab0110f98b25652175d361c690d0b53e41f01801997b34edca3774aa8b
+  base_sha: 56f4aa67d19de843be85b5833df55f42f8d30ac2
+  changed_files_hash: a718aaf2497f3c8e09757c919c12d0de4e7624a2c2c96077bc8461ce0d0db976
 change:
-  id: plan24-all-improvements
-  summary: Evidence-led implementation of the twelve approved plan24 improvement areas across four phases.
+  id: creative-workflow-continuity
+  summary: Fix Chinese illustration intent, bounded OpenCode clarification continuity, local engine diagnostics and recovery guidance by extending existing creative execution capabilities.
   boundary:
-    - OpenCode runtime latency, cancellation, authorization freshness, and host-version acceptance
-    - Local creative backend/model compatibility, provenance, inference, and human visual review
-    - CI optional-toolchain selection and required-check preservation
-    - Large Python module extraction with facade compatibility
-    - High-risk quality debt and focused type/branch evidence
-    - Project Intelligence next-action and recovery guidance
-    - Real creative output and generate/edit workflow evidence
-    - Shared path classification with independent planner risk semantics
-    - Documentation impact amplification and canonical placement
-    - Evolution Radar analysis status, shortlist quality, and Human decision boundary
-    - Release/channel readiness and branch/dependency inventory
-    - Privacy-limited runtime, governance, quality, and outcome telemetry
-    - Exact-candidate documentation, scenarios, security scan, and publication validation
+    - Creative intent and output-budget contract
+    - OpenCode session-bound creative prompt admission, clarification continuation and revocation
+    - Local image-engine discovery, compatibility status and reason-specific recovery
+    - Existing multi-item Creative generate-set workflow and partial recovery
+    - Creative workflow documentation, diagrams and exact-candidate publication
 matrix:
-  - boundary: OpenCode runtime and host acceptance
-    reason: Native hook calls and permission decisions affect latency, cancellation, session identity, and protected writes.
+  - boundary: Creative intent and output-budget contract
+    reason: Chinese intent routing and output-count calculation determine which local creative actions and item counts can be admitted.
     checks:
-      static_lint: {applicable: true, evidence: tests/validation/opencode_integration_contracts.py}
-      unit: {applicable: true, evidence: timeout, cancellation, cache-key, invalidation, and fail-closed negative paths}
-      integration: {applicable: true, evidence: tests/evidence/opencode_integration_lifecycle.py and plugin harness}
-      contract: {applicable: true, evidence: Preserve tool payloads, stable reason codes, and direct Allow/Deny semantics}
-      e2e: {applicable: true, evidence: tests/evidence/opencode_native_acceptance.py passed on OpenCode v2.0.24 with Context delivery and native Allow/Deny; other versions and instruction-model delivery remain UNVERIFIED}
-      security: {applicable: true, evidence: stale grants, session/root drift, timeout, and context-missing denial}
-      migration_recovery: {applicable: false, na_reason: No persisted runtime state migration}
-      cli_harness: {applicable: true, evidence: OpenCode plugin runtime plus version-bound acceptance report}
-      docs_schema: {applicable: true, evidence: Compatibility matrix, privacy docs, scenario and harness projections}
-  - boundary: Creative backend/model compatibility
-    reason: Existing local preflight must identify known incompatibilities without running or downloading a model.
+      static_lint: {applicable: true, evidence: scripts/turn_intent.py and scripts/creative_request_policy.py validation}
+      unit: {applicable: true, evidence: Original three prompts, 立繪 synonyms, one/two-role counts, ambiguous and over-budget cases}
+      integration: {applicable: true, evidence: tests/evidence/creative_request_policy_lifecycle.py}
+      contract: {applicable: true, evidence: Preserve existing intent fields, action decisions and maximum output limit}
+      e2e: {applicable: true, evidence: AIPS policy invocation from the original Chinese conversation}
+      security: {applicable: true, evidence: User-only source, cancellation and scope-expansion negative cases}
+      migration_recovery: {applicable: false, na_reason: No durable authorization or user data schema}
+      cli_harness: {applicable: true, evidence: creative request policy CLI input/output and OpenCode caller}
+      docs_schema: {applicable: true, evidence: Creative direction and relevant scenario/documentation contracts}
+  - boundary: OpenCode session-bound authorization lifecycle
+    reason: A constrained continuation can affect filesystem mutation and must bind the current user response to one active Session and bounded task.
     checks:
-      static_lint: {applicable: true, evidence: creative execution validation and diff checks}
-      unit: {applicable: true, evidence: Hardware/runtime/dtype/model compatibility vectors including unknown=UNVERIFIED}
-      integration: {applicable: true, evidence: Stubbed MFLUX and loopback ComfyUI inventory/preflight lifecycle}
-      contract: {applicable: true, evidence: Existing Bundle and provider result schemas remain backward compatible}
-      e2e: {applicable: true, evidence: No verified weights were available; model inference and visual quality remain UNVERIFIED, with no downloads performed}
-      security: {applicable: true, evidence: No downloads, quantization, cloud fallback, or non-loopback image egress}
-      migration_recovery: {applicable: false, na_reason: No profile migration planned}
-      cli_harness: {applicable: true, evidence: Existing creative discover/preflight CLI and OpenCode consumer}
-      docs_schema: {applicable: true, evidence: Backend compatibility docs and versioned profile/report schema}
-  - boundary: CI optional-toolchain selection
-    reason: Reducing setup cost can change validator execution and required aggregate behavior.
+      static_lint: {applicable: true, evidence: TypeScript plugin contracts and repository validator}
+      unit: {applicable: true, evidence: Fresh grants, bounded selections, cancellation, unrelated requests, session/root drift, concurrency and expiry}
+      integration: {applicable: true, evidence: Native tool harness and tests/evidence/opencode_integration_lifecycle.py}
+      contract: {applicable: true, evidence: Preserve tool schema, reason codes, current Session root binding and direct allow/deny behavior}
+      e2e: {applicable: true, evidence: Native OpenCode v2.0.24 acceptance verified grant admission/revocation; no image generation was executed}
+      security: {applicable: true, evidence: No transcript-only grants, no prompt persistence, no unauthorized execute, no cross-session reuse}
+      migration_recovery: {applicable: false, na_reason: Session state remains ephemeral and is discarded on restart}
+      cli_harness: {applicable: true, evidence: OpenCode plugin lifecycle and host discovery/version result}
+      docs_schema: {applicable: true, evidence: OpenCode adapter guidance and current conversation scenario}
+  - boundary: Local creative engine diagnostics and recovery
+    reason: Health and static compatibility diagnostics must not imply inference readiness, download weights, or silently change output medium/provider.
     checks:
-      static_lint: {applicable: true, evidence: CI plan contracts and workflow validation}
-      unit: {applicable: true, evidence: All selected-toolchain combinations and unknown-path full validation}
-      integration: {applicable: true, evidence: Workflow lifecycle plus exact planner output}
-      contract: {applicable: true, evidence: Preserve repository aggregate, secret scan, governance, Impact, and Core gates}
-      e2e: {applicable: true, evidence: Candidate workflow precheck passed; exact-candidate Integration Gate will execute before publication}
-      security: {applicable: true, evidence: Required scans remain unconditional; validator skips require complete replay evidence}
-      migration_recovery: {applicable: false, na_reason: No workflow state migration}
-      cli_harness: {applicable: true, evidence: Local publish preflight and CI resolver parity}
-      docs_schema: {applicable: true, evidence: CI planning and validation policy documentation}
-  - boundary: Python module extraction
-    reason: Internal ownership changes can break imports, CLI calls, execution order, and stable output contracts.
+      static_lint: {applicable: true, evidence: Creative execution validation and repository validator}
+      unit: {applicable: true, evidence: Missing command, probe timeout/failure, version parse, local capability, dtype compatibility and UNVERIFIED outcomes}
+      integration: {applicable: true, evidence: Fake MFLUX and loopback ComfyUI discovery/preflight lifecycle}
+      contract: {applicable: true, evidence: Additive diagnostics; preserve Bundle/provider schemas and existing reason codes}
+      e2e: {applicable: true, evidence: No real local weights assumed; inference and image quality remain UNVERIFIED unless explicitly available}
+      security: {applicable: true, evidence: No downloads, cloud fallback, prompt/image trace, or non-loopback image egress}
+      migration_recovery: {applicable: false, na_reason: No engine configuration migration}
+      cli_harness: {applicable: true, evidence: aips creative discover/preflight and OpenCode diagnostic result}
+      docs_schema: {applicable: true, evidence: Diagnostics and recovery guidance}
+  - boundary: Existing multi-item workflow and recovery
+    reason: Multi-role generation must respect the admitted total budget and preserve successful output when another item fails.
     checks:
-      static_lint: {applicable: true, evidence: Ruff and mypy selected-module ratchets}
-      unit: {applicable: true, evidence: Characterization and golden-vector tests for each extracted boundary}
-      integration: {applicable: true, evidence: Existing lifecycle suites through compatibility facades}
-      contract: {applicable: true, evidence: Public imports, CLI arguments, schema, and reason codes unchanged}
-      e2e: {applicable: false, na_reason: Existing integration lifecycle exercises the public user path}
-      security: {applicable: true, evidence: Secret-path exclusion and redaction regression where applicable}
-      migration_recovery: {applicable: true, evidence: Existing cache/profile recovery and interrupted operation contracts}
-      cli_harness: {applicable: true, evidence: Direct checkout and installed symlink invocation}
-      docs_schema: {applicable: true, evidence: Architecture and module ownership references}
-  - boundary: Quality debt and targeted coverage
-    reason: Ratchets and module quality policy may alter the mandatory repository validator.
+      static_lint: {applicable: true, evidence: Generate-set validators and repository checks}
+      unit: {applicable: true, evidence: Item count cap, stable IDs, per-item failure and hash-verified resume}
+      integration: {applicable: true, evidence: tests/evidence/creative_generate_set_lifecycle.py and creative execution lifecycle}
+      contract: {applicable: true, evidence: Existing manifest format and generate-set CLI remain compatible}
+      e2e: {applicable: true, evidence: Synthetic two-Bundle run with one failure; real inference separately UNVERIFIED}
+      security: {applicable: true, evidence: No overwrite, no scope traversal, no budget bypass}
+      migration_recovery: {applicable: true, evidence: Interrupted/partial set resume only when saved hashes match}
+      cli_harness: {applicable: true, evidence: Creative generate-set and OpenCode multi-item invocation}
+      docs_schema: {applicable: true, evidence: Multi-character workflow and recovery documentation}
+  - boundary: Documentation, architecture and exact-candidate publication
+    reason: Behavior changes affect user guidance and must be reviewed against the exact base/head, complete file set and required checks.
     checks:
-      static_lint: {applicable: true, evidence: Current Ruff ratchet baseline and zero-new-findings paths}
-      unit: {applicable: true, evidence: Branch tests for every behavior changed in a high-risk function}
-      integration: {applicable: true, evidence: Quality ratchet lifecycle}
-      contract: {applicable: true, evidence: Existing debt baseline preserved; no arbitrary repository-wide coverage threshold}
-      e2e: {applicable: false, na_reason: Focused contracts and complete repository Integration Gate cover this tooling boundary}
-      security: {applicable: true, evidence: Security-owned modified paths receive negative-path tests}
-      migration_recovery: {applicable: false, na_reason: No persisted user data migration}
-      cli_harness: {applicable: true, evidence: Quality ratchet and repository validation CLI}
-      docs_schema: {applicable: true, evidence: Quality and maintenance policy}
-  - boundary: Project Intelligence diagnostics and recovery
-    reason: New next-actions must remain observational and cannot infer authority or auto-run repair.
-    checks:
-      static_lint: {applicable: true, evidence: Diagnostic contracts and diff checks}
-      unit: {applicable: true, evidence: Missing, stale, partial, blocked, and migrated-state action plans}
-      integration: {applicable: true, evidence: Project diagnose lifecycle and recovery scenarios}
-      contract: {applicable: true, evidence: Stable reason codes and read-only output schema}
-      e2e: {applicable: true, evidence: CLI diagnose from missing Intelligence through recommended next action}
-      security: {applicable: true, evidence: No auto-bootstrap, refresh, finalize, or scope authorization}
-      migration_recovery: {applicable: true, evidence: Interrupted bootstrap and project path migration recovery}
-      cli_harness: {applicable: true, evidence: aips project diagnose/check and supported runtime context}
-      docs_schema: {applicable: true, evidence: Project Intelligence guide and recovery commands}
-  - boundary: Creative output and real inference evidence
-    reason: Synthetic raster tests do not prove model execution, image fidelity, or user acceptance.
-    checks:
-      static_lint: {applicable: true, evidence: Creative schema, profile, and provenance validators}
-      unit: {applicable: true, evidence: Identity/style preservation, output container validity, and manifest provenance}
-      integration: {applicable: true, evidence: Fake provider generate/edit lifecycle with resume/review state separation}
-      contract: {applicable: true, evidence: Existing Character/Style Profile and Bundle contracts remain accepted}
-      e2e: {applicable: true, evidence: Reproducible real local generate/edit only if verified weights/runtime exist; otherwise explicitly UNVERIFIED}
-      security: {applicable: true, evidence: Safe paths, create-only outputs, no raw prompt/image trace, and no network egress}
-      migration_recovery: {applicable: true, evidence: Incomplete job recovery and no-overwrite resume}
-      cli_harness: {applicable: true, evidence: Creative discover/configure/preflight/execute/review lifecycle}
-      docs_schema: {applicable: true, evidence: Human visual review protocol and manifest provenance schema}
-  - boundary: Shared path classification
-    reason: Two planners share known paths but retain distinct risk and selection rules.
-    checks:
-      static_lint: {applicable: true, evidence: Planner contracts}
-      unit: {applicable: true, evidence: Cross-planner root paths, prefixes, unknown paths, and explicit full validation vectors}
-      integration: {applicable: true, evidence: CI workflow and validator-selection plan lifecycle}
-      contract: {applicable: true, evidence: Preserve planner-specific risk semantics}
-      e2e: {applicable: false, na_reason: Exact configuration and planner lifecycle tests cover the boundary}
-      security: {applicable: true, evidence: Unknown and malformed paths fail closed}
-      migration_recovery: {applicable: false, na_reason: No persisted classification data migration}
-      cli_harness: {applicable: true, evidence: Publish plan and CI resolver commands}
-      docs_schema: {applicable: true, evidence: Canonical path inventory and maintenance docs}
-  - boundary: Documentation change amplification
-    reason: Documentation policy edits can weaken canonical placement or sync closure.
-    checks:
-      static_lint: {applicable: true, evidence: Documentation placement and sync validators}
-      unit: {applicable: true, evidence: Required/indirect/unrelated dependency classification vectors}
-      integration: {applicable: true, evidence: Exact Markdown link and VitePress build}
-      contract: {applicable: true, evidence: No placement bypass or weakened documentation impact Gate}
-      e2e: {applicable: true, evidence: Exact candidate documentation impact and build preflight}
-      security: {applicable: false, na_reason: Documentation cost metrics contain no user payload}
-      migration_recovery: {applicable: false, na_reason: No persisted state migration}
-      cli_harness: {applicable: true, evidence: aips docs impact and publish preflight}
-      docs_schema: {applicable: true, evidence: Canonical H2 placement and diagram impact check}
-  - boundary: Evolution Radar research conversion
-    reason: Triage status and proposals must not imply Human adoption or autonomous implementation.
-    checks:
-      static_lint: {applicable: true, evidence: Radar schema and source configuration validation}
-      unit: {applicable: true, evidence: Pending analysis versus assessed/disqualified states and capability-gap evidence}
-      integration: {applicable: true, evidence: Bounded signal cohort through assessment and Human decision handoff}
-      contract: {applicable: true, evidence: Existing source/weight/decision semantics preserved}
-      e2e: {applicable: true, evidence: One deterministic bounded cohort yields reviewable advisory candidates}
-      security: {applicable: true, evidence: No credentials, auto-adoption, PR, merge, or code-write authority}
-      migration_recovery: {applicable: true, evidence: Existing signal records remain valid under additive status fields}
-      cli_harness: {applicable: true, evidence: Existing Radar and effectiveness workflows}
-      docs_schema: {applicable: true, evidence: Evolution Radar guide and evidence provenance}
-  - boundary: Release readiness and branch/dependency inventory
-    reason: Reports may affect protected refs if they gain remediation authority.
-    checks:
-      static_lint: {applicable: true, evidence: Branch lifecycle and release readiness contracts}
-      unit: {applicable: true, evidence: Current SHA, merged PR evidence, release/tag/channel status, and unknown preservation}
-      integration: {applicable: true, evidence: Read-only branch proposal lifecycle}
-      contract: {applicable: true, evidence: No deletion, unrelated PR merge, release, or tag creation}
-      e2e: {applicable: true, evidence: Branch hygiene, release-channel, and dependency-impact lifecycle fixtures passed; no cleanup or unrelated publication action was run}
-      security: {applicable: true, evidence: No contents-write or branch-delete authority}
-      migration_recovery: {applicable: false, na_reason: Report-only output; no state migration}
-      cli_harness: {applicable: true, evidence: aips release/branch report commands}
-      docs_schema: {applicable: true, evidence: Release readiness and branch lifecycle guidance}
-  - boundary: Existing telemetry outcome extension
-    reason: New outcome measures must preserve privacy and separate runtime events from task content.
-    checks:
-      static_lint: {applicable: true, evidence: Telemetry schema/contract validation}
-      unit: {applicable: true, evidence: Aggregate metrics, redaction, and allowlist vectors}
-      integration: {applicable: true, evidence: Export lifecycle with bounded event source}
-      contract: {applicable: true, evidence: Existing telemetry export envelope remains compatible}
-      e2e: {applicable: true, evidence: tests/evidence/telemetry_export_lifecycle.py passed with local synthetic events and allowlisted export fields}
-      security: {applicable: true, evidence: No prompts, images, secrets, or chain-of-thought persisted}
-      migration_recovery: {applicable: true, evidence: Old schema inputs and incomplete event histories}
-      cli_harness: {applicable: true, evidence: Existing telemetry export entrypoint and runtime adapters}
-      docs_schema: {applicable: true, evidence: Privacy and telemetry documentation}
-  - boundary: Exact candidate, documentation, and publication
-    reason: Candidate must bind every impact and evidence record to exact source state.
-    checks:
-      static_lint: {applicable: true, evidence: Full repository validator and diff checks}
-      unit: {applicable: true, evidence: Scenario coverage and registry projections}
-      integration: {applicable: true, evidence: Exact-candidate aips publish preflight}
-      contract: {applicable: true, evidence: Impact validation and core matrix/file-set binding}
-      e2e: {applicable: true, evidence: PR required repository aggregate on exact head}
-      security: {applicable: true, evidence: Mandatory candidate secret scan over tree and history}
-      migration_recovery: {applicable: false, na_reason: No persistent user-project migration}
-      cli_harness: {applicable: true, evidence: CLI, Harness, and supported host lifecycles}
-      docs_schema: {applicable: true, evidence: Documentation impact closure and affected architecture diagrams}
-review_evidence:
-  required: false
-  reason: Primary-agent implementation with exact candidate Integration Gate; host-specific evidence remains separately classified.
+      static_lint: {applicable: true, evidence: Documentation validators and full repository validation}
+      unit: {applicable: true, evidence: Scenario/conformance coverage and generated capability projections if affected}
+      integration: {applicable: true, evidence: Documentation impact plus exact-candidate Integration Gate}
+      contract: {applicable: true, evidence: Impact record and matrix changed-file digest reconcile with actual diff}
+      e2e: {applicable: true, evidence: PR required aggregate on exact candidate; remote main checks after merge}
+      security: {applicable: true, evidence: Mandatory candidate and history secret scanning; no credentials added}
+      migration_recovery: {applicable: false, na_reason: No persistent project/user data migration}
+      cli_harness: {applicable: true, evidence: Python 3.12 local publication preflight and Integration Gate}
+      docs_schema: {applicable: true, evidence: Markdown links, docs build, canonical placement and architecture diagram impact check}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
+review_evidence:
+  required: false
+verification:
+  creative_request_policy: PASS — tests/evidence/creative_request_policy_lifecycle.py
+  creative_execution_lifecycle: PASS — tests/evidence/creative_execution_lifecycle.py; synthetic ComfyUI loopback fixture, no real image generation
+  creative_generate_set: PASS — tests/evidence/creative_generate_set_lifecycle.py
+  opencode_lifecycle: PASS — tests/evidence/opencode_integration_lifecycle.py
+  opencode_native_acceptance: PASS — OpenCode v2.0.24 native Context/tool/permission fixture; model execution mocked, creative generation false
+  creative_contracts: PASS — python -m tests.validation.creative_execution_contracts
+  python_lint: PASS — Ruff on changed Python implementation and lifecycle files
+  plugin_syntax: PASS — Node 24 `--check --experimental-strip-types`
+  documentation_impact: PASS — 40-path recursive closure complete
+  publication_environment: READY — Python 3.12, Node 24, pinned VitePress 1.6.4, loopback and browser probes
+  real_image_inference: UNVERIFIED — no user-local model generation requested or performed
 blockers: []
 status: READY

@@ -107,6 +107,8 @@ Brand System 可涵蓋 Brand Intent、Audience / Positioning、Purpose / Mission
 
 ### 可重複使用的角色美術
 
+明確要求多位角色各自產圖時，授權會依角色／輸出數量設上限。創作中的短風格選擇可延續目前 Session 的有限回合；取消、切換工作、擴大範圍或超過數量後需重新提出明確要求。缺少本機引擎時會提供原因與恢復方式，不會自動下載模型或改用雲端服務。
+
 角色素材沿用 `creative-calibration`、`visual-direction` 與 `visual-quality-review`。以 `CHARACTER_PROFILE.yaml` 記錄身份特徵與本機參考圖雜湊，以 `STYLE_PROFILE.yaml` 記錄媒材、構圖和文字規則；姿勢、表情、配件分開產出，避免一次生成後難以替換。預設使用已存在的本機 ComfyUI MCP；Apple Silicon 可選用 MFLUX。流程不安裝引擎、不下載模型，也不使用雲端或付費 API。清單需記錄精確模型版本、Runtime、授權來源與本機執行狀態。
 
 使用 `python scripts/character_artifacts.py validate MANIFEST --project PROJECT` 驗證檔案、路徑、尺寸、雜湊和來源；使用 `compose` 以 SVG 組成設定表並排上繁體中文標籤。輸出不覆寫既有檔案。這些檢查不會判斷角色是否一致或畫面是否合格，仍需人工依核准的角色與風格設定逐張審查；效能數據只有實際量測後才能填入。
@@ -139,6 +141,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 新專案若尚未選擇技術，AIPS 會先檢查硬性限制，再依團隊、產品、既有系統、交付與維護需求提出少量候選和取捨；語言與框架分開選擇。架構建議同時看複雜度訊號與反向訊號，並分開說明 Clean Architecture、DDD 與部署方式。重要選擇由使用者確認後，才會整理到 Implementation Profile。
 
 ## Global Harness 與 MCP
+
+OpenCode 對話中的創作延續只保留 Session root、有限回合與剩餘輸出數等結構化狀態，每次回覆仍重新判斷授權；不保存舊提示文字，也不以 Context 或 transcript 恢復權限。取消、切換工作、擴大範圍或達到數量上限後，需重新明確提出要求。
 
 OpenCode V2 Creative writes use the current native user prompt for authorization; tool Context and prior transcript messages cannot renew a cancelled request.
 
@@ -194,6 +198,8 @@ Raw data
 Architecture trade-off、Threat Model、視覺方向等主觀專業判斷不應為了省 token 被強行 deterministic 化。
 
 ## Deterministic Scheduler
+
+創作延續狀態只協助短風格選擇，不會排程或自動重試生成。每次產圖仍需明確執行動作，並通過本機引擎 preflight。
 
 discover/preflight 是唯讀操作；configure 會建立版本化檔案，execute 才會啟動 provider。排程與狀態不可將這些不同效果混為完成產圖。
 
@@ -262,6 +268,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+創作授權、Bundle／輸出 provenance、人工視覺審查與使用者接受是不同證據；通過程式 Gate 不代表角色品質已驗收，也不會自動取得 Git 合併權限。
 
 Creative output integrity, human visual review and user acceptance remain separate states; a successful local batch does not mark image quality as approved.
 
@@ -428,6 +436,8 @@ Standalone and shadow dependency-review artifacts retain exact base/head, run ID
 舊聊天內容不是 authoritative run state；若 workspace fingerprint 已變，先 refresh / revalidate 再接續。
 
 ## Project Intelligence
+
+Change Impact 需把創作授權 adapter、policy、executor、呼叫者與消費者納入 bounded traversal；只完成種子範圍不能宣稱 repository-wide graph 完整。
 
 Project diagnose provides the next read-only inspection or recovery pointer; users choose whether to run a suggested repair.
 

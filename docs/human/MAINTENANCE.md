@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+The creative authorization change updates the recursive character-artwork and Harness documentation closure; its exact candidate, changed-file digest and boundary evidence are bound by `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`.
+
 The candidate report measures direct paths, closure additions, rule fan-in and repeated requirements. Repeated requirements are retained unless their content is shown to be redundant.
 
 
@@ -239,6 +241,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+For creative authorization changes, derive regression cases from the adapter, policy, executor, callers and consumers. Review changed and affected-but-unchanged nodes; do not infer repository-wide completeness from scoped graph evidence.
+
 創作 runtime 變更驗證 user-only 授權、Context envelope、設定欄位與版本競爭、取消／換任務、媒材拒絕、損壞圖片及 provenance。真實推論與人工品質驗收需分開回報，不能由 fake engine PASS 代替。
 
 Core adapter changes bind lifecycle, security-boundary, documentation-closure, and exact-candidate Gate evidence in `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`.
@@ -352,6 +356,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 High-risk external runtime actions also require an exact, unexpired Approval Record and fresh verified network-egress enforcement. A hook alone is not a sandbox; missing provider proof blocks the action.
 
 ## Public repository / CI consistency
+
+Creative authorization lifecycle evidence covers fresh grants, revocation, root/session changes, scope expansion and output caps; native-host checks and real inference remain separately reported, and unavailable inference stays unverified.
 
 The OpenCode native adapter is version-scoped to V2. CI and local acceptance distinguish plugin setup from model-context and permission-hook execution; unknown runtime behavior remains UNVERIFIED.
 

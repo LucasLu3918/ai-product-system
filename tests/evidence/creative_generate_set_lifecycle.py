@@ -115,10 +115,13 @@ def main() -> int:
         executable.write_text("#!/bin/sh\nprintf 'mflux fixture 1\n'\n", encoding="utf-8")
         executable.chmod(0o755)
         with patch.object(creative.shutil, "which", side_effect=lambda command: str(executable) if command == "mflux-generate" else None), \
-             patch.object(creative.subprocess, "run", return_value=SimpleNamespace(returncode=0, stdout="mflux fixture 1\n", stderr="")) as probe:
+             patch.object(creative.subprocess, "run", return_value=SimpleNamespace(returncode=0, stdout="mflux fixture 1.0\n", stderr="")) as probe:
             discovered = creative.discover(root)
         assert discovered["engine_probe"] == "bounded_version_only"
         assert discovered["health_summary"]["healthy_commands"] == 1
+        runtime = next(item for item in discovered["runtimes"] if item["command"] == "mflux-generate")
+        assert runtime["capability_status"] == "COMMAND_PRESENT"
+        assert runtime["version_status"] == "PARSED"
         assert probe.call_count == 1 and discovered["generation_executed"] is False
 
     print("Creative generate-set PASS: per-item preflight, continue-on-failure, verified resume and version-only health probe")

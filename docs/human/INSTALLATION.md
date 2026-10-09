@@ -82,6 +82,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
+OpenCode creative clarification state is held only in the active Session and requires no additional service, provider credential or model download; host-native acceptance remains separate from installation status.
+
 Successful adapter installation confirms setup only. Runtime Context delivery, permission enforcement and host-version compatibility use separate acceptance evidence, so unsupported or untested host combinations remain explicitly unverified.
 
 The OpenCode V2 Creative tool uses the adapter's prompt hook and shared local executor; installing the plugin does not install an image engine or model. Verify native grant admission with the versioned-host acceptance before relying on runtime behavior.

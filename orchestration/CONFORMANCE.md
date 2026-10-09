@@ -58,6 +58,8 @@ The fixture lifecycle covers safe local profile/reference paths, SVG and PNG val
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
 
+Each creative response derives its grant from the current native prompt hook and bounded Session continuation state; transcript recovery, stale prompts and advisory Context cannot restore authority.
+
 
 Prompt classification keeps its legacy tuple and adds domain, intent, effect, and L0-L3 readiness. A managed V2 plugin resolves the active Session directory, injects a bounded Context before primary model dispatch, and rechecks current Context and target confinement before supported native file permissions. L1 is limited to new creative assets in non-Git workspaces; L2 requires READY/CURRENT project evidence; external actions retain existing Human approval. EPHEMERAL creative sessions receive read-only asset metadata from a private external cache with versioned no-overwrite suggestions. Shell rejects known command/argument side effects but is not a process sandbox. Optional native acceptance uses an isolated loopback mock model to verify actual Context delivery and native file Allow/Deny. Host discovery and execution remain UNVERIFIED without that evidence, so governance remains ADVISORY. `aips harness trace` provides an allowlisted privacy-limited event view. MCP/custom tools and out-of-process writes are outside the guard.
 
@@ -931,7 +933,7 @@ Scenario 236's exact-candidate Core Matrix records synthetic creative lifecycle 
 Each item retains explicit execution intent and distinct review/acceptance state.
 
 
-Native OpenCode V2 prompt admission issues an in-memory grant bound to the active session, workspace, actions and bounded output count; unrelated prompts revoke it, and truncated transcript context cannot restore authority. Read-only discovery and preflight remain available without a grant.
+Native OpenCode V2 prompt admission issues a fresh in-memory grant bound to the active session, workspace, actions and bounded output count. A short style selection can derive a new grant only from root-bound, expiring structured continuation state; cancellation, unrelated work, scope expansion and output-cap exhaustion revoke it. Raw prior prompts and transcript context cannot restore authority. Read-only discovery and preflight remain available without a grant.
 
 The synthetic multi-item lifecycle verifies per-item preflight, continue-on-failure, hash-verified resume and recovery after an output succeeds before its checkpoint. Version-only local engine discovery never starts generation. Native OpenCode acceptance verifies grant admission and revocation without invoking image generation; no real model quality or visual acceptance is claimed.
 

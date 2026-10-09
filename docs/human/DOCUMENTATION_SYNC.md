@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Creative workflow changes synchronize the explicit request, bounded OpenCode clarification, local execution and independent visual acceptance boundaries across the User Guide, Technology Guide, Architecture Overview, Harness guidance and Scenario 238.
+
 Change-amplification metrics record direct paths, recursive closure, required additions and repeated requirements; repetition triggers review but does not authorize deleting canonical content.
 
 

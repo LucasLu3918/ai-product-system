@@ -29,6 +29,8 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+The creative workflow's fresh-grant continuation, output cap, local engine recovery and no-silent-fallback behavior stay aligned across Human guidance, OpenCode Agent rules, Creative Direction and Scenario 238.
+
 Amplification metrics reveal repeated document requirements for review; only proven duplicate content can justify a future policy reduction.
 
 
@@ -184,6 +186,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 
 ## Human documentation placement
+
+The creative authorization change also updates the Harness, security, deterministic execution and change-impact topics that explain its fresh-grant and bounded-continuation behavior.
 
 
 Creative authorization and batch execution must remain synchronized across the OpenCode adapter contract, Creative Direction, Human usage/architecture docs and Scenario 238.

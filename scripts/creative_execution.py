@@ -86,9 +86,10 @@ OFFLINE_ENV = {
 
 
 class Blocked(ValueError):
-    def __init__(self, reason_code: str, message: str):
+    def __init__(self, reason_code: str, message: str, diagnostics: dict[str, Any] | None = None):
         super().__init__(message)
         self.reason_code = reason_code
+        self.diagnostics = diagnostics or {}
 
 
 class TransientProviderError(RuntimeError):
@@ -508,7 +509,27 @@ def resolve_provider(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str,
 
 def preflight(project: Path, bundle_path: str) -> dict[str, Any]:
     root, bundle = read_bundle(project, bundle_path)
-    provider, resolved = resolve_provider(root, bundle)
+    try:
+        provider, resolved = resolve_provider(root, bundle)
+    except Blocked as exc:
+        if exc.reason_code == "BLOCKED_NO_ENGINE":
+            try:
+                inventory = discover(root)
+            except (OSError, ValueError, TypeError, subprocess.SubprocessError):
+                inventory = {"runtimes": [], "health_summary": {"healthy_commands": 0, "total_commands": 0},
+                             "generation_executed": False, "external_image_egress": False}
+            configured = bundle.get("provider") == "comfyui_local" or isinstance(bundle.get("comfyui"), dict)
+            exc.diagnostics = {
+                **exc.diagnostics,
+                "mflux": inventory.get("runtimes", []),
+                "mflux_health_summary": inventory.get("health_summary"),
+                "comfyui": {"status": "CONFIGURED_BUT_PREFLIGHT_FAILED" if configured else "NOT_CONFIGURED",
+                            "reason_code": exc.reason_code if configured else "explicit_bundle_required"},
+                "model_status": "NOT_VERIFIED",
+                "generation_executed": False,
+                "external_image_egress": False,
+            }
+        raise
     dtype_values: set[str] = set()
     workflow = resolved.get("workflow")
     if isinstance(workflow, dict):
@@ -553,32 +574,39 @@ def discover(project: Path) -> dict[str, Any]:
     runtimes = []
     for command in commands:
         executable = shutil.which(command)
-        record: dict[str, Any] = {"command": command, "available": bool(executable), "health_status": "UNAVAILABLE"}
+        record: dict[str, Any] = {"command": command, "available": bool(executable), "health_status": "UNAVAILABLE",
+                                  "capability_status": "NOT_CHECKED", "version_status": "NOT_CHECKED"}
         if executable:
+            record["capability_status"] = "COMMAND_PRESENT"
             try:
                 result = subprocess.run(
                     [executable, "--version"], cwd=root, capture_output=True, text=True,
                     timeout=3, check=False, shell=False, env={**os.environ, **OFFLINE_ENV},
                 )
                 version = (result.stdout or result.stderr).strip().splitlines()
-                record["health_status"] = "HEALTHY" if result.returncode == 0 and bool(version) else "UNRESPONSIVE"
-                if record["health_status"] == "HEALTHY":
+                record["health_status"] = "HEALTHY" if result.returncode == 0 else "UNRESPONSIVE"
+                if result.returncode != 0:
+                    record.update(reason_code="version_probe_nonzero_exit", exit_code=result.returncode, version_status="FAILED")
+                elif not version:
+                    record.update(reason_code="version_probe_empty", version_status="EMPTY")
+                else:
+                    record["version_status"] = "UNRECOGNIZED"
                     match = re.search(r"(?<![A-Za-z0-9])v?\d+\.\d+(?:\.\d+)?", version[0])
                     if match:
-                        record["version"] = match.group(0)[:32]
-                else:
-                    record["reason_code"] = "version_probe_failed"
+                        record.update(version=match.group(0)[:32], version_status="PARSED")
             except subprocess.TimeoutExpired:
-                record.update(health_status="UNRESPONSIVE", reason_code="version_probe_timeout")
-            except OSError:
-                record.update(health_status="UNAVAILABLE", reason_code="version_probe_failed")
+                record.update(health_status="UNRESPONSIVE", reason_code="version_probe_timeout", version_status="TIMEOUT")
+            except OSError as exc:
+                record.update(health_status="UNAVAILABLE", reason_code="version_probe_failed", failure_type=type(exc).__name__)
+        else:
+            record.update(reason_code="command_not_found", capability_status="UNAVAILABLE", version_status="UNAVAILABLE")
         runtimes.append(record)
     healthy = sum(runtime["health_status"] == "HEALTHY" for runtime in runtimes)
     return {"status": "DISCOVERED", "runtimes": runtimes, "supported_models": sorted(MFLUX_CAPABILITIES),
             "model_status": "NOT_VERIFIED", "generation_executed": False,
             "external_image_egress": False, "engine_probe": "bounded_version_only",
             "health_summary": {"healthy_commands": healthy, "total_commands": len(runtimes)},
-            "next_action": "configure_then_preflight",
+            "next_action": "inspect_health_then_configure_and_preflight",
             "comfyui_status": "NOT_PROBED_REQUIRES_EXPLICIT_BUNDLE"}
 
 
@@ -1350,7 +1378,10 @@ def main() -> int:
         print(json.dumps(result, ensure_ascii=False))
         return 0
     except Blocked as exc:
-        print(json.dumps({"status": "BLOCKED", "reason_code": exc.reason_code, "message": str(exc)}, ensure_ascii=False))
+        payload = {"status": "BLOCKED", "reason_code": exc.reason_code, "message": str(exc)}
+        if exc.diagnostics:
+            payload["diagnostics"] = exc.diagnostics
+        print(json.dumps(payload, ensure_ascii=False))
         return 2
     except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as exc:
         print(json.dumps({"status": "BLOCKED", "reason_code": "creative_execution_error", "message": type(exc).__name__}, ensure_ascii=False))
