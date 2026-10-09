@@ -13,6 +13,8 @@ Adapter setup, Context delivery, permission-hook execution and exact host-versio
 
 `aips project diagnose <path>` 可檢查目前 Runtime/Harness 設定並彙整 MCP 靜態能力；它不能證明 Host 已載入 Context、Hook 或 Tool。未完成版本綁定的原生證據一律保留 UNVERIFIED。
 
+Creative recovery includes sanitized provider reason codes. OpenCode discovery can inspect only the fixed `127.0.0.1:8188` ComfyUI API and keeps inference unverified until an explicit execution is separately observed.
+
 Runtime resolution keeps machine-readable results on stdout and diagnostics on stderr. Invalid adapter-state YAML is reported as an error; an unavailable Intelligence subprocess has a stable reason code instead of being confused with a successful empty result.
 
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.

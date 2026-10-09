@@ -20,6 +20,8 @@ OpenCode 的 Creative tool 仍使用同一個本機 executor；ComfyUI Z-Image p
 
 OpenCode 創作 tool 支援 discover/configure，產圖意圖、原生檔案 guard 與 Shell effect policy 維持不同檢查；重新投影後仍須驗證實際 host hooks。
 
+Discovery distinguishes installed command, responsive runtime, local model catalog, Bundle preflight and real inference. The ordinary ComfyUI probe is fixed to `127.0.0.1:8188`; static Apple Silicon FP8 evidence stays advisory.
+
 Native Context envelope 驗證與 user-only 授權分開處理；只檢查設定的要求仍可執行 discover/preflight，不會啟動生成。
 
 OpenCode V2 derives creative mutation grants from the current native prompt admission; dispatch Context is advisory and never grants authority. Its explicit creative executor and resumable multi-item workflow share the CLI execution boundary.
@@ -115,7 +117,7 @@ Z-Image Turbo 可使用 MFLUX 專用命令 `mflux-generate-z-image-turbo`，或 
 
 角色插畫新增唯讀 `discover` 與建立新版本的 `configure`，補齊本機引擎設定路徑。OpenCode 先正規化 Context，再判斷使用者要求與取消狀態；要求點陣插畫時不能默默改交 SVG。生成、圖片容器檢查、人工視覺審查與使用者接受分開記錄；沒有模型權重時仍不能宣稱真實產圖驗收。
 
-Reusable character artwork extends the existing Creative Direction path: hashed local identity/style profiles feed optional installed MFLUX or loopback ComfyUI built-in workflows, separate create-only raster assets receive provenance validation, and a deterministic composer typesets the character sheet. Preflight never starts generation; unavailable engines return `BLOCKED_NO_ENGINE`. An independent human visual review checks identity and style fidelity. The helper does not infer quality or install/download image models.
+Reusable character artwork extends the existing Creative Direction path: hashed local identity/style profiles feed optional installed MFLUX or loopback ComfyUI built-in workflows, separate create-only raster assets receive provenance validation, and a deterministic composer typesets the character sheet. Read-only discovery distinguishes command, runtime, model inventory, preflight and inference readiness; its ordinary ComfyUI check only contacts `127.0.0.1:8188`. Preflight never starts generation; unavailable engines return `BLOCKED_NO_ENGINE` with provider-specific reason codes and recovery guidance. On Apple Silicon, explicit FP8 metadata can raise a static advisory while real backend compatibility remains unverified. An independent human visual review checks identity and style fidelity. The helper does not infer quality or install/download image models.
 
 The `creative_execution` path can prepare versioned Character/Style Profiles and an unconfigured Bundle before any engine is selected; its closed MFLUX registry fixes model/operation commands and bounds multi-reference edits to supported FLUX.2/Qwen operations. ComfyUI and FLUX.1 edits remain single-reference.
 
@@ -318,6 +320,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 ## Maintenance governance
 
 Release and branch inventories remain advisory evidence and do not authorize cleanup, tag creation, release or unrelated merges.
+
+The exact-candidate CI path provisions required Python validation dependencies, exports the selected interpreter for subprocess fixtures, then evaluates the repository Gate; this environment handoff leaves the existing secret-scan and publication authority boundaries intact.
 
 
 The Creative authorization change is tracked by Scenario 238 and its exact-candidate Core Matrix; real model quality remains a separate human review.

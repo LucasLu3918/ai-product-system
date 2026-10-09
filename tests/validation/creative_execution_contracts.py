@@ -49,6 +49,11 @@ if all(path.is_file() for path in required):
         ('ctx.session.hook("prompt"' in plugin and 'creativeAdmissions' in plugin and 'creative_admission_grant_missing' in plugin and 'slice(-64)' not in plugin, "OpenCode mutation authority must use current prompt admission, independent of transcript truncation"),
         ('def generate_set(' in executor and 'verified_prior_success' in executor and 'batch must continue after an item fails' in (ROOT / "tests/evidence/creative_generate_set_lifecycle.py").read_text(encoding="utf-8"), "multi-item execution must continue failures and verify resume evidence"),
         ('bounded_version_only' in executor and 'timeout=3' in executor, "engine discovery must use bounded version-only health probes"),
+        ('DEFAULT_COMFYUI_BASE_URL = "http://127.0.0.1:8188"' in executor and 'def discover_comfyui(' in executor and 'default_loopback_only' in executor, "ordinary ComfyUI discovery must be fixed to the default loopback endpoint"),
+        ('"MODEL_PATH_PRESENT"' in executor and '"MODEL_CONFIGURED_PRESENT"' in executor and '"INFERENCE_UNVERIFIED"' in executor, "readiness must distinguish model presence from actual inference"),
+        ('"MODEL_CATALOG_EMPTY"' in executor and '"MODEL_CATALOG_INCOMPLETE"' in executor, "empty local model inventories must not appear ready"),
+        ('"apple_mps_fp8_static_warning"' in executor and '"RUNTIME_UNVERIFIED"' in executor, "Apple Silicon FP8 remains a static advisory without claiming runtime compatibility"),
+        ('"providers"' in executor and 'recommended_action' in executor, "BLOCKED_NO_ENGINE must preserve bounded provider diagnostics and recovery"),
         ('creative_request_policy.py' in plugin and 'contextMessages' in plugin, "OpenCode must normalize native context for advisory routing"),
     )
     for condition, message in contracts:

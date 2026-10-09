@@ -90,7 +90,19 @@ function creativeRecovery(reason: string, admission?: { maxOutputs?: number }, d
     case "creative_scope_expansion": return { next_action: "Confirm the changed creative scope in a new explicit request; the active continuation cannot expand its subject or output set." }
     case "creative_admission_grant_missing": return { next_action: "Restate the requested creative action. Conversation history alone does not grant write or generation authority." }
     case "creative_output_limit_exceeded": return { next_action: "Reduce the set to the already authorized output count or start a new explicit request.", details: { max_outputs: admission?.maxOutputs ?? 0 } }
-    case "BLOCKED_NO_ENGINE": return { next_action: "Review local engine diagnostics and configure an already installed compatible engine. No model was downloaded and no fallback was used.", details: diagnostics }
+    case "BLOCKED_NO_ENGINE": {
+      const action = diagnostics?.comfyui?.recommended_action
+      const providerChecks = diagnostics?.providers
+      const hasProviderChecks = providerChecks && typeof providerChecks === "object" && Object.keys(providerChecks).length > 0
+      const nextAction = hasProviderChecks
+        ? "Review the per-provider command, runtime, and model status; configure an already installed compatible engine, then rerun preflight."
+        : action === "CONFIGURE_COMFYUI_BUNDLE"
+        ? "Local ComfyUI responds on loopback. Configure a versioned Bundle with the installed model files, then rerun preflight."
+        : action === "START_OR_REPAIR_LOOPBACK_COMFYUI"
+          ? "No compatible local engine passed discovery. Start ComfyUI on 127.0.0.1:8188 or configure an already installed MFLUX runtime and model."
+          : "Review the per-provider command, runtime, and model status; configure an already installed compatible engine, then rerun preflight."
+      return { next_action: `${nextAction} No model was downloaded and no fallback was used.`, details: diagnostics }
+    }
     case "creative_target_exists": return { next_action: "Choose a new versioned output path; existing files are never overwritten." }
     case "creative_ephemeral_required": return { next_action: "Use a non-Git EPHEMERAL workspace for local creative execution." }
     case "version_probe_timeout":
@@ -404,6 +416,10 @@ export default {
                 comfyui: { type: "object", additionalProperties: false, properties: {
                   base_url: { type: "string" }, workflow_path: { type: "string" },
                   checkpoint_node_id: { type: "string" }, checkpoint_name: { type: "string" }, model_id: { type: "string" },
+                  model_profile: { type: "string", enum: ["z-image-turbo"] },
+                  unet_name: { type: "string", minLength: 1, maxLength: 240 },
+                  clip_name: { type: "string", minLength: 1, maxLength: 240 },
+                  vae_name: { type: "string", minLength: 1, maxLength: 240 },
                   prompt_node_id: { type: "string" }, latent_node_id: { type: "string" }, sampler_node_id: { type: "string" },
                   save_node_id: { type: "string" }, input_image_node_id: { type: "string" }, input_image_name: { type: "string" },
                 } },

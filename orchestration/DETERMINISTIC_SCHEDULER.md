@@ -223,6 +223,8 @@ Execution IDs and runtime attestation are produced by the execution runtime and 
 
 Shared path classification supplies safe root/prefix inventory only. CI dependency planning and validator selection retain independent risk rules, and unknown or malformed paths preserve full-validation behavior.
 
+The required validation workflow selects the runner's installed Python executable after optional dependencies are provisioned and exports it as `AIPS_VALIDATION_PYTHON` before the Integration Gate. This environment handoff lets subprocess fixtures use the same complete interpreter without changing validator selection, ownership, or merge authority.
+
 CI provisioning always supplies all Python validation requirements for required repository lifecycles. Exact-path planning still selects Node setup, Chromium downloads and optional evidence; required lifecycles retain single-owner execution and cannot be skipped or grant Scheduler merge authority.
 
 Bootstrap verification imports each caller-declared module and runs `pip check`; missing modules fail the workflow before its validation job proceeds.

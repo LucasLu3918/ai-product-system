@@ -81,7 +81,9 @@ Project Diagnostics 只報告既有狀態，不會建立 Creative Bundle、啟�
 
 ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需明列 UNET、Qwen CLIP、VAE 權重檔名，並使用 AIPS 隨附的固定 API 工作流。Preflight 會向 loopback ComfyUI 核對三項本機模型清單；此配對僅支援 generate。
 
-先用 `aips creative discover --project PROJECT` 盤點，再由工具 prepare 建立角色規範。`aips creative configure --project PROJECT --bundle RELATIVE.yaml` 從 stdin 接收 allowlisted JSON，回傳新的 Bundle 路徑；以該路徑 preflight，通過後才 execute。OpenCode 可直接使用相同 action。缺少模型或生成失敗時回報受阻，不改交 SVG；精緻插畫先校準代表性樣圖，完成後逐張檢查身份、人物結構、材質、光影與風格。
+先用 `aips creative discover --project PROJECT` 盤點，再由工具 prepare 建立角色規範。Discovery 只檢查已安裝的 MFLUX 命令／版本，並對固定 `127.0.0.1:8188` 的 ComfyUI 做唯讀 API 探測；不連 LAN 或外網，也不送出生成工作。狀態分開呈現命令、runtime、模型目錄、preflight 與 inference；服務回應或模型檔名存在都不代表推論已驗證。Apple Silicon 若靜態設定明確顯示 FP8，preflight 會提出 advisory 警告並建議檢查本機 FP16/BF16 權重；仍須另外執行並驗證實際推論才能確認相容性。
+
+`aips creative configure --project PROJECT --bundle RELATIVE.yaml` 從 stdin 接收 allowlisted JSON，回傳新的 Bundle 路徑；以該路徑 preflight，通過後才 execute。OpenCode 可直接使用相同 action。缺少模型或生成失敗時回報受阻，不改交 SVG；精緻插畫先校準代表性樣圖，完成後逐張檢查身份、人物結構、材質、光影與風格。
 
 多個 Bundles 可用 `templates/creative/CREATIVE_JOB_MANIFEST.yaml` 列入工作清單，再執行 `aips creative generate-set --project PROJECT --manifest MANIFEST.yaml`；每項分別預檢，失敗後會繼續並保存結果，重跑時僅略過雜湊仍吻合的已完成項目。OpenCode 原生授權只來自目前提示，並依提示中的明確數量限制生成項目。
 
@@ -151,6 +153,8 @@ OpenCode V2 Creative writes use the current native user prompt for authorization
 OpenCode `creative_execution` tool 與 `aips creative` CLI 共用本機執行器；ComfyUI Z-Image Turbo 需使用固定 API workflow 與已安裝權重，preflight 只查核，不會產生圖片。
 
 OpenCode 創作 tool 支援 discover/configure，產圖意圖、原生檔案 guard 與 Shell effect policy 維持不同檢查；重新投影後仍須驗證實際 host hooks。
+
+Creative discovery is read-only: it probes installed MFLUX commands and only the fixed `127.0.0.1:8188` ComfyUI API, while keeping model inference and image quality unverified.
 
 OpenCode V2 的 creative execution tool 只接受明確創作或修改意圖，並在執行前要求 Bundle preflight 通過。
 
@@ -459,6 +463,8 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 ## Git Publication 與 Release
 
 Core creative workflow changes use the normal exact-candidate Gate and Git Publish Approval flow; neither validation nor matrix readiness authorizes remote publication or merge.
+
+During GitHub validation, isolated CLI fixtures receive the installed validation interpreter through `AIPS_VALIDATION_PYTHON`; its workflow contract runs before the deterministic Gate and does not grant publication or merge authority.
 
 Release tagging, dependency PR merges, and branch deletion remain separate operations with their own evidence and Human approval; a successful maintenance report cannot perform them.
 

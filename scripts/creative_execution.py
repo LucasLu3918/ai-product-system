@@ -40,6 +40,7 @@ MAX_PROMPT_CHARS = 4000
 MAX_RETRIES = 2
 MAX_TIMEOUT_SECONDS = 3600
 TRACE_LIMIT_BYTES = 512 * 1024
+DEFAULT_COMFYUI_BASE_URL = "http://127.0.0.1:8188"
 COMFY_CHECKPOINT_NODES = {
     "CheckpointLoaderSimple", "CLIPTextEncode", "EmptyLatentImage", "KSampler",
     "VAEDecode", "SaveImage", "LoadImage", "VAEEncode", "VAEEncodeForInpaint",
@@ -486,8 +487,6 @@ def resolve_provider(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str,
             model_path_raw = bundle["model"].get("local_path")
             if not isinstance(model_path_raw, str) or not Path(model_path_raw).expanduser().is_dir():
                 checks.append((provider, "model_not_local"))
-                if requested != "auto":
-                    raise Blocked("BLOCKED_NO_ENGINE", "MFLUX requires an existing local model directory; downloads are disabled.")
                 continue
             binary = Path(executable).expanduser().resolve(strict=False)
             if not binary.is_file() or not os.access(binary, os.X_OK):
@@ -503,8 +502,18 @@ def resolve_provider(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str,
                 if requested != "auto":
                     raise
     if requested == "auto" or not choices:
-        raise Blocked("BLOCKED_NO_ENGINE", "No configured local image engine passed Creative Preflight. Install no model; configure a local engine and rerun preflight.")
-    raise Blocked("BLOCKED_NO_ENGINE", "The selected local image engine is unavailable.")
+        provider_checks = {provider: reason for provider, reason in checks}
+        raise Blocked(
+            "BLOCKED_NO_ENGINE",
+            "No configured local image engine passed Creative Preflight. Install no model; configure a local engine and rerun preflight.",
+            {"providers": {name: {"status": "BLOCKED", "reason_code": reason} for name, reason in provider_checks.items()}},
+        )
+    provider_checks = {provider: reason for provider, reason in checks}
+    raise Blocked(
+        "BLOCKED_NO_ENGINE",
+        "The selected local image engine is unavailable.",
+        {"providers": {name: {"status": "BLOCKED", "reason_code": reason} for name, reason in provider_checks.items()}},
+    )
 
 
 def preflight(project: Path, bundle_path: str) -> dict[str, Any]:
@@ -523,9 +532,12 @@ def preflight(project: Path, bundle_path: str) -> dict[str, Any]:
                 **exc.diagnostics,
                 "mflux": inventory.get("runtimes", []),
                 "mflux_health_summary": inventory.get("health_summary"),
-                "comfyui": {"status": "CONFIGURED_BUT_PREFLIGHT_FAILED" if configured else "NOT_CONFIGURED",
-                            "reason_code": exc.reason_code if configured else "explicit_bundle_required"},
+                "comfyui": ({**inventory.get("comfyui", {}), "configured": configured,
+                             "reason_code": exc.reason_code if configured else inventory.get("comfyui", {}).get("reason_code", "explicit_bundle_required")}),
                 "model_status": "NOT_VERIFIED",
+                "readiness": {"command": "COMMAND_NOT_READY", "runtime": "RUNTIME_UNVERIFIED",
+                              "model": "MODEL_NOT_READY", "preflight": "PREFLIGHT_BLOCKED",
+                              "inference": "INFERENCE_UNVERIFIED"},
                 "generation_executed": False,
                 "external_image_egress": False,
             }
@@ -544,19 +556,38 @@ def preflight(project: Path, bundle_path: str) -> dict[str, Any]:
                         dtype_values.add(value.strip()[:64])
     dtype = sorted(dtype_values) or ["NOT_EXPOSED_BY_CONFIGURED_WORKFLOW"]
     host = {"os": platform.system().lower(), "architecture": platform.machine().lower()[:64]}
+    weight_evidence = [*dtype]
+    if isinstance(resolved.get("config"), dict):
+        weight_evidence.extend(str(resolved["config"].get(key, "")) for key in ("unet_name", "clip_name", "vae_name", "checkpoint_name"))
+    elif isinstance(bundle.get("model"), dict):
+        weight_evidence.append(str(bundle["model"].get("id", "")))
+    fp8_evidence = any(re.search(r"(?:fp|float)\s*8|e4m3|e5m2", value, re.IGNORECASE) for value in weight_evidence)
+    apple_silicon = platform.system().lower() == "darwin" and platform.machine().lower() in {"arm64", "aarch64"}
+    compatibility_warnings = ["apple_mps_fp8_static_warning"] if apple_silicon and fp8_evidence else []
+    precision_evidence = any(re.search(r"(?:fp|float)\s*(?:16|32)|bf16|bfloat16", value, re.IGNORECASE) for value in weight_evidence)
     compatibility = {
-        "status": "UNVERIFIED",
+        "status": "WARNING" if compatibility_warnings else "UNVERIFIED",
         "backend": provider,
         "host": host,
         "runtime": str(bundle.get("runtime") or "UNVERIFIED")[:128],
         "weight_dtypes": dtype,
         "model_id": str(bundle["model"].get("id") or "UNVERIFIED")[:128],
         "evidence": "Static local preflight only; no model inference or weight download was performed.",
-        "reason_code": "hardware_backend_dtype_not_smoke_verified",
+        "warnings": compatibility_warnings,
+        "recommended_action": ("Prefer a locally installed FP16/BF16 model and verify a real inference separately."
+                               if compatibility_warnings else
+                               "FP16/BF16 metadata was observed; real backend compatibility remains unverified."
+                               if apple_silicon and precision_evidence else
+                               "Inspect model precision metadata; real backend compatibility remains unverified."),
+        "reason_code": compatibility_warnings[0] if compatibility_warnings else "hardware_backend_dtype_not_smoke_verified",
     }
     return {
         "status": "READY", "reason_code": "local_engine_ready", "provider": provider,
         "backend_compatibility": compatibility,
+        "readiness": {"command": "COMMAND_FOUND" if provider == "mflux_local" else "LOCAL_SERVICE_REACHABLE",
+                      "runtime": "RUNTIME_UNVERIFIED" if provider == "mflux_local" else "RUNTIME_VERIFIED",
+                      "model": "MODEL_PATH_PRESENT" if provider == "mflux_local" else "MODEL_CONFIGURED_PRESENT",
+                      "preflight": "PREFLIGHT_READY", "inference": "INFERENCE_UNVERIFIED"},
         "operation": bundle["operation"], "output_path": bundle["output_path"],
         "output_scope": bundle["output_scope"], "overwrite": False,
         "max_attempts": bundle.get("max_retries", 0) + 1,
@@ -565,8 +596,53 @@ def preflight(project: Path, bundle_path: str) -> dict[str, Any]:
     }
 
 
+def discover_comfyui(base_url: str | None = None) -> dict[str, Any]:
+    """Probe only the explicitly allowlisted default loopback ComfyUI service."""
+    base_url = base_url or DEFAULT_COMFYUI_BASE_URL
+    if base_url != DEFAULT_COMFYUI_BASE_URL:
+        return {"status": "NOT_PROBED", "reason_code": "default_loopback_only", "readiness": {
+            "command": "NOT_APPLICABLE", "runtime": "RUNTIME_UNVERIFIED", "model": "MODEL_NOT_PROBED",
+            "preflight": "NOT_RUN", "inference": "INFERENCE_UNVERIFIED"}}
+    try:
+        stats = json.loads(local_request(base_url + "/system_stats", timeout=2, max_bytes=256 * 1024))
+        if not isinstance(stats, dict):
+            raise TypeError("invalid system stats")
+        capabilities: dict[str, str] = {}
+        for node_type in ("CheckpointLoaderSimple", "UNETLoader", "CLIPLoader", "VAELoader"):
+            payload = json.loads(local_request(base_url + "/object_info/" + node_type, timeout=2, max_bytes=512 * 1024))
+            node = payload.get(node_type) if isinstance(payload, dict) else None
+            if not isinstance(node, dict):
+                raise TypeError("invalid node inventory")
+            required = ((node.get("input") or {}).get("required") or {})
+            model_field = {"CheckpointLoaderSimple": "ckpt_name", "UNETLoader": "unet_name",
+                           "CLIPLoader": "clip_name", "VAELoader": "vae_name"}[node_type]
+            field = required.get(model_field)
+            choices = field[0] if isinstance(field, list) and field else None
+            capabilities[node_type] = (
+                "MODEL_CATALOG_AVAILABLE" if isinstance(choices, list) and choices
+                else "MODEL_CATALOG_EMPTY" if isinstance(choices, list)
+                else "UNKNOWN"
+            )
+        catalog_available = all(value == "MODEL_CATALOG_AVAILABLE" for value in capabilities.values())
+        return {"status": "REACHABLE", "reason_code": "local_comfyui_reachable",
+                "endpoint": "127.0.0.1:8188", "node_capabilities": capabilities,
+                "readiness": {"command": "NOT_APPLICABLE", "runtime": "RUNTIME_VERIFIED",
+                              "model": "MODEL_CATALOG_AVAILABLE" if catalog_available else "MODEL_CATALOG_INCOMPLETE", "preflight": "NOT_RUN",
+                              "inference": "INFERENCE_UNVERIFIED"},
+                "recommended_action": "CONFIGURE_COMFYUI_BUNDLE", "generation_executed": False}
+    except (TransientProviderError, Blocked, ValueError, TypeError, json.JSONDecodeError) as exc:
+        reason = "comfy_unavailable" if isinstance(exc, TransientProviderError) else "comfy_discovery_invalid"
+        return {"status": "UNAVAILABLE" if reason == "comfy_unavailable" else "UNVERIFIED",
+                "reason_code": reason,
+                "readiness": {"command": "NOT_APPLICABLE", "runtime": "RUNTIME_UNVERIFIED",
+                              "model": "MODEL_UNVERIFIED", "preflight": "NOT_RUN",
+                              "inference": "INFERENCE_UNVERIFIED"},
+                "recommended_action": "START_OR_REPAIR_LOOPBACK_COMFYUI" if reason == "comfy_unavailable" else "CHECK_LOCAL_COMFYUI_API",
+                "generation_executed": False}
+
+
 def discover(project: Path) -> dict[str, Any]:
-    """Inventory fixed local commands and run bounded version-only health probes."""
+    """Inventory fixed local commands and the allowlisted loopback ComfyUI service."""
     root = project.expanduser().resolve(strict=True)
     if not root.is_dir():
         raise Blocked("project_not_directory", "Project must be a directory.")
@@ -574,8 +650,11 @@ def discover(project: Path) -> dict[str, Any]:
     runtimes = []
     for command in commands:
         executable = shutil.which(command)
-        record: dict[str, Any] = {"command": command, "available": bool(executable), "health_status": "UNAVAILABLE",
-                                  "capability_status": "NOT_CHECKED", "version_status": "NOT_CHECKED"}
+        record: dict[str, Any] = {"command": command, "available": bool(executable), "health_status": "UNVERIFIED",
+                                  "capability_status": "NOT_CHECKED", "version_status": "NOT_CHECKED",
+                                  "readiness": {"command": "COMMAND_NOT_FOUND" if not executable else "COMMAND_FOUND",
+                                                "runtime": "RUNTIME_UNVERIFIED", "model": "MODEL_NOT_CONFIGURED",
+                                                "preflight": "NOT_RUN", "inference": "INFERENCE_UNVERIFIED"}}
         if executable:
             record["capability_status"] = "COMMAND_PRESENT"
             try:
@@ -584,7 +663,8 @@ def discover(project: Path) -> dict[str, Any]:
                     timeout=3, check=False, shell=False, env={**os.environ, **OFFLINE_ENV},
                 )
                 version = (result.stdout or result.stderr).strip().splitlines()
-                record["health_status"] = "HEALTHY" if result.returncode == 0 else "UNRESPONSIVE"
+                record["health_status"] = "HEALTHY" if result.returncode == 0 else "UNVERIFIED"
+                record["readiness"]["runtime"] = "RUNTIME_VERIFIED" if result.returncode == 0 else "RUNTIME_UNVERIFIED"
                 if result.returncode != 0:
                     record.update(reason_code="version_probe_nonzero_exit", exit_code=result.returncode, version_status="FAILED")
                 elif not version:
@@ -595,19 +675,20 @@ def discover(project: Path) -> dict[str, Any]:
                     if match:
                         record.update(version=match.group(0)[:32], version_status="PARSED")
             except subprocess.TimeoutExpired:
-                record.update(health_status="UNRESPONSIVE", reason_code="version_probe_timeout", version_status="TIMEOUT")
+                record.update(health_status="UNVERIFIED", reason_code="version_probe_timeout", version_status="TIMEOUT")
             except OSError as exc:
-                record.update(health_status="UNAVAILABLE", reason_code="version_probe_failed", failure_type=type(exc).__name__)
+                record.update(health_status="UNVERIFIED", reason_code="version_probe_failed", failure_type=type(exc).__name__)
         else:
             record.update(reason_code="command_not_found", capability_status="UNAVAILABLE", version_status="UNAVAILABLE")
         runtimes.append(record)
     healthy = sum(runtime["health_status"] == "HEALTHY" for runtime in runtimes)
+    comfyui = discover_comfyui()
     return {"status": "DISCOVERED", "runtimes": runtimes, "supported_models": sorted(MFLUX_CAPABILITIES),
             "model_status": "NOT_VERIFIED", "generation_executed": False,
             "external_image_egress": False, "engine_probe": "bounded_version_only",
             "health_summary": {"healthy_commands": healthy, "total_commands": len(runtimes)},
-            "next_action": "inspect_health_then_configure_and_preflight",
-            "comfyui_status": "NOT_PROBED_REQUIRES_EXPLICIT_BUNDLE"}
+            "next_action": "inspect_provider_diagnostics_then_configure_and_preflight",
+            "comfyui": comfyui, "comfyui_status": comfyui["status"]}
 
 
 def configure(project: Path, bundle_path: str, settings: dict[str, Any]) -> dict[str, Any]:

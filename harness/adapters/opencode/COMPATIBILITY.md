@@ -73,4 +73,6 @@ Official contracts: [V2 Skills](https://opencode.ai/v2/docs/skills/), [V2 Comman
 
 The local creative executor registers Z-Image Turbo generate via the dedicated MFLUX command or the fixed ComfyUI split-loader API workflow. ComfyUI verifies the local UNET, Qwen `lumina2` CLIP and VAE inventories and remains generate-only. Existing native request authority and configure/preflight/execute contracts apply without a new permission surface.
 
+The OpenCode configure schema exposes the registered `model_profile`, `unet_name`, `clip_name` and `vae_name` fields. Read-only discovery checks only `127.0.0.1:8188`; FP8 compatibility remains advisory and real inference remains unverified.
+
 The optional generate-set action accepts a bounded project-relative job manifest and maps only to the current prompt's explicit execute grant. Its shared CLI validates every Bundle, runs per-item preflight, continues after failures, and records hash-bound results for safe resume.

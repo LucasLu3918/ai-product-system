@@ -88,6 +88,8 @@ Successful adapter installation confirms setup only. Runtime Context delivery, p
 
 The OpenCode V2 Creative tool uses the adapter's prompt hook and shared local executor; installing the plugin does not install an image engine or model. Verify native grant admission with the versioned-host acceptance before relying on runtime behavior.
 
+The plugin accepts the shared executor's Z-Image Turbo `model_profile`, UNET, CLIP and VAE fields; runtime setup does not verify local weights or real inference.
+
 ~~~bash
 aips project diagnose /path/to/project --format text
 ~~~

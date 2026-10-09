@@ -26,6 +26,13 @@ for phrase in ("publish preview|plan|preflight|matrix-sync|post-merge", "publish
 for phrase in ("scripts/publish_preflight.py run", "--labels \"$PR_LABELS\"", "AIPS_GATE_BASE_TIP", "unlabeled"):
     if phrase not in workflow:
         errors.append(f"validate workflow missing shared publication resolver: {phrase}")
+python_handoff = 'echo "AIPS_VALIDATION_PYTHON=$(python -c \'import sys; print(sys.executable)\')" >> "$GITHUB_ENV"'
+if python_handoff not in workflow:
+    errors.append("validate workflow must pass its installed Python interpreter to isolated CLI fixtures")
+elif workflow.index("Install deterministic Playwright Chromium") > workflow.index(python_handoff):
+    errors.append("validate workflow must select the full validation Python after optional dependencies are installed")
+elif workflow.index(python_handoff) > workflow.index("deterministic integration gate"):
+    errors.append("validate workflow must export the full validation Python before the deterministic integration gate")
 for phrase in ("def refresh(root:", "REFRESHED_EQUIVALENT_TREE", "SEMANTIC_REFRESH_REQUIRED", "set disposition to reviewed_safe, requires_change or unknown"):
     if phrase not in intelligence:
         errors.append(f"Project Intelligence equivalent-tree refresh missing: {phrase}")

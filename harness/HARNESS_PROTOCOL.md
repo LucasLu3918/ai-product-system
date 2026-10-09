@@ -38,6 +38,8 @@ ATTACHED projects use `.ai/intelligence/`. EPHEMERAL projects remain source-clea
 
 Local Creative Bundle preparation is limited to an explicit project-relative scope in a non-Git EPHEMERAL project. It creates versioned Profile/Bundle files without overwrite and leaves engine/model/license provenance unconfigured; prepare never invokes a generator.
 
+OpenCode creative discovery reports MFLUX command/version state and probes only `http://127.0.0.1:8188` for ComfyUI. Keep model, preflight and real-inference readiness separate, and preserve provider reason codes without local paths or credentials.
+
 ## Context budget
 
 OpenCode V2 applies a 12,000-byte UTF-8 cap to its transient AIPS Context and uses a session/prompt/target cache; the bounded trace records duration and size without prompt text.
