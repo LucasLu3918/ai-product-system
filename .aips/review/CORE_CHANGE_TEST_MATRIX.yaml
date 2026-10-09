@@ -77,9 +77,13 @@ matrix:
         sync/placement audits and recursive publish impact closure are required for
         all 28 paths, including the approved documentation closure and Harness placements.
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
+actual_diff_reconciled: true
 review_evidence:
   required: false
-blockers:
-- pending exact-candidate repository validation, Core Gate, and evidence refresh
-status: DRAFT
+blockers: []
+status: READY
+verification:
+  repository_validation: PASS
+  documentation_sync: PASS
+  documentation_placement: PASS
+  core_gate: PENDING_EXACT_CANDIDATE_EXECUTION
