@@ -294,7 +294,7 @@ def classification_cases():
 def main():
     plugin_source = (ROOT / "harness/adapters/opencode/plugin.ts").read_text(encoding="utf-8")
     assert 'ctx.tool.transform((editor)' in plugin_source and 'name: "creative_execution"' in plugin_source
-    assert 'enum: ["prepare", "configure", "discover", "preflight", "execute", "generate-set"]' in plugin_source
+    assert 'enum: ["prepare", "configure", "discover", "preflight", "execute", "generate-set", "review-assist"]' in plugin_source
     assert 'classification.intent !== "create"' in plugin_source and '"creative", "prepare"' in plugin_source
     assert 'ctx.session.hook("prompt"' in plugin_source and 'creativeAdmissions' in plugin_source and 'slice(-64)' not in plugin_source
     assert 'max_outputs: remainingOutputs' in plugin_source, "a fresh prompt reset already consumed output budget"
