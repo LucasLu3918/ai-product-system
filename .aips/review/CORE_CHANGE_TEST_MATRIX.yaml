@@ -1,38 +1,38 @@
 version: 1
 change:
-  id: plan25-phase4-outcomes
-  summary: Record existing Evolution outcomes, local validation timings and telemetry boundaries without changing policy or exporting data.
+  id: plan25-phase5-branch-dependencies
+  summary: Record read-only branch hygiene and dependency risk evidence while preserving report-only cleanup and disabled automatic merges.
   boundary:
-    - .aips/review/PLAN25_PHASE4_EVIDENCE.md
+    - .aips/review/PLAN25_PHASE5_EVIDENCE.md
     - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
 candidate:
-  base_sha: bb6c324d68bc7185da8f31cc5e0aa36fcf68dce4
-  changed_files_hash: 8b89340436b291a9357ec878190ed5e3980956effac702a45c55ea44f8cfbf4a
+  base_sha: 18bc33d0790a3369e16fa216f0dd617aed8f0d76
+  changed_files_hash: e928da3d84573f5471932eeff285070e3de4b59e24bb1eabdafefbbdce1f78db
 matrix:
-  - boundary: Evolution outcomes and Human policy authority
-    reason: Aggregate evidence must distinguish collection from useful outcomes and keep source-policy, semantic adoption and publication decisions with Humans.
+  - boundary: Branch Hygiene proposal and authority
+    reason: The report may identify cleanup candidates, but must preserve exact-SHA checks, report-only policy and Human deletion authority.
     checks:
-      static_lint: {applicable: true, evidence: YAML/document validation and repository contracts.}
-      unit: {applicable: true, evidence: evolution_effectiveness_lifecycle.}
-      integration: {applicable: false, na_reason: No workflow was dispatched and no Issue/source configuration was modified.}
-      contract: {applicable: true, evidence: Current monthly and quarterly report fields, review flags and authority states.}
-      e2e: {applicable: false, na_reason: External report publication and Human source review are not part of this evidence-only candidate.}
-      security: {applicable: true, evidence: Read-only issue retrieval; no comments, issue edits, source mutations or secret transmission.}
-      migration_recovery: {applicable: false, na_reason: No Evolution report schema or durable source state changed.}
-      cli_harness: {applicable: true, evidence: Existing deterministic Evolution reports and lifecycle contracts.}
-      docs_schema: {applicable: true, evidence: Documentation closure and report-schema contracts.}
-  - boundary: Runtime performance evidence and privacy-limited telemetry
-    reason: Local repository test timings are not product latency; usage and cost must remain observed or explicitly unknown.
+      static_lint: {applicable: true, evidence: Repository validation and YAML/document contracts.}
+      unit: {applicable: true, evidence: branch_hygiene_lifecycle.py.}
+      integration: {applicable: true, evidence: Read-only report built against fetched origin metadata; no cleanup dispatch.}
+      contract: {applicable: true, evidence: Branch lifecycle policy, exact manifest policy and deletion_authorized false.}
+      e2e: {applicable: false, na_reason: No branch cleanup or GitHub mutation is part of this candidate.}
+      security: {applicable: true, evidence: Branch report is read-only and cleanup authority remains false.}
+      migration_recovery: {applicable: false, na_reason: No branch lifecycle policy or persistent data changed.}
+      cli_harness: {applicable: true, evidence: branch_hygiene_lifecycle.py and report-only CLI contract.}
+      docs_schema: {applicable: true, evidence: Core Change Matrix validation and Phase 5 evidence review.}
+  - boundary: Dependency risk classification and merge authority
+    reason: Dependency PRs require their configured security/core evidence and must not be auto-merged from listing metadata.
     checks:
-      static_lint: {applicable: true, evidence: Repository validation.}
-      unit: {applicable: true, evidence: performance_evidence_lifecycle and telemetry_export_lifecycle.}
-      integration: {applicable: true, evidence: Local 127.0.0.1 fixtures only; no external service or telemetry export.}
-      contract: {applicable: true, evidence: Export remains disabled; cost status is unknown; no price inference or cross-host latency claim.}
-      e2e: {applicable: false, na_reason: No production provider, real inference or remote telemetry path is exercised.}
-      security: {applicable: true, evidence: Privacy allowlist and local loopback receiver; no prompt/image payload capture.}
-      migration_recovery: {applicable: false, na_reason: No event storage or telemetry schema changed.}
-      cli_harness: {applicable: true, evidence: Existing performance evidence and telemetry export contract consumers.}
-      docs_schema: {applicable: true, evidence: Documentation impact and telemetry schema contracts.}
+      static_lint: {applicable: true, evidence: Repository validation and YAML/document contracts.}
+      unit: {applicable: true, evidence: dependency_impact_lifecycle.py.}
+      integration: {applicable: true, evidence: Read-only GitHub PR state query; no PR updates or merges.}
+      contract: {applicable: true, evidence: dependency-policy.yaml keeps automatic_merge_authorized false.}
+      e2e: {applicable: false, na_reason: No dependency PR is updated, tested on a branch, or merged by this evidence-only candidate.}
+      security: {applicable: true, evidence: Existing dependency policy security/core requirements remain unchanged.}
+      migration_recovery: {applicable: false, na_reason: No dependency lockfile, package or policy changed.}
+      cli_harness: {applicable: true, evidence: dependency_impact_lifecycle.py and read-only PR state retrieval.}
+      docs_schema: {applicable: true, evidence: Core Change Matrix validation and Phase 5 evidence review.}
 scope_recomputed_after_expansion: false
 actual_diff_reconciled: true
 review_evidence:
