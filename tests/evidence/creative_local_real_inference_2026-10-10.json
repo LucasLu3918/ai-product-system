@@ -1,7 +1,7 @@
 {
   "version": 1,
   "created_at": "2026-10-09T17:39:28.344853+00:00",
-  "purpose": "Plan26 Phase 2 #1 local image generation evidence; human visual quality and user acceptance remain pending.",
+  "purpose": "Plan26 Phase 2 #1 local image generation evidence; final images passed human visual review and user acceptance after revisions to initial cases 01, 02, and 08.",
   "status": "PASS",
   "privacy": {
     "raw_prompt_retained": false,
@@ -59,7 +59,7 @@
     "path": "benchmark/mira-cartographer-v1/workflows/z-image-turbo.json",
     "sha256": "sha256:60577b68f702ca2174308ad1a9c67a67814c4f7dbbdb89c8e904405f6508b29a",
     "model_inference_observed": true,
-    "visual_acceptance": "PENDING"
+    "visual_acceptance": "PASS"
   },
   "counts": {
     "requested": 13,
