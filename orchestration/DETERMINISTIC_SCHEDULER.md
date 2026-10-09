@@ -174,6 +174,8 @@ The Scheduler never falls back to LLM coordination to make a blocked graph look 
 
 ## Read-only declaration and fail-closed boundary
 
+Creative generation is not scheduled by the authorization continuation path: clarification state only derives bounded current-response authority, while provider execution remains an explicit foreground action with its own preflight.
+
 Creative `discover` and `preflight` remain read-only; `generate-set` is an explicit local creative workflow and does not acquire authority from deterministic scheduler state or task continuation.
 
 `aips project diagnose` is observational guidance only. Its reported status cannot satisfy Scheduler authorization, execution ownership, Change Impact readiness or any required validation evidence.

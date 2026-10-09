@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+OpenCode V2 每則使用者回覆都重新建立目前動作授權；有界 Session 狀態只支援短風格選擇，並與 Harness Context、原生檔案決策分開。創作執行仍需明確工具動作及本機 preflight。
+
 OpenCode 的 Context、admission、permission 與 Shell hooks 使用非同步程序呼叫及有限輸出；同一 Session 的 Context 可短暫共用結果，permission 決策仍會重新讀取。Project Diagnostics 只提供下一步與復原指引，不會替人執行修復。
 
 OpenCode V2 captures Creative mutation authority at native prompt admission; its Session-root grant is independent of dispatch Context and is revoked by the next prompt.
@@ -42,6 +44,8 @@ MCP 提供 portability；native adapters 提供 runtime hook / guard。兩者共
 OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn Context，並在 permission evaluation 階段檢查支援的直接檔案操作。L1 僅允許非 Git workspace 中受限路徑的新創意資產；L2 需要 Project Intelligence READY、freshness CURRENT 與無待解權威衝突；L3 外部效果沿用既有 Human approval gate。Shell 僅保留有限唯讀命令，並額外提供固定參數的 AIPS 診斷。`creative_execution` 是唯一有界自訂工具：它綁定當前 EPHEMERAL Session，可建立不覆寫的角色／風格 Profile 與未設定引擎的 Creative Bundle，也可對既有 Bundle 執行唯讀預檢及明確要求的本機生成。其他 MCP/custom tools 和繞過 OpenCode 的寫入仍不在 guard 範圍。Plugin 安裝與 hook discovery 不足以證明執行防護；完成 runtime permission acceptance 前，治理保持 ADVISORY。
 
 ## Project Intelligence 與 Retrieval
+
+高風險既有專案變更先以 Change Impact 遍歷明確的 caller、consumer 與資料／事件邊界；scoped coverage 不會提升為 repository-wide 完整性。
 
 Project Diagnostics points to read-only inspection or a conditional recovery action without running it.
 
@@ -115,7 +119,7 @@ Reusable character artwork extends the existing Creative Direction path: hashed 
 
 The `creative_execution` path can prepare versioned Character/Style Profiles and an unconfigured Bundle before any engine is selected; its closed MFLUX registry fixes model/operation commands and bounds multi-reference edits to supported FLUX.2/Qwen operations. ComfyUI and FLUX.1 edits remain single-reference.
 
-OpenCode V2 prompt admission issues transient creative grants bound to the Session root and output count; Context and retrieved Project Intelligence remain advisory. The local `generate-set` workflow records each Bundle outcome and resumes only after verifying saved provenance hashes.
+OpenCode V2 prompt admission issues a fresh transient grant for each user response. A short creative selection can use root-bound, expiring structured Session state with finite turns and remaining outputs; Context and retrieved Project Intelligence remain advisory, and raw prior prompts are not retained. Cancellation, unrelated work, scope expansion and output-cap exhaustion revoke continuation. The local `generate-set` workflow records each Bundle outcome and resumes only after verifying saved provenance hashes.
 
 ## Planning 與 Product Delivery
 
@@ -156,6 +160,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+Creative 延續狀態只容許有限回合與輸出數，不建立排程、背景重試或自動執行；取消、工作切換、範圍擴張或數量耗盡即撤銷延續。
 
 The shared path inventory classifies safe roots and prefixes; planner-specific risk semantics remain independent and unknown paths select full validation.
 
@@ -251,6 +257,8 @@ Browser evidence 也屬於 deterministic environment contract：candidate prefli
 Publication Preflight 將 Python module availability 與 loopback/browser capability 分開回報；未被 exact candidate 選用的 browser probe 回報 `NOT_REQUIRED` 且不阻擋，選用時才驗證 capability blockers。
 
 ## Security 與 Governance
+
+Creative prompt admission 是獨立授權邊界：每次回覆必須以目前 Session、root、動作與剩餘輸出數重新核准；原始歷史提示和 transcript 不得作為授權依據。
 
 Required repository checks and publication authority remain unchanged.
 

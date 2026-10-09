@@ -157,6 +157,8 @@ The durable Human surface is the original GitHub Issue containing Radar evidence
 
 ## Documentation consistency
 
+Creative workflow recommendations remain advisory; implementation and Git publication use their existing Human decisions, and Radar evidence never grants continuation, push, merge or release authority.
+
 Creative workflow fixtures are contract evidence, not real model effectiveness evidence. Command discovery and successful synthetic configuration never authorize weights, cloud egress or an ADOPT conclusion about artwork quality.
 
 Native runtime acceptance is tracked by its adapter Scenario and exact-candidate Core Gate; it does not create Evolution Radar adoption evidence or change Human Decision authority.

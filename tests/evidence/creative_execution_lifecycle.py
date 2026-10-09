@@ -12,6 +12,7 @@ import zlib
 from concurrent.futures import ThreadPoolExecutor
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import yaml
@@ -439,8 +440,41 @@ def no_engine_case(base: Path):
         creative.preflight(project, bundle.name)
     except creative.Blocked as exc:
         require(exc.reason_code == "BLOCKED_NO_ENGINE", "missing engine did not return BLOCKED_NO_ENGINE")
+        require(exc.diagnostics.get("generation_executed") is False and exc.diagnostics.get("external_image_egress") is False,
+                "missing-engine diagnostics implied inference or external image egress")
+        require(exc.diagnostics.get("comfyui", {}).get("status") == "NOT_CONFIGURED",
+                "unconfigured ComfyUI status was not explained")
+        require(isinstance(exc.diagnostics.get("mflux"), list), "missing-engine diagnostics omitted MFLUX probes")
     else:
         raise AssertionError("missing local engine was presented as READY")
+
+
+def diagnostic_cases(base: Path):
+    project = fixture_project(base)
+    executable = project / "mflux-generate"
+    executable.write_text("fixture", encoding="utf-8")
+    executable.chmod(0o755)
+    which = lambda command: str(executable) if command == "mflux-generate" else None
+    with patch.object(creative.shutil, "which", side_effect=which), \
+         patch.object(creative.subprocess, "run", side_effect=subprocess.TimeoutExpired("mflux-generate", 3)):
+        timed_out = creative.discover(project)
+    timeout = next(item for item in timed_out["runtimes"] if item["command"] == "mflux-generate")
+    require(timeout["health_status"] == "UNRESPONSIVE" and timeout["version_status"] == "TIMEOUT"
+            and timeout["reason_code"] == "version_probe_timeout", "version timeout was not classified precisely")
+    require(timed_out["generation_executed"] is False and timed_out["external_image_egress"] is False,
+            "health discovery performed inference or external egress")
+    with patch.object(creative.shutil, "which", side_effect=which), \
+         patch.object(creative.subprocess, "run", return_value=SimpleNamespace(returncode=7, stdout="", stderr="failed")):
+        failed = creative.discover(project)
+    nonzero = next(item for item in failed["runtimes"] if item["command"] == "mflux-generate")
+    require(nonzero["reason_code"] == "version_probe_nonzero_exit" and nonzero["exit_code"] == 7,
+            "nonzero version probe did not retain its safe failure category")
+    with patch.object(creative.shutil, "which", side_effect=which), \
+         patch.object(creative.subprocess, "run", return_value=SimpleNamespace(returncode=0, stdout="runtime ready", stderr="")):
+        unparsed = creative.discover(project)
+    responsive = next(item for item in unparsed["runtimes"] if item["command"] == "mflux-generate")
+    require(responsive["health_status"] == "HEALTHY" and responsive["version_status"] == "UNRECOGNIZED",
+            "responsive command with an unknown version was conflated with a failed health probe")
 
 
 def configure_cases(base: Path):
@@ -505,6 +539,7 @@ def main() -> int:
         state.mkdir()
         os.environ["XDG_STATE_HOME"] = str(state)
         no_engine_case(base / "no-engine")
+        diagnostic_cases(base / "diagnostics")
         configure_cases(base / "configure")
         request_policy_cases()
         node = os.environ.get("AIPS_NODE_BINARY") or shutil.which("node")

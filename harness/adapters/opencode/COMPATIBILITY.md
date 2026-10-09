@@ -16,6 +16,8 @@ The owned `plugins/aips-opencode.ts` projection is installed only for a positive
 
 ## Readiness and enforcement boundary
 
+Creative continuation uses only in-memory state bound to the active Session root, a short TTL, finite turns and remaining outputs. Host-version discovery is not native acceptance evidence, and the synthetic lifecycle does not claim real model inference.
+
 The cross-runtime `aips project diagnose` command reports configured status and static MCP capability only. It cannot establish that this OpenCode version loaded Context, invoked a Hook or executed a Tool; retain UNVERIFIED until the version-bound native acceptance evidence proves each effect.
 
 Native v2.0.24 creative preparation is verified through Code Mode execute calling the catalog-provided tools.creative_execution. The V2 prompt-admission hook derives the mutation grant from the current user prompt before it is admitted, binds it to the Session root and bounded output count, and stores only a prompt digest; a new prompt revokes the prior grant. Model-dispatch Context remains for advisory routing and cannot grant creative authority. No real model inference is part of this acceptance.

@@ -42,6 +42,8 @@ def main() -> int:
     assert admission["max_outputs"] == 2 and len(admission["prompt_sha256"]) == 64
     assert "basis_prompt" not in admission and all("basis_prompt" not in grant for grant in admission["grants"].values())
     assert output_budget("Generate 3 images") == 3
+    assert output_budget("設計兩個哈利波特角色，各自一張日式奇幻立繪") == 2
+    assert output_budget("生成三位角色圖片") == 3
     assert not admit_prompt("yes")["active"]
     assert not admit_prompt("只規劃這個角色，不要生成")["active"]
     assert not admit_prompt("Create an image, plan only")["active"]
@@ -59,8 +61,23 @@ def main() -> int:
     assert user_texts([{"role": "assistant", "content": "generate an image"}, {"role": "tool", "content": ORIGINAL}]) == []
     assert not authorize([{"role": "system", "content": ORIGINAL}], "execute")["allowed"]
     assert classify_task(ORIGINAL)["creative_medium"] == "raster"
+    assert classify_task("生成妙麗的日式奇幻立繪")["domain"] == "creative"
     assert classify_task("建立 SVG 向量角色")["creative_medium"] == "vector"
     assert classify_task("生成動漫圖片，不要SVG")["creative_medium"] == "raster"
+    pending = admit_prompt(ORIGINAL)["continuation"]
+    selected = admit_prompt("哈利＋妙麗 A佈局＋B質感 獨立立繪", pending)
+    assert selected["continued"] and selected["max_outputs"] == 2
+    assert selected["grants"]["execute"]["allowed"]
+    assert "allowed_actions" in selected["continuation"]
+    assert admit_prompt("繼續生成", {**pending, "max_outputs": 1})["max_outputs"] == 1
+    assert not admit_prompt("取消產圖", pending)["active"]
+    assert not admit_prompt("改成做網站", pending)["active"]
+    assert admit_prompt("三個角色各自生成三張立繪", pending)["reason_code"] == "creative_output_limit_exceeded"
+    assert not admit_prompt("再加榮恩角色", pending)["active"]
+    assert admit_prompt("生成一張森林插畫", pending)["reason_code"] == "creative_scope_expansion"
+    assert admit_prompt("生成一隻貓咪插畫", pending)["reason_code"] == "creative_scope_expansion"
+    assert admit_prompt("改畫森林插畫", pending)["reason_code"] == "creative_scope_expansion"
+    assert admit_prompt("A", pending)["continued"]
     print("Creative request policy PASS: prompt-admission grants, user-only authority, unbounded history, revocation, read-only actions and medium classification")
     return 0
 

@@ -1691,6 +1691,8 @@ The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-c
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
 
+創作提示 hook 每次只根據目前使用者回覆建立 grant；Context 注入或 transcript 截斷不得授權創作工具，native acceptance 只證明實際 hook 行為，不代表模型推論或視覺品質驗收。
+
 Plan24 acceptance was exercised against OpenCode v2.0.24 with a loopback mock: Context delivery and native file Allow/Deny hooks passed. Creative generation was not run; model inference and visual quality remain separate evidence.
 
 The V2 creative tool additionally requires a create/modify intent and a successful preflight before execution; this boundary is covered by Scenario 236.
@@ -1701,7 +1703,7 @@ The lifecycle covers separate prompt dimensions, Chinese creative-asset routing,
 
 ## Scenario 238 — Creative Task Authorization and Multi-item Execution
 
-Native OpenCode V2 prompt admission issues an in-memory grant bound to the active session, workspace, actions and bounded output count; unrelated prompts revoke it, and truncated transcript context cannot restore authority. Read-only discovery and preflight remain available without a grant.
+Native OpenCode V2 prompt admission issues a fresh in-memory grant bound to the active session, workspace, actions and bounded output count. A short style selection can derive a new grant only from root-bound, expiring structured continuation state; cancellation, unrelated work, scope expansion and output-cap exhaustion revoke it. Raw prior prompts and transcript context cannot restore authority. Read-only discovery and preflight remain available without a grant.
 
 The synthetic multi-item lifecycle verifies per-item preflight, continue-on-failure, hash-verified resume and recovery after an output succeeds before its checkpoint. Version-only local engine discovery never starts generation. Native OpenCode acceptance verifies grant admission and revocation without invoking image generation; no real model quality or visual acceptance is claimed.
 
@@ -1720,6 +1722,8 @@ Scenario 236 covers versioned no-overwrite Profile/Bundle preparation, fixed MFL
 The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies concurrent preparation allocates distinct versions, unconfigured engines remain blocked, preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, MFLUX commands match the fixed capability registry, batch references remain bounded, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, the Z-Image Turbo split-loader graph and local model inventory are exact, prompt-bearing PNG text metadata is removed, edits use exactly one hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
+
+診斷結果仍是唯讀建議；創作引擎診斷不得觸發安裝、下載、生成或授權延續，這些動作維持各自明確入口。
 
 The diagnostics lifecycle covers missing, stale, partial and blocked Intelligence states. Suggested recovery remains observational; bootstrap, refresh and finalization require their existing explicit actions.
 

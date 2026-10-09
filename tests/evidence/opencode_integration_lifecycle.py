@@ -297,6 +297,7 @@ def main():
     assert 'enum: ["prepare", "configure", "discover", "preflight", "execute", "generate-set"]' in plugin_source
     assert 'classification.intent !== "create"' in plugin_source and '"creative", "prepare"' in plugin_source
     assert 'ctx.session.hook("prompt"' in plugin_source and 'creativeAdmissions' in plugin_source and 'slice(-64)' not in plugin_source
+    assert 'max_outputs: remainingOutputs' in plugin_source, "a fresh prompt reset already consumed output budget"
     assert 'identity_features' in plugin_source and '"--identity-feature"' in plugin_source
     assert 'toolContext.signal' in plugin_source and 'shell: false' in plugin_source
     desired = projection.skill_files()

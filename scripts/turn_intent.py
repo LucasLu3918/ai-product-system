@@ -132,7 +132,7 @@ READ_ZH = re.compile(r"讀取|查看|檢視|列出|摘要|介紹|說明|解釋|�
 EXTERNAL_EN = re.compile(r"\b(?:publish|deploy|release|push|merge|send|upload|submit|purchase|transfer)\b", re.IGNORECASE)
 EXTERNAL_ZH = re.compile(r"發布|部署|上線|推送|合併|寄送|上傳|提交|購買|轉帳")
 CREATIVE_EN = re.compile(r"\b(?:image|illustration|character|artwork|asset|icon|drawing)\b", re.IGNORECASE)
-CREATIVE_ZH = re.compile(r"圖片|圖像|插畫|角色|素材|圖檔|圖示|繪圖")
+CREATIVE_ZH = re.compile(r"圖片|圖像|插畫|立繪|肖像|人像|角色|素材|圖檔|圖示|繪圖")
 ASSET_FORMAT = re.compile(r"\b(?:svg|png|jpe?g|webp)\b", re.IGNORECASE)
 
 

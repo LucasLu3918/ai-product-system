@@ -84,6 +84,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+Creative execution changes review the OpenCode prompt-admission path, CLI policy/execution modules, local provider boundary, lifecycle consumers and documentation. A scoped review does not upgrade repository-wide partial Impact Graph coverage.
+
 Repository-wide graph coverage remains partial; inspect affected inputs, outputs, events and consumers and do not infer complete coverage from scoped retrieval.
 
 

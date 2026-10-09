@@ -22,6 +22,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+The creative workflow Core Matrix binds the exact candidate file set and covers prompt admission, revocation, local engine diagnostics, multi-item recovery, documentation closure and publication checks. Passing the Gate remains evidence only; Human merge authorization is separate.
+
 Optional browser/OpenAPI setup follows the exact candidate plan while required dependencies, strict secret scanning and repository validation remain mandatory.
 
 

@@ -117,6 +117,8 @@ OpenCode local file admission is limited to directly intercepted native operatio
 
 Change Impact approval authorizes only its reviewed scope; partial graph coverage is recorded as a limitation and reconciled against the exact candidate before publication.
 
+Creative authorization changes traverse the OpenCode adapter, Python policy/executor, direct callers and output consumers; scoped evidence may establish only the reviewed boundary and cannot upgrade partial repository-wide coverage.
+
 Task routing 只縮小本回合載入的 canonical 協定範圍，不會降低 SAL、授權需求、Change Impact 深度、必要測試或 Human approval。
 
 Repository governance snapshot 透過已驗證的 `gh` 讀取 repository rulesets 與 branch protection，保留完整回應與明確 UNKNOWN 狀態；它不修改 GitHub 設定，也不代替發布核准。
@@ -403,6 +405,8 @@ The Parallel Run Dashboard is loopback-only and read-only. Its projection cannot
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.
 
 ## Runtime Policy Enforcement
+
+Creative prompt grants are recalculated from each current user response and bounded Session state; cancellation, scope expansion, unrelated work or exhausted output budgets revoke continuation without relying on transcript history.
 
 OpenCode permission decisions refresh Context after session changes and retain fail-closed behavior on timeout or missing authorization evidence. Telemetry may record bounded runtime, governance, quality and outcome enums; prompts, images, credentials and reasoning are excluded.
 

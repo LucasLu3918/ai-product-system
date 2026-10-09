@@ -15,6 +15,8 @@ The local creative path is `discover → prepare → configure → preflight →
 
 OpenCode V2 resolves Context and supported native file decisions from each active Session directory. EPHEMERAL creative asset metadata stays in a private external cache, and Shell/MCP effects remain outside the native file guard.
 
+OpenCode creative continuation derives a fresh action grant from root-bound, expiring Session state with finite turns and remaining outputs; cancellation, unrelated work, scope expansion and output-cap exhaustion revoke it. Harness context and native action checks remain separate from creative execution, which requires an explicit action and successful local preflight.
+
 ~~~mermaid
 flowchart TD
     S[User Prompt] --> RA[Runtime Adapter]

@@ -12,6 +12,8 @@ Evolution Radar 是 AIPS 的 maintenance plane，用來研究外部技術變化�
 
 ## Signal Collection
 
+Creative workflow signals distinguish deterministic authorization checks, native-host acceptance, real model inference and Human visual review; missing inference evidence remains unverified.
+
 本機創作 fixture 只提供流程證據，不能證明生成品質改善或模型採用成效；真實圖片與人工驗收需另行取得。
 
 Runtime lifecycle observations separate plugin setup from action-level hook execution; unknown provider or MCP behavior remains unverified and cannot be promoted from setup evidence.
@@ -83,6 +85,8 @@ Quarterly Radar aggregation runs on day 3 of January, April, July and October so
 Portable Command Core 的 Registry、renderer、ownership conflict 與 MCP read-only contract 沿用既有 Harness capability；Host-native integration 維持後續候選。
 
 ## Verification History
+
+Creative workflow verification distinguishes deterministic authorization and provenance checks, native-host hook acceptance, real model inference and Human visual review. Missing inference evidence stays unverified and Radar recommendations never replace implementation or publication decisions.
 
 本機創作可靠性 fixture 只驗證流程與安全邊界。缺少權重時，生成品質與設備效能維持未驗證，不能由命令盤點推定改善成效。
 

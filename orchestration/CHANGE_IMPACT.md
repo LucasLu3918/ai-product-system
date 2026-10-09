@@ -110,6 +110,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 Compare the exact changed paths against inputs, outputs, data, events and consumers. Repository-wide Impact Graph coverage remains partial and must be recorded as a limitation.
 
+For creative authorization boundaries, seed the OpenCode adapter and Python policy/execution nodes explicitly. Record bounded module relationships and manually review direct consumers; partial repository-wide coverage remains partial and cannot be promoted by this scoped change.
+
 
 Creative authorization changes reconcile the native prompt hook, executor/CLI, job schemas, output recovery, privacy traces and each Human/Agent consumer before the candidate matrix is finalized.
 

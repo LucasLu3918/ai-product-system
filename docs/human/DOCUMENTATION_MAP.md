@@ -83,6 +83,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+Creative authorization and recovery behavior is canonical in `orchestration/CREATIVE_DIRECTION.md` and `harness/adapters/opencode/AGENTS.md`; user guidance is synchronized through the reusable character-artwork topics and Scenario 238.
+
 Behavior-bearing modules, schemas and scenarios remain the source references for detailed execution and evidence contracts.
 
 

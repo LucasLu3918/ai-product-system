@@ -22,6 +22,8 @@ When a shared module-extraction lifecycle gains another facade, retain identity 
 
 ## Impact-derived Test Matrix
 
+Creative authorization candidates include positive style-selection continuation and negative cancellation, unrelated-task, session/root drift, scope-expansion and output-cap cases; the matrix separately records native-host acceptance and real inference when unavailable.
+
 Creative runtime candidates cover original Chinese requests, bounded continuation and revocation, native Context envelopes, read-only preflight/discovery, allowlisted configuration races, rejected settings/symlinks, raster-medium refusal and corrupt containers. Run native tool callbacks plus supported-host loopback acceptance; real model inference remains separately scoped.
 
 OpenCode runtime changes require lifecycle, version/ownership recovery, Context/cache freshness, target confinement, direct Allow/Deny, effect-aware Shell limits and a credential-free native loopback acceptance when a supported binary is available.
