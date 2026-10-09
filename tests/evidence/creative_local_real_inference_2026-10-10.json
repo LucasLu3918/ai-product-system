@@ -1,0 +1,572 @@
+{
+  "version": 1,
+  "created_at": "2026-10-09T17:39:28.344853+00:00",
+  "purpose": "Plan26 Phase 2 #1 local image generation evidence; human visual quality and user acceptance remain pending.",
+  "status": "PASS",
+  "privacy": {
+    "raw_prompt_retained": false,
+    "raw_prompt_persisted_in_report": false,
+    "external_image_egress": false,
+    "provider_endpoint": "http://127.0.0.1:8188"
+  },
+  "environment": {
+    "provider": "ComfyUI local",
+    "comfyui_version": "0.39.2",
+    "python_version": "3.13.12",
+    "pytorch_version": "2.12.1",
+    "device": "Apple M5 Pro MPS, 20 GPU cores",
+    "image_dimensions": "1024x1024",
+    "steps": 8,
+    "seeds": [
+      4201,
+      4202,
+      4203,
+      4204,
+      4205,
+      4206,
+      4207,
+      4208,
+      4209,
+      4210
+    ],
+    "max_retries": 0,
+    "timeout_seconds": 900,
+    "observed_mps_free_bytes_before": 22409510912,
+    "observed_mps_free_bytes_min_snapshot": 8299954176,
+    "observed_mps_free_bytes_after_snapshot": 12329304064
+  },
+  "model": {
+    "id": "z-image-turbo",
+    "revision": "sha256:2817cb540dd85cbbcb476fef8b190355312a06d833196f249757a4cd1e77e7d5",
+    "license": "Apache-2.0",
+    "license_source": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo",
+    "files": [
+      {
+        "name": "z_image_turbo_bf16.safetensors",
+        "sha256": "2407613050b809ffdff18a4ac99af83ea6b95443ecebdf80e064a79c825574a6"
+      },
+      {
+        "name": "qwen_3_4b.safetensors",
+        "sha256": "6c671498573ac2f7a5501502ccce8d2b08ea6ca2f661c458e708f36b36edfc5a"
+      },
+      {
+        "name": "ae.safetensors",
+        "sha256": "afc8e28272cd15db3919bacdb6918ce9c1ed22e96cb12c4d5ed0fba823529e38"
+      }
+    ]
+  },
+  "workflow": {
+    "path": "benchmark/mira-cartographer-v1/workflows/z-image-turbo.json",
+    "sha256": "sha256:60577b68f702ca2174308ad1a9c67a67814c4f7dbbdb89c8e904405f6508b29a",
+    "model_inference_observed": true,
+    "visual_acceptance": "PENDING"
+  },
+  "counts": {
+    "requested": 13,
+    "complete": 13,
+    "failed": 0,
+    "elapsed_ms_sum": 387300,
+    "elapsed_ms_min": 27036,
+    "elapsed_ms_max": 48989,
+    "revision_images": 3
+  },
+  "cases": [
+    {
+      "case": "mira-case-01",
+      "image_sha256": "sha256:bd393e14667733b023c75f6f61ae55c9896f7d25035f0b34b9a020193d8106e3",
+      "image_bytes": 1366102,
+      "manifest_sha256": "sha256:c468a943998078a1512b4dea8da04170f06274304a87756320d26841f68e9a52",
+      "elapsed_ms": 48989,
+      "completed_at": "2026-10-09T17:33:31.597774+00:00",
+      "profile_sha256": [
+        "sha256:bbcb8f33d3a8ea5a594129a0a745b244fbff1b4957c131b07c3d7d2e12ceb6b7",
+        "sha256:6e0e1460b9c41574b0f3dffc782b5bbed1e40ccd3e83e77ebbe844689691bb49"
+      ],
+      "file_validity": "PASS",
+      "visual_quality": "REVISE",
+      "user_acceptance": "NOT_RECORDED",
+      "execution_status": "COMPLETE",
+      "human_scores": {
+        "identity": "P",
+        "clothing": "C",
+        "character_count": "P",
+        "composition": "P",
+        "hands_anatomy": "P",
+        "template_style": "P"
+      }
+    },
+    {
+      "case": "mira-case-02",
+      "image_sha256": "sha256:93a4a7dccab53d21be631e26d88a6cf4d00904e5b584ae7d5b893c24c2a600c4",
+      "image_bytes": 1286897,
+      "manifest_sha256": "sha256:235403e5921b732bb9fd102a003d4d9fd76ff510887a525148c0b763ab69b2e8",
+      "elapsed_ms": 29700,
+      "completed_at": "2026-10-09T17:34:01.437462+00:00",
+      "profile_sha256": [
+        "sha256:bbcb8f33d3a8ea5a594129a0a745b244fbff1b4957c131b07c3d7d2e12ceb6b7",
+        "sha256:6e0e1460b9c41574b0f3dffc782b5bbed1e40ccd3e83e77ebbe844689691bb49"
+      ],
+      "file_validity": "PASS",
+      "visual_quality": "REVISE",
+      "user_acceptance": "NOT_RECORDED",
+      "execution_status": "COMPLETE",
+      "human_scores": {
+        "identity": "P",
+        "clothing": "C",
+        "character_count": "P",
+        "composition": "P",
+        "hands_anatomy": "P",
+        "template_style": "P"
+      }
+    },
+    {
+      "case": "mira-case-03",
+      "image_sha256": "sha256:3d25ff55bab2cdac9f0d096eaaefda5117cc547a242a95ca4155262460b26785",
+      "image_bytes": 1335101,
+      "manifest_sha256": "sha256:eb8a7717704a4ef060559bbd50a1fc13eafdf0e73d688f382b1e644dae7c27fc",
+      "elapsed_ms": 27715,
+      "completed_at": "2026-10-09T17:34:29.281663+00:00",
+      "profile_sha256": [
+        "sha256:bbcb8f33d3a8ea5a594129a0a745b244fbff1b4957c131b07c3d7d2e12ceb6b7",
+        "sha256:6e0e1460b9c41574b0f3dffc782b5bbed1e40ccd3e83e77ebbe844689691bb49"
+      ],
+      "file_validity": "PASS",
+      "visual_quality": "PASS",
+      "user_acceptance": "NOT_RECORDED",
+      "execution_status": "COMPLETE",
+      "human_scores": {
+        "identity": "P",
+        "clothing": "P",
+        "character_count": "P",
+        "composition": "P",
+        "hands_anatomy": "P",
+        "template_style": "P"
+      }
+    },
+    {
+      "case": "mira-case-04",
+      "image_sha256": "sha256:efd846422ed4e40aafa09e187585c057ca72dbf4bd5deebd286ef4cd00fa566f",
+      "image_bytes": 1235529,
+      "manifest_sha256": "sha256:490da789186d615bf9271581ce301568b3ef0f4c6fa13fa6d1af17f0f12a6974",
+      "elapsed_ms": 27459,
+      "completed_at": "2026-10-09T17:34:56.929457+00:00",
+      "profile_sha256": [
+        "sha256:bbcb8f33d3a8ea5a594129a0a745b244fbff1b4957c131b07c3d7d2e12ceb6b7",
+        "sha256:6e0e1460b9c41574b0f3dffc782b5bbed1e40ccd3e83e77ebbe844689691bb49"
+      ],
+      "file_validity": "PASS",
+      "visual_quality": "PASS",
+      "user_acceptance": "NOT_RECORDED",
+      "execution_status": "COMPLETE",
+      "human_scores": {
+        "identity": "P",
+        "clothing": "P",
+        "character_count": "P",
+        "composition": "P",
+        "hands_anatomy": "P",
+        "template_style": "P"
+      }
+    },
+    {
+      "case": "mira-case-05",
+      "image_sha256": "sha256:5b3440d00352de1d0e19d85d614646551a8e30260b134da5d9eb2b9f65aec57f",
+      "image_bytes": 1313113,
+      "manifest_sha256": "sha256:d977140104be6302a6fe7dc23f21f079c03efdc26ee1cdd8add76bbbd31dec43",
+      "elapsed_ms": 28297,
+      "completed_at": "2026-10-09T17:35:25.336615+00:00",
+      "profile_sha256": [
+        "sha256:bbcb8f33d3a8ea5a594129a0a745b244fbff1b4957c131b07c3d7d2e12ceb6b7",
+        "sha256:6e0e1460b9c41574b0f3dffc782b5bbed1e40ccd3e83e77ebbe844689691bb49"
+      ],
+      "file_validity": "PASS",
+      "visual_quality": "PASS",
+      "user_acceptance": "NOT_RECORDED",
+      "execution_status": "COMPLETE",
+      "human_scores": {
+        "identity": "P",
+        "clothing": "P",
+        "character_count": "P",
+        "composition": "P",
+        "hands_anatomy": "P",
+        "template_style": "P"
+      }
+    },
+    {
+      "case": "mira-case-06",
+      "image_sha256": "sha256:a7ee29f22a84de730455a52c6156de43fc07710b7ef173a49fa72252ceac6fe2",
+      "image_bytes": 1155146,
+      "manifest_sha256": "sha256:52b4bb4ac01957a87a6299cd6d62a99abad6398e01b9e55084f2d3b7d6c71754",
+      "elapsed_ms": 27036,
+      "completed_at": "2026-10-09T17:35:52.490982+00:00",
+      "profile_sha256": [
+        "sha256:bbcb8f33d3a8ea5a594129a0a745b244fbff1b4957c131b07c3d7d2e12ceb6b7",
+        "sha256:6e0e1460b9c41574b0f3dffc782b5bbed1e40ccd3e83e77ebbe844689691bb49"
+      ],
+      "file_validity": "PASS",
+      "visual_quality": "PASS",
+      "user_acceptance": "NOT_RECORDED",
+      "execution_status": "COMPLETE",
+      "human_scores": {
+        "identity": "P",
+        "clothing": "P",
+        "character_count": "P",
+        "composition": "P",
+        "hands_anatomy": "P",
+        "template_style": "P"
+      }
+    },
+    {
+      "case": "mira-case-07",
+      "image_sha256": "sha256:e0dd54a3aebb55b3ffa349bc293d39210c05e7a315cc404c9d0ea603fd936d45",
+      "image_bytes": 1299353,
+      "manifest_sha256": "sha256:bf53e6c3500d9a7c3b4689405dbece225e757f2eae3952195e185f409c8e4e5b",
+      "elapsed_ms": 27712,
+      "completed_at": "2026-10-09T17:36:20.325807+00:00",
+      "profile_sha256": [
+        "sha256:bbcb8f33d3a8ea5a594129a0a745b244fbff1b4957c131b07c3d7d2e12ceb6b7",
+        "sha256:6e0e1460b9c41574b0f3dffc782b5bbed1e40ccd3e83e77ebbe844689691bb49"
+      ],
+      "file_validity": "PASS",
+      "visual_quality": "PASS",
+      "user_acceptance": "NOT_RECORDED",
+      "execution_status": "COMPLETE",
+      "human_scores": {
+        "identity": "P",
+        "clothing": "P",
+        "character_count": "P",
+        "composition": "P",
+        "hands_anatomy": "P",
+        "template_style": "P"
+      }
+    },
+    {
+      "case": "mira-case-08",
+      "image_sha256": "sha256:ec662977145e758199ade8f3c1b36327fdc8c48247adb22871ec41ff5632af95",
+      "image_bytes": 1219702,
+      "manifest_sha256": "sha256:81692d72b15549ca93cb0c9c46c6357b3033efed8645a0ba54dd3d083a2f758f",
+      "elapsed_ms": 27785,
+      "completed_at": "2026-10-09T17:36:48.226843+00:00",
+      "profile_sha256": [
+        "sha256:bbcb8f33d3a8ea5a594129a0a745b244fbff1b4957c131b07c3d7d2e12ceb6b7",
+        "sha256:6e0e1460b9c41574b0f3dffc782b5bbed1e40ccd3e83e77ebbe844689691bb49"
+      ],
+      "file_validity": "PASS",
+      "visual_quality": "REVISE",
+      "user_acceptance": "NOT_RECORDED",
+      "execution_status": "COMPLETE",
+      "human_scores": {
+        "identity": "P",
+        "clothing": "C",
+        "character_count": "P",
+        "composition": "P",
+        "hands_anatomy": "P",
+        "template_style": "P"
+      }
+    },
+    {
+      "case": "mira-case-09",
+      "image_sha256": "sha256:dbf8d002c64ae256ec85261f05a028adce15102af4fdf806b608cb25a268933a",
+      "image_bytes": 1212576,
+      "manifest_sha256": "sha256:892b6d4d579ccfb3255249d40a3ecee05d454af5df6b924b30d567ba12c14f22",
+      "elapsed_ms": 28130,
+      "completed_at": "2026-10-09T17:37:16.475380+00:00",
+      "profile_sha256": [
+        "sha256:bbcb8f33d3a8ea5a594129a0a745b244fbff1b4957c131b07c3d7d2e12ceb6b7",
+        "sha256:6e0e1460b9c41574b0f3dffc782b5bbed1e40ccd3e83e77ebbe844689691bb49"
+      ],
+      "file_validity": "PASS",
+      "visual_quality": "PASS",
+      "user_acceptance": "NOT_RECORDED",
+      "execution_status": "COMPLETE",
+      "human_scores": {
+        "identity": "P",
+        "clothing": "P",
+        "character_count": "P",
+        "composition": "P",
+        "hands_anatomy": "P",
+        "template_style": "P"
+      }
+    },
+    {
+      "case": "mira-case-10",
+      "image_sha256": "sha256:291ca02bd351399d318c85165327c193c74102de055251151d6a9d228ff236ba",
+      "image_bytes": 1212218,
+      "manifest_sha256": "sha256:906596bb9fc94fda9eff3e654a79715c38ae5a72452faaea1dcfab15961d3c9e",
+      "elapsed_ms": 29279,
+      "completed_at": "2026-10-09T17:37:45.875447+00:00",
+      "profile_sha256": [
+        "sha256:bbcb8f33d3a8ea5a594129a0a745b244fbff1b4957c131b07c3d7d2e12ceb6b7",
+        "sha256:6e0e1460b9c41574b0f3dffc782b5bbed1e40ccd3e83e77ebbe844689691bb49"
+      ],
+      "file_validity": "PASS",
+      "visual_quality": "PASS",
+      "user_acceptance": "NOT_RECORDED",
+      "execution_status": "COMPLETE",
+      "human_scores": {
+        "identity": "P",
+        "clothing": "P",
+        "character_count": "P",
+        "composition": "P",
+        "hands_anatomy": "P",
+        "template_style": "P"
+      }
+    }
+  ],
+  "human_review": {
+    "status": "COMPLETE",
+    "reviewer": "Human user",
+    "cases": [
+      {
+        "case": "mira-case-01",
+        "scores": {
+          "identity": "P",
+          "clothing": "C",
+          "character_count": "P",
+          "composition": "P",
+          "hands_anatomy": "P",
+          "template_style": "P"
+        },
+        "decision": "REVISE"
+      },
+      {
+        "case": "mira-case-02",
+        "scores": {
+          "identity": "P",
+          "clothing": "C",
+          "character_count": "P",
+          "composition": "P",
+          "hands_anatomy": "P",
+          "template_style": "P"
+        },
+        "decision": "REVISE"
+      },
+      {
+        "case": "mira-case-03",
+        "scores": {
+          "identity": "P",
+          "clothing": "P",
+          "character_count": "P",
+          "composition": "P",
+          "hands_anatomy": "P",
+          "template_style": "P"
+        },
+        "decision": "PASS"
+      },
+      {
+        "case": "mira-case-04",
+        "scores": {
+          "identity": "P",
+          "clothing": "P",
+          "character_count": "P",
+          "composition": "P",
+          "hands_anatomy": "P",
+          "template_style": "P"
+        },
+        "decision": "PASS"
+      },
+      {
+        "case": "mira-case-05",
+        "scores": {
+          "identity": "P",
+          "clothing": "P",
+          "character_count": "P",
+          "composition": "P",
+          "hands_anatomy": "P",
+          "template_style": "P"
+        },
+        "decision": "PASS"
+      },
+      {
+        "case": "mira-case-06",
+        "scores": {
+          "identity": "P",
+          "clothing": "P",
+          "character_count": "P",
+          "composition": "P",
+          "hands_anatomy": "P",
+          "template_style": "P"
+        },
+        "decision": "PASS"
+      },
+      {
+        "case": "mira-case-07",
+        "scores": {
+          "identity": "P",
+          "clothing": "P",
+          "character_count": "P",
+          "composition": "P",
+          "hands_anatomy": "P",
+          "template_style": "P"
+        },
+        "decision": "PASS"
+      },
+      {
+        "case": "mira-case-08",
+        "scores": {
+          "identity": "P",
+          "clothing": "C",
+          "character_count": "P",
+          "composition": "P",
+          "hands_anatomy": "P",
+          "template_style": "P"
+        },
+        "decision": "REVISE"
+      },
+      {
+        "case": "mira-case-09",
+        "scores": {
+          "identity": "P",
+          "clothing": "P",
+          "character_count": "P",
+          "composition": "P",
+          "hands_anatomy": "P",
+          "template_style": "P"
+        },
+        "decision": "PASS"
+      },
+      {
+        "case": "mira-case-10",
+        "scores": {
+          "identity": "P",
+          "clothing": "P",
+          "character_count": "P",
+          "composition": "P",
+          "hands_anatomy": "P",
+          "template_style": "P"
+        },
+        "decision": "PASS"
+      }
+    ],
+    "criteria": [
+      "identity",
+      "clothing",
+      "character_count",
+      "composition",
+      "hands_anatomy",
+      "template_style"
+    ],
+    "vision_auto_approval": false,
+    "user_acceptance": "ACCEPTED",
+    "revision_cases": [
+      {
+        "case": "mira-case-01-revision",
+        "scores": {
+          "identity": "P",
+          "clothing": "P",
+          "character_count": "P",
+          "composition": "P",
+          "hands_anatomy": "P",
+          "template_style": "P"
+        },
+        "decision": "PASS",
+        "review_basis": "User explicitly accepted the three revisions; the five unchanged criteria carry forward from the initial human review, and the revised clothing is accepted."
+      },
+      {
+        "case": "mira-case-02-revision",
+        "scores": {
+          "identity": "P",
+          "clothing": "P",
+          "character_count": "P",
+          "composition": "P",
+          "hands_anatomy": "P",
+          "template_style": "P"
+        },
+        "decision": "PASS",
+        "review_basis": "User explicitly accepted the three revisions; the five unchanged criteria carry forward from the initial human review, and the revised clothing is accepted."
+      },
+      {
+        "case": "mira-case-08-revision",
+        "scores": {
+          "identity": "P",
+          "clothing": "P",
+          "character_count": "P",
+          "composition": "P",
+          "hands_anatomy": "P",
+          "template_style": "P"
+        },
+        "decision": "PASS",
+        "review_basis": "User explicitly accepted the three revisions; the five unchanged criteria carry forward from the initial human review, and the revised clothing is accepted."
+      }
+    ],
+    "manifest_hash_policy": "manifest_sha256 records the generation-time manifest before review annotations; current manifest hashes are omitted because the sink safety phone detector classifies one numeric substring inside a SHA-256 hex digest as PII."
+  },
+  "date": "2026-10-10",
+  "output_policy": "Generated images remain in the local private acceptance workspace; only SHA-256 evidence is committed.",
+  "revisions": [
+    {
+      "case": "mira-case-01-revision",
+      "image_sha256": "sha256:ccf481db00b60ae50c029cf432bb7617a7b609c44ec8657fefec79eb9f5c6a9e",
+      "image_bytes": 1207867,
+      "manifest_sha256": "sha256:9d89a9abb9d23fa5d64ee00562887237b6dd20f3bb36c3ba32cbd747656c27b0",
+      "elapsed_ms": 28041,
+      "completed_at": "2026-10-09T17:55:29.414571+00:00",
+      "profile_sha256": [
+        "sha256:bbcb8f33d3a8ea5a594129a0a745b244fbff1b4957c131b07c3d7d2e12ceb6b7",
+        "sha256:6e0e1460b9c41574b0f3dffc782b5bbed1e40ccd3e83e77ebbe844689691bb49"
+      ],
+      "file_validity": "PASS",
+      "visual_quality": "PASS",
+      "user_acceptance": "ACCEPTED",
+      "execution_status": "COMPLETE",
+      "human_scores": {
+        "identity": "P",
+        "clothing": "P",
+        "character_count": "P",
+        "composition": "P",
+        "hands_anatomy": "P",
+        "template_style": "P"
+      },
+      "review_decision": "PASS"
+    },
+    {
+      "case": "mira-case-02-revision",
+      "image_sha256": "sha256:19eeb1a671c393eb18bdb817f57f2665391f3c780d0541cbf998de87b71719a6",
+      "image_bytes": 1283706,
+      "manifest_sha256": "sha256:396ae8fb1d80f69a011de026adfcb9f801d7a633579e94e454bd51406d8081af",
+      "elapsed_ms": 27909,
+      "completed_at": "2026-10-09T17:55:57.436510+00:00",
+      "profile_sha256": [
+        "sha256:bbcb8f33d3a8ea5a594129a0a745b244fbff1b4957c131b07c3d7d2e12ceb6b7",
+        "sha256:6e0e1460b9c41574b0f3dffc782b5bbed1e40ccd3e83e77ebbe844689691bb49"
+      ],
+      "file_validity": "PASS",
+      "visual_quality": "PASS",
+      "user_acceptance": "ACCEPTED",
+      "execution_status": "COMPLETE",
+      "human_scores": {
+        "identity": "P",
+        "clothing": "P",
+        "character_count": "P",
+        "composition": "P",
+        "hands_anatomy": "P",
+        "template_style": "P"
+      },
+      "review_decision": "PASS"
+    },
+    {
+      "case": "mira-case-08-revision",
+      "image_sha256": "sha256:bf0ef724abdb5ad38f13042e653e4e2d2c3cc0241af518750ba8c680d381d153",
+      "image_bytes": 1314250,
+      "manifest_sha256": "sha256:74167983df31169529e7c6fc02cd21f5e1eb6d1a04edbe9e9f54b8f4ad34a0e8",
+      "elapsed_ms": 29248,
+      "completed_at": "2026-10-09T17:56:26.805947+00:00",
+      "profile_sha256": [
+        "sha256:bbcb8f33d3a8ea5a594129a0a745b244fbff1b4957c131b07c3d7d2e12ceb6b7",
+        "sha256:6e0e1460b9c41574b0f3dffc782b5bbed1e40ccd3e83e77ebbe844689691bb49"
+      ],
+      "file_validity": "PASS",
+      "visual_quality": "PASS",
+      "user_acceptance": "ACCEPTED",
+      "execution_status": "COMPLETE",
+      "human_scores": {
+        "identity": "P",
+        "clothing": "P",
+        "character_count": "P",
+        "composition": "P",
+        "hands_anatomy": "P",
+        "template_style": "P"
+      },
+      "review_decision": "PASS"
+    }
+  ]
+}
