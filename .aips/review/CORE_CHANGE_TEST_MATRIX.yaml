@@ -64,6 +64,9 @@ change:
     - tests/validation/creative_execution_contracts.py
     - tests/validation/creative_quality_contracts.py
     - tests/validation/registry.py
+candidate:
+  base_sha: 62af5a9312756669ecfe0203ea8f468d94659d23
+  changed_files_hash: 9378642b2ae352245aadb906cef358f156bcbf611fb80942c6f7c3aa58d76f1b
 matrix:
   - boundary: Profile-driven prompt compilation and provenance
     reason: Style and identity constraints must reach local generation deterministically, while profile compatibility and prompt privacy remain intact.
@@ -114,8 +117,8 @@ matrix:
       cli_harness: {applicable: true, evidence: Full creative CLI/OpenCode lifecycle remains required for the core change.}
       docs_schema: {applicable: true, evidence: Canonical documentation sync and placement gates plus diagrams are updated.}
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
+actual_diff_reconciled: true
 review_evidence:
   required: false
 blockers: []
-status: DRAFT
+status: READY
