@@ -40,6 +40,8 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+The Phase 1 creative prompt compiler extraction is internal to the Python implementation. It preserves the `creative_execution` facade and does not change OpenCode permissions, native tool signatures, or Harness installation.
+
 OpenCode 的 local creative tool 對視覺審查使用獨立、目前使用者明確提出的 `review-assist` grant，並綁定 active Session root；它不替使用者完成審查或接受。
 
 OpenCode V2 acceptance now reports plugin setup, Context delivery, permission-hook execution and host version separately. The v2.0.24 loopback lifecycle verified Context plus native Allow/Deny; other host versions and instruction-model delivery remain unverified.

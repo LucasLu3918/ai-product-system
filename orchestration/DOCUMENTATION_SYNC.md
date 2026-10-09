@@ -44,6 +44,8 @@ For creative engine readiness, synchronize fixed-loopback ComfyUI discovery, MFL
 
 Creative quality updates keep deterministic bounded prompt compilation, profile fingerprints, evidence-ranked model recommendations, optional loopback Ollama review, explicit current-user review authorization, and separate Human/user decisions aligned across Creative Direction, Human guidance, profile templates, Scenarios 234/236/238 and lifecycle contracts.
 
+Behavior-preserving prompt compiler extraction keeps `creative_execution` as the compatibility facade; exact output fingerprints and function/class identity evidence document the internal boundary without claiming a workflow change.
+
 Creative reliability closure includes native Context envelopes, user-only revocation, allowlisted Bundle configuration and distinct file/visual/user acceptance. Human instructions must expose the new Bundle path and missing-weight limitation; Agent protocols must prohibit silent medium fallback.
 
 Character artwork behavior is mapped through `config/documentation-sync.yaml` and `config/documentation-placement.yaml`: keep the Creative Direction protocol, Scenarios 234/236, User Guide Creative Direction topic, Technology Guide Execution topic, and dedicated Architecture Overview Creative Workflow topic synchronized. Deterministic provenance checks do not replace visual review.

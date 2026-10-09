@@ -19,6 +19,8 @@ Creative executor, job-manifest, OpenCode prompt-grant or related scenario chang
 
 Creative prompt compilation, capability ranking or local visual-review changes also require Scenario 234/236 coverage, privacy and authorization checks, and explicit evidence that advisory reports cannot complete Human review or user acceptance.
 
+For behavior-preserving compiler extraction, bind the final candidate's Core Matrix to every documentation-closure path, verify exact prompt/recommendation parity and facade identity, and record architecture diagrams as unaffected because workflow boundaries do not change.
+
 Creative readiness changes also keep fixed loopback discovery, sanitized provider recovery, and advisory-only Apple Silicon FP8 compatibility wording aligned across the adapter, Scenario 236 and canonical Human documentation.
 
 Shared CLI router 更新可能觸發 Creative Direction 文件審查；Project Diagnostics 只讀，不會執行 Creative Profile、Provider 或 Artwork lifecycle。

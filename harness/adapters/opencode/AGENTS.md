@@ -1,5 +1,7 @@
 # AIPS Global Turn Harness
 
+Creative prompt compilation internals are not a native authority surface. Preserve the existing `creative_execution` facade and keep prompt/output parity separate from OpenCode grant and host-acceptance evidence.
+
 OpenCode hook subprocesses must be asynchronous, bounded and cancellable. A short per-Session Context cache may deduplicate concurrent reads; permission checks always refresh Context. Report plugin setup, hook execution and exact host-version acceptance separately, and preserve fail-closed behavior on timeout or missing evidence.
 
 The read-only `aips project diagnose <path>` command reports configured Runtime status and static MCP capability only; it does not prove this Host delivered Context or executed a Hook/Tool. Keep unsupported effects UNVERIFIED until native acceptance evidence exists.

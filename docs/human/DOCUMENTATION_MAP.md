@@ -85,6 +85,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 Creative prompt compiler、model capability evidence 與本機 vision advisory 的行為由 Creative Direction 和 Scenario 234/236/238 定義；Human 導覽與文件閉包由本圖及 Documentation Sync 維護。
 
+Compiler implementation is maintained in `scripts/creative_prompt_compiler.py`; the stable `creative_execution` facade and exact-output evidence are described in Architecture Overview and Technology Guide.
+
 Creative authorization and recovery behavior is canonical in `orchestration/CREATIVE_DIRECTION.md` and `harness/adapters/opencode/AGENTS.md`; user guidance is synchronized through the reusable character-artwork topics and Scenario 238.
 
 Behavior-bearing modules, schemas and scenarios remain the source references for detailed execution and evidence contracts.

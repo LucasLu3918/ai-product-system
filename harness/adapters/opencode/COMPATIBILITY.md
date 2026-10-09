@@ -46,6 +46,8 @@ MCP config defaults to V2; select `--opencode-version 1` for an explicit V1 prev
 
 ## Evidence (2026-10-08)
 
+The Phase 1 Python compiler extraction preserves the existing `creative_execution` imports and exact deterministic outputs. It does not change the native OpenCode tool catalog, prompt-admission grants, or host compatibility requirements.
+
 | Boundary | macOS / OpenCode v2.0.24 | Linux / WSL | V1 native |
 |---|---|---|---|
 | 27 canonical Skill descriptions/projection integrity | PASS lifecycle | deterministic lifecycle can run in CI | native UNVERIFIED |

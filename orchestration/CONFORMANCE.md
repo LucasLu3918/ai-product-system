@@ -56,6 +56,8 @@ Scenario 236 adds a separate explicit execution boundary for local MFLUX and loo
 
 Scenario 234/236 also cover deterministic bounded prompt compilation, evidence-ranked model advice, and optional loopback-only vision review. Its separate advisory report cannot complete Human visual review or user acceptance.
 
+The Phase 1 compiler extraction lifecycle additionally binds exact prompt/recommendation output parity, `creative_execution` function and `Blocked` class identity, and invalid-prompt reason parity. These checks do not represent model inference or image-quality acceptance.
+
 The fixture lifecycle covers safe local profile/reference paths, SVG and PNG validation, exact hashes, verified provider/runtime/license provenance, and deterministic non-overwriting SVG composition with correctly typeset Unicode labels. A passing helper or manifest never proves generated character identity fidelity, model execution, or device performance; those require actual assets and separate human visual review.
 
 ## Scenario 235 — OpenCode Native Context and Action Guard

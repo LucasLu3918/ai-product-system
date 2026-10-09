@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+Creative prompt compiler 與共用錯誤類別屬於既有 Python executor 的內部模組；`creative_execution` 相容 facade 保留原有呼叫與輸出，不新增 OpenCode 權限或工具簽名。
+
 OpenCode 的 local creative tool 有獨立 `review-assist` action grant，綁定目前 Session root；它只授權本機視覺建議，不能改變 Human review 或 user acceptance。
 
 OpenCode V2 每則使用者回覆都重新建立目前動作授權；有界 Session 狀態只支援短風格選擇，並與 Harness Context、原生檔案決策分開。創作執行仍需明確工具動作及本機 preflight。
@@ -115,6 +117,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 Creative manifests distinguish workflow execution and raster validity from real model inference, Human visual review and user acceptance.
 
 Profile-driven prompt compilation combines bundle intent with character acceptance criteria and style constraints, then records profile and compiled-prompt hashes. Model capability profiles provide advisory, evidence-ranked recommendations without changing the selected model. An optional review action sends a bounded image only to an already-installed local Ollama vision model over loopback and writes a separate advisory report; a Human still decides visual review and the user still records acceptance.
+
+The deterministic prompt compiler and model recommendation logic are internal pure functions in `scripts/creative_prompt_compiler.py`; `scripts/creative_execution.py` remains their compatibility facade. Exact output fingerprints and function/class identity checks cover the extraction. This does not change the creative workflow or its architecture diagrams.
 
 
 `aips project diagnose` 不會呼叫創作工具或產生圖片；Creative Profile、Provider 與視覺驗收流程仍由既有明確授權路徑負責。

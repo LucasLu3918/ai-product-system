@@ -90,6 +90,8 @@ The optional local character-art executor accepts an already-installed MFLUX CLI
 
 Profile-driven prompt compilation includes character acceptance criteria, style constraints and an optional collection style lock; manifests keep hashes instead of compiled prompt text. Capability profiles produce advisory recommendations only. Optional visual assistance calls only an already-installed Ollama vision model over loopback and emits a separate report with no review or acceptance authority.
 
+The pure prompt compiler and model recommendation helpers live in `scripts/creative_prompt_compiler.py`; `scripts/creative_execution.py` re-exports the same function objects for existing callers. Golden output fingerprints and facade-identity checks guard behavior-preserving extraction.
+
 The shared helper package consolidates canonical hashes, repository-relative paths and caller-specific glob matching; existing module facades preserve current call sites and outputs.
 
 Task-specific routes keep product-delivery, visual, security, testing, API/data, planning, documentation and publication procedures progressive; the general mutation fallback includes Orchestrator, Change Impact and Quality Planning.

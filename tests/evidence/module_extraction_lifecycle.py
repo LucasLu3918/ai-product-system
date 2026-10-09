@@ -10,6 +10,9 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+import creative_errors as creative_errors_impl
+import creative_execution as creative_facade
+import creative_prompt_compiler as creative_impl
 import evolution_analysis as evolution_facade
 import evolution_preanalysis as evolution_impl
 import project_intelligence as project_facade
@@ -28,6 +31,15 @@ import retrieval_structural_graph as retrieval_impl
 
 
 def main() -> int:
+    assert creative_facade.compile_creative_prompt is creative_impl.compile_creative_prompt
+    assert creative_facade.model_recommendation is creative_impl.model_recommendation
+    assert creative_facade.Blocked is creative_errors_impl.Blocked
+    try:
+        creative_facade.compile_creative_prompt({}, {})
+    except creative_errors_impl.Blocked as exc:
+        assert exc.reason_code == "compiled_prompt_invalid"
+    else:
+        raise AssertionError("invalid prompt did not preserve the shared Blocked exception")
     for name in ("atomic_text", "atomic_yaml", "writer_lock"):
         assert getattr(project_facade, name) is getattr(project_storage_impl, name), name
     assert project_facade.traverse_architecture_impact_graph is project_impl.traverse_architecture_impact_graph
