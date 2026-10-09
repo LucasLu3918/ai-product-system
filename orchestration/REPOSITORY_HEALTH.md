@@ -17,6 +17,8 @@ Repository Health keeps path and digest facade signatures stable over shared pri
 
 ## Deterministic checks
 
+Project Diagnostics is an operational read-only aggregate, not a Repository Health source of truth. Capability Registry and Architecture Surface validation remain the canonical consistency checks.
+
 Run:
 
     python scripts/repository_health.py audit --config config/repository-health.yaml

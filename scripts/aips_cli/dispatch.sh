@@ -102,11 +102,14 @@ case "${1:-help}" in
     shift 2 || true
     case "$sub" in
       help|-h|--help)
-        say "Usage: aips project check <project-path>"
+        say "Usage: aips project <check|diagnose> ..."
         ;;
       check)
         [ "$#" -eq 1 ] || die "Usage: aips project check <project-path>"
         project_check "$1"
+        ;;
+      diagnose)
+        project_diagnose "$@"
         ;;
       *) die "Unknown project command: $sub" ;;
     esac

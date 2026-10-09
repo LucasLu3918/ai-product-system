@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+診斷回報的 Runtime/Harness 狀態是設定與靜態觀測；沒有版本綁定的原生測試時，不代表 Context、Hook 或 Tool 已在 Host 內生效。
+
 OpenCode 與 CLI 共用本機模型能力表；Z-Image Turbo 的新增 generate 配對會同時出現在 discovery、configure 與 preflight。
 
 OpenCode 的 Creative tool 仍使用同一個本機 executor；ComfyUI Z-Image profile 固定 split-loader topology，並在 preflight 驗證權重清單與清除輸出 PNG 的 prompt text metadata。
@@ -36,6 +38,8 @@ MCP 提供 portability；native adapters 提供 runtime hook / guard。兩者共
 OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn Context，並在 permission evaluation 階段檢查支援的直接檔案操作。L1 僅允許非 Git workspace 中受限路徑的新創意資產；L2 需要 Project Intelligence READY、freshness CURRENT 與無待解權威衝突；L3 外部效果沿用既有 Human approval gate。Shell 僅保留有限唯讀命令，並額外提供固定參數的 AIPS 診斷。`creative_execution` 是唯一有界自訂工具：它綁定當前 EPHEMERAL Session，可建立不覆寫的角色／風格 Profile 與未設定引擎的 Creative Bundle，也可對既有 Bundle 執行唯讀預檢及明確要求的本機生成。其他 MCP/custom tools 和繞過 OpenCode 的寫入仍不在 guard 範圍。Plugin 安裝與 hook discovery 不足以證明執行防護；完成 runtime permission acceptance 前，治理保持 ADVISORY。
 
 ## Project Intelligence 與 Retrieval
+
+`aips project diagnose <path>` 聚合既有 Project Intelligence、Harness 與 MCP 靜態檢查，提供原因碼與恢復指引；它不會建立索引、刷新或修改專案。診斷中的 Host 能力仍依原生證據維持 UNVERIFIED。
 
 創作 manifest 的 Human visual review 與軟體獨立 review evidence 是不同契約。圖片容器或 tool fixture 通過不會自動產生視覺 PASS 或使用者接受。
 
@@ -89,6 +93,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+`aips project diagnose` 不會呼叫創作工具或產生圖片；Creative Profile、Provider 與視覺驗收流程仍由既有明確授權路徑負責。
+
 Z-Image Turbo 可使用 MFLUX 專用命令 `mflux-generate-z-image-turbo`，或 ComfyUI 固定 split-loader 工作流；ComfyUI 會核對 UNET、CLIP、VAE 本機清單。兩種配對僅支援文字產圖，8 步可由 Bundle 明確設定，實際品質與人工驗收仍獨立記錄。
 
 角色插畫新增唯讀 `discover` 與建立新版本的 `configure`，補齊本機引擎設定路徑。OpenCode 先正規化 Context，再判斷使用者要求與取消狀態；要求點陣插畫時不能默默改交 SVG。生成、圖片容器檢查、人工視覺審查與使用者接受分開記錄；沒有模型權重時仍不能宣稱真實產圖驗收。
@@ -133,6 +139,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+System Facts 與 Capability Registry 將 `aips project diagnose` 登錄為既有 `project` 命令下的唯讀診斷，未新增執行權限或狀態儲存。
 
 Image generation remains a separate explicit action; the CLI preparation path is not scheduled as an autonomous task or retry loop.
 
@@ -270,6 +278,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Project Diagnostics 的命令事實、Scenario 與文件映射共同納入候選一致性驗證；診斷結果不取代 Repository Health 或 Integration Gate。
 
 創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
 

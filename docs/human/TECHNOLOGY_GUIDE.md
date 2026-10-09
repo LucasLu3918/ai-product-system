@@ -31,6 +31,8 @@ Role、Skill、Protocol 與 Project evidence 只在 task relevant 時載入，�
 
 ## Project Understanding
 
+`aips project diagnose` aggregates existing Project Intelligence readiness, Runtime/Harness status and MCP static inspection. It reports safe recovery actions without invoking them.
+
 OpenCode V2 receives the existing compact Context Manifest before model dispatch. Its readiness and path checks consume Project Intelligence output without adding a separate Role, Skill, or local-write policy engine.
 
 Project Intelligence promotion 將候選資格與目標路徑限制拆成 helper，並由 facade 維持舊呼叫介面及人工核准邊界。
@@ -58,6 +60,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+`aips project diagnose` 不會啟動 Creative Bundle 或模型；創作生成仍由既有受限的明確使用者請求路徑執行。
 
 MFLUX 固定命令表新增 Z-Image Turbo generate：`mflux-generate-z-image-turbo`。CLI 不傳任意額外參數；步數沿用明確 Bundle 設定，模型與 tokenizer 仍須預先完整安裝，本流程不下載。ComfyUI 也支援限定的 Z-Image Turbo generate profile：固定 UNETLoader、CLIPLoader (`lumina2`)、VAELoader 與 AIPS 內建 API 拓樸，preflight 逐項核對本機模型清單；不支援任意 split-loader 工作流或 edit。
 
@@ -181,6 +185,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+`aips project diagnose <path>` 聚合既有只讀檢查，Lifecycle evidence 驗證 text/YAML/JSON、隱私遮蔽、失敗情境與不寫入行為。這份診斷不取代各 subsystem 的權威檢查或精確候選 Gate。
 
 創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
 

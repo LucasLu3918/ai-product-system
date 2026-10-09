@@ -1,88 +1,64 @@
 version: 1
 candidate:
-  base_sha: 3a9af677b36813d26590372efe29426671cec9fa
-  changed_files_hash: 93dafe4e9985e534140fadc0db613a9f1991ff6a980359e3926d2fd6472b22f9
+  base_sha: 1f3ef8c5da9d071b455c25f612e76038091891da
+  changed_files_hash: b282a3f0638c1dca09e519fad293c2197bd1657626de019454713b9c29f90cf9
 change:
-  id: comfyui-zimage-turbo-20261009
-  summary: Add bounded ComfyUI Z-Image Turbo split-loader generation, local inventory
-    verification and prompt metadata stripping.
+  id: plan23-project-diagnostics
+  summary: Additive read-only project diagnostics with PI recovery guidance and explicit
+    UNVERIFIED Host limits.
   boundary:
-  - Exact built-in Z-Image Turbo API graph and local UNET/CLIP/VAE inventory only
-  - Existing checkpoint workflows and MFLUX routes remain compatible; no custom nodes
-    or edit support
-  - No new authority, dependency, external provider, runtime install or model download
+  - Existing project status, PI readiness and freshness
+  - Fixed local Harness resolver and MCP static inspect outputs
+  - Text/YAML/JSON report, stable reason codes, safe recovery suggestions
+  - No writes, attachment, cache/index refresh, installation, network access or native
+    Host enforcement claim
 matrix:
-- boundary: Local ComfyUI Z-Image Turbo provider profile
-  reason: Adds one closed built-in workflow graph and inventory checks while preserving
-    the existing checkpoint path and local-only authorization boundary.
+- boundary: Read-only project diagnostics public CLI and structured report
+  reason: New command composes existing interfaces and exposes stable privacy-bounded
+    recovery guidance.
   checks:
     static_lint:
       applicable: true
-      evidence: 'Synthetic creative lifecycle: exact node/input/link/sampler checks;
-        local inventory positive and missing VAE negative; generate-only rejection;
-        custom node rejection; prompt-bearing PNG metadata stripping and hash provenance.
-        Full exact-candidate core Gate required.'
+      evidence: Run Ruff and repository static contracts for the final exact candidate.
     unit:
       applicable: true
-      evidence: 'Synthetic creative lifecycle: exact node/input/link/sampler checks;
-        local inventory positive and missing VAE negative; generate-only rejection;
-        custom node rejection; prompt-bearing PNG metadata stripping and hash provenance.
-        Full exact-candidate core Gate required.'
+      evidence: Focused assertions cover stable mappings for missing, partial, stale
+        and blocked PI plus allowlisted Adapter values.
     integration:
       applicable: true
-      evidence: 'Synthetic creative lifecycle: exact node/input/link/sampler checks;
-        local inventory positive and missing VAE negative; generate-only rejection;
-        custom node rejection; prompt-bearing PNG metadata stripping and hash provenance.
-        Full exact-candidate core Gate required.'
-    contract:
-      applicable: true
-      evidence: 'Synthetic creative lifecycle: exact node/input/link/sampler checks;
-        local inventory positive and missing VAE negative; generate-only rejection;
-        custom node rejection; prompt-bearing PNG metadata stripping and hash provenance.
-        Full exact-candidate core Gate required.'
+      evidence: tests/evidence/project_diagnostics_lifecycle.py and installed CLI
+        invocation against isolated project/cache paths.
+      contract:
+        applicable: true
+        evidence: JSON/YAML/text shape, static CLI help, Scenario 237 and generated
+          System Facts/Capability projections, plus the updated Plan21 golden hash
+          for additive top-level CLI help.
     e2e:
       applicable: true
-      evidence: 'Synthetic creative lifecycle: exact node/input/link/sampler checks;
-        local inventory positive and missing VAE negative; generate-only rejection;
-        custom node rejection; prompt-bearing PNG metadata stripping and hash provenance.
-        Full exact-candidate core Gate required.'
+      evidence: Local CLI end-to-end; live external Agent Host is not in scope and
+        remains UNVERIFIED.
     security:
       applicable: true
-      evidence: 'Synthetic creative lifecycle: exact node/input/link/sampler checks;
-        local inventory positive and missing VAE negative; generate-only rejection;
-        custom node rejection; prompt-bearing PNG metadata stripping and hash provenance.
-        Full exact-candidate core Gate required.'
+      evidence: No-write, no raw stderr/stdout, no environment sentinel leakage, enum
+        allowlisting, fixed argv and subprocess timeout checks; strict candidate secret
+        scan required.
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted state, cache, project-local file, schema change or automatic
+        repair; lifecycle verifies advisory recovery instructions.
     cli_harness:
       applicable: true
-      evidence: 'Synthetic creative lifecycle: exact node/input/link/sampler checks;
-        local inventory positive and missing VAE negative; generate-only rejection;
-        custom node rejection; prompt-bearing PNG metadata stripping and hash provenance.
-        Full exact-candidate core Gate required.'
+      evidence: aips project diagnose CLI routing and output tested while preserving
+        aips project check.
     docs_schema:
       applicable: true
-      evidence: 'Synthetic creative lifecycle: exact node/input/link/sampler checks;
-        local inventory positive and missing VAE negative; generate-only rejection;
-        custom node rejection; prompt-bearing PNG metadata stripping and hash provenance.
-        Full exact-candidate core Gate required.'
-- boundary: Versioned release and documentation closure
-  reason: Core capability release is 0.79.0 with canonical docs and Scenario 236 updates.
-  checks:
-    migration_recovery:
-      applicable: true
-      evidence: No Bundle schema migration; source-preserving configure and legacy
-        checkpoint/MFLUX lifecycle regression remain covered by the synthetic lifecycle
-        and full Gate.
+      evidence: Canonical Human docs, Scenario registry, system facts and generated
+        references validated.
 review_evidence:
   required: false
-  reason: Bounded primary implementation; existing Human visual review remains PENDING
-    for actual assets.
+  reason: Bounded primary implementation; exact candidate local gate and remote checks
+    remain separate.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 status: READY
-verification:
-  focused_creative_lifecycle: PASS
-  creative_contracts: PASS
-  real_model_inference: PASS_LOCAL_COMFYUI_0.39.2_Z_IMAGE_TURBO_1024X1024_8_STEPS
-  visual_quality: AGENT_INSPECTED_RENDERED_IMAGES_INDEPENDENT_HUMAN_PENDING
-  complete_gate: PASS_EXACT_CANDIDATE_CORE_GATE

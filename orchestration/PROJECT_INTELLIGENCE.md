@@ -201,6 +201,8 @@ Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
 
+Project Diagnostics may summarize readiness but is not a retrieval or Impact Graph query; it cannot promote inferred relationships or disposition affected consumers.
+
 Task classification includes advisory creative_medium (raster/vector/unspecified) for output-medium consumers. It grants no generation authority. OpenCode normalizes Context envelopes and separately evaluates current user requests, revocation and bounded continuation.
 
 The creative execution Change Impact boundary includes versioned Profile/Bundle creation, its Shell guard, CLI dispatch, OpenCode tool consumer, Bundle inputs, provenance manifest, privacy trace, lifecycle evidence, and documentation projections.
@@ -594,6 +596,8 @@ For an existing `impact-init` change ID, the CLI reports the existing record and
 Do not claim the project has been initialized merely from directory/file-name inventory.
 
 ## Existing-project automatic behavior
+
+The `aips project diagnose <path>` command aggregates existing status surfaces and maps missing, partial, stale and blocked states to explicit recovery guidance. It never initializes or refreshes Project Intelligence automatically; static Host/MCP observations remain distinct from native execution evidence.
 
 The user should not need to run initialization commands during normal Agent use.
 

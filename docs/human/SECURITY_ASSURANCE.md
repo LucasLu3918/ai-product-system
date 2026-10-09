@@ -6,6 +6,8 @@ Security review depth is proportional to the actual product/feature risk. The sy
 
 ## Core model
 
+Project Diagnostics 只輸出 allowlisted 狀態、穩定 reason code 與建議，不複製 Doctor 原始輸出、憑證、prompt 或來源片段；靜態 Runtime/MCP 能力不得升格為原生執行證據。
+
 The creative executor confines writes to a declared non-Git EPHEMERAL output directory, uses create-only raster outputs, and contacts only an explicitly configured local engine.
 
 The OpenCode native guard is a narrow runtime check, not an operating-system sandbox. Claims remain ADVISORY until direct permission-hook execution is verified; MCP/custom tools and other processes remain outside its boundary.
@@ -208,6 +210,8 @@ Review actual:
 - tests and failure paths.
 
 ## Release Security Gate
+
+Project Diagnostics PASS 不能提升 SAL、證明獨立審查或取代精確候選 Gate；未確認的 Runtime／MCP 效果維持 UNVERIFIED。
 
 創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
 

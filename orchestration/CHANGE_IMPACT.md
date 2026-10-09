@@ -108,6 +108,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+The read-only `aips project diagnose` command can expose Project Intelligence readiness and recovery guidance. It is observational only and does not authorize narrowing target paths, refreshing state or treating unresolved Impact Graph consumers as safe.
+
 Creative configuration changes include allowlisted settings, source preservation, output-version allocation, message-envelope normalization, user-only authorization and raster-medium consumers. Reconcile new validation helpers, native-tool fixtures, existing CLI/provider callers, profile provenance and the documentation closure; preserve partial repository-wide graph coverage.
 
 For local creative execution, include versioned Profile/Bundle creation, provider adapter, CLI dispatch, OpenCode consumer, output manifest and trace, Scenario, and canonical documentation projections in the affected boundary; distinguish no-generator preparation from explicit execution.

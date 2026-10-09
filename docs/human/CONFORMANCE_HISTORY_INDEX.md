@@ -105,6 +105,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 234 — Local Character Artwork Provenance and Composition](CONFORMANCE.md#scenario-234-local-character-artwork-provenance-and-composition) | Current Human guidance |
 | [## Scenario 235 — OpenCode Native Context and Action Guard](CONFORMANCE.md#scenario-235-opencode-native-context-and-action-guard) | Current Human guidance |
 | [## Scenario 236 — Local Creative Bundle Execution](CONFORMANCE.md#scenario-236-local-creative-bundle-execution) | Current Human guidance |
+| [## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance](CONFORMANCE.md#scenario-237-read-only-project-diagnostics-and-recovery-guidance) | Current Human guidance |
 | [## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow](CONFORMANCE.md#scenario-231-advisory-security-inventory-and-secret-scanner-shadow) | Current Human guidance |
 | [# Scenario Conformance](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-conformance) | Normative rule |
 | [## Purpose](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#purpose) | Normative rule |
@@ -181,5 +182,6 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [### Scenarios 214–219 — Plan15 operational closure](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenarios-214219-plan15-operational-closure) | Normative rule |
 | [### Scenario 223 — Evolution Radar exclusion attribution](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-223-evolution-radar-exclusion-attribution) | Normative rule |
 | [## Scenario 210 — Python runtime support policy](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-210-python-runtime-support-policy) | Normative rule |
+| [## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-237-read-only-project-diagnostics-and-recovery-guidance) | Normative rule |
 
 The crosswalk preserves source anchors. Edit the source documents for content changes, then regenerate this index.

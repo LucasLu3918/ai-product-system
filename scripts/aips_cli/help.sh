@@ -7,6 +7,7 @@ Usage:
   aips uninstall [--remove-venv] [--remove-cache] [--remove-shell-integration]
   aips system preflight <project-path> [--allow-major]
   aips project check <project-path>
+  aips project diagnose <project-path> [--runtime codex|opencode|claude-code|gemini-cli|unknown] [--format text|yaml|json]
   aips preflight <project-path> [--allow-major]  (compatibility alias)
 
   aips shell install

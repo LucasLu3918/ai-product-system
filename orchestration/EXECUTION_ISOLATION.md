@@ -72,6 +72,7 @@ Dirty worktrees are preserved and reported BLOCKED. AIPS never force-removes the
 
 ## CLI
 
+
 Local publication checks execute only the selected prepared Python environment and already-installed VitePress bundle. They do not invoke package managers or reach package registries; host/browser/loopback limits are reported as environment blockers before candidate lifecycle tests.
 
 Lifecycle validator 子程序使用 `sys.executable`，避免呼叫主機上未安裝或缺少相依套件的泛用 `python` / `python3` 命令。
@@ -282,6 +283,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 
 ## Parallel runtime resource isolation
+
+`aips project diagnose` performs local read-only inspection and does not select an isolation provider, launch a subprocess-backed task, or claim sandbox enforcement. Use the existing isolation resolver for execution decisions.
 
 Local creative configure is a confined persistent effect even though it does not generate. Discovery and preflight stay read-only; execute remains explicit and local-only. No action changes the existing Shell/MCP coverage limitation or grants model-download authority.
 

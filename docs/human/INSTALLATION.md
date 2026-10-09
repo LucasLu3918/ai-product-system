@@ -68,6 +68,7 @@ aips mcp inspect
 aips project check /path/to/project
 ~~~
 
+
 Maintainer 的發布前入口為 `aips docs impact` 與 `aips publish plan|preflight|post-merge`。一般使用者安裝不會自動執行 GitHub 查詢、重寫 branch 或取得 publication authority。
 
 安裝流程本身會執行 **installation integrity validation**：確認必要 runtime dependency、核心 source contract 與 Human documentation placement 可用；它不會在一般使用者電腦重跑需要 Playwright/browser 等開發工具的完整 repository CI suite。
@@ -80,6 +81,12 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
+
+~~~bash
+aips project diagnose /path/to/project --format text
+~~~
+
+`aips project diagnose` 只讀彙整 `aips doctor`、專案智慧、Runtime/Harness 設定與 MCP 靜態能力，並提供 recovery next steps。它不會自動建立或更新快取；原生 Host 效果也不會因設定存在而被標記為已驗證。
 
 選用 Z-Image Turbo 時，另外確認本機 MFLUX 提供 `mflux-generate-z-image-turbo` 且模型、tokenizer 權重完整；AIPS 安裝不會替你下載模型。
 

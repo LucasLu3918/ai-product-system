@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Project Diagnostics 只報告既有狀態，不會建立 Creative Bundle、啟動本地生成器或替代角色視覺驗收。
+
 已安裝 Z-Image Turbo 權重時，可使用 MFLUX 專用 generate 命令。建議 8 步；此配對不支援 edit、ControlNet 或其他 Z-Image 變體。
 
 ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需明列 UNET、Qwen CLIP、VAE 權重檔名，並使用 AIPS 隨附的固定 API 工作流。Preflight 會向 loopback ComfyUI 核對三項本機模型清單；此配對僅支援 generate。
@@ -132,6 +134,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 新專案若尚未選擇技術，AIPS 會先檢查硬性限制，再依團隊、產品、既有系統、交付與維護需求提出少量候選和取捨；語言與框架分開選擇。架構建議同時看複雜度訊號與反向訊號，並分開說明 Clean Architecture、DDD 與部署方式。重要選擇由使用者確認後，才會整理到 Implementation Profile。
 
 ## Global Harness 與 MCP
+
+診斷中的 MCP inspect 是靜態設定檢查，不會呼叫遠端或本機 MCP Tool；沒有原生 Host 證據時仍顯示 UNVERIFIED。
 
 OpenCode `creative_execution` tool 與 `aips creative` CLI 共用本機執行器；ComfyUI Z-Image Turbo 需使用固定 API workflow 與已安裝權重，preflight 只查核，不會產生圖片。
 
@@ -251,6 +255,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+Project Diagnostics 的輸出只能協助定位下一步，不取代獨立 Review、必要測試、完整 Integration Gate 或 Git 發布核准。
 
 本機 Z-Image Turbo 產圖也須分開確認檔案有效性、角色／畫風品質與人工接受；引擎執行成功不會自動將人工審查改為 PASS。
 
@@ -411,6 +417,8 @@ Standalone and shadow dependency-review artifacts retain exact base/head, run ID
 舊聊天內容不是 authoritative run state；若 workspace fingerprint 已變，先 refresh / revalidate 再接續。
 
 ## Project Intelligence
+
+遇到 Project Intelligence 狀態不完整時，可先執行 `aips project diagnose <path>` 查看 reason code、下一步與重新驗證命令。診斷不會自動 bootstrap、refresh、attach 或修復；請先檢視建議，再明確執行相應操作。
 
 Turn Context 顯示固定核心與本回合選取的 canonical protocol routes；路由清單只提供指引，變更前仍須完成 Change Impact 與正式核准。
 

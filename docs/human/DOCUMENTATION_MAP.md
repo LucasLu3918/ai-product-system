@@ -80,6 +80,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+Project Diagnostics 的 Agent-facing read-only 與 UNVERIFIED 邊界保留在 `orchestration/PROJECT_INTELLIGENCE.md`、`harness/HARNESS_PROTOCOL.md` 與 OpenCode Adapter 指示中。
+
 Z-Image Turbo generate 的 MFLUX 命令映射與固定 ComfyUI split-loader profile 真實來源是 `scripts/creative_execution.py` 和 `templates/creative/COMFYUI_Z_IMAGE_TURBO_API.json`；本機產圖與人工審查流程由 `orchestration/CREATIVE_DIRECTION.md` 說明。
 
 角色圖片保留要求的媒材；以受限 configure 建立新的 Bundle，並載入校準、方向與視覺審查 skill。執行、圖片容器、人工審查與使用者接受分開回報。
@@ -148,6 +150,8 @@ CLI entry-point and publication-preflight modularization map to this document, A
 Retrieval SQLite storage helpers are implemented in `scripts/retrieval_storage.py` and remain re-exported through the `scripts/retrieval_intelligence.py` facade. The existing Project Intelligence documentation closure covers both source modules.
 
 ## Shared canonical 文件
+
+Project Diagnostics 的操作與恢復流程以 [Project Intelligence](PROJECT_INTELLIGENCE.md) 為 Human canonical 文件；公開命令清單維持在 [System Reference](SYSTEM_REFERENCE.md)。
 
 The reusable Python CI bootstrap contract lives with its composite action; per-workflow import profiles live in the caller, and package versions remain in requirements and constraints.
 

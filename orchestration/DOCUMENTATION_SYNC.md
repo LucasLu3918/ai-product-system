@@ -29,6 +29,8 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+Project Diagnostics adds no creative generation behavior; shared CLI routing changes preserve the existing explicit creative lifecycle and its independent visual-review boundary.
+
 For Z-Image Turbo, synchronize generate-only MFLUX command and the single registered ComfyUI split-loader profile across creative, execution and Runtime docs. ComfyUI checks preinstalled UNET/CLIP/VAE files and strips prompt-bearing PNG text metadata; do not claim broader Z-Image, arbitrary split-model or edit support.
 
 Creative reliability closure includes native Context envelopes, user-only revocation, allowlisted Bundle configuration and distinct file/visual/user acceptance. Human instructions must expose the new Bundle path and missing-weight limitation; Agent protocols must prohibit silent medium fallback.
@@ -176,6 +178,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 
 ## Human documentation placement
+
+Project Diagnostics uses the existing Project Intelligence, System Reference, Harness and Conformance topics. Its report is a read-only projection with explicit UNVERIFIED Host effects; it creates no new state authority or remediation path.
 
 創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
 

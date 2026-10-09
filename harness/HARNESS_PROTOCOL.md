@@ -99,6 +99,8 @@ Provider credentials must not be injected into unmerged PR code. A secure provid
 
 ## MCP interoperability access plane
 
+The `aips project diagnose` projection may report MCP static inspection and allowlisted Runtime status. It does not execute MCP tools or prove native Host delivery; absent version-bound runtime evidence stays UNVERIFIED.
+
 The OpenCode V2 adapter exposes local creative execution as an explicit, preflight-gated tool; this path does not grant MCP or arbitrary Shell write authority.
 
 Use `harness/MCP_GATEWAY.md` when a compatible host can connect through MCP.

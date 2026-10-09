@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Shared CLI router 更新可能觸發 Creative Direction 文件審查；Project Diagnostics 只讀，不會執行 Creative Profile、Provider 或 Artwork lifecycle。
+
 固定模型配對新增 Z-Image Turbo generate 時，同步更新創意流程、Runtime 接入說明與 Scenario 236；執行證據與人工視覺接受仍分開。
 
 角色圖片保留要求的媒材；以受限 configure 建立新的 Bundle，並載入校準、方向與視覺審查 skill。執行、圖片容器、人工審查與使用者接受分開回報。
@@ -131,6 +133,8 @@ Major updates are not auto-applied by `aips system preflight` without explicit `
 Before readiness, move finalized release notes under the heading matching `VERSION`, leaving exactly one empty `## Unreleased` section. `scripts/version_tag_policy.py` checks `VERSION`, exact candidate/main SHA, any existing tag destination, and that canonical section. Missing, duplicate, malformed, or non-empty sections block readiness. READY still requires separate explicit release approval; merging a PR does not create a version tag or backfill historical tags.
 
 ## System facts and validation planning
+
+Project Diagnostics 的 Core 候選同步更新公開命令事實、Capability Registry、Scenario 237、Lifecycle evidence 與文件閉包；精確候選仍須執行完整 Integration Gate，診斷 PASS 不代表發布核准。
 
 The validator registry, exact-path CI provisioning plan, full-run Shadow Plan, and Integration Gate profile have separate responsibilities; none may silently omit required validators. Promotion of selective execution requires the complete reviewed shadow cohort.
 
@@ -419,6 +423,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+System Facts、Capability Registry、Scenario 237、文件放置與完整 Gate 都綁定同一精確候選；diagnose PASS 不是發布或獨立審查證據。
+
 The creative lifecycle is owned once by repository validation; exact-candidate validation uses synthetic engines and never runs a user-configured generator.
 
 OpenCode ownership、Skill description 與 Host 安裝生命週期由 `tests/evidence/opencode_integration_lifecycle.py` 驗證；既有 Host 與 MCP 回歸仍需通過。
@@ -528,6 +534,8 @@ Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanu
 
 
 ## Repository Health / Architecture Drift consistency
+
+新增 CLI 能力時同步維護 Capability Registry 與 Architecture Surface projection；`aips project diagnose` 的靜態檢查不取代這些 canonical consistency checks。
 
 The canonical Capability Registry lists `scripts/creative_execution.py`, its Bundle, lifecycle, and Scenario under the existing Harness runtime surface; generated architecture projections are checked from that registry.
 
