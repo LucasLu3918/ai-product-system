@@ -62,7 +62,7 @@ No scenario or schema change is expected: existing Scenario 234/236/238 and the 
 
 ### Architecture / Contracts
 
-The new module is an internal pure-logic leaf. `creative_execution` remains the stable import facade. Its direct consumers are `preflight`, `execute`, `review_assist`, and `tests/evidence/creative_quality_lifecycle.py`; source references were checked directly. The bounded Project Intelligence traversal found inferred caller edges, hit its depth/edge limit, and could not map the architecture seed. This proposal therefore makes no repository-wide graph completeness claim; the private-leaf impact policy and focused facade/subsystem evidence apply.
+The new module is an internal pure-logic leaf. `creative_execution` remains the stable import facade. Its direct consumers are `preflight`, `execute`, `review_assist`, and `tests/evidence/creative_quality_lifecycle.py`; source references were checked directly. The bounded Project Intelligence traversal found 14 caller nodes through depth 4 without truncation, but retained unresolved alias-import and same-name edges and could not map the architecture seed. Direct imports/call sites and focused facade/subsystem evidence were reviewed; this proposal makes no repository-wide graph completeness claim and keeps global graph coverage partial.
 
 ### Data / Migration
 
@@ -135,5 +135,5 @@ Status: APPROVED
 Approved by: User
 Approved at: 2026-10-10T00:40:28+08:00
 Approval record: User approved the compiler extraction proposal and neutral `Blocked` exception module, then explicitly approved the exact 16 documentation paths required by recursive publish impact in this Codex conversation.
-Proposal fingerprint: sha256:8f437107b468b53faf43ba4a2343c0d9572fe20d1efc340dae28e0bc8fb039cf
+Proposal fingerprint: sha256:f9fddd0a88beb434eb0119d4a57b5d1dcd1350392f9a31d1fa01febe6cc4b085
 Scope fingerprint: sha256:4f11a05249d03782f9a73c3ef8e6489847b2c0b9e2f2685e213fd7e6dd4570d3
