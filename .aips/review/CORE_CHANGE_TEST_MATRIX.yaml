@@ -3,12 +3,28 @@ change:
   id: plan26-phase1-creative-prompt-compiler
   summary: Extract deterministic prompt compilation and model advice into a pure internal
     module while preserving the creative_execution facade, Blocked exception identity,
-    and exact outputs.
+    and exact outputs; synchronize the approved recursive documentation closure.
   boundary:
   - .aips/review/PLAN26_PHASE1_CREATIVE_PROMPT_COMPILER_PROPOSAL.md
   - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
   - CHANGELOG.md
   - docs/ARCHITECTURE.md
+  - docs/human/ARCHITECTURE_OVERVIEW.md
+  - docs/human/CONFORMANCE.md
+  - docs/human/DOCUMENTATION_MAP.md
+  - docs/human/DOCUMENTATION_SYNC.md
+  - docs/human/HARNESS.md
+  - docs/human/INSTALLATION.md
+  - docs/human/MAINTENANCE.md
+  - docs/human/TECHNOLOGY_GUIDE.md
+  - docs/human/USER_GUIDE.md
+  - docs/human/index.md
+  - harness/HARNESS_PROTOCOL.md
+  - harness/adapters/opencode/AGENTS.md
+  - harness/adapters/opencode/COMPATIBILITY.md
+  - orchestration/CONFORMANCE.md
+  - orchestration/CREATIVE_DIRECTION.md
+  - orchestration/DOCUMENTATION_SYNC.md
   - scripts/creative_errors.py
   - scripts/creative_execution.py
   - scripts/creative_prompt_compiler.py
@@ -18,7 +34,7 @@ change:
   - tests/validation/registry.py
 candidate:
   base_sha: b44cc28aa7b5ec687a7b49eaf77bed8434c1ce19
-  changed_files_hash: cc96aeba6b63c2d2ed5ecd7eb01838c540b54eb1b0b8cbbfd80504f646ccd127
+  changed_files_hash: 2ba99d52333a32c652758c9c64104389f52c63467bdbaf24933e0e6af2d5ec3e
 matrix:
 - boundary: Creative prompt compiler, shared error type, and compatibility facade
   reason: Prompt bytes determine generation fingerprints. The extraction must preserve
@@ -56,11 +72,14 @@ matrix:
         existing facade consumers.
     docs_schema:
       applicable: true
-      evidence: Architecture source description and changelog updated; repository
-        documentation validation required.
+      evidence: Source architecture, changelog, and all 16 user-approved recursive
+        documentation paths are synchronized; architecture diagrams are assessed as
+        unaffected with a concrete no-flow-change reason; repository documentation
+        validation and exact-candidate impact closure are required.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
-blockers: []
-status: READY
+blockers:
+  - pending final exact-candidate validation and evidence refresh
+status: DRAFT

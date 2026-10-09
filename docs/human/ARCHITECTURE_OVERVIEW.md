@@ -116,6 +116,8 @@ Creative manifests distinguish workflow execution and raster validity from real 
 
 Profile-driven prompt compilation combines bundle intent with character acceptance criteria and style constraints, then records profile and compiled-prompt hashes. Model capability profiles provide advisory, evidence-ranked recommendations without changing the selected model. An optional review action sends a bounded image only to an already-installed local Ollama vision model over loopback and writes a separate advisory report; a Human still decides visual review and the user still records acceptance.
 
+The deterministic prompt compiler and model recommendation logic are internal pure functions in `scripts/creative_prompt_compiler.py`; `scripts/creative_execution.py` remains their compatibility facade. Exact output fingerprints and function/class identity checks cover the extraction. This does not change the creative workflow or its architecture diagrams.
+
 
 `aips project diagnose` 不會呼叫創作工具或產生圖片；Creative Profile、Provider 與視覺驗收流程仍由既有明確授權路徑負責。
 

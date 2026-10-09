@@ -18,6 +18,7 @@ These functions feed local generation and review-assist requests. A changed prom
 - Preserve execution and `review_assist` callers through that facade.
 - Add exact deterministic output-parity evidence, facade function/class identity checks, and invalid-prompt exception parity.
 - Update the validator registry, implementation contract, changelog, and source architecture description for the internal module boundary.
+- Synchronize the user-approved recursive documentation closure in the canonical creative, Harness, conformance, documentation-governance, and maintenance topics; record unaffected architecture diagrams with a concrete reason.
 
 ### Out of scope
 
@@ -38,6 +39,22 @@ These functions feed local generation and review-assist requests. A changed prom
 - `tests/validation/registry.py`
 - `CHANGELOG.md`
 - `docs/ARCHITECTURE.md`
+- `docs/human/ARCHITECTURE_OVERVIEW.md`
+- `docs/human/CONFORMANCE.md`
+- `docs/human/DOCUMENTATION_MAP.md`
+- `docs/human/DOCUMENTATION_SYNC.md`
+- `docs/human/HARNESS.md`
+- `docs/human/INSTALLATION.md`
+- `docs/human/MAINTENANCE.md`
+- `docs/human/TECHNOLOGY_GUIDE.md`
+- `docs/human/USER_GUIDE.md`
+- `docs/human/index.md`
+- `harness/HARNESS_PROTOCOL.md`
+- `harness/adapters/opencode/AGENTS.md`
+- `harness/adapters/opencode/COMPATIBILITY.md`
+- `orchestration/CONFORMANCE.md`
+- `orchestration/CREATIVE_DIRECTION.md`
+- `orchestration/DOCUMENTATION_SYNC.md`
 
 No scenario or schema change is expected: existing Scenario 234/236/238 and the Creative quality lifecycle already cover the behavior. If implementation uncovers a missing contract, stop and revise this boundary before adding files.
 
@@ -88,9 +105,9 @@ Rotation/revocation plan if exposure is found: N/A; stop publication and follow 
 ### Documentation / Diagrams
 
 Architecture Diagram Impact:
-- `docs/ARCHITECTURE.md` Mermaid: N/A — logical workflow is unchanged; update the source module description only.
-- `docs/human/ARCHITECTURE_OVERVIEW.md`: N/A — no user-visible architecture change.
-- Human SVG architecture/lifecycle diagrams: N/A — no flow or boundary change.
+- `docs/ARCHITECTURE.md` Mermaid: N/A — no flow changes; update the source module description.
+- `docs/human/ARCHITECTURE_OVERVIEW.md`: update the Creative Workflow explanation with the private compiler module and preserved facade; no diagram topology changes.
+- Human SVG architecture/lifecycle diagrams: N/A — no runtime, Harness, installation, or delivery flow or boundary changes.
 
 ## Risks
 
@@ -116,7 +133,7 @@ This bounded extraction is approved as the first independently verifiable Plan26
 
 Status: APPROVED
 Approved by: User
-Approved at: 2026-10-10T00:18:36+08:00
-Approval record: User approved the compiler extraction proposal, then explicitly approved moving `Blocked` to `scripts/creative_errors.py` and re-exporting it from `creative_execution.py` in this Codex conversation.
-Proposal fingerprint: sha256:65c9737a4b6348a44ffe476f80b49b6de319afe630aa151ffa7f58d860338fc7
-Scope fingerprint: sha256:b2eb88d992da51a8f21465891a8a89dc9b5f75fda0909423e98451d4f79d9cad
+Approved at: 2026-10-10T00:40:28+08:00
+Approval record: User approved the compiler extraction proposal and neutral `Blocked` exception module, then explicitly approved the exact 16 documentation paths required by recursive publish impact in this Codex conversation.
+Proposal fingerprint: sha256:8f437107b468b53faf43ba4a2343c0d9572fe20d1efc340dae28e0bc8fb039cf
+Scope fingerprint: sha256:4f11a05249d03782f9a73c3ef8e6489847b2c0b9e2f2685e213fd7e6dd4570d3

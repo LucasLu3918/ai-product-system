@@ -28,6 +28,8 @@ SYSTEM.md / orchestration / roles / skills
 
 Creative prompt compilation、model advice 與 review-assist 的文件閉包由 `config/documentation-sync.yaml` 和 `config/documentation-placement.yaml` 登錄；建議報告不得取代 Human review 或 user acceptance。
 
+Behavior-preserving extraction of prompt compilation or model advice keeps `creative_execution` as the compatibility facade and records exact output and object-identity evidence; it does not imply a new user workflow or provider capability.
+
 Creative workflow changes synchronize the explicit request, bounded OpenCode clarification, local execution and independent visual acceptance boundaries across the User Guide, Technology Guide, Architecture Overview, Harness guidance and Scenario 238.
 
 Change-amplification metrics record direct paths, recursive closure, required additions and repeated requirements; repetition triggers review but does not authorize deleting canonical content.

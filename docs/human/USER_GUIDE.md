@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+The prompt compiler extraction does not change the creative workflow, model selection, or review steps described here.
+
 
 Creative manifests keep model inference, Human visual review and user acceptance as distinct evidence.
 

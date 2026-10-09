@@ -1715,6 +1715,8 @@ Scenario 236 covers bounded `creative discover`, `preflight`, `execute`, `review
 
 Scenario 234/236 cover profile-driven bounded prompt compilation and fingerprints, evidence-backed advisory model recommendations, and opt-in local Ollama vision review over loopback. Scenario 238 verifies visual review requires explicit current-user intent. Review assistance writes a separate `authority: NONE` report and cannot mark Human review or user acceptance complete.
 
+The Phase 1 module-extraction lifecycle verifies exact prompt and recommendation outputs, facade object identity, and invalid-prompt error behavior; it does not claim real image generation or visual-quality evidence.
+
 Scenario 236's native-context checks are complemented by Scenario 238: the active prompt hook grants scoped actions and output count, and a later prompt or unrelated assistant Context cannot restore a revoked grant.
 
 Scenario 238 covers the per-item job result lifecycle, verified resume, orphaned-success recovery and fixed local version probes. Native OpenCode acceptance does not execute image generation or claim visual quality.
