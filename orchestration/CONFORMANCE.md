@@ -54,6 +54,8 @@ Provenance keeps raster validity separate from inference and visual review.
 
 Scenario 236 adds a separate explicit execution boundary for local MFLUX and loopback ComfyUI, including the fixed Z-Image Turbo split-loader graph and local model inventory checks; ComfyUI prompt PNG metadata is removed before AIPS output publication. Character identity and style review remain independent.
 
+Scenario 234/236 also cover deterministic bounded prompt compilation, evidence-ranked model advice, and optional loopback-only vision review. Its separate advisory report cannot complete Human visual review or user acceptance.
+
 The fixture lifecycle covers safe local profile/reference paths, SVG and PNG validation, exact hashes, verified provider/runtime/license provenance, and deterministic non-overwriting SVG composition with correctly typeset Unicode labels. A passing helper or manifest never proves generated character identity fidelity, model execution, or device performance; those require actual assets and separate human visual review.
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
@@ -991,6 +993,8 @@ The OpenCode lifecycle runs with the selected validation Python. OpenCode itself
 Scenario 210 is lifecycle-covered by `tests/evidence/install_preflight_lifecycle.py` and `tests/evidence/system_facts_lifecycle.py`. It verifies the Python >=3.12 floor across explicit selection, old managed venv repair, doctor diagnostics, canonical facts, and the scheduled 3.12–3.14 compatibility workflow.
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
+
+Its read-only diagnostic path remains separate from creative Profile compilation, model recommendation and local visual-review actions.
 
 Recovery suggestions remain read-only and conditional across missing, stale, partial and blocked Intelligence. The lifecycle does not invoke the suggested bootstrap, refresh or finalization action.
 

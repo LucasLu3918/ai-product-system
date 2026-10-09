@@ -358,6 +358,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+For an approved Core implementation, complete local exact-candidate validation first, then present its concrete commit, file scope and Gate evidence for publication approval before remote branch or PR creation.
+
 Protected publication still requires a clean exact candidate, reconciled Matrix, secret scan, documentation closure and passing repository aggregate.
 
 For the GitHub validation route, install Python packages from all four validation requirement files under tested constraints because required lifecycle fixtures exercise the full CLI preflight. Then export the runner's `sys.executable` as `AIPS_VALIDATION_PYTHON` before invoking the exact-candidate Gate. The workflow contract verifies this handoff; Node and Chromium installation remain candidate-selected.

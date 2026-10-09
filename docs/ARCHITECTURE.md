@@ -82,6 +82,23 @@ All writers of `EVENTS.jsonl` share one sequence lock. Optional observed operati
 
 OpenCode V2 receives transient compact Context from the existing CLI. Its native permission hook applies a second check to supported direct file resources, and Shell creation applies a bounded read-only allowlist including fixed AIPS diagnostics. One structured Creative tool is separately bound to the active EPHEMERAL Session and create-only Bundle scope; other MCP/custom tools and out-of-process writes remain outside this evidence boundary. Runtime governance stays ADVISORY until actual permission-hook acceptance is verified.
 
+Creative artifact flow compiles approved Character, Style and Collection profile evidence into a bounded prompt, adds evidence-ranked model advice, and keeps optional loopback-only visual assistance separate from Human review and acceptance.
+
+~~~mermaid
+flowchart LR
+    CP[Character Profile + local reference hashes] --> CAL[Profile-driven prompt compiler]
+    SP[Style Profile + optional Collection Style Lock] --> CAL
+    CAL --> REC[Evidence-ranked model advice]
+    CAL --> GEN[Optional local ComfyUI MCP or MFLUX]
+    GEN --> ASSETS[Separate raster outputs + model/license provenance]
+    ASSETS --> VALIDATE[Manifest validation: paths, bytes, hashes, dimensions]
+    VALIDATE --> SHEET[Deterministic SVG sheet + typeset Chinese labels]
+    SHEET --> REVIEW[Independent Human visual review]
+    REVIEW --> EVIDENCE[Human review + optional manifest digest]
+    ASSETS -. optional loopback .-> VLM[Installed local Ollama vision model]
+    VLM --> REPORT[Separate advisory report; Human decision required]
+~~~
+
 ## Parallel run observation flow
 
 ~~~mermaid
@@ -128,22 +145,6 @@ flowchart LR
     HOST --> OTLP[OTLP-compatible backend]
 HOST -. failure .-> DEG[TELEMETRY_DEGRADED evidence only]
 ~~~
-
-### Local character artwork
-
-~~~mermaid
-flowchart LR
-    CP[Character Profile + local reference hashes] --> CAL[Creative Calibration]
-    SP[Style Profile] --> CAL
-    CAL --> GEN[Optional local ComfyUI MCP or MFLUX]
-    GEN --> ASSETS[Separate SVG / PNG outputs + model/license provenance]
-    ASSETS --> VALIDATE[Manifest validation: paths, bytes, hashes, dimensions]
-    VALIDATE --> SHEET[Deterministic SVG sheet + typeset Chinese labels]
-    SHEET --> REVIEW[Independent visual-quality-review]
-    REVIEW --> EVIDENCE[Optional manifest digest in Creative Evidence]
-~~~
-
-Character assets remain local by default. Deterministic validation proves file/provenance integrity; independent visual review assesses identity and style consistency. The generation tools are optional, model weights are not downloaded by this workflow, and there is no cloud/paid API fallback.
 
 The telemetry projection is read-only with respect to canonical run state. Endpoint credentials stay on the host, runtime content is excluded, independent review uses correlation links only, and export failure cannot change workflow or Gate outcomes.
 

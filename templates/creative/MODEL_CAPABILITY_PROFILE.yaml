@@ -1,0 +1,22 @@
+version: 1
+profile_id: local-model-capabilities
+description: >-
+  Record only locally observed capabilities and reviewed comparison evidence.
+  AIPS does not download models or infer quality from a model name.
+models: []
+
+# Example entry shape (keep unverified fields out of recommendations):
+# - id: locally-installed-model-id
+#   runtime: comfyui_local
+#   operations: [generate]
+#   capabilities: [anime-illustration, cel-shading]
+#   availability: VERIFIED_LOCAL
+#   license_status: VERIFIED
+#   evidence:
+#     source: local model inventory or verified model card
+#     observed_at: 2026-01-01
+#   quality_review:
+#     status: HUMAN_REVIEWED
+#     style_score: 4
+#     character_consistency_score: 4
+#     evidence: local comparison report path and digest

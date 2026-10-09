@@ -2,6 +2,8 @@
 
 Given an explicitly admitted Creative prompt for a local EPHEMERAL project, when the native OpenCode tool requests mutation, then it uses the current prompt-admission grant and never derives authority from a truncated transcript.
 
+Given a generation grant, when review assistance is requested without explicit current-user visual review intent, then the action is denied; a separate explicit review request may inspect only a bounded image through an installed local model and cannot complete Human review or user acceptance.
+
 Given a job manifest containing multiple configured local Bundles, when one preflight or generation fails, then later items continue and the results identify each outcome without storing raw prompts.
 
 Given a partially completed job is rerun, when prior output and manifest hashes still match, then completed items are skipped and failed items are retried without overwriting outputs.

@@ -10,7 +10,7 @@ const MAX_TRACE_BYTES = 512 * 1024
 
 type ContextEntry = { key: string; at: number; root: string; prompt: string; manifest: Record<string, any> | null; reason?: string; durationMs: number }
 type CreativeToolInput = {
-  action: "prepare" | "configure" | "discover" | "preflight" | "execute" | "generate-set"
+  action: "prepare" | "configure" | "discover" | "preflight" | "execute" | "generate-set" | "review-assist"
   settings?: Record<string, unknown>
   bundle?: string
   scope?: string
@@ -20,6 +20,8 @@ type CreativeToolInput = {
   style_intent?: string
   prompt?: string
   identity_features?: string[]
+  manifest?: string
+  vision_model?: string
 }
 
 function contextMessages(value: any): any[] {
@@ -397,7 +399,7 @@ export default {
         input: {
           type: "object",
           properties: {
-            action: { type: "string", enum: ["prepare", "configure", "discover", "preflight", "execute", "generate-set"] },
+            action: { type: "string", enum: ["prepare", "configure", "discover", "preflight", "execute", "generate-set", "review-assist"] },
             settings: {
               type: "object", additionalProperties: false,
               description: "Create a configured Bundle version; observed provenance only. No install, download, cloud or arbitrary output-path fields.",
@@ -428,6 +430,8 @@ export default {
                 max_retries: { type: "integer", minimum: 0, maximum: 2 }, timeout_seconds: { type: "integer", minimum: 1, maximum: 3600 },
                 prompt: { type: "string", minLength: 1, maxLength: 4000 }, operation: { type: "string", enum: ["generate", "edit"] },
                 input_image: { type: "string" }, input_images: { type: "array", maxItems: 8, items: { type: "string" } },
+                collection_profile: { type: "string", minLength: 1, maxLength: 240 },
+                model_capability_profile: { type: "string", minLength: 1, maxLength: 240 },
               },
             },
             bundle: { type: "string", minLength: 1, maxLength: 240 },
@@ -439,13 +443,14 @@ export default {
             style_intent: { type: "string", minLength: 1, maxLength: 600 },
             prompt: { type: "string", minLength: 1, maxLength: 4000 },
             identity_features: { type: "array", minItems: 1, maxItems: 12, items: { type: "string", minLength: 1, maxLength: 160 } },
+            vision_model: { type: "string", minLength: 1, maxLength: 128, description: "Exact id of an already-installed local Ollama vision model; no download is attempted." },
           },
           required: ["action"],
           additionalProperties: false,
         },
         async execute(input, toolContext) {
           const request = input as CreativeToolInput
-          const validAction = request && ["prepare", "configure", "discover", "preflight", "execute", "generate-set"].includes(request.action)
+          const validAction = request && ["prepare", "configure", "discover", "preflight", "execute", "generate-set", "review-assist"].includes(request.action)
           const validBundle = typeof request?.bundle === "string" && request.bundle.length > 0 && request.bundle.length <= 240 && !request.bundle.startsWith("/") && !request.bundle.split(/[\\/]/).includes("..")
           const validManifest = typeof request?.manifest === "string" && request.manifest.length > 0 && request.manifest.length <= 240 && !request.manifest.startsWith("/") && !request.manifest.split(/[\\/]/).includes("..")
           const validPrepare = typeof request?.scope === "string" && request.scope.length > 0 && request.scope.length <= 240 && !request.scope.startsWith("/") && !request.scope.split(/[\\/]/).includes("..")
@@ -456,9 +461,12 @@ export default {
             && typeof request.prompt === "string" && request.prompt.length > 0 && request.prompt.length <= 4000
             && Array.isArray(request.identity_features) && request.identity_features.length > 0 && request.identity_features.length <= 12
             && request.identity_features.every((item) => typeof item === "string" && item.length > 0 && item.length <= 160)
+          const validReviewAssist = validManifest && typeof request.vision_model === "string" && /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$/.test(request.vision_model)
           const validConfigure = request.settings && typeof request.settings === "object" && !Array.isArray(request.settings) && Buffer.byteLength(JSON.stringify(request.settings)) <= 32 * 1024
           const validTarget = request.action === "prepare"
             ? validPrepare && !validBundle && request.manifest === undefined
+            : request.action === "review-assist"
+              ? validReviewAssist && !validBundle && request.scope === undefined && request.settings === undefined
             : request.action === "discover"
               ? !validBundle && request.scope === undefined && request.manifest === undefined
               : request.action === "generate-set"
@@ -495,7 +503,7 @@ export default {
           }
           const classification = entry.manifest.task?.classification ?? {}
           if (!["preflight", "discover"].includes(request.action) && !admission?.continued
-            && (classification.domain !== "creative" || (request.action === "prepare" ? classification.intent !== "create" : !["create", "modify"].includes(classification.intent)))) {
+            && (classification.domain !== "creative" || (request.action === "review-assist" ? false : request.action === "prepare" ? classification.intent !== "create" : !["create", "modify"].includes(classification.intent)))) {
             return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_intent_required" }) }
           }
           if (["execute", "generate-set"].includes(request.action)) {
@@ -525,11 +533,12 @@ export default {
             admission.usedOutputs += 1
           }
           const executable = ["execute", "generate-set"].includes(request.action)
-          const maximum = executable ? 3_600_000 : 20_000
+          const maximum = executable ? 3_600_000 : request.action === "review-assist" ? 180_000 : 20_000
           const command = request.action === "prepare"
             ? ["creative", "prepare", "--project", root, "--scope", request.scope!, "--character-id", request.character_id!, "--character-name", request.character_name!, "--summary", request.summary!, "--style-intent", request.style_intent!, "--prompt", request.prompt!, ...request.identity_features!.flatMap((item) => ["--identity-feature", item])]
             : request.action === "discover" ? ["creative", "discover", "--project", root]
             : request.action === "generate-set" ? ["creative", "generate-set", "--project", root, "--manifest", request.manifest!, "--max-items", String(admission!.maxOutputs)]
+            : request.action === "review-assist" ? ["creative", "review-assist", "--project", root, "--manifest", request.manifest!, "--model", request.vision_model!]
             : ["creative", request.action, "--project", root, "--bundle", request.bundle!]
           const started = performance.now()
           const result = await invokeAsync(aips, command, root, maximum, toolContext.signal, request.action === "configure" ? JSON.stringify(request.settings) : undefined)

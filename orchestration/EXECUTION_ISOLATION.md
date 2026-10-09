@@ -285,6 +285,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+OpenCode creative visual assistance is separately authorized by the current user prompt and confined to the active Session root; local model findings remain advisory and cannot broaden the execution grant.
+
 Creative Session continuation is an in-memory policy boundary, not an OS process sandbox. Provider execution retains its existing EPHEMERAL path checks, allowlisted command mapping, loopback-only ComfyUI access and explicit user authorization.
 
 Synthetic creative provider runs validate workflow contracts only; real inference and image quality require separate evidence.

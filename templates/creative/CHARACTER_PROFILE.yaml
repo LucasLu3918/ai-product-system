@@ -8,6 +8,10 @@ identity_features:
   - distinctive face or silhouette
   - defining hair, eyes, clothing, or accessory
 must_preserve: []
+# Features below are prioritized in the compiled generation prompt and review checklist.
+acceptance_criteria:
+  critical_features: []
+  forbidden_misplacements: []
 allowed_variations:
   expressions: [joyful, thoughtful, surprised, determined]
   poses: [front, three-quarter, profile]

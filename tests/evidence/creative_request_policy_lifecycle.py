@@ -25,6 +25,8 @@ def messages(*texts):
 def main() -> int:
     for action in ("prepare", "configure", "execute"):
         assert authorize(messages(ORIGINAL), action)["allowed"]
+    assert not authorize(messages(ORIGINAL), "review-assist")["allowed"]
+    assert authorize(messages(ORIGINAL, "請檢查角色圖片品質"), "review-assist")["allowed"]
     assert authorize(messages(ORIGINAL, "好，用這個方向繼續"), "execute")["inherited"]
     assert authorize(messages(ORIGINAL, "A"), "execute")["allowed"]
     assert authorize(messages(ORIGINAL, "調整角色配色"), "execute")["allowed"]
@@ -40,6 +42,7 @@ def main() -> int:
     admission = admit_prompt(ORIGINAL)
     assert admission["active"] and all(admission["grants"][action]["allowed"] for action in ("prepare", "configure", "execute"))
     assert admission["max_outputs"] == 2 and len(admission["prompt_sha256"]) == 64
+    assert not admission["grants"]["review-assist"]["allowed"], "generation intent alone must not grant image review"
     assert "basis_prompt" not in admission and all("basis_prompt" not in grant for grant in admission["grants"].values())
     assert output_budget("Generate 3 images") == 3
     assert output_budget("設計兩個哈利波特角色，各自一張日式奇幻立繪") == 2
@@ -68,6 +71,7 @@ def main() -> int:
     selected = admit_prompt("哈利＋妙麗 A佈局＋B質感 獨立立繪", pending)
     assert selected["continued"] and selected["max_outputs"] == 2
     assert selected["grants"]["execute"]["allowed"]
+    assert not selected["grants"]["review-assist"]["allowed"]
     assert "allowed_actions" in selected["continuation"]
     assert admit_prompt("繼續生成", {**pending, "max_outputs": 1})["max_outputs"] == 1
     assert not admit_prompt("取消產圖", pending)["active"]

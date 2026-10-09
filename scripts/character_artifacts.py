@@ -16,7 +16,7 @@ import tempfile
 import xml.etree.ElementTree as ET
 import zlib
 from pathlib import Path, PurePosixPath
-from typing import Any
+from typing import Any, NoReturn
 from urllib.parse import urlsplit
 
 import yaml
@@ -47,7 +47,7 @@ class ArtifactError(ValueError):
         self.code = code
 
 
-def _error(code: str, message: str) -> None:
+def _error(code: str, message: str) -> NoReturn:
     raise ArtifactError(code, message)
 
 
@@ -398,6 +398,16 @@ def validate_character_profile(
                     "message": f"Character profile {section} must be a mapping.",
                 }
             )
+    acceptance = doc.get("acceptance_criteria")
+    if acceptance is not None:
+        if not isinstance(acceptance, dict):
+            issues.append({"code": "PROFILE_ACCEPTANCE", "message": "acceptance_criteria must be a mapping."})
+        else:
+            for key in ("critical_features", "forbidden_misplacements"):
+                values = acceptance.get(key, [])
+                if (not isinstance(values, list) or len(values) > 24
+                        or any(not isinstance(item, str) or not item.strip() or len(item) > 160 for item in values)):
+                    issues.append({"code": "PROFILE_ACCEPTANCE", "message": f"acceptance_criteria.{key} must contain at most 24 bounded strings."})
     if (doc.get("privacy") or {}).get("raw_prompt_persistence") != "forbidden":
         issues.append(
             {
@@ -515,6 +525,50 @@ def validate_style_profile(doc: dict[str, Any]) -> list[dict[str, str]]:
                 "message": "Style profile must typeset text after image generation.",
             }
         )
+    constraints = doc.get("prompt_constraints")
+    if constraints is not None:
+        if not isinstance(constraints, dict):
+            issues.append({"code": "STYLE_CONSTRAINTS", "message": "prompt_constraints must be a mapping."})
+        else:
+            for key in ("must_include", "must_avoid"):
+                values = constraints.get(key, [])
+                if (not isinstance(values, list) or len(values) > 24
+                        or any(not isinstance(item, str) or not item.strip() or len(item) > 160 for item in values)):
+                    issues.append({"code": "STYLE_CONSTRAINTS", "message": f"prompt_constraints.{key} must contain at most 24 bounded strings."})
+    lock_id = doc.get("style_lock_id")
+    if lock_id is not None and not _valid_id(lock_id):
+        issues.append({"code": "STYLE_LOCK_ID", "message": "style_lock_id must be null or a stable lowercase id."})
+    return issues
+
+
+def validate_collection_profile(doc: dict[str, Any]) -> list[dict[str, str]]:
+    issues: list[dict[str, str]] = []
+    if doc.get("version") != 1 or not _valid_id(doc.get("collection_id")):
+        issues.append({"code": "COLLECTION_ID", "message": "Collection profile requires version 1 and a stable collection_id."})
+    if not isinstance(doc.get("visual_direction"), str) or not doc["visual_direction"].strip():
+        issues.append({"code": "COLLECTION_DIRECTION", "message": "Collection visual_direction is required."})
+    characters = doc.get("characters")
+    if not isinstance(characters, list) or not 1 <= len(characters) <= 24:
+        issues.append({"code": "COLLECTION_CHARACTERS", "message": "Collection must list between 1 and 24 characters."})
+    else:
+        identifiers: set[str] = set()
+        for index, item in enumerate(characters):
+            if not isinstance(item, dict) or not _valid_id(item.get("id")) or not isinstance(item.get("name"), str) or not item["name"].strip() or not isinstance(item.get("bundle"), str) or not item["bundle"].strip():
+                issues.append({"code": "COLLECTION_CHARACTER", "message": f"characters[{index}] requires id, name, and bundle."})
+                continue
+            if item["id"] in identifiers:
+                issues.append({"code": "COLLECTION_DUPLICATE", "message": f"Duplicate collection character id: {item['id']}."})
+            identifiers.add(item["id"])
+    lock = doc.get("style_lock", {"id": None, "must_match": [], "must_avoid": [], "palette": []})
+    if not isinstance(lock, dict):
+        issues.append({"code": "COLLECTION_STYLE_LOCK", "message": "style_lock must be a mapping."})
+    else:
+        if lock.get("id") is not None and not _valid_id(lock.get("id")):
+            issues.append({"code": "COLLECTION_STYLE_LOCK", "message": "style_lock.id must be null or a stable lowercase id."})
+        for key in ("must_match", "must_avoid", "palette"):
+            values = lock.get(key, [])
+            if not isinstance(values, list) or len(values) > 24 or any(not isinstance(value, str) or not value.strip() or len(value) > 160 for value in values):
+                issues.append({"code": "COLLECTION_STYLE_LOCK", "message": f"style_lock.{key} must contain at most 24 bounded strings."})
     return issues
 
 
@@ -558,6 +612,17 @@ def validate_manifest(doc: dict[str, Any], project: Path) -> dict[str, Any]:
                 "message": f"Style profile: {exc}",
             }
         )
+        style = {}
+    collection_reference = doc.get("collection_profile")
+    if collection_reference is not None:
+        try:
+            collection = _read_yaml(_project_path(project, collection_reference))
+            issues.extend(validate_collection_profile(collection))
+            lock_id = (collection.get("style_lock") or {}).get("id")
+            if lock_id and style.get("style_lock_id") != lock_id:
+                issues.append({"code": "COLLECTION_STYLE_LOCK_MISMATCH", "message": "Character Style Profile must use the collection's shared style_lock_id."})
+        except (ArtifactError, OSError) as exc:
+            issues.append({"code": getattr(exc, "code", "COLLECTION_PROFILE_INVALID"), "message": f"Collection profile: {exc}"})
 
     execution = doc.get("execution")
     if not isinstance(execution, dict):

@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Compile bounded creative prompts from Character, Style and Collection profiles; rank only evidence-backed local model candidates and add optional loopback Ollama visual advice with separate Human review and user acceptance evidence.
 - Distinguish local creative command/runtime/model/preflight/inference readiness, probe only the fixed loopback ComfyUI service, preserve provider recovery reasons, and warn conservatively on static Apple Silicon FP8 evidence without claiming inference compatibility.
 - Make OpenCode AIPS hooks asynchronous and cancellable, bound per-Session Context reuse, and report host-version acceptance separately from hook setup.
 - Add backend/runtime/dtype diagnostics and richer creative provenance while keeping model inference, Human visual review, and user acceptance as separate evidence.

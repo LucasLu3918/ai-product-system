@@ -630,7 +630,9 @@ Architecture and DDD classifications require behavioral/dependency evidence, not
 
 The CLI commands are deterministic building blocks used by the Agent/Harness and remain available for debugging.
 
-## Change-impact artifacts
+## Retrieval relationships and impact traversal
+
+When creative consumer edges are unmapped, preserve PARTIAL graph readiness and record manually inspected consumers and accepted unknowns in the scoped Change Impact artifact.
 
 
 Structured unknown dispositions preserve the original description and require a verifiable repository-file or complete scoped traversal evidence item plus explicit Human review. Legacy strings, stale evidence, out-of-root paths and mismatched scope remain blocking; they do not alter repository-wide coverage.

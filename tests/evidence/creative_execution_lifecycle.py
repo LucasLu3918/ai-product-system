@@ -202,7 +202,7 @@ def mflux_cases(base: Path):
     require(manifest["output"]["sha256"] == creative.digest(output) and manifest["privacy"]["external_image_egress"] is False, "output provenance or privacy boundary missing")
     require(manifest["verification"] == {"workflow_execution": "PASS", "raster_container": "PASS", "model_inference": "UNVERIFIED", "human_visual_review": "PENDING", "user_acceptance": "NOT_RECORDED"}, "workflow, inference, visual review and user acceptance evidence must remain distinct")
     require("private creative prompt" not in manifest_path.read_text() and "private creative prompt" not in creative.read_trace(20).__repr__(), "raw prompt reached a manifest or trace")
-    require("--output\n" in args and "--model-path\n" in args and "--prompt\nprivate creative prompt" in args, "fixed MFLUX argv was not formed")
+    require("--output\n" in args and "--model-path\n" in args and "--prompt\nRequested image brief: private creative prompt" in args, "fixed MFLUX argv or compiled prompt was not formed")
     require("HF_HUB_OFFLINE" not in args and output_magic(output), "MFLUX output fixture was not written")
     expect_blocked(lambda: creative.execute(project, bundle_path.name), "existing output was overwritten")
     reviewed = creative.review(project, result["manifest"], "Independent Human", "PASS", "Identity and style match the approved profiles.")
@@ -370,7 +370,7 @@ def comfy_cases(base: Path):
                                         "inference": "INFERENCE_UNVERIFIED"},
                 "ComfyUI staged readiness implied inference or hid model preflight")
         executed = creative.execute(project, bundle_path.name)
-        require(executed["status"] == "COMPLETE" and FakeComfyHandler.workflow["6"]["inputs"]["text"] == "private creative prompt", "ComfyUI workflow did not receive the explicit prompt")
+        require(executed["status"] == "COMPLETE" and FakeComfyHandler.workflow["6"]["inputs"]["text"] == "Requested image brief: private creative prompt", "ComfyUI workflow did not receive the profile-compiled prompt")
         saved_png = (project / executed["output"]).read_bytes()
         require(b"private creative prompt" not in saved_png and saved_png == PNG, "ComfyUI prompt metadata was retained in the AIPS output")
         require(FakeComfyHandler.workflow["1"]["inputs"]["width"] == 64 and FakeComfyHandler.workflow["3"]["inputs"]["steps"] == 2, "ComfyUI generation settings escaped Bundle limits")
@@ -610,6 +610,8 @@ def configure_cases(base: Path):
     generated = creative.execute(project, profile_bundle["bundle"])
     provenance = json.loads((project / generated["manifest"]).read_text())
     require(len(provenance["profiles"]) == 2, "prepared profiles were not bound to output")
+    require(provenance["prompt_compiler"] == "profile-driven-v1" and len(provenance["compiled_prompt_sha256"]) == 71, "compiled prompt fingerprint was not recorded")
+    require("round glasses" not in json.dumps(provenance) and "private creative prompt" not in json.dumps(provenance), "profile text or raw prompt was persisted in the manifest")
     style.write_text("changed after generation")
     expect_blocked(lambda: creative.review(project, generated["manifest"], "Human", "PASS", "fixture"), "stale profile review was accepted")
     corrupt = project / "corrupt.png"

@@ -1839,7 +1839,9 @@ scenarios:
       - scripts/character_artifacts.py
       - scripts/creative_evidence.py
       - tests/evidence/character_artifacts_lifecycle.py
+      - tests/evidence/creative_quality_lifecycle.py
       - tests/validation/character_artifacts_contracts.py
+      - tests/validation/creative_quality_contracts.py
   - id: "235"
     path: tests/scenarios/235-opencode-native-context-guard.md
     coverage: lifecycle
@@ -1864,10 +1866,12 @@ scenarios:
       - scripts/creative_image_validation.py
       - templates/creative/CREATIVE_BUNDLE.yaml
       - tests/evidence/creative_execution_lifecycle.py
+      - tests/evidence/creative_quality_lifecycle.py
       - tests/evidence/creative_request_policy_lifecycle.py
       - tests/evidence/creative_tool_harness.mjs
       - tests/evidence/opencode_native_acceptance.py
       - tests/validation/creative_execution_contracts.py
+      - tests/validation/creative_quality_contracts.py
   - id: "237"
     path: tests/scenarios/237-read-only-project-diagnostics.md
     coverage: lifecycle

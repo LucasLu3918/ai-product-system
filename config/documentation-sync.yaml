@@ -28,6 +28,8 @@ rules:
       - templates/creative/CREATIVE_EVIDENCE.yaml
       - templates/creative/CREATIVE_BUNDLE.yaml
       - templates/creative/CREATIVE_COLLECTION_PROFILE.yaml
+      - templates/creative/MODEL_CAPABILITY_PROFILE.yaml
+      - templates/creative/VISUAL_REVIEW_REPORT.schema.json
       - templates/creative/CREATIVE_JOB_MANIFEST.yaml
       - tests/evidence/creative_generate_set_lifecycle.py
       - tests/scenarios/238-creative-task-authorization-and-multi-item-execution.md
@@ -49,7 +51,11 @@ rules:
       - tests/scenario_coverage.yaml
       - tests/evidence/character_artifacts_lifecycle.py
       - tests/evidence/creative_execution_lifecycle.py
+      - tests/evidence/creative_quality_lifecycle.py
+      - tests/validation/creative_quality_contracts.py
+      - tests/scenarios/234-character-art-workflow.md
       - tests/validation/creative_execution_contracts.py
+      - tests/validation/registry.py
 
   - id: maintenance-planning
     triggers:

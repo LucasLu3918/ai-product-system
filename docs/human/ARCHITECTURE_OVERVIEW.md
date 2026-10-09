@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+OpenCode 的 local creative tool 有獨立 `review-assist` action grant，綁定目前 Session root；它只授權本機視覺建議，不能改變 Human review 或 user acceptance。
+
 OpenCode V2 每則使用者回覆都重新建立目前動作授權；有界 Session 狀態只支援短風格選擇，並與 Harness Context、原生檔案決策分開。創作執行仍需明確工具動作及本機 preflight。
 
 OpenCode 的 Context、admission、permission 與 Shell hooks 使用非同步程序呼叫及有限輸出；同一 Session 的 Context 可短暫共用結果，permission 決策仍會重新讀取。Project Diagnostics 只提供下一步與復原指引，不會替人執行修復。
@@ -46,6 +48,8 @@ MCP 提供 portability；native adapters 提供 runtime hook / guard。兩者共
 OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn Context，並在 permission evaluation 階段檢查支援的直接檔案操作。L1 僅允許非 Git workspace 中受限路徑的新創意資產；L2 需要 Project Intelligence READY、freshness CURRENT 與無待解權威衝突；L3 外部效果沿用既有 Human approval gate。Shell 僅保留有限唯讀命令，並額外提供固定參數的 AIPS 診斷。`creative_execution` 是唯一有界自訂工具：它綁定當前 EPHEMERAL Session，可建立不覆寫的角色／風格 Profile 與未設定引擎的 Creative Bundle，也可對既有 Bundle 執行唯讀預檢及明確要求的本機生成。其他 MCP/custom tools 和繞過 OpenCode 的寫入仍不在 guard 範圍。Plugin 安裝與 hook discovery 不足以證明執行防護；完成 runtime permission acceptance 前，治理保持 ADVISORY。
 
 ## Project Intelligence 與 Retrieval
+
+Creative Impact Graph edges are currently incomplete; manually reviewed consumer paths keep this change scoped and do not imply repository-wide graph coverage.
 
 高風險既有專案變更先以 Change Impact 遍歷明確的 caller、consumer 與資料／事件邊界；scoped coverage 不會提升為 repository-wide 完整性。
 
@@ -110,6 +114,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 Creative manifests distinguish workflow execution and raster validity from real model inference, Human visual review and user acceptance.
 
+Profile-driven prompt compilation combines bundle intent with character acceptance criteria and style constraints, then records profile and compiled-prompt hashes. Model capability profiles provide advisory, evidence-ranked recommendations without changing the selected model. An optional review action sends a bounded image only to an already-installed local Ollama vision model over loopback and writes a separate advisory report; a Human still decides visual review and the user still records acceptance.
+
 
 `aips project diagnose` 不會呼叫創作工具或產生圖片；Creative Profile、Provider 與視覺驗收流程仍由既有明確授權路徑負責。
 
@@ -124,6 +130,8 @@ The `creative_execution` path can prepare versioned Character/Style Profiles and
 OpenCode V2 prompt admission issues a fresh transient grant for each user response. A short creative selection can use root-bound, expiring structured Session state with finite turns and remaining outputs; Context and retrieved Project Intelligence remain advisory, and raw prior prompts are not retained. Cancellation, unrelated work, scope expansion and output-cap exhaustion revoke continuation. The local `generate-set` workflow records each Bundle outcome and resumes only after verifying saved provenance hashes.
 
 ## Planning 與 Product Delivery
+
+Creative visual-assistance findings remain advisory inputs to Human review and cannot stand in for the approved direction or acceptance decision.
 
 Creative generation provenance and Human review are separate from workflow and raster checks.
 
@@ -162,6 +170,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+Prompt compilation is deterministic and fingerprinted; model rankings and local vision reports remain advisory and never change execution status or selected model.
 
 Creative 延續狀態只容許有限回合與輸出數，不建立排程、背景重試或自動執行；取消、工作切換、範圍擴張或數量耗盡即撤銷延續。
 
@@ -262,6 +272,8 @@ Publication Preflight 將 Python module availability 與 loopback/browser capabi
 
 ## Security 與 Governance
 
+Optional creative vision review is confined to an installed local model over loopback and cannot update Human review or user-acceptance state.
+
 Creative prompt admission 是獨立授權邊界：每次回覆必須以目前 Session、root、動作與剩餘輸出數重新核准；原始歷史提示和 transcript 不得作為授權依據。
 
 Required repository checks and publication authority remain unchanged.
@@ -320,6 +332,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+The creative change updates the recursive documentation map and retains a scoped Impact Graph unknown disposition until consumer edges are independently mapped.
 
 Release and branch inventories remain advisory evidence and do not authorize cleanup, tag creation, release or unrelated merges.
 

@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Creative prompt compilation、model advice 與 review-assist 的文件閉包由 `config/documentation-sync.yaml` 和 `config/documentation-placement.yaml` 登錄；建議報告不得取代 Human review 或 user acceptance。
+
 Creative workflow changes synchronize the explicit request, bounded OpenCode clarification, local execution and independent visual acceptance boundaries across the User Guide, Technology Guide, Architecture Overview, Harness guidance and Scenario 238.
 
 Change-amplification metrics record direct paths, recursive closure, required additions and repeated requirements; repetition triggers review but does not authorize deleting canonical content.
@@ -175,6 +177,8 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+For creative prompt/model/review behavior, placement and synchronization registries name the existing canonical Creative sections and Scenario 234/236/238 evidence; generated output remains advisory.
 
 Documentation tooling requires content in each mapped canonical topic and reports misplaced additions; a complete path closure alone does not satisfy topic placement.
 

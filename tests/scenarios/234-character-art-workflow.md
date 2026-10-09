@@ -4,6 +4,7 @@
 
 - a character identity profile referencing hashed local SVG/PNG identity sources;
 - a style profile with stable rendering guidance and a typeset-label policy;
+- optional collection style-lock constraints and character acceptance criteria;
 - separate character artwork files and a manifest containing local runtime/model/license provenance.
 
 ## When
@@ -20,6 +21,9 @@
 - Traditional Chinese labels are typeset into stable SVG output and repeated composition is byte-identical;
 - existing source/output files are never overwritten;
 - a passing structural result explicitly does not infer character identity fidelity or visual quality.
+- compiled prompts are deterministic and bounded; profile hashes identify the source inputs without retaining prompt text in execution manifests;
+- model capability advice requires local availability, verified license and human-reviewed quality evidence and never changes the selected model;
+- optional local vision assistance writes an advisory-only report and cannot mark Human review or user acceptance complete.
 
 ## Evidence boundaries
 
