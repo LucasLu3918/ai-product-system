@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 1f3ef8c5da9d071b455c25f612e76038091891da
-  changed_files_hash: ec0bd04d01ccc13b156b9b9938cff3a60758bf30e2cd974102bf31726af59713
+  changed_files_hash: fb7d4dfefdea868c1fa15ef6ddbd9f2dc7e313d1279e9b7ee4168ec46eb70c12
 change:
   id: plan23-project-diagnostics
   summary: Additive read-only project diagnostics with PI recovery guidance and explicit
@@ -28,10 +28,11 @@ matrix:
       applicable: true
       evidence: tests/evidence/project_diagnostics_lifecycle.py and installed CLI
         invocation against isolated project/cache paths.
-    contract:
-      applicable: true
-      evidence: JSON/YAML/text shape, static CLI help, Scenario 237 and generated
-        System Facts/Capability projections.
+      contract:
+        applicable: true
+        evidence: JSON/YAML/text shape, static CLI help, Scenario 237 and generated
+          System Facts/Capability projections, plus the updated Plan21 golden hash
+          for additive top-level CLI help.
     e2e:
       applicable: true
       evidence: Local CLI end-to-end; live external Agent Host is not in scope and
