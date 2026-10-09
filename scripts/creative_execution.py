@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import base64
 import hashlib
 import importlib
 import ipaddress
@@ -40,7 +41,10 @@ MAX_PROMPT_CHARS = 4000
 MAX_RETRIES = 2
 MAX_TIMEOUT_SECONDS = 3600
 TRACE_LIMIT_BYTES = 512 * 1024
+MAX_VISION_IMAGE_BYTES = 12 * 1024 * 1024
+MAX_VISION_RESPONSE_BYTES = 64 * 1024
 DEFAULT_COMFYUI_BASE_URL = "http://127.0.0.1:8188"
+DEFAULT_OLLAMA_BASE_URL = "http://127.0.0.1:11434"
 COMFY_CHECKPOINT_NODES = {
     "CheckpointLoaderSimple", "CLIPTextEncode", "EmptyLatentImage", "KSampler",
     "VAEDecode", "SaveImage", "LoadImage", "VAEEncode", "VAEEncodeForInpaint",
@@ -150,6 +154,21 @@ def is_git_workspace(root: Path) -> bool:
         return False
 
 
+def _profile_reference(root: Path, raw: str, field: str) -> Path:
+    relative = Path(raw)
+    if relative.is_absolute() or ".." in relative.parts or "\\" in raw or not relative.parts:
+        raise Blocked("creative_profile_reference_invalid", f"{field} must be a normalized project-relative path.")
+    current = root
+    for part in relative.parts:
+        current = current / part
+        if current.is_symlink():
+            raise Blocked("creative_profile_reference_invalid", f"{field} may not traverse a symlink.")
+    resolved = confined(root, raw, exists=True)
+    if not resolved.is_file() or resolved.suffix.lower() not in {".yaml", ".yml"} or resolved.stat().st_size > 64 * 1024:
+        raise Blocked("creative_profile_reference_invalid", f"{field} must be a bounded regular YAML file.")
+    return resolved
+
+
 def bundle_input_images(root: Path, value: dict[str, Any]) -> list[Path]:
     multiple = value.get("input_images")
     single = value.get("input_image")
@@ -194,6 +213,13 @@ def read_bundle(project: Path, bundle_path: str, *, allow_existing_output: bool 
         raise Blocked("bundle_invalid", "Bundle YAML could not be read.") from exc
     if not isinstance(value, dict) or value.get("version") != 1 or value.get("mode") != "EPHEMERAL":
         raise Blocked("bundle_invalid", "Bundle must use version 1 and mode EPHEMERAL.")
+    for reference_key in ("collection_profile", "model_capability_profile"):
+        raw_reference = value.get(reference_key)
+        if raw_reference is None:
+            continue
+        if not isinstance(raw_reference, str) or not raw_reference or "\\" in raw_reference:
+            raise Blocked("creative_profile_reference_invalid", f"{reference_key} must be a project-relative YAML path.")
+        _profile_reference(root, raw_reference, reference_key)
     operation = value.get("operation")
     if operation not in {"generate", "edit"}:
         raise Blocked("operation_unsupported", "Operation must be generate or edit.")
@@ -518,6 +544,8 @@ def resolve_provider(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str,
 
 def preflight(project: Path, bundle_path: str) -> dict[str, Any]:
     root, bundle = read_bundle(project, bundle_path)
+    profile_documents, _ = load_profile_documents(root, bundle, confined(root, bundle_path, exists=True))
+    model_advice = model_recommendation(bundle, profile_documents)
     try:
         provider, resolved = resolve_provider(root, bundle)
     except Blocked as exc:
@@ -540,6 +568,7 @@ def preflight(project: Path, bundle_path: str) -> dict[str, Any]:
                               "inference": "INFERENCE_UNVERIFIED"},
                 "generation_executed": False,
                 "external_image_egress": False,
+                "model_recommendation": model_advice,
             }
         raise
     dtype_values: set[str] = set()
@@ -593,6 +622,7 @@ def preflight(project: Path, bundle_path: str) -> dict[str, Any]:
         "max_attempts": bundle.get("max_retries", 0) + 1,
         "timeout_seconds": bundle.get("timeout_seconds", 900),
         "model_id": bundle["model"]["id"], "local_only": True,
+        "model_recommendation": model_advice,
     }
 
 
@@ -695,7 +725,7 @@ def configure(project: Path, bundle_path: str, settings: dict[str, Any]) -> dict
     """Create a validated configured Bundle version; never edit the source."""
     allowed = {"provider", "model", "runtime", "runtime_version", "mflux_executable", "comfyui",
                "width", "height", "steps", "seed", "max_retries", "timeout_seconds", "prompt",
-               "operation", "input_image", "input_images"}
+               "operation", "input_image", "input_images", "collection_profile", "model_capability_profile"}
     if not isinstance(settings, dict) or not settings or set(settings) - allowed:
         raise Blocked("creative_configuration_invalid", "Configuration contains unsupported fields.")
     root, bundle = read_bundle(project, bundle_path)
@@ -922,6 +952,264 @@ def strip_png_text_metadata(data: bytes) -> bytes:
     return bytes(output)
 
 
+def load_profile_documents(root: Path, bundle: dict[str, Any], bundle_file: Path) -> tuple[dict[str, dict[str, Any]], list[dict[str, str]]]:
+    """Load bounded, project-local profiles and bind every one to its exact bytes."""
+    paths: dict[str, Path] = {}
+    if bundle_file.parent.name == "bundles":
+        profile_dir = bundle_file.parent.parent
+        for key, name in (("character", "CHARACTER_PROFILE.yaml"), ("style", "STYLE_PROFILE.yaml")):
+            candidate = profile_dir / name
+            if candidate.exists():
+                paths[key] = _profile_reference(root, candidate.relative_to(root).as_posix(), key)
+    for key, field in (("collection", "collection_profile"), ("model_capabilities", "model_capability_profile")):
+        raw = bundle.get(field)
+        if isinstance(raw, str):
+            paths[key] = _profile_reference(root, raw, field)
+    documents: dict[str, dict[str, Any]] = {}
+    fingerprints: list[dict[str, str]] = []
+    for key, path in paths.items():
+        try:
+            if path.stat().st_size > 64 * 1024:
+                raise Blocked("creative_profile_invalid", f"The {key} profile exceeds the 64 KiB limit.")
+            value = yaml.safe_load(path.read_text(encoding="utf-8"))
+        except (OSError, UnicodeError, yaml.YAMLError) as exc:
+            raise Blocked("creative_profile_invalid", f"The {key} profile could not be read as YAML.") from exc
+        if not isinstance(value, dict) or value.get("version") != 1:
+            raise Blocked("creative_profile_invalid", f"The {key} profile must be a version-1 YAML mapping.")
+        if key == "model_capabilities" and not _valid_model_capability_profile(value):
+            raise Blocked("model_capability_profile_invalid", "Model capability entries must use bounded ids, operation tags, and explicit evidence fields.")
+        documents[key] = value
+        fingerprints.append({"path": path.relative_to(root).as_posix(), "sha256": digest(path)})
+    return documents, fingerprints
+
+
+def _valid_model_capability_profile(profile: dict[str, Any]) -> bool:
+    models = profile.get("models")
+    if not isinstance(models, list) or len(models) > 100:
+        return False
+    seen: set[str] = set()
+    for item in models:
+        if not isinstance(item, dict):
+            return False
+        identifier = item.get("id")
+        capabilities = item.get("capabilities")
+        operations = item.get("operations")
+        if (not isinstance(identifier, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}", identifier)
+                or identifier in seen or not isinstance(capabilities, list) or len(capabilities) > 24
+                or any(not isinstance(value, str) or not value.strip() or len(value) > 120 for value in capabilities)
+                or not isinstance(operations, list) or not operations or len(operations) > 2
+                or any(not isinstance(operation, str) or operation not in {"generate", "edit"} for operation in operations)
+                or item.get("availability") not in {"VERIFIED_LOCAL", "UNVERIFIED"}
+                or item.get("license_status") not in {"VERIFIED", "UNVERIFIED"}):
+            return False
+        seen.add(identifier)
+    return True
+
+
+def _profile_lines(value: Any) -> list[str]:
+    if isinstance(value, str):
+        return [value.strip()] if value.strip() else []
+    if isinstance(value, list):
+        return [item.strip() for item in value if isinstance(item, str) and item.strip()]
+    return []
+
+
+def _profile_mapping(value: Any) -> dict[str, Any]:
+    return value if isinstance(value, dict) else {}
+
+
+def compile_creative_prompt(bundle: dict[str, Any], profiles: dict[str, dict[str, Any]]) -> str:
+    """Compile approved Profile facts into a bounded, reproducible provider prompt."""
+    sections: list[str] = []
+    def add(label: str, values: Any) -> None:
+        lines = _profile_lines(values)
+        if lines:
+            sections.append(f"{label}: " + "; ".join(lines))
+
+    add("Requested image brief", bundle.get("prompt"))
+    character = _profile_mapping(profiles.get("character"))
+    acceptance = _profile_mapping(character.get("acceptance_criteria"))
+    add("Character identity", character.get("summary"))
+    add("Identity features to preserve", character.get("identity_features"))
+    add("Critical features", acceptance.get("critical_features"))
+    add("Required character details", character.get("must_preserve"))
+    variations = _profile_mapping(character.get("allowed_variations"))
+    for key, label in (("expressions", "Allowed expressions"), ("poses", "Allowed poses"), ("outfit_variants", "Allowed outfit variations")):
+        add(label, variations.get(key))
+    add("Forbidden feature placements", acceptance.get("forbidden_misplacements"))
+    style = _profile_mapping(profiles.get("style"))
+    add("Art direction", style.get("intent"))
+    rendering = _profile_mapping(style.get("rendering"))
+    for key, label in (("medium", "Medium"), ("linework", "Linework"), ("shading", "Shading"), ("finish", "Finish")):
+        add(label, rendering.get(key))
+    composition = _profile_mapping(style.get("composition"))
+    for key, label in (("framing", "Framing"), ("background", "Background")):
+        add(label, composition.get(key))
+    prompt_constraints = _profile_mapping(style.get("prompt_constraints"))
+    add("Style constraints", prompt_constraints.get("must_include"))
+    add("Avoid", [*(_profile_lines(character.get("must_avoid"))),
+                   *(_profile_lines(style.get("must_avoid"))),
+                   *(_profile_lines(prompt_constraints.get("must_avoid")))])
+    collection = _profile_mapping(profiles.get("collection"))
+    add("Shared collection direction", collection.get("visual_direction"))
+    style_lock = _profile_mapping(collection.get("style_lock"))
+    add("Shared style lock", style_lock.get("must_match"))
+    add("Shared palette", style_lock.get("palette"))
+    add("Collection exclusions", style_lock.get("must_avoid"))
+    prompt = "\n".join(sections)
+    if not prompt or len(prompt) > 12000:
+        raise Blocked("compiled_prompt_invalid", "Compiled creative prompt is empty or exceeds its 12000 character limit.")
+    return prompt
+
+
+def model_recommendation(bundle: dict[str, Any], profiles: dict[str, dict[str, Any]]) -> dict[str, Any]:
+    """Rank only explicitly inventoried local candidates with reviewed evidence."""
+    profile = profiles.get("model_capabilities")
+    if profile is None:
+        return {"status": "UNAVAILABLE", "reason_code": "model_capability_profile_not_configured", "models": []}
+    models = profile.get("models")
+    if not isinstance(models, list) or len(models) > 100:
+        return {"status": "UNAVAILABLE", "reason_code": "model_capability_profile_invalid", "models": []}
+    style = _profile_mapping(profiles.get("style"))
+    rendering = _profile_mapping(style.get("rendering"))
+    intent_terms = " ".join([str(style.get("intent", "")), str(rendering.get("medium", "")),
+                              str(rendering.get("shading", ""))]).casefold()
+    scored: list[tuple[int, float, dict[str, Any]]] = []
+    for item in models:
+        if not isinstance(item, dict) or not isinstance(item.get("id"), str) or not isinstance(item.get("capabilities"), list):
+            continue
+        capabilities = [term for term in item["capabilities"] if isinstance(term, str) and term.strip()]
+        operations = item.get("operations")
+        if not isinstance(operations, list) or bundle.get("operation") not in operations:
+            continue
+        overlap = [term for term in capabilities if term.casefold() in intent_terms]
+        review = _profile_mapping(item.get("quality_review"))
+        availability = item.get("availability") == "VERIFIED_LOCAL"
+        licensed = item.get("license_status") == "VERIFIED"
+        reviewed = review.get("status") == "HUMAN_REVIEWED" and isinstance(review.get("evidence"), str) and bool(review["evidence"].strip())
+        scores = [review.get("style_score"), review.get("character_consistency_score")]
+        numeric_scores = [score for score in scores if isinstance(score, int) and not isinstance(score, bool)]
+        scores_valid = len(numeric_scores) == 2 and all(1 <= score <= 5 for score in numeric_scores)
+        verified = availability and licensed and reviewed and scores_valid
+        quality_score = sum(numeric_scores) / len(numeric_scores) if verified else 0.0
+        scored.append((len(overlap), quality_score, {"id": item["id"][:128], "status": "EVIDENCE_BACKED" if verified else "INSUFFICIENT_EVIDENCE",
+                                      "matching_capabilities": overlap[:12], "quality_evidence": "HUMAN_REVIEWED" if verified else "UNVERIFIED",
+                                      "human_quality_score": quality_score if verified else None,
+                                      "selection_reason": "Ranked by declared style match and human-reviewed quality evidence; no model is selected automatically."}))
+    scored.sort(key=lambda candidate: (-candidate[0], -candidate[1], candidate[2]["id"].casefold()))
+    ranked = [row for _, _, row in scored[:3]]
+    backed = any(row["status"] == "EVIDENCE_BACKED" for row in ranked)
+    return {"status": "RECOMMENDATIONS_AVAILABLE" if backed else "NO_VERIFIED_RECOMMENDATION",
+            "reason_code": "local_evidence_ranked" if backed else "quality_or_local_evidence_missing",
+            "selected_model_changed": False, "models": ranked}
+
+
+def _validated_observations(value: Any) -> list[dict[str, str]]:
+    allowed_checks = {"style", "identity", "anatomy", "composition", "consistency", "artifacts"}
+    allowed_assessments = {"MATCH", "POSSIBLE_ISSUE", "UNCERTAIN"}
+    if not isinstance(value, list) or len(value) > 24:
+        raise Blocked("visual_review_response_invalid", "Local vision review must return at most 24 observations.")
+    observations: list[dict[str, str]] = []
+    for item in value:
+        if (not isinstance(item, dict) or set(item) != {"check", "assessment", "evidence", "suggestion"}
+                or item.get("check") not in allowed_checks or item.get("assessment") not in allowed_assessments
+                or any(not isinstance(item.get(key), str) or len(item[key]) > 500 for key in ("evidence", "suggestion"))):
+            raise Blocked("visual_review_response_invalid", "Local vision review returned an unsupported observation.")
+        observations.append({key: item[key].strip() for key in ("check", "assessment", "evidence", "suggestion")})
+    return observations
+
+
+def review_assist(project: Path, manifest_name: str, model: str) -> dict[str, Any]:
+    """Ask an already-installed local Ollama vision model for advisory findings."""
+    root = project.expanduser().resolve(strict=True)
+    manifest_path = confined(root, manifest_name, exists=True)
+    if manifest_path.is_symlink() or manifest_path.name != "creative-execution-manifest.json" or not manifest_path.is_file():
+        raise Blocked("manifest_invalid", "Review target must be an in-project creative execution manifest.")
+    if is_git_workspace(root):
+        raise Blocked("creative_git_workspace", "Local creative review is restricted to a non-Git EPHEMERAL project.")
+    if not isinstance(model, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}", model):
+        raise Blocked("visual_review_model_invalid", "Specify an installed local vision model id.")
+    try:
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError) as exc:
+        raise Blocked("manifest_invalid", "Execution manifest is invalid.") from exc
+    output = manifest.get("output") if isinstance(manifest, dict) else None
+    if not isinstance(output, dict) or not isinstance(output.get("path"), str):
+        raise Blocked("manifest_invalid", "Execution manifest does not identify an output image.")
+    image = confined(root, output["path"], exists=True)
+    output_scope = confined(root, str(manifest.get("output_scope", "")))
+    if image.is_symlink() or not image.is_file() or output_scope == root or output_scope not in image.parents:
+        raise Blocked("manifest_scope_invalid", "Reviewed image must remain a regular file inside its declared output scope.")
+    image_bytes = image.read_bytes()
+    if len(image_bytes) > MAX_VISION_IMAGE_BYTES or digest(image) != output.get("sha256"):
+        raise Blocked("manifest_hash_mismatch", "Reviewed image is oversized or differs from its provenance hash.")
+    profile_hashes = manifest.get("profiles", [])
+    if not isinstance(profile_hashes, list) or len(profile_hashes) > 8:
+        raise Blocked("manifest_invalid", "Profile provenance list is invalid.")
+    for profile in profile_hashes:
+        if not isinstance(profile, dict) or not isinstance(profile.get("path"), str) or not isinstance(profile.get("sha256"), str):
+            raise Blocked("manifest_invalid", "Profile provenance entry is invalid.")
+        path = confined(root, profile["path"], exists=True)
+        if path.is_symlink() or digest(path) != profile["sha256"]:
+            raise Blocked("profile_hash_mismatch", "A reviewed Character, Style or Collection Profile changed after generation.")
+    character: dict[str, Any] = {}
+    style: dict[str, Any] = {}
+    collection: dict[str, Any] = {}
+    for entry in profile_hashes:
+        name = Path(entry["path"]).name
+        if name == "CHARACTER_PROFILE.yaml":
+            character = yaml.safe_load(_profile_reference(root, entry["path"], "character profile").read_text(encoding="utf-8")) or {}
+        elif name == "STYLE_PROFILE.yaml":
+            style = yaml.safe_load(_profile_reference(root, entry["path"], "style profile").read_text(encoding="utf-8")) or {}
+        elif name == "CREATIVE_COLLECTION_PROFILE.yaml":
+            collection = yaml.safe_load(_profile_reference(root, entry["path"], "collection profile").read_text(encoding="utf-8")) or {}
+        else:
+            continue
+        if not isinstance(character, dict) or not isinstance(style, dict) or not isinstance(collection, dict):
+            raise Blocked("creative_profile_invalid", "Reviewed profile inputs must be versioned YAML mappings.")
+    review_brief = compile_creative_prompt({"prompt": "Inspect the image against the approved profiles."},
+                                           {"character": character, "style": style, "collection": collection})
+    tags_body = json.loads(local_request(DEFAULT_OLLAMA_BASE_URL + "/api/tags", timeout=3, max_bytes=512 * 1024))
+    inventory = tags_body.get("models") if isinstance(tags_body, dict) else None
+    installed = {entry.get("name") for entry in inventory if isinstance(entry, dict) and isinstance(entry.get("name"), str)} if isinstance(inventory, list) else set()
+    if model not in installed:
+        raise Blocked("visual_review_model_not_installed", "Requested local vision model is not present in the local model inventory; AIPS will not download it.")
+    instruction = (
+        "Review the supplied image against the approved profile details. Return JSON only with an observations array; "
+        "each observation must contain check (style, identity, anatomy, composition, consistency, or artifacts), "
+        "assessment (MATCH, POSSIBLE_ISSUE, or UNCERTAIN), evidence, and suggestion. "
+        "Report uncertainty honestly. You do not decide PASS/FAIL, user acceptance, or whether the work is complete.\n\n"
+        + review_brief
+    )
+    payload = json.dumps({"model": model, "stream": False, "format": "json", "options": {"temperature": 0},
+                          "messages": [{"role": "user", "content": instruction,
+                                       "images": [base64.b64encode(image_bytes).decode("ascii")]}]},
+                         separators=(",", ":")).encode("utf-8")
+    response = json.loads(local_request(DEFAULT_OLLAMA_BASE_URL + "/api/chat", data=payload,
+                                       headers={"Content-Type": "application/json"}, timeout=120,
+                                       max_bytes=MAX_VISION_RESPONSE_BYTES))
+    message = response.get("message") if isinstance(response, dict) else None
+    try:
+        model_result = json.loads(message.get("content", "")) if isinstance(message, dict) else None
+    except json.JSONDecodeError as exc:
+        raise Blocked("visual_review_response_invalid", "Local vision model returned invalid JSON.") from exc
+    observations = _validated_observations(model_result.get("observations") if isinstance(model_result, dict) else None)
+    report = {"version": 1, "status": "ADVISORY_REVIEW", "authority": "NONE", "model": model,
+              "manifest_sha256": digest(manifest_path), "image_sha256": digest(image),
+              "profile_sha256": [entry["sha256"] for entry in profile_hashes], "observations": observations,
+              "human_review_required": True, "user_acceptance": "NOT_RECORDED"}
+    for version in range(1, 10000):
+        target = manifest_path.with_name(f"creative-visual-review-v{version}.json")
+        if target.exists() or target.is_symlink():
+            continue
+        atomic_manifest(target, report)
+        return {"status": report["status"], "reason_code": "local_visual_review_advisory",
+                "report": target.relative_to(root).as_posix(), "model": model,
+                "observations": len(observations), "human_review_required": True,
+                "user_acceptance": "NOT_RECORDED", "external_image_egress": False, "overwrite": False}
+    raise Blocked("visual_review_version_exhausted", "No create-only visual review report version remains.")
+
+
 def mflux_command(root: Path, bundle: dict[str, Any], executable: Path, temp_output: Path) -> list[str]:
     model = bundle["model"]
     model_id = model.get("id")
@@ -1094,11 +1382,9 @@ def execute(project: Path, bundle_path: str) -> dict[str, Any]:
     root, bundle = read_bundle(project, bundle_path)
     bundle_file = confined(root, bundle_path, exists=True)
     bundle_hash = digest(bundle_file)
-    profile_dir = bundle_file.parent.parent
-    profiles = [{"path": path.relative_to(root).as_posix(), "sha256": digest(path)}
-                for name in ("CHARACTER_PROFILE.yaml", "STYLE_PROFILE.yaml")
-                if bundle_file.parent.name == "bundles" and profile_dir.is_relative_to(root)
-                and (path := profile_dir / name).is_file() and not path.is_symlink()]
+    profile_documents, profiles = load_profile_documents(root, bundle, bundle_file)
+    compiled_prompt = compile_creative_prompt(bundle, profile_documents)
+    provider_bundle = {**bundle, "prompt": compiled_prompt}
     provider_name, provider = resolve_provider(root, bundle)
     output = confined(root, bundle["output_path"])
     sources = bundle_input_images(root, bundle)
@@ -1123,9 +1409,9 @@ def execute(project: Path, bundle_path: str) -> dict[str, Any]:
             temp_output.unlink(missing_ok=True)
             try:
                 if provider_name == "mflux_local":
-                    mflux_execute(root, bundle, provider, temp_output, bundle.get("timeout_seconds", 900))
+                    mflux_execute(root, provider_bundle, provider, temp_output, bundle.get("timeout_seconds", 900))
                 else:
-                    comfy_execute(bundle, provider, temp_output, bundle.get("timeout_seconds", 900))
+                    comfy_execute(provider_bundle, provider, temp_output, bundle.get("timeout_seconds", 900))
                 if not output_magic(temp_output):
                     raise Blocked("provider_output_invalid", "Local engine did not produce a supported image within the byte limit.")
                 break
@@ -1143,6 +1429,8 @@ def execute(project: Path, bundle_path: str) -> dict[str, Any]:
             "model": {"id": bundle["model"]["id"], "revision": bundle["model"]["revision"], "runtime": bundle["runtime"], "runtime_version": bundle["runtime_version"], "license": bundle["model"]["license"], "license_source": bundle["model"]["license_source"], "location": "local"},
             "bundle_sha256": bundle_hash,
             "profiles": profiles,
+            "prompt_compiler": "profile-driven-v1",
+            "compiled_prompt_sha256": "sha256:" + hashlib.sha256(compiled_prompt.encode("utf-8")).hexdigest(),
             "workflow_sha256": digest(provider["path"]) if provider_name == "comfyui_local" else None,
             "input": input_records[0] if len(input_records) == 1 else None,
             "inputs": input_records if len(input_records) > 1 else [],
@@ -1433,6 +1721,10 @@ def main() -> int:
     review_parser.add_argument("--reviewer", required=True)
     review_parser.add_argument("--decision", choices=("PASS", "REVISE"), required=True)
     review_parser.add_argument("--note", default="")
+    assist_parser = sub.add_parser("review-assist", help="Request optional advisory review from an already-installed local Ollama vision model.")
+    assist_parser.add_argument("--project", type=Path, required=True)
+    assist_parser.add_argument("--manifest", required=True)
+    assist_parser.add_argument("--model", required=True)
     trace_parser = sub.add_parser("trace")
     trace_parser.add_argument("--limit", type=int, default=20)
     args = parser.parse_args()
@@ -1454,12 +1746,14 @@ def main() -> int:
             result = generate_set(args.project, args.manifest, args.max_items)
         elif args.action == "review":
             result = review(args.project, args.manifest, args.reviewer, args.decision, args.note)
+        elif args.action == "review-assist":
+            result = review_assist(args.project, args.manifest, args.model)
         else:
             result = read_trace(args.limit)
         print(json.dumps(result, ensure_ascii=False))
         return 0
     except Blocked as exc:
-        payload = {"status": "BLOCKED", "reason_code": exc.reason_code, "message": str(exc)}
+        payload: dict[str, Any] = {"status": "BLOCKED", "reason_code": exc.reason_code, "message": str(exc)}
         if exc.diagnostics:
             payload["diagnostics"] = exc.diagnostics
         print(json.dumps(payload, ensure_ascii=False))

@@ -15,9 +15,10 @@ CONTINUE = re.compile(r"^(?:[ABC](?:$|\s)|選[ABC]|第[一二三]個|好(?:的)?
 STYLE_SELECTION = re.compile(r"(?:[ABC]\s*(?:佈局|質感|配色|風格|構圖|色調|比例).{0,80}[ABC]\s*(?:佈局|質感|配色|風格|構圖|色調|比例)|[ABC]\s*(?:佈局|質感|配色|風格|構圖|色調|比例))", re.IGNORECASE)
 CREATIVE_TARGET = re.compile(r"角色|人物|立繪|肖像|人像|character|portrait", re.IGNORECASE)
 CONFIGURE = re.compile(r"設定|配置|configure|configuration", re.IGNORECASE)
+VISUAL_REVIEW = re.compile(r"檢查|審查|評論|review|inspect|critique|quality", re.IGNORECASE)
 OTHER_TASK = re.compile(r"程式|網站|資料庫|寄信|\b(?:python|javascript|website|database|email)\b", re.IGNORECASE)
 MAX_PROMPT_CHARS = 8000
-ACTIONS = {"prepare", "configure", "execute", "preflight", "discover"}
+ACTIONS = {"prepare", "configure", "execute", "preflight", "discover", "review-assist"}
 OUTPUT_COUNT = re.compile(r"(?:生成|產圖|繪製|畫|create|generate|render|draw|paint)\s*(\d{1,2})\s*(?:張|個|幅|名|images?|illustrations?|characters?|items?)", re.IGNORECASE)
 CJK_COUNTS = {"一": 1, "兩": 2, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10}
 CJK_OUTPUT_COUNT = re.compile(r"([一兩二三四五六七八九十])\s*(?:個|張|幅|名|位).{0,16}(?:角色|人物|圖片|插畫|圖|立繪|肖像|人像)")
@@ -119,6 +120,11 @@ def _authorize_texts(texts: list[str], action: str) -> dict[str, Any]:
     allowed = active and bool(anchor) and (action != "execute" or generation)
     if action == "prepare" and anchor:
         allowed = allowed and classify_task(anchor)["intent"] == "create"
+    if action == "review-assist":
+        review_task = classify_task(latest)
+        allowed = bool(latest) and review_task["domain"] == "creative" and bool(VISUAL_REVIEW.search(latest)) and not STOP.search(latest) and not OTHER_TASK.search(latest)
+        anchor = latest if allowed else ""
+        active = allowed
     return {
         "allowed": bool(allowed),
         "reason_code": "creative_request_authorized" if allowed else "creative_intent_required",
@@ -141,7 +147,7 @@ def _valid_continuation(value: Any) -> bool:
         and 1 <= value["turns_remaining"] <= MAX_CONTINUATION_TURNS
         and isinstance(value.get("allowed_actions"), list)
         and bool(value["allowed_actions"])
-        and all(action in {"prepare", "configure", "execute"} for action in value["allowed_actions"])
+        and all(action in {"prepare", "configure", "execute", "review-assist"} for action in value["allowed_actions"])
     )
 
 
@@ -156,7 +162,7 @@ def _continuation_result(text: str, pending: Any) -> dict[str, Any] | None:
             "continued": False,
             "max_outputs": 0,
             "grants": {action: {"allowed": False, "reason_code": "creative_scope_expansion", "inherited": False}
-                       for action in ("prepare", "configure", "execute")},
+                       for action in ("prepare", "configure", "execute", "review-assist")},
             "continuation": None,
             "reason_code": "creative_scope_expansion",
         }
@@ -170,7 +176,7 @@ def _continuation_result(text: str, pending: Any) -> dict[str, Any] | None:
             "continued": False,
             "max_outputs": 0,
             "grants": {action: {"allowed": False, "reason_code": "creative_output_limit_exceeded", "inherited": False}
-                       for action in ("prepare", "configure", "execute")},
+                       for action in ("prepare", "configure", "execute", "review-assist")},
             "continuation": None,
             "reason_code": "creative_output_limit_exceeded",
         }
@@ -181,7 +187,7 @@ def _continuation_result(text: str, pending: Any) -> dict[str, Any] | None:
             "continued": False,
             "max_outputs": 0,
             "grants": {action: {"allowed": False, "reason_code": "creative_scope_expansion", "inherited": False}
-                       for action in ("prepare", "configure", "execute")},
+                       for action in ("prepare", "configure", "execute", "review-assist")},
             "continuation": None,
             "reason_code": "creative_scope_expansion",
         }
@@ -195,7 +201,7 @@ def _continuation_result(text: str, pending: Any) -> dict[str, Any] | None:
             "reason_code": "creative_request_continued" if action in allowed_actions else "creative_intent_required",
             "inherited": action in allowed_actions,
         }
-        for action in ("prepare", "configure", "execute")
+        for action in ("prepare", "configure", "execute", "review-assist")
     }
     turns_remaining = pending["turns_remaining"] - 1
     continuation = ({
@@ -223,7 +229,7 @@ def admit_prompt(prompt: Any, pending: Any = None) -> dict[str, Any]:
             continued["prompt_sha256"] = hashlib.sha256(text.encode("utf-8")).hexdigest()
             return continued
     texts = [text] if text else []
-    grants = {action: _authorize_texts(texts, action) for action in ("prepare", "configure", "execute")}
+    grants = {action: _authorize_texts(texts, action) for action in ("prepare", "configure", "execute", "review-assist")}
     active = any(grant["allowed"] for grant in grants.values())
     # The native adapter stores only action decisions and a digest, never prompt text.
     for grant in grants.values():

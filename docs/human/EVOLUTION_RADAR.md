@@ -50,6 +50,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 Pending assessments remain distinct from assessed or disqualified evidence; bounded candidates still require a Human adoption decision.
 
+Creative model recommendations and local vision review are runtime evidence only; neither creates an Evolution adoption decision or replaces independent Human review.
+
 
 Local creative grants and batch execution add no Evolution Radar provider, semantic analysis, trial, or adoption authority; their verification remains in the Creative lifecycle and Scenario 238.
 

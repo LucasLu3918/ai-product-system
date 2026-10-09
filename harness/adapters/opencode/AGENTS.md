@@ -23,3 +23,5 @@ On OpenCode V2, the custom creative tool is exposed in the Code Mode catalog as 
 For local Z-Image Turbo generation, use the shared creative_execution capability mapping to the dedicated MFLUX command or the fixed ComfyUI split-loader workflow; the latter verifies local UNET, Qwen `lumina2` CLIP and VAE files and strips prompt-bearing PNG text metadata. Edit and other Z-Image variants remain unsupported.
 
 For multiple configured Bundles, use aips creative generate-set --project PROJECT --manifest CREATIVE_JOB_MANIFEST.yaml. The bounded manifest runs each item's preflight, continues after failures, and resumes only when saved output and provenance hashes still match.
+
+The `review-assist` action requires explicit visual-review intent in the current user prompt, stays bound to the active Session root, and uses only an already-installed local vision model. Its report is advisory and cannot grant generation, write or user-acceptance authority.

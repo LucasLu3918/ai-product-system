@@ -17,6 +17,8 @@ The candidate report measures direct paths, closure additions, rule fan-in and r
 
 Creative executor, job-manifest, OpenCode prompt-grant or related scenario changes require synchronized Creative Direction, User Guide, Architecture Overview, Technology Guide and conformance evidence, plus the resolved documentation-placement closure.
 
+Creative prompt compilation, capability ranking or local visual-review changes also require Scenario 234/236 coverage, privacy and authorization checks, and explicit evidence that advisory reports cannot complete Human review or user acceptance.
+
 Creative readiness changes also keep fixed loopback discovery, sanitized provider recovery, and advisory-only Apple Silicon FP8 compatibility wording aligned across the adapter, Scenario 236 and canonical Human documentation.
 
 Shared CLI router 更新可能觸發 Creative Direction 文件審查；Project Diagnostics 只讀，不會執行 Creative Profile、Provider 或 Artwork lifecycle。
@@ -437,6 +439,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+Creative Core Matrix rows bind profile contracts, local-only review authorization, scenario evidence and recursive documentation placement to the exact candidate.
 
 CI 對每個候選安裝 `requirements.txt`、`requirements-validation.txt`、`requirements-visual.txt` 與 `requirements-openapi.txt` 的 Python 套件，確保必要的完整 CLI lifecycle fixtures 可執行；Node、文件建置套件與 Playwright Chromium 仍依精確候選路徑選擇。
 

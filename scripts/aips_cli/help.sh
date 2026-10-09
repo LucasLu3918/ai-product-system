@@ -30,6 +30,7 @@ Usage:
   aips creative execute --project <path> --bundle <relative-yaml>
   aips creative generate-set --project <path> --manifest <relative-yaml> (continues failures; resumes verified successes)
   aips creative review --project <path> --manifest <relative-json> --reviewer <name> --decision <PASS|REVISE>
+  aips creative review-assist --project <path> --manifest <relative-json> --model <installed-local-ollama-vision-model>
   aips creative trace [--limit 1..100]
 
   aips mcp serve

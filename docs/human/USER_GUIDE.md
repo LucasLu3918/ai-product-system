@@ -72,6 +72,7 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+
 Creative manifests keep model inference, Human visual review and user acceptance as distinct evidence.
 
 
@@ -113,7 +114,11 @@ Brand System 可涵蓋 Brand Intent、Audience / Positioning、Purpose / Mission
 
 角色素材沿用 `creative-calibration`、`visual-direction` 與 `visual-quality-review`。以 `CHARACTER_PROFILE.yaml` 記錄身份特徵與本機參考圖雜湊，以 `STYLE_PROFILE.yaml` 記錄媒材、構圖和文字規則；姿勢、表情、配件分開產出，避免一次生成後難以替換。預設使用已存在的本機 ComfyUI MCP；Apple Silicon 可選用 MFLUX。流程不安裝引擎、不下載模型，也不使用雲端或付費 API。清單需記錄精確模型版本、Runtime、授權來源與本機執行狀態。
 
+執行時會把 Bundle brief、Character acceptance criteria、Style prompt constraints 與選用的 collection style lock 編譯成有界 Prompt，並記錄輸入 Profile 與編譯結果雜湊。可選的 `MODEL_CAPABILITY_PROFILE.yaml` 只依已記錄且經人工審查的能力證據提出模型建議，不會替你切換模型。
+
 使用 `python scripts/character_artifacts.py validate MANIFEST --project PROJECT` 驗證檔案、路徑、尺寸、雜湊和來源；使用 `compose` 以 SVG 組成設定表並排上繁體中文標籤。輸出不覆寫既有檔案。這些檢查不會判斷角色是否一致或畫面是否合格，仍需人工依核准的角色與風格設定逐張審查；效能數據只有實際量測後才能填入。
+
+如需產生視覺檢查建議，可明確呼叫 `aips creative review-assist --project PROJECT --manifest MANIFEST.json --model INSTALLED_OLLAMA_VISION_MODEL`。此功能只連本機 `127.0.0.1:11434` 上已安裝的 Ollama 模型，另存 advisory review 報告，不修改生成 manifest，也不代表 Human review 或使用者接受。
 
 若要直接執行本機生成，可先用 OpenCode `creative_execution` 工具的 `prepare` 動作，或 `aips creative prepare` 建立版本化工作目錄，內含 README、Character Profile、Style Profile 與草稿 Bundle。準備流程只在明確素材 scope 建立固定的新檔，不覆寫；先補上已安裝引擎、模型版本與授權來源，再執行 `aips creative preflight --project PROJECT --bundle BUNDLE.yaml`。MFLUX Adapter 依固定能力表呼叫 FLUX.1、FLUX.2 Klein、Qwen Image Edit 2511 或 Z-Image Turbo 專用命令；FLUX.1 一次一張參考圖，只有支援 `--image-paths` 的 FLUX.2/Qwen edit 才接受最多八張專案內參考圖。ComfyUI 僅連線 loopback；一般 checkpoint 工作流維持既有限制，Z-Image Turbo 使用固定分離載入器工作流，兩者都拒絕自訂節點。預檢會核對本機工作流與模型清單，不會生成素材；缺少引擎會回報 `BLOCKED_NO_ENGINE`。確認後，以 `aips creative execute` 明確執行。輸出限於 EPHEMERAL 非 Git workspace 中指定 scope 的新 PNG/JPEG/WEBP 與 provenance manifest，不覆寫現有檔案、不下載模型。ComfyUI 編輯時須先將單張參考圖放入本機 input，且預檢會核對位元組雜湊。生成結果的視覺審查初始為 `PENDING`，請由獨立人工對照角色與風格規範檢查後，才用 `aips creative review` 記錄 PASS 或 REVISE；`aips creative trace` 只顯示原因碼、耗時、重試次數與雜湊。
 
@@ -143,6 +148,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 新專案若尚未選擇技術，AIPS 會先檢查硬性限制，再依團隊、產品、既有系統、交付與維護需求提出少量候選和取捨；語言與框架分開選擇。架構建議同時看複雜度訊號與反向訊號，並分開說明 Clean Architecture、DDD 與部署方式。重要選擇由使用者確認後，才會整理到 Implementation Profile。
 
 ## Global Harness 與 MCP
+
+OpenCode creative tool 只有目前使用者明確提出視覺審查時才授予 `review-assist`；此權限與產圖數量及使用者接受分開。
 
 OpenCode 對話中的創作延續只保留 Session root、有限回合與剩餘輸出數等結構化狀態，每次回覆仍重新判斷授權；不保存舊提示文字，也不以 Context 或 transcript 恢復權限。取消、切換工作、擴大範圍或達到數量上限後，需重新明確提出要求。
 
@@ -202,6 +209,8 @@ Raw data
 Architecture trade-off、Threat Model、視覺方向等主觀專業判斷不應為了省 token 被強行 deterministic 化。
 
 ## Deterministic Scheduler
+
+Creative quality evidence does not alter Scheduler ownership, output budgets, or the Human decision required for publication.
 
 創作延續狀態只協助短風格選擇，不會排程或自動重試生成。每次產圖仍需明確執行動作，並通過本機引擎 preflight。
 
@@ -272,6 +281,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+Review assistance is an optional local second opinion. Inspect the actual image and approved Profile yourself; model findings cannot complete visual review or user acceptance.
 
 CI 會依候選安裝完整 Python 驗證套件以執行必要的 repository fixtures；只有 Node、文件建置與 Chromium 等執行工具依變更路徑安裝。
 
@@ -442,6 +453,8 @@ Standalone and shadow dependency-review artifacts retain exact base/head, run ID
 舊聊天內容不是 authoritative run state；若 workspace fingerprint 已變，先 refresh / revalidate 再接續。
 
 ## Project Intelligence
+
+When creative Impact Graph edges are unavailable, use the documented scoped consumer review and keep repository-wide coverage marked partial.
 
 Change Impact 需把創作授權 adapter、policy、executor、呼叫者與消費者納入 bounded traversal；只完成種子範圍不能宣稱 repository-wide graph 完整。
 

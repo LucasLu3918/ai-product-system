@@ -2,6 +2,11 @@ version: 1
 collection_id: example-collection
 title: Example character collection
 visual_direction: "Shared high-level direction; each character may have its own style profile."
+style_lock:
+  id: null
+  must_match: []
+  must_avoid: []
+  palette: []
 characters:
   - id: character-one
     name: Character One

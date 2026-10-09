@@ -81,6 +81,7 @@ def run() -> None:
             "summary": "A copper-haired explorer.",
             "identity_features": ["copper bob", "green eyes"],
             "must_preserve": ["crescent pin"],
+            "acceptance_criteria": {"critical_features": ["green eyes"], "forbidden_misplacements": ["crescent pin on the cloak"]},
             "allowed_variations": {
                 "expressions": ["joyful"],
                 "poses": ["front"],
@@ -110,15 +111,23 @@ def run() -> None:
                 "text_policy": "typeset labels after image generation; never ask the image model to render text"
             },
             "reference_policy": {"extract_traits_only": True, "literal_copy": False},
+            "style_lock_id": "shared-cel",
             "must_avoid": [],
         }
         write_yaml(project / "CHARACTER_PROFILE.yaml", profile)
         write_yaml(project / "STYLE_PROFILE.yaml", style)
+        collection = {
+            "version": 1, "collection_id": "mira-series", "visual_direction": "Shared warm cel-shaded fantasy art",
+            "style_lock": {"id": "shared-cel", "must_match": ["cel shading"], "must_avoid": ["photorealism"], "palette": ["warm gold"]},
+            "characters": [{"id": "mira", "name": "Mira", "bundle": "characters/mira/bundles/CREATIVE_BUNDLE.yaml"}],
+        }
+        write_yaml(project / "CREATIVE_COLLECTION_PROFILE.yaml", collection)
         manifest = {
             "version": 1,
             "status": "DRAFT",
             "character_profile": "CHARACTER_PROFILE.yaml",
             "style_profile": "STYLE_PROFILE.yaml",
+            "collection_profile": "CREATIVE_COLLECTION_PROFILE.yaml",
             "execution": {
                 "provider_id": "comfy_mcp_local",
                 "model_id": "fixture-model@rev1",
@@ -175,6 +184,13 @@ def run() -> None:
 
         checked = artwork.validate_manifest(manifest, project)
         assert checked["valid"], checked["issues"]
+        assert not artwork.validate_collection_profile(collection)
+        mismatched_style = {**style, "style_lock_id": "different-lock"}
+        write_yaml(project / "STYLE_PROFILE.yaml", mismatched_style)
+        expect_issue(artwork.validate_manifest(manifest, project), "COLLECTION_STYLE_LOCK_MISMATCH")
+        write_yaml(project / "STYLE_PROFILE.yaml", style)
+        invalid_acceptance = {**profile, "acceptance_criteria": {"critical_features": ["x" * 161]}}
+        assert any(issue["code"] == "PROFILE_ACCEPTANCE" for issue in artwork.validate_character_profile(invalid_acceptance, project))
         assert artwork.inspect_asset(expression)["format"] == "png"
         first = artwork.compose_sheet(manifest, project)
         first_bytes = (project / first["output"]).read_bytes()

@@ -213,6 +213,8 @@ Review actual:
 
 ## Release Security Gate
 
+Core creative candidates keep local vision review opt-in, use the fixed loopback endpoint with proxy and redirects disabled, and include exact-candidate privacy and authorization evidence.
+
 CI 在 tested constraints 下提供必要 lifecycle fixtures 使用的完整 Python 套件；候選秘密掃描及 `repository` 必要檢查不變，Node 與 Chromium 只在候選需要時安裝。
 
 Branch and release readiness reports do not grant branch deletion, release/tag creation or merge authority.
@@ -303,6 +305,8 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 
 ## Secret and credential safety
+
+Optional creative vision review accepts only bounded local image bytes and an already-installed Ollama model over fixed loopback; proxying, redirects, cloud egress and content-bearing traces are excluded.
 
 Creative admission stores only action grants, output limits and a prompt digest in memory; raw prompts are not written to job results or traces. Local engine discovery is version-only and does not download models or fall back to cloud providers.
 

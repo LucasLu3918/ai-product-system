@@ -16,6 +16,8 @@ The owned `plugins/aips-opencode.ts` projection is installed only for a positive
 
 ## Readiness and enforcement boundary
 
+The creative `review-assist` schema is a separate bounded action. The adapter requires a current-user review grant and active Session root, while the tool reports advisory results without changing execution review or acceptance state.
+
 Creative continuation uses only in-memory state bound to the active Session root, a short TTL, finite turns and remaining outputs. Host-version discovery is not native acceptance evidence, and the synthetic lifecycle does not claim real model inference.
 
 The cross-runtime `aips project diagnose` command reports configured status and static MCP capability only. It cannot establish that this OpenCode version loaded Context, invoked a Hook or executed a Tool; retain UNVERIFIED until the version-bound native acceptance evidence proves each effect.

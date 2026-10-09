@@ -2,6 +2,7 @@ version: 1
 status: DRAFT # DRAFT | COMPLETE | REJECTED
 character_profile: CHARACTER_PROFILE.yaml
 style_profile: STYLE_PROFILE.yaml
+collection_profile: null # Optional; when configured, Style Profile must match its shared style_lock_id.
 
 execution:
   provider_id: comfy_mcp_local # comfy_mcp_local | mflux_local

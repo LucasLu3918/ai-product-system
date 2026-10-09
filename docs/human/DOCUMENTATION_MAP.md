@@ -83,6 +83,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+Creative prompt compiler、model capability evidence 與本機 vision advisory 的行為由 Creative Direction 和 Scenario 234/236/238 定義；Human 導覽與文件閉包由本圖及 Documentation Sync 維護。
+
 Creative authorization and recovery behavior is canonical in `orchestration/CREATIVE_DIRECTION.md` and `harness/adapters/opencode/AGENTS.md`; user guidance is synchronized through the reusable character-artwork topics and Scenario 238.
 
 Behavior-bearing modules, schemas and scenarios remain the source references for detailed execution and evidence contracts.
@@ -182,6 +184,7 @@ docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGEL
 Runtime, diagnostics, creative provenance, CI planning, telemetry and governance changes follow the recursive Documentation Impact Gate. Its closure size is a review metric; it does not by itself authorize removing canonical placements.
 
 本機創作設定與交付狀態由 Creative Direction、OpenCode compatibility 與 Scenario 236 共同描述；User Guide 提供操作順序。合成測試、本機命令可用與真實圖片驗收是不同證據。
+
 
 Evolution Radar 人工相關性抽樣與評估行為以 `EVOLUTION_RADAR.md` / `EVOLUTION_RADAR_OVERVIEW.md` 為 Human 說明，`orchestration/CONFORMANCE.md` 與 Scenario 218 定義 Agent 驗證契約；placement 登錄於 `config/documentation-placement.yaml`。同月份 Issue reconciliation 的非取消排隊契約由 Scenario 207 lifecycle 驗證。
 

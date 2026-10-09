@@ -88,6 +88,8 @@ Prompt admission counts requested outputs before generation; a short style selec
 
 The optional local character-art executor accepts an already-installed MFLUX CLI or a loopback ComfyUI API workflow restricted to built-in nodes. A closed model/operation registry maps FLUX.1, FLUX.2 Klein, Qwen Image Edit 2511 and Z-Image Turbo to fixed executable arguments or the registered split-loader topology. FLUX.1 edit accepts one reference, while FLUX.2/Qwen edit commands with `--image-paths` accept up to eight bounded references. ComfyUI edit accepts one staged hash-checked reference; the Z-Image Turbo profile is generate-only and checks its UNET, CLIP and VAE against the local API inventory. It disables HTTP proxying and redirects, uses offline model-hub flags, scopes create-only PNG/JPEG/WEBP output to a non-Git EPHEMERAL bundle, strips ComfyUI text metadata that can contain prompts, and records profile/workflow/input/output hashes, model revision, runtime version and license source. Preparation creates versioned fixed Profile/Bundle files without overwrite and leaves engine provenance unconfigured. Preflight does not generate; missing local engines return `BLOCKED_NO_ENGINE`. No runtime or weights are installed, and no image is sent to a cloud provider. Existing Comfy MCP guidance remains available when that user-managed route better fits the project.
 
+Profile-driven prompt compilation includes character acceptance criteria, style constraints and an optional collection style lock; manifests keep hashes instead of compiled prompt text. Capability profiles produce advisory recommendations only. Optional visual assistance calls only an already-installed Ollama vision model over loopback and emits a separate report with no review or acceptance authority.
+
 The shared helper package consolidates canonical hashes, repository-relative paths and caller-specific glob matching; existing module facades preserve current call sites and outputs.
 
 Task-specific routes keep product-delivery, visual, security, testing, API/data, planning, documentation and publication procedures progressive; the general mutation fallback includes Orchestrator, Change Impact and Quality Planning.
@@ -198,6 +200,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Creative visual assistance writes a separate advisory report; its findings do not replace independent Human review, user acceptance, or measured real-model quality evidence.
 
 CI 在 tested constraints 下安裝四份驗證 requirements 的完整 Python 套件，供必要 repository lifecycle fixtures 使用。精確候選計畫可以省略 Node、文件建置及 Chromium 執行環境；候選秘密掃描、repository validation 與 Integration Gate 仍是必要檢查。沒有模組基準時，coverage 僅供報告。
 

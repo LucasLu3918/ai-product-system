@@ -1713,6 +1713,8 @@ The synthetic multi-item lifecycle verifies per-item preflight, continue-on-fail
 
 Scenario 236 covers bounded `creative discover`, `preflight`, `execute`, `review`, and `trace` command contracts. Discovery probes installed MFLUX command/version status and only the fixed loopback ComfyUI service, separates command/runtime/model/preflight/inference evidence, and never starts a workflow. Static Apple Silicon FP8 warnings remain advisory; unavailable-engine recovery retains provider-specific reason codes without local path disclosure. Only explicit execution starts a configured local engine.
 
+Scenario 234/236 cover profile-driven bounded prompt compilation and fingerprints, evidence-backed advisory model recommendations, and opt-in local Ollama vision review over loopback. Scenario 238 verifies visual review requires explicit current-user intent. Review assistance writes a separate `authority: NONE` report and cannot mark Human review or user acceptance complete.
+
 Scenario 236's native-context checks are complemented by Scenario 238: the active prompt hook grants scoped actions and output count, and a later prompt or unrelated assistant Context cannot restore a revoked grant.
 
 Scenario 238 covers the per-item job result lifecycle, verified resume, orphaned-success recovery and fixed local version probes. Native OpenCode acceptance does not execute image generation or claim visual quality.

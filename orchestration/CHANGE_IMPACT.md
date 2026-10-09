@@ -108,6 +108,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+Reconcile the exact committed candidate, sorted changed paths and binary diff digest. A partial Impact Graph may be accepted only with scoped manual consumer evidence; it must not be described as globally complete.
+
 Compare the exact changed paths against inputs, outputs, data, events and consumers. Repository-wide Impact Graph coverage remains partial and must be recorded as a limitation.
 
 For creative authorization boundaries, seed the OpenCode adapter and Python policy/execution nodes explicitly. Record bounded module relationships and manually review direct consumers; partial repository-wide coverage remains partial and cannot be promoted by this scoped change.

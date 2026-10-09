@@ -1,6 +1,11 @@
 version: 1
 mode: EPHEMERAL
 
+# Optional project-relative shared inputs. They are read-only and are included
+# in execution provenance when configured.
+collection_profile: null
+model_capability_profile: null
+
 # The provider only reads this prompt when `aips creative execute` is explicitly called.
 # Preflight never starts an image generation job and does not store prompt text in traces.
 operation: generate # generate | edit

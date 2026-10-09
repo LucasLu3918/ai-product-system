@@ -13,6 +13,13 @@ rendering:
     secondary: []
     accent: []
 
+# Structured constraints are compiled into provider input; they do not guarantee
+# that a generative model will follow them.
+prompt_constraints:
+  must_include: []
+  must_avoid: []
+style_lock_id: null
+
 composition:
   background: warm, lightly textured paper with generous whitespace
   framing: full-body hero plus separately generated expressions and accessories

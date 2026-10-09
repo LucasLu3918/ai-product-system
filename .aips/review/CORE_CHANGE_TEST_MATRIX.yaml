@@ -1,65 +1,121 @@
 version: 1
 change:
-  id: plan25-ci-validation-fixture-deps
-  summary: Always provision the pinned Python modules required by mandatory repository lifecycle fixtures, keep Node and browser runtimes path-filtered, and synchronize all required documentation.
+  id: design6-quality-driven-creative
+  summary: Extend local creative execution with profile-driven prompts, evidence-backed model guidance, advisory local vision review, shared collection style constraints, and bounded OpenCode integration.
   boundary:
-    - .github/workflows/validate.yml
-    - tests/validation/ci_validation_plan_contracts.py
     - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
+    - .aips/review/DESIGN6_CREATIVE_QUALITY_CORE_CHANGE_PROPOSAL.md
+    - CHANGELOG.md
+    - config/documentation-placement.yaml
+    - config/documentation-sync.yaml
+    - docs/ARCHITECTURE.md
     - docs/human/ARCHITECTURE_OVERVIEW.md
     - docs/human/CONFORMANCE.md
+    - docs/human/DOCUMENTATION_MAP.md
+    - docs/human/DOCUMENTATION_SYNC.md
+    - docs/human/EVOLUTION_RADAR.md
+    - docs/human/HARNESS.md
+    - docs/human/INSTALLATION.md
     - docs/human/MAINTENANCE.md
+    - docs/human/PROJECT_INTELLIGENCE.md
     - docs/human/SECURITY_ASSURANCE.md
     - docs/human/TECHNOLOGY_GUIDE.md
     - docs/human/USER_GUIDE.md
+    - docs/human/index.md
+    - harness/HARNESS_PROTOCOL.md
+    - harness/adapters/opencode/AGENTS.md
+    - harness/adapters/opencode/COMPATIBILITY.md
+    - harness/adapters/opencode/plugin.ts
+    - orchestration/CHANGE_IMPACT.md
     - orchestration/CONFORMANCE.md
-    - orchestration/CORE_CHANGE_TESTING.md
+    - orchestration/CREATIVE_DIRECTION.md
     - orchestration/DETERMINISTIC_SCHEDULER.md
+    - orchestration/DOCUMENTATION_SYNC.md
+    - orchestration/EXECUTION_ISOLATION.md
+    - orchestration/GITHUB_RULESET_POLICY.md
     - orchestration/INTEGRATION_GATE.md
     - orchestration/ORCHESTRATOR.md
-candidate:
-  base_sha: a657b544b2431e55f7deec350e875a9c94ad293a
-  changed_files_hash: b6a4ba275236d088abf4be1a278e7b4074c6d0999966d86fc75be23721df74bd
+    - orchestration/PROJECT_INTELLIGENCE.md
+    - orchestration/RELEASE_READINESS.md
+    - orchestration/RUNTIME_CONTEXT.md
+    - scripts/aips_cli/dispatch.sh
+    - scripts/aips_cli/help.sh
+    - scripts/character_artifacts.py
+    - scripts/creative_execution.py
+    - scripts/creative_request_policy.py
+    - skills/design/creative-calibration/SKILL.md
+    - skills/design/visual-quality-review/SKILL.md
+    - templates/creative/CHARACTER_ARTWORK_MANIFEST.yaml
+    - templates/creative/CHARACTER_PROFILE.yaml
+    - templates/creative/CREATIVE_BUNDLE.yaml
+    - templates/creative/CREATIVE_COLLECTION_PROFILE.yaml
+    - templates/creative/MODEL_CAPABILITY_PROFILE.yaml
+    - templates/creative/STYLE_PROFILE.yaml
+    - templates/creative/VISUAL_REVIEW_REPORT.schema.json
+    - tests/evidence/character_artifacts_lifecycle.py
+    - tests/evidence/creative_execution_lifecycle.py
+    - tests/evidence/creative_quality_lifecycle.py
+    - tests/evidence/creative_request_policy_lifecycle.py
+    - tests/evidence/creative_tool_harness.mjs
+    - tests/scenario_coverage.yaml
+    - tests/scenarios/234-character-art-workflow.md
+    - tests/scenarios/236-local-creative-execution.md
+    - tests/scenarios/238-creative-task-authorization-and-multi-item-execution.md
+    - tests/validation/creative_execution_contracts.py
+    - tests/validation/creative_quality_contracts.py
+    - tests/validation/registry.py
 matrix:
-  - boundary: Complete Python modules for full repository lifecycle fixtures
-    reason: The deterministic repository suite always exercises installed CLI preflight fixtures that require the full Python module set even when the changed candidate is docs-only.
+  - boundary: Profile-driven prompt compilation and provenance
+    reason: Style and identity constraints must reach local generation deterministically, while profile compatibility and prompt privacy remain intact.
     checks:
-      static_lint: {applicable: true, evidence: GitHub workflow semantic validation and repository preflight.}
-      unit: {applicable: true, evidence: ci_validation_plan_contracts.py plus install_preflight_lifecycle.py and legacy_harness_migration_lifecycle.py.}
-      integration: {applicable: true, evidence: Full Core Gate and CI exact-candidate repository validation.}
-      contract: {applicable: true, evidence: Python 3.12 resolver requires the pinned validation, Playwright and OpenAPI modules for full preflight fixtures.}
-      e2e: {applicable: false, na_reason: This change installs Python modules only; it does not launch a browser or exercise a production service.}
-      security: {applicable: true, evidence: Dependencies remain constrained by constraints/tested.txt; candidate strict secret scan required.}
-      migration_recovery: {applicable: false, na_reason: No runtime dependency, lockfile or product installation changed.}
-      cli_harness: {applicable: true, evidence: CLI preflight lifecycle fixtures run against the selected Python environment.}
-      docs_schema: {applicable: true, evidence: Workflow placement and repository documentation impact contracts.}
-  - boundary: Keep heavyweight toolchains selected by candidate needs
-    reason: Provision Python modules needed by always-run fixtures without downloading Node tooling or a Playwright browser for unrelated candidates.
+      static_lint: {applicable: true, evidence: Python 3.12 lint and type checks on the exact candidate.}
+      unit: {applicable: true, evidence: Tests cover compilation ordering, bounded fields, and identity/style/collection constraints.}
+      integration: {applicable: true, evidence: Creative execution lifecycle proves both local provider adapters receive only compiled input and provenance stores fingerprints only.}
+      contract: {applicable: true, evidence: Existing version-1 Character, Style, Collection, and Bundle fixtures remain readable.}
+      e2e: {applicable: false, na_reason: No production UI or browser workflow changes.}
+      security: {applicable: true, evidence: Raw prompt and profile text are absent from manifest/trace; no image egress or provider fallback.}
+      migration_recovery: {applicable: true, evidence: Existing manifests and output paths remain valid; changed Profile hashes invalidate stale reviews without overwriting prior outputs.}
+      cli_harness: {applicable: true, evidence: Existing creative CLI and OpenCode tool lifecycles exercise prepare/configure/preflight/execute.}
+      docs_schema: {applicable: true, evidence: Creative Profile/Bundle examples and schema/placement contracts are synchronized.}
+  - boundary: Model capability recommendations and optional local vision review
+    reason: Model selection must disclose evidence and uncertainty; optional local review may report suspected defects but cannot assert Human acceptance.
     checks:
-      static_lint: {applicable: true, evidence: Workflow validation and repository preflight.}
-      unit: {applicable: true, evidence: CI validation plan lifecycle contracts.}
-      integration: {applicable: true, evidence: PR workflow plan distinguishes Python modules from Node/browser binary installation.}
-      contract: {applicable: true, evidence: Node install and Playwright Chromium install remain capability-gated.}
-      e2e: {applicable: false, na_reason: No application-level user path changes.}
-      security: {applicable: true, evidence: No permissions, secrets or external publication authority changes.}
-      migration_recovery: {applicable: false, na_reason: No durable state or schema changes.}
-      cli_harness: {applicable: true, evidence: Full validator modules available to local/CI lifecycle fixtures.}
-      docs_schema: {applicable: true, evidence: Core matrix and workflow semantics validation.}
-  - boundary: Documentation closure for CI provisioning behavior
-    reason: Human and Agent guidance must distinguish always-installed Python fixture dependencies from path-selected Node and Chromium runtimes.
+      static_lint: {applicable: true, evidence: Python 3.12 lint and type checks on the exact candidate.}
+      unit: {applicable: true, evidence: Model recommendation ranks only declared locally observed capabilities and reports missing/unknown evidence.}
+      integration: {applicable: true, evidence: Mocked local vision API lifecycle verifies bounded request/response and create-only reports.}
+      contract: {applicable: true, evidence: Visual-review report schema and strict response validation reject malformed/model-authored authority claims.}
+      e2e: {applicable: false, na_reason: Real VLM inference and visual quality are not executed in CI.}
+      security: {applicable: true, evidence: Fixed loopback destination, proxy disabled, redirects refused, no credentials, model download, cloud access, or content traces.}
+      migration_recovery: {applicable: true, evidence: New report creation is atomic/create-only; interrupted or invalid review leaves manifests and images unchanged.}
+      cli_harness: {applicable: true, evidence: Explicit review-assist CLI and OpenCode action stay within Session root and user grant.}
+      docs_schema: {applicable: true, evidence: Capability evidence, advisory status, limitations, and model setup guidance are documented.}
+  - boundary: OpenCode authorization, output budget, and collection consistency
+    reason: New review action and shared Style Lock must reuse the existing prompt grant, output cap, collection contract, and Human decision separation.
     checks:
-      static_lint: {applicable: true, evidence: Markdown links and documentation-site build in the exact-candidate Core Gate.}
-      unit: {applicable: false, na_reason: Documentation changes do not add executable runtime behavior.}
-      integration: {applicable: true, evidence: Exact-candidate Core Gate validates recursive documentation closure and repository contracts.}
-      contract: {applicable: true, evidence: Every required Human and Agent doc describes the workflow dependency behavior consistently.}
-      e2e: {applicable: false, na_reason: No application user path changes.}
-      security: {applicable: true, evidence: Documentation preserves mandatory candidate secret scanning and the required repository aggregate.}
-      migration_recovery: {applicable: false, na_reason: No persisted runtime data or migration changes.}
-      cli_harness: {applicable: false, na_reason: No CLI or harness behavior changes.}
-      docs_schema: {applicable: true, evidence: AIPS documentation impact gate requires all 11 approved closure paths.}
+      static_lint: {applicable: true, evidence: TypeScript and Python checks cover modified adapters and validators.}
+      unit: {applicable: true, evidence: Authorization, collection lock, and character acceptance validation lifecycle coverage.}
+      integration: {applicable: true, evidence: Native creative tool fixture covers review authorization, revocation, Session root, and existing generation limits.}
+      contract: {applicable: true, evidence: Existing native action schemas and profile/artifact version-1 contracts remain compatible.}
+      e2e: {applicable: false, na_reason: Native OpenCode binary acceptance is an optional separately provisioned check; synthetic callback lifecycle is required.}
+      security: {applicable: true, evidence: No action grant from transcript/assistant messages; all paths are confined; image count and create-only guarantees remain unchanged.}
+      migration_recovery: {applicable: true, evidence: Older collection/profile versions remain valid and stale review reports cannot mutate reviewed manifests.}
+      cli_harness: {applicable: true, evidence: CLI dispatch and native tool contract fixture exercise every newly exposed action.}
+      docs_schema: {applicable: true, evidence: Scenario 234/236/238 and OpenCode/Human/Agent guidance remain aligned.}
+  - boundary: Documentation, scenarios, and repository governance
+    reason: New workflow steps and authority boundaries must appear in the canonical recursive documentation closure and exact Core candidate evidence.
+    checks:
+      static_lint: {applicable: true, evidence: Markdown link, documentation placement, and documentation sync checks.}
+      unit: {applicable: false, na_reason: Documentation-only contracts are exercised by repository validation; behavior unit evidence is in the creative boundaries above.}
+      integration: {applicable: true, evidence: Full exact-candidate Core Integration Gate and repository validation.}
+      contract: {applicable: true, evidence: Scenario and capability/profile documentation contracts match the implementation.}
+      e2e: {applicable: false, na_reason: No browser-backed product UI changes.}
+      security: {applicable: true, evidence: Mandatory candidate secret scan and documented privacy/authority invariants.}
+      migration_recovery: {applicable: false, na_reason: Documentation has no runtime persistence or migration behavior.}
+      cli_harness: {applicable: true, evidence: Full creative CLI/OpenCode lifecycle remains required for the core change.}
+      docs_schema: {applicable: true, evidence: Canonical documentation sync and placement gates plus diagrams are updated.}
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: true
+actual_diff_reconciled: false
 review_evidence:
   required: false
-blockers:
-status: READY
+blockers: []
+status: DRAFT

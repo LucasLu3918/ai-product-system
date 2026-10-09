@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+Creative quality workflow 的操作、OpenCode 授權、Profile contract 與 lifecycle 證據依 User Guide、Creative Direction、Scenario 234/236/238 對照；AI review 僅提供建議。
+
 Creative engine readiness behavior is described in the User Guide and Scenario 236; Architecture and Harness pages preserve the fixed-loopback and unverified-inference boundaries.
 
 角色美術授權、產圖前檢查及視覺驗收請依序參考 [User Guide](USER_GUIDE.md#creative-directionstyle與brand)、[Technology Guide](TECHNOLOGY_GUIDE.md#execution) 與 [Scenario Conformance](CONFORMANCE.md#scenario-238--creative-task-authorization-and-multi-item-execution)。

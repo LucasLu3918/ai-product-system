@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AIPS Local Visual Review Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "status", "authority", "model", "manifest_sha256", "image_sha256", "observations", "human_review_required", "user_acceptance"],
+  "properties": {
+    "version": {"const": 1},
+    "status": {"const": "ADVISORY_REVIEW"},
+    "authority": {"const": "NONE"},
+    "model": {"type": "string", "minLength": 1, "maxLength": 128},
+    "manifest_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "image_sha256": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"},
+    "profile_sha256": {"type": "array", "maxItems": 8, "items": {"type": "string", "pattern": "^sha256:[0-9a-f]{64}$"}},
+    "observations": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["check", "assessment", "evidence", "suggestion"],
+        "properties": {
+          "check": {"enum": ["style", "identity", "anatomy", "composition", "consistency", "artifacts"]},
+          "assessment": {"enum": ["MATCH", "POSSIBLE_ISSUE", "UNCERTAIN"]},
+          "evidence": {"type": "string", "maxLength": 500},
+          "suggestion": {"type": "string", "maxLength": 500}
+        }
+      }
+    },
+    "human_review_required": {"const": true},
+    "user_acceptance": {"const": "NOT_RECORDED"}
+  }
+}

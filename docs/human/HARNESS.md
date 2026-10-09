@@ -40,6 +40,8 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+OpenCode 的 local creative tool 對視覺審查使用獨立、目前使用者明確提出的 `review-assist` grant，並綁定 active Session root；它不替使用者完成審查或接受。
+
 OpenCode V2 acceptance now reports plugin setup, Context delivery, permission-hook execution and host version separately. The v2.0.24 loopback lifecycle verified Context plus native Allow/Deny; other host versions and instruction-model delivery remain unverified.
 
 OpenCode V2 derives Creative mutation authority from the current native prompt-admission hook. Dispatch Context remains advisory, each new prompt replaces the transient grant, and read-only discovery/preflight does not require one.
