@@ -10,7 +10,7 @@ const MAX_TRACE_BYTES = 512 * 1024
 
 type ContextEntry = { key: string; at: number; root: string; prompt: string; manifest: Record<string, any> | null; reason?: string; durationMs: number }
 type CreativeToolInput = {
-  action: "prepare" | "configure" | "discover" | "preflight" | "execute"
+  action: "prepare" | "configure" | "discover" | "preflight" | "execute" | "generate-set"
   settings?: Record<string, unknown>
   bundle?: string
   scope?: string
@@ -167,7 +167,10 @@ export default {
     const python = process.env.AIPS_GUARD_PYTHON || "python3"
     const guard = join(SYSTEM_ROOT, "scripts/opencode_native_guard.py")
     const cache = new Map<string, ContextEntry>()
-    const dispatchMessages = new Map<string, { root: string; messages: any[] }>()
+    const creativeAdmissions = new Map<string, {
+      grants: Record<string, any>; root: string; outputScope: string; messageID: string
+      promptDigest: string; maxOutputs: number; usedOutputs: number
+    }>()
     const maxCache = 32
 
     async function sessionRoot(sessionID: string): Promise<{ root: string; source: "directory" | "location_directory" | "worktree" } | null> {
@@ -212,6 +215,43 @@ export default {
       return entry
     }
 
+    await ctx.session.hook("prompt", async (event: any) => {
+      const sessionID = event.sessionID
+      if (typeof sessionID !== "string" || !sessionID) return
+      // Revoke the previous prompt before deriving the new grant. A failed or
+      // unsupported admission must never inherit authority from an older turn.
+      creativeAdmissions.delete(sessionID)
+      const session = await sessionRoot(sessionID)
+      if (!session) {
+        void trace({ event: "creative_admission", decision: "DENY", session: hash(sessionID), reason_code: "session_directory_unavailable" })
+        return
+      }
+      const result = invoke(python, [join(SYSTEM_ROOT, "scripts/creative_request_policy.py")], session.root, 5000,
+        JSON.stringify({ action: "admit", prompt: event.prompt?.text }))
+      if (result.status !== 0) {
+        void trace({ event: "creative_admission", decision: "DENY", session: hash(sessionID), reason_code: "creative_authorization_unavailable" })
+        return
+      }
+      try {
+        const admission = JSON.parse(result.stdout)
+        if (admission?.grants && Number.isInteger(admission.max_outputs) && admission.max_outputs >= 0
+          && typeof admission.prompt_sha256 === "string" && /^[0-9a-f]{64}$/.test(admission.prompt_sha256)) {
+          creativeAdmissions.set(sessionID, {
+            grants: admission.grants, root: session.root, outputScope: session.root,
+            messageID: String(event.messageID ?? event.messageId ?? ""),
+            promptDigest: admission.prompt_sha256, maxOutputs: admission.max_outputs, usedOutputs: 0,
+          })
+          while (creativeAdmissions.size > maxCache) creativeAdmissions.delete(creativeAdmissions.keys().next().value as string)
+          void trace({ event: "creative_admission", decision: admission.active === true ? "GRANT" : "DENY", session: hash(sessionID), project: hash(session.root),
+            reason_code: admission.active === true ? "prompt_admitted" : "creative_intent_required" })
+        } else {
+          void trace({ event: "creative_admission", decision: "DENY", session: hash(sessionID), reason_code: "creative_authorization_unavailable" })
+        }
+      } catch {
+        void trace({ event: "creative_admission", decision: "DENY", session: hash(sessionID), reason_code: "creative_authorization_unavailable" })
+      }
+    })
+
     await ctx.session.hook("context", async (event) => {
       await trace({ event: "context", status: "entered" })
       const hookStarted = performance.now()
@@ -222,8 +262,6 @@ export default {
         return
       }
       const { root } = resolvedSession
-      dispatchMessages.set(event.sessionID, { root, messages: contextMessages(event.messages).slice(-64) })
-      while (dispatchMessages.size > maxCache) dispatchMessages.delete(dispatchMessages.keys().next().value as string)
       const entry = await contextFor(event.sessionID, event.messages as any[], root)
       const classification = entry.manifest?.task?.classification ?? {}
       if (entry.manifest && entry.manifest.project?.mode === "EPHEMERAL" && classification.domain === "creative") {
@@ -300,7 +338,7 @@ export default {
         input: {
           type: "object",
           properties: {
-            action: { type: "string", enum: ["prepare", "configure", "discover", "preflight", "execute"] },
+            action: { type: "string", enum: ["prepare", "configure", "discover", "preflight", "execute", "generate-set"] },
             settings: {
               type: "object", additionalProperties: false,
               description: "Create a configured Bundle version; observed provenance only. No install, download, cloud or arbitrary output-path fields.",
@@ -330,6 +368,7 @@ export default {
               },
             },
             bundle: { type: "string", minLength: 1, maxLength: 240 },
+            manifest: { type: "string", minLength: 1, maxLength: 240 },
             scope: { type: "string", minLength: 1, maxLength: 240 },
             character_id: { type: "string", minLength: 1, maxLength: 64, pattern: "^[a-z0-9][a-z0-9_-]{0,63}$" },
             character_name: { type: "string", minLength: 1, maxLength: 120 },
@@ -343,8 +382,9 @@ export default {
         },
         async execute(input, toolContext) {
           const request = input as CreativeToolInput
-          const validAction = request && ["prepare", "configure", "discover", "preflight", "execute"].includes(request.action)
+          const validAction = request && ["prepare", "configure", "discover", "preflight", "execute", "generate-set"].includes(request.action)
           const validBundle = typeof request?.bundle === "string" && request.bundle.length > 0 && request.bundle.length <= 240 && !request.bundle.startsWith("/") && !request.bundle.split(/[\\/]/).includes("..")
+          const validManifest = typeof request?.manifest === "string" && request.manifest.length > 0 && request.manifest.length <= 240 && !request.manifest.startsWith("/") && !request.manifest.split(/[\\/]/).includes("..")
           const validPrepare = typeof request?.scope === "string" && request.scope.length > 0 && request.scope.length <= 240 && !request.scope.startsWith("/") && !request.scope.split(/[\\/]/).includes("..")
             && typeof request.character_id === "string" && /^[a-z0-9][a-z0-9_-]{0,63}$/.test(request.character_id)
             && typeof request.character_name === "string" && request.character_name.length > 0 && request.character_name.length <= 120
@@ -354,24 +394,37 @@ export default {
             && Array.isArray(request.identity_features) && request.identity_features.length > 0 && request.identity_features.length <= 12
             && request.identity_features.every((item) => typeof item === "string" && item.length > 0 && item.length <= 160)
           const validConfigure = request.settings && typeof request.settings === "object" && !Array.isArray(request.settings) && Buffer.byteLength(JSON.stringify(request.settings)) <= 32 * 1024
-          if (!validAction || (request.action === "prepare" ? (!validPrepare || validBundle) : request.action === "discover" ? (validBundle || request.scope !== undefined) : (!validBundle || request.scope !== undefined)) || (request.action === "configure" ? !validConfigure : request.settings !== undefined)) {
+          const validTarget = request.action === "prepare"
+            ? validPrepare && !validBundle && request.manifest === undefined
+            : request.action === "discover"
+              ? !validBundle && request.scope === undefined && request.manifest === undefined
+              : request.action === "generate-set"
+                ? validManifest && !validBundle && request.scope === undefined
+                : validBundle && request.scope === undefined && request.manifest === undefined
+          if (!validAction || !validTarget || (request.action === "configure" ? !validConfigure : request.settings !== undefined)) {
             return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_bundle_invalid" }) }
           }
           const resolvedSession = await sessionRoot(toolContext.sessionID)
           if (!resolvedSession) return { content: JSON.stringify({ status: "BLOCKED", reason_code: "session_directory_unavailable" }) }
           const { root } = resolvedSession
+          const admission = creativeAdmissions.get(toolContext.sessionID)
+          const mutating = !["preflight", "discover"].includes(request.action)
+          if (mutating && (admission?.root !== root || admission.outputScope !== root)) {
+            const reason = admission ? "creative_session_mismatch" : "creative_admission_grant_missing"
+            await trace({ event: "creative_execution", decision: "DENY", project: hash(root), reason_code: reason })
+            return { content: JSON.stringify({ status: "BLOCKED", reason_code: reason, fallback_allowed: false }) }
+          }
           const nativeContext = await ctx.session.context({ sessionID: toolContext.sessionID })
-          const dispatched = dispatchMessages.get(toolContext.sessionID)
-          const messages = (dispatched?.root === root ? dispatched.messages : contextMessages(nativeContext)).slice(-64)
-          const policy = invoke(python, [join(SYSTEM_ROOT, "scripts/creative_request_policy.py")], root, 5000, JSON.stringify({ action: request.action, messages }))
-          let authorization: Record<string, any> = { allowed: false, reason_code: "creative_authorization_unavailable" }
-          try { authorization = JSON.parse(policy.stdout) } catch { /* fail closed */ }
-          if (policy.status !== 0 || authorization.allowed !== true) {
+          const messages = contextMessages(nativeContext)
+          const authorization: Record<string, any> = ["preflight", "discover"].includes(request.action)
+            ? { allowed: true, reason_code: "creative_readonly", basis_prompt: lastUserText(messages) }
+            : admission?.grants?.[request.action === "generate-set" ? "execute" : request.action] ?? { allowed: false, reason_code: "creative_admission_grant_missing" }
+          if (authorization.allowed !== true) {
             await trace({ event: "creative_execution", decision: "DENY", project: hash(root), reason_code: authorization.reason_code })
             return { content: JSON.stringify({ status: "BLOCKED", reason_code: authorization.reason_code, next_action: "clarify_current_creative_request", fallback_allowed: false,
-              context_diagnostic: { message_count: messages.length, source: dispatched?.root === root ? "active_dispatch" : "session_context" } }) }
+              context_diagnostic: { source: admission ? "prompt_admission" : "no_current_admission" } }) }
           }
-          const entry = await contextFor(toolContext.sessionID, messages, root, root, true, authorization.basis_prompt || undefined)
+          const entry = await contextFor(toolContext.sessionID, messages, root, root, true)
           if (!entry.manifest || entry.manifest.project?.mode !== "EPHEMERAL") {
             await trace({ event: "creative_execution", decision: "DENY", project: hash(root), reason_code: "creative_ephemeral_required" })
             return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_ephemeral_required" }) }
@@ -380,17 +433,29 @@ export default {
           if (!["preflight", "discover"].includes(request.action) && (classification.domain !== "creative" || (request.action === "prepare" ? classification.intent !== "create" : !["create", "modify"].includes(classification.intent)))) {
             return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_intent_required" }) }
           }
+          if (["execute", "generate-set"].includes(request.action)) {
+            if (!admission || admission.usedOutputs >= admission.maxOutputs) {
+              return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_output_limit_exceeded", fallback_allowed: false }) }
+            }
+            // A set reserves the complete prompt budget as one invocation. A
+            // single execution reserves one output, including concurrent calls.
+            if (request.action === "generate-set" && admission.usedOutputs > 0) {
+              return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_output_limit_exceeded", fallback_allowed: false }) }
+            }
+            admission.usedOutputs = request.action === "generate-set" ? admission.maxOutputs : admission.usedOutputs + 1
+          }
           if (request.action === "execute") {
             const preflight = await invokeAsync(aips, ["creative", "preflight", "--project", root, "--bundle", request.bundle], root, 20_000, toolContext.signal)
             let check: Record<string, any> = { status: "BLOCKED", reason_code: "creative_preflight_failed" }
             try { check = JSON.parse(preflight.stdout) } catch { /* fail closed */ }
             if (preflight.status !== 0 || check.status !== "READY") return { content: JSON.stringify(check) }
           }
-          const executable = request.action === "execute"
+          const executable = ["execute", "generate-set"].includes(request.action)
           const maximum = executable ? 3_600_000 : 20_000
           const command = request.action === "prepare"
             ? ["creative", "prepare", "--project", root, "--scope", request.scope!, "--character-id", request.character_id!, "--character-name", request.character_name!, "--summary", request.summary!, "--style-intent", request.style_intent!, "--prompt", request.prompt!, ...request.identity_features!.flatMap((item) => ["--identity-feature", item])]
             : request.action === "discover" ? ["creative", "discover", "--project", root]
+            : request.action === "generate-set" ? ["creative", "generate-set", "--project", root, "--manifest", request.manifest!, "--max-items", String(admission!.maxOutputs)]
             : ["creative", request.action, "--project", root, "--bundle", request.bundle!]
           const started = performance.now()
           const result = await invokeAsync(aips, command, root, maximum, toolContext.signal, request.action === "configure" ? JSON.stringify(request.settings) : undefined)

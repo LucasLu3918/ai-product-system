@@ -84,6 +84,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+For OpenCode Creative mutations, Project Intelligence and Turn Context may inform routing but do not authorize writes; the grant comes from the current native user prompt and is bound to the active Session root.
+
 Project Diagnostics 的 PI reason code 只提供建議；必須由使用者明確執行 bootstrap、refresh 或其他修復，且仍需遵守 Change Impact target scope。
 
 創作分類附帶 advisory `creative_medium`（raster/vector/unspecified），供 OpenCode 檢查媒材不符；分類欄位不是執行授權。native tool 另確認使用者要求與取消狀態，保持唯讀預檢可用。

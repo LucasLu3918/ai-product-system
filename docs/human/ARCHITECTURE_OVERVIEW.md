@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+OpenCode V2 captures Creative mutation authority at native prompt admission; its Session-root grant is independent of dispatch Context and is revoked by the next prompt.
+
 診斷回報的 Runtime/Harness 狀態是設定與靜態觀測；沒有版本綁定的原生測試時，不代表 Context、Hook 或 Tool 已在 Host 內生效。
 
 OpenCode 與 CLI 共用本機模型能力表；Z-Image Turbo 的新增 generate 配對會同時出現在 discovery、configure 與 preflight。
@@ -16,7 +18,7 @@ OpenCode 創作 tool 支援 discover/configure，產圖意圖、原生檔案 gua
 
 Native Context envelope 驗證與 user-only 授權分開處理；只檢查設定的要求仍可執行 discover/preflight，不會啟動生成。
 
-OpenCode V2 exposes the creative executor as an explicit, preflight-gated tool; the CLI remains the shared execution boundary.
+OpenCode V2 derives creative mutation grants from the current native prompt admission; dispatch Context is advisory and never grants authority. Its explicit creative executor and resumable multi-item workflow share the CLI execution boundary.
 
 OpenCode V2 的 AIPS Plugin 以 Session directory 裝載精簡 Turn Context，並在原生檔案權限前重查目標；另提供綁定 EPHEMERAL Session 的 Creative 工具。任意 Shell 子程序仍不宣稱受保護。
 
@@ -38,6 +40,8 @@ MCP 提供 portability；native adapters 提供 runtime hook / guard。兩者共
 OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn Context，並在 permission evaluation 階段檢查支援的直接檔案操作。L1 僅允許非 Git workspace 中受限路徑的新創意資產；L2 需要 Project Intelligence READY、freshness CURRENT 與無待解權威衝突；L3 外部效果沿用既有 Human approval gate。Shell 僅保留有限唯讀命令，並額外提供固定參數的 AIPS 診斷。`creative_execution` 是唯一有界自訂工具：它綁定當前 EPHEMERAL Session，可建立不覆寫的角色／風格 Profile 與未設定引擎的 Creative Bundle，也可對既有 Bundle 執行唯讀預檢及明確要求的本機生成。其他 MCP/custom tools 和繞過 OpenCode 的寫入仍不在 guard 範圍。Plugin 安裝與 hook discovery 不足以證明執行防護；完成 runtime permission acceptance 前，治理保持 ADVISORY。
 
 ## Project Intelligence 與 Retrieval
+
+Project Intelligence may route Creative work and identify affected consumers, but it cannot create or restore the native prompt grant used for file mutations.
 
 `aips project diagnose <path>` 聚合既有 Project Intelligence、Harness 與 MCP 靜態檢查，提供原因碼與恢復指引；它不會建立索引、刷新或修改專案。診斷中的 Host 能力仍依原生證據維持 UNVERIFIED。
 
@@ -103,6 +107,8 @@ Reusable character artwork extends the existing Creative Direction path: hashed 
 
 The `creative_execution` path can prepare versioned Character/Style Profiles and an unconfigured Bundle before any engine is selected; its closed MFLUX registry fixes model/operation commands and bounds multi-reference edits to supported FLUX.2/Qwen operations. ComfyUI and FLUX.1 edits remain single-reference.
 
+OpenCode V2 prompt admission issues transient creative grants bound to the Session root and output count; Context and retrieved Project Intelligence remain advisory. The local `generate-set` workflow records each Bundle outcome and resumes only after verifying saved provenance hashes.
+
 ## Planning 與 Product Delivery
 
 OpenCode 的 `aips-plan` Command 使用既有 Planning 工作流與 Human Approval；原生入口不建立第二份規劃規則。
@@ -139,6 +145,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+The Creative batch executor preflights each configured Bundle, records per-item results and verifies output/provenance hashes before resuming.
 
 System Facts 與 Capability Registry 將 `aips project diagnose` 登錄為既有 `project` 命令下的唯讀診斷，未新增執行權限或狀態儲存。
 
@@ -230,6 +238,8 @@ Publication Preflight 將 Python module availability 與 loopback/browser capabi
 
 ## Security 與 Governance
 
+Creative grants retain only action decisions, a bounded output count and a prompt digest in memory; batch results and traces omit raw prompts.
+
 Creative preparation stays within a non-Git EPHEMERAL scope and does not install model weights or contact a cloud image provider.
 
 Runtime governance hooks classify malformed requests as explicit denials and fail closed when policy or audit evaluation fails. The response contains a stable failure code; diagnostic details stay on stderr.
@@ -278,6 +288,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+The Creative authorization change is tracked by Scenario 238 and its exact-candidate Core Matrix; real model quality remains a separate human review.
 
 Project Diagnostics 的命令事實、Scenario 與文件映射共同納入候選一致性驗證；診斷結果不取代 Repository Health 或 Integration Gate。
 

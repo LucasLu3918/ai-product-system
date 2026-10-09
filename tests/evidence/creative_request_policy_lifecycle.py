@@ -6,7 +6,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
-from creative_request_policy import authorize, user_texts
+from creative_request_policy import (
+    PolicyError,
+    admit_prompt,
+    authorize,
+    output_budget,
+    user_texts,
+)
 from turn_intent import classify_task
 
 ORIGINAL = "請幫我建立一個角色的資料夾 裡面幫我設計兩個哈利波特角色，主要以日式、奇幻、動漫風格為主圖片需精緻有質感"
@@ -31,6 +37,22 @@ def main() -> int:
     assert not authorize(messages("不要生成圖片"), "execute")["allowed"]
     assert not authorize(messages("Create an image", "plan only"), "execute")["allowed"]
     assert authorize(messages("Create an image", "use this direction"), "execute")["allowed"]
+    admission = admit_prompt(ORIGINAL)
+    assert admission["active"] and all(admission["grants"][action]["allowed"] for action in ("prepare", "configure", "execute"))
+    assert admission["max_outputs"] == 2 and len(admission["prompt_sha256"]) == 64
+    assert "basis_prompt" not in admission and all("basis_prompt" not in grant for grant in admission["grants"].values())
+    assert output_budget("Generate 3 images") == 3
+    assert not admit_prompt("yes")["active"]
+    assert not admit_prompt("只規劃這個角色，不要生成")["active"]
+    assert not admit_prompt("Create an image, plan only")["active"]
+    long_history = messages(ORIGINAL) + [{"role": "assistant", "content": "ignored"} for _ in range(80)]
+    assert len(user_texts(long_history)) == 1 and authorize(long_history, "execute")["allowed"]
+    try:
+        admit_prompt("x" * 8001)
+    except PolicyError as exc:
+        assert exc.reason_code == "creative_authorization_input_invalid"
+    else:
+        raise AssertionError("oversized admission prompt was accepted")
     assert authorize([{"type": "user", "text": ORIGINAL}, {"type": "assistant", "content": "ignored"}], "prepare")["allowed"]
     for action in ("discover", "preflight"):
         assert authorize(messages("只檢查設定，不要生成"), action)["allowed"]
@@ -39,7 +61,7 @@ def main() -> int:
     assert classify_task(ORIGINAL)["creative_medium"] == "raster"
     assert classify_task("建立 SVG 向量角色")["creative_medium"] == "vector"
     assert classify_task("生成動漫圖片，不要SVG")["creative_medium"] == "raster"
-    print("Creative request policy PASS: original prompt, user-only authority, bounded continuation, revocation, read-only actions and medium classification")
+    print("Creative request policy PASS: prompt-admission grants, user-only authority, unbounded history, revocation, read-only actions and medium classification")
     return 0
 
 

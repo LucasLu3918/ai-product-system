@@ -174,6 +174,8 @@ The Scheduler never falls back to LLM coordination to make a blocked graph look 
 
 ## Read-only declaration and fail-closed boundary
 
+Creative `discover` and `preflight` remain read-only; `generate-set` is an explicit local creative workflow and does not acquire authority from deterministic scheduler state or task continuation.
+
 `aips project diagnose` is observational guidance only. Its reported status cannot satisfy Scheduler authorization, execution ownership, Change Impact readiness or any required validation evidence.
 
 Creative Profile/Bundle preparation and image generation remain explicit user-directed CLI/tool actions; do not infer or schedule generation as a background Task Graph effect.

@@ -22,6 +22,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+For Creative Core changes, bind the matrix to native prompt admission/revocation, bounded local batch execution and recovery evidence, then rerun the Gate against the committed file set.
+
 Project Diagnostics Lifecycle evidence checks the read-only aggregate and its output/privacy contract. It does not replace exact base/head binding, candidate secret scanning, the required repository validation or the Gate result.
 
 The creative lifecycle runs only fake MFLUX, loopback ComfyUI and credential-free native tool callback fixtures. Discovery/configuration must not invoke engines; file container checks and profile hashes do not constitute visual PASS. User-configured model inference is outside deterministic Gate execution.

@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Creative executor, job-manifest, OpenCode prompt-grant or related scenario changes require synchronized Creative Direction, User Guide, Architecture Overview, Technology Guide and conformance evidence, plus the resolved documentation-placement closure.
+
 Shared CLI router 更新可能觸發 Creative Direction 文件審查；Project Diagnostics 只讀，不會執行 Creative Profile、Provider 或 Artwork lifecycle。
 
 固定模型配對新增 Z-Image Turbo generate 時，同步更新創意流程、Runtime 接入說明與 Scenario 236；執行證據與人工視覺接受仍分開。
@@ -107,6 +109,8 @@ Multi-file changes should normally be assembled into one coherent remote branch 
 15. Prefer independent review/PR for material system changes.
 
 ## Versioning
+
+The current Creative authorization work remains under Unreleased; no release version changes until a separate release candidate is prepared.
 
 創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
 
@@ -422,6 +426,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+The Creative matrix and lifecycle evidence cover prompt admission, revocation, output scope, local engine probing, batch recovery and the required documentation projections.
 
 System Facts、Capability Registry、Scenario 237、文件放置與完整 Gate 都綁定同一精確候選；diagnose PASS 不是發布或獨立審查證據。
 

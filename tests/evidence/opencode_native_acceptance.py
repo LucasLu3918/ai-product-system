@@ -38,12 +38,13 @@ class MockModelHandler(BaseHTTPRequestHandler):
         user_prompt = '\n'.join(str(item.get('content', '')) for item in messages if isinstance(item, dict) and item.get('role') == 'user')
         previous_tool = any(item.get('role') == 'tool' or item.get('tool_call_id') for item in messages if isinstance(item, dict))
         body = None
-        if 'native-creative-prepare' in user_prompt and payload.get('tools') and not previous_tool:
+        if any(marker in user_prompt for marker in ('native-creative-prepare', 'native-creative-deny')) and payload.get('tools') and not previous_tool:
             creative_tool = next((item for item in payload['tools'] if item.get('function', {}).get('name') == 'creative_execution'), None)
             code_tool = next((item for item in payload['tools'] if item.get('function', {}).get('name') == 'execute'), None)
             catalog = '\n'.join(str(item.get('content', '')) for item in messages if isinstance(item, dict) and item.get('role') == 'system')
             if creative_tool or (code_tool and 'tools.creative_execution(' in catalog):
-                arguments = {'action': 'prepare', 'scope': 'native-art', 'character_id': 'native-wizard', 'character_name': 'Wizard',
+                denied_prompt = 'native-creative-deny' in user_prompt
+                arguments = {'action': 'prepare', 'scope': 'native-denied' if denied_prompt else 'native-art', 'character_id': 'native-denied' if denied_prompt else 'native-wizard', 'character_name': 'Wizard',
                              'summary': 'A wizard character', 'style_intent': 'Detailed fantasy anime', 'prompt': 'Detailed wizard illustration', 'identity_features': ['round glasses']}
                 name = 'creative_execution' if creative_tool else 'execute'
                 invocation = arguments if creative_tool else {'code': 'return await tools.creative_execution(' + json.dumps(arguments) + ')'}
@@ -396,8 +397,19 @@ def main() -> None:
                     location = context_text.find('creative_execution')
                     raise RuntimeError('native creative prepare failed; tool_names=' + repr(names) + '; execute_schema=' + json.dumps(execute_schema)[:5000] + '; creative_documentation=' + context_text[max(0, location - 200):location + 800] + '; bounded tool results=' + repr(tool_results[-3:]))
                 assert not list((prepared / 'output').rglob('*.png')), 'native prepare launched generation'
+                denied_prompt = '只規劃，不要生成 native-creative-deny'
+                if model_execution_path == 'native_cli':
+                    cli_prompt(denied_prompt)
+                else:
+                    prompt(denied_prompt)
+                denied_workspace = workspace / 'native-denied/native-denied-v1'
+                if denied_workspace.exists():
+                    raise RuntimeError('a planning-only prompt inherited a previous creative admission grant')
+                traces = json.loads(subprocess.check_output([sys.executable, str(ROOT / 'scripts/opencode_trace.py'), '--file', str(base / 'state/aips/opencode/events.jsonl')], env=env, text=True))
+                if not any(event.get('event') == 'creative_execution' and event.get('decision') == 'DENY' and event.get('reason_code') == 'creative_intent_required' for event in traces.get('events', [])):
+                    raise RuntimeError('native prompt-admission revocation did not produce a creative tool denial')
                 print(json.dumps({'version': version, 'skills': len(expected), 'commands': 3, 'skill_load': 'VERIFIED', 'mcp': 'CONNECTED', 'plugin_setup': plugin_setup, 'runtime': 'DISCOVERY_VERIFIED', 'model_execution': model_delivery, 'model_execution_path': model_execution_path, 'context_delivery': 'VERIFIED', 'permission_hook_execution': 'VERIFIED', 'permission_decisions': ['ALLOW', 'DENY'], 'pre_tool_guard': 'VERIFIED'}))
-                print(json.dumps({'creative_prepare': 'VERIFIED_NATIVE_HOST', 'generation_executed': False}))
+                print(json.dumps({'creative_prepare': 'VERIFIED_NATIVE_HOST', 'admission_revocation': 'VERIFIED_NATIVE_HOST', 'generation_executed': False}))
                 print(json.dumps({'global_instructions': 'OFFICIAL_CONTRACT', 'instruction_model_delivery': 'UNVERIFIED'}))
             finally:
                 server.terminate()

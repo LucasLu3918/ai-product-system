@@ -1,64 +1,149 @@
 version: 1
 candidate:
-  base_sha: 1f3ef8c5da9d071b455c25f612e76038091891da
-  changed_files_hash: b282a3f0638c1dca09e519fad293c2197bd1657626de019454713b9c29f90cf9
+  base_sha: 219f0602c34e76898bcb4b804af30c5fb7f90937
+  changed_files_hash: 65d03cdeefdedeee1392f720421d8bbd5cc65cb1cad443e4177ffcbcfcf20c26
 change:
-  id: plan23-project-diagnostics
-  summary: Additive read-only project diagnostics with PI recovery guidance and explicit
-    UNVERIFIED Host limits.
+  id: design3-creative-authorization
+  summary: Trusted prompt grants and resumable local multi-character generation.
   boundary:
-  - Existing project status, PI readiness and freshness
-  - Fixed local Harness resolver and MCP static inspect outputs
-  - Text/YAML/JSON report, stable reason codes, safe recovery suggestions
-  - No writes, attachment, cache/index refresh, installation, network access or native
-    Host enforcement claim
+  - Native OpenCode prompt-admission authorization
+  - Creative executor and CLI set orchestration
+  - Local engine health, output/job state and safe resume
+  - OpenCode runtime, privacy, docs, scenarios and capability projections
 matrix:
-- boundary: Read-only project diagnostics public CLI and structured report
-  reason: New command composes existing interfaces and exposes stable privacy-bounded
-    recovery guidance.
+- boundary: Prompt grant authority and lifecycle
+  reason: Changes authorization source and lifetime for creative mutations.
   checks:
     static_lint:
       applicable: true
-      evidence: Run Ruff and repository static contracts for the final exact candidate.
+      evidence: tests/validation/opencode_integration_contracts.py and git diff --check.
     unit:
       applicable: true
-      evidence: Focused assertions cover stable mappings for missing, partial, stale
-        and blocked PI plus allowlisted Adapter values.
+      evidence: Grant source/session/workspace/action/scope/count, revocation and
+        reason-code cases.
     integration:
       applicable: true
-      evidence: tests/evidence/project_diagnostics_lifecycle.py and installed CLI
-        invocation against isolated project/cache paths.
-      contract:
-        applicable: true
-        evidence: JSON/YAML/text shape, static CLI help, Scenario 237 and generated
-          System Facts/Capability projections, plus the updated Plan21 golden hash
-          for additive top-level CLI help.
+      evidence: OpenCode prompt admission and native creative tool callback lifecycle.
+    contract:
+      applicable: true
+      evidence: Read-only actions and additive tool/CLI schema remain compatible.
     e2e:
       applicable: true
-      evidence: Local CLI end-to-end; live external Agent Host is not in scope and
-        remains UNVERIFIED.
+      evidence: Mock OpenCode prompt to grant to tool call with long Context and cancellation/task
+        switch.
     security:
       applicable: true
-      evidence: No-write, no raw stderr/stdout, no environment sentinel leakage, enum
-        allowlisting, fixed argv and subprocess timeout checks; strict candidate secret
-        scan required.
+      evidence: Forged context, wrong session/root, revocation and privacy negative
+        paths.
     migration_recovery:
       applicable: false
-      na_reason: No persisted state, cache, project-local file, schema change or automatic
-        repair; lifecycle verifies advisory recovery instructions.
+      na_reason: Grants are in-memory and fail closed after plugin restart.
     cli_harness:
       applicable: true
-      evidence: aips project diagnose CLI routing and output tested while preserving
-        aips project check.
+      evidence: Native prompt hook and plugin tool lifecycle.
     docs_schema:
       applicable: true
-      evidence: Canonical Human docs, Scenario registry, system facts and generated
-        references validated.
+      evidence: OpenCode compatibility, instructions, scenario and route projections.
+- boundary: Configured-Bundle batch execution and recovery
+  reason: Adds collection/job templates and resumable per-item state for configured Bundles.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: tests/validation/creative_execution_contracts.py and git diff --check.
+    unit:
+      applicable: true
+      evidence: Manifest schema, confinement, item/output limits, and result transitions.
+    integration:
+      applicable: true
+      evidence: Stub executor; continue after failure, recover an orphaned success, verify hashes and resume without overwrite.
+    contract:
+      applicable: true
+      evidence: Existing Bundle v1 and single-item behavior remain valid.
+    e2e:
+      applicable: true
+      evidence: One generate-set request creates validated fake rasters and collection
+        status.
+    security:
+      applicable: true
+      evidence: Symlink/path escape, duplicate IDs, existing targets and command rejection.
+    migration_recovery:
+      applicable: true
+      evidence: Legacy workspaces unchanged; interrupted staging cleanup and partial-job
+        resume.
+    cli_harness:
+      applicable: true
+      evidence: Fixed new CLI action plus existing creative CLI regression.
+    docs_schema:
+      applicable: true
+      evidence: Versioned collection/job templates and user docs.
+- boundary: Local engine discovery and health
+  reason: Select only verified local providers with no downloads or cloud fallback.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: creative execution contracts and fixed-command discovery lifecycle.
+    unit:
+      applicable: true
+      evidence: Missing executable/model, incompatible operation and local-only diagnostics.
+    integration:
+      applicable: true
+      evidence: Stub executables/loopback; prove discover/preflight never infer.
+    contract:
+      applicable: true
+      evidence: Stable discovery result consumed by generate-set.
+    e2e:
+      applicable: false
+      na_reason: Real model weights/inference are not required to verify this boundary.
+    security:
+      applicable: true
+      evidence: No arbitrary command, network egress, model download, proxy or remote
+        ComfyUI.
+    migration_recovery:
+      applicable: false
+      na_reason: No engine installation/configuration migration.
+    cli_harness:
+      applicable: true
+      evidence: Read-only discovery and deterministic local provider selection.
+    docs_schema:
+      applicable: true
+      evidence: Document health and missing-engine limits.
+- boundary: Docs, projections and exact candidate publication
+  reason: User-facing and governance projections must describe the changed flow and
+    bind evidence.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: documentation placement, conformance summary and VitePress build.
+    unit:
+      applicable: true
+      evidence: Scenario and registry metadata consistency.
+    integration:
+      applicable: true
+      evidence: Full validator, docs closure and VitePress build.
+    contract:
+      applicable: true
+      evidence: Capability/architecture projection and documentation sync checks.
+    e2e:
+      applicable: true
+      evidence: Exact-candidate local Integration Gate.
+    security:
+      applicable: true
+      evidence: Credential-free strict scan of final tree and base..head history.
+    migration_recovery:
+      applicable: false
+      na_reason: No stored state migration; user-generated workspaces are not rolled
+        back automatically.
+    cli_harness:
+      applicable: true
+      evidence: Local CLI and OpenCode lifecycle checks.
+    docs_schema:
+      applicable: true
+      evidence: Human/Agent docs, Scenario 238 and changelog/version consistency.
 review_evidence:
   required: false
-  reason: Bounded primary implementation; exact candidate local gate and remote checks
+  reason: Bounded primary implementation; exact-candidate local gate and remote checks
     remain separate.
-scope_recomputed_after_expansion: true
+scope_recomputed_after_expansion: false
 actual_diff_reconciled: true
 blockers: []
 status: READY

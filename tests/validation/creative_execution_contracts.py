@@ -11,7 +11,11 @@ required = (
     ROOT / "templates/creative/CREATIVE_BUNDLE.yaml",
     ROOT / "templates/creative/COMFYUI_Z_IMAGE_TURBO_API.json",
     ROOT / "tests/evidence/creative_execution_lifecycle.py",
+    ROOT / "tests/evidence/creative_generate_set_lifecycle.py",
+    ROOT / "templates/creative/CREATIVE_COLLECTION_PROFILE.yaml",
+    ROOT / "templates/creative/CREATIVE_JOB_MANIFEST.yaml",
     ROOT / "tests/scenarios/236-local-creative-execution.md",
+    ROOT / "tests/scenarios/238-creative-task-authorization-and-multi-item-execution.md",
     ROOT / "orchestration/CREATIVE_DIRECTION.md",
     ROOT / "docs/human/USER_GUIDE.md",
     ROOT / "docs/human/TECHNOLOGY_GUIDE.md",
@@ -23,7 +27,7 @@ for path in required:
 if all(path.is_file() for path in required):
     bundle = yaml.safe_load(required[1].read_text(encoding="utf-8")) or {}
     executor = required[0].read_text(encoding="utf-8")
-    docs = required[4].read_text(encoding="utf-8")
+    docs = required[9].read_text(encoding="utf-8")
     plugin = (ROOT / "harness/adapters/opencode/plugin.ts").read_text(encoding="utf-8")
     compatibility = (ROOT / "harness/adapters/opencode/COMPATIBILITY.md").read_text(encoding="utf-8")
     contracts = (
@@ -41,8 +45,11 @@ if all(path.is_file() for path in required):
         ("MAX_REFERENCE_IMAGES = 8" in executor and "--image-paths" in executor, "MFLUX edit reference batches must be bounded and explicit"),
         ("def prepare(" in executor and "os.O_EXCL" in executor and "creative_ephemeral_required" in executor, "preparation must be confined, create-only and EPHEMERAL"),
         ("exactly one hash-checked reference" in compatibility, "ComfyUI compatibility docs must state the single-reference boundary"),
-        ('enum: ["prepare", "configure", "discover", "preflight", "execute"]' in plugin and 'classification.intent !== "create"' in plugin, "OpenCode preparation must remain explicit and intent-gated"),
-        ('creative_request_policy.py' in plugin and 'contextMessages' in plugin, "OpenCode must normalize native context and use user-only request authorization"),
+        ('enum: ["prepare", "configure", "discover", "preflight", "execute", "generate-set"]' in plugin and 'classification.intent !== "create"' in plugin, "OpenCode preparation and generation sets must remain explicit and intent-gated"),
+        ('ctx.session.hook("prompt"' in plugin and 'creativeAdmissions' in plugin and 'creative_admission_grant_missing' in plugin and 'slice(-64)' not in plugin, "OpenCode mutation authority must use current prompt admission, independent of transcript truncation"),
+        ('def generate_set(' in executor and 'verified_prior_success' in executor and 'batch must continue after an item fails' in (ROOT / "tests/evidence/creative_generate_set_lifecycle.py").read_text(encoding="utf-8"), "multi-item execution must continue failures and verify resume evidence"),
+        ('bounded_version_only' in executor and 'timeout=3' in executor, "engine discovery must use bounded version-only health probes"),
+        ('creative_request_policy.py' in plugin and 'contextMessages' in plugin, "OpenCode must normalize native context for advisory routing"),
     )
     for condition, message in contracts:
         if not condition:
@@ -56,3 +63,11 @@ if all(path.is_file() for path in required):
         errors.append("Creative execution lifecycle failed: " + lifecycle.stdout + lifecycle.stderr)
     else:
         print(lifecycle.stdout.strip())
+    batch = subprocess.run(
+        [sys.executable, str(ROOT / "tests/evidence/creative_generate_set_lifecycle.py")],
+        cwd=ROOT, capture_output=True, text=True, timeout=90, check=False,
+    )
+    if batch.returncode:
+        errors.append("Creative generate-set lifecycle failed: " + batch.stdout + batch.stderr)
+    else:
+        print(batch.stdout.strip())

@@ -1658,7 +1658,17 @@ This Scenario is the canonical evidence pointer for OpenCode V2 context routing,
 
 The lifecycle covers separate prompt dimensions, Chinese creative-asset routing, Project Intelligence readiness, session-root binding, direct native path/symlink decisions, Shell argument effects, V2 plugin ownership, private EPHEMERAL asset metadata cache, bounded privacy trace, performance measurement, and version-aware install/repair/removal. OpenCode v2.0.24 acceptance uses a loopback mock model to verify actual Context delivery, a new EPHEMERAL creative asset native write Allow, and an existing-asset edit Deny with incomplete Project Intelligence. No provider credentials are needed. Linux/WSL, V1, production-provider behavior, MCP/custom-tool writes, arbitrary Shell effects and writes outside OpenCode remain unverified or out of scope; overall governance stays ADVISORY.
 
+## Scenario 238 — Creative Task Authorization and Multi-item Execution
+
+Native OpenCode V2 prompt admission issues an in-memory grant bound to the active session, workspace, actions and bounded output count; unrelated prompts revoke it, and truncated transcript context cannot restore authority. Read-only discovery and preflight remain available without a grant.
+
+The synthetic multi-item lifecycle verifies per-item preflight, continue-on-failure, hash-verified resume and recovery after an output succeeds before its checkpoint. Version-only local engine discovery never starts generation. Native OpenCode acceptance verifies grant admission and revocation without invoking image generation; no real model quality or visual acceptance is claimed.
+
 ## Scenario 236 — Local Creative Bundle Execution
+
+Scenario 236's native-context checks are complemented by Scenario 238: the active prompt hook grants scoped actions and output count, and a later prompt or unrelated assistant Context cannot restore a revoked grant.
+
+Scenario 238 covers the per-item job result lifecycle, verified resume, orphaned-success recovery and fixed local version probes. Native OpenCode acceptance does not execute image generation or claim visual quality.
 
 Z-Image Turbo 測試涵蓋專用 MFLUX generate 命令與固定 ComfyUI split-loader 拓樸、模型清單核對及 prompt PNG metadata 清理；明確步數、拒絕 edit／非 Turbo 變體／通用 FLUX 命令，既有離線、create-only 與人工 PENDING 契約保持適用。
 

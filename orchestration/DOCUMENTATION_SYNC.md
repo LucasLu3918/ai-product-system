@@ -29,6 +29,8 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+Creative job manifests and transient OpenCode prompt grants are described in the Creative Direction protocol and User Guide, with architecture and Scenario 238 evidence kept in sync.
+
 Project Diagnostics adds no creative generation behavior; shared CLI routing changes preserve the existing explicit creative lifecycle and its independent visual-review boundary.
 
 For Z-Image Turbo, synchronize generate-only MFLUX command and the single registered ComfyUI split-loader profile across creative, execution and Runtime docs. ComfyUI checks preinstalled UNET/CLIP/VAE files and strips prompt-bearing PNG text metadata; do not claim broader Z-Image, arbitrary split-model or edit support.
@@ -178,6 +180,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 
 ## Human documentation placement
+
+Creative authorization and batch execution must remain synchronized across the OpenCode adapter contract, Creative Direction, Human usage/architecture docs and Scenario 238.
 
 Project Diagnostics uses the existing Project Intelligence, System Reference, Harness and Conformance topics. Its report is a read-only projection with explicit UNVERIFIED Host effects; it creates no new state authority or remediation path.
 

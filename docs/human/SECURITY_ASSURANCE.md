@@ -211,6 +211,8 @@ Review actual:
 
 ## Release Security Gate
 
+Creative Core candidates also verify grant revocation, Session-root confinement, prompt privacy, local-only discovery and create-only output recovery before publication.
+
 Project Diagnostics PASS 不能提升 SAL、證明獨立審查或取代精確候選 Gate；未確認的 Runtime／MCP 效果維持 UNVERIFIED。
 
 創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
@@ -292,6 +294,8 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 
 ## Secret and credential safety
+
+Creative admission stores only action grants, output limits and a prompt digest in memory; raw prompts are not written to job results or traces. Local engine discovery is version-only and does not download models or fall back to cloud providers.
 
 Account usage windows do not expose task/model token traces; record those values only when an official per-task source supplies them.
 

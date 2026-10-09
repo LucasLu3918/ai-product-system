@@ -52,6 +52,8 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+Creative candidates include the exact Core Matrix binding, local engine no-download evidence, job recovery checks and prompt-privacy review; real image quality remains outside deterministic release claims.
+
 A Project Diagnostics PASS is not release evidence. Publication readiness still binds the exact candidate to the complete Integration Gate, documentation closure, security scan and required Human approval.
 
 Creative reliability evidence separates versioned configuration/discovery, native callback/hook acceptance, raster container integrity and profile provenance from real-model quality. Unavailable local weights remain an explicit inference limitation; fixture PASS cannot close visual acceptance.

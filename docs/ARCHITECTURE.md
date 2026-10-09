@@ -8,7 +8,7 @@ The `aips project diagnose <path>` command is a read-only projection over existi
 
 The shared creative executor registers Z-Image Turbo generation through the fixed `mflux-generate-z-image-turbo` command or the exact built-in ComfyUI split-loader API workflow. Discovery, configuration, preflight and OpenCode share the executor; ComfyUI verifies its UNET, CLIP and VAE inventory and rejects other workflow topology. Editing and other Z-Image variants remain unsupported.
 
-The local creative path is `discover → prepare → configure → preflight → execute → Human review`. Discovery is read-only; configuration creates a new allowlisted Bundle version. User-only authorization and explicit raster/vector intent are separate from advisory task routing. New model profiles do not change those authority boundaries or enable external providers.
+The local creative path is `discover → prepare → configure → preflight → execute or resumable generate-set → Human review`. Discovery is read-only; configuration creates a new allowlisted Bundle version. OpenCode V2 mutation authority comes from current native prompt admission, independent of dispatch Context or transcript truncation. User-only authorization and explicit raster/vector intent are separate from advisory task routing. New model profiles do not change those authority boundaries or enable external providers.
 
 OpenCode V2 resolves Context and supported native file decisions from each active Session directory. EPHEMERAL creative asset metadata stays in a private external cache, and Shell/MCP effects remain outside the native file guard.
 

@@ -61,6 +61,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+The local Creative `generate-set` executor preflights configured Bundles one at a time, records per-item outcomes, and resumes only when prior output and provenance hashes still match. OpenCode V2 receives mutation authority from native prompt admission, not Context.
+
 `aips project diagnose` 不會啟動 Creative Bundle 或模型；創作生成仍由既有受限的明確使用者請求路徑執行。
 
 MFLUX 固定命令表新增 Z-Image Turbo generate：`mflux-generate-z-image-turbo`。CLI 不傳任意額外參數；步數沿用明確 Bundle 設定，模型與 tokenizer 仍須預先完整安裝，本流程不下載。ComfyUI 也支援限定的 Z-Image Turbo generate profile：固定 UNETLoader、CLIPLoader (`lumina2`)、VAELoader 與 AIPS 內建 API 拓樸，preflight 逐項核對本機模型清單；不支援任意 split-loader 工作流或 edit。
@@ -185,6 +187,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+The Core Creative verification path covers native prompt admission and revocation, bounded multi-item recovery, local-only engine probes, documentation closure and the exact committed candidate.
 
 `aips project diagnose <path>` 聚合既有只讀檢查，Lifecycle evidence 驗證 text/YAML/JSON、隱私遮蔽、失敗情境與不寫入行為。這份診斷不取代各 subsystem 的權威檢查或精確候選 Gate。
 

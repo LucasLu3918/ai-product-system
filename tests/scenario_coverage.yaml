@@ -1875,3 +1875,17 @@ scenarios:
       - scripts/project_diagnostics.py
       - tests/evidence/project_diagnostics_lifecycle.py
       - tests/validation/static_contracts.py
+  - id: "238"
+    path: tests/scenarios/238-creative-task-authorization-and-multi-item-execution.md
+    coverage: lifecycle
+    evidence:
+      - scripts/creative_request_policy.py
+      - scripts/creative_execution.py
+      - harness/adapters/opencode/plugin.ts
+      - templates/creative/CREATIVE_COLLECTION_PROFILE.yaml
+      - templates/creative/CREATIVE_JOB_MANIFEST.yaml
+      - tests/evidence/creative_request_policy_lifecycle.py
+      - tests/evidence/creative_generate_set_lifecycle.py
+      - tests/evidence/opencode_native_acceptance.py
+      - tests/validation/creative_execution_contracts.py
+      - tests/validation/opencode_integration_contracts.py

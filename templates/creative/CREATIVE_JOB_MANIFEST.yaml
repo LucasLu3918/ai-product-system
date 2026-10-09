@@ -1,0 +1,7 @@
+version: 1
+collection_profile: CREATIVE_COLLECTION_PROFILE.yaml
+items:
+  - id: character-one
+    bundle: characters/character-one-v1/bundles/CREATIVE_BUNDLE.yaml
+  - id: character-two
+    bundle: characters/character-two-v1/bundles/CREATIVE_BUNDLE.yaml

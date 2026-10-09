@@ -27,6 +27,10 @@ rules:
       - templates/creative/CHARACTER_ARTWORK_MANIFEST.yaml
       - templates/creative/CREATIVE_EVIDENCE.yaml
       - templates/creative/CREATIVE_BUNDLE.yaml
+      - templates/creative/CREATIVE_COLLECTION_PROFILE.yaml
+      - templates/creative/CREATIVE_JOB_MANIFEST.yaml
+      - tests/evidence/creative_generate_set_lifecycle.py
+      - tests/scenarios/238-creative-task-authorization-and-multi-item-execution.md
       - tests/scenarios/236-local-creative-execution.md
     human_docs:
       - docs/human/USER_GUIDE.md
