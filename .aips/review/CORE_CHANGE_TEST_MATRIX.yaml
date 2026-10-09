@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: 219f0602c34e76898bcb4b804af30c5fb7f90937
-  changed_files_hash: f160a18f918c5ad76466050e4044cdf9163723ebe32862cf73cf816294868c62
+  changed_files_hash: 65d03cdeefdedeee1392f720421d8bbd5cc65cb1cad443e4177ffcbcfcf20c26
 change:
   id: design3-creative-authorization
   summary: Trusted prompt grants and resumable local multi-character generation.
@@ -16,7 +16,7 @@ matrix:
   checks:
     static_lint:
       applicable: true
-      evidence: null
+      evidence: tests/validation/opencode_integration_contracts.py and git diff --check.
     unit:
       applicable: true
       evidence: Grant source/session/workspace/action/scope/count, revocation and
@@ -49,7 +49,7 @@ matrix:
   checks:
     static_lint:
       applicable: true
-      evidence: null
+      evidence: tests/validation/creative_execution_contracts.py and git diff --check.
     unit:
       applicable: true
       evidence: Manifest schema, confinement, item/output limits, and result transitions.
@@ -81,7 +81,7 @@ matrix:
   checks:
     static_lint:
       applicable: true
-      evidence: null
+      evidence: creative execution contracts and fixed-command discovery lifecycle.
     unit:
       applicable: true
       evidence: Missing executable/model, incompatible operation and local-only diagnostics.
@@ -113,7 +113,7 @@ matrix:
   checks:
     static_lint:
       applicable: true
-      evidence: null
+      evidence: documentation placement, conformance summary and VitePress build.
     unit:
       applicable: true
       evidence: Scenario and registry metadata consistency.

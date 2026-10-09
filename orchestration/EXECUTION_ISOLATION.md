@@ -284,6 +284,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+The Creative `generate-set` executor processes configured Bundles sequentially within the active local project scope and records per-item recovery state; the OpenCode grant is in-memory and session-root-bound.
+
 `aips project diagnose` performs local read-only inspection and does not select an isolation provider, launch a subprocess-backed task, or claim sandbox enforcement. Use the existing isolation resolver for execution decisions.
 
 Local creative configure is a confined persistent effect even though it does not generate. Discovery and preflight stay read-only; execute remains explicit and local-only. No action changes the existing Shell/MCP coverage limitation or grants model-download authority.

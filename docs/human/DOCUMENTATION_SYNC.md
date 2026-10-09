@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Creative multi-item generation is documented in User Guide, Architecture Overview, Technology Guide and the Creative Direction protocol; its transient prompt grant, job manifest and resume behavior are verified by Scenario 238.
+
 Project Diagnostics 將 `aips project diagnose` 的唯讀行為、狀態 reason code、恢復建議與 UNVERIFIED Host 邊界放在 Human Project Intelligence、System Reference、Harness 與對應 Scenario；不可將靜態 MCP／設定檢查描述為實機執行證據。
 
 Z-Image Turbo 的 generate-only 能力說明放在 Creative／Execution／Runtime 主題內；ComfyUI 支持只涵蓋固定 split-loader API 工作流與可由本機 API 核對的三項權重，不延伸為任意節點或 editing 支持。
@@ -166,6 +168,8 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+Creative prompt-grant behavior and resumable job schemas are maintained in the Creative Direction protocol, User Guide, Technology Guide, Architecture Overview and Scenario 238.
 
 Documentation Impact Gate 以固定點映射確認 Project Diagnostics 的 Human／Agent canonical topics，並要求新行落在指定 H2；不得以文件尾端追加繞過放置檢查。
 

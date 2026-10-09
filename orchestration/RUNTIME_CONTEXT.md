@@ -20,6 +20,8 @@ Managed AIPS CLI runtimes require Python >=3.12. An explicit `AIPS_PYTHON` is au
 
 ## Context contract
 
+For OpenCode Creative mutations, Runtime Context is advisory routing input; only the current native prompt-admission hook creates the transient, session-bound action grant.
+
 OpenCode resolves project context from the active Session's directory rather than the plugin's setup location, enforces its compact UTF-8 budget and records only bounded privacy-safe timing metadata.
 
 OpenCode's creative `prepare` action also binds its requested output to the active EPHEMERAL project scope and requires explicit create intent; it does not inherit the plugin installation directory as a write root.

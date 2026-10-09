@@ -71,5 +71,5 @@ Status: APPROVED
 Approved by: user
 Approved at: 2026-10-09
 Approval record: User message “核准此變更邊界” in this task.
-Proposal fingerprint: pending final exact scope hash
-Scope fingerprint: pending final changed-file reconciliation
+Proposal fingerprint: SHA-256 of the proposal body before this Approval section — `22e5f43321cf26df4ed784c75619d16bc85f88a57d6768a33d8efd59d538d87a`.
+Scope fingerprint: Canonical sorted changed-file set for base `219f0602c34e76898bcb4b804af30c5fb7f90937` — `65d03cdeefdedeee1392f720421d8bbd5cc65cb1cad443e4177ffcbcfcf20c26`.

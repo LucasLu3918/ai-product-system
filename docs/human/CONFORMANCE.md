@@ -1666,6 +1666,10 @@ The synthetic multi-item lifecycle verifies per-item preflight, continue-on-fail
 
 ## Scenario 236 — Local Creative Bundle Execution
 
+Scenario 236's native-context checks are complemented by Scenario 238: the active prompt hook grants scoped actions and output count, and a later prompt or unrelated assistant Context cannot restore a revoked grant.
+
+Scenario 238 covers the per-item job result lifecycle, verified resume, orphaned-success recovery and fixed local version probes. Native OpenCode acceptance does not execute image generation or claim visual quality.
+
 Z-Image Turbo 測試涵蓋專用 MFLUX generate 命令與固定 ComfyUI split-loader 拓樸、模型清單核對及 prompt PNG metadata 清理；明確步數、拒絕 edit／非 Turbo 變體／通用 FLUX 命令，既有離線、create-only 與人工 PENDING 契約保持適用。
 
 Scenario 236 新增 Bundle 設定競爭／來源保留、native Context envelope、使用者授權撤銷、唯讀預檢、媒材不符與損壞 PNG 檢查。實際 tool callback 使用無憑證 fixture；這不等於真實模型品質或使用者接受。

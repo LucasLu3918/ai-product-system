@@ -75,8 +75,6 @@ Keep each pose, expression, and accessory as its own SVG or PNG so the user can 
 
 Creative evidence may optionally link the artwork manifest and its exact SHA-256 digest using `character_artwork.manifest` and `character_artwork.sha256`. This records which manifest was reviewed; it does not replace asset validation or visual review. The workflow sends no images to external services and keeps references local by default; the optional ComfyUI adapter contacts only the configured loopback API.
 
-## Local multi-item generation
-
 A collection profile records shared direction and stable character references. A CREATIVE_JOB_MANIFEST.yaml lists only already prepared and configured local Bundles. aips creative generate-set validates the bounded manifest, preflights each Bundle immediately before execution, records per-item failures, and continues the remaining set. Re-running the same unchanged manifest skips only outputs and provenance manifests whose saved hashes still match; failed or changed items are retried only into their existing create-only output paths, so users must select a new Bundle version if an output already exists. Health discovery runs a bounded version-only probe for fixed installed MFLUX commands; it reports only a sanitized version token and does not load weights or generate an image.
 
 For OpenCode V2, mutation authority comes from the native prompt-admission hook and is held only in memory for the active Session. Every new user prompt replaces that grant; dispatch Context and transcript history are never an authority source. Synthetic, shell, compaction, and tool-driven continuation events do not create a new grant.

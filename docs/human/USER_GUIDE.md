@@ -78,7 +78,9 @@ Project Diagnostics 只報告既有狀態，不會建立 Creative Bundle、啟�
 
 ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需明列 UNET、Qwen CLIP、VAE 權重檔名，並使用 AIPS 隨附的固定 API 工作流。Preflight 會向 loopback ComfyUI 核對三項本機模型清單；此配對僅支援 generate。
 
-先用 `aips creative discover --project PROJECT` 盤點，再由工具 prepare 建立角色規範。`aips creative configure --project PROJECT --bundle RELATIVE.yaml` 從 stdin 接收 allowlisted JSON，回傳新的 Bundle 路徑；以該路徑 preflight，通過後才 execute。OpenCode 可直接使用相同 action。缺少模型或生成失敗時回報受阻，不改交 SVG；精緻插畫先校準代表性樣圖，完成後逐張檢查身份、人物結構、材質、光影與風格。 多個 Bundles 可用 templates/creative/CREATIVE_JOB_MANIFEST.yaml 列入工作清單，再執行 aips creative generate-set --project PROJECT --manifest MANIFEST.yaml；每項分別預檢，失敗後會繼續並保存結果，重跑時僅略過雜湊仍吻合的已完成項目；OpenCode 原生授權只來自目前提示，並依提示中的明確數量限制生成項目。
+先用 `aips creative discover --project PROJECT` 盤點，再由工具 prepare 建立角色規範。`aips creative configure --project PROJECT --bundle RELATIVE.yaml` 從 stdin 接收 allowlisted JSON，回傳新的 Bundle 路徑；以該路徑 preflight，通過後才 execute。OpenCode 可直接使用相同 action。缺少模型或生成失敗時回報受阻，不改交 SVG；精緻插畫先校準代表性樣圖，完成後逐張檢查身份、人物結構、材質、光影與風格。
+
+多個 Bundles 可用 `templates/creative/CREATIVE_JOB_MANIFEST.yaml` 列入工作清單，再執行 `aips creative generate-set --project PROJECT --manifest MANIFEST.yaml`；每項分別預檢，失敗後會繼續並保存結果，重跑時僅略過雜湊仍吻合的已完成項目。OpenCode 原生授權只來自目前提示，並依提示中的明確數量限制生成項目。
 
 Creative Direction 適用 Website、Landing Page、Banner、Hero、Social Post、Presentation、Product Page、UI、Campaign Visual 等工作。
 
@@ -134,6 +136,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 新專案若尚未選擇技術，AIPS 會先檢查硬性限制，再依團隊、產品、既有系統、交付與維護需求提出少量候選和取捨；語言與框架分開選擇。架構建議同時看複雜度訊號與反向訊號，並分開說明 Clean Architecture、DDD 與部署方式。重要選擇由使用者確認後，才會整理到 Implementation Profile。
 
 ## Global Harness 與 MCP
+
+OpenCode V2 Creative writes use the current native user prompt for authorization; tool Context and prior transcript messages cannot renew a cancelled request.
 
 診斷中的 MCP inspect 是靜態設定檢查，不會呼叫遠端或本機 MCP Tool；沒有原生 Host 證據時仍顯示 UNVERIFIED。
 
@@ -255,6 +259,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+Creative output integrity, human visual review and user acceptance remain separate states; a successful local batch does not mark image quality as approved.
 
 Project Diagnostics 的輸出只能協助定位下一步，不取代獨立 Review、必要測試、完整 Integration Gate 或 Git 發布核准。
 
@@ -407,6 +413,8 @@ The dashboard is an observation surface. It shows workflow state, gate, last act
 有 ownership state 時，dashboard 也顯示 task owner、lease/recovery、Boundary、worktree、dirty files、dependencies、heartbeat 與 enforcement capability。舊 run 沒有 owner 時顯示 `UNASSIGNED`，檢視不會改變其狀態。
 
 ## Checkpoint / Resume
+
+For Creative `generate-set`, the job result records each Bundle independently; reruns skip only completed outputs whose saved Bundle, output and provenance hashes still match.
 
 Run projection fingerprints preserve their existing facade and canonical digest bytes after helper consolidation; run state and resume authority remain governed by the existing contracts.
 

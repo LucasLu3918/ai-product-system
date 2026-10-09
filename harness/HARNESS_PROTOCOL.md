@@ -83,6 +83,8 @@ Runtime-native contract verification and actual runtime execution verification a
 
 ## Exact-candidate real-runtime verification
 
+OpenCode V2 Creative mutation acceptance must exercise the native prompt-admission hook and prove that a later or cancelled prompt revokes the grant; transcript Context alone is not authorization.
+
 Runtime adapter source-contract verification is not the same as executing the actual runtime binary.
 
 Scenario 143 pins Gemini CLI v0.60.0 and executes the bundled CLI, built-in file tools and linked AIPS extension on the exact PR head. Gemini CLI's official `--fake-responses` interface replaces provider inference only; it does not replace CLI/tool/hook execution.

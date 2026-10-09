@@ -48,6 +48,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+Local creative grants and batch execution add no Evolution Radar provider, semantic analysis, trial, or adoption authority; their verification remains in the Creative lifecycle and Scenario 238.
+
 Project Diagnostics 是本機只讀診斷，不讀取或彙整 Evolution Radar 訊號，也不會改變研究、Trial 或採用狀態。
 
 創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。

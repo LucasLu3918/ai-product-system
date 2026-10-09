@@ -201,6 +201,8 @@ Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
 
+For Creative changes, Impact Graph traversal identifies the executor, OpenCode adapter, job schema and docs consumers; Project Intelligence remains advisory and does not mint the native prompt grant.
+
 Project Diagnostics may summarize readiness but is not a retrieval or Impact Graph query; it cannot promote inferred relationships or disposition affected consumers.
 
 Task classification includes advisory creative_medium (raster/vector/unspecified) for output-medium consumers. It grants no generation authority. OpenCode normalizes Context envelopes and separately evaluates current user requests, revocation and bounded continuation.

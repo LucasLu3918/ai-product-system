@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+Creative workflow 的 Human 操作方式見 User Guide；協定與授權邊界見 Creative Direction，批次工作範本與驗收證據分別見 `templates/creative/` 和 Scenario 238。
+
 Project Intelligence 與診斷恢復流程見 [Project Intelligence 使用指南](PROJECT_INTELLIGENCE.md)；命令與 Runtime 支援見 [System Reference](SYSTEM_REFERENCE.md)。
 
 本機 Z-Image Turbo 的 MFLUX 與固定 ComfyUI 工作流設定及生成操作請由 User Guide 的 Creative Direction 主題進入；Technology Guide 說明固定執行邊界。

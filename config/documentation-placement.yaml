@@ -424,7 +424,7 @@ placement_rules:
       docs/human/DOCUMENTATION_MAP.md: [Agent / machine canonical 文件]
       docs/human/DOCUMENTATION_SYNC.md: [Current-behavior placement contract]
       docs/human/index.md: [文件如何組織]
-      docs/human/CONFORMANCE.md: [Scenario 234 — Local Character Artwork Provenance and Composition, Scenario 236 — Local Creative Bundle Execution, Scenario 237 — Read-only Project Diagnostics and Recovery Guidance]
+      docs/human/CONFORMANCE.md: [Scenario 234 — Local Character Artwork Provenance and Composition, Scenario 236 — Local Creative Bundle Execution, Scenario 237 — Read-only Project Diagnostics and Recovery Guidance, Scenario 238 — Creative Task Authorization and Multi-item Execution]
       orchestration/CREATIVE_DIRECTION.md: [Local character artwork]
       orchestration/CONFORMANCE.md: [Scenario 234 — Local Character Artwork Provenance and Composition, Scenario 236 — Local Creative Bundle Execution, Scenario 238 — Creative Task Authorization and Multi-item Execution]
       orchestration/DOCUMENTATION_SYNC.md: [Audience synchronization]
