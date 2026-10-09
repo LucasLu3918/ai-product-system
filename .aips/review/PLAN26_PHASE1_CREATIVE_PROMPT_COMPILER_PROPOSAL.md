@@ -18,7 +18,7 @@ These functions feed local generation and review-assist requests. A changed prom
 - Preserve execution and `review_assist` callers through that facade.
 - Add exact deterministic output-parity evidence, facade function/class identity checks, and invalid-prompt exception parity.
 - Update the validator registry, implementation contract, changelog, and source architecture description for the internal module boundary.
-- Synchronize the user-approved recursive documentation closure in the canonical creative, Harness, conformance, documentation-governance, and maintenance topics; record unaffected architecture diagrams with a concrete reason.
+- Register both internal helper modules in the canonical documentation-placement map; synchronize the user-approved recursive closure in the creative, Harness, conformance, documentation-governance, and maintenance topics; record unaffected architecture diagrams with a concrete reason.
 
 ### Out of scope
 
@@ -39,6 +39,7 @@ These functions feed local generation and review-assist requests. A changed prom
 - `tests/validation/registry.py`
 - `CHANGELOG.md`
 - `docs/ARCHITECTURE.md`
+- `config/documentation-placement.yaml`
 - `docs/human/ARCHITECTURE_OVERVIEW.md`
 - `docs/human/CONFORMANCE.md`
 - `docs/human/DOCUMENTATION_MAP.md`
@@ -133,7 +134,7 @@ This bounded extraction is approved as the first independently verifiable Plan26
 
 Status: APPROVED
 Approved by: User
-Approved at: 2026-10-10T00:40:28+08:00
-Approval record: User approved the compiler extraction proposal and neutral `Blocked` exception module, then explicitly approved the exact 16 documentation paths required by recursive publish impact in this Codex conversation.
-Proposal fingerprint: sha256:f9fddd0a88beb434eb0119d4a57b5d1dcd1350392f9a31d1fa01febe6cc4b085
-Scope fingerprint: sha256:4f11a05249d03782f9a73c3ef8e6489847b2c0b9e2f2685e213fd7e6dd4570d3
+Approved at: 2026-10-10T01:01:06+08:00
+Approval record: User approved the compiler extraction proposal and neutral `Blocked` exception module, then explicitly approved the 16 required documentation paths and, after CI identified the missing source-placement registry, approved `config/documentation-placement.yaml` plus the two required Harness-topic notes in this Codex conversation.
+Proposal fingerprint: sha256:a876db8cba3e0bb4bf2cfa19c3cfe41197202ba3dabf642b9012eadd96647ec7
+Scope fingerprint: sha256:71e603558e1324e85971a5b771801d20268256eeed46260237e470ecd23eb8b1

@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+Creative prompt compiler 與共用錯誤類別屬於既有 Python executor 的內部模組；`creative_execution` 相容 facade 保留原有呼叫與輸出，不新增 OpenCode 權限或工具簽名。
+
 OpenCode 的 local creative tool 有獨立 `review-assist` action grant，綁定目前 Session root；它只授權本機視覺建議，不能改變 Human review 或 user acceptance。
 
 OpenCode V2 每則使用者回覆都重新建立目前動作授權；有界 Session 狀態只支援短風格選擇，並與 Harness Context、原生檔案決策分開。創作執行仍需明確工具動作及本機 preflight。

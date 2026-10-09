@@ -151,6 +151,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+本次 prompt compiler 內部抽離不改變 OpenCode 原生工具、授權、安裝步驟或 creative 操作流程；原有 `creative_execution` facade 仍供既有呼叫端使用。
+
 OpenCode creative tool 只有目前使用者明確提出視覺審查時才授予 `review-assist`；此權限與產圖數量及使用者接受分開。
 
 OpenCode 對話中的創作延續只保留 Session root、有限回合與剩餘輸出數等結構化狀態，每次回覆仍重新判斷授權；不保存舊提示文字，也不以 Context 或 transcript 恢復權限。取消、切換工作、擴大範圍或達到數量上限後，需重新明確提出要求。

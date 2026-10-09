@@ -1,13 +1,14 @@
 version: 1
 change:
   id: plan26-phase1-creative-prompt-compiler
-  summary: Extract deterministic prompt compilation and model advice into a pure internal
-    module while preserving the creative_execution facade, Blocked exception identity,
-    and exact outputs; synchronize the approved recursive documentation closure.
+  summary: Extract deterministic creative prompt compilation and model advice with
+    the stable facade, exact output parity, registered canonical documentation placement,
+    and the user-approved recursive documentation closure.
   boundary:
   - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
   - .aips/review/PLAN26_PHASE1_CREATIVE_PROMPT_COMPILER_PROPOSAL.md
   - CHANGELOG.md
+  - config/documentation-placement.yaml
   - docs/ARCHITECTURE.md
   - docs/human/ARCHITECTURE_OVERVIEW.md
   - docs/human/CONFORMANCE.md
@@ -34,7 +35,7 @@ change:
   - tests/validation/registry.py
 candidate:
   base_sha: b44cc28aa7b5ec687a7b49eaf77bed8434c1ce19
-  changed_files_hash: 2ba99d52333a32c652758c9c64104389f52c63467bdbaf24933e0e6af2d5ec3e
+  changed_files_hash: 8c9829a4134698ff855c1b3d273af5296ca8f7441dfeb21c1eac331735d60cc8
 matrix:
 - boundary: Creative prompt compiler, shared error type, and compatibility facade
   reason: Prompt bytes determine generation fingerprints. The extraction must preserve
@@ -72,13 +73,13 @@ matrix:
         existing facade consumers.
     docs_schema:
       applicable: true
-      evidence: Exact candidate sync and placement audit pass; recursive publish impact
-        is complete with 27 direct paths, zero required additions, all 16 approved
-        documents present, and diagrams assessed unaffected with the no-flow-change
-        reason.
+      evidence: The canonical placement map registers both helpers; exact-candidate
+        sync/placement audits and recursive publish impact closure are required for
+        all 28 paths, including the approved documentation closure and Harness placements.
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: true
+actual_diff_reconciled: false
 review_evidence:
   required: false
-blockers: []
-status: READY
+blockers:
+- pending exact-candidate repository validation, Core Gate, and evidence refresh
+status: DRAFT
