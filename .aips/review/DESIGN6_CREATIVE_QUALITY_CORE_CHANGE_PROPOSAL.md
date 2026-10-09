@@ -142,6 +142,7 @@ Architecture Diagram Impact:
 - `tests/evidence/creative_quality_lifecycle.py`
 - `tests/evidence/creative_request_policy_lifecycle.py`
 - `tests/evidence/creative_tool_harness.mjs`
+- `tests/fixtures/plan21-contract-golden-vectors.yaml`
 - `tests/scenario_coverage.yaml`
 - `tests/scenarios/234-character-art-workflow.md`
 - `tests/scenarios/236-local-creative-execution.md`
@@ -174,5 +175,5 @@ Status: APPROVED
 Approved by: Human
 Approved at: 2026-10-09T14:53:19Z
 Approval record: User message `核准` in the current task, approving the four-stage Design6 System Improvement Review scope.
-Proposal fingerprint: sha256:a4d64bbd41d611cd15df9beb08107b05246ed81d16d4c1c35f26203cbe99c877 (SHA-256 over proposal with this field set to the pending placeholder)
-Scope fingerprint: sha256:9378642b2ae352245aadb906cef358f156bcbf611fb80942c6f7c3aa58d76f1b
+Proposal fingerprint: sha256:2858969e57588a78ab484afe12b01c5c0ff61846179925ba8ff876f1b959fe08 (SHA-256 over proposal with this field set to the pending placeholder)
+Scope fingerprint: sha256:5eb0abaefb98e73919727a3097352a78044d4186c30179fc6bcaa287b12c0d27

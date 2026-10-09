@@ -57,6 +57,7 @@ change:
     - tests/evidence/creative_quality_lifecycle.py
     - tests/evidence/creative_request_policy_lifecycle.py
     - tests/evidence/creative_tool_harness.mjs
+    - tests/fixtures/plan21-contract-golden-vectors.yaml
     - tests/scenario_coverage.yaml
     - tests/scenarios/234-character-art-workflow.md
     - tests/scenarios/236-local-creative-execution.md
@@ -66,7 +67,7 @@ change:
     - tests/validation/registry.py
 candidate:
   base_sha: 62af5a9312756669ecfe0203ea8f468d94659d23
-  changed_files_hash: 9378642b2ae352245aadb906cef358f156bcbf611fb80942c6f7c3aa58d76f1b
+  changed_files_hash: 5eb0abaefb98e73919727a3097352a78044d4186c30179fc6bcaa287b12c0d27
 matrix:
   - boundary: Profile-driven prompt compilation and provenance
     reason: Style and identity constraints must reach local generation deterministically, while profile compatibility and prompt privacy remain intact.
