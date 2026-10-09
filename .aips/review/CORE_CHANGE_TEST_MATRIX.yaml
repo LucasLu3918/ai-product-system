@@ -144,8 +144,6 @@ review_evidence:
   reason: Bounded primary implementation; exact-candidate local gate and remote checks
     remain separate.
 scope_recomputed_after_expansion: false
-actual_diff_reconciled: false
-blockers:
-- Exact candidate binding and full Integration Gate evidence are pending commit.
-- candidate binding refreshed; review scope and evidence before marking READY
-status: DRAFT
+actual_diff_reconciled: true
+blockers: []
+status: READY
