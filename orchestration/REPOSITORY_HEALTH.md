@@ -59,6 +59,8 @@ The detector still avoids semantic inference over arbitrary source files. Archit
 
 ## Evidence and Human review
 
+Project Intelligence relation-candidate lifecycle and contract evidence are registered under the existing project-intelligence capability. Generated capability projections remain derived from `config/capability-registry.yaml`.
+
 Status is PASS or DRIFT_DETECTED. PASS means only that configured consistency contracts hold. Version 1 is Detect + Evidence + Human Review only and performs no remediation.
 
 Every report keeps credential_required=false, external_network_required=false, automatic_remediation_performed=false and every automatic-remediation, code-change, branch/PR, merge, release and publication authority field false. Repository Health evidence cannot authorize protected operations or credential acquisition.

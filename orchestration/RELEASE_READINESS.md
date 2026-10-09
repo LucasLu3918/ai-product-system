@@ -52,6 +52,8 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+Impact relationship candidates remain unreviewed and cannot substitute for exact-candidate integrity, documentation closure or validation evidence.
+
 The creative quality workflow uses one exact candidate across matrix reconciliation, local lifecycle evidence, documentation closure, secret scanning and the required repository check.
 
 Release, dependency and branch inventories remain evidence for Human review. They do not delete branches, merge unrelated PRs, create tags/releases or change protected refs; readiness applies only to the exact recorded candidate.

@@ -90,6 +90,8 @@ Creative execution changes review the OpenCode prompt-admission path, CLI policy
 
 Repository-wide graph coverage remains partial; inspect affected inputs, outputs, events and consumers and do not infer complete coverage from scoped retrieval.
 
+`aips intelligence impact-candidates --seed-path <path>` reports bounded, source-backed relationship candidates from Python imports, literal CLI dispatch, test imports and documentation placement. It is read-only: candidates remain unreviewed, dynamic relations stay unresolved, and repository-wide coverage remains partial/unknown.
+
 
 For OpenCode Creative mutations, Project Intelligence and Turn Context may inform routing but do not authorize writes; the grant comes from the current native user prompt and is bound to the active Session root.
 

@@ -890,6 +890,8 @@ Scenario 218 uses deterministic monthly fingerprint sampling and complete Human 
 
 ## Scenario 220 — Parallel advisory fast feedback
 
+Scenario 239 adds bounded source relationship discovery with explicit provenance, truncation and unresolved dynamic behavior; it does not promote graph edges.
+
 Unknown paths continue to select the complete validation profile.
 
 The required validation workflow exports the provisioned Python interpreter to isolated subprocess fixtures before the deterministic Gate, and the publish preflight contract checks that exact step ordering.
@@ -944,6 +946,8 @@ Each item retains explicit execution intent and distinct review/acceptance state
 Native OpenCode V2 prompt admission issues a fresh in-memory grant bound to the active session, workspace, actions and bounded output count. A short style selection can derive a new grant only from root-bound, expiring structured continuation state; cancellation, unrelated work, scope expansion and output-cap exhaustion revoke it. Raw prior prompts and transcript context cannot restore authority. Read-only discovery and preflight remain available without a grant.
 
 The synthetic multi-item lifecycle verifies per-item preflight, continue-on-failure, hash-verified resume and recovery after an output succeeds before its checkpoint. Version-only local engine discovery never starts generation. Native OpenCode acceptance verifies grant admission and revocation without invoking image generation; no real model quality or visual acceptance is claimed.
+
+Scenario 239 binds bounded read-only Impact Graph relationship candidates to import, literal CLI dispatch, test, and documentation registry evidence; lifecycle checks confirm source-line provenance, explicit dynamic unknowns, budget truncation, unchanged canonical graph bytes and partial/unknown global coverage.
 
 ## Scenario 236 — Local Creative Bundle Execution
 

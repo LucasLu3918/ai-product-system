@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Impact candidates are advisory software discovery evidence and do not authorize creative asset changes.
+
 The prompt compiler extraction does not change the creative workflow, model selection, or review steps described here.
 
 
@@ -150,6 +152,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 新專案若尚未選擇技術，AIPS 會先檢查硬性限制，再依團隊、產品、既有系統、交付與維護需求提出少量候選和取捨；語言與框架分開選擇。架構建議同時看複雜度訊號與反向訊號，並分開說明 Clean Architecture、DDD 與部署方式。重要選擇由使用者確認後，才會整理到 Implementation Profile。
 
 ## Global Harness 與 MCP
+
+For existing-project discovery, `aips intelligence impact-candidates --seed-path <path>` reports unreviewed source-backed relationships only; review evidence never grants mutation authority.
 
 本次 prompt compiler 內部抽離不改變 OpenCode 原生工具、授權、安裝步驟或 creative 操作流程；原有 `creative_execution` facade 仍供既有呼叫端使用。
 
@@ -285,6 +289,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+Review bounded Impact Graph candidates with their source path and line. Dynamic relationships remain unknown, and candidate output does not alter canonical coverage.
 
 Review assistance is an optional local second opinion. Inspect the actual image and approved Profile yourself; model findings cannot complete visual review or user acceptance.
 

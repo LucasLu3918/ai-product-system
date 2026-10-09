@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+Existing Project relationship discovery is explained in Project Intelligence; architecture boundaries are summarized in Architecture Overview and scenario evidence is listed in Conformance.
+
 Creative quality workflow 的操作、OpenCode 授權、Profile contract 與 lifecycle 證據依 User Guide、Creative Direction、Scenario 234/236/238 對照；AI review 僅提供建議。
 
 Implementation maintainers can find the internal prompt compiler boundary and extraction evidence in the Architecture Overview, Technology Guide, and Scenario Conformance pages.

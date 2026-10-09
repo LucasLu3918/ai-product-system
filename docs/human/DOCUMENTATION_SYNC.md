@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Project Intelligence candidate behavior is synchronized across its user guide, architecture and conformance topics; candidates remain unreviewed and non-canonical.
+
 Creative prompt compilation、model advice 與 review-assist 的文件閉包由 `config/documentation-sync.yaml` 和 `config/documentation-placement.yaml` 登錄；建議報告不得取代 Human review 或 user acceptance。
 
 Behavior-preserving extraction of prompt compilation or model advice keeps `creative_execution` as the compatibility facade and records exact output and object-identity evidence; it does not imply a new user workflow or provider capability.
@@ -179,6 +181,8 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+The relationship-candidate registry and its generated capability projections are included in the recursive documentation and validation closure.
 
 For creative prompt/model/review behavior, placement and synchronization registries name the existing canonical Creative sections and Scenario 234/236/238 evidence; generated output remains advisory.
 

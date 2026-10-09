@@ -27,3 +27,6 @@ For local Z-Image Turbo generation, use the shared creative_execution capability
 For multiple configured Bundles, use aips creative generate-set --project PROJECT --manifest CREATIVE_JOB_MANIFEST.yaml. The bounded manifest runs each item's preflight, continues after failures, and resumes only when saved output and provenance hashes still match.
 
 The `review-assist` action requires explicit visual-review intent in the current user prompt, stays bound to the active Session root, and uses only an already-installed local vision model. Its report is advisory and cannot grant generation, write or user-acceptance authority.
+# Project Intelligence impact candidates
+
+`aips intelligence impact-candidates` provides bounded, read-only source candidates. It does not grant OpenCode write authority or update canonical Impact Graph edges; dynamic behavior remains unresolved.

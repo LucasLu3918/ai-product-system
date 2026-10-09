@@ -82,6 +82,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
+Installed runtimes may use `aips intelligence impact-candidates --seed-path <path>` for bounded read-only relationship discovery; the command preserves unknown relationships and does not alter Project Intelligence graph files.
+
 The creative prompt compiler is part of the existing AIPS Python package and adds no installer step, provider dependency, or model download.
 
 Local creative visual assistance uses an already-installed Ollama model over fixed loopback only; the workflow does not install the model or enable a cloud endpoint.

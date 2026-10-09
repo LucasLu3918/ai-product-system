@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+When Project Intelligence candidate behavior changes, preserve its read-only status and verify the documentation placement and synchronization closure.
+
 The creative authorization change updates the recursive character-artwork and Harness documentation closure; its exact candidate, changed-file digest and boundary evidence are bound by `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`.
 
 The candidate report measures direct paths, closure additions, rule fan-in and repeated requirements. Repeated requirements are retained unless their content is shown to be redundant.
@@ -442,6 +444,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+Project Intelligence candidate contract and lifecycle checks are registered; they assert bounded output, unknown dynamic behavior and unchanged canonical graph coverage.
+
 Creative Core Matrix rows bind profile contracts, local-only review authorization, scenario evidence and recursive documentation placement to the exact candidate.
 
 CI 對每個候選安裝 `requirements.txt`、`requirements-validation.txt`、`requirements-visual.txt` 與 `requirements-openapi.txt` 的 Python 套件，確保必要的完整 CLI lifecycle fixtures 可執行；Node、文件建置套件與 Playwright Chromium 仍依精確候選路徑選擇。
@@ -561,6 +565,8 @@ Use `config/branch-lifecycle.yaml` and `scripts/branch_hygiene.py` before cleanu
 
 
 ## Repository Health / Architecture Drift consistency
+
+The capability registry records the candidate module and its lifecycle/contract evidence; generated projections must be regenerated and checked from that registry.
 
 The Project Intelligence context helper is behind the existing facade and generated capability projections remain derived from the canonical registry.
 

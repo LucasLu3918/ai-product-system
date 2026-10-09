@@ -67,6 +67,7 @@ v0.14.1 重新核對 Scenario 001–095 與目前 canonical contracts，先修�
 
 - Update Preflight：沒有 `.ai/` 的 Project 保持 EPHEMERAL，不再自動 Attach。
 - Project Knowledge：新 reusable understanding 以 Project Intelligence + SOURCE_REGISTRY 為 canonical；`.ai/knowledge/` 僅保留 migration compatibility。
+
 - Runtime instruction integration：Codex / Claude 使用 managed composition 保存既有使用者內容，不再因為檔案已存在就一律降為 MANUAL。
 - Harness lifecycle：ownership 以 managed block / namespaced hook 為單位安全移除；使用者內容與 unrelated settings 必須保留。
 - Runtime capability：Context Capability 與 Governance Enforcement 維持兩個獨立 truth axes。
@@ -1614,6 +1615,8 @@ The monthly evaluator deterministically samples up to 20 signal fingerprints and
 
 ## Scenario 220 — Parallel advisory fast feedback
 
+Scenario 239 extends Project Intelligence evidence with bounded, read-only relation candidates while preserving partial/unknown graph coverage.
+
 Unknown and malformed paths retain complete validation selection.
 
 The required validation workflow exports its fully provisioned Python interpreter as `AIPS_VALIDATION_PYTHON` before the deterministic Gate; `publish_preflight_contracts` verifies the handoff and ordering for isolated CLI fixtures.
@@ -1721,6 +1724,8 @@ Scenario 236's native-context checks are complemented by Scenario 238: the activ
 
 Scenario 238 covers the per-item job result lifecycle, verified resume, orphaned-success recovery and fixed local version probes. Native OpenCode acceptance does not execute image generation or claim visual quality.
 
+Scenario 239 verifies read-only Impact Graph relationship candidates, source-line provenance, budget truncation, unresolved dynamic relations and unchanged canonical graph state.
+
 Z-Image Turbo 測試涵蓋專用 MFLUX generate 命令與固定 ComfyUI split-loader 拓樸、模型清單核對及 prompt PNG metadata 清理；明確步數、拒絕 edit／非 Turbo 變體／通用 FLUX 命令，既有離線、create-only 與人工 PENDING 契約保持適用。
 
 Scenario 236 新增 Bundle 設定競爭／來源保留、native Context envelope、使用者授權撤銷、唯讀預檢、媒材不符與損壞 PNG 檢查。實際 tool callback 使用無憑證 fixture；這不等於真實模型品質或使用者接受。
@@ -1730,6 +1735,8 @@ Scenario 236 covers versioned no-overwrite Profile/Bundle preparation, fixed MFL
 The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies concurrent preparation allocates distinct versions, unconfigured engines remain blocked, preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, MFLUX commands match the fixed capability registry, batch references remain bounded, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, the Z-Image Turbo split-loader graph and local model inventory are exact, prompt-bearing PNG text metadata is removed, edits use exactly one hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
+
+Scenario 239 adds a separate read-only relationship-candidate lifecycle; diagnostics and candidate reports both leave Project Intelligence canonical state unchanged.
 
 診斷結果仍是唯讀建議；創作引擎診斷不得觸發安裝、下載、生成或授權延續，這些動作維持各自明確入口。
 

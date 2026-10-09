@@ -56,6 +56,8 @@ The creative tool normalizes native message envelopes and evaluates user-only re
 
 Existing-project mutations require current enough Intelligence, relevant native rules, Change Impact, valid project-native style preservation, and verification of declared inputs/outputs/data/events/consumers.
 
+The `impact-candidates` command is read-only discovery evidence. Candidate relationships remain unreviewed and cannot satisfy canonical graph coverage or mutation approval by themselves.
+
 Missing required context fails closed for the affected mutation; general conversation fails soft.
 
 ## Uninstall

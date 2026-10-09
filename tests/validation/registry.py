@@ -62,6 +62,7 @@ VALIDATORS = (
     ValidatorSpec("validation.gemini_provider_session_workflow_contracts", False),
     ValidatorSpec("validation.external_credential_guard_contracts", False),
     ValidatorSpec("validation.repository_health_contracts", False, ("scripts/repository_health.py", "config/repository-health.yaml", "tests/evidence/repository_health_lifecycle.py", "tests/validation/repository_health_contracts.py"), False),
+    ValidatorSpec("validation.project_intelligence_candidates_contracts", False, ("scripts/project_intelligence.py", "scripts/project_intelligence_impact_graph.py", "tests/evidence/project_intelligence_relation_candidates_lifecycle.py", "tests/validation/project_intelligence_candidates_contracts.py"), False),
     ValidatorSpec("validation.codex_hooks_contracts", False, ("harness/adapters/codex/hooks/*", "tests/evidence/codex_hooks_lifecycle.py", "tests/scenarios/227-codex-native-hook-enforcement-probe.md", "tests/validation/codex_hooks_contracts.py"), False),
     ValidatorSpec("validation.agent_eval_freshness_contracts", False, ("config/eval-freshness.yaml", "scripts/agent_eval_freshness.py", "tests/evidence/agent_eval_freshness_lifecycle.py", "tests/scenarios/229-agent-eval-freshness.md", "tests/validation/agent_eval_freshness_contracts.py"), False),
     ValidatorSpec("validation.mcp_interoperability_contracts", False),
