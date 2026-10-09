@@ -29,6 +29,8 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+Impact candidate guidance is synchronized across the existing Project Intelligence Human and Agent topics; it remains advisory and non-canonical.
+
 The creative workflow's fresh-grant continuation, output cap, local engine recovery and no-silent-fallback behavior stay aligned across Human guidance, OpenCode Agent rules, Creative Direction and Scenario 238.
 
 Amplification metrics reveal repeated document requirements for review; only proven duplicate content can justify a future policy reduction.
@@ -244,6 +246,8 @@ The report exposes repeated requirements and closure ratios for human review whi
 
 
 The Phase 2 helper lifecycle remains part of the required repository aggregate and pins existing digest/path/glob behavior; it does not replace the monthly reliability evidence or its UNKNOWN handling.
+
+Read-only Impact Graph relationship candidates remain part of Project Intelligence; their provenance, unresolved dynamics and non-promotion boundary are synchronized in Human and Agent guidance.
 
 Changes to Turn Context routing retain the small fixed core, route-source ownership and fail-closed missing-source behavior across Human and Agent documents.
 

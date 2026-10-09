@@ -35,6 +35,8 @@ Role、Skill、Protocol 與 Project evidence 只在 task relevant 時載入，�
 
 The compact Project Intelligence Context projection remains behind the public facade; diagnostic recovery suggestions do not execute automatically.
 
+Impact candidate discovery is exposed by the same CLI and remains report-only: source-backed imports, literal dispatch, tests and documentation references do not update canonical graph edges or coverage.
+
 
 `aips project diagnose` aggregates existing Project Intelligence readiness, Runtime/Harness status and MCP static inspection. It reports safe recovery actions without invoking them.
 
@@ -65,6 +67,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+Impact candidate extraction is bounded and read-only; its source references remain unreviewed and are not execution or approval evidence.
 
 The shared validation-path inventory classifies known roots and prefixes for both CI planners. Each planner keeps its own risk and validator-selection semantics; unknown or malformed paths continue to select full validation.
 
@@ -202,6 +206,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Impact candidate checks preserve source provenance, report budget truncation and unresolved dynamic relationships, and prove canonical graph state and global coverage remain unchanged.
 
 Creative visual assistance writes a separate advisory report; its findings do not replace independent Human review, user acceptance, or measured real-model quality evidence.
 

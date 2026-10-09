@@ -83,6 +83,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+The candidate command and its review boundary are routed through canonical Project Intelligence guidance and its registered conformance evidence.
+
 Creative prompt compiler、model capability evidence 與本機 vision advisory 的行為由 Creative Direction 和 Scenario 234/236/238 定義；Human 導覽與文件閉包由本圖及 Documentation Sync 維護。
 
 Compiler implementation is maintained in `scripts/creative_prompt_compiler.py`; the stable `creative_execution` facade and exact-output evidence are described in Architecture Overview and Technology Guide.
@@ -182,6 +184,8 @@ docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGEL
 
 
 ## 文件一致性
+
+Project Intelligence relationship candidates are documented in the Project Intelligence and Architecture Overview sections; their scenario evidence is indexed in Conformance.
 
 Runtime, diagnostics, creative provenance, CI planning, telemetry and governance changes follow the recursive Documentation Impact Gate. Its closure size is a review metric; it does not by itself authorize removing canonical placements.
 

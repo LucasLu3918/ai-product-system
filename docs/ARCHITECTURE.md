@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+Project Intelligence `impact-candidates` emits bounded, provenance-backed source candidates; its report is unreviewed, leaves dynamic behavior unresolved, and never writes canonical graph edges or upgrades coverage.
+
 OpenCode hooks run asynchronously with bounded output and cancellation. A short per-Session Context cache deduplicates reads; permission decisions refresh Context, and host-version acceptance remains separate from plugin discovery.
 
 

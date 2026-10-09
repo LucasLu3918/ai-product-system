@@ -20,6 +20,8 @@ Managed AIPS CLI runtimes require Python >=3.12. An explicit `AIPS_PYTHON` is au
 
 ## Context contract
 
+The additive `impact-candidates` command is read-only and its output does not alter Context freshness, project readiness or mutation authorization.
+
 Creative prompt compilation and model guidance consume approved Profile facts as advisory input; only the active user's explicit action grant authorizes local execution or visual review.
 
 For OpenCode Creative mutations, Runtime Context is advisory routing input; only the current native prompt-admission hook creates the transient, session-bound action grant.

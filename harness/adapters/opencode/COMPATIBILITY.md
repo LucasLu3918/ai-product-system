@@ -80,3 +80,6 @@ The local creative executor registers Z-Image Turbo generate via the dedicated M
 The OpenCode configure schema exposes the registered `model_profile`, `unet_name`, `clip_name` and `vae_name` fields. Read-only discovery checks only `127.0.0.1:8188`; FP8 compatibility remains advisory and real inference remains unverified.
 
 The optional generate-set action accepts a bounded project-relative job manifest and maps only to the current prompt's explicit execute grant. Its shared CLI validates every Bundle, runs per-item preflight, continues after failures, and records hash-bound results for safe resume.
+# Project Intelligence impact candidates
+
+The additive `impact-candidates` CLI is report-only. OpenCode must treat its source-backed relationships as unreviewed evidence and preserve unknown coverage.

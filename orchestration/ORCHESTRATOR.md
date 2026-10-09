@@ -10,6 +10,8 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 ## Minimal algorithm
 
+For existing-project changes, the Agent may use `impact-candidates` as bounded discovery evidence; unresolved relations and global coverage limitations remain explicit through review and verification.
+
 Read-only Project Diagnostics recommends inspection or conditional recovery and never executes those actions.
 
 

@@ -173,6 +173,8 @@ Client-owned MCP config 不由 AIPS 自動寫入或刪除。
 
 ## Portable Commands
 
+The Project Intelligence `impact-candidates` command is a read-only review aid; its candidates never grant mutation authority or update canonical graph state.
+
 The read-only `aips run dashboard` is a repository-scoped observation consumer and does not install a host integration or add mutation authority.
 
 Evolution maintenance commands are also exposed through the checkout-root-aware CLI: `aips evolution package`, `aips evolution analyze` and `aips evolution apply`. They share the resolved project runtime; the apply path remains bounded by the existing Human decision and trial authorization.

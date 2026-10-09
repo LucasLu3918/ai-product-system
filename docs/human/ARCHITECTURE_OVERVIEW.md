@@ -95,6 +95,8 @@ Existing Project 第一次需要廣泛理解或修改時，先 read-only bootstr
 
 修改既有專案時，Change Impact 會把 canonical Impact Graph、可重建的本機 lexical code relations 與本次 traversal evidence 分成三層。依風險設定 caller/consumer 深度與 node/edge 上限；結果會列出受影響但未修改的檔案供 review。Lexical 關係是候選而非編譯器解析結果；動態 dispatch、圖涵蓋不足、索引過期或預算截斷都會標成 unknown/incomplete，高風險情境不能據此宣稱完整。
 
+`aips intelligence impact-candidates --seed-path <path>` 可從 Python imports、literal CLI dispatch、測試引用與文件 placement registry 產生有來源行號的唯讀候選。候選未經審閱不會進入 canonical Impact Graph；動態關係保持 unknown，全域 coverage 不會因此升級。
+
 Temporal Project Intelligence 在既有層上增加 `TEMPORAL_ASSERTIONS.yaml`，以 Git revision ancestry 表達事實有效期間，以 provenance、observed metadata 與 supersession 表達架構演進。一般工作仍使用 Current Snapshot；只有歷史、backport、release branch 或 evolution 問題才執行 bounded temporal query。SQLite 只保存可重建投影，不是 canonical truth。
 
 Turn Context 另以 deterministic L1 Project Core capsule 壓縮穩定摘要並保留 source digest/pointers；L2 提供 topic 與 bounded retrieval，L3 指向按需讀取的原始來源。Core capsule 是可重建衍生檢視，不取代權威文件或 temporal assertions；context-audit 以唯讀方式檢查 freshness、provenance 與衝突。
@@ -113,6 +115,8 @@ repository_id
 EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才使用 project-local .ai/。
 
 ## Creative Workflow
+
+Project Intelligence candidate reports remain read-only and cannot authorize creative execution or change canonical graph state.
 
 Creative manifests distinguish workflow execution and raster validity from real model inference, Human visual review and user acceptance.
 
@@ -174,6 +178,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+Project Intelligence relationship candidates are listed as review evidence under the existing capability; generated architecture surfaces remain projections of the canonical registry.
 
 Prompt compilation is deterministic and fingerprinted; model rankings and local vision reports remain advisory and never change execution status or selected model.
 
@@ -336,6 +342,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+The candidate command is read-only and does not change graph completeness or publication authority.
 
 The creative change updates the recursive documentation map and retains a scoped Impact Graph unknown disposition until consumer edges are independently mapped.
 

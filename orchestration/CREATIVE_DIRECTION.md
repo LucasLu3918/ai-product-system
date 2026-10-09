@@ -55,6 +55,8 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+Project Intelligence relationship candidates are advisory discovery evidence only; they do not grant permission to create or modify visual assets.
+
 The general `aips project diagnose` command is read-only and does not discover, prepare, configure or execute a creative provider. Creative workflow authorization remains governed by the explicit request and bounded creative lifecycle.
 
 For local Z-Image Turbo in ComfyUI, use the registered API workflow template and verify the three locally installed model files during preflight; do not substitute custom nodes or treat this profile as image editing support. AIPS strips ComfyUI prompt-bearing PNG text chunks before publishing the output file.

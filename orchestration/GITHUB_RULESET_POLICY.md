@@ -4,6 +4,8 @@
 
 ## Inputs
 
+Exact-candidate publication checks remain authoritative; read-only relationship candidates do not satisfy required checks or branch protection.
+
 Local Project Diagnostics does not inspect GitHub branch protection or ruleset snapshots. Remote policy remains UNKNOWN until a complete read-only repository snapshot is supplied to the canonical evaluator.
 
 OpenCode integration candidates retain the Core classification and required repository checks. Native Host detection does not authorize remote publication or merge.

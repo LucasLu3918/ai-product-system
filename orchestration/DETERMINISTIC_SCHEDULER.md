@@ -174,6 +174,8 @@ The Scheduler never falls back to LLM coordination to make a blocked graph look 
 
 ## Read-only declaration and fail-closed boundary
 
+Project Intelligence relation candidates are read-only observations and cannot add approved tasks, alter canonical graph state or authorize execution.
+
 An optional creative vision-review report is evidence only: it cannot complete a review task, grant generation authority or change the user's output budget.
 
 Creative generation is not scheduled by the authorization continuation path: clarification state only derives bounded current-response authority, while provider execution remains an explicit foreground action with its own preflight.

@@ -108,6 +108,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+The `impact-candidates` report may inform discovery but is not reviewed canonical evidence by itself; it does not close unknowns or change repository-wide partial/unknown coverage.
+
 Reconcile the exact committed candidate, sorted changed paths and binary diff digest. A partial Impact Graph may be accepted only with scoped manual consumer evidence; it must not be described as globally complete.
 
 Compare the exact changed paths against inputs, outputs, data, events and consumers. Repository-wide Impact Graph coverage remains partial and must be recorded as a limitation.
@@ -171,7 +173,6 @@ If actual material impact falls outside the declared Change Boundary:
 
 - For release-readiness policy changes, include the changelog parser, exact candidate consumers, negative lifecycle cases, Scenario 208, and all canonical documentation placements in the final reconciled boundary.
 ## Impact Graph maintenance
-
 
 Update reusable `IMPACT_GRAPH.yaml` only when the change reveals/stably changes cross-component relationships.
 

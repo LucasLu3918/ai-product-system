@@ -48,6 +48,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+Relationship-candidate output is advisory evidence, not a promotion decision or effectiveness signal; only reviewed canonical edges affect graph state.
+
 Pending assessments remain distinct from assessed or disqualified evidence; bounded candidates still require a Human adoption decision.
 
 Creative model recommendations and local vision review are runtime evidence only; neither creates an Evolution adoption decision or replaces independent Human review.

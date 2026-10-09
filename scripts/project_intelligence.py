@@ -1122,7 +1122,7 @@ def resolve_component_context(store: Path, intel: dict[str, Any], component: str
         return public, []
     target = components.get(component)
     if not isinstance(target, dict):
-        raise RuntimeError(f"Unknown Project Intelligence component: {component}")
+        raise TypeError(f"Unknown Project Intelligence component: {component}")
 
     loaded_paths: list[str] = []
     target_topics: list[str] = []
@@ -1138,7 +1138,7 @@ def resolve_component_context(store: Path, intel: dict[str, Any], component: str
     for relationship_id in target.get("shared_relationships") or []:
         relationship = relationships.get(str(relationship_id))
         if not isinstance(relationship, dict):
-            raise RuntimeError(f"Unknown shared relationship for component {component}: {relationship_id}")
+            raise TypeError(f"Unknown shared relationship for component {component}: {relationship_id}")
         relationship_path = relationship.get("path")
         if not relationship_path:
             raise RuntimeError(f"Shared relationship has no path: {relationship_id}")
@@ -1683,7 +1683,25 @@ def impact_traverse(
     return result
 
 
-from project_intelligence_impact_graph import traverse_architecture_impact_graph
+from project_intelligence_impact_graph import (
+    generate_relation_candidates as _generate_relation_candidates,
+)
+from project_intelligence_impact_graph import (
+    traverse_architecture_impact_graph,
+)
+
+
+def impact_candidates(
+    root: Path,
+    seed_paths: list[str],
+    *,
+    max_files: int = 8000,
+    max_candidates: int = 300,
+) -> dict[str, Any]:
+    """Expose bounded source candidates without changing canonical graph state."""
+    return _generate_relation_candidates(
+        root, seed_paths, max_files=max_files, max_candidates=max_candidates,
+    )
 
 
 def validate_traversal_evidence(doc: dict[str, Any], changed_files: list[str] | None = None) -> list[str]:
@@ -2179,6 +2197,13 @@ def main() -> int:
     p.add_argument("--changed-path", action="append", default=[])
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
 
+    p = sub.add_parser("impact-candidates")
+    p.add_argument("--project", default=os.getcwd())
+    p.add_argument("--seed-path", action="append", required=True)
+    p.add_argument("--max-files", type=int, default=8000)
+    p.add_argument("--max-candidates", type=int, default=300)
+    p.add_argument("--format", choices=["yaml", "json"], default="yaml")
+
     p = sub.add_parser("context-audit")
     p.add_argument("--project", default=os.getcwd())
     p.add_argument("--format", choices=["yaml", "json"], default="yaml")
@@ -2269,6 +2294,13 @@ def main() -> int:
                 args.changed_path,
                 args.graph_seed,
             )
+        elif args.command == "impact-candidates":
+            result = impact_candidates(
+                root,
+                args.seed_path,
+                max_files=args.max_files,
+                max_candidates=args.max_candidates,
+            )
         elif args.command == "impact-validate":
             result = impact_validate(Path(args.path), root)
         elif args.command == "context-audit":
@@ -2312,7 +2344,7 @@ def main() -> int:
             result = reconcile_overrides(root)
         else:
             raise RuntimeError("unsupported command")
-    except (RuntimeError, OSError, ValueError) as exc:
+    except (RuntimeError, OSError, TypeError, ValueError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 2
     output(result, args.format)

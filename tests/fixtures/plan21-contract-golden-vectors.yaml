@@ -44,7 +44,7 @@ cli:
   stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 - argv: [intelligence, --help]
   exit_code: 0
-  stdout_sha256: 0e1ff902edfef018821ada5d29d64dbad1f06524fee62a67af97c4343be496ba
+  stdout_sha256: d12bacebc810f0efc5af239778e826c2c60e4088de3224a87d05800519fa7681
   stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 - argv: [publish, --help]
   exit_code: 0

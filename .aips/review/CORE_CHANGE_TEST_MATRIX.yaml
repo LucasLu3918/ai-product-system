@@ -1,81 +1,92 @@
 version: 1
 change:
-  id: plan26-phase1-creative-prompt-compiler
-  summary: Extract deterministic creative prompt compilation and model advice with
-    the stable facade, exact output parity, registered canonical documentation placement,
-    and the user-approved recursive documentation closure.
+  id: plan26-phase4-impact-relation-candidates
+  summary: Add bounded, read-only, provenance-backed Impact Graph relationship candidates while preserving unreviewed status and partial/unknown global coverage.
   boundary:
   - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
-  - .aips/review/PLAN26_PHASE1_CREATIVE_PROMPT_COMPILER_PROPOSAL.md
   - CHANGELOG.md
+  - config/architecture-surfaces.yaml
+  - config/capability-registry.yaml
+  - config/documentation-sync.yaml
   - config/documentation-placement.yaml
   - docs/ARCHITECTURE.md
   - docs/human/ARCHITECTURE_OVERVIEW.md
   - docs/human/CONFORMANCE.md
+  - docs/human/CONFORMANCE_CURRENT.md
+  - docs/human/CONFORMANCE_HISTORY_INDEX.md
   - docs/human/DOCUMENTATION_MAP.md
   - docs/human/DOCUMENTATION_SYNC.md
+  - docs/human/EVOLUTION_RADAR.md
   - docs/human/HARNESS.md
   - docs/human/INSTALLATION.md
   - docs/human/MAINTENANCE.md
+  - docs/human/PROJECT_INTELLIGENCE.md
+  - docs/human/SECURITY_ASSURANCE.md
+  - docs/human/SYSTEM_REFERENCE.md
   - docs/human/TECHNOLOGY_GUIDE.md
   - docs/human/USER_GUIDE.md
   - docs/human/index.md
   - harness/HARNESS_PROTOCOL.md
   - harness/adapters/opencode/AGENTS.md
   - harness/adapters/opencode/COMPATIBILITY.md
+  - orchestration/CHANGE_IMPACT.md
   - orchestration/CONFORMANCE.md
   - orchestration/CREATIVE_DIRECTION.md
+  - orchestration/DETERMINISTIC_SCHEDULER.md
+  - orchestration/PROJECT_INTELLIGENCE.md
   - orchestration/DOCUMENTATION_SYNC.md
-  - scripts/creative_errors.py
-  - scripts/creative_execution.py
-  - scripts/creative_prompt_compiler.py
-  - tests/evidence/creative_quality_lifecycle.py
-  - tests/evidence/module_extraction_lifecycle.py
-  - tests/validation/creative_execution_contracts.py
+  - orchestration/EXECUTION_ISOLATION.md
+  - orchestration/GITHUB_RULESET_POLICY.md
+  - orchestration/INTEGRATION_GATE.md
+  - orchestration/ORCHESTRATOR.md
+  - orchestration/RELEASE_READINESS.md
+  - orchestration/REPOSITORY_HEALTH.md
+  - orchestration/RUNTIME_CONTEXT.md
+  - scripts/project_intelligence.py
+  - scripts/project_intelligence_impact_graph.py
+  - tests/evidence/project_intelligence_relation_candidates_lifecycle.py
+  - tests/fixtures/plan21-contract-golden-vectors.yaml
+  - tests/scenario_coverage.yaml
+  - tests/scenarios/239-read-only-impact-relation-candidates.md
+  - tests/validate_repository.py
+  - tests/validation/project_intelligence_candidates_contracts.py
+  - tests/validation/conformance_isolation.py
   - tests/validation/registry.py
+  - .aips/review/PLAN26_PHASE4_IMPACT_RELATION_CANDIDATES_PROPOSAL.md
 candidate:
-  base_sha: b44cc28aa7b5ec687a7b49eaf77bed8434c1ce19
-  changed_files_hash: 8c9829a4134698ff855c1b3d273af5296ca8f7441dfeb21c1eac331735d60cc8
+  base_sha: f3adb04ee917b06529c8f4c110bb30c80897842f
+  changed_files_hash: 7358575198ec8a3082331b893fb745199183a7bfde2adf28b041bb77f6d87bdd
 matrix:
-- boundary: Creative prompt compiler, shared error type, and compatibility facade
-  reason: Prompt bytes determine generation fingerprints. The extraction must preserve
-    exact outputs, shared exception semantics, and existing callers.
+- boundary: Read-only source candidate extraction and provenance
+  reason: Imports, CLI routing, tests and documentation placements must produce bounded review evidence without promoting into canonical graph state.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff, Python syntax, and full repository validation on the exact candidate.
+      evidence: Ruff, Python syntax and full repository validation on the exact candidate.
     unit:
       applicable: true
-      evidence: Golden SHA-256 values verify exact prompt bytes and canonical model
-        recommendation output; invalid prompt preserves reason code.
+      evidence: Focused lifecycle covers import resolution, literal CLI dispatch, test imports, documentation placement and provenance.
     integration:
       applicable: true
-      evidence: Creative quality and execution lifecycles plus exact-candidate Core
-        Integration Gate.
+      evidence: Exact-candidate Core Integration Gate verifies the public CLI and repository validation.
     contract:
       applicable: true
-      evidence: Facade exports identical function/class objects; existing CLI, Bundle,
-        manifest, and version-1 data contracts remain unchanged.
+      evidence: Candidate status remains unreviewed; canonical graph bytes stay unchanged; dynamic relations remain unresolved; budgets report truncation.
     e2e:
       applicable: false
-      na_reason: No UI or browser workflow changes; native host acceptance is covered
-        by the CLI/Harness check.
+      na_reason: No UI, browser or external runtime behavior changes.
     security:
       applicable: true
-      evidence: Mandatory credential-free strict candidate secret scan; compiler adds
-        no I/O, network, or external egress.
+      evidence: Mandatory credential-free strict candidate secret scan; candidate scanning is read-only and bounded.
     migration_recovery:
       applicable: false
-      na_reason: No persisted data, schemas, migrations, or recovery state change.
+      na_reason: No persisted schema or canonical graph migration is introduced.
     cli_harness:
       applicable: true
-      evidence: Creative execution lifecycle and native OpenCode host acceptance exercise
-        existing facade consumers.
+      evidence: "`aips intelligence impact-candidates --seed-path <path>` is exercised against isolated fixtures and the exact candidate."
     docs_schema:
       applicable: true
-      evidence: The canonical placement map registers both helpers; exact-candidate
-        sync/placement audits and recursive publish impact closure are required for
-        all 28 paths, including the approved documentation closure and Harness placements.
+      evidence: Project Intelligence docs, canonical placement/sync registrations, scenario coverage and capability projections pass exact-candidate documentation gates.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
@@ -83,7 +94,10 @@ review_evidence:
 blockers: []
 status: READY
 verification:
+  focused_lifecycle: PASS
+  candidate_contract: PASS
   repository_validation: PASS
   documentation_sync: PASS
   documentation_placement: PASS
-  core_gate: PENDING_EXACT_CANDIDATE_EXECUTION
+  capability_registry: PASS
+  core_gate: PASS

@@ -206,6 +206,7 @@ Readers continue using the last valid generation.
 Scoped evidence does not upgrade this repository’s partial Impact Graph to complete repository-wide coverage.
 
 
+
 For Creative changes, Impact Graph traversal identifies the executor, OpenCode adapter, job schema and docs consumers; Project Intelligence remains advisory and does not mint the native prompt grant.
 
 Project Diagnostics may summarize readiness but is not a retrieval or Impact Graph query; it cannot promote inferred relationships or disposition affected consumers.
@@ -633,6 +634,8 @@ The CLI commands are deterministic building blocks used by the Agent/Harness and
 ## Retrieval relationships and impact traversal
 
 When creative consumer edges are unmapped, preserve PARTIAL graph readiness and record manually inspected consumers and accepted unknowns in the scoped Change Impact artifact.
+
+`aips intelligence impact-candidates --seed-path <path>` is a bounded read-only candidate view over Python imports, literal CLI dispatch, test imports and documentation placement. Every candidate retains source-path/line provenance and remains unreviewed; dynamic relationships remain unknown, and output never updates canonical `IMPACT_GRAPH.yaml` or global partial/unknown coverage.
 
 
 Structured unknown dispositions preserve the original description and require a verifiable repository-file or complete scoped traversal evidence item plus explicit Human review. Legacy strings, stale evidence, out-of-root paths and mismatched scope remain blocking; they do not alter repository-wide coverage.

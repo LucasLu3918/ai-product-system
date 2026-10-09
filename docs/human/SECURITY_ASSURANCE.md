@@ -213,6 +213,8 @@ Review actual:
 
 ## Release Security Gate
 
+Read-only Impact Graph candidates do not replace the exact-candidate secret scan, satisfy a security gate, or grant publication authority.
+
 Core creative candidates keep local vision review opt-in, use the fixed loopback endpoint with proxy and redirects disabled, and include exact-candidate privacy and authorization evidence.
 
 CI 在 tested constraints 下提供必要 lifecycle fixtures 使用的完整 Python 套件；候選秘密掃描及 `repository` 必要檢查不變，Node 與 Chromium 只在候選需要時安裝。

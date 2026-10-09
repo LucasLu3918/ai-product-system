@@ -125,6 +125,7 @@ surfaces:
   - implementation-resolution
   required_paths:
   - scripts/project_intelligence.py
+  - scripts/project_intelligence_impact_graph.py
   - scripts/project_intelligence_context.py
   - scripts/project_intelligence_promotion.py
   - scripts/project_intelligence_temporal.py
@@ -140,7 +141,10 @@ surfaces:
   - scripts/run_dashboard.py
   - tests/evidence/change_impact_resolution_lifecycle.py
   - tests/evidence/retrieval_relations_extraction_lifecycle.py
+  - tests/evidence/project_intelligence_relation_candidates_lifecycle.py
+  - tests/scenarios/239-read-only-impact-relation-candidates.md
   - tests/validation/change_impact_resolution_contracts.py
+  - tests/validation/project_intelligence_candidates_contracts.py
   - tests/validation/conformance_isolation.py
   - tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md
   - scripts/planning_package_validate.py
@@ -159,7 +163,9 @@ surfaces:
   - tests/evidence/project_intelligence_lifecycle.py
   - tests/evidence/change_impact_resolution_lifecycle.py
   - tests/evidence/module_extraction_lifecycle.py
+  - tests/evidence/project_intelligence_relation_candidates_lifecycle.py
   - tests/validation/change_impact_resolution_contracts.py
+  - tests/validation/project_intelligence_candidates_contracts.py
   - tests/validation/conformance_isolation.py
   - tests/evidence/identity_resume_isolation.py
   - tests/evidence/run_dashboard_lifecycle.py
