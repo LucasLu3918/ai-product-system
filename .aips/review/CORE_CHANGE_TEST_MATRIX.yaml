@@ -5,8 +5,8 @@ change:
     module while preserving the creative_execution facade, Blocked exception identity,
     and exact outputs; synchronize the approved recursive documentation closure.
   boundary:
-  - .aips/review/PLAN26_PHASE1_CREATIVE_PROMPT_COMPILER_PROPOSAL.md
   - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
+  - .aips/review/PLAN26_PHASE1_CREATIVE_PROMPT_COMPILER_PROPOSAL.md
   - CHANGELOG.md
   - docs/ARCHITECTURE.md
   - docs/human/ARCHITECTURE_OVERVIEW.md
@@ -72,14 +72,13 @@ matrix:
         existing facade consumers.
     docs_schema:
       applicable: true
-      evidence: Source architecture, changelog, and all 16 user-approved recursive
-        documentation paths are synchronized; architecture diagrams are assessed as
-        unaffected with a concrete no-flow-change reason; repository documentation
-        validation and exact-candidate impact closure are required.
+      evidence: Exact candidate sync and placement audit pass; recursive publish impact
+        is complete with 27 direct paths, zero required additions, all 16 approved
+        documents present, and diagrams assessed unaffected with the no-flow-change
+        reason.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
-blockers:
-  - pending final exact-candidate validation and evidence refresh
-status: DRAFT
+blockers: []
+status: READY
