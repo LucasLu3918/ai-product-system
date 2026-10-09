@@ -30,6 +30,7 @@ from aips_identity import (
 from content_safety import safe_emit as safe_context_emit
 from git_paths import GitPathsError, run_git_paths
 from observed_stage import observed_stage
+from project_intelligence_context import SOURCE_NAMES, compact_context_manifest
 from project_intelligence_promotion import promotion_candidate as _promotion_candidate
 from project_intelligence_promotion import promotion_target as _promotion_target_impl
 from project_intelligence_storage import atomic_text, atomic_yaml, writer_lock
@@ -80,7 +81,6 @@ SECRET_NAMES = {
     ".env", ".env.local", ".env.production", ".env.development",
     "id_rsa", "id_ed25519", "credentials.json", "service-account.json",
 }
-SOURCE_NAMES = {"AGENTS.md", "AGENTS.override.md", "CLAUDE.md", "GEMINI.md"}
 MANIFEST_NAMES = {
     "go.mod", "go.work", "package.json", "pnpm-workspace.yaml", "yarn.lock",
     "Cargo.toml", "pyproject.toml", "requirements.txt", "pom.xml", "build.gradle",
@@ -1253,7 +1253,7 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
                     "token_budget": retrieval_budget,
                     "estimated_tokens": 0,
                 }
-        except Exception as exc:
+        except (GitPathsError, OSError, RuntimeError, TypeError, ValueError, KeyError, yaml.YAMLError) as exc:
             diagnostic = retrieval_index_unavailable(exc, token_budget=retrieval_budget)
             retrieval = {
                 "status": "UNAVAILABLE",
@@ -1393,43 +1393,6 @@ def context_manifest(root: Path, runtime: str, prompt: str, explain: bool = Fals
     }
     manifest["context"]["layers"]["telemetry"]["full_manifest_characters"] = len(json.dumps(manifest, ensure_ascii=False))
     return manifest
-
-
-def compact_context_manifest(manifest: dict[str, Any]) -> dict[str, Any]:
-    context = manifest.get("context") or {}
-    layers = context.get("layers") or {}
-    retrieval = context.get("retrieval") or {}
-    instruction_names = SOURCE_NAMES
-    project_instructions = [path for path in context.get("project_native") or [] if Path(path).name in instruction_names]
-    return {
-        "version": manifest.get("version"),
-        "runtime": manifest.get("runtime"),
-        "project": manifest.get("project"),
-        "task": manifest.get("task"),
-        "context": {
-            "always": context.get("always") or [],
-            "system_protocol_routes": context.get("system_protocol_routes") or {},
-            "runtime_native": context.get("runtime_native") or [],
-            "project_native": project_instructions,
-            "source_scope": context.get("source_scope") or {},
-            "intelligence_topics": context.get("intelligence_topics") or [],
-            "project_core": (layers.get("core") or {}).get("summary"),
-            "retrieval": {
-                "status": retrieval.get("status"),
-                "reason_code": retrieval.get("reason_code"),
-                "remediation": retrieval.get("remediation"),
-                "results": [
-                    {key: item.get(key) for key in ("path", "start_line", "end_line", "reason", "snippet") if item.get(key) is not None}
-                    for item in (retrieval.get("results") or [])[:4]
-                ],
-            },
-            "on_demand_source_count": len(context.get("project_native") or []) - len(project_instructions),
-        },
-        "intelligence": manifest.get("intelligence"),
-        "freshness": {key: (manifest.get("freshness") or {}).get(key) for key in ("status", "reasons", "affected_topics")},
-        "requirements": manifest.get("requirements"),
-        "fail_policy": manifest.get("fail_policy"),
-    }
 
 
 def topic_is_complete(store: Path, name: str, topic: Any) -> bool:

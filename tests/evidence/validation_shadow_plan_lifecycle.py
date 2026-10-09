@@ -13,9 +13,10 @@ import validation_shadow_plan as shadow  # noqa: E402
 
 def main() -> int:
     config = yaml.safe_load((ROOT / "config/validation-scope.yaml").read_text(encoding="utf-8")) or {}
+    inventory = yaml.safe_load((ROOT / "config/validation-path-inventory.yaml").read_text(encoding="utf-8")) or {}
     paths = ["scripts/evolution_radar.py", "tests/evidence/evolution_radar_lifecycle.py"]
-    first = shadow.build_plan(config, paths, base="a" * 40, head="b" * 40, change_class="standard")
-    second = shadow.build_plan(config, paths, base="a" * 40, head="b" * 40, change_class="standard")
+    first = shadow.build_plan(config, paths, base="a" * 40, head="b" * 40, change_class="standard", path_inventory=inventory)
+    second = shadow.build_plan(config, paths, base="a" * 40, head="b" * 40, change_class="standard", path_inventory=inventory)
     assert first == second, "same exact candidate must produce an identical shadow plan"
     assert first["mode"] == "FULL_RUN_SHADOW" and first["replay_status"] == "NOT_RUN"
     assert first["selective_execution_enabled"] is False
@@ -25,16 +26,16 @@ def main() -> int:
     assert "validation.evolution_radar_contracts" in first["would_run"]
     assert first["would_skip"], "scoped validators should be measurable as advisory shadow skips"
 
-    unknown = shadow.build_plan(config, ["unregistered/new-boundary/file.py"], base="a" * 40, head="c" * 40, change_class="standard")
+    unknown = shadow.build_plan(config, ["unregistered/new-boundary/file.py"], base="a" * 40, head="c" * 40, change_class="standard", path_inventory=inventory)
     assert unknown["full_validation_fallback"] is True
     assert unknown["would_skip"] == []
 
-    validator_change = shadow.build_plan(config, ["tests/validation/new_validator.py"], base="a" * 40, head="e" * 40, change_class="standard")
+    validator_change = shadow.build_plan(config, ["tests/validation/new_validator.py"], base="a" * 40, head="e" * 40, change_class="standard", path_inventory=inventory)
     assert validator_change["full_validation_fallback"] is True
     assert validator_change["would_skip"] == []
 
     for change_class in ("large", "core", "release", "unknown"):
-        full = shadow.build_plan(config, paths, base="a" * 40, head="d" * 40, change_class=change_class)
+        full = shadow.build_plan(config, paths, base="a" * 40, head="d" * 40, change_class=change_class, path_inventory=inventory)
         assert full["full_validation_fallback"] is True
         assert full["would_skip"] == []
         assert full["actual_modules_run"] == [item.module for item in shadow.VALIDATORS]
@@ -51,6 +52,10 @@ def main() -> int:
     }])
     assert caught["status"] == "FAIL" and caught["false_negatives"], "replay must disclose a proposed false skip"
     assert caught["selective_execution_enabled"] is False
+
+    shared_root = shadow.build_plan(config, ["requirements-visual.txt"], base="a" * 40, head="f" * 40,
+                                    change_class="standard", path_inventory=inventory)
+    assert shared_root["full_validation_fallback"] is False and shared_root["unknown_paths"] == []
 
     print("VALIDATION SHADOW PLAN LIFECYCLE PASSED")
     return 0

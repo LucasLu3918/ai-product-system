@@ -85,6 +85,8 @@ A Large/Core Change is not complete when:
 
 ## Evidence
 
+For OpenCode, bind lifecycle evidence to asynchronous timeout/cancellation, Context cache freshness, direct permission Allow/Deny and a credential-free native loopback acceptance when a supported binary is available. Record the exact accepted host version; keep other versions and model-instruction delivery unverified.
+
 For shell CLI module extraction, preserve the public launcher and facade, verify ordered module loading from the resolved checkout, and run the lifecycle from source and installed-symlink entrypoints with a caller working directory outside the repository.
 
 When post-merge reconciliation is extracted, include both the publication lifecycle and module-facade lifecycle evidence in the same exact-candidate matrix.

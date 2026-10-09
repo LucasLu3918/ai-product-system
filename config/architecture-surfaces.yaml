@@ -125,6 +125,7 @@ surfaces:
   - implementation-resolution
   required_paths:
   - scripts/project_intelligence.py
+  - scripts/project_intelligence_context.py
   - scripts/project_intelligence_promotion.py
   - scripts/project_intelligence_temporal.py
   - scripts/retrieval_intelligence.py

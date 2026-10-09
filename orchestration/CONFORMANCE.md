@@ -22,11 +22,17 @@ Scenario 230 binds compact fixed-context and task-route behavior to the intellig
 
 ## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
 
+Candidate secret scanning remains mandatory when optional toolchains are omitted.
+
+
 OpenCode setup evidence does not replace candidate secret scanning, Core Matrix review, or exact-candidate publication checks.
 
 The weekly/manual workflow runs the pinned OSV Scanner reusable workflow and a full-history Gitleaks shadow scan. Both scan outcomes are advisory evidence; the existing required candidate secret scan and `repository` Gate remain unchanged. The workflow has no PR, merge, or publication authority and leaves CodeQL default setup as remotely configured evidence.
 
 ## Scenario 232 — Project Check and System Preflight
+
+Project Diagnostics remains read-only and does not perform its suggested recovery action.
+
 
 OpenCode integration retains system preflight and existing-host lifecycle checks; missing runtime detection is not native acceptance evidence.
 
@@ -34,11 +40,17 @@ OpenCode integration retains system preflight and existing-host lifecycle checks
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+The existing command facade and stable output contract remain in place.
+
+
 Scenario 236 adds fixed creative CLI routes; preflight and Gate inspection do not launch a provider.
 
 Public command groups expose help with status 0 and return nonzero for unknown subcommands. Keep routing in the shell facade and preserve internal library modules as libraries.
 
 ## Scenario 234 — Local Character Artwork Provenance and Composition
+
+Provenance keeps raster validity separate from inference and visual review.
+
 
 Scenario 236 adds a separate explicit execution boundary for local MFLUX and loopback ComfyUI, including the fixed Z-Image Turbo split-loader graph and local model inventory checks; ComfyUI prompt PNG metadata is removed before AIPS output publication. Character identity and style review remain independent.
 
@@ -872,6 +884,9 @@ Scenario 218 uses deterministic monthly fingerprint sampling and complete Human 
 
 ## Scenario 220 — Parallel advisory fast feedback
 
+Unknown paths continue to select the complete validation profile.
+
+
 The current creative execution Scenario is registered in the canonical coverage file and represented in the generated Human conformance summary.
 
 Scenario 224 is manual semantic acceptance for runtime-preferred primary routing. Scenario 225 is executable Skill-index lifecycle evidence; it does not prove actual Agent model selection.
@@ -884,15 +899,24 @@ Scenarios 211 and 217 also verify that dependency-review shadow evidence cannot 
 
 ## Scenario 221 — Dependency Update Risk Classification
 
+Dependency reports preserve Human review and do not merge unrelated pull requests.
+
+
 `scripts/dependency_impact.py` classifies dependency updates from `config/dependency-policy.yaml` and recommends evidence by class. Unknown packages are `UNCLASSIFIED` / `HIGH`; semantic runtime changes require retrieval regression and semantic trial evidence. The CLI is advisory, requires a human decision, and never authorizes automatic merges or policy edits.
 
 ## Scenario 222 — Large Document Measurement Only
+
+Documentation closure metrics are report-only and do not weaken placement requirements.
+
 
 The size audit measures tracked text/evidence files against 50,000 bytes and reports oversized items as non-blocking `WARN`. It never blocks a Gate and does not archive or move files.
 
 
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
+
+Candidate evidence stays bound to exact paths and reports missing facts as unknown.
+
 
 Creative authorization and multi-item output are recorded under Scenario 238 and the current Core Matrix; this remains local adapter evidence and makes no provider or visual-quality claim.
 
@@ -904,11 +928,17 @@ Scenario 236's exact-candidate Core Matrix records synthetic creative lifecycle 
 
 ## Scenario 238 — Creative Task Authorization and Multi-item Execution
 
+Each item retains explicit execution intent and distinct review/acceptance state.
+
+
 Native OpenCode V2 prompt admission issues an in-memory grant bound to the active session, workspace, actions and bounded output count; unrelated prompts revoke it, and truncated transcript context cannot restore authority. Read-only discovery and preflight remain available without a grant.
 
 The synthetic multi-item lifecycle verifies per-item preflight, continue-on-failure, hash-verified resume and recovery after an output succeeds before its checkpoint. Version-only local engine discovery never starts generation. Native OpenCode acceptance verifies grant admission and revocation without invoking image generation; no real model quality or visual acceptance is claimed.
 
 ## Scenario 236 — Local Creative Bundle Execution
+
+Synthetic-provider success does not establish real model inference or visual quality.
+
 
 Project Diagnostics remains a separate read-only command and does not configure or execute the Creative Bundle lifecycle.
 
@@ -953,5 +983,7 @@ The OpenCode lifecycle runs with the selected validation Python. OpenCode itself
 Scenario 210 is lifecycle-covered by `tests/evidence/install_preflight_lifecycle.py` and `tests/evidence/system_facts_lifecycle.py`. It verifies the Python >=3.12 floor across explicit selection, old managed venv repair, doctor diagnostics, canonical facts, and the scheduled 3.12–3.14 compatibility workflow.
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
+
+Recovery suggestions remain read-only and conditional across missing, stale, partial and blocked Intelligence. The lifecycle does not invoke the suggested bootstrap, refresh or finalization action.
 
 Scenario 237 binds reason-code recovery output, format parity, privacy redaction and no-write behavior to lifecycle evidence. It does not assert live Host or MCP execution.

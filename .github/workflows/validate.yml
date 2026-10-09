@@ -145,8 +145,10 @@ jobs:
       - name: Enforce progressive quality ratchet
         run: python scripts/quality_ratchet.py check --base "$AIPS_GATE_BASE"
       - name: Install browser validation dependencies
+        if: steps.validation_plan.outputs.needs_browser == 'true'
         run: python -m pip install -c constraints/tested.txt -r requirements-visual.txt
       - name: Install OpenAPI validation dependencies
+        if: steps.validation_plan.outputs.needs_openapi == 'true'
         run: python -m pip install -c constraints/tested.txt -r requirements-openapi.txt
       - name: Install deterministic Playwright Chromium
         if: steps.validation_plan.outputs.needs_browser == 'true'

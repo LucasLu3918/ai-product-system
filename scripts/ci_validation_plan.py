@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from validation_path_classification import unknown_paths
 
 DEFAULT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -49,15 +50,16 @@ def matches(path: str, selectors: list[str]) -> bool:
     return any(path == selector or path.startswith(selector) for selector in selectors)
 
 
-def build_plan(config: dict[str, Any], paths: list[str], *, base: str, head: str) -> dict[str, Any]:
+def build_plan(config: dict[str, Any], paths: list[str], *, base: str, head: str, path_inventory: dict[str, Any] | None = None) -> dict[str, Any]:
     if not isinstance(config, dict):
         raise PlanError("CI validation plan config must be a mapping")
     if config.get("version") != 1:
         raise PlanError("CI validation plan config version must be 1")
     full_paths = set(config.get("full_validation_paths") or [])
-    known_prefixes = tuple(config.get("known_path_prefixes") or [])
-    known_roots = set(config.get("known_root_paths") or [])
-    unknown = [path for path in paths if path not in known_roots and not path.startswith(known_prefixes)]
+    if path_inventory is None:
+        inventory_path = DEFAULT_ROOT / "config/validation-path-inventory.yaml"
+        path_inventory = yaml.safe_load(inventory_path.read_text(encoding="utf-8")) or {}
+    unknown = unknown_paths(paths, path_inventory)
     force_full = bool(unknown or full_paths.intersection(paths))
     capability_paths = config.get("capabilities") or {}
     selected = {
@@ -90,7 +92,8 @@ def main() -> int:
     config_path = args.config or root / "config/ci-validation-plan.yaml"
     try:
         config = yaml.safe_load(config_path.read_text(encoding="utf-8")) or {}
-        plan = build_plan(config, changed_paths(root, args.base, args.head), base=args.base, head=args.head)
+        inventory = yaml.safe_load((root / "config/validation-path-inventory.yaml").read_text(encoding="utf-8")) or {}
+        plan = build_plan(config, changed_paths(root, args.base, args.head), base=args.base, head=args.head, path_inventory=inventory)
     except (OSError, UnicodeError, yaml.YAMLError, PlanError) as exc:
         print(json.dumps({"version": 1, "full_validation": True, "needs_node": True, "needs_browser": True, "needs_openapi": True, "reason": "planner_error_fail_closed", "error": str(exc)}, sort_keys=True))
         return 0

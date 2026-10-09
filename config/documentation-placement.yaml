@@ -733,3 +733,21 @@ placement_rules:
       docs/human/TECHNOLOGY_GUIDE.md: [Project Understanding]
       docs/human/USER_GUIDE.md: [Project Intelligence]
       orchestration/PROJECT_INTELLIGENCE.md: [Existing-project automatic behavior]
+
+  - id: shared-validation-path-classification
+    triggers:
+      - config/validation-path-inventory.yaml
+      - scripts/validation_path_classification.py
+    placements:
+      docs/human/MAINTENANCE.md: [Validation architecture consistency]
+      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+      orchestration/DETERMINISTIC_SCHEDULER.md: [Validation de-duplication boundary]
+
+  - id: project-intelligence-context-projection
+    triggers:
+      - scripts/project_intelligence_context.py
+    placements:
+      docs/human/PROJECT_INTELLIGENCE.md: [Change Impact]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval]
+      docs/human/TECHNOLOGY_GUIDE.md: [Project Understanding]
+      orchestration/PROJECT_INTELLIGENCE.md: [Existing-project automatic behavior]

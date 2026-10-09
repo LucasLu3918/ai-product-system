@@ -32,6 +32,8 @@ The first v1 baseline reconciles one already-observed drift rather than suppress
 
 ## Explicit Architecture Surface Inventory
 
+The Project Intelligence context projection is an internal module behind the existing public facade. Its capability and architecture projections are generated from the canonical registry and checked for drift; the generated files are not independent sources of truth.
+
 The existing Harness runtime surface owns the creative executor, its Bundle template, Scenario, and lifecycle evidence; generated projections must remain in sync with the canonical registry.
 
 The Harness runtime surface includes the OpenCode native plugin, direct-action guard, creative metadata profile, privacy trace and their lifecycle/native acceptance evidence; generated inventory remains derived from the Capability Registry.

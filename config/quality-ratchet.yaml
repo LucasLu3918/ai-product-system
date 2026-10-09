@@ -27,6 +27,7 @@ mypy:
     - scripts/validation_observation.py
     - scripts/validation_taxonomy.py
     - scripts/project_intelligence_promotion.py
+    - scripts/project_intelligence_context.py
   follow_imports: skip
   ignore_missing_imports: true
 coverage:

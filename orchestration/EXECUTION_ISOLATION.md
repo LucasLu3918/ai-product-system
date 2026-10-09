@@ -258,6 +258,7 @@ Evolution Radar v0.43 expands research discovery and bounded semantic selection 
 
 ## Evolution evidence-quality boundary
 
+
 Evidence-quality classification is a read-only deterministic transform over collected source provenance. It does not create or select an execution workspace, and it does not authorize a Controlled Trial. A higher evidence level may make a signal eligible for advisory semantic `ADOPT`, but any actual mutation still requires the existing Human Decision and Execution Isolation contracts. Semantic providers cannot upgrade evidence metadata to obtain broader execution authority.
 
 
@@ -283,6 +284,9 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 
 ## Parallel runtime resource isolation
+
+Synthetic creative provider runs validate workflow contracts only; real inference and image quality require separate evidence.
+
 
 The Creative `generate-set` executor processes configured Bundles sequentially within the active local project scope and records per-item recovery state; the OpenCode grant is in-memory and session-root-bound.
 

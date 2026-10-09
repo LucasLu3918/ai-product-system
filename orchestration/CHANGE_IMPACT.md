@@ -108,6 +108,9 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+Compare the exact changed paths against inputs, outputs, data, events and consumers. Repository-wide Impact Graph coverage remains partial and must be recorded as a limitation.
+
+
 Creative authorization changes reconcile the native prompt hook, executor/CLI, job schemas, output recovery, privacy traces and each Human/Agent consumer before the candidate matrix is finalized.
 
 The read-only `aips project diagnose` command can expose Project Intelligence readiness and recovery guidance. It is observational only and does not authorize narrowing target paths, refreshing state or treating unresolved Impact Graph consumers as safe.
@@ -164,6 +167,7 @@ If actual material impact falls outside the declared Change Boundary:
 
 - For release-readiness policy changes, include the changelog parser, exact candidate consumers, negative lifecycle cases, Scenario 208, and all canonical documentation placements in the final reconciled boundary.
 ## Impact Graph maintenance
+
 
 Update reusable `IMPACT_GRAPH.yaml` only when the change reveals/stably changes cross-component relationships.
 

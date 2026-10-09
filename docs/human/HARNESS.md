@@ -8,6 +8,9 @@ Runtime Context 統一解析驗證 Python 與 cache/config 路徑；它將 Playw
 
 ## Integration model
 
+Adapter setup, Context delivery, permission-hook execution and exact host-version acceptance are reported as separate evidence.
+
+
 `aips project diagnose <path>` 可檢查目前 Runtime/Harness 設定並彙整 MCP 靜態能力；它不能證明 Host 已載入 Context、Hook 或 Tool。未完成版本綁定的原生證據一律保留 UNVERIFIED。
 
 Runtime resolution keeps machine-readable results on stdout and diagnostics on stderr. Invalid adapter-state YAML is reported as an error; an unavailable Intelligence subprocess has a stable reason code instead of being confused with a successful empty result.
@@ -34,6 +37,8 @@ AIPS Core
 ~~~
 
 ## Native Runtime Adapters
+
+OpenCode V2 acceptance now reports plugin setup, Context delivery, permission-hook execution and host version separately. The v2.0.24 loopback lifecycle verified Context plus native Allow/Deny; other host versions and instruction-model delivery remain unverified.
 
 OpenCode V2 derives Creative mutation authority from the current native prompt-admission hook. Dispatch Context remains advisory, each new prompt replaces the transient grant, and read-only discovery/preflight does not require one.
 

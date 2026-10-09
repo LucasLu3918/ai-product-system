@@ -184,6 +184,10 @@ def mflux_cases(base: Path):
     bundle_path, bundle = write_bundle(project)
     before = creative.preflight(project, bundle_path.name)
     require(before["status"] == "READY" and not args_path.exists(), "preflight started the configured generator")
+    compatibility = before["backend_compatibility"]
+    require(compatibility["status"] == "UNVERIFIED" and compatibility["backend"] == "mflux_local", "static readiness must not imply real hardware/backend compatibility")
+    require(compatibility["host"]["os"] and compatibility["host"]["architecture"] and compatibility["weight_dtypes"] == ["NOT_EXPOSED_BY_CONFIGURED_WORKFLOW"], "preflight did not disclose available host/model compatibility inputs")
+    require(not args_path.exists() and compatibility["evidence"].startswith("Static local preflight only"), "compatibility inspection executed inference")
     result = creative.execute(project, bundle_path.name)
     output = project / bundle["output_path"]
     manifest_path = project / result["manifest"]
@@ -192,12 +196,15 @@ def mflux_cases(base: Path):
     require(result["status"] == "COMPLETE" and result["review_status"] == "PENDING", "MFLUX execution did not retain pending human review")
     require(manifest["model"]["revision"] == "fixture-sha" and manifest["bundle_sha256"].startswith("sha256:"), "model/bundle provenance was not recorded")
     require(manifest["output"]["sha256"] == creative.digest(output) and manifest["privacy"]["external_image_egress"] is False, "output provenance or privacy boundary missing")
+    require(manifest["verification"] == {"workflow_execution": "PASS", "raster_container": "PASS", "model_inference": "UNVERIFIED", "human_visual_review": "PENDING", "user_acceptance": "NOT_RECORDED"}, "workflow, inference, visual review and user acceptance evidence must remain distinct")
     require("private creative prompt" not in manifest_path.read_text() and "private creative prompt" not in creative.read_trace(20).__repr__(), "raw prompt reached a manifest or trace")
     require("--output\n" in args and "--model-path\n" in args and "--prompt\nprivate creative prompt" in args, "fixed MFLUX argv was not formed")
     require("HF_HUB_OFFLINE" not in args and output_magic(output), "MFLUX output fixture was not written")
     expect_blocked(lambda: creative.execute(project, bundle_path.name), "existing output was overwritten")
     reviewed = creative.review(project, result["manifest"], "Independent Human", "PASS", "Identity and style match the approved profiles.")
     require(reviewed["status"] == "REVIEWED" and json.loads(manifest_path.read_text())["review"]["decision"] == "PASS", "human review was not recorded")
+    reviewed_manifest = json.loads(manifest_path.read_text())
+    require(reviewed_manifest["verification"]["human_visual_review"] == "PASS" and reviewed_manifest["acceptance"]["visual_quality"] == "PASS" and reviewed_manifest["verification"]["user_acceptance"] == "NOT_RECORDED", "human review and user acceptance must remain distinct")
     guard_cases(project)
 
     bundle["output_path"] = "outside-v1.png"
@@ -387,6 +394,7 @@ def comfy_cases(base: Path):
         zimage_bundle, _ = write_bundle(zimage_project, provider="comfyui_local", model={"id": "z-image-turbo", "revision": "local-model-files", "license": "Apache-2.0", "license_source": "https://huggingface.co/Tongyi-MAI/Z-Image-Turbo"}, runtime="ComfyUI", runtime_version="fixture-1", comfyui=zimage_config, steps=8)
         ready = creative.preflight(zimage_project, zimage_bundle.name)
         require(ready["status"] == "READY" and FakeComfyHandler.prompts == 2, "Z-Image Turbo preflight submitted a workflow or did not become ready")
+        require(ready["backend_compatibility"]["status"] == "UNVERIFIED" and "default" in ready["backend_compatibility"]["weight_dtypes"], "ComfyUI dtype/backend evidence was not surfaced conservatively")
         zimage_result = creative.execute(zimage_project, zimage_bundle.name)
         require(zimage_result["status"] == "COMPLETE" and FakeComfyHandler.workflow["13"]["inputs"]["width"] == 64 and FakeComfyHandler.workflow["3"]["inputs"]["steps"] == 8, "Z-Image Turbo settings were not applied to the registered workflow")
         FakeComfyHandler.missing_vae = True

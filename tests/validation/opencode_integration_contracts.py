@@ -12,6 +12,11 @@ projection = (ROOT / "scripts/opencode_skill_projection.py").read_text(encoding=
 for marker in ('export default {', 'ctx.session.hook("prompt"', 'ctx.session.hook("context"', 'creativeAdmissions', 'creative_admission_grant_missing', 'ctx.permission.hook("evaluate"', 'ctx.shell.hook("create.before"', 'ctx.session.get({ sessionID })', 'MAX_CONTEXT_BYTES', 'creative_workspace_profile.py', 'generate-set'):
     if marker not in plugin:
         errors.append(f"OpenCode V2 plugin is missing documented hook contract: {marker}")
+if "spawnSync" in plugin or "const result = await invokeAsync" not in plugin or "contextCacheTtlMs" not in plugin or "signal?.aborted" not in plugin or 'host_version_acceptance: "UNVERIFIED"' not in plugin:
+    errors.append("OpenCode native subprocesses must be asynchronous, bounded, cancellable, short-cache scoped and explicit about host-version acceptance")
+for marker in ('duration_ms:', 'host_capability', 'permission_enforcement:', 'host_version_acceptance:'):
+    if marker not in plugin:
+        errors.append(f"OpenCode bounded latency/host evidence is missing: {marker}")
 for marker in ('evaluate_write', 'evaluate_shell', 'Project Intelligence readiness is not READY', 'target escapes project root'):
     if marker not in guard:
         errors.append(f"OpenCode native guard is missing decision boundary: {marker}")

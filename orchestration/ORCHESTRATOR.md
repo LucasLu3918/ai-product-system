@@ -10,6 +10,9 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 ## Minimal algorithm
 
+Read-only Project Diagnostics recommends inspection or conditional recovery and never executes those actions.
+
+
 Use `aips project diagnose <path>` for a read-only summary of existing Doctor, Project Intelligence, Harness and MCP static status. Review the suggested recovery action before execution; diagnostics do not bootstrap, refresh, attach or authorize a mutation.
 
 For local creative execution, preflight the scoped Bundle and require explicit create/modify intent before invoking the structured tool; never route through arbitrary Shell.
@@ -139,6 +142,9 @@ existing skill reuse → new narrow skill → new capability → new role
 Do not create a permanent/high-authority role without user approval.
 
 ## Context expansion
+
+OpenCode hook subprocesses are asynchronous and bounded; permission decisions refresh Session Context before authorization.
+
 
 An OpenCode Creative mutation grant is derived from the current native prompt-admission event and remains independent of compact Turn Context, retrieved Project Intelligence and transcript truncation.
 
@@ -350,6 +356,9 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+Protected publication still requires a clean exact candidate, reconciled Matrix, secret scan, documentation closure and passing repository aggregate.
+
+
 OpenCode adapter and native permission changes are Core boundaries: route them through the reviewed Core Change Matrix, full repository validation and exact-candidate Gate before requesting Git publication approval.
 
 Publication CI always provisions the complete Python validation dependency set; isolated required preflight fixtures cannot rely on optional-package selection. Exact-path plans still control Node, Chromium downloads and optional evidence. Required remote checks must pass on the exact candidate before an explicitly authorized merge.
@@ -414,6 +423,8 @@ Validation observations never authorize selective execution: `NOT_READY` is an e
 
 - When release-policy sources trigger documentation placement rules, expand and review the complete required documentation closure before the Core candidate Gate.
 ## Runtime Content Safety Boundary
+
+Project Diagnostics may recommend inspection or a specific recovery action but never runs it. Exact-candidate publication still binds the reconciled diff, documentation closure, active Core Matrix, secret scan and required repository result before a Git Publish Proposal.
 
 After merge, use the updated checkout CLI `publish post-merge --fetch --sync-installed --apply` to verify target main and the registered installed system. Installed synchronization refuses dirty/wrong-branch, different remote, stale target and divergent history; it never resets the installation or grants publication authority.
 

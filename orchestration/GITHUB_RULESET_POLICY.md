@@ -26,6 +26,8 @@ The input must include branch protection, rulesets, bypass actors, and `source_c
 
 ## Transition procedure
 
+Readiness and branch inventory remain report-only. A clean status or recommendation does not authorize branch deletion, release/tag creation, unrelated PR merge or ruleset mutation; protected operations follow the exact Human-approved candidate path.
+
 Creative authorization and generation changes do not alter repository ruleset policy; publication still requires the exact-candidate Core Matrix, required PR checks and the repository's protected merge path.
 
 Creative runtime reliability candidates preserve the Core change label and exact-candidate required checks. Synthetic engine success does not waive native callback/hook evidence or authorize modifying repository rulesets.

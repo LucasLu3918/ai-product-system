@@ -18,7 +18,7 @@ any compatible observability backend
 
 ## Recorded fields
 
-Use `aips telemetry record` to add lifecycle markers to the existing event stream. Only bounded identifiers and allowlisted metadata are accepted. Supported kinds are phase, gate, model, and tool. A started/completed pair produces a duration span. A gate waiting/resumed pair produces a separate wait span; report each wait segment with a distinct operation ID.
+Use `aips telemetry record` to add lifecycle markers to the existing event stream. Only bounded identifiers and allowlisted metadata are accepted. Supported kinds are phase, gate, model, tool and quality. A started/completed pair produces a duration span. A gate waiting/resumed pair produces a separate wait span; report each wait segment with a distinct operation ID. Optional bounded fields record runtime, Human governance decision, quality finding delta and a coarse outcome; they contain no task content and grant no authority.
 
 For independent review, use a separate review operation and set `--related-operation-id` to the implementation operation. The exporter uses a SpanLink and common AIPS run correlation. It never forwards trace context into a reviewer runtime. Runtime metadata is evidence only: a provider, model, or token count may be recorded only when the adapter genuinely observed it. Execution Profiles may retain advisory per-run cost budgets with currency and an optional verified price source. Missing usage and prices remain unknown; the system adds no price lookup, inferred provider costs, Gateway, or vendor SDK.
 
@@ -26,7 +26,7 @@ Missing start/end markers, invalid timestamps, unpaired events, malformed record
 
 ## Privacy
 
-The projection allows only operation IDs, fixed operation names, provider/model identifiers, input/output token counts, outcome, and lifecycle correlation IDs. It rejects unknown telemetry fields. Prompt text, model output, tool arguments, private reasoning, credentials, and arbitrary runtime payload are never copied to the OTLP payload. Existing event artifacts/evidence are not exported.
+The projection allows only operation IDs, fixed operation names, provider/model identifiers, runtime enum, governance-decision enum, bounded quality finding delta, coarse outcome, input/output token counts and lifecycle correlation IDs. It rejects unknown telemetry fields. Prompt text, model output, tool arguments, private reasoning, credentials, and arbitrary runtime payload are never copied to the OTLP payload. Existing event artifacts/evidence are not exported.
 
 GenAI attributes follow the pinned OpenTelemetry GenAI snapshot recorded in `orchestration/schemas/telemetry-export.yaml`. The schema is in development upstream; update the immutable revision only with a reviewed mapping and contract change. AIPS generic workflow and Gate spans use the `aips.*` namespace.
 

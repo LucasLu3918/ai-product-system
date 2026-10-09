@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Make OpenCode AIPS hooks asynchronous and cancellable, bound per-Session Context reuse, and report host-version acceptance separately from hook setup.
+- Add backend/runtime/dtype diagnostics and richer creative provenance while keeping model inference, Human visual review, and user acceptance as separate evidence.
+- Share safe validation-path classification across CI planners, preserve unknown-path full validation, and conditionally provision only optional CI toolchains.
+- Add read-only Project Intelligence next actions, preserve facade-compatible context extraction, and extend privacy-limited telemetry with runtime, governance, quality, and outcome fields.
+- Measure recursive documentation impact, retain canonical sync requirements pending redundancy evidence, and update the affected runtime, recovery, creative, validation, and governance references.
 - Bind OpenCode creative mutation to the current V2 prompt-admission grant, Session root, allowed actions and bounded output count; store only a prompt digest and revoke grants on each new prompt.
 - Add local Creative generate-set manifests with per-item preflight, continue-on-failure, hash-verified resume and bounded version-only engine health probes.
 - Add read-only `aips project diagnose` to aggregate Project Intelligence, Runtime/Harness and MCP static status with privacy-bounded recovery guidance; preserve explicit repair actions and `UNVERIFIED` native Host limits.

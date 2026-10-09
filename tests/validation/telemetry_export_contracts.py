@@ -30,6 +30,10 @@ if schema.get("mapping", {}).get("cost_estimation") != "disabled_without_verifie
     errors.append("telemetry must not estimate cost without a verified price source")
 if not {"usage_source", "usage_confidence", "cost_status"}.issubset(schema.get("recording", {}).get("attributes", {}).get("optional", [])):
     errors.append("telemetry schema must carry provider-neutral usage confidence and unknown cost status")
+if not {"runtime", "governance_decision", "quality_findings_delta", "outcome"}.issubset(schema.get("recording", {}).get("attributes", {}).get("optional", [])):
+    errors.append("telemetry schema must expose bounded runtime, governance, quality and outcome aggregates")
+if schema.get("recording", {}).get("kinds", {}).get("quality", {}).get("names") != ["lint", "types", "branch_tests", "coverage"]:
+    errors.append("quality telemetry names must stay within the bounded check allowlist")
 if (config.get("usage") or {}).get("price_inference") is not False or (config.get("usage") or {}).get("cost_estimation") is not False:
     errors.append("telemetry config must not infer prices or estimate cost")
 if not scenario.is_file():

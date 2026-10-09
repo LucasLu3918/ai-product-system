@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+Runtime integration, Project Intelligence recovery, creative provenance, validation policy, Evolution Radar and release governance are documented at their canonical topic pages; cross-topic changes are reconciled through the documentation impact report.
+
 Creative workflow 的 Human 操作方式見 User Guide；協定與授權邊界見 Creative Direction，批次工作範本與驗收證據分別見 `templates/creative/` 和 Scenario 238。
 
 Project Intelligence 與診斷恢復流程見 [Project Intelligence 使用指南](PROJECT_INTELLIGENCE.md)；命令與 Runtime 支援見 [System Reference](SYSTEM_REFERENCE.md)。

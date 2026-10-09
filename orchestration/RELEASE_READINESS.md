@@ -52,6 +52,8 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+Release, dependency and branch inventories remain evidence for Human review. They do not delete branches, merge unrelated PRs, create tags/releases or change protected refs; readiness applies only to the exact recorded candidate.
+
 Creative candidates include the exact Core Matrix binding, local engine no-download evidence, job recovery checks and prompt-privacy review; real image quality remains outside deterministic release claims.
 
 A Project Diagnostics PASS is not release evidence. Publication readiness still binds the exact candidate to the complete Integration Gate, documentation closure, security scan and required Human approval.

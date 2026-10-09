@@ -1,0 +1,135 @@
+version: 1
+plan: plan24
+observed_at: '2026-10-09'
+source:
+  remote: origin/main
+  base_sha: b8c430ab0edfb431a79aaaa999a415b2119ee489
+  version: 0.79.0
+  clean_before_plan24_changes: true
+
+runtime:
+  opencode:
+    source: harness/adapters/opencode/plugin.ts
+    synchronous_calls: spawnSync
+    context_timeout_seconds: 15
+    prompt_admission_timeout_seconds: 5
+    measured_p50_ms: null
+    measured_p95_ms: null
+    measurement_status: NOT_MEASURED
+    note: Current implementation contains synchronous subprocess paths; latency impact has not been measured.
+  host_acceptance:
+    supported_evidence: macOS OpenCode v2.0.24 loopback acceptance is documented in Scenario 235.
+    other_versions: UNVERIFIED
+    governance_enforcement: ADVISORY
+
+creative:
+  host:
+    platform: macOS arm64
+    chip: Apple M5 Pro
+    memory_gib: 48
+  discover:
+    status: DISCOVERED
+    mflux_commands_total: 5
+    mflux_commands_healthy: 0
+    mflux_health: UNRESPONSIVE
+    reason_code: version_probe_failed
+    model_inventory: NOT_VERIFIED
+    generation_executed: false
+    external_image_egress: false
+  real_inference:
+    status: UNVERIFIED
+    weights_downloaded: false
+    quantization_performed: false
+    human_visual_review: NOT_PERFORMED
+
+ci:
+  workflow_run_id: 37893980270
+  head_sha: b8c430ab0edfb431a79aaaa999a415b2119ee489
+  janitor_status: success
+  janitor_duration_seconds: 198
+  required_repository_aggregate: success
+  observation_count: 1
+  median_duration_seconds: null
+  pip_steps:
+    optional_visual_requirements: unconditional_on_current_main
+    optional_openapi_requirements: unconditional_on_current_main
+  validator_selection:
+    mode: SHADOW
+    skips_authorized: false
+
+quality:
+  ruff:
+    configured_baseline_findings: 758
+    measured_findings: null
+    measurement_status: BLOCKED_ENVIRONMENT
+  module_lines:
+    scripts/project_intelligence.py: 2366
+    scripts/retrieval_intelligence.py: 1708
+    scripts/creative_execution.py: 1326
+    scripts/repository_health.py: 959
+  mypy:
+    policy: selected_module_ratchet
+    measured_findings: null
+    measurement_status: BLOCKED_ENVIRONMENT
+  coverage:
+    policy: report_only
+    repository_minimum_percent: null
+
+project_intelligence:
+  diagnose_exists: true
+  diagnostic_authority: read_only
+  initial_bootstrap_readiness: PARTIAL
+  initial_retrieval_index: MISSING
+  retrieval_index_built_for_base: true
+  semantic_provider: NOT_CONFIGURED
+  semantic_provider_required: false
+
+validation_scope:
+  validation_scope_config: config/validation-scope.yaml
+  ci_toolchain_config: config/ci-validation-plan.yaml
+  observed_shared_inventory_drift:
+    - SYSTEM_CORE.md
+    - requirements-validation.txt
+    - requirements-visual.txt
+    - requirements-openapi.txt
+  unknown_paths_behavior: FULL_VALIDATION
+
+documentation:
+  latest_feature_pr: 279
+  latest_feature_changed_files: 56
+  latest_feature_additions: 951
+  latest_feature_deletions: 113
+  docs_impact_gate: enabled
+  full_documentation_amplification_sample_count: 1
+
+evolution_radar:
+  evidence: .aips/review/PLAN19_EVOLUTION_EFFECTIVENESS.yaml
+  cohort_month: '2026-09'
+  raw_signals: 100
+  unique_signals: 100
+  shortlist: 0
+  analysis_pending: 100
+  adoption: 0
+  note: Historical monthly observation; not a current-trend estimate.
+
+release_and_branches:
+  github_release_count: 0
+  release_branch_count: 29
+  open_dependency_pr_count: 7
+  automatic_branch_deletion: false
+  dependency_prs_auto_merged: false
+
+telemetry:
+  existing_export_schema: orchestration/schemas/telemetry-export.yaml
+  export_default_enabled: false
+  raw_runtime_payload_persisted: false
+  outcome_baseline_available: false
+
+validation_environment:
+  python: 3.12.14
+  node: 24.19.0
+  python_gate_dependencies: MISSING
+  vitepress_dependencies: MISSING
+  localhost_bind: BLOCKED_SANDBOX
+  managed_browser_launch: BLOCKED_SANDBOX
+  complete_local_gate_status: ENVIRONMENT_BLOCKED

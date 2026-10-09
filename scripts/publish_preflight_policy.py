@@ -86,6 +86,8 @@ def documentation_impact(files: list[str], root: Path = DEFAULT_ROOT) -> dict[st
             closure.update(required)
             changed = changed or len(closure) != before
     required = sorted(closure - set(files))
+    direct_path_count = len(set(files))
+    required_by_counts = [len(sources) for sources in required_by.values()]
     return {
         "changed_files": files,
         "closure": sorted(closure),
@@ -94,4 +96,14 @@ def documentation_impact(files: list[str], root: Path = DEFAULT_ROOT) -> dict[st
         "required_by": {path: sorted(required_by.get(path, set())) for path in required},
         "complete": not required,
         "placement_rules": placement_hits,
+        "amplification": {
+            "direct_path_count": direct_path_count,
+            "closure_path_count": len(closure),
+            "required_addition_count": len(required),
+            "closure_to_direct_ratio": round(len(closure) / max(1, direct_path_count), 3),
+            "triggered_sync_rule_count": len(triggered),
+            "triggered_placement_rule_count": len(placement_hits),
+            "repeated_required_document_count": sum(1 for count in required_by_counts if count > 1),
+            "maximum_requirements_per_document": max(required_by_counts, default=0),
+        },
     }

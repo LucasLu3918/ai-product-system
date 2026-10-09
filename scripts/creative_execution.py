@@ -7,6 +7,7 @@ import importlib
 import ipaddress
 import json
 import os
+import platform
 import re
 import shutil
 import subprocess
@@ -507,9 +508,34 @@ def resolve_provider(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str,
 
 def preflight(project: Path, bundle_path: str) -> dict[str, Any]:
     root, bundle = read_bundle(project, bundle_path)
-    provider, _resolved = resolve_provider(root, bundle)
+    provider, resolved = resolve_provider(root, bundle)
+    dtype_values: set[str] = set()
+    workflow = resolved.get("workflow")
+    if isinstance(workflow, dict):
+        for node in workflow.values():
+            if not isinstance(node, dict):
+                continue
+            inputs = node.get("inputs")
+            if isinstance(inputs, dict):
+                for key in ("weight_dtype", "dtype", "precision"):
+                    value = inputs.get(key)
+                    if isinstance(value, str) and value.strip():
+                        dtype_values.add(value.strip()[:64])
+    dtype = sorted(dtype_values) or ["NOT_EXPOSED_BY_CONFIGURED_WORKFLOW"]
+    host = {"os": platform.system().lower(), "architecture": platform.machine().lower()[:64]}
+    compatibility = {
+        "status": "UNVERIFIED",
+        "backend": provider,
+        "host": host,
+        "runtime": str(bundle.get("runtime") or "UNVERIFIED")[:128],
+        "weight_dtypes": dtype,
+        "model_id": str(bundle["model"].get("id") or "UNVERIFIED")[:128],
+        "evidence": "Static local preflight only; no model inference or weight download was performed.",
+        "reason_code": "hardware_backend_dtype_not_smoke_verified",
+    }
     return {
         "status": "READY", "reason_code": "local_engine_ready", "provider": provider,
+        "backend_compatibility": compatibility,
         "operation": bundle["operation"], "output_path": bundle["output_path"],
         "output_scope": bundle["output_scope"], "overwrite": False,
         "max_attempts": bundle.get("max_retries", 0) + 1,
@@ -1017,6 +1043,13 @@ def execute(project: Path, bundle_path: str) -> dict[str, Any]:
             "execution": {"attempts": attempts, "retry_count": attempts - 1, "elapsed_ms": elapsed, "completed_at": datetime.now(UTC).isoformat()},
             "review": {"status": "PENDING", "reviewer": None, "decision": None, "reviewed_at": None},
             "acceptance": {"file_validity": "PASS", "visual_quality": "PENDING", "user_acceptance": "NOT_RECORDED"},
+            "verification": {
+                "workflow_execution": "PASS",
+                "raster_container": "PASS",
+                "model_inference": "UNVERIFIED",
+                "human_visual_review": "PENDING",
+                "user_acceptance": "NOT_RECORDED",
+            },
             "validation_scope": "bounded_container_checks_not_visual_quality",
             "privacy": {"raw_prompt_stored": False, "image_bytes_stored_in_manifest": False, "external_image_egress": False},
         }
@@ -1250,6 +1283,8 @@ def review(project: Path, manifest_name: str, reviewer: str, decision: str, note
     data["review"] = {"status": decision, "reviewer": reviewer.strip(), "decision": decision, "note": note.strip(), "reviewed_at": datetime.now(UTC).isoformat()}
     if isinstance(data.get("acceptance"), dict):
         data["acceptance"]["visual_quality"] = decision
+    if isinstance(data.get("verification"), dict):
+        data["verification"]["human_visual_review"] = decision
     replacement = manifest.with_name(".creative-execution-manifest.review.tmp")
     replacement.write_text(json.dumps(data, ensure_ascii=False, sort_keys=True, indent=2) + "\n", encoding="utf-8")
     os.chmod(replacement, 0o600)

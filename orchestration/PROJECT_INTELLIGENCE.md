@@ -6,6 +6,8 @@ Repeated bootstrap preserves existing metadata, graph and temporal assertions. U
 
 `project_intelligence.py` remains the public CLI/import facade. Promotion eligibility and project-relative target validation live in `project_intelligence_promotion.py`; the facade re-exports the candidate helper so symbol identity and existing approval requirements remain covered by the module-extraction lifecycle.
 
+Compact Context manifest projection lives in `project_intelligence_context.py` as a pure transformation. The public facade re-exports the same function and instruction-source names; output shape and ordering remain covered by Context and module-extraction lifecycle evidence.
+
 Project Intelligence is the reusable, evidence-grounded understanding layer for existing projects.
 
 It replaces Project Knowledge as the long-term cache model. Existing `.ai/knowledge/` remains readable for migration compatibility, but new reusable discovery belongs in Project Intelligence.
@@ -200,6 +202,9 @@ lock
 Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
+
+Scoped evidence does not upgrade this repository’s partial Impact Graph to complete repository-wide coverage.
+
 
 For Creative changes, Impact Graph traversal identifies the executor, OpenCode adapter, job schema and docs consumers; Project Intelligence remains advisory and does not mint the native prompt grant.
 
@@ -598,6 +603,9 @@ For an existing `impact-init` change ID, the CLI reports the existing record and
 Do not claim the project has been initialized merely from directory/file-name inventory.
 
 ## Existing-project automatic behavior
+
+The compact Context projection is a pure helper behind the stable public facade; it does not change project-native instruction authority.
+
 
 The `aips project diagnose <path>` command aggregates existing status surfaces and maps missing, partial, stale and blocked states to explicit recovery guidance. It never initializes or refreshes Project Intelligence automatically; static Host/MCP observations remain distinct from native execution evidence.
 
