@@ -6,7 +6,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
-from creative_request_policy import PolicyError, admit_prompt, authorize, output_budget, user_texts
+from creative_request_policy import (
+    PolicyError,
+    admit_prompt,
+    authorize,
+    output_budget,
+    user_texts,
+)
 from turn_intent import classify_task
 
 ORIGINAL = "請幫我建立一個角色的資料夾 裡面幫我設計兩個哈利波特角色，主要以日式、奇幻、動漫風格為主圖片需精緻有質感"
