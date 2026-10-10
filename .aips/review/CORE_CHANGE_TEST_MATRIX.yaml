@@ -85,8 +85,8 @@ verification:
   focused_publication_tests: 'PASS: 30 tests'
   changed_python_ruff: 'PASS: changed files clean; governance_guard.py has 3 pre-existing findings, none on changed lines.'
   documentation_placement: PASS
-  repository_validation: PENDING_FINAL_CANDIDATE
-  exact_candidate_integration_gate: 'PENDING: run with prepared Python/Node dependencies and retain report outside checkout.'
+  repository_validation: 'PASS: full repository validators passed; evidence is retained in the exact-candidate Gate report.'
+  exact_candidate_integration_gate: 'PASS: /private/tmp/aips-personal-pr-merge-gate-final.yaml; rerun after this matrix evidence update to bind the final commit SHA.'
   independent_security_review: 'SELF_CHECK: no unresolved implementation finding; Codex advisory limitation accepted by Human.'
   install_preflight_lifecycle: PENDING_FINAL_CANDIDATE
   conformance_isolation: PENDING_FINAL_CANDIDATE
