@@ -108,6 +108,10 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+Python call sites are not symbol declarations. Resolve an explicit top-level facade assignment only when its value is an attribute of a declared imported module; arbitrary object methods remain unresolved candidates.
+
+Internal helper extractions preserve original facade identities and outputs. Review source-scanning, term expansion, trace persistence and image validation consumers; multi-hop relation candidates remain lexical evidence with explicit global coverage limitations.
+
 The `impact-candidates` report may inform discovery but is not reviewed canonical evidence by itself; it does not close unknowns or change repository-wide partial/unknown coverage.
 
 Reconcile the exact committed candidate, sorted changed paths and binary diff digest. A partial Impact Graph may be accepted only with scoped manual consumer evidence; it must not be described as globally complete.

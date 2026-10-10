@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import json
+import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import yaml
@@ -38,6 +41,39 @@ def main() -> int:
     require("import yaml" not in install["run"], "bootstrap verification must not hard-code a dependency module")
     require(action["inputs"]["verification-modules"]["required"] is True,
             "each workflow must declare the imports that verify its dependency profile")
+
+    # Execute the real action body on the host Bash (including macOS Bash 3.2).
+    # Capture argv instead of installing packages; optional inputs must preserve quoting.
+    with tempfile.TemporaryDirectory(prefix="aips-bootstrap-shell-") as temporary:
+        fixture = Path(temporary)
+        calls = fixture / "calls.jsonl"
+        python_stub = fixture / "python"
+        python_stub.write_text(
+            f"#!{sys.executable}\nimport json, os, sys\n"
+            "with open(os.environ['AIPS_BOOTSTRAP_ARGV_LOG'], 'a') as stream:\n"
+            "    stream.write(json.dumps(sys.argv[1:]) + '\\n')\n",
+            encoding="utf-8",
+        )
+        python_stub.chmod(0o700)
+        for constraints in ("", "constraints/tested path.txt"):
+            calls.unlink(missing_ok=True)
+            env = {**os.environ, "PATH": f"{fixture}:/usr/bin:/bin",
+                   "AIPS_REQUIREMENTS_FILES": "requirements.txt\ntwo requirements.txt\n",
+                   "AIPS_CONSTRAINTS_FILE": constraints, "AIPS_VERIFICATION_MODULES": "json\npathlib",
+                   "AIPS_BOOTSTRAP_ARGV_LOG": str(calls)}
+            result = subprocess.run(["/bin/bash", "-c", install["run"]], env=env,
+                                    capture_output=True, text=True, check=False)
+            require(result.returncode == 0, f"optional constraints bootstrap failed: {result.stderr}")
+            captured = [json.loads(line) for line in calls.read_text().splitlines()]
+            expected = ["-m", "pip", "install"] + (["-c", constraints] if constraints else [])
+            expected += ["-r", "requirements.txt", "-r", "two requirements.txt"]
+            require(captured[0] == expected, "bootstrap must preserve exact declared pip arguments")
+            require(captured[-1] == ["-m", "pip", "check"], "dependency conflict check must remain mandatory")
+        calls.unlink(missing_ok=True)
+        env["AIPS_REQUIREMENTS_FILES"] = "\n"
+        result = subprocess.run(["/bin/bash", "-c", install["run"]], env=env,
+                                capture_output=True, text=True, check=False)
+        require(result.returncode == 2 and not calls.exists(), "empty requirements must fail before pip")
 
     valid = subprocess.run(
         [sys.executable, str(VERIFY_SCRIPT), "--modules", "json\npathlib"],

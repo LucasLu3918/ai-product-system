@@ -1,5 +1,7 @@
 # AIPS Global Turn Harness
 
+Doctor may display source/version/platform-bound local native acceptance and bounded Context byte/latency metrics. These are observations only: absent model usage, real task outcomes and unsupported effects remain UNKNOWN or UNVERIFIED. Recovery Plan is read-only and does not authorize its actions.
+
 Creative prompt compilation internals are not a native authority surface. Preserve the existing `creative_execution` facade and keep prompt/output parity separate from OpenCode grant and host-acceptance evidence.
 
 OpenCode hook subprocesses must be asynchronous, bounded and cancellable. A short per-Session Context cache may deduplicate concurrent reads; permission checks always refresh Context. Report plugin setup, hook execution and exact host-version acceptance separately, and preserve fail-closed behavior on timeout or missing evidence.

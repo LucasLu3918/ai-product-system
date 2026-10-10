@@ -22,6 +22,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+Bind extracted facades, additive recovery/measurement outputs, conservative effect coverage and canonical documentation to the same candidate Matrix and complete Gate. Recorded native evidence is version/platform/source-bound and remains distinct from Human release approval.
+
 Candidate-generation output is bound to the exact source tree for review but remains non-canonical; the Gate still verifies the unchanged graph and exact changed-file set.
 
 Creative core candidates bind profile compilation, local review authority, model evidence, provider privacy, documentation closure and lifecycle checks to the same exact base/head candidate.

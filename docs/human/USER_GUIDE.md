@@ -72,6 +72,10 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+ComfyUI 已接受工作後若逾時或輪詢失敗，AIPS 只請求移除該 queued job，阻擋自動重送，不中斷其他正在執行的工作。先檢查 Provider 狀態，再明確重試。
+
+使用 `templates/creative/QUALITY_BENCHMARK.json` 記錄真正的本地 trial，再以 `python scripts/creative_quality_benchmark.py --project <workspace> --evidence <report.json>` 核對輸出及雜湊。角色、服裝、構圖、參考圖編輯與恢復由人工分別評分；空紀錄保持 UNKNOWN。
+
 Impact candidates are advisory software discovery evidence and do not authorize creative asset changes.
 
 The prompt compiler extraction does not change the creative workflow, model selection, or review steps described here.
@@ -290,6 +294,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 
 ## Quality 與 Review
 
+Agent Eval 報告的 `observed_task_outcomes` 是額外的任務觀察，與 rubric 通過率分開。模型 token／成本沒有可靠資料時顯示 UNKNOWN；Creative 影像有效性不能替代你的視覺評分與接受。
+
 Review bounded Impact Graph candidates with their source path and line. Dynamic relationships remain unknown, and candidate output does not alter canonical coverage.
 
 Review assistance is an optional local second opinion. Inspect the actual image and approved Profile yourself; model findings cannot complete visual review or user acceptance.
@@ -465,6 +471,8 @@ Standalone and shadow dependency-review artifacts retain exact base/head, run ID
 舊聊天內容不是 authoritative run state；若 workspace fingerprint 已變，先 refresh / revalidate 再接續。
 
 ## Project Intelligence
+
+診斷的 Recovery Plan 按既有狀態提供檢查、補主題、finalize 或 refresh 順序。每步都標示操作種類與所需授權；計畫供檢視，不會自動執行或改變 Project Mode。
 
 When creative Impact Graph edges are unavailable, use the documented scoped consumer review and keep repository-wide coverage marked partial.
 

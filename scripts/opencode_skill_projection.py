@@ -10,6 +10,7 @@ import os
 import re
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -197,6 +198,52 @@ def plugin_files(root: Path = ROOT) -> dict[str, str]:
     return {"plugins/aips-opencode.ts": body.replace("__AIPS_SYSTEM_ROOT__", json.dumps(str(root.resolve())))}
 
 
+def native_source_digest() -> str:
+    """Conservatively bind the local acceptance to runtime source dependencies."""
+    paths = {ROOT / "harness/adapters/opencode/plugin.ts", ROOT / "harness/adapters/opencode/AGENTS.md",
+             ROOT / "harness/BOOTSTRAP.md", ROOT / "SYSTEM_CORE.md", ROOT / "VERSION"}
+    for pattern in ("scripts/*.py", "scripts/aips_common/*.py", "orchestration/*.md", "config/*.yaml"):
+        paths.update(ROOT.glob(pattern))
+    values = {}
+    for path in sorted(paths):
+        if path.is_symlink() or not path.resolve().is_relative_to(ROOT.resolve()):
+            raise ValueError("native acceptance source must remain within the repository")
+        values[path.relative_to(ROOT).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
+    return hashlib.sha256(json.dumps(values, sort_keys=True, separators=(",", ":")).encode()).hexdigest()
+
+
+def native_acceptance(version: str | None) -> dict:
+    """Read version/platform/source-bound local acceptance, never grant authority."""
+    unknown = {"status": "UNVERIFIED", "reason_code": "acceptance_missing"}
+    path = state_root() / "native-acceptance.json"
+    if not path.is_file() or path.is_symlink():
+        return unknown
+    try:
+        if path.stat().st_size > 64 * 1024:
+            return {**unknown, "reason_code": "acceptance_invalid"}
+        record = json.loads(path.read_text())
+        expected = {
+            "plugin_sha256": hashlib.sha256((ROOT / "harness/adapters/opencode/plugin.ts").read_bytes()).hexdigest(),
+            "acceptance_sha256": hashlib.sha256((ROOT / "tests/evidence/opencode_native_acceptance.py").read_bytes()).hexdigest(),
+            "runtime_source_sha256": native_source_digest(),
+        }
+        if not isinstance(record, dict) or record.get("schema_version") != 1:
+            return {**unknown, "reason_code": "acceptance_invalid"}
+        if record.get("version") != version or record.get("platform") != sys.platform or any(record.get(key) != value for key, value in expected.items()):
+            return {**unknown, "reason_code": "acceptance_stale"}
+        checks = record.get("checks")
+        allowed = {"context_delivery", "permission_hook_execution", "creative_prepare", "admission_revocation",
+                   "l3_external_actions", "session_cancel", "instruction_model_delivery"}
+        statuses = {"VERIFIED", "VERIFIED_NATIVE_HOST", "UNVERIFIED", "UNSUPPORTED", "FAIL"}
+        if not isinstance(checks, dict) or set(checks) != allowed or any(value not in statuses for value in checks.values()):
+            return {**unknown, "reason_code": "acceptance_invalid"}
+        return {"status": "FAILED" if "FAIL" in checks.values() else "RECORDED", "reason_code": "acceptance_exact_host",
+                "version": version, "platform": sys.platform, "checks": checks,
+                "evidence_kind": "LOCAL_LOOPBACK_ACCEPTANCE", "authority": "NONE"}
+    except (OSError, ValueError, TypeError):
+        return {**unknown, "reason_code": "acceptance_invalid"}
+
+
 def probe() -> dict:
     command = shutil.which("opencode")
     if not command:
@@ -215,6 +262,7 @@ def probe() -> dict:
         "installation": "DETECTED" if version else "PROBE_FAILED",
         "binary": command,
         "version": version,
+        "native_acceptance": native_acceptance(version),
         "runtime_verification": "UNVERIFIED",
         "host_discovery": "UNVERIFIED",
         "hook_execution": "UNVERIFIED",

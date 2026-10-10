@@ -10,6 +10,8 @@ Weekly collection 只讀 source-controlled allowlist 中的 public sources，保
 
 ## Evidence Quality
 
+每來源最多十筆、總原始訊號上限五十筆；報告另列去重後候選數、社群候選數、目標缺口與是否達標。BELOW_TARGET 不能藉由重複或低品質訊號補滿，人工採納與 Primary Source 查核維持。
+
 OpenCode V2 plugin discovery is setup evidence only; Context delivery, native permission decisions, provider behavior, Shell, and MCP coverage remain separately unverified unless action-level evidence is recorded.
 
 Turn Context routing 的變更應以 route lifecycle、compact Manifest、hook compatibility 與 fixed-core measurements 作為可重現證據；route coverage 不表示治理圖完整。
@@ -47,6 +49,8 @@ Trial PASS 只提供 adoption review evidence。正式 ADOPT 必須是新的 Hum
 External Agent/provider credentials 永遠是 optional enhancement；缺少 credential 不得阻擋 unrelated baseline/release。Secret 不進 Git、Issue body、Prompt、logs 或 ordinary evidence artifact。
 
 ## Effectiveness Feedback
+
+Signal 數量及 Target Reached 是採樣觀察，並非採納率或有效性分數。來源健康與去重後缺口分開呈現；零推薦仍是有效結果。
 
 Relationship-candidate output is advisory evidence, not a promotion decision or effectiveness signal; only reviewed canonical edges affect graph state.
 

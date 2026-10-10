@@ -1,0 +1,7 @@
+{
+  "version": 1,
+  "trials": [],
+  "required_dimensions": ["character_identity", "outfit_consistency", "composition", "reference_edit", "recovery"],
+  "canonical_scenarios": ["236", "238", "239"],
+  "instruction": "Record observed_host trials with provider, exact model_revision, device, confined output, sha256 and elapsed_ms. visual_review requires reviewer_type=human, reviewer and separately assessed dimensions. Missing trials and reviews remain UNKNOWN or UNVERIFIED. Do not retain prompts or infer visual quality from a valid image."
+}

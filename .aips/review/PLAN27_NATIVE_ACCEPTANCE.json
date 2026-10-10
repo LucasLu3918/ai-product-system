@@ -1,0 +1,17 @@
+{
+  "acceptance_sha256": "e956317e7818e886c0374e12499c2f27b454601766ff1fc824ba55bf9c1b4e26",
+  "checks": {
+    "admission_revocation": "VERIFIED_NATIVE_HOST",
+    "context_delivery": "VERIFIED",
+    "creative_prepare": "VERIFIED_NATIVE_HOST",
+    "instruction_model_delivery": "UNVERIFIED",
+    "l3_external_actions": "UNVERIFIED",
+    "permission_hook_execution": "VERIFIED",
+    "session_cancel": "UNVERIFIED"
+  },
+  "platform": "darwin",
+  "plugin_sha256": "52e58c91987ccb0f37f31a282bbed02877be3baeacbf31ba6bdff72d7a075118",
+  "runtime_source_sha256": "51595e27ca7637b69ca0dcbd58bf0ed1e00fd90d32b26631b594bf240b8b0425",
+  "schema_version": 1,
+  "version": "2.0.24"
+}

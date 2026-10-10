@@ -13,6 +13,7 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+import retrieval_query_terms as _retrieval_query_terms
 import yaml
 from aips_identity import repository_identity as canonical_repository_identity
 from git_paths import GitPathsError, run_git_nul_output, run_git_paths
@@ -29,7 +30,7 @@ from retrieval_storage import metadata_get, metadata_set, open_db, open_read_db
 from temporal_intelligence import load_temporal, temporal_digest
 from temporal_intelligence import validate_document as validate_temporal_document
 
-SCHEMA_VERSION = 5
+SCHEMA_VERSION = 6
 DEFAULT_TOKEN_BUDGET = 6000
 DEFAULT_RESULT_LIMIT = 12
 MAX_FILE_BYTES = 1_000_000
@@ -43,8 +44,6 @@ IMPACT_MAX_DEPTH = 6
 IMPACT_MAX_NODES = 150
 IMPACT_MAX_EDGES = 300
 IMPACT_MAX_RELATIONS_PER_FILE = 5000
-SEMANTIC_ALIAS_LIMIT = 32
-SEMANTIC_ALIAS_PATH = Path(__file__).resolve().parents[1] / "templates/intelligence/SEMANTIC_ALIASES.yaml"
 CHUNK_LINES = 100
 CHUNK_OVERLAP = 20
 
@@ -71,7 +70,6 @@ SECRET_VALUE_PATTERNS = (
     re.compile(r"""(?i)(["']?(?:password|api[_-]?key|token|secret)["']?\s*[:=]\s*["']?)([^"'\s,;}]+)"""),
     re.compile(r"(?i)(authorization\s*:\s*bearer\s+)([^\s]+)"),
 )
-TOKEN_RE = re.compile(r"[A-Za-z_][A-Za-z0-9_]{1,}|[\u4e00-\u9fff]{2,}")
 IDENTIFIER_RE = re.compile(r"[A-Za-z_$][A-Za-z0-9_$]*")
 SYMBOL_PATTERNS = {
     ".py": [
@@ -233,7 +231,7 @@ def extract_symbols(rel_path: str, text: str) -> list[tuple[str, str, int]]:
                 symbols.append((match.group(1), kind, line_no))
                 found = True
                 break
-        if not found:
+        if not found and ext != ".py":
             match = GENERIC_SYMBOL_PATTERN.match(line)
             if match:
                 symbols.append((match.group(1), "symbol", line_no))
@@ -423,6 +421,21 @@ def _local_import_target(root: Path, source_path: str, target_name: str) -> tupl
         return None
 
     imported_targets: list[tuple[str, str]] = []
+    module_imports = {
+        alias.asname or alias.name.split(".", 1)[0]: alias.name
+        for node in tree.body if isinstance(node, ast.Import) for alias in node.names
+    }
+    # Public facades may re-export an imported module's object by assignment.
+    # Resolve only this explicit top-level shape, never arbitrary object methods.
+    for node in tree.body:
+        if (not isinstance(node, ast.Assign) or len(node.targets) != 1
+                or not isinstance(node.targets[0], ast.Name) or node.targets[0].id != target_name
+                or not isinstance(node.value, ast.Attribute) or not isinstance(node.value.value, ast.Name)):
+            continue
+        module = module_imports.get(node.value.value.id)
+        if module:
+            resolved = module_file(module)
+            imported_targets.append((node.value.attr, resolved.relative_to(root).as_posix() if resolved else ""))
     for node in ast.walk(tree):
         if isinstance(node, ast.ImportFrom):
             for alias in node.names:
@@ -473,12 +486,24 @@ def _resolve_call_target(
             return [], "ambiguous_consumer_target", False
         if imported and imported[0] == "local":
             target_name, target_path = imported[1], imported[2]
-            rows = conn.execute(
-                "SELECT path, line FROM symbols WHERE name = ? AND path = ? ORDER BY line LIMIT 9",
-                (target_name, target_path),
-            ).fetchall()
-            if len(rows) == 1:
-                return list(rows), None, False
+            seen_exports: set[tuple[str, str]] = set()
+            for _ in range(4):
+                identity = (target_name, target_path)
+                if identity in seen_exports:
+                    break
+                seen_exports.add(identity)
+                rows = conn.execute(
+                    "SELECT path, line FROM symbols WHERE name = ? AND path = ? ORDER BY line LIMIT 9",
+                    (target_name, target_path),
+                ).fetchall()
+                if len(rows) == 1:
+                    return list(rows), None, False
+                if rows:
+                    break
+                exported = _local_import_target(root, target_path, target_name)
+                if not exported or exported[0] != "local":
+                    break
+                target_name, target_path = exported[1], exported[2]
             return list(rows), "unresolved_consumer_target", False
 
         local_rows = conn.execute(
@@ -696,8 +721,8 @@ def traverse_change_impact(
                     report["stop_reason"] = "max_edges"
                     rows = rows[: max(0, max_edges - len(edge_rows))]
                 definitions = conn.execute(
-                    "SELECT path, line FROM symbols WHERE name = ? ORDER BY path, line LIMIT 9",
-                    (current["symbol"],),
+                    "SELECT path, line FROM symbols WHERE name = ? AND (? = '' OR path = ?) ORDER BY path, line LIMIT 9",
+                    (current["symbol"], str(current.get("path") or ""), str(current.get("path") or "")),
                 ).fetchall()
                 target_matches = [row for row in definitions if str(row["path"]) == str(current.get("path")) and (not current.get("line") or int(row["line"]) == int(current["line"]))]
                 if direction == "callers" and current.get("path") and definitions and not target_matches:
@@ -1147,66 +1172,10 @@ def index_status(root: Path, store: Path) -> dict[str, Any]:
     }
 
 
-def query_terms(query: str) -> list[str]:
-    result: list[str] = []
-    for token in TOKEN_RE.findall(query):
-        low = token.lower()
-        if low not in result:
-            result.append(low)
-    return result[:20]
 
 
-def semantic_alias_expansion(terms: list[str]) -> tuple[list[str], dict[str, Any]]:
-    telemetry: dict[str, Any] = {
-        "provider": "builtin-curated-software-aliases",
-        "matched_groups": [],
-        "matched_group_terms": {},
-        "expanded_terms": [],
-        "truncated": False,
-        "limit": SEMANTIC_ALIAS_LIMIT,
-    }
-    if not SEMANTIC_ALIAS_PATH.is_file():
-        telemetry["status"] = "UNAVAILABLE"
-        return [], telemetry
-    try:
-        doc = yaml.safe_load(SEMANTIC_ALIAS_PATH.read_text(encoding="utf-8")) or {}
-    except Exception:
-        telemetry["status"] = "INVALID"
-        return [], telemetry
-
-    source_terms = set(terms)
-    expanded: list[str] = []
-    for group in doc.get("groups") or []:
-        if not isinstance(group, dict):
-            continue
-        group_terms = [
-            str(item).lower()
-            for item in (group.get("terms") or [])
-            if str(item).strip()
-        ]
-        if not source_terms.intersection(group_terms):
-            continue
-        group_id = str(group.get("id") or "unnamed")
-        telemetry["matched_groups"].append(group_id)
-        telemetry["matched_group_terms"][group_id] = group_terms
-        for term in group_terms:
-            if term in source_terms or term in expanded:
-                continue
-            if len(expanded) >= SEMANTIC_ALIAS_LIMIT:
-                telemetry["truncated"] = True
-                break
-            expanded.append(term)
-        if telemetry["truncated"]:
-            break
-    telemetry["expanded_terms"] = expanded
-    telemetry["status"] = "READY"
-    return expanded, telemetry
 
 
-def fts_expression(terms: list[str]) -> str:
-    safe = [re.sub(r"[^A-Za-z0-9_\u4e00-\u9fff]", "", term) for term in terms]
-    safe = [term for term in safe if term]
-    return " OR ".join(f'"{term}"' for term in safe)
 
 
 def load_graph_boosts(store: Path, terms: list[str]) -> set[str]:
@@ -1282,6 +1251,15 @@ def exact_symbol_companion_keys(
 
 
 from retrieval_structural_graph import structural_relation_boosts
+
+SEMANTIC_ALIAS_LIMIT = _retrieval_query_terms.SEMANTIC_ALIAS_LIMIT
+SEMANTIC_ALIAS_PATH = _retrieval_query_terms.SEMANTIC_ALIAS_PATH
+TOKEN_RE = _retrieval_query_terms.TOKEN_RE
+fts_expression = _retrieval_query_terms.fts_expression
+query_terms = _retrieval_query_terms.query_terms
+semantic_alias_expansion = _retrieval_query_terms.semantic_alias_expansion
+
+# Keep the legacy facade bound to the same implementation objects.
 
 
 def lexical_candidates(conn: sqlite3.Connection, fts_available: bool, terms: list[str], limit: int = 80) -> list[sqlite3.Row]:

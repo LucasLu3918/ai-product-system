@@ -1615,6 +1615,8 @@ The monthly evaluator deterministically samples up to 20 signal fingerprints and
 
 ## Scenario 220 — Parallel advisory fast feedback
 
+Validation Observation 新增相同候選的完整耗時量測與依 Change Class 分組的 P50／P95。重跑不當作新的 PR；歷史紀錄不完整時不授予 selective execution，完整驗證與 required repository check 維持。
+
 Scenario 239 extends Project Intelligence evidence with bounded, read-only relation candidates while preserving partial/unknown graph coverage.
 
 Unknown and malformed paths retain complete validation selection.
@@ -1649,6 +1651,8 @@ Dependency updates receive an explicit class, risk and recommended validation pl
 
 ## Scenario 222 — Large Document Measurement Only
 
+文件大小報告附上前十二個既有 H2 閱讀入口，並區分文件與 Canonical machine-readable 來源；仍只回報 WARN，不複製 Registry、搬移文件或縮減 Gate。
+
 Documentation amplification is reported as a measurement; no placement rule is removed on count alone.
 
 
@@ -1664,6 +1668,8 @@ The probe denies only a harmless synthetic local Bash command. Unsupported, malf
 
 ## Scenario 228 — Progressive Quality Ratchet
 
+Ruff 已量測的總基準為 685；Retrieval 模組基準為 4、下一目標為 3。保留 touched-code no-new-findings、既有模組降債規則與 report-only Coverage。
+
 Coverage remains report-only and the selected mypy scope is unchanged. Scenario 228 records a bounded relation-candidate lifecycle baseline (45.5% combined statement-and-branch coverage) without establishing a repository-wide minimum. The quality ratchet also pins the Ruff baseline at 687 findings and per-module budgets; baseline reductions do not widen the validated module scope.
 
 
@@ -1672,6 +1678,8 @@ Coverage remains report-only and the selected mypy scope is unchanged. Scenario 
 Per-module findings and direct coverage are measured without increasing a repository-wide threshold; debt must not grow in a touched module.
 
 ## Scenario 229 — Agent Eval Freshness Selection
+
+實際任務 observation 與 deterministic rubric 分開呈現。只有與 Case 相符且 CURRENT 的 result 才納入已記錄的 task_completed、human_corrections、false_positives；缺觀察為 UNKNOWN，runtime attestation 維持 UNVERIFIED。
 
 The extracted context helper is added to core-change freshness coverage.
 
@@ -1698,6 +1706,8 @@ The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-c
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
 
+Native acceptance is bound to the observed Host version, platform and source digests. Doctor distinguishes missing, stale, invalid, failed and recorded evidence; the current loopback scope does not imply L3, session cancellation, arbitrary MCP or production-model verification.
+
 創作提示 hook 每次只根據目前使用者回覆建立 grant；Context 注入或 transcript 截斷不得授權創作工具，native acceptance 只證明實際 hook 行為，不代表模型推論或視覺品質驗收。
 
 Plan24 acceptance was exercised against OpenCode v2.0.24 with a loopback mock: Context delivery and native file Allow/Deny hooks passed. Creative generation was not run; model inference and visual quality remain separate evidence.
@@ -1715,6 +1725,8 @@ Native OpenCode V2 prompt admission issues a fresh in-memory grant bound to the 
 The synthetic multi-item lifecycle verifies per-item preflight, continue-on-failure, hash-verified resume and recovery after an output succeeds before its checkpoint. Version-only local engine discovery never starts generation. Native OpenCode acceptance verifies grant admission and revocation without invoking image generation; no real model quality or visual acceptance is claimed.
 
 ## Scenario 236 — Local Creative Bundle Execution
+
+已接受的 ComfyUI 工作逾時或輪詢失敗時，測試 exact-ID queued cleanup、禁止全域 interrupt 與禁止自動重送；未知的 running completion 保持未驗證。
 
 Scenario 236 covers bounded `creative discover`, `preflight`, `execute`, `review`, and `trace` command contracts. Discovery probes installed MFLUX command/version status and only the fixed loopback ComfyUI service, separates command/runtime/model/preflight/inference evidence, and never starts a workflow. Static Apple Silicon FP8 warnings remain advisory; unavailable-engine recovery retains provider-specific reason codes without local path disclosure. Only explicit execution starts a configured local engine.
 
@@ -1737,6 +1749,8 @@ Scenario 236 covers versioned no-overwrite Profile/Bundle preparation, fixed MFL
 The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies concurrent preparation allocates distinct versions, unconfigured engines remain blocked, preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, MFLUX commands match the fixed capability registry, batch references remain bounded, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, the Z-Image Turbo split-loader graph and local model inventory are exact, prompt-bearing PNG text metadata is removed, edits use exactly one hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
+
+Recovery Plan 延伸既有 reason code／next action，標示順序、相依與 derived-state-write 授權需求。診斷不執行計畫，UNKNOWN 狀態先提供唯讀檢查，EPHEMERAL 不自動轉為 ATTACHED。
 
 Scenario 239 adds a separate read-only relationship-candidate lifecycle; diagnostics and candidate reports both leave Project Intelligence canonical state unchanged.
 

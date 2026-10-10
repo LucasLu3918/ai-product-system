@@ -45,7 +45,7 @@ def main() -> int:
     require(len(community_sources) >= 6, "at least six configured community sources required")
     require(config["policy"]["minimum_community_sources_when_available"] == 5, "five successful communities are the healthy weekly floor")
     require(config["policy"]["target_community_sources"] == 6, "six community sources are the configured resilience target")
-    require(config["policy"]["max_items_per_source"] == 8, "per-source candidate bound must remain eight")
+    require(config["policy"]["max_items_per_source"] == 10, "per-source candidate bound must remain ten")
     require(config["policy"]["max_raw_signals"] == 50, "weekly global raw-signal cap must remain fifty")
     require(config["policy"]["public_only"] is True, "Evolution Radar sources must remain public-only")
     require(config["policy"]["credentials_in_repository"] is False, "source credentials must remain outside repository")
@@ -197,7 +197,7 @@ def main() -> int:
     original_collect = radar.collect_source
 
     def fake_collect(source, max_items, timeout, *, max_response_bytes, max_redirects):
-        require(max_items == 8, "collector must pass the configured bounded item count")
+        require(max_items == 10, "collector must pass the configured bounded item count")
         require(timeout > 0, "collector must use a finite positive timeout")
         require(max_response_bytes == 2097152, "collector must enforce configured response cap")
         require(max_redirects == 3, "collector must enforce configured redirect cap")

@@ -55,3 +55,12 @@ The established Retrieval Intelligence command/import facade remains `scripts/re
 OpenCode V2 adapter lifecycle, install/doctor repair guidance, Session-scoped Context and tested native permission boundaries are documented in [Harness](HARNESS.md); use `aips harness trace` for the bounded privacy-limited event view.
 
 Temporal queries use the existing Python and Git runtime; the internal adapter adds no dependency or public command.
+
+## Observation fields
+
+| Command | Field / option | Observation |
+| --- | --- | --- |
+| `aips project diagnose` | `recovery_plan` | Ordered reasons/actions, dependencies and operation/authorization metadata; no actions executed. |
+| `aips intelligence impact-candidates` | `--max-depth 1\|2\|3` | Bounded lexical relation candidates; no Canonical Graph writes. |
+| `aips harness doctor` | OpenCode `native_acceptance` | Local Host/platform/source-bound evidence; missing/stale/failed remain explicit. |
+| `aips harness trace` | `observed_metrics` | Retained observed Context bytes/latency; unobserved model usage/cost stay UNKNOWN. |

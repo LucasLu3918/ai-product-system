@@ -213,6 +213,8 @@ Review actual:
 
 ## Release Security Gate
 
+原生 write Guard 的成功不會讓任意 MCP／自訂工具取得等效權限。外部動作與未知 effect 維持原 Human Gate 或 UNSUPPORTED；本地驗收報告沒有發布、發行或刪除分支權限。
+
 Read-only Impact Graph candidates do not replace the exact-candidate secret scan, satisfy a security gate, or grant publication authority.
 
 Core creative candidates keep local vision review opt-in, use the fixed loopback endpoint with proxy and redirects disabled, and include exact-candidate privacy and authorization evidence.
@@ -268,7 +270,7 @@ The publication CLI facade loads its implementation modules from the same resolv
 
 Post-merge reconciliation retains its clean-worktree, remote ancestry and fast-forward checks in `scripts/publish_post_merge.py`. The compatible CLI facade grants no merge, reset or release authority.
 
-Remote Git candidates receive a credential-free strict scan over the exact final tree and complete candidate history. Release readiness checks are read-only; signed tag trust and the first release decision remain separate Human-controlled steps.
+Remote Git candidates receive a credential-free strict scan over the exact final tree and complete candidate history. Release readiness checks are read-only; the tag target/SHA/VERSION checks do not verify cryptographic signatures, and the first release decision remains a separate Human-controlled step.
 
 The public repository runs GitHub Dependency Review on pull requests (blocking newly introduced high or critical vulnerabilities) as an exact-candidate shadow alongside the required `repository` aggregate. Its standalone check remains authoritative until parity is observed and a separate reviewed change switches the canonical required path. CodeQL default setup for `actions` and `python`, and scheduled OpenSSF Scorecard reporting complement candidate secret scanning: dependency review detects vulnerable dependency deltas, CodeQL analyzes source vulnerabilities, and Scorecard reports repository supply-chain posture. Scorecard remains advisory; none of these workflows can merge, publish, or change source. Dependency Review and Scorecard actions are pinned to immutable commits with read-only permissions except the narrowly scoped SARIF upload token.
 

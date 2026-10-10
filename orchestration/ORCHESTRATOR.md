@@ -145,6 +145,8 @@ Do not create a permanent/high-authority role without user approval.
 
 ## Context expansion
 
+Reuse existing helper facades and load only task-relevant topics. Three-hop candidate discovery does not resolve dynamic effects; observed Context bytes and latency do not imply token use, cache reuse or execution authority.
+
 For creative clarification, preserve the active Session root and bounded structured state while deriving a fresh current-response grant. Stop continuation on cancellation, unrelated work, scope expansion or exhausted output budget; generation remains an explicit separate action.
 
 OpenCode hook subprocesses are asynchronous and bounded; permission decisions refresh Session Context before authorization.

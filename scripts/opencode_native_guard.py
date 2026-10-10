@@ -18,6 +18,19 @@ FIND_SIDE_EFFECTS = {"-delete", "-exec", "-execdir", "-ok", "-okdir", "-fprint",
 SENSITIVE_OPTIONS = {"-c", "--config-env", "--git-dir", "--work-tree", "--namespace", "--exec-path", "--config", "--files0-from", "--pre", "--pre-glob"}
 
 
+def tool_effect_boundary(tool: str) -> dict[str, str]:
+    """Describe observable enforcement coverage without authorizing the action."""
+    if tool in WRITE_TOOLS:
+        return {"effect": "project_write", "enforcement": "NATIVE_PATH_GUARD", "verification": "ACTION_CHECK_REQUIRED"}
+    if tool in {"read", "glob", "grep"}:
+        return {"effect": "read_only", "enforcement": "HOST_PERMISSION", "verification": "UNVERIFIED"}
+    if tool in {"bash", "shell"}:
+        return {"effect": "unknown", "enforcement": "BOUNDED_READ_ONLY_SUBSET", "verification": "COMMAND_CHECK_REQUIRED"}
+    if tool == "external_action":
+        return {"effect": "external_action", "enforcement": "HUMAN_GATE_REQUIRED", "verification": "UNVERIFIED"}
+    return {"effect": "unknown", "enforcement": "UNSUPPORTED", "verification": "UNVERIFIED"}
+
+
 def inside_root(path: str, root: str) -> tuple[bool, str]:
     base = Path(root).resolve(strict=True)
     candidate = Path(path).expanduser()
@@ -42,7 +55,8 @@ def evaluate_write(*, tool: str, resources: list[str], root: str, manifest: dict
     if tool == "external_action":
         return {"decision": "DENY", "level": "L3", "reason": "external actions require the existing Human approval gate"}
     if tool not in WRITE_TOOLS:
-        return {"decision": "UNSUPPORTED", "level": "L0", "reason": "operation is outside the supported native write tools"}
+        return {"decision": "UNSUPPORTED", "level": "L0", "reason": "operation is outside the supported native write tools",
+                "effect_boundary": tool_effect_boundary(tool)}
     if not resources or any(not isinstance(item, str) or not item.strip() for item in resources):
         return {"decision": "DENY", "level": "L2", "reason": "native write target is missing or ambiguous"}
     targets: list[Path] = []

@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+拆出的 Discovery、Query Terms、Creative Trace 與 Asset Validation 使用原 Facade 的文件歸屬。文件大小報告提供既有 H2 閱讀入口與機器可讀來源分類，保留單一 Canonical Registry。
+
 When Project Intelligence candidate behavior changes, preserve its read-only status and verify the documentation placement and synchronization closure.
 
 The creative authorization change updates the recursive character-artwork and Harness documentation closure; its exact candidate, changed-file digest and boundary evidence are bound by `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`.
@@ -300,6 +302,8 @@ Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverif
 
 ## Durable Run State consistency
 
+恢復計畫與品質摘要都是唯讀觀察；讀取報告不會附加專案、刷新狀態、授予工具權限或改變生成／人工審核／接受狀態。
+
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
 
 OpenCode plugin recovery is version-aware and ownership-safe; doctor output distinguishes installation integrity from native runtime acceptance.
@@ -445,6 +449,10 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+The shared Python bootstrap preserves optional constraints on macOS Bash 3.2 by prepending them to its non-empty requirements argument array. Its lifecycle executes the actual shell body for constrained/unconstrained inputs, exact argument quoting and fail-closed empty requirements.
+
+既有 Quality Ratchet 的 Ruff 基準為 685，Retrieval 模組為 4、下一階段目標為 3。Validation Observation 以相同候選的完整紀錄計算各 Change Class 的 P50／P95；缺少有效耗時時回報 UNKNOWN，仍執行完整 Gate。
 
 Project Intelligence candidate contract and lifecycle checks are registered; they assert bounded output, unknown dynamic behavior and unchanged canonical graph coverage.
 

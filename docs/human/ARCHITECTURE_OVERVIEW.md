@@ -51,6 +51,8 @@ OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn C
 
 ## Project Intelligence 與 Retrieval
 
+Discovery 與 Query Terms 拆為內部模組，原 Facade 保留相同函式物件。最多三層的 lexical candidate 探索不升格 Canonical Graph；有序 Recovery Plan 不修改 Intelligence。
+
 Creative Impact Graph edges are currently incomplete; manually reviewed consumer paths keep this change scoped and do not imply repository-wide graph coverage.
 
 高風險既有專案變更先以 Change Impact 遍歷明確的 caller、consumer 與資料／事件邊界；scoped coverage 不會提升為 repository-wide 完整性。
@@ -115,6 +117,8 @@ repository_id
 EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才使用 project-local .ai/。
 
 ## Creative Workflow
+
+Creative Trace 與 Asset Validation 分別處理私密資料過濾與被動容器驗證。Trial 摘要綁定本地影像及雜湊，Human 視覺評分與使用者接受保持獨立。
 
 Project Intelligence candidate reports remain read-only and cannot authorize creative execution or change canonical graph state.
 
@@ -343,6 +347,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 ## Maintenance governance
 
+CI 耗時摘要、分支／Dependency PR 盤點與 Evolution 候選缺口是觀察證據。歷史 cohort 不足仍跑完整 Gate；遠端清理及正式發行須另行批准 exact manifest／candidate。
+
 The candidate command is read-only and does not change graph completeness or publication authority.
 
 Progressive quality ratchets keep per-module Ruff budgets and bounded lifecycle coverage report-only; they do not set a repository-wide coverage minimum.
@@ -409,6 +415,8 @@ Evolution data completeness、validator shadow/replay、branch cleanup proposal�
 
 - Before release readiness, finalized notes are recorded under the matching `VERSION` heading, leaving exactly one empty canonical `## Unreleased` section. This read-only check does not authorize tag or release writes; those remain separate Human-approved actions.
 ## Documentation Architecture
+
+大型文件報告提供既有章節導覽，機器可讀 Registry 保留 Canonical 單一來源。新 helper 透過 Placement／Sync 對應既有主題，避免另外建立一份政策。
 
 Recursive documentation impact reports closure size and repeated requirements; the report does not itself remove canonical placements.
 

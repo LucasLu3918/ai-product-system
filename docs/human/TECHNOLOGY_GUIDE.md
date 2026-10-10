@@ -33,6 +33,8 @@ Role、Skill、Protocol 與 Project evidence 只在 task relevant 時載入，�
 
 ## Project Understanding
 
+`aips project diagnose` 的 `recovery_plan` 列出原因、步驟相依、操作種類與所需授權，保持唯讀。`aips intelligence impact-candidates --max-depth 3` 提供最多三層候選關係；同目錄 import 可解析，但動態呼叫及全域 coverage 限制仍需人工覆核。
+
 The compact Project Intelligence Context projection remains behind the public facade; diagnostic recovery suggestions do not execute automatically.
 
 Impact candidate discovery is exposed by the same CLI and remains report-only: source-backed imports, literal dispatch, tests and documentation references do not update canonical graph edges or coverage.
@@ -67,6 +69,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+公開 Python Facade 保留同一函式／例外物件，Discovery、Query Terms、Creative Trace 與 Asset Validation 分別處理有界掃描、查詢詞、隱私 trace 與影像容器驗證。任意 MCP／自訂工具仍不在原生檔案 Guard 的驗證範圍。
 
 Impact candidate extraction is bounded and read-only; its source references remain unreviewed and are not execution or approval evidence.
 
@@ -208,6 +212,10 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+The shared Python bootstrap preserves optional constraints on macOS Bash 3.2 by prepending them to its non-empty requirements argument array. Its lifecycle executes the actual shell body for constrained/unconstrained inputs, exact argument quoting and fail-closed empty requirements.
+
+以觀察到的數值計算 P50／P95，缺值維持 UNKNOWN。OpenCode 驗收綁定 Host 版本、平台與 Plugin／驗收程式雜湊；Agent 任務完成、人工修正與誤判另行記錄，不能從 rubric PASS 推算。Creative trial 先核對本地影像與雜湊，再呈現人工角色、服裝、構圖、編輯與恢復評分。
 
 Impact candidate checks preserve source provenance, report budget truncation and unresolved dynamic relationships, and prove canonical graph state and global coverage remain unchanged.
 

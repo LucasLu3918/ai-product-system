@@ -1,100 +1,173 @@
 version: 1
 status: READY
 change:
-  id: required-check-concurrency-race
-  summary: Isolate validate workflow runs by pull-request event action so opened and classification-label events cannot cancel each other while same-action supersession and required repository checks remain intact.
+  id: plan27-reliability-quality
+  summary: Extend existing reliability, evidence, recovery and maintenance boundaries
+    while preserving authority and compatibility.
   boundary:
-  - .github/workflows/validate.yml
-  - tests/validation/static_contracts.py
   - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
-  - .aips/review/REQUIRED_CHECK_CONCURRENCY_CORE_CHANGE_PROPOSAL.md
+  - .aips/review/PLAN27_CORE_CHANGE_PROPOSAL.md
+  - .aips/review/PLAN27_MAINTENANCE_EVIDENCE.yaml
+  - .aips/review/PLAN27_NATIVE_ACCEPTANCE.json
+  - .github/actions/aips-python-bootstrap/action.yml
+  - .github/workflows/installation-entrypoints.yml
+  - CHANGELOG.md
+  - VERSION
+  - config/documentation-placement.yaml
+  - config/documentation-sync.yaml
+  - config/evolution-sources.yaml
+  - config/quality-ratchet.yaml
+  - docs/ARCHITECTURE.md
   - docs/human/ARCHITECTURE_OVERVIEW.md
   - docs/human/CONFORMANCE.md
+  - docs/human/DOCUMENTATION_MAP.md
+  - docs/human/DOCUMENTATION_SYNC.md
+  - docs/human/EVOLUTION_RADAR.md
+  - docs/human/EVOLUTION_RADAR_OVERVIEW.md
+  - docs/human/GETTING_STARTED.md
+  - docs/human/HARNESS.md
+  - docs/human/INSTALLATION.md
   - docs/human/MAINTENANCE.md
+  - docs/human/PROJECT_INTELLIGENCE.md
   - docs/human/SECURITY_ASSURANCE.md
+  - docs/human/SYSTEM_REFERENCE.md
   - docs/human/TECHNOLOGY_GUIDE.md
   - docs/human/USER_GUIDE.md
+  - docs/human/index.md
+  - harness/HARNESS_PROTOCOL.md
+  - harness/adapters/opencode/AGENTS.md
+  - harness/adapters/opencode/COMPATIBILITY.md
+  - orchestration/AGENT_EVAL.md
+  - orchestration/CHANGE_IMPACT.md
   - orchestration/CONFORMANCE.md
   - orchestration/CORE_CHANGE_TESTING.md
+  - orchestration/CREATIVE_DIRECTION.md
   - orchestration/DETERMINISTIC_SCHEDULER.md
+  - orchestration/DOCUMENTATION_SYNC.md
+  - orchestration/EVOLUTION_RADAR.md
+  - orchestration/EXECUTION_ISOLATION.md
+  - orchestration/GITHUB_RULESET_POLICY.md
   - orchestration/INTEGRATION_GATE.md
   - orchestration/ORCHESTRATOR.md
+  - orchestration/PROJECT_INTELLIGENCE.md
+  - orchestration/RELEASE_READINESS.md
+  - orchestration/RUNTIME_CONTEXT.md
+  - scripts/agent_eval.py
+  - scripts/character_artifacts.py
+  - scripts/character_asset_validation.py
+  - scripts/creative_execution.py
+  - scripts/creative_quality_benchmark.py
+  - scripts/creative_trace.py
+  - scripts/document_size_audit.py
+  - scripts/evolution_radar.py
+  - scripts/opencode_native_guard.py
+  - scripts/opencode_skill_projection.py
+  - scripts/opencode_trace.py
+  - scripts/performance_evidence.py
+  - scripts/project_diagnostics.py
+  - scripts/project_intelligence.py
+  - scripts/project_intelligence_discovery.py
+  - scripts/project_intelligence_impact_graph.py
+  - scripts/retrieval_intelligence.py
+  - scripts/retrieval_query_terms.py
+  - scripts/validation_observation.py
+  - templates/conformance/AGENT_EVAL_RESULT.yaml
+  - templates/conformance/AGENT_TASK_BENCHMARK.yaml
+  - templates/creative/QUALITY_BENCHMARK.json
+  - tests/evidence/evolution_radar_lifecycle.py
+  - tests/evidence/opencode_native_acceptance.py
+  - tests/evidence/plan27_lifecycle.py
+  - tests/evidence/python_bootstrap_action_lifecycle.py
+  - tests/validation/evolution_radar_contracts.py
+  - tests/validation/plan27_contracts.py
+  - tests/validation/quality_ratchet_contracts.py
+  - tests/validation/registry.py
 candidate:
-  base_sha: bde3a84afbba375de0d1aa4297b8ba2a7b4847af
-  changed_files_hash: 7e46034164ef2650a44790af94a39a00984a799551b75c9e580aaf73be7374cc
+  base_sha: 7dc56860b8131535cf72575467b1b89fefff3c27
+  changed_files_hash: 52c8f680ce4674083c42ce13c7158ceb6c25b6f7217058a8bdd9ac0f764eae23
 matrix:
-- boundary: Pull-request event concurrency and required aggregate
-  reason: GitHub workflow cancellation previously removed the required repository aggregate when opened and labeled events shared a PR-only concurrency key. The action-aware key must retain same-action replacement without cross-action cancellation.
-  checks:
+- boundary: Public facades and impact candidates
+  reason: Move coherent internal responsibilities with same-object exports, retain
+    old APIs and bounded lexical uncertainty.
+  checks: &id001
     static_lint:
       applicable: true
-      evidence: Python static workflow contract and YAML/workflow structural validation.
+      evidence: Ruff touched-code ratchet PASS (685 findings); selected Mypy PASS
+        (0).
     unit:
       applicable: true
-      evidence: Static contract exercises distinct PR action keys, same-PR action isolation, push separation, and cancellation decisions.
+      evidence: tests/evidence/plan27_lifecycle.py PASS; same-object facade and baseline-query
+        golden vectors PASS.
     integration:
       applicable: true
-      evidence: Full repository validation and exact-candidate Core Integration Gate.
+      evidence: Focused existing lifecycles PASS; full exact-candidate Core Integration
+        Gate required on frozen commit.
     contract:
       applicable: true
-      evidence: Workflow contract locks event-action grouping, label behavior, Janitor routing, and the required repository aggregate.
+      evidence: Facade identity, candidate-only graph confidence, read-only recovery,
+        exact-ID Comfy recovery and native-source freshness tested.
     e2e:
-      applicable: false
-      na_reason: No product UI/browser behavior changes; remote PR event-pair behavior is verified by the exact candidate GitHub Actions run.
+      applicable: true
+      evidence: OpenCode v2.0.24 isolated native loopback acceptance PASS; local queued-job
+        timeout observed and own queued cleanup confirmed. Real visual acceptance
+        remains unverified.
     security:
       applicable: true
-      evidence: "Strict exact-candidate and base..head secret scans; confirm contents: read and branch protection are unchanged."
+      evidence: Path/symlink confinement, unsupported effects, no global interrupt
+        and trace privacy negative cases PASS; strict exact-tree/history scan required
+        by final Gate.
     migration_recovery:
-      applicable: false
-      na_reason: No persisted schema, data, migration, or recovery behavior changes.
+      applicable: true
+      evidence: Existing install/release, creative generate-set resume, diagnostics
+        and trace/facade lifecycles PASS; additive report fields do not change persisted
+        user schemas.
     cli_harness:
-      applicable: false
-      na_reason: No AIPS CLI or Harness runtime behavior changes.
+      applicable: true
+      evidence: Existing OpenCode integration, Project Diagnostics, Creative execution
+        and public facade lifecycles PASS.
     docs_schema:
       applicable: true
-      evidence: Required 15-path impact closure, canonical placement, Markdown links, documentation contracts, and VitePress build.
-- boundary: Documentation and policy compatibility
-  reason: The documentation impact gate requires canonical guidance updates; workflow permissions, branch protection, required check names, secret scanning, and merge authority must remain unchanged.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Documentation validators, placement checks, link checks, and VitePress build.
-    unit:
-      applicable: true
-      evidence: Repository documentation and workflow static contracts.
-    integration:
-      applicable: true
-      evidence: Full repository validation and exact-candidate Core Integration Gate.
-    contract:
-      applicable: true
-      evidence: Impact closure and canonical placement contracts.
-    e2e:
-      applicable: false
-      na_reason: No user-facing product flow changes.
-    security:
-      applicable: true
-      evidence: Read-only permissions and protected-main behavior remain covered by static and remote candidate checks.
-    migration_recovery:
-      applicable: false
-      na_reason: Documentation-only compatibility updates have no persistent state.
-    cli_harness:
-      applicable: false
-      na_reason: No CLI or Harness changes.
-    docs_schema:
-      applicable: true
-      evidence: All required closure files updated and validated.
+      evidence: Canonical Placement/Sync preview PASS; Mermaid facade diagram and
+        original-topic reading paths updated; exact-candidate docs build required.
+- boundary: Native acceptance and unsupported effects
+  reason: Bind one observed Host/platform/source and maintain existing guarded/unguarded
+    truth.
+  checks: *id001
+- boundary: Creative accepted-job recovery
+  reason: Prevent duplicate accepted work on timeout/polling failure; exact-job queued
+    cleanup never interrupts other jobs.
+  checks: *id001
+- boundary: Read-only recovery and observed quality/metrics
+  reason: Add ordered recommendations and bounded observations without authorizing
+    execution, inferring usage or conflating fixtures with real tasks.
+  checks: *id001
+- boundary: Release, quality and maintenance
+  reason: Keep exact tag/SHA/VERSION integrity, mandatory full validation and human
+    release/cleanup/adoption decisions.
+  checks: *id001
+- boundary: Canonical documentation and navigation
+  reason: Keep single-source registries, original-topic placement and source-driven
+    architecture views.
+  checks: *id001
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
 blockers: []
 verification:
-  workflow_contract: PASS
-  documentation_impact_and_placement: PASS
-  documentation_site_build: PASS
-  repository_validation: PASS
-  diff_reconciliation: PASS
+  focused_lifecycles: PASS
+  quality_ratchet: PASS
+  native_loopback: PASS
+  documentation_placement_sync: PASS
+  exact_candidate_core_gate: REQUIRED_ON_COMMITTED_CANDIDATE
   strict_secret_scan: REQUIRED_ON_COMMITTED_CANDIDATE
-  core_integration_gate: REQUIRED_ON_COMMITTED_CANDIDATE
-  git_publish_gate: REQUIRED_BEFORE_PR_PUBLICATION
-  remote_action_pair_and_merge: REQUIRED_ON_PR
+  remote_repository_and_merge: REQUIRED_ON_PR
+  real_agent_outcomes: UNKNOWN_NO_LOCAL_MODEL
+  creative_visual_acceptance: UNVERIFIED_QUEUED_JOB_TIMEOUT
+  formal_release: SEPARATE_EXACT_CANDIDATE_APPROVAL
+  complete_local_repository_validation: Prior 13d0f56 full Gate PASS; current exact-candidate
+    repository-validation REQUIRED
+  scope_impact_traversal: COMPLETE; 51 nodes, 111 edges; reviewed local/CI scope;
+    global coverage unchanged
+  bash32_optional_constraints: PASS; actual shell argv with and without constraints;
+    empty requirements blocked

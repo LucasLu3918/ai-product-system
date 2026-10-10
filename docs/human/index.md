@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+依工作直接閱讀：[專案診斷與恢復](PROJECT_INTELLIGENCE.md)、[Runtime 整合與驗收](HARNESS.md)、[品質與人工 Review](USER_GUIDE.md)、[維護與 CI](MAINTENANCE.md)。大型文件報告可列出既有章節入口；機器可讀 Registry 保留單一來源。
+
 Existing Project relationship discovery is explained in Project Intelligence; architecture boundaries are summarized in Architecture Overview and scenario evidence is listed in Conformance.
 
 Creative quality workflow 的操作、OpenCode 授權、Profile contract 與 lifecycle 證據依 User Guide、Creative Direction、Scenario 234/236/238 對照；AI review 僅提供建議。

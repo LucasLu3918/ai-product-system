@@ -38,7 +38,13 @@ def _module_path(root: Path, module: str, level: int, source: Path, module_paths
         package = package[: max(0, len(package) - level + 1)]
         parts = package + parts
     name = ".".join(part for part in parts if part)
-    return module_paths.get(name)
+    exact = module_paths.get(name)
+    if exact or level:
+        return exact
+    # Scripts commonly import sibling modules through their launcher sys.path.
+    # Do not resolve another directory's similarly named module by guessing.
+    sibling = ".".join((*source.parent.parts, *parts))
+    return module_paths.get(sibling)
 
 
 def generate_relation_candidates(
@@ -47,6 +53,7 @@ def generate_relation_candidates(
     *,
     max_files: int = 8000,
     max_candidates: int = 300,
+    max_depth: int = 1,
 ) -> dict[str, Any]:
     """Generate read-only, provenance-backed source relationship candidates.
 
@@ -54,7 +61,16 @@ def generate_relation_candidates(
     Impact Graph and does not infer runtime behavior from dynamic dispatch.
     """
     root = root.resolve()
-    seeds = sorted({str(Path(item).as_posix()).strip("./") for item in seed_paths if item})
+    seeds = []
+    for item in seed_paths:
+        path = Path(item)
+        if path.is_absolute() or ".." in path.parts or not (root / path).resolve().is_relative_to(root):
+            raise ValueError("relation seed must remain repository-relative")
+        if item:
+            seeds.append(path.as_posix())
+    seeds = sorted(set(seeds))
+    max_depth = max(1, min(max_depth, 3))
+    max_candidates = max(1, min(max_candidates, 300))
     files, file_truncated = _python_sources(root, max(1, min(max_files, 8000)))
     module_paths: dict[str, str] = {}
     ambiguous_modules: set[str] = set()
@@ -94,7 +110,7 @@ def generate_relation_candidates(
             level = 0
             if isinstance(node, ast.Import):
                 for alias in node.names:
-                    target = module_paths.get(alias.name)
+                    target = _module_path(root, alias.name, 0, Path(relative), module_paths)
                     if target:
                         add(relative, target, "test_imports" if is_test else "imports", relative, node.lineno, "python_import")
                 continue
@@ -151,10 +167,23 @@ def generate_relation_candidates(
     def endpoint_path(value: str) -> str:
         return value.split("#", 1)[0]
 
-    selected = [
-        item for item in candidates.values()
-        if endpoint_path(item["from"]) in seeds or endpoint_path(item["to"]) in seeds
-    ]
+    reached = set(seeds)
+    selected_by_key: dict[tuple[str, str, str, int], dict[str, Any]] = {}
+    frontier = set(seeds)
+    depth_reached = 0
+    for depth in range(1, max_depth + 1):
+        following = set()
+        for key, item in candidates.items():
+            endpoints = {endpoint_path(item["from"]), endpoint_path(item["to"])}
+            if endpoints & frontier:
+                selected_by_key.setdefault(key, {**item, "depth": depth, "confidence": "candidate"})
+                following.update(endpoints - reached)
+        if not following:
+            break
+        depth_reached = depth
+        reached.update(following)
+        frontier = following
+    selected = list(selected_by_key.values())
     selected.sort(key=lambda item: (item["from"], item["to"], item["relation"], item["provenance"]["path"], item["provenance"]["line"]))
     truncated = file_truncated or len(selected) > max_candidates
     selected = selected[: max(1, min(max_candidates, 300))]
@@ -164,8 +193,10 @@ def generate_relation_candidates(
         "scanned_python_files": len(files),
         "candidates": selected,
         "candidate_count": len(selected),
+        "requested_depth": max_depth,
+        "reached_depth": depth_reached,
         "unresolved": sorted(
-            (item for item in unresolved if item.get("path") in seeds),
+            (item for item in unresolved if item.get("path") in reached),
             key=lambda item: (item.get("path", ""), int(item.get("line", 0)), item["kind"]),
         ),
         "global_coverage": {"api": "partial", "data": "partial", "events": "partial", "consumers": "unknown"},

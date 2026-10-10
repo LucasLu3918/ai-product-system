@@ -65,7 +65,7 @@ if source_config.exists():
         "credentials_in_repository: false",
         "minimum_community_sources_when_available: 5",
         "target_community_sources: 6",
-        "max_items_per_source: 8",
+        "max_items_per_source: 10",
         "max_raw_signals: 50",
         "evidence_quality:",
         "adopt_minimum_level: 2",
