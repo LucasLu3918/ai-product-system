@@ -1,4 +1,8 @@
 case "${1:-help}" in
+  approval)
+    shift
+    "$(python_bin)" "$SYSTEM_DIR/scripts/governance_guard.py" "$@"
+    ;;
   install)
     shift
     install_cli "$@"

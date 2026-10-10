@@ -6,3 +6,4 @@ Expected:
 - canonicalization produces the same SHA-256 fingerprint;
 - formatting/order for files/boundaries/operations does not create false drift;
 - semantic scope change changes the fingerprint.
+- legacy deterministic scope fingerprint remains a content binding, not proof of Human authority; v2 publication requires external signature and canonical explicit-operation proposal.

@@ -100,6 +100,8 @@ Usage:
   aips integration-gate --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--review-trust-store <path>] [--observe-run-id <id>] [--output <path>] [--project-root <repo>]
   aips janitor --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>]
   aips publish preview|plan|preflight|matrix-sync|post-merge|checks [publish-preflight options] [--project-root <repo>]
+  aips approval propose --operation <operation> --base <sha> --command <literal-command> [--cwd <repo>]
+  aips approval status|verify --approval <signed-record> --operation <operation> --command <literal-command> [--cwd <repo>]
   aips evolution package|analyze|apply [evolution analysis options]
   aips docs impact --base <ref> [--head <ref>] [--project-root <repo>] [--format yaml|json]
   aips openapi <doctor|install|validate|compare|run-contract-tests|verify-evidence|generator> ...

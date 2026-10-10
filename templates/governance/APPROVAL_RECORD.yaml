@@ -1,17 +1,29 @@
-version: 1
+version: 2
+# Git publication requires an external Human-issued Ed25519 signature and online
+# status/atomic consume. This template is only a PENDING proposal, never authority.
 approval:
   id: null
   type: null
   status: PENDING
   approved_by: null
   approved_at: null
+  expires_at: null
 proposal:
   fingerprint: null
 scope:
-  fingerprint: null
+  repository_id: null
+  worktree_id: null
   branch: null
   remote: null
+  remote_url: null
+  target_ref: null
+  expected_remote_oid: null
   candidate_commit: null
+  base_commit: null
+  diff_digest: null
+  argv: []
+  force: false
+  delete: false
   files: []
   boundaries: []
   operations: []
@@ -21,3 +33,7 @@ evidence:
 metadata:
   created_at: null
   updated_at: null
+signature:
+  algorithm: ed25519
+  issuer_key_id: null
+  value_b64: null

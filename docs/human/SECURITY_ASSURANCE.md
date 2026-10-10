@@ -213,6 +213,8 @@ Review actual:
 
 ## Release Security Gate
 
+External signed publication grant 與 validation／secret-scan evidence 一起綁定 exact candidate；Human release approval、production issuer readiness 與 GH base/tag CAS 限制需各自確認，不能由 fixture 結果推定。
+
 原生 write Guard 的成功不會讓任意 MCP／自訂工具取得等效權限。外部動作與未知 effect 維持原 Human Gate 或 UNSUPPORTED；本地驗收報告沒有發布、發行或刪除分支權限。
 
 Read-only Impact Graph candidates do not replace the exact-candidate secret scan, satisfy a security gate, or grant publication authority.
@@ -419,6 +421,99 @@ The Parallel Run Dashboard is loopback-only and read-only. Its projection cannot
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.
 
 ## Runtime Policy Enforcement
+
+### Git publication: 外部可信簽發與部署
+
+`aips approval propose` 建立 PENDING v2 提案；Agent 不簽發 APPROVED。
+核准綁定 common Git directory／worktree 的雜湊身分、branch、完整 candidate／base SHA、
+NUL-delimited files、binary diff digest、push URL、完整 argv、ref、force/delete、
+遠端 tip、有效期限與 grant ID。沒有 upstream 仍以明確 base 計算差異。
+
+範例（使用實際 SHA／ref；每次操作分別核准）：
+
+~~~sh
+aips approval propose --operation git_push --base <base-sha> --command 'git push --force-with-lease=refs/heads/feature:<expected-tip> origin <candidate-sha>:refs/heads/feature'
+aips approval status --approval <signed-record.yaml> --operation git_push --command '<same-literal-command>'
+aips approval verify --approval <signed-record.yaml> --operation git_push --command '<same-literal-command>'
+~~~
+
+新分支的 `<expected-tip>` 為空，保留結尾冒號。提案加入確切驗證／secret-scan evidence，
+由外部管理者獨立確認 Human 身分與完整提案，再簽發。每份 grant 只涵蓋一個操作；
+push、PR create、PR merge 需不同紀錄。status/verify 唯讀；PreToolUse 的 consume
+在放行前原子消耗。執行失敗、timeout、取消或範圍變動必須重新簽發；不自動重試發布。
+有效期限最多一小時，預設十五分鐘；服務回應含 fresh nonce 且最多六十秒。
+
+**接入信任根**：由系統管理者在 `/etc/aips/publication-authority.yaml` 配置，
+檔案與所有父路徑須 root-owned 且沒有 group/other write 權限。這不是 Agent 的部署步驟；
+不可用 repo、使用者可寫的 external YAML 或環境變數替換 trust root。
+
+~~~yaml
+version: 1
+endpoint: https://issuer.example.invalid
+issuers:
+  operator-key-id: <base64-encoded-32-byte-Ed25519-public-key>
+~~~
+
+**外部 issuer**：`scripts/publication_issuer.py` 是獨立管理主機的 reference service，
+不是 Agent grant tool。私鑰、SQLite ledger、管理者 terminal 與 Human authentication
+都必須在 Agent 無權存取的信任域；本機同 UID 的外部檔案不足以建立隔離。
+管理者先以自有可信 UI／terminal 核准 exact proposal 和 evidence，再呼叫 grant。
+HTTP API 沒有 grant endpoint；只提供 TLS 的 `/status`、`/consume`。
+
+Issuer host 配置（root-owned、不允許 Agent 寫入；私鑰 mode 0600）：
+
+~~~yaml
+private_key: /etc/aips/issuer/replace-me-key.pem
+key_id: operator-key-id
+database: /var/lib/aips-issuer/grants.sqlite
+tls_certificate: /etc/aips/issuer/server.crt
+tls_private_key: /etc/aips/issuer/server.key
+bind: 127.0.0.1
+port: 8443
+~~~
+
+管理者在獨立 issuer host 執行：
+
+~~~sh
+python3 scripts/publication_issuer.py --config /etc/aips/issuer.yaml grant --proposal <reviewed-proposal.yaml> --approved-by <authenticated-human-id> --ttl 900
+python3 scripts/publication_issuer.py --config /etc/aips/issuer.yaml serve
+~~~
+
+使用受信任 CA 的 HTTPS certificate（標準 TLS 驗證）；如使用 reverse proxy，必須保護
+admin UI、request size／rate、timeout 與 TLS。AIPS 不產生 production signing key，
+不配置人類登入，也不將 fixture key 認作 production authority。私鑰輪替由管理者更换
+issuer key ID／公鑰；刪除舊公鑰撤銷舊 grant。Ledger 備份不能恢復已用授權為未用。
+
+Client POST JSON：`version: 1`、fresh `nonce`、完整 signed `record`、
+`record_digest`、`action_digest`。digest 為 canonical JSON（排序 keys、UTF-8、
+無空白 separators）的 SHA-256。Service assertion 簽章涵蓋除 signature 外的所有欄位：
+`version`、`nonce`、`grant_id`、相同兩個 digest、`result`、`expires_at`。
+result 僅 `AVAILABLE` 或 `CONSUMED` 對應該操作；其他結果／重放／逾時一律拒絕。
+signature 使用 `algorithm: ed25519`、`issuer_key_id`、`value_b64`。
+Ledger 以 SQLite `BEGIN IMMEDIATE` 與 record digest 強制單次消耗，並行只能一個成功。
+
+**作用域限制**：Git push 必須單一明確 SHA/refspec 與 exact-tip force-with-lease，
+拒絕 unconditional force、mirror、followTags、隱含／多目標 ref。PR merge 必須 explicit
+repo／PR number／merge method／match-head-commit；禁止 auto/admin/delete-branch。
+GitHub merge base 與既存 release tag 是 preexecution observation，沒有 Git lease
+等價 CAS；scope 的 `remote_state_enforcement` 明確記錄此限制。要求 atomic base/tag
+不變的環境必須另用受控平台機制，不能把此觀測當成原子保證。
+
+**相容性與復原**：unsigned v1 Git record 即使 fingerprint 正確也拒絕，需重新提出並簽發。
+非 publication 的 runtime-policy legacy binding API 保留。從子目錄尋找時以 worktree root
+解析 env／STATE／ACTIVE pointer；common-directory fallback 使用獨立 worktree ID 目錄，
+簽章亦綁定該 ID，絕不自動共享權限。查找／簽章／service 錯誤僅輸出類型，不洩漏 payload。
+
+**Shell／commit**：AST 只看實際命令，包括 command/process substitution；quoted heredoc
+及 literal 文字不當作執行。未支援的 shell stdin/file、dynamic executable、Git alias、
+env split-string、unquoted publication glob/tilde、未解析的 message expansion 一律 fail closed。
+Git send-pack/http-push/receive-pack 與未綁定的 GitHub API／其他 mutation workflow 也拒絕旁路。
+這是 command gate，
+不是任意 Python／MCP／子程序的完整 OS sandbox。Codex/OpenCode 仍為 ADVISORY。
+提交需 standalone `git commit`、明確 message/file 与已暫存內容；-a/amend/editor 等
+未支援模式須改成先 stage、再 explicit message 的操作。只有 message 最後合法
+Co-Authored-By trailer 的 email 可豁免 PII，原訊息 SECRET 與實際 staged blob 掃描仍執行。
+唯讀 `git tag`／list／verify 不消耗 publication grant。
 
 Creative prompt grants are recalculated from each current user response and bounded Session state; cancellation, scope expansion, unrelated work or exhausted output budgets revoke continuation without relying on transcript history.
 

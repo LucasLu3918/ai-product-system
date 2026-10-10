@@ -238,6 +238,7 @@ Large/core changes are proposal-first. Use `templates/core-change-proposal.md`. 
 
 ## Git Publish Approval
 
+
 Before updating a remote branch/ref or publishing for PR/release, use `templates/git-publish-proposal.md`. Present changed files, feature summary, validation evidence, atomic commit plan and target. Wait for explicit approval. A material difference from the approved publish plan requires another approval.
 
 
@@ -361,6 +362,8 @@ When emitting a Structured Task Graph, treat tasks as writable by default. Set `
 For Evolution Radar semantic work, prefer the generated provider-neutral handoff when no scheduled provider is available rather than inventing a recommendation. For PR integration, stale target-base evidence must route back to refresh/revalidation rather than proceeding with an old PASS.
 
 ## Change-class handoff to Integration Gate
+
+Git protected commands now require externally signed v2 grants; Agent-generated APPROVED/fingerprint is not authority. Use `aips approval propose/status/verify`, separate grants per push/PR/merge, exact candidate/evidence and protected administrator trust configuration. Hook consumes once before execution; outages/failed execution require reissuance. Deployment and GH base/tag observation limits are documented in Human Security Assurance.
 
 For an approved Core implementation, complete local exact-candidate validation first, then present its concrete commit, file scope and Gate evidence for publication approval before remote branch or PR creation.
 

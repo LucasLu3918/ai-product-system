@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Publication issuer 接入與 unsigned-record migration 放在 Security Assurance，使用流程放在 User Guide 的 Git Publication 與 Release；Harness/architecture 記錄 external trust domain 與 advisory limits。
+
 文件大小報告提供 H2 reading_sections 與來源種類，協助逐步閱讀。新增內容放在其既有 Canonical 主題，Registry 與原始政策保持單一來源。
 
 Project Intelligence candidate behavior is synchronized across its user guide, architecture and conformance topics; candidates remain unreviewed and non-canonical.
@@ -183,6 +185,8 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+Publication placement covers the runtime requirements, new authority/parser/reference issuer and v2 Approval Record. Core candidate checks both changed-path closure and added content in the original semantic topics.
 
 Placement／Sync 明確映射新增的 Discovery、Query Terms、Creative Trace、Asset Validation 與 observed quality 工作入口；以相同 Facade 主題驗證文件閉包，不另立平行政策。
 

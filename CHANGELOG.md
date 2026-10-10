@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Bind Git publication to external Ed25519 Human grants, exact worktree/candidate/remote/ref scope, bounded expiry and transactional single-use consumption; add proposal/status/verify and separate-host issuer integration.
+- Replace shell text heuristics with bounded AST classification, preserve read-only tag access, and scan actual staged commit content while exempting only valid final author-trailer email metadata.
+
 
 ## 0.82.0
 

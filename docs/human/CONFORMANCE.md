@@ -111,6 +111,7 @@ Identity/Resume evidence 同時驗證跨 worktree repository identity、dirty wo
 
 ## v0.16 Agent Eval Conformance
 
+
 Telemetry remains content-free and additive; runtime and outcome fields do not capture model messages.
 
 
@@ -1725,6 +1726,8 @@ Native OpenCode V2 prompt admission issues a fresh in-memory grant bound to the 
 The synthetic multi-item lifecycle verifies per-item preflight, continue-on-failure, hash-verified resume and recovery after an output succeeds before its checkpoint. Version-only local engine discovery never starts generation. Native OpenCode acceptance verifies grant admission and revocation without invoking image generation; no real model quality or visual acceptance is claimed.
 
 ## Scenario 236 — Local Creative Bundle Execution
+
+Publication regression 增加 signed/unsigned、expiry、scope drift、8-way atomic consumption、shell AST／Hook deny 與 staged content 測試；由 governance validator 執行 `tests/test_publication_authority.py`。Fixture evidence 不證明 production issuer 或 universal subprocess enforcement。
 
 已接受的 ComfyUI 工作逾時或輪詢失敗時，測試 exact-ID queued cleanup、禁止全域 interrupt 與禁止自動重送；未知的 running completion 保持未驗證。
 

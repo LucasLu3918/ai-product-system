@@ -83,6 +83,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+Publication canonical implementation 是 `scripts/governance_guard.py`、`publication_authority.py`、`publication_commands.py`；`publication_issuer.py` 僅供外部管理域部署。Human 接入指引位於 Security Assurance / Runtime Policy Enforcement，避免複製 signing policy。
+
 Agent 任務 bench 重用 `tests/scenario_coverage.yaml` 與既有 Case；`templates/conformance/AGENT_TASK_BENCHMARK.yaml` 提供 Coding／Creative／Planning／Security 工作入口，結果使用既有 Result 範本，沒有第二份 Scenario Registry。
 
 The candidate command and its review boundary are routed through canonical Project Intelligence guidance and its registered conformance evidence.

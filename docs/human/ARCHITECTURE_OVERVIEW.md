@@ -118,6 +118,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Creative artifact 的本地授權不能用於 Git publication；新增的 approval CLI 與既有 creative CLI 共用 dispatch，仍維持各自 grant 邊界。
+
 Creative Trace 與 Asset Validation 分別處理私密資料過濾與被動容器驗證。Trial 摘要綁定本地影像及雜湊，Human 視覺評分與使用者接受保持獨立。
 
 Project Intelligence candidate reports remain read-only and cannot authorize creative execution or change canonical graph state.
@@ -182,6 +184,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+Publication exact-candidate diff 與 Hook consumption 是獨立邊界：Integration Gate PASS 不簽發 Human grant，Git common/worktree ID 不等同共享授權。這些 scope consumer 保留 bounded Intelligence evidence。
 
 Project Intelligence relationship candidates are listed as review evidence under the existing capability; generated architecture surfaces remain projections of the canonical registry.
 
@@ -286,6 +290,8 @@ Publication Preflight 將 Python module availability 與 loopback/browser capabi
 
 ## Security 與 Governance
 
+Git Publish Guard 現在區分 Agent PENDING proposal 與外部 Human-issued Ed25519 grant；trust config 由管理者保護，ledger 原子限制一次。common Git identity 與 worktree identity 同時綁定，沒有 upstream 仍驗完整 base/candidate 差異。Git lease 保護 push；GH base/tag 為執行前觀測，不能聲稱 atomic CAS。
+
 Optional creative vision review is confined to an installed local model over loopback and cannot update Human review or user-acceptance state.
 
 Creative prompt admission 是獨立授權邊界：每次回覆必須以目前 Session、root、動作與剩餘輸出數重新核准；原始歷史提示和 transcript 不得作為授權依據。
@@ -346,6 +352,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Publication 維護需獨立確認 issuer config、公鑰、ledger 與 exact-candidate Core evidence；缺少可信部署時保留發布阻擋，不將 fixture acceptance 當正式授權。
 
 CI 耗時摘要、分支／Dependency PR 盤點與 Evolution 候選缺口是觀察證據。歷史 cohort 不足仍跑完整 Gate；遠端清理及正式發行須另行批准 exact manifest／candidate。
 

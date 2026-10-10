@@ -29,6 +29,8 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+Publication authority has one Human deployment reference in Security Assurance / Runtime Policy Enforcement, with User Guide CLI usage and architecture/Harness trust-boundary links. Preserve explicit unsigned-record migration and unsupported Shell/GH CAS limitations.
+
 Creative benchmark guidance separates file integrity, observed provider execution, Human visual dimensions and acceptance. Synchronize the existing Human and Agent creative topics with the same distinctions.
 
 Impact candidate guidance is synchronized across the existing Project Intelligence Human and Agent topics; it remains advisory and non-canonical.
@@ -198,6 +200,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 
 ## Human documentation placement
+
+Publication sources extend the existing Security placement rule, while shared CLI consumers retain their original creative/runtime topics. This adds no placement bypass and keeps external issuer deployment documentation canonical.
 
 New extracted helpers inherit their existing facade documentation topics. Compact reading sections point into canonical documents; do not copy registries or policy into another source of truth.
 

@@ -37,6 +37,7 @@ Regardless of workspace isolation mode, every Remote Git publication candidate m
 
 ## Worktree ownership
 
+
 AIPS-created worktrees live outside the project source tree:
 
 `~/.config/aips/worktrees/<repository-id>/<isolation-id>/`
@@ -284,6 +285,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 
 ## Parallel runtime resource isolation
+
+Git publication approval lookup resolves from the active worktree root; common-directory storage is partitioned by worktree ID. Signed scope binds both identities, so shared repository storage does not share authority.
 
 Native acceptance uses isolated HOME/config/state and a credential-free loopback model. Temporary creative trials use versioned create-only output; neither observed metrics nor fixture success grants wider filesystem or external-service authority.
 

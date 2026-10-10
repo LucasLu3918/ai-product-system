@@ -71,13 +71,19 @@ else:
         record["scope"]["fingerprint"] = gg.fingerprint(scope_a)
         ap.write_text(yaml.safe_dump(record, sort_keys=False), encoding="utf-8")
         ok, reason, _ = gg.verify_record(ap, "git_push", Path(tmp), check_actual=False)
-        if not ok:
-            errors.append(f"Approval fingerprint should validate: {reason}")
+        if ok:
+            errors.append("Unsigned legacy Git approval must not validate")
         record["scope"]["files"].append("drift.txt")
         ap.write_text(yaml.safe_dump(record, sort_keys=False), encoding="utf-8")
         ok, _, _ = gg.verify_record(ap, "git_push", Path(tmp), check_actual=False)
         if ok:
             errors.append("Approval fingerprint did not detect scope drift")
+    publication_tests = subprocess.run(
+        [sys.executable, '-m', 'unittest', 'discover', '-s', str(ROOT / 'tests'), '-p', 'test_publication_authority.py'],
+        capture_output=True, text=True, check=False,
+    )
+    if publication_tests.returncode:
+        errors.append('Publication authority regression failed: ' + publication_tests.stderr[-1500:])
 
 for n in range(96, 101):
     matches = list((ROOT / "tests/scenarios").glob(f"{n:03d}-*.md"))
