@@ -36,7 +36,7 @@ Creative engine readiness behavior is described in the User Guide and Scenario 2
 
 角色美術授權、產圖前檢查及視覺驗收請依序參考 [User Guide](USER_GUIDE.md#creative-directionstyle與brand)、[Technology Guide](TECHNOLOGY_GUIDE.md#execution) 與 [Scenario Conformance](CONFORMANCE.md#scenario-238--creative-task-authorization-and-multi-item-execution)。
 
-Runtime integration, Project Intelligence recovery, creative provenance, validation policy, Evolution Radar and release governance are documented at their canonical topic pages; cross-topic changes are reconciled through the documentation impact report. Quality baselines and Scenario evidence are summarized in Maintenance, Technology Guide and Conformance.
+Runtime integration, Project Intelligence recovery, creative provenance, validation policy, Evolution Radar and release governance are documented at their canonical topic pages; cross-topic changes are reconciled through the documentation impact report. Quality baselines and Scenario evidence are summarized in Maintenance, Technology Guide and Conformance. The `0.81.0` release notes remain in `CHANGELOG.md`; versioning and exact-candidate readiness guidance is maintained in [Maintenance](MAINTENANCE.md#versioning) and [User Guide](USER_GUIDE.md#git-publication-與-release).
 
 Creative workflow 的 Human 操作方式見 User Guide；協定與授權邊界見 Creative Direction，批次工作範本與驗收證據分別見 `templates/creative/` 和 Scenario 238。
 

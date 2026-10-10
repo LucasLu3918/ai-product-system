@@ -489,6 +489,8 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
+Plan26 Phase 7 的 PR 只整理 `0.81.0` 版本與 Changelog，並為 exact-candidate readiness 留下空白 `Unreleased`；合併 PR 不會建立 tag 或 GitHub Release。
+
 Core creative workflow changes use the normal exact-candidate Gate and Git Publish Approval flow; neither validation nor matrix readiness authorizes remote publication or merge.
 
 During GitHub validation, isolated CLI fixtures receive the installed validation interpreter through `AIPS_VALIDATION_PYTHON`; its workflow contract runs before the deterministic Gate and does not grant publication or merge authority.

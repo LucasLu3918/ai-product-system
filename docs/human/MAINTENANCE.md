@@ -123,7 +123,7 @@ Multi-file changes should normally be assembled into one coherent remote branch 
 
 ## Versioning
 
-The current Creative authorization work remains under Unreleased; no release version changes until a separate release candidate is prepared.
+Plan26 Phase 7 sets `VERSION` to `0.81.0` and moves the accumulated Unreleased notes intact under the matching changelog heading, leaving one empty `## Unreleased`. This prepares exact-candidate readiness only; tag and GitHub Release creation remain separate actions requiring their own approval.
 
 創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
 
