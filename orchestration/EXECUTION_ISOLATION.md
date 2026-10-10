@@ -286,6 +286,9 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+A Git worktree isolates files and branches but does not isolate credentials or the user account. Personal publication trusts its configured `origin`; use an externally protected remote identity and high-assurance trust root when same-account Agent access is in scope.
+
+
 Git publication approval lookup resolves from the active worktree root; common-directory storage is partitioned by worktree ID. Signed scope binds both identities, so shared repository storage does not share authority.
 
 Native acceptance uses isolated HOME/config/state and a credential-free loopback model. Temporary creative trials use versioned create-only output; neither observed metrics nor fixture success grants wider filesystem or external-service authority.

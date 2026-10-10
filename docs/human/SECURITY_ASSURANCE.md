@@ -213,6 +213,9 @@ Review actual:
 
 ## Release Security Gate
 
+The Gate proves candidate fitness but grants no publication or merge authority. Personal mode uses the configured `origin` as its target and accepts that a same-account Agent can rewrite `.git/config`; select high assurance or an externally protected identity anchor when that threat must be resisted.
+
+
 External signed publication grant 與 validation／secret-scan evidence 一起綁定 exact candidate；Human release approval、production issuer readiness 與 GH base/tag CAS 限制需各自確認，不能由 fixture 結果推定。
 
 原生 write Guard 的成功不會讓任意 MCP／自訂工具取得等效權限。外部動作與未知 effect 維持原 Human Gate 或 UNSUPPORTED；本地驗收報告沒有發布、發行或刪除分支權限。
@@ -422,7 +425,17 @@ AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned cont
 
 ## Runtime Policy Enforcement
 
-### Git publication: 外部可信簽發與部署
+### Git publication: 個人模式與高保證模式
+
+預設的 `personal` 模式適用於個人快速開發。當 `/etc/aips/publication-authority.yaml` 不存在時，Agent 在完成既有候選／秘密掃描與明確命令檢查後，可推送至自己的工程分支並建立或更新指向遠端預設分支的 PR；使用者明確指定 local-only／不發布時則不推送。個人模式 Hook 不授權 PR merge。只有任務明確要求合併時，任務執行者才能在確認 PR 指向預設分支、head SHA 符合候選且 GitHub required checks 通過後合併。此模式接受一般個人帳號下 Agent 使用現有 GitHub 權限發布，不提供外部簽章隔離保證。
+
+個人模式只允許目前的工程分支推送至同名遠端分支，而且只接受 fetch/push URL 相同的唯一 `origin`；支援普通 push 或精確 `--force-with-lease`。建立 PR 也限工程分支並只能以遠端即時公告的預設分支為目標。掃描起點取自遠端 HEAD 與預設分支即時 SHA，不採信本機可改寫的 `origin/HEAD`；需先取得該 SHA 對應的物件，否則拒絕發布。個人模式 Hook 拒絕合併 PR、直接推送預設分支、刪除分支、tag/release、未知命令或不乾淨／無法驗證的候選。`git commit` 的既有 staged content scan、遠端候選秘密掃描、必要本地 Gate 與 PR required checks 保持適用。個人模式不建立 `APPROVED` 紀錄或簽章。
+
+個人模式以使用者目前設定的 `origin` 作為目標。相同帳號下的 Agent 能改寫工作區 `.git/config`，所以此模式無法保證 Agent 未把 `origin` 指向其他倉庫，也不提供抵禦惡意 Agent 外傳原始碼的隔離。使用者選擇此取捨以免快速開發前置部署可信服務；若需抵禦此風險，必須切換高保證授權或提供 Agent 無權修改的遠端身分錨點。
+
+未來若部署高保證服務，管理者建立固定信任根即選擇 `high_assurance`。只要該路徑存在，授權便要求外部簽署的 v2 單次 grant；內容錯誤、權限不安全或服務失效一律 fail closed，不會退回個人模式。舊版有效 trust config 持續代表高保證模式。
+
+這項個人模式是效率與隔離保證間的明確取捨。Claude／Gemini 的原生 Hook 在能力範圍內檢查命令；Codex 仍為 ADVISORY，不能宣稱 OS 級或跨工具攔截。
 
 `aips approval propose` 建立 PENDING v2 提案；Agent 不簽發 APPROVED。
 核准綁定 common Git directory／worktree 的雜湊身分、branch、完整 candidate／base SHA、

@@ -161,16 +161,9 @@ If approved scope materially expands during execution, stop and obtain approval 
 
 ## Git Publish Approval Gate
 
-Before any remote Git publication that changes a branch/ref or is intended for PR/release:
+Publication follows the configured mode. In default personal mode, a coding task publishes its validated candidate to its own engineering branch and creates/updates a PR without a separate per-operation confirmation, unless the user says local-only or forbids publication. Merge into `main` only when the task explicitly requests it and required repository checks pass. High-assurance mode requires a separate external grant for each protected publication operation. Direct protected-branch pushes, tags/releases, branch deletion, admin/auto merge and production actions remain separately gated.
 
-1. show the complete changed-file list;
-2. summarize the change by logical feature;
-3. show validation/review evidence and unresolved items;
-4. propose atomic commits grouped by logical capability, not by file;
-5. show target remote/branch and planned PR/release action;
-6. stop for explicit user approval.
-
-Local preparation/commit objects may be created before this gate. Do not update remote refs or publish a PR/release until approval. If the file list, commit plan, target or material scope changes after approval, re-run this gate.
+For either mode, preserve the exact candidate, complete file list, validation evidence, commit plan and target. Local preparation/commit objects are allowed before publication. Respect an explicit local-only/no-publication instruction. If the target or material scope changes, re-evaluate the publication checks.
 
 ## Task Preflight
 
@@ -581,7 +574,7 @@ AIPS extends existing components rather than adding new authority layers:
 - Deterministic Scheduler blocks any potentially writable task that omits Change Boundary; only explicit read-only tasks may run boundary-free.
 - Integration/Janitor Gate can bind a freshly fetched target-branch tip and blocks stale PR bases before running candidate checks.
 
-These are validation/research/execution hardening rules only. Protected Human Authority, Git Publish Approval, merge authority and release authority remain unchanged.
+These are validation/research/execution hardening rules only. Protected Human Authority, task-scoped merge authorization and release authority remain unchanged; Git publication follows the personal/high-assurance mode contract.
 
 
 ## Governance Audit Retention / Verification

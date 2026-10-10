@@ -44,6 +44,9 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+Git publication hooks share the personal/high-assurance policy where the adapter supports enforcement. Claude and Gemini use native hooks; Codex remains advisory, so this is not an OS-level boundary. See Security Assurance for the accepted same-account `origin` limitation.
+
+
 The Phase 1 creative prompt compiler extraction is internal to the Python implementation. It preserves the `creative_execution` facade and does not change OpenCode permissions, native tool signatures, or Harness installation.
 
 OpenCode 的 local creative tool 對視覺審查使用獨立、目前使用者明確提出的 `review-assist` grant，並綁定 active Session root；它不替使用者完成審查或接受。

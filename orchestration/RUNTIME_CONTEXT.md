@@ -22,6 +22,9 @@ Managed AIPS CLI runtimes require Python >=3.12. An explicit `AIPS_PYTHON` is au
 
 ## Context contract
 
+Runtime publication mode is resolved from the fixed administrator trust-root path: absent selects personal; present selects high assurance and invalid configuration fails closed. Context or an Agent-generated approval record cannot substitute for the external grant.
+
+
 The additive `impact-candidates` command is read-only and its output does not alter Context freshness, project readiness or mutation authorization.
 
 Creative prompt compilation and model guidance consume approved Profile facts as advisory input; only the active user's explicit action grant authorizes local execution or visual review.

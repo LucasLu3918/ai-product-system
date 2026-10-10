@@ -470,36 +470,46 @@ def hook(runtime: str) -> int:
                 else:
                     print(json.dumps({"decision": "deny", "reason": "AIPS blocked: " + reason}))
                 return 0
-    try:
-        path = approval_path(cwd)
-    except (OSError, ValueError, TypeError, KeyError, AttributeError, yaml.YAMLError, subprocess.TimeoutExpired):
-        return deny_hook_input(runtime, "approval_location_unavailable")
     ok = False
     reason = "no active AIPS Approval Record"
-    if path and not path.exists():
-        reason = "selected approval pointer does not exist; no fallback to a different scope"
     approval_operations = [operation for operation in operations if operation in PROTECTED]
     if not approval_operations:
         ok = True
         reason = "content safety passed; no publish approval required"
-    elif path and path.exists():
+    else:
         try:
-            failures = []
-            for operation in approval_operations:
-                valid, op_reason, _ = verify_record(path, operation, cwd, command=command, consume=True)
-                if not valid:
-                    failures.append(f"{operation}: {op_reason}")
-            ok = not failures
-            reason = "approval binding valid" if ok else "; ".join(failures)
+            if len(approval_operations) != 1:
+                raise ValueError('one protected publication operation per invocation required')
+            from publication_authority import (
+                PublicationError,
+                publication_mode,
+                validate_personal_action,
+            )
+            mode = publication_mode()
+            if mode == 'personal':
+                from publication_commands import shell_commands
+                parsed = shell_commands(command)
+                if len(parsed) != 1 or len(approval_operations) != 1:
+                    raise PublicationError('one standalone publication operation required')
+                validate_personal_action(cwd, approval_operations[0], parsed[0])
+                ok = True
+                reason = 'personal publication checks passed'
+            else:
+                path = approval_path(cwd)
+                if path and not path.exists():
+                    reason = "selected approval pointer does not exist; no fallback to a different scope"
+                elif path:
+                    valid, reason, _ = verify_record(path, approval_operations[0], cwd, command=command, consume=True)
+                    ok = valid
         except (OSError, ValueError, TypeError, KeyError, AttributeError, ImportError, yaml.YAMLError, subprocess.TimeoutExpired) as exc:
             logger.exception("Approval verification failed closed: %s", type(exc).__name__)
-            reason = "approval verification failed (" + type(exc).__name__ + ")"
+            reason = "publication authorization failed (" + type(exc).__name__ + ")"
 
     if runtime == "claude-code":
         print(json.dumps({"hookSpecificOutput": {
             "hookEventName": "PreToolUse",
             "permissionDecision": "allow" if ok else "deny",
-            "permissionDecisionReason": "AIPS approval binding verified" if ok else "AIPS blocked protected publication: " + reason,
+            "permissionDecisionReason": "AIPS " + reason if ok else "AIPS blocked protected publication: " + reason,
         }}))
     else:
         result = {"decision": "allow" if ok else "deny"}

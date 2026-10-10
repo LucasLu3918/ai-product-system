@@ -206,6 +206,8 @@ Readers continue using the last valid generation.
 
 
 
+
+
 Scoped evidence does not upgrade this repository’s partial Impact Graph to complete repository-wide coverage.
 
 
@@ -608,6 +610,9 @@ Do not claim the project has been initialized merely from directory/file-name in
 
 ## Existing-project automatic behavior
 
+Publication checks consume current remote/default-branch identity and exact candidate evidence, but Project Intelligence readiness never supplies Git authority. Personal mode trusts configured `origin`; high assurance requires its separate external grant.
+
+
 Diagnostics exposes a dependency-ordered recovery plan using existing reason codes/actions. Each step states read-only, manual-review or derived-state-write scope; it never attaches or repairs a project automatically.
 
 The compact Context projection is a pure helper behind the stable public facade; it does not change project-native instruction authority.
@@ -637,6 +642,9 @@ Architecture and DDD classifications require behavioral/dependency evidence, not
 The CLI commands are deterministic building blocks used by the Agent/Harness and remain available for debugging.
 
 ## Retrieval relationships and impact traversal
+
+Publication-mode changes affect hook dispatch, remote identity, scan bases, task authority and documentation consumers. Preserve explicit partial-graph limits and reconcile discovered paths against the actual candidate diff.
+
 
 Publication Intelligence must distinguish shared common-directory identity from worktree-local authority. Missing upstream is not evidence of an empty diff; bind an explicit base. External issuer deployment/readiness remains separate from repository graph coverage.
 

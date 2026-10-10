@@ -108,6 +108,9 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+For publication-policy changes, reconcile hook adapters, remote/default-branch identity, secret-scan base, merge boundary, Human guidance and exact-candidate Gate consumers. User acceptance of a documented limitation is evidence, not a grant.
+
+
 Publication changes reconcile shell AST, complete explicit-base diff, common/worktree identity, exact remote/ref/argv, external issuer and transactional consumption, plus the unchanged non-publication runtime-policy consumer. Record GH base/tag preexecution observation separately from Git server lease.
 
 Python call sites are not symbol declarations. Resolve an explicit top-level facade assignment only when its value is an attribute of a declared imported module; arbitrary object methods remain unresolved candidates.

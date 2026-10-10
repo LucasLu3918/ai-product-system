@@ -70,7 +70,7 @@ The scheduler is stateless between invocations. Durable workflow state remains o
 
 ## CLI
 
-A scheduler result or Integration Gate PASS cannot supply publication authority. The publication Hook separately verifies external signature, exact argv/candidate/target and atomically consumes one grant; never retry a consumed grant after failure.
+A scheduler result or Integration Gate PASS cannot supply publication authority. The publication Hook applies the selected mode: personal mode checks exact argv/candidate/target and content safety, while high assurance verifies the external signature and atomically consumes one grant; never retry a consumed grant after failure.
 
 Observed validation timing is diagnostic only. Capture complete exact-candidate durations and retain mandatory full validation; missing observations do not authorize selective execution or change the required aggregate.
 

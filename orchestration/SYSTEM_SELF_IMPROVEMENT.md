@@ -165,6 +165,6 @@ After self-improvement direction is approved:
 - run Documentation Impact Gate;
 - run Architecture Diagram Impact Check for Large/Core changes;
 - prepare Git Publish Proposal;
-- wait for publication approval before changing a remote branch/ref.
+- apply the selected publication mode before changing a remote branch/ref.
 
 If implementation materially drifts from the approved System Improvement Review or Core Change Proposal, including an unapproved additional optimization, stop and request approval again.

@@ -269,6 +269,7 @@ placement_rules:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary, Maintenance governance]
       docs/human/TECHNOLOGY_GUIDE.md: [Project Understanding, Product Delivery, Execution, Quality & Verification, Runtime Content Safety Boundary]
       docs/human/CONFORMANCE.md: [v0.16 Agent Eval Conformance, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenarios 202–209 — Plan13 current and provenance evidence, Scenario 220 — Parallel advisory fast feedback, Scenario 235 — OpenCode Native Context and Action Guard, Scenario 236 — Local Creative Bundle Execution, Scenario 237 — Read-only Project Diagnostics and Recovery Guidance]
+      orchestration/PROJECT_INTELLIGENCE.md: [Existing-project automatic behavior, Retrieval relationships and impact traversal]
 
   - id: repository-health
     triggers: [scripts/repository_health.py, config/architecture-surfaces.yaml, config/repository-health.yaml, orchestration/REPOSITORY_HEALTH.md]
@@ -455,6 +456,7 @@ placement_rules:
       docs/human/DOCUMENTATION_SYNC.md: [Current-behavior placement contract, Official Docs Site, Technology Guide, Deterministic protection]
       docs/human/DOCUMENTATION_MAP.md: [Official Docs Site, 文件角色, Agent / machine canonical 文件, Shared canonical 文件, 文件一致性, 文件角色]
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Documentation Platform, Product Delivery, Execution, Quality & Verification, Evolution & Maintenance, Runtime Content Safety Boundary, Security & Governance]
+      orchestration/DOCUMENTATION_SYNC.md: [Human documentation placement, Maintenance reliability mapping]
 
   - id: trajectory-evaluation
     triggers: [scripts/trajectory_eval.py, orchestration/TRAJECTORY_EVAL.md, templates/review/TRAJECTORY_TRACE.yaml, templates/review/TRAJECTORY_EVIDENCE.yaml, tests/evidence/trajectory_quality_gate_lifecycle.py, tests/scenarios/167-trajectory-quality-gate.md]
@@ -761,3 +763,18 @@ placement_rules:
       docs/human/MAINTENANCE.md: [Validation architecture consistency]
       orchestration/AGENT_EVAL.md: [Result]
       orchestration/CORE_CHANGE_TESTING.md: [Evidence]
+  - id: personal-publication-modes
+    triggers:
+      - scripts/publication_authority.py
+      - scripts/governance_guard.py
+      - orchestration/SYSTEM_SELF_IMPROVEMENT.md
+      - templates/git-publish-proposal.md
+      - tests/test_publication_authority.py
+      - tests/scenarios/240-personal-publication-default.md
+    placements:
+      docs/human/USER_GUIDE.md: [Git Publication 與 Release]
+      docs/human/SECURITY_ASSURANCE.md: [Runtime Policy Enforcement, Release Security Gate]
+      docs/human/ARCHITECTURE_OVERVIEW.md: [Security 與 Governance, Maintenance governance]
+      docs/human/TECHNOLOGY_GUIDE.md: [Execution, Security & Governance, Quality & Verification]
+      docs/ARCHITECTURE.md: [Maintenance and publication evidence]
+      orchestration/ORCHESTRATOR.md: [Git Publish Approval, Change-class handoff to Integration Gate]

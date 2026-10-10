@@ -86,6 +86,9 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+Publication-authority changes include hook consumers, remote identity resolution, candidate scanning and documentation. Change Impact evidence describes the affected boundary; it does not grant push, PR, or merge authority.
+
+
 Publication authority impact 包含 shell AST、Git common/worktree identity、legacy runtime-policy consumer、外部 issuer 與 ledger。Scoped manual consumer evidence 不升級全域 Impact Graph 覆蓋；signed grant 也不替代 Intelligence readiness。
 
 Disposable Retrieval index version 6 會重建舊的 symbol inventories；資料表介面與使用者 Canonical Intelligence 不變，舊索引不能作為本次關係修正的可信證據。

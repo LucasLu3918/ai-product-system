@@ -59,6 +59,7 @@ class PublicationTest(unittest.TestCase):
         self.run_git(self.repo, 'commit', '-m', 'base')
         self.base = self.run_git(self.repo, 'rev-parse', 'HEAD')
         self.run_git(self.path, 'init', '--bare', str(self.remote))
+        self.run_git(self.remote, 'symbolic-ref', 'HEAD', 'refs/heads/main')
         self.run_git(self.repo, 'remote', 'add', 'origin', str(self.remote))
         self.run_git(self.repo, 'push', 'origin', 'main')
         self.run_git(self.repo, 'switch', '-c', 'feature')
@@ -93,6 +94,80 @@ class PublicationTest(unittest.TestCase):
             self.verify(consume=True)
         with self.assertRaises(auth.PublicationError):
             self.verify()
+
+    def test_publication_mode_is_personal_only_when_admin_root_is_absent(self):
+        config = self.path / 'authority.yaml'
+        self.assertEqual(auth.publication_mode(config), 'personal')
+        config.write_text('version: 1\n')
+        self.assertEqual(auth.publication_mode(config), 'high_assurance')
+        config.unlink()
+        config.symlink_to(self.path / 'missing-target')
+        with self.assertRaises(auth.PublicationError):
+            auth.publication_mode(config)
+
+    def test_personal_mode_allows_only_scoped_engineering_branch_push(self):
+        self.run_git(self.repo, 'fetch', 'origin', 'main')
+        self.run_git(self.repo, 'switch', '-c', 'codex/test')
+        command = ['git', 'push', 'origin', self.head + ':refs/heads/codex/test']
+        observed = auth.validate_personal_action(self.repo, 'git_push', command)
+        self.assertEqual(observed['candidate_commit'], self.head)
+        self.assertEqual(observed['target_ref'], 'refs/heads/codex/test')
+
+        self.run_git(self.repo, 'remote', 'add', 'exfil', str(self.remote))
+        with self.assertRaisesRegex(auth.PublicationError, 'verified single origin'):
+            auth.validate_personal_action(
+                self.repo, 'git_push', ['git', 'push', 'exfil', self.head + ':refs/heads/codex/test'])
+
+        for branch, refspec, flags in [
+            ('main', 'refs/heads/main', []),
+            ('codex/test', 'refs/heads/main', []),
+            ('codex/test', 'refs/heads/codex/test', ['--delete']),
+            ('codex/test', 'refs/heads/codex/test', ['--force']),
+        ]:
+            args = ['git', 'push', *flags, 'origin', self.head + ':' + refspec]
+            with self.subTest(branch=branch, refspec=refspec, flags=flags), self.assertRaises(auth.PublicationError):
+                auth.validate_personal_action(self.repo, 'git_push', args)
+
+    def test_personal_mode_does_not_authorize_tags_releases_or_multiple_ops(self):
+        with self.assertRaises(auth.PublicationError):
+            auth.validate_personal_action(self.repo, 'git_tag', ['git', 'tag', 'v1'])
+        with self.assertRaises(auth.PublicationError):
+            auth.validate_personal_action(self.repo, 'gh_release_create', ['gh', 'release', 'create', 'v1'])
+        merge = ['gh', 'pr', 'merge', '7', '--repo', 'owner/project', '--merge',
+                 '--match-head-commit', self.head]
+        with self.assertRaises(auth.PublicationError):
+            auth.validate_personal_action(self.repo, 'gh_pr_merge', merge)
+
+    def test_personal_scan_uses_live_remote_default_not_mutable_origin_head(self):
+        self.run_git(self.repo, 'fetch', 'origin', 'main')
+        self.run_git(self.repo, 'update-ref', 'refs/remotes/origin/agent/attacker-controlled', self.head)
+        self.run_git(self.repo, 'symbolic-ref', 'refs/remotes/origin/HEAD',
+                     'refs/remotes/origin/agent/attacker-controlled')
+        self.assertEqual(auth._personal_base(self.repo, 'git_push', self.argv), self.base)
+
+    def test_personal_pr_requires_allowlisted_head_and_live_default_base(self):
+        self.run_git(self.repo, 'remote', 'set-url', 'origin', 'https://github.com/owner/project.git')
+        command = ['gh', 'pr', 'create', '--repo', 'owner/project', '--head', 'feature', '--base', 'main',
+                   '--title', 'Feature', '--body', 'body']
+        with patch('publication_authority._personal_base', return_value=self.base), \
+                patch('publication_authority._tip', return_value=self.head), \
+                self.assertRaisesRegex(auth.PublicationError, 'PR head'):
+            auth.validate_personal_action(self.repo, 'gh_pr_create', command)
+
+        command[command.index('--base') + 1] = 'production'
+        with self.assertRaisesRegex(auth.PublicationError, 'remote default branch'):
+            auth._personal_base(self.repo, 'gh_pr_create', command)
+
+    def test_personal_mode_runs_strict_candidate_and_history_secret_scan(self):
+        self.run_git(self.repo, 'fetch', 'origin', 'main')
+        self.run_git(self.repo, 'switch', '-c', 'codex/secret-test')
+        (self.repo / 'credentials.txt').write_text('token=github_pat_' + 'a' * 36 + '\n')
+        self.run_git(self.repo, 'add', 'credentials.txt')
+        self.run_git(self.repo, 'commit', '-m', 'candidate with credential')
+        head = self.run_git(self.repo, 'rev-parse', 'HEAD')
+        command = ['git', 'push', 'origin', head + ':refs/heads/codex/secret-test']
+        with self.assertRaisesRegex(auth.PublicationError, 'secret scan blocked'):
+            auth.validate_personal_action(self.repo, 'git_push', command)
 
     def test_signature_tamper_unsigned_and_wrong_key(self):
         for mutate in [lambda r: r.pop('signature'), lambda r: r['approval'].update(approved_by='agent'),
@@ -313,6 +388,19 @@ class PublicationTest(unittest.TestCase):
                                   input=json.dumps(payload), text=True, capture_output=True, check=False)
             self.assertEqual(proc.returncode, 0)
             self.assertEqual(json.loads(proc.stdout)['hookSpecificOutput']['permissionDecision'], 'deny')
+
+    def test_claude_hook_allows_a_valid_personal_branch_push_without_grant(self):
+        import json
+        self.run_git(self.repo, 'fetch', 'origin', 'main')
+        self.run_git(self.repo, 'switch', '-c', 'codex/hook-test')
+        command = f'git push origin {self.head}:refs/heads/codex/hook-test'
+        payload = {'cwd': str(self.repo), 'tool_input': {'command': command}}
+        proc = subprocess.run([sys.executable, str(ROOT / 'scripts/governance_guard.py'), 'hook', '--runtime', 'claude-code'],
+                              input=json.dumps(payload), text=True, capture_output=True, check=False)
+        self.assertEqual(proc.returncode, 0)
+        response = json.loads(proc.stdout)['hookSpecificOutput']
+        self.assertEqual(response['permissionDecision'], 'allow')
+        self.assertIn('personal publication checks passed', response['permissionDecisionReason'])
 
 
 class ShellTest(unittest.TestCase):
