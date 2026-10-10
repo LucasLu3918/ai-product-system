@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+The personal PR merge confirmation path is independent from character artwork generation and review; keep both authorization boundaries explicit when adapter documentation changes.
+
 Shared CLI dispatch changes require creative/Harness documentation closure even when the new entry is publication-only; confirm existing creative authorization remains independent of external Git grants.
 
 拆出的 Discovery、Query Terms、Creative Trace 與 Asset Validation 使用原 Facade 的文件歸屬。文件大小報告提供既有 H2 閱讀入口與機器可讀來源分類，保留單一 Canonical Registry。

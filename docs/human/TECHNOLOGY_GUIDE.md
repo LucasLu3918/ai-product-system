@@ -70,6 +70,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+Personal PR merge confirmation is handled by the Claude/Gemini runtime adapters and does not change Creative Bundle execution or acceptance boundaries.
+
 Approval CLI 在既有 dispatch 中提出 high-assurance exact-operation proposal；既有 creative grant、Intelligence readiness 與 scheduler evidence 各保留原權限。Personal mode 不建立簽章授權，也不將一般 Human task authorization 描述成外部簽章。
 
 公開 Python Facade 保留同一函式／例外物件，Discovery、Query Terms、Creative Trace 與 Asset Validation 分別處理有界掃描、查詢詞、隱私 trace 與影像容器驗證。任意 MCP／自訂工具仍不在原生檔案 Guard 的驗證範圍。

@@ -118,6 +118,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Git publication confirmation remains within Security and Governance; it does not grant or alter creative task authority.
+
 Creative artifact 的本地授權不能用於 Git publication；新增的 approval CLI 與既有 creative CLI 共用 dispatch，仍維持各自 grant 邊界。
 
 Creative Trace 與 Asset Validation 分別處理私密資料過濾與被動容器驗證。Trial 摘要綁定本地影像及雜湊，Human 視覺評分與使用者接受保持獨立。

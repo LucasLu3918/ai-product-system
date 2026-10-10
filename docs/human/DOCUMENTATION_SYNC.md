@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Creative authorization remains independent from Git publication grants and native merge confirmation; preserve that boundary in the Human and Agent topic mappings.
+
 Git publication mode behavior is documented in the User Guide and Security Assurance; proposal and self-improvement sources map there through `config/documentation-placement.yaml`. Keep the personal-mode origin trust limitation explicit in both behavior and security guidance. Per-merge confirmation is provided by Claude Code's native `ask` and the active Gemini extension's interactive `ask_user` policy; Codex remains advisory and higher-priority Gemini policies can override the extension rule.
 
 

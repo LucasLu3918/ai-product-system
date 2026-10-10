@@ -1721,6 +1721,8 @@ The lifecycle covers separate prompt dimensions, Chinese creative-asset routing,
 
 ## Scenario 238 — Creative Task Authorization and Multi-item Execution
 
+Creative task grants authorize only their bounded workflow; Git PR merge confirmation is a separate publication action covered by Scenario 240.
+
 Native OpenCode V2 prompt admission issues a fresh in-memory grant bound to the active session, workspace, actions and bounded output count. A short style selection can derive a new grant only from root-bound, expiring structured continuation state; cancellation, unrelated work, scope expansion and output-cap exhaustion revoke it. Raw prior prompts and transcript context cannot restore authority. Read-only discovery and preflight remain available without a grant.
 
 The synthetic multi-item lifecycle verifies per-item preflight, continue-on-failure, hash-verified resume and recovery after an output succeeds before its checkpoint. Version-only local engine discovery never starts generation. Native OpenCode acceptance verifies grant admission and revocation without invoking image generation; no real model quality or visual acceptance is claimed.

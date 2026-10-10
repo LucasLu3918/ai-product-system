@@ -86,6 +86,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+OpenCode continues to use its existing signed-publication route for protected operations; per-call personal PR merge confirmation is implemented only by Claude Code and the active Gemini AIPS extension.
+
 個人與高保證發布模式的機器執行規則位於 `scripts/publication_authority.py`、`scripts/governance_guard.py` 與 `orchestration/ORCHESTRATOR.md`；proposal 由 `templates/git-publish-proposal.md` 保留候選證據。
 
 

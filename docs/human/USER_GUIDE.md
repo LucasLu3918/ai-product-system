@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Creative task grants remain separate from Git authority; the personal PR merge confirmation flow is described under Git Publication 與 Release.
+
 Creative grant 僅涵蓋已核准創作範圍；成品若要 commit／push／PR，需另依 Git Publication 與 Release 流程取得 signed external grant。
 
 ComfyUI 已接受工作後若逾時或輪詢失敗，AIPS 只請求移除該 queued job，阻擋自動重送，不中斷其他正在執行的工作。先檢查 Provider 狀態，再明確重試。
