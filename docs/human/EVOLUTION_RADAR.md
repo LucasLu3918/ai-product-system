@@ -50,6 +50,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+Evolution evidence 或 adoption decision 不能簽發 Git publication grant；發布仍需 exact-operation external Human approval。新 reference issuer 的合成測試不是 production trust-root acceptance。
+
 Signal 數量及 Target Reached 是採樣觀察，並非採納率或有效性分數。來源健康與去重後缺口分開呈現；零推薦仍是有效結果。
 
 Relationship-candidate output is advisory evidence, not a promotion decision or effectiveness signal; only reviewed canonical edges affect graph state.
@@ -103,6 +105,7 @@ Monthly / quarterly roll-up 量測 collected → shortlist → semantic → acti
 
 - Release readiness is a separate deterministic evidence gate; Evolution metrics do not imply an empty Unreleased section or authorize a tag.
 ## Current Boundaries
+
 
 Creative workflow reliability is validated through its exact-candidate Core Matrix and deterministic lifecycle evidence; it does not create an Evolution Radar trial or authorize autonomous code, publication or merge actions.
 

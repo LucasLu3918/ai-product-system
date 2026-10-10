@@ -1,5 +1,7 @@
 # AIPS Global Turn Harness
 
+Git publication requires separately issued signed v2 authority; OpenCode advisory integration must not claim universal interception or create its own APPROVED record. See Human Security Assurance for the external issuer setup.
+
 Doctor may display source/version/platform-bound local native acceptance and bounded Context byte/latency metrics. These are observations only: absent model usage, real task outcomes and unsupported effects remain UNKNOWN or UNVERIFIED. Recovery Plan is read-only and does not authorize its actions.
 
 Creative prompt compilation internals are not a native authority surface. Preserve the existing `creative_execution` facade and keep prompt/output parity separate from OpenCode grant and host-acceptance evidence.

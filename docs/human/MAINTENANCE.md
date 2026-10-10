@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Shared CLI dispatch changes require creative/Harness documentation closure even when the new entry is publication-only; confirm existing creative authorization remains independent of external Git grants.
+
 拆出的 Discovery、Query Terms、Creative Trace 與 Asset Validation 使用原 Facade 的文件歸屬。文件大小報告提供既有 H2 閱讀入口與機器可讀來源分類，保留單一 Canonical Registry。
 
 When Project Intelligence candidate behavior changes, preserve its read-only status and verify the documentation placement and synchronization closure.
@@ -289,6 +291,7 @@ Prefer the strongest practical deterministic evidence for affected behavior whil
 
 ## Governance enforcement consistency
 
+
 When Approval Binding / Governance Enforcement changes, review together:
 
 - Approval Record template + governance_guard.py;
@@ -449,6 +452,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+Publication 維護需檢查 external issuer、公鑰輪替、grant expiry、SQLite single-use ledger 與 worktree isolation。服務 outage 不得改寫 APPROVED 或重用 consumed grant；重新簽發，並保留 Codex/OpenCode advisory capability truth。
 
 The shared Python bootstrap preserves optional constraints on macOS Bash 3.2 by prepending them to its non-empty requirements argument array. Its lifecycle executes the actual shell body for constrained/unconstrained inputs, exact argument quoting and fail-closed empty requirements.
 

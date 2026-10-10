@@ -82,6 +82,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
+安裝 Harness 不會部署 publication issuer 或產生可信 signing key。Git Hook 新版需由管理者另外接入 root-owned `/etc/aips/publication-authority.yaml` 與外部 HTTPS service；步驟見 Security Assurance 的 Runtime Policy Enforcement。
+
 驗收後可將 `tests/evidence/opencode_native_acceptance.py --binary <opencode> --output <XDG_CONFIG_HOME>/aips/harness/owned/opencode/native-acceptance.json` 的報告交由 doctor 顯示。報告不授予權限，Host／來源變更後需重新驗收。
 
 Installed runtimes may use `aips intelligence impact-candidates --seed-path <path>` for bounded read-only relationship discovery; the command preserves unknown relationships and does not alter Project Intelligence graph files.

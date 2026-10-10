@@ -70,6 +70,8 @@ The scheduler is stateless between invocations. Durable workflow state remains o
 
 ## CLI
 
+A scheduler result or Integration Gate PASS cannot supply publication authority. The publication Hook separately verifies external signature, exact argv/candidate/target and atomically consumes one grant; never retry a consumed grant after failure.
+
 Observed validation timing is diagnostic only. Capture complete exact-candidate durations and retain mandatory full validation; missing observations do not authorize selective execution or change the required aggregate.
 
 Creative generation is an explicit user action through `aips creative execute`; scheduler inspection, validation, and Gate runs never launch a configured image engine.

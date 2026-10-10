@@ -12,6 +12,7 @@ EARS validator 測試契約的文件影響限於本 Conformance 規範與對應�
 
 ## Purpose
 
+
 Make AIPS behavioral regression coverage measurable without conflating specification count with executable evidence.
 
 ## Registry
@@ -961,6 +962,8 @@ Scenario 239 binds bounded read-only Impact Graph relationship candidates to imp
 
 ## Scenario 236 — Local Creative Bundle Execution
 
+Creative lifecycle success does not issue a Git publication grant. The shared CLI dispatch preserves separate creative/publication authorization and is covered by the complete repository validator.
+
 Creative trace summaries record bounded completion, failure and duration samples. The quality benchmark checks confined output digests before showing separately recorded Human dimension ratings; fixtures, valid containers and aggregate timings do not establish visual acceptance.
 
 Synthetic-provider success does not establish real model inference or visual quality.
@@ -1011,6 +1014,8 @@ The OpenCode lifecycle runs with the selected validation Python. OpenCode itself
 Scenario 210 is lifecycle-covered by `tests/evidence/install_preflight_lifecycle.py` and `tests/evidence/system_facts_lifecycle.py`. It verifies the Python >=3.12 floor across explicit selection, old managed venv repair, doctor diagnostics, canonical facts, and the scheduled 3.12–3.14 compatibility workflow.
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
+
+The governance validator executes signed publication lifecycle regressions in `tests/test_publication_authority.py`, including actual Hook deny envelopes and SQLite concurrent single-use consumption. Fixture keys never establish an external production issuer.
 
 Its read-only diagnostic path remains separate from creative Profile compilation, model recommendation and local visual-review actions.
 

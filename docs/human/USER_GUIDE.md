@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Creative grant 僅涵蓋已核准創作範圍；成品若要 commit／push／PR，需另依 Git Publication 與 Release 流程取得 signed external grant。
+
 ComfyUI 已接受工作後若逾時或輪詢失敗，AIPS 只請求移除該 queued job，阻擋自動重送，不中斷其他正在執行的工作。先檢查 Provider 狀態，再明確重試。
 
 使用 `templates/creative/QUALITY_BENCHMARK.json` 記錄真正的本地 trial，再以 `python scripts/creative_quality_benchmark.py --project <workspace> --evidence <report.json>` 核對輸出及雜湊。角色、服裝、構圖、參考圖編輯與恢復由人工分別評分；空紀錄保持 UNKNOWN。
@@ -156,6 +158,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 新專案若尚未選擇技術，AIPS 會先檢查硬性限制，再依團隊、產品、既有系統、交付與維護需求提出少量候選和取捨；語言與框架分開選擇。架構建議同時看複雜度訊號與反向訊號，並分開說明 Clean Architecture、DDD 與部署方式。重要選擇由使用者確認後，才會整理到 Implementation Profile。
 
 ## Global Harness 與 MCP
+
+`aips approval` 由現有 CLI dispatch 提供；Hook 設定與 external issuer readiness 分開驗證。Codex/OpenCode ADVISORY 不因新簽章介面升級為 universal process enforcement。
 
 For existing-project discovery, `aips intelligence impact-candidates --seed-path <path>` reports unreviewed source-backed relationships only; review evidence never grants mutation authority.
 
@@ -496,6 +500,8 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 Retrieval index persistence is an internal, rebuildable cache boundary in `scripts/retrieval_storage.py`; existing commands and imports continue through the `retrieval_intelligence.py` compatibility facade.
 
 ## Git Publication 與 Release
+
+`aips approval propose/status/verify` 提供 PENDING 提案與外部簽章驗證；每個 push、PR create、merge 各需獨立一次性 grant。可信服務未配置時拒絕發布；完整部署、CLI 範例與移轉步驟見 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement)。
 
 Plan26 Phase 7 的 PR 只整理 `0.81.0` 版本與 Changelog，並為 exact-candidate readiness 留下空白 `Unreleased`；合併 PR 不會建立 tag 或 GitHub Release。
 

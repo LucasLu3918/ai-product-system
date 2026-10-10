@@ -4,6 +4,8 @@
 
 ## Inputs
 
+External signed publication grants supplement rulesets; they do not override required checks or grant --admin/--auto/delete-branch merge authority. GH match-head-commit pins head, while base freshness remains a preexecution observation rather than a server CAS.
+
 Native acceptance reports bind observed Host version, platform, Plugin digest and acceptance-script digest. These local read-only records do not establish branch-protection configuration or grant repository policy writes.
 
 Exact-candidate publication checks remain authoritative; read-only relationship candidates do not satisfy required checks or branch protection.

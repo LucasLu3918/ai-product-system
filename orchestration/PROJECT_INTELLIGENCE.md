@@ -14,6 +14,7 @@ It replaces Project Knowledge as the long-term cache model. Existing `.ai/knowle
 
 ## Goals
 
+
 Disposable default-cache recovery uses a private current-user temporary directory when the default home cache is unwritable; explicit XDG configuration is authoritative. When registered derived metadata is read-only, colocated disposable metadata reports CACHE_ONLY and preserves revision-bound freshness without replacing canonical sources or graphs. Missing databases yield MISSING/ORPHANED rather than trusting persisted READY metadata; rebuilding does not require force. Read-only snapshot, WAL refusal and source-integrity checks remain intact.
 
 Read-only Context remains available in ordinary directories and repositories without a first commit. Temporal assertions requiring Git ancestry are unavailable until a commit exists. Source Registry instructions are selected by target path and runtime; unrelated nested adapters are not injected into root work. Retrieval queries use read-only SQLite access and may use a verified, disposable snapshot when WAL shared memory is unavailable; index construction and refresh remain writer operations.
@@ -202,6 +203,7 @@ lock
 Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
+
 
 
 Scoped evidence does not upgrade this repository’s partial Impact Graph to complete repository-wide coverage.
@@ -635,6 +637,8 @@ Architecture and DDD classifications require behavioral/dependency evidence, not
 The CLI commands are deterministic building blocks used by the Agent/Harness and remain available for debugging.
 
 ## Retrieval relationships and impact traversal
+
+Publication Intelligence must distinguish shared common-directory identity from worktree-local authority. Missing upstream is not evidence of an empty diff; bind an explicit base. External issuer deployment/readiness remains separate from repository graph coverage.
 
 `impact-candidates --max-depth 3` follows bounded lexical source relationships, including exact sibling module paths. Keep every edge a candidate until reviewed, retain dynamic-call unknowns, and preserve global partial coverage.
 

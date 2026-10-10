@@ -4,6 +4,21 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+Git publication extends the existing guard with a separate administrator trust domain:
+
+~~~mermaid
+flowchart LR
+    P[Agent PENDING exact-operation proposal] --> H[External authenticated Human approval]
+    H --> I[Administrator Ed25519 issuer and transactional grant ledger]
+    I --> R[Signed v2 record]
+    R --> G[Worktree-aware guard and fixed protected trust config]
+    G --> S[HTTPS signed status or atomic consume]
+    S --> C[One literal operation]
+    C --> L[Git server lease or GH head pin with observed base]
+~~~
+
+No signing key is deployed in the Agent domain. Missing issuer fails closed; advisory runtimes do not become process sandboxes.
+
 ```mermaid
 flowchart LR
   PI[Project Intelligence facade] --> Discovery[Bounded source discovery]

@@ -86,6 +86,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+Publication authority impact 包含 shell AST、Git common/worktree identity、legacy runtime-policy consumer、外部 issuer 與 ledger。Scoped manual consumer evidence 不升級全域 Impact Graph 覆蓋；signed grant 也不替代 Intelligence readiness。
+
 Disposable Retrieval index version 6 會重建舊的 symbol inventories；資料表介面與使用者 Canonical Intelligence 不變，舊索引不能作為本次關係修正的可信證據。
 
 Python symbol discovery 不再把一般函式呼叫當成宣告；explicit top-level module-object re-export 可追到其實作。這減少假的 ambiguous target，關係仍維持 lexical candidate，不推論任意物件方法。

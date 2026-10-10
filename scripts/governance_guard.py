@@ -10,6 +10,7 @@ import re
 import shlex
 import subprocess
 import sys
+from datetime import UTC
 from pathlib import Path
 from typing import Any
 
@@ -24,8 +25,8 @@ try:
 except ModuleNotFoundError:  # imported as a repository module
     from scripts.content_safety import safe_emit
 
-PROTECTED = ("git_push", "git_tag", "gh_pr_create", "gh_release_create")
-CONTENT_SENSITIVE = ("git_commit", "git_push", "git_tag", "gh_pr_create", "gh_release_create")
+PROTECTED = ("git_push", "git_tag", "gh_pr_create", "gh_pr_merge", "gh_release_create")
+CONTENT_SENSITIVE = ("git_commit", *PROTECTED)
 logger = logging.getLogger(__name__)
 SET_LIKE_KEYS = {"files", "boundaries", "operations"}
 ASSIGNMENT_RE = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*=")
@@ -81,6 +82,9 @@ def actual_scope(cwd: Path, operation: str) -> dict:
 
 
 def approval_path(cwd: Path) -> Path | None:
+    from publication_authority import approval_location
+    if git_output(cwd, "rev-parse", "--show-toplevel"):
+        return approval_location(cwd)
     env = os.environ.get("AIPS_APPROVAL_RECORD")
     if env:
         return Path(env).expanduser()
@@ -95,8 +99,23 @@ def approval_path(cwd: Path) -> Path | None:
     return default if default.exists() else None
 
 
-def verify_record(path: Path, operation: str, cwd: Path, check_actual: bool = True):
+def verify_record(path: Path, operation: str, cwd: Path, check_actual: bool = True,
+                  *, command: str | None = None, consume: bool = False):
     doc = load_yaml(path)
+    if operation in PROTECTED:
+        from publication_authority import PublicationError, verify
+        from publication_commands import shell_commands
+        try:
+            commands = shell_commands(command) if command else []
+            if len(commands) != 1:
+                return False, "one standalone literal publication command required", doc
+            verify(doc, operation, cwd, commands[0], consume=consume)
+            return True, "external publication authority verified", doc
+        except PublicationError as exc:
+            return False, str(exc), doc  # Only constant redacted protocol reasons, never payload/path.
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, ImportError, yaml.YAMLError, subprocess.TimeoutExpired) as exc:
+            # Do not emit exception text from subprocess/network/record parsing.
+            return False, "publication authority unavailable or binding rejected (" + type(exc).__name__ + ")", doc
     approval = doc.get("approval") or {}
     scope = doc.get("scope") or {}
     if approval.get("status") != "APPROVED":
@@ -126,22 +145,8 @@ def _shell_tokens(command: str) -> list[str]:
 
 
 def _segments(command: str) -> list[list[str]]:
-    try:
-        tokens = _shell_tokens(command)
-    except ValueError:
-        return []
-    result: list[list[str]] = []
-    current: list[str] = []
-    for token in tokens:
-        if token in CONTROL_TOKENS or (token and all(ch in ";&|" for ch in token)):
-            if current:
-                result.append(current)
-                current = []
-        else:
-            current.append(token)
-    if current:
-        result.append(current)
-    return result
+    from publication_commands import shell_commands
+    return shell_commands(command)
 
 
 def _strip_options(tokens: list[str], with_value: set[str]) -> list[str]:
@@ -177,6 +182,9 @@ def _unwrap(tokens: list[str]) -> list[str]:
             return []
         exe = Path(tokens[0]).name
         if exe == "env":
+            from publication_commands import CommandError
+            if any(token.startswith(('-S', '--split-string')) for token in tokens[1:]):
+                raise CommandError('env split-string execution requires a standalone command')
             tokens = _strip_options(tokens[1:], ENV_WITH_VALUE)
             while tokens and ASSIGNMENT_RE.match(tokens[0]):
                 tokens.pop(0)
@@ -201,9 +209,10 @@ def _direct_operations(tokens: list[str]) -> list[str]:
         for i, token in enumerate(tokens[1:], start=1):
             if token == "-c" and i + 1 < len(tokens):
                 return operations_for(tokens[i + 1])
-            if token.startswith("-") and "c" in token[1:] and i + 1 < len(tokens):
+            if re.fullmatch(r'-[A-Za-z]*c[A-Za-z]*', token) and i + 1 < len(tokens):
                 return operations_for(tokens[i + 1])
-        return []
+        from publication_commands import CommandError
+        raise CommandError('interpreter file/stdin execution cannot be classified; use literal standalone commands')
 
     if exe == "eval" and len(tokens) > 1:
         return operations_for(" ".join(tokens[1:]))
@@ -216,22 +225,58 @@ def _direct_operations(tokens: list[str]) -> list[str]:
             return ["git_push"]
         if args[0] == "commit":
             return ["git_commit"]
+        if args[0] in {'send-pack', 'http-push', 'receive-pack'}:
+            from publication_commands import CommandError
+            raise CommandError('Git remote-ref plumbing is unsupported; use the exact signed push workflow')
         if args[0] == "tag":
+            query = args[1:]
+            read_flags = {"--list", "-l", "--verify", "-v", "--contains", "--no-contains",
+                          "--merged", "--no-merged", "--points-at", "--sort", "--format", "--column", "--no-column"}
+            if not query or (any(x.split("=")[0] in read_flags or re.fullmatch(r"-n\d*", x) for x in query)
+                             and all(not x.startswith("-") or x.split("=")[0] in read_flags or re.fullmatch(r"-n\d*", x) for x in query)):
+                return []
             return ["git_tag"]
+        # A Git alias may run shell code or publish; unknown verbs are not read-only evidence.
+        builtin = subprocess.run(['git', '--list-cmds=builtins'], capture_output=True, text=True, timeout=5, check=False)
+        if builtin.returncode or args[0] not in builtin.stdout.split():
+            from publication_commands import CommandError
+            raise CommandError('unknown Git verb or alias cannot be classified')
         return []
 
     if exe == "gh":
         args = _strip_options(tokens[1:], GH_GLOBAL_WITH_VALUE)
+        if args and args[0] == 'api':
+            from publication_commands import CommandError
+            # API writes may change Git refs without invoking git push/gh pr merge.
+            if '--method' not in args or args.count('--method') != 1 or args[args.index('--method') + 1:args.index('--method') + 2] != ['GET']:
+                raise CommandError('unbound GitHub API mutation is unsupported')
+            if any(x.startswith(('-f', '-F', '--field', '--raw-field', '--input', '-X', '--method=')) for x in args):
+                raise CommandError('ambiguous GitHub API request is unsupported')
         if len(args) >= 2 and args[0:2] == ["pr", "create"]:
             return ["gh_pr_create"]
+        if len(args) >= 2 and args[0:2] == ["pr", "merge"]:
+            return ["gh_pr_merge"]
         if len(args) >= 2 and args[0:2] == ["release", "create"]:
             return ["gh_release_create"]
+        if len(args) >= 2 and (args[0] == 'pr' and args[1] in {'edit', 'close', 'reopen', 'ready'}
+                              or args[0] == 'release' and args[1] in {'delete', 'edit', 'upload'}
+                              or args[0] == 'repo' and args[1] in {'delete', 'create', 'fork', 'sync'}):
+            from publication_commands import CommandError
+            raise CommandError('unsupported GitHub mutation requires a separately reviewed workflow')
     return []
 
 
 def operations_for(command: str) -> list[str]:
+    from publication_commands import CommandError
     operations: list[str] = []
     for segment in _segments(command):
+        effective = _unwrap(segment)
+        if effective and any('$' in word or '`' in word or '\0' in word for word in effective[:1]):
+            raise CommandError('dynamic executable cannot be classified')
+        if effective and Path(effective[0]).name in {'git', 'gh'} and any('$' in word or '`' in word or '\0' in word for word in effective[1:3]):
+            raise CommandError('dynamic Git/GitHub subcommand cannot be classified')
+        if effective and Path(effective[0]).name in {'bash', 'sh', 'zsh'} and '<<' in command:
+            raise CommandError('shell heredoc execution requires an inspected standalone command')
         for operation in _direct_operations(segment):
             if operation not in operations:
                 operations.append(operation)
@@ -241,6 +286,73 @@ def operations_for(command: str) -> list[str]:
 def operation_for(command: str):
     operations = operations_for(command)
     return operations[0] if operations else None
+
+
+def commit_safety(cwd: Path, command: str) -> dict:
+    """Scan actual commit messages and staged blobs; exempt only final author email metadata."""
+    from content_safety import scan_payload
+    from publication_authority import PublicationError, git
+    from publication_commands import shell_commands
+    commands = shell_commands(command)
+    if len(commands) != 1 or commands[0][:2] != ["git", "commit"]:
+        raise PublicationError("commit must be standalone without context-changing wrappers")
+    args = commands[0][2:]
+    if any('$' in word or '`' in word or '\0' in word for word in args):
+        raise PublicationError("commit message/file must be literal without shell expansion")
+    # Alternate index/worktree environment can change what Git commits.
+    if any(os.environ.get(key) for key in ['GIT_INDEX_FILE', 'GIT_DIR', 'GIT_WORK_TREE']):
+        raise PublicationError("alternate Git commit environment unsupported")
+    messages = []
+    i = 0
+    while i < len(args):
+        word = args[i]
+        if word in {'-m', '--message', '-F', '--file'}:
+            if i + 1 >= len(args):
+                raise PublicationError("commit message value missing")
+            value = args[i + 1]
+            if word in {'-F', '--file'}:
+                if value == '-':
+                    raise PublicationError("stdin commit message cannot be inspected")
+                value = (cwd / value).read_text()
+            messages.append(value)
+            i += 2
+        elif word.startswith('--message=') or word.startswith('-m') and len(word) > 2:
+            messages.append(word.split('=', 1)[1] if word.startswith('--message=') else word[2:])
+            i += 1
+        elif word in {'--allow-empty', '--allow-empty-message', '--no-verify', '--signoff', '-s', '--quiet', '-q'}:
+            i += 1
+        else:
+            # -a, --only, --amend, re-use/editor messages and path selection change the candidate.
+            raise PublicationError("unsupported commit option requires an explicit inspected staged commit")
+    if not messages:
+        raise PublicationError("explicit commit message required")
+    message = '\n\n'.join(messages)
+    original = scan_payload(message, sink='git_commit')
+    if any(item.type == 'SECRET' and item.action == 'BLOCK' for item in original):
+        return {'decision': 'BLOCK', 'reason_codes': ['SECRET']}
+    blocks = message.rstrip().split('\n\n')
+    trailer = re.compile(r'^(Co-Authored-By: [^<>\r\n]+ <)([A-Za-z0-9.!#$%&\x27*+/=?^_`{|}~-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,})(>)$', re.IGNORECASE)
+    if len(blocks) > 1 and all(trailer.fullmatch(line) for line in blocks[-1].splitlines()):
+        blocks[-1] = '\n'.join(trailer.sub(r'\1git-email-metadata\3', line) for line in blocks[-1].splitlines())
+        message = '\n\n'.join(blocks)
+    safety = safe_emit(sink='git_commit', payload={'message': message})
+    if safety['decision'] == 'BLOCK':
+        return safety
+    root = Path(git(cwd, 'rev-parse', '--show-toplevel'))
+    staged = subprocess.run(['git', 'diff', '--cached', '--name-only', '-z', '--diff-filter=ACMR'], cwd=root,
+                            capture_output=True, timeout=10, check=False)
+    if staged.returncode:
+        raise PublicationError("staged file list unavailable")
+    for name in staged.stdout.split(b'\0'):
+        if not name:
+            continue
+        blob = subprocess.run(['git', 'show', ':' + os.fsdecode(name)], cwd=root, capture_output=True, timeout=10, check=False)
+        if blob.returncode or len(blob.stdout) > 8 * 1024 * 1024:
+            raise PublicationError("staged blob unavailable or too large")
+        result = safe_emit(sink='git_commit', payload={'staged_blob': blob.stdout.decode('utf-8', errors='replace')})
+        if result['decision'] == 'BLOCK':
+            return result
+    return safety
 
 
 def deny_hook_input(runtime: str, reason: str) -> int:
@@ -293,12 +405,12 @@ def hook(runtime: str) -> int:
             ledger = os.environ.get("AIPS_GOVERNANCE_AUDIT_LEDGER")
             if ledger:
                 try:
-                    from datetime import datetime, timezone
+                    from datetime import datetime
 
                     from governance_audit import append_event
                     append_event(Path(ledger), {
                         "event_type": event.get("event_type", "RUNTIME_ACTION_BLOCKED"),
-                        "occurred_at": datetime.now(timezone.utc).isoformat(),
+                        "occurred_at": datetime.now(UTC).isoformat(),
                         "actor": {"type": "runtime", "id": runtime},
                         "authority": {"source": "runtime_policy", "approval_id": None},
                         "binding": {"proposal_fingerprint": event.get("policy_digest"),
@@ -328,7 +440,10 @@ def hook(runtime: str) -> int:
         else:
             print(json.dumps({"decision": "deny", "reason": reason}))
         return 0
-    operations = operations_for(command)
+    try:
+        operations = operations_for(command)
+    except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError, ImportError, subprocess.TimeoutExpired):
+        return deny_hook_input(runtime, "unsupported_shell_syntax")
     if not operations:
         print("{}")
         return 0
@@ -341,9 +456,13 @@ def hook(runtime: str) -> int:
                 "git_push": "source_artifact",
                 "git_tag": "source_artifact",
                 "gh_pr_create": "github_pr",
+                "gh_pr_merge": "github_pr",
                 "gh_release_create": "release_notes",
             }[operation]
-            safety = safe_emit(sink=sink, payload={"command": command})
+            try:
+                safety = commit_safety(cwd, command) if operation == 'git_commit' else safe_emit(sink=sink, payload={"command": command})
+            except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError, ImportError, subprocess.TimeoutExpired):
+                return deny_hook_input(runtime, "content_candidate_unavailable")
             if safety["decision"] == "BLOCK":
                 reason = "content safety blocked " + operation
                 if runtime == "claude-code":
@@ -351,9 +470,14 @@ def hook(runtime: str) -> int:
                 else:
                     print(json.dumps({"decision": "deny", "reason": "AIPS blocked: " + reason}))
                 return 0
-    path = approval_path(cwd)
+    try:
+        path = approval_path(cwd)
+    except (OSError, ValueError, TypeError, KeyError, AttributeError, yaml.YAMLError, subprocess.TimeoutExpired):
+        return deny_hook_input(runtime, "approval_location_unavailable")
     ok = False
     reason = "no active AIPS Approval Record"
+    if path and not path.exists():
+        reason = "selected approval pointer does not exist; no fallback to a different scope"
     approval_operations = [operation for operation in operations if operation in PROTECTED]
     if not approval_operations:
         ok = True
@@ -362,12 +486,12 @@ def hook(runtime: str) -> int:
         try:
             failures = []
             for operation in approval_operations:
-                valid, op_reason, _ = verify_record(path, operation, cwd)
+                valid, op_reason, _ = verify_record(path, operation, cwd, command=command, consume=True)
                 if not valid:
                     failures.append(f"{operation}: {op_reason}")
             ok = not failures
             reason = "approval binding valid" if ok else "; ".join(failures)
-        except Exception as exc:
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, ImportError, yaml.YAMLError, subprocess.TimeoutExpired) as exc:
             logger.exception("Approval verification failed closed: %s", type(exc).__name__)
             reason = "approval verification failed (" + type(exc).__name__ + ")"
 
@@ -390,11 +514,17 @@ def main() -> int:
     sub = p.add_subparsers(dest="command", required=True)
     fp = sub.add_parser("fingerprint")
     fp.add_argument("--file", required=True)
-    vr = sub.add_parser("verify")
+    vr = sub.add_parser("verify", aliases=["status"])
     vr.add_argument("--approval", required=True)
     vr.add_argument("--operation", required=True, choices=sorted(PROTECTED))
     vr.add_argument("--cwd", default=os.getcwd())
     vr.add_argument("--no-actual", action="store_true")
+    vr.add_argument("--command", dest="actual_command", help="Exact standalone publication command; verification never consumes")
+    pp = sub.add_parser("propose")
+    pp.add_argument("--operation", required=True, choices=sorted(PROTECTED))
+    pp.add_argument("--cwd", default=os.getcwd())
+    pp.add_argument("--base", required=True)
+    pp.add_argument("--command", dest="actual_command", required=True)
     hk = sub.add_parser("hook")
     hk.add_argument("--runtime", required=True, choices=["claude-code", "gemini-cli"])
     a = p.parse_args()
@@ -403,10 +533,22 @@ def main() -> int:
         value = yaml.safe_load(path.read_text(encoding="utf-8")) if path.suffix in {".yaml", ".yml"} else json.loads(path.read_text(encoding="utf-8"))
         print(fingerprint(value))
         return 0
-    if a.command == "verify":
-        ok, reason, _ = verify_record(Path(a.approval), a.operation, Path(a.cwd), not a.no_actual)
+    if a.command in {"verify", "status"}:
+        ok, reason, _ = verify_record(Path(a.approval), a.operation, Path(a.cwd), not a.no_actual, command=a.actual_command)
         print(json.dumps({"status": "VALID" if ok else "APPROVAL_STALE", "reason": reason}))
         return 0 if ok else 2
+    if a.command == "propose":
+        from publication_authority import proposal
+        from publication_commands import shell_commands
+        try:
+            commands = shell_commands(a.actual_command)
+            if len(commands) != 1:
+                raise ValueError("one standalone command required")
+            print(yaml.safe_dump(proposal(Path(a.cwd), a.operation, commands[0], a.base), sort_keys=False))
+            return 0
+        except (OSError, ValueError, TypeError, KeyError, AttributeError, ImportError, subprocess.TimeoutExpired) as exc:
+            print(json.dumps({'status': 'BLOCKED', 'reason': type(exc).__name__}))
+            return 2
     return hook(a.runtime)
 
 

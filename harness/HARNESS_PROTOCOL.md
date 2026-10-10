@@ -30,6 +30,8 @@ Shared instruction files use reversible delimited managed blocks. Structured set
 
 ## Capability
 
+Publication command guards verify external signed v2 receipts and consume them once. This does not upgrade Codex/OpenCode ADVISORY or claim enforcement over arbitrary interpreter/MCP/subprocess execution; unsupported shell inputs deny.
+
 Report TURN_NATIVE / CONTEXT_ALWAYS / SESSION_ONLY / MANUAL / UNSUPPORTED separately from installation status.
 
 ## Project persistence

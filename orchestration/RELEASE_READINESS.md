@@ -52,6 +52,8 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+Release publication uses a separately signed exact-operation grant and an existing verified local/remote tag pointing to the candidate. GH tag observation has no atomic CAS; production issuer deployment and Human release authority remain independent prerequisites.
+
 Plan27 separates local engineering validation, source/version-bound native loopback acceptance, observed local inference and Human visual review. Stable promotion still requires the exact main candidate, clean version/changelog, exact tag/SHA/VERSION verification and separate explicit release approval; unreadable platforms remain UNVERIFIED.
 
 Impact relationship candidates remain unreviewed and cannot substitute for exact-candidate integrity, documentation closure or validation evidence.
