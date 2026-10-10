@@ -26,6 +26,9 @@ features:
 
 ## 文件如何組織
 
+
+可重用的任務方法見 `skills/INDEX.yaml` 與各 Skill；場景規格和覆蓋狀態見 Conformance 文件；遊戲引擎與平台資料見 `references/`。
+
 Git publish／merge 的 Human 操作見 User Guide，安全與 Agent adapter 邊界見 Security Assurance 和 Harness；創意授權與 Git 授權各自維持其文件入口。
 
 Git 發布操作請從 [User Guide](./USER_GUIDE.md#git-publication-與-release) 開始；若需理解個人快速模式與高保證模式的信任邊界，閱讀 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement)。

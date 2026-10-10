@@ -134,6 +134,9 @@ Resolve Clean Architecture, tactical/strategic DDD, logical boundaries, and depl
 
 ## Language, framework, and knowledge
 
+
+Load task Skills only when their trigger matches the implementation. Keep project-selected framework conventions and constraints authoritative; use Skills as reusable methods and verify version-sensitive claims through the external-context process.
+
 Load one of the stable Go, PHP, Python, or .NET language profiles. Keep framework/library conventions separate from language guidance and honor detected project toolchains. For version-sensitive framework behavior, consult official documentation for the selected version only when the evidence gap matters. Record source/version/provenance; do not copy a full framework knowledge base into AIPS. Repeated knowledge gaps may enter Capability Incubation for later review.
 
 ## Ownership resolution

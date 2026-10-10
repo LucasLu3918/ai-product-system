@@ -497,6 +497,8 @@ Plan21 Phase 2 keeps canonical JSON/hash and path/glob helpers in `scripts/aips_
 
 Skill metadata 修改後須重建 INDEX 並執行 `tests/evidence/skill_index_lifecycle.py`；完整 repository validation 也會執行此 lifecycle。Scenario 224 是人工語意驗收，225 是 registry lifecycle 證據，不可互換。Plan19 增加 per-module quality budgets、behavior-based Eval freshness 與 canonical capability projections；各報告仍是 evidence，不能代替完整 Gate 或擴張批准範圍。
 
+新增或擴充 Skill 前，先完成 reuse/admission review；只修改 canonical SKILL.md frontmatter，再重建 INDEX。Skill-incubation Scenarios 241–256 記錄預期語意路由但屬 manual evidence；不得把它們算成自動模型驗收，也不得聲稱跨專案遊戲試作或玩家測試已完成。Documentation placement、scenario registry、Skill Index lifecycle 與完整 Integration Gate 一起驗證。
+
 Shared Python CI bootstrap callers must declare their requirement files, tested constraints, and import smoke tests; the action runs `pip check` and does not own package versions.
 
 `tests/validate_repository.py` classifies every OpenAPI-dependent lifecycle, including `implementation_enforcement_lifecycle.py`, under the exact candidate's optional-toolchain plan. When `needs_openapi` is false it skips those optional checks; an absent or invalid plan retains the full validation profile. The runner consumes `AIPS_CI_VALIDATION_PLAN` itself and removes it before loading contracts or launching lifecycle subprocesses, so selection metadata cannot change isolated test behavior. Secret scanning, the required repository aggregate and the Integration Gate remain mandatory.

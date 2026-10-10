@@ -205,6 +205,9 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+
+When primary Skill sources, `skills/INDEX.yaml`, or skill-routing scenarios change, synchronize the Human User Guide, Technology Guide, Architecture Overview, Maintenance, Conformance, Documentation Map, and Documentation Sync sections selected by `config/documentation-placement.yaml`. Preserve the manual versus executable evidence distinction.
+
 Personal-mode PR merges require explicit intent, exact head/default-base and passing-check validation, then per-call Claude native `ask` or Gemini extension `ask_user`. Codex and OpenCode remain advisory for direct merge interception; do not imply the base SHA is atomically pinned.
 
 

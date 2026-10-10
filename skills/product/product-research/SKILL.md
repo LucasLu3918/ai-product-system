@@ -52,3 +52,11 @@ Product problem, target users, research questions, known constraints, market/geo
 ## Output
 
 Use `templates/planning-package/PRODUCT_RESEARCH.md`. Research supports decisions; it does not make product or human approval decisions. Load domain reference packs only when they apply, and treat their patterns as options rather than mandatory product rules.
+
+## Game playtesting
+
+When evaluating a game experience, convert the design assumption into an observable research question. Recruit a small, relevant range of players; explain the session, obtain consent, and collect only data needed for the question. A small qualitative sample reveals usability and comprehension issues but does not estimate population rates.
+
+Use think-aloud selectively so narration does not distort time-sensitive play. Observe first-time user experience (FTUE), task completion, confusion, retries, quits, and recovery. Ask neutral questions after the task; do not coach players through the moment being evaluated. With permission, use minimal event telemetry to understand funnels and drop-off, and protect identifiers and session recordings.
+
+Report the participant/context, task, observed behavior, direct quotes only with consent, interpretation, limitations, and the next testable change. Separate observation from designer inference; do not label a player as the cause of a design failure.

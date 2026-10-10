@@ -17,6 +17,7 @@ Make AIPS behavioral regression coverage measurable without conflating specifica
 
 ## Registry
 
+
 Keep Scenario coverage canonical. Optional Coding, Creative, Planning and Security workloads reference existing Cases; absent native task observations remain UNKNOWN even when the deterministic rubric passes.
 
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
@@ -829,6 +830,9 @@ The shared deterministic helper extraction keeps caller facades and digest/path/
 Current automated inventory: 27 deterministic + 101 lifecycle + 54 agent_eval = 182 / 182; manual 0; uncovered 0.
 
 ## Scenario 183–192 — Planning Package v2
+
+
+Scenarios 241–256 specify manual routing expectations for the newly admitted engineering and game Skills. Keep them manual until direct deterministic, lifecycle, or Agent Eval evidence exists; a routing case does not prove a playable product or participant testing.
 
 Preserve eligible runtime primary preference and canonical Skill metadata; deterministic registry evidence does not prove semantic model selection or relax existing isolation, review or Human authority.
 

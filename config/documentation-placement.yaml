@@ -713,6 +713,42 @@ placement_rules:
       - orchestration/MODEL_ROUTING.md
       - orchestration/VISUAL_POLISH.md
       - scripts/skill_index.py
+      - skills/INDEX.yaml
+      - skills/engineering/systematic-debugging/SKILL.md
+      - skills/engineering/frontend-implementation/SKILL.md
+      - skills/engineering/llm-feature-integration/SKILL.md
+      - skills/testing/e2e-browser-testing/SKILL.md
+      - skills/operations/observability-design/SKILL.md
+      - skills/database/database-migration/SKILL.md
+      - skills/security/dependency-upgrade/SKILL.md
+      - skills/software-architecture/architecture-decision-record/SKILL.md
+      - skills/product/game-design-document/SKILL.md
+      - skills/software-architecture/game-loop-architecture/SKILL.md
+      - skills/design/game-feel/SKILL.md
+      - skills/product/game-balance-economy/SKILL.md
+      - skills/design/level-design/SKILL.md
+      - skills/design/ux-web-design/SKILL.md
+      - skills/performance/performance-profiling/SKILL.md
+      - skills/product/product-research/SKILL.md
+      - references/game-engines/native-web-dom-svg-puzzle-games.md
+      - references/game-platforms/README.md
+      - tests/scenario_coverage.yaml
+      - tests/scenarios/241-skill-incubation-routing.md
+      - tests/scenarios/242-skill-incubation-routing.md
+      - tests/scenarios/243-skill-incubation-routing.md
+      - tests/scenarios/244-skill-incubation-routing.md
+      - tests/scenarios/245-skill-incubation-routing.md
+      - tests/scenarios/246-skill-incubation-routing.md
+      - tests/scenarios/247-skill-incubation-routing.md
+      - tests/scenarios/248-skill-incubation-routing.md
+      - tests/scenarios/249-skill-incubation-routing.md
+      - tests/scenarios/250-skill-incubation-routing.md
+      - tests/scenarios/251-skill-incubation-routing.md
+      - tests/scenarios/252-skill-incubation-routing.md
+      - tests/scenarios/253-skill-incubation-routing.md
+      - tests/scenarios/254-skill-incubation-routing.md
+      - tests/scenarios/255-skill-incubation-routing.md
+      - tests/scenarios/256-skill-incubation-routing.md
     placements:
       docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Deterministic Execution]

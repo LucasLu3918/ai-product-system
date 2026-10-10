@@ -315,6 +315,9 @@ Privacy, complexity, tools, context and total task cost remain part of model rou
 
 ## Secret and credential safety
 
+
+LLM prompts and outputs are untrusted input; apply data minimization, secret handling, and risk-appropriate human review. Product research and playtests require informed consent and retain only evidence needed for the decision.
+
 Optional creative vision review accepts only bounded local image bytes and an already-installed Ollama model over fixed loopback; proxying, redirects, cloud egress and content-bearing traces are excluded.
 
 Creative admission stores only action grants, output limits and a prompt digest in memory; raw prompts are not written to job results or traces. Local engine discovery is version-only and does not download models or fall back to cloud providers.
@@ -414,6 +417,7 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
+
 
 Creative traces and tool responses exclude raw prompts, image bytes, credentials, arbitrary workflow bodies, and absolute local paths; remote image egress is not supported.
 

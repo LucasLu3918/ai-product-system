@@ -8,6 +8,120 @@ policy:
     no_uncovered: true
 
 scenarios:
+  - id: "241"
+    path: tests/scenarios/241-skill-incubation-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/241-skill-incubation-routing.md
+      - skills/engineering/systematic-debugging/SKILL.md
+      - skills/INDEX.yaml
+  - id: "242"
+    path: tests/scenarios/242-skill-incubation-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/242-skill-incubation-routing.md
+      - skills/engineering/frontend-implementation/SKILL.md
+      - skills/INDEX.yaml
+  - id: "243"
+    path: tests/scenarios/243-skill-incubation-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/243-skill-incubation-routing.md
+      - skills/engineering/llm-feature-integration/SKILL.md
+      - skills/INDEX.yaml
+  - id: "244"
+    path: tests/scenarios/244-skill-incubation-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/244-skill-incubation-routing.md
+      - skills/testing/e2e-browser-testing/SKILL.md
+      - skills/INDEX.yaml
+  - id: "245"
+    path: tests/scenarios/245-skill-incubation-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/245-skill-incubation-routing.md
+      - skills/operations/observability-design/SKILL.md
+      - skills/operations/incident-response/SKILL.md
+      - skills/INDEX.yaml
+  - id: "246"
+    path: tests/scenarios/246-skill-incubation-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/246-skill-incubation-routing.md
+      - skills/database/database-migration/SKILL.md
+      - skills/INDEX.yaml
+  - id: "247"
+    path: tests/scenarios/247-skill-incubation-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/247-skill-incubation-routing.md
+      - skills/security/dependency-upgrade/SKILL.md
+      - skills/INDEX.yaml
+  - id: "248"
+    path: tests/scenarios/248-skill-incubation-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/248-skill-incubation-routing.md
+      - skills/software-architecture/architecture-decision-record/SKILL.md
+      - skills/INDEX.yaml
+  - id: "249"
+    path: tests/scenarios/249-skill-incubation-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/249-skill-incubation-routing.md
+      - skills/product/game-design-document/SKILL.md
+      - skills/INDEX.yaml
+  - id: "250"
+    path: tests/scenarios/250-skill-incubation-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/250-skill-incubation-routing.md
+      - skills/software-architecture/game-loop-architecture/SKILL.md
+      - references/game-engines/native-web-dom-svg-puzzle-games.md
+      - skills/INDEX.yaml
+  - id: "251"
+    path: tests/scenarios/251-skill-incubation-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/251-skill-incubation-routing.md
+      - skills/design/game-feel/SKILL.md
+      - skills/INDEX.yaml
+  - id: "252"
+    path: tests/scenarios/252-skill-incubation-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/252-skill-incubation-routing.md
+      - skills/product/game-balance-economy/SKILL.md
+      - skills/INDEX.yaml
+  - id: "253"
+    path: tests/scenarios/253-skill-incubation-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/253-skill-incubation-routing.md
+      - skills/design/level-design/SKILL.md
+      - skills/INDEX.yaml
+  - id: "254"
+    path: tests/scenarios/254-skill-incubation-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/254-skill-incubation-routing.md
+      - skills/design/ux-web-design/SKILL.md
+      - skills/INDEX.yaml
+  - id: "255"
+    path: tests/scenarios/255-skill-incubation-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/255-skill-incubation-routing.md
+      - skills/performance/performance-profiling/SKILL.md
+      - skills/INDEX.yaml
+  - id: "256"
+    path: tests/scenarios/256-skill-incubation-routing.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/256-skill-incubation-routing.md
+      - skills/product/product-research/SKILL.md
+      - skills/INDEX.yaml
   - id: "240"
     path: tests/scenarios/240-personal-publication-default.md
     coverage: deterministic

@@ -1484,6 +1484,9 @@ Lifecycle evidence covers scheduler-serialized ownership claims, active worktree
 
 ## Scenario 183–192 — Planning Package v2
 
+
+新增 Scenario 241–256 作為人工技能路由案例，仍維持 `manual`；技能規格、Planning Package 與 executable evidence 各自保持明確邊界。
+
 主要實作保留合格的 Runtime／使用者模型；Skill frontmatter 產生相容 v1 INDEX，決定性 lifecycle 與人工模型政策驗收分開記錄。
 
 Scenarios 183–192 cover optional manifest dependency graphs, stable requirement and acceptance traceability, separate Human approvals at Gate 1 and Gate 2, reuse of product and data-modeling capabilities, cross-artifact UX/visual/domain/API references, legacy package compatibility, on-demand e-commerce guidance, actionable structural diagnostics and an end-to-end planning journey. Structural and lifecycle contracts run locally; Scenario 192 remains manual because a real product-specific planning and approval journey requires human decisions.
@@ -1669,6 +1672,12 @@ The probe denies only a harmless synthetic local Bash command. Unsupported, malf
 
 ## Scenario 228 — Progressive Quality Ratchet
 
+
+新增技能路由案例維持人工 conformance；只有直接證據才可提高自動化成熟度或改變 quality baseline。
+## Scenario 179 — Evidence-backed Change Impact Unknown Dispositions
+
+技能與一般方法可重用；專案專屬遊戲規則、遙測與參與者資料留在受治理的專案儲存，不得升格到全域素材。
+
 Ruff 已量測的總基準為 685；Retrieval 模組基準為 4、下一目標為 3。保留 touched-code no-new-findings、既有模組降債規則與 report-only Coverage。
 
 Coverage remains report-only and the selected mypy scope is unchanged. Scenario 228 records a bounded relation-candidate lifecycle baseline (45.5% combined statement-and-branch coverage) without establishing a repository-wide minimum. The quality ratchet also pins the Ruff baseline at 687 findings and per-module budgets; baseline reductions do not widen the validated module scope.
@@ -1756,6 +1765,7 @@ The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies c
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
 
 ## Scenario 240 — Personal Publication Default and High-Assurance Opt-In
+
 
 Personal mode allows an Agent to publish a validated engineering branch and create a PR to the live remote default branch without a separate grant. An explicitly requested PR merge requires exact candidate/head and live default-base binding, a mergeable open PR, and passing required checks; Claude Code and Gemini CLI require native per-call confirmation. Codex remains `ADVISORY` and cannot guarantee interception of direct merge commands. A protected administrator trust-root selects high assurance; missing, invalid, or unavailable signed authorization blocks without fallback. Direct protected-branch push, tag/release, delete, bypass flags, unsafe commands, and content-scan failures remain denied.
 

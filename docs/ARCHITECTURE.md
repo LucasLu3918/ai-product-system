@@ -602,6 +602,8 @@ flowchart LR
 
 Primary model preference is preserved; auxiliary routing remains minimum-sufficient and risk-adaptive. This policy does not switch host models or create review authority. REST/OpenAPI and visual evidence plumbing stays in existing orchestration protocols and loads on demand.
 
+Skill metadata remains the canonical, on-demand capability layer: reuse review admits narrow skills or extends existing ones, and the generated v1 INDEX feeds the existing routing flow. New debugging, frontend, LLM, browser-testing, observability, migration, dependency, ADR and game skills add no Role or Capability. Engine-specific web DOM/SVG guidance and volatile platform policy links are reference data; the existing Mermaid topology remains unchanged.
+
 ~~~mermaid
 flowchart TD
     U[User Request / Assets] --> Q[Q1/Q2/Q3 Quality Planning]
