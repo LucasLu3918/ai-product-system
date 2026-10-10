@@ -40,11 +40,11 @@ Creative authorization and generation changes do not alter repository ruleset po
 
 Creative runtime reliability candidates preserve the Core change label and exact-candidate required checks. Synthetic engine success does not waive native callback/hook evidence or authorize modifying repository rulesets.
 
-The local creative execution capability does not change protected-branch or merge policy; publish the exact reviewed candidate through the normal Integration Gate and Git Publish Approval flow.
+The local creative execution capability does not change protected-branch or merge policy; publish the exact reviewed candidate through the normal Integration Gate and selected-mode Git publication flow.
 
 Core Harness changes use the `aips:core-change` label on initial PR creation and require exact-candidate Integration Gate evidence; ruleset inspection remains read-only and separate from merge authority.
 
-The creative Bundle change adds no ruleset or branch-protection mutation; the PR remains subject to the repository's existing Core checks and explicit publication/merge approvals.
+The creative Bundle change adds no ruleset or branch-protection mutation; the PR remains subject to the repository's existing Core checks and selected-mode/task-authorized publication rules.
 
 The current policy path compares a complete read-only repository snapshot and reports `NO_CHANGE` or `NOT_READY`; it does not activate rulesets or alter branch protection. Any future transition requires a fresh settings snapshot, recovery plan and explicit approval.
 

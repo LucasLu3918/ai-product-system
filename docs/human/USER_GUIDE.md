@@ -159,6 +159,9 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+Git publication uses the runtime adapter’s supported hook surface. Claude and Gemini have native command hooks; Codex remains advisory, so users needing enforced isolation must use an externally protected high-assurance setup.
+
+
 `aips approval` 由現有 CLI dispatch 提供；Hook 設定與 external issuer readiness 分開驗證。Codex/OpenCode ADVISORY 不因新簽章介面升級為 universal process enforcement。
 
 For existing-project discovery, `aips intelligence impact-candidates --seed-path <path>` reports unreviewed source-backed relationships only; review evidence never grants mutation authority.
@@ -501,11 +504,13 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
-`aips approval propose/status/verify` 提供 PENDING 提案與外部簽章驗證；每個 push、PR create、merge 各需獨立一次性 grant。可信服務未配置時拒絕發布；完整部署、CLI 範例與移轉步驟見 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement)。
+預設個人模式會在程式修改與驗證完成後，自行推送工程分支並建立／更新指向遠端預設分支的 PR；不需設定簽發服務。只有使用者明確要求 local-only／不發布時才停在本機。個人模式 Hook 不允許 Agent 合併 PR；只有使用者在該任務明確要求合併，且 PR head、預設 base 與 required checks 均確認通過時，任務執行者才可完成合併。直接推送保護分支、刪除分支與發行不屬於個人模式。
+
+部署管理者信任根會選擇高保證模式；此時每個 push、PR create、merge 各需獨立一次性 grant。`aips approval propose/status/verify` 提供精確提案與外部簽章驗證。完整部署、CLI 範例與安全取捨見 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement)。
 
 Plan26 Phase 7 的 PR 只整理 `0.81.0` 版本與 Changelog，並為 exact-candidate readiness 留下空白 `Unreleased`；合併 PR 不會建立 tag 或 GitHub Release。
 
-Core creative workflow changes use the normal exact-candidate Gate and Git Publish Approval flow; neither validation nor matrix readiness authorizes remote publication or merge.
+Core creative workflow changes use the normal exact-candidate Gate and selected Git publication mode; validation or matrix readiness alone does not authorize a merge into `main`.
 
 During GitHub validation, isolated CLI fixtures receive the installed validation interpreter through `AIPS_VALIDATION_PYTHON`; its workflow contract runs before the deterministic Gate and does not grant publication or merge authority.
 
@@ -527,7 +532,7 @@ Pull requests may show an early advisory repository-preflight result while the r
 
 Post-merge reconciliation 的實作拆分不改變既有指令、快轉安全條件或人工合併權限。
 
-For a Large/Core change, complete documentation closure, the reviewed Core Change Test Matrix, candidate secret scanning, full repository validation, and the exact-candidate Integration Gate before asking for publication approval. Create the PR with its `aips:core-change` label on the initial request; merging and release tagging remain separate Human decisions.
+For a Large/Core change, complete documentation closure, the reviewed Core Change Test Matrix, candidate secret scanning, full repository validation, and the exact-candidate Integration Gate before publication. Create the PR with its `aips:core-change` label on the initial request. Merge into `main` only when the task requests it and required checks pass; release tagging remains separate.
 
 Repository validation keeps running every validator while shadow reports assess future selective-validation safety. Coverage, governance complexity, and reliability data are review signals; they do not bypass the normal Gate or authorize automatic source changes.
 

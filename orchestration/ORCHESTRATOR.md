@@ -69,7 +69,7 @@ For a candidate built in a shared workspace, first snapshot the intended head an
 24. Refresh only affected Intelligence/Impact Graph topics; preserve user Overrides and canonical authoritative pointers.
 25. Regenerate Project Intelligence Review HTML only when initial bootstrap or material Intelligence/Override changes warrant it.
 26. Complete LOCAL_COMPLETE / Production Enablement / PRODUCTION_VERIFIED rules when applicable.
-27. Persist state/provenance only in permitted stores and before remote publication run Git Publish Approval.
+27. Persist state/provenance only in permitted stores and before remote publication run the selected-mode Git Publish checks.
 
 ## System Update Preflight
 
@@ -239,7 +239,7 @@ Large/core changes are proposal-first. Use `templates/core-change-proposal.md`. 
 ## Git Publish Approval
 
 
-Before updating a remote branch/ref or publishing for PR/release, use `templates/git-publish-proposal.md`. Present changed files, feature summary, validation evidence, atomic commit plan and target. Wait for explicit approval. A material difference from the approved publish plan requires another approval.
+For remote publication, use `templates/git-publish-proposal.md` to preserve the exact candidate, changed files, validation evidence, commit plan and target. Personal mode proceeds for a task-authorized engineering branch/PR after required checks; merge into `main` still requires explicit task intent and required checks. High-assurance mode requires the external grant. Re-evaluate if target or task scope changes.
 
 
 ## Creative / Brand work
@@ -363,16 +363,16 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
-Git protected commands now require externally signed v2 grants; Agent-generated APPROVED/fingerprint is not authority. Use `aips approval propose/status/verify`, separate grants per push/PR/merge, exact candidate/evidence and protected administrator trust configuration. Hook consumes once before execution; outages/failed execution require reissuance. Deployment and GH base/tag observation limits are documented in Human Security Assurance.
+Personal publication is the default when the fixed administrator trust-root file is absent. After candidate/content checks, an implementation task pushes its own engineering branch and creates/updates a PR targeting the live remote default branch without a per-operation confirmation, unless the user says local-only/no-publication. The personal-mode hook never authorizes PR merges. Merge only when the task explicitly requests it, the PR targets the default branch, the head SHA is exact, and required checks pass. A present trust-root selects high assurance; malformed configuration fails closed, and protected operations require externally signed v2 single-use grants. Agent-generated APPROVED/fingerprint is never authority in high-assurance mode. Tag/release and direct protected-branch pushes remain outside personal mode. Deployment and GH base/tag observation limits are documented in Human Security Assurance.
 
-For an approved Core implementation, complete local exact-candidate validation first, then present its concrete commit, file scope and Gate evidence for publication approval before remote branch or PR creation.
+For a Core implementation, complete local exact-candidate validation first. In personal mode, publish the scoped engineering branch and create/update a PR after the user requested implementation; in high-assurance mode, present the exact candidate and obtain the external grant before publication.
 
 Protected publication still requires a clean exact candidate, reconciled Matrix, secret scan, documentation closure and passing repository aggregate.
 
 For the GitHub validation route, install Python packages from all four validation requirement files under tested constraints because required lifecycle fixtures exercise the full CLI preflight. Then export the runner's `sys.executable` as `AIPS_VALIDATION_PYTHON` before invoking the exact-candidate Gate. The workflow contract verifies this handoff; Node and Chromium installation remain candidate-selected.
 
 
-OpenCode adapter and native permission changes are Core boundaries: route them through the reviewed Core Change Matrix, full repository validation and exact-candidate Gate before requesting Git publication approval.
+OpenCode adapter and native permission changes are Core boundaries: route them through the reviewed Core Change Matrix, full repository validation and exact-candidate Gate before publication. High-assurance mode additionally requires a Git publication grant.
 
 Publication CI always provisions the complete Python validation dependency set; isolated required preflight fixtures cannot rely on optional-package selection. Exact-path plans still control Node, Chromium downloads and optional evidence. Required remote checks must pass on the exact candidate before an explicitly authorized merge.
 
@@ -380,7 +380,7 @@ Existing fingerprint facade imports remain stable over `scripts/aips_common`; th
 
 Preserve the eligible runtime/user-selected primary implementation model. Prefer solving bounded implementation with the primary agent and use deterministic tools for repeatable processing. Delegate only for material parallel evidence, specialized risk, context isolation or independent review. Skills supply model requirement hints for capability floors and auxiliary routing; the Model Router does not silently downshift the primary agent. Business importance, technical complexity, risk, privacy and failure cost are considered together. Critical risk may raise the minimum tier.
 
-Before remote publication, require the exact validated candidate proposal and explicit approval. A read-only governance snapshot is evidence only and grants no publication authority.
+Before remote publication, require the exact validated candidate and task-authorized scope. A read-only governance snapshot is evidence only and grants no publication authority. High-assurance mode additionally requires its signed grant.
 
 
 
@@ -394,7 +394,7 @@ After merge, post-merge checkout and installed-version reconciliation run throug
 
 The pull-request advisory fast-feedback job checks the same base/head candidate in parallel and reports findings only; it does not participate in change-class routing or alter the required full validation path.
 
-Large/Core work remains blocked from remote publication until documentation closure, the candidate-bound test matrix, mandatory secret scan and exact Integration Gate pass; publication approval names the final files, commit plan and target branch.
+Large/Core work remains blocked from remote publication until documentation closure, the candidate-bound test matrix, mandatory secret scan and exact Integration Gate pass. Personal mode uses the task-authorized engineering branch/PR scope; high-assurance mode also binds the signed grant to the final files, commit plan and target branch.
 
 Installed product CLI acceptance keeps the required AIPS runtime dependencies separate from optional OpenAPI validator packages. Require an explicit setup command before contract validation; exercise the installed entrypoint from a product root containing no AIPS scripts, then retain platform installation and exact-candidate Gates.
 
@@ -428,7 +428,7 @@ When a repository PR represents an already approved Large/Core Change, preserve 
 
 For a fixed local candidate, schedule one complete Publication Preflight after focused development checks; it includes repository validation. PR and main retain separate complete CI Gates, with an optional timing artifact to guide later performance work. Timing evidence grants no merge or publication authority.
 
-Before requesting Git publication approval, run the shared publication plan/preflight, resolve protected-branch routing, and present the exact candidate after diff-aware documentation checks pass. After merge, fast-forward a clean local `main` only when it is an ancestor of the fetched target, preserving a backup branch first. If histories diverged, reconcile only equivalent trees with a backup; otherwise stop for Human review.
+Before personal-mode publication, run the shared publication plan/preflight, resolve protected-branch routing, and verify the exact candidate after diff-aware documentation checks pass. After a requested merge, fast-forward a clean local `main` only when it is an ancestor of the fetched target, preserving a backup branch first. If histories diverged, reconcile only equivalent trees with a backup; otherwise stop for Human review.
 
 When Core Change Testing requires independent review, schedule a separate read-only `INDEPENDENT_REVIEW` task over the bounded packet and exact candidate. The Integration Gate must consume evidence from a trusted runtime attestation verifier; absent or stale attestation blocks required review rather than falling back to self-check.
 

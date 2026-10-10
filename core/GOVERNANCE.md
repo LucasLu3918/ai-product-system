@@ -34,7 +34,7 @@ If actual scope materially exceeds the approved proposal, stop and request appro
 
 ## Git Publish Approval
 
-Remote Git publication is gated. Before a remote branch/ref update intended for collaboration, PR or release, present changed files, logical change summary, validation evidence, atomic commit plan, target branch/remote and planned publication action. Wait for explicit user approval.
+Remote Git publication follows the selected publication mode and the user's task scope. In personal mode, a coding task defaults to publishing its validated candidate to its own engineering branch and creating/updating a PR without a separate per-operation confirmation, unless the user says local-only or forbids publication. Merge a PR into `main` only when the task explicitly requests that outcome and required checks pass. High-assurance mode requires the external signed grant for each protected Git operation. Direct pushes to protected/default branches, tags, releases, production actions, branch deletion, admin/auto merge flags and unknown publication commands remain blocked unless a separate policy explicitly authorizes them.
 
 Commits are grouped by logical capability and should be independently reviewable/revertible. Do not split commits merely by file.
 

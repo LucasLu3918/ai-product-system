@@ -70,7 +70,7 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
-Approval CLI 在既有 dispatch 中提出 exact-operation proposal；既有 creative grant、Intelligence readiness 與 scheduler evidence 各保留原權限，不能替代 external Human-issued publication authority。
+Approval CLI 在既有 dispatch 中提出 high-assurance exact-operation proposal；既有 creative grant、Intelligence readiness 與 scheduler evidence 各保留原權限。Personal mode 不建立簽章授權，也不將一般 Human task authorization 描述成外部簽章。
 
 公開 Python Facade 保留同一函式／例外物件，Discovery、Query Terms、Creative Trace 與 Asset Validation 分別處理有界掃描、查詢詞、隱私 trace 與影像容器驗證。任意 MCP／自訂工具仍不在原生檔案 Guard 的驗證範圍。
 
@@ -184,7 +184,7 @@ The Retrieval Intelligence SQLite persistence boundary is `scripts/retrieval_sto
 
 ## Security & Governance
 
-Git publication 使用 bashlex shell AST 與 cryptography Ed25519。外部管理的 root-owned trust config、HTTPS issuer 與 transactional single-use ledger 是 production 前置條件；fixture 簽章只驗證協定。Git push 的 server lease 與 GH preexecution observation 分別記錄於 scope。
+Git publication 使用 bashlex shell AST 與 cryptography Ed25519。預設 personal mode 以共用 Hook 驗證內容、乾淨候選、工程分支與明確操作；安裝固定的 root-owned trust config 會啟用 high-assurance mode，並要求外部 HTTPS issuer 與 transactional single-use ledger。fixture 簽章只驗證高保證協定。Git push 的 server lease 與 GH preexecution observation 分別記錄於 scope；Codex hook 維持 ADVISORY。
 
 Creative traces omit prompts, local absolute paths, image bytes, credentials, and workflow bodies; the configured ComfyUI adapter disables proxies and redirects.
 
@@ -216,6 +216,9 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Repository validation and the exact-candidate Integration Gate establish candidate fitness. Personal publication mode permits only guarded engineering-branch push and PR creation; PR merge still needs explicit task intent, exact head/default-base binding, and passing required checks.
+
 
 Publication Core candidate 執行完整 repository／secret／docs Gate 與 signed-grant regression。Synthetic issuer、review 或 creative lifecycle evidence 不建立 production signing trust root。
 

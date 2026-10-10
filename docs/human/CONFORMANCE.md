@@ -1753,6 +1753,14 @@ The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies c
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
 
+### Scenario 240 — Personal Publication Default and High-Assurance Opt-In
+
+Personal mode allows an Agent to publish a validated engineering branch and create a PR to the live remote default branch without a separate grant. The personal-mode hook denies PR merges; a merge requires explicit task intent, exact head/default-base binding, and passing required checks. A protected administrator trust-root selects high assurance; missing, invalid, or unavailable signed authorization blocks without fallback. Direct protected-branch push, tag/release, delete, bypass flags, unsafe commands, and content-scan failures remain denied.
+
+
+
+Scenario 240 adds the publication-mode contract while retaining these diagnostics as read-only and non-authorizing.
+
 Recovery Plan 延伸既有 reason code／next action，標示順序、相依與 derived-state-write 授權需求。診斷不執行計畫，UNKNOWN 狀態先提供唯讀檢查，EPHEMERAL 不自動轉為 ATTACHED。
 
 Scenario 239 adds a separate read-only relationship-candidate lifecycle; diagnostics and candidate reports both leave Project Intelligence canonical state unchanged.

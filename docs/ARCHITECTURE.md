@@ -4,6 +4,9 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+The shared Harness routes Git publication through the selected assurance mode. Personal mode validates a guarded engineering branch and PR; high assurance requires the external single-use grant.
+
+
 Git publication extends the existing guard with a separate administrator trust domain:
 
 ~~~mermaid
@@ -248,6 +251,9 @@ flowchart LR
 The alias candidate is deterministic and transparent. It is not an embedding provider and does not change `semantic.status=NOT_CONFIGURED`. The committed Trial follows the FAIL → KEEP branch: required regressions and no synonym-recall improvement produce recommendation `HOLD`. Normal Turn Context retrieval therefore does not enable the alias lane.
 
 ## Maintenance and publication evidence
+
+Git publication resolves to personal mode unless the fixed administrator trust root selects high assurance. Personal mode validates and scans the exact candidate before an engineering-branch push or PR; high assurance requires the external single-use grant.
+
 
 ~~~mermaid
 flowchart LR

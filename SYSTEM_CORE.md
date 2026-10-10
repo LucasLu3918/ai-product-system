@@ -17,9 +17,9 @@ For an existing-project mutation: initialize missing Project Intelligence read-o
 
 Use bounded, evidence-based execution. Large/Core changes require the affected-boundary test matrix and required review. Report only verified results and unresolved limits.
 
-## Publication
+## Git Publish Approval Gate
 
-Before changing any remote Git ref or opening a PR/release, satisfy the Git Publish Approval Gate with the exact candidate, complete file list, validation evidence, commit plan and target. Merge only when explicitly authorized and required checks pass. Release and production gates remain separate.
+Before remote Git publication, satisfy the selected mode's candidate, content-safety and scope checks. Personal mode defaults coding tasks to publishing the validated candidate to an engineering branch and creating/updating a PR without a separate per-operation confirmation, unless the user says local-only or forbids publication. The personal-mode hook denies PR merges; merge into `main` only when the task explicitly requests it, the PR head/base are exact, and required checks pass. High-assurance mode requires the external single-use grant for each protected publication operation. Direct protected-branch pushes, releases and production actions remain separately gated.
 
 ## Task-specific protocols
 

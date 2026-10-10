@@ -1,7 +1,7 @@
-"""Exact Git publication grants from a separately administered Ed25519 issuer.
+"""Guarded personal Git publication and optional external Ed25519 grants.
 
-No signing key or writable trust root is accepted from the repository/environment.
-The external service owns Human approval and transactional single-use state.
+The administrator trust-root file selects high-assurance publication. Its absence
+selects the explicitly lower-isolation personal workflow.
 """
 from __future__ import annotations
 
@@ -23,10 +23,51 @@ import yaml
 
 CONFIG = Path('/etc/aips/publication-authority.yaml')
 PUBLICATION_OPERATIONS = {'git_push', 'git_tag', 'gh_pr_create', 'gh_pr_merge', 'gh_release_create'}
+PERSONAL_PUBLICATION_OPERATIONS = {'git_push', 'gh_pr_create'}
+PERSONAL_BRANCH_PREFIXES = ('agent/', 'bugfix/', 'chore/', 'claude/', 'codex/', 'docs/', 'feature/', 'fix/', 'gemini/', 'work/')
 
 
 class PublicationError(ValueError):
     pass
+
+
+def publication_mode(config_path: Path | None = None) -> str:
+    """Select personal mode only when the fixed administrator trust root is absent."""
+    config_path = config_path or CONFIG
+    try:
+        info = config_path.lstat()
+    except FileNotFoundError:
+        return 'personal'
+    except OSError as exc:
+        raise PublicationError('publication mode configuration unavailable') from exc
+    if not stat.S_ISREG(info.st_mode):
+        raise PublicationError('publication mode configuration must be a regular file')
+    return 'high_assurance'
+
+
+def _personal_base(root: Path, operation: str, argv: list[str]) -> str:
+    """Resolve a locally available exact merge base for personal-mode scope checks."""
+    remote = 'origin'
+    urls = git(root, 'remote', 'get-url', '--all', remote).splitlines()
+    push_urls = git(root, 'remote', 'get-url', '--push', '--all', remote).splitlines()
+    if len(urls) != 1 or len(push_urls) != 1 or urls[0] != push_urls[0]:
+        raise PublicationError('personal publication requires one matching origin fetch and push URL')
+    response = subprocess.run(['git', 'ls-remote', '--symref', '--', urls[0], 'HEAD'],
+                              cwd=root, capture_output=True, text=True, timeout=15, check=False)
+    match = re.search(r'^ref: refs/heads/([A-Za-z0-9_./-]+)\tHEAD$', response.stdout, re.MULTILINE)
+    if response.returncode or not match:
+        raise PublicationError('remote default branch unavailable')
+    default_branch = match.group(1)
+    default_tip = _tip(root, urls[0], 'refs/heads/' + default_branch)
+    if not default_tip or not re.fullmatch(r'[0-9a-f]{40,64}', default_tip):
+        raise PublicationError('remote default branch tip unavailable')
+    if operation == 'gh_pr_create' and _option(argv, '--base') != default_branch:
+        raise PublicationError('personal PRs must target the remote default branch')
+    try:
+        git(root, 'cat-file', '-e', default_tip + '^{commit}')
+    except PublicationError as exc:
+        raise PublicationError('fetch the current remote default branch before personal publication') from exc
+    return default_tip
 
 
 def canonical(value: Any) -> bytes:
@@ -103,7 +144,7 @@ def _option(argv: list[str], option: str) -> str:
     return argv[index + 1]
 
 
-def action(cwd: Path, operation: str, argv: list[str], base: str) -> dict[str, Any]:
+def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: bool = False) -> dict[str, Any]:
     """Observe a supported standalone literal command; implicit/multi-target pushes deny."""
     if operation not in PUBLICATION_OPERATIONS or not argv or any('$' in word or '`' in word or '\0' in word for word in argv):
         raise PublicationError('literal publication command required')
@@ -143,6 +184,11 @@ def action(cwd: Path, operation: str, argv: list[str], base: str) -> dict[str, A
         if len(args) != 2 or not re.fullmatch(r'[A-Za-z0-9_.-]+', args[0]):
             raise PublicationError('one named remote and one explicit refspec required')
         remote, spec = args
+        if personal:
+            fetch_urls = git(root, 'remote', 'get-url', '--all', 'origin').splitlines()
+            push_urls = git(root, 'remote', 'get-url', '--push', '--all', 'origin').splitlines()
+            if remote != 'origin' or len(fetch_urls) != 1 or len(push_urls) != 1 or fetch_urls[0] != push_urls[0]:
+                raise PublicationError('personal mode permits only the verified single origin remote')
         delete = '--delete' in flags or spec.startswith(':')
         if '--delete' in flags:
             source, target = None, _ref(root, spec)
@@ -156,6 +202,12 @@ def action(cwd: Path, operation: str, argv: list[str], base: str) -> dict[str, A
             source = source or None
         force = any(flag in {'-f', '--force'} or flag.startswith('--force-with-lease=') for flag in flags)
         result.update(source_commit=source, refspec=spec)
+        if personal:
+            branch = result['branch']
+            if (delete or target != 'refs/heads/' + branch or
+                    branch in {'main', 'master', 'trunk', 'develop', 'production', 'release'} or
+                    not branch.startswith(PERSONAL_BRANCH_PREFIXES)):
+                raise PublicationError('personal mode permits only the current engineering branch')
         for key in ['push.followTags', 'remote.' + remote + '.mirror']:
             proc = subprocess.run(['git', 'config', '--bool', '--get', key], cwd=root, capture_output=True, text=True, timeout=5, check=False)
             if proc.returncode not in {0, 1} or proc.stdout.strip() == 'true':
@@ -214,7 +266,8 @@ def action(cwd: Path, operation: str, argv: list[str], base: str) -> dict[str, A
             raise PublicationError('gh repository does not match Git remote')
         result['github_repo'] = repo
         if operation == 'gh_pr_create':
-            if _option(argv, '--head') != result['branch']:
+            if (_option(argv, '--head') != result['branch'] or
+                    personal and not result['branch'].startswith(PERSONAL_BRANCH_PREFIXES)):
                 raise PublicationError('PR head must be the bound candidate branch')
             target = _ref(root, 'refs/heads/' + _option(argv, '--base'))
             if _tip(root, remote, 'refs/heads/' + result['branch']) != head:
@@ -257,13 +310,28 @@ def action(cwd: Path, operation: str, argv: list[str], base: str) -> dict[str, A
     result['remote_state_enforcement'] = 'server_lease' if operation == 'git_push' else 'preexecution_observation'
     if operation == 'git_push':
         expected_lease = '--force-with-lease=' + target + ':' + (result['expected_remote_oid'] or '')
-        if flags != [expected_lease] and flags != [expected_lease, '--delete']:
+        allowed_flags = ([], [expected_lease]) if personal else ([expected_lease], [expected_lease, '--delete'])
+        if flags not in allowed_flags:
             raise PublicationError('one explicit target/tip force-with-lease required; unconditional force forbidden')
     if operation == 'gh_pr_merge' and result['pr_base_commit'] != result['expected_remote_oid']:
         raise PublicationError('PR base differs from current remote tip')
     if operation == 'gh_release_create' and result['tag_oid'] != result['expected_remote_oid']:
         raise PublicationError('local and remote release tag differ')
     return result
+
+
+def validate_personal_action(cwd: Path, operation: str, argv: list[str]) -> dict[str, Any]:
+    """Validate a single ordinary engineering publication without minting approval data."""
+    if operation not in PERSONAL_PUBLICATION_OPERATIONS:
+        raise PublicationError('operation is unavailable in personal publication mode')
+    root = Path(git(cwd, 'rev-parse', '--show-toplevel')).resolve()
+    base = _personal_base(root, operation, argv)
+    from check_secret_leakage import DEFAULT_POLICY, load_policy, scan_candidate
+    policy, _ = load_policy(DEFAULT_POLICY)
+    findings, blockers, _, _ = scan_candidate(root, base, 'HEAD', policy)
+    if findings or blockers:
+        raise PublicationError('mandatory candidate and history secret scan blocked publication')
+    return action(root, operation, argv, base, personal=True)
 
 
 def proposal(cwd: Path, operation: str, argv: list[str], base: str) -> dict[str, Any]:

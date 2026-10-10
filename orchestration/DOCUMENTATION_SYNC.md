@@ -178,6 +178,8 @@ Runtime Policy action schemas, deterministic decisions, hook capability claims a
 
 
 
+
+
 The `maintenance-reliability` sync rule binds the monthly collector, policy, workflow, lifecycle evidence, contract validator, Scenario 201 and its registry/runner wiring to the Human Maintenance, Conformance, Technology Guide and Documentation Map topics plus this Agent-facing protocol and `orchestration/CONFORMANCE.md`. Changes must preserve bounded collection, UNKNOWN for incomplete input, exact-SHA correlation limits and Human-only remediation.
 
 Generated Conformance views must retain a deterministic path from the canonical scenario registry to current Human counts and section-level Human/Agent history anchors. Regenerate them after inventory or heading changes; do not rewrite historical sections without an explicit content-mapping review.
@@ -200,6 +202,12 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 
 ## Human documentation placement
+
+Candidate-aware preview verifies documentation closure and allowed H2 placement for the exact base/head diff; a generic placement audit alone is insufficient for publication readiness.
+
+
+Personal publication behavior is mapped from its code, proposal template and self-improvement protocol to the User Guide, Security Assurance, Architecture Overview and Technology Guide. The same-account writable-origin limitation must remain visible.
+
 
 Publication sources extend the existing Security placement rule, while shared CLI consumers retain their original creative/runtime topics. This adds no placement bypass and keeps external issuer deployment documentation canonical.
 

@@ -84,6 +84,7 @@ Automated coverage is deterministic + lifecycle + agent_eval.
 
 ## Admission rules
 
+
 Every `tests/scenarios/NNN-*.md` file must have exactly one registry entry.
 
 Every entry must:
@@ -1014,6 +1015,8 @@ The OpenCode lifecycle runs with the selected validation Python. OpenCode itself
 Scenario 210 is lifecycle-covered by `tests/evidence/install_preflight_lifecycle.py` and `tests/evidence/system_facts_lifecycle.py`. It verifies the Python >=3.12 floor across explicit selection, old managed venv repair, doctor diagnostics, canonical facts, and the scheduled 3.12–3.14 compatibility workflow.
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
+
+Scenario 240 covers the personal publication default and high-assurance opt-in, including PR/merge separation and the accepted current-origin trust boundary.
 
 The governance validator executes signed publication lifecycle regressions in `tests/test_publication_authority.py`, including actual Hook deny envelopes and SQLite concurrent single-use consumption. Fixture keys never establish an external production issuer.
 

@@ -354,6 +354,8 @@ Before promoting legacy manual coverage: reconcile the Scenario to current canon
 
 ## Execution Isolation consistency
 
+
+
 The local Integration Gate selects a complete Python 3.12 validation environment and reports missing dependencies before candidate scanning. For documentation changes it requires Node 24+ and VitePress at the exact version pinned by the candidate's `package-lock.json`. It uses the checkout's `node_modules` by default; `AIPS_VITEPRESS_NODE_MODULES` may point to an absolute external dependency directory for a clean checkout. The preflight invokes that bundle directly and never installs packages or contacts a registry. The E2B artifact workflow pins the Node 24 upload action; its existing synthetic-data and least-privilege boundaries remain in force.
 
 When Execution Isolation behavior changes, review together:
@@ -373,6 +375,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 High-risk external runtime actions also require an exact, unexpired Approval Record and fresh verified network-egress enforcement. A hook alone is not a sandbox; missing provider proof blocks the action.
 
 ## Public repository / CI consistency
+
+
 
 Creative authorization lifecycle evidence covers fresh grants, revocation, root/session changes, scope expansion and output caps; native-host checks and real inference remain separately reported, and unavailable inference stays unverified.
 
@@ -452,6 +456,11 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+Publication preflight resolves the live remote default branch and scans the exact candidate/history. Personal mode trusts the current `origin`, and a worktree does not isolate same-account credentials or `.git/config`. The exact-candidate Gate proves fitness only; merge requires task intent, exact PR head/default-base binding, and passing required checks.
+
+
+
 
 Publication 維護需檢查 external issuer、公鑰輪替、grant expiry、SQLite single-use ledger 與 worktree isolation。服務 outage 不得改寫 APPROVED 或重用 consumed grant；重新簽發，並保留 Codex/OpenCode advisory capability truth。
 

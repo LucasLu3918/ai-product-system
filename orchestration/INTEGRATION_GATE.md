@@ -22,6 +22,9 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+Gate evidence proves the exact candidate passed deterministic checks; it does not authorize merge. A task-authorized merge must bind the PR head to the validated SHA, target the live default branch and satisfy required checks.
+
+
 Signed Git publication grants additionally bind the exact explicit-base diff, worktree and remote/ref/argv. Integration Gate evidence does not create the external Human grant or its signing trust root; status verification stays read-only and Hook consumption is single-use.
 
 Bind extracted facades, additive recovery/measurement outputs, conservative effect coverage and canonical documentation to the same candidate Matrix and complete Gate. Recorded native evidence is version/platform/source-bound and remains distinct from Human release approval.

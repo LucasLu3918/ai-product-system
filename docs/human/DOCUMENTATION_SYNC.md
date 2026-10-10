@@ -26,6 +26,9 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Git publication mode behavior is documented in the User Guide and Security Assurance; proposal and self-improvement sources map there through `config/documentation-placement.yaml`. Keep the personal-mode origin trust limitation explicit in both behavior and security guidance.
+
+
 Publication issuer 接入與 unsigned-record migration 放在 Security Assurance，使用流程放在 User Guide 的 Git Publication 與 Release；Harness/architecture 記錄 external trust domain 與 advisory limits。
 
 文件大小報告提供 H2 reading_sections 與來源種類，協助逐步閱讀。新增內容放在其既有 Canonical 主題，Registry 與原始政策保持單一來源。
@@ -185,6 +188,9 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+Publication documentation closure checks the behavior source map and the allowed canonical section for each added line; a successful placement audit does not replace exact-candidate validation.
+
 
 Publication placement covers the runtime requirements, new authority/parser/reference issuer and v2 Approval Record. Core candidate checks both changed-path closure and added content in the original semantic topics.
 

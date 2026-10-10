@@ -290,6 +290,8 @@ Publication Preflight 將 Python module availability 與 loopback/browser capabi
 
 ## Security 與 Governance
 
+
+
 Git Publish Guard 現在區分 Agent PENDING proposal 與外部 Human-issued Ed25519 grant；trust config 由管理者保護，ledger 原子限制一次。common Git identity 與 worktree identity 同時綁定，沒有 upstream 仍驗完整 base/candidate 差異。Git lease 保護 push；GH base/tag 為執行前觀測，不能聲稱 atomic CAS。
 
 Optional creative vision review is confined to an installed local model over loopback and cannot update Human review or user-acceptance state.
@@ -352,6 +354,9 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Git publication 的行為來源映射與 Human 文件位置由 `config/documentation-placement.yaml` 約束；個人模式及其 accepted origin limitation 需在 User Guide 與 Security Assurance 保持一致。
+
 
 Publication 維護需獨立確認 issuer config、公鑰、ledger 與 exact-candidate Core evidence；缺少可信部署時保留發布阻擋，不將 fixture acceptance 當正式授權。
 

@@ -8,6 +8,13 @@ policy:
     no_uncovered: true
 
 scenarios:
+  - id: "240"
+    path: tests/scenarios/240-personal-publication-default.md
+    coverage: deterministic
+    evidence:
+      - scripts/publication_authority.py
+      - scripts/governance_guard.py
+      - tests/test_publication_authority.py
   - id: "226"
     path: tests/scenarios/226-capability-registry-single-source.md
     coverage: lifecycle

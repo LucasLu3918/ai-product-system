@@ -50,6 +50,9 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+Repository-ruleset maintenance records policy and validation evidence; it does not grant publication. The general personal/high-assurance publication contract and its origin-trust limitation are documented in Security Assurance.
+
+
 Evolution evidence 或 adoption decision 不能簽發 Git publication grant；發布仍需 exact-operation external Human approval。新 reference issuer 的合成測試不是 production trust-root acceptance。
 
 Signal 數量及 Target Reached 是採樣觀察，並非採納率或有效性分數。來源健康與去重後缺口分開呈現；零推薦仍是有效結果。

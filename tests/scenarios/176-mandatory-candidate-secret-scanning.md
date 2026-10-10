@@ -14,7 +14,7 @@ When an AIPS Git publication candidate is prepared, the existing built-in scanne
 - Findings and CI evidence never include secret values; reports contain bounded metadata and hashes only.
 - Integration Gate refuses a missing/non-required/path-filtered scanner check and binds base/head, changed-file hash, policy hash and scanner hash into the candidate fingerprint.
 - Local publication preflight and GitHub Actions use the same scanner and policy; CI scans before installing expensive validation dependencies.
-- The existing `repository` required context remains the branch-protection aggregate. Human Git Publish Approval remains authoritative.
+- The existing `repository` required context remains the branch-protection aggregate. Git publication continues to follow the selected personal/high-assurance mode.
 - Gitleaks, GitGuardian and platform scanning remain optional defense-in-depth; no external credential is required for baseline.
 
 ## Evidence
