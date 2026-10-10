@@ -46,7 +46,7 @@ pytest==9.1.1
 referencing==0.37.0
 rfc3339-validator==0.1.4
 rpds-py==2026.6.3
-ruff==0.16.8
+ruff==0.16.10
 six==1.17.0
 sortedcontainers==2.4.0
 sse-starlette==3.5.0
