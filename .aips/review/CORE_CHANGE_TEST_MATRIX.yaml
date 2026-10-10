@@ -11,12 +11,25 @@ change:
   - docs/ARCHITECTURE.md
   - docs/human/ARCHITECTURE_OVERVIEW.md
   - docs/human/CONFORMANCE.md
+  - docs/human/DOCUMENTATION_MAP.md
+  - docs/human/DOCUMENTATION_SYNC.md
+  - docs/human/HARNESS.md
+  - docs/human/INSTALLATION.md
+  - docs/human/MAINTENANCE.md
   - docs/human/SECURITY_ASSURANCE.md
   - docs/human/TECHNOLOGY_GUIDE.md
   - docs/human/USER_GUIDE.md
+  - docs/human/index.md
+  - harness/HARNESS_PROTOCOL.md
+  - harness/adapters/opencode/AGENTS.md
+  - harness/adapters/opencode/COMPATIBILITY.md
   - harness/adapters/gemini-cli/GEMINI.md
   - harness/adapters/gemini-cli/policies/personal-pr-merge.toml
   - orchestration/ORCHESTRATOR.md
+  - orchestration/CONFORMANCE.md
+  - orchestration/CREATIVE_DIRECTION.md
+  - orchestration/DETERMINISTIC_SCHEDULER.md
+  - orchestration/DOCUMENTATION_SYNC.md
   - scripts/governance_guard.py
   - scripts/publication_authority.py
   - tests/scenario_coverage.yaml

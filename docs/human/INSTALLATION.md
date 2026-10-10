@@ -99,6 +99,8 @@ OpenCode creative clarification state is held only in the active Session and req
 
 Successful adapter installation confirms setup only. Runtime Context delivery, permission enforcement and host-version compatibility use separate acceptance evidence, so unsupported or untested host combinations remain explicitly unverified.
 
+The Gemini per-merge confirmation rule is shipped in the AIPS extension's `policies/personal-pr-merge.toml`; it applies only while the extension is active and interactive. User/admin policy with higher priority may override it. Claude's confirmation uses the installed native PreToolUse hook. Codex remains advisory.
+
 The OpenCode V2 Creative tool uses the adapter's prompt hook and shared local executor; installing the plugin does not install an image engine or model. Verify native grant admission with the versioned-host acceptance before relying on runtime behavior.
 
 The plugin accepts the shared executor's Z-Image Turbo `model_profile`, UNET, CLIP and VAE fields; runtime setup does not verify local weights or real inference.

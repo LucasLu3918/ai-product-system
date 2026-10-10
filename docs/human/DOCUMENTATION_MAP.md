@@ -22,7 +22,7 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
-Git 發布模式與操作步驟以 [User Guide](./USER_GUIDE.md#git-publication-與-release) 為入口；安全保證、信任根部署與隔離限制以 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement) 為準。
+Git 發布模式與操作步驟以 [User Guide](./USER_GUIDE.md#git-publication-與-release) 為入口；安全保證、信任根部署與隔離限制以 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement) 為準。個人模式 PR merge 的逐次確認依賴 Claude Code 原生 `ask` 或啟用中的 Gemini AIPS extension `ask_user` policy；Codex 仍為 advisory。
 
 
 The recursive impact report links source changes to required Human and Agent documents.

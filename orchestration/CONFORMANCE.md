@@ -2,6 +2,10 @@
 
 The Agent-facing rules in this document are normative. The generated Human current view and section-anchor history crosswalk live in `docs/human/CONFORMANCE_CURRENT.md` and `docs/human/CONFORMANCE_HISTORY_INDEX.md`; `tests/scenario_coverage.yaml` remains the canonical coverage data.
 
+## Scenario 240 — Personal Publication Default and High-Assurance Opt-In
+
+Personal-mode PR merge requires explicit task intent, an open non-draft mergeable PR on the live default branch, the current allowlisted engineering branch and exact candidate head, plus passing required checks. Claude Code and the active Gemini AIPS extension require native per-call confirmation; Codex and OpenCode remain advisory for direct merge interception. High-assurance signed grants and the accepted current-origin trust limitation remain unchanged.
+
 The retrieval relation extraction lifecycle checks legacy facade behavior against the internal implementation, including masking, relation rows and secret-path exclusion. It does not upgrade lexical evidence to compiler-resolved semantics.
 
 Scenario 198 is lifecycle-covered by `tests/evidence/runtime_context_lifecycle.py` and `scripts/runtime_invariant_matrix.py`. Runtime Context reporting must remain credential-free, and the matrix must retain complete deterministic pair coverage within its declared case bound.

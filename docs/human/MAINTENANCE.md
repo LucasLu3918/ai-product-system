@@ -303,6 +303,8 @@ When Approval Binding / Governance Enforcement changes, review together:
 
 Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverifiable.
 
+Personal PR merge behavior is limited to explicit, validated PR operations with per-call Claude/Gemini native confirmation. Keep the required check, exact head/default-base binding, Gemini extension priority caveat and Codex advisory limit aligned with Scenario 240 and Security Assurance.
+
 ## Durable Run State consistency
 
 恢復計畫與品質摘要都是唯讀觀察；讀取報告不會附加專案、刷新狀態、授予工具權限或改變生成／人工審核／接受狀態。

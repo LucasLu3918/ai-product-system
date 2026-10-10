@@ -46,6 +46,8 @@ AIPS Core
 
 Git publication hooks share the personal/high-assurance policy where the adapter supports enforcement. Claude and Gemini use native hooks; Codex remains advisory, so this is not an OS-level boundary. See Security Assurance for the accepted same-account `origin` limitation.
 
+For explicitly requested personal-mode PR merges, Claude Code prompts through native `PreToolUse ask`; the active Gemini AIPS extension asks through its interactive policy in `default`, `autoEdit`, and `yolo`. The shared hook shows the PR and candidate/check details. Codex cannot guarantee interception of direct merge commands.
+
 
 The Phase 1 creative prompt compiler extraction is internal to the Python implementation. It preserves the `creative_execution` facade and does not change OpenCode permissions, native tool signatures, or Harness installation.
 

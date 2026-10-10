@@ -26,7 +26,7 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
-Git publication mode behavior is documented in the User Guide and Security Assurance; proposal and self-improvement sources map there through `config/documentation-placement.yaml`. Keep the personal-mode origin trust limitation explicit in both behavior and security guidance.
+Git publication mode behavior is documented in the User Guide and Security Assurance; proposal and self-improvement sources map there through `config/documentation-placement.yaml`. Keep the personal-mode origin trust limitation explicit in both behavior and security guidance. Per-merge confirmation is provided by Claude Code's native `ask` and the active Gemini extension's interactive `ask_user` policy; Codex remains advisory and higher-priority Gemini policies can override the extension rule.
 
 
 Publication issuer 接入與 unsigned-record migration 放在 Security Assurance，使用流程放在 User Guide 的 Git Publication 與 Release；Harness/architecture 記錄 external trust domain 與 advisory limits。

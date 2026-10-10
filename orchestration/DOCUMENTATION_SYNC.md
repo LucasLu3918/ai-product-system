@@ -31,6 +31,8 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 Publication authority has one Human deployment reference in Security Assurance / Runtime Policy Enforcement, with User Guide CLI usage and architecture/Harness trust-boundary links. Preserve explicit unsigned-record migration and unsupported Shell/GH CAS limitations.
 
+Personal-mode PR merges require explicit intent, exact head/default-base and passing-check validation, then per-call Claude native `ask` or Gemini extension `ask_user`. Codex and OpenCode remain advisory for direct merge interception; do not imply the base SHA is atomically pinned.
+
 Creative benchmark guidance separates file integrity, observed provider execution, Human visual dimensions and acceptance. Synchronize the existing Human and Agent creative topics with the same distinctions.
 
 Impact candidate guidance is synchronized across the existing Project Intelligence Human and Agent topics; it remains advisory and non-canonical.

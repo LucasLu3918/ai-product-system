@@ -57,6 +57,8 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 Creative task grants authorize only their creative boundary; they cannot issue or satisfy an external signed Git publication grant. Artifact publication remains separately bound to its exact validated commit and target.
 
+Creative Direction does not grant PR merge authority. The Claude/Gemini personal-mode confirmation path is a separate Git publication rule; this protocol's creative grants and execution flow are unchanged.
+
 After ComfyUI accepts a job, timeout or transient polling failure requests deletion of only that queued job and blocks automatic resubmission. Never interrupt all running jobs to recover one request; provider completion remains unverified until inspected.
 
 Use the existing Character/Style profiles and versioned local execution. Optional quality trials bind local raster digests and record Human character identity, outfit, composition, reference-edit and recovery assessments independently; never infer acceptance from a PNG or fixture.

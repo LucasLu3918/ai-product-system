@@ -22,6 +22,8 @@ Every turn may resolve current context. Every turn must not rescan the repositor
 
 Adapter-facing machine-readable output stays on stdout and diagnostics stay on stderr. Invalid state and unavailable subprocesses use explicit failure status/reason codes; malformed hook input must fail closed rather than being treated as an empty valid request.
 
+For personal-mode PR merge, the Claude adapter must return native `ask` only after the shared validator binds an explicit PR, candidate head, live default base and passing required checks. The Gemini extension pairs its hook summary with an interactive `ask_user` policy; Codex remains advisory.
+
 ## Non-invasive invariant
 
 AIPS does not replace or delete user-owned Agent instructions, Skills, project source or unrelated runtime settings.
