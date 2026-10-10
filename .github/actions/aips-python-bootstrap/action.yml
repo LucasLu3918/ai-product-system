@@ -40,10 +40,9 @@ runs:
           requirement_args+=(-r "$file")
         done <<< "$AIPS_REQUIREMENTS_FILES"
         ((${#requirement_args[@]} > 0)) || { echo "requirements-files must not be empty" >&2; exit 2; }
-        constraint_args=()
         if [[ -n "$AIPS_CONSTRAINTS_FILE" ]]; then
-          constraint_args=(-c "$AIPS_CONSTRAINTS_FILE")
+          requirement_args=(-c "$AIPS_CONSTRAINTS_FILE" "${requirement_args[@]}")
         fi
-        python -m pip install "${constraint_args[@]}" "${requirement_args[@]}"
+        python -m pip install "${requirement_args[@]}"
         python scripts/python_bootstrap_verify.py --modules "$AIPS_VERIFICATION_MODULES"
         python -m pip check

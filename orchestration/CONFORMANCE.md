@@ -933,6 +933,8 @@ The size audit measures tracked text/evidence files against 50,000 bytes and rep
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
+The shared Python bootstrap preserves optional constraints on macOS Bash 3.2 by prepending them to its non-empty requirements argument array. Its lifecycle executes the actual shell body for constrained/unconstrained inputs, exact argument quoting and fail-closed empty requirements.
+
 CI always installs Python packages from all four validation requirement files because mandatory full-repository lifecycle fixtures exercise the complete CLI preflight. Candidate-path selection still controls Node and Playwright Chromium installation.
 
 Candidate evidence stays bound to exact paths and reports missing facts as unknown. The current quality ratchet records a Ruff baseline and bounded report-only lifecycle coverage; it does not expand the validated module scope or grant release authority.

@@ -450,6 +450,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+The shared Python bootstrap preserves optional constraints on macOS Bash 3.2 by prepending them to its non-empty requirements argument array. Its lifecycle executes the actual shell body for constrained/unconstrained inputs, exact argument quoting and fail-closed empty requirements.
+
 既有 Quality Ratchet 的 Ruff 基準為 685，Retrieval 模組為 4、下一階段目標為 3。Validation Observation 以相同候選的完整紀錄計算各 Change Class 的 P50／P95；缺少有效耗時時回報 UNKNOWN，仍執行完整 Gate。
 
 Project Intelligence candidate contract and lifecycle checks are registered; they assert bounded output, unknown dynamic behavior and unchanged canonical graph coverage.

@@ -9,6 +9,7 @@ change:
   - .aips/review/PLAN27_CORE_CHANGE_PROPOSAL.md
   - .aips/review/PLAN27_MAINTENANCE_EVIDENCE.yaml
   - .aips/review/PLAN27_NATIVE_ACCEPTANCE.json
+  - .github/actions/aips-python-bootstrap/action.yml
   - .github/workflows/installation-entrypoints.yml
   - CHANGELOG.md
   - VERSION
@@ -76,13 +77,14 @@ change:
   - tests/evidence/evolution_radar_lifecycle.py
   - tests/evidence/opencode_native_acceptance.py
   - tests/evidence/plan27_lifecycle.py
+  - tests/evidence/python_bootstrap_action_lifecycle.py
   - tests/validation/evolution_radar_contracts.py
   - tests/validation/plan27_contracts.py
   - tests/validation/quality_ratchet_contracts.py
   - tests/validation/registry.py
 candidate:
   base_sha: 7dc56860b8131535cf72575467b1b89fefff3c27
-  changed_files_hash: b3dedf426b7e1f111edebc2a8f18563ce3bb8cb0e3e8c2225514da7c93bb9336
+  changed_files_hash: 52c8f680ce4674083c42ce13c7158ceb6c25b6f7217058a8bdd9ac0f764eae23
 matrix:
 - boundary: Public facades and impact candidates
   reason: Move coherent internal responsibilities with same-object exports, retain
@@ -163,6 +165,9 @@ verification:
   real_agent_outcomes: UNKNOWN_NO_LOCAL_MODEL
   creative_visual_acceptance: UNVERIFIED_QUEUED_JOB_TIMEOUT
   formal_release: SEPARATE_EXACT_CANDIDATE_APPROVAL
-  complete_local_repository_validation: PASS
-  scope_impact_traversal: COMPLETE; 42 nodes, 95 edges; source-reviewed bounded architecture;
+  complete_local_repository_validation: Prior 13d0f56 full Gate PASS; current exact-candidate
+    repository-validation REQUIRED
+  scope_impact_traversal: COMPLETE; 51 nodes, 111 edges; reviewed local/CI scope;
     global coverage unchanged
+  bash32_optional_constraints: PASS; actual shell argv with and without constraints;
+    empty requirements blocked

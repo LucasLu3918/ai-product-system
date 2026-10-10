@@ -42,3 +42,5 @@ Self-check covers compatibility, truthfulness, privacy, failure recovery and exa
 Architecture diagram impact: the implementation diagram shows the four facade-to-helper responsibilities. Human Architecture Overview records the same boundaries. Existing SVG lifecycle diagrams are N/A because no public orchestration stage or product deployment unit is added.
 
 Release-readiness and branch inventory are observations only. Formal release, Windows WSL clean installation, real Agent tasks and Human creative quality acceptance are operational follow-ups, not invented passing evidence.
+
+The macOS installation check exposed Bash 3.2 nounset handling of an empty optional constraints array in the shared Python bootstrap. Constraints now prepend to the already non-empty requirements argument array, preserving exact argv and empty-input failure. The existing bootstrap lifecycle executes the actual Bash body with captured pip arguments for both optional-input modes; all six workflow consumers retain their input and permission contracts. This portability correction is required for the approved cross-platform installation evidence.

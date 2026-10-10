@@ -213,6 +213,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+The shared Python bootstrap preserves optional constraints on macOS Bash 3.2 by prepending them to its non-empty requirements argument array. Its lifecycle executes the actual shell body for constrained/unconstrained inputs, exact argument quoting and fail-closed empty requirements.
+
 以觀察到的數值計算 P50／P95，缺值維持 UNKNOWN。OpenCode 驗收綁定 Host 版本、平台與 Plugin／驗收程式雜湊；Agent 任務完成、人工修正與誤判另行記錄，不能從 rubric PASS 推算。Creative trial 先核對本地影像與雜湊，再呈現人工角色、服裝、構圖、編輯與恢復評分。
 
 Impact candidate checks preserve source provenance, report budget truncation and unresolved dynamic relationships, and prove canonical graph state and global coverage remain unchanged.
