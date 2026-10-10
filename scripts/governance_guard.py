@@ -184,7 +184,7 @@ def _unwrap(tokens: list[str]) -> list[str]:
         if exe == "env":
             from publication_commands import CommandError
             if any(token.startswith(('-S', '--split-string')) for token in tokens[1:]):
-                raise CommandError('env split-string execution requires a standalone command')
+                raise CommandError('env split-string execution requires a standalone command', 'UNSUPPORTED_WRAPPER')
             tokens = _strip_options(tokens[1:], ENV_WITH_VALUE)
             while tokens and ASSIGNMENT_RE.match(tokens[0]):
                 tokens.pop(0)
@@ -197,6 +197,37 @@ def _unwrap(tokens: list[str]) -> list[str]:
             continue
         break
     return tokens
+
+
+def _dynamic_word(token: str) -> bool:
+    return "$" in token or "`" in token or "\0" in token
+
+
+def _after_global_options(tokens: list[str], with_value: set[str]) -> list[str]:
+    """Locate a CLI verb after its global options without accepting dynamic context."""
+    index = 0
+    while index < len(tokens):
+        token = tokens[index]
+        if not token.startswith("-") or token == "-":
+            return tokens[index:]
+        if _dynamic_word(token):
+            from publication_commands import CommandError
+            raise CommandError("dynamic CLI global option cannot be classified", "DYNAMIC_CLI_OPTION")
+        option = token.split("=", 1)[0]
+        if option in with_value:
+            if "=" in token:
+                index += 1
+                continue
+            if index + 1 >= len(tokens):
+                from publication_commands import CommandError
+                raise CommandError("CLI global option is missing its value")
+            if _dynamic_word(tokens[index + 1]):
+                from publication_commands import CommandError
+                raise CommandError("dynamic CLI global option value cannot bind a stable target", "DYNAMIC_CLI_OPTION")
+            index += 2
+            continue
+        index += 1
+    return []
 
 
 def _direct_operations(tokens: list[str]) -> list[str]:
@@ -212,7 +243,7 @@ def _direct_operations(tokens: list[str]) -> list[str]:
             if re.fullmatch(r'-[A-Za-z]*c[A-Za-z]*', token) and i + 1 < len(tokens):
                 return operations_for(tokens[i + 1])
         from publication_commands import CommandError
-        raise CommandError('interpreter file/stdin execution cannot be classified; use literal standalone commands')
+        raise CommandError('interpreter file/stdin execution cannot be classified; use literal standalone commands', 'UNSUPPORTED_INTERPRETER')
 
     if exe == "eval" and len(tokens) > 1:
         return operations_for(" ".join(tokens[1:]))
@@ -227,7 +258,7 @@ def _direct_operations(tokens: list[str]) -> list[str]:
             return ["git_commit"]
         if args[0] in {'send-pack', 'http-push', 'receive-pack'}:
             from publication_commands import CommandError
-            raise CommandError('Git remote-ref plumbing is unsupported; use the exact signed push workflow')
+            raise CommandError('Git remote-ref plumbing is unsupported; use the exact signed push workflow', 'UNSUPPORTED_GIT_PLUMBING')
         if args[0] == "tag":
             query = args[1:]
             read_flags = {"--list", "-l", "--verify", "-v", "--contains", "--no-contains",
@@ -240,7 +271,7 @@ def _direct_operations(tokens: list[str]) -> list[str]:
         builtin = subprocess.run(['git', '--list-cmds=builtins'], capture_output=True, text=True, timeout=5, check=False)
         if builtin.returncode or args[0] not in builtin.stdout.split():
             from publication_commands import CommandError
-            raise CommandError('unknown Git verb or alias cannot be classified')
+            raise CommandError('unknown Git verb or alias cannot be classified', 'UNKNOWN_GIT_COMMAND')
         return []
 
     if exe == "gh":
@@ -249,9 +280,9 @@ def _direct_operations(tokens: list[str]) -> list[str]:
             from publication_commands import CommandError
             # API writes may change Git refs without invoking git push/gh pr merge.
             if '--method' not in args or args.count('--method') != 1 or args[args.index('--method') + 1:args.index('--method') + 2] != ['GET']:
-                raise CommandError('unbound GitHub API mutation is unsupported')
+                raise CommandError('unbound GitHub API mutation is unsupported', 'UNBOUND_GITHUB_API_MUTATION')
             if any(x.startswith(('-f', '-F', '--field', '--raw-field', '--input', '-X', '--method=')) for x in args):
-                raise CommandError('ambiguous GitHub API request is unsupported')
+                raise CommandError('ambiguous GitHub API request is unsupported', 'AMBIGUOUS_GITHUB_API_REQUEST')
         if len(args) >= 2 and args[0:2] == ["pr", "create"]:
             return ["gh_pr_create"]
         if len(args) >= 2 and args[0:2] == ["pr", "merge"]:
@@ -262,7 +293,7 @@ def _direct_operations(tokens: list[str]) -> list[str]:
                               or args[0] == 'release' and args[1] in {'delete', 'edit', 'upload'}
                               or args[0] == 'repo' and args[1] in {'delete', 'create', 'fork', 'sync'}):
             from publication_commands import CommandError
-            raise CommandError('unsupported GitHub mutation requires a separately reviewed workflow')
+            raise CommandError('unsupported GitHub mutation requires a separately reviewed workflow', 'UNSUPPORTED_GITHUB_MUTATION')
     return []
 
 
@@ -271,12 +302,18 @@ def operations_for(command: str) -> list[str]:
     operations: list[str] = []
     for segment in _segments(command):
         effective = _unwrap(segment)
-        if effective and any('$' in word or '`' in word or '\0' in word for word in effective[:1]):
-            raise CommandError('dynamic executable cannot be classified')
-        if effective and Path(effective[0]).name in {'git', 'gh'} and any('$' in word or '`' in word or '\0' in word for word in effective[1:3]):
-            raise CommandError('dynamic Git/GitHub subcommand cannot be classified')
+        if effective and _dynamic_word(effective[0]):
+            raise CommandError('dynamic executable cannot be classified', 'DYNAMIC_EXECUTABLE')
+        if effective and Path(effective[0]).name == 'git':
+            args = _after_global_options(effective[1:], GIT_GLOBAL_WITH_VALUE)
+            if args and _dynamic_word(args[0]):
+                raise CommandError('dynamic Git subcommand cannot be classified', 'DYNAMIC_SUBCOMMAND')
+        if effective and Path(effective[0]).name == 'gh':
+            args = _after_global_options(effective[1:], GH_GLOBAL_WITH_VALUE)
+            if any(_dynamic_word(word) for word in args[:2]):
+                raise CommandError('dynamic GitHub CLI command cannot be classified', 'DYNAMIC_SUBCOMMAND')
         if effective and Path(effective[0]).name in {'bash', 'sh', 'zsh'} and '<<' in command:
-            raise CommandError('shell heredoc execution requires an inspected standalone command')
+            raise CommandError('shell heredoc execution requires an inspected standalone command', 'UNSUPPORTED_HEREDOC')
         for operation in _direct_operations(segment):
             if operation not in operations:
                 operations.append(operation)
@@ -357,14 +394,31 @@ def commit_safety(cwd: Path, command: str) -> dict:
 
 def deny_hook_input(runtime: str, reason: str) -> int:
     """Return the runtime's normal deny envelope without echoing input data."""
+    reason_messages = {
+        "UNSUPPORTED_SHELL_SYNTAX": "AIPS cannot safely parse this shell syntax; simplify the command and retry.",
+        "UNSUPPORTED_HEREDOC": "AIPS cannot safely inspect this heredoc form; use a quoted heredoc or a separate command.",
+        "DYNAMIC_EXECUTABLE": "AIPS cannot verify a dynamically selected executable; use a literal command name.",
+        "DYNAMIC_SUBCOMMAND": "AIPS cannot classify a dynamically selected Git/GitHub command; use a literal subcommand.",
+        "DYNAMIC_CLI_OPTION": "AIPS cannot verify a dynamically selected Git/GitHub context option; use a literal option value.",
+        "UNSUPPORTED_WRAPPER": "AIPS cannot inspect this Shell wrapper safely; use a literal standalone command.",
+        "UNSUPPORTED_INTERPRETER": "AIPS cannot inspect commands read from a Shell file or stdin; use an inspected literal command.",
+        "UNSUPPORTED_GIT_PLUMBING": "AIPS blocks this low-level Git publication path; use the exact approved push workflow.",
+        "UNKNOWN_GIT_COMMAND": "AIPS cannot classify this Git verb or alias; use a supported built-in command.",
+        "UNBOUND_GITHUB_API_MUTATION": "AIPS cannot bind this GitHub API write to an approved operation; use a supported explicit workflow.",
+        "AMBIGUOUS_GITHUB_API_REQUEST": "AIPS cannot determine whether this GitHub API request writes data; use an explicit supported request.",
+        "UNSUPPORTED_GITHUB_MUTATION": "AIPS requires a separately reviewed workflow for this GitHub mutation.",
+        "CONTENT_CANDIDATE_UNAVAILABLE": "AIPS could not inspect the publication content; retry after resolving the local inspection error.",
+    }
+    detail = reason_messages.get(reason, "AIPS blocked this command during a required safety check.")
+    detail += " [" + reason + "]"
     if runtime == "claude-code":
         result = {"hookSpecificOutput": {
             "hookEventName": "PreToolUse",
             "permissionDecision": "deny",
-            "permissionDecisionReason": "AIPS blocked: invalid hook input (" + reason + ")",
+            "permissionDecisionReason": detail,
         }}
     else:
-        result = {"decision": "deny", "reason": "AIPS blocked: invalid hook input (" + reason + ")"}
+        result = {"decision": "deny", "reason": detail}
     print(json.dumps(result))
     return 0
 
@@ -442,8 +496,13 @@ def hook(runtime: str) -> int:
         return 0
     try:
         operations = operations_for(command)
-    except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError, ImportError, subprocess.TimeoutExpired):
-        return deny_hook_input(runtime, "unsupported_shell_syntax")
+    except Exception as exc:
+        from publication_commands import CommandError
+        if isinstance(exc, CommandError):
+            return deny_hook_input(runtime, exc.reason_code)
+        if isinstance(exc, (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError, ImportError, subprocess.TimeoutExpired)):
+            return deny_hook_input(runtime, "UNSUPPORTED_SHELL_SYNTAX")
+        raise
     if not operations:
         print("{}")
         return 0
@@ -462,7 +521,7 @@ def hook(runtime: str) -> int:
             try:
                 safety = commit_safety(cwd, command) if operation == 'git_commit' else safe_emit(sink=sink, payload={"command": command})
             except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError, ImportError, subprocess.TimeoutExpired):
-                return deny_hook_input(runtime, "content_candidate_unavailable")
+                return deny_hook_input(runtime, "CONTENT_CANDIDATE_UNAVAILABLE")
             if safety["decision"] == "BLOCK":
                 reason = "content safety blocked " + operation
                 if runtime == "claude-code":

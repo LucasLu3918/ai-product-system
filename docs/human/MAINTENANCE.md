@@ -295,7 +295,6 @@ Prefer the strongest practical deterministic evidence for affected behavior whil
 
 ## Governance enforcement consistency
 
-
 When Approval Binding / Governance Enforcement changes, review together:
 
 - Approval Record template + governance_guard.py;
@@ -557,6 +556,8 @@ Validation Observation treats a completed `NOT_READY` report as collected eviden
 Internal Retrieval Intelligence module extraction must preserve the `retrieval_intelligence.py` facade and its existing lifecycle behavior. `tests/evidence/module_extraction_lifecycle.py` verifies the storage helper exports; retrieval lifecycle and repository validation cover the existing index contract.
 
 ## Deterministic Scheduler / Integration Gate consistency
+
+Shared publication guard changes must retain Core Matrix and exact-candidate Gate evidence for recursive substitution parsing, quoted/escaped heredoc handling, dynamic command denial, and literal publication scope.
 
 Phase 3 enforcement changes also update `scripts/implementation_enforcement.py`, its versioned report schema, Scenario 195 and the existing Integration Gate profile/lifecycle evidence. Check report-only behavior before enabling path-scoped enforcement in a project; a missing current-run command report or stale generated/OpenAPI hash must not turn into PASS. Generated hashes verify recorded provenance, not generator execution.
 
