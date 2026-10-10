@@ -23,7 +23,7 @@ import yaml
 
 CONFIG = Path('/etc/aips/publication-authority.yaml')
 PUBLICATION_OPERATIONS = {'git_push', 'git_tag', 'gh_pr_create', 'gh_pr_merge', 'gh_release_create'}
-PERSONAL_PUBLICATION_OPERATIONS = {'git_push', 'gh_pr_create'}
+PERSONAL_PUBLICATION_OPERATIONS = {'git_push', 'gh_pr_create', 'gh_pr_merge'}
 PERSONAL_BRANCH_PREFIXES = ('agent/', 'bugfix/', 'chore/', 'claude/', 'codex/', 'docs/', 'feature/', 'fix/', 'gemini/', 'work/')
 
 
@@ -52,12 +52,7 @@ def _personal_base(root: Path, operation: str, argv: list[str]) -> str:
     push_urls = git(root, 'remote', 'get-url', '--push', '--all', remote).splitlines()
     if len(urls) != 1 or len(push_urls) != 1 or urls[0] != push_urls[0]:
         raise PublicationError('personal publication requires one matching origin fetch and push URL')
-    response = subprocess.run(['git', 'ls-remote', '--symref', '--', urls[0], 'HEAD'],
-                              cwd=root, capture_output=True, text=True, timeout=15, check=False)
-    match = re.search(r'^ref: refs/heads/([A-Za-z0-9_./-]+)\tHEAD$', response.stdout, re.MULTILINE)
-    if response.returncode or not match:
-        raise PublicationError('remote default branch unavailable')
-    default_branch = match.group(1)
+    default_branch = _remote_default_branch(root, urls[0])
     default_tip = _tip(root, urls[0], 'refs/heads/' + default_branch)
     if not default_tip or not re.fullmatch(r'[0-9a-f]{40,64}', default_tip):
         raise PublicationError('remote default branch tip unavailable')
@@ -68,6 +63,15 @@ def _personal_base(root: Path, operation: str, argv: list[str]) -> str:
     except PublicationError as exc:
         raise PublicationError('fetch the current remote default branch before personal publication') from exc
     return default_tip
+
+
+def _remote_default_branch(root: Path, url: str) -> str:
+    response = subprocess.run(['git', 'ls-remote', '--symref', '--', url, 'HEAD'],
+                              cwd=root, capture_output=True, text=True, timeout=15, check=False)
+    match = re.search(r'^ref: refs/heads/([A-Za-z0-9_./-]+)\tHEAD$', response.stdout, re.MULTILINE)
+    if response.returncode or not match:
+        raise PublicationError('remote default branch unavailable')
+    return match.group(1)
 
 
 def canonical(value: Any) -> bytes:
@@ -277,11 +281,43 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
                 raise PublicationError('explicit PR number and immediate checked merge required')
             if _option(argv, '--match-head-commit') != head:
                 raise PublicationError('merge must pin the exact candidate SHA')
-            pr = json.loads(run(root, 'gh', 'pr', 'view', argv[3], '--repo', repo, '--json', 'headRefOid,baseRefOid,baseRefName'))
+            pr = json.loads(run(root, 'gh', 'pr', 'view', argv[3], '--repo', repo, '--json',
+                                'url,state,isDraft,mergeable,headRefOid,headRefName,baseRefOid,baseRefName'))
+            if pr.get('state') != 'OPEN' or pr.get('isDraft') is True:
+                raise PublicationError('PR must be open and ready for review')
             if pr['headRefOid'] != head:
                 raise PublicationError('PR head differs from candidate')
+            if personal and (pr.get('headRefName') != result['branch'] or
+                             not result['branch'].startswith(PERSONAL_BRANCH_PREFIXES)):
+                raise PublicationError('personal PR merge must use the current allowlisted engineering branch')
+            if pr.get('mergeable') != 'MERGEABLE':
+                raise PublicationError('PR mergeability is not confirmed')
             result['pr_base_commit'] = pr['baseRefOid']
             target = _ref(root, 'refs/heads/' + pr['baseRefName'])
+            if pr['baseRefName'] != _remote_default_branch(root, url):
+                raise PublicationError('personal PR merge must target the remote default branch')
+            checks = subprocess.run(
+                ['gh', 'pr', 'checks', argv[3], '--repo', repo, '--required', '--json', 'bucket,name'],
+                cwd=root, capture_output=True, text=True, timeout=30, check=False,
+            )
+            if checks.returncode:
+                raise PublicationError('required PR checks are not all complete and passing')
+            try:
+                required_checks = json.loads(checks.stdout)
+            except json.JSONDecodeError as exc:
+                raise PublicationError('required PR check status unavailable') from exc
+            if not isinstance(required_checks, list) or any(
+                    not isinstance(item, dict) or item.get('bucket') not in {'pass', 'skipping'}
+                    for item in required_checks):
+                raise PublicationError('required PR checks are not all passing')
+            result['merge_confirmation'] = {
+                'pr_number': int(argv[3]),
+                'pr_url': pr['url'],
+                'head_sha': pr['headRefOid'],
+                'base_branch': pr['baseRefName'],
+                'base_sha': pr['baseRefOid'],
+                'required_checks': sorted(item.get('name', 'unnamed') for item in required_checks),
+            }
         else:
             if len(argv) < 4 or argv[3].startswith('-'):
                 raise PublicationError('explicit release tag required')
@@ -321,7 +357,7 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
 
 
 def validate_personal_action(cwd: Path, operation: str, argv: list[str]) -> dict[str, Any]:
-    """Validate a single ordinary engineering publication without minting approval data."""
+    """Validate personal publication; PR merge returns an exact per-call confirmation binding."""
     if operation not in PERSONAL_PUBLICATION_OPERATIONS:
         raise PublicationError('operation is unavailable in personal publication mode')
     root = Path(git(cwd, 'rev-parse', '--show-toplevel')).resolve()

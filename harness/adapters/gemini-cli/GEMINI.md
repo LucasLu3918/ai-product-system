@@ -29,6 +29,8 @@ When the exact-head verification workflow passes, this adapter may report runtim
 
 The shell wrappers resolve their physical script directory before locating the AIPS repository. This is required because Gemini CLI loads linked extensions through a symlink under `~/.gemini/extensions`; resolving the symlink path lexically would point hook scripts at the temporary/user HOME instead of the AIPS checkout.
 
+Personal-mode `gh pr merge` requires the companion `policies/personal-pr-merge.toml` extension policy to be active. Its interactive `ask_user` rule applies in `default`, `autoEdit`, and `yolo`; the shared BeforeTool hook validates the exact PR and emits its SHA/check summary. The hook's `allow` is conditional validation output and does not itself confirm the merge. If interaction is unavailable, the policy denies the command. Higher-priority user or administrator policies may override the extension rule. Codex has no equivalent guaranteed interception and remains advisory.
+
 Scenario 143 also verifies the official extension-settings path: the isolated Gemini settings enable `experimental.extensionConfig`, and the non-sensitive capture controls are supplied from the temporary workspace `.env`. Parent-process environment inheritance is not treated as proof that hook settings propagate.
 
 ## Live provider-session gate
@@ -38,4 +40,3 @@ Provider/model inference is intentionally verified separately from the determini
 The Human-approved next step is a bounded provider session using the protected GitHub Actions `GEMINI_API_KEY` secret. Until a trusted-main workflow executes that session successfully, this adapter MUST keep `live_provider_session_verified=false` and `provider_model_execution_verified=false`.
 
 The provider secret must never be persisted into extension settings, workspace evidence, canonical events, logs, or committed result files.
-

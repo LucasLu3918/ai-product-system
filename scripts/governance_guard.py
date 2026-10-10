@@ -472,6 +472,7 @@ def hook(runtime: str) -> int:
                 return 0
     ok = False
     reason = "no active AIPS Approval Record"
+    merge_confirmation = None
     approval_operations = [operation for operation in operations if operation in PROTECTED]
     if not approval_operations:
         ok = True
@@ -491,9 +492,21 @@ def hook(runtime: str) -> int:
                 parsed = shell_commands(command)
                 if len(parsed) != 1 or len(approval_operations) != 1:
                     raise PublicationError('one standalone publication operation required')
-                validate_personal_action(cwd, approval_operations[0], parsed[0])
+                publication = validate_personal_action(cwd, approval_operations[0], parsed[0])
+                if approval_operations[0] == 'gh_pr_merge':
+                    merge_confirmation = publication.get('merge_confirmation')
+                    if not merge_confirmation:
+                        raise PublicationError('merge confirmation binding unavailable')
+                    names = ', '.join(merge_confirmation['required_checks']) or 'none reported'
+                    reason = (
+                        f"Confirm PR merge #{merge_confirmation['pr_number']} in {publication['github_repo']} "
+                        f"into {merge_confirmation['base_branch']} (base SHA {merge_confirmation['base_sha']})? "
+                        f"Head SHA: {merge_confirmation['head_sha']}. Required checks: {names}. "
+                        "GitHub pins the head SHA at merge; the base SHA is a pre-execution observation."
+                    )
+                else:
+                    reason = 'personal publication checks passed'
                 ok = True
-                reason = 'personal publication checks passed'
             else:
                 path = approval_path(cwd)
                 if path and not path.exists():
@@ -508,11 +521,13 @@ def hook(runtime: str) -> int:
     if runtime == "claude-code":
         print(json.dumps({"hookSpecificOutput": {
             "hookEventName": "PreToolUse",
-            "permissionDecision": "allow" if ok else "deny",
+            "permissionDecision": "ask" if ok and merge_confirmation else "allow" if ok else "deny",
             "permissionDecisionReason": "AIPS " + reason if ok else "AIPS blocked protected publication: " + reason,
         }}))
     else:
         result = {"decision": "allow" if ok else "deny"}
+        if ok and merge_confirmation:
+            result['systemMessage'] = 'AIPS per-merge confirmation: ' + reason
         if not ok:
             result["reason"] = "AIPS blocked protected publication: " + reason
         print(json.dumps(result))

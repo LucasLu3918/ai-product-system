@@ -1753,9 +1753,9 @@ The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies c
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
 
-### Scenario 240 — Personal Publication Default and High-Assurance Opt-In
+## Scenario 240 — Personal Publication Default and High-Assurance Opt-In
 
-Personal mode allows an Agent to publish a validated engineering branch and create a PR to the live remote default branch without a separate grant. The personal-mode hook denies PR merges; a merge requires explicit task intent, exact head/default-base binding, and passing required checks. A protected administrator trust-root selects high assurance; missing, invalid, or unavailable signed authorization blocks without fallback. Direct protected-branch push, tag/release, delete, bypass flags, unsafe commands, and content-scan failures remain denied.
+Personal mode allows an Agent to publish a validated engineering branch and create a PR to the live remote default branch without a separate grant. An explicitly requested PR merge requires exact candidate/head and live default-base binding, a mergeable open PR, and passing required checks; Claude Code and Gemini CLI require native per-call confirmation. Codex remains `ADVISORY` and cannot guarantee interception of direct merge commands. A protected administrator trust-root selects high assurance; missing, invalid, or unavailable signed authorization blocks without fallback. Direct protected-branch push, tag/release, delete, bypass flags, unsafe commands, and content-scan failures remain denied.
 
 
 

@@ -355,7 +355,7 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 ## Maintenance governance
 
-Git publication 的行為來源映射與 Human 文件位置由 `config/documentation-placement.yaml` 約束；個人模式及其 accepted origin limitation 需在 User Guide 與 Security Assurance 保持一致。
+Git publication 的行為來源映射與 Human 文件位置由 `config/documentation-placement.yaml` 約束；個人模式的逐次 PR merge 確認、Codex advisory limitation 與 accepted origin limitation 需在 User Guide 與 Security Assurance 保持一致。這項改動擴充既有 runtime policy boundary，未改變元件拓撲，架構圖不需更新。
 
 
 Publication 維護需獨立確認 issuer config、公鑰、ledger 與 exact-candidate Core evidence；缺少可信部署時保留發布阻擋，不將 fixture acceptance 當正式授權。

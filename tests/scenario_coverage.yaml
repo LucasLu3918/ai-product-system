@@ -14,6 +14,7 @@ scenarios:
     evidence:
       - scripts/publication_authority.py
       - scripts/governance_guard.py
+      - harness/adapters/gemini-cli/policies/personal-pr-merge.toml
       - tests/test_publication_authority.py
   - id: "226"
     path: tests/scenarios/226-capability-registry-single-source.md

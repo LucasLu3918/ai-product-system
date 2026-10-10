@@ -1,0 +1,7 @@
+[[rule]]
+toolName = "run_shell_command"
+argsPattern = "gh pr merge"
+decision = "ask_user"
+priority = 999
+modes = ["default", "autoEdit", "yolo"]
+interactive = true

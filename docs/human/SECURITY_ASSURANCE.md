@@ -427,9 +427,9 @@ AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned cont
 
 ### Git publication: 個人模式與高保證模式
 
-預設的 `personal` 模式適用於個人快速開發。當 `/etc/aips/publication-authority.yaml` 不存在時，Agent 在完成既有候選／秘密掃描與明確命令檢查後，可推送至自己的工程分支並建立或更新指向遠端預設分支的 PR；使用者明確指定 local-only／不發布時則不推送。個人模式 Hook 不授權 PR merge。只有任務明確要求合併時，任務執行者才能在確認 PR 指向預設分支、head SHA 符合候選且 GitHub required checks 通過後合併。此模式接受一般個人帳號下 Agent 使用現有 GitHub 權限發布，不提供外部簽章隔離保證。
+預設的 `personal` 模式適用於個人快速開發。當 `/etc/aips/publication-authority.yaml` 不存在時，Agent 在完成既有候選／秘密掃描與明確命令檢查後，可推送至自己的工程分支並建立或更新指向遠端預設分支的 PR；使用者明確指定 local-only／不發布時則不推送。任務明確要求合併且符合下方條件時，可逐次以支援的原生確認流程合併 PR。此模式接受一般個人帳號下 Agent 使用現有 GitHub 權限發布，不提供外部簽章隔離保證。
 
-個人模式只允許目前的工程分支推送至同名遠端分支，而且只接受 fetch/push URL 相同的唯一 `origin`；支援普通 push 或精確 `--force-with-lease`。建立 PR 也限工程分支並只能以遠端即時公告的預設分支為目標。掃描起點取自遠端 HEAD 與預設分支即時 SHA，不採信本機可改寫的 `origin/HEAD`；需先取得該 SHA 對應的物件，否則拒絕發布。個人模式 Hook 拒絕合併 PR、直接推送預設分支、刪除分支、tag/release、未知命令或不乾淨／無法驗證的候選。`git commit` 的既有 staged content scan、遠端候選秘密掃描、必要本地 Gate 與 PR required checks 保持適用。個人模式不建立 `APPROVED` 紀錄或簽章。
+個人模式只允許目前的工程分支推送至同名遠端分支，而且只接受 fetch/push URL 相同的唯一 `origin`；支援普通 push 或精確 `--force-with-lease`。建立 PR 也限工程分支並只能以遠端即時公告的預設分支為目標。掃描起點取自遠端 HEAD 與預設分支即時 SHA，不採信本機可改寫的 `origin/HEAD`；需先取得該 SHA 對應的物件，否則拒絕發布。PR merge 限明確單一 PR number、精確 `--match-head-commit`、目前 allowlist 工程 branch、開啟且非 draft 且 mergeable 的 PR、遠端預設 base，以及全部 required checks 通過；admin、auto merge 與刪除 branch 仍拒絕。Claude Code `PreToolUse` 以原生 `ask` 每次顯示 PR、base/head SHA 與 checks 後要求確認；Gemini CLI 在 AIPS extension 啟用時，由 `policies/personal-pr-merge.toml` 在 `default`、`autoEdit`、`yolo` 以 `interactive=true` 的 `ask_user` 要求逐次確認，再由 AIPS hook 顯示綁定細節。Gemini 較高優先級的使用者或管理者政策可覆寫 extension rule。GitHub 使用 head SHA 鎖定候選；base SHA 是執行前觀測，兩者不是原子 compare-and-swap。Codex Hook 維持 `ADVISORY`，無法保證攔截直接 merge 命令；Human 接受此個人模式限制。直接推送預設分支、刪除分支、tag/release、未知命令或不乾淨／無法驗證的候選仍拒絕。`git commit` 的既有 staged content scan、遠端候選秘密掃描與必要本地 Gate 保持適用。個人模式不建立 `APPROVED` 紀錄或簽章。
 
 個人模式以使用者目前設定的 `origin` 作為目標。相同帳號下的 Agent 能改寫工作區 `.git/config`，所以此模式無法保證 Agent 未把 `origin` 指向其他倉庫，也不提供抵禦惡意 Agent 外傳原始碼的隔離。使用者選擇此取捨以免快速開發前置部署可信服務；若需抵禦此風險，必須切換高保證授權或提供 Agent 無權修改的遠端身分錨點。
 

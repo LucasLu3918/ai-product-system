@@ -767,12 +767,17 @@ placement_rules:
     triggers:
       - scripts/publication_authority.py
       - scripts/governance_guard.py
+      - SYSTEM_CORE.md
+      - harness/adapters/gemini-cli/policies/personal-pr-merge.toml
+      - harness/adapters/gemini-cli/GEMINI.md
       - orchestration/SYSTEM_SELF_IMPROVEMENT.md
       - templates/git-publish-proposal.md
       - tests/test_publication_authority.py
       - tests/scenarios/240-personal-publication-default.md
+      - docs/human/CONFORMANCE.md
     placements:
       docs/human/USER_GUIDE.md: [Git Publication 與 Release]
+      docs/human/CONFORMANCE.md: [Scenario 240 — Personal Publication Default and High-Assurance Opt-In]
       docs/human/SECURITY_ASSURANCE.md: [Runtime Policy Enforcement, Release Security Gate]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Security 與 Governance, Maintenance governance]
       docs/human/TECHNOLOGY_GUIDE.md: [Execution, Security & Governance, Quality & Verification]

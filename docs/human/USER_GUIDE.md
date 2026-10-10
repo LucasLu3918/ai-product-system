@@ -504,7 +504,7 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
-預設個人模式會在程式修改與驗證完成後，自行推送工程分支並建立／更新指向遠端預設分支的 PR；不需設定簽發服務。只有使用者明確要求 local-only／不發布時才停在本機。個人模式 Hook 不允許 Agent 合併 PR；只有使用者在該任務明確要求合併，且 PR head、預設 base 與 required checks 均確認通過時，任務執行者才可完成合併。直接推送保護分支、刪除分支與發行不屬於個人模式。
+預設個人模式會在程式修改與驗證完成後，自行推送工程分支並建立／更新指向遠端預設分支的 PR；不需設定簽發服務。只有使用者明確要求 local-only／不發布時才停在本機。使用者明確要求合併 PR 時，Claude Code 每次會顯示原生確認並列出 PR、base/head SHA 與 required checks；Gemini CLI 透過互動式 extension policy 每次要求確認。合併前會驗證 PR 開啟且可合併、目標為遠端預設分支、head 是目前 allowlist 工程分支與精確候選 SHA，且 required checks 已通過。Codex Hook 仍是 advisory，無法保證攔截直接 merge 命令。直接推送保護分支、刪除分支與發行不屬於個人模式。
 
 部署管理者信任根會選擇高保證模式；此時每個 push、PR create、merge 各需獨立一次性 grant。`aips approval propose/status/verify` 提供精確提案與外部簽章驗證。完整部署、CLI 範例與安全取捨見 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement)。
 

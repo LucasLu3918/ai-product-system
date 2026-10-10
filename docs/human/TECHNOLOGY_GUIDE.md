@@ -184,7 +184,7 @@ The Retrieval Intelligence SQLite persistence boundary is `scripts/retrieval_sto
 
 ## Security & Governance
 
-Git publication 使用 bashlex shell AST 與 cryptography Ed25519。預設 personal mode 以共用 Hook 驗證內容、乾淨候選、工程分支與明確操作；安裝固定的 root-owned trust config 會啟用 high-assurance mode，並要求外部 HTTPS issuer 與 transactional single-use ledger。fixture 簽章只驗證高保證協定。Git push 的 server lease 與 GH preexecution observation 分別記錄於 scope；Codex hook 維持 ADVISORY。
+Git publication 使用 bashlex shell AST 與 cryptography Ed25519。預設 personal mode 以共用 Hook 驗證內容、乾淨候選、工程分支與明確操作；PR merge 另外要求 Claude 原生 `ask` 或 Gemini interactive `ask_user`、精確 head SHA、預設 base 與 passing required checks。Gemini policy 涵蓋 default/autoEdit/yolo；Codex hook 維持 ADVISORY 且不能保證攔截直接 merge。安裝固定的 root-owned trust config 會啟用 high-assurance mode，並要求外部 HTTPS issuer 與 transactional single-use ledger。fixture 簽章只驗證高保證協定。Git push 的 server lease 與 GH head pin/base preexecution observation 分別記錄於 scope。
 
 Creative traces omit prompts, local absolute paths, image bytes, credentials, and workflow bodies; the configured ComfyUI adapter disables proxies and redirects.
 
@@ -217,7 +217,7 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
-Repository validation and the exact-candidate Integration Gate establish candidate fitness. Personal publication mode permits only guarded engineering-branch push and PR creation; PR merge still needs explicit task intent, exact head/default-base binding, and passing required checks.
+Repository validation and the exact-candidate Integration Gate establish candidate fitness. Personal publication permits guarded engineering-branch push and PR creation, plus per-call confirmed PR merge through Claude Code and Gemini CLI native controls after exact head/default-base and required-check validation; Codex remains advisory.
 
 
 Publication Core candidate 執行完整 repository／secret／docs Gate 與 signed-grant regression。Synthetic issuer、review 或 creative lifecycle evidence 不建立 production signing trust root。
