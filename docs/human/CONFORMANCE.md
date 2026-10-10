@@ -1568,7 +1568,7 @@ Plan21 Phase 0 adds `tests/evidence/plan21_contract_baseline.py` to the required
 
 必要的 repository lifecycle fixtures 使用 CI 一律提供的完整 Python 驗證套件；此設定不會改變候選路徑對 Node 與 Chromium 執行環境的選擇。
 
-Exact-candidate planning continues to distinguish observed evidence from unknown status.
+Exact-candidate planning continues to distinguish observed evidence from unknown status. The current quality ratchet also records the Ruff baseline and bounded report-only lifecycle coverage; these measures do not expand the tested module scope or grant release authority.
 
 
 驗證契約另涵蓋固定安裝全部 Python 驗證 requirements，以及完整、條件安裝、漏裝和無條件 Chromium 下載的正／負案例。隔離的安裝／preflight 與 legacy migration lifecycle 在文件候選中仍需完整 Python 模組；下載 Chromium 和可選 OpenAPI evidence 維持精準計畫選擇。
@@ -1662,7 +1662,7 @@ The probe denies only a harmless synthetic local Bash command. Unsupported, malf
 
 ## Scenario 228 — Progressive Quality Ratchet
 
-Coverage remains report-only and the selected mypy scope adds only the extracted context module.
+Coverage remains report-only and the selected mypy scope is unchanged. Scenario 228 records a bounded relation-candidate lifecycle baseline (45.5% combined statement-and-branch coverage) without establishing a repository-wide minimum. The quality ratchet also pins the Ruff baseline at 687 findings and per-module budgets; baseline reductions do not widen the validated module scope.
 
 
 新增 OpenCode 投影與生命週期程式納入 touched-file quality ratchet；既有 lint debt 不因 Host 整合而擴大。

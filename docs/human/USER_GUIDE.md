@@ -302,6 +302,8 @@ Creative output integrity, human visual review and user acceptance remain separa
 
 Project Diagnostics 的輸出只能協助定位下一步，不取代獨立 Review、必要測試、完整 Integration Gate 或 Git 發布核准。
 
+品質基線與模組預算用於避免既有 debt 增長；coverage 報告維持 report-only，不代表整體覆蓋率門檻或人工品質驗收。
+
 本機 Z-Image Turbo 產圖也須分開確認檔案有效性、角色／畫風品質與人工接受；引擎執行成功不會自動將人工審查改為 PASS。
 
 創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。

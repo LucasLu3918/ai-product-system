@@ -72,8 +72,9 @@ def module_debt_violations(
         current = int((modules.get(path) or {}).get("findings", 0))
         allowed = int(budget.get("current_findings", -1))
         next_target = int(budget.get("next_target", -1))
-        if allowed < 0 or next_target < 0 or next_target >= allowed:
-            violations.append(f"{path}: module ledger must define a lower non-negative next_target")
+        terminal_zero_budget = allowed == 0 and next_target == 0
+        if allowed < 0 or next_target < 0 or (next_target >= allowed and not terminal_zero_budget):
+            violations.append(f"{path}: module ledger must define a lower non-negative next_target, or a terminal zero budget")
         if current > allowed:
             violations.append(f"{path}: {current} findings exceed recorded current_findings {allowed}")
         if touched and path in touched and previous_counts and path in previous_counts:

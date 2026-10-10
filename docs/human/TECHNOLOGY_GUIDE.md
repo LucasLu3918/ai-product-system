@@ -213,6 +213,8 @@ Creative visual assistance writes a separate advisory report; its findings do no
 
 CI 在 tested constraints 下安裝四份驗證 requirements 的完整 Python 套件，供必要 repository lifecycle fixtures 使用。精確候選計畫可以省略 Node、文件建置及 Chromium 執行環境；候選秘密掃描、repository validation 與 Integration Gate 仍是必要檢查。沒有模組基準時，coverage 僅供報告。
 
+The current Ruff baseline is 687 findings. Zero-finding modules use a terminal zero budget. Coverage remains report-only: the bounded Project Intelligence relation-candidate lifecycle records 45.5% combined statement-and-branch coverage for its helper module; it does not imply repository-wide coverage or establish a minimum.
+
 When isolated validation fixtures need the optional Python modules, the workflow passes the provisioned interpreter through `AIPS_VALIDATION_PYTHON` before running the deterministic Gate; a workflow contract protects this handoff.
 
 The Core Creative verification path covers native prompt admission and revocation, bounded multi-item recovery, local-only engine probes, documentation closure and the exact committed candidate.

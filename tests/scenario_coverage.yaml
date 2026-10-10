@@ -31,6 +31,8 @@ scenarios:
     evidence:
       - config/quality-ratchet.yaml
       - scripts/quality_ratchet.py
+      - scripts/project_intelligence_impact_graph.py
+      - tests/evidence/project_intelligence_relation_candidates_lifecycle.py
       - tests/evidence/quality_ratchet_lifecycle.py
       - tests/validation/quality_ratchet_contracts.py
   - id: "229"

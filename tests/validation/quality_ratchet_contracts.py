@@ -20,14 +20,14 @@ if config_path.is_file():
     touched = config.get("touched_code") or {}
     mypy = config.get("mypy") or {}
     coverage = config.get("coverage") or {}
-    if config.get("version") != 1 or ruff.get("baseline_findings") != 758 or ruff.get("policy") != "never_increase":
-        errors.append("Ruff must preserve the measured 758-finding baseline and prohibit debt growth")
+    if config.get("version") != 1 or ruff.get("baseline_findings") != 687 or ruff.get("policy") != "never_increase":
+        errors.append("Ruff must preserve the measured 687-finding baseline and prohibit debt growth")
     module_budgets = ruff.get("module_budgets") or {}
     project_budget = module_budgets.get("scripts/project_intelligence.py") or {}
-    if project_budget.get("current_findings") != 10 or project_budget.get("next_target") != 9:
-        errors.append("Project Intelligence Ruff debt must retain its measured current count and lower next target")
+    if project_budget.get("current_findings") != 0 or project_budget.get("next_target") != 0:
+        errors.append("Project Intelligence Ruff debt must retain its zero-finding baseline")
     retrieval_budget = module_budgets.get("scripts/retrieval_intelligence.py") or {}
-    if retrieval_budget.get("current_findings") != 6 or retrieval_budget.get("next_target") != 5:
+    if retrieval_budget.get("current_findings") != 5 or retrieval_budget.get("next_target") != 4:
         errors.append("Retrieval Intelligence Ruff debt must retain its measured current count and lower next target")
     if "scripts/project_intelligence_promotion.py" not in (mypy.get("modules") or []):
         errors.append("The extracted Project Intelligence promotion module must remain in the zero-error mypy scope")
@@ -40,6 +40,18 @@ if config_path.is_file():
     storage_coverage = (coverage.get("module_baselines") or {}).get("scripts/project_intelligence_storage.py") or {}
     if storage_coverage.get("evidence") != "tests/evidence/module_extraction_lifecycle.py" or storage_coverage.get("measurement_scope") != "bounded_storage_lifecycle":
         errors.append("Coverage baseline must be bound to the bounded storage lifecycle evidence")
+    graph_coverage = (coverage.get("module_baselines") or {}).get("scripts/project_intelligence_impact_graph.py") or {}
+    if (
+        graph_coverage.get("covered_lines") != 98
+        or graph_coverage.get("total_statements") != 207
+        or graph_coverage.get("percent") != 45.5
+        or graph_coverage.get("covered_branches") != 47
+        or graph_coverage.get("total_branches") != 112
+        or graph_coverage.get("measurement_scope") != "bounded_relation_candidates_lifecycle"
+        or graph_coverage.get("evidence") != "tests/evidence/project_intelligence_relation_candidates_lifecycle.py"
+        or "--branch --source=project_intelligence_impact_graph" not in graph_coverage.get("measurement_command", "")
+    ):
+        errors.append("Impact Graph coverage must preserve the measured bounded lifecycle scope and report-only evidence")
     if ruff.get("report_dimensions") != ["rule", "module", "auto_fixable"]:
         errors.append("Ruff debt report must include rule, module, and auto-fixability dimensions")
     if touched.get("policy") != "no_new_findings" or touched.get("missing_base_behavior") != "block":

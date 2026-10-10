@@ -186,7 +186,7 @@ Monthly Human relevance evaluation also includes deterministic fingerprint sampl
 
 Dependency risk classification adds an advisory policy and CLI mapping package classes to recommended validation plans. Keep the class behaviors, unknown-package fail-closed default, human decision requirement and no-auto-merge authority aligned with Maintenance, Technology Guide and Scenario 221.
 
-The large-document baseline is measurement evidence only. Keep the 50,000-byte `WARN` threshold and no-gate/no-archive behavior aligned across the policy, report, Human maintenance guidance and Scenario 222.
+The large-document baseline is measurement evidence only. Keep the 50,000-byte `WARN` threshold and no-gate/no-archive behavior aligned across the policy, report, Human maintenance guidance and Scenario 222. Progressive quality ratchet updates synchronize its baseline and report-only coverage scope across Human Maintenance, Technology Guide, Scenario 228 and Architecture Overview.
 
 The `evolution-radar` mapping includes the deterministic effectiveness script, policy config and monthly GitHub workflow. Changes to metric definitions, thresholds, source review flags, Issue publication behavior or authority fields must synchronize the canonical Evolution Radar / Execution Isolation Human and Agent docs plus the Technology Guide. Scheduled and manual runs that write the same monthly Issue use a repository/cohort queue with no cancellation; separate periods retain separate work.
 

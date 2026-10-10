@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Reduce the measured Ruff baseline to 687 findings, record current per-module debt and bounded Impact Graph lifecycle coverage, and keep coverage report-only without a global minimum.
 - Add bounded read-only Impact Graph relationship candidates from Python imports, literal CLI dispatch, test references, and documentation placement; preserve source-line provenance, unresolved dynamic behavior, and partial/unknown global coverage without mutating canonical edges.
 - Extract deterministic creative prompt compilation and evidence-ranked model advice behind the existing `creative_execution` facade, with exact output parity and function-identity checks; preserve the shared `Blocked` exception through a neutral errors module.
 - Compile bounded creative prompts from Character, Style and Collection profiles; rank only evidence-backed local model candidates and add optional loopback Ollama visual advice with separate Human review and user acceptance evidence.

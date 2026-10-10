@@ -37,7 +37,7 @@ Project Intelligence 的 temporal query 維持原有 CLI 與 `project_intelligen
 
 Current behavior follows the topic sections in this map: installation and release, maintenance validation, Project Intelligence, Evolution, and security each point to one Human-facing explanation and its canonical Agent protocol.
 
-Quality and validation governance is configured by `config/quality-ratchet.yaml`, `config/validation-graduation.yaml`, and `config/maintenance-reliability.yaml`; its human-facing behavior is summarized in Maintenance and the Technology Guide.
+Quality and validation governance is configured by `config/quality-ratchet.yaml`, `config/validation-graduation.yaml`, and `config/maintenance-reliability.yaml`; its human-facing behavior is summarized in Maintenance and the Technology Guide. Scenario 228 records progressive quality ratchet evidence in Conformance.
 
 Exact-candidate browser toolchain selection is documented in Maintenance and Technology Guide; `tests/evidence/validator_registry_lifecycle.py` verifies the central validator registry and its fail-closed full-profile default.
 
