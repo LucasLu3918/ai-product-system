@@ -108,6 +108,8 @@ CLI 發布診斷優先選擇完整 Python 3.12 驗證環境，再以既有環境
 
 GitHub Actions job 的逾時依最近成功執行的 P95、明示安全倍數與向上取整方式設定；installation entrypoint 的 Unix/Linux/Windows jobs 目前採 5/10/10 分鐘，依 2026-10-06 02:53–11:34 UTC 最近十次成功執行計算。只在工作共用狀態且不會丟失必要證據時才設定 concurrency。
 
+`validate.yml` uses a per-PR, per-event-action concurrency key. This prevents PR lifecycle events such as `opened` and `labeled` from cancelling one another while allowing a newer run of the same action to replace stale validation.
+
 本機 Integration Gate 會先選用完整的 Python 3.12 驗證環境。文件變更的 VitePress 建置需要 Node 24+ 與既有 `node_modules/vitepress/bin/vitepress.js`；Node 不在 `PATH` 時可用 `AIPS_NODE_BINARY` 指定，預檢不會自動安裝套件或連接 registry.
 
 產品使用安裝版 `aips openapi` 時，validator 與 `jsonschema` 是固定版本的選用相依套件。`aips openapi doctor` 檢查 managed venv，`aips openapi install` 才執行安裝；缺少套件時契約命令在呼叫 validator 前提供修復提示。
@@ -212,6 +214,8 @@ Impact candidate checks preserve source provenance, report budget truncation and
 Creative visual assistance writes a separate advisory report; its findings do not replace independent Human review, user acceptance, or measured real-model quality evidence.
 
 CI 在 tested constraints 下安裝四份驗證 requirements 的完整 Python 套件，供必要 repository lifecycle fixtures 使用。精確候選計畫可以省略 Node、文件建置及 Chromium 執行環境；候選秘密掃描、repository validation 與 Integration Gate 仍是必要檢查。沒有模組基準時，coverage 僅供報告。
+
+`validate.yml` scopes concurrency to a PR and event action. Distinct `opened` and classification `labeled` runs remain independent, while a newer run for the same action can replace stale validation.
 
 The current Ruff baseline is 687 findings. Zero-finding modules use a terminal zero budget. Coverage remains report-only: the bounded Project Intelligence relation-candidate lifecycle records 45.5% combined statement-and-branch coverage for its helper module; it does not imply repository-wide coverage or establish a minimum.
 

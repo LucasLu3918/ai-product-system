@@ -166,7 +166,7 @@ Invalid graph, unknown dependency, cycle, invalid state or plan mismatch is `SCH
 
 Publication preview performs the bounded content-safety and configured Git identity checks before scheduling repository lifecycle validation; an unscannable candidate or disallowed identity is a deterministic preflight block.
 
-GitHub Actions workflow concurrency is a separate CI scheduling boundary: the validate group uses the pull request number, and cancellation is conditional on the event. New candidate events and Core/Large classification-label changes can replace stale validation; unrelated label changes neither cancel active work nor run the expensive Gate. This does not alter Scheduler task ownership or the required `repository` check.
+GitHub Actions workflow concurrency is a separate CI scheduling boundary: the validate group uses the pull request number and event action, and cancellation is conditional on the event. Distinct actions such as `opened` and Core/Large classification `labeled` runs cannot cancel one another; a newer run of the same action can replace stale validation. Unrelated label changes neither cancel active work nor run the expensive Gate. This does not alter Scheduler task ownership or the required `repository` check.
 
 When the Execution Profile requires sandbox isolation, Scheduler dispatch must preserve its risk, minimum-isolation and data-class inputs and stop on `UNSUPPORTED`/`BLOCKED`. Worktree or shared execution is not a fallback for a task whose minimum isolation is sandbox. The E2B candidate remains disabled until its task adapter and data-transfer scope are approved.
 
@@ -238,6 +238,8 @@ Bootstrap verification imports each caller-declared module and runs `pip check`;
 GitHub Actions may run an advisory repository preflight as a separate job while the required validation workflow continues; it has no dependency edge into the required aggregate and cannot suppress or de-duplicate full validation.
 
 Validation observation capture records the actual full-run set and exact PR/base/head identity. The read-only collector installs PyYAML from `constraints/tested.txt` before reading bounded Actions artifacts; a missing dependency or artifact remains incomplete evidence. It never changes the scheduler or skips a validator.
+
+The validate workflow's action-aware PR group keeps separate event runs from cancelling one another; same-action replacement still removes superseded candidate work without changing the required repository aggregate.
 
 The required validation profile includes a Ruff no-growth baseline and selected-module mypy ratchet. It reports coverage without a percentage gate and still invokes every repository validator during the selective-validation shadow period.
 

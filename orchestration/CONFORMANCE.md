@@ -896,6 +896,8 @@ Unknown paths continue to select the complete validation profile.
 
 The required validation workflow exports the provisioned Python interpreter to isolated subprocess fixtures before the deterministic Gate, and the publish preflight contract checks that exact step ordering.
 
+The static workflow contract requires PR concurrency groups to include both PR identity and event action, so `opened` and `labeled` events cannot cancel one another; repeated runs for one action still supersede earlier runs, and the `repository` check remains required.
+
 
 The current creative execution Scenario is registered in the canonical coverage file and represented in the generated Human conformance summary.
 

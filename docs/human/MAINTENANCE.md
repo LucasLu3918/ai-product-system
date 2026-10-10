@@ -160,6 +160,8 @@ The validator registry, exact-path CI provisioning plan, full-run Shadow Plan, a
 
 CI derives Node setup, Chromium downloads and optional OpenAPI evidence selection from exact candidate paths using `scripts/ci_validation_plan.py`. Python packages from all four validation requirement files are always installed under the tested constraints: install/preflight and legacy-migration fixtures require the complete Python environment even for documentation-only candidates. Unknown and sensitive paths select the full toolchain. The plan only skips unrelated browser downloads and optional lifecycle evidence; mandatory secret scanning, fast preflight, repository validation and the exact-candidate Integration Gate remain required.
 
+The `validate.yml` concurrency group includes the pull-request action as well as its number, preventing an `opened` event from cancelling a separate classification-label validation while preserving same-action supersession.
+
 ## Documentation audience
 
 - Human docs use Traditional Chinese. Specialized terms include English on first use.
@@ -454,6 +456,8 @@ The Creative matrix and lifecycle evidence cover prompt admission, revocation, o
 
 GitHub validation exports the fully provisioned Python interpreter as `AIPS_VALIDATION_PYTHON` after optional dependency installation and before the exact-candidate Gate, so isolated CLI fixtures use the required validation environment.
 
+Required validation runs are grouped by PR and event action. This prevents `opened` and classification `labeled` events from cancelling each other's repository aggregate; later runs of the same action can still supersede stale work.
+
 System Facts、Capability Registry、Scenario 237、文件放置與完整 Gate 都綁定同一精確候選；diagnose PASS 不是發布或獨立審查證據。
 
 The creative lifecycle is owned once by repository validation; exact-candidate validation uses synthetic engines and never runs a user-configured generator.
@@ -538,6 +542,8 @@ Preview 對 Core Matrix 套用與 Gate 相同的就緒條件：可執行狀態�
 在原始碼 checkout 驗證尚未安裝的修改時，使用 `./bin/aips`，避免全域安裝的 CLI 指向另一份系統程式碼或 Matrix。受限 sandbox 若禁止 localhost bind，先用 `prepare-local-validation` 辨識 `ENVIRONMENT_BLOCKED`；恢復該能力後重新執行完整驗證，不略過測試。
 
 被 concurrency 取消的舊 CI run 不執行 `repository` 彙總 job，現行 run 的 Janitor 失敗仍讓彙總 job 失敗。無關 PR 標籤事件會跳過 Janitor；只有該事件明確屬於無關標籤，且最新完整 Janitor 已成功、run title 綁定同一 PR/head/base/change class 時，`repository` aggregate 才以記錄在 Step Summary 的 no-op 成功結束。缺漏、失敗、取消、尚未完成或 stale evidence 均阻擋；Actions metadata 只需 repository job 的 `actions: read` 權限。檢查同一候選 SHA 的最新 required aggregate。
+
+`validate.yml` 的 concurrency group 同時包含 PR number 與事件 action。這讓 `opened` 和分類 `labeled` 事件各自保留所需的 aggregate；同一 action 的新候選仍會取消舊 run，無關標籤仍不能取消候選驗證。
 
 When deterministic scheduling or merge-candidate validation changes, review together:
 
