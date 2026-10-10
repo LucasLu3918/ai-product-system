@@ -221,6 +221,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Canonical Skill frontmatter defines routing metadata and the generated version 1 skills/INDEX.yaml remains the consumer view. Skills load only when relevant. Scenarios 241–256 are manual semantic expectations; the Skill Index lifecycle separately checks deterministic metadata generation and compatibility. The additions use existing Capabilities, and the browser-game reference keeps DOM/SVG implementation detail out of global Skill metadata.
+
 Repository validation and the exact-candidate Integration Gate establish candidate fitness. Personal publication permits guarded engineering-branch push and PR creation, plus per-call confirmed PR merge through Claude Code and Gemini CLI native controls after exact head/default-base and required-check validation; Codex remains advisory.
 
 

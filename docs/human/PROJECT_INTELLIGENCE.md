@@ -169,6 +169,9 @@ Explicit Rule → Formatter/Linter/Contract → Shared Abstraction → Majority 
 
 ## Sensitive Data
 
+
+Reusable Skills describe methods only. Project-specific game rules, telemetry, participant research notes, credentials, and private playtest data stay in the owning project and must not be copied into global Skills or shared references.
+
 Intelligence / HTML 不保存實際 Password、Token、Private Key、Secret env value、Credential 或不必要的敏感 Payload。
 
 ## Monorepo

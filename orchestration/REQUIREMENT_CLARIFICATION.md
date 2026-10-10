@@ -89,6 +89,9 @@ Use `templates/requirements/IMPLEMENTATION_GOAL.yaml` when persistence is useful
 
 ## New-project technology and architecture decisions
 
+
+For game projects, clarify platform, input, session length, core loop, progression, failure/retry behavior, accessibility needs, and whether real-time multiplayer is a requirement before choosing architecture or adding networking scope.
+
 When a new project's language/framework/architecture materially affects implementation, discover only the missing constraints that change the recommendation. Apply hard constraints first, then consider team expertise, product/workload, ecosystem, existing systems, delivery, performance/runtime, operations, maintenance and Human preference. Recommend a primary choice plus at most two meaningful alternatives with trade-offs; do not invent weighted scores. Decide language before framework.
 
 Assess architecture with qualitative complexity signals, triggers and counter-signals. Keep framework, Clean Architecture, tactical/strategic DDD, logical boundaries and deployment model as separate decisions. A simple CRUD project should not gain DDD by default; complex domain does not imply microservices. Preserve a user-specified choice unless a material conflict or risk requires a warning. Human confirms material technology/architecture decisions before the Implementation Profile is finalized.

@@ -253,6 +253,7 @@ Validation errors for missing dispositions state the affected node, allowed fina
 - Documentation placement closure is validated against configured policy; a bounded traversal does not upgrade partial repository-wide Impact Graph coverage.
 ## Sensitive data
 
+
 Do not persist secret values or sensitive payload bodies in Intelligence or HTML.
 
 Never persist:
@@ -609,6 +610,9 @@ For an existing `impact-init` change ID, the CLI reports the existing record and
 Do not claim the project has been initialized merely from directory/file-name inventory.
 
 ## Existing-project automatic behavior
+
+
+Skills and references provide reusable methods and public facts. Keep project-specific gameplay rules, private research, telemetry, credentials, and participant data in the project’s governed stores; do not promote them into global reusable knowledge.
 
 Publication checks consume current remote/default-branch identity and exact candidate evidence, but Project Intelligence readiness never supplies Git authority. Personal mode trusts configured `origin`; high assurance requires its separate external grant.
 

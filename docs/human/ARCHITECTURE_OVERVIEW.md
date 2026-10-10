@@ -147,6 +147,9 @@ OpenCode V2 prompt admission issues a fresh transient grant for each user respon
 
 ## Planning 與 Product Delivery
 
+
+`skills/` 提供可按任務載入的工程、遊戲設計、研究與 UX 方法；遊戲平台政策及原生 Web 遊戲技術細節放在 `references/`。規劃文件保留產品專屬決策，技能和參考資料不取代真實專案的驗收。
+
 Creative visual-assistance findings remain advisory inputs to Human review and cannot stand in for the approved direction or acceptance decision.
 
 Creative generation provenance and Human review are separate from workflow and raster checks.
@@ -221,6 +224,8 @@ Runtime hook 與 compact Context Manifest 共用同一組路由結果，僅輸�
 `scripts/aips_common/` 是共用 canonical JSON/hash、repository-relative path 與 glob primitives 的唯一實作；既有模組保留同名 facade，以維持呼叫介面與 digest 表示。Governance fingerprint 與 Runtime Policy action digest 仍由各自領域擁有，不納入通用 canonicalization。
 
 主要實作保留合格的 Runtime／使用者模型；Skill frontmatter 產生相容 v1 INDEX，決定性 lifecycle 與人工模型政策驗收分開記錄。
+
+Canonical Skills are loaded on demand through the existing routing path. The registry now covers code debugging, frontend and product LLM work, browser E2E, observability, live-data migration, dependency upgrades, ADRs, and game design/runtime/feel/balance/level design. Accessibility audit, game frame-time profiling and playtesting extend existing UX, performance and research skills. These remain inside current Capabilities; the browser-game and platform-policy references keep implementation and volatile policy details out of global routing metadata.
 
 Standalone and shadow dependency-review artifacts retain exact base/head, run ID, actual JSON findings and outcome for 90 days. Parity compares canonical findings; missing outputs, different candidates or inaccessible artifacts stay UNKNOWN. Job success alone cannot promote the shadow. Record resolved toolchain fingerprints and repeat full Gates only for new changes or unresolved failures.
 

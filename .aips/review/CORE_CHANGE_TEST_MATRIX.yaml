@@ -1,102 +1,113 @@
 version: 1
-status: READY
-change:
-  id: claude-shell-expansion-guard
-  summary: Safely classify argument and unquoted-heredoc command substitutions in Claude/Gemini shell hooks while preserving exact publication checks.
-  boundary:
-  - .aips/review/CLAUDE_SHELL_EXPANSION_CORE_CHANGE_PROPOSAL.md
-  - .aips/review/CLAUDE_SHELL_EXPANSION_SYSTEM_IMPROVEMENT_REVIEW.md
-  - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
-  - docs/ARCHITECTURE.md
-  - docs/human/ARCHITECTURE_OVERVIEW.md
-  - docs/human/CONFORMANCE.md
-  - docs/human/MAINTENANCE.md
-  - docs/human/SECURITY_ASSURANCE.md
-  - docs/human/TECHNOLOGY_GUIDE.md
-  - docs/human/USER_GUIDE.md
-  - orchestration/DETERMINISTIC_SCHEDULER.md
-  - orchestration/ORCHESTRATOR.md
-  - orchestration/RUNTIME_POLICY_ENFORCEMENT.md
-  - scripts/governance_guard.py
-  - scripts/publication_commands.py
-  - tests/scenarios/097-approval-scope-drift-stops-protected-action.md
-  - tests/test_publication_authority.py
 candidate:
-  base_sha: b64f1ad859852aad8cc6151d6b54b4b89bdaeca2
-  changed_files_hash: 9abe85322b44d0a31e59c17c646df5c32c6225865ee47239fa6c18be579954e9
+  base_sha: d54ed1daa0e650c3d59a3648b3eca6001f3222d4
+  changed_files_hash: 6e69bf66ea5eb7b1244e6981f3b23e2b4de7df903c859f86e255cae060641451
+change:
+  id: skill-incubation-2026-10-11
+  summary: Add 13 admitted Skills, extend three, add 16 manual scenarios, update documentation closure
+    and add native web game reference.
+  boundary:
+  - Canonical Skill sources and generated v1 INDEX
+  - Manual scenario registry and game reference
+  - Human documentation and placement closure
+  - Exact candidate and Core review artifacts
 matrix:
-- boundary: Shell AST parsing and recursive command-substitution classification
-  reason: Nested substitutions and heredoc expansion must be inspected without executing them, while quoted or escaped content stays literal.
+- boundary: Canonical Skill metadata and generated registry
+  reason: Additive routing metadata is consumed by existing v1 Skill Index consumers.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff on publication_commands.py and the touched-code quality ratchet; governance_guard.py has three confirmed pre-existing baseline findings.
+      evidence: 'PASS: `tests/validate_repository.py` (full repository validation).'
     unit:
       applicable: true
-      evidence: tests.test_publication_authority ShellTest covers ordinary/nested substitutions, parameter expansions, quoted/escaped heredocs, <<- tabs and malformed syntax.
+      evidence: 'PASS: Skill Index lifecycle via full repository validation.'
     integration:
       applicable: true
-      evidence: Hook subprocess tests exercise parsed commands through the Claude Code JSON envelope; exact-candidate Integration Gate required.
+      evidence: 'PASS: OpenCode native Skill projection lifecycle and Skill Index regeneration.'
     contract:
       applicable: true
-      evidence: shell_commands keeps its argv-list contract and hook response envelopes remain unchanged; CommandError adds a stable reason_code.
+      evidence: 'PASS: 40 Skills project to the compatible v1 registry and native OpenCode files.'
     e2e:
-      applicable: true
-      evidence: Local Claude hook subprocess accepts harmless substitutions and denies dynamic publication targets; native interactive CLI acceptance is unavailable locally.
+      applicable: false
+      na_reason: No product frontend or runtime changes; browser-game details are reference content.
     security:
       applicable: true
-      evidence: Nested git push substitutions remain detectable, the parser never executes them, and dynamic executable/subcommand/context values remain denied.
+      evidence: 'PASS: repository secret scan and content review; exact-candidate mandatory scan is included
+        in Integration Gate.'
     migration_recovery:
       applicable: false
-      na_reason: No persisted data, schema or migration changes.
+      na_reason: No persistent product data or schema changes.
     cli_harness:
-      applicable: true
-      evidence: Shared Claude/Gemini hook classifier and sanitized stable denial codes are exercised by hook and shell tests.
+      applicable: false
+      na_reason: No CLI, Harness adapter or runtime code changes.
     docs_schema:
       applicable: true
-      evidence: Canonical runtime/security/user documentation closure is complete; exact-candidate repository validation required.
-- boundary: Publication command identity and exact scope binding
-  reason: Global CLI options change where Git/GitHub verbs appear; dynamic context and publication arguments must not bind reusable approval scope.
+      evidence: 'PASS: documentation placement, scenario conformance, generated Conformance views, and
+        VitePress build.'
+- boundary: Scenario registry and reference content
+  reason: Sixteen expected behaviors extend manual semantic coverage without claiming automated model
+    routing.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff on changed parser/guard/test files and repository quality ratchet in the exact-candidate Gate.
+      evidence: 'PASS: full repository validation and scenario schema checks.'
     unit:
-      applicable: true
-      evidence: ShellTest rejects dynamic Git/GH verbs and --repo/-C values while accepting harmless literal-scoped queries.
+      applicable: false
+      na_reason: Specifications and references contain no executable code.
     integration:
       applicable: true
-      evidence: Existing publication authority lifecycle tests remain included in the 31-test module and exact-candidate Gate.
+      evidence: 'PASS: Scenario Conformance reports 256 registered and zero uncovered.'
     contract:
       applicable: true
-      evidence: Existing publication authority return shapes and high-assurance grant boundary are preserved.
+      evidence: 'PASS: 16 new scenarios remain manual; automated classifications are unchanged.'
     e2e:
       applicable: false
-      na_reason: No new interactive product flow; hook subprocess and deterministic authority lifecycle tests cover the changed boundary.
+      na_reason: No game or product is implemented in this repository change.
     security:
       applicable: true
-      evidence: Exact candidate/ref/repository checks remain in place and secret scanning runs in the final Gate.
+      evidence: 'PASS: full repository secret scan and manual review of routing/reference content.'
     migration_recovery:
       applicable: false
-      na_reason: No persisted data, schema or migration changes.
+      na_reason: No data migration.
     cli_harness:
-      applicable: true
-      evidence: Git/GH global option parsing is tested through the shared hook classifier; final Gate includes CLI/Harness validators.
+      applicable: false
+      na_reason: No CLI or runtime behavior.
     docs_schema:
       applicable: true
-      evidence: Human and Agent guidance was updated; placement and scenario/repository validation are required in the final Gate.
+      evidence: 'PASS: Human and Agent Conformance docs and generated current/history views are synchronized.'
+- boundary: Human documentation and placement closure
+  reason: New reusable capabilities change the supported Skill catalog and maintenance guidance.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: full repository validation and documentation placement check.'
+    unit:
+      applicable: false
+      na_reason: Human prose contains no executable logic.
+    integration:
+      applicable: true
+      evidence: 'PASS: recursive placement check and VitePress documentation build.'
+    contract:
+      applicable: true
+      evidence: 'PASS: all triggered canonical H2 placements pass.'
+    e2e:
+      applicable: false
+      na_reason: No user product flow changes.
+    security:
+      applicable: true
+      evidence: 'PASS: repository secret scan.'
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted state migration.
+    cli_harness:
+      applicable: false
+      na_reason: No CLI or Harness code changes.
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: current and historical Conformance summaries generated and lifecycle-checked.'
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
+blockers: []
+status: READY
 review_evidence:
   required: false
-blockers: []
-verification:
-  focused_publication_tests: 'PASS: tests.test_publication_authority, 31 tests'
-  changed_python_ruff: 'PASS: publication_commands.py and test_publication_authority.py; 3 known baseline findings in governance_guard.py are unchanged from main'
-  documentation_placement: 'PASS: aips docs impact reports complete with no required additions'
-  repository_validation: 'PASS: tests/validate_repository.py; full repository checks passed on the exact candidate.'
-  exact_candidate_integration_gate: 'PASS: /private/tmp/aips-validation-claude-shell-gate-final-commit.yaml; final Gate report is regenerated for the committed candidate.'
-  impact_reconciliation: 'PASS: external EPHEMERAL Change Impact artifact validates exact base/head/digest/path set and bounded caller/consumer traversal.'
-  secret_scan: 'PASS: mandatory-candidate-secret-scan, candidate and history clean, no findings; report /private/tmp/aips-validation-claude-shell-gate-final-commit.yaml.'
-  independent_security_review: SELF_REVIEWED_NO_UNRESOLVED_FINDING
-  documentation_build: PASS

@@ -64,6 +64,9 @@ Do not replace exact source content with generic web search when the user suppli
 
 ## Version-aware implementation knowledge
 
+
+For platform-dependent Skills, verify current policies and APIs from official sources when the task depends on them; record source and retrieval date. Treat platform reference notes as navigation, not a substitute for checking the live policy.
+
 OpenCode V1 and V2 configuration shapes differ. Resolve version-specific official contracts before rendering MCP configuration; runtime probes record the actual binary version without importing user credentials.
 
 For OpenAPI validation, use the pinned local validator and declared specification version; never resolve `$ref` through the network. Any external contract authority must be separately retrieved, identified and recorded before it is treated as a baseline.

@@ -30,4 +30,7 @@ Inspect the existing API contract and consumer needs first. Project contracts, s
 
 ## On-demand implementation protocol
 
+
+For API work that needs a browser client, load `frontend-implementation`; for production telemetry, load `observability-design`; for browser-visible acceptance, load `e2e-browser-testing`. Keep each Skill task-specific and preserve the API contract as the source of truth.
+
 Load `orchestration/IMPLEMENTATION_RESOLUTION.md` when OpenAPI validation/compatibility, contract-test evidence, Phase 3 ownership enforcement or optional Phase 4 client generation is needed. It owns tool invocation, report freshness, generated-file provenance and Integration Gate inspection. Project-native tests verify service success/error, serialization and authorization behavior. The Gate never runs a project generator; explicit Human execution authority remains required.

@@ -18,6 +18,9 @@ A Q2 product may have Q3-level security while keeping medium performance require
 
 ## Seven dimensions
 
+
+Select accessibility, browser E2E, observability, migration, and LLM safety checks according to affected boundaries and risk. Game feel and balance require human or playtest evidence where the acceptance claim depends on player experience; deterministic checks alone do not establish that claim.
+
 Every complete product evaluates:
 
 1. Performance

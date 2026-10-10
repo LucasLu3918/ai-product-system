@@ -136,6 +136,9 @@ Brand System 可涵蓋 Brand Intent、Audience / Positioning、Purpose / Mission
 
 ## 需求釐清與 Planning
 
+
+需求階段可載入產品研究與遊戲設計技能；先釐清平台、輸入、核心循環、進程、失敗／重試與可及性。研究或 playtest 規劃須先定義參與同意、資料最小化與證據限制。
+
 需求不足時採 progressive clarification：先問會改變產品方向、architecture、安全或交付成本的高資訊量問題，不為了流程而問全部細節。
 
 會成為後續實作依據的大型需求應建立 reproducible Planning Package，常見內容：
@@ -205,6 +208,7 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
 
 新增能力前依序檢查：
 
@@ -304,6 +308,9 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+
+使用瀏覽器 E2E、觀測性、遷移和 LLM 安全技能時，依受影響邊界與風險挑選驗收；需主張玩家體驗時，確保計畫包含適當人工或 playtest 證據。
 
 Agent Eval 報告的 `observed_task_outcomes` 是額外的任務觀察，與 rubric 通過率分開。模型 token／成本沒有可靠資料時顯示 UNKNOWN；Creative 影像有效性不能替代你的視覺評分與接受。
 
