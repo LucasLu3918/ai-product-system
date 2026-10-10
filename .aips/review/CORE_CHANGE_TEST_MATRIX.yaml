@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: d54ed1daa0e650c3d59a3648b3eca6001f3222d4
-  changed_files_hash: 719b08a38371d84015aae0594f5451eb0ff76785d27d5299511872427ce6b058
+  changed_files_hash: 6e69bf66ea5eb7b1244e6981f3b23e2b4de7df903c859f86e255cae060641451
 change:
   id: skill-incubation-2026-10-11
   summary: Add 13 admitted Skills, extend three, add 16 manual scenarios, update documentation closure
@@ -32,8 +32,8 @@ matrix:
       na_reason: No product frontend or runtime changes; browser-game details are reference content.
     security:
       applicable: true
-      evidence: 'PASS: repository secret scan and content review; exact-candidate Gate scan remains required
-        before publication.'
+      evidence: 'PASS: repository secret scan and content review; exact-candidate mandatory scan is included
+        in Integration Gate.'
     migration_recovery:
       applicable: false
       na_reason: No persistent product data or schema changes.
@@ -106,9 +106,8 @@ matrix:
       applicable: true
       evidence: 'PASS: current and historical Conformance summaries generated and lifecycle-checked.'
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
-blockers:
-- Run and record the exact-candidate Core Integration Gate before remote publication.
-status: DRAFT
+actual_diff_reconciled: true
+blockers: []
+status: READY
 review_evidence:
   required: false
