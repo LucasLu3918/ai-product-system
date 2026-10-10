@@ -255,6 +255,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+Personal-mode PR merge validation binds the per-call confirmation to the exact candidate head and required-check result; completed review evidence does not substitute for that confirmation.
+
 For creative authorization changes, derive regression cases from the adapter, policy, executor, callers and consumers. Review changed and affected-but-unchanged nodes; do not infer repository-wide completeness from scoped graph evidence.
 
 創作 runtime 變更驗證 user-only 授權、Context envelope、設定欄位與版本競爭、取消／換任務、媒材拒絕、損壞圖片及 provenance。真實推論與人工品質驗收需分開回報，不能由 fake engine PASS 代替。
@@ -302,8 +304,6 @@ When Approval Binding / Governance Enforcement changes, review together:
 - scenarios 096-100 and focused governance evidence.
 
 Do not claim TOOL_GUARDED when the installed pre-tool guard is absent or unverifiable.
-
-Personal PR merge behavior is limited to explicit, validated PR operations with per-call Claude/Gemini native confirmation. Keep the required check, exact head/default-base binding, Gemini extension priority caveat and Codex advisory limit aligned with Scenario 240 and Security Assurance.
 
 ## Durable Run State consistency
 

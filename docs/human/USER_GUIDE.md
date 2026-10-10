@@ -159,6 +159,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+For personal-mode PR merges, the runtime adapter presents a per-operation confirmation with the validated PR, candidate SHA, and required-check state.
+
 Git publication uses the runtime adapter’s supported hook surface. Claude and Gemini have native command hooks; Codex remains advisory, so users needing enforced isolation must use an externally protected high-assurance setup.
 
 

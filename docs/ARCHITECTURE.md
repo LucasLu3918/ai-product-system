@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+Claude Code and Gemini CLI use their native confirmation controls for explicitly requested personal-mode PR merges; the shared policy binds the prompt to the validated PR and candidate.
+
 The shared Harness routes Git publication through the selected assurance mode. Personal mode validates a guarded engineering branch and PR; high assurance requires the external single-use grant.
 
 
