@@ -20,9 +20,9 @@ Backward compatibility: Additive SKILL.md files and generated compatible v1 INDE
 
 Scenario / test impact: Add Scenarios 241–256 as manual semantic expectations; keep Skill Index lifecycle evidence deterministic and separate. Run documentation placement, scenario conformance, full repository validation and exact-candidate Integration Gate.
 
-Human docs impact: Update Technology Guide, Architecture Overview, Maintenance guidance and generated Conformance summary. No new user-facing product workflow.
+Human docs impact: Update User Guide, Technology Guide, Architecture Overview, Maintenance, Security Assurance, Project Intelligence, Documentation Map/Sync, and generated Conformance views. No new AIPS user-facing runtime workflow.
 
-Agent docs impact: Skills remain canonical Agent surfaces; update documentation placement and Skill Index only. No orchestration or runtime policy changes.
+Agent docs impact: Skills remain canonical Agent surfaces; add bounded planning, project-data, security and conformance guidance to the affected orchestration documents. No runtime policy or authority changes.
 
 Architecture diagram impact: Existing Skill metadata → generator → INDEX → implementation flow remains accurate; update adjacent explanation and record Mermaid/SVG topology as N/A.
 
@@ -37,4 +37,4 @@ Expected scope: Skill sources and index; 16 scenarios and registry; native web g
 
 Risks: Trigger overlap and quality drift are controlled through explicit non-triggers, companion links and manual scenarios. Manual scenarios do not establish model routing quality. Real-game implementation/player testing remains a later project validation milestone.
 
-Approval: The user explicitly requested implementation of all recommendations in the attached plan.
+Approval evidence is recorded in the Core Change Proposal.

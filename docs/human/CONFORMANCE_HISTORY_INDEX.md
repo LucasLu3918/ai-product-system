@@ -99,6 +99,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 226 — Capability Registry Single Source](CONFORMANCE.md#scenario-226-capability-registry-single-source) | Current Human guidance |
 | [## Scenario 227 — Codex Native Hook Enforcement Probe](CONFORMANCE.md#scenario-227-codex-native-hook-enforcement-probe) | Current Human guidance |
 | [## Scenario 228 — Progressive Quality Ratchet](CONFORMANCE.md#scenario-228-progressive-quality-ratchet) | Current Human guidance |
+| [## Scenario 179 — Evidence-backed Change Impact Unknown Dispositions](CONFORMANCE.md#scenario-179-evidence-backed-change-impact-unknown-dispositions-1) | Current Human guidance |
 | [## Scenario 229 — Agent Eval Freshness Selection](CONFORMANCE.md#scenario-229-agent-eval-freshness-selection) | Current Human guidance |
 | [## Scenario 232 — Project Check and System Preflight](CONFORMANCE.md#scenario-232-project-check-and-system-preflight) | Current Human guidance |
 | [## Scenario 233 — Public CLI Help and Error Contracts](CONFORMANCE.md#scenario-233-public-cli-help-and-error-contracts) | Current Human guidance |

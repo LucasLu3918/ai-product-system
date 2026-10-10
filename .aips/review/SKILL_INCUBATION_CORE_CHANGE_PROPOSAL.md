@@ -26,7 +26,7 @@ The change adds 13 canonical Skills and expands three existing Skills, changing 
 
 ## Expected Files / Modules
 
-Canonical Skill sources under skills/; generated skills/INDEX.yaml; tests/scenarios/241–256-skill-incubation-routing.md and tests/scenario_coverage.yaml; references/game-engines/native-web-dom-svg-puzzle-games.md; config/documentation-placement.yaml; docs/ARCHITECTURE.md; docs/human/ARCHITECTURE_OVERVIEW.md, MAINTENANCE.md, TECHNOLOGY_GUIDE.md and generated CONFORMANCE_CURRENT.md. Active review evidence is in .aips/review/.
+Canonical Skill sources under skills/; generated skills/INDEX.yaml; tests/scenarios/241–256-skill-incubation-routing.md and tests/scenario_coverage.yaml; OpenCode Skill projection lifecycle expectations; conformance baseline expectations; references/game-engines/native-web-dom-svg-puzzle-games.md; config/documentation-placement.yaml; docs/ARCHITECTURE.md; Human documentation and generated Conformance views. Active review evidence is in .aips/review/.
 
 ## Impact
 

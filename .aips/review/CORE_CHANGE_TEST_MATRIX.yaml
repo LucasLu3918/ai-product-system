@@ -1,8 +1,11 @@
 version: 1
+candidate:
+  base_sha: d54ed1daa0e650c3d59a3648b3eca6001f3222d4
+  changed_files_hash: 719b08a38371d84015aae0594f5451eb0ff76785d27d5299511872427ce6b058
 change:
   id: skill-incubation-2026-10-11
-  summary: Add 13 admitted Skills, extend three, add 16 manual scenarios, update documentation closure and add native web
-    game reference.
+  summary: Add 13 admitted Skills, extend three, add 16 manual scenarios, update documentation closure
+    and add native web game reference.
   boundary:
   - Canonical Skill sources and generated v1 INDEX
   - Manual scenario registry and game reference
@@ -14,22 +17,23 @@ matrix:
   checks:
     static_lint:
       applicable: true
-      evidence: 'PENDING: repository validation and Skill Index drift check.'
+      evidence: 'PASS: `tests/validate_repository.py` (full repository validation).'
     unit:
       applicable: true
-      evidence: 'PENDING: skill_index_lifecycle.py via repository validation.'
+      evidence: 'PASS: Skill Index lifecycle via full repository validation.'
     integration:
       applicable: true
-      evidence: 'PENDING: generate/check registry and validate Skill metadata.'
+      evidence: 'PASS: OpenCode native Skill projection lifecycle and Skill Index regeneration.'
     contract:
       applicable: true
-      evidence: 'PENDING: lifecycle verifies v1 shape, unique IDs, paths and consumer compatibility.'
+      evidence: 'PASS: 40 Skills project to the compatible v1 registry and native OpenCode files.'
     e2e:
       applicable: false
       na_reason: No product frontend or runtime changes; browser-game details are reference content.
     security:
       applicable: true
-      evidence: 'PENDING: exact-candidate secret scan, content-safety lifecycle and manual review.'
+      evidence: 'PASS: repository secret scan and content review; exact-candidate Gate scan remains required
+        before publication.'
     migration_recovery:
       applicable: false
       na_reason: No persistent product data or schema changes.
@@ -38,28 +42,30 @@ matrix:
       na_reason: No CLI, Harness adapter or runtime code changes.
     docs_schema:
       applicable: true
-      evidence: 'PENDING: documentation placement and Scenario Conformance.'
+      evidence: 'PASS: documentation placement, scenario conformance, generated Conformance views, and
+        VitePress build.'
 - boundary: Scenario registry and reference content
-  reason: Sixteen expected behaviors extend manual semantic coverage without claiming automated model routing.
+  reason: Sixteen expected behaviors extend manual semantic coverage without claiming automated model
+    routing.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PENDING: repository validation and scenario schema checks.'
+      evidence: 'PASS: full repository validation and scenario schema checks.'
     unit:
       applicable: false
       na_reason: Specifications and references contain no executable code.
     integration:
       applicable: true
-      evidence: 'PENDING: Scenario Conformance verifies registry entries and evidence files.'
+      evidence: 'PASS: Scenario Conformance reports 256 registered and zero uncovered.'
     contract:
       applicable: true
-      evidence: 'PENDING: no unknown or uncovered scenarios; manual classification is preserved.'
+      evidence: 'PASS: 16 new scenarios remain manual; automated classifications are unchanged.'
     e2e:
       applicable: false
       na_reason: No game or product is implemented in this repository change.
     security:
       applicable: true
-      evidence: 'PENDING: scan/review for secrets, unsafe advice and privacy boundaries.'
+      evidence: 'PASS: full repository secret scan and manual review of routing/reference content.'
     migration_recovery:
       applicable: false
       na_reason: No data migration.
@@ -68,28 +74,28 @@ matrix:
       na_reason: No CLI or runtime behavior.
     docs_schema:
       applicable: true
-      evidence: 'PENDING: registry, manual Conformance summary and reference links.'
+      evidence: 'PASS: Human and Agent Conformance docs and generated current/history views are synchronized.'
 - boundary: Human documentation and placement closure
   reason: New reusable capabilities change the supported Skill catalog and maintenance guidance.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PENDING: documentation validator.'
+      evidence: 'PASS: full repository validation and documentation placement check.'
     unit:
       applicable: false
       na_reason: Human prose contains no executable logic.
     integration:
       applicable: true
-      evidence: 'PENDING: recursive documentation placement/sync checks.'
+      evidence: 'PASS: recursive placement check and VitePress documentation build.'
     contract:
       applicable: true
-      evidence: 'PENDING: required canonical H2 placements remain valid.'
+      evidence: 'PASS: all triggered canonical H2 placements pass.'
     e2e:
       applicable: false
       na_reason: No user product flow changes.
     security:
       applicable: true
-      evidence: 'PENDING: candidate secret scan.'
+      evidence: 'PASS: repository secret scan.'
     migration_recovery:
       applicable: false
       na_reason: No persisted state migration.
@@ -98,12 +104,11 @@ matrix:
       na_reason: No CLI or Harness code changes.
     docs_schema:
       applicable: true
-      evidence: 'PENDING: generated Conformance summary and source-document placement checks.'
+      evidence: 'PASS: current and historical Conformance summaries generated and lifecycle-checked.'
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: false
 blockers:
-- Complete focused validations and one full exact-candidate local Integration Gate.
-- Reconcile matrix to exact committed base/head and file-set digest.
+- Run and record the exact-candidate Core Integration Gate before remote publication.
 status: DRAFT
 review_evidence:
   required: false
