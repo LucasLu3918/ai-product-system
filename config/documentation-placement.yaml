@@ -774,7 +774,6 @@ placement_rules:
       - templates/git-publish-proposal.md
       - tests/test_publication_authority.py
       - tests/scenarios/240-personal-publication-default.md
-      - docs/human/CONFORMANCE.md
     placements:
       docs/human/USER_GUIDE.md: [Git Publication 與 Release]
       docs/human/CONFORMANCE.md: [Scenario 240 — Personal Publication Default and High-Assurance Opt-In]
