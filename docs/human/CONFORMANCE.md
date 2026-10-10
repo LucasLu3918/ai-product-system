@@ -1759,6 +1759,8 @@ The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies c
 
 Personal mode allows an Agent to publish a validated engineering branch and create a PR to the live remote default branch without a separate grant. An explicitly requested PR merge requires exact candidate/head and live default-base binding, a mergeable open PR, and passing required checks; Claude Code and Gemini CLI require native per-call confirmation. Codex remains `ADVISORY` and cannot guarantee interception of direct merge commands. A protected administrator trust-root selects high assurance; missing, invalid, or unavailable signed authorization blocks without fallback. Direct protected-branch push, tag/release, delete, bypass flags, unsafe commands, and content-scan failures remain denied.
 
+Scenario 097's publication command lifecycle also covers substitution position, recursive unquoted-heredoc classification, quoted/escaped literal preservation, and stable denial codes for dynamic command identity.
+
 
 
 Scenario 240 adds the publication-mode contract while retaining these diagnostics as read-only and non-authorizing.

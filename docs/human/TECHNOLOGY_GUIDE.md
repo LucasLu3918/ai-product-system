@@ -188,6 +188,8 @@ The Retrieval Intelligence SQLite persistence boundary is `scripts/retrieval_sto
 
 Git publication 使用 bashlex shell AST 與 cryptography Ed25519。預設 personal mode 以共用 Hook 驗證內容、乾淨候選、工程分支與明確操作；PR merge 另外要求 Claude 原生 `ask` 或 Gemini interactive `ask_user`、精確 head SHA、預設 base 與 passing required checks。Gemini policy 涵蓋 default/autoEdit/yolo；Codex hook 維持 ADVISORY 且不能保證攔截直接 merge。安裝固定的 root-owned trust config 會啟用 high-assurance mode，並要求外部 HTTPS issuer 與 transactional single-use ledger。fixture 簽章只驗證高保證協定。Git push 的 server lease 與 GH head pin/base preexecution observation 分別記錄於 scope。
 
+The publication parser recursively classifies command substitutions in arguments and unquoted heredoc bodies without executing them. Quoted/escaped text remains literal; dynamic executable, subcommand and Git context values still fail closed. Explicit SHA/ref/repository binding and publication approvals remain required.
+
 Creative traces omit prompts, local absolute paths, image bytes, credentials, and workflow bodies; the configured ComfyUI adapter disables proxies and redirects.
 
 GitHub governance snapshot 只呼叫讀取 API，輸出完整設定證據與穩定 fingerprint，不具設定修改或發布權限。

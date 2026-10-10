@@ -467,7 +467,25 @@ class PublicationTest(unittest.TestCase):
             proc = subprocess.run([sys.executable, str(ROOT / 'scripts/governance_guard.py'), 'hook', '--runtime', 'claude-code'],
                                   input=json.dumps(payload), text=True, capture_output=True, check=False)
             self.assertEqual(proc.returncode, 0)
-            self.assertEqual(json.loads(proc.stdout)['hookSpecificOutput']['permissionDecision'], 'deny')
+            response = json.loads(proc.stdout)['hookSpecificOutput']
+            self.assertEqual(response['permissionDecision'], 'deny')
+        dynamic = {'cwd': str(self.repo), 'tool_input': {'command': 'git "$(printf push)" origin main'}}
+        proc = subprocess.run([sys.executable, str(ROOT / 'scripts/governance_guard.py'), 'hook', '--runtime', 'claude-code'],
+                              input=json.dumps(dynamic), text=True, capture_output=True, check=False)
+        response = json.loads(proc.stdout)['hookSpecificOutput']
+        self.assertEqual(response['permissionDecision'], 'deny')
+        self.assertIn('[DYNAMIC_SUBCOMMAND]', response['permissionDecisionReason'])
+
+    def test_claude_hook_accepts_safe_argument_substitutions(self):
+        import json
+        for command in ['git show "$(git rev-parse HEAD)"',
+                        'git diff "$(git merge-base HEAD origin/main)" HEAD',
+                        'cat <<EOF\nrevision=$(git rev-parse HEAD)\nEOF\n']:
+            payload = {'cwd': str(self.repo), 'tool_input': {'command': command}}
+            proc = subprocess.run([sys.executable, str(ROOT / 'scripts/governance_guard.py'), 'hook', '--runtime', 'claude-code'],
+                                  input=json.dumps(payload), text=True, capture_output=True, check=False)
+            self.assertEqual(proc.returncode, 0)
+            self.assertEqual(json.loads(proc.stdout), {})
 
     def test_personal_merge_hook_requires_native_confirmation_for_supported_runtimes(self):
         import io
@@ -529,10 +547,35 @@ class ShellTest(unittest.TestCase):
         for command in harmless:
             self.assertEqual(guard.operations_for(command), [])
         for command in ['echo $(git push origin main)', 'echo `git push origin main`',
-                        'cat <(git push origin main)', 'git status\ngit push origin main']:
+                        'cat <(git push origin main)', 'git status\ngit push origin main',
+                        'cat <<EOF\n$(git push origin main)\nEOF\n',
+                        'cat <<EOF\n`git push origin main`\nEOF\n',
+                        'echo "${VALUE:-$(git push origin main)}"',
+                        'cat <<EOF\n${VALUE:-$(git push origin main)}\nEOF\n',
+                        'cat <<-EOF\n\t$(git push origin main)\n\tEOF\n']:
             self.assertIn('git_push', guard.operations_for(command))
-        with self.assertRaises(CommandError):
-            shell_commands('cat <<EOF\n$(git push origin main)\nEOF\n')
+        for command in ["cat <<'EOF'\n$(git push origin main)\nEOF\n",
+                        'cat <<EOF\n\\$(git push origin main)\nEOF\n',
+                        'cat <<EOF\njust $HOME\nEOF\n',
+                        'git show "$(git rev-parse HEAD)"',
+                        'git diff "$(git merge-base HEAD origin/main)" HEAD',
+                        'echo "${VALUE:-$(git rev-parse HEAD)}"',
+                        'cat <<EOF\n${VALUE:-$(git rev-parse HEAD)}\nEOF\n',
+                        'git show -- "$(git rev-parse HEAD)"',
+                        'gh --repo owner/project pr view "$(printf 7)"',
+                        'cat <<EOF\n\\`git push origin main\\`\nEOF\n']:
+            with self.subTest(command=command):
+                self.assertEqual(guard.operations_for(command), [])
+        for command, code in [('git "$(printf status)"', 'DYNAMIC_SUBCOMMAND'),
+                              ('gh pr "$(printf view)"', 'DYNAMIC_SUBCOMMAND'),
+                              ('git -C "$(pwd)" status', 'DYNAMIC_CLI_OPTION'),
+                              ('gh --repo "$(printf owner/project)" pr view', 'DYNAMIC_CLI_OPTION')]:
+            with self.subTest(command=command), self.assertRaises(CommandError) as raised:
+                guard.operations_for(command)
+            self.assertEqual(raised.exception.reason_code, code)
+        with self.assertRaises(CommandError) as raised:
+            shell_commands('cat <<EOF\n$(git push origin main\nEOF\n')
+        self.assertEqual(raised.exception.reason_code, 'UNSUPPORTED_HEREDOC')
 
     def test_tag_reads_and_merge_mutation(self):
         for command in ['git tag', 'git tag --list', 'git tag -l "v*"', 'git tag --verify v1', 'git tag -n9']:

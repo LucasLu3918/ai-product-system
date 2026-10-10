@@ -517,9 +517,12 @@ GitHub merge base 與既存 release tag 是 preexecution observation，沒有 Gi
 解析 env／STATE／ACTIVE pointer；common-directory fallback 使用獨立 worktree ID 目錄，
 簽章亦綁定該 ID，絕不自動共享權限。查找／簽章／service 錯誤僅輸出類型，不洩漏 payload。
 
-**Shell／commit**：AST 只看實際命令，包括 command/process substitution；quoted heredoc
-及 literal 文字不當作執行。未支援的 shell stdin/file、dynamic executable、Git alias、
-env split-string、unquoted publication glob/tilde、未解析的 message expansion 一律 fail closed。
+**Shell／commit**：AST 只看實際命令，包括 command/process substitution；一般參數中的替換與
+unquoted heredoc 內的替換會遞迴分類，但解析只讀語法、不執行替換。quoted／escaped heredoc
+及 literal 文字不當作執行。動態 executable、Git/GitHub 子命令或 Git context option、未支援的
+shell stdin/file、Git alias、env split-string、unquoted publication glob/tilde、未解析的 message
+expansion 一律 fail closed，並提供穩定拒絕原因碼與安全改寫提示。發布命令仍須 literal、可綁定的
+候選參數；一般參數替換不會放寬 SHA、ref、repository 或 approval scope 驗證。
 Git send-pack/http-push/receive-pack 與未綁定的 GitHub API／其他 mutation workflow 也拒絕旁路。
 這是 command gate，
 不是任意 Python／MCP／子程序的完整 OS sandbox。Codex/OpenCode 仍為 ADVISORY。

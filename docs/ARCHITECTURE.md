@@ -256,6 +256,8 @@ The alias candidate is deterministic and transparent. It is not an embedding pro
 
 Git publication resolves to personal mode unless the fixed administrator trust root selects high assurance. Personal mode validates and scans the exact candidate before an engineering-branch push or PR; an explicitly requested PR merge requires each Claude/Gemini native confirmation plus exact head/default-base and passing required-check validation. Codex remains advisory. High assurance requires the external single-use grant.
 
+The existing Claude/Gemini publication guard uses bounded Bash AST inspection to classify substitutions in command arguments and unquoted heredocs without executing them. Dynamic command identity and publication scope still require literal, verifiable values; this parser change does not alter approval or merge authority.
+
 
 ~~~mermaid
 flowchart LR

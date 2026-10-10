@@ -1,95 +1,102 @@
 version: 1
 status: READY
 change:
-  id: personal-pr-merge-confirmation
-  summary: Personal mode permits explicitly requested PR merges after exact-candidate checks and per-call native confirmation in Claude Code or Gemini CLI; Codex remains advisory.
+  id: claude-shell-expansion-guard
+  summary: Safely classify argument and unquoted-heredoc command substitutions in Claude/Gemini shell hooks while preserving exact publication checks.
   boundary:
+  - .aips/review/CLAUDE_SHELL_EXPANSION_CORE_CHANGE_PROPOSAL.md
+  - .aips/review/CLAUDE_SHELL_EXPANSION_SYSTEM_IMPROVEMENT_REVIEW.md
   - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
-  - .aips/review/PERSONAL_PR_MERGE_CORE_CHANGE_PROPOSAL.md
-  - SYSTEM_CORE.md
-  - config/documentation-placement.yaml
   - docs/ARCHITECTURE.md
   - docs/human/ARCHITECTURE_OVERVIEW.md
   - docs/human/CONFORMANCE.md
-  - docs/human/CONFORMANCE_HISTORY_INDEX.md
-  - docs/human/DOCUMENTATION_MAP.md
-  - docs/human/DOCUMENTATION_SYNC.md
-  - docs/human/HARNESS.md
-  - docs/human/INSTALLATION.md
   - docs/human/MAINTENANCE.md
   - docs/human/SECURITY_ASSURANCE.md
   - docs/human/TECHNOLOGY_GUIDE.md
   - docs/human/USER_GUIDE.md
-  - docs/human/index.md
-  - harness/HARNESS_PROTOCOL.md
-  - harness/adapters/gemini-cli/GEMINI.md
-  - harness/adapters/gemini-cli/policies/personal-pr-merge.toml
-  - harness/adapters/opencode/AGENTS.md
-  - harness/adapters/opencode/COMPATIBILITY.md
-  - orchestration/ORCHESTRATOR.md
-  - orchestration/CONFORMANCE.md
-  - orchestration/CREATIVE_DIRECTION.md
   - orchestration/DETERMINISTIC_SCHEDULER.md
-  - orchestration/DOCUMENTATION_SYNC.md
+  - orchestration/ORCHESTRATOR.md
+  - orchestration/RUNTIME_POLICY_ENFORCEMENT.md
   - scripts/governance_guard.py
-  - scripts/publication_authority.py
-  - tests/scenario_coverage.yaml
-  - tests/scenarios/240-personal-publication-default.md
+  - scripts/publication_commands.py
+  - tests/scenarios/097-approval-scope-drift-stops-protected-action.md
   - tests/test_publication_authority.py
 candidate:
-  base_sha: 15db798c6f5e02b32a41c10295c503f1b0d24dcf
-  changed_files_hash: 16fbe7125c2be77582ef3facdfa81e84b5fef83a03526b1d4d8846501beaa8e4
+  base_sha: b64f1ad859852aad8cc6151d6b54b4b89bdaeca2
+  changed_files_hash: 9abe85322b44d0a31e59c17c646df5c32c6225865ee47239fa6c18be579954e9
 matrix:
-- boundary: Personal PR merge validation and exact-candidate binding
-  reason: PR state, source branch, target branch, head SHA and required checks determine whether a merge prompt may be shown.
-  checks: &id001
+- boundary: Shell AST parsing and recursive command-substitution classification
+  reason: Nested substitutions and heredoc expansion must be inspected without executing them, while quoted or escaped content stays literal.
+  checks:
     static_lint:
       applicable: true
-      evidence: Ruff on changed Python sources and repository touched-code quality ratchet; run on the final candidate.
+      evidence: Ruff on publication_commands.py and the touched-code quality ratchet; governance_guard.py has three confirmed pre-existing baseline findings.
     unit:
       applicable: true
-      evidence: 'tests.test_publication_authority: 30 tests passed, including exact PR/head/base binding, closed/draft/unmergeable rejection, branch allowlist, required checks and existing grant regressions.'
+      evidence: tests.test_publication_authority ShellTest covers ordinary/nested substitutions, parameter expansions, quoted/escaped heredocs, <<- tabs and malformed syntax.
     integration:
       applicable: true
-      evidence: Local bare Git remote and mocked GH responses exercise default-branch resolution and positive/negative merge preflight; live Gemini CLI is unavailable for runtime acceptance.
+      evidence: Hook subprocess tests exercise parsed commands through the Claude Code JSON envelope; exact-candidate Integration Gate required.
     contract:
       applicable: true
-      evidence: Claude hook returns native ask; Gemini extension policy requires interactive ask_user in default/autoEdit/yolo; Codex remains ADVISORY.
+      evidence: shell_commands keeps its argv-list contract and hook response envelopes remain unchanged; CommandError adds a stable reason_code.
     e2e:
       applicable: true
-      evidence: Shared hook routing and TOML policy contract are covered by tests; native CLI end-to-end prompt requires installed runtime and is not claimed locally.
+      evidence: Local Claude hook subprocess accepts harmless substitutions and denies dynamic publication targets; native interactive CLI acceptance is unavailable locally.
     security:
       applicable: true
-      evidence: Rejects wrong head SHA/branch, non-default base, closed/draft/unmergeable PR and failing/pending checks; base SHA is pre-execution observation; user accepts Codex interception limitation.
+      evidence: Nested git push substitutions remain detectable, the parser never executes them, and dynamic executable/subcommand/context values remain denied.
     migration_recovery:
-      applicable: true
-      evidence: Existing signed high-assurance grant path remains covered; no persisted schema or migration changes.
+      applicable: false
+      na_reason: No persisted data, schema or migration changes.
     cli_harness:
       applicable: true
-      evidence: Claude/Gemini hook output contracts and explicit standalone command parsing remain covered; full validator run on exact candidate.
+      evidence: Shared Claude/Gemini hook classifier and sanitized stable denial codes are exercised by hook and shell tests.
     docs_schema:
       applicable: true
-      evidence: Human/Agent docs, Scenario 240, scenario coverage and documentation placement are synchronized; run final repository validation.
-- boundary: Native per-call confirmation and Codex limitation
-  reason: Claude Code and Gemini CLI prompt per merge in supported interactive routes; Codex cannot guarantee interception of direct CLI merges.
-  checks: *id001
-- boundary: High-assurance compatibility and documentation closure
-  reason: Existing external signed v2 grants remain unchanged while all runtime and Human behavior claims match implemented controls.
-  checks: *id001
+      evidence: Canonical runtime/security/user documentation closure is complete; exact-candidate repository validation required.
+- boundary: Publication command identity and exact scope binding
+  reason: Global CLI options change where Git/GitHub verbs appear; dynamic context and publication arguments must not bind reusable approval scope.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff on changed parser/guard/test files and repository quality ratchet in the exact-candidate Gate.
+    unit:
+      applicable: true
+      evidence: ShellTest rejects dynamic Git/GH verbs and --repo/-C values while accepting harmless literal-scoped queries.
+    integration:
+      applicable: true
+      evidence: Existing publication authority lifecycle tests remain included in the 31-test module and exact-candidate Gate.
+    contract:
+      applicable: true
+      evidence: Existing publication authority return shapes and high-assurance grant boundary are preserved.
+    e2e:
+      applicable: false
+      na_reason: No new interactive product flow; hook subprocess and deterministic authority lifecycle tests cover the changed boundary.
+    security:
+      applicable: true
+      evidence: Exact candidate/ref/repository checks remain in place and secret scanning runs in the final Gate.
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted data, schema or migration changes.
+    cli_harness:
+      applicable: true
+      evidence: Git/GH global option parsing is tested through the shared hook classifier; final Gate includes CLI/Harness validators.
+    docs_schema:
+      applicable: true
+      evidence: Human and Agent guidance was updated; placement and scenario/repository validation are required in the final Gate.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
 blockers: []
 verification:
-  focused_publication_tests: 'PASS: 30 tests'
-  changed_python_ruff: 'PASS: changed files clean; governance_guard.py has 3 pre-existing findings, none on changed lines.'
-  documentation_placement: PASS
-  repository_validation: 'PASS: full repository validators passed; evidence is retained in the exact-candidate Gate report.'
-  exact_candidate_integration_gate: 'PASS: /private/tmp/aips-personal-pr-merge-gate-final.yaml; rerun after this matrix evidence update to bind the final commit SHA.'
-  independent_security_review: 'SELF_CHECK: no unresolved implementation finding; Codex advisory limitation accepted by Human.'
-  install_preflight_lifecycle: PENDING_FINAL_CANDIDATE
-  conformance_isolation: PENDING_FINAL_CANDIDATE
-  agent_eval: PENDING_FINAL_CANDIDATE
-  cli_harness: PENDING_FINAL_CANDIDATE
-  docs_schema: 'PASS: placement contract; scenario coverage and repository validator pending.'
+  focused_publication_tests: 'PASS: tests.test_publication_authority, 31 tests'
+  changed_python_ruff: 'PASS: publication_commands.py and test_publication_authority.py; 3 known baseline findings in governance_guard.py are unchanged from main'
+  documentation_placement: 'PASS: aips docs impact reports complete with no required additions'
+  repository_validation: 'PASS: tests/validate_repository.py; full repository checks passed on the exact candidate.'
+  exact_candidate_integration_gate: 'PASS: /private/tmp/aips-validation-claude-shell-gate-final-commit.yaml; final Gate report is regenerated for the committed candidate.'
+  impact_reconciliation: 'PASS: external EPHEMERAL Change Impact artifact validates exact base/head/digest/path set and bounded caller/consumer traversal.'
+  secret_scan: 'PASS: mandatory-candidate-secret-scan, candidate and history clean, no findings; report /private/tmp/aips-validation-claude-shell-gate-final-commit.yaml.'
+  independent_security_review: SELF_REVIEWED_NO_UNRESOLVED_FINDING
+  documentation_build: PASS

@@ -296,6 +296,8 @@ Publication Preflight 將 Python module availability 與 loopback/browser capabi
 
 Git Publish Guard 現在區分 Agent PENDING proposal 與外部 Human-issued Ed25519 grant；trust config 由管理者保護，ledger 原子限制一次。common Git identity 與 worktree identity 同時綁定，沒有 upstream 仍驗完整 base/candidate 差異。Git lease 保護 push；GH base/tag 為執行前觀測，不能聲稱 atomic CAS。
 
+Claude/Gemini publication hook 以既有 Bash AST 遞迴辨識參數與 unquoted heredoc 中的命令替換，不執行替換。Dynamic executable／subcommand／Git context 與 publication scope 仍需明確可驗證；Hook 的解析能力不新增 approval 或 merge authority。
+
 Optional creative vision review is confined to an installed local model over loopback and cannot update Human review or user-acceptance state.
 
 Creative prompt admission 是獨立授權邊界：每次回覆必須以目前 Session、root、動作與剩餘輸出數重新核准；原始歷史提示和 transcript 不得作為授權依據。

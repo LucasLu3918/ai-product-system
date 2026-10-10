@@ -241,7 +241,6 @@ Large/core changes are proposal-first. Use `templates/core-change-proposal.md`. 
 
 For remote publication, use `templates/git-publish-proposal.md` to preserve the exact candidate, changed files, validation evidence, commit plan and target. Personal mode proceeds for a task-authorized engineering branch/PR after required checks; merge into `main` still requires explicit task intent and required checks. High-assurance mode requires the external grant. Re-evaluate if target or task scope changes.
 
-
 ## Creative / Brand work
 
 Use `orchestration/CREATIVE_DIRECTION.md` for reference-grounded visual work and `orchestration/BRAND_SYSTEM.md` for reusable brand creation/reuse.
@@ -366,6 +365,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 Personal publication is the default when the fixed administrator trust-root file is absent. After candidate/content checks, an implementation task pushes its own engineering branch and creates/updates a PR targeting the live remote default branch without a per-operation confirmation, unless the user says local-only/no-publication. For an explicitly requested PR merge, validate that the PR is open, non-draft, mergeable, targets the live remote default branch, uses the current allowlisted engineering branch and exact candidate SHA, and has passing required checks. Claude Code must return native `PreToolUse` `ask` with the PR/base/head/check details; Gemini CLI pairs the hook's details with the extension Policy Engine's interactive `ask_user` rule in `default`, `autoEdit`, and `yolo`. GitHub pins the head SHA; the base SHA is a pre-execution observation. Codex remains `ADVISORY` and cannot guarantee interception of direct merge commands, a limitation accepted by Human for personal mode. A present trust-root selects high assurance; malformed configuration fails closed, and protected operations require externally signed v2 single-use grants. Agent-generated APPROVED/fingerprint is never authority in high-assurance mode. Tag/release and direct protected-branch pushes remain outside personal mode. Deployment and GH base/tag observation limits are documented in Human Security Assurance.
 
 For a Core implementation, complete local exact-candidate validation first. In personal mode, publish the scoped engineering branch and create/update a PR after the user requested implementation; in high-assurance mode, present the exact candidate and obtain the external grant before publication.
+
+Claude/Gemini Shell publication guards classify supported command substitutions recursively, including those in unquoted heredocs; parsing never executes them. Keep protected publication arguments literal and preserve exact candidate, ref, content-safety and approval checks.
 
 Protected publication still requires a clean exact candidate, reconciled Matrix, secret scan, documentation closure and passing repository aggregate.
 
