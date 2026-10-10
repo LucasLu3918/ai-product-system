@@ -572,6 +572,13 @@ def build_evidence(config: dict[str, Any], *, mode: str, timeout: float = 8.0) -
             "global_signal_limit_applied": len(collected) > len(bounded),
             "adopt_minimum_evidence_level": int(policy["evidence_quality"]["adopt_minimum_level"]),
             "deduplicated_count": len(unique),
+            "community_candidate_count": sum(
+                any(source.get("role") == "community" for source in signal.get("source_provenance", []))
+                for signal in unique
+            ),
+            "candidate_target": max_raw_signals,
+            "candidate_shortfall": max(0, max_raw_signals - len(unique)),
+            "sampling_status": "TARGET_REACHED" if len(unique) >= max_raw_signals else "BELOW_TARGET",
             "recommendation_count": len(recommendations),
             "actionable_count": 0,
             "zero_recommendations_valid": True,

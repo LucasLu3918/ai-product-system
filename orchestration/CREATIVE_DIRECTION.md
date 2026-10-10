@@ -55,6 +55,10 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+After ComfyUI accepts a job, timeout or transient polling failure requests deletion of only that queued job and blocks automatic resubmission. Never interrupt all running jobs to recover one request; provider completion remains unverified until inspected.
+
+Use the existing Character/Style profiles and versioned local execution. Optional quality trials bind local raster digests and record Human character identity, outfit, composition, reference-edit and recovery assessments independently; never infer acceptance from a PNG or fixture.
+
 Project Intelligence relationship candidates are advisory discovery evidence only; they do not grant permission to create or modify visual assets.
 
 The general `aips project diagnose` command is read-only and does not discover, prepare, configure or execute a creative provider. Creative workflow authorization remains governed by the explicit request and bounded creative lifecycle.

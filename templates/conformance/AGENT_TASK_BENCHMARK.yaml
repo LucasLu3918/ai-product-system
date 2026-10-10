@@ -1,0 +1,27 @@
+version: 1
+mode: observed_host
+authority: NONE
+canonical_scenarios: tests/scenario_coverage.yaml
+result_template: templates/conformance/AGENT_EVAL_RESULT.yaml
+tasks:
+  - domain: coding
+    case: tests/agent_eval/cases/002-existing-rest-api.yaml
+    observation: Implement the existing API case in an isolated project and run its native validation.
+  - domain: creative
+    case: tests/agent_eval/cases/021-vague-visual-request.yaml
+    observation: Observe native clarification, selected tool, artifact generation, and separate Human review.
+  - domain: planning
+    case: tests/agent_eval/cases/013-reproducible-planning-package.yaml
+    observation: Execute the planning case and inspect the resulting artifact and requirement coverage.
+  - domain: security
+    case: tests/agent_eval/cases/091-secret-exposure-release-block.yaml
+    observation: Execute with synthetic credentials only and inspect the remediation and publication block.
+required_observations: [task_completed, human_corrections, false_positives]
+privacy:
+  retain_private_reasoning: false
+  retain_credentials: false
+  retain_user_prompt_by_default: false
+claims:
+  fixture_success_is_real_task_success: false
+  rubric_pass_is_completion_rate: false
+  missing_observation: UNKNOWN

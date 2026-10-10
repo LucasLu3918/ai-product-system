@@ -203,6 +203,7 @@ Readers continue using the last valid generation.
 
 ## Retrieval relationships and impact traversal
 
+
 Scoped evidence does not upgrade this repository’s partial Impact Graph to complete repository-wide coverage.
 
 
@@ -605,6 +606,8 @@ Do not claim the project has been initialized merely from directory/file-name in
 
 ## Existing-project automatic behavior
 
+Diagnostics exposes a dependency-ordered recovery plan using existing reason codes/actions. Each step states read-only, manual-review or derived-state-write scope; it never attaches or repairs a project automatically.
+
 The compact Context projection is a pure helper behind the stable public facade; it does not change project-native instruction authority.
 
 
@@ -632,6 +635,8 @@ Architecture and DDD classifications require behavioral/dependency evidence, not
 The CLI commands are deterministic building blocks used by the Agent/Harness and remain available for debugging.
 
 ## Retrieval relationships and impact traversal
+
+`impact-candidates --max-depth 3` follows bounded lexical source relationships, including exact sibling module paths. Keep every edge a candidate until reviewed, retain dynamic-call unknowns, and preserve global partial coverage.
 
 When creative consumer edges are unmapped, preserve PARTIAL graph readiness and record manually inspected consumers and accepted unknowns in the scoped Change Impact artifact.
 

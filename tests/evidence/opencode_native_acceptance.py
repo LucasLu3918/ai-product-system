@@ -130,7 +130,13 @@ def plugin_diagnostics(base: Path, server_log) -> list[str]:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--binary', required=True)
+    parser.add_argument('--output', type=Path, help='Write a source/version/platform-bound local acceptance report after all checks pass')
     args = parser.parse_args()
+    if args.output:
+        if args.output.is_symlink():
+            raise ValueError('native acceptance output must not be a symlink')
+        # A failed rerun must not leave an older success report available.
+        args.output.unlink(missing_ok=True)
     binary = str(Path(args.binary).resolve(strict=True))
     with tempfile.TemporaryDirectory(prefix='aips-opencode-native-') as tmp:
         base = Path(tmp).resolve()
@@ -411,6 +417,22 @@ def main() -> None:
                 print(json.dumps({'version': version, 'skills': len(expected), 'commands': 3, 'skill_load': 'VERIFIED', 'mcp': 'CONNECTED', 'plugin_setup': plugin_setup, 'runtime': 'DISCOVERY_VERIFIED', 'model_execution': model_delivery, 'model_execution_path': model_execution_path, 'context_delivery': 'VERIFIED', 'permission_hook_execution': 'VERIFIED', 'permission_decisions': ['ALLOW', 'DENY'], 'pre_tool_guard': 'VERIFIED'}))
                 print(json.dumps({'creative_prepare': 'VERIFIED_NATIVE_HOST', 'admission_revocation': 'VERIFIED_NATIVE_HOST', 'generation_executed': False}))
                 print(json.dumps({'global_instructions': 'OFFICIAL_CONTRACT', 'instruction_model_delivery': 'UNVERIFIED'}))
+                if args.output:
+                    sys.path.insert(0, str(ROOT / 'scripts'))
+                    from opencode_skill_projection import native_source_digest
+                    report = {
+                        'schema_version': 1, 'version': re.sub(r'^(?:opencode\s+)?v?', '', version),
+                        'platform': sys.platform,
+                        'plugin_sha256': hashlib.sha256((ROOT / 'harness/adapters/opencode/plugin.ts').read_bytes()).hexdigest(),
+                        'acceptance_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+                        'runtime_source_sha256': native_source_digest(),
+                        'checks': {'context_delivery': 'VERIFIED', 'permission_hook_execution': 'VERIFIED',
+                                   'creative_prepare': 'VERIFIED_NATIVE_HOST', 'admission_revocation': 'VERIFIED_NATIVE_HOST',
+                                   'l3_external_actions': 'UNVERIFIED', 'session_cancel': 'UNVERIFIED',
+                                   'instruction_model_delivery': 'UNVERIFIED'},
+                    }
+                    args.output.parent.mkdir(parents=True, exist_ok=True)
+                    args.output.write_text(json.dumps(report, sort_keys=True, indent=2) + '\n')
             finally:
                 server.terminate()
                 server.wait(timeout=15)

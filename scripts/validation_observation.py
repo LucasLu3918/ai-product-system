@@ -16,6 +16,7 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 import yaml
+from performance_evidence import observed_distribution
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tests"))
@@ -125,9 +126,34 @@ def create_observation(
             "deterministic_full_audit": validation_graduation.deterministic_full_audit(head, 10) if head_valid else False,
             "full_validation_result": "FAIL" if failed_gate else "PASS" if full and timing and timing.get("status") == "PASS" and gate_status == "PASS" else "INCOMPLETE",
             "evidence_complete": bool(shadow and timing and gate and identity_matches),
+            "measurements": {
+                "repository_duration_ms": (timing or {}).get("total_duration_ms") if full and identity_matches else None,
+                "validators": [{"name": item["name"], "duration_ms": item.get("duration_ms")}
+                               for item in timing_checks if isinstance(item, dict)
+                               and item.get("name") in actual] if full and identity_matches else [],
+            },
         },
     }
     return observation
+
+
+def summarize_timings(records: list[dict[str, Any]]) -> dict[str, Any]:
+    """Keep incomplete evidence separate and avoid counting reruns as new PRs."""
+    candidates: dict[tuple[str, str], dict[str, Any]] = {}
+    for record in records:
+        if record.get("evidence_complete") is not True or record.get("full_validation_run") is not True:
+            continue
+        key = (str(record.get("pull_request")), str(record.get("head_sha")))
+        prior = candidates.get(key)
+        if prior is None or str(record.get("timestamp", "")) > str(prior.get("timestamp", "")):
+            candidates[key] = record
+    classes = sorted({str(record.get("change_class", "unknown")) for record in candidates.values()})
+    return {"status": "OBSERVED" if candidates else "UNKNOWN", "unit": "milliseconds",
+            "candidate_count": len(candidates), "selective_execution_authorized": False,
+            "by_change_class": {category: observed_distribution([
+                (record.get("measurements") or {}).get("repository_duration_ms")
+                for record in candidates.values() if record.get("change_class", "unknown") == category
+            ]) for category in classes}}
 
 
 def safe_observation_zip(payload: bytes) -> dict[str, Any]:
@@ -333,6 +359,7 @@ def main() -> int:
         config = yaml.safe_load((ROOT / "config/validation-graduation.yaml").read_text(encoding="utf-8")) or {}
         scope = yaml.safe_load((ROOT / "config/validation-scope.yaml").read_text(encoding="utf-8")) or {}
         report = validation_graduation.evaluate(config, scope, dataset)
+        report["timing_summary"] = summarize_timings(dataset["records"])
         args.report.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         print(json.dumps({"status": report["status"], "unique_pull_request_count": report.get("unique_pull_request_count"), "artifact_history_complete": dataset["artifact_history_complete"], "errors": report["errors"]}, indent=2))
         status = report.get("status")

@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+
+## 0.82.0
+
+- Preserve the Project Intelligence, Retrieval, Creative, and Character public facades while extracting bounded discovery, query terms, private trace persistence, and passive image validation.
+- Add dependency-ordered read-only recovery plans and conservative two/three-hop sibling-import relation candidates without promoting lexical evidence into the canonical graph.
+- Bind local OpenCode acceptance to Host/platform and runtime source digests; retain unsupported Shell/MCP/external-action and production-model verification boundaries.
+- Prevent automatic resubmission after an accepted ComfyUI job times out or polling fails; request exact-job queued cleanup without globally interrupting running work.
+- Separate observed Agent task outcomes, artifact-bound creative trials, Human visual ratings, and user acceptance from deterministic fixture/rubric success.
+- Report bounded Context/creative and complete same-candidate CI duration distributions, retaining UNKNOWN model usage/cost and the full selective-validation graduation policy.
+- Lower measured Ruff debt to 685 and Retrieval debt to 4; sample up to ten items per Evolution source with explicit deduplicated candidate counts/shortfall; add canonical document reading paths.
+- Extend macOS/Linux stable-channel fixture acceptance and correct release documentation to the implemented exact tag/SHA/VERSION checks without claiming cryptographic signature verification.
+
 ## 0.81.0
 
 - Reduce the measured Ruff baseline to 687 findings, record current per-module debt and bounded Impact Graph lifecycle coverage, and keep coverage report-only without a global minimum.

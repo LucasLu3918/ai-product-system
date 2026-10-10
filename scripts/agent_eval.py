@@ -4,9 +4,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
 from typing import Any
 
 import yaml
@@ -377,6 +377,32 @@ def analyze(cases_dir: Path, results_dir: Path) -> dict[str, Any]:
     for orphan in sorted(set(results) - set(cases)):
         errors.append(f"orphan Agent Eval result: {orphan}")
 
+    observed = []
+    for case_id, result_path in results.items():
+        record = load_yaml(result_path)
+        execution = record.get("execution") or {}
+        if not isinstance(execution, dict):
+            continue
+        observation = execution.get("task_observation") or {}
+        if not isinstance(observation, dict) or observation.get("source") != "observed_host":
+            continue
+        completed = observation.get("task_completed")
+        corrections = observation.get("human_corrections")
+        false_positives = observation.get("false_positives")
+        current_result = next((item for item in items if item.get("case_id") == case_id), None)
+        if current_result is None or current_result.get("evidence_freshness") != "CURRENT":
+            continue
+        if case_id not in cases or validate_result(load_yaml(cases[case_id]), record):
+            continue
+        if not isinstance(completed, bool) or any(not isinstance(value, int) or isinstance(value, bool) or value < 0
+                                                  for value in (corrections, false_positives)):
+            continue
+        observed.append({"task_completed": completed, "human_corrections": corrections, "false_positives": false_positives})
+    task_outcomes = {"status": "RECORDED" if observed else "UNKNOWN", "sample_count": len(observed),
+                     "completed": sum(item["task_completed"] for item in observed) if observed else None,
+                     "human_corrections": sum(item["human_corrections"] for item in observed) if observed else None,
+                     "false_positives": sum(item["false_positives"] for item in observed) if observed else None,
+                     "runtime_attestation": "UNVERIFIED"}
     passed = sum(1 for item in items if item["status"] == "PASS")
     current = sum(1 for item in items if item.get("evidence_freshness") == "CURRENT")
     unbound = sum(1 for item in items if item.get("evidence_freshness") == "UNBOUND")
@@ -394,6 +420,7 @@ def analyze(cases_dir: Path, results_dir: Path) -> dict[str, Any]:
             "orphan_results": len(set(results) - set(cases)),
         },
         "cases": items,
+        "observed_task_outcomes": task_outcomes,
     }
 
 

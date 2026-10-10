@@ -29,6 +29,8 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+Creative benchmark guidance separates file integrity, observed provider execution, Human visual dimensions and acceptance. Synchronize the existing Human and Agent creative topics with the same distinctions.
+
 Impact candidate guidance is synchronized across the existing Project Intelligence Human and Agent topics; it remains advisory and non-canonical.
 
 The creative workflow's fresh-grant continuation, output cap, local engine recovery and no-silent-fallback behavior stay aligned across Human guidance, OpenCode Agent rules, Creative Direction and Scenario 238.
@@ -180,6 +182,8 @@ Generated Conformance views must retain a deterministic path from the canonical 
 
 ## Evolution Effectiveness mapping
 
+Sampling reports expose deduplicated and community candidate counts plus target shortfall. Reflect these as collection-quality evidence, not adoption authorization or engineering effectiveness.
+
 Primary-routing and Skill-metadata changes reconcile canonical model policy, architecture, Human maintenance/technology guidance and Scenario coverage; metadata generation does not replace semantic review.
 
 Monthly Human relevance evaluation also includes deterministic fingerprint sampling, actionable yield and per-source relevance yield. Keep these metric and authority statements aligned across the Human Radar guides, Scenario 218 and the Technology Guide; incomplete labels remain `NOT_READY`.
@@ -194,6 +198,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 
 ## Human documentation placement
+
+New extracted helpers inherit their existing facade documentation topics. Compact reading sections point into canonical documents; do not copy registries or policy into another source of truth.
 
 Creative quality protocol changes route through the registered Creative Direction, Harness, Human topic and Scenario 234/236/238 placements; recursive closure remains required before publication.
 

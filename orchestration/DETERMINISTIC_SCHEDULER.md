@@ -70,6 +70,8 @@ The scheduler is stateless between invocations. Durable workflow state remains o
 
 ## CLI
 
+Observed validation timing is diagnostic only. Capture complete exact-candidate durations and retain mandatory full validation; missing observations do not authorize selective execution or change the required aggregate.
+
 Creative generation is an explicit user action through `aips creative execute`; scheduler inspection, validation, and Gate runs never launch a configured image engine.
 
 Turn Context task routes are resolved before scheduling and never grant Scheduler write authority; the task's approved boundary and lease remain authoritative.
@@ -224,6 +226,8 @@ Execution IDs and runtime attestation are produced by the execution runtime and 
 
 - Release readiness also fails closed when `CHANGELOG.md` is unavailable or its canonical `## Unreleased` section is missing, duplicated, malformed, or non-empty; the check remains read-only.
 ## Validation de-duplication boundary
+
+Timing summaries use complete same-candidate records, group by change class and deduplicate reruns. The observation/graduation policy still controls cohort readiness; P50/P95 alone cannot enable selective validation.
 
 Shared path classification supplies safe root/prefix inventory only. CI dependency planning and validator selection retain independent risk rules, and unknown or malformed paths preserve full-validation behavior.
 

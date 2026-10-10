@@ -8,4 +8,9 @@ execution:
   runtime: null
   executed_at: null
   system_fingerprint: null # Digest of the Case's system_dependencies at actual execution time.
+  task_observation: # Optional, independently recorded task outcome; rubric PASS alone does not populate it.
+    source: null # observed_host only after an actual task run; fixtures remain fixture.
+    task_completed: null
+    human_corrections: null
+    false_positives: null
 response: {}

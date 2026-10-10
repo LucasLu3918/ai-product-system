@@ -223,6 +223,35 @@ def _doctor_check(root: Path, project: Path) -> dict[str, Any]:
     )
 
 
+def recovery_plan(checks: list[dict[str, Any]]) -> dict[str, Any]:
+    """Order existing next-actions without executing or inventing repair authority."""
+    steps: list[dict[str, Any]] = []
+    blocked_by: list[str] = []
+    for check in checks:
+        if check["status"] == "PASS":
+            continue
+        blocked_by.append(check["reason_code"])
+        actions = check.get("next_actions") or []
+        if not actions and check.get("verification_command"):
+            actions = [{"action": "inspect", "command": check["verification_command"]}]
+        previous = None
+        for action in actions:
+            action_id = f"{check['id']}:{len(steps) + 1}:{action['action']}"
+            state_write = action["action"] in {"bootstrap", "finalize", "refresh_after_review"}
+            manual = action["action"] == "complete_required_topics"
+            steps.append({
+                "id": action_id, "check_id": check["id"],
+                "reason_code": check["reason_code"], **action,
+                "depends_on": [previous] if previous else [],
+                "operation": "derived_state_write" if state_write else "manual_review" if manual else "read_only",
+                "authorization": "APPROVED_TASK_SCOPE_REQUIRED" if state_write else "NONE",
+                "automatic": False,
+            })
+            previous = action_id
+    return {"status": "NO_ACTIONS" if not blocked_by else "REVIEW_REQUIRED",
+            "blocked_by": blocked_by, "steps": steps, "execution_authorized": False}
+
+
 def diagnose(project: Path, runtime: str) -> dict[str, Any]:
     root = Path(__file__).resolve().parents[1]
     py = sys.executable
@@ -269,6 +298,7 @@ def diagnose(project: Path, runtime: str) -> dict[str, Any]:
         "project": {"mode": "ATTACHED" if (project / ".ai").is_dir() else "EPHEMERAL"},
         "runtime": runtime,
         "checks": checks,
+        "recovery_plan": recovery_plan(checks),
         "limitations": [
             "診斷不會建立、刷新、索引、附加或修復 Project Intelligence。",
             "原生 Hook、工具與 MCP Host 連線狀態維持 UNVERIFIED；靜態設定不是實機執行證據。",
@@ -293,6 +323,10 @@ def _text(report: dict[str, Any]) -> str:
             lines.append(f"Action: {action.get('action', 'next')} — {action.get('command', '')}{when}")
         if item.get("verification_command"):
             lines.append(f"Verify: {item['verification_command']}")
+    plan = report["recovery_plan"]
+    lines.extend(["", f"Recovery plan: {plan['status']} (no actions executed)"])
+    for index, step in enumerate(plan["steps"], 1):
+        lines.append(f"{index}. {step['command']} [{step['operation']}; {step['authorization']}]")
     lines.extend(["", "Limitations:", *[f"- {item}" for item in report["limitations"]]])
     return "\n".join(lines)
 

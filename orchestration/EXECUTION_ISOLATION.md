@@ -285,6 +285,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+Native acceptance uses isolated HOME/config/state and a credential-free loopback model. Temporary creative trials use versioned create-only output; neither observed metrics nor fixture success grants wider filesystem or external-service authority.
+
 Impact relationship candidate generation scans repository source read-only and launches no project runtime or external provider.
 
 OpenCode creative visual assistance is separately authorized by the current user prompt and confined to the active Session root; local model findings remain advisory and cannot broaden the execution grant.

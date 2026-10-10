@@ -91,6 +91,8 @@ Runtime-native contract verification and actual runtime execution verification a
 
 ## Exact-candidate real-runtime verification
 
+Native acceptance reports are bound to the actual Host version, platform, Plugin, acceptance-script and conservative runtime-source digests. Doctor reports missing/stale/invalid/failed/recorded local evidence without elevating ADVISORY governance or unsupported effect coverage.
+
 Internal creative prompt compiler extraction preserves the existing `creative_execution` facade and does not alter native Harness permissions or tool signatures; exact output parity is covered by the repository lifecycle evidence.
 
 Native acceptance records setup, hook delivery, permission enforcement and exact host version as separate evidence. A passing host/version fixture does not establish behavior for another version, provider, Shell surface or model instruction path.

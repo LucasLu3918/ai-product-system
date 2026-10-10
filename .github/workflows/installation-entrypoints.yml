@@ -22,6 +22,8 @@ on:
       - "scripts/package_install.py"
       - "tests/evidence/runtime_recovery_lifecycle.py"
       - "tests/evidence/release_channel_lifecycle.py"
+      - "scripts/release_channel.py"
+      - "scripts/version_tag_policy.py"
       - "tests/evidence/install_download_lifecycle.py"
       - "tests/evidence/openapi_cli_install_lifecycle.py"
       - "tests/evidence/install_preflight_lifecycle.py"
@@ -48,6 +50,23 @@ jobs:
       - run: bash scripts/install.sh --dry-run
       - run: python3 tests/evidence/install_download_lifecycle.py
       - run: python3 tests/evidence/openapi_cli_install_lifecycle.py
+      - uses: ./.github/actions/aips-python-bootstrap
+        with:
+          python-version: "3.12"
+          requirements-files: |
+            requirements.txt
+            requirements-validation.txt
+          cache-dependency-path: |
+            requirements.txt
+            requirements-validation.txt
+          verification-modules: |
+            yaml
+            coverage
+            hypothesis
+      - name: Verify stable channel candidate and recovery fixtures
+        run: |
+          export AIPS_VALIDATION_PYTHON="$(command -v python)"
+          python tests/evidence/release_channel_lifecycle.py
 
   linux-lifecycle:
     timeout-minutes: 10

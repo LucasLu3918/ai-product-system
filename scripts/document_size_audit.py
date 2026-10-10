@@ -77,7 +77,11 @@ def build_document_size_report(root: Path, policy: dict[str, Any]) -> dict[str, 
         if not resolved.is_relative_to(project) or not path.is_file():
             continue
         size = path.stat().st_size
-        files.append({"path": relative, "bytes": size, "status": "WARN" if size > threshold else "OK"})
+        text = path.read_text(encoding="utf-8", errors="replace") if path.suffix == ".md" else ""
+        headings = [line.strip() for line in text.splitlines() if line.startswith("## ")][:12]
+        files.append({"path": relative, "bytes": size, "status": "WARN" if size > threshold else "OK",
+                      "reading_sections": headings,
+                      "source_kind": "canonical_machine_readable" if path.suffix in {".yaml", ".yml", ".json"} else "document"})
     files.sort(key=lambda row: (-row["bytes"], row["path"]))
     oversized = [row for row in files if row["status"] == "WARN"]
     return {

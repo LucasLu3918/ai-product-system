@@ -15,7 +15,7 @@ policy:
 current_behavior_docs:
   docs/human/SYSTEM_REFERENCE.md:
     strict_h2: true
-    required_h2: [Public commands, Capability surfaces, Runtime support]
+    required_h2: [Public commands, Capability surfaces, Runtime support, Observation fields]
   docs/human/GETTING_STARTED.md:
     strict_h2: true
     required_h2: [安裝 AIPS, 驗證安裝, 開始工作, Existing Project, 更新, 解除安裝]
@@ -225,7 +225,7 @@ placement_rules:
       orchestration/RUN_DASHBOARD.md: [Contract, CLI and local API, Failure and security behavior]
 
   - id: harness
-    triggers: [harness/**, scripts/harness_resolve.py, scripts/manage_runtime_adapter.py, scripts/opencode_skill_projection.py, scripts/opencode_native_guard.py, scripts/opencode_trace.py, scripts/creative_workspace_profile.py, scripts/creative_execution.py, scripts/turn_intent.py, scripts/project_intelligence.py, scripts/mcp_server.py, scripts/portable_commands.py, templates/harness/**, orchestration/EXECUTION_ISOLATION.md]
+    triggers: [harness/**, scripts/harness_resolve.py, scripts/manage_runtime_adapter.py, scripts/opencode_skill_projection.py, scripts/opencode_native_guard.py, scripts/opencode_trace.py, scripts/creative_workspace_profile.py, scripts/creative_execution.py, scripts/creative_trace.py, scripts/creative_quality_benchmark.py, templates/creative/QUALITY_BENCHMARK.json, scripts/turn_intent.py, scripts/project_intelligence.py, scripts/project_intelligence_discovery.py, scripts/mcp_server.py, scripts/portable_commands.py, templates/harness/**, orchestration/EXECUTION_ISOLATION.md]
     placements:
       docs/ARCHITECTURE.md: [Runtime flow, Installation and project lifecycle, End-to-end product delivery]
       docs/human/HARNESS.md: [Integration model, Native Runtime Adapters, MCP Interoperability, Portable Commands, Capability truth, Progressive disclosure, Ownership 與解除]
@@ -263,7 +263,7 @@ placement_rules:
       docs/human/USER_GUIDE.md: [Git Publication 與 Release]
 
   - id: project-intelligence
-    triggers: [scripts/project_intelligence.py, scripts/project_intelligence_impact_graph.py, scripts/project_intelligence_storage.py, scripts/project_intelligence_promotion.py, scripts/project_intelligence_temporal.py, scripts/retrieval_intelligence.py, scripts/retrieval_relations.py, scripts/retrieval_storage.py, scripts/temporal_intelligence.py, scripts/turn_context_hook.py, scripts/turn_intent.py, scripts/git_paths.py, orchestration/PROJECT_INTELLIGENCE.md, orchestration/CHANGE_IMPACT.md, orchestration/TURN_HARNESS.md, templates/intelligence/**, tests/evidence/change_impact_resolution_lifecycle.py, tests/evidence/retrieval_relations_extraction_lifecycle.py, tests/evidence/project_intelligence_relation_candidates_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/validation/project_intelligence_candidates_contracts.py, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, tests/scenarios/239-read-only-impact-relation-candidates.md]
+    triggers: [scripts/project_intelligence.py, scripts/project_intelligence_discovery.py, scripts/project_intelligence_impact_graph.py, scripts/project_intelligence_storage.py, scripts/project_intelligence_promotion.py, scripts/project_intelligence_temporal.py, scripts/retrieval_intelligence.py, scripts/retrieval_query_terms.py, scripts/retrieval_relations.py, scripts/retrieval_storage.py, scripts/temporal_intelligence.py, scripts/turn_context_hook.py, scripts/turn_intent.py, scripts/git_paths.py, orchestration/PROJECT_INTELLIGENCE.md, orchestration/CHANGE_IMPACT.md, orchestration/TURN_HARNESS.md, templates/intelligence/**, tests/evidence/change_impact_resolution_lifecycle.py, tests/evidence/retrieval_relations_extraction_lifecycle.py, tests/evidence/project_intelligence_relation_candidates_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/validation/project_intelligence_candidates_contracts.py, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, tests/scenarios/239-read-only-impact-relation-candidates.md]
     placements:
       docs/human/PROJECT_INTELLIGENCE.md: [第一次 Existing Project, 不重複正式文件, 四份核心 Machine-readable 檔, 三軸狀態, Human Review HTML, Freshness, Attach / Detach, Change Impact, Preserve Valid Native Conventions, Sensitive Data, Monorepo, Retrieval Intelligence：即時按需檢索, Retrieval Quality Evaluation：先量測，再決定下一項技術, Structural Retrieval：已採用的跨檔關係檢索, Semantic Alias Expansion Candidate Trial：HOLD, Remote Embedding Retrieval Trial Readiness（Scenario 133）, Provider-Neutral Local-First Embedding Trial（Scenario 134）, Debug, Identity namespace, Runtime Content Safety Boundary]
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval, Planning 與 Product Delivery, Documentation Architecture, Deterministic Execution, Scenario Conformance 與 Agent Eval, Runtime Content Safety Boundary, Maintenance governance]
@@ -357,6 +357,7 @@ placement_rules:
   - id: evolution
     triggers: [scripts/evolution_*.py, config/evolution-*.yaml, references/evolution/ISSUE_79_*.yaml, .github/workflows/evolution-*.yml, orchestration/EVOLUTION_RADAR.md]
     placements:
+      orchestration/EVOLUTION_RADAR.md: [Operating modes, Technology Intelligence Expansion]
       docs/human/EVOLUTION_RADAR.md: [Weekly Signal Scan, Evidence Quality, Deterministic Pre-analysis, Semantic Analysis, Human Decision Binding, Controlled Trial, Trial → ADOPT, Effectiveness Feedback, Current Boundaries]
       docs/human/EVOLUTION_RADAR_OVERVIEW.md: [Signal Collection, Deterministic Pre-analysis, Semantic Analysis, Human Decision, Controlled Trial, Trial → Adoption, Effectiveness Feedback]
       docs/human/TECHNOLOGY_GUIDE.md: [Runtime & Integration, Execution, Quality & Verification, Evolution & Maintenance, Security & Governance]
@@ -414,7 +415,7 @@ placement_rules:
       docs/human/CONFORMANCE.md: [Deterministic Scheduler + Integration Gate（Scenario 135–136）, Scenario 174 — EARS Requirement Traceability, Scenario 175 — Risk-adaptive bounded Change Impact, Scenario 176 — Mandatory Candidate Secret Scanning, Scenario 177 — Runtime Policy Enforcement, Scenario 179 — Evidence-backed Change Impact Unknown Dispositions, Scenario 183–192 — Planning Package v2, Scenario 193 — Evidence-driven Implementation Resolution, Scenario 195 — Implementation Resolution deterministic enforcement, Scenario 196 — Explicit OpenAPI client generator adapter, Scenario 198 — Runtime Context and invariant matrix, Scenario 199 — Branch cleanup proposal evidence, Scenario 200 — Demand-driven CI toolchain planning, Execution Isolation Conformance]
 
   - id: character-artwork
-    triggers: [orchestration/CREATIVE_DIRECTION.md, harness/adapters/opencode/plugin.ts, harness/adapters/opencode/COMPATIBILITY.md, scripts/aips_cli/dispatch.sh, scripts/aips_cli/help.sh, scripts/character_artifacts.py, scripts/creative_evidence.py, scripts/creative_execution.py, scripts/creative_errors.py, scripts/creative_prompt_compiler.py, scripts/creative_request_policy.py, scripts/creative_image_validation.py, templates/creative/CHARACTER_PROFILE.yaml, templates/creative/STYLE_PROFILE.yaml, templates/creative/CHARACTER_ARTWORK_MANIFEST.yaml, templates/creative/CREATIVE_EVIDENCE.yaml, templates/creative/CREATIVE_BUNDLE.yaml, templates/creative/CREATIVE_COLLECTION_PROFILE.yaml, templates/creative/MODEL_CAPABILITY_PROFILE.yaml, templates/creative/VISUAL_REVIEW_REPORT.schema.json, templates/creative/CREATIVE_JOB_MANIFEST.yaml, templates/creative/COMFYUI_Z_IMAGE_TURBO_API.json, tests/evidence/creative_quality_lifecycle.py, tests/validation/creative_quality_contracts.py, tests/scenarios/234-character-art-workflow.md, tests/scenarios/236-local-creative-execution.md, tests/scenarios/238-creative-task-authorization-and-multi-item-execution.md]
+    triggers: [orchestration/CREATIVE_DIRECTION.md, harness/adapters/opencode/plugin.ts, harness/adapters/opencode/COMPATIBILITY.md, scripts/aips_cli/dispatch.sh, scripts/aips_cli/help.sh, scripts/character_artifacts.py, scripts/character_asset_validation.py, scripts/creative_evidence.py, scripts/creative_execution.py, scripts/creative_trace.py, scripts/creative_quality_benchmark.py, templates/creative/QUALITY_BENCHMARK.json, scripts/creative_errors.py, scripts/creative_prompt_compiler.py, scripts/creative_request_policy.py, scripts/creative_image_validation.py, templates/creative/CHARACTER_PROFILE.yaml, templates/creative/STYLE_PROFILE.yaml, templates/creative/CHARACTER_ARTWORK_MANIFEST.yaml, templates/creative/CREATIVE_EVIDENCE.yaml, templates/creative/CREATIVE_BUNDLE.yaml, templates/creative/CREATIVE_COLLECTION_PROFILE.yaml, templates/creative/MODEL_CAPABILITY_PROFILE.yaml, templates/creative/VISUAL_REVIEW_REPORT.schema.json, templates/creative/CREATIVE_JOB_MANIFEST.yaml, templates/creative/COMFYUI_Z_IMAGE_TURBO_API.json, tests/evidence/creative_quality_lifecycle.py, tests/validation/creative_quality_contracts.py, tests/scenarios/234-character-art-workflow.md, tests/scenarios/236-local-creative-execution.md, tests/scenarios/238-creative-task-authorization-and-multi-item-execution.md]
     placements:
       docs/human/USER_GUIDE.md: [Creative Direction、Style 與 Brand]
       docs/ARCHITECTURE.md: [Runtime flow]
@@ -729,7 +730,7 @@ placement_rules:
       docs/human/HARNESS.md: [Integration model]
       docs/human/INSTALLATION.md: [Runtime integration]
       docs/human/PROJECT_INTELLIGENCE.md: [第一次 Existing Project]
-      docs/human/SYSTEM_REFERENCE.md: [Public commands]
+      docs/human/SYSTEM_REFERENCE.md: [Public commands, Observation fields]
       docs/human/TECHNOLOGY_GUIDE.md: [Project Understanding]
       docs/human/USER_GUIDE.md: [Project Intelligence]
       orchestration/PROJECT_INTELLIGENCE.md: [Existing-project automatic behavior]
@@ -751,3 +752,12 @@ placement_rules:
       docs/human/ARCHITECTURE_OVERVIEW.md: [Project Intelligence 與 Retrieval]
       docs/human/TECHNOLOGY_GUIDE.md: [Project Understanding]
       orchestration/PROJECT_INTELLIGENCE.md: [Existing-project automatic behavior]
+
+  - id: observed-quality-benchmarks
+    triggers: [scripts/agent_eval.py, scripts/performance_evidence.py, scripts/validation_observation.py, tests/evidence/plan27_lifecycle.py, tests/validation/plan27_contracts.py, templates/conformance/AGENT_TASK_BENCHMARK.yaml, templates/conformance/AGENT_EVAL_RESULT.yaml]
+    placements:
+      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+      docs/human/CONFORMANCE.md: [Scenario 229 — Agent Eval Freshness Selection]
+      docs/human/MAINTENANCE.md: [Validation architecture consistency]
+      orchestration/AGENT_EVAL.md: [Result]
+      orchestration/CORE_CHANGE_TESTING.md: [Evidence]

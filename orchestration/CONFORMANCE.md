@@ -16,6 +16,8 @@ Make AIPS behavioral regression coverage measurable without conflating specifica
 
 ## Registry
 
+Keep Scenario coverage canonical. Optional Coding, Creative, Planning and Security workloads reference existing Cases; absent native task observations remain UNKNOWN even when the deterministic rubric passes.
+
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
 
 Scenario 230 binds compact fixed-context and task-route behavior to the intelligence context lifecycle and static contracts; route pointers never imply governance authority.
@@ -890,6 +892,8 @@ Scenario 218 uses deterministic monthly fingerprint sampling and complete Human 
 
 ## Scenario 220 — Parallel advisory fast feedback
 
+Validation Observation 新增相同候選的完整耗時量測與依 Change Class 分組的 P50／P95。重跑不當作新的 PR；歷史紀錄不完整時不授予 selective execution，完整驗證與 required repository check 維持。
+
 Scenario 239 adds bounded source relationship discovery with explicit provenance, truncation and unresolved dynamic behavior; it does not promote graph edges.
 
 Unknown paths continue to select the complete validation profile.
@@ -917,6 +921,8 @@ Dependency reports preserve Human review and do not merge unrelated pull request
 `scripts/dependency_impact.py` classifies dependency updates from `config/dependency-policy.yaml` and recommends evidence by class. Unknown packages are `UNCLASSIFIED` / `HIGH`; semantic runtime changes require retrieval regression and semantic trial evidence. The CLI is advisory, requires a human decision, and never authorizes automatic merges or policy edits.
 
 ## Scenario 222 — Large Document Measurement Only
+
+文件大小報告附上前十二個既有 H2 閱讀入口，並區分文件與 Canonical machine-readable 來源；仍只回報 WARN，不複製 Registry、搬移文件或縮減 Gate。
 
 Documentation closure metrics are report-only and do not weaken placement requirements.
 
@@ -952,6 +958,8 @@ The synthetic multi-item lifecycle verifies per-item preflight, continue-on-fail
 Scenario 239 binds bounded read-only Impact Graph relationship candidates to import, literal CLI dispatch, test, and documentation registry evidence; lifecycle checks confirm source-line provenance, explicit dynamic unknowns, budget truncation, unchanged canonical graph bytes and partial/unknown global coverage.
 
 ## Scenario 236 — Local Creative Bundle Execution
+
+Creative trace summaries record bounded completion, failure and duration samples. The quality benchmark checks confined output digests before showing separately recorded Human dimension ratings; fixtures, valid containers and aggregate timings do not establish visual acceptance.
 
 Synthetic-provider success does not establish real model inference or visual quality.
 

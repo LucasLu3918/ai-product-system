@@ -83,6 +83,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+Agent 任務 bench 重用 `tests/scenario_coverage.yaml` 與既有 Case；`templates/conformance/AGENT_TASK_BENCHMARK.yaml` 提供 Coding／Creative／Planning／Security 工作入口，結果使用既有 Result 範本，沒有第二份 Scenario Registry。
+
 The candidate command and its review boundary are routed through canonical Project Intelligence guidance and its registered conformance evidence.
 
 Creative prompt compiler、model capability evidence 與本機 vision advisory 的行為由 Creative Direction 和 Scenario 234/236/238 定義；Human 導覽與文件閉包由本圖及 Documentation Sync 維護。
@@ -184,6 +186,8 @@ docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGEL
 
 
 ## 文件一致性
+
+新拆出的四個 helper 與 Creative quality 摘要沿用既有 Facade 的 Placement／Sync 主題；Document Size Audit 的 reading_sections 僅導向原 H2，不生成第二份 Canonical Policy。
 
 Project Intelligence relationship candidates are documented in the Project Intelligence and Architecture Overview sections; their scenario evidence is indexed in Conformance.
 

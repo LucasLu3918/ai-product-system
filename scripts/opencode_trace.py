@@ -8,6 +8,8 @@ import re
 from pathlib import Path
 from typing import Any
 
+from performance_evidence import observed_distribution
+
 ALLOWED_FIELDS = {
     "at", "runtime", "event", "status", "decision", "level", "session", "project",
     "domain", "intent", "effect", "readiness", "workflow_count", "duration_ms",
@@ -97,7 +99,15 @@ def read_events(path: Path, limit: int = 20) -> dict[str, Any]:
             events.append(clean)
         except (json.JSONDecodeError, UnicodeDecodeError):
             invalid += 1
-    return {"status": "READY" if events else "NO_EVENTS", "path": str(path), "invalid_records": invalid, "events": events[-limit:]}
+    delivered = [event for event in events if event.get("event") == "context" and event.get("status") == "delivered"]
+    return {"status": "READY" if events else "NO_EVENTS", "path": str(path), "invalid_records": invalid, "events": events[-limit:],
+            "observed_metrics": {
+                "scope": "bounded_retained_events",
+                "context_bytes": observed_distribution([event.get("context_bytes") for event in delivered]),
+                "context_command_ms": observed_distribution([event.get("context_command_ms") for event in delivered]),
+                "model_tokens": None, "model_cost": None, "model_usage_status": "UNKNOWN",
+                "cache_reuse_status": "UNKNOWN",
+            }}
 
 
 def main() -> int:

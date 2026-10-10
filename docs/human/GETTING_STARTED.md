@@ -75,6 +75,8 @@ aips commands list
 
 ## Existing Project
 
+先查看 `aips project diagnose <path>` 的 Recovery Plan。它會解釋阻礙與修復順序，但 bootstrap、finalize、refresh 仍按已批准範圍執行，專案不會因診斷而自動附加。
+
 For local character artwork, an explicit creative request may continue through a bounded style clarification; cancellation or switching tasks revokes that continuation. See the [User Guide](USER_GUIDE.md#creative-directionstyle與brand).
 
 角色插畫可先以 `aips creative discover --project PATH` 檢查支援命令。再準備角色規範、建立 configured Bundle 並預檢；命令存在不代表模型權重或圖片品質已可用。

@@ -1,0 +1,138 @@
+version: 1
+base_sha: 7dc56860b8131535cf72575467b1b89fefff3c27
+branch_inventory:
+  scope: remote:origin
+  observed_count: 128
+  cleanup_candidates: 0
+  cleanup_authorized: false
+dependencies:
+- pull_request: 263
+  dependency:
+    name: ruff
+    normalized_name: ruff
+    ecosystem: pip
+    current_version: 0.16.8
+    target_version: 0.16.10
+  classification: DEV_TOOL
+  risk: LOW
+  required_evidence: []
+  automatic_merge_authorized: false
+- pull_request: 262
+  dependency:
+    name: coverage
+    normalized_name: coverage
+    ecosystem: pip
+    current_version: 7.16.1
+    target_version: 7.16.2
+  classification: UNCLASSIFIED
+  risk: HIGH
+  required_evidence:
+  - human_dependency_review
+  automatic_merge_authorized: false
+- pull_request: 261
+  dependency:
+    name: pyee
+    normalized_name: pyee
+    ecosystem: pip
+    current_version: 13.0.1
+    target_version: 14.0.0
+  classification: UNCLASSIFIED
+  risk: HIGH
+  required_evidence:
+  - human_dependency_review
+  automatic_merge_authorized: false
+- pull_request: 260
+  dependency:
+    name: cryptography
+    normalized_name: cryptography
+    ecosystem: pip
+    current_version: 50.0.1
+    target_version: 50.0.2
+  classification: SECURITY_SENSITIVE
+  risk: HIGH
+  required_evidence:
+  - vulnerability_review
+  - security_review
+  automatic_merge_authorized: false
+- pull_request: 168
+  dependency:
+    name: sentence-transformers
+    normalized_name: sentence-transformers
+    ecosystem: pip
+    current_version: 6.0.1
+    target_version: 6.1.0
+  classification: SEMANTIC_RUNTIME
+  risk: HIGH
+  required_evidence:
+  - retrieval_regression
+  - semantic_trial
+  automatic_merge_authorized: false
+- pull_request: 264
+  dependency:
+    name: github/codeql-action/upload-sarif
+    normalized_name: github/codeql-action/upload-sarif
+    ecosystem: github-actions
+    current_version: 4.37.4
+    target_version: 4.38.2
+  classification: CI_ACTION
+  risk: MEDIUM
+  required_evidence:
+  - action_reference_review
+  automatic_merge_authorized: false
+- pull_request: 259
+  dependency:
+    name: ossf/scorecard-action
+    normalized_name: ossf/scorecard-action
+    ecosystem: github-actions
+    current_version: 55891bbd73f2425e97637d96e306fc9d491d0b21
+    target_version: 2d1146689b8cda280b9bc96326124645441f03bc
+  classification: CI_ACTION
+  risk: MEDIUM
+  required_evidence:
+  - action_reference_review
+  automatic_merge_authorized: false
+validation_cohort:
+  status: NOT_READY
+  unique_pull_request_count: 0
+  errors:
+  - artifact history is incomplete or unverified
+  - 13 shadow records are incomplete, stale, or malformed
+  - cohort has 0 unique pull requests; 30 required
+  selective_execution_authorized: false
+evolution:
+  community_coverage:
+    required: 5
+    target: 6
+    successful: 6
+    status: HEALTHY
+  summary:
+    collected_before_global_limit: 100
+    signal_count: 50
+    global_signal_limit: 50
+    global_signal_limit_applied: true
+    adopt_minimum_evidence_level: 2
+    deduplicated_count: 50
+    community_candidate_count: 30
+    candidate_target: 50
+    candidate_shortfall: 0
+    sampling_status: TARGET_REACHED
+    recommendation_count: 50
+    actionable_count: 0
+    zero_recommendations_valid: true
+  adoption_authorized: false
+creative_attempt:
+  status: BLOCKED
+  reason_code: provider_timeout
+  configured_trials: 1
+  started_trials: 1
+  accepted_submission_attempts: 2
+  completed_trials: 0
+  own_queued_jobs_removed: 2
+  global_interrupt: false
+  human_visual_review: UNVERIFIED
+  user_acceptance: NOT_RECORDED
+  requested_trials: 2
+real_agent_outcomes:
+  status: UNKNOWN
+  reason: no_existing_local_ollama_model_available
+  paid_api_used: false

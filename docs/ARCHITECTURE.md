@@ -4,6 +4,16 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+```mermaid
+flowchart LR
+  PI[Project Intelligence facade] --> Discovery[Bounded source discovery]
+  RI[Retrieval facade] --> Terms[Query terms and aliases]
+  CE[Creative facade] --> Trace[Privacy-filtered trace]
+  CA[Character facade] --> Assets[Passive asset validation]
+```
+
+Python 公開 Facade 委派內部 Discovery、Query Terms、Creative Trace 與 Asset Validation，保留函式與例外身分。Diagnostics 回傳有序唯讀 Recovery Plan；候選關係可有界探索至三層，Runtime 與品質量測仍不提供執行或發布權限。
+
 Project Intelligence `impact-candidates` emits bounded, provenance-backed source candidates; its report is unreviewed, leaves dynamic behavior unresolved, and never writes canonical graph edges or upgrades coverage.
 
 OpenCode hooks run asynchronously with bounded output and cancellation. A short per-Session Context cache deduplicates reads; permission decisions refresh Context, and host-version acceptance remains separate from plugin discovery.

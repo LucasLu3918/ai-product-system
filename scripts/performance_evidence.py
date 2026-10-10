@@ -20,6 +20,17 @@ def percentile_nearest_rank(samples: list[float], percentile: float) -> float:
     return ordered[rank - 1]
 
 
+def observed_distribution(samples: list[object]) -> dict:
+    """Summarize valid observed numbers; absence is UNKNOWN, never zero."""
+    valid = [float(value) for value in samples
+             if isinstance(value, (int, float)) and not isinstance(value, bool)
+             and math.isfinite(value) and value >= 0]
+    return {"status": "OBSERVED" if valid else "UNKNOWN", "sample_count": len(valid),
+            "invalid_count": len(samples) - len(valid),
+            "p50": percentile_nearest_rank(valid, 0.5) if valid else None,
+            "p95": percentile_nearest_rank(valid, 0.95) if valid else None}
+
+
 def route_specialist_skills(profile: dict) -> list[str]:
     skills = ["performance-profiling"]
     bottleneck = profile.get("bottleneck") or {}

@@ -36,6 +36,8 @@ For project work, context identifies project mode and stable instruction sources
 
 ## Verification
 
+Facade extraction keeps same function/exception identity under the supported interpreter. Validate source CLI and existing installed entrypoints with the complete Python 3.12 environment; missing observations stay UNKNOWN and do not bypass Gate requirements.
+
 Creative preflight may report host OS/architecture, backend, runtime, model and discovered dtype. This metadata is diagnostic only; report compatibility as unverified until a supported inference smoke establishes it, without downloads or silent backend fallback.
 
 Project Diagnostics reports allowlisted Runtime capability status and may leave effects UNVERIFIED. Only version-bound native lifecycle evidence can establish Context delivery or Hook/Tool execution.

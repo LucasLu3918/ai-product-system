@@ -8,6 +8,8 @@ Project Intelligence 是 AIPS 對既有專案建立的可重用理解層。
 
 ## 第一次 Existing Project
 
+診斷的 Recovery Plan 以既有 reason code 提供先後步驟及授權標記。bootstrap／finalize／refresh 是需要已批准任務範圍的衍生狀態操作；diagnose 本身仍不建立、附加或修復專案。
+
 ### 唯讀診斷與恢復
 
 `aips project diagnose <project-path>` 會聚合 `aips doctor`、Project Intelligence、目前 Runtime/Harness 設定和本機 MCP 靜態能力，支援 `--format text|yaml|json`。報告包含狀態、穩定 reason code、結構化 next-actions 及重新驗證命令；缺少／部分／過期狀態會先列唯讀檢查，刷新前標示使用者決策點；BLOCKED 狀態只建議查明原因，不猜測修復命令。診斷本身不會 bootstrap、refresh、建立索引、attach 或修復任何資料。Doctor 原始輸出不會複製到報告。
@@ -83,6 +85,12 @@ Skill frontmatter 為 routing source，INDEX 為 generated view；Intelligence �
 Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Detach 先 validated sync 回 External Cache，再封存 `.ai/`。
 
 ## Change Impact
+
+Disposable Retrieval index version 6 會重建舊的 symbol inventories；資料表介面與使用者 Canonical Intelligence 不變，舊索引不能作為本次關係修正的可信證據。
+
+Python symbol discovery 不再把一般函式呼叫當成宣告；explicit top-level module-object re-export 可追到其實作。這減少假的 ambiguous target，關係仍維持 lexical candidate，不推論任意物件方法。
+
+`impact-candidates --max-depth 2` 或 `--max-depth 3` 可探索候選的相鄰 import／consumer；輸出保留 candidate confidence、來源行號及未知關係。候選不會寫入 Canonical Graph，也不能替代高風險 Change Impact 的審查。
 
 For creative changes, manually reviewed CLI, OpenCode, provider, profile, validation and documentation consumers remain scoped evidence when the Impact Graph has no mapped edges; do not claim repository-wide completeness.
 

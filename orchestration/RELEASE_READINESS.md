@@ -52,6 +52,8 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+Plan27 separates local engineering validation, source/version-bound native loopback acceptance, observed local inference and Human visual review. Stable promotion still requires the exact main candidate, clean version/changelog, exact tag/SHA/VERSION verification and separate explicit release approval; unreadable platforms remain UNVERIFIED.
+
 Impact relationship candidates remain unreviewed and cannot substitute for exact-candidate integrity, documentation closure or validation evidence.
 
 The creative quality workflow uses one exact candidate across matrix reconciliation, local lifecycle evidence, documentation closure, secret scanning and the required repository check.
@@ -80,7 +82,7 @@ A Python CI candidate must use its declared requirements and tested constraints,
 
 The CLI module lifecycle is part of candidate validation for changes to the launcher, facade or sourced modules; it checks the source and installed-symlink routes without changing release or publication authority.
 
-Readiness validates the exact `VERSION`, tag target and main candidate without creating a tag. Stable installation remains blocked until a trusted signed version tag exists; key enrollment and first-release approval are separate decisions.
+Readiness validates the exact `VERSION`, tag target and main candidate without creating a tag. Stable installation remains blocked until an approved version tag exists. The current installer verifies the tag target against the advertised exact SHA and VERSION; it does not verify a cryptographic signature. First-release approval remains a separate decision.
 
 Stable installations verify an immutable `vX.Y.Z` tag against its target commit and `VERSION`. This does not create a release: tag writing still requires the separate explicit release approval, and pre-release bootstrap uses `main` only while no stable tag exists.
 

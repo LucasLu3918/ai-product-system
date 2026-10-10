@@ -20,14 +20,14 @@ if config_path.is_file():
     touched = config.get("touched_code") or {}
     mypy = config.get("mypy") or {}
     coverage = config.get("coverage") or {}
-    if config.get("version") != 1 or ruff.get("baseline_findings") != 687 or ruff.get("policy") != "never_increase":
-        errors.append("Ruff must preserve the measured 687-finding baseline and prohibit debt growth")
+    if config.get("version") != 1 or ruff.get("baseline_findings") != 685 or ruff.get("policy") != "never_increase":
+        errors.append("Ruff must preserve the measured 685-finding baseline and prohibit debt growth")
     module_budgets = ruff.get("module_budgets") or {}
     project_budget = module_budgets.get("scripts/project_intelligence.py") or {}
     if project_budget.get("current_findings") != 0 or project_budget.get("next_target") != 0:
         errors.append("Project Intelligence Ruff debt must retain its zero-finding baseline")
     retrieval_budget = module_budgets.get("scripts/retrieval_intelligence.py") or {}
-    if retrieval_budget.get("current_findings") != 5 or retrieval_budget.get("next_target") != 4:
+    if retrieval_budget.get("current_findings") != 4 or retrieval_budget.get("next_target") != 3:
         errors.append("Retrieval Intelligence Ruff debt must retain its measured current count and lower next target")
     if "scripts/project_intelligence_promotion.py" not in (mypy.get("modules") or []):
         errors.append("The extracted Project Intelligence promotion module must remain in the zero-error mypy scope")

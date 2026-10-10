@@ -87,6 +87,10 @@ A Large/Core Change is not complete when:
 
 ## Evidence
 
+Accepted ComfyUI job recovery must test exact-ID queue deletion, no global interrupt and no automatic resubmission after timeout or polling failure. Inconclusive cleanup does not grant another submission.
+
+Plan27 lifecycle binds facade identity, sibling imports, bounded candidate depth, recovery ordering, stale native acceptance, privacy filters and missing-measurement behavior. Native loopback acceptance, real local inference, Human visual review and user acceptance remain separate evidence dimensions.
+
 For OpenCode, bind lifecycle evidence to asynchronous timeout/cancellation, Context cache freshness, direct permission Allow/Deny and a credential-free native loopback acceptance when a supported binary is available. Record the exact accepted host version; keep other versions and model-instruction delivery unverified.
 
 For shell CLI module extraction, preserve the public launcher and facade, verify ordered module loading from the resolved checkout, and run the lifecycle from source and installed-symlink entrypoints with a caller working directory outside the repository.

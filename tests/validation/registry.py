@@ -20,6 +20,7 @@ class ValidatorSpec:
 
 VALIDATORS = (
     ValidatorSpec("validation.static_contracts", True),
+    ValidatorSpec("validation.plan27_contracts", False, ("scripts/project_intelligence*.py", "scripts/retrieval_query_terms.py", "scripts/creative_trace.py", "scripts/creative_quality_benchmark.py", "scripts/creative_execution.py", "scripts/opencode_*.py", "scripts/project_diagnostics.py", "scripts/performance_evidence.py", "scripts/validation_observation.py", "templates/conformance/AGENT_TASK_BENCHMARK.yaml", "templates/conformance/AGENT_EVAL_RESULT.yaml", "templates/creative/QUALITY_BENCHMARK.json", "tests/evidence/plan27_lifecycle.py"), False),
     ValidatorSpec("validation.skill_index_contracts", False),
     ValidatorSpec("validation.opencode_integration_contracts", False, ("scripts/opencode_skill_projection.py", "scripts/opencode_native_guard.py", "scripts/turn_intent.py", "scripts/project_intelligence.py", "harness/adapters/opencode/*", "tests/evidence/opencode_integration_lifecycle.py", "tests/evidence/opencode_native_acceptance.py", "tests/evidence/intelligence_context_lifecycle.py"), False),
     ValidatorSpec("validation.versioning_contracts", True),

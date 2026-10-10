@@ -1,6 +1,6 @@
 version: 1
 ruff:
-  baseline_findings: 687
+  baseline_findings: 685
   policy: never_increase
   scope: scripts_and_tests
   report_dimensions: [rule, module, auto_fixable]
@@ -9,8 +9,8 @@ ruff:
       current_findings: 0
       next_target: 0
     scripts/retrieval_intelligence.py:
-      current_findings: 5
-      next_target: 4
+      current_findings: 4
+      next_target: 3
 touched_code:
   policy: no_new_findings
   base_ref: origin/main

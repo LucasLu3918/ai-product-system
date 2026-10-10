@@ -18,8 +18,12 @@ rules:
       - scripts/aips_cli/dispatch.sh
       - scripts/aips_cli/help.sh
       - scripts/character_artifacts.py
+      - scripts/character_asset_validation.py
       - scripts/creative_evidence.py
       - scripts/creative_execution.py
+      - scripts/creative_trace.py
+      - scripts/creative_quality_benchmark.py
+      - templates/creative/QUALITY_BENCHMARK.json
       - harness/adapters/opencode/plugin.ts
       - harness/adapters/opencode/COMPATIBILITY.md
       - templates/creative/CHARACTER_PROFILE.yaml
@@ -189,11 +193,11 @@ rules:
     agent_docs:
       - orchestration/DOCUMENTATION_SYNC.md
   - id: harness
-    triggers: [scripts/manage_runtime_adapter.py, scripts/harness_resolve.py, scripts/opencode_skill_projection.py, scripts/opencode_native_guard.py, scripts/opencode_trace.py, scripts/creative_workspace_profile.py, scripts/creative_execution.py, scripts/turn_intent.py, scripts/project_intelligence.py, scripts/aips_cli/dispatch.sh, scripts/aips_cli/help.sh, harness/adapters/**, templates/harness/**, tests/scenarios/235-opencode-native-context-guard.md, tests/scenarios/236-local-creative-execution.md]
+    triggers: [scripts/manage_runtime_adapter.py, scripts/harness_resolve.py, scripts/opencode_skill_projection.py, scripts/opencode_native_guard.py, scripts/opencode_trace.py, scripts/creative_workspace_profile.py, scripts/creative_execution.py, scripts/creative_trace.py, scripts/creative_quality_benchmark.py, templates/creative/QUALITY_BENCHMARK.json, scripts/turn_intent.py, scripts/project_intelligence.py, scripts/project_intelligence_discovery.py, scripts/aips_cli/dispatch.sh, scripts/aips_cli/help.sh, harness/adapters/**, templates/harness/**, tests/scenarios/235-opencode-native-context-guard.md, tests/scenarios/236-local-creative-execution.md]
     human_docs: [docs/human/HARNESS.md, docs/human/INSTALLATION.md, docs/human/USER_GUIDE.md, docs/human/ARCHITECTURE_OVERVIEW.md, docs/human/TECHNOLOGY_GUIDE.md, docs/human/CONFORMANCE.md]
     agent_docs: [harness/HARNESS_PROTOCOL.md, harness/adapters/opencode/AGENTS.md, harness/adapters/opencode/COMPATIBILITY.md, orchestration/CONFORMANCE.md]
   - id: project-intelligence
-    triggers: [scripts/project_intelligence.py, scripts/project_intelligence_impact_graph.py, scripts/project_intelligence_storage.py, scripts/project_intelligence_promotion.py, scripts/project_intelligence_temporal.py, scripts/retrieval_intelligence.py, scripts/retrieval_relations.py, scripts/retrieval_storage.py, scripts/retrieval_evaluation.py, scripts/structural_retrieval_trial.py, scripts/retrieval_embedding_trial.py, scripts/retrieval_embedding_trial_summary.py, tests/evidence/retrieval_relations_extraction_lifecycle.py, tests/evidence/project_intelligence_relation_candidates_lifecycle.py, tests/validation/project_intelligence_candidates_contracts.py, tests/scenarios/239-read-only-impact-relation-candidates.md, scripts/turn_context_hook.py, config/retrieval-embedding-trial.yaml, requirements-semantic-trial.txt, templates/intelligence/**, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, .github/workflows/retrieval-semantic-trial.yml]
+    triggers: [scripts/project_intelligence.py, scripts/project_intelligence_discovery.py, scripts/project_intelligence_impact_graph.py, scripts/project_intelligence_storage.py, scripts/project_intelligence_promotion.py, scripts/project_intelligence_temporal.py, scripts/retrieval_intelligence.py, scripts/retrieval_query_terms.py, scripts/retrieval_relations.py, scripts/retrieval_storage.py, scripts/retrieval_evaluation.py, scripts/structural_retrieval_trial.py, scripts/retrieval_embedding_trial.py, scripts/retrieval_embedding_trial_summary.py, tests/evidence/retrieval_relations_extraction_lifecycle.py, tests/evidence/project_intelligence_relation_candidates_lifecycle.py, tests/validation/project_intelligence_candidates_contracts.py, tests/scenarios/239-read-only-impact-relation-candidates.md, scripts/turn_context_hook.py, config/retrieval-embedding-trial.yaml, requirements-semantic-trial.txt, templates/intelligence/**, tests/evidence/change_impact_resolution_lifecycle.py, tests/validation/change_impact_resolution_contracts.py, tests/scenarios/179-evidence-backed-impact-unknown-dispositions.md, .github/workflows/retrieval-semantic-trial.yml]
     human_docs: [docs/human/PROJECT_INTELLIGENCE.md, docs/human/ARCHITECTURE_OVERVIEW.md, docs/human/TECHNOLOGY_GUIDE.md, docs/human/CONFORMANCE.md]
     agent_docs: [orchestration/PROJECT_INTELLIGENCE.md, orchestration/CHANGE_IMPACT.md]
   - id: repository-governance-snapshot
@@ -360,3 +364,8 @@ rules:
       - orchestration/DOCUMENTATION_SYNC.md
     evidence:
       - tests/validation/versioning_contracts.py
+
+  - id: observed-quality-benchmarks
+    triggers: [scripts/agent_eval.py, scripts/performance_evidence.py, scripts/validation_observation.py, tests/evidence/plan27_lifecycle.py, tests/validation/plan27_contracts.py, templates/conformance/AGENT_TASK_BENCHMARK.yaml, templates/conformance/AGENT_EVAL_RESULT.yaml]
+    human_docs: [docs/human/TECHNOLOGY_GUIDE.md, docs/human/CONFORMANCE.md, docs/human/MAINTENANCE.md]
+    agent_docs: [orchestration/AGENT_EVAL.md, orchestration/CORE_CHANGE_TESTING.md]

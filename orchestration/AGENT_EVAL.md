@@ -61,6 +61,8 @@ Do not encode hidden reasoning expectations in the rubric.
 
 ## Result
 
+Optionally record execution.task_observation with source observed_host, task_completed, human_corrections and false_positives. Summarize only case-bound CURRENT results; absence is UNKNOWN. Recorded outcomes remain self-reported host evidence with UNVERIFIED runtime attestation, separate from deterministic rubric PASS.
+
 Recorded results live under:
 
 ~~~text

@@ -12,7 +12,7 @@ Human overview: `docs/human/EVOLUTION_RADAR_OVERVIEW.html`.
 
 ### Weekly Signal Scan
 
-Collect a bounded set of recent high-signal items from configured public technical sources. Configure at least six community discovery sources, treat five successful community sources as the healthy weekly floor, retain separate primary/vendor evidence sources, collect at most eight items per source, and apply a deterministic round-robin global cap of 50 raw signals. Record source roles/provenance/failures; normalize and deduplicate; zero recommendations is valid.
+Collect a bounded set of recent high-signal items from configured public technical sources. Configure at least six community discovery sources, treat five successful community sources as the healthy weekly floor, retain separate primary/vendor evidence sources, collect at most ten items per source, and apply a deterministic round-robin global cap of 50 raw signals. Record source roles/provenance/failures; normalize and deduplicate; zero recommendations is valid.
 
 ### Monthly Deep Review
 
@@ -156,6 +156,8 @@ Direct Human ADOPT without a Trial remains possible when justified, but it MUST 
 The durable Human surface is the original GitHub Issue containing Radar evidence, Human Decision records and Controlled Trial reports. Reporting artifacts never grant publication authority.
 
 ## Documentation consistency
+
+Evolution collection uses ten items per source and retains the fifty-raw-signal bound. Report healthy sources, deduplicated candidates and shortfall separately; preserve primary-source checks, deduplication and Human adoption.
 
 Creative workflow recommendations remain advisory; implementation and Git publication use their existing Human decisions, and Radar evidence never grants continuation, push, merge or release authority.
 
@@ -347,7 +349,7 @@ Weekly discovery uses two source roles: `community` for technical-community disc
 The research funnel is deterministic and bounded:
 
 ~~~text
-per-source candidates <= 8
+per-source candidates <= 10
 → round-robin global raw signals <= 50
 → deterministic Human shortlist <= 12
 → near-duplicate-aware semantic queue <= 10
