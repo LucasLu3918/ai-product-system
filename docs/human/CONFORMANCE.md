@@ -1721,6 +1721,8 @@ The lifecycle covers separate prompt dimensions, Chinese creative-asset routing,
 
 ## Scenario 238 — Creative Task Authorization and Multi-item Execution
 
+Creative task grants authorize only their bounded workflow; Git PR merge confirmation is a separate publication action covered by Scenario 240.
+
 Native OpenCode V2 prompt admission issues a fresh in-memory grant bound to the active session, workspace, actions and bounded output count. A short style selection can derive a new grant only from root-bound, expiring structured continuation state; cancellation, unrelated work, scope expansion and output-cap exhaustion revoke it. Raw prior prompts and transcript context cannot restore authority. Read-only discovery and preflight remain available without a grant.
 
 The synthetic multi-item lifecycle verifies per-item preflight, continue-on-failure, hash-verified resume and recovery after an output succeeds before its checkpoint. Version-only local engine discovery never starts generation. Native OpenCode acceptance verifies grant admission and revocation without invoking image generation; no real model quality or visual acceptance is claimed.
@@ -1753,9 +1755,9 @@ The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies c
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
 
-### Scenario 240 — Personal Publication Default and High-Assurance Opt-In
+## Scenario 240 — Personal Publication Default and High-Assurance Opt-In
 
-Personal mode allows an Agent to publish a validated engineering branch and create a PR to the live remote default branch without a separate grant. The personal-mode hook denies PR merges; a merge requires explicit task intent, exact head/default-base binding, and passing required checks. A protected administrator trust-root selects high assurance; missing, invalid, or unavailable signed authorization blocks without fallback. Direct protected-branch push, tag/release, delete, bypass flags, unsafe commands, and content-scan failures remain denied.
+Personal mode allows an Agent to publish a validated engineering branch and create a PR to the live remote default branch without a separate grant. An explicitly requested PR merge requires exact candidate/head and live default-base binding, a mergeable open PR, and passing required checks; Claude Code and Gemini CLI require native per-call confirmation. Codex remains `ADVISORY` and cannot guarantee interception of direct merge commands. A protected administrator trust-root selects high assurance; missing, invalid, or unavailable signed authorization blocks without fallback. Direct protected-branch push, tag/release, delete, bypass flags, unsafe commands, and content-scan failures remain denied.
 
 
 

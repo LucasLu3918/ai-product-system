@@ -29,6 +29,8 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+Personal PR merge confirmation does not change Creative Direction grants, generation flow or visual acceptance; keep these as separate authority boundaries.
+
 Publication authority has one Human deployment reference in Security Assurance / Runtime Policy Enforcement, with User Guide CLI usage and architecture/Harness trust-boundary links. Preserve explicit unsigned-record migration and unsupported Shell/GH CAS limitations.
 
 Creative benchmark guidance separates file integrity, observed provider execution, Human visual dimensions and acceptance. Synchronize the existing Human and Agent creative topics with the same distinctions.
@@ -202,6 +204,9 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 
 ## Human documentation placement
+
+Personal-mode PR merges require explicit intent, exact head/default-base and passing-check validation, then per-call Claude native `ask` or Gemini extension `ask_user`. Codex and OpenCode remain advisory for direct merge interception; do not imply the base SHA is atomically pinned.
+
 
 Candidate-aware preview verifies documentation closure and allowed H2 placement for the exact base/head diff; a generic placement audit alone is insufficient for publication readiness.
 

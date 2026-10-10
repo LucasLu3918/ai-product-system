@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+The personal PR merge confirmation path is independent from character artwork generation and review; keep both authorization boundaries explicit when adapter documentation changes.
+
 Shared CLI dispatch changes require creative/Harness documentation closure even when the new entry is publication-only; confirm existing creative authorization remains independent of external Git grants.
 
 拆出的 Discovery、Query Terms、Creative Trace 與 Asset Validation 使用原 Facade 的文件歸屬。文件大小報告提供既有 H2 閱讀入口與機器可讀來源分類，保留單一 Canonical Registry。
@@ -254,6 +256,8 @@ Legacy Project Knowledge remains compatibility input only. New reusable understa
 Focused Intelligence context evidence must distinguish storage deduplication from runtime-context deduplication. Do not promote conflict/override/change-impact/monorepo/migration Scenarios until their full contracts are actually enforced and directly exercised.
 
 ## Impact-derived regression testing
+
+Personal-mode PR merge validation binds the per-call confirmation to the exact candidate head and required-check result; completed review evidence does not substitute for that confirmation.
 
 For creative authorization changes, derive regression cases from the adapter, policy, executor, callers and consumers. Review changed and affected-but-unchanged nodes; do not infer repository-wide completeness from scoped graph evidence.
 

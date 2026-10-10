@@ -118,6 +118,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Git publication confirmation remains within Security and Governance; it does not grant or alter creative task authority.
+
 Creative artifact 的本地授權不能用於 Git publication；新增的 approval CLI 與既有 creative CLI 共用 dispatch，仍維持各自 grant 邊界。
 
 Creative Trace 與 Asset Validation 分別處理私密資料過濾與被動容器驗證。Trial 摘要綁定本地影像及雜湊，Human 視覺評分與使用者接受保持獨立。
@@ -355,7 +357,7 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 ## Maintenance governance
 
-Git publication 的行為來源映射與 Human 文件位置由 `config/documentation-placement.yaml` 約束；個人模式及其 accepted origin limitation 需在 User Guide 與 Security Assurance 保持一致。
+Git publication 的行為來源映射與 Human 文件位置由 `config/documentation-placement.yaml` 約束；個人模式的逐次 PR merge 確認、Codex advisory limitation 與 accepted origin limitation 需在 User Guide 與 Security Assurance 保持一致。這項改動擴充既有 runtime policy boundary，未改變元件拓撲，架構圖不需更新。
 
 
 Publication 維護需獨立確認 issuer config、公鑰、ledger 與 exact-candidate Core evidence；缺少可信部署時保留發布阻擋，不將 fixture acceptance 當正式授權。

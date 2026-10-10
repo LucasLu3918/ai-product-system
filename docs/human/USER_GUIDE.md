@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Creative task grants remain separate from Git authority; the personal PR merge confirmation flow is described under Git Publication 與 Release.
+
 Creative grant 僅涵蓋已核准創作範圍；成品若要 commit／push／PR，需另依 Git Publication 與 Release 流程取得 signed external grant。
 
 ComfyUI 已接受工作後若逾時或輪詢失敗，AIPS 只請求移除該 queued job，阻擋自動重送，不中斷其他正在執行的工作。先檢查 Provider 狀態，再明確重試。
@@ -158,6 +160,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 新專案若尚未選擇技術，AIPS 會先檢查硬性限制，再依團隊、產品、既有系統、交付與維護需求提出少量候選和取捨；語言與框架分開選擇。架構建議同時看複雜度訊號與反向訊號，並分開說明 Clean Architecture、DDD 與部署方式。重要選擇由使用者確認後，才會整理到 Implementation Profile。
 
 ## Global Harness 與 MCP
+
+For personal-mode PR merges, the runtime adapter presents a per-operation confirmation with the validated PR, candidate SHA, and required-check state.
 
 Git publication uses the runtime adapter’s supported hook surface. Claude and Gemini have native command hooks; Codex remains advisory, so users needing enforced isolation must use an externally protected high-assurance setup.
 
@@ -504,7 +508,7 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
-預設個人模式會在程式修改與驗證完成後，自行推送工程分支並建立／更新指向遠端預設分支的 PR；不需設定簽發服務。只有使用者明確要求 local-only／不發布時才停在本機。個人模式 Hook 不允許 Agent 合併 PR；只有使用者在該任務明確要求合併，且 PR head、預設 base 與 required checks 均確認通過時，任務執行者才可完成合併。直接推送保護分支、刪除分支與發行不屬於個人模式。
+預設個人模式會在程式修改與驗證完成後，自行推送工程分支並建立／更新指向遠端預設分支的 PR；不需設定簽發服務。只有使用者明確要求 local-only／不發布時才停在本機。使用者明確要求合併 PR 時，Claude Code 每次會顯示原生確認並列出 PR、base/head SHA 與 required checks；Gemini CLI 透過互動式 extension policy 每次要求確認。合併前會驗證 PR 開啟且可合併、目標為遠端預設分支、head 是目前 allowlist 工程分支與精確候選 SHA，且 required checks 已通過。Codex Hook 仍是 advisory，無法保證攔截直接 merge 命令。直接推送保護分支、刪除分支與發行不屬於個人模式。
 
 部署管理者信任根會選擇高保證模式；此時每個 push、PR create、merge 各需獨立一次性 grant。`aips approval propose/status/verify` 提供精確提案與外部簽章驗證。完整部署、CLI 範例與安全取捨見 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement)。
 

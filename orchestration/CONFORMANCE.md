@@ -952,6 +952,8 @@ Scenario 236's exact-candidate Core Matrix records synthetic creative lifecycle 
 
 ## Scenario 238 — Creative Task Authorization and Multi-item Execution
 
+Creative task authorization remains separate from Git publication; personal PR merge confirmation follows the publication policy and Scenario 240.
+
 Each item retains explicit execution intent and distinct review/acceptance state.
 
 

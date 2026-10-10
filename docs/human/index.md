@@ -26,7 +26,11 @@ features:
 
 ## 文件如何組織
 
+Git publish／merge 的 Human 操作見 User Guide，安全與 Agent adapter 邊界見 Security Assurance 和 Harness；創意授權與 Git 授權各自維持其文件入口。
+
 Git 發布操作請從 [User Guide](./USER_GUIDE.md#git-publication-與-release) 開始；若需理解個人快速模式與高保證模式的信任邊界，閱讀 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement)。
+
+個人模式 PR 合併每次需使用 Claude Code 或啟用中的 Gemini 原生確認；Codex 無法保證攔截直接 merge 命令，詳見上述安全保證。
 
 
 Git publication 外部簽發、服務接入與 migration 請閱讀 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement)，實際 propose/status/verify 使用流程在 User Guide 的 Git Publication 與 Release。

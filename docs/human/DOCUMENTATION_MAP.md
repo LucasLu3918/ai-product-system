@@ -22,7 +22,7 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
-Git 發布模式與操作步驟以 [User Guide](./USER_GUIDE.md#git-publication-與-release) 為入口；安全保證、信任根部署與隔離限制以 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement) 為準。
+Git 發布模式與操作步驟以 [User Guide](./USER_GUIDE.md#git-publication-與-release) 為入口；安全保證、信任根部署與隔離限制以 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement) 為準。個人模式 PR merge 的逐次確認依賴 Claude Code 原生 `ask` 或啟用中的 Gemini AIPS extension `ask_user` policy；Codex 仍為 advisory。
 
 
 The recursive impact report links source changes to required Human and Agent documents.
@@ -85,6 +85,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 - SYSTEM_REFERENCE.md：由已驗證 system facts registry 衍生的 command、capability、platform 與 runtime 表格。
 
 ## Agent / machine canonical 文件
+
+OpenCode continues to use its existing signed-publication route for protected operations; per-call personal PR merge confirmation is implemented only by Claude Code and the active Gemini AIPS extension.
 
 個人與高保證發布模式的機器執行規則位於 `scripts/publication_authority.py`、`scripts/governance_guard.py` 與 `orchestration/ORCHESTRATOR.md`；proposal 由 `templates/git-publish-proposal.md` 保留候選證據。
 

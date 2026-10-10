@@ -18,6 +18,8 @@ The owned `plugins/aips-opencode.ts` projection is installed only for a positive
 
 The shared publication CLI can propose/verify external signed grants. OpenCode remains ADVISORY for this Git command gate; setup or fixture receipts cannot prove native interception of every remote publication.
 
+Per-call personal PR merge confirmation is supported only by Claude Code and the active Gemini AIPS extension. This OpenCode adapter remains advisory for direct `gh pr merge` and retains the external signed-grant route for high-assurance publication.
+
 Optional native-acceptance.json records one local loopback Host/platform/source combination, including a conservative runtime-source digest. Do not extrapolate its Context and native file-hook checks to another version, L3 external actions, session cancellation, arbitrary MCP or production model quality.
 
 The creative `review-assist` schema is a separate bounded action. The adapter requires a current-user review grant and active Session root, while the tool reports advisory results without changing execution review or acceptance state.

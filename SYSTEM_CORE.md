@@ -19,7 +19,7 @@ Use bounded, evidence-based execution. Large/Core changes require the affected-b
 
 ## Git Publish Approval Gate
 
-Before remote Git publication, satisfy the selected mode's candidate, content-safety and scope checks. Personal mode defaults coding tasks to publishing the validated candidate to an engineering branch and creating/updating a PR without a separate per-operation confirmation, unless the user says local-only or forbids publication. The personal-mode hook denies PR merges; merge into `main` only when the task explicitly requests it, the PR head/base are exact, and required checks pass. High-assurance mode requires the external single-use grant for each protected publication operation. Direct protected-branch pushes, releases and production actions remain separately gated.
+Before remote Git publication, satisfy the selected mode's candidate, content-safety and scope checks. Personal mode defaults coding tasks to publishing the validated candidate to an engineering branch and creating/updating a PR without a separate per-operation confirmation, unless the user says local-only or forbids publication. A PR merge requires explicit task intent, exact candidate/head and live default-base validation, mergeability and passing required checks, plus native per-call confirmation in Claude Code or Gemini CLI. Codex remains `ADVISORY` and cannot guarantee interception of direct merge commands. High-assurance mode requires the external single-use grant for each protected publication operation. Direct protected-branch pushes, releases and production actions remain separately gated.
 
 ## Task-specific protocols
 

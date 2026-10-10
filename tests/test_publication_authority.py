@@ -128,15 +128,84 @@ class PublicationTest(unittest.TestCase):
             with self.subTest(branch=branch, refspec=refspec, flags=flags), self.assertRaises(auth.PublicationError):
                 auth.validate_personal_action(self.repo, 'git_push', args)
 
-    def test_personal_mode_does_not_authorize_tags_releases_or_multiple_ops(self):
+    def test_personal_mode_still_denies_tags_and_releases(self):
         with self.assertRaises(auth.PublicationError):
             auth.validate_personal_action(self.repo, 'git_tag', ['git', 'tag', 'v1'])
         with self.assertRaises(auth.PublicationError):
             auth.validate_personal_action(self.repo, 'gh_release_create', ['gh', 'release', 'create', 'v1'])
-        merge = ['gh', 'pr', 'merge', '7', '--repo', 'owner/project', '--merge',
+
+    def test_personal_merge_requires_exact_open_default_branch_pr_and_passing_checks(self):
+        import json
+
+        self.run_git(self.repo, 'switch', '-c', 'codex/test-merge')
+        self.run_git(self.repo, 'remote', 'set-url', 'origin', 'https://github.com/owner/project.git')
+        merge = ['gh', 'pr', 'merge', '7', '--repo', 'owner/project', '--squash',
                  '--match-head-commit', self.head]
-        with self.assertRaises(auth.PublicationError):
-            auth.validate_personal_action(self.repo, 'gh_pr_merge', merge)
+        pr = {'url': 'https://github.com/owner/project/pull/7', 'state': 'OPEN', 'isDraft': False,
+              'mergeable': 'MERGEABLE', 'headRefOid': self.head, 'headRefName': 'codex/test-merge',
+              'baseRefOid': self.base,
+              'baseRefName': 'main'}
+        original_run = auth.run
+        real_subprocess_run = subprocess.run
+
+        def observed_run(cwd, *argv):
+            if argv[:3] == ('gh', 'pr', 'view'):
+                return json.dumps(pr)
+            return original_run(cwd, *argv)
+
+        def observed_subprocess_run(argv, **kwargs):
+            if argv[:3] == ['gh', 'pr', 'checks']:
+                return subprocess.CompletedProcess(argv, 0, '[{"bucket":"pass","name":"repository"}]', '')
+            return real_subprocess_run(argv, **kwargs)
+
+        with patch('publication_authority._personal_base', return_value=self.base), \
+                patch('publication_authority._remote_default_branch', return_value='main'), \
+                patch('publication_authority._tip', return_value=self.base), \
+                patch('publication_authority.run', side_effect=observed_run), \
+                patch('publication_authority.subprocess.run', side_effect=observed_subprocess_run), \
+                patch('check_secret_leakage.scan_candidate', return_value=([], [], [], {})):
+            observed = auth.validate_personal_action(self.repo, 'gh_pr_merge', merge)
+            binding = observed['merge_confirmation']
+            self.assertEqual(binding['pr_number'], 7)
+            self.assertEqual(binding['pr_url'], 'https://github.com/owner/project/pull/7')
+            self.assertEqual(binding['head_sha'], self.head)
+            self.assertEqual(binding['base_sha'], self.base)
+            self.assertEqual(binding['required_checks'], ['repository'])
+
+            pr['state'] = 'CLOSED'
+            with self.assertRaisesRegex(auth.PublicationError, 'open and ready'):
+                auth.validate_personal_action(self.repo, 'gh_pr_merge', merge)
+            pr['state'] = 'OPEN'
+            pr['isDraft'] = True
+            with self.assertRaisesRegex(auth.PublicationError, 'open and ready'):
+                auth.validate_personal_action(self.repo, 'gh_pr_merge', merge)
+            pr['isDraft'] = False
+            pr['mergeable'] = 'UNKNOWN'
+            with self.assertRaisesRegex(auth.PublicationError, 'mergeability'):
+                auth.validate_personal_action(self.repo, 'gh_pr_merge', merge)
+            pr['mergeable'] = 'MERGEABLE'
+
+            pr['baseRefName'] = 'release'
+            with self.assertRaisesRegex(auth.PublicationError, 'default branch'):
+                auth.validate_personal_action(self.repo, 'gh_pr_merge', merge)
+            pr['baseRefName'] = 'main'
+            pr['headRefName'] = 'other-branch'
+            with self.assertRaisesRegex(auth.PublicationError, 'current allowlisted engineering branch'):
+                auth.validate_personal_action(self.repo, 'gh_pr_merge', merge)
+            pr['headRefName'] = 'codex/test-merge'
+            pr['headRefOid'] = self.base
+            with self.assertRaisesRegex(auth.PublicationError, 'head'):
+                auth.validate_personal_action(self.repo, 'gh_pr_merge', merge)
+            pr['headRefOid'] = self.head
+
+            def pending_checks(argv, **kwargs):
+                if argv[:3] == ['gh', 'pr', 'checks']:
+                    return subprocess.CompletedProcess(argv, 8, '[{"bucket":"pending","name":"repository"}]', '')
+                return real_subprocess_run(argv, **kwargs)
+
+            with patch('publication_authority.subprocess.run', side_effect=pending_checks), \
+                    self.assertRaisesRegex(auth.PublicationError, 'required PR checks'):
+                auth.validate_personal_action(self.repo, 'gh_pr_merge', merge)
 
     def test_personal_scan_uses_live_remote_default_not_mutable_origin_head(self):
         self.run_git(self.repo, 'fetch', 'origin', 'main')
@@ -359,12 +428,23 @@ class PublicationTest(unittest.TestCase):
         self.run_git(self.repo, 'remote', 'set-url', 'origin', 'https://github.com/owner/project.git')
         merge = ['gh', 'pr', 'merge', '7', '--repo', 'owner/project', '--squash', '--match-head-commit', self.head]
         original = auth.run
+        real_subprocess_run = subprocess.run
         def observe(cwd, *argv):
             if argv[0] == 'gh':
                 import json
-                return json.dumps({'headRefOid': self.head, 'baseRefOid': self.base, 'baseRefName': 'main'})
+                return json.dumps({'url': 'https://github.com/owner/project/pull/7', 'state': 'OPEN',
+                                   'isDraft': False, 'mergeable': 'MERGEABLE', 'headRefOid': self.head,
+                                   'headRefName': 'codex/test-merge',
+                                   'baseRefOid': self.base, 'baseRefName': 'main'})
             return original(cwd, *argv)
-        with patch('publication_authority._tip', return_value=self.base), patch('publication_authority.run', side_effect=observe):
+        def observe_checks(argv, **kwargs):
+            if argv[:3] == ['gh', 'pr', 'checks']:
+                return subprocess.CompletedProcess(argv, 0, '[{"bucket":"pass","name":"repository"}]', '')
+            return real_subprocess_run(argv, **kwargs)
+        with patch('publication_authority._tip', return_value=self.base), \
+                patch('publication_authority._remote_default_branch', return_value='main'), \
+                patch('publication_authority.run', side_effect=observe), \
+                patch('publication_authority.subprocess.run', side_effect=observe_checks):
             self.assertEqual(auth.action(self.repo, 'gh_pr_merge', merge, self.base)['target_ref'], 'refs/heads/main')
             for flag in ['-d', '--auto=true', '--admin=true', '--delete-branch=true']:
                 with self.assertRaises(auth.PublicationError):
@@ -378,9 +458,9 @@ class PublicationTest(unittest.TestCase):
         with patch('publication_authority._tip', return_value=self.base), self.assertRaises(auth.PublicationError):
             auth.action(self.repo, 'gh_release_create', release, self.base)
 
-    def test_hook_returns_normal_deny_for_merge_and_unsupported_shell(self):
+    def test_hook_denies_unsupported_shell(self):
         import json
-        commands = ['gh pr merge 7', "sh <<'EOF'\ngit push origin main\nEOF\n", 'G=git; $G push origin main',
+        commands = ["sh <<'EOF'\ngit push origin main\nEOF\n", 'G=git; $G push origin main',
                     "env -S 'git push origin main'", 'git -c alias.publish=push publish origin main']
         for command in commands:
             payload = {'cwd': str(self.repo), 'tool_input': {'command': command}}
@@ -388,6 +468,42 @@ class PublicationTest(unittest.TestCase):
                                   input=json.dumps(payload), text=True, capture_output=True, check=False)
             self.assertEqual(proc.returncode, 0)
             self.assertEqual(json.loads(proc.stdout)['hookSpecificOutput']['permissionDecision'], 'deny')
+
+    def test_personal_merge_hook_requires_native_confirmation_for_supported_runtimes(self):
+        import io
+        import json
+        import tomllib
+
+        command = 'gh pr merge 7 --repo owner/project --squash --match-head-commit ' + self.head
+        publication = {
+            'github_repo': 'owner/project',
+            'merge_confirmation': {'pr_number': 7, 'required_checks': ['repository'],
+                                   'base_branch': 'main', 'base_sha': self.base, 'head_sha': self.head},
+        }
+        payload = {'cwd': str(self.repo), 'tool_input': {'command': command}}
+        for runtime in ['claude-code', 'gemini-cli']:
+            output = io.StringIO()
+            with patch('sys.stdin', io.StringIO(json.dumps(payload))), patch('sys.stdout', output), \
+                    patch('runtime_policy.action_from_hook', return_value=None), \
+                    patch.object(guard, 'safe_emit', return_value={'decision': 'ALLOW'}), \
+                    patch('publication_authority.publication_mode', return_value='personal'), \
+                    patch('publication_authority.validate_personal_action', return_value=publication):
+                guard.hook(runtime)
+            response = json.loads(output.getvalue())
+            if runtime == 'claude-code':
+                hook_output = response['hookSpecificOutput']
+                self.assertEqual(hook_output['permissionDecision'], 'ask')
+                self.assertIn(self.head, hook_output['permissionDecisionReason'])
+                self.assertIn(self.base, hook_output['permissionDecisionReason'])
+            else:
+                self.assertEqual(response['decision'], 'allow')
+                self.assertIn(self.head, response['systemMessage'])
+
+        policy_path = ROOT / 'harness/adapters/gemini-cli/policies/personal-pr-merge.toml'
+        rule = tomllib.loads(policy_path.read_text())['rule'][0]
+        self.assertEqual(rule['decision'], 'ask_user')
+        self.assertTrue(rule['interactive'])
+        self.assertEqual(set(rule['modes']), {'default', 'autoEdit', 'yolo'})
 
     def test_claude_hook_allows_a_valid_personal_branch_push_without_grant(self):
         import json
