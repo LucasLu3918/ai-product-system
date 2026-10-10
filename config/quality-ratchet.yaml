@@ -1,16 +1,16 @@
 version: 1
 ruff:
-  baseline_findings: 758
+  baseline_findings: 687
   policy: never_increase
   scope: scripts_and_tests
   report_dimensions: [rule, module, auto_fixable]
   module_budgets:
     scripts/project_intelligence.py:
-      current_findings: 10
-      next_target: 9
+      current_findings: 0
+      next_target: 0
     scripts/retrieval_intelligence.py:
-      current_findings: 6
-      next_target: 5
+      current_findings: 5
+      next_target: 4
 touched_code:
   policy: no_new_findings
   base_ref: origin/main
@@ -35,6 +35,15 @@ coverage:
   branch_measurement: true
   minimum_percent: null
   module_baselines:
+    scripts/project_intelligence_impact_graph.py:
+      covered_lines: 98
+      total_statements: 207
+      percent: 45.5
+      covered_branches: 47
+      total_branches: 112
+      measurement_scope: bounded_relation_candidates_lifecycle
+      evidence: tests/evidence/project_intelligence_relation_candidates_lifecycle.py
+      measurement_command: coverage run --branch --source=project_intelligence_impact_graph tests/evidence/project_intelligence_relation_candidates_lifecycle.py
     scripts/project_intelligence_storage.py:
       covered_lines: 37
       total_statements: 37
@@ -44,4 +53,4 @@ coverage:
       measurement_scope: bounded_storage_lifecycle
       evidence: tests/evidence/module_extraction_lifecycle.py
       measurement_command: coverage run --branch --source=project_intelligence_storage tests/evidence/module_extraction_lifecycle.py
-  note: This is a bounded lifecycle baseline, not repository-wide coverage. Keep it report-only until multiple representative modules and workflows are measured.
+  note: These are bounded lifecycle baselines, not repository-wide coverage. Keep them report-only; do not infer a global threshold from selected module measurements.

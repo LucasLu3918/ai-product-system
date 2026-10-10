@@ -927,7 +927,7 @@ The size audit measures tracked text/evidence files against 50,000 bytes and rep
 
 CI always installs Python packages from all four validation requirement files because mandatory full-repository lifecycle fixtures exercise the complete CLI preflight. Candidate-path selection still controls Node and Playwright Chromium installation.
 
-Candidate evidence stays bound to exact paths and reports missing facts as unknown.
+Candidate evidence stays bound to exact paths and reports missing facts as unknown. The current quality ratchet records a Ruff baseline and bounded report-only lifecycle coverage; it does not expand the validated module scope or grant release authority.
 
 
 Creative authorization and multi-item output are recorded under Scenario 238 and the current Core Matrix; this remains local adapter evidence and makes no provider or visual-quality claim.

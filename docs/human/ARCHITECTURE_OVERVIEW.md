@@ -345,6 +345,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 The candidate command is read-only and does not change graph completeness or publication authority.
 
+Progressive quality ratchets keep per-module Ruff budgets and bounded lifecycle coverage report-only; they do not set a repository-wide coverage minimum.
+
 The creative change updates the recursive documentation map and retains a scoped Impact Graph unknown disposition until consumer edges are independently mapped.
 
 Release and branch inventories remain advisory evidence and do not authorize cleanup, tag creation, release or unrelated merges.

@@ -25,6 +25,16 @@ def main() -> int:
         previous_counts={"scripts/project_intelligence.py": 20},
     )
     assert violations == []
+    terminal_zero = quality_ratchet.module_debt_violations(
+        {"by_module": {"scripts/project_intelligence.py": {"findings": 0}}},
+        {"scripts/project_intelligence.py": {"current_findings": 0, "next_target": 0}},
+    )
+    assert terminal_zero == []
+    terminal_zero_violation = quality_ratchet.module_debt_violations(
+        {"by_module": {"scripts/project_intelligence.py": {"findings": 1}}},
+        {"scripts/project_intelligence.py": {"current_findings": 0, "next_target": 0}},
+    )
+    assert terminal_zero_violation and "1 findings exceed recorded current_findings 0" in terminal_zero_violation[0]
     violations = quality_ratchet.module_debt_violations(
         {"by_module": {"scripts/project_intelligence.py": {"findings": 19}}},
         {"scripts/project_intelligence.py": {"current_findings": 19, "next_target": 17}},

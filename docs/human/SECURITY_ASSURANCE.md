@@ -248,7 +248,7 @@ Plan21 shared hash/path helpers preserve existing evidence formats and do not ch
 
 Publication scanning excludes only validated numeric Git index/mode metadata; paths, added/removed/context lines and unknown headers remain scanned. Branch deletion verifies GitHub RS256 issuer, repository, protected main, workflow SHA, dispatch event and a proposal-bound audience. Runner flags alone grant no authority; tokens remain in memory.
 
-Release readiness checks bind version, changelog, installer and tag policy to an exact candidate but do not create a release or tag; release publication requires separate Human authorization.
+Release readiness checks bind version, changelog, installer and tag policy to an exact candidate but do not create a release or tag; release publication requires separate Human authorization. Quality ratchet reports are maintenance evidence only and do not grant security assurance, publication or merge authority.
 
 The shared CI bootstrap validates module names as Python identifiers before import, uses checked-in requirement files and constraints, and fails on inconsistent dependencies.
 
