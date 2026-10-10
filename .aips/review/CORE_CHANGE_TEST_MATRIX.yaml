@@ -11,6 +11,7 @@ change:
   - docs/ARCHITECTURE.md
   - docs/human/ARCHITECTURE_OVERVIEW.md
   - docs/human/CONFORMANCE.md
+  - docs/human/CONFORMANCE_HISTORY_INDEX.md
   - docs/human/DOCUMENTATION_MAP.md
   - docs/human/DOCUMENTATION_SYNC.md
   - docs/human/HARNESS.md
@@ -37,7 +38,7 @@ change:
   - tests/test_publication_authority.py
 candidate:
   base_sha: 15db798c6f5e02b32a41c10295c503f1b0d24dcf
-  changed_files_hash: 6d7fc2a2650417fc655dfd20d6249a3fd4eba5a4b0cad1309077ef8cf5685fd5
+  changed_files_hash: 16fbe7125c2be77582ef3facdfa81e84b5fef83a03526b1d4d8846501beaa8e4
 matrix:
 - boundary: Personal PR merge validation and exact-candidate binding
   reason: PR state, source branch, target branch, head SHA and required checks determine whether a merge prompt may be shown.
