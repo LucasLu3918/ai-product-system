@@ -165,6 +165,8 @@ An advisory preflight can run concurrently but must not be a prerequisite of the
 
 When concurrency cancels a superseded workflow, the aggregate does not run. An active workflow still runs the aggregate after Janitor failure, so a genuine failed candidate remains red. Review the latest run for the candidate SHA when older runs were canceled.
 
+The `validate` concurrency key includes both PR number and event action. This keeps `opened` and classification `labeled` candidates independent, while a newer run for the same action can replace stale evidence; always verify the successful aggregate against the exact candidate.
+
 ~~~text
 PR candidate
 ├─ janitor: exact candidate + lint/type/tests/contracts

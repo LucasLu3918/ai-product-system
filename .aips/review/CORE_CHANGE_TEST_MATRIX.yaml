@@ -1,67 +1,100 @@
 version: 1
 status: READY
 change:
-  id: plan26-phase7-stable-release-0-81-0
-  summary: Prepare exact stable release candidate 0.81.0 by finalizing VERSION and losslessly moving accumulated Unreleased notes, while keeping tag and GitHub Release creation out of scope.
+  id: required-check-concurrency-race
+  summary: Isolate validate workflow runs by pull-request event action so opened and classification-label events cannot cancel each other while same-action supersession and required repository checks remain intact.
   boundary:
+  - .github/workflows/validate.yml
+  - tests/validation/static_contracts.py
   - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
-  - .aips/review/PLAN26_PHASE7_STABLE_RELEASE_PROPOSAL.md
-  - CHANGELOG.md
-  - VERSION
+  - .aips/review/REQUIRED_CHECK_CONCURRENCY_CORE_CHANGE_PROPOSAL.md
   - docs/human/ARCHITECTURE_OVERVIEW.md
-  - docs/human/DOCUMENTATION_MAP.md
-  - docs/human/DOCUMENTATION_SYNC.md
+  - docs/human/CONFORMANCE.md
   - docs/human/MAINTENANCE.md
+  - docs/human/SECURITY_ASSURANCE.md
   - docs/human/TECHNOLOGY_GUIDE.md
   - docs/human/USER_GUIDE.md
-  - docs/human/index.md
-  - orchestration/DOCUMENTATION_SYNC.md
+  - orchestration/CONFORMANCE.md
+  - orchestration/CORE_CHANGE_TESTING.md
+  - orchestration/DETERMINISTIC_SCHEDULER.md
+  - orchestration/INTEGRATION_GATE.md
+  - orchestration/ORCHESTRATOR.md
 candidate:
-  base_sha: 7ac0dffa45cc3d793188f6f4c36ea7a7290e4cb6
-  changed_files_hash: 6ac0ae1659ff2540a16f275f0e008be8283618d04c9f6f9306d3fa9200307b7d
+  base_sha: bde3a84afbba375de0d1aa4297b8ba2a7b4847af
+  changed_files_hash: 7e46034164ef2650a44790af94a39a00984a799551b75c9e580aaf73be7374cc
 matrix:
-- boundary: Stable version and changelog metadata
-  reason: Release readiness consumes VERSION and the canonical changelog sections; the candidate must preserve all current notes and remain bound to its exact Git SHA.
+- boundary: Pull-request event concurrency and required aggregate
+  reason: GitHub workflow cancellation previously removed the required repository aggregate when opened and labeled events shared a PR-only concurrency key. The action-aware key must retain same-action replacement without cross-action cancellation.
   checks:
     static_lint:
       applicable: true
-      evidence: YAML and release metadata structural validation; no Python source changes.
+      evidence: Python static workflow contract and YAML/workflow structural validation.
     unit:
       applicable: true
-      evidence: Versioning contracts verify one empty top-level Unreleased heading, unique descending release headings, and VERSION matching the newest release.
+      evidence: Static contract exercises distinct PR action keys, same-PR action isolation, push separation, and cancellation decisions.
     integration:
       applicable: true
       evidence: Full repository validation and exact-candidate Core Integration Gate.
     contract:
       applicable: true
-      evidence: Version-policy contracts and lifecycle verify exact version 0.81.0, changelog readiness, and read-only exact-candidate provenance.
+      evidence: Workflow contract locks event-action grouping, label behavior, Janitor routing, and the required repository aggregate.
     e2e:
       applicable: false
-      na_reason: No UI, browser, generation, installation, or external runtime behavior changes.
+      na_reason: No product UI/browser behavior changes; remote PR event-pair behavior is verified by the exact candidate GitHub Actions run.
     security:
       applicable: true
-      evidence: Mandatory exact-candidate strict secret scan and normal Core publication security checks.
+      evidence: "Strict exact-candidate and base..head secret scans; confirm contents: read and branch protection are unchanged."
     migration_recovery:
       applicable: false
-      na_reason: No persisted user data, schema, or migration behavior changes.
+      na_reason: No persisted schema, data, migration, or recovery behavior changes.
     cli_harness:
       applicable: false
-      na_reason: No CLI or Harness behavior changes.
+      na_reason: No AIPS CLI or Harness runtime behavior changes.
     docs_schema:
       applicable: true
-      evidence: Recursive documentation impact closure, canonical placement, and full documentation validators confirm release guidance and changelog metadata consistency across all eight required Human/Agent documents.
+      evidence: Required 15-path impact closure, canonical placement, Markdown links, documentation contracts, and VitePress build.
+- boundary: Documentation and policy compatibility
+  reason: The documentation impact gate requires canonical guidance updates; workflow permissions, branch protection, required check names, secret scanning, and merge authority must remain unchanged.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Documentation validators, placement checks, link checks, and VitePress build.
+    unit:
+      applicable: true
+      evidence: Repository documentation and workflow static contracts.
+    integration:
+      applicable: true
+      evidence: Full repository validation and exact-candidate Core Integration Gate.
+    contract:
+      applicable: true
+      evidence: Impact closure and canonical placement contracts.
+    e2e:
+      applicable: false
+      na_reason: No user-facing product flow changes.
+    security:
+      applicable: true
+      evidence: Read-only permissions and protected-main behavior remain covered by static and remote candidate checks.
+    migration_recovery:
+      applicable: false
+      na_reason: Documentation-only compatibility updates have no persistent state.
+    cli_harness:
+      applicable: false
+      na_reason: No CLI or Harness changes.
+    docs_schema:
+      applicable: true
+      evidence: All required closure files updated and validated.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
 blockers: []
 verification:
-  versioning_contracts: PASS
-  version_policy_contracts: PASS
-  version_policy_lifecycle: PASS
+  workflow_contract: PASS
+  documentation_impact_and_placement: PASS
+  documentation_site_build: PASS
   repository_validation: PASS
-  documentation_sync: PASS
-  documentation_placement: PASS
-  exact_candidate_secret_scan: REQUIRED_ON_COMMITTED_CANDIDATE
-  core_gate: REQUIRED_ON_COMMITTED_CANDIDATE
+  diff_reconciliation: PASS
+  strict_secret_scan: REQUIRED_ON_COMMITTED_CANDIDATE
+  core_integration_gate: REQUIRED_ON_COMMITTED_CANDIDATE
   git_publish_gate: REQUIRED_BEFORE_PR_PUBLICATION
+  remote_action_pair_and_merge: REQUIRED_ON_PR

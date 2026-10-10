@@ -17,7 +17,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: validate-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: validate-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.event.action || github.event_name }}
   cancel-in-progress: >-
     ${{ github.event_name == 'push' ||
         (github.event_name == 'pull_request' &&

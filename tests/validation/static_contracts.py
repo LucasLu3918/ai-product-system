@@ -278,7 +278,7 @@ for contract in (
     "pull_request:",
     "workflow_dispatch:",
     "concurrency:",
-    "group: validate-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}",
+    "group: validate-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}-${{ github.event.action || github.event_name }}",
     "cancel-in-progress: >-",
     "github.event.label.name == 'aips:core-change'",
     "github.event.label.name == 'aips:large-change'",
@@ -292,7 +292,8 @@ for contract in (
 
 def validate_concurrency_group(action: str | None, event_name: str, pr_number: int = 191) -> str:
     ref = f"{pr_number}" if event_name == "pull_request" else "refs/heads/main"
-    return f"validate-validate-{ref}"
+    event_key = action or event_name
+    return f"validate-validate-{ref}-{event_key}"
 
 
 CLASSIFICATION_LABELS = {"aips:core-change", "aips:large-change"}
@@ -328,8 +329,11 @@ def repository_aggregate_passes(
 
 
 pr_actions = ("opened", "synchronize", "labeled", "unlabeled")
-if len({validate_concurrency_group(action, "pull_request") for action in pr_actions}) != 1:
-    errors.append("validate PR lifecycle actions must share a concurrency group")
+pr_group_keys = {validate_concurrency_group(action, "pull_request") for action in pr_actions}
+if len(pr_group_keys) != len(pr_actions):
+    errors.append("different PR lifecycle actions must not share a concurrency group")
+if validate_concurrency_group("opened", "pull_request", 191) == validate_concurrency_group("opened", "pull_request", 192):
+    errors.append("different PRs must not share a concurrency group for the same action")
 if not all(validate_concurrency_cancels(action, "pull_request") for action in ("opened", "synchronize", "reopened", "ready_for_review")):
     errors.append("a new PR candidate event must supersede the active validation for that PR")
 for action in ("labeled", "unlabeled"):

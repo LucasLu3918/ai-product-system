@@ -495,6 +495,8 @@ Core creative workflow changes use the normal exact-candidate Gate and Git Publi
 
 During GitHub validation, isolated CLI fixtures receive the installed validation interpreter through `AIPS_VALIDATION_PYTHON`; its workflow contract runs before the deterministic Gate and does not grant publication or merge authority.
 
+The required validation workflow keeps PR runs for different event actions in separate concurrency groups. Adding the Core/Large classification label therefore cannot cancel the `opened` validation run; the required `repository` check and normal branch protection remain in force.
+
 Release tagging, dependency PR merges, and branch deletion remain separate operations with their own evidence and Human approval; a successful maintenance report cannot perform them.
 
 Publication preflight retains its existing CLI and raw canonical hash output through the shared helper; exact-candidate and Human merge authority boundaries remain unchanged.

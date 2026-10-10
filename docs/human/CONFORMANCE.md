@@ -1634,6 +1634,8 @@ Scenario 224 驗收主要模型保留與稀疏委派，目前登錄為 manual；
 
 Pull requests run the bounded repository preflight concurrently against the exact candidate. Its findings are reported for early feedback and do not replace or gate the required full repository validation; unrelated label-only events skip the advisory job.
 
+The validation workflow contract also requires distinct concurrency groups for different pull-request actions, preventing `opened` and classification `labeled` runs from cancelling one another while preserving same-action supersession and the required `repository` aggregate.
+
 The installation-entrypoint workflow keeps its Unix, Linux lifecycle and Windows contract checks on pull requests. Per-job limits use a 15× multiplier over P95 from the ten latest successful runs (2026-10-06 02:53–11:34 UTC), rounded upward to five-minute increments; a timeout is a failed job and does not replace the required repository Gate.
 
 Related security and observation contracts are covered by Scenarios 211 and 217: Dependency Review shadow results do not alter the required aggregate, and a completed `NOT_READY` cohort is distinct from an operational collection failure.
