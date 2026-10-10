@@ -196,7 +196,7 @@ Evolution Radar 人工相關性抽樣與評估行為以 `EVOLUTION_RADAR.md` / `
 
 Dependency Update risk classification 的使用方式位於 Maintenance 與 Technology Guide；Agent 契約由 Scenario 221 定義，placement 登錄於 `config/documentation-placement.yaml`。
 
-Release history keeps Unreleased and the latest five full releases in CHANGELOG.md; older complete sections live in docs/history/changelog/ while every version heading remains at the root as a stable link. Finalized notes move under the heading matching VERSION before readiness; a version heading alone does not prove a stable tag exists. The report-only size audit remains WARN-only and never moves files; archive placement is a manual, lossless documentation decision.
+Release history keeps Unreleased and the latest five full releases in CHANGELOG.md; older complete sections live in docs/history/changelog/ while every version heading remains at the root as a stable link. Finalized notes move under the heading matching VERSION before readiness; a version heading alone does not prove a stable tag exists. The report-only size audit remains WARN-only and never moves files; archive placement is a manual, lossless documentation decision. For Plan26 Phase 7, `VERSION` and the newest heading are `0.81.0`; the PR only finalizes metadata and does not publish a tag or release.
 
 Plan21 pre-hardening compatibility evidence is owned by `.aips/review/PLAN21_VALIDATION_TIMING_BASELINE.yaml` and `tests/evidence/plan21_contract_baseline.py`; the fixture and runner pin test contracts without becoming a runtime policy source.
 

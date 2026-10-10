@@ -413,7 +413,7 @@ Recursive documentation impact reports closure size and repeated requirements; t
 
 The canonical documentation placement registry maps Evolution Radar Human-label evaluation to its Human guides and Scenario 218 so future metric or authority changes remain synchronized.
 
-Release history keeps the active window in CHANGELOG.md and stores older complete sections in the manually maintained docs/history/changelog/ archive. The report-only document-size audit never moves files.
+Release history keeps the active window in CHANGELOG.md and stores older complete sections in the manually maintained docs/history/changelog/ archive. The report-only document-size audit never moves files. Plan26 Phase 7 finalizes the accumulated notes under `0.81.0` and keeps the single canonical `Unreleased` section empty before exact-candidate readiness; this metadata does not create a tag or release.
 
 Dependency risk policy and its advisory classifier are mapped to maintenance, verification and Scenario 221 documentation by the canonical placement registry.
 

@@ -1,102 +1,67 @@
 version: 1
 status: READY
 change:
-  id: plan26-phase6-progressive-quality-ratchet
-  summary: Reduce and bound selected static-analysis debt, preserve per-module quality budgets, and add bounded Project Intelligence lifecycle coverage as report-only evidence.
+  id: plan26-phase7-stable-release-0-81-0
+  summary: Prepare exact stable release candidate 0.81.0 by finalizing VERSION and losslessly moving accumulated Unreleased notes, while keeping tag and GitHub Release creation out of scope.
   boundary:
   - .aips/review/CORE_CHANGE_TEST_MATRIX.yaml
+  - .aips/review/PLAN26_PHASE7_STABLE_RELEASE_PROPOSAL.md
   - CHANGELOG.md
-  - config/quality-ratchet.yaml
+  - VERSION
   - docs/human/ARCHITECTURE_OVERVIEW.md
-  - docs/human/CONFORMANCE.md
   - docs/human/DOCUMENTATION_MAP.md
   - docs/human/DOCUMENTATION_SYNC.md
   - docs/human/MAINTENANCE.md
-  - docs/human/SECURITY_ASSURANCE.md
   - docs/human/TECHNOLOGY_GUIDE.md
   - docs/human/USER_GUIDE.md
   - docs/human/index.md
-  - orchestration/CONFORMANCE.md
   - orchestration/DOCUMENTATION_SYNC.md
-  - scripts/quality_ratchet.py
-  - tests/evidence/quality_ratchet_lifecycle.py
-  - tests/scenario_coverage.yaml
-  - tests/scenarios/228-progressive-quality-ratchet.md
-  - tests/validation/quality_ratchet_contracts.py
 candidate:
-  base_sha: ea4f59354dad5dae56e74b3c53df0893fa99d01e
-  changed_files_hash: a8bd1e3e10bd40777a1528c88c8856065dc785cefea70887430acf29eb69b575
+  base_sha: 7ac0dffa45cc3d793188f6f4c36ea7a7290e4cb6
+  changed_files_hash: 6ac0ae1659ff2540a16f275f0e008be8283618d04c9f6f9306d3fa9200307b7d
 matrix:
-- boundary: Progressive per-module quality budgets
-  reason: Ratchet configuration and contracts must preserve the existing lint baseline and prevent touched-module debt from growing without imposing a new repository-wide quality threshold.
+- boundary: Stable version and changelog metadata
+  reason: Release readiness consumes VERSION and the canonical changelog sections; the candidate must preserve all current notes and remain bound to its exact Git SHA.
   checks:
     static_lint:
       applicable: true
-      evidence: Ruff count and module budget checks run against the exact candidate; changed Python validation code is linted.
+      evidence: YAML and release metadata structural validation; no Python source changes.
     unit:
       applicable: true
-      evidence: Quality ratchet contract tests cover baseline shape, module budgets, report-only coverage metadata and scenario evidence linkage.
+      evidence: Versioning contracts verify one empty top-level Unreleased heading, unique descending release headings, and VERSION matching the newest release.
     integration:
       applicable: true
       evidence: Full repository validation and exact-candidate Core Integration Gate.
     contract:
       applicable: true
-      evidence: Ruff baseline is 687; scripts/project_intelligence.py budget is terminal zero and scripts/retrieval_intelligence.py budget is five with next target four; global coverage minimum remains unset.
+      evidence: Version-policy contracts and lifecycle verify exact version 0.81.0, changelog readiness, and read-only exact-candidate provenance.
     e2e:
       applicable: false
-      na_reason: No user interface, browser or external runtime behavior changes.
+      na_reason: No UI, browser, generation, installation, or external runtime behavior changes.
     security:
       applicable: true
       evidence: Mandatory exact-candidate strict secret scan and normal Core publication security checks.
     migration_recovery:
       applicable: false
-      na_reason: No persisted schema, user data or migration behavior changes.
+      na_reason: No persisted user data, schema, or migration behavior changes.
     cli_harness:
-      applicable: true
-      evidence: Full repository validation exercises the public quality-ratchet command and its deterministic reporting contracts.
+      applicable: false
+      na_reason: No CLI or Harness behavior changes.
     docs_schema:
       applicable: true
-      evidence: Recursive documentation closure and changed-line canonical placement pass for all Phase 6 paths.
-- boundary: Bounded relation-candidate lifecycle coverage report
-  reason: Coverage is collected only for the named helper lifecycle and must remain report-only without implying repository-wide coverage or changing canonical graph state.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: Ruff and Python syntax checks include the changed contract and lifecycle sources.
-    unit:
-      applicable: true
-      evidence: Bounded lifecycle and quality ratchet contract validate the report metadata and evidence path.
-    integration:
-      applicable: true
-      evidence: Full repository validation runs the registered required lifecycle on the exact candidate.
-    contract:
-      applicable: true
-      evidence: Recorded helper coverage is 45.5% combined statement-and-branch coverage for the bounded lifecycle; no global minimum is introduced.
-    e2e:
-      applicable: false
-      na_reason: No UI or external runtime behavior changes.
-    security:
-      applicable: true
-      evidence: Mandatory exact-candidate strict secret scan remains required.
-    migration_recovery:
-      applicable: false
-      na_reason: No persisted data or recovery contract changes.
-    cli_harness:
-      applicable: true
-      evidence: Registered lifecycle is executed by the exact-candidate repository validator.
-    docs_schema:
-      applicable: true
-      evidence: Scenario 228, Human and Agent conformance, maintenance and technology guidance, and recursive documentation closure are synchronized.
+      evidence: Recursive documentation impact closure, canonical placement, and full documentation validators confirm release guidance and changelog metadata consistency across all eight required Human/Agent documents.
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 review_evidence:
   required: false
 blockers: []
 verification:
-  focused_lifecycle: PASS
-  candidate_contract: PASS
+  versioning_contracts: PASS
+  version_policy_contracts: PASS
+  version_policy_lifecycle: PASS
   repository_validation: PASS
   documentation_sync: PASS
   documentation_placement: PASS
-  capability_registry: NOT_APPLICABLE
-  core_gate: PASS
+  exact_candidate_secret_scan: REQUIRED_ON_COMMITTED_CANDIDATE
+  core_gate: REQUIRED_ON_COMMITTED_CANDIDATE
+  git_publish_gate: REQUIRED_BEFORE_PR_PUBLICATION

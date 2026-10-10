@@ -67,7 +67,7 @@ Changes to runtime hook input validation, resolver diagnostics or installer lock
 
 主要模型／Skill metadata 變更同步更新模型路由、架構、技術指南、維護與 Conformance；REST／visual Skill 精簡仍須保留 canonical orchestration 指標與原有 evidence 規則。
 
-Keep exactly one canonical `Unreleased` heading empty when a release candidate is ready, and record finalized notes under the matching `VERSION` heading. Keep the latest five full releases and all stable version anchors in `CHANGELOG.md`; manually archive older full sections without loss under `docs/history/changelog/`. The document-size audit remains report-only and never moves files.
+Keep exactly one canonical `Unreleased` heading empty when a release candidate is ready, and record finalized notes under the matching `VERSION` heading. Keep the latest five full releases and all stable version anchors in `CHANGELOG.md`; manually archive older full sections without loss under `docs/history/changelog/`. The document-size audit remains report-only and never moves files. Phase 7 records the current Plan26 notes under `0.81.0`; exact-candidate readiness is read-only and does not itself authorize tag or release publication.
 
 共用快取解析器歸既有 publication-preflight 主題，套件安裝診斷器歸 installation 主題；修正與文件閉包一起驗證，不建立重複的治理或文件層。
 
