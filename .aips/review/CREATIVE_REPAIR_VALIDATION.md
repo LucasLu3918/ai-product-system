@@ -4,6 +4,7 @@ Scope authorization: user approved the preceding P0/P1/P2 implementation and req
 
 ## Focused evidence
 
+- Pillow 12.3.0 is a runtime dependency so ordinary installed AIPS can decode/crop images; it is not limited to the test-only visual environment.
 - PASS: Ruff on changed creative modules, fixtures and validator consumers.
 - PASS: mypy on creative_repair, creative_execution, creative_request_policy and turn_intent.
 - PASS: original recreation/read-only/negated prompt policy and bounded repair lifecycle.
@@ -12,6 +13,8 @@ Scope authorization: user approved the preceding P0/P1/P2 implementation and req
 - Independent distinct-role semantic review: no remaining material blockers after two correction rounds. Runtime attestation remains unavailable; this is not a VERIFIED attestation claim.
 - Credential-free native host acceptance: OpenCode v2.0.24 on darwin; prepare, revocation, Context and supported native permission hooks observed. New repair execution is covered by the projected tool fixture.
 - Real local image generation and vision accuracy: UNVERIFIED in this change; fixtures never establish artwork quality.
+- Initial complete Gate caught the CLI help golden contract drift; both help aliases were synchronized and focused baseline rerun passed.
+- Ordinary generation now grants only bounded quality checks of its own produced manifests; this cannot grant repair/acceptance authority.
 - Exact-candidate full Core Gate and required remote checks: executed separately before publication/merge, report kept in task-local temporary evidence.
 
 ## Actual file changes
@@ -57,7 +60,7 @@ Scope authorization: user approved the preceding P0/P1/P2 implementation and req
 - modified: `orchestration/PROJECT_INTELLIGENCE.md`
 - modified: `orchestration/RELEASE_READINESS.md`
 - modified: `orchestration/RUNTIME_CONTEXT.md`
-- modified: `requirements-visual.txt`
+- modified: `requirements.txt`
 - modified: `scripts/aips_cli/help.sh`
 - modified: `scripts/creative_execution.py`
 - added: `scripts/creative_repair.py`
@@ -69,3 +72,5 @@ Scope authorization: user approved the preceding P0/P1/P2 implementation and req
 - modified: `tests/scenarios/238-creative-task-authorization-and-multi-item-execution.md`
 - modified: `tests/validation/creative_quality_contracts.py`
 - modified: `tests/validation/registry.py`
+
+- modified: `tests/fixtures/plan21-contract-golden-vectors.yaml`

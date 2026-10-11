@@ -67,6 +67,8 @@ def main():
     for prompt in ('分析重出一張角色圖片為什麼失敗', '不要重出一張角色圖片', '只規劃角色重畫', '請解釋重出一張哈利的方式', '請不要重新生成圖片', 'Please explain how to repair and generate an image'):
         assert not admit_prompt(prompt)['grants']['execute']['allowed'], prompt
         assert not admit_prompt(prompt)['grants']['repair']['allowed'], prompt
+    assert admit_prompt('請生成一張角色圖片')['grants']['quality-check']['allowed']
+    assert not admit_prompt('建立角色資料夾')['grants']['quality-check']['allowed']
     feedback_grant = admit_prompt('哈利波特的閃電是刀疤跟髮型沒關係，不可以在頭髮上呈現')
     assert feedback_grant['grants']['feedback']['allowed'] and not feedback_grant['grants']['execute']['allowed']
     auto = admit_prompt('請生成一張角色圖片，產圖後檢查並自動修正')

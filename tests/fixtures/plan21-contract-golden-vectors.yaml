@@ -24,11 +24,11 @@ canonical_hashes:
 cli:
 - argv: [--help]
   exit_code: 0
-  stdout_sha256: 3fbd77b7c168947950b0855ed7d383a163bb630045fa0b1b4b1b93bf786c2aee
+  stdout_sha256: 453dca7cebcf9c50b14f0c4f259ac4ca893afd887473d6eeb622b549b64b83f9
   stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 - argv: [help]
   exit_code: 0
-  stdout_sha256: 3fbd77b7c168947950b0855ed7d383a163bb630045fa0b1b4b1b93bf786c2aee
+  stdout_sha256: 453dca7cebcf9c50b14f0c4f259ac4ca893afd887473d6eeb622b549b64b83f9
   stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 - argv: [not-a-command]
   exit_code: 1

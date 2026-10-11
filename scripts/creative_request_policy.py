@@ -18,7 +18,7 @@ CONFIGURE = re.compile(r"設定|配置|configure|configuration", re.IGNORECASE)
 VISUAL_REVIEW = re.compile(r"比較|compare|檢查|審查|評論|review|inspect|critique|quality", re.IGNORECASE)
 OTHER_TASK = re.compile(r"程式|網站|資料庫|寄信|\b(?:python|javascript|website|database|email)\b", re.IGNORECASE)
 MAX_PROMPT_CHARS = 8000
-MUTATING_ACTIONS = ("prepare", "configure", "execute", "review-assist", "feedback", "repair", "quality-loop", "compare")
+MUTATING_ACTIONS = ("prepare", "configure", "execute", "review-assist", "quality-check", "feedback", "repair", "quality-loop", "compare")
 ACTIONS = {*MUTATING_ACTIONS, "preflight", "discover"}
 AUTO_REPAIR = re.compile(r"自動.{0,12}(?:修正|修復|重製|重畫)|\bauto(?:matic)?(?:ally)?.{0,20}(?:repair|correct|retry)\b", re.IGNORECASE)
 AUTO_REPAIR_NEGATED = re.compile(r"(?:不要|不用|禁止|勿|別).{0,8}自動.{0,12}(?:修正|修復|重製|重畫)|\b(?:do not|don't|never|without|no)\b.{0,20}\bauto(?:matic)?(?:ally)?\b", re.IGNORECASE)
@@ -136,6 +136,10 @@ def _authorize_texts(texts: list[str], action: str) -> dict[str, Any]:
         allowed = bool(latest) and review_task["domain"] == "creative" and bool(VISUAL_REVIEW.search(latest)) and not STOP.search(latest) and not OTHER_TASK.search(latest)
         anchor = latest if allowed else ""
         active = allowed
+    if action == "quality-check":
+        review_task = classify_task(latest)
+        allowed = (active and generation) or (review_task["domain"] == "creative" and bool(VISUAL_REVIEW.search(latest)))
+        allowed = allowed and not STOP.search(latest) and not OTHER_TASK.search(latest)
     return {
         "allowed": bool(allowed),
         "reason_code": "creative_request_authorized" if allowed else "creative_intent_required",
@@ -261,7 +265,7 @@ def admit_prompt(prompt: Any, pending: Any = None) -> dict[str, Any]:
     max_time = min(3600, int(time_count.group(1)) * (60 if time_count.group(2) in {"分鐘", "minute", "minutes"} else 1)) if time_count else 600
     scope_match = re.search(r"(?:characters|assets|art)/[a-zA-Z0-9_/-]+", text)
     target_scope = scope_match.group(0).rstrip("/") if scope_match else None
-    actions = [action for action, grant in grants.items() if grant["allowed"] and action in {"prepare", "configure", "execute", "review-assist"}]
+    actions = [action for action, grant in grants.items() if grant["allowed"] and action in {"prepare", "configure", "execute", "review-assist", "quality-check"}]
     continuation = ({
         "version": CONTINUATION_VERSION,
         "max_outputs": max_outputs,

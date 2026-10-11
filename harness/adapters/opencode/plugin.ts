@@ -206,7 +206,7 @@ export default {
     const contextFlights = new Map<string, Promise<ContextEntry>>()
     const creativeAdmissions = new Map<string, {
       grants: Record<string, any>; root: string; outputScope: string; messageID: string
-      promptDigest: string; maxOutputs: number; usedOutputs: number; maxRepairs: number; usedRepairs: number; maxTimeBudget: number; targetScope: string | null; busy: boolean; continued: boolean
+      promptDigest: string; maxOutputs: number; usedOutputs: number; maxRepairs: number; usedRepairs: number; usedChecks: number; generatedManifests: Set<string>; maxTimeBudget: number; targetScope: string | null; busy: boolean; continued: boolean
       continuation: Record<string, any> | null; issuedAt: number
     }>()
     const maxCache = 32
@@ -319,7 +319,7 @@ export default {
             grants: admission.grants, root: session.root, outputScope: session.root,
             messageID: String(event.messageID ?? event.messageId ?? ""),
             promptDigest: admission.prompt_sha256, maxOutputs: admission.max_outputs, usedOutputs: 0,
-            maxRepairs: Number.isInteger(admission.max_repairs) && admission.max_repairs >= 0 && admission.max_repairs <= 2 ? admission.max_repairs : 0, usedRepairs: 0, targetScope: typeof admission.target_scope === "string" ? admission.target_scope : null, maxTimeBudget: Number.isInteger(admission.time_budget_seconds) && admission.time_budget_seconds >= 1 && admission.time_budget_seconds <= 3600 ? admission.time_budget_seconds : 600, busy: false,
+            maxRepairs: Number.isInteger(admission.max_repairs) && admission.max_repairs >= 0 && admission.max_repairs <= 2 ? admission.max_repairs : 0, usedRepairs: 0, usedChecks: 0, generatedManifests: new Set<string>(), targetScope: typeof admission.target_scope === "string" ? admission.target_scope : null, maxTimeBudget: Number.isInteger(admission.time_budget_seconds) && admission.time_budget_seconds >= 1 && admission.time_budget_seconds <= 3600 ? admission.time_budget_seconds : 600, busy: false,
             continued: admission.continued, continuation: admission.continuation, issuedAt: Date.now(),
           })
           while (creativeAdmissions.size > maxCache) creativeAdmissions.delete(creativeAdmissions.keys().next().value as string)
@@ -536,7 +536,7 @@ export default {
           const messages = contextMessages(nativeContext)
           const authorization: Record<string, any> = ["preflight", "discover"].includes(request.action)
             ? { allowed: true, reason_code: "creative_readonly", basis_prompt: lastUserText(messages) }
-            : admission?.grants?.[request.action === "generate-set" ? "execute" : request.action === "quality-check" ? "review-assist" : request.action] ?? { allowed: false, reason_code: "creative_admission_grant_missing" }
+            : admission?.grants?.[request.action === "generate-set" ? "execute" : request.action] ?? { allowed: false, reason_code: "creative_admission_grant_missing" }
           if (authorization.allowed !== true) {
             await trace({ event: "creative_execution", decision: "DENY", project: hash(root), reason_code: authorization.reason_code })
             const recovery = creativeRecovery(String(authorization.reason_code), admission)
@@ -554,6 +554,11 @@ export default {
           if (!["preflight", "discover", "feedback", "compare"].includes(request.action) && !admission?.continued
             && (classification.domain !== "creative" || (["review-assist", "quality-check"].includes(request.action) ? false : request.action === "prepare" ? classification.intent !== "create" : !["create", "modify"].includes(classification.intent)))) {
             return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_intent_required" }) }
+          }
+          if (request.action === "quality-check") {
+            if (!admission || admission.usedChecks >= admission.maxOutputs * (1 + admission.maxRepairs)) return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_review_limit_exceeded", fallback_allowed: false }) }
+            if (!admission.grants["review-assist"]?.allowed && !admission.generatedManifests.has(request.manifest!)) return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_review_target_unbound", fallback_allowed: false }) }
+            admission.usedChecks += 1
           }
           if (request.action === "quality-loop") {
             if (!admission || admission.busy || admission.usedOutputs >= admission.maxOutputs || request.max_repairs! > admission.maxRepairs - admission.usedRepairs || request.time_budget_seconds! > admission.maxTimeBudget) return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_output_limit_exceeded", fallback_allowed: false }) }
@@ -605,6 +610,10 @@ export default {
           let payload: Record<string, any>
           try { payload = JSON.parse(result.stdout) } catch { payload = { status: "BLOCKED", reason_code: "creative_response_invalid" } }
           if (result.status !== 0 && payload.status !== "BLOCKED") payload = { status: "BLOCKED", reason_code: result.error?.includes("timed out") ? "creative_timeout" : "creative_execution_failed" }
+          if (admission && ["execute", "generate-set", "quality-loop"].includes(request.action)) {
+            if (typeof payload.manifest === "string") admission.generatedManifests.add(payload.manifest)
+            for (const item of [...(Array.isArray(payload.items) ? payload.items : []), ...(Array.isArray(payload.attempts) ? payload.attempts : [])]) if (typeof item?.manifest === "string") admission.generatedManifests.add(item.manifest)
+          }
           if (payload.status === "BLOCKED") {
             payload.fallback_allowed = false
             Object.assign(payload, creativeRecovery(String(payload.reason_code ?? "creative_execution_failed"), admission, payload.diagnostics))

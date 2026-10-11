@@ -62,6 +62,8 @@ assert.match(missingEngine.next_action, /per-provider command, runtime, and mode
 assert.equal(JSON.stringify(missingEngine).includes(project), false, "provider recovery leaked a local path")
 const reviewWithoutGrant = await call({ action: "review-assist", manifest: "missing/creative-execution-manifest.json", vision_model: "vision-local" })
 assert.equal(reviewWithoutGrant.reason_code, "creative_intent_required", "generation permission must not imply visual review permission")
+const unboundCheck = await call({ action: "quality-check", manifest: "missing/creative-execution-manifest.json", vision_model: "vision-local" })
+assert.equal(unboundCheck.reason_code, "creative_review_target_unbound", "generation grant inspected an unrelated historical image")
 await admit("請檢查角色圖片品質")
 const reviewWithGrant = await call({ action: "review-assist", manifest: "missing/creative-execution-manifest.json", vision_model: "vision-local" })
 assert.notEqual(reviewWithGrant.reason_code, "creative_admission_grant_missing", "explicit review intent did not authorize the bounded review action")
@@ -86,7 +88,13 @@ assert.equal((await call({ action: "configure", bundle: configured.bundle, setti
 const runner = join(project, "loop-fixture")
 await writeFile(runner, `#!/usr/bin/env python3
 import json,subprocess,sys
-if sys.argv[1:3] == ['creative','quality-loop']:
+if sys.argv[1:3] == ['creative','preflight']:
+ print(json.dumps({'status':'READY'}))
+elif sys.argv[1:3] == ['creative','execute']:
+ print(json.dumps({'status':'COMPLETE','manifest':'fixture/creative-execution-manifest.json'}))
+elif sys.argv[1:3] == ['creative','quality-check']:
+ print(json.dumps({'status':'ADVISORY_REVIEW','machine_decision':'UNVERIFIED'}))
+elif sys.argv[1:3] == ['creative','quality-loop']:
  print(json.dumps({'status':'NEEDS_ATTENTION','reason_code':'fixture_no_inference'}))
 else:
  raise SystemExit(subprocess.call([${JSON.stringify(process.env.AIPS_CLI)},*sys.argv[1:]]))
@@ -97,6 +105,10 @@ const originalCli = process.env.AIPS_CLI
 process.env.AIPS_CLI = runner
 await plugin.setup({ session: { ...noHook, get: async () => { if (delayedGet) { const wait = delayedGet; delayedGet = null; await wait }; return { data: { directory: project } } }, context: async () => current }, permission: noHook, shell: noHook, tool: { transform: async (callback) => callback({ add: (value) => { tool = value } }) } })
 process.env.AIPS_CLI = originalCli
+await admit("請生成一張角色圖片")
+assert.equal((await call({ action: "execute", bundle: configured.bundle })).status, "COMPLETE")
+assert.equal((await call({ action: "quality-check", manifest: "fixture/creative-execution-manifest.json", vision_model: "vision-fixture" })).status, "ADVISORY_REVIEW", "ordinary generation could not check its own produced manifest")
+assert.equal((await call({ action: "quality-check", manifest: "fixture/creative-execution-manifest.json", vision_model: "vision-fixture" })).reason_code, "creative_review_limit_exceeded")
 await admit("請生成一張角色圖片，檢查後自動修正最多一次")
 const loopInput = { action: "quality-loop", bundle: configured.bundle, vision_model: "vision-fixture", max_repairs: 1, time_budget_seconds: 30 }
 assert.equal((await call({ ...loopInput, max_repairs: 2 })).reason_code, "creative_output_limit_exceeded")

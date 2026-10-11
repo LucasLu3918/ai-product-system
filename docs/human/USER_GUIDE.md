@@ -74,6 +74,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 指出「疤痕畫在頭髮上」會形成版本綁定的缺陷回饋；明確要求「重出一張哈利」可在同一 Session 取得新的單張修正授權。`quality-check` 逐項檢查必要特徵與禁止錯置；只有明確要求自動修正才可使用 `quality-loop`，最多兩次修正，預設 native 時間上限十分鐘。
 
+Ordinary generation grants permit bounded `quality-check` of manifests produced by that grant; historical/unrelated images require explicit review intent. This does not authorize regeneration, and `review-assist` retains its separate explicit-review contract. Inspect required criteria before delivery; without an installed local reviewer, report UNVERIFIED and request Human inspection.
+
 Creative task grants remain separate from Git authority; the personal PR merge confirmation flow is described under Git Publication 與 Release.
 
 Creative grant 僅涵蓋已核准創作範圍；成品若要 commit／push／PR，需另依 Git Publication 與 Release 流程取得 signed external grant。
