@@ -438,6 +438,8 @@ AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned cont
 
 ## Runtime Policy Enforcement
 
+Personal PR merge accepts `gh pr merge --auto` only with an exact candidate/head binding and a non-empty set of passing required checks. Claude/Gemini native confirmation remains in effect; this option does not issue a Human grant or bypass repository policy.
+
 OpenCode native acceptance is bounded evidence, not a process sandbox. Arbitrary Shell process effects, MCP/custom-tool effects and out-of-process writes remain UNSUPPORTED; Hook success does not grant authority over those paths.
 
 ### Git publication: 個人模式與高保證模式

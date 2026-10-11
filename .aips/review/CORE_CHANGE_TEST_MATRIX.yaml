@@ -1,66 +1,25 @@
 version: 1
 change:
-  id: plan30-publication-recovery
-  summary: Safe diagnostics and worktree-bound read-only publication/resume planning
+  id: aips-autonomous-publication-20261011
+  summary: Extend AIPS publication diagnostics, branch recognition and checked automatic PR merge.
   boundary:
-  - Reuse existing authority, scan and native hooks; never grant or execute publication
-    from planning.
-  - Bind exact candidate, worktree, live base, remote/PR, policy and body digests;
-    re-observe every continuation.
-  - Preserve Human merge intent, native confirmation and external single-use grants.
-  - Add failure/recovery fixtures and canonical documentation closure; leave LUCAS-LAB
-    untouched.
+  - Extend existing publication authority/planning/hooks; preserve high-assurance external grants and personal native confirmation.
+  - Keep exact worktree, candidate, remote, PR, live base, required-check and content-scan binding.
+  - Preserve isolated candidate and live-state idempotent recovery; do not add agent-authored grants.
+  - AIPS only; Lucas Lab configuration and rulesets are excluded.
 matrix:
-- boundary: Publication planner / authority diagnostics / native CLI and hooks / PR
-    recovery
-  reason: New observation contract must not weaken protected publication or trust
-    stale state.
+- boundary: Publication authority and native hooks
+  reason: Protect Human authorization, candidate identity and fail-closed diagnostics while allowing safe --auto.
   checks:
-    static_lint:
-      applicable: true
-      evidence: 'PASS: git diff --check; Ruff reports zero findings for publication_planning.py
-        and test_publication_planning.py. Existing touched-module findings remain
-        subject to the exact-candidate ratchet.'
-    unit:
-      applicable: true
-      evidence: 'PASS: tests/test_publication_planning.py runs 18 cases; test_publication_authority.py
-        runs 31 cases including scoped grants, replay/concurrency and merge confirmation.'
-    integration:
-      applicable: true
-      evidence: 'PASS: real bare-Git and separate worktree fixtures preserve remote
-        refs during planning, bind distinct worktree identities and verify live-base
-        integration for squash recovery.'
-    contract:
-      applicable: true
-      evidence: 'PASS: diagnostics use fixed safe codes; exception messages remain
-        compatible; CLI prepare/diagnose return bounded authorized=false observations
-        with no execution. Plan21 help-only stdout snapshots synchronized; all original
-        exit/stderr contracts retained.'
-    e2e:
-      applicable: true
-      evidence: 'PASS: native bin/aips prepare/diagnose fixtures run from a caller
-        directory outside AIPS with explicit project-root; local bare-Git push/PR-state/squash
-        lifecycle. Real REST delivery is separately required on this PR.'
-    security:
-      applicable: true
-      evidence: 'PASS: high-assurance no fallback/no consumption, content scanner
-        refusal, stale observation denial, host denial without retry and native Claude/Gemini
-        hook redaction fixtures; existing authority signed/replay suite passes.'
-    migration_recovery:
-      applicable: true
-      evidence: 'PASS: no persistent schema migration; live PR reuse, duplicate/CLOSED
-        rejection, changed body fingerprint invalidation and verified integrated merge
-        recovery pass. Caller-owned observations never supply grants.'
-    cli_harness:
-      applicable: true
-      evidence: 'PASS: additive CLI routes and safe native hook decisions pass; existing
-        native merge ask/ask_user behavior covered by authority tests. Codex/OpenCode
-        remain advisory; real Host acceptance is not inferred.'
-    docs_schema:
-      applicable: true
-      evidence: 'PASS: documentation_sync valid=true/no errors; canonical placement
-        working-tree check returns []; recursive documentation impact has no required
-        additions; architecture flow and Human/runtime limits updated.'
+    static_lint: {applicable: true, evidence: "PASS: Ruff security-critical rules and git diff --check"}
+    unit: {applicable: true, evidence: "PASS: publication authority/planning unittest suites, 52 tests"}
+    integration: {applicable: true, evidence: "PASS: exact-candidate Integration Gate on 18ef7ca; full repository validation 96 modules and 258 scenarios"}
+    contract: {applicable: true, evidence: "PASS: full repository validator, 96 modules and 258 scenarios"}
+    e2e: {applicable: false, evidence: "N/A: no deployed application or browser flow changes; publication hook/planning behavior is covered by focused and lifecycle tests"}
+    security: {applicable: true, evidence: "PASS: exact-candidate secret scan and Gate security lifecycle; zero findings"}
+    migration_recovery: {applicable: true, evidence: "PASS: no persisted-schema migration; publication lifecycle/recovery coverage passes"}
+    cli_harness: {applicable: true, evidence: "PASS: full repository validator and native governance hook coverage"}
+    docs_schema: {applicable: true, evidence: "PASS: publication preview closure and documentation placement; full repository validation"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
@@ -68,5 +27,5 @@ status: READY
 review_evidence:
   required: false
 candidate:
-  base_sha: f2bebac5bf927ac7b70b0efa61cb49a7460114d7
-  changed_files_hash: f94d6475dcb4a89585afde8d5fd16bdfac5910d2eb760c408b61ab7d9cecc491
+  base_sha: 123d0561ae32a18d96a2abd7e84991f7017911f8
+  changed_files_hash: 5c28db404ed54fa7d7cef8bca443860477aac5dc4adb6aeca869f2b1c66803ad

@@ -119,6 +119,43 @@ class PlanningTest(unittest.TestCase):
         self.rows = [self.row('CLOSED')]
         self.assertEqual(self.prepare()['diagnostics'][0]['reason_code'], 'PR_STATE_AMBIGUOUS')
 
+    def test_auto_merge_plan_requires_intent_and_keeps_exact_candidate(self):
+        self.git(self.repo, 'push', 'origin', self.head + ':refs/heads/codex/plan30')
+        self.rows = [self.row()]
+        base = self.git(self.repo, 'rev-parse', 'main')
+        original_run = auth.run
+        real_action = auth.action
+        calls = []
+
+        def observed_run(cwd, *argv):
+            if argv[:2] == ('gh', 'api'):
+                return '{"allow_squash_merge":true}'
+            return original_run(cwd, *argv)
+
+        def observed_tip(root, remote, ref):
+            return self.head if ref == 'refs/heads/codex/plan30' else base
+
+        def observe_action(root, operation, argv, base, **kwargs):
+            if operation == 'gh_pr_merge':
+                calls.append(argv)
+                return {}
+            return real_action(root, operation, argv, base, **kwargs)
+
+        with patch('publication_planning.authority.run', side_effect=observed_run), \
+                patch('publication_planning.authority.action', side_effect=observe_action), \
+                patch('publication_planning.authority._tip', side_effect=observed_tip), \
+                patch('publication_planning.authority._personal_base', return_value=base), \
+                patch('publication_planning.authority._remote_default_branch', return_value='main'):
+            result = self.prepare(merge_intent=True, auto_merge=True)
+        self.assertEqual(result['next_step'], 'TASK_AUTHORIZED_MERGE', result)
+        self.assertIn('--auto', calls[0])
+        self.assertEqual(calls[0][calls[0].index('--match-head-commit') + 1], self.head)
+
+    def test_auto_merge_without_explicit_intent_is_blocked(self):
+        result = self.prepare(auto_merge=True)
+        self.assertEqual(result['diagnostics'][0]['reason_code'], 'AUTO_MERGE_REQUIRES_INTENT')
+        self.assertEqual(result['invocations'], [])
+
     def test_host_denial_never_retries(self):
         with patch.object(auth, 'git', side_effect=AssertionError('must not observe/retry')):
             result = self.prepare(host_denied=True)
@@ -223,6 +260,18 @@ class PlanningTest(unittest.TestCase):
             self.assertIn('WORKTREE_DIRTY', response)
             self.assertIn('deny', response)
             self.assertNotIn('private-token', response)
+
+    def test_staged_content_failure_has_safe_cause_code(self):
+        command = 'git commit -m candidate'
+        output = io.StringIO()
+        with patch('sys.stdin', io.StringIO(json.dumps({'cwd': str(self.repo), 'tool_input': {'command': command}}))), \
+                patch('sys.stdout', output), patch('runtime_policy.action_from_hook', return_value=None), \
+                patch.object(guard, 'commit_safety', side_effect=auth.PublicationError('private/path/value', 'STAGED_CONTENT_UNAVAILABLE')):
+            guard.hook('claude-code')
+        response = output.getvalue()
+        self.assertIn('STAGED_CONTENT_UNAVAILABLE', response)
+        self.assertIn('restage', response)
+        self.assertNotIn('private/path/value', response)
 
     def test_merge_plan_requires_intent_and_enabled_method(self):
         self.git(self.repo, 'push', 'origin', self.head + ':refs/heads/codex/plan30')

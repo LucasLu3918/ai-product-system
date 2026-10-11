@@ -8,8 +8,10 @@ Expected:
 - personal publication does not create an `APPROVED` record, signature, or claim of isolated Human authorization;
 - an explicit local-only/no-publication instruction prevents remote delivery;
 - personal-mode PR merge is available only as a standalone, explicit PR-number command with the exact candidate `--match-head-commit` SHA; the PR must be open, non-draft, mergeable, target the live remote default branch, and use the current allowlisted engineering branch;
+- `feat/` is an allowlisted engineering branch prefix alongside the existing prefixes;
 - before each merge, Claude Code's native `PreToolUse` permission asks the user and shows the PR, base/head SHAs, and required-check names; Gemini CLI's extension Policy Engine uses interactive `ask_user` in `default`, `autoEdit`, and `yolo` modes, paired with the AIPS hook's PR details;
-- required PR checks must be complete and passing before the confirmation prompt; GitHub pins the head SHA at merge, while the base SHA is a pre-execution observation;
+- required PR checks must be reported, complete, and passing before the confirmation prompt; an empty, malformed, pending, or failing required-check result blocks merge; GitHub pins the head SHA at merge, while the base SHA is a pre-execution observation;
+- `gh pr merge --auto` is accepted only with the same exact PR/head/base binding and a non-empty passing required-check observation; it still follows native Human confirmation and does not use `--admin` or skip GitHub policy;
 - PR creation targets only the remote live default branch and an allowlisted engineering branch;
 - personal pushes use only the single matching fetch/push `origin` URL; additional remotes are denied;
 - the selected personal-mode trust model accepts the currently configured origin and explicitly does not claim protection if an Agent rewrites `.git/config` to another repository;
@@ -25,3 +27,5 @@ Publication planning acceptance (Plan30):
 - retry re-observes live evidence, reuses an OPEN PR, blocks ambiguous/CLOSED exact candidates and verifies a MERGED candidate through its integrated merge commit, including squash merges.
 - changed inputs reject the old fingerprint; host-denied operations stop without alternate commands; high-assurance never falls back or consumes a grant during planning.
 - real bare-Git and native hook fixtures are separate from actual Claude/Gemini Host permission and GitHub REST acceptance.
+- staged index/blob inspection failures return fixed cause codes and safe remediation without echoing exception text, local paths, or staged content.
+- task-scoped user authorization is evidence for the current requested delivery only; agent-authored files cannot create a general Human grant, and the existing high-assurance issuer remains authoritative.

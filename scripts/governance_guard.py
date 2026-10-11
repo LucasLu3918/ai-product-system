@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import errno
 import hashlib
 import json
 import logging
@@ -19,6 +20,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT / "scripts") not in sys.path:
     sys.path.insert(0, str(ROOT / "scripts"))
+
+from publication_authority import PublicationError
 
 try:
     from content_safety import safe_emit
@@ -380,13 +383,15 @@ def commit_safety(cwd: Path, command: str) -> dict:
     staged = subprocess.run(['git', 'diff', '--cached', '--name-only', '-z', '--diff-filter=ACMR'], cwd=root,
                             capture_output=True, timeout=10, check=False)
     if staged.returncode:
-        raise PublicationError("staged file list unavailable")
+        raise PublicationError("staged file list unavailable", "STAGED_CONTENT_UNAVAILABLE")
     for name in staged.stdout.split(b'\0'):
         if not name:
             continue
         blob = subprocess.run(['git', 'show', ':' + os.fsdecode(name)], cwd=root, capture_output=True, timeout=10, check=False)
-        if blob.returncode or len(blob.stdout) > 8 * 1024 * 1024:
-            raise PublicationError("staged blob unavailable or too large")
+        if blob.returncode:
+            raise PublicationError("staged blob unavailable", "STAGED_CONTENT_UNAVAILABLE")
+        if len(blob.stdout) > 8 * 1024 * 1024:
+            raise PublicationError("staged blob exceeds inspection limit", "STAGED_CONTENT_TOO_LARGE")
         result = safe_emit(sink='git_commit', payload={'staged_blob': blob.stdout.decode('utf-8', errors='replace')})
         if result['decision'] == 'BLOCK':
             return result
@@ -409,6 +414,9 @@ def deny_hook_input(runtime: str, reason: str) -> int:
         "AMBIGUOUS_GITHUB_API_REQUEST": "AIPS cannot determine whether this GitHub API request writes data; use an explicit supported request.",
         "UNSUPPORTED_GITHUB_MUTATION": "AIPS requires a separately reviewed workflow for this GitHub mutation.",
         "CONTENT_CANDIDATE_UNAVAILABLE": "AIPS could not inspect the publication content; retry after resolving the local inspection error.",
+        "STAGED_CONTENT_UNAVAILABLE": "AIPS could not read a staged file for content inspection; check the index and restage the candidate.",
+        "STAGED_CONTENT_TOO_LARGE": "AIPS cannot inspect a staged file above the configured size limit; split or remove that file.",
+        "CONTENT_INSPECTION_UNAVAILABLE": "AIPS content inspection could not complete; check the local scanner and Git state.",
     }
     detail = reason_messages.get(reason, "AIPS blocked this command during a required safety check.")
     detail += " [" + reason + "]"
@@ -521,8 +529,13 @@ def hook(runtime: str) -> int:
             }[operation]
             try:
                 safety = commit_safety(cwd, command) if operation == 'git_commit' else safe_emit(sink=sink, payload={"command": command})
-            except (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError, ImportError, subprocess.TimeoutExpired):
-                return deny_hook_input(runtime, "CONTENT_CANDIDATE_UNAVAILABLE")
+            except PublicationError as exc:
+                return deny_hook_input(runtime, exc.reason_code)
+            except OSError as exc:
+                reason = "STAGED_CONTENT_UNAVAILABLE" if exc.errno in {errno.ENOENT, errno.EACCES, errno.EPERM} else "CONTENT_INSPECTION_UNAVAILABLE"
+                return deny_hook_input(runtime, reason)
+            except (ValueError, TypeError, KeyError, IndexError, AttributeError, ImportError, subprocess.TimeoutExpired):
+                return deny_hook_input(runtime, "CONTENT_INSPECTION_UNAVAILABLE")
             if safety["decision"] == "BLOCK":
                 reason = "content safety blocked " + operation
                 if runtime == "claude-code":
@@ -542,7 +555,6 @@ def hook(runtime: str) -> int:
             if len(approval_operations) != 1:
                 raise ValueError('one protected publication operation per invocation required')
             from publication_authority import (
-                PublicationError,
                 publication_mode,
                 validate_personal_action,
             )

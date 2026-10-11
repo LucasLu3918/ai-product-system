@@ -289,6 +289,8 @@ flowchart LR
 
 Read-only publication planning binds the explicit worktree, exact candidate, live default base, remote/PR state and body/policy digests. It returns native-tool cwd/argv and safe diagnostics; neither a plan nor its fingerprint grants permission or executes a protected operation.
 
+`--auto-merge` still requires explicit merge intent, a non-empty passing required-check observation, and the existing native Human authorization boundary.
+
 Git publication resolves to personal mode unless the fixed administrator trust root selects high assurance. Personal mode validates and scans the exact candidate before an engineering-branch push or PR; an explicitly requested PR merge requires each Claude/Gemini native confirmation plus exact head/default-base and passing required-check validation. Codex remains advisory. High assurance requires the external single-use grant.
 
 The existing Claude/Gemini publication guard uses bounded Bash AST inspection to classify substitutions in command arguments and unquoted heredocs without executing them. Dynamic command identity and publication scope still require literal, verifiable values; this parser change does not alter approval or merge authority.
