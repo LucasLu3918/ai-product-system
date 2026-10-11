@@ -120,6 +120,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Creative quality evidence extends the existing local trial and repair workflow with a prompt-free profile-case matrix. Benchmark reports preserve separate states for raster validity, model/check/compiler outcomes, Human visual review, user acceptance and runtime attestation. This adds evidence detail without changing the creative execution topology or authorization boundary.
+
 OpenCode 原生驗收只驗證主機整合，不代表創作執行或視覺品質；任意 Shell、MCP／自訂工具及程式外寫入仍不受 guard 支援。
 
 創作修正流程在既有 executor 下新增逐項機器證據與版本化 lineage。交付數、生成嘗試數、修正次數分開；明確 opt-in 循環受兩次修正及共同時間上限限制，判斷不明或重複缺陷則停下並提供下一步。
@@ -195,6 +197,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+Creative benchmark evidence is a read-only consumer of local trial artifacts. It has no provider dispatch, generation authority, or path into the Human acceptance decision.
 
 Stable release readiness binds the proposed version to the exact main commit and keeps tag/release publication separate. The install/update lifecycle verifies fast-forward success and confirms a rejected divergent update preserves the installed commit and version.
 

@@ -130,6 +130,17 @@ scenarios:
       - .github/workflows/branch-hygiene.yml
       - tests/evidence/branch_hygiene_lifecycle.py
       - tests/validation/branch_hygiene_contracts.py
+  - id: "258"
+    path: tests/scenarios/258-creative-quality-cross-profile-evidence.md
+    coverage: lifecycle
+    evidence:
+      - templates/creative/CREATIVE_QUALITY_DATASET.yaml
+      - templates/creative/QUALITY_BENCHMARK.json
+      - scripts/creative_quality_benchmark.py
+      - scripts/creative_repair.py
+      - tests/evidence/creative_quality_benchmark_lifecycle.py
+      - tests/evidence/creative_repair_lifecycle.py
+      - tests/validation/creative_quality_contracts.py
   - id: "240"
     path: tests/scenarios/240-personal-publication-default.md
     coverage: deterministic

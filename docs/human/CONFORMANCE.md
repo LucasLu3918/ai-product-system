@@ -1750,7 +1750,13 @@ Native OpenCode V2 prompt admission issues a fresh in-memory grant bound to the 
 
 The synthetic multi-item lifecycle verifies per-item preflight, continue-on-failure, hash-verified resume and recovery after an output succeeds before its checkpoint. Version-only local engine discovery never starts generation. Native OpenCode acceptance verifies grant admission and revocation without invoking image generation; no real model quality or visual acceptance is claimed.
 
+## Scenario 258 — Creative Quality Cross-profile Evidence
+
+Benchmark v2 records the registered three-archetype by six-case coverage matrix, confines and hash-binds completed raster outputs, and reports model, check and compiler failures separately. The lifecycle also checks legacy v1 readability, Human review and user-acceptance separation, and bounded privacy-safe failure evidence. Synthetic fixtures establish schema and path contracts only; real inference, visual quality and acceptance remain unverified until observed independently.
+
 ## Scenario 236 — Local Creative Bundle Execution
+
+The cross-profile quality evidence extension is covered by Scenario 258; this creative execution scenario continues to distinguish generated artifacts, image checks, Human review and user acceptance.
 
 創作修正回歸以原始「重出一張哈利」對話、否定／分析指令、重播／並行額度、必要特徵錯置、來源漂移、版本比較與時間／次數停損為準。`creative_repair_lifecycle.py` 與 native tool fixture 是 synthetic evidence；真實生成及 host acceptance 分列。
 

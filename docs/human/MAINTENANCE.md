@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Creative quality benchmark changes update the dataset and evidence contract alongside the creative workflow guidance, architecture overview, maintenance validation notes and Scenario 258. This evidence remains separate from native Host acceptance.
+
 OpenCode adapter changes require exact-host evidence and synchronized Harness, Installation, Technology Guide and Scenario 235 descriptions of unsupported effects.
 
 創作品質維護分開觀察必要條件漏判、生成／修正次數、重複缺陷與耗時。缺陷回饋、修正版 Profile／Bundle、比較報告保留 hash 關聯；既有 Profile 不原地修改。合成 lifecycle 只驗證流程，真實 vision 正確率需獨立實測。
@@ -469,6 +471,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+The creative quality benchmark lifecycle validates dataset coverage, bounded failure stages, legacy evidence compatibility, and Human review/acceptance separation. Its synthetic artifacts do not count as real local model inference or visual-quality evidence.
 
 OpenCode native acceptance is integration evidence only. Do not treat it as an Agent task outcome, production model measure or generated-image quality result.
 
