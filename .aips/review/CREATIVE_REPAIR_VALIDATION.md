@@ -11,7 +11,7 @@ Scope authorization: user approved the preceding P0/P1/P2 implementation and req
 - PASS: versioned feedback/profile copies, source hashes, lineage comparison, finite repair/uncertainty/repeated-defect/time stops.
 - PASS: projected native tool fixture, including scope, current-message replay, concurrent reservations and overlapping prompt epoch.
 - Independent distinct-role semantic review: no remaining material blockers after two correction rounds. Runtime attestation remains unavailable; this is not a VERIFIED attestation claim.
-- Credential-free native host acceptance: OpenCode v2.0.24 on darwin; prepare, revocation, Context and supported native permission hooks observed. New repair execution is covered by the projected tool fixture.
+- Credential-free native host acceptance: OpenCode v2.0.24 and desktop v2.0.26 on darwin; prepare, revocation, Context and supported native permission hooks observed. New repair execution is covered by the projected tool fixture.
 - Real local image generation and vision accuracy: UNVERIFIED in this change; fixtures never establish artwork quality.
 - Initial complete Gate caught the CLI help golden contract drift; both help aliases were synchronized and focused baseline rerun passed.
 - Ordinary generation now grants only bounded quality checks of its own produced manifests; this cannot grant repair/acceptance authority.
@@ -74,3 +74,7 @@ Scope authorization: user approved the preceding P0/P1/P2 implementation and req
 - modified: `tests/validation/registry.py`
 
 - modified: `tests/fixtures/plan21-contract-golden-vectors.yaml`
+
+- modified: `tests/evidence/opencode_integration_lifecycle.py` (additive native action contract synchronized).
+
+- Multi-delivery native grants preserve per-delivery repair budgets and explicit total repair/time ceilings.

@@ -120,6 +120,13 @@ assert.equal((await call(loopInput)).reason_code, "creative_output_limit_exceede
 await admit("取消產圖")
 await promptHook({ sessionID: "creative-fixture", messageID: `message-${messageID - 1}`, prompt: { text: "請生成一張角色圖片，檢查後自動修正最多一次" } })
 assert.notEqual((await call(loopInput)).reason_code, "fixture_no_inference", "replayed old native prompt restored authority")
+await admit("請生成兩張角色圖片，檢查後自動修正")
+assert.equal((await call({ ...loopInput, max_repairs: 2 })).reason_code, "fixture_no_inference")
+assert.equal((await call({ ...loopInput, max_repairs: 2 })).reason_code, "fixture_no_inference", "second delivery lost its per-delivery repair budget")
+assert.equal((await call({ ...loopInput, max_repairs: 2 })).reason_code, "creative_output_limit_exceeded")
+await admit("請生成兩張角色圖片，檢查後自動修正，總共最多一次")
+assert.equal((await call(loopInput)).reason_code, "fixture_no_inference")
+assert.equal((await call(loopInput)).reason_code, "creative_output_limit_exceeded", "explicit total repair ceiling was exceeded")
 // A slower old creation hook must never overwrite a newer cancellation.
 let releaseOld
 let oldEntered

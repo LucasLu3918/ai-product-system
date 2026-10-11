@@ -206,7 +206,7 @@ export default {
     const contextFlights = new Map<string, Promise<ContextEntry>>()
     const creativeAdmissions = new Map<string, {
       grants: Record<string, any>; root: string; outputScope: string; messageID: string
-      promptDigest: string; maxOutputs: number; usedOutputs: number; maxRepairs: number; usedRepairs: number; usedChecks: number; generatedManifests: Set<string>; maxTimeBudget: number; targetScope: string | null; busy: boolean; continued: boolean
+      promptDigest: string; maxOutputs: number; usedOutputs: number; maxRepairs: number; maxRepairTotal: number; loopDeadline: number | null; usedRepairs: number; usedChecks: number; generatedManifests: Set<string>; maxTimeBudget: number; targetScope: string | null; busy: boolean; continued: boolean
       continuation: Record<string, any> | null; issuedAt: number
     }>()
     const maxCache = 32
@@ -319,7 +319,7 @@ export default {
             grants: admission.grants, root: session.root, outputScope: session.root,
             messageID: String(event.messageID ?? event.messageId ?? ""),
             promptDigest: admission.prompt_sha256, maxOutputs: admission.max_outputs, usedOutputs: 0,
-            maxRepairs: Number.isInteger(admission.max_repairs) && admission.max_repairs >= 0 && admission.max_repairs <= 2 ? admission.max_repairs : 0, usedRepairs: 0, usedChecks: 0, generatedManifests: new Set<string>(), targetScope: typeof admission.target_scope === "string" ? admission.target_scope : null, maxTimeBudget: Number.isInteger(admission.time_budget_seconds) && admission.time_budget_seconds >= 1 && admission.time_budget_seconds <= 3600 ? admission.time_budget_seconds : 600, busy: false,
+            maxRepairs: Number.isInteger(admission.max_repairs) && admission.max_repairs >= 0 && admission.max_repairs <= 2 ? admission.max_repairs : 0, maxRepairTotal: Number.isInteger(admission.max_repair_total) && admission.max_repair_total >= 0 && admission.max_repair_total <= 48 ? admission.max_repair_total : 0, loopDeadline: null, usedRepairs: 0, usedChecks: 0, generatedManifests: new Set<string>(), targetScope: typeof admission.target_scope === "string" ? admission.target_scope : null, maxTimeBudget: Number.isInteger(admission.time_budget_seconds) && admission.time_budget_seconds >= 1 && admission.time_budget_seconds <= 3600 ? admission.time_budget_seconds : 600, busy: false,
             continued: admission.continued, continuation: admission.continuation, issuedAt: Date.now(),
           })
           while (creativeAdmissions.size > maxCache) creativeAdmissions.delete(creativeAdmissions.keys().next().value as string)
@@ -561,7 +561,11 @@ export default {
             admission.usedChecks += 1
           }
           if (request.action === "quality-loop") {
-            if (!admission || admission.busy || admission.usedOutputs >= admission.maxOutputs || request.max_repairs! > admission.maxRepairs - admission.usedRepairs || request.time_budget_seconds! > admission.maxTimeBudget) return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_output_limit_exceeded", fallback_allowed: false }) }
+            if (!admission || admission.busy || admission.usedOutputs >= admission.maxOutputs || request.max_repairs! > admission.maxRepairs || request.max_repairs! > admission.maxRepairTotal - admission.usedRepairs || request.time_budget_seconds! > admission.maxTimeBudget) return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_output_limit_exceeded", fallback_allowed: false }) }
+            admission.loopDeadline ??= Date.now() + admission.maxTimeBudget * 1000
+            const remainingSeconds = Math.floor((admission.loopDeadline - Date.now()) / 1000)
+            if (remainingSeconds < 1) return { content: JSON.stringify({ status: "BLOCKED", reason_code: "time_budget_exhausted", fallback_allowed: false }) }
+            request.time_budget_seconds = Math.min(request.time_budget_seconds!, remainingSeconds)
             admission.usedOutputs += 1
             admission.usedRepairs += request.max_repairs!
             admission.busy = true

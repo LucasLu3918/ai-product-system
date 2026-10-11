@@ -162,7 +162,8 @@ def classify_task(prompt: str, intent: str = "auto") -> dict[str, object]:
     elif re.search(r"\b(?:delete|remove|erase)\b", stripped, re.IGNORECASE) or re.search(r"刪除|移除|刪掉", stripped):
         task_intent = "delete"
     elif recreation_read_only:
-        task_intent = "read" if CREATIVE_READ_ONLY.search(prompt.strip()) else "discuss"
+        discussion = re.search(r"^(?:請)?(?:幫我)?(?:討論|只討論)|^(?:please\s+)?discuss\b", prompt.strip(), re.IGNORECASE)
+        task_intent = "read" if CREATIVE_READ_ONLY.search(prompt.strip()) and not discussion else "discuss"
     elif mutation and re.search(r"生成|產圖|繪製", stripped) and re.search(r"自動.{0,12}(?:修正|修復|重製|重畫)", stripped):
         task_intent = "create"
     elif re.search(r"\b(?:modify|edit|update|change|fix|repair|overwrite)\b", stripped, re.IGNORECASE) or re.search(r"重出|重畫|重新產圖|修改|編輯|調整|修正|更新|覆寫", stripped):

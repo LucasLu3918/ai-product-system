@@ -278,6 +278,7 @@ def admit_prompt(prompt: Any, pending: Any = None) -> dict[str, Any]:
         "grants": grants,
         "max_outputs": max_outputs,
         "max_repairs": max_repairs,
+        "max_repair_total": max_repairs if re.search(r"總共|合計|總修正|\btotal\b", text, re.IGNORECASE) and repair_count else max_outputs * max_repairs,
         "time_budget_seconds": max_time,
         "target_scope": target_scope,
         "continued": False,

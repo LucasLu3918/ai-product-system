@@ -76,6 +76,8 @@ def main():
     for prompt in ('請生成圖片，但不要自動修復', 'Generate an image, but do not automatically repair it'):
         assert not admit_prompt(prompt)['grants']['quality-loop']['allowed']
     assert admit_prompt('請生成一張角色圖片，自動修正最多一次')['max_repairs'] == 1
+    assert admit_prompt('請生成兩張角色圖片，自動修正')['max_repair_total'] == 4
+    assert admit_prompt('請生成兩張角色圖片，自動修正，總共最多一次')['max_repair_total'] == 1
     criteria = repair.checklist({'character': {'identity_features': ['scar on forehead']}, 'style': {'intent': 'anime'}})
     blocked(lambda: repair.validate_checks([], criteria), 'visual_review_response_invalid')
     blocked(lambda: repair.validate_checks([{'id': 'required-1', 'assessment': 'MATCH', 'evidence': '', 'suggestion': 'ok'}] * 2, criteria), 'visual_review_response_invalid')
