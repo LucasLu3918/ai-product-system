@@ -78,3 +78,5 @@ Scope authorization: user approved the preceding P0/P1/P2 implementation and req
 - modified: `tests/evidence/opencode_integration_lifecycle.py` (additive native action contract synchronized).
 
 - Multi-delivery native grants preserve per-delivery repair budgets and explicit total repair/time ceilings.
+
+- modified: `scripts/aips_cli/runtime.sh` (upgrade/install readiness includes Pillow, so existing runtimes repair the newly required decoder).

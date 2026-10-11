@@ -1,7 +1,7 @@
 version: 1
 candidate:
   base_sha: c4c239443a4ca3ceb070b2b77291eecbf891622c
-  changed_files_hash: 3b65122675f21f072874d37a9636c56ccb16fa2e38d4ae8414f6cc9701b3be9b
+  changed_files_hash: 37a60f5b83ef7d1a35f7153d89c6473912d777d0502370e498342a1ad8b95cf5
 change:
   id: creative-quality-repair-20261011
   summary: Same-session recreation admission, criterion evidence, versioned feedback/repair/comparison
