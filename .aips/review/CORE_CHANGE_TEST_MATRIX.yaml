@@ -51,13 +51,13 @@ matrix:
     checks:
       static_lint:
         applicable: true
-        evidence: "PASS: scoped traversal reached callers depth 3 and consumers depth 3 with no unresolved edges or truncation."
+        evidence: "PASS: final exact-candidate security-boundary traversal reached callers depth 3 and consumers depth 3; 19 nodes, 32 edges, no unresolved edges or truncation."
       unit:
         applicable: true
         evidence: "PASS: Focused lifecycle evidence covers negative and positive import paths."
       integration:
         applicable: true
-        evidence: "PASS: scoped Impact Graph includes launcher, dispatch, lifecycle, validation, and registry paths."
+        evidence: "PASS: scoped Impact Graph includes launcher, dispatch, lifecycle, validation, and registry paths; changed nodes are requires_change and unchanged CLI/validation consumers are reviewed_safe."
       contract:
         applicable: true
         evidence: "PASS: scoped coverage selected for the exact creative workspace profile seed; global coverage remains api/data/events partial and consumers unknown."
@@ -78,11 +78,8 @@ matrix:
         evidence: "PASS: Change Impact records exact target paths and scoped evidence; focused lifecycle exercises the bounded behavior."
 
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
-blockers:
-  - exact candidate commit and changed-file hash binding pending
-  - exact-candidate Integration Gate pending
-  - candidate binding refreshed; review scope and evidence before marking READY
-status: DRAFT
+actual_diff_reconciled: true
+blockers: []
+status: READY
 review_evidence:
   required: false
