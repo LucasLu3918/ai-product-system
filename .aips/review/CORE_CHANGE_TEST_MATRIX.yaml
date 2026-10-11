@@ -1,75 +1,76 @@
 version: 1
 candidate:
-  base_sha: a9f6ac194124b647428f7a4580f95971b6acdceb
+  base_sha: bf4b224a0cdc04b408432027cafbab1d0bd64271
   changed_files_hash: b7c4d72049d8b007fd54528a1bdf0be0b7e3a97439efe20dbbf878f6cd3d98a8
 change:
-  id: plan29-core-facade-20261011
-  summary: Record Plan29 #8 as satisfied by existing facade extractions and lifecycle evidence; no runtime code changes.
+  id: plan29-cost-evidence-20261011
+  summary: Record Plan29 #9 as satisfied by existing privacy-bounded Context and telemetry evidence while preserving unavailable task-level token and cost values as UNKNOWN.
   boundary:
-    - Preserve the existing extracted internal module boundaries and public facade identities for Creative, Project Intelligence, and Retrieval.
-    - Preserve existing CLI/import behavior; this candidate only updates Plan29 tracking and its exact-candidate matrix.
-    - Preserve current subsystem lifecycle evidence and repository-wide Impact Graph coverage as partial/unknown.
+    - Preserve the bounded Project Intelligence Context budgets and distinguish their estimates from authoritative model token usage.
+    - Preserve the telemetry allowlist, runtime-observed usage-source requirement, privacy protections, and unavailable/unknown semantics.
+    - Preserve cost as UNKNOWN without a verified price source; do not persist synthetic or account-level usage as a per-task cost baseline.
+    - This candidate changes only Plan29 tracking and its Core Change Matrix; runtime source and public interfaces remain unchanged.
 matrix:
-  - boundary: Existing facade identity and internal module boundaries
-    reason: The accepted #8 boundary is met by existing extracted modules; no duplicate or behavior-changing extraction is needed.
+  - boundary: Context, token-source, and cost evidence contracts
+    reason: Context estimates, runtime-observed model usage, and monetary cost have different evidence sources and must not be conflated.
     checks:
       static_lint:
         applicable: true
-        evidence: 'PASS: tests/evidence/module_extraction_lifecycle.py verifies the same public function and exception objects are re-exported from existing implementation modules; repository validation and Ruff run in the exact-candidate Gate.'
+        evidence: 'PASS: the exact-candidate Core Gate runs repository validation and Ruff; telemetry and Context contract scripts verify allowlists and bounded estimates.'
       unit:
         applicable: true
-        evidence: 'PASS: tests/evidence/module_extraction_lifecycle.py; tests/evidence/retrieval_relations_extraction_lifecycle.py; tests/evidence/project_intelligence_relation_candidates_lifecycle.py.'
+        evidence: 'PASS: tests/evidence/runtime_context_lifecycle.py and tests/evidence/intelligence_context_lifecycle.py; tests/validation/performance_evidence_contracts.py.'
       integration:
         applicable: true
-        evidence: 'PASS: the exact-candidate Core Integration Gate runs complete repository validation across the affected facade surfaces.'
+        evidence: 'PASS: tests/evidence/performance_evidence_lifecycle.py and tests/evidence/telemetry_export_lifecycle.py; exact-candidate Core Gate covers full repository validation.'
       contract:
         applicable: true
-        evidence: 'PASS: facade identity assertions cover Creative, Project Intelligence, and Retrieval public compatibility symbols.'
+        evidence: 'PASS: tests/validation/telemetry_export_contracts.py rejects unbound usage, unsupported cost status, and unknown telemetry attributes; missing usage remains unavailable/unknown.'
       e2e:
         applicable: true
-        evidence: 'PASS: tests/evidence/creative_execution_lifecycle.py; tests/evidence/project_intelligence_lifecycle.py; tests/evidence/retrieval_intelligence_lifecycle.py.'
+        evidence: 'PASS: telemetry lifecycle builds deterministic OTLP projection, exports to a local receiver, and verifies observed and unavailable token cases.'
       security:
         applicable: true
-        evidence: 'PASS: existing lifecycle evidence retains create-only creative output, Project Intelligence path confinement and writer locking, Retrieval secret exclusion, and unchanged authority boundaries; exact-candidate secret scan is required.'
+        evidence: 'PASS: telemetry lifecycle rejects secret-like model identifiers and excludes prompt/output/private reasoning/credentials; exact-candidate mandatory secret scan is required.'
       migration_recovery:
         applicable: false
-        na_reason: No runtime module move, persisted schema, migration, or recovery path changes in this evidence-based closure.
+        na_reason: No runtime event schema, stored data, or migration changes in this evidence-based closure.
       cli_harness:
         applicable: true
-        evidence: 'PASS: tests/evidence/aips_cli_module_extraction_lifecycle.py verifies installed CLI dispatch compatibility; Project Intelligence and Creative subsystem lifecycle tests exercise their direct CLI interfaces.'
+        evidence: 'PASS: runtime-context and telemetry lifecycle evidence exercise existing CLI recording/projection interfaces; this candidate does not change dispatch.'
       docs_schema:
         applicable: true
-        evidence: 'PASS: Plan29 acceptance status is recorded in its existing proposal; the exact-candidate Gate checks documentation closure and YAML structure.'
+        evidence: 'PASS: existing telemetry schema and docs state cost estimation is disabled without a verified price source; the proposal records the UNKNOWN limitation.'
   - boundary: Exact-candidate evidence-only scope
-    reason: The diff must not change runtime code or claims beyond the acceptance evidence already present.
+    reason: Keep the record within verified current behavior and do not imply that synthetic fixture values are real runtime measurements.
     checks:
       static_lint:
         applicable: true
         evidence: 'PASS: exact base/head diff contains only the Plan29 proposal and this Core Change Matrix.'
       unit:
         applicable: true
-        evidence: 'PASS: no runtime behavior changes; all five focused identity, CLI, and subsystem lifecycle tests passed before the documentation-only status edit.'
+        evidence: 'PASS: telemetry export, performance evidence, runtime Context, and Context manifest focused lifecycle/contracts passed before the status-only edit.'
       integration:
         applicable: true
-        evidence: 'PASS: the exact-candidate Core Integration Gate runs after this matrix is bound to the committed diff.'
+        evidence: 'PASS: exact-candidate Core Integration Gate runs after matrix binding.'
       contract:
         applicable: true
-        evidence: 'PASS: Plan29 status names the existing lifecycle evidence and states that no duplicate extraction was performed.'
+        evidence: 'PASS: Plan29 status explicitly distinguishes Context estimates from authoritative tokens and retains UNKNOWN for unavailable task usage and unverified prices.'
       e2e:
         applicable: true
-        evidence: 'PASS: existing end-to-end Creative, Project Intelligence, Retrieval, and CLI lifecycle scripts passed locally.'
+        evidence: 'PASS: existing telemetry local-receiver lifecycle and Context subsystem evidence passed.'
       security:
         applicable: true
-        evidence: 'PASS: no source, credential, data-flow, runtime authority, or external provider changes; exact-candidate secret scan remains required.'
+        evidence: 'PASS: no prompts, responses, tool arguments, account-usage percentages, provider credentials, or synthetic benchmark data are added to the repository.'
       migration_recovery:
         applicable: false
-        na_reason: No persisted data or runtime state changes.
+        na_reason: No persistent schema or runtime state changes.
       cli_harness:
         applicable: true
-        evidence: 'PASS: CLI lifecycle evidence passed and the candidate does not modify launchers or dispatch code.'
+        evidence: 'PASS: the candidate does not modify CLI or runtime dispatch; existing CLI evidence is included in the exact repository Gate.'
       docs_schema:
         applicable: true
-        evidence: 'PASS: docs-impact placement and content-safety checks will run against the exact candidate.'
+        evidence: 'PASS: docs-impact and content-safety checks will run against the exact candidate.'
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
