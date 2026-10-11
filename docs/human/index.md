@@ -26,6 +26,9 @@ features:
 
 ## 文件如何組織
 
+Creative asset import usage lives in USER_GUIDE.md; its reusable workflow and boundaries live in orchestration/CREATIVE_DIRECTION.md.
+
+
 Creative quality benchmark 操作方式在 USER_GUIDE，證據欄位與驗證邊界在 TECHNOLOGY_GUIDE，Scenario 258 收錄可執行的契約證據。
 
 OpenCode setup 與版本綁定驗收請閱讀 [Global Harness](./HARNESS.md)、[Installation](./INSTALLATION.md) 與 [Technology Guide](./TECHNOLOGY_GUIDE.md)；Scenario 235 定義原生驗收證據邊界。

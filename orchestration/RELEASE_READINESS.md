@@ -52,6 +52,9 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+Creative asset imports target non-Git EPHEMERAL workspaces; imported user files are not part of a repository release candidate.
+
+
 Creative repair candidates bind admission, replay/concurrency, local-only review, versioned source integrity and finite deadline evidence to the exact Core diff. Full repository validation, documentation closure and required PR checks remain necessary; machine visual evidence never grants publication or acceptance authority.
 
 Candidate readiness is mode-neutral evidence. Personal mode may publish a guarded engineering branch and PR after the required checks; high-assurance publication also requires its external grant, and neither mode makes the Gate an implicit merge approval.

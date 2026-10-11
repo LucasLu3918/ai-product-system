@@ -26,6 +26,9 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+The creative workspace import CLI workflow is maintained in USER_GUIDE.md and orchestration/CREATIVE_DIRECTION.md.
+
+
 Creative quality benchmark v2 uses a prompt-free registered matrix and keeps profile-case coverage, model/check/compiler failures, Human review, user acceptance and runtime attestation distinct. The benchmark lifecycle is schema/path evidence only; it does not establish generated-image quality.
 
 Keep Scenario 235, OpenCode compatibility, Harness, Installation, and Technology Guide aligned on exact-host evidence and the unsupported Shell/MCP/out-of-process boundary. A legacy report missing unsupported_effects remains UNVERIFIED; it cannot be upgraded from static installation evidence.
@@ -199,6 +202,9 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+Plan29 #6 binds its Change Impact and Core Change Test Matrix to the exact implementation candidate before publication.
+
 
 Branch lifecycle reporting follows one current behavior across the Human maintenance guide, Agent-facing Branch Hygiene protocol, and Scenario 257 evidence. The workflow classifies with current exact-SHA evidence and remains read-only; never describe a cleanup candidate as authorization to delete.
 

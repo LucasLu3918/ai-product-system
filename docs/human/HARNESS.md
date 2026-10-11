@@ -8,6 +8,9 @@ Runtime Context 統一解析驗證 Python 與 cache/config 路徑；它將 Playw
 
 ## Integration model
 
+The creative workspace import is an explicit local CLI workflow using the existing AIPS launcher and private metadata cache.
+
+
 Creative quality benchmark evidence is a post-trial read-only report. It does not invoke a native adapter, grant creative execution, or establish host acceptance.
 
 OpenCode current native prompt admission 支援「重出／重畫」的新有限 grant；重複 message 不重置額度，過期、取消或 grant 被替換時拒絕執行。`quality-loop` 預先保留 delivery 與 repair attempts；否定自動修正不授予 loop 權限。

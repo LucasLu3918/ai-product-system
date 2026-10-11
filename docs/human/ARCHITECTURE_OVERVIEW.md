@@ -120,6 +120,9 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Creative workspaces can receive existing user-owned assets through a hash-bound candidate and explicit create-only import; generation remains a separate action.
+
+
 Creative quality evidence extends the existing local trial and repair workflow with a prompt-free profile-case matrix. Benchmark reports preserve separate states for raster validity, model/check/compiler outcomes, Human visual review, user acceptance and runtime attestation. This adds evidence detail without changing the creative execution topology or authorization boundary.
 
 OpenCode 原生驗收只驗證主機整合，不代表創作執行或視覺品質；任意 Shell、MCP／自訂工具及程式外寫入仍不受 guard 支援。
@@ -381,6 +384,9 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Plan29 #6 records its approved scoped Change Impact and exact Core Change Test Matrix alongside the implementation PR.
+
 
 創作修正流程在既有 executor 下新增逐項機器證據與版本化 lineage。交付數、生成嘗試數、修正次數分開；明確 opt-in 循環受兩次修正及共同時間上限限制，判斷不明或重複缺陷則停下並提供下一步。
 

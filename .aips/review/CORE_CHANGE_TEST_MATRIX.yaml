@@ -1,118 +1,88 @@
 version: 1
 
 candidate:
-  base_sha: a157302a3c1e7880708a038a24829b2e814e3395
-  changed_files_hash: 9be7a84a611fde25dee5f7ca34d32e3780a580e29b8bd8506e0f083992da682a
+  base_sha: 323466e116518984145755a4390ac9994fd89e0f
+  changed_files_hash: 448f423b5c7dc227e0fa490b915ac8e65837b1b5d0d61c463b6e68d617bad79e
 
 change:
-  id: plan29-phase2-creative-quality-20261011
-  summary: Add prompt-free cross-profile creative quality coverage and preserve separate failure, Human review, user acceptance, and runtime evidence.
+  id: plan29-creative-workspace-import-20261011
+  summary: Add a hash-bound creative workspace asset import proposal and explicit create-only import command.
   boundary:
-    - Register three character archetypes and six cases as an 18-cell coverage matrix without prompts or model quality labels.
-    - Accept bounded version-2 local trial evidence with confined, valid, SHA-256-bound raster outputs and per-profile coverage.
-    - Report model, check, and compiler failures separately using bounded reason codes; reject raw prompt, traceback, and unknown fields.
-    - Preserve version-1 evidence readability with dataset coverage UNVERIFIED and keep Human review, user acceptance, and runtime attestation independent.
-    - Preserve the existing versioned, source-hash-bound, create-only repair contract; no generation, repair, provider, authority, or architecture topology is added.
-    - Update the existing conformance-isolation baseline assertion for the newly registered Scenario 258, without weakening the no-uncovered rule.
-    - Keep generated current conformance and history projections synchronized with the registered Scenario and Human/Agent documentation changes.
+    - Bind a supported source asset, destination workspace, exact relative target, and SHA-256 in a private external candidate record without caching asset bytes.
+    - Revalidate candidate integrity and current source bytes before import; reject source drift and candidate edits.
+    - Confine source and target paths, reject symlinks and Git destinations, and never overwrite or create destination directories.
+    - Preserve existing scan and next-version behavior and route both new commands through the existing creative CLI.
+    - Keep repository-wide Impact Graph coverage unchanged and record only the approved #6 scoped evidence.
+    - Document the explicit proposal and exact-hash acceptance workflow.
 
 matrix:
-  - boundary: Dataset integrity and cross-profile coverage
-    reason: Coverage claims must derive from a registered bounded dataset, retain missing cells explicitly, and avoid representing the matrix as generated samples or quality labels.
+  - boundary: Hash-bound candidate and source revalidation
+    reason: Import must refer to exact source bytes and a fixed destination; stale or modified evidence cannot authorize a copy.
     checks:
       static_lint:
         applicable: true
-        evidence: "PASS: Ruff check on creative_quality_benchmark.py and affected lifecycle/contract tests."
+        evidence: "PASS: Python py_compile for creative_workspace_profile.py."
       unit:
         applicable: true
-        evidence: "PASS: tests/evidence/creative_quality_benchmark_lifecycle.py checks 3 profiles, 6 cases, 18 expected cells, observed/missing cells, and v1 UNKNOWN coverage; conformance-isolation baseline is updated to 258 scenarios / 239 automated."
+        evidence: "PASS: OpenCode lifecycle covers candidate digest, private metadata-only cache, candidate tampering, and source drift."
       integration:
         applicable: true
-        evidence: "PASS: tests/validation/creative_quality_contracts.py loads the registered dataset and exercises the benchmark lifecycle."
+        evidence: "PASS: OpenCode integration lifecycle invokes the source-checkout bin/aips import-candidate and import commands end to end."
       contract:
         applicable: true
-        evidence: "PASS: Scenario 258 and tests/scenario_coverage.yaml bind the dataset, template, benchmark, repair lifecycle, and validator."
+        evidence: "PASS: opencode_integration_contracts runs the lifecycle contract."
       e2e:
-        applicable: false
-        na_reason: "No product workflow or provider dispatch changes; the registered matrix is exercised through a deterministic local fixture."
+        applicable: true
+        evidence: "PASS: explicit candidate hash imports exact bytes to the selected target; repeat import is blocked."
       security:
         applicable: true
-        evidence: "PASS: bounded dataset IDs/archetypes/dimensions and profile/case references are validated; report output contains no prompt or traceback fields. Exact-candidate secret scan remains part of the publication Gate."
+        evidence: "PASS: hash mismatch, changed source, path traversal, symlink input, Git destination, and target race are blocked without overwriting existing bytes."
       migration_recovery:
         applicable: false
-        na_reason: "The dataset is a source-controlled read-only contract; no persisted project state is migrated or rewritten."
+        na_reason: "Candidate records are versioned private EPHEMERAL cache files; no existing project data schema is migrated."
       cli_harness:
         applicable: true
-        evidence: "PASS: benchmark lifecycle invokes scripts/creative_quality_benchmark.py with a v2 fixture and checks JSON coverage output."
+        evidence: "PASS: source-checkout bin/aips exposes import-candidate and import through creative dispatch; help output is verified."
       docs_schema:
         applicable: true
-        evidence: "PASS: publication preview reports documentation placement PASS; Human and Agent docs, dataset/template, Scenario 258, and generated conformance projections are synchronized."
-
-  - boundary: Failure stage and acceptance evidence separation
-    reason: Model, output-check, and prompt-compiler failures must remain independently countable; Human visual ratings, user acceptance, and runtime attestation must not be inferred from output validity.
+        evidence: "PASS: User Guide and creative protocol describe proposal, hash acceptance, privacy, and no-overwrite behavior."
+  - boundary: Scoped Change Impact and repository-wide limitation
+    reason: The import is a security boundary; exact CLI and test consumers are reviewed while global Impact Graph coverage stays partial/unknown.
     checks:
       static_lint:
         applicable: true
-        evidence: "PASS: Ruff check on the affected benchmark and lifecycle modules."
+        evidence: "PASS: scoped traversal reached callers depth 3 and consumers depth 3 with no unresolved edges or truncation."
       unit:
         applicable: true
-        evidence: "PASS: lifecycle fixture records one model, one check, and one compiler failure; malformed stage and traceback fields are rejected."
+        evidence: "PASS: Focused lifecycle evidence covers negative and positive import paths."
       integration:
         applicable: true
-        evidence: "PASS: creative quality contracts retain advisory report authority and independent Human review/user acceptance fields."
+        evidence: "PASS: scoped Impact Graph includes launcher, dispatch, lifecycle, validation, and registry paths."
       contract:
         applicable: true
-        evidence: "PASS: v2 template restricts failure stages and reason codes; Scenario 258 records independent evidence states."
+        evidence: "PASS: scoped coverage selected for the exact creative workspace profile seed; global coverage remains api/data/events partial and consumers unknown."
       e2e:
         applicable: false
-        na_reason: "Real model inference and visual review need installed local weights and Human observation; this change adds an evidence format, not a generation workflow."
+        na_reason: "Change Impact is an evidence contract; exact end-to-end import behavior is covered in the first boundary."
       security:
         applicable: true
-        evidence: "PASS: reason codes are bounded tokens, unknown/raw-text keys invalidate trials, and no authority is granted."
-      migration_recovery:
-        applicable: true
-        evidence: "PASS: version-1 empty evidence remains readable with UNVERIFIED dataset coverage and UNKNOWN observations."
-      cli_harness:
-        applicable: true
-        evidence: "PASS: CLI output retains authority NONE, runtime attestation UNVERIFIED, and independent user-acceptance status."
-      docs_schema:
-        applicable: true
-        evidence: "PASS: USER_GUIDE, TECHNOLOGY_GUIDE, CREATIVE_DIRECTION, architecture and conformance documents state the evidence boundary."
-
-  - boundary: Existing scoped repair and exact artifact binding
-    reason: Quality reporting must not weaken the pre-existing bounded repair, source lineage, confined output, or Human acceptance contracts.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: "PASS: Ruff check covers the changed benchmark and lifecycle modules; creative_repair.py is unchanged."
-      unit:
-        applicable: true
-        evidence: "PASS: creative repair lifecycle verifies copied versioned inputs, source/hash lineage, bounded attempts, uncertainty/time stops, and no false Human acceptance."
-      integration:
-        applicable: true
-        evidence: "PASS: creative_quality_contracts.py runs quality and repair lifecycle evidence together."
-      contract:
-        applicable: true
-        evidence: "PASS: version-2 completed trials require valid project-confined raster output and matching SHA-256; repair remains create-only and parent-bound."
-      e2e:
-        applicable: false
-        na_reason: "No generator or repair tool is invoked by benchmark inspection; existing lifecycle fixtures cover deterministic repair behavior."
-      security:
-        applicable: true
-        evidence: "PASS: benchmark reads bounded files, rejects symlink outputs and path escapes, validates raster bytes and digest, and reports no authority."
+        evidence: "PASS: exact candidate and seed-scoped Impact Graph evidence retained; no global coverage promotion."
       migration_recovery:
         applicable: false
-        na_reason: "No persistent repair schema or project files are changed by the reporting contract."
+        na_reason: "No persistent repository Intelligence or project data schema changes."
       cli_harness:
         applicable: true
-        evidence: "PASS: direct benchmark CLI lifecycle invocation and existing creative repair command contract both run in the focused validation."
+        evidence: "PASS: dispatch path is explicitly traversed and exercised by the CLI lifecycle."
       docs_schema:
         applicable: true
-        evidence: "PASS: Scenario 258 and creative repair guidance preserve separate execution, visual review, and acceptance states."
+        evidence: "PASS: Change Impact records exact target paths and scoped evidence; focused lifecycle exercises the bounded behavior."
 
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: true
-blockers: []
-status: READY
+actual_diff_reconciled: false
+blockers:
+  - exact candidate commit and changed-file hash binding pending
+  - exact-candidate Integration Gate pending
+  - candidate binding refreshed; review scope and evidence before marking READY
+status: DRAFT
 review_evidence:
   required: false

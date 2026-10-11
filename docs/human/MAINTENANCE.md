@@ -10,6 +10,9 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+The creative workspace import flow is covered in the User Guide and canonical creative protocol, with the CLI and lifecycle paths reconciled.
+
+
 Creative quality benchmark changes update the dataset and evidence contract alongside the creative workflow guidance, architecture overview, maintenance validation notes and Scenario 258. This evidence remains separate from native Host acceptance.
 
 OpenCode adapter changes require exact-host evidence and synchronized Harness, Installation, Technology Guide and Scenario 235 descriptions of unsupported effects.
@@ -134,6 +137,9 @@ Multi-file changes should normally be assembled into one coherent remote branch 
 15. Prefer independent review/PR for material system changes.
 
 ## Versioning
+
+Plan29 #6 is validated as an exact Core Change candidate with its own matrix and required repository check.
+
 
 創作品質維護分開觀察必要條件漏判、生成／修正次數、重複缺陷與耗時。缺陷回饋、修正版 Profile／Bundle、比較報告保留 hash 關聯；既有 Profile 不原地修改。合成 lifecycle 只驗證流程，真實 vision 正確率需獨立實測。
 

@@ -54,6 +54,9 @@ Load `SYSTEM_CORE.md` with minimal Harness rules and critical native/project ins
 
 ## Mutation safety
 
+Creative workspace asset import is an explicit local CLI action bound to a reviewed source hash and an absent destination path.
+
+
 Optional creative `review-assist` is a separate current-user-authorized action bound to the active Session root; its local vision findings remain advisory and cannot grant write, generation or acceptance authority.
 
 The OpenCode creative tool receives a fresh per-response grant; only bounded structured state tied to the same Session root can continue an active clarification. Cancellation, unrelated work, scope expansion, expiry and exhausted output budgets revoke continuation.

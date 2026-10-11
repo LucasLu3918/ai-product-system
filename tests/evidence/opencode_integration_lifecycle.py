@@ -252,6 +252,60 @@ def creative_profile_cases(base):
         assert suggestion == {"status": "AVAILABLE", "path": "cat-v2.svg", "created": False, "overwrite": False}
         assert not (project / "cat-v2.svg").exists()
 
+        destination = base / "destination"
+        (destination / "assets").mkdir(parents=True)
+        candidate = creative_profile.import_candidate(project, "cat.svg", destination, "assets/cat.svg")
+        assert candidate["status"] == "READY" and candidate["overwrite"] is False
+        assert candidate["source"]["sha256"] == __import__("hashlib").sha256(b"<svg/>").hexdigest()
+        assert candidate["destination"]["state"] == "ABSENT" and not (destination / "assets/cat.svg").exists()
+        candidate_file = Path(candidate["candidate_file"])
+        assert candidate_file.is_relative_to(env_cache) and candidate_file.stat().st_mode & 0o777 == 0o600
+        assert b"<svg/>" not in candidate_file.read_bytes(), "candidate cache must not contain asset bytes"
+
+        tampered = json.loads(candidate_file.read_text(encoding="utf-8"))
+        tampered["destination"]["path"] = "../escape.svg"
+        tampered_path = base / "tampered.json"
+        tampered_path.write_text(json.dumps(tampered), encoding="utf-8")
+        expect_blocked(lambda: creative_profile.import_asset(tampered_path, candidate["candidate_sha256"]))
+
+        (project / "cat.svg").write_text("<svg changed/>", encoding="utf-8")
+        expect_blocked(lambda: creative_profile.import_asset(candidate_file, candidate["candidate_sha256"]))
+        (project / "cat.svg").write_text("<svg/>", encoding="utf-8")
+        fresh = creative_profile.import_candidate(project, "cat.svg", destination, "assets/cat.svg")
+        (destination / "assets" / "cat.svg").write_text("keep me", encoding="utf-8")
+        expect_blocked(lambda: creative_profile.import_asset(Path(fresh["candidate_file"]), fresh["candidate_sha256"]))
+        assert (destination / "assets" / "cat.svg").read_text(encoding="utf-8") == "keep me"
+        (destination / "assets" / "cat.svg").unlink()
+
+        accepted = creative_profile.import_candidate(project, "cat.svg", destination, "assets/cat.svg")
+        imported = creative_profile.import_asset(Path(accepted["candidate_file"]), accepted["candidate_sha256"])
+        assert imported["status"] == "IMPORTED" and imported["created"] is True and imported["overwrite"] is False
+        assert (destination / "assets" / "cat.svg").read_bytes() == b"<svg/>"
+        expect_blocked(lambda: creative_profile.import_asset(Path(accepted["candidate_file"]), accepted["candidate_sha256"]))
+
+        conflict = creative_profile.import_candidate(project, "cat.svg", destination, "assets/cat.svg")
+        assert conflict["status"] == "CONFLICT" and conflict["destination"]["existing_sha256"]
+        expect_blocked(lambda: creative_profile.import_asset(Path(conflict["candidate_file"]), conflict["candidate_sha256"]))
+        expect_blocked(lambda: creative_profile.import_candidate(project, "../outside.png", destination, "assets/outside.png"))
+        expect_blocked(lambda: creative_profile.import_candidate(project, "ignored.png", destination, "assets/ignored.png"))
+        git_destination = base / "git-destination"
+        git_destination.mkdir()
+        (git_destination / ".git").mkdir()
+        expect_blocked(lambda: creative_profile.import_candidate(project, "cat.svg", git_destination, "cat.svg"))
+
+        cli_destination = base / "cli-destination"
+        (cli_destination / "assets").mkdir(parents=True)
+        cli_env = {**os.environ, "XDG_CACHE_HOME": str(env_cache), "AIPS_VALIDATION_PYTHON": sys.executable}
+        cli = ROOT / "bin" / "aips"
+        proposal = run([str(cli), "creative", "import-candidate", "--source-project", str(project), "--source", "cat.svg", "--destination-project", str(cli_destination), "--target", "assets/cat.svg"], cli_env)
+        proposal_doc = json.loads(proposal.stdout)
+        imported_cli = run([str(cli), "creative", "import", "--candidate", proposal_doc["candidate_file"], "--accept-hash", proposal_doc["candidate_sha256"]], cli_env)
+        assert json.loads(imported_cli.stdout)["status"] == "IMPORTED"
+        assert (cli_destination / "assets" / "cat.svg").read_bytes() == b"<svg/>"
+
+    dispatch = (ROOT / "scripts" / "aips_cli" / "dispatch.sh").read_text(encoding="utf-8")
+    assert "scan|next-version|import-candidate|import)" in dispatch
+
 
 def trace_cases(base):
     base.mkdir(parents=True)
