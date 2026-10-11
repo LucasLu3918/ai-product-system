@@ -17,3 +17,13 @@ Given a pending creative clarification, when the user cancels, switches to softw
 Given local engine probing returns a timeout, nonzero version command, unrecognized version or missing executable, when diagnostics are reported, then command availability, process health and version parsing remain distinct; no diagnostic claims model inference or visual quality.
 
 Evidence: scripts/creative_request_policy.py, scripts/creative_execution.py, harness/adapters/opencode/plugin.ts, tests/evidence/creative_request_policy_lifecycle.py, tests/evidence/creative_generate_set_lifecycle.py, tests/evidence/opencode_native_acceptance.py.
+
+Given the output cap is exhausted, when the current native user asks `請按疤痕在額頭皮膚、不在頭髮上，重出一張哈利`, then derive a new single-output repair grant in the same Session; no raw transcript restores authority. Analysis, negation and feedback alone cannot grant generation.
+
+Given explicit generation plus automatic correction, when a quality loop runs, then reserve one delivery and at most two repair attempts before inference, enforce the shared time ceiling, inspect every criterion and applicable expression at composition/detail scale, preserve machine/Human/user decisions, and stop on uncertainty, repeated defects or exhausted budget.
+
+Given a user reports misplaced identity details, when feedback and repair are requested, then record version-bound defects, copy Profiles and Bundle, reverify source hashes, choose only installed edit capability of the selected model, and compare the exact parent/revision. Existing files stay intact. Duplicate native messages and concurrent tool calls cannot recharge or overspend the grant.
+
+Repair evidence: tests/evidence/creative_repair_lifecycle.py and tests/evidence/creative_tool_harness.mjs. Synthetic evidence does not establish real local vision accuracy or native host acceptance.
+
+The creative repair contract extends the existing executor: current explicit reconstruction intent, per-criterion local advisory checks, copied Profile/Bundle versions, hash-bound comparison and opt-in bounded repairs. Machine findings grant neither execution nor Human/user acceptance; no model download, cloud fallback or overwrite is introduced.

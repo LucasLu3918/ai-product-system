@@ -8,6 +8,8 @@ Runtime Context 統一解析驗證 Python 與 cache/config 路徑；它將 Playw
 
 ## Integration model
 
+OpenCode current native prompt admission 支援「重出／重畫」的新有限 grant；重複 message 不重置額度，過期、取消或 grant 被替換時拒絕執行。`quality-loop` 預先保留 delivery 與 repair attempts；否定自動修正不授予 loop 權限。
+
 Publication Hook 使用外部 Ed25519 issuer、worktree-bound scope 與 atomic consume；未簽章 legacy record 需重新簽發。Shell AST 誤判修正不代表 OS sandbox；Codex/OpenCode 的 ADVISORY 能力不變，接入見 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement)。
 
 `aips harness doctor` 的 OpenCode probe 可讀取 source／version／platform-bound `native_acceptance`。缺少、過期、格式錯誤及失敗各有明確狀態；LOCAL_LOOPBACK_ACCEPTANCE 不證明 production model、L3 外部動作或未測試的平台。

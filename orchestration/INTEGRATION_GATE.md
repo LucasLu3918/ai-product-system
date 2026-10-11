@@ -22,6 +22,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+Creative repair candidates bind admission, replay/concurrency, local-only review, versioned source integrity and finite deadline evidence to the exact Core diff. Full repository validation, documentation closure and required PR checks remain necessary; machine visual evidence never grants publication or acceptance authority.
+
 Gate evidence proves the exact candidate passed deterministic checks; it does not authorize merge. A task-authorized merge must bind the PR head to the validated SHA, target the live default branch and satisfy required checks.
 
 

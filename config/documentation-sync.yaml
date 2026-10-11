@@ -20,6 +20,8 @@ rules:
       - scripts/character_artifacts.py
       - scripts/character_asset_validation.py
       - scripts/creative_evidence.py
+      - requirements.txt
+      - scripts/creative_repair.py
       - scripts/creative_execution.py
       - scripts/creative_trace.py
       - scripts/creative_quality_benchmark.py

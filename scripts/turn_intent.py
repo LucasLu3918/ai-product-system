@@ -4,7 +4,7 @@ from __future__ import annotations
 import re
 
 MUTATION_EN = re.compile(r"\b(?:modify|change|fix|implement|add|remove|refactor|update|create|delete|rename|repair|generate|draw|render|export|save|write|overwrite)\b", re.IGNORECASE)
-MUTATION_ZH = re.compile(r"修改|調整|實作|新增|刪除|重構|修正|更新|修好|加入|移除|建立|完成|生成|產生|繪製|畫|製作|輸出|儲存|存檔|寫入|覆寫")
+MUTATION_ZH = re.compile(r"重出|重畫|重新產圖|修改|調整|實作|新增|刪除|重構|修正|更新|修好|加入|移除|建立|完成|生成|產生|繪製|畫|製作|輸出|儲存|存檔|寫入|覆寫")
 NEGATED_ZH = re.compile(r"(?:不要|不用|不需|無須|勿|禁止|不得|別)\s*(?:對[^，。；]*?)?(?:修改|調整|實作|新增|刪除|重構|修正|更新|建立|完成|生成|產生|繪製|畫|製作|輸出|儲存|存檔|寫入|覆寫)")
 NEGATED_EN = re.compile(r"\b(?:do not|don't|never|without|no need to)\s+(?:\w+\s+){0,2}?(?:modify|change|fix|implement|add|remove|refactor|update|create|delete|rename|generate|draw|render|export|save|write|overwrite)\b", re.IGNORECASE)
 EXPLANATION_EN = re.compile(r"\b(?:explain|describe|review|assess|analy[sz]e)\s+(?:the\s+)?(?:\w+\s+){0,2}?(?:update|change|implementation|build)\b", re.IGNORECASE)
@@ -131,6 +131,8 @@ READ_EN = re.compile(r"\b(?:read|inspect|open|show|list|summari[sz]e|explain|des
 READ_ZH = re.compile(r"讀取|查看|檢視|列出|摘要|介紹|說明|解釋|分析|審查")
 EXTERNAL_EN = re.compile(r"\b(?:publish|deploy|release|push|merge|send|upload|submit|purchase|transfer)\b", re.IGNORECASE)
 EXTERNAL_ZH = re.compile(r"發布|部署|上線|推送|合併|寄送|上傳|提交|購買|轉帳")
+RECREATE_ZH = re.compile(r"重出|重畫|重新(?:產圖|生成|繪製)")
+CREATIVE_READ_ONLY = re.compile(r"^(?:(?:請)?(?:幫我)?(?:分析|說明|解釋|討論|規劃|只分析|只討論|檢查|檢視|查看|審查)|(?:please\s+)?(?:explain|analy[sz]e|discuss|plan|describe)\b)", re.IGNORECASE)
 CREATIVE_EN = re.compile(r"\b(?:image|illustration|character|artwork|asset|icon|drawing)\b", re.IGNORECASE)
 CREATIVE_ZH = re.compile(r"圖片|圖像|插畫|立繪|肖像|人像|角色|素材|圖檔|圖示|繪圖")
 ASSET_FORMAT = re.compile(r"\b(?:svg|png|jpe?g|webp)\b", re.IGNORECASE)
@@ -144,14 +146,27 @@ def classify_task(prompt: str, intent: str = "auto") -> dict[str, object]:
     stripped = EXPLANATION_ZH.sub("", EXPLANATION_EN.sub("", stripped))
     external = bool(EXTERNAL_EN.search(stripped) or EXTERNAL_ZH.search(stripped))
     mutation = intent == "write" or (intent == "auto" and bool(MUTATION_EN.search(stripped) or MUTATION_ZH.search(stripped)))
-    asset = bool(CREATIVE_EN.search(prompt) or CREATIVE_ZH.search(prompt) or (ASSET_FORMAT.search(prompt) and mutation))
+    recreate = bool(RECREATE_ZH.search(stripped) and re.search(r"張|圖|動漫|插畫", prompt))
+    recreation_read_only = bool(RECREATE_ZH.search(prompt) and (CREATIVE_READ_ONLY.search(prompt.strip()) or re.search(r"(?:不要|不用|禁止|別|勿)(?:再)?(?:重出|重畫|重新產圖)", prompt)))
+    if recreation_read_only:
+        mutation = False
+        recreate = False
+    asset = recreate or bool(CREATIVE_EN.search(prompt) or CREATIVE_ZH.search(prompt) or (ASSET_FORMAT.search(prompt) and mutation))
+    if asset and CREATIVE_READ_ONLY.search(prompt.strip()):
+        mutation = False
+        recreation_read_only = True
     if external:
         task_intent = "publish"
     elif PLAN_EN.search(stripped) or PLAN_ZH.search(stripped):
         task_intent = "plan"
     elif re.search(r"\b(?:delete|remove|erase)\b", stripped, re.IGNORECASE) or re.search(r"刪除|移除|刪掉", stripped):
         task_intent = "delete"
-    elif re.search(r"\b(?:modify|edit|update|change|fix|repair|overwrite)\b", stripped, re.IGNORECASE) or re.search(r"修改|編輯|調整|修正|更新|覆寫", stripped):
+    elif recreation_read_only:
+        discussion = re.search(r"^(?:請)?(?:幫我)?(?:討論|只討論)|^(?:please\s+)?discuss\b", prompt.strip(), re.IGNORECASE)
+        task_intent = "read" if CREATIVE_READ_ONLY.search(prompt.strip()) and not discussion else "discuss"
+    elif mutation and re.search(r"生成|產圖|繪製", stripped) and re.search(r"自動.{0,12}(?:修正|修復|重製|重畫)", stripped):
+        task_intent = "create"
+    elif re.search(r"\b(?:modify|edit|update|change|fix|repair|overwrite)\b", stripped, re.IGNORECASE) or re.search(r"重出|重畫|重新產圖|修改|編輯|調整|修正|更新|覆寫", stripped):
         task_intent = "modify"
     elif mutation:
         task_intent = "create"
@@ -181,7 +196,7 @@ def classify_task(prompt: str, intent: str = "auto") -> dict[str, object]:
     if domain == "creative" and task_intent == "plan":
         effect = "chat_only"
     medium_text = re.sub(r"(?:不要|不用|不使用|非|\bnot\s+|\bno\s+)\s*(?:SVG|向量|vector)", "", prompt, flags=re.IGNORECASE)
-    creative_medium = "vector" if asset and re.search(r"\b(?:svg|vector)\b|向量", medium_text, re.IGNORECASE) else "raster" if asset and re.search(r"\b(?:png|jpe?g|webp|illustration|portrait|anime)\b|圖片|插畫|圖像|動漫|精緻", prompt, re.IGNORECASE) else "unspecified"
+    creative_medium = "vector" if asset and re.search(r"\b(?:svg|vector)\b|向量", medium_text, re.IGNORECASE) else "raster" if recreate else "raster" if asset and re.search(r"\b(?:png|jpe?g|webp|illustration|portrait|anime)\b|圖片|插畫|圖像|動漫|精緻", prompt, re.IGNORECASE) else "unspecified"
     return {"category": selected_category, "mutation_likely": mutation, "topics": selected_topics,
             "domain": domain, "intent": task_intent, "effect": effect, "creative_medium": creative_medium}
 
@@ -189,4 +204,5 @@ def classify_task(prompt: str, intent: str = "auto") -> dict[str, object]:
 def classify_prompt(prompt: str, intent: str = "auto") -> tuple[str, bool, list[str]]:
     """Backward-compatible category/mutation/topics view of ``classify_task``."""
     result = classify_task(prompt, intent)
-    return str(result["category"]), bool(result["mutation_likely"]), list(result["topics"])
+    topics = result["topics"]
+    return str(result["category"]), bool(result["mutation_likely"]), list(topics) if isinstance(topics, list) else []

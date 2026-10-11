@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+創作流程新增逐項驗證、版本化回饋與有限修正。明確重製指令可在同一 Session 執行；自動修正需 opt-in，機器結果仍需人工確認與使用者驗收。
+
 
 可重用的任務方法見 `skills/INDEX.yaml` 與各 Skill；場景規格和覆蓋狀態見 Conformance 文件；遊戲引擎與平台資料見 `references/`。
 

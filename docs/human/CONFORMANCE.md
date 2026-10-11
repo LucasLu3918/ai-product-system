@@ -111,6 +111,8 @@ Identity/Resume evidence 同時驗證跨 worktree repository identity、dirty wo
 
 ## v0.16 Agent Eval Conformance
 
+創作修正回歸以原始「重出一張哈利」對話、否定／分析指令、重播／並行額度、必要特徵錯置、來源漂移、版本比較與時間／次數停損為準。`creative_repair_lifecycle.py` 與 native tool fixture 是 synthetic evidence；真實生成及 host acceptance 分列。
+
 
 Telemetry remains content-free and additive; runtime and outcome fields do not capture model messages.
 
@@ -1737,6 +1739,8 @@ Native OpenCode V2 prompt admission issues a fresh in-memory grant bound to the 
 The synthetic multi-item lifecycle verifies per-item preflight, continue-on-failure, hash-verified resume and recovery after an output succeeds before its checkpoint. Version-only local engine discovery never starts generation. Native OpenCode acceptance verifies grant admission and revocation without invoking image generation; no real model quality or visual acceptance is claimed.
 
 ## Scenario 236 — Local Creative Bundle Execution
+
+創作修正回歸以原始「重出一張哈利」對話、否定／分析指令、重播／並行額度、必要特徵錯置、來源漂移、版本比較與時間／次數停損為準。`creative_repair_lifecycle.py` 與 native tool fixture 是 synthetic evidence；真實生成及 host acceptance 分列。
 
 Publication regression 增加 signed/unsigned、expiry、scope drift、8-way atomic consumption、shell AST／Hook deny 與 staged content 測試；由 governance validator 執行 `tests/test_publication_authority.py`。Fixture evidence 不證明 production issuer 或 universal subprocess enforcement。
 

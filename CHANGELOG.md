@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add same-session creative recreation admission, per-criterion local quality checks, versioned feedback/repair/comparison and explicit bounded repair loops with replay, provenance and time-budget guards.
+
 - Default personal Git publication to locally guarded Agent pushes and PRs; keep externally signed single-use grants as an opt-in high-assurance mode.
 - Bind Git publication to external Ed25519 Human grants, exact worktree/candidate/remote/ref scope, bounded expiry and transactional single-use consumption; add proposal/status/verify and separate-host issuer integration.
 - Replace shell text heuristics with bounded AST classification, preserve read-only tag access, and scan actual staged commit content while exempting only valid final author-trailer email metadata.

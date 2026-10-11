@@ -145,6 +145,8 @@ Do not create a permanent/high-authority role without user approval.
 
 ## Context expansion
 
+Creative quality loops reserve bounded attempts before execution and serialize each exact source with a deadline-aware lock. They preserve separate delivery, inference and repair counts; uncertainty, repeated defects or exhaustion stops further generation. Current native Human intent remains the only execution authority.
+
 Reuse existing helper facades and load only task-relevant topics. Three-hop candidate discovery does not resolve dynamic effects; observed Context bytes and latency do not imply token use, cache reuse or execution authority.
 
 For creative clarification, preserve the active Session root and bounded structured state while deriving a fresh current-response grant. Stop continuation on cancellation, unrelated work, scope expansion or exhausted output budget; generation remains an explicit separate action.

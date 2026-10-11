@@ -17,6 +17,8 @@ Make AIPS behavioral regression coverage measurable without conflating specifica
 
 ## Registry
 
+Creative repair evidence separates original-prompt admission, criterion observations, finite attempts, repeated-defect stops, real local inference and native host-version acceptance. Fixture success does not establish vision accuracy or Human acceptance; unknown real-world measurements remain explicit.
+
 
 Keep Scenario coverage canonical. Optional Coding, Creative, Planning and Security workloads reference existing Cases; absent native task observations remain UNKNOWN even when the deterministic rubric passes.
 
@@ -939,6 +941,8 @@ The size audit measures tracked text/evidence files against 50,000 bytes and rep
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
 
+Creative repair evidence separates original-prompt admission, criterion observations, finite attempts, repeated-defect stops, real local inference and native host-version acceptance. Fixture success does not establish vision accuracy or Human acceptance; unknown real-world measurements remain explicit.
+
 The shared Python bootstrap preserves optional constraints on macOS Bash 3.2 by prepending them to its non-empty requirements argument array. Its lifecycle executes the actual shell body for constrained/unconstrained inputs, exact argument quoting and fail-closed empty requirements.
 
 CI always installs Python packages from all four validation requirement files because mandatory full-repository lifecycle fixtures exercise the complete CLI preflight. Candidate-path selection still controls Node and Playwright Chromium installation.
@@ -968,6 +972,8 @@ The synthetic multi-item lifecycle verifies per-item preflight, continue-on-fail
 Scenario 239 binds bounded read-only Impact Graph relationship candidates to import, literal CLI dispatch, test, and documentation registry evidence; lifecycle checks confirm source-line provenance, explicit dynamic unknowns, budget truncation, unchanged canonical graph bytes and partial/unknown global coverage.
 
 ## Scenario 236 — Local Creative Bundle Execution
+
+Creative repair evidence separates original-prompt admission, criterion observations, finite attempts, repeated-defect stops, real local inference and native host-version acceptance. Fixture success does not establish vision accuracy or Human acceptance; unknown real-world measurements remain explicit.
 
 Creative lifecycle success does not issue a Git publication grant. The shared CLI dispatch preserves separate creative/publication authorization and is covered by the complete repository validator.
 

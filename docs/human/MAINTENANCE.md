@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+創作品質維護分開觀察必要條件漏判、生成／修正次數、重複缺陷與耗時。缺陷回饋、修正版 Profile／Bundle、比較報告保留 hash 關聯；既有 Profile 不原地修改。合成 lifecycle 只驗證流程，真實 vision 正確率需獨立實測。
+
 The personal PR merge confirmation path is independent from character artwork generation and review; keep both authorization boundaries explicit when adapter documentation changes.
 
 Shared CLI dispatch changes require creative/Harness documentation closure even when the new entry is publication-only; confirm existing creative authorization remains independent of external Git grants.
@@ -128,6 +130,8 @@ Multi-file changes should normally be assembled into one coherent remote branch 
 15. Prefer independent review/PR for material system changes.
 
 ## Versioning
+
+創作品質維護分開觀察必要條件漏判、生成／修正次數、重複缺陷與耗時。缺陷回饋、修正版 Profile／Bundle、比較報告保留 hash 關聯；既有 Profile 不原地修改。合成 lifecycle 只驗證流程，真實 vision 正確率需獨立實測。
 
 Plan26 Phase 7 sets `VERSION` to `0.81.0` and moves the accumulated Unreleased notes intact under the matching changelog heading, leaving one empty `## Unreleased`. This prepares exact-candidate readiness only; tag and GitHub Release creation remain separate actions requiring their own approval.
 
@@ -378,6 +382,8 @@ High-risk external runtime actions also require an exact, unexpired Approval Rec
 High-risk external runtime actions also require an exact, unexpired Approval Record and fresh verified network-egress enforcement. A hook alone is not a sandbox; missing provider proof blocks the action.
 
 ## Public repository / CI consistency
+
+創作品質維護分開觀察必要條件漏判、生成／修正次數、重複缺陷與耗時。缺陷回饋、修正版 Profile／Bundle、比較報告保留 hash 關聯；既有 Profile 不原地修改。合成 lifecycle 只驗證流程，真實 vision 正確率需獨立實測。
 
 
 

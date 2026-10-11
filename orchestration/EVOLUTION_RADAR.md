@@ -10,6 +10,8 @@ Human overview: `docs/human/EVOLUTION_RADAR_OVERVIEW.html`.
 
 ## Operating modes
 
+Creative repair evidence separates original-prompt admission, criterion observations, finite attempts, repeated-defect stops, real local inference and native host-version acceptance. Fixture success does not establish vision accuracy or Human acceptance; unknown real-world measurements remain explicit.
+
 ### Weekly Signal Scan
 
 Collect a bounded set of recent high-signal items from configured public technical sources. Configure at least six community discovery sources, treat five successful community sources as the healthy weekly floor, retain separate primary/vendor evidence sources, collect at most ten items per source, and apply a deterministic round-robin global cap of 50 raw signals. Record source roles/provenance/failures; normalize and deduplicate; zero recommendations is valid.
@@ -156,6 +158,8 @@ Direct Human ADOPT without a Trial remains possible when justified, but it MUST 
 The durable Human surface is the original GitHub Issue containing Radar evidence, Human Decision records and Controlled Trial reports. Reporting artifacts never grant publication authority.
 
 ## Documentation consistency
+
+Creative repair evidence separates original-prompt admission, criterion observations, finite attempts, repeated-defect stops, real local inference and native host-version acceptance. Fixture success does not establish vision accuracy or Human acceptance; unknown real-world measurements remain explicit.
 
 Evolution collection uses ten items per source and retains the fifty-raw-signal bound. Report healthy sources, deduplicated candidates and shortfall separately; preserve primary-source checks, deduplication and Human adoption.
 

@@ -23,6 +23,10 @@ def main() -> int:
     result = subprocess.run([sys.executable, str(ROOT / "tests/evidence/creative_quality_lifecycle.py")], cwd=ROOT,
                             check=False, capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stdout + result.stderr
+    result = subprocess.run([sys.executable, str(ROOT / "tests/evidence/creative_repair_lifecycle.py")], cwd=ROOT,
+                            check=False, capture_output=True, text=True, timeout=45)
+    assert result.returncode == 0, result.stdout + result.stderr
+    print(result.stdout.strip())
     plugin = (ROOT / "harness/adapters/opencode/plugin.ts").read_text()
     assert '"review-assist"' in plugin and "vision_model" in plugin
     assert '"review-assist"' in (ROOT / "scripts/creative_request_policy.py").read_text()
@@ -32,3 +36,5 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+else:
+    main()

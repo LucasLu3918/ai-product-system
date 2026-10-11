@@ -4,6 +4,18 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+```mermaid
+flowchart LR
+  Request[Explicit creative request] --> Generate[Bounded local generation]
+  Generate --> Checks[Per-criterion machine evidence]
+  Checks -->|MATCH| Human[Human review and user acceptance]
+  Checks -->|DEFECT and authorized budget| Repair[Versioned repair and parent comparison]
+  Repair --> Generate
+  Checks -->|UNCERTAIN or repeated defect or exhausted| Stop[Stop with concrete next action]
+```
+
+創作 executor 以 `creative_repair.py` 延伸既有 facade：逐項機器證據、版本化回饋與修正、父版本比較，以及明確 opt-in 的有限循環。Profile／圖片 hashes 在準備及執行前後複驗；共同 deadline 涵蓋 lock、preflight、provider 與 review。
+
 Claude Code and Gemini CLI use their native confirmation controls for explicitly requested personal-mode PR merges; the shared policy binds the prompt to the validated PR and candidate.
 
 The shared Harness routes Git publication through the selected assurance mode. Personal mode validates a guarded engineering branch and PR; high assurance requires the external single-use grant.

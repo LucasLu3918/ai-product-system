@@ -118,6 +118,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+創作修正流程在既有 executor 下新增逐項機器證據與版本化 lineage。交付數、生成嘗試數、修正次數分開；明確 opt-in 循環受兩次修正及共同時間上限限制，判斷不明或重複缺陷則停下並提供下一步。
+
 Git publication confirmation remains within Security and Governance; it does not grant or alter creative task authority.
 
 Creative artifact 的本地授權不能用於 Git publication；新增的 approval CLI 與既有 creative CLI 共用 dispatch，仍維持各自 grant 邊界。
@@ -328,6 +330,8 @@ Validation Observation keeps evidence readiness separate from operational failur
 
 ## Scenario Conformance 與 Agent Eval
 
+創作修正流程在既有 executor 下新增逐項機器證據與版本化 lineage。交付數、生成嘗試數、修正次數分開；明確 opt-in 循環受兩次修正及共同時間上限限制，判斷不明或重複缺陷則停下並提供下一步。
+
 Synthetic lifecycle evidence does not establish real inference, model quality or acceptance.
 
 
@@ -363,6 +367,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+創作修正流程在既有 executor 下新增逐項機器證據與版本化 lineage。交付數、生成嘗試數、修正次數分開；明確 opt-in 循環受兩次修正及共同時間上限限制，判斷不明或重複缺陷則停下並提供下一步。
 
 Git publication 的行為來源映射與 Human 文件位置由 `config/documentation-placement.yaml` 約束；個人模式的逐次 PR merge 確認、Codex advisory limitation 與 accepted origin limitation 需在 User Guide 與 Security Assurance 保持一致。這項改動擴充既有 runtime policy boundary，未改變元件拓撲，架構圖不需更新。
 

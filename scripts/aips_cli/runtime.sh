@@ -101,7 +101,7 @@ runtime_dependencies_available() {
   else
     py="$(command -v python3 || true)"
   fi
-  [ -n "$py" ] && "$py" -c 'import yaml, mcp' >/dev/null 2>&1
+  [ -n "$py" ] && "$py" -c 'import yaml, mcp, PIL' >/dev/null 2>&1
 }
 
 openapi_dependency_status() {
@@ -123,7 +123,7 @@ install_runtime_dependencies() {
   local py="$SYSTEM_DIR/.venv/bin/python"
   "$py" "$SYSTEM_DIR/scripts/package_install.py" --python "$py" --requirements "$SYSTEM_DIR/requirements.txt" --constraints "$SYSTEM_DIR/constraints/tested.txt" ||
     die "AIPS runtime dependency installation failed."
-  "$py" -c 'import yaml, mcp' >/dev/null 2>&1 ||
+  "$py" -c 'import yaml, mcp, PIL' >/dev/null 2>&1 ||
     die "AIPS runtime dependencies are incomplete after installation."
 }
 

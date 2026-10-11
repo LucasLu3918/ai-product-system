@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+創作修正同步範圍包含 native admission、quality-check／feedback／repair／compare／quality-loop、機器與人工狀態、版本化來源及有限預算。CLI、OpenCode catalog、Scenario 238 與 Human 指南依同一契約更新。
+
 
 Skill routing changes update the canonical Skill sources and `skills/INDEX.yaml`, then synchronize task guidance, scenario coverage, the Human conformance view, and applicable architecture and maintenance sections. Manual scenarios remain explicitly distinct from executable evidence.
 
@@ -193,6 +195,8 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+創作修正同步範圍包含 native admission、quality-check／feedback／repair／compare／quality-loop、機器與人工狀態、版本化來源及有限預算。CLI、OpenCode catalog、Scenario 238 與 Human 指南依同一契約更新。
 
 Publication documentation closure checks the behavior source map and the allowed canonical section for each added line; a successful placement audit does not replace exact-candidate validation.
 

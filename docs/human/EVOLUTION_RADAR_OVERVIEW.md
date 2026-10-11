@@ -12,6 +12,8 @@ Evolution Radar 是 AIPS 的 maintenance plane，用來研究外部技術變化�
 
 ## Signal Collection
 
+創作閉環的新觀察項目是必要條件漏判、修正次數、重複缺陷與停損原因；實測前不宣稱準確率提升。使用者回饋可以形成有限修正任務，機器評估仍不代替人工驗收。
+
 採樣政策維持至少五個可用健康社群來源，每來源最多十筆、原始訊號總上限五十筆。去重後不足五十筆時報告 candidate_shortfall 與 BELOW_TARGET，不以重複項湊數。
 
 Creative workflow signals distinguish deterministic authorization checks, native-host acceptance, real model inference and Human visual review; missing inference evidence remains unverified.

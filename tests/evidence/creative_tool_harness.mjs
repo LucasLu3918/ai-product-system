@@ -12,9 +12,10 @@ const plugin = (await import(pathToFileURL(projected).href)).default
 let current = []
 let tool
 let promptHook
+let delayedGet = null
 const noHook = { hook: async (name, callback) => { if (name === "prompt") promptHook = callback } }
 await plugin.setup({
-  session: { ...noHook, get: async () => ({ data: { directory: project } }), context: async () => current },
+  session: { ...noHook, get: async () => { if (delayedGet) { const wait = delayedGet; delayedGet = null; await wait }; return { data: { directory: project } } }, context: async () => current },
   permission: noHook, shell: noHook,
   tool: { transform: async (callback) => callback({ add: (value) => { tool = value } }) },
 })
@@ -61,6 +62,8 @@ assert.match(missingEngine.next_action, /per-provider command, runtime, and mode
 assert.equal(JSON.stringify(missingEngine).includes(project), false, "provider recovery leaked a local path")
 const reviewWithoutGrant = await call({ action: "review-assist", manifest: "missing/creative-execution-manifest.json", vision_model: "vision-local" })
 assert.equal(reviewWithoutGrant.reason_code, "creative_intent_required", "generation permission must not imply visual review permission")
+const unboundCheck = await call({ action: "quality-check", manifest: "missing/creative-execution-manifest.json", vision_model: "vision-local" })
+assert.equal(unboundCheck.reason_code, "creative_review_target_unbound", "generation grant inspected an unrelated historical image")
 await admit("請檢查角色圖片品質")
 const reviewWithGrant = await call({ action: "review-assist", manifest: "missing/creative-execution-manifest.json", vision_model: "vision-local" })
 assert.notEqual(reviewWithGrant.reason_code, "creative_admission_grant_missing", "explicit review intent did not authorize the bounded review action")
@@ -70,4 +73,71 @@ assert.equal((await call({ action: "execute", bundle: configured.bundle })).reas
 current = [{ role: "assistant", content: "生成圖片" }]
 await admit("請繼續")
 assert.equal((await call({ action: "execute", bundle: configured.bundle })).reason_code, "creative_intent_required")
+// Fresh recreation requests work in this Session without transcript authority.
+await admit("請按疤痕在額頭皮膚、不在頭髮上，重出一張哈利")
+assert.equal((await call({ action: "configure", bundle: configured.bundle, settings: { prompt: "Scar on forehead skin, no lightning in hair" } })).status, "CONFIGURED")
+await admit("分析重出一張角色圖片為什麼失敗")
+assert.equal((await call({ action: "execute", bundle: configured.bundle })).reason_code, "creative_intent_required")
+await admit("請不要重新生成圖片")
+assert.equal((await call({ action: "execute", bundle: configured.bundle })).reason_code, "creative_intent_required")
+await admit("請生成角色圖片，但不要自動修復")
+assert.equal((await call({ action: "quality-loop", bundle: configured.bundle, vision_model: "vision-fixture", max_repairs: 2, time_budget_seconds: 30 })).reason_code, "creative_intent_required")
+await admit("請在 characters/harry-potter-v1 下重出一張哈利波特圖片")
+assert.equal((await call({ action: "configure", bundle: configured.bundle, settings: { prompt: "Wrong character scope" } })).reason_code, "creative_target_mismatch")
+// Loop stub exercises native reservations/replay/concurrency only; it never infers images.
+const runner = join(project, "loop-fixture")
+await writeFile(runner, `#!/usr/bin/env python3
+import json,subprocess,sys
+if sys.argv[1:3] == ['creative','preflight']:
+ print(json.dumps({'status':'READY'}))
+elif sys.argv[1:3] == ['creative','execute']:
+ print(json.dumps({'status':'COMPLETE','manifest':'fixture/creative-execution-manifest.json'}))
+elif sys.argv[1:3] == ['creative','quality-check']:
+ print(json.dumps({'status':'ADVISORY_REVIEW','machine_decision':'UNVERIFIED'}))
+elif sys.argv[1:3] == ['creative','quality-loop']:
+ print(json.dumps({'status':'NEEDS_ATTENTION','reason_code':'fixture_no_inference'}))
+else:
+ raise SystemExit(subprocess.call([${JSON.stringify(process.env.AIPS_CLI)},*sys.argv[1:]]))
+`)
+const { chmod } = await import("node:fs/promises")
+await chmod(runner, 0o755)
+const originalCli = process.env.AIPS_CLI
+process.env.AIPS_CLI = runner
+await plugin.setup({ session: { ...noHook, get: async () => { if (delayedGet) { const wait = delayedGet; delayedGet = null; await wait }; return { data: { directory: project } } }, context: async () => current }, permission: noHook, shell: noHook, tool: { transform: async (callback) => callback({ add: (value) => { tool = value } }) } })
+process.env.AIPS_CLI = originalCli
+await admit("請生成一張角色圖片")
+assert.equal((await call({ action: "execute", bundle: configured.bundle })).status, "COMPLETE")
+assert.equal((await call({ action: "quality-check", manifest: "fixture/creative-execution-manifest.json", vision_model: "vision-fixture" })).status, "ADVISORY_REVIEW", "ordinary generation could not check its own produced manifest")
+assert.equal((await call({ action: "quality-check", manifest: "fixture/creative-execution-manifest.json", vision_model: "vision-fixture" })).reason_code, "creative_review_limit_exceeded")
+await admit("請生成一張角色圖片，檢查後自動修正最多一次")
+const loopInput = { action: "quality-loop", bundle: configured.bundle, vision_model: "vision-fixture", max_repairs: 1, time_budget_seconds: 30 }
+assert.equal((await call({ ...loopInput, max_repairs: 2 })).reason_code, "creative_output_limit_exceeded")
+const parallel = await Promise.all([call(loopInput), call(loopInput)])
+assert.equal(parallel.filter((r) => r.reason_code === "fixture_no_inference").length, 1)
+assert.equal(parallel.filter((r) => r.reason_code === "creative_output_limit_exceeded").length, 1)
+await promptHook({ sessionID: "creative-fixture", messageID: `message-${messageID}`, prompt: { text: "請生成一張角色圖片，檢查後自動修正最多一次" } })
+assert.equal((await call(loopInput)).reason_code, "creative_output_limit_exceeded", "duplicate native prompt recharged its budget")
+await admit("取消產圖")
+await promptHook({ sessionID: "creative-fixture", messageID: `message-${messageID - 1}`, prompt: { text: "請生成一張角色圖片，檢查後自動修正最多一次" } })
+assert.notEqual((await call(loopInput)).reason_code, "fixture_no_inference", "replayed old native prompt restored authority")
+await admit("請生成兩張角色圖片，檢查後自動修正")
+assert.equal((await call({ ...loopInput, max_repairs: 2 })).reason_code, "fixture_no_inference")
+assert.equal((await call({ ...loopInput, max_repairs: 2 })).reason_code, "fixture_no_inference", "second delivery lost its per-delivery repair budget")
+assert.equal((await call({ ...loopInput, max_repairs: 2 })).reason_code, "creative_output_limit_exceeded")
+await admit("請生成兩張角色圖片，檢查後自動修正，總共最多一次")
+assert.equal((await call(loopInput)).reason_code, "fixture_no_inference")
+assert.equal((await call(loopInput)).reason_code, "creative_output_limit_exceeded", "explicit total repair ceiling was exceeded")
+// A slower old creation hook must never overwrite a newer cancellation.
+let releaseOld
+let oldEntered
+const entered = new Promise((resolve) => { oldEntered = resolve })
+delayedGet = new Promise((resolve) => { releaseOld = resolve })
+const staleHook = promptHook({ sessionID: "creative-fixture", messageID: "race-old", prompt: { text: "請生成一張角色圖片，檢查後自動修正" } })
+// sessionRoot consumes delayedGet synchronously at its first await.
+oldEntered()
+await entered
+await promptHook({ sessionID: "creative-fixture", messageID: "race-cancel", prompt: { text: "取消產圖" } })
+releaseOld()
+await staleHook
+assert.notEqual((await call(loopInput)).reason_code, "fixture_no_inference", "stale prompt hook restored cancelled authority")
 console.log("Creative native tool fixture PASS: context envelope normalization, Z-Image schema, prepare/configure, read-only preflight/discovery, provider recovery and revoked authority")

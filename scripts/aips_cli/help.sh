@@ -31,6 +31,10 @@ Usage:
   aips creative generate-set --project <path> --manifest <relative-yaml> (continues failures; resumes verified successes)
   aips creative review --project <path> --manifest <relative-json> --reviewer <name> --decision <PASS|REVISE>
   aips creative review-assist --project <path> --manifest <relative-json> --model <installed-local-ollama-vision-model>
+  aips creative quality-check --project <path> --manifest <json> --model <installed-local-vision-model>
+  aips creative feedback|repair --project <path> --manifest <json> [--settings-json <json>]
+  aips creative compare --project <path> --manifest <before-json> --after <after-json>
+  aips creative quality-loop --project <path> --bundle <yaml> --model <installed-local-vision-model> --max-repairs <0..2> --time-budget-seconds <1..3600>
   aips creative trace [--limit 1..100]
 
   aips mcp serve
@@ -128,3 +132,5 @@ Project modes:
   ATTACHED   created explicitly with 'aips attach'; project-local persistent AIPS state is enabled.
 EOF
 }
+
+# Creative quality loop is explicit opt-in; criterion evidence never grants Human acceptance.
