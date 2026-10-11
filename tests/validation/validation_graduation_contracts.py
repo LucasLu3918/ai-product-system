@@ -27,6 +27,16 @@ if config_path.is_file():
         errors.append("Validation graduation must require zero false negatives")
     if graduation.get("deterministic_full_audit_modulo", 0) < 2:
         errors.append("Validation graduation requires deterministic full-run audit sampling")
+    if graduation.get("minimum_observation_days") != 30 or graduation.get("minimum_unique_pull_requests") != 30:
+        errors.append("Plan29 validation baseline must retain the current 30-day and 30-PR thresholds")
+
+if script_path.is_file():
+    text = script_path.read_text(encoding="utf-8")
+    for required in ("selection_metrics", "run_precision", "skip_precision", "false_negative_rate", "graduation_thresholds"):
+        if required not in text:
+            errors.append(f"Validation graduation report must expose {required}")
+    if "selective_execution_enabled\": False" not in text or "automatic_activation_authorized\": False" not in text:
+        errors.append("Validation graduation must preserve disabled selective execution and human authority")
 
 if scope_path.is_file():
     scope = load_yaml(scope_path)

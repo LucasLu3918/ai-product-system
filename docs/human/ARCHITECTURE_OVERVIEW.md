@@ -341,7 +341,7 @@ Human Approval 維持最高決策權；machine-readable approval binding、resou
 
 Runtime Policy Enforcement 使用四種結果：`ALLOW`、`DENY`、`REQUIRE_APPROVAL`、`BLOCKED`。SAL3/4 外連需有核准範圍相符的 Approval Record、可攔截的 runtime hook，以及可驗證的 sandbox network allowlist。現行 E2B provider 仍 disabled、未驗證且 deny-all，因此目前高風險外連會 `BLOCKED`。Codex 維持 `ADVISORY`；shell hook 不代表子程序或網路隔離。
 
-Validation Observation keeps evidence readiness separate from operational failure: a completed `NOT_READY` cohort does not fail collection, while API, artifact, missing-report and unknown-status errors remain failures. Dependency Review records exact-candidate shadow parity; the standalone high-severity check remains authoritative until a separate reviewed switch after the observation window.
+Validation Observation keeps evidence readiness separate from operational failure: a completed `NOT_READY` cohort does not fail collection, while API, artifact, missing-report and unknown-status errors remain failures. Its graduation report exposes validator-level run precision, skip precision, recall, false-negative rate and confusion counts; zero-denominator rates stay null. Dependency Review records exact-candidate shadow parity; the standalone high-severity check remains authoritative until a separate reviewed switch after the observation window.
 
 ## Scenario Conformance 與 Agent Eval
 
@@ -442,7 +442,7 @@ Pull-request validation starts a separate, bounded repository-preflight job alon
 
 The required validate workflow separates concurrency groups by pull-request event action as well as PR number. An `opened` run therefore cannot cancel a concurrent `labeled` classification run; repeated runs for the same action still supersede stale work, and the required repository aggregate remains unchanged.
 
-The read-only Validation Observation Collector installs its caller-declared dependency profile before collecting bounded shadow evidence. Its provisional 15-minute timeout is based on only two observed runs at about 31 seconds, so it is not a reliable P95; the scheduled/manual collector has no concurrency group that could replace pending evidence. Missing runtime dependencies leave graduation evidence incomplete; full validation remains required.
+The read-only Validation Observation Collector installs its caller-declared dependency profile before collecting bounded shadow evidence. When a workflow run has no PR association, it resolves the exact head SHA and accepts only one matching PR in the same repository. Its provisional 15-minute timeout is based on only two observed runs at about 31 seconds, so it is not a reliable P95; the scheduled/manual collector has no concurrency group that could replace pending evidence. Missing runtime dependencies leave graduation evidence incomplete; full validation remains required.
 
 Phase B keeps `bin/aips` as a small argument-preserving launcher to `scripts/aips_cli.sh`. The facade resolves its source checkout once, then loads the help, runtime, harness, command, project, shell, installation, maintenance and dispatch modules from `scripts/aips_cli/`; this works through installed symlinks and from any caller working directory. Runtime path and Python resolution remain in the implementation layer.
 

@@ -48,6 +48,13 @@ def main() -> int:
     assert ready["selective_execution_enabled"] is False
     assert ready["automatic_activation_authorized"] is False
     assert ready["deterministic_full_audit_count"] > 0
+    assert ready["selection_metrics"]["status"] == "OBSERVED"
+    assert ready["selection_metrics"]["valid_record_count"] == 30
+    assert ready["selection_metrics"]["run_precision"] == 0.0
+    assert ready["selection_metrics"]["run_recall"] is None
+    assert ready["selection_metrics"]["skip_precision"] == 1.0
+    assert ready["selection_metrics"]["false_negative_rate"] is None
+    assert ready["graduation_thresholds"]["minimum_unique_pull_requests"] == 30
 
     partial = dict(dataset, artifact_history_complete=False)
     blocked = graduation.evaluate(config, scope, partial)
@@ -59,6 +66,8 @@ def main() -> int:
     missed_records[0]["failed_modules"] = [skipped]
     missed = graduation.evaluate(config, scope, dict(dataset, records=missed_records))
     assert missed["status"] == "NOT_READY" and missed["false_negative_count"] == 1
+    assert missed["selection_metrics"]["false_negative_rate"] == 1.0
+    assert missed["selection_metrics"]["skip_precision"] < 1.0
 
     validator_change = shadow.build_plan(
         scope, ["tests/validation/new_validator.py"], base="a" * 40,

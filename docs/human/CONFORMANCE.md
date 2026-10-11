@@ -1596,7 +1596,7 @@ The repository validator also runs `tests/evidence/aips_cli_module_extraction_li
 
 Scenario 204 的 module-extraction lifecycle 核對 temporal query 與 Evolution pre-analysis 的 facade identity 和 current-mode 輸出，避免內部拆分改變既有 CLI 契約。
 
-Scenarios 211–213 cover GitHub supply-chain checks, evidence-gated validator graduation, and gradual quality ratchets with deterministic property and coverage reports. All remain advisory or fail-closed controls; selective execution is not enabled by their presence.
+Scenarios 211–213 cover GitHub supply-chain checks, evidence-gated validator graduation, and gradual quality ratchets with deterministic property and coverage reports. Graduation reports include confusion counts and precision/recall rates with explicit null denominators; the current cohort must still meet the 30-day and 30-PR thresholds with zero false-negative skips. All remain advisory or fail-closed controls; selective execution is not enabled by their presence.
 
 ### Scenarios 214–219 — Plan15 operational closure
 

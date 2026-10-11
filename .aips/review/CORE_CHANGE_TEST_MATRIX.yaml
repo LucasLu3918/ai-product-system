@@ -1,85 +1,188 @@
 version: 1
-
 candidate:
-  base_sha: 323466e116518984145755a4390ac9994fd89e0f
-  changed_files_hash: 448f423b5c7dc227e0fa490b915ac8e65837b1b5d0d61c463b6e68d617bad79e
-
+  base_sha: 182c3cd216cb5f5db671b67ac74071102e505774
+  changed_files_hash: 32bfcc9f204e3fa0d7b797a5400cd18366d50d438d21eb426ccb1e2c6651d4d4
 change:
-  id: plan29-creative-workspace-import-20261011
-  summary: Add a hash-bound creative workspace asset import proposal and explicit create-only import command.
+  id: plan29-selective-validation-20261011
+  summary: Expose validator-level Validation Shadow precision and false-negative metrics,
+    recover a missing PR link by exact SHA when uniquely attributable, and preserve
+    full validation execution.
   boundary:
-    - Bind a supported source asset, destination workspace, exact relative target, and SHA-256 in a private external candidate record without caching asset bytes.
-    - Revalidate candidate integrity and current source bytes before import; reject source drift and candidate edits.
-    - Confine source and target paths, reject symlinks and Git destinations, and never overwrite or create destination directories.
-    - Preserve existing scan and next-version behavior and route both new commands through the existing creative CLI.
-    - Keep repository-wide Impact Graph coverage unchanged and record only the approved #6 scoped evidence.
-    - Document the explicit proposal and exact-hash acceptance workflow.
-
+  - Report validator-level run/skip precision, recall, false-negative rate, confusion
+    counts, and current graduation thresholds with null for zero denominators.
+  - Resolve absent workflow-run pull request metadata using read-only commit-to-pull-requests
+    lookup for the exact head SHA; require one same-repository result or keep the
+    record incomplete.
+  - Preserve FULL_RUN_SHADOW, the 30-day and 30-PR thresholds, zero false-negative
+    requirement, modulo-10 audit, complete artifact history, and Human activation
+    authority.
+  - Keep the external Impact Graph scope limited to Validation Shadow, its existing
+    workflow and exact lifecycle/contracts; preserve repository-wide partial/unknown
+    coverage.
+  - Document the one-day measured baseline as descriptive and NOT_READY without persisting
+    raw run identifiers or artifact data.
 matrix:
-  - boundary: Hash-bound candidate and source revalidation
-    reason: Import must refer to exact source bytes and a fixed destination; stale or modified evidence cannot authorize a copy.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: "PASS: Python py_compile for creative_workspace_profile.py."
-      unit:
-        applicable: true
-        evidence: "PASS: OpenCode lifecycle covers candidate digest, private metadata-only cache, candidate tampering, and source drift."
-      integration:
-        applicable: true
-        evidence: "PASS: OpenCode integration lifecycle invokes the source-checkout bin/aips import-candidate and import commands end to end."
-      contract:
-        applicable: true
-        evidence: "PASS: opencode_integration_contracts runs the lifecycle contract."
-      e2e:
-        applicable: true
-        evidence: "PASS: explicit candidate hash imports exact bytes to the selected target; repeat import is blocked."
-      security:
-        applicable: true
-        evidence: "PASS: hash mismatch, changed source, path traversal, symlink input, Git destination, and target race are blocked without overwriting existing bytes."
-      migration_recovery:
-        applicable: false
-        na_reason: "Candidate records are versioned private EPHEMERAL cache files; no existing project data schema is migrated."
-      cli_harness:
-        applicable: true
-        evidence: "PASS: source-checkout bin/aips exposes import-candidate and import through creative dispatch; help output is verified."
-      docs_schema:
-        applicable: true
-        evidence: "PASS: User Guide and creative protocol describe proposal, hash acceptance, privacy, and no-overwrite behavior."
-  - boundary: Scoped Change Impact and repository-wide limitation
-    reason: The import is a security boundary; exact CLI and test consumers are reviewed while global Impact Graph coverage stays partial/unknown.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: "PASS: final exact-candidate security-boundary traversal reached callers depth 3 and consumers depth 3; 19 nodes, 32 edges, no unresolved edges or truncation."
-      unit:
-        applicable: true
-        evidence: "PASS: Focused lifecycle evidence covers negative and positive import paths."
-      integration:
-        applicable: true
-        evidence: "PASS: scoped Impact Graph includes launcher, dispatch, lifecycle, validation, and registry paths; changed nodes are requires_change and unchanged CLI/validation consumers are reviewed_safe."
-      contract:
-        applicable: true
-        evidence: "PASS: scoped coverage selected for the exact creative workspace profile seed; global coverage remains api/data/events partial and consumers unknown."
-      e2e:
-        applicable: false
-        na_reason: "Change Impact is an evidence contract; exact end-to-end import behavior is covered in the first boundary."
-      security:
-        applicable: true
-        evidence: "PASS: exact candidate and seed-scoped Impact Graph evidence retained; no global coverage promotion."
-      migration_recovery:
-        applicable: false
-        na_reason: "No persistent repository Intelligence or project data schema changes."
-      cli_harness:
-        applicable: true
-        evidence: "PASS: dispatch path is explicitly traversed and exercised by the CLI lifecycle."
-      docs_schema:
-        applicable: true
-        evidence: "PASS: Change Impact records exact target paths and scoped evidence; focused lifecycle exercises the bounded behavior."
-
+- boundary: Validator-level graduation metrics and fail-closed semantics
+  reason: Precision and false-negative evidence need explicit denominators and must
+    not make an empty sample appear safe.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: focused graduation lifecycle and contract checks verify confusion
+        counts, precision/recall/null semantics, unchanged thresholds, false-negative
+        blocking, and selective execution remains disabled.'
+    unit:
+      applicable: true
+      evidence: 'PASS: focused graduation lifecycle and contract checks verify confusion
+        counts, precision/recall/null semantics, unchanged thresholds, false-negative
+        blocking, and selective execution remains disabled.'
+    integration:
+      applicable: true
+      evidence: 'PASS: focused graduation lifecycle and contract checks verify confusion
+        counts, precision/recall/null semantics, unchanged thresholds, false-negative
+        blocking, and selective execution remains disabled.'
+    contract:
+      applicable: true
+      evidence: 'PASS: focused graduation lifecycle and contract checks verify confusion
+        counts, precision/recall/null semantics, unchanged thresholds, false-negative
+        blocking, and selective execution remains disabled.'
+    e2e:
+      applicable: true
+      evidence: 'PASS: focused graduation lifecycle and contract checks verify confusion
+        counts, precision/recall/null semantics, unchanged thresholds, false-negative
+        blocking, and selective execution remains disabled.'
+    security:
+      applicable: true
+      evidence: 'PASS: focused graduation lifecycle and contract checks verify confusion
+        counts, precision/recall/null semantics, unchanged thresholds, false-negative
+        blocking, and selective execution remains disabled.'
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted policy/data schema is migrated; report fields are additive.
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: focused graduation lifecycle and contract checks verify confusion
+        counts, precision/recall/null semantics, unchanged thresholds, false-negative
+        blocking, and selective execution remains disabled.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: focused graduation lifecycle and contract checks verify confusion
+        counts, precision/recall/null semantics, unchanged thresholds, false-negative
+        blocking, and selective execution remains disabled.'
+- boundary: Exact SHA pull-request association fallback
+  reason: A missing Actions run association otherwise loses a valid observation; ambiguous
+    or cross-repository attribution must never be guessed.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: focused collector lifecycle resolves one same-repository PR
+        through the exact head commit endpoint; read-only API use is bounded and failed/ambiguous
+        attribution remains incomplete. One-day live collection recovered the cohort
+        while preserving NOT_READY for insufficient/incomplete records.'
+    unit:
+      applicable: true
+      evidence: 'PASS: focused collector lifecycle resolves one same-repository PR
+        through the exact head commit endpoint; read-only API use is bounded and failed/ambiguous
+        attribution remains incomplete. One-day live collection recovered the cohort
+        while preserving NOT_READY for insufficient/incomplete records.'
+    integration:
+      applicable: true
+      evidence: 'PASS: focused collector lifecycle resolves one same-repository PR
+        through the exact head commit endpoint; read-only API use is bounded and failed/ambiguous
+        attribution remains incomplete. One-day live collection recovered the cohort
+        while preserving NOT_READY for insufficient/incomplete records.'
+    contract:
+      applicable: true
+      evidence: 'PASS: focused collector lifecycle resolves one same-repository PR
+        through the exact head commit endpoint; read-only API use is bounded and failed/ambiguous
+        attribution remains incomplete. One-day live collection recovered the cohort
+        while preserving NOT_READY for insufficient/incomplete records.'
+    e2e:
+      applicable: true
+      evidence: 'PASS: focused collector lifecycle resolves one same-repository PR
+        through the exact head commit endpoint; read-only API use is bounded and failed/ambiguous
+        attribution remains incomplete. One-day live collection recovered the cohort
+        while preserving NOT_READY for insufficient/incomplete records.'
+    security:
+      applicable: true
+      evidence: 'PASS: focused collector lifecycle resolves one same-repository PR
+        through the exact head commit endpoint; read-only API use is bounded and failed/ambiguous
+        attribution remains incomplete. One-day live collection recovered the cohort
+        while preserving NOT_READY for insufficient/incomplete records.'
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted policy/data schema is migrated; report fields are additive.
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: focused collector lifecycle resolves one same-repository PR
+        through the exact head commit endpoint; read-only API use is bounded and failed/ambiguous
+        attribution remains incomplete. One-day live collection recovered the cohort
+        while preserving NOT_READY for insufficient/incomplete records.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: focused collector lifecycle resolves one same-repository PR
+        through the exact head commit endpoint; read-only API use is bounded and failed/ambiguous
+        attribution remains incomplete. One-day live collection recovered the cohort
+        while preserving NOT_READY for insufficient/incomplete records.'
+- boundary: Scoped Change Impact and aggregate-only evidence
+  reason: The change touches validation evidence reporting and attribution; review
+    bounded consumers while keeping global graph coverage unchanged.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: #7 scoped traversal is COMPLETE, reaches three caller/consumer
+        hops without unresolved edges or truncation, and records affected-changed
+        versus reviewed-safe paths. Global API/data/events coverage remains partial
+        and consumers unknown.'
+    unit:
+      applicable: true
+      evidence: 'PASS: #7 scoped traversal is COMPLETE, reaches three caller/consumer
+        hops without unresolved edges or truncation, and records affected-changed
+        versus reviewed-safe paths. Global API/data/events coverage remains partial
+        and consumers unknown.'
+    integration:
+      applicable: true
+      evidence: 'PASS: #7 scoped traversal is COMPLETE, reaches three caller/consumer
+        hops without unresolved edges or truncation, and records affected-changed
+        versus reviewed-safe paths. Global API/data/events coverage remains partial
+        and consumers unknown.'
+    contract:
+      applicable: true
+      evidence: 'PASS: #7 scoped traversal is COMPLETE, reaches three caller/consumer
+        hops without unresolved edges or truncation, and records affected-changed
+        versus reviewed-safe paths. Global API/data/events coverage remains partial
+        and consumers unknown.'
+    e2e:
+      applicable: true
+      evidence: 'PASS: #7 scoped traversal is COMPLETE, reaches three caller/consumer
+        hops without unresolved edges or truncation, and records affected-changed
+        versus reviewed-safe paths. Global API/data/events coverage remains partial
+        and consumers unknown.'
+    security:
+      applicable: true
+      evidence: 'PASS: #7 scoped traversal is COMPLETE, reaches three caller/consumer
+        hops without unresolved edges or truncation, and records affected-changed
+        versus reviewed-safe paths. Global API/data/events coverage remains partial
+        and consumers unknown.'
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted policy/data schema is migrated; report fields are additive.
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: #7 scoped traversal is COMPLETE, reaches three caller/consumer
+        hops without unresolved edges or truncation, and records affected-changed
+        versus reviewed-safe paths. Global API/data/events coverage remains partial
+        and consumers unknown.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: #7 scoped traversal is COMPLETE, reaches three caller/consumer
+        hops without unresolved edges or truncation, and records affected-changed
+        versus reviewed-safe paths. Global API/data/events coverage remains partial
+        and consumers unknown.'
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: true
-blockers: []
-status: READY
+actual_diff_reconciled: false
+blockers:
+- exact committed candidate and required Core Integration Gate are pending
+status: DRAFT
 review_evidence:
   required: false

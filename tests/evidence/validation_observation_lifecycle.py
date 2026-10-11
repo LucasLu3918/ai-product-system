@@ -141,6 +141,30 @@ def main() -> int:
     assert dataset["artifact_history_complete"] is True
     assert len(dataset["records"]) == 1 and dataset["records"][0]["run_id"] == "11"
 
+    unlinked_run = {"id": 12, "run_attempt": 1, "event": "pull_request", "status": "completed",
+                    "head_sha": "c" * 40, "pull_requests": []}
+    records.append({"pull_request": 18, "base_sha": base, "head_sha": "c" * 40,
+                    "timestamp": "2026-10-05T02:00:00Z", "run_attempt": 1, "run_id": "12"})
+    original_api = observation.api_get
+    original_download = observation.download_artifact
+    def linked_api(url: str, token: str):
+        if "/actions/workflows/validate.yml/runs?" in url:
+            return {"total_count": 1, "workflow_runs": [unlinked_run]}, None
+        if "/commits/" in url and "/pulls?" in url:
+            return [{"number": 18, "head": {"repo": {"full_name": "owner/repo"}}}], None
+        if "/actions/runs/12/artifacts" in url:
+            return {"artifacts": [{"id": 112, "name": "validation-observation-12-1", "expired": False}]}, None
+        raise AssertionError("unexpected API route")
+    observation.api_get = linked_api
+    observation.download_artifact = lambda repo, artifact_id, token: archive(records[2])
+    try:
+        linked_dataset = observation.collect_dataset("owner/repo", "test-token", date(2026, 10, 5), date(2026, 10, 5))
+    finally:
+        observation.api_get = original_api
+        observation.download_artifact = original_download
+    assert linked_dataset["artifact_history_complete"] is True
+    assert len(linked_dataset["records"]) == 1 and linked_dataset["records"][0]["pull_request"] == 18
+
     original_build = observation.urllib.request.build_opener
     original_urlopen = observation.urllib.request.urlopen
 

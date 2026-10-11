@@ -1,0 +1,46 @@
+version: 1
+source: read-only GitHub Actions artifact collection
+collected_window:
+  start: '2026-10-11'
+  end: '2026-10-11'
+  inclusive_days: 1
+collection:
+  workflow_runs: 19
+  artifact_history_complete: true
+  unique_pull_requests: 3
+  records_total: 13
+  records_valid: 3
+  records_incomplete_stale_or_malformed: 10
+selection_metrics:
+  status: OBSERVED
+  validator_decisions: 192
+  confusion:
+    true_positive: 0
+    false_positive: 192
+    true_negative: 0
+    false_negative: 0
+  run_precision: 0.0
+  run_recall: null
+  skip_precision: null
+  false_negative_rate: null
+  null_rate_reason: no_actual_validator_failures_in_the_valid_sample
+graduation:
+  status: NOT_READY
+  false_negative_count: 0
+  thresholds:
+    minimum_observation_days: 30
+    minimum_unique_pull_requests: 30
+    maximum_false_negatives: 0
+    deterministic_full_audit_modulo: 10
+    require_complete_artifact_history: true
+    require_full_run_for_every_shadow_record: true
+execution:
+  mode: FULL_RUN_SHADOW
+  selective_execution_enabled: false
+  automatic_activation_authorized: false
+  human_decision_required: true
+limitations:
+  - One day and three unique PRs do not meet the cohort duration or size threshold.
+  - Ten of thirteen records were unusable, so observed rates are descriptive only.
+  - No validator failures were observed; null recall, skip precision, and false-negative rate do not establish zero risk.
+  - This aggregate contains no PR numbers, commit SHAs, paths, or raw artifacts.
