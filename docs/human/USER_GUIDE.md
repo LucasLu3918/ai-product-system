@@ -370,6 +370,8 @@ Context routing 的 Scenario 230 驗證核心大小、路由涵蓋、hook/manife
 
 Agent Eval freshness 依變更路徑與明確的行為依賴挑選受影響案例，只標示需要更新 evidence 的案例，不會自動執行 Eval；Scenario 192、193、224 仍為人工驗收。
 
+Real-task comparison uses a Human-selected fixed cohort and the same case fingerprints for baseline and candidate. Keep task completion, human corrections/false positives, Trajectory Eval security findings, and directly observed telemetry separate; retain failures, and leave missing observations `UNKNOWN`. Existing fixtures do not establish an empirical baseline. See [Scenario 229 — Agent Eval Freshness Selection](./CONFORMANCE.md#scenario-229-agent-eval-freshness-selection).
+
 Plan17 regression evidence covers numeric diff headers, four browser/OpenAPI combinations, mandatory aggregates, reusable caller keys/permissions, explicit Python and isolated children, recursive placement, signed identity/immutable proposal rejection and atomic deletion races. Missing or malformed capability plans retain the full profile. A latest cancelled check stays INCOMPLETE; replaced old checks are reported as SUPERSEDED.
 
 The shared Python CI bootstrap checks each caller-declared import profile and dependency consistency; it complements the required full repository Gate.

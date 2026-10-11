@@ -389,6 +389,8 @@ Scenario registry 將 evidence 分成 deterministic、lifecycle、agent_eval、m
 
 需要 semantic judgment 的 case 使用 provider-neutral observable-result contract，不保存 private reasoning。
 
+Real-task outcome comparisons reuse current, case-bound Agent Eval observations, shadow Trajectory Eval evidence, and genuinely observed telemetry. The fixed-cohort protocol keeps success, rework, security, and missing/failed runs separate; absent baseline or candidate evidence remains `NOT_READY`/`UNKNOWN`. See [Scenario 229 — Agent Eval Freshness Selection](./CONFORMANCE.md#scenario-229-agent-eval-freshness-selection).
+
 ### Repository Health
 
 Architecture Surface、documentation mapping、validation contract 與 drift evidence用 deterministic audit 檢查。
