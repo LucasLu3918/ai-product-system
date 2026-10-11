@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+OpenCode setup 與版本綁定驗收請閱讀 [Global Harness](./HARNESS.md)、[Installation](./INSTALLATION.md) 與 [Technology Guide](./TECHNOLOGY_GUIDE.md)；Scenario 235 定義原生驗收證據邊界。
+
 創作流程新增逐項驗證、版本化回饋與有限修正。明確重製指令可在同一 Session 執行；自動修正需 opt-in，機器結果仍需人工確認與使用者驗收。
 
 

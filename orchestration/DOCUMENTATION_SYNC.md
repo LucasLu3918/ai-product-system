@@ -29,6 +29,8 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+OpenCode adapter documentation must keep exact-host native acceptance and its unsupported Shell/MCP/out-of-process effects synchronized across Scenario 235, Human Harness/Installation/Technology guidance, and Agent adapter rules. Missing legacy effect fields remain UNVERIFIED.
+
 The creative repair contract extends the existing executor: current explicit reconstruction intent, per-criterion local advisory checks, copied Profile/Bundle versions, hash-bound comparison and opt-in bounded repairs. Machine findings grant neither execution nor Human/user acceptance; no model download, cloud fallback or overwrite is introduced.
 
 Personal PR merge confirmation does not change Creative Direction grants, generation flow or visual acceptance; keep these as separate authority boundaries.

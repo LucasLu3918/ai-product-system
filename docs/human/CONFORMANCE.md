@@ -111,6 +111,8 @@ Identity/Resume evidence 同時驗證跨 worktree repository identity、dirty wo
 
 ## v0.16 Agent Eval Conformance
 
+OpenCode native acceptance verifies one host integration boundary; it is not an Agent task-outcome or production-model quality measure.
+
 創作修正回歸以原始「重出一張哈利」對話、否定／分析指令、重播／並行額度、必要特徵錯置、來源漂移、版本比較與時間／次數停損為準。`creative_repair_lifecycle.py` 與 native tool fixture 是 synthetic evidence；真實生成及 host acceptance 分列。
 
 
@@ -1695,6 +1697,8 @@ Per-module findings and direct coverage are measured without increasing a reposi
 
 ## Scenario 229 — Agent Eval Freshness Selection
 
+OpenCode host acceptance does not measure Agent outcome or quality; retain its separate exact-host integration evidence.
+
 實際任務 observation 與 deterministic rubric 分開呈現。只有與 Case 相符且 CURRENT 的 result 才納入已記錄的 task_completed、human_corrections、false_positives；缺觀察為 UNKNOWN，runtime attestation 維持 UNVERIFIED。
 
 The extracted context helper is added to core-change freshness coverage.
@@ -1718,9 +1722,13 @@ The public command groups return concise help with status 0 and reject unknown s
 
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
+OpenCode host acceptance verifies adapter integration only. It does not verify local image generation, visual quality or user acceptance.
+
 The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-content rejection, file dimensions and hashes, verified local-provider/license provenance, stable UTF-8 Traditional Chinese labels, non-overwriting deterministic sheet composition, and optional Creative Evidence manifest-digest binding. It does not invoke a model, download weights, attest identity consistency, or claim hardware performance; those require the user's local runtime and independent visual review.
 
 ## Scenario 235 — OpenCode Native Context and Action Guard
+
+原生驗收僅對指定 OpenCode 版本、平台與來源摘要成立；任意 Shell、MCP／自訂工具及 guard 外寫入標為 UNSUPPORTED，不代表生產模型品質或整體強制治理。
 
 Native acceptance is bound to the observed Host version, platform and source digests. Doctor distinguishes missing, stale, invalid, failed and recorded evidence; the current loopback scope does not imply L3, session cancellation, arbitrary MCP or production-model verification.
 

@@ -61,6 +61,8 @@ Do not encode hidden reasoning expectations in the rubric.
 
 ## Result
 
+OpenCode native acceptance is runtime integration evidence, not an Agent task-outcome or production-model quality measure. Preserve its exact-host binding and report arbitrary Shell, MCP/custom-tool and out-of-process effects as unsupported.
+
 Optionally record execution.task_observation with source observed_host, task_completed, human_corrections and false_positives. Summarize only case-bound CURRENT results; absence is UNKNOWN. Recorded outcomes remain self-reported host evidence with UNVERIFIED runtime attestation, separate from deterministic rubric PASS.
 
 Recorded results live under:

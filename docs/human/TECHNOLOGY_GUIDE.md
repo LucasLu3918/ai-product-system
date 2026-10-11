@@ -8,6 +8,8 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ## Runtime & Integration
 
+OpenCode's optional native acceptance records host version, platform, plugin digest and conservative runtime-source digest. It marks arbitrary Shell process effects, MCP/custom-tool effects and out-of-process writes UNSUPPORTED; missing fields in older reports remain UNVERIFIED.
+
 The OpenCode creative adapter exposes the shared Z-Image Turbo profile and component filenames. Discovery and failure recovery remain local-only; command, runtime, model inventory, preflight and inference readiness are distinct evidence.
 
 OpenCode V2 registers a bounded creative tool that requires explicit intent. Its `prepare` action creates versioned character/style Profiles and an unconfigured Bundle in a non-Git EPHEMERAL scope; `preflight` remains read-only and `execute` requires a ready Bundle.
@@ -69,6 +71,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+OpenCode's bounded Shell command policy does not sandbox arbitrary subprocess effects. Acceptance records MCP/custom-tool effects and out-of-process writes as unsupported.
 
 創作修正重用 `creative_execution` 與 `creative_repair`：`feedback` 記錄缺陷、`repair` 複製版本化 Profiles／Bundle、`compare` 提供 hash-bound 前後對照、`quality-check` 以本地 vision 檢查整體及四個細節裁切。Pillow 12.3.0 是固定影像解碼依賴。
 
@@ -224,6 +228,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+OpenCode host acceptance verifies runtime integration only; it does not measure generated-image quality, production model quality or real-task outcomes.
 
 Stable release readiness is an exact-candidate, read-only decision. Scenario 214 covers stable install, main-channel fast-forward, and unchanged installed state after a divergent update is rejected; creating a release tag remains a separate approval.
 

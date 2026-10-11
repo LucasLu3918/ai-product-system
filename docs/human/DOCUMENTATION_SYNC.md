@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Keep Scenario 235, OpenCode compatibility, Harness, Installation, and Technology Guide aligned on exact-host evidence and the unsupported Shell/MCP/out-of-process boundary. A legacy report missing unsupported_effects remains UNVERIFIED; it cannot be upgraded from static installation evidence.
+
 創作修正同步範圍包含 native admission、quality-check／feedback／repair／compare／quality-loop、機器與人工狀態、版本化來源及有限預算。CLI、OpenCode catalog、Scenario 238 與 Human 指南依同一契約更新。
 
 

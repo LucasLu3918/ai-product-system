@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+The OpenCode adapter reports exact-host acceptance separately from installation and static capability discovery. Its version/platform/source-bound report records arbitrary Shell process effects, MCP/custom-tool effects, and out-of-process writes as unsupported; this does not change the adapter's advisory governance boundary.
+
 ```mermaid
 flowchart LR
   Request[Explicit creative request] --> Generate[Bounded local generation]

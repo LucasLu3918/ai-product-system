@@ -433,6 +433,8 @@ AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned cont
 
 ## Runtime Policy Enforcement
 
+OpenCode native acceptance is bounded evidence, not a process sandbox. Arbitrary Shell process effects, MCP/custom-tool effects and out-of-process writes remain UNSUPPORTED; Hook success does not grant authority over those paths.
+
 ### Git publication: 個人模式與高保證模式
 
 預設的 `personal` 模式適用於個人快速開發。當 `/etc/aips/publication-authority.yaml` 不存在時，Agent 在完成既有候選／秘密掃描與明確命令檢查後，可推送至自己的工程分支並建立或更新指向遠端預設分支的 PR；使用者明確指定 local-only／不發布時則不推送。任務明確要求合併且符合下方條件時，可逐次以支援的原生確認流程合併 PR。此模式接受一般個人帳號下 Agent 使用現有 GitHub 權限發布，不提供外部簽章隔離保證。

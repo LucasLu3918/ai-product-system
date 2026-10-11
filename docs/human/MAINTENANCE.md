@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+OpenCode adapter changes require exact-host evidence and synchronized Harness, Installation, Technology Guide and Scenario 235 descriptions of unsupported effects.
+
 創作品質維護分開觀察必要條件漏判、生成／修正次數、重複缺陷與耗時。缺陷回饋、修正版 Profile／Bundle、比較報告保留 hash 關聯；既有 Profile 不原地修改。合成 lifecycle 只驗證流程，真實 vision 正確率需獨立實測。
 
 The personal PR merge confirmation path is independent from character artwork generation and review; keep both authorization boundaries explicit when adapter documentation changes.
@@ -261,6 +263,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+OpenCode adapter changes must preserve version/platform/source binding in native acceptance. Review unsupported Shell, MCP/custom-tool and out-of-process effects as explicit limitations; keep missing legacy evidence UNVERIFIED and overall governance ADVISORY.
+
 Personal-mode PR merge validation binds the per-call confirmation to the exact candidate head and required-check result; completed review evidence does not substitute for that confirmation.
 
 For creative authorization changes, derive regression cases from the adapter, policy, executor, callers and consumers. Review changed and affected-but-unchanged nodes; do not infer repository-wide completeness from scoped graph evidence.
@@ -465,6 +469,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+OpenCode native acceptance is integration evidence only. Do not treat it as an Agent task outcome, production model measure or generated-image quality result.
 
 The stable release-readiness workflow checks one exact main SHA and proposed version with read-only permissions. Scenario 214's install/preflight lifecycle verifies successful fast-forward and preservation of the installed SHA and `VERSION` when divergent history is refused; failed updates do not auto-merge, rebase, or roll back.
 

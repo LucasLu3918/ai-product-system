@@ -55,6 +55,8 @@ Public command groups expose help with status 0 and return nonzero for unknown s
 
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
+OpenCode host acceptance verifies adapter integration only. It does not verify local image generation, visual quality or user acceptance.
+
 Provenance keeps raster validity separate from inference and visual review.
 
 
