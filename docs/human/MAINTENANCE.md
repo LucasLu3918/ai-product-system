@@ -484,7 +484,7 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
-Skill registry changes run the catalog contract and regenerate `docs/human/skill-catalog.html`; Scenario 259 keeps source dispositions, optional Writing triggers and manual routing acceptance visible.
+Skill registry changes run the catalog contract and regenerate `docs/human/public/skill-catalog.html`; Scenario 259 keeps source dispositions, optional Writing triggers and manual routing acceptance visible.
 
 The creative quality benchmark lifecycle validates dataset coverage, bounded failure stages, legacy evidence compatibility, and Human review/acceptance separation. Its synthetic artifacts do not count as real local model inference or visual-quality evidence.
 

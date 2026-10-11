@@ -434,7 +434,7 @@ placement_rules:
       - skills/INDEX.yaml
       - skills/integrations/matt-pocock-skills.json
       - scripts/skill_catalog.py
-      - docs/human/skill-catalog.html
+      - docs/human/public/skill-catalog.html
       - tests/scenario_coverage.yaml
       - tests/scenarios/259-matt-pocock-skill-integration.md
       - tests/validation/skill_catalog_contracts.py

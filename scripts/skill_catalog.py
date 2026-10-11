@@ -14,7 +14,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "skills/INDEX.yaml"
 SOURCE = ROOT / "skills/integrations/matt-pocock-skills.json"
-OUTPUT = ROOT / "docs/human/skill-catalog.html"
+OUTPUT = ROOT / "docs/human/public/skill-catalog.html"
 
 DISPOSITION = {
     "merged": ("已合併至 AIPS", "integrated"),
