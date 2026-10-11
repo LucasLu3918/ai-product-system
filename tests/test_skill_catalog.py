@@ -1,15 +1,16 @@
 """Integration tests for Strategy B skill intake and the Human Skill Explorer."""
+
 from __future__ import annotations
 
 import json
 import re
-import sys
 from pathlib import Path
+
 import yaml
 
+from scripts.skill_catalog import OUTPUT, TEMPLATE, records, render
+
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "scripts"))
-from skill_catalog import OUTPUT, TEMPLATE, records, render
 
 
 def test_one_page_catalog_deterministic_and_complete():
@@ -26,7 +27,7 @@ def test_one_page_catalog_deterministic_and_complete():
     assert 'navigator.clipboard' in markup
     assert "<script src=" not in markup
     assert 'rel="noopener noreferrer"' in markup
-    match = re.search(r'<script id="skill-data" type="application/json">(.*?)</script>', markup, re.S)
+    match = re.search(r'<script id="skill-data" type="application/json">(.*?)</script>', markup, re.DOTALL)
     assert match
     data = json.loads(match.group(1))
     assert [x["id"] for x in data] == ids
@@ -56,8 +57,8 @@ def test_no_skill_identity_collision_and_explicit_writing():
     assert len(index) == 45
     assert {"code-review", "tdd", "systematic-debugging", "domain-driven-design", "delivery-planning"} <= set(index)
     assert index["creative-writing-workflow"]["triggers"] == ["explicit_creative_writing_workflow"]
-    assert not any(s in index for s in {"chief-of-staff", "claude-handoff", "loop-me", "setup-ts-deep-modules"})
-    for sid, item in index.items():
+    assert not any(s in index for s in ("chief-of-staff", "claude-handoff", "loop-me", "setup-ts-deep-modules"))
+    for item in index.values():
         assert (ROOT / "skills" / item["path"]).exists()
 
 

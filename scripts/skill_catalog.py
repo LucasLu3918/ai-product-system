@@ -1,8 +1,11 @@
 """Generate the one-page human Skill Explorer from canonical Skill frontmatter."""
+
 from __future__ import annotations
+
 import argparse
 import json
 from pathlib import Path
+
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
