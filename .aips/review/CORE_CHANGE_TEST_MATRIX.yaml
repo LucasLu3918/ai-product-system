@@ -21,12 +21,11 @@ matrix:
     cli_harness: {applicable: true, evidence: "PASS: full repository validator and native governance hook coverage"}
     docs_schema: {applicable: true, evidence: "PASS: publication preview closure and documentation placement; full repository validation"}
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
-blockers:
-- Exact committed-candidate binding, Integration Gate, and publication-candidate secret scan remain pending.
-status: DRAFT
+actual_diff_reconciled: true
+blockers: []
+status: READY
 review_evidence:
   required: false
 candidate:
-  base_sha: pending
-  changed_files_hash: pending
+  base_sha: 123d0561ae32a18d96a2abd7e84991f7017911f8
+  changed_files_hash: 5c28db404ed54fa7d7cef8bca443860477aac5dc4adb6aeca869f2b1c66803ad
