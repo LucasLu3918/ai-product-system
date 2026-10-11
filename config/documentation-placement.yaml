@@ -84,7 +84,7 @@ placement_rules:
   - id: mattpocock-skill-explorer
     triggers:
       - scripts/skill_catalog.py
-      - templates/docs/skill-explorer.template.html
+      - docs/human/assets/skill-explorer.template.html
       - docs/human/skill-examples.yaml
       - docs/human/public/skill-explorer.html
       - docs/human/SKILL_EXPLORER.md

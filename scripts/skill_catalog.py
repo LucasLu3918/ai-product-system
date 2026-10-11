@@ -6,7 +6,7 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-TEMPLATE = "templates/docs/skill-explorer.template.html"
+TEMPLATE = "docs/human/assets/skill-explorer.template.html"
 OUTPUT = "docs/human/public/skill-explorer.html"
 
 def records(root: Path) -> list[dict]:

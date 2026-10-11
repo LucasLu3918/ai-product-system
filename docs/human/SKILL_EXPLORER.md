@@ -4,7 +4,7 @@
 
 AIPS Skill Explorer 是一頁式互動 Human Doc，列出最新 `skills/INDEX.yaml` 的所有可用 Skill。內容涵蓋繁體中文名稱、功能描述、Context Cost、觸發情境、Skill 原始路徑以及可複製的使用 Prompt。
 
-**[開啟一頁式 Skill Explorer HTML](./skill-explorer.html)**
+<a href="./skill-explorer.html">開啟一頁式 Skill Explorer HTML</a>
 
 目前整合基準：AIPS v0.82.0 main `123d0561`、Matt Pocock Skills `49dd158d`。本次整合採 Strategy B：全數盤點 38 個上游項目，重用既有能力，僅建立 5 個實質獨立的新 Skill，Writing 系列以明確要求才啟用，其他 Beta 不試驗。
 
