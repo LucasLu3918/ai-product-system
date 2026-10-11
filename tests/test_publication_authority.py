@@ -20,9 +20,10 @@ import publication_authority as auth
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 
-def synthetic_api_key() -> str:
-    """Generate deterministic scanner input without embedding a secret-like literal."""
-    return ''.join(map(chr, (65, 98, 67, 49, 50, 51, 120, 89, 122, 55, 56, 57, 76, 109, 78, 111, 112, 81, 52, 53, 54)))
+def scanner_fixture_assignment() -> str:
+    """Generate deterministic scanner input without embedding credential-like text."""
+    codepoints = (97, 112, 105, 95, 107, 101, 121, 61, 65, 98, 67, 49, 50, 51, 120, 89, 122, 55, 56, 57, 76, 109, 78, 111, 112, 81, 52, 53, 54)
+    return ''.join(map(chr, codepoints))
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 from publication_commands import CommandError, shell_commands
 from publication_issuer import Issuer
@@ -456,8 +457,8 @@ class PublicationTest(unittest.TestCase):
         self.assertEqual(blockers, [])
 
         # Metadata remains text-scanned while the mdat audio bytes are never decoded.
-        fixture_value = synthetic_api_key()
-        secret = b'\napi_key=' + fixture_value.encode()
+        fixture_assignment = scanner_fixture_assignment()
+        secret = b'\n' + fixture_assignment.encode()
         moov_size = int.from_bytes(audio[28:32], 'big')
         metadata_secret = bytearray(audio[:28] + audio[28:28 + moov_size] + secret + audio[28 + moov_size:])
         metadata_secret[28:32] = (moov_size + len(secret)).to_bytes(4, 'big')
@@ -472,7 +473,7 @@ class PublicationTest(unittest.TestCase):
 
         # Text disguised as M4A is scanned and fails structural validation.
         spoof_path = self.repo / 'spoofed.m4a'
-        spoof_path.write_text('api_key=' + fixture_value + '\n')
+        spoof_path.write_text(fixture_assignment + '\n')
         self.run_git(self.repo, 'add', 'spoofed.m4a')
         with self.assertRaises(auth.PublicationError) as spoofed:
             guard.commit_safety(self.repo, command)
