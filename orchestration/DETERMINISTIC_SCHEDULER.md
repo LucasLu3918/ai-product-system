@@ -136,6 +136,8 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 ## Failure behavior
 
+Creative quality loops reserve bounded attempts before execution and serialize each exact source with a deadline-aware lock. They preserve separate delivery, inference and repair counts; uncertainty, repeated defects or exhaustion stops further generation. Current native Human intent remains the only execution authority.
+
 Creative discovery/preflight are read-only, while configure creates versioned files and execute launches a provider. Keep those effects distinct in scheduler declarations; a blocked engine cannot become a completed artwork task through an alternate medium.
 
 A native runtime hook failure must remain visible and must not be recorded as successful protection; unsupported Shell/MCP paths retain their declared unverified status.

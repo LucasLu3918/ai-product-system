@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto"
-import { appendFile, chmod, mkdir, stat, writeFile } from "node:fs/promises"
+import { appendFile, chmod, mkdir, realpath, stat, writeFile } from "node:fs/promises"
 import { homedir } from "node:os"
-import { dirname, join, resolve } from "node:path"
+import { dirname, join, resolve, sep } from "node:path"
 import { spawn } from "node:child_process"
 
 const SYSTEM_ROOT = __AIPS_SYSTEM_ROOT__
@@ -10,7 +10,7 @@ const MAX_TRACE_BYTES = 512 * 1024
 
 type ContextEntry = { key: string; at: number; root: string; prompt: string; manifest: Record<string, any> | null; reason?: string; durationMs: number }
 type CreativeToolInput = {
-  action: "prepare" | "configure" | "discover" | "preflight" | "execute" | "generate-set" | "review-assist"
+  action: "prepare" | "configure" | "discover" | "preflight" | "execute" | "generate-set" | "review-assist" | "quality-check" | "feedback" | "repair" | "compare" | "quality-loop"
   settings?: Record<string, unknown>
   bundle?: string
   scope?: string
@@ -22,6 +22,10 @@ type CreativeToolInput = {
   identity_features?: string[]
   manifest?: string
   vision_model?: string
+  repair_settings?: Record<string, unknown>
+  after_manifest?: string
+  max_repairs?: number
+  time_budget_seconds?: number
 }
 
 function contextMessages(value: any): any[] {
@@ -88,7 +92,7 @@ function hash(value: string): string { return createHash("sha256").update(value)
 
 function creativeRecovery(reason: string, admission?: { maxOutputs?: number }, diagnostics?: Record<string, any>): { next_action: string; details?: Record<string, any> } {
   switch (reason) {
-    case "creative_intent_required": return { next_action: "Ask for a new explicit creative request; a style choice alone is valid only during an active bounded clarification." }
+    case "creative_intent_required": return { next_action: "The current native prompt did not admit this action. Inspect prompt classification and hook delivery; a new explicit generation/repair request can receive a fresh grant in the same Session. Do not repeat a failed wording or require a new Session without evidence." }
     case "creative_scope_expansion": return { next_action: "Confirm the changed creative scope in a new explicit request; the active continuation cannot expand its subject or output set." }
     case "creative_admission_grant_missing": return { next_action: "Restate the requested creative action. Conversation history alone does not grant write or generation authority." }
     case "creative_output_limit_exceeded": return { next_action: "Reduce the set to the already authorized output count or start a new explicit request.", details: { max_outputs: admission?.maxOutputs ?? 0 } }
@@ -202,11 +206,13 @@ export default {
     const contextFlights = new Map<string, Promise<ContextEntry>>()
     const creativeAdmissions = new Map<string, {
       grants: Record<string, any>; root: string; outputScope: string; messageID: string
-      promptDigest: string; maxOutputs: number; usedOutputs: number; continued: boolean
+      promptDigest: string; maxOutputs: number; usedOutputs: number; maxRepairs: number; usedRepairs: number; maxTimeBudget: number; targetScope: string | null; busy: boolean; continued: boolean
       continuation: Record<string, any> | null; issuedAt: number
     }>()
     const maxCache = 32
     const contextCacheTtlMs = 1000
+    const admittedMessages = new Map<string, Map<string, string>>()
+    const admissionEpochs = new Map<string, number>()
     const creativeContinuationTtlMs = 15 * 60 * 1000
     void trace({ event: "host_capability", hook_delivery: "configured", permission_enforcement: "active_for_supported_native_actions",
       host_version: process.env.OPENCODE_VERSION ?? "UNKNOWN", host_version_acceptance: "UNVERIFIED" })
@@ -268,7 +274,21 @@ export default {
       // Revoke the previous prompt before deriving the new grant. A failed or
       // unsupported admission must never inherit authority from an older turn.
       const previous = creativeAdmissions.get(sessionID)
+      const nativeMessageID = String(event.messageID ?? event.messageId ?? "")
+      const promptDigest = typeof event.prompt?.text === "string" ? createHash("sha256").update(event.prompt.text).digest("hex") : ""
+      if (nativeMessageID && previous?.messageID === nativeMessageID && previous.promptDigest === promptDigest) return
+      const epoch = (admissionEpochs.get(sessionID) ?? 0) + 1
+      admissionEpochs.set(sessionID, epoch)
+      while (admissionEpochs.size > maxCache) admissionEpochs.delete(admissionEpochs.keys().next().value as string)
       creativeAdmissions.delete(sessionID)
+      const seen = admittedMessages.get(sessionID) ?? new Map<string, string>()
+      if (nativeMessageID && seen.has(nativeMessageID)) return
+      if (nativeMessageID) {
+        seen.set(nativeMessageID, promptDigest)
+        while (seen.size > 128) seen.delete(seen.keys().next().value as string)
+        admittedMessages.set(sessionID, seen)
+        while (admittedMessages.size > maxCache) admittedMessages.delete(admittedMessages.keys().next().value as string)
+      }
       const session = await sessionRoot(sessionID)
       if (!session) {
         void trace({ event: "creative_admission", decision: "DENY", session: hash(sessionID), reason_code: "session_directory_unavailable", duration_ms: Math.round(performance.now() - hookStarted) })
@@ -287,6 +307,7 @@ export default {
       }
       try {
         const admission = JSON.parse(result.stdout)
+        if (admissionEpochs.get(sessionID) !== epoch) return
         if (admission?.grants && Number.isInteger(admission.max_outputs) && admission.max_outputs >= 0
           && typeof admission.prompt_sha256 === "string" && /^[0-9a-f]{64}$/.test(admission.prompt_sha256)
           && typeof admission.continued === "boolean"
@@ -298,6 +319,7 @@ export default {
             grants: admission.grants, root: session.root, outputScope: session.root,
             messageID: String(event.messageID ?? event.messageId ?? ""),
             promptDigest: admission.prompt_sha256, maxOutputs: admission.max_outputs, usedOutputs: 0,
+            maxRepairs: Number.isInteger(admission.max_repairs) && admission.max_repairs >= 0 && admission.max_repairs <= 2 ? admission.max_repairs : 0, usedRepairs: 0, targetScope: typeof admission.target_scope === "string" ? admission.target_scope : null, maxTimeBudget: Number.isInteger(admission.time_budget_seconds) && admission.time_budget_seconds >= 1 && admission.time_budget_seconds <= 3600 ? admission.time_budget_seconds : 600, busy: false,
             continued: admission.continued, continuation: admission.continuation, issuedAt: Date.now(),
           })
           while (creativeAdmissions.size > maxCache) creativeAdmissions.delete(creativeAdmissions.keys().next().value as string)
@@ -399,7 +421,7 @@ export default {
         input: {
           type: "object",
           properties: {
-            action: { type: "string", enum: ["prepare", "configure", "discover", "preflight", "execute", "generate-set", "review-assist"] },
+            action: { type: "string", enum: ["prepare", "configure", "discover", "preflight", "execute", "generate-set", "review-assist", "quality-check", "feedback", "repair", "compare", "quality-loop"] },
             settings: {
               type: "object", additionalProperties: false,
               description: "Create a configured Bundle version; observed provenance only. No install, download, cloud or arbitrary output-path fields.",
@@ -443,6 +465,15 @@ export default {
             style_intent: { type: "string", minLength: 1, maxLength: 600 },
             prompt: { type: "string", minLength: 1, maxLength: 4000 },
             identity_features: { type: "array", minItems: 1, maxItems: 12, items: { type: "string", minLength: 1, maxLength: 160 } },
+            repair_settings: { type: "object", additionalProperties: false, properties: {
+              prompt: { type: "string", minLength: 1, maxLength: 4000 }, prefer_edit: { type: "boolean" },
+              defects: { type: "array", minItems: 1, maxItems: 12, items: { type: "string", minLength: 1, maxLength: 500 } },
+              critical_features: { type: "array", maxItems: 12, items: { type: "string", minLength: 1, maxLength: 500 } },
+              forbidden_misplacements: { type: "array", maxItems: 12, items: { type: "string", minLength: 1, maxLength: 500 } },
+            } },
+            after_manifest: { type: "string", minLength: 1, maxLength: 240 },
+            max_repairs: { type: "integer", minimum: 0, maximum: 2 },
+            time_budget_seconds: { type: "integer", minimum: 1, maximum: 3600 },
             vision_model: { type: "string", minLength: 1, maxLength: 128, description: "Exact id of an already-installed local Ollama vision model; no download is attempted." },
           },
           required: ["action"],
@@ -450,7 +481,7 @@ export default {
         },
         async execute(input, toolContext) {
           const request = input as CreativeToolInput
-          const validAction = request && ["prepare", "configure", "discover", "preflight", "execute", "generate-set", "review-assist"].includes(request.action)
+          const validAction = request && ["prepare", "configure", "discover", "preflight", "execute", "generate-set", "review-assist", "quality-check", "feedback", "repair", "compare", "quality-loop"].includes(request.action)
           const validBundle = typeof request?.bundle === "string" && request.bundle.length > 0 && request.bundle.length <= 240 && !request.bundle.startsWith("/") && !request.bundle.split(/[\\/]/).includes("..")
           const validManifest = typeof request?.manifest === "string" && request.manifest.length > 0 && request.manifest.length <= 240 && !request.manifest.startsWith("/") && !request.manifest.split(/[\\/]/).includes("..")
           const validPrepare = typeof request?.scope === "string" && request.scope.length > 0 && request.scope.length <= 240 && !request.scope.startsWith("/") && !request.scope.split(/[\\/]/).includes("..")
@@ -462,10 +493,16 @@ export default {
             && Array.isArray(request.identity_features) && request.identity_features.length > 0 && request.identity_features.length <= 12
             && request.identity_features.every((item) => typeof item === "string" && item.length > 0 && item.length <= 160)
           const validReviewAssist = validManifest && typeof request.vision_model === "string" && /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$/.test(request.vision_model)
+          const validRepair = validManifest && request.repair_settings && typeof request.repair_settings === "object" && !Array.isArray(request.repair_settings) && Buffer.byteLength(JSON.stringify(request.repair_settings)) <= 32 * 1024
+          const validAfter = typeof request.after_manifest === "string" && request.after_manifest.length > 0 && request.after_manifest.length <= 240 && !request.after_manifest.startsWith("/") && !request.after_manifest.split(/[\\/]/).includes("..")
+          const validLoop = validBundle && typeof request.vision_model === "string" && /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,127}$/.test(request.vision_model) && Number.isInteger(request.max_repairs) && request.max_repairs! >= 0 && request.max_repairs! <= 2 && Number.isInteger(request.time_budget_seconds) && request.time_budget_seconds! >= 1 && request.time_budget_seconds! <= 3600
           const validConfigure = request.settings && typeof request.settings === "object" && !Array.isArray(request.settings) && Buffer.byteLength(JSON.stringify(request.settings)) <= 32 * 1024
           const validTarget = request.action === "prepare"
             ? validPrepare && !validBundle && request.manifest === undefined
-            : request.action === "review-assist"
+            : ["feedback", "repair"].includes(request.action) ? validRepair && !validBundle
+            : request.action === "compare" ? validManifest && validAfter && !validBundle
+            : request.action === "quality-loop" ? validLoop && !validManifest
+            : ["review-assist", "quality-check"].includes(request.action)
               ? validReviewAssist && !validBundle && request.scope === undefined && request.settings === undefined
             : request.action === "discover"
               ? !validBundle && request.scope === undefined && request.manifest === undefined
@@ -485,26 +522,44 @@ export default {
             await trace({ event: "creative_execution", decision: "DENY", project: hash(root), reason_code: reason })
             return { content: JSON.stringify({ status: "BLOCKED", reason_code: reason, fallback_allowed: false }) }
           }
+          if (mutating && admission?.targetScope) {
+            const selected = request.bundle ?? request.manifest ?? request.scope ?? ""
+            if (selected !== admission.targetScope && !selected.startsWith(admission.targetScope + "/")) return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_target_mismatch", fallback_allowed: false }) }
+            if (request.action !== "prepare") {
+              try {
+                const [scopePath, selectedPath] = await Promise.all([realpath(join(root, admission.targetScope)), realpath(join(root, selected))])
+                if (selectedPath !== scopePath && !selectedPath.startsWith(scopePath + sep)) return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_target_mismatch", fallback_allowed: false }) }
+              } catch { return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_target_mismatch", fallback_allowed: false }) } }
+            }
+          }
           const nativeContext = await ctx.session.context({ sessionID: toolContext.sessionID })
           const messages = contextMessages(nativeContext)
           const authorization: Record<string, any> = ["preflight", "discover"].includes(request.action)
             ? { allowed: true, reason_code: "creative_readonly", basis_prompt: lastUserText(messages) }
-            : admission?.grants?.[request.action === "generate-set" ? "execute" : request.action] ?? { allowed: false, reason_code: "creative_admission_grant_missing" }
+            : admission?.grants?.[request.action === "generate-set" ? "execute" : request.action === "quality-check" ? "review-assist" : request.action] ?? { allowed: false, reason_code: "creative_admission_grant_missing" }
           if (authorization.allowed !== true) {
             await trace({ event: "creative_execution", decision: "DENY", project: hash(root), reason_code: authorization.reason_code })
             const recovery = creativeRecovery(String(authorization.reason_code), admission)
             return { content: JSON.stringify({ status: "BLOCKED", reason_code: authorization.reason_code, ...recovery, fallback_allowed: false,
-              context_diagnostic: { source: admission ? "prompt_admission" : "no_current_admission" } }) }
+              context_diagnostic: { source: admission ? "prompt_admission" : "no_current_admission", remaining_outputs: admission ? Math.max(0, admission.maxOutputs - admission.usedOutputs) : 0, grant_allows_action: authorization.allowed === true } }) }
           }
+          if (mutating && admission && Date.now() - admission.issuedAt > creativeContinuationTtlMs) return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_admission_expired", fallback_allowed: false }) }
           const entry = await contextFor(toolContext.sessionID, messages, root, root, true)
           if (!entry.manifest || entry.manifest.project?.mode !== "EPHEMERAL") {
             await trace({ event: "creative_execution", decision: "DENY", project: hash(root), reason_code: "creative_ephemeral_required" })
             return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_ephemeral_required" }) }
           }
           const classification = entry.manifest.task?.classification ?? {}
-          if (!["preflight", "discover"].includes(request.action) && !admission?.continued
-            && (classification.domain !== "creative" || (request.action === "review-assist" ? false : request.action === "prepare" ? classification.intent !== "create" : !["create", "modify"].includes(classification.intent)))) {
+          if (mutating && creativeAdmissions.get(toolContext.sessionID) !== admission) return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_admission_grant_missing", fallback_allowed: false }) }
+          if (!["preflight", "discover", "feedback", "compare"].includes(request.action) && !admission?.continued
+            && (classification.domain !== "creative" || (["review-assist", "quality-check"].includes(request.action) ? false : request.action === "prepare" ? classification.intent !== "create" : !["create", "modify"].includes(classification.intent)))) {
             return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_intent_required" }) }
+          }
+          if (request.action === "quality-loop") {
+            if (!admission || admission.busy || admission.usedOutputs >= admission.maxOutputs || request.max_repairs! > admission.maxRepairs - admission.usedRepairs || request.time_budget_seconds! > admission.maxTimeBudget) return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_output_limit_exceeded", fallback_allowed: false }) }
+            admission.usedOutputs += 1
+            admission.usedRepairs += request.max_repairs!
+            admission.busy = true
           }
           if (["execute", "generate-set"].includes(request.action)) {
             if (!admission || admission.usedOutputs >= admission.maxOutputs) {
@@ -530,18 +585,23 @@ export default {
               return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_output_limit_exceeded", fallback_allowed: false,
                 ...creativeRecovery("creative_output_limit_exceeded", admission) }) }
             }
+            if (creativeAdmissions.get(toolContext.sessionID) !== admission) return { content: JSON.stringify({ status: "BLOCKED", reason_code: "creative_admission_grant_missing", fallback_allowed: false }) }
             admission.usedOutputs += 1
           }
-          const executable = ["execute", "generate-set"].includes(request.action)
-          const maximum = executable ? 3_600_000 : request.action === "review-assist" ? 180_000 : 20_000
+          const executable = ["execute", "generate-set", "quality-loop"].includes(request.action)
+          const maximum = request.action === "quality-loop" ? request.time_budget_seconds! * 1000 + 1500 : executable ? 3_600_000 : ["review-assist", "quality-check"].includes(request.action) ? 180_000 : 20_000
           const command = request.action === "prepare"
             ? ["creative", "prepare", "--project", root, "--scope", request.scope!, "--character-id", request.character_id!, "--character-name", request.character_name!, "--summary", request.summary!, "--style-intent", request.style_intent!, "--prompt", request.prompt!, ...request.identity_features!.flatMap((item) => ["--identity-feature", item])]
             : request.action === "discover" ? ["creative", "discover", "--project", root]
             : request.action === "generate-set" ? ["creative", "generate-set", "--project", root, "--manifest", request.manifest!, "--max-items", String(admission!.maxOutputs)]
-            : request.action === "review-assist" ? ["creative", "review-assist", "--project", root, "--manifest", request.manifest!, "--model", request.vision_model!]
+            : ["feedback", "repair"].includes(request.action) ? ["creative", request.action, "--project", root, "--manifest", request.manifest!]
+            : request.action === "compare" ? ["creative", "compare", "--project", root, "--manifest", request.manifest!, "--after", request.after_manifest!]
+            : request.action === "quality-loop" ? ["creative", "quality-loop", "--project", root, "--bundle", request.bundle!, "--model", request.vision_model!, "--max-repairs", String(request.max_repairs), "--time-budget-seconds", String(request.time_budget_seconds)]
+            : ["review-assist", "quality-check"].includes(request.action) ? ["creative", request.action, "--project", root, "--manifest", request.manifest!, "--model", request.vision_model!]
             : ["creative", request.action, "--project", root, "--bundle", request.bundle!]
           const started = performance.now()
-          const result = await invokeAsync(aips, command, root, maximum, toolContext.signal, request.action === "configure" ? JSON.stringify(request.settings) : undefined)
+          const result = await invokeAsync(aips, command, root, maximum, toolContext.signal, request.action === "configure" ? JSON.stringify(request.settings) : ["feedback", "repair"].includes(request.action) ? JSON.stringify(request.repair_settings) : undefined)
+          if (request.action === "quality-loop" && admission) admission.busy = false
           let payload: Record<string, any>
           try { payload = JSON.parse(result.stdout) } catch { payload = { status: "BLOCKED", reason_code: "creative_response_invalid" } }
           if (result.status !== 0 && payload.status !== "BLOCKED") payload = { status: "BLOCKED", reason_code: result.error?.includes("timed out") ? "creative_timeout" : "creative_execution_failed" }

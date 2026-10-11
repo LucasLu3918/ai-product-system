@@ -4,6 +4,8 @@ The adapter uses native global AGENTS, canonical Skill/Command projections, a ma
 
 ## Contract profiles
 
+The creative tool adds bounded quality-check, feedback, repair, compare and opt-in quality-loop actions. Same-session recreation, native message replay and concurrency are tested with the projected tool fixture; synthetic fixture success is separate from exact host-version acceptance and real local image/vision inference.
+
 | Interface | V1 profile | V2 profile |
 |---|---|---|
 | Global instructions | config root `AGENTS.md` | config root `AGENTS.md` |

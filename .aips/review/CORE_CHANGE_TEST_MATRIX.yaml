@@ -1,110 +1,181 @@
 version: 1
 candidate:
-  base_sha: d54ed1daa0e650c3d59a3648b3eca6001f3222d4
-  changed_files_hash: 6e69bf66ea5eb7b1244e6981f3b23e2b4de7df903c859f86e255cae060641451
+  base_sha: c4c239443a4ca3ceb070b2b77291eecbf891622c
+  changed_files_hash: a3d32174d8fbe07073a689f3c1df43c9e594e1beabd825e8fcac00f441aad9a4
 change:
-  id: skill-incubation-2026-10-11
-  summary: Add 13 admitted Skills, extend three, add 16 manual scenarios, update documentation closure
-    and add native web game reference.
+  id: creative-quality-repair-20261011
+  summary: Same-session recreation admission, criterion evidence, versioned feedback/repair/comparison
+    and opt-in bounded repair loop.
   boundary:
-  - Canonical Skill sources and generated v1 INDEX
-  - Manual scenario registry and game reference
-  - Human documentation and placement closure
-  - Exact candidate and Core review artifacts
+  - Creative intent and native grants
+  - Criterion review and repair provenance
+  - Bounded repair orchestration
+  - Canonical documentation and validation consumers
 matrix:
-- boundary: Canonical Skill metadata and generated registry
-  reason: Additive routing metadata is consumed by existing v1 Skill Index consumers.
+- boundary: Creative intent and native grants
+  reason: Original recreation/read-only/negated requests; fresh grants, explicit scope,
+    replay, async epoch and concurrent reservations.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: `tests/validate_repository.py` (full repository validation).'
+      evidence: 'PASS: focused Ruff and mypy checks on changed creative modules.'
     unit:
       applicable: true
-      evidence: 'PASS: Skill Index lifecycle via full repository validation.'
+      evidence: 'PASS: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_repair_lifecycle.py.'
     integration:
       applicable: true
-      evidence: 'PASS: OpenCode native Skill projection lifecycle and Skill Index regeneration.'
+      evidence: 'PASS: fixture provider/VLM repair lifecycle and projected native
+        tool harness; full exact-candidate aggregate is additionally required by the
+        publication Gate.'
     contract:
       applicable: true
-      evidence: 'PASS: 40 Skills project to the compatible v1 registry and native OpenCode files.'
+      evidence: 'PASS: legacy creative quality lifecycle and additive schema/criterion
+        checks.'
     e2e:
       applicable: false
-      na_reason: No product frontend or runtime changes; browser-game details are reference content.
+      na_reason: No product browser UI. Native host/tool acceptance is covered under
+        cli_harness; real image/vision quality is separate optional evidence, not
+        a synthetic PASS.
     security:
       applicable: true
-      evidence: 'PASS: repository secret scan and content review; exact-candidate mandatory scan is included
-        in Integration Gate.'
+      evidence: 'PASS: negative intent, no-egress fixtures, source drift, no-overwrite,
+        target scope, replay/epoch and bounded repair checks. Mandatory exact-candidate
+        secret scan runs in the Gate.'
     migration_recovery:
-      applicable: false
-      na_reason: No persistent product data or schema changes.
+      applicable: true
+      evidence: 'PASS: legacy v1 Profiles/Bundles, immutable historical assets, versioned
+        repair/comparison and repeat request refusal. No database migration.'
     cli_harness:
-      applicable: false
-      na_reason: No CLI, Harness adapter or runtime code changes.
+      applicable: true
+      evidence: 'PASS: creative_execution_lifecycle.py projected native fixture; credential-free
+        native OpenCode v2.0.24 acceptance separately observed.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: documentation placement, scenario conformance, generated Conformance views, and
-        VitePress build.'
-- boundary: Scenario registry and reference content
-  reason: Sixteen expected behaviors extend manual semantic coverage without claiming automated model
-    routing.
+      evidence: 'PASS: working-tree documentation closure and canonical placement
+        preview; full candidate docs build runs in the Gate.'
+- boundary: Criterion review and repair provenance
+  reason: Local installed reviewer; composition/detail evidence, copied Profiles,
+    parent/source hashes and comparison lineage.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: full repository validation and scenario schema checks.'
+      evidence: 'PASS: focused Ruff and mypy checks on changed creative modules.'
     unit:
-      applicable: false
-      na_reason: Specifications and references contain no executable code.
+      applicable: true
+      evidence: 'PASS: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_repair_lifecycle.py.'
     integration:
       applicable: true
-      evidence: 'PASS: Scenario Conformance reports 256 registered and zero uncovered.'
+      evidence: 'PASS: fixture provider/VLM repair lifecycle and projected native
+        tool harness; full exact-candidate aggregate is additionally required by the
+        publication Gate.'
     contract:
       applicable: true
-      evidence: 'PASS: 16 new scenarios remain manual; automated classifications are unchanged.'
+      evidence: 'PASS: legacy creative quality lifecycle and additive schema/criterion
+        checks.'
     e2e:
       applicable: false
-      na_reason: No game or product is implemented in this repository change.
+      na_reason: No product browser UI. Native host/tool acceptance is covered under
+        cli_harness; real image/vision quality is separate optional evidence, not
+        a synthetic PASS.
     security:
       applicable: true
-      evidence: 'PASS: full repository secret scan and manual review of routing/reference content.'
+      evidence: 'PASS: negative intent, no-egress fixtures, source drift, no-overwrite,
+        target scope, replay/epoch and bounded repair checks. Mandatory exact-candidate
+        secret scan runs in the Gate.'
     migration_recovery:
-      applicable: false
-      na_reason: No data migration.
+      applicable: true
+      evidence: 'PASS: legacy v1 Profiles/Bundles, immutable historical assets, versioned
+        repair/comparison and repeat request refusal. No database migration.'
     cli_harness:
-      applicable: false
-      na_reason: No CLI or runtime behavior.
+      applicable: true
+      evidence: 'PASS: creative_execution_lifecycle.py projected native fixture; credential-free
+        native OpenCode v2.0.24 acceptance separately observed.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: Human and Agent Conformance docs and generated current/history views are synchronized.'
-- boundary: Human documentation and placement closure
-  reason: New reusable capabilities change the supported Skill catalog and maintenance guidance.
+      evidence: 'PASS: working-tree documentation closure and canonical placement
+        preview; full candidate docs build runs in the Gate.'
+- boundary: Bounded repair orchestration
+  reason: Explicit opt-in; separate delivery/inference/repair counters, time-aware
+    locks/provider/preflight/review and repeated-defect stops.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: full repository validation and documentation placement check.'
+      evidence: 'PASS: focused Ruff and mypy checks on changed creative modules.'
     unit:
-      applicable: false
-      na_reason: Human prose contains no executable logic.
+      applicable: true
+      evidence: 'PASS: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_repair_lifecycle.py.'
     integration:
       applicable: true
-      evidence: 'PASS: recursive placement check and VitePress documentation build.'
+      evidence: 'PASS: fixture provider/VLM repair lifecycle and projected native
+        tool harness; full exact-candidate aggregate is additionally required by the
+        publication Gate.'
     contract:
       applicable: true
-      evidence: 'PASS: all triggered canonical H2 placements pass.'
+      evidence: 'PASS: legacy creative quality lifecycle and additive schema/criterion
+        checks.'
     e2e:
       applicable: false
-      na_reason: No user product flow changes.
+      na_reason: No product browser UI. Native host/tool acceptance is covered under
+        cli_harness; real image/vision quality is separate optional evidence, not
+        a synthetic PASS.
     security:
       applicable: true
-      evidence: 'PASS: repository secret scan.'
+      evidence: 'PASS: negative intent, no-egress fixtures, source drift, no-overwrite,
+        target scope, replay/epoch and bounded repair checks. Mandatory exact-candidate
+        secret scan runs in the Gate.'
     migration_recovery:
-      applicable: false
-      na_reason: No persisted state migration.
+      applicable: true
+      evidence: 'PASS: legacy v1 Profiles/Bundles, immutable historical assets, versioned
+        repair/comparison and repeat request refusal. No database migration.'
     cli_harness:
-      applicable: false
-      na_reason: No CLI or Harness code changes.
+      applicable: true
+      evidence: 'PASS: creative_execution_lifecycle.py projected native fixture; credential-free
+        native OpenCode v2.0.24 acceptance separately observed.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: current and historical Conformance summaries generated and lifecycle-checked.'
+      evidence: 'PASS: working-tree documentation closure and canonical placement
+        preview; full candidate docs build runs in the Gate.'
+- boundary: Canonical documentation and validation consumers
+  reason: CLI/native schema, backward-compatible v1 evidence fields, lifecycle ownership,
+    documented privacy and Human authority.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: focused Ruff and mypy checks on changed creative modules.'
+    unit:
+      applicable: true
+      evidence: 'PASS: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_repair_lifecycle.py.'
+    integration:
+      applicable: true
+      evidence: 'PASS: fixture provider/VLM repair lifecycle and projected native
+        tool harness; full exact-candidate aggregate is additionally required by the
+        publication Gate.'
+    contract:
+      applicable: true
+      evidence: 'PASS: legacy creative quality lifecycle and additive schema/criterion
+        checks.'
+    e2e:
+      applicable: false
+      na_reason: No product browser UI. Native host/tool acceptance is covered under
+        cli_harness; real image/vision quality is separate optional evidence, not
+        a synthetic PASS.
+    security:
+      applicable: true
+      evidence: 'PASS: negative intent, no-egress fixtures, source drift, no-overwrite,
+        target scope, replay/epoch and bounded repair checks. Mandatory exact-candidate
+        secret scan runs in the Gate.'
+    migration_recovery:
+      applicable: true
+      evidence: 'PASS: legacy v1 Profiles/Bundles, immutable historical assets, versioned
+        repair/comparison and repeat request refusal. No database migration.'
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: creative_execution_lifecycle.py projected native fixture; credential-free
+        native OpenCode v2.0.24 acceptance separately observed.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: working-tree documentation closure and canonical placement
+        preview; full candidate docs build runs in the Gate.'
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

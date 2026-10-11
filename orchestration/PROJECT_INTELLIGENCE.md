@@ -208,6 +208,7 @@ Readers continue using the last valid generation.
 
 
 
+
 Scoped evidence does not upgrade this repository’s partial Impact Graph to complete repository-wide coverage.
 
 
@@ -646,6 +647,8 @@ Architecture and DDD classifications require behavioral/dependency evidence, not
 The CLI commands are deterministic building blocks used by the Agent/Harness and remain available for debugging.
 
 ## Retrieval relationships and impact traversal
+
+Creative repair impact includes current prompt admission, profile/image provenance, versioned lineage, CLI/tool consumers and machine/Human decision boundaries. New defect criteria belong to copied Profiles; preparation and inference reverify source hashes without upgrading global graph completeness.
 
 Publication-mode changes affect hook dispatch, remote identity, scan bases, task authority and documentation consumers. Preserve explicit partial-graph limits and reconcile discovered paths against the actual candidate diff.
 

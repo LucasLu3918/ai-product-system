@@ -10,6 +10,8 @@ Weekly collection 只讀 source-controlled allowlist 中的 public sources，保
 
 ## Evidence Quality
 
+創作改善成效以缺陷被發現、修正成功、重複缺陷停損、實際嘗試數與使用者驗收作分開觀察。機器 MATCH 或 fixture PASS 不等於真實模型品質改善；未量測指標保留 UNKNOWN。
+
 每來源最多十筆、總原始訊號上限五十筆；報告另列去重後候選數、社群候選數、目標缺口與是否達標。BELOW_TARGET 不能藉由重複或低品質訊號補滿，人工採納與 Primary Source 查核維持。
 
 OpenCode V2 plugin discovery is setup evidence only; Context delivery, native permission decisions, provider behavior, Shell, and MCP coverage remain separately unverified unless action-level evidence is recorded.
@@ -49,6 +51,8 @@ Trial PASS 只提供 adoption review evidence。正式 ADOPT 必須是新的 Hum
 External Agent/provider credentials 永遠是 optional enhancement；缺少 credential 不得阻擋 unrelated baseline/release。Secret 不進 Git、Issue body、Prompt、logs 或 ordinary evidence artifact。
 
 ## Effectiveness Feedback
+
+創作改善成效以缺陷被發現、修正成功、重複缺陷停損、實際嘗試數與使用者驗收作分開觀察。機器 MATCH 或 fixture PASS 不等於真實模型品質改善；未量測指標保留 UNKNOWN。
 
 Repository-ruleset maintenance records policy and validation evidence; it does not grant publication. The general personal/high-assurance publication contract and its origin-trust limitation are documented in Security Assurance.
 

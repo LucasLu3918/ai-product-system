@@ -41,6 +41,8 @@ For project work, context identifies project mode and stable instruction sources
 
 ## Verification
 
+Creative repair candidates bind admission, replay/concurrency, local-only review, versioned source integrity and finite deadline evidence to the exact Core diff. Full repository validation, documentation closure and required PR checks remain necessary; machine visual evidence never grants publication or acceptance authority.
+
 Facade extraction keeps same function/exception identity under the supported interpreter. Validate source CLI and existing installed entrypoints with the complete Python 3.12 environment; missing observations stay UNKNOWN and do not bypass Gate requirements.
 
 Creative preflight may report host OS/architecture, backend, runtime, model and discovered dtype. This metadata is diagnostic only; report compatibility as unverified until a supported inference smoke establishes it, without downloads or silent backend fallback.

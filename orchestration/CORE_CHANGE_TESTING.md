@@ -22,6 +22,8 @@ When a shared module-extraction lifecycle gains another facade, retain identity 
 
 ## Impact-derived Test Matrix
 
+Creative repair Core candidates cover fresh same-session recreation grants, negation/read-only intent, native prompt replay/concurrency, per-criterion evidence, source/hash drift, versioned lineage and comparisons, shared deadlines and finite/repeated-defect stops. Synthetic tests do not satisfy real local image/vision accuracy or exact-host acceptance.
+
 Creative authorization candidates include positive style-selection continuation and negative cancellation, unrelated-task, session/root drift, scope-expansion and output-cap cases; the matrix separately records native-host acceptance and real inference when unavailable.
 
 Creative runtime candidates cover original Chinese requests, bounded continuation and revocation, native Context envelopes, read-only preflight/discovery, allowlisted configuration races, rejected settings/symlinks, raster-medium refusal and corrupt containers. Run native tool callbacks plus supported-host loopback acceptance; real model inference remains separately scoped.

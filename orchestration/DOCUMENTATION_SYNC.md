@@ -29,6 +29,8 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+The creative repair contract extends the existing executor: current explicit reconstruction intent, per-criterion local advisory checks, copied Profile/Bundle versions, hash-bound comparison and opt-in bounded repairs. Machine findings grant neither execution nor Human/user acceptance; no model download, cloud fallback or overwrite is introduced.
+
 Personal PR merge confirmation does not change Creative Direction grants, generation flow or visual acceptance; keep these as separate authority boundaries.
 
 Publication authority has one Human deployment reference in Security Assurance / Runtime Policy Enforcement, with User Guide CLI usage and architecture/Harness trust-boundary links. Preserve explicit unsigned-record migration and unsupported Shell/GH CAS limitations.
@@ -204,6 +206,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 
 ## Human documentation placement
+
+The creative repair contract extends the existing executor: current explicit reconstruction intent, per-criterion local advisory checks, copied Profile/Bundle versions, hash-bound comparison and opt-in bounded repairs. Machine findings grant neither execution nor Human/user acceptance; no model download, cloud fallback or overwrite is introduced.
 
 
 When primary Skill sources, `skills/INDEX.yaml`, or skill-routing scenarios change, synchronize the Human User Guide, Technology Guide, Architecture Overview, Maintenance, Conformance, Documentation Map, and Documentation Sync sections selected by `config/documentation-placement.yaml`. Preserve the manual versus executable evidence distinction.

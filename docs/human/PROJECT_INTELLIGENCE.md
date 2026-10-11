@@ -86,6 +86,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+創作修正 Change Impact 涵蓋 native prompt admission、Profile-to-prompt、manifest／image hashes、版本化 lineage、CLI/tool consumers 與品質證據。缺陷更新寫入新版 Profiles，歷史來源仍可驗證；局部 caller review 不提升 global graph coverage。
+
 Publication-authority changes include hook consumers, remote identity resolution, candidate scanning and documentation. Change Impact evidence describes the affected boundary; it does not grant push, PR, or merge authority.
 
 

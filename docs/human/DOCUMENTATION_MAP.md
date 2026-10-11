@@ -86,6 +86,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+創作修正的 canonical contracts 位於 `scripts/creative_repair.py`、`orchestration/CREATIVE_DIRECTION.md` 與既有 OpenCode adapter；Human 操作入口仍為 USER_GUIDE／TECHNOLOGY_GUIDE，沒有新增全域 Role 或 Skill。
+
 
 Reusable task methods are canonical in `skills/<domain>/<skill>/SKILL.md`, with discoverability metadata in `skills/INDEX.yaml`. Scenario behavior is canonical in `tests/scenario_coverage.yaml` and `tests/scenarios/`; domain/platform reference notes live under `references/`.
 

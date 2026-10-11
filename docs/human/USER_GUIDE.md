@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+指出「疤痕畫在頭髮上」會形成版本綁定的缺陷回饋；明確要求「重出一張哈利」可在同一 Session 取得新的單張修正授權。`quality-check` 逐項檢查必要特徵與禁止錯置；只有明確要求自動修正才可使用 `quality-loop`，最多兩次修正，預設 native 時間上限十分鐘。
+
 Creative task grants remain separate from Git authority; the personal PR merge confirmation flow is described under Git Publication 與 Release.
 
 Creative grant 僅涵蓋已核准創作範圍；成品若要 commit／push／PR，需另依 Git Publication 與 Release 流程取得 signed external grant。
@@ -308,6 +310,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+指出「疤痕畫在頭髮上」會形成版本綁定的缺陷回饋；明確要求「重出一張哈利」可在同一 Session 取得新的單張修正授權。`quality-check` 逐項檢查必要特徵與禁止錯置；只有明確要求自動修正才可使用 `quality-loop`，最多兩次修正，預設 native 時間上限十分鐘。
 
 
 使用瀏覽器 E2E、觀測性、遷移和 LLM 安全技能時，依受影響邊界與風險挑選驗收；需主張玩家體驗時，確保計畫包含適當人工或 playtest 證據。

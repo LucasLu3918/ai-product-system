@@ -55,6 +55,8 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+After generation, require visible per-criterion evidence for identity, forbidden placements and style across every applicable main/expression depiction. Critical identity errors require revision, never PASS WITH COMMENTS. quality-check uses only an installed local reviewer and full/detail images; UNCERTAIN stops automatic correction. User feedback binds a concrete version, repair copies Profiles/Bundle, and comparison binds the parent hashes. An explicit quality-loop request permits at most two finite repairs within a shared time deadline; repeated defects stop for a strategy decision. No automatic model/provider switching, downloads or cloud fallback. Machine findings remain advisory and cannot approve Human review/user acceptance.
+
 Creative grants cannot authorize Git publication or PR merges; per-call Claude/Gemini merge confirmation is governed by the Git publication protocol.
 
 Creative task grants authorize only their creative boundary; they cannot issue or satisfy an external signed Git publication grant. Artifact publication remains separately bound to its exact validated commit and target.

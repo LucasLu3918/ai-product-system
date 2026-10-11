@@ -75,6 +75,8 @@ aips commands list
 
 ## Existing Project
 
+創作結果有必要身份特徵錯誤時，直接指出缺陷並明確要求重製；同一 OpenCode Session 可接受新的單張修正請求。自動修正須明確 opt-in，機器檢查完成後仍提供預覽供使用者驗收。
+
 先查看 `aips project diagnose <path>` 的 Recovery Plan。它會解釋阻礙與修復順序，但 bootstrap、finalize、refresh 仍按已批准範圍執行，專案不會因診斷而自動附加。
 
 For local character artwork, an explicit creative request may continue through a bounded style clarification; cancellation or switching tasks revokes that continuation. See the [User Guide](USER_GUIDE.md#creative-directionstyle與brand).

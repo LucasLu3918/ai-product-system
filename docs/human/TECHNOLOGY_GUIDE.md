@@ -70,6 +70,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+創作修正重用 `creative_execution` 與 `creative_repair`：`feedback` 記錄缺陷、`repair` 複製版本化 Profiles／Bundle、`compare` 提供 hash-bound 前後對照、`quality-check` 以本地 vision 檢查整體及四個細節裁切。Pillow 12.3.0 是固定影像解碼依賴。
+
 Personal PR merge confirmation is handled by the Claude/Gemini runtime adapters and does not change Creative Bundle execution or acceptance boundaries.
 
 Approval CLI 在既有 dispatch 中提出 high-assurance exact-operation proposal；既有 creative grant、Intelligence readiness 與 scheduler evidence 各保留原權限。Personal mode 不建立簽章授權，也不將一般 Human task authorization 描述成外部簽章。
@@ -220,6 +222,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+創作修正重用 `creative_execution` 與 `creative_repair`：`feedback` 記錄缺陷、`repair` 複製版本化 Profiles／Bundle、`compare` 提供 hash-bound 前後對照、`quality-check` 以本地 vision 檢查整體及四個細節裁切。Pillow 12.3.0 是固定影像解碼依賴。
 
 Canonical Skill frontmatter defines routing metadata and the generated version 1 skills/INDEX.yaml remains the consumer view. Skills load only when relevant. Scenarios 241–256 are manual semantic expectations; the Skill Index lifecycle separately checks deterministic metadata generation and compatibility. The additions use existing Capabilities, and the browser-game reference keeps DOM/SVG implementation detail out of global Skill metadata.
 

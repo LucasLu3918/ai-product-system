@@ -7,19 +7,23 @@ import re
 import sys
 from typing import Any
 
-from turn_intent import classify_task
+from turn_intent import CREATIVE_READ_ONLY, RECREATE_ZH, classify_task
 
-STOP = re.compile(r"取消|先停|停止|先不要|只規劃|只討論|不要(?:再)?(?:生成|產圖|繪製|畫)|\b(?:cancel|stop|pause|do not generate|don't generate|plan only)\b", re.IGNORECASE)
-GENERATE = re.compile(r"生成|產圖|繪製|畫(?:一|兩|二|張|個|角色|圖)|(?:設計|製作).*(?:圖片|插畫|圖像)|\b(?:generate|render|draw|paint|create)\b.*\b(?:image|illustration|artwork|png|portrait)\b", re.IGNORECASE)
+STOP = re.compile(r"取消|先停|停止|先不要|只規劃|只討論|只分析|(?:不要|不用|禁止|勿|別)(?:再)?(?:重新)?(?:生成|產圖|繪製|畫|重出|重畫)|\b(?:cancel|stop|pause|do not (?:re)?generate|don't (?:re)?generate|plan only)\b", re.IGNORECASE)
+GENERATE = re.compile(r"重出|重畫|重新產圖|生成|產圖|繪製|畫(?:一|兩|二|張|個|角色|圖)|(?:設計|製作).*(?:圖片|插畫|圖像)|\b(?:generate|render|draw|paint|create)\b.*\b(?:image|illustration|artwork|png|portrait)\b", re.IGNORECASE)
 CONTINUE = re.compile(r"^(?:[ABC](?:$|\s)|選[ABC]|第[一二三]個|好(?:的)?|可以|繼續|用這個|照這個|依這個|改成|換成|調整|再生成|生成|請生成|ok\b|yes\b|continue\b|use this\b|generate\b|make it\b)", re.IGNORECASE)
 STYLE_SELECTION = re.compile(r"(?:[ABC]\s*(?:佈局|質感|配色|風格|構圖|色調|比例).{0,80}[ABC]\s*(?:佈局|質感|配色|風格|構圖|色調|比例)|[ABC]\s*(?:佈局|質感|配色|風格|構圖|色調|比例))", re.IGNORECASE)
 CREATIVE_TARGET = re.compile(r"角色|人物|立繪|肖像|人像|character|portrait", re.IGNORECASE)
 CONFIGURE = re.compile(r"設定|配置|configure|configuration", re.IGNORECASE)
-VISUAL_REVIEW = re.compile(r"檢查|審查|評論|review|inspect|critique|quality", re.IGNORECASE)
+VISUAL_REVIEW = re.compile(r"比較|compare|檢查|審查|評論|review|inspect|critique|quality", re.IGNORECASE)
 OTHER_TASK = re.compile(r"程式|網站|資料庫|寄信|\b(?:python|javascript|website|database|email)\b", re.IGNORECASE)
 MAX_PROMPT_CHARS = 8000
-ACTIONS = {"prepare", "configure", "execute", "preflight", "discover", "review-assist"}
-OUTPUT_COUNT = re.compile(r"(?:生成|產圖|繪製|畫|create|generate|render|draw|paint)\s*(\d{1,2})\s*(?:張|個|幅|名|images?|illustrations?|characters?|items?)", re.IGNORECASE)
+MUTATING_ACTIONS = ("prepare", "configure", "execute", "review-assist", "feedback", "repair", "quality-loop", "compare")
+ACTIONS = {*MUTATING_ACTIONS, "preflight", "discover"}
+AUTO_REPAIR = re.compile(r"自動.{0,12}(?:修正|修復|重製|重畫)|\bauto(?:matic)?(?:ally)?.{0,20}(?:repair|correct|retry)\b", re.IGNORECASE)
+AUTO_REPAIR_NEGATED = re.compile(r"(?:不要|不用|禁止|勿|別).{0,8}自動.{0,12}(?:修正|修復|重製|重畫)|\b(?:do not|don't|never|without|no)\b.{0,20}\bauto(?:matic)?(?:ally)?\b", re.IGNORECASE)
+FEEDBACK = re.compile(r"錯誤|不對|有誤|錯置|缺陷|刀疤|疤痕|feedback|defect", re.IGNORECASE)
+OUTPUT_COUNT = re.compile(r"(?:重出|重畫|生成|產圖|繪製|畫|create|generate|render|draw|paint)\s*(\d{1,2})\s*(?:張|個|幅|名|images?|illustrations?|characters?|items?)", re.IGNORECASE)
 CJK_COUNTS = {"一": 1, "兩": 2, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8, "九": 9, "十": 10}
 CJK_OUTPUT_COUNT = re.compile(r"([一兩二三四五六七八九十])\s*(?:個|張|幅|名|位).{0,16}(?:角色|人物|圖片|插畫|圖|立繪|肖像|人像)")
 ROLE_COUNT = re.compile(r"([一兩二三四五六七八九十])\s*(?:個|名|位)\s*(?:[^\s，,。；;]{0,8})?(?:角色|人物)")
@@ -101,9 +105,9 @@ def _authorize_texts(texts: list[str], action: str) -> dict[str, Any]:
     for text in texts:
         latest = text
         task = classify_task(text)
-        if STOP.search(text):
+        if STOP.search(text) or (CREATIVE_READ_ONLY.search(text.strip()) and action not in {"review-assist"}):
             anchor, generation, active = "", False, False
-        elif task["domain"] == "creative" and task["intent"] in {"create", "modify"}:
+        elif task["domain"] == "creative" and task["intent"] in {"create", "modify"} and task["effect"] == "filesystem_write":
             if task["intent"] == "modify" and anchor:
                 generation, active = generation or bool(GENERATE.search(text)), True
             else:
@@ -117,7 +121,14 @@ def _authorize_texts(texts: list[str], action: str) -> dict[str, Any]:
             active = action == "configure"
         else:
             anchor, generation, active = "", False, False
+    if action in {"feedback", "compare"}:
+        allowed = bool(latest) and (action == "compare" or not CREATIVE_READ_ONLY.search(latest.strip())) and not STOP.search(latest) and not OTHER_TASK.search(latest) and bool(FEEDBACK.search(latest) or VISUAL_REVIEW.search(latest))
+        return {"allowed": allowed, "reason_code": "creative_request_authorized" if allowed else "creative_intent_required", "inherited": False, "basis_prompt": latest if allowed else ""}
     allowed = active and bool(anchor) and (action != "execute" or generation)
+    if action == "repair":
+        allowed = allowed and generation and classify_task(latest)["intent"] == "modify"
+    if action == "quality-loop":
+        allowed = allowed and generation and bool(AUTO_REPAIR.search(latest)) and not AUTO_REPAIR_NEGATED.search(latest)
     if action == "prepare" and anchor:
         allowed = allowed and classify_task(anchor)["intent"] == "create"
     if action == "review-assist":
@@ -147,7 +158,7 @@ def _valid_continuation(value: Any) -> bool:
         and 1 <= value["turns_remaining"] <= MAX_CONTINUATION_TURNS
         and isinstance(value.get("allowed_actions"), list)
         and bool(value["allowed_actions"])
-        and all(action in {"prepare", "configure", "execute", "review-assist"} for action in value["allowed_actions"])
+        and all(action in set(MUTATING_ACTIONS) for action in value["allowed_actions"])
     )
 
 
@@ -162,7 +173,7 @@ def _continuation_result(text: str, pending: Any) -> dict[str, Any] | None:
             "continued": False,
             "max_outputs": 0,
             "grants": {action: {"allowed": False, "reason_code": "creative_scope_expansion", "inherited": False}
-                       for action in ("prepare", "configure", "execute", "review-assist")},
+                       for action in MUTATING_ACTIONS},
             "continuation": None,
             "reason_code": "creative_scope_expansion",
         }
@@ -176,7 +187,7 @@ def _continuation_result(text: str, pending: Any) -> dict[str, Any] | None:
             "continued": False,
             "max_outputs": 0,
             "grants": {action: {"allowed": False, "reason_code": "creative_output_limit_exceeded", "inherited": False}
-                       for action in ("prepare", "configure", "execute", "review-assist")},
+                       for action in MUTATING_ACTIONS},
             "continuation": None,
             "reason_code": "creative_output_limit_exceeded",
         }
@@ -187,7 +198,7 @@ def _continuation_result(text: str, pending: Any) -> dict[str, Any] | None:
             "continued": False,
             "max_outputs": 0,
             "grants": {action: {"allowed": False, "reason_code": "creative_scope_expansion", "inherited": False}
-                       for action in ("prepare", "configure", "execute", "review-assist")},
+                       for action in MUTATING_ACTIONS},
             "continuation": None,
             "reason_code": "creative_scope_expansion",
         }
@@ -201,7 +212,7 @@ def _continuation_result(text: str, pending: Any) -> dict[str, Any] | None:
             "reason_code": "creative_request_continued" if action in allowed_actions else "creative_intent_required",
             "inherited": action in allowed_actions,
         }
-        for action in ("prepare", "configure", "execute", "review-assist")
+        for action in MUTATING_ACTIONS
     }
     turns_remaining = pending["turns_remaining"] - 1
     continuation = ({
@@ -209,12 +220,15 @@ def _continuation_result(text: str, pending: Any) -> dict[str, Any] | None:
         "max_outputs": max_outputs,
         "turns_remaining": turns_remaining,
         "allowed_actions": sorted(allowed_actions),
+        "target_scope": pending.get("target_scope"),
     } if turns_remaining > 0 else None)
     return {
         "active": any(grant["allowed"] for grant in grants.values()),
         "continued": True,
         "grants": grants,
         "max_outputs": max_outputs,
+        "max_repairs": 0,
+        "target_scope": pending.get("target_scope"),
         "continuation": continuation,
         "reason_code": "creative_request_continued",
     }
@@ -223,29 +237,45 @@ def _continuation_result(text: str, pending: Any) -> dict[str, Any] | None:
 def admit_prompt(prompt: Any, pending: Any = None) -> dict[str, Any]:
     """Derive a fresh grant; optionally continue only a bounded in-memory task state."""
     text = _prompt_text(prompt)
+    # A new explicit recreation request derives its own grant even after output exhaustion.
+    if RECREATE_ZH.search(text) and classify_task(text)["domain"] == "creative" and classify_task(text)["intent"] == "modify" and not CREATIVE_READ_ONLY.search(text):
+        pending = None
     if _valid_continuation(pending):
         continued = _continuation_result(text, pending)
         if continued is not None:
             continued["prompt_sha256"] = hashlib.sha256(text.encode("utf-8")).hexdigest()
             return continued
     texts = [text] if text else []
-    grants = {action: _authorize_texts(texts, action) for action in ("prepare", "configure", "execute", "review-assist")}
+    grants = {action: _authorize_texts(texts, action) for action in MUTATING_ACTIONS}
     active = any(grant["allowed"] for grant in grants.values())
     # The native adapter stores only action decisions and a digest, never prompt text.
     for grant in grants.values():
         grant.pop("basis_prompt", None)
     max_outputs = output_budget(text) if active else 0
-    actions = [action for action, grant in grants.items() if grant["allowed"]]
+    repair_count = re.search(r"(?:最多|至多|自動修正|自動修復)\s*(?:修正|修復|重試)?\s*([0-9]+|[一兩二三四五六七八九十])\s*次", text)
+    requested_repairs = (int(repair_count.group(1)) if repair_count.group(1).isdigit() else CJK_COUNTS[repair_count.group(1)]) if repair_count else 2
+    if requested_repairs > 2:
+        grants["quality-loop"] = {"allowed": False, "reason_code": "creative_repair_budget_invalid", "inherited": False}
+    max_repairs = requested_repairs if grants["quality-loop"]["allowed"] else 0
+    time_count = re.search(r"(?:總時間|總耗時|時間上限|time budget)\s*[:：]?\s*([0-9]+)\s*(秒|分鐘|seconds?|minutes?)", text, re.IGNORECASE)
+    max_time = min(3600, int(time_count.group(1)) * (60 if time_count.group(2) in {"分鐘", "minute", "minutes"} else 1)) if time_count else 600
+    scope_match = re.search(r"(?:characters|assets|art)/[a-zA-Z0-9_/-]+", text)
+    target_scope = scope_match.group(0).rstrip("/") if scope_match else None
+    actions = [action for action, grant in grants.items() if grant["allowed"] and action in {"prepare", "configure", "execute", "review-assist"}]
     continuation = ({
         "version": CONTINUATION_VERSION,
         "max_outputs": max_outputs,
         "turns_remaining": MAX_CONTINUATION_TURNS,
         "allowed_actions": actions,
+        "target_scope": target_scope,
     } if active and actions else None)
     return {
         "active": active,
         "grants": grants,
         "max_outputs": max_outputs,
+        "max_repairs": max_repairs,
+        "time_budget_seconds": max_time,
+        "target_scope": target_scope,
         "continued": False,
         "continuation": continuation,
         "prompt_sha256": hashlib.sha256(text.encode("utf-8")).hexdigest(),

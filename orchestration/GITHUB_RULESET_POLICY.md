@@ -4,6 +4,8 @@
 
 ## Inputs
 
+Creative repair candidates bind admission, replay/concurrency, local-only review, versioned source integrity and finite deadline evidence to the exact Core diff. Full repository validation, documentation closure and required PR checks remain necessary; machine visual evidence never grants publication or acceptance authority.
+
 External signed publication grants supplement rulesets; they do not override required checks or grant --admin/--auto/delete-branch merge authority. GH match-head-commit pins head, while base freshness remains a preexecution observation rather than a server CAS.
 
 Native acceptance reports bind observed Host version, platform, Plugin digest and acceptance-script digest. These local read-only records do not establish branch-protection configuration or grant repository policy writes.
