@@ -326,7 +326,7 @@ Git Publish Guard 現在區分 Agent PENDING proposal 與外部 Human-issued Ed2
 
 Claude/Gemini publication hook 以既有 Bash AST 遞迴辨識參數與 unquoted heredoc 中的命令替換，不執行替換。Dynamic executable／subcommand／Git context 與 publication scope 仍需明確可驗證；Hook 的解析能力不新增 approval 或 merge authority。
 
-`feat/` is an accepted personal engineering branch prefix. Automatic PR merge remains bound to the exact head and a non-empty set of passing required checks; native Human authorization still applies.
+`feat/` is an accepted personal engineering branch prefix. Automatic PR merge remains bound to the exact head and a non-empty set of passing required checks. Explicit task-authorized Claude `--auto` enables GitHub auto-merge through the same guard; GitHub enforces its checks and policy. Ordinary merge and Gemini `--auto` retain native confirmation.
 
 Optional creative vision review is confined to an installed local model over loopback and cannot update Human review or user-acceptance state.
 

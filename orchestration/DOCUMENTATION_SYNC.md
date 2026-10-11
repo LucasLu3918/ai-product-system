@@ -240,6 +240,8 @@ Candidate-aware preview verifies documentation closure and allowed H2 placement 
 
 Personal publication behavior is mapped from its code, proposal template and self-improvement protocol to the User Guide, Security Assurance, Architecture Overview and Technology Guide. The same-account writable-origin limitation must remain visible.
 
+The existing `personal-publication-modes` placement also covers `scripts/check_secret_leakage.py`, `scripts/publish_preflight.py` and `scripts/m4a_inspection.py`: M4A structural validation and metadata scanning must stay aligned with Scenario 240 and the Human Git Publication/Security topics. Task-authorized Claude `--auto` semantics stay synchronized with the same publication-mode docs; Gemini's native ask rule is unchanged.
+
 
 Publication sources extend the existing Security placement rule, while shared CLI consumers retain their original creative/runtime topics. This adds no placement bypass and keeps external issuer deployment documentation canonical.
 

@@ -24,7 +24,7 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 Skill 的使用者搜尋入口是 <a href="./skill-catalog.html">Skill Explorer</a>；其卡片由 `skills/INDEX.yaml` 和固定版本的上游處置清單產生。Skill routing 的 canonical 定義仍在各 `SKILL.md` 與 Registry，Scenario 259 記錄整合及選用邊界。
 
-Git 發布模式與操作步驟以 [User Guide](./USER_GUIDE.md#git-publication-與-release) 為入口；安全保證、信任根部署與隔離限制以 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement) 為準。個人模式 PR merge 的逐次確認依賴 Claude Code 原生 `ask` 或啟用中的 Gemini AIPS extension `ask_user` policy；Codex 仍為 advisory。
+Git 發布模式與操作步驟以 [User Guide](./USER_GUIDE.md#git-publication-與-release) 為入口；安全保證、信任根部署與隔離限制以 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement) 為準。一般個人模式 PR merge 依賴 Claude Code 原生 `ask` 或啟用中的 Gemini AIPS extension `ask_user` policy；明確 task-authorized 的 Claude `--auto` 可由同一候選檢查啟用 GitHub auto-merge，Gemini 仍逐次詢問。Codex 仍為 advisory。
 
 
 The recursive impact report links source changes to required Human and Agent documents.
@@ -68,6 +68,8 @@ Runtime action authorization is canonical in `config/runtime-policy.yaml`, `orch
 
 Secret handling guidance covers the built-in mandatory publication-candidate scan in the existing Git Publication and Security Assurance topics. Provider scanners are optional defense-in-depth, not baseline dependencies.
 
+The built-in publication scanner validates `.m4a` container structure and scans metadata without decoding audio payloads; the 8 MiB limit and Git LFS/external-storage remediation are documented in User Guide and Security Assurance.
+
 GitHub API transfer integrity is documented in User Guide 的 Git Publication、Maintenance 的 CI consistency 及 Technology Guide 的驗證說明；`scripts/publication_transfer.py` 是 deterministic implementation，文件範圍由 `publication-transfer` placement rule 維護。
 
 ### 架構與技術
@@ -107,6 +109,8 @@ Reusable task methods are canonical in `skills/<domain>/<skill>/SKILL.md`, with 
 OpenCode continues to use its existing signed-publication route for protected operations; per-call personal PR merge confirmation is implemented only by Claude Code and the active Gemini AIPS extension.
 
 個人與高保證發布模式的機器執行規則位於 `scripts/publication_authority.py`、`scripts/governance_guard.py` 與 `orchestration/ORCHESTRATOR.md`；proposal 由 `templates/git-publish-proposal.md` 保留候選證據。
+
+M4A scanner structure validation is implemented in `scripts/m4a_inspection.py` and consumed by publication preview, `scripts/check_secret_leakage.py` and the staged commit guard; Scenario 240 protects candidate-tree/history and hook behavior.
 
 
 Publication canonical implementation 是 `scripts/governance_guard.py`、`publication_authority.py`、`publication_commands.py`；`publication_issuer.py` 僅供外部管理域部署。Human 接入指引位於 Security Assurance / Runtime Policy Enforcement，避免複製 signing policy。

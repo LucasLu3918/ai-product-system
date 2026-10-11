@@ -120,6 +120,8 @@ External Eval / Red-Team Interoperability 的來源由 `eval-interoperability` p
 
 Publication Preflight preview reports each required document with the sync or placement rule that introduced it, so maintainers can locate the exact source of recursive documentation requirements.
 
+Publication authority and scanner changes use the existing `personal-publication-modes` placement: update the Human User Guide, Security Assurance, Architecture/Technology guidance, Scenario 240 and the corresponding Agent protocol. `.m4a` validation is a bounded extension of the existing secret-scanner/commit-safety boundary, not a new publication route.
+
 Keep the Node lockfile, npm CI installation and lockfile-triggered docs-site build aligned when changing documentation dependencies. GitHub merge-method reporting belongs to the existing publication-preflight guidance and does not change Human approval requirements.
 
 Mandatory Candidate Secret Scanning extends the existing publication-preflight and security topics. The built-in scanner and policy must stay aligned across local preflight, Integration Gate and the early CI fail-fast step; all paths use the same exact candidate and redacted evidence contract.

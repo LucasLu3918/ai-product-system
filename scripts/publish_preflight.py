@@ -319,9 +319,24 @@ def preview_content_safety(base: str, files: list[str]) -> dict[str, Any]:
     ]
     untracked: dict[str, str] = {}
     unscannable: list[str] = []
+    m4a_blockers: list[str] = []
     for relative in files:
         path = (ROOT / relative).resolve()
         if not path.is_relative_to(ROOT.resolve()) or not path.is_file():
+            continue
+        if path.suffix.lower() == ".m4a":
+            from m4a_inspection import M4AInspectionError, inspect_m4a, metadata_text
+            size = path.stat().st_size
+            if size > 8 * 1024 * 1024:
+                m4a_blockers.append(f"M4A exceeds 8 MiB publication limit: {relative}; use Git LFS or external asset storage.")
+                continue
+            try:
+                inspected = inspect_m4a(path.read_bytes())
+            except (M4AInspectionError, OSError):
+                m4a_blockers.append(f"invalid or spoofed M4A file: {relative}")
+                continue
+            # The source-artifact sink scans selected metadata, not binary audio.
+            untracked[relative] = metadata_text(inspected.metadata)
             continue
         tracked = subprocess.run(["git", "ls-files", "--error-unmatch", "--", relative], cwd=ROOT, capture_output=True, text=True)
         if tracked.returncode == 0:
@@ -334,7 +349,7 @@ def preview_content_safety(base: str, files: list[str]) -> dict[str, Any]:
         except (OSError, UnicodeError):
             unscannable.append(relative)
     check = safe_emit(sink="source_artifact", payload={"tracked_additions": tracked_additions, "untracked_files": untracked})
-    blockers = []
+    blockers = list(m4a_blockers)
     if check["decision"] == "BLOCK":
         blockers.append("early content-safety check blocked the working-tree candidate")
     if unscannable:

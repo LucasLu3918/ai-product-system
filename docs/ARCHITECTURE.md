@@ -285,15 +285,15 @@ flowchart LR
   N --> G[Existing Guard / external grant / host permission]
   G --> R[Engineering branch and PR]
   R --> C[Required checks and explicit merge intent]
-  C --> M[Native merge confirmation where supported]
+  C --> M[Ordinary native confirmation / task-authorized checked --auto]
   M --> V[Verified merge commit in live base]
 ```
 
 Read-only publication planning binds the explicit worktree, exact candidate, live default base, remote/PR state and body/policy digests. It returns native-tool cwd/argv and safe diagnostics; neither a plan nor its fingerprint grants permission or executes a protected operation.
 
-`--auto-merge` still requires explicit merge intent, a non-empty passing required-check observation, and the existing native Human authorization boundary.
+`--auto-merge` still requires explicit merge intent, a non-empty passing required-check observation, and the existing exact-candidate guard. Claude may omit a second native prompt for this task-authorized path; Gemini retains `ask_user`, and GitHub policy/checks remain authoritative.
 
-Git publication resolves to personal mode unless the fixed administrator trust root selects high assurance. Personal mode validates and scans the exact candidate before an engineering-branch push or PR; an explicitly requested PR merge requires each Claude/Gemini native confirmation plus exact head/default-base and passing required-check validation. Codex remains advisory. High assurance requires the external single-use grant.
+Git publication resolves to personal mode unless the fixed administrator trust root selects high assurance. Personal mode validates and scans the exact candidate before an engineering-branch push or PR; ordinary PR merge requires native confirmation plus exact head/default-base and passing required-check validation. An explicitly task-authorized Claude `--auto` path uses the same guard and lets GitHub finish after checks; Gemini retains native confirmation. Codex remains advisory. High assurance requires the external single-use grant.
 
 The existing Claude/Gemini publication guard uses bounded Bash AST inspection to classify substitutions in command arguments and unquoted heredocs without executing them. Dynamic command identity and publication scope still require literal, verifiable values; this parser change does not alter approval or merge authority.
 
