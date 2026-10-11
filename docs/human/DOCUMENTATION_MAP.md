@@ -202,6 +202,8 @@ docs/ARCHITECTURE.md 可作 machine/human shared architecture artifact；CHANGEL
 
 ## 文件一致性
 
+Branch lifecycle behavior is maintained in [System Maintenance](MAINTENANCE.md#branch-lifecycle-hygiene) for Human operations and [Branch Hygiene](../../orchestration/BRANCH_HYGIENE.md) for Agent authority and evidence rules; [Scenario 257](CONFORMANCE.md#scenario-257-branch-and-pr-lifecycle-dispositions) records its conformance contract.
+
 新拆出的四個 helper 與 Creative quality 摘要沿用既有 Facade 的 Placement／Sync 主題；Document Size Audit 的 reading_sections 僅導向原 H2，不生成第二份 Canonical Policy。
 
 Project Intelligence relationship candidates are documented in the Project Intelligence and Architecture Overview sections; their scenario evidence is indexed in Conformance.

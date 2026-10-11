@@ -161,15 +161,9 @@ def branch_refs(target: str, remote: str | None) -> tuple[str, list[tuple[str, s
 
 
 def _pull_request_state(branch: str, target: str, sha: str, pull_requests: list[dict[str, Any]]) -> tuple[int | None, str, str | None]:
-    rows = [
-        row for row in pull_requests
-        if row.get("headRefName") == branch and row.get("baseRefName") == target
-    ]
-    exact = [row for row in rows if row.get("headRefOid") == sha]
-    candidates = exact or rows
-    if not candidates:
+    row = _matching_pull_request(branch, target, sha, pull_requests)
+    if row is None:
         return None, "NO_MATCHING_PR", None
-    row = max(candidates, key=lambda item: str(item.get("mergedAt") or item.get("closedAt") or ""))
     if row.get("mergedAt"):
         return int(row["number"]), "MERGED" if row.get("headRefOid") == sha else "MERGED_HEAD_MOVED", row.get("mergedAt")
     if row.get("state") == "OPEN":
@@ -177,6 +171,37 @@ def _pull_request_state(branch: str, target: str, sha: str, pull_requests: list[
     if row.get("closedAt") or row.get("state") == "CLOSED":
         return int(row["number"]), "CLOSED_UNMERGED", None
     return int(row["number"]), "UNKNOWN", None
+
+
+def _matching_pull_request(
+    branch: str, target: str, sha: str, pull_requests: list[dict[str, Any]],
+) -> dict[str, Any] | None:
+    rows = [
+        row for row in pull_requests
+        if row.get("headRefName") == branch and row.get("baseRefName") == target
+    ]
+    exact = [row for row in rows if row.get("headRefOid") == sha]
+    candidates = exact or rows
+    if not candidates:
+        return None
+    return max(candidates, key=lambda item: str(item.get("updatedAt") or item.get("mergedAt") or item.get("closedAt") or ""))
+
+
+def branch_disposition(
+    lifecycle: str, active_checkout: bool, integrated_into_target: bool,
+    merged_status: str, merge_state_status: str | None = None,
+    mergeable: str | None = None,
+) -> tuple[str, str]:
+    """Return a conservative work disposition; it never grants a Git action."""
+    if merged_status == "OPEN" and (merge_state_status == "DIRTY" or mergeable == "CONFLICTING"):
+        return "REBASE_REQUIRED", "open_pull_request_has_merge_conflicts"
+    if lifecycle != "EPHEMERAL" or active_checkout:
+        return "KEEP", "persistent_unclassified_or_active_checkout"
+    if integrated_into_target:
+        if merged_status == "MERGED":
+            return "CLEANUP_CANDIDATE", "exact_merged_pull_request_and_target_integration"
+        return "SUPERSEDED", "branch_tree_is_already_in_target_without_exact_merged_pr_evidence"
+    return "KEEP", "not_integrated_or_exact_pr_evidence_missing"
 
 
 def build_report(
@@ -191,13 +216,21 @@ def build_report(
         raise BranchHygieneError("generated_at must be a valid ISO-8601 timestamp") from exc
     rows = []
     checked_out = active_branches()
+    main_sha = git("rev-parse", target_ref).stdout.strip()
     for name, ref in refs:
         lifecycle = classify(name, config)
         is_integrated = integrated(ref, target_ref)
         sha = git("rev-parse", ref).stdout.strip()
         committed_at = datetime.fromisoformat(git("show", "-s", "--format=%cI", ref).stdout.strip())
         age_days = max(0, (now - committed_at).days)
+        pull_request = _matching_pull_request(name, target, sha, prs)
         merged_pr, merged_status, merged_at = _pull_request_state(name, target, sha, prs)
+        merge_state_status = str(pull_request.get("mergeStateStatus") or "UNKNOWN") if pull_request else "UNKNOWN"
+        mergeable = str(pull_request.get("mergeable") or "UNKNOWN") if pull_request else "UNKNOWN"
+        disposition, disposition_reason = branch_disposition(
+            lifecycle, name in checked_out, is_integrated, merged_status,
+            merge_state_status, mergeable,
+        )
         action = "REVIEW_FOR_CLEANUP" if lifecycle == "EPHEMERAL" and is_integrated and name not in checked_out else "PRESERVE"
         rows.append({
             "branch": name,
@@ -207,12 +240,27 @@ def build_report(
             "merged_pr": merged_pr,
             "merged_status": merged_status,
             "merged_at": merged_at,
+            "pr_merge_state": merge_state_status,
+            "pr_mergeable": mergeable,
             "age_days": age_days,
             "integrated_into_target": is_integrated,
+            "disposition": disposition,
+            "disposition_reason": disposition_reason,
+            "disposition_evidence": {
+                "branch_sha": sha,
+                "target_sha": main_sha,
+                "lifecycle": lifecycle,
+                "active_checkout": name in checked_out,
+                "integrated_into_target": is_integrated,
+                "pr_number": merged_pr,
+                "pr_head_sha": pull_request.get("headRefOid") if pull_request else None,
+                "pr_state": merged_status,
+                "pr_merge_state": merge_state_status,
+                "pr_mergeable": mergeable,
+            },
             "recommended_action": action,
             "recommendation_reason": "active_local_checkout" if name in checked_out else "ephemeral_and_integrated" if action == "REVIEW_FOR_CLEANUP" else "persistent_unclassified_or_not_integrated",
         })
-    main_sha = git("rev-parse", target_ref).stdout.strip()
     proposal_rows = [
         {
             "branch": row["branch"],
@@ -254,6 +302,10 @@ def build_report(
         "generated_against_main_sha": main_sha,
         "cleanup_proposal": proposal,
         "branches": rows,
+        "disposition_summary": {
+            disposition: sum(row["disposition"] == disposition for row in rows)
+            for disposition in ("KEEP", "SUPERSEDED", "REBASE_REQUIRED", "CLEANUP_CANDIDATE")
+        },
         "authority": {
             "branch_deletion_authorized": False,
             "human_authority_preserved": True,

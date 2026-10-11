@@ -13,7 +13,12 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "branch_hygiene.py"
 sys.path.insert(0, str(ROOT / "scripts"))
-from branch_hygiene import BranchHygieneError, classify, validate_proposal
+from branch_hygiene import (
+    BranchHygieneError,
+    branch_disposition,
+    classify,
+    validate_proposal,
+)
 
 
 def git(cwd: Path, *args: str) -> str:
@@ -21,13 +26,20 @@ def git(cwd: Path, *args: str) -> str:
     return proc.stdout.strip()
 
 
-def validate(payload: dict) -> None:
+def validate(payload: dict, *, with_pr_metadata: bool = False) -> None:
     rows = {row["branch"]: row for row in payload["branches"]}
     assert rows["feature/merged"]["recommended_action"] == "REVIEW_FOR_CLEANUP"
     assert rows["feature/squashed"]["recommended_action"] == "REVIEW_FOR_CLEANUP"
     assert rows["feature/pending"]["recommended_action"] == "PRESERVE"
     assert {"current_sha", "merged_pr", "merged_status", "age_days", "integrated_into_target"}.issubset(rows["feature/merged"])
     assert rows["feature/retrieval-embedding-trial"]["lifecycle"] == "PERSISTENT"
+    assert rows["feature/merged"]["disposition"] == ("CLEANUP_CANDIDATE" if with_pr_metadata else "SUPERSEDED")
+    assert rows["feature/squashed"]["disposition"] == "SUPERSEDED"
+    assert rows["feature/pending"]["disposition"] == ("REBASE_REQUIRED" if with_pr_metadata else "KEEP")
+    assert rows["feature/review"]["disposition"] == "KEEP"
+    assert rows["customer/keep-forever"]["disposition"] == "KEEP"
+    assert rows["feature/merged"]["disposition_evidence"]["target_sha"] == payload["generated_against_main_sha"]
+    assert payload["disposition_summary"]["CLEANUP_CANDIDATE"] == (1 if with_pr_metadata else 0)
     assert payload["authority"]["branch_deletion_authorized"] is False
     assert payload["authority"]["human_authority_preserved"] is True
     proposal = payload["cleanup_proposal"]
@@ -81,6 +93,17 @@ def main() -> int:
         git(repo, "commit", "-qm", "pending")
         pending_sha = git(repo, "rev-parse", "HEAD")
         git(repo, "checkout", "-q", "main")
+        git(repo, "checkout", "-qb", "feature/review")
+        (repo / "review.txt").write_text("review needed\n", encoding="utf-8")
+        git(repo, "add", ".")
+        git(repo, "commit", "-qm", "review fixture")
+        review_sha = git(repo, "rev-parse", "HEAD")
+        git(repo, "checkout", "-q", "main")
+        git(repo, "checkout", "-qb", "customer/keep-forever")
+        (repo / "customer.txt").write_text("unclassified work\n", encoding="utf-8")
+        git(repo, "add", ".")
+        git(repo, "commit", "-qm", "unclassified fixture")
+        git(repo, "checkout", "-q", "main")
         git(repo, "checkout", "-qb", "feature/pr-evidence")
         (repo / "pr-only.txt").write_text("provider evidence\n", encoding="utf-8")
         git(repo, "add", ".")
@@ -114,8 +137,9 @@ deletion:
         validate(yaml.safe_load(local.stdout))
 
         prs = [
-            {"number": 21, "headRefName": "feature/merged", "headRefOid": merged_sha, "baseRefName": "main", "state": "CLOSED", "mergedAt": "2026-09-21T00:00:00Z", "closedAt": "2026-09-21T00:00:00Z"},
-            {"number": 22, "headRefName": "feature/pending", "headRefOid": pending_sha, "baseRefName": "main", "state": "OPEN", "mergedAt": None, "closedAt": None},
+            {"number": 21, "title": "merged exact head", "headRefName": "feature/merged", "headRefOid": merged_sha, "baseRefName": "main", "state": "CLOSED", "mergeStateStatus": "MERGEABLE", "mergeable": "MERGEABLE", "updatedAt": "2026-09-21T00:00:00Z", "mergedAt": "2026-09-21T00:00:00Z", "closedAt": "2026-09-21T00:00:00Z"},
+            {"number": 22, "title": "conflicting open PR", "headRefName": "feature/pending", "headRefOid": pending_sha, "baseRefName": "main", "state": "OPEN", "mergeStateStatus": "DIRTY", "mergeable": "CONFLICTING", "updatedAt": "2026-09-22T00:00:00Z", "mergedAt": None, "closedAt": None},
+            {"number": 23, "title": "review open PR", "headRefName": "feature/review", "headRefOid": review_sha, "baseRefName": "main", "state": "OPEN", "mergeStateStatus": "CLEAN", "mergeable": "MERGEABLE", "updatedAt": "2026-09-23T00:00:00Z", "mergedAt": None, "closedAt": None},
         ]
         pr_fixture = repo / "pull-requests.json"
         pr_fixture.write_text(json.dumps(prs), encoding="utf-8")
@@ -126,15 +150,27 @@ deletion:
         )
         assert dated.returncode == 0, dated.stdout + dated.stderr
         dated_report = yaml.safe_load(dated.stdout)
+        validate(dated_report, with_pr_metadata=True)
         dated_rows = {row["branch"]: row for row in dated_report["branches"]}
         assert dated_rows["feature/merged"]["merged_pr"] == 21
         assert dated_rows["feature/merged"]["merged_status"] == "MERGED"
         assert dated_rows["feature/pending"]["merged_status"] == "OPEN"
+        assert dated_rows["feature/pending"]["pr_merge_state"] == "DIRTY"
+        assert dated_rows["feature/pending"]["disposition_reason"] == "open_pull_request_has_merge_conflicts"
+        assert dated_rows["feature/review"]["disposition"] == "KEEP"
+        assert dated_rows["customer/keep-forever"]["lifecycle"] == "UNCLASSIFIED"
+        assert dated_rows["customer/keep-forever"]["disposition"] == "KEEP"
         assert dated_rows["feature/merged"]["age_days"] >= 0
         assert dated_report["authority"]["branch_deletion_authorized"] is False
         proposal = dated_report["cleanup_proposal"]
         assert proposal["generated_against_main_sha"] == git(repo, "rev-parse", "main")
         assert proposal["branches"][0]["merged_at"] == "2026-09-21T00:00:00Z"
+        assert branch_disposition("EPHEMERAL", False, False, "NO_MATCHING_PR") == (
+            "KEEP", "not_integrated_or_exact_pr_evidence_missing"
+        )
+        assert branch_disposition("PERSISTENT", False, True, "MERGED") == (
+            "KEEP", "persistent_unclassified_or_active_checkout"
+        )
         validate_proposal(
             proposal,
             current_main_sha=git(repo, "rev-parse", "main"),

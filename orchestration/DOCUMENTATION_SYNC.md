@@ -179,6 +179,8 @@ Runtime Policy action schemas, deterministic decisions, hook capability claims a
 
 ## Maintenance reliability mapping
 
+Branch lifecycle disposition behavior is documented in the Human Maintenance guide and Technology Guide, with the exact authority boundary in `orchestration/BRANCH_HYGIENE.md` and Scenario 257 in Conformance. Preserve the distinction between advisory cleanup candidates and separately authorized exact-manifest deletion.
+
 
 
 

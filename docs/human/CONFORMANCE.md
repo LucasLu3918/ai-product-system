@@ -1539,6 +1539,8 @@ Runtime Context retains its existing canonical hash output through the compatibi
 
 ## Scenario 199 — Branch cleanup proposal evidence
 
+Scenario 257 extends the report with evidence-bound `KEEP`, `SUPERSEDED`, `REBASE_REQUIRED`, and `CLEANUP_CANDIDATE` dispositions. It remains advisory: branch reports do not mutate GitHub or grant cleanup authorization.
+
 The report remains read-only; no branch deletion is authorized by its recommendation.
 
 

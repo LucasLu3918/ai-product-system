@@ -187,5 +187,6 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [### Scenario 223 — Evolution Radar exclusion attribution](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-223-evolution-radar-exclusion-attribution) | Normative rule |
 | [## Scenario 210 — Python runtime support policy](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-210-python-runtime-support-policy) | Normative rule |
 | [## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-237-read-only-project-diagnostics-and-recovery-guidance) | Normative rule |
+| [## Scenario 257 — Branch and PR lifecycle dispositions](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-257-branch-and-pr-lifecycle-dispositions) | Normative rule |
 
 The crosswalk preserves source anchors. Edit the source documents for content changes, then regenerate this index.

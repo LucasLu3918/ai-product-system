@@ -521,6 +521,8 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
+`branch-hygiene.yml` 的報告會依 branch SHA、目前 main、local checkout 與 PR 狀態列出 `KEEP`、`SUPERSEDED`、`REBASE_REQUIRED` 或 `CLEANUP_CANDIDATE`。這些分類供維護者檢視，不會自動 merge、rebase、關閉 PR 或刪除 branch；清理仍須逐筆核准 exact manifest。
+
 預設個人模式會在程式修改與驗證完成後，自行推送工程分支並建立／更新指向遠端預設分支的 PR；不需設定簽發服務。只有使用者明確要求 local-only／不發布時才停在本機。使用者明確要求合併 PR 時，Claude Code 每次會顯示原生確認並列出 PR、base/head SHA 與 required checks；Gemini CLI 透過互動式 extension policy 每次要求確認。合併前會驗證 PR 開啟且可合併、目標為遠端預設分支、head 是目前 allowlist 工程分支與精確候選 SHA，且 required checks 已通過。Codex Hook 仍是 advisory，無法保證攔截直接 merge 命令。直接推送保護分支、刪除分支與發行不屬於個人模式。
 Claude/Gemini Hook 會遞迴分類命令參數及 unquoted heredoc 內的 `$(...)`／反引號替換，因此安全的查詢命令可留在同一次 Shell 呼叫。替換只供 AST 分析、不會由 Hook 執行；發布仍須使用明確 SHA、ref、repository 和既有核准流程。
 

@@ -192,6 +192,8 @@ Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行
 
 ## Deterministic Execution
 
+Branch Hygiene connects exact remote branch and PR evidence to a read-only maintenance report; the lifecycle classification never grants Git mutation authority.
+
 Publication exact-candidate diff 與 Hook consumption 是獨立邊界：Integration Gate PASS 不簽發 Human grant，Git common/worktree ID 不等同共享授權。這些 scope consumer 保留 bounded Intelligence evidence。
 
 Project Intelligence relationship candidates are listed as review evidence under the existing capability; generated architecture surfaces remain projections of the canonical registry.

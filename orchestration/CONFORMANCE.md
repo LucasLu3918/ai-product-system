@@ -1037,3 +1037,7 @@ Its read-only diagnostic path remains separate from creative Profile compilation
 Recovery suggestions remain read-only and conditional across missing, stale, partial and blocked Intelligence. The lifecycle does not invoke the suggested bootstrap, refresh or finalization action.
 
 Scenario 237 binds reason-code recovery output, format parity, privacy redaction and no-write behavior to lifecycle evidence. It does not assert live Host or MCP execution.
+
+## Scenario 257 — Branch and PR lifecycle dispositions
+
+The branch lifecycle report classifies remote branches using current exact-SHA PR metadata and local checkout evidence. It distinguishes branches to keep, superseded work, PR branches requiring rebase, and cleanup candidates. These are advisory dispositions only: report generation and the scheduled workflow never delete branches or grant cleanup authorization. Unknown or incomplete evidence fails closed to KEEP. Scenario 257 is covered by `tests/evidence/branch_hygiene_lifecycle.py` and `tests/validation/branch_hygiene_contracts.py`.

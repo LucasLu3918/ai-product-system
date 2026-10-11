@@ -1,181 +1,136 @@
 version: 1
 candidate:
-  base_sha: c4c239443a4ca3ceb070b2b77291eecbf891622c
-  changed_files_hash: 37a60f5b83ef7d1a35f7153d89c6473912d777d0502370e498342a1ad8b95cf5
+  base_sha: 8eaf16983d816a1fc8ad08d31eb8cd2b908e4bdc
+  changed_files_hash: 9d090149bc254f58dec2f2a9c8084d797da2275b45d3c28e9e12cbf8d7260937
 change:
-  id: creative-quality-repair-20261011
-  summary: Same-session recreation admission, criterion evidence, versioned feedback/repair/comparison
-    and opt-in bounded repair loop.
+  id: plan29-phase0-branch-lifecycle
+  summary: Evidence-bound branch and PR disposition reporting with report-only cleanup authority.
   boundary:
-  - Creative intent and native grants
-  - Criterion review and repair provenance
-  - Bounded repair orchestration
-  - Canonical documentation and validation consumers
+  - Branch disposition classifier using exact remote/main/PR evidence
+  - Workflow metadata and advisory branch report summary
+  - Scenario 257 conformance registration and lifecycle evidence
+  - Canonical documentation closure and generated conformance projections
 matrix:
-- boundary: Creative intent and native grants
-  reason: Original recreation/read-only/negated requests; fresh grants, explicit scope,
-    replay, async epoch and concurrent reservations.
+- boundary: Branch disposition classifier
+  reason: Classifies each branch from exact SHA, active checkout, lifecycle, integration and read-only PR state; unknown work remains protected.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: focused Ruff and mypy checks on changed creative modules.'
+      evidence: 'PASS: focused Ruff on scripts/branch_hygiene.py, tests/evidence/branch_hygiene_lifecycle.py and tests/validation/branch_hygiene_contracts.py.'
     unit:
       applicable: true
-      evidence: 'PASS: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_repair_lifecycle.py.'
+      evidence: 'PASS: branch_hygiene_lifecycle.py fixture coverage for KEEP, SUPERSEDED, REBASE_REQUIRED, CLEANUP_CANDIDATE, stale SHAs and unknown/persistent work.'
     integration:
       applicable: true
-      evidence: 'PASS: fixture provider/VLM repair lifecycle and projected native
-        tool harness; full exact-candidate aggregate is additionally required by the
-        publication Gate.'
+      evidence: 'PASS: full tests/validate_repository.py on the exact working tree; 257 registered scenarios, 0 uncovered.'
     contract:
       applicable: true
-      evidence: 'PASS: legacy creative quality lifecycle and additive schema/criterion
-        checks.'
+      evidence: 'PASS: branch hygiene workflow/static contracts and lifecycle fixtures.'
     e2e:
       applicable: false
-      na_reason: No product browser UI. Native host/tool acceptance is covered under
-        cli_harness; real image/vision quality is separate optional evidence, not
-        a synthetic PASS.
+      na_reason: Branch reporting is read-only and has no browser UI; no live remote Git mutation is allowed for this workstream.
     security:
       applicable: true
-      evidence: 'PASS: negative intent, no-egress fixtures, source drift, no-overwrite,
-        target scope, replay/epoch and bounded repair checks. Mandatory exact-candidate
-        secret scan runs in the Gate.'
+      evidence: 'PASS: branch lifecycle fixtures preserve report-only authority and full preview content_safety is PASS; exact committed candidate scan remains required in Gate.'
     migration_recovery:
-      applicable: true
-      evidence: 'PASS: legacy v1 Profiles/Bundles, immutable historical assets, versioned
-        repair/comparison and repeat request refusal. No database migration.'
+      applicable: false
+      na_reason: Additive report fields only; no persistent data/schema migration or recovery path changes.
     cli_harness:
       applicable: true
-      evidence: 'PASS: creative_execution_lifecycle.py projected native fixture; credential-free
-        native OpenCode v2.0.24 acceptance separately observed.'
+      evidence: 'PASS: CLI report contract and fixture lifecycle; no branch mutation command is introduced.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: working-tree documentation closure and canonical placement
-        preview; full candidate docs build runs in the Gate.'
-- boundary: Criterion review and repair provenance
-  reason: Local installed reviewer; composition/detail evidence, copied Profiles,
-    parent/source hashes and comparison lineage.
+      evidence: 'PASS: documentation preview closure complete and generated conformance summaries match; exact Gate runs docs build.'
+- boundary: Workflow metadata and advisory report summary
+  reason: Workflow requests read-only PR merge state and surfaces evidence without granting mutation authority.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: focused Ruff and mypy checks on changed creative modules.'
+      evidence: 'PASS: full repository validator and exact candidate Gate include workflow validation.'
     unit:
       applicable: true
-      evidence: 'PASS: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_repair_lifecycle.py.'
+      evidence: 'PASS: branch hygiene lifecycle and workflow/static contract coverage.'
     integration:
       applicable: true
-      evidence: 'PASS: fixture provider/VLM repair lifecycle and projected native
-        tool harness; full exact-candidate aggregate is additionally required by the
-        publication Gate.'
+      evidence: 'PASS: full tests/validate_repository.py; exact GitHub PR mutation is excluded.'
     contract:
       applicable: true
-      evidence: 'PASS: legacy creative quality lifecycle and additive schema/criterion
-        checks.'
+      evidence: 'PASS: workflow contract verifies requested PR metadata and summary authority.'
     e2e:
       applicable: false
-      na_reason: No product browser UI. Native host/tool acceptance is covered under
-        cli_harness; real image/vision quality is separate optional evidence, not
-        a synthetic PASS.
+      na_reason: Scheduled report has no user-facing browser interface and makes no remote mutation.
     security:
       applicable: true
-      evidence: 'PASS: negative intent, no-egress fixtures, source drift, no-overwrite,
-        target scope, replay/epoch and bounded repair checks. Mandatory exact-candidate
-        secret scan runs in the Gate.'
+      evidence: 'PASS: workflow permissions and report-only contract; exact candidate secret scan remains required in Gate.'
     migration_recovery:
-      applicable: true
-      evidence: 'PASS: legacy v1 Profiles/Bundles, immutable historical assets, versioned
-        repair/comparison and repeat request refusal. No database migration.'
+      applicable: false
+      na_reason: Workflow reads metadata and publishes a summary; no durable data migration.
     cli_harness:
       applicable: true
-      evidence: 'PASS: creative_execution_lifecycle.py projected native fixture; credential-free
-        native OpenCode v2.0.24 acceptance separately observed.'
+      evidence: 'PASS: workflow contracts preserve existing read-only schedule/dispatch permissions.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: working-tree documentation closure and canonical placement
-        preview; full candidate docs build runs in the Gate.'
-- boundary: Bounded repair orchestration
-  reason: Explicit opt-in; separate delivery/inference/repair counters, time-aware
-    locks/provider/preflight/review and repeated-defect stops.
+      evidence: 'PASS: workflow summary rendered by validated workflow contract; full candidate docs build runs in Gate.'
+- boundary: Scenario 257 conformance registration and lifecycle evidence
+  reason: Adds deterministic scenario evidence and updates canonical conformance counts and projections.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: focused Ruff and mypy checks on changed creative modules.'
+      evidence: 'PASS: focused Ruff on new and changed branch hygiene implementation/evidence modules.'
     unit:
       applicable: true
-      evidence: 'PASS: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_repair_lifecycle.py.'
+      evidence: 'PASS: branch_hygiene_lifecycle.py and scenario_conformance.py (257 registered, 0 uncovered).'
     integration:
       applicable: true
-      evidence: 'PASS: fixture provider/VLM repair lifecycle and projected native
-        tool harness; full exact-candidate aggregate is additionally required by the
-        publication Gate.'
+      evidence: 'PASS: full tests/validate_repository.py; 12 Roles, 40 Skills, 257 Scenarios.'
     contract:
       applicable: true
-      evidence: 'PASS: legacy creative quality lifecycle and additive schema/criterion
-        checks.'
+      evidence: 'PASS: branch hygiene contract and conformance isolation validator.'
     e2e:
       applicable: false
-      na_reason: No product browser UI. Native host/tool acceptance is covered under
-        cli_harness; real image/vision quality is separate optional evidence, not
-        a synthetic PASS.
+      na_reason: Scenario is fixture-backed and explicitly excludes live GitHub mutations.
     security:
       applicable: true
-      evidence: 'PASS: negative intent, no-egress fixtures, source drift, no-overwrite,
-        target scope, replay/epoch and bounded repair checks. Mandatory exact-candidate
-        secret scan runs in the Gate.'
+      evidence: 'PASS: fixture assertions fail closed on unknown/persistent/active work; final candidate scan remains required in Gate.'
     migration_recovery:
-      applicable: true
-      evidence: 'PASS: legacy v1 Profiles/Bundles, immutable historical assets, versioned
-        repair/comparison and repeat request refusal. No database migration.'
+      applicable: false
+      na_reason: Conformance registry and documentation projections have no runtime persistence migration.
     cli_harness:
       applicable: true
-      evidence: 'PASS: creative_execution_lifecycle.py projected native fixture; credential-free
-        native OpenCode v2.0.24 acceptance separately observed.'
+      evidence: 'PASS: CLI/Harness contracts and full repository validation.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: working-tree documentation closure and canonical placement
-        preview; full candidate docs build runs in the Gate.'
-- boundary: Canonical documentation and validation consumers
-  reason: CLI/native schema, backward-compatible v1 evidence fields, lifecycle ownership,
-    documented privacy and Human authority.
+      evidence: 'PASS: generated current/history summaries match their sources; placement preview complete.'
+- boundary: Canonical documentation closure and generated conformance projections
+  reason: Updates Human and Agent maintenance guidance while preserving source-of-truth and generated-projection rules.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: focused Ruff and mypy checks on changed creative modules.'
+      evidence: 'PASS: focused Ruff and full repository validator.'
     unit:
       applicable: true
-      evidence: 'PASS: tests/evidence/creative_request_policy_lifecycle.py and tests/evidence/creative_repair_lifecycle.py.'
+      evidence: 'PASS: conformance summary lifecycle and scenario conformance checks.'
     integration:
       applicable: true
-      evidence: 'PASS: fixture provider/VLM repair lifecycle and projected native
-        tool harness; full exact-candidate aggregate is additionally required by the
-        publication Gate.'
+      evidence: 'PASS: full documentation placement closure preview and repository validator.'
     contract:
       applicable: true
-      evidence: 'PASS: legacy creative quality lifecycle and additive schema/criterion
-        checks.'
+      evidence: 'PASS: summary generator --check and Human/Agent crosswalk anchors.'
     e2e:
       applicable: false
-      na_reason: No product browser UI. Native host/tool acceptance is covered under
-        cli_harness; real image/vision quality is separate optional evidence, not
-        a synthetic PASS.
+      na_reason: Documentation projections are validated by deterministic source comparison, not a product UI.
     security:
       applicable: true
-      evidence: 'PASS: negative intent, no-egress fixtures, source drift, no-overwrite,
-        target scope, replay/epoch and bounded repair checks. Mandatory exact-candidate
-        secret scan runs in the Gate.'
+      evidence: 'PASS: no secrets or private data added; exact-candidate content scan remains required in Gate.'
     migration_recovery:
-      applicable: true
-      evidence: 'PASS: legacy v1 Profiles/Bundles, immutable historical assets, versioned
-        repair/comparison and repeat request refusal. No database migration.'
+      applicable: false
+      na_reason: Documentation-only additions and generated projections introduce no migration or data repair requirement.
     cli_harness:
       applicable: true
-      evidence: 'PASS: creative_execution_lifecycle.py projected native fixture; credential-free
-        native OpenCode v2.0.24 acceptance separately observed.'
+      evidence: 'PASS: local Harness/CLI validation is included in the full repository validator.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: working-tree documentation closure and canonical placement
-        preview; full candidate docs build runs in the Gate.'
+      evidence: 'PASS: documentation closure complete; full exact-candidate documentation Gate remains required before publication.'
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
