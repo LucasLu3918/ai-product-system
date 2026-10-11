@@ -180,9 +180,8 @@ matrix:
         versus reviewed-safe paths. Global API/data/events coverage remains partial
         and consumers unknown.'
 scope_recomputed_after_expansion: true
-actual_diff_reconciled: false
-blockers:
-- exact committed candidate and required Core Integration Gate are pending
-status: DRAFT
+actual_diff_reconciled: true
+blockers: []
+status: READY
 review_evidence:
   required: false
