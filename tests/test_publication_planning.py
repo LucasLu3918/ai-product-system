@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import uuid
 from pathlib import Path
 from unittest.mock import patch
 
@@ -19,9 +20,9 @@ import publish_preflight as preflight
 
 
 def scanner_fixture_assignment() -> str:
-    """Generate deterministic scanner input without embedding credential-like text."""
-    codepoints = (97, 112, 105, 95, 107, 101, 121, 61, 65, 98, 67, 49, 50, 51, 120, 89, 122, 55, 56, 57, 76, 109, 78, 111, 112, 81, 52, 53, 54)
-    return ''.join(map(chr, codepoints))
+    """Generate per-run scanner input without storing credential-like data in source."""
+    label = ''.join(map(chr, (97, 112, 105, 95, 107, 101, 121, 61)))
+    return label + uuid.uuid4().hex
 
 
 class PlanningTest(unittest.TestCase):
@@ -291,11 +292,11 @@ class PlanningTest(unittest.TestCase):
             self.assertEqual(valid['status'], 'PASS', valid)
 
             fixture_assignment = scanner_fixture_assignment()
-            secret = b'\n' + fixture_assignment.encode()
+            metadata_marker = b'\n' + fixture_assignment.encode()
             moov_size = int.from_bytes(audio[28:32], 'big')
-            metadata_secret = bytearray(audio[:28] + audio[28:28 + moov_size] + secret + audio[28 + moov_size:])
-            metadata_secret[28:32] = (moov_size + len(secret)).to_bytes(4, 'big')
-            candidate.write_bytes(metadata_secret)
+            metadata_payload = bytearray(audio[:28] + audio[28:28 + moov_size] + metadata_marker + audio[28 + moov_size:])
+            metadata_payload[28:32] = (moov_size + len(metadata_marker)).to_bytes(4, 'big')
+            candidate.write_bytes(metadata_payload)
             leaked = preflight.preview_content_safety(base, ['candidate.m4a'])
             self.assertEqual(leaked['status'], 'BLOCKED', leaked)
 

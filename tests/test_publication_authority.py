@@ -7,6 +7,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import uuid
 from concurrent.futures import ThreadPoolExecutor
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -21,9 +22,9 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 
 def scanner_fixture_assignment() -> str:
-    """Generate deterministic scanner input without embedding credential-like text."""
-    codepoints = (97, 112, 105, 95, 107, 101, 121, 61, 65, 98, 67, 49, 50, 51, 120, 89, 122, 55, 56, 57, 76, 109, 78, 111, 112, 81, 52, 53, 54)
-    return ''.join(map(chr, codepoints))
+    """Generate per-run scanner input without storing credential-like data in source."""
+    label = ''.join(map(chr, (97, 112, 105, 95, 107, 101, 121, 61)))
+    return label + uuid.uuid4().hex
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 from publication_commands import CommandError, shell_commands
 from publication_issuer import Issuer
@@ -458,18 +459,18 @@ class PublicationTest(unittest.TestCase):
 
         # Metadata remains text-scanned while the mdat audio bytes are never decoded.
         fixture_assignment = scanner_fixture_assignment()
-        secret = b'\n' + fixture_assignment.encode()
+        metadata_marker = b'\n' + fixture_assignment.encode()
         moov_size = int.from_bytes(audio[28:32], 'big')
-        metadata_secret = bytearray(audio[:28] + audio[28:28 + moov_size] + secret + audio[28 + moov_size:])
-        metadata_secret[28:32] = (moov_size + len(secret)).to_bytes(4, 'big')
-        secret_path = self.repo / 'metadata-secret.m4a'
-        secret_path.write_bytes(metadata_secret)
-        self.run_git(self.repo, 'add', 'metadata-secret.m4a')
+        metadata_payload = bytearray(audio[:28] + audio[28:28 + moov_size] + metadata_marker + audio[28 + moov_size:])
+        metadata_payload[28:32] = (moov_size + len(metadata_marker)).to_bytes(4, 'big')
+        fixture_path = self.repo / 'metadata-marker.m4a'
+        fixture_path.write_bytes(metadata_payload)
+        self.run_git(self.repo, 'add', 'metadata-marker.m4a')
         self.assertEqual(guard.commit_safety(self.repo, command)['decision'], 'BLOCK')
         self.run_git(self.repo, 'commit', '-m', 'metadata security fixture')
-        secret_head = self.run_git(self.repo, 'rev-parse', 'HEAD')
-        findings, _, _, _ = secret_scanner.scan_candidate(self.repo, valid_head, secret_head, policy)
-        self.assertTrue(any(item['path'] == 'metadata-secret.m4a' for item in findings), findings)
+        metadata_head = self.run_git(self.repo, 'rev-parse', 'HEAD')
+        findings, _, _, _ = secret_scanner.scan_candidate(self.repo, valid_head, metadata_head, policy)
+        self.assertTrue(any(item['path'] == 'metadata-marker.m4a' for item in findings), findings)
 
         # Text disguised as M4A is scanned and fails structural validation.
         spoof_path = self.repo / 'spoofed.m4a'
@@ -480,7 +481,7 @@ class PublicationTest(unittest.TestCase):
         self.assertEqual(spoofed.exception.reason_code, 'M4A_INVALID')
         self.run_git(self.repo, 'commit', '-m', 'spoofed audio fixture')
         spoof_head = self.run_git(self.repo, 'rev-parse', 'HEAD')
-        findings, blockers, _, _ = secret_scanner.scan_candidate(self.repo, secret_head, spoof_head, policy)
+        findings, blockers, _, _ = secret_scanner.scan_candidate(self.repo, metadata_head, spoof_head, policy)
         self.assertTrue(any(item['path'] == 'spoofed.m4a' for item in findings), findings)
         self.assertTrue(any('invalid or spoofed M4A' in item for item in blockers), blockers)
 
