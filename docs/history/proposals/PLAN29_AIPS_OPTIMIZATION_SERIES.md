@@ -61,7 +61,7 @@ The series crosses runtime adapters, release and branch publication, CI policy, 
 |---:|---|---|---|---|---|
 | 1 | 0 | PR and branch lifecycle reconciliation | `scripts/branch_hygiene.py`, `config/branch-lifecycle.yaml`, branch-hygiene workflow | Exact main/branch/PR evidence; `KEEP`, `SUPERSEDED`, `REBASE_REQUIRED`, `CLEANUP_CANDIDATE`; report-only authority | Complete — PR #305 merged |
 | 2 | 1 | Stable release readiness | `scripts/version_tag_policy.py`, release-readiness workflow | Readiness, install/upgrade/rollback evidence; no release publication | Complete — existing exact-candidate gate and install/update lifecycle verified; rejected divergent updates preserve installed state |
-| 3 | 1 | OpenCode native reliability | OpenCode adapter, native guard, compatibility matrix | Version-bound host evidence and explicit unsupported-effect status | Planned |
+| 3 | 1 | OpenCode native reliability | OpenCode adapter, native guard, compatibility matrix | Version-bound host evidence and explicit unsupported-effect status | Complete — exact-host acceptance reports unsupported Shell, MCP/custom-tool, and out-of-process effects; legacy reports remain \`UNVERIFIED\` |
 | 4 | 2 | Creative image quality and repair | `creative_repair.py`, quality benchmark, existing evidence | Cross-profile dataset, scoped repair, separate model/check/compiler failures, human acceptance | Planned |
 | 5 | 1 | Project Intelligence recovery | `project_diagnostics.py`, `project_intelligence.py` | Reproducible missing/stale/ephemeral/blocked recovery plans without hidden writes | Planned |
 | 6 | 2 | Creative workspace asset import | Creative bundle and workspace profile | Hash-bound import candidate, destination/overwrite checks, Change Impact | Planned |

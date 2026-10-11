@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+OpenCode acceptance applies only to the reported host version and source. A successful Context or file-hook check does not cover arbitrary Shell processes, MCP/custom tools, or writes initiated outside OpenCode; the report marks these effects UNSUPPORTED and grants no additional authority.
+
 指出「疤痕畫在頭髮上」會形成版本綁定的缺陷回饋；明確要求「重出一張哈利」可在同一 Session 取得新的單張修正授權。`quality-check` 逐項檢查必要特徵與禁止錯置；只有明確要求自動修正才可使用 `quality-loop`，最多兩次修正，預設 native 時間上限十分鐘。
 
 Ordinary generation grants permit bounded `quality-check` of manifests produced by that grant; historical/unrelated images require explicit review intent. This does not authorize regeneration, and `review-assist` retains its separate explicit-review contract. Inspect required criteria before delivery; without an installed local reviewer, report UNVERIFIED and request Human inspection.
@@ -167,6 +169,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 新專案若尚未選擇技術，AIPS 會先檢查硬性限制，再依團隊、產品、既有系統、交付與維護需求提出少量候選和取捨；語言與框架分開選擇。架構建議同時看複雜度訊號與反向訊號，並分開說明 Clean Architecture、DDD 與部署方式。重要選擇由使用者確認後，才會整理到 Implementation Profile。
 
 ## Global Harness 與 MCP
+
+OpenCode adapter setup and version-bound evidence are separate. Consult the report's unsupported-effect states before relying on a native permission hook.
 
 For personal-mode PR merges, the runtime adapter presents a per-operation confirmation with the validated PR, candidate SHA, and required-check state.
 
@@ -312,6 +316,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+OpenCode native acceptance is not evidence of production model quality, generated-image quality or user acceptance.
 
 指出「疤痕畫在頭髮上」會形成版本綁定的缺陷回饋；明確要求「重出一張哈利」可在同一 Session 取得新的單張修正授權。`quality-check` 逐項檢查必要特徵與禁止錯置；只有明確要求自動修正才可使用 `quality-loop`，最多兩次修正，預設 native 時間上限十分鐘。
 

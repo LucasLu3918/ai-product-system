@@ -27,6 +27,7 @@
 - installation diagnostics distinguish supported major, unknown version, projection integrity, host discovery, and Hook execution, with a restart/new-session remediation;
 - `aips harness trace` returns only allowlisted event fields and never prompt, credential, asset content, full path, or model reasoning;
 - the optional V2 native acceptance sends actual Context through a local loopback mock model, performs one new creative write (ALLOW), and confirms one existing-asset edit is denied (DENY);
+- the version/platform/source-bound acceptance report explicitly marks arbitrary Shell process effects, MCP/custom-tool effects, and out-of-process writes as UNSUPPORTED; a legacy report without this field leaves each category UNVERIFIED;
 - the Shell policy rejects known command, argument, and path effects but is not represented as a complete process sandbox;
 - MCP/custom tools and out-of-process writes are explicitly outside the guard;
 - overall governance remains ADVISORY because arbitrary Shell effects, MCP/custom tools and out-of-process writes remain outside the guard, even when native hooks pass acceptance.

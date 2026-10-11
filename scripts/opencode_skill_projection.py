@@ -237,8 +237,16 @@ def native_acceptance(version: str | None) -> dict:
         statuses = {"VERIFIED", "VERIFIED_NATIVE_HOST", "UNVERIFIED", "UNSUPPORTED", "FAIL"}
         if not isinstance(checks, dict) or set(checks) != allowed or any(value not in statuses for value in checks.values()):
             return {**unknown, "reason_code": "acceptance_invalid"}
+        unsupported = record.get("unsupported_effects")
+        effect_types = {"arbitrary_shell_process_effects", "mcp_custom_tool_effects", "out_of_process_writes"}
+        if unsupported is None:
+            unsupported = {effect: "UNVERIFIED" for effect in sorted(effect_types)}
+        unsupported_statuses = {"UNSUPPORTED", "UNVERIFIED"}
+        if not isinstance(unsupported, dict) or set(unsupported) != effect_types or any(value not in unsupported_statuses for value in unsupported.values()):
+            return {**unknown, "reason_code": "acceptance_invalid"}
         return {"status": "FAILED" if "FAIL" in checks.values() else "RECORDED", "reason_code": "acceptance_exact_host",
                 "version": version, "platform": sys.platform, "checks": checks,
+                "unsupported_effects": unsupported,
                 "evidence_kind": "LOCAL_LOOPBACK_ACCEPTANCE", "authority": "NONE"}
     except (OSError, ValueError, TypeError):
         return {**unknown, "reason_code": "acceptance_invalid"}

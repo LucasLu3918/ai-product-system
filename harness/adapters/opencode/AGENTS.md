@@ -1,5 +1,7 @@
 # AIPS Global Turn Harness
 
+Native acceptance records exact version/platform/source evidence. Arbitrary Shell process effects, MCP/custom-tool effects and out-of-process writes are UNSUPPORTED; older reports without explicit effect coverage remain UNVERIFIED. Overall governance remains ADVISORY.
+
 Git publication requires separately issued signed v2 authority; OpenCode advisory integration must not claim universal interception or create its own APPROVED record. The personal PR merge confirmation route is implemented only for Claude Code and the active Gemini AIPS extension. See Human Security Assurance for the external issuer setup.
 
 Doctor may display source/version/platform-bound local native acceptance and bounded Context byte/latency metrics. These are observations only: absent model usage, real task outcomes and unsupported effects remain UNKNOWN or UNVERIFIED. Recovery Plan is read-only and does not authorize its actions.

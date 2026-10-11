@@ -97,6 +97,8 @@ Runtime-native contract verification and actual runtime execution verification a
 
 ## Exact-candidate real-runtime verification
 
+OpenCode native acceptance is exact-host evidence, bound to version, platform and source digests. Static setup does not prove Hook execution. Arbitrary Shell process effects, MCP/custom-tool effects and out-of-process writes remain UNSUPPORTED; absent legacy report fields remain UNVERIFIED.
+
 Native acceptance reports are bound to the actual Host version, platform, Plugin, acceptance-script and conservative runtime-source digests. Doctor reports missing/stale/invalid/failed/recorded local evidence without elevating ADVISORY governance or unsupported effect coverage.
 
 Internal creative prompt compiler extraction preserves the existing `creative_execution` facade and does not alter native Harness permissions or tool signatures; exact output parity is covered by the repository lifecycle evidence.

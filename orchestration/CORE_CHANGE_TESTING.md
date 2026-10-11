@@ -89,6 +89,8 @@ A Large/Core Change is not complete when:
 
 ## Evidence
 
+For OpenCode runtime changes, exact-host acceptance is separate from fixtures and static registration. Record the host/platform/source boundary and preserve explicit unsupported-effect states; do not infer production model quality or universal interception.
+
 Accepted ComfyUI job recovery must test exact-ID queue deletion, no global interrupt and no automatic resubmission after timeout or polling failure. Inconclusive cleanup does not grant another submission.
 
 Plan27 lifecycle binds facade identity, sibling imports, bounded candidate depth, recovery ordering, stale native acceptance, privacy filters and missing-measurement behavior. Native loopback acceptance, real local inference, Human visual review and user acceptance remain separate evidence dimensions.

@@ -1,108 +1,48 @@
 version: 1
 
 candidate:
-  base_sha: 8f2e1757eb06aac619b86e7997351ff18d968c9e
-  changed_files_hash: b942d907ec4352893be8fb43b78eb40ac773088808ac40129fbd9bca904c4512
+  base_sha: 8280471ef8f8d3a4a332414189cb847fbdb4bffd
+  changed_files_hash: 7574efebdf86dfc659d0a226b840ba2dd2cc205bddce4c261a48ab65e829d0ef
 
 change:
-  id: plan29-phase1-release-readiness
-  summary: Complete stable release readiness evidence for exact-candidate decisions and preserve installed state when a divergent update is refused.
+  id: plan29-phase1-opencode-20261011
+  summary: Make version-bound OpenCode native acceptance explicitly report unsupported effect classes while preserving legacy report handling.
   boundary:
-    - Stable release readiness remains exact-version/exact-main and read-only.
-    - Main-channel update fast-forward and divergent-update refusal preserve the documented install contract.
-    - Scenario 214, its evidence mapping, and Plan29 workstream status document the verified boundary.
+    - Native acceptance reports remain bound to exact host version, platform and AIPS/plugin source digests.
+    - Arbitrary Shell process effects, MCP/custom-tool effects and out-of-process writes are explicitly UNSUPPORTED; missing legacy fields remain UNVERIFIED.
+    - OpenCode remains ADVISORY and the parsed Shell subset is not described as a process sandbox.
 
 matrix:
-  - boundary: Stable release readiness and stable install contract
-    reason: Existing version-tag policy and manual workflow must remain exact-candidate, read-only, and unable to authorize release writes.
+  - boundary: Version-bound unsupported-effect evidence and compatibility
+    reason: Host acceptance must record unsupported effects without overstating the native guard or breaking existing local reports.
     checks:
       static_lint:
         applicable: true
         evidence: "PASS: full repository validator and exact-candidate Integration Gate."
       unit:
         applicable: true
-        evidence: "PASS: version_policy_lifecycle.py covers exact SHA/version, changelog, mismatched tag, and no-tag-write cases."
+        evidence: "PASS: Plan27 lifecycle covers exact-host acceptance, explicit unsupported effects, malformed data, and legacy reports without unsupported-effect claims."
       integration:
         applicable: true
-        evidence: "PASS: release_channel_lifecycle.py covers fail-closed stable install, explicit main install, and verified stable install."
+        evidence: "PASS: OpenCode integration contract and native acceptance procedure preserve exact version/platform/source binding and advisory limits."
       contract:
         applicable: true
-        evidence: "PASS: release readiness workflow retains workflow_dispatch and contents: read, with no tag/release write."
+        evidence: "PASS: Scenario 235 and scenario_coverage.yaml bind exact-host acceptance and unsupported-effect status."
       e2e:
-        applicable: false
-        na_reason: The readiness workflow is manual and read-only; live release publication is explicitly outside scope.
+        applicable: true
+        evidence: "PASS: OpenCode v2.0.24 native loopback acceptance delivered Context and exercised native permission ALLOW/DENY plus creative admission/revocation; no production inference claimed."
       security:
         applicable: true
-        evidence: "PASS: workflow write permissions remain absent; exact-candidate secret scanning runs in the Integration Gate."
-      migration_recovery:
-        applicable: false
-        na_reason: No persistent schema or migration changes; installed-update recovery is covered by the next boundary.
-      cli_harness:
-        applicable: true
-        evidence: "PASS: stable install/update behavior is exercised by existing installer and preflight lifecycles."
-      docs_schema:
-        applicable: true
-        evidence: "PASS: Scenario 214 and scenario_coverage.yaml bind readiness and installer/update evidence."
-  - boundary: Main-channel update and rejected-divergence recovery
-    reason: Preflight must fast-forward a clean install and leave the exact installed commit/version unchanged when remote history diverges.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: "PASS: focused lifecycle is executed by the full repository validator."
-      unit:
-        applicable: true
-        evidence: "PASS: install_preflight_lifecycle.py asserts the installed SHA and VERSION stay unchanged after stable no-tag and divergent-update refusal."
-      integration:
-        applicable: true
-        evidence: "PASS: install_preflight_lifecycle.py exercises local source/updater Git repositories, exact fast-forward behavior, and stable update refusal without a verified tag."
-      contract:
-        applicable: true
-        evidence: "PASS: Scenario 214 and evidence mapping cover clean update and divergence refusal."
-      e2e:
-        applicable: false
-        na_reason: CLI lifecycle uses isolated local Git fixtures; no browser or external provider is involved.
-      security:
-        applicable: true
-        evidence: "PASS: rejected divergent history performs no merge, rebase, rollback, or install-state mutation."
+        evidence: "PASS: exact-host report explicitly marks arbitrary Shell, MCP/custom-tool and out-of-process effects UNSUPPORTED; no enforcement expansion."
       migration_recovery:
         applicable: true
-        evidence: "PASS: stable no-tag and divergent-update lifecycles check the installed revision and version are preserved after failure."
+        evidence: "PASS: older schema-v1 reports remain readable and missing unsupported_effects resolves to UNVERIFIED."
       cli_harness:
         applicable: true
-        evidence: "PASS: install_preflight_lifecycle.py executes the real AIPS CLI updater and preflight entrypoints."
+        evidence: "PASS: native acceptance writes a version/platform/source-bound report; projection validates allowed effect keys and status vocabulary."
       docs_schema:
         applicable: true
-        evidence: "PASS: scenario 214 and scenario_coverage.yaml are reconciled; full Gate checks documentation closure."
-  - boundary: Scenario and optimization-series tracking
-    reason: The canonical Scenario and approved Plan29 table must reflect the tested release-readiness status and evidence sources.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: "PASS: full repository validator."
-      unit:
-        applicable: true
-        evidence: "PASS: scenario coverage validator requires the registered evidence paths."
-      integration:
-        applicable: true
-        evidence: "PASS: complete scenario conformance and repository validation."
-      contract:
-        applicable: true
-        evidence: "PASS: exact scenario-to-evidence mapping and proposal status are validated in the candidate Gate."
-      e2e:
-        applicable: false
-        na_reason: This boundary is documentation and registry data validated deterministically.
-      security:
-        applicable: true
-        evidence: "PASS: no credentials or personal data are added; candidate secret/content scan remains required."
-      migration_recovery:
-        applicable: false
-        na_reason: Scenario registry and planning table do not introduce persistent runtime state.
-      cli_harness:
-        applicable: false
-        na_reason: CLI behavior is independently exercised by the update lifecycle boundary.
-      docs_schema:
-        applicable: true
-        evidence: "PASS: proposal table and canonical scenario text are validated by full repository validation and docs placement checks."
+        evidence: "PASS: Scenario 235, compatibility docs and Plan29 status describe tested and unsupported effects."
 
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true

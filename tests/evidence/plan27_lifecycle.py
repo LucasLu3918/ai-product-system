@@ -108,11 +108,22 @@ def main() -> int:
                       "acceptance_sha256": hashlib.sha256((ROOT / "tests/evidence/opencode_native_acceptance.py").read_bytes()).hexdigest(),
                       "runtime_source_sha256": opencode_skill_projection.native_source_digest(),
                       "checks": {"context_delivery": "VERIFIED", "permission_hook_execution": "VERIFIED", "creative_prepare": "VERIFIED_NATIVE_HOST",
-                                 "admission_revocation": "VERIFIED_NATIVE_HOST", "l3_external_actions": "UNVERIFIED", "session_cancel": "UNVERIFIED", "instruction_model_delivery": "UNVERIFIED"}}
+                                 "admission_revocation": "VERIFIED_NATIVE_HOST", "l3_external_actions": "UNVERIFIED", "session_cancel": "UNVERIFIED", "instruction_model_delivery": "UNVERIFIED"},
+                      "unsupported_effects": {"arbitrary_shell_process_effects": "UNSUPPORTED", "mcp_custom_tool_effects": "UNSUPPORTED", "out_of_process_writes": "UNSUPPORTED"}}
             path = opencode_skill_projection.state_root() / "native-acceptance.json"
             path.parent.mkdir(parents=True)
             path.write_text(json.dumps(report))
-            assert opencode_skill_projection.native_acceptance("2.0.24")["status"] == "RECORDED"
+            accepted = opencode_skill_projection.native_acceptance("2.0.24")
+            assert accepted["status"] == "RECORDED"
+            assert set(accepted["unsupported_effects"].values()) == {"UNSUPPORTED"}
+            report["unsupported_effects"]["mcp_custom_tool_effects"] = "VERIFIED"
+            path.write_text(json.dumps(report))
+            assert opencode_skill_projection.native_acceptance("2.0.24")["reason_code"] == "acceptance_invalid", "unsupported effects must not be reported as verified"
+            report["unsupported_effects"]["mcp_custom_tool_effects"] = "UNSUPPORTED"
+            report.pop("unsupported_effects")
+            path.write_text(json.dumps(report))
+            assert set(opencode_skill_projection.native_acceptance("2.0.24")["unsupported_effects"].values()) == {"UNVERIFIED"}, "legacy reports must not imply unsupported-effect coverage"
+            report["unsupported_effects"] = {"arbitrary_shell_process_effects": "UNSUPPORTED", "mcp_custom_tool_effects": "UNSUPPORTED", "out_of_process_writes": "UNSUPPORTED"}
             assert opencode_skill_projection.native_acceptance("2.0.25")["reason_code"] == "acceptance_stale"
             report["checks"]["permission_hook_execution"] = "FAIL"
             path.write_text(json.dumps(report))

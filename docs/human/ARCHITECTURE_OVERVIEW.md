@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+OpenCode 安裝、Host 能力發現與版本綁定的原生驗收是不同證據。驗收報告明確列出任意 Shell 子程序、MCP／自訂工具及程式外寫入不受 guard 支援；整體治理仍為 ADVISORY。
+
 Creative prompt compiler 與共用錯誤類別屬於既有 Python executor 的內部模組；`creative_execution` 相容 facade 保留原有呼叫與輸出，不新增 OpenCode 權限或工具簽名。
 
 OpenCode 的 local creative tool 有獨立 `review-assist` action grant，綁定目前 Session root；它只授權本機視覺建議，不能改變 Human review 或 user acceptance。
@@ -117,6 +119,8 @@ repository_id
 EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才使用 project-local .ai/。
 
 ## Creative Workflow
+
+OpenCode 原生驗收只驗證主機整合，不代表創作執行或視覺品質；任意 Shell、MCP／自訂工具及程式外寫入仍不受 guard 支援。
 
 創作修正流程在既有 executor 下新增逐項機器證據與版本化 lineage。交付數、生成嘗試數、修正次數分開；明確 opt-in 循環受兩次修正及共同時間上限限制，判斷不明或重複缺陷則停下並提供下一步。
 
@@ -333,6 +337,8 @@ Runtime Policy Enforcement 使用四種結果：`ALLOW`、`DENY`、`REQUIRE_APPR
 Validation Observation keeps evidence readiness separate from operational failure: a completed `NOT_READY` cohort does not fail collection, while API, artifact, missing-report and unknown-status errors remain failures. Dependency Review records exact-candidate shadow parity; the standalone high-severity check remains authoritative until a separate reviewed switch after the observation window.
 
 ## Scenario Conformance 與 Agent Eval
+
+Scenario 235 的 OpenCode 原生驗收綁定確切版本、平台與來源摘要；成功的 Hook 證據不代表 production model quality 或 Agent task outcome。
 
 創作修正流程在既有 executor 下新增逐項機器證據與版本化 lineage。交付數、生成嘗試數、修正次數分開；明確 opt-in 循環受兩次修正及共同時間上限限制，判斷不明或重複缺陷則停下並提供下一步。
 

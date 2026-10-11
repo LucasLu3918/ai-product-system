@@ -430,6 +430,11 @@ def main() -> None:
                                    'creative_prepare': 'VERIFIED_NATIVE_HOST', 'admission_revocation': 'VERIFIED_NATIVE_HOST',
                                    'l3_external_actions': 'UNVERIFIED', 'session_cancel': 'UNVERIFIED',
                                    'instruction_model_delivery': 'UNVERIFIED'},
+                        'unsupported_effects': {
+                            'arbitrary_shell_process_effects': 'UNSUPPORTED',
+                            'mcp_custom_tool_effects': 'UNSUPPORTED',
+                            'out_of_process_writes': 'UNSUPPORTED',
+                        },
                     }
                     args.output.parent.mkdir(parents=True, exist_ok=True)
                     args.output.write_text(json.dumps(report, sort_keys=True, indent=2) + '\n')
