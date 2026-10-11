@@ -55,6 +55,8 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+Writing Fragments → Beats → Shape is a separate opt-in workflow. It is used only when a user explicitly requests the staged writing method and does not change creative asset generation or review authority.
+
 Keep unfinished concepts and masters in the development workspace; use a separate clean candidate for publication planning. Delivery manifests record path, use, SHA-256, size, license and deployment source; validate compressed playback assets and LFS retrieval in the actual deployment before choosing storage.
 
 OpenCode native acceptance can verify Context and supported file-hook behavior for one exact host. It does not evaluate generated-image quality or user acceptance, and does not cover arbitrary Shell, MCP/custom tools or out-of-process writes.

@@ -1758,6 +1758,8 @@ The synthetic multi-item lifecycle verifies per-item preflight, continue-on-fail
 
 Benchmark v2 records the registered three-archetype by six-case coverage matrix, confines and hash-binds completed raster outputs, and reports model, check and compiler failures separately. The lifecycle also checks legacy v1 readability, Human review and user-acceptance separation, and bounded privacy-safe failure evidence. Synthetic fixtures establish schema and path contracts only; real inference, visual quality and acceptance remain unverified until observed independently.
 
+The Skill integration adds a separate manual Scenario 259; it does not change creative quality evidence or imply writing model quality.
+
 ## Scenario 236 — Local Creative Bundle Execution
 
 Scenario 240 的 `tests/test_publication_planning.py` 覆蓋 worktree 綁定、精確 SHA/ref、舊指紋拒絕、Host denial、PR 重用與 squash merge 恢復；fixture 不等於真實 Host 或 REST 驗收。
@@ -1766,6 +1768,10 @@ The existing OpenCode integration lifecycle also verifies hash-bound asset impor
 
 
 The cross-profile quality evidence extension is covered by Scenario 258; this creative execution scenario continues to distinguish generated artifacts, image checks, Human review and user acceptance.
+
+## Scenario 259 — Matt Pocock Skill Integration and Explorer
+
+The generated Skill Explorer presents all 48 canonical AIPS Skills and the complete disposition of the 38 upstream Skills pinned to the reviewed commit. Writing workflow Skills remain explicit-request-only; untested Beta items remain excluded. Deterministic inventory and output contracts are checked by `tests/validation/skill_catalog_contracts.py`; semantic routing acceptance remains manual.
 
 創作修正回歸以原始「重出一張哈利」對話、否定／分析指令、重播／並行額度、必要特徵錯置、來源漂移、版本比較與時間／次數停損為準。`creative_repair_lifecycle.py` 與 native tool fixture 是 synthetic evidence；真實生成及 host acceptance 分列。
 

@@ -32,3 +32,8 @@ Use this skill for code-level defects. For an active service incident, load inci
 ## Output
 
 Report reproduction steps, the verified root cause and evidence, the correction, regression coverage, and remaining uncertainty. Never delete, skip, or weaken a test merely to obtain a passing result.
+## Tight feedback loops
+
+Build the quickest repeatable check that fails on the reported symptom before forming a root-cause claim. Reduce the case until each remaining input is necessary. List falsifiable explanations, then run the smallest experiment that separates them. Redact credentials and private payloads from captured output. Add the regression assertion at a seam that reproduces the real failure path, and report uncertainty when the available loop cannot exercise it.
+
+Source note: adapted from mattpocock/skills engineering/diagnosing-bugs at 49dd158d1076134a641b33efb035946536778336 (MIT); see licenses/MIT-Matt-Pocock-Skills.txt.

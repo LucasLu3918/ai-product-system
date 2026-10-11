@@ -14,6 +14,7 @@ export default defineConfig({
     nav: [
       { text: '開始使用', link: '/GETTING_STARTED' },
       { text: '使用指南', link: '/USER_GUIDE' },
+      { text: 'Skill Explorer', link: '/skill-catalog.html' },
       { text: '架構', link: '/ARCHITECTURE_OVERVIEW' },
       { text: 'System Reference', link: '/SYSTEM_REFERENCE' },
       { text: 'Technology', link: '/TECHNOLOGY_GUIDE' }
@@ -23,7 +24,7 @@ export default defineConfig({
         { text: '總覽', link: '/' }, { text: '快速上手', link: '/GETTING_STARTED' }, { text: '安裝 / 更新 / 解除', link: '/INSTALLATION' }
       ]},
       { text: '使用 AIPS', items: [
-        { text: '使用指南', link: '/USER_GUIDE' }, { text: 'Global Harness / MCP', link: '/HARNESS' }, { text: 'Project Intelligence', link: '/PROJECT_INTELLIGENCE' }, { text: 'Security Assurance', link: '/SECURITY_ASSURANCE' }
+        { text: '使用指南', link: '/USER_GUIDE' }, { text: 'Skill Explorer', link: '/skill-catalog.html' }, { text: 'Global Harness / MCP', link: '/HARNESS' }, { text: 'Project Intelligence', link: '/PROJECT_INTELLIGENCE' }, { text: 'Security Assurance', link: '/SECURITY_ASSURANCE' }
       ]},
       { text: '架構與技術', items: [
         { text: '系統架構', link: '/ARCHITECTURE_OVERVIEW' }, { text: 'System Reference', link: '/SYSTEM_REFERENCE' }, { text: 'Technology Guide', link: '/TECHNOLOGY_GUIDE' }, { text: 'Evolution Radar', link: '/EVOLUTION_RADAR' }, { text: 'Evolution 流程圖解', link: '/EVOLUTION_RADAR_OVERVIEW' }

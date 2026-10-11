@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+新增 Skill 或改動 routing 時，同步更新 generated Skill Explorer、文件 placement/sync 規則、Scenario 259 與相關 Human/Agent 章節；使用 `scripts/skill_catalog.py` 重建頁面。
+
 發布恢復使用 `aips publish prepare` 重新觀察目前候選與 live GitHub 狀態；既有 OPEN PR 不再建立，CLOSED/歧義 PR 停止，MERGED 必須驗證 exact PR head 與 merge commit 已納入 live base。觀察只由呼叫者選擇保存，不儲存 prompt、body 內容或憑證。
 
 The creative workspace import flow is covered in the User Guide and canonical creative protocol, with the CLI and lifecycle paths reconciled.
@@ -481,6 +483,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+Skill registry changes run the catalog contract and regenerate `docs/human/skill-catalog.html`; Scenario 259 keeps source dispositions, optional Writing triggers and manual routing acceptance visible.
 
 The creative quality benchmark lifecycle validates dataset coverage, bounded failure stages, legacy evidence compatibility, and Human review/acceptance separation. Its synthetic artifacts do not count as real local model inference or visual-quality evidence.
 

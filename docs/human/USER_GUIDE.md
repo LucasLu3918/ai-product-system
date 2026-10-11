@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+上游 Writing Fragments → Beats → Shape 是獨立的明確選用流程，不會因一般寫作或創意工作自動套用；完整 Skill 狀態可在 [Skill Explorer](./skill-catalog.html) 查看。
+
 發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。
 
 To bring an existing image or SVG into a creative workspace, use `aips creative import-candidate` to review a source hash and absent destination, then `aips creative import --candidate FILE --accept-hash SHA256` to revalidate and create the exact file without overwrite.
@@ -223,6 +225,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 
 ## Roles、Skills 與重用
 
+使用 [Skill Explorer](./skill-catalog.html) 依名稱、用途或分類搜尋 48 個目前可用的 AIPS Skills，並複製提示範例。Explorer 也列出 Matt Pocock 上游 38 項 Skill 的 AIPS 處置；這些紀錄不代表未採納項目已啟用。Writing Fragments、Beats、Shape 只在你明確要求該流程時使用。
+
 
 新增能力前依序檢查：
 
@@ -322,6 +326,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+Skill Explorer 可搜尋可用的 AIPS 任務方法；上游方法的採納狀態與選用條件以卡片標示，Writing workflow 仍須明確指定。
 
 Plan29 #6 is reviewed as a scoped Core Change: its exact source and destination checks, direct lifecycle evidence, and candidate matrix are reviewed before the PR Gate.
 

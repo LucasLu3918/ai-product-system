@@ -28,3 +28,8 @@ For substantial products:
 - include TCO/operations implications when they affect the plan.
 
 Do not redo product discovery unless a blocking gap prevents planning.
+## Vertical slices and dependency maps
+
+When a plan spans multiple deliverables, break it into user-visible vertical slices with explicit blocking dependencies, verification evidence and requirement traceability. Keep each ticket independently reviewable where practical; identify integration points and assumptions before parallel work. Create or update external tracker records only when the user explicitly authorized that write.
+
+Source note: adapted from mattpocock/skills engineering/to-tickets and engineering/implement-spec at 49dd158d1076134a641b33efb035946536778336 (MIT); see licenses/MIT-Matt-Pocock-Skills.txt.
