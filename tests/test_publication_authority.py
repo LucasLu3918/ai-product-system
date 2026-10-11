@@ -113,6 +113,11 @@ class PublicationTest(unittest.TestCase):
         self.assertEqual(observed['candidate_commit'], self.head)
         self.assertEqual(observed['target_ref'], 'refs/heads/codex/test')
 
+        self.run_git(self.repo, 'switch', '-c', 'feat/checked-prefix')
+        feat_command = ['git', 'push', 'origin', self.head + ':refs/heads/feat/checked-prefix']
+        feat_observed = auth.validate_personal_action(self.repo, 'git_push', feat_command)
+        self.assertEqual(feat_observed['target_ref'], 'refs/heads/feat/checked-prefix')
+
         self.run_git(self.repo, 'remote', 'add', 'exfil', str(self.remote))
         with self.assertRaisesRegex(auth.PublicationError, 'verified single origin'):
             auth.validate_personal_action(
@@ -388,6 +393,27 @@ class PublicationTest(unittest.TestCase):
         (self.repo / 'file.txt').write_text('api_key=' + 'A1b2C3d4E5f6G7h8I9j0K1l2')
         self.run_git(self.repo, 'add', 'file.txt')
         self.assertEqual(guard.commit_safety(self.repo, command)['decision'], 'BLOCK')
+        original_run = subprocess.run
+
+        def unavailable_blob(argv, **kwargs):
+            if argv[:2] == ['git', 'show']:
+                return subprocess.CompletedProcess(argv, 1, b'', b'private path detail')
+            return original_run(argv, **kwargs)
+
+        with patch('governance_guard.subprocess.run', side_effect=unavailable_blob), \
+                self.assertRaises(auth.PublicationError) as unavailable:
+            guard.commit_safety(self.repo, command)
+        self.assertEqual(unavailable.exception.reason_code, 'STAGED_CONTENT_UNAVAILABLE')
+
+        def oversized_blob(argv, **kwargs):
+            if argv[:2] == ['git', 'show']:
+                return subprocess.CompletedProcess(argv, 0, b'x' * (8 * 1024 * 1024 + 1), b'')
+            return original_run(argv, **kwargs)
+
+        with patch('governance_guard.subprocess.run', side_effect=oversized_blob), \
+                self.assertRaises(auth.PublicationError) as oversized:
+            guard.commit_safety(self.repo, command)
+        self.assertEqual(oversized.exception.reason_code, 'STAGED_CONTENT_TOO_LARGE')
         with self.assertRaises(auth.PublicationError):
             guard.commit_safety(self.repo, 'git commit -a -m candidate')
         for dynamic in ['git commit -m "$MSG"', "git commit -m $'encoded\\x41message'", 'git commit -F ~/message',
@@ -446,9 +472,15 @@ class PublicationTest(unittest.TestCase):
                 patch('publication_authority.run', side_effect=observe), \
                 patch('publication_authority.subprocess.run', side_effect=observe_checks):
             self.assertEqual(auth.action(self.repo, 'gh_pr_merge', merge, self.base)['target_ref'], 'refs/heads/main')
+            self.assertTrue(auth.action(self.repo, 'gh_pr_merge', merge + ['--auto'], self.base)['merge_confirmation']['auto_merge'])
             for flag in ['-d', '--auto=true', '--admin=true', '--delete-branch=true']:
                 with self.assertRaises(auth.PublicationError):
                     auth.action(self.repo, 'gh_pr_merge', merge + [flag], self.base)
+
+            with patch('publication_authority.subprocess.run', side_effect=lambda argv, **kwargs:
+                       subprocess.CompletedProcess(argv, 0, '[]', '') if argv[:3] == ['gh', 'pr', 'checks']
+                       else observe_checks(argv, **kwargs)), self.assertRaisesRegex(auth.PublicationError, 'missing or not all passing'):
+                auth.action(self.repo, 'gh_pr_merge', merge + ['--auto'], self.base)
         self.run_git(self.repo, 'tag', 'v1')
         release = ['gh', 'release', 'create', 'v1', '--repo', 'owner/project', '--verify-tag']
         with patch('publication_authority._tip', return_value=self.head):

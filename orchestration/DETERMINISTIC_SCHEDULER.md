@@ -238,6 +238,8 @@ Execution IDs and runtime attestation are produced by the execution runtime and 
 - Release readiness also fails closed when `CHANGELOG.md` is unavailable or its canonical `## Unreleased` section is missing, duplicated, malformed, or non-empty; the check remains read-only.
 ## Validation de-duplication boundary
 
+GitHub auto-merge planning is not Scheduler execution: `aips publish prepare --auto-merge` binds the exact PR head and passing required checks, while native Human authorization remains a separate boundary.
+
 Timing summaries use complete same-candidate records, group by change class and deduplicate reruns. The observation/graduation policy still controls cohort readiness; P50/P95 alone cannot enable selective validation.
 
 Shared path classification supplies safe root/prefix inventory only. CI dependency planning and validator selection retain independent risk rules, and unknown or malformed paths preserve full-validation behavior.

@@ -61,7 +61,7 @@ def _invocation(root: Path, operation: str, argv: list[str]) -> dict[str, Any]:
 
 def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'codex',
             expected_fingerprint: str | None = None, host_denied: bool = False,
-            merge_intent: bool = False) -> dict[str, Any]:
+            merge_intent: bool = False, auto_merge: bool = False) -> dict[str, Any]:
     """Re-observe Git/PR state each time; no cached step, grant or permission is trusted."""
     result: dict[str, Any] = {'version': 1, 'status': 'BLOCKED', 'authorized': False,
                               'diagnostics': [], 'invocations': [], 'host_permission': 'UNKNOWN',
@@ -69,6 +69,9 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
     if host_denied:
         result['host_permission'] = 'DENIED'
         result['diagnostics'] = [diagnostic('HOST_PERMISSION_DENIED')]
+        return result
+    if auto_merge and not merge_intent:
+        result['diagnostics'] = [diagnostic('AUTO_MERGE_REQUIRES_INTENT')]
         return result
     try:
         root = worktree.expanduser().resolve(strict=True)
@@ -134,6 +137,7 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
             'remote_digest': authority.digest(remote_url), 'remote_head': remote_head,
             'diff_digest': scope['diff_digest'], 'policy_digest': policy_hash,
             'prs': prs, 'runtime': runtime, 'merge_intent': merge_intent,
+            'auto_merge': auto_merge,
             'title_digest': authority.digest(title), 'body_digest': authority.digest(body_bytes.hex()),
             'body_file': str(body_file),
         }
@@ -162,6 +166,8 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
                     raise authority.PublicationError('no enabled merge method', 'PR_STATE_AMBIGUOUS')
                 argv = ['gh', 'pr', 'merge', str(row['number']), '--repo', repo,
                         '--' + method, '--match-head-commit', head]
+                if auto_merge:
+                    argv.append('--auto')
                 authority.action(root, 'gh_pr_merge', argv, base, personal=mode == 'personal')
                 result['invocations'] = [_invocation(root, 'gh_pr_merge', argv)]
                 result['next_step'] = 'NATIVE_MERGE_CONFIRMATION' if runtime in {'claude-code', 'gemini-cli'} else 'TASK_AUTHORIZED_MERGE'

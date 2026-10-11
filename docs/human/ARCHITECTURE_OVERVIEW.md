@@ -322,6 +322,8 @@ Git Publish Guard 現在區分 Agent PENDING proposal 與外部 Human-issued Ed2
 
 Claude/Gemini publication hook 以既有 Bash AST 遞迴辨識參數與 unquoted heredoc 中的命令替換，不執行替換。Dynamic executable／subcommand／Git context 與 publication scope 仍需明確可驗證；Hook 的解析能力不新增 approval 或 merge authority。
 
+`feat/` is an accepted personal engineering branch prefix. Automatic PR merge remains bound to the exact head and a non-empty set of passing required checks; native Human authorization still applies.
+
 Optional creative vision review is confined to an installed local model over loopback and cannot update Human review or user-acceptance state.
 
 Creative prompt admission 是獨立授權邊界：每次回覆必須以目前 Session、root、動作與剩餘輸出數重新核准；原始歷史提示和 transcript 不得作為授權依據。
@@ -388,6 +390,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 ## Maintenance governance
 
 Publication planning 按需擴充既有 preflight：觀察 worktree identity、精確候選、live base 與 PR，再交回原生工具。Claude/Gemini 保留 native per-call merge confirmation；Codex 仍為 ADVISORY，OpenCode 不宣稱支援通用 Shell 發布攔截。
+
+The `aips publish prepare --auto-merge` option requests exact-head GitHub auto-merge only after non-empty required checks pass. It does not replace Claude/Gemini native confirmation.
 
 Plan29 #6 records its approved scoped Change Impact and exact Core Change Test Matrix alongside the implementation PR.
 

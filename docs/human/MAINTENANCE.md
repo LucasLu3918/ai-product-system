@@ -273,6 +273,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+`aips publish prepare --auto-merge` 僅規劃 exact-head GitHub auto-merge，並要求 non-empty passing required checks；既有 native Human confirmation 與 GitHub 後續要求仍適用。
+
 OpenCode adapter changes must preserve version/platform/source binding in native acceptance. Review unsupported Shell, MCP/custom-tool and out-of-process effects as explicit limitations; keep missing legacy evidence UNVERIFIED and overall governance ADVISORY.
 
 Personal-mode PR merge validation binds the per-call confirmation to the exact candidate head and required-check result; completed review evidence does not substitute for that confirmation.

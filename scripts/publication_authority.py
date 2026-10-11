@@ -24,7 +24,7 @@ import yaml
 CONFIG = Path('/etc/aips/publication-authority.yaml')
 PUBLICATION_OPERATIONS = {'git_push', 'git_tag', 'gh_pr_create', 'gh_pr_merge', 'gh_release_create'}
 PERSONAL_PUBLICATION_OPERATIONS = {'git_push', 'gh_pr_create', 'gh_pr_merge'}
-PERSONAL_BRANCH_PREFIXES = ('agent/', 'bugfix/', 'chore/', 'claude/', 'codex/', 'docs/', 'feature/', 'fix/', 'gemini/', 'work/')
+PERSONAL_BRANCH_PREFIXES = ('agent/', 'bugfix/', 'chore/', 'claude/', 'codex/', 'docs/', 'feat/', 'feature/', 'fix/', 'gemini/', 'work/')
 
 
 class PublicationError(ValueError):
@@ -56,6 +56,10 @@ PUBLICATION_DIAGNOSTICS = {
     'REMOTE_OBSERVATION_FAILED': ('Required repository or remote evidence is unavailable.', 'Diagnose network, authentication and repository configuration without printing raw errors.'),
     'CANDIDATE_CHANGED': ('Candidate or publication inputs changed after planning.', 'Discard the previous observation and create a fresh plan; reissue grants when required.'),
     'PR_STATE_AMBIGUOUS': ('PR state is ambiguous or stale.', 'Review matching PRs and remote head before continuing; do not create duplicate PRs.'),
+    'STAGED_CONTENT_UNAVAILABLE': ('A staged file could not be read for content inspection.', 'Check the staged index and file availability, then restage and retry.'),
+    'STAGED_CONTENT_TOO_LARGE': ('A staged file exceeds the content inspection limit.', 'Split or remove the oversized staged file, then retry.'),
+    'CONTENT_INSPECTION_UNAVAILABLE': ('The content inspection step could not complete.', 'Check the local scanner and Git state, then retry without bypassing the guard.'),
+    'AUTO_MERGE_REQUIRES_INTENT': ('Automatic merge planning requires explicit merge intent.', 'Re-run prepare with --merge-intent or --auto-merge only after reviewing the exact candidate.'),
 }
 
 
@@ -279,6 +283,8 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
             position = 4
             if sum(flag in argv for flag in switches) != 1:
                 raise PublicationError('exactly one explicit merge method required')
+            if argv.count('--auto') > 1:
+                raise PublicationError('duplicate automatic merge option is unsupported')
         else:
             valued = {'--repo', '--title', '--notes', '--notes-file'}
             switches = {'--verify-tag', '--draft', '--prerelease'}
@@ -292,6 +298,8 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
                     raise PublicationError('missing explicit option value')
                 position += 2
             elif flag in switches:
+                position += 1
+            elif operation == 'gh_pr_merge' and flag == '--auto':
                 position += 1
             else:
                 raise PublicationError('unsupported or ambiguous GitHub publication option')
@@ -311,8 +319,8 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
             if _tip(root, remote, 'refs/heads/' + result['branch']) != head:
                 raise PublicationError('remote PR head differs from candidate')
         elif operation == 'gh_pr_merge':
-            if len(argv) < 4 or not argv[3].isdigit() or any(flag in argv for flag in ['--auto', '--admin', '--delete-branch']):
-                raise PublicationError('explicit PR number and immediate checked merge required')
+            if len(argv) < 4 or not argv[3].isdigit() or any(flag in argv for flag in ['--admin', '--delete-branch']):
+                raise PublicationError('explicit PR number and checked merge required')
             if _option(argv, '--match-head-commit') != head:
                 raise PublicationError('merge must pin the exact candidate SHA')
             pr = json.loads(run(root, 'gh', 'pr', 'view', argv[3], '--repo', repo, '--json',
@@ -340,10 +348,11 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
                 required_checks = json.loads(checks.stdout)
             except json.JSONDecodeError as exc:
                 raise PublicationError('required PR check status unavailable') from exc
-            if not isinstance(required_checks, list) or any(
+            if not isinstance(required_checks, list) or not required_checks or any(
                     not isinstance(item, dict) or item.get('bucket') not in {'pass', 'skipping'}
+                    or not isinstance(item.get('name'), str) or not item.get('name')
                     for item in required_checks):
-                raise PublicationError('required PR checks are not all passing')
+                raise PublicationError('required PR checks are missing or not all passing')
             result['merge_confirmation'] = {
                 'pr_number': int(argv[3]),
                 'pr_url': pr['url'],
@@ -351,6 +360,7 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
                 'base_branch': pr['baseRefName'],
                 'base_sha': pr['baseRefOid'],
                 'required_checks': sorted(item.get('name', 'unnamed') for item in required_checks),
+                'auto_merge': '--auto' in argv,
             }
         else:
             if len(argv) < 4 or argv[3].startswith('-'):

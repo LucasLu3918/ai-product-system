@@ -51,6 +51,8 @@ For fixed-system-context or protocol-routing changes, verify every supported tas
 
 Before implementation, start from `templates/review/CORE_CHANGE_TEST_MATRIX.yaml` and maintain the active candidate at `.aips/review/CORE_CHANGE_TEST_MATRIX.yaml`.
 
+Publication guard changes cover staged-content inspection failure codes, allowlisted branch prefixes, exact-head `--auto` parsing, empty/pending/failing required-check rejection, and unchanged native Human authorization.
+
 Assess each materially affected boundary against applicable evidence:
 
 - static / lint / type checks;
