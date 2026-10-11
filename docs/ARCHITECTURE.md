@@ -4,6 +4,9 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+Creative workspace import is a local flow: review a private source-hash candidate, then explicitly create the exact absent target in a non-Git workspace.
+
+
 After a local creative trial, the read-only quality benchmark validates registered profile-case coverage and raster hashes. It records model, check and compiler failures separately from Human review, user acceptance and runtime attestation; it adds no runtime provider or authorization path.
 
 The OpenCode adapter reports exact-host acceptance separately from installation and static capability discovery. Its version/platform/source-bound report records arbitrary Shell process effects, MCP/custom-tool effects, and out-of-process writes as unsupported; this does not change the adapter's advisory governance boundary.

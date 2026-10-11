@@ -52,6 +52,9 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+Plan29 #6 evaluates the workspace transfer contract through exact source hashes, create-only destination checks, and direct CLI lifecycle evidence.
+
+
 創作改善成效以缺陷被發現、修正成功、重複缺陷停損、實際嘗試數與使用者驗收作分開觀察。機器 MATCH 或 fixture PASS 不等於真實模型品質改善；未量測指標保留 UNKNOWN。
 
 Repository-ruleset maintenance records policy and validation evidence; it does not grant publication. The general personal/high-assurance publication contract and its origin-trust limitation are documented in Security Assurance.

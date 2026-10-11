@@ -72,6 +72,9 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+The local creative CLI supports `import-candidate` followed by explicit `import --accept-hash`; it rechecks source bytes and refuses existing destinations.
+
+
 OpenCode's bounded Shell command policy does not sandbox arbitrary subprocess effects. Acceptance records MCP/custom-tool effects and out-of-process writes as unsupported.
 
 創作修正重用 `creative_execution` 與 `creative_repair`：`feedback` 記錄缺陷、`repair` 複製版本化 Profiles／Bundle、`compare` 提供 hash-bound 前後對照、`quality-check` 以本地 vision 檢查整體及四個細節裁切。Pillow 12.3.0 是固定影像解碼依賴。
@@ -230,6 +233,9 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+The OpenCode integration lifecycle exercises candidate tampering, source drift, path and symlink rejection, destination races, cache privacy, and end-to-end CLI dispatch.
+
 
 OpenCode host acceptance verifies runtime integration only; it does not measure generated-image quality, production model quality or real-task outcomes.
 

@@ -86,6 +86,9 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+Creative workspace asset import is described in USER_GUIDE.md and governed by orchestration/CREATIVE_DIRECTION.md.
+
+
 Cross-profile creative quality evidence is defined by the registered dataset and benchmark template, implemented by `scripts/creative_quality_benchmark.py`, and verified by Scenario 258. Human usage and technical boundaries are described in USER_GUIDE and TECHNOLOGY_GUIDE.
 
 OpenCode host compatibility and unsupported effects: Harness, Installation, Technology Guide, and Scenario 235. Canonical Agent behavior is in harness/adapters/opencode/AGENTS.md and harness/adapters/opencode/COMPATIBILITY.md.

@@ -213,6 +213,9 @@ Review actual:
 
 ## Release Security Gate
 
+Creative asset transfer requires an exact source SHA-256, a non-Git destination, and a create-only target; candidate metadata is private and excludes asset bytes.
+
+
 Branch lifecycle reports consume read-only GitHub PR metadata and exact remote SHAs. They expose evidence and conservative dispositions but cannot merge, rebase, close PRs, delete refs, or authorize a cleanup manifest.
 
 自動創作修正只能使用目前使用者明確授予的有限範圍：原角色、指定缺陷、本地已安裝引擎、新版本輸出。vision findings 沒有生成授權；機器 MATCH 不能寫成 Human PASS 或 user acceptance。來源漂移、否定、重播與並行額度列為負向測試。

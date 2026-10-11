@@ -4,6 +4,9 @@ Runtime Context is the bounded, deterministic view of the active AIPS runtime, t
 
 ## Interpreter resolution
 
+The creative import subcommands use the existing AIPS CLI Python selection and revalidate the exact source file before copying.
+
+
 Publication shell classification uses pinned bashlex and signature verification uses pinned cryptography in the runtime. Missing parser or trust configuration returns a normal fail-closed Hook envelope; no environment-provided signing root is accepted.
 
 Explicit validation Python/venv selection cannot silently fall back. Verify coverage, Hypothesis, mandatory JSON Schema and pip consistency before full validation; telemetry requires loopback even without browser. Child executors preserve HOME/credential lookup while removing inherited plan/import overrides and binding PATH to the selected Python.

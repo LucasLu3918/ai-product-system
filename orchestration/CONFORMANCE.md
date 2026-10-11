@@ -55,6 +55,9 @@ Public command groups expose help with status 0 and return nonzero for unknown s
 
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
+The repository lifecycle also checks explicit asset import into a non-Git workspace with candidate and source hash revalidation.
+
+
 OpenCode host acceptance verifies adapter integration only. It does not verify local image generation, visual quality or user acceptance.
 
 Provenance keeps raster validity separate from inference and visual review.
@@ -942,6 +945,9 @@ The size audit measures tracked text/evidence files against 50,000 bytes and rep
 
 
 ## Scenarios 202–209 — Plan13 current and provenance evidence
+
+Plan29 #6 keeps its exact candidate, scoped Change Impact, and required repository Gate evidence together for review.
+
 
 Creative repair evidence separates original-prompt admission, criterion observations, finite attempts, repeated-defect stops, real local inference and native host-version acceptance. Fixture success does not establish vision accuracy or Human acceptance; unknown real-world measurements remain explicit.
 

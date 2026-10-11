@@ -108,6 +108,9 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+For creative workspace asset import, reconcile the profile, CLI dispatch, direct lifecycle, documentation, and exact seed-scoped evidence while leaving global graph coverage unchanged.
+
+
 Creative repair impact includes current prompt admission, profile/image provenance, versioned lineage, CLI/tool consumers and machine/Human decision boundaries. New defect criteria belong to copied Profiles; preparation and inference reverify source hashes without upgrading global graph completeness.
 
 For publication-policy changes, reconcile hook adapters, remote/default-branch identity, secret-scan base, merge boundary, Human guidance and exact-candidate Gate consumers. User acceptance of a documented limitation is evidence, not a grant.

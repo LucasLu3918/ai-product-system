@@ -29,6 +29,9 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+Creative asset import usage is documented in the Human User Guide and its Agent-facing workflow protocol.
+
+
 Cross-profile creative quality evidence keeps the registered dataset, Human operation guide, Technology Guide, architecture view, and Scenario 258 aligned; benchmark fixtures do not establish visual quality.
 
 OpenCode adapter documentation must keep exact-host native acceptance and its unsupported Shell/MCP/out-of-process effects synchronized across Scenario 235, Human Harness/Installation/Technology guidance, and Agent adapter rules. Missing legacy effect fields remain UNVERIFIED.
@@ -212,6 +215,9 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 
 ## Human documentation placement
+
+The import commands belong to the existing creative workflow documentation and are linked from the canonical documentation map.
+
 
 Creative quality benchmark v2 is mapped to the registered dataset, USER_GUIDE and TECHNOLOGY_GUIDE behavior, the Creative Workflow architecture section, and Scenario 258. The report is an evidence summary, not Human visual or user-acceptance approval.
 

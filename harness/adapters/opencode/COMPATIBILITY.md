@@ -18,6 +18,9 @@ The owned `plugins/aips-opencode.ts` projection is installed only for a positive
 
 ## Readiness and enforcement boundary
 
+The creative workspace import is exposed through the AIPS CLI; OpenCode native creative tools retain their separately verified action contract.
+
+
 Creative quality benchmark evidence is independent of this compatibility report and does not upgrade Host version, Context delivery or permission-action readiness.
 
 The shared publication CLI can propose/verify external signed grants. OpenCode remains ADVISORY for this Git command gate; setup or fixture receipts cannot prove native interception of every remote publication.

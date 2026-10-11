@@ -1756,6 +1756,9 @@ Benchmark v2 records the registered three-archetype by six-case coverage matrix,
 
 ## Scenario 236 — Local Creative Bundle Execution
 
+The existing OpenCode integration lifecycle also verifies hash-bound asset import, source drift rejection, destination conflicts, and the source-checkout CLI route.
+
+
 The cross-profile quality evidence extension is covered by Scenario 258; this creative execution scenario continues to distinguish generated artifacts, image checks, Human review and user acceptance.
 
 創作修正回歸以原始「重出一張哈利」對話、否定／分析指令、重播／並行額度、必要特徵錯置、來源漂移、版本比較與時間／次數停損為準。`creative_repair_lifecycle.py` 與 native tool fixture 是 synthetic evidence；真實生成及 host acceptance 分列。

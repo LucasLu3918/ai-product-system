@@ -286,6 +286,9 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+Creative asset import writes only to a confined non-Git EPHEMERAL destination and does not start a provider or generation process.
+
+
 Creative quality loops reserve bounded attempts before execution and serialize each exact source with a deadline-aware lock. They preserve separate delivery, inference and repair counts; uncertainty, repeated defects or exhaustion stops further generation. Current native Human intent remains the only execution authority.
 
 A Git worktree isolates files and branches but does not isolate credentials or the user account. Personal publication trusts its configured `origin`; use an externally protected remote identity and high-assurance trust root when same-account Agent access is in scope.

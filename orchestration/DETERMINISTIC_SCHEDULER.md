@@ -70,6 +70,9 @@ The scheduler is stateless between invocations. Durable workflow state remains o
 
 ## CLI
 
+The creative workspace `import-candidate` and `import` commands are synchronous CLI operations; import is bound to the exact accepted candidate SHA-256.
+
+
 A scheduler result or Integration Gate PASS cannot supply publication authority. The publication Hook applies the selected mode: personal mode checks exact argv/candidate/target and content safety; explicitly requested PR merges also require a mergeable default-base PR, passing required checks and Claude/Gemini native per-call confirmation. High assurance verifies the external signature and atomically consumes one grant; never retry a consumed grant after failure.
 
 Observed validation timing is diagnostic only. Capture complete exact-candidate durations and retain mandatory full validation; missing observations do not authorize selective execution or change the required aggregate.

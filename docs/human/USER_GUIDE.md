@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+To bring an existing image or SVG into a creative workspace, use `aips creative import-candidate` to review a source hash and absent destination, then `aips creative import --candidate FILE --accept-hash SHA256` to revalidate and create the exact file without overwrite.
+
 OpenCode acceptance applies only to the reported host version and source. A successful Context or file-hook check does not cover arbitrary Shell processes, MCP/custom tools, or writes initiated outside OpenCode; the report marks these effects UNSUPPORTED and grants no additional authority.
 
 指出「疤痕畫在頭髮上」會形成版本綁定的缺陷回饋；明確要求「重出一張哈利」可在同一 Session 取得新的單張修正授權。`quality-check` 逐項檢查必要特徵與禁止錯置；只有明確要求自動修正才可使用 `quality-loop`，最多兩次修正，預設 native 時間上限十分鐘。
@@ -199,7 +201,7 @@ Creative discovery is read-only: it probes installed MFLUX commands and only the
 
 OpenCode V2 的 creative execution tool 只接受明確創作或修改意圖，並在執行前要求 Bundle preflight 通過。
 
-OpenCode V2 may use the managed plugin for Session-scoped Context, supported direct-file checks, and the structured `creative_execution` tool. In EPHEMERAL creative projects, its explicit `prepare` action creates a versioned README/Profile/Bundle set in a selected scope; `preflight` checks a local Bundle without starting generation, and `execute` is explicit and create-only. `aips creative scan --project PATH` indexes existing image/SVG metadata in the user cache; `aips creative next-version --project PATH --target RELATIVE_ASSET` suggests a new path and never writes it. `aips harness trace` and `aips creative trace` show privacy-limited events. Arbitrary Shell effects and other MCP/custom tools remain outside the guard; inspect adapter status before relying on runtime enforcement.
+OpenCode V2 may use the managed plugin for Session-scoped Context, supported direct-file checks, and the structured `creative_execution` tool. In EPHEMERAL creative projects, its explicit `prepare` action creates a versioned README/Profile/Bundle set in a selected scope; `preflight` checks a local Bundle without starting generation, and `execute` is explicit and create-only. `aips creative scan --project PATH` indexes existing image/SVG metadata in the user cache; `aips creative next-version --project PATH --target RELATIVE_ASSET` suggests a new path and never writes it. To transfer an asset, first run `aips creative import-candidate --source-project SOURCE --source RELATIVE_ASSET --destination-project WORKSPACE --target RELATIVE_ASSET`; review the returned candidate SHA-256 and destination check, then run `aips creative import --candidate CANDIDATE_FILE --accept-hash SHA256` to recheck the source and create the destination file without overwriting. The candidate cache stores paths and hashes, not asset bytes. `aips harness trace` and `aips creative trace` show privacy-limited events. Arbitrary Shell effects and other MCP/custom tools remain outside the guard; inspect adapter status before relying on runtime enforcement.
 
 Native Adapter 用來取得 runtime-specific hook / guard；MCP 提供跨 Host 標準接入。兩者共用 canonical Roles、Skills、Orchestration 與 Project Intelligence。
 
@@ -316,6 +318,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+Plan29 #6 is reviewed as a scoped Core Change: its exact source and destination checks, direct lifecycle evidence, and candidate matrix are reviewed before the PR Gate.
 
 Creative benchmark v2 is read-only evidence after an explicitly run local trial. Its coverage matrix does not rate images or replace Human visual review or user acceptance.
 
