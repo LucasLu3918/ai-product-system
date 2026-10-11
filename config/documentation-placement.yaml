@@ -61,6 +61,9 @@ current_behavior_docs:
   docs/human/EVOLUTION_RADAR_OVERVIEW.md:
     strict_h2: true
     required_h2: [Signal Collection, Deterministic Pre-analysis, Semantic Analysis, Human Decision, Controlled Trial, Trial → Adoption, Provider Credentials, Effectiveness Feedback, Verification History]
+  docs/human/SKILL_EXPLORER.md:
+    strict_h2: true
+    required_h2: [Overview, Usage, Source and Status]
   docs/human/TECHNOLOGY_GUIDE.md:
     strict_h2: true
     required_h2: [Runtime & Integration, Project Understanding, Execution, Security & Governance, Quality & Verification, Product Delivery, Evolution & Maintenance, Documentation Platform, Runtime Content Safety Boundary]
@@ -78,6 +81,27 @@ legacy_append_forbidden:
   - docs/human/EVOLUTION_RADAR_OVERVIEW.html
 
 placement_rules:
+  - id: mattpocock-skill-explorer
+    triggers:
+      - scripts/skill_catalog.py
+      - templates/docs/skill-explorer.template.html
+      - docs/human/skill-examples.yaml
+      - docs/human/public/skill-explorer.html
+      - docs/human/SKILL_EXPLORER.md
+      - references/external-skills/mattpocock-2026-10-11.yaml
+      - skills/engineering/rapid-prototyping/SKILL.md
+      - skills/engineering/technical-research/SKILL.md
+      - skills/engineering/human-guided-wizard/SKILL.md
+      - skills/engineering/technical-teaching/SKILL.md
+      - skills/design/creative-writing-workflow/SKILL.md
+      - tests/test_skill_catalog.py
+    placements:
+      docs/human/SKILL_EXPLORER.md: [Overview, Usage, Source and Status]
+      docs/human/USER_GUIDE.md: [Roles、Skills 與重用]
+      docs/human/TECHNOLOGY_GUIDE.md: [Quality & Verification]
+      docs/human/DOCUMENTATION_MAP.md: [Official Docs Site]
+      docs/human/DOCUMENTATION_SYNC.md: [Official Docs Site]
+
   - id: capability-registry
     triggers: [config/capability-registry.yaml, scripts/capability_registry.py, config/architecture-surfaces.yaml, references/evolution/CAPABILITY_MAP.yaml, config/repository-health.yaml, scripts/repository_health.py, orchestration/REPOSITORY_HEALTH.md, tests/validation/repository_health_contracts.py, tests/evidence/repository_health_lifecycle.py]
     placements:

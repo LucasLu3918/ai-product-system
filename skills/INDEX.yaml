@@ -158,6 +158,19 @@ skills:
       reliability: high
       minimum_tier: 1
       preferred_tier: 2
+  creative-writing-workflow:
+    description: Guide opt-in fragments, beats and shaping for original creative writing.
+    capability: design
+    path: design/creative-writing-workflow/SKILL.md
+    triggers:
+    - explicit_creative_writing_workflow
+    cost: medium
+    model_requirements:
+      reasoning: high
+      coding: none
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 2
   data-modeling:
     description: Model domain data, ownership, relationships and invariants with suitable
       persistence and migration boundaries.
@@ -359,6 +372,20 @@ skills:
       reliability: high
       minimum_tier: 2
       preferred_tier: 3
+  human-guided-wizard:
+    description: Guide human-only setup or cutover steps without handling credentials.
+    capability: engineering
+    path: engineering/human-guided-wizard/SKILL.md
+    triggers:
+    - explicit_human_setup_wizard
+    - manual_cutover_instruction_wizard
+    cost: low
+    model_requirements:
+      reasoning: high
+      coding: strong
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 3
   incident-response:
     description: Triage incidents, contain impact, recover service and document evidence
       and follow-up actions.
@@ -473,6 +500,20 @@ skills:
       reliability: high
       minimum_tier: 2
       preferred_tier: 2
+  rapid-prototyping:
+    description: Build disposable prototypes to test bounded UI or logic design questions.
+    capability: engineering
+    path: engineering/rapid-prototyping/SKILL.md
+    triggers:
+    - explicit_throwaway_prototype
+    - validate_ui_interaction_variant
+    cost: low
+    model_requirements:
+      reasoning: medium
+      coding: strong
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 2
   requirements-definition:
     description: Define traceable requirements, acceptance criteria and downstream
       planning artifact relationships.
@@ -583,6 +624,33 @@ skills:
       coding: strong
       reliability: high
       minimum_tier: 2
+      preferred_tier: 2
+  technical-research:
+    description: Research technical APIs and architecture using verifiable versioned sources.
+    capability: engineering
+    path: engineering/technical-research/SKILL.md
+    triggers:
+    - technical_source_research
+    - technology_api_evidence
+    cost: medium
+    model_requirements:
+      reasoning: high
+      coding: normal
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 3
+  technical-teaching:
+    description: Teach technical concepts with exercises and progress by explicit request.
+    capability: engineering
+    path: engineering/technical-teaching/SKILL.md
+    triggers:
+    - explicit_guided_technical_learning
+    cost: medium
+    model_requirements:
+      reasoning: medium
+      coding: normal
+      reliability: high
+      minimum_tier: 1
       preferred_tier: 2
   threat-modeling:
     description: Identify protected assets, trust boundaries, threats and mitigations

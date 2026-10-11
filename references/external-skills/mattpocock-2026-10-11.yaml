@@ -1,0 +1,126 @@
+# User-approved Strategy B on 2026-10-11; documentation-only upstream intake.
+version: 1
+upstream:
+  repository: https://github.com/mattpocock/skills
+  commit: 49dd158d1076134a641b33efb035946536778336
+  license: MIT
+  plugin_version: 1.3.1
+policy:
+  beta_trials: disabled
+  writing_workflow: opt_in
+  no_new_publication_authority: true
+entries:
+  - source: engineering/ask-matt
+    action: workflow
+    target: "harness routing"
+  - source: engineering/code-review
+    action: merge
+    target: "code-review"
+  - source: engineering/codebase-design
+    action: merge
+    target: "clean-architecture"
+  - source: engineering/diagnosing-bugs
+    action: merge
+    target: "systematic-debugging"
+  - source: engineering/domain-modeling
+    action: merge
+    target: "domain-driven-design"
+  - source: engineering/grill-with-docs
+    action: workflow
+    target: "requirements-definition / ADR"
+  - source: engineering/implement-spec
+    action: workflow
+    target: "delivery-planning"
+  - source: engineering/implement
+    action: workflow
+    target: "execution orchestration"
+  - source: engineering/improve-codebase-architecture
+    action: merge
+    target: "clean-architecture"
+  - source: engineering/pr
+    action: workflow
+    target: "Git Publication"
+  - source: engineering/prototype
+    action: new
+    target: "rapid-prototyping"
+  - source: engineering/research
+    action: new
+    target: "technical-research"
+  - source: engineering/retro
+    action: workflow
+    target: "Self-Improvement Review"
+  - source: engineering/setup-matt-pocock-skills
+    action: workflow
+    target: "AIPS installation/attach"
+  - source: engineering/tdd
+    action: merge
+    target: "tdd"
+  - source: engineering/to-spec
+    action: merge
+    target: "requirements-definition"
+  - source: engineering/to-tickets
+    action: merge
+    target: "delivery-planning"
+  - source: engineering/triage
+    action: optional
+    target: "Issue/PR triage trial (not active)"
+  - source: engineering/wayfinder
+    action: workflow
+    target: "delivery-planning / checkpoint"
+  - source: engineering/wizard
+    action: new
+    target: "human-guided-wizard"
+  - source: productivity/grill-me
+    action: workflow
+    target: "requirements clarification"
+  - source: productivity/grilling
+    action: workflow
+    target: "requirements clarification"
+  - source: productivity/handoff
+    action: workflow
+    target: "checkpoint / resume"
+  - source: productivity/teach
+    action: new
+    target: "technical-teaching"
+  - source: productivity/to-questionnaire
+    action: merge
+    target: "requirements-definition"
+  - source: productivity/wait-what
+    action: workflow
+    target: "Human-facing explanation"
+  - source: productivity/writing-for-agents
+    action: workflow
+    target: "Capability Incubation / Agent docs"
+  - source: in-progress/chief-of-staff
+    action: excluded
+    target: "Beta trial not requested"
+  - source: in-progress/claude-handoff
+    action: excluded
+    target: "Beta trial not requested"
+  - source: in-progress/loop-me
+    action: excluded
+    target: "Beta trial not requested"
+  - source: in-progress/setup-ts-deep-modules
+    action: excluded
+    target: "Beta trial not requested"
+  - source: in-progress/writing-beats
+    action: optional
+    target: "creative-writing-workflow"
+  - source: in-progress/writing-fragments
+    action: optional
+    target: "creative-writing-workflow"
+  - source: in-progress/writing-shape
+    action: optional
+    target: "creative-writing-workflow"
+  - source: misc/git-guardrails-claude-code
+    action: reference
+    target: "existing Git Publication Governance"
+  - source: misc/migrate-to-shoehorn
+    action: reference
+    target: "TypeScript-specific; not default"
+  - source: misc/scaffold-exercises
+    action: reference
+    target: "teaching optional reference"
+  - source: misc/setup-pre-commit
+    action: reference
+    target: "project toolchain-specific"

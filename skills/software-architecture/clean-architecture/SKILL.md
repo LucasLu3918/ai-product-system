@@ -36,3 +36,7 @@ Review questions:
 2. Is a new abstraction solving a current dependency problem or only adding ceremony?
 3. Can the core behavior be tested without external infrastructure?
 4. Does the change preserve project conventions where they remain adequate?
+
+## Deep-module design (optional)
+
+Favor narrow public interfaces that hide a cohesive, substantial implementation. Test through stable interfaces when that proves behavior more reliably than testing internal implementation details. Make dependency seams explicit and reject pass-through abstractions that only add indirection. Evaluate more than one feasible boundary shape before a material architecture change; preserve approved scope and migrations.

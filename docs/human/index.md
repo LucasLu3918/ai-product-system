@@ -26,6 +26,9 @@ features:
 
 ## 文件如何組織
 
+[Skill Explorer 技能圖鑑](SKILL_EXPLORER.md) 提供所有已註冊 Skill 的繁體中文用途、觸發情境與可複製範例，另有可離線使用的互動式單頁 HTML。這是 Human Docs 檢視入口，實際執行權限仍依 AIPS 治理。
+
+
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
 Creative asset import usage lives in USER_GUIDE.md; its reusable workflow and boundaries live in orchestration/CREATIVE_DIRECTION.md.

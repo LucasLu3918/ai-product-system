@@ -236,6 +236,9 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Skill Explorer 使用 canonical frontmatter → `skills/INDEX.yaml` → localized examples → deterministic one-page HTML 的單向資料流。 `scripts/skill_catalog.py` 可在不連網下重新生成並檢查漂移。五項窄範圍新 Skill 僅補充缺口，其他重疊方法併入原 Skill，沒有新增 Role/Capability/Gate。查看 [Skill Explorer](SKILL_EXPLORER.md) 和 `tests/test_skill_catalog.py`。頁面僅記錄能力與使用提示，不表示 Runtime Guard 已驗證。
+
+
 `publication_planning.py` 重用 authority、candidate/history scan 與 GitHub PR evidence，提供 read-only `prepare` / `diagnose`。指紋包含 worktree、HEAD/base、remote/PR、policy 與 PR body digest；任何漂移需重新規劃，不能用診斷代碼放行。
 
 The OpenCode integration lifecycle exercises candidate tampering, source drift, path and symlink rejection, destination races, cache privacy, and end-to-end CLI dispatch.

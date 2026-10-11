@@ -480,6 +480,9 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+維護 Skills 時依序執行 `python scripts/skill_index.py --write`、`python scripts/skill_catalog.py --write`，再執行對應的 Index lifecycle、Catalog tests、文件 placement / sync 和原有 CI Gate。外部 Matt Pocock 來源固定 SHA，升級時先重新盤點 38 項處置，不對其他 Beta 自動啟用，也不使用外部更新腳本覆寫 AIPS-managed Skill。
+
+
 The creative quality benchmark lifecycle validates dataset coverage, bounded failure stages, legacy evidence compatibility, and Human review/acceptance separation. Its synthetic artifacts do not count as real local model inference or visual-quality evidence.
 
 OpenCode native acceptance is integration evidence only. Do not treat it as an Agent task outcome, production model measure or generated-image quality result.

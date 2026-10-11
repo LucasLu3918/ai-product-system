@@ -172,6 +172,9 @@ Behavior-bearing source changes must first map every new source path in `config/
 
 ## Official Docs Site
 
+Skill Explorer 的繁體中文名稱和用法範例只維護在 `docs/human/skill-examples.yaml`；正式用途、trigger、成本與模型要求以 `skills/*/*/SKILL.md` frontmatter 為準。先以 `python scripts/skill_index.py --write` 更新 Registry，再以 `python scripts/skill_catalog.py --write` 更新單頁 HTML；CI 中檢查兩者是否 drift，不把產物當成另一份權威 Skill 設定。
+
+
 文件工具鏈安全修補需同步 `package.json` 的限定 Vite 覆寫與 npm lockfile。保留 VitePress 穩定版時，跨 Vite 主要版本的覆寫必須驗證乾淨安裝、audit、build、開發／預覽及熱更新；本機存取設定與操作限制維護在 Technology Guide 的 Documentation Platform。
 
 Pinned Actions updates require synchronized operational documentation. setup-node v7 executes with Node 24; upload-pages-artifact v5 uses upload-artifact v7. GitHub-hosted Ubuntu 24.04 supplies the runner; PR builds keep deployment skipped and main retains the configured Pages-state guard.

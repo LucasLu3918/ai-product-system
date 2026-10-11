@@ -38,3 +38,7 @@ Rules:
 - separate domain language between bounded contexts when meanings differ;
 - introducing or changing a bounded context is a material architecture decision and requires preflight recommendation/approval when it affects scope or contracts;
 - never perform unrelated repository-wide rewrites solely to “adopt DDD”.
+
+## Domain vocabulary reconciliation
+
+When the domain is nontrivial, maintain an explicit ubiquitous language / glossary with term, definition, bounded context, contrasting meanings, example and source. Challenge ambiguous nouns against at least one concrete business scenario and executable boundary where possible. Write an ADR only for a material architectural decision, reusing the project's accepted ADR convention. Do not infer that a glossary update grants Change Impact or human approval.

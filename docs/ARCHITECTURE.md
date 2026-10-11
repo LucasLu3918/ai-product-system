@@ -616,6 +616,9 @@ For Large/Core changes, architecture-diagram impact is mandatory. Update each af
 
 ## End-to-end product delivery
 
+The optional Matt Pocock skills integration preserves AIPS's canonical Skill frontmatter → generated index → host projection chain. Duplicate methods strengthen existing Skills; narrow additions are registered only after reuse-first admission. The Human Skill Explorer is a generated, read-only documentation projection and never authorizes code mutation, Git publication or runtime tool execution.
+
+
 Creative quality benchmark evidence is collected read-only after local trials. A registered prompt-free profile-case dataset identifies coverage, while raster hash checks and model/check/compiler outcomes remain separate from Human visual review, user acceptance and runtime attestation. The dataset adds no provider or execution component to the runtime flow.
 
 Branch Hygiene consumes exact remote branch SHAs, current-main and read-only PR metadata to produce advisory lifecycle dispositions. It can identify work to keep, superseded branches, PRs that require rebase, and cleanup candidates; report generation never merges, rebases, closes PRs or deletes branches. See `orchestration/BRANCH_HYGIENE.md` for the authority boundary.

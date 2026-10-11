@@ -10,6 +10,9 @@ Human Docs 依使用目的組織，而不是依版本號堆疊。
 
 ## Official Docs Site
 
+Skill 使用者入口是 [Skill Explorer](SKILL_EXPLORER.md)，自包含 HTML 位於 `docs/human/public/skill-explorer.html`。內容由 `skills/INDEX.yaml` 和 `docs/human/skill-examples.yaml` 使用 `scripts/skill_catalog.py` 產生，Registry 永遠維持 canonical。
+
+
 文件開發工具的安全版本、限定覆寫與本機伺服器操作見 [Technology Guide](TECHNOLOGY_GUIDE.md#documentation-platform)；相依套件與鎖定檔變更的同步要求見 [Documentation Consistency](DOCUMENTATION_SYNC.md#official-docs-site)。
 
 The docs-site workflow uses pinned setup-node v7 and upload-pages-artifact v5 on GitHub-hosted Ubuntu 24.04. Action upgrades include architecture, technology and documentation-sync updates; dependency PRs are subject to the same documentation closure as manual changes.
