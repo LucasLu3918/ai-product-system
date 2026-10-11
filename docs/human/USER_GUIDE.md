@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。
+
 To bring an existing image or SVG into a creative workspace, use `aips creative import-candidate` to review a source hash and absent destination, then `aips creative import --candidate FILE --accept-hash SHA256` to revalidate and create the exact file without overwrite.
 
 OpenCode acceptance applies only to the reported host version and source. A successful Context or file-hook check does not cover arbitrary Shell processes, MCP/custom tools, or writes initiated outside OpenCode; the report marks these effects UNSUPPORTED and grants no additional authority.
@@ -171,6 +173,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 新專案若尚未選擇技術，AIPS 會先檢查硬性限制，再依團隊、產品、既有系統、交付與維護需求提出少量候選和取捨；語言與框架分開選擇。架構建議同時看複雜度訊號與反向訊號，並分開說明 Clean Architecture、DDD 與部署方式。重要選擇由使用者確認後，才會整理到 Implementation Profile。
 
 ## Global Harness 與 MCP
+
+發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。
 
 OpenCode adapter setup and version-bound evidence are separate. Consult the report's unsupported-effect states before relying on a native permission hook.
 
@@ -534,6 +538,12 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 Retrieval index persistence is an internal, rebuildable cache boundary in `scripts/retrieval_storage.py`; existing commands and imports continue through the `retrieval_intelligence.py` compatibility facade.
 
 ## Git Publication 與 Release
+
+`aips publish diagnose --worktree <candidate-root> --command '<literal-command>'` 可辨識 `PUSH_SOURCE_NOT_EXACT_SHA`、`INVALID_TARGET_REF`、`WORKTREE_DIRTY`、`BASE_NOT_ANCESTOR`、`CONTENT_SCAN_BLOCKED` 與 metadata 問題。`prepare` 的高保證流程輸出精確 lease 命令與 `AUTHORITY_REQUIRED`，仍須由外部 issuer 核准；模式設定存在但無效時不降級。`--merge-intent` 僅記錄當次任務意圖，不能取代使用者或 Host 授權。
+
+若開發 workspace 有未交付素材，保留原檔並建立獨立乾淨的工程分支 worktree，再將該 root 明確傳給 `prepare` 與原生 tool。素材清單至少記錄路徑、用途、SHA-256、大小、授權與部署來源；母帶需獨立備份，正式音訊經壓縮與音質驗收。Git LFS／物件儲存由專案決定，且部署必須驗證實體檔案可取得。Scanner 的文字、binary 與來源政策限制要各別診斷，不因檔案大小推論授權失敗。
+
+發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。
 
 `branch-hygiene.yml` 的報告會依 branch SHA、目前 main、local checkout 與 PR 狀態列出 `KEEP`、`SUPERSEDED`、`REBASE_REQUIRED` 或 `CLEANUP_CANDIDATE`。這些分類供維護者檢視，不會自動 merge、rebase、關閉 PR 或刪除 branch；清理仍須逐筆核准 exact manifest。
 

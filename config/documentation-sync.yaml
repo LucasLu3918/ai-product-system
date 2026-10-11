@@ -242,6 +242,8 @@ rules:
       - orchestration/ORCHESTRATOR.md
   - id: publication-preflight
     triggers:
+      - scripts/publication_planning.py
+      - tests/test_publication_planning.py
       - scripts/publish_preflight.py
       - scripts/publish_post_merge.py
       - scripts/browser_runtime.py

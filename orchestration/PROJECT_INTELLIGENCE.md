@@ -211,6 +211,7 @@ Readers continue using the last valid generation.
 
 
 
+
 Scoped evidence does not upgrade this repository’s partial Impact Graph to complete repository-wide coverage.
 
 
@@ -649,6 +650,8 @@ Architecture and DDD classifications require behavioral/dependency evidence, not
 The CLI commands are deterministic building blocks used by the Agent/Harness and remain available for debugging.
 
 ## Retrieval relationships and impact traversal
+
+Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
 Plan29 #6 records the creative profile seed, its CLI and test consumers, and the accepted limit on repository-wide graph coverage.
 

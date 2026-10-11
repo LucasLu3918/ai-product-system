@@ -70,6 +70,8 @@ The scheduler is stateless between invocations. Durable workflow state remains o
 
 ## CLI
 
+Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
+
 The creative workspace `import-candidate` and `import` commands are synchronous CLI operations; import is bound to the exact accepted candidate SHA-256.
 
 

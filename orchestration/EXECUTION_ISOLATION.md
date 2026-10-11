@@ -286,6 +286,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
+
 Creative asset import writes only to a confined non-Git EPHEMERAL destination and does not start a provider or generation process.
 
 

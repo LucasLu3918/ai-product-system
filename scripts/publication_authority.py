@@ -28,7 +28,35 @@ PERSONAL_BRANCH_PREFIXES = ('agent/', 'bugfix/', 'chore/', 'claude/', 'codex/', 
 
 
 class PublicationError(ValueError):
-    pass
+    def __init__(self, message: str, reason_code: str = 'PUBLICATION_REJECTED'):
+        super().__init__(message)
+        self.reason_code = reason_code
+
+    def diagnostic(self) -> dict[str, str]:
+        # Never expose exception text: Git/host errors may contain private data.
+        code = self.reason_code if self.reason_code in PUBLICATION_DIAGNOSTICS else 'PUBLICATION_REJECTED'
+        detail, next_step = PUBLICATION_DIAGNOSTICS[code]
+        return {'reason_code': code, 'detail': detail, 'next_step': next_step}
+
+
+PUBLICATION_DIAGNOSTICS = {
+    'PUBLICATION_REJECTED': ('Publication binding was rejected.', 'Inspect the candidate with aips publish prepare; retain the current authority boundary.'),
+    'PUSH_SOURCE_NOT_EXACT_SHA': ('Push source must equal the full candidate SHA.', 'Resolve HEAD and use its literal full SHA as the refspec source.'),
+    'INVALID_TARGET_REF': ('An explicit full target ref is required.', 'Use refs/heads/<current-engineering-branch>.'),
+    'WORKTREE_DIRTY': ('The selected worktree has uncommitted content.', 'Preserve development files; review delivery scope or use a separate clean candidate worktree.'),
+    'CWD_MISMATCH': ('The current worktree differs from the planned candidate.', 'Set the native tool working directory to the planned worktree and re-observe.'),
+    'BASE_NOT_ANCESTOR': ('The live default base is not an ancestor of the candidate.', 'Preserve the candidate; review merge/rebase and conflicts, then revalidate the new SHA.'),
+    'BASE_OBJECT_MISSING': ('The live default commit is not available locally.', 'Fetch the remote default branch in the selected worktree, then re-observe.'),
+    'AUTHORITY_REQUIRED': ('High-assurance publication requires an external grant.', 'Use the configured Human issuer; a plan does not create or consume a grant.'),
+    'AUTHORITY_CONFIG_INVALID': ('The present authority configuration cannot be used.', 'Repair the administrator trust root; do not remove it or fall back to personal mode.'),
+    'HOST_PERMISSION_DENIED': ('The host denied the operation.', 'Resolve permissions through the host approval flow; do not retry using another command form.'),
+    'CONTENT_SCAN_BLOCKED': ('Mandatory candidate/history content scanning failed.', 'Review the scanner policy and safe finding categories; resolve them and revalidate.'),
+    'PR_METADATA_INCOMPLETE': ('Explicit PR metadata is incomplete or ambiguous.', 'Provide unique --repo, --head, --base, --title and exactly one --body or --body-file.'),
+    'COMMAND_FORM_UNSUPPORTED': ('The publication command form is unsupported.', 'Use a standalone literal native command from the worktree-bound plan.'),
+    'REMOTE_OBSERVATION_FAILED': ('Required repository or remote evidence is unavailable.', 'Diagnose network, authentication and repository configuration without printing raw errors.'),
+    'CANDIDATE_CHANGED': ('Candidate or publication inputs changed after planning.', 'Discard the previous observation and create a fresh plan; reissue grants when required.'),
+    'PR_STATE_AMBIGUOUS': ('PR state is ambiguous or stale.', 'Review matching PRs and remote head before continuing; do not create duplicate PRs.'),
+}
 
 
 def publication_mode(config_path: Path | None = None) -> str:
@@ -39,9 +67,9 @@ def publication_mode(config_path: Path | None = None) -> str:
     except FileNotFoundError:
         return 'personal'
     except OSError as exc:
-        raise PublicationError('publication mode configuration unavailable') from exc
+        raise PublicationError('publication mode configuration unavailable', 'AUTHORITY_CONFIG_INVALID') from exc
     if not stat.S_ISREG(info.st_mode):
-        raise PublicationError('publication mode configuration must be a regular file')
+        raise PublicationError('publication mode configuration must be a regular file', 'AUTHORITY_CONFIG_INVALID')
     return 'high_assurance'
 
 
@@ -61,7 +89,7 @@ def _personal_base(root: Path, operation: str, argv: list[str]) -> str:
     try:
         git(root, 'cat-file', '-e', default_tip + '^{commit}')
     except PublicationError as exc:
-        raise PublicationError('fetch the current remote default branch before personal publication') from exc
+        raise PublicationError('fetch the current remote default branch before personal publication', 'BASE_OBJECT_MISSING') from exc
     return default_tip
 
 
@@ -85,7 +113,7 @@ def digest(value: Any) -> str:
 def run(cwd: Path, *argv: str) -> str:
     proc = subprocess.run(list(argv), cwd=cwd, capture_output=True, text=True, timeout=15, check=False)
     if proc.returncode:
-        raise PublicationError('required repository observation failed')
+        raise PublicationError('required repository observation failed', 'REMOTE_OBSERVATION_FAILED')
     return proc.stdout.strip()
 
 
@@ -126,8 +154,11 @@ def approval_location(cwd: Path) -> Path | None:
 
 def _ref(cwd: Path, value: str) -> str:
     if not value.startswith(('refs/heads/', 'refs/tags/')):
-        raise PublicationError('explicit full target ref required')
-    git(cwd, 'check-ref-format', value)
+        raise PublicationError('explicit full target ref required', 'INVALID_TARGET_REF')
+    try:
+        git(cwd, 'check-ref-format', value)
+    except PublicationError as exc:
+        raise PublicationError('invalid explicit target ref', 'INVALID_TARGET_REF') from exc
     return value
 
 
@@ -141,10 +172,10 @@ def _tip(cwd: Path, remote: str, ref: str) -> str | None:
 
 def _option(argv: list[str], option: str) -> str:
     if argv.count(option) != 1:
-        raise PublicationError('explicit unique ' + option + ' required')
+        raise PublicationError('explicit unique ' + option + ' required', 'PR_METADATA_INCOMPLETE')
     index = argv.index(option)
     if index + 1 >= len(argv) or argv[index + 1].startswith('-'):
-        raise PublicationError('missing ' + option + ' value')
+        raise PublicationError('missing ' + option + ' value', 'PR_METADATA_INCOMPLETE')
     return argv[index + 1]
 
 
@@ -156,9 +187,12 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
     head = git(root, 'rev-parse', 'HEAD^{commit}')
     if not re.fullmatch(r'[0-9a-f]{40,64}', base):
         raise PublicationError('explicit base commit SHA required')
-    git(root, 'merge-base', '--is-ancestor', base, head)
+    try:
+        git(root, 'merge-base', '--is-ancestor', base, head)
+    except PublicationError as exc:
+        raise PublicationError('base is not a candidate ancestor', 'BASE_NOT_ANCESTOR') from exc
     if git(root, 'status', '--porcelain', '--untracked-files=all'):
-        raise PublicationError('publication requires a clean worktree')
+        raise PublicationError('publication requires a clean worktree', 'WORKTREE_DIRTY')
     diff = subprocess.run(['git', 'diff', '--binary', base, head, '--'], cwd=root, capture_output=True, timeout=15, check=False)
     files = subprocess.run(['git', 'diff', '--name-only', '-z', base, head, '--'], cwd=root, capture_output=True, timeout=15, check=False)
     if diff.returncode or files.returncode:
@@ -177,13 +211,13 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
     delete = False
     if operation == 'git_push':
         if argv[:2] != ['git', 'push']:
-            raise PublicationError('use a standalone git push without wrappers/global options')
+            raise PublicationError('use a standalone git push without wrappers/global options', 'COMMAND_FORM_UNSUPPORTED')
         args = argv[2:]
         flags = []
         while args and args[0].startswith('-'):
             flag, args = args[0], args[1:]
             if flag not in {'--force', '-f', '--delete'} and not flag.startswith('--force-with-lease='):
-                raise PublicationError('unsupported push option')
+                raise PublicationError('unsupported push option', 'COMMAND_FORM_UNSUPPORTED')
             flags.append(flag)
         if len(args) != 2 or not re.fullmatch(r'[A-Za-z0-9_.-]+', args[0]):
             raise PublicationError('one named remote and one explicit refspec required')
@@ -198,11 +232,11 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
             source, target = None, _ref(root, spec)
         else:
             if spec.count(':') != 1:
-                raise PublicationError('explicit source SHA:full-ref required')
+                raise PublicationError('explicit source SHA:full-ref required', 'PUSH_SOURCE_NOT_EXACT_SHA')
             source, target = spec.split(':')
             target = _ref(root, target)
             if source and source != head:
-                raise PublicationError('push source must be exact current candidate SHA')
+                raise PublicationError('push source must be exact current candidate SHA', 'PUSH_SOURCE_NOT_EXACT_SHA')
             source = source or None
         force = any(flag in {'-f', '--force'} or flag.startswith('--force-with-lease=') for flag in flags)
         result.update(source_commit=source, refspec=spec)
@@ -236,7 +270,7 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
         if operation == 'gh_pr_create':
             _option(argv, '--title')
             if ('--body' in argv) == ('--body-file' in argv):
-                raise PublicationError('exactly one explicit PR body or body file required')
+                raise PublicationError('exactly one explicit PR body or body file required', 'PR_METADATA_INCOMPLETE')
             valued |= {'--head', '--base', '--title', '--label', '--assignee', '--reviewer', '--milestone', '--project'}
             switches = {'--draft'}
         elif operation == 'gh_pr_merge':
@@ -366,7 +400,7 @@ def validate_personal_action(cwd: Path, operation: str, argv: list[str]) -> dict
     policy, _ = load_policy(DEFAULT_POLICY)
     findings, blockers, _, _ = scan_candidate(root, base, 'HEAD', policy)
     if findings or blockers:
-        raise PublicationError('mandatory candidate and history secret scan blocked publication')
+        raise PublicationError('mandatory candidate and history secret scan blocked publication', 'CONTENT_SCAN_BLOCKED')
     return action(root, operation, argv, base, personal=True)
 
 

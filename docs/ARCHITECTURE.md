@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+Read-only publication planning binds the explicit worktree, exact candidate, live default base, remote/PR state and body/policy digests. It returns native-tool cwd/argv and safe diagnostics; neither a plan nor its fingerprint grants permission or executes a protected operation.
+
 Creative workspace import is a local flow: review a private source-hash candidate, then explicitly create the exact absent target in a non-Git workspace.
 
 
@@ -272,6 +274,20 @@ flowchart LR
 The alias candidate is deterministic and transparent. It is not an embedding provider and does not change `semantic.status=NOT_CONFIGURED`. The committed Trial follows the FAIL → KEEP branch: required regressions and no synonym-recall improvement produce recommendation `HOLD`. Normal Turn Context retrieval therefore does not enable the alias lane.
 
 ## Maintenance and publication evidence
+
+```mermaid
+flowchart LR
+  W[Explicit candidate worktree] --> P[Read-only prepare / diagnose]
+  P --> O[Live Git / PR observation fingerprint]
+  O --> N[Standalone native tool with exact cwd and argv]
+  N --> G[Existing Guard / external grant / host permission]
+  G --> R[Engineering branch and PR]
+  R --> C[Required checks and explicit merge intent]
+  C --> M[Native merge confirmation where supported]
+  M --> V[Verified merge commit in live base]
+```
+
+Read-only publication planning binds the explicit worktree, exact candidate, live default base, remote/PR state and body/policy digests. It returns native-tool cwd/argv and safe diagnostics; neither a plan nor its fingerprint grants permission or executes a protected operation.
 
 Git publication resolves to personal mode unless the fixed administrator trust root selects high assurance. Personal mode validates and scans the exact candidate before an engineering-branch push or PR; an explicitly requested PR merge requires each Claude/Gemini native confirmation plus exact head/default-base and passing required-check validation. Codex remains advisory. High assurance requires the external single-use grant.
 

@@ -1,5 +1,7 @@
 # Core Change Testing
 
+
+Publication prepare/diagnose planning is read-only and binds an explicit candidate worktree; native tools retain their own permission and authority checks. Re-observe live Git/PR state before continuation; a planning fingerprint never grants publication or merge authority.
 Runtime Foundation changes include the bounded Runtime Invariant Matrix and credential-free Context contract in the candidate-specific test matrix. Recompute the matrix and actual diff reconciliation after implementation expands.
 
 For CLI reliability changes, cover side-effect-free help, unknown-argument rejection, implicit/explicit docs-impact checkout routing, gh configuration isolation precedence, invalid venv identity and installed OpenAPI execution from an independent product root. Preserve remote-reference confinement and preview-only generation; fixture evidence is not real-product acceptance. Architecture topology is unchanged by routing fixes.

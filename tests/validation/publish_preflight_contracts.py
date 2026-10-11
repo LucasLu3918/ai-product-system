@@ -65,3 +65,10 @@ if evidence.is_file():
     proc = subprocess.run([sys.executable, str(evidence)], cwd=ROOT, capture_output=True, text=True)
     if proc.returncode:
         errors.append(f"Publication preflight lifecycle failed: {proc.stdout.strip()} {proc.stderr.strip()}")
+
+planning_tests = subprocess.run(
+    [sys.executable, str(ROOT / "tests/test_publication_planning.py")],
+    cwd=ROOT, capture_output=True, text=True, check=False,
+)
+if planning_tests.returncode:
+    errors.append("Publication planning lifecycle failed: " + planning_tests.stderr[-2000:])

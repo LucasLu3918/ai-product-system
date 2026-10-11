@@ -55,6 +55,8 @@ Public command groups expose help with status 0 and return nonzero for unknown s
 
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
+Scenario 240 adds worktree-bound publication prepare/diagnose regression; safe failure codes and live PR reuse are exercised by tests/test_publication_planning.py. Synthetic GitHub metadata does not establish real-host permission or REST acceptance.
+
 The repository lifecycle also checks explicit asset import into a non-Git workspace with candidate and source hash revalidation.
 
 
@@ -1034,6 +1036,8 @@ Plan19's module-extraction lifecycle continues to verify the Project Intelligenc
 
 Verifies deterministic pre-analysis exclusion reasons and counts without changing Human decision authority.
 ## Scenario 210 — Python runtime support policy
+
+Scenario 240 adds worktree-bound publication prepare/diagnose regression; safe failure codes and live PR reuse are exercised by tests/test_publication_planning.py. Synthetic GitHub metadata does not establish real-host permission or REST acceptance.
 
 The OpenCode lifecycle runs with the selected validation Python. OpenCode itself is detected separately and is never downloaded by Harness installation.
 

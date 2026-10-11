@@ -1760,6 +1760,8 @@ Benchmark v2 records the registered three-archetype by six-case coverage matrix,
 
 ## Scenario 236 — Local Creative Bundle Execution
 
+Scenario 240 的 `tests/test_publication_planning.py` 覆蓋 worktree 綁定、精確 SHA/ref、舊指紋拒絕、Host denial、PR 重用與 squash merge 恢復；fixture 不等於真實 Host 或 REST 驗收。
+
 The existing OpenCode integration lifecycle also verifies hash-bound asset import, source drift rejection, destination conflicts, and the source-checkout CLI route.
 
 
@@ -1794,6 +1796,8 @@ The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies c
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
 
 ## Scenario 240 — Personal Publication Default and High-Assurance Opt-In
+
+Scenario 240 的 `tests/test_publication_planning.py` 覆蓋 worktree 綁定、精確 SHA/ref、舊指紋拒絕、Host denial、PR 重用與 squash merge 恢復；fixture 不等於真實 Host 或 REST 驗收。
 
 
 Personal mode allows an Agent to publish a validated engineering branch and create a PR to the live remote default branch without a separate grant. An explicitly requested PR merge requires exact candidate/head and live default-base binding, a mergeable open PR, and passing required checks; Claude Code and Gemini CLI require native per-call confirmation. Codex remains `ADVISORY` and cannot guarantee interception of direct merge commands. A protected administrator trust-root selects high assurance; missing, invalid, or unavailable signed authorization blocks without fallback. Direct protected-branch push, tag/release, delete, bypass flags, unsafe commands, and content-scan failures remain denied.

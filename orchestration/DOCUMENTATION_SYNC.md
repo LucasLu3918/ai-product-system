@@ -29,6 +29,8 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 ## Audience synchronization
 
+Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
+
 Creative asset import usage is documented in the Human User Guide and its Agent-facing workflow protocol.
 
 
@@ -215,6 +217,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 
 ## Human documentation placement
+
+Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
 The import commands belong to the existing creative workflow documentation and are linked from the canonical documentation map.
 

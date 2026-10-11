@@ -22,6 +22,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+Read-only publication prepare/diagnose results do not replace this exact-candidate Gate. Native execution revalidates authority; required PR/main checks and task merge intent remain separate from planning fingerprints.
+
 Plan29 #6 binds the import implementation, direct lifecycle evidence, and Core Change Test Matrix to the same candidate head and changed-file set.
 
 

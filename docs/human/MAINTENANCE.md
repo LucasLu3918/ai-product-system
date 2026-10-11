@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+發布恢復使用 `aips publish prepare` 重新觀察目前候選與 live GitHub 狀態；既有 OPEN PR 不再建立，CLOSED/歧義 PR 停止，MERGED 必須驗證 exact PR head 與 merge commit 已納入 live base。觀察只由呼叫者選擇保存，不儲存 prompt、body 內容或憑證。
+
 The creative workspace import flow is covered in the User Guide and canonical creative protocol, with the CLI and lifecycle paths reconciled.
 
 
@@ -696,6 +698,8 @@ Plan21 Phase 0 recorded a clean `origin/main` full-validation baseline at 165,75
 
 
 ## Controlled branch cleanup
+
+發布恢復使用 `aips publish prepare` 重新觀察目前候選與 live GitHub 狀態；既有 OPEN PR 不再建立，CLOSED/歧義 PR 停止，MERGED 必須驗證 exact PR head 與 merge commit 已納入 live base。觀察只由呼叫者選擇保存，不儲存 prompt、body 內容或憑證。
 
 一般 Branch Hygiene 仍是 `report_only`。唯讀報告以目前 `main` SHA、remote branch SHA 與 PR 狀態產生 `KEEP`、`SUPERSEDED`、`REBASE_REQUIRED` 或 `CLEANUP_CANDIDATE` 建議。這些狀態只描述觀察到的證據，不會關閉 PR、執行 rebase/merge 或授予刪除權限。只有在 repository maintainer 明確批准的 one-time manifest 中，AIPS 才可刪除 remote branch。
 

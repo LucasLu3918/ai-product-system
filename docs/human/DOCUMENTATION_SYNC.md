@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
+
 The creative workspace import CLI workflow is maintained in USER_GUIDE.md and orchestration/CREATIVE_DIRECTION.md.
 
 
@@ -202,6 +204,8 @@ Canonical source 是 docs/human/TECHNOLOGY_GUIDE.md。舊 HTML 只保留 backwar
 Getting Started / Installation / User Guide 以 task-oriented方式導覽；Architecture / Technology Guide 負責 explanation；Conformance 負責 reference/evidence history；Maintenance 文件給 maintainer。
 
 ## Deterministic protection
+
+Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
 Plan29 #6 binds its Change Impact and Core Change Test Matrix to the exact implementation candidate before publication.
 

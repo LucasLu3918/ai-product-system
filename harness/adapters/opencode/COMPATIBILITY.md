@@ -1,5 +1,7 @@
 # OpenCode compatibility and acceptance
 
+
+Publication prepare/diagnose planning is read-only and binds an explicit candidate worktree; native tools retain their own permission and authority checks. Re-observe live Git/PR state before continuation; a planning fingerprint never grants publication or merge authority.
 The adapter uses native global AGENTS, canonical Skill/Command projections, a managed V2 plugin, and review-only MCP config. It does not select models, change user JSONC, download OpenCode or register MCP automatically. The plugin injects compact AIPS context before each primary model dispatch, uses the permission hook for supported native file actions, and registers one scoped `creative_execution` tool for local EPHEMERAL bundles. Isolated macOS OpenCode v2.0.24 acceptance verifies native hooks; overall governance remains **ADVISORY** because arbitrary Shell effects, other MCP/custom tools and out-of-process writes remain outside the guard.
 
 ## Contract profiles

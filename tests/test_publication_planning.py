@@ -1,0 +1,258 @@
+from __future__ import annotations
+
+import io
+import json
+import os
+import subprocess
+import sys
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'scripts'))
+import governance_guard as guard
+import publication_authority as auth
+import publication_planning as planning
+
+
+class PlanningTest(unittest.TestCase):
+    def git(self, cwd, *args):
+        proc = subprocess.run(['git', *args], cwd=cwd, capture_output=True, text=True, check=True)
+        return proc.stdout.strip()
+
+    def setUp(self):
+        clean_environment = patch.dict(os.environ)
+        clean_environment.start()
+        self.addCleanup(clean_environment.stop)
+        for key in list(os.environ):
+            if key in {'GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE', 'GIT_CONFIG_PARAMETERS'} or key.startswith(('GIT_CONFIG_COUNT', 'GIT_CONFIG_KEY_', 'GIT_CONFIG_VALUE_')):
+                os.environ.pop(key)
+        temp = tempfile.TemporaryDirectory()
+        self.addCleanup(temp.cleanup)
+        self.root = Path(temp.name).resolve()
+        self.repo, self.remote = self.root / 'repo', self.root / 'remote.git'
+        self.repo.mkdir()
+        self.git(self.repo, 'init', '-b', 'main')
+        self.git(self.repo, 'config', 'user.name', 'Fixture')
+        self.git(self.repo, 'config', 'user.email', 'fixture' + '@' + 'example.test')
+        (self.repo / 'file.txt').write_text('base\n')
+        self.git(self.repo, 'add', '.')
+        self.git(self.repo, 'commit', '-m', 'base')
+        self.git(self.root, 'init', '--bare', str(self.remote))
+        self.git(self.remote, 'symbolic-ref', 'HEAD', 'refs/heads/main')
+        self.git(self.repo, 'remote', 'add', 'origin', str(self.remote))
+        self.git(self.repo, 'push', 'origin', 'main')
+        self.git(self.repo, 'switch', '-c', 'codex/plan30')
+        (self.repo / 'file.txt').write_text('candidate\n')
+        self.git(self.repo, 'commit', '-am', 'candidate')
+        self.head = self.git(self.repo, 'rev-parse', 'HEAD')
+        self.body = self.root / 'body.md'
+        self.body.write_text('Candidate validation evidence.\n')
+        self.rows = []
+        for target, replacement in [('publication_mode', lambda: 'personal')]:
+            p = patch.object(auth, target, replacement)
+            p.start()
+            self.addCleanup(p.stop)
+        p = patch.object(planning, '_repo', return_value='fixture/repo')
+        p.start()
+        self.addCleanup(p.stop)
+        p = patch.object(planning, '_prs', side_effect=lambda *args: self.rows)
+        p.start()
+        self.addCleanup(p.stop)
+
+    def prepare(self, **kwargs):
+        return planning.prepare(self.repo, title='Candidate', body_file=self.body, **kwargs)
+
+    def row(self, state='OPEN'):
+        return {'number': 1, 'state': state, 'headRefOid': self.head, 'headRefName': 'codex/plan30',
+                'baseRefName': 'main', 'isDraft': False, 'mergeCommit': None}
+
+    def test_push_plan_is_literal_worktree_bound_and_read_only(self):
+        before = self.git(self.remote, 'show-ref')
+        result = self.prepare()
+        self.assertEqual(result['status'], 'PLANNED', result)
+        call = result['invocations'][0]
+        self.assertEqual(call['cwd'], str(self.repo))
+        self.assertEqual(call['argv'], ['git', 'push', 'origin', self.head + ':refs/heads/codex/plan30'])
+        self.assertEqual(self.git(self.remote, 'show-ref'), before)
+        self.assertFalse(result['authorized'])
+        self.assertEqual(result['host_permission'], 'UNKNOWN')
+
+    def test_dirty_and_wrong_root_have_safe_codes(self):
+        (self.repo / 'private.txt').write_text('untracked')
+        self.assertEqual(self.prepare()['diagnostics'][0]['reason_code'], 'WORKTREE_DIRTY')
+        result = planning.prepare(self.repo / '.git', title='Candidate', body_file=self.body)
+        self.assertEqual(result['status'], 'BLOCKED')
+
+    def test_changed_body_invalidates_fingerprint(self):
+        first = self.prepare()
+        self.body.write_text('New reviewed body\n')
+        result = self.prepare(expected_fingerprint=first['fingerprint'])
+        self.assertEqual(result['diagnostics'][0]['reason_code'], 'CANDIDATE_CHANGED')
+        self.assertEqual(result['invocations'], [])
+
+    def test_pushed_candidate_plans_pr_then_reuses_existing_pr(self):
+        self.git(self.repo, 'push', 'origin', self.head + ':refs/heads/codex/plan30')
+        # _repo is mocked for local bare-Git fixtures; action still verifies the GitHub identity.
+        real_action = auth.action
+        def action(root, operation, argv, base, **kwargs):
+            if operation == 'gh_pr_create':
+                return {}
+            return real_action(root, operation, argv, base, **kwargs)
+        with patch.object(auth, 'action', side_effect=action):
+            result = self.prepare()
+        self.assertEqual(result['next_step'], 'CREATE_PR', result)
+        argv = result['invocations'][0]['argv']
+        for option in ('--repo', '--head', '--base', '--title', '--body-file'):
+            self.assertIn(option, argv)
+        self.rows = [self.row()]
+        result = self.prepare()
+        self.assertEqual(result['next_step'], 'CHECKS_AND_MERGE_INTENT')
+        self.assertEqual(result['invocations'], [])
+
+    def test_duplicate_and_closed_prs_do_not_create_another(self):
+        self.git(self.repo, 'push', 'origin', self.head + ':refs/heads/codex/plan30')
+        self.rows = [self.row(), {**self.row(), 'number': 2}]
+        self.assertEqual(self.prepare()['diagnostics'][0]['reason_code'], 'PR_STATE_AMBIGUOUS')
+        self.rows = [self.row('CLOSED')]
+        self.assertEqual(self.prepare()['diagnostics'][0]['reason_code'], 'PR_STATE_AMBIGUOUS')
+
+    def test_host_denial_never_retries(self):
+        with patch.object(auth, 'git', side_effect=AssertionError('must not observe/retry')):
+            result = self.prepare(host_denied=True)
+        self.assertEqual(result['diagnostics'][0]['reason_code'], 'HOST_PERMISSION_DENIED')
+        self.assertEqual(result['invocations'], [])
+
+    def test_assurance_never_falls_back_or_consumes(self):
+        with patch.object(auth, 'publication_mode', return_value='high_assurance'), \
+                patch.object(auth, 'configured_authority', return_value=object()), \
+                patch.object(auth, 'verify', side_effect=AssertionError('must not consume')):
+            result = self.prepare()
+        self.assertEqual(result['status'], 'AWAITING_AUTHORITY', result)
+        self.assertEqual(result['diagnostics'][0]['reason_code'], 'AUTHORITY_REQUIRED')
+        with patch.object(auth, 'publication_mode', side_effect=auth.PublicationError('private', 'AUTHORITY_CONFIG_INVALID')):
+            result = self.prepare()
+        self.assertNotIn('private', json.dumps(result))
+        self.assertEqual(result['diagnostics'][0]['reason_code'], 'AUTHORITY_CONFIG_INVALID')
+
+    def test_scan_failure_and_exception_text_are_redacted(self):
+        with patch('check_secret_leakage.scan_candidate', return_value=([{'private': 'value'}], [], {}, {})):
+            result = self.prepare()
+        self.assertEqual(result['diagnostics'][0]['reason_code'], 'CONTENT_SCAN_BLOCKED')
+        with patch.object(auth, 'git', side_effect=auth.PublicationError('https://token.invalid/private')):
+            result = self.prepare()
+        self.assertNotIn('token.invalid', json.dumps(result))
+
+    def test_diagnose_source_ref_options_and_compounds(self):
+        cases = [
+            ('git push origin codex/plan30:refs/heads/codex/plan30', 'PUSH_SOURCE_NOT_EXACT_SHA'),
+            ('git push origin ' + self.head + ':codex/plan30', 'INVALID_TARGET_REF'),
+            ('git push -u origin ' + self.head + ':refs/heads/codex/plan30', 'COMMAND_FORM_UNSUPPORTED'),
+            ('pwd; git push origin main', 'COMMAND_FORM_UNSUPPORTED'),
+        ]
+        for command, code in cases:
+            with self.subTest(command=command):
+                self.assertEqual(planning.diagnose(self.repo, command)['diagnostics'][0]['reason_code'], code)
+
+    def test_high_assurance_diagnose_requires_lease_before_grant(self):
+        command = 'git push origin ' + self.head + ':refs/heads/codex/plan30'
+        with patch.object(auth, 'publication_mode', return_value='high_assurance'), \
+                patch.object(auth, 'configured_authority', return_value=object()):
+            self.assertEqual(planning.diagnose(self.repo, command)['status'], 'BLOCKED')
+            leased = command.replace('git push ', 'git push --force-with-lease=refs/heads/codex/plan30: ')
+            result = planning.diagnose(self.repo, leased)
+        self.assertEqual(result['status'], 'AWAITING_AUTHORITY', result)
+        self.assertFalse(result['authorized'])
+
+    def test_alternate_git_environment_is_still_denied(self):
+        with patch.dict(os.environ, {'GIT_CONFIG_COUNT': '1', 'GIT_CONFIG_KEY_0': 'safe.directory', 'GIT_CONFIG_VALUE_0': '*'}):
+            result = self.prepare()
+        self.assertEqual(result['status'], 'BLOCKED')
+        self.assertEqual(result['invocations'], [])
+
+    def test_real_isolated_worktree_has_distinct_identity(self):
+        other = self.root / 'clean'
+        self.git(self.repo, 'worktree', 'add', '-b', 'codex/clean', str(other), 'HEAD')
+        first = self.prepare()
+        second = planning.prepare(other, title='Candidate', body_file=self.body)
+        self.assertEqual(first['observation']['repository_id'], second['observation']['repository_id'])
+        self.assertNotEqual(first['observation']['worktree_id'], second['observation']['worktree_id'])
+        self.assertEqual(second['invocations'][0]['cwd'], str(other))
+
+    def test_base_advance_blocks_old_candidate(self):
+        self.git(self.repo, 'switch', 'main')
+        (self.repo / 'base.txt').write_text('base advance\n')
+        self.git(self.repo, 'add', '.')
+        self.git(self.repo, 'commit', '-m', 'base advance')
+        self.git(self.repo, 'push', 'origin', 'main')
+        self.git(self.repo, 'switch', 'codex/plan30')
+        self.assertEqual(self.prepare()['diagnostics'][0]['reason_code'], 'BASE_NOT_ANCESTOR')
+
+    def test_squash_merge_resume_verifies_remote_integration(self):
+        self.git(self.repo, 'switch', 'main')
+        self.git(self.repo, 'merge', '--squash', 'codex/plan30')
+        self.git(self.repo, 'commit', '-m', 'squash candidate')
+        merged = self.git(self.repo, 'rev-parse', 'HEAD')
+        self.git(self.repo, 'push', 'origin', 'main')
+        self.git(self.repo, 'switch', 'codex/plan30')
+        self.rows = [{**self.row('MERGED'), 'mergeCommit': {'oid': merged}}]
+        result = self.prepare()
+        self.assertEqual(result['status'], 'COMPLETE', result)
+        self.assertEqual(result['invocations'], [])
+        self.rows[0]['mergeCommit'] = None
+        self.assertEqual(self.prepare()['status'], 'BLOCKED')
+
+    def test_pr_discovery_rejects_wrong_identity_and_truncation(self):
+        for rows in ([{**self.row(), 'baseRefName': 'other'}], [self.row()] * 100):
+            with patch.object(auth, 'run', return_value=json.dumps(rows)), self.assertRaises(auth.PublicationError):
+                # Call the original function, bypassing the fixture discovery mock.
+                PlanningTest.original_prs(self.repo, 'fixture/repo', 'codex/plan30', 'main')
+
+    def test_native_runtime_diagnostics_retain_denial_and_redact_raw_error(self):
+        command = 'git push origin ' + self.head + ':refs/heads/codex/plan30'
+        for runtime in ('claude-code', 'gemini-cli'):
+            output = io.StringIO()
+            with patch('sys.stdin', io.StringIO(json.dumps({'cwd': str(self.repo), 'tool_input': {'command': command}}))), \
+                    patch('sys.stdout', output), patch('runtime_policy.action_from_hook', return_value=None), \
+                    patch.object(guard, 'safe_emit', return_value={'decision': 'ALLOW'}), \
+                    patch.object(auth, 'validate_personal_action', side_effect=auth.PublicationError('private-token', 'WORKTREE_DIRTY')):
+                guard.hook(runtime)
+            response = output.getvalue()
+            self.assertIn('WORKTREE_DIRTY', response)
+            self.assertIn('deny', response)
+            self.assertNotIn('private-token', response)
+
+    def test_merge_plan_requires_intent_and_enabled_method(self):
+        self.git(self.repo, 'push', 'origin', self.head + ':refs/heads/codex/plan30')
+        self.rows = [self.row()]
+        real_action = auth.action
+        def action(root, operation, argv, base, **kwargs):
+            return {} if operation == 'gh_pr_merge' else real_action(root, operation, argv, base, **kwargs)
+        original = auth.run
+        with patch.object(auth, 'run', wraps=auth.run) as run, patch.object(auth, 'action', side_effect=action):
+            # Only repository-metadata REST is mocked; Git observations remain real.
+            run.side_effect = lambda root, *argv: json.dumps({'allow_merge_commit': True}) if argv[:2] == ('gh', 'api') else original(root, *argv)
+            result = self.prepare(merge_intent=True, runtime='claude-code')
+        self.assertEqual(result['next_step'], 'NATIVE_MERGE_CONFIRMATION', result)
+        self.assertIn('--merge', result['invocations'][0]['argv'])
+        self.assertIn('--match-head-commit', result['invocations'][0]['argv'])
+
+    def test_cli_prepare_and_diagnose_are_reachable(self):
+        for args, code in [
+            (['prepare', '--title', 'Candidate', '--body-file', str(self.body), '--host-denied'], 'HOST_PERMISSION_DENIED'),
+            (['diagnose', '--command', 'pwd; git push origin main'], 'COMMAND_FORM_UNSUPPORTED'),
+        ]:
+            proc = subprocess.run([str(ROOT / 'bin/aips'), 'publish', *args, '--worktree', str(self.repo),
+                                   '--project-root', str(ROOT), '--format', 'json'],
+                                  cwd=self.root, env={**os.environ, 'AIPS_VALIDATION_PYTHON': sys.executable},
+                                  capture_output=True, text=True, check=False)
+            self.assertEqual(proc.returncode, 1, proc.stderr)
+            self.assertEqual(json.loads(proc.stdout)['diagnostics'][0]['reason_code'], code)
+
+
+PlanningTest.original_prs = staticmethod(planning._prs)
+
+if __name__ == '__main__':
+    unittest.main()

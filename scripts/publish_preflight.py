@@ -753,6 +753,19 @@ def common(parser: argparse.ArgumentParser) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     subs = parser.add_subparsers(dest="command", required=True)
+    prepare = subs.add_parser("prepare", help="Read-only native publication command and resume plan")
+    prepare.add_argument("--worktree", required=True, type=Path)
+    prepare.add_argument("--title", required=True)
+    prepare.add_argument("--body-file", required=True, type=Path)
+    prepare.add_argument("--runtime", choices=("codex", "claude-code", "gemini-cli", "opencode"), default="codex")
+    prepare.add_argument("--expected-fingerprint")
+    prepare.add_argument("--host-denied", action="store_true")
+    prepare.add_argument("--merge-intent", action="store_true", help="Task intent only; never a grant or host permission")
+    prepare.add_argument("--format", choices=("yaml", "json"), default="yaml")
+    diagnose = subs.add_parser("diagnose", help="Diagnose a literal native command without executing it")
+    diagnose.add_argument("--worktree", required=True, type=Path)
+    diagnose.add_argument("--command", dest="native_command", required=True)
+    diagnose.add_argument("--format", choices=("yaml", "json"), default="yaml")
     plan = subs.add_parser("plan")
     common(plan)
     preview = subs.add_parser("preview")
@@ -791,6 +804,16 @@ def main() -> int:
     checks.add_argument("--format", choices=("yaml", "json"), default="yaml")
     args = parser.parse_args()
     try:
+        if args.command in {"prepare", "diagnose"}:
+            import publication_planning
+            if args.command == "prepare":
+                result = publication_planning.prepare(args.worktree, title=args.title, body_file=args.body_file,
+                    runtime=args.runtime, expected_fingerprint=args.expected_fingerprint,
+                    host_denied=args.host_denied, merge_intent=args.merge_intent)
+            else:
+                result = publication_planning.diagnose(args.worktree, args.native_command)
+            emit(result, args.format)
+            return 1 if result["status"] == "BLOCKED" else 0
         if args.command == "docs-impact":
             for planned in args.planned_path:
                 if Path(planned).is_absolute() or ".." in Path(planned).parts or not planned or "\0" in planned:
