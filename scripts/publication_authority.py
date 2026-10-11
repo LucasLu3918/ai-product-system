@@ -297,9 +297,7 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
                 if position + 1 >= len(argv) or argv[position + 1].startswith('-'):
                     raise PublicationError('missing explicit option value')
                 position += 2
-            elif flag in switches:
-                position += 1
-            elif operation == 'gh_pr_merge' and flag == '--auto':
+            elif flag in switches or operation == 'gh_pr_merge' and flag == '--auto':
                 position += 1
             else:
                 raise PublicationError('unsupported or ambiguous GitHub publication option')
