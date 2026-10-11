@@ -595,6 +595,8 @@ For Large/Core changes, architecture-diagram impact is mandatory. Update each af
 
 Branch Hygiene consumes exact remote branch SHAs, current-main and read-only PR metadata to produce advisory lifecycle dispositions. It can identify work to keep, superseded branches, PRs that require rebase, and cleanup candidates; report generation never merges, rebases, closes PRs or deletes branches. See `orchestration/BRANCH_HYGIENE.md` for the authority boundary.
 
+Stable release readiness reuses the exact-candidate version-tag policy and read-only workflow; install and update recovery evidence lives with Scenario 214 and the release-channel lifecycle. A READY assessment never creates a tag or GitHub Release.
+
 Creative provenance separates workflow execution, raster validity, model inference, Human visual review and user acceptance.
 
 

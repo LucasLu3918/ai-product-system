@@ -225,6 +225,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Stable release readiness is an exact-candidate, read-only decision. Scenario 214 covers stable install, main-channel fast-forward, and unchanged installed state after a divergent update is rejected; creating a release tag remains a separate approval.
+
 Large/Core candidate validation binds its test evidence and documentation closure to the exact diff in the Core Change Matrix. The read-only branch lifecycle report is a maintenance signal; it does not replace exact-candidate publication checks or authorize a Git mutation.
 
 創作修正重用 `creative_execution` 與 `creative_repair`：`feedback` 記錄缺陷、`repair` 複製版本化 Profiles／Bundle、`compare` 提供 hash-bound 前後對照、`quality-check` 以本地 vision 檢查整體及四個細節裁切。Pillow 12.3.0 是固定影像解碼依賴。

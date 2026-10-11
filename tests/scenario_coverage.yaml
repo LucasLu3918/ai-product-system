@@ -1870,6 +1870,7 @@ scenarios:
       - scripts/version_tag_policy.py
       - .github/workflows/release-readiness.yml
       - tests/evidence/release_channel_lifecycle.py
+      - tests/evidence/install_preflight_lifecycle.py
       - tests/evidence/version_policy_lifecycle.py
   - id: "215"
     path: tests/scenarios/215-stable-runtime-dependency-constraints.md

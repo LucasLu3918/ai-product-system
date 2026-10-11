@@ -466,6 +466,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+The stable release-readiness workflow checks one exact main SHA and proposed version with read-only permissions. Scenario 214's install/preflight lifecycle verifies successful fast-forward and preservation of the installed SHA and `VERSION` when divergent history is refused; failed updates do not auto-merge, rebase, or roll back.
+
 Branch Hygiene is a read-only maintenance capability: it reconciles current main, exact remote heads, active local checkouts and current PR state, then reports conservative dispositions. Any later cleanup still needs the exact current-main-bound manifest and its separate Human authorization.
 
 Publication preflight resolves the live remote default branch and scans the exact candidate/history. Personal mode trusts the current `origin`, and a worktree does not isolate same-account credentials or `.git/config`. The exact-candidate Gate proves fitness only; merge requires task intent, exact PR head/default-base binding, and passing required checks.

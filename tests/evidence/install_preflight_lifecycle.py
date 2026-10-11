@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 from __future__ import annotations
 
 import os
@@ -258,8 +257,33 @@ def divergence_gate() -> None:
             (updater / "remote.txt").write_text("remote\n", encoding="utf-8")
 
         remote_commit(remote, base, "diverge-updater", mutate)
+        installed_sha = git(system, "rev-parse", "HEAD").stdout.strip()
+        installed_version = (system / "VERSION").read_text(encoding="utf-8")
         result = cli(system, ["preflight", str(project)], env)
         require(result.returncode != 0 and "diverged" in result.stderr, "Preflight must never auto merge/rebase divergent system history")
+        require(git(system, "rev-parse", "HEAD").stdout.strip() == installed_sha,
+                "Rejected divergent update must leave the installed system commit unchanged")
+        require((system / "VERSION").read_text(encoding="utf-8") == installed_version,
+                "Rejected divergent update must leave the installed system version unchanged")
+
+
+def stable_update_without_tag_gate() -> None:
+    with tempfile.TemporaryDirectory() as tmp:
+        base = Path(tmp)
+        system, _ = system_fixture(base, "stable-without-tag")
+        env = make_env(base / "runtime", base / "validation.log")
+        channel_path = Path(git(system, "rev-parse", "--path-format=absolute", "--git-path", "aips-channel").stdout.strip())
+        channel_path.write_text("stable\n", encoding="utf-8")
+        installed_sha = git(system, "rev-parse", "HEAD").stdout.strip()
+        installed_version = (system / "VERSION").read_text(encoding="utf-8")
+
+        result = cli(system, ["update"], env)
+        require(result.returncode != 0 and "No stable release tag exists yet" in result.stderr,
+                "Stable updater must fail closed when the remote has no verified release tag")
+        require(git(system, "rev-parse", "HEAD").stdout.strip() == installed_sha,
+                "Stable update without a release tag must leave the installed commit unchanged")
+        require((system / "VERSION").read_text(encoding="utf-8") == installed_version,
+                "Stable update without a release tag must leave the installed version unchanged")
 
 
 def major_version_gate() -> None:
@@ -582,6 +606,7 @@ def shell_integration_lifecycle() -> None:
 def main() -> int:
     preflight_and_project_lifecycle()
     divergence_gate()
+    stable_update_without_tag_gate()
     major_version_gate()
     cli_collision_contract()
     runtime_dependency_health_contract()

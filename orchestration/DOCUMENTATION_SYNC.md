@@ -263,6 +263,7 @@ The placement map includes explicit source triggers for Turn Context intent, obs
 The same canonical H2 placement contract applies to pre-commit working-tree preview and committed repository preflight. Preview includes tracked, staged, unstaged and untracked paths and identifies the allowed H2 for misplaced content.
 
 - Version-tag policy and release-readiness evaluator changes trigger the configured canonical Human and Agent documentation closure; preview and reconcile every required path.
+- Stable install/update recovery evidence is bound to Scenario 214 and its Human/Agent conformance placements. Preserve exact-candidate readiness, fast-forward-only updates, unchanged installed state on divergence, and the separate release-publication approval.
 
 The new `scripts/retrieval_storage.py` helper belongs to the existing Project Intelligence topic. Register behavior-bearing helpers in both `config/documentation-placement.yaml` and `config/documentation-sync.yaml`; changes to those governance maps require the Documentation Map, Documentation Sync, Technology Guide and this Agent protocol closure.
 
