@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Generate a self-contained Skill Explorer from the canonical AIPS registry."""
 
 from __future__ import annotations
@@ -49,7 +48,7 @@ def build_cards(registry: dict[str, Any], source: dict[str, Any]) -> tuple[str, 
     categories: set[str] = set()
     active = registry.get("skills")
     if not isinstance(active, dict):
-        raise ValueError("skills/INDEX.yaml must contain a skills mapping")
+        raise TypeError("skills/INDEX.yaml must contain a skills mapping")
 
     for identifier, skill in sorted(active.items()):
         category = str(skill.get("capability", "other"))
@@ -79,7 +78,7 @@ def build_cards(registry: dict[str, Any], source: dict[str, Any]) -> tuple[str, 
 
     records = source.get("skills")
     if not isinstance(records, list):
-        raise ValueError("source disposition must contain a skills list")
+        raise TypeError("source disposition must contain a skills list")
     for record in records:
         disposition = record.get("disposition")
         if disposition not in DISPOSITION:
