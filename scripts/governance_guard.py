@@ -112,7 +112,8 @@ def verify_record(path: Path, operation: str, cwd: Path, check_actual: bool = Tr
             verify(doc, operation, cwd, commands[0], consume=consume)
             return True, "external publication authority verified", doc
         except PublicationError as exc:
-            return False, str(exc), doc  # Only constant redacted protocol reasons, never payload/path.
+            diagnostic = exc.diagnostic()
+            return False, diagnostic['reason_code'] + ': ' + diagnostic['detail'] + ' ' + diagnostic['next_step'], doc
         except (OSError, ValueError, TypeError, KeyError, AttributeError, ImportError, yaml.YAMLError, subprocess.TimeoutExpired) as exc:
             # Do not emit exception text from subprocess/network/record parsing.
             return False, "publication authority unavailable or binding rejected (" + type(exc).__name__ + ")", doc
@@ -574,8 +575,12 @@ def hook(runtime: str) -> int:
                     valid, reason, _ = verify_record(path, approval_operations[0], cwd, command=command, consume=True)
                     ok = valid
         except (OSError, ValueError, TypeError, KeyError, AttributeError, ImportError, yaml.YAMLError, subprocess.TimeoutExpired) as exc:
-            logger.exception("Approval verification failed closed: %s", type(exc).__name__)
-            reason = "publication authorization failed (" + type(exc).__name__ + ")"
+            logger.warning("Approval verification failed closed: %s", type(exc).__name__)
+            if isinstance(exc, ValueError) and hasattr(exc, 'diagnostic'):
+                diagnostic = exc.diagnostic()
+                reason = diagnostic['reason_code'] + ': ' + diagnostic['detail'] + ' ' + diagnostic['next_step']
+            else:
+                reason = "publication authorization failed (" + type(exc).__name__ + ")"
 
     if runtime == "claude-code":
         print(json.dumps({"hookSpecificOutput": {

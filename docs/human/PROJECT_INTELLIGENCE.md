@@ -86,6 +86,8 @@ Attach 將 External Intelligence validated migrate 到 `.ai/intelligence/`；Det
 
 ## Change Impact
 
+Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
+
 The creative workspace import review uses a seed-scoped graph for the profile, CLI, and direct test consumers; repository-wide graph coverage remains partial/unknown.
 
 

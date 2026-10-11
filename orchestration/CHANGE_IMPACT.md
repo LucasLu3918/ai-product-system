@@ -108,6 +108,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+Publication planning impact includes the lazy CLI facade, authority diagnostics, native Guard consumers, Git/PR observation fingerprints and canonical documentation. Candidate plans are read-only evidence; reconcile the exact final diff without promoting global graph coverage.
+
 For creative workspace asset import, reconcile the profile, CLI dispatch, direct lifecycle, documentation, and exact seed-scoped evidence while leaving global graph coverage unchanged.
 
 

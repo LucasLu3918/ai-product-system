@@ -138,6 +138,8 @@ Temporal Project Intelligence 的 historical query 由既有 deterministic CLI�
 
 ## Capability truth
 
+Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
+
 Codex managed block 保留 Runtime／使用者選定的合格主要模型，並指向 bounded primary execution；不更改模型設定或擴大 tool guard 權限。
 
 GitHub governance snapshot 是 repository operator 的唯讀工具，不是 runtime adapter 能力，也不擴張 Harness 的遠端寫入權限。

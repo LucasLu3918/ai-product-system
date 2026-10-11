@@ -17,3 +17,11 @@ Expected:
 - if the fixed administrator trust-root exists, high-assurance mode is selected; only a valid external single-use grant permits protected publication;
 - an invalid or unreadable present trust-root fails closed and never falls back to personal mode;
 - Claude and Gemini native controls provide the per-call confirmation described above; Codex remains `ADVISORY`, cannot guarantee interception of direct `gh pr merge`, and must not claim host enforcement. Human accepts this Codex limitation for personal mode.
+
+Publication planning acceptance (Plan30):
+
+- `prepare` binds explicit worktree identity, full HEAD/base, origin, remote head, PR state and body/policy digests; it returns literal cwd/argv without executing or issuing approval.
+- `diagnose` exposes fixed safe failure codes for source/ref/cwd/base/content/metadata problems. Raw exception text and credentials are omitted.
+- retry re-observes live evidence, reuses an OPEN PR, blocks ambiguous/CLOSED exact candidates and verifies a MERGED candidate through its integrated merge commit, including squash merges.
+- changed inputs reject the old fingerprint; host-denied operations stop without alternate commands; high-assurance never falls back or consumes a grant during planning.
+- real bare-Git and native hook fixtures are separate from actual Claude/Gemini Host permission and GitHub REST acceptance.

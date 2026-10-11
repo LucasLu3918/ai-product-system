@@ -52,6 +52,8 @@ External Agent/provider credentials 永遠是 optional enhancement；缺少 cred
 
 ## Effectiveness Feedback
 
+Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
+
 Plan29 #6 evaluates the workspace transfer contract through exact source hashes, create-only destination checks, and direct CLI lifecycle evidence.
 
 

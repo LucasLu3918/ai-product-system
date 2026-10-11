@@ -120,6 +120,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Publication planning 按需擴充既有 preflight：觀察 worktree identity、精確候選、live base 與 PR，再交回原生工具。Claude/Gemini 保留 native per-call merge confirmation；Codex 仍為 ADVISORY，OpenCode 不宣稱支援通用 Shell 發布攔截。
+
 Creative workspaces can receive existing user-owned assets through a hash-bound candidate and explicit create-only import; generation remains a separate action.
 
 
@@ -384,6 +386,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Publication planning 按需擴充既有 preflight：觀察 worktree identity、精確候選、live base 與 PR，再交回原生工具。Claude/Gemini 保留 native per-call merge confirmation；Codex 仍為 ADVISORY，OpenCode 不宣稱支援通用 Shell 發布攔截。
 
 Plan29 #6 records its approved scoped Change Impact and exact Core Change Test Matrix alongside the implementation PR.
 

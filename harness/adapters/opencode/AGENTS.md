@@ -1,5 +1,7 @@
 # AIPS Global Turn Harness
 
+
+Publication prepare/diagnose planning is read-only and binds an explicit candidate worktree; native tools retain their own permission and authority checks. Re-observe live Git/PR state before continuation; a planning fingerprint never grants publication or merge authority.
 Creative benchmark evidence is a read-only post-trial report and cannot establish OpenCode Context delivery or permission-hook acceptance.
 
 Native acceptance records exact version/platform/source evidence. Arbitrary Shell process effects, MCP/custom-tool effects and out-of-process writes are UNSUPPORTED; older reports without explicit effect coverage remain UNVERIFIED. Overall governance remains ADVISORY.

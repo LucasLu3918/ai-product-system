@@ -86,6 +86,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
+
 Creative workspace asset import is described in USER_GUIDE.md and governed by orchestration/CREATIVE_DIRECTION.md.
 
 

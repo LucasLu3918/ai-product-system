@@ -4,6 +4,8 @@
 
 ## Inputs
 
+Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
+
 Plan29 #6 publishes through the ordinary exact-candidate PR path after its repository check and scoped Change Impact evidence pass.
 
 
