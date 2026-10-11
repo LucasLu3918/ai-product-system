@@ -1,76 +1,70 @@
 version: 1
 candidate:
-  base_sha: 53577014eb8a02c049b8f81f25d5dbf92a8312e2
-  changed_files_hash: b7c4d72049d8b007fd54528a1bdf0be0b7e3a97439efe20dbbf878f6cd3d98a8
+  base_sha: f77b3f34fafef5e5531d39135d24a371d61ff815
+  changed_files_hash: 5607ccddeb37ab9e50f6ee997dbc038b5f0bef1646171ba91a2348072395471a
 change:
-  id: plan29-documentation-capability-maintenance-20261011
-  summary: Record Plan29 #12 as satisfied by existing canonical registries, deterministic generated projections, documentation synchronization, and a non-destructive report-only size audit.
+  id: plan29-real-task-outcome-evaluation-20261011
+  summary: Define the Plan29
   boundary:
-    - Preserve config/capability-registry.yaml and config/system-facts.yaml as canonical sources; their consumer indexes and reference facts remain deterministic generated projections with drift checks.
-    - Preserve documentation source-to-canonical-doc synchronization and Repository Health bindings for capability IDs, paths, canonical docs, validation evidence, and bounded discovery.
-    - Preserve report-only size measurement: oversized documents remain non-blocking WARN, and audit never archives, moves, or deletes required security or historical evidence.
-    - This candidate changes only Plan29 tracking and its Core Change Matrix; registries, projections, documentation, audit behavior, and global Impact Graph coverage remain unchanged.
+  - Reuse the existing Agent Eval task_observation contract, Trajectory Eval shadow
+    evidence, and allowlisted telemetry; do not add a second evaluator or infer missing
+    measurements.
+  - Define a Human-reviewed fixed cohort, exact case fingerprints, comparable baseline/candidate
+    revisions, separate success/rework/security measures, and failure retention.
+  - Keep missing, stale, invalid, failed, or unbound evidence visible as NOT_READY/UNKNOWN;
+    the empirical benchmark remains NOT_READY until real observations exist.
+  - This candidate changes only Plan29 tracking, the existing canonical Agent Eval
+    topic, the required canonical Technology Guide, Conformance, and User Guide references,
+    and this Core Change Matrix; runtime behavior, persisted task data, telemetry,
+    and global Impact Graph coverage remain unchanged.
 matrix:
-  - boundary: Canonical capability/system-facts sources and generated documentation projections
-    reason: Generated consumer views should be checked against one canonical source so the same facts are not maintained independently.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: 'PASS: exact-candidate Core Gate runs repository validation and Ruff; capability registry, documentation sync, system-facts, and Repository Health contracts validate source/projection bindings.'
-      unit:
-        applicable: true
-        evidence: 'PASS: tests/evidence/system_facts_lifecycle.py and tests/evidence/repository_health_lifecycle.py verify deterministic generation, stale projection detection, required paths/docs/evidence, and bounded discovery.'
-      integration:
-        applicable: true
-        evidence: 'PASS: tests/validation/documentation_sync_contracts.py and Repository Health lifecycle exercise canonical doc and registry integration; exact-candidate Core Gate validates the repository.'
-      contract:
-        applicable: true
-        evidence: 'PASS: capability_registry.py check reports 45 capabilities and 10 surfaces valid; system_facts.py --check confirms generated SYSTEM_REFERENCE facts match the canonical registries.'
-      e2e:
-        applicable: true
-        evidence: 'PASS: repository_health_lifecycle verifies the complete inventory lifecycle and projection drift; the capability registry check is read-only and deterministic.'
-      security:
-        applicable: true
-        evidence: 'PASS: canonical registry checks are read-only; no security or historical files are moved or removed; exact-candidate mandatory secret scan is required.'
-      migration_recovery:
-        applicable: false
-        na_reason: No registry schema, generated projection, persistent state, or migration changes in this evidence-based closure.
-      cli_harness:
-        applicable: true
-        evidence: 'PASS: existing capability_registry.py check and system_facts.py --check CLIs were exercised; this candidate does not change dispatch or harness behavior.'
-      docs_schema:
-        applicable: true
-        evidence: 'PASS: Repository Health and DOCUMENTATION_SYNC define canonical documentation and generated-view ownership; the proposal records the existing maintenance boundaries.'
-  - boundary: Report-only document-size audit and preservation of required evidence
-    reason: Size signals should guide review without silently deleting or relocating required security, conformance, or historical material.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: 'PASS: tests/validation/document_size_audit_contracts.py checks threshold and report-only behavior; exact-candidate Core Gate runs repository validation and secret scan.'
-      unit:
-        applicable: true
-        evidence: 'PASS: tests/evidence/document_size_audit_lifecycle.py verifies tracked-file measurement, WARN behavior, and no archive/move side effects.'
-      integration:
-        applicable: true
-        evidence: 'PASS: current audit scans 232 tracked files; eight over 50 KB are WARN while gate_blocking=false, measurement_only=true, and archive_or_move=false.'
-      contract:
-        applicable: true
-        evidence: 'PASS: config/document-size-policy.yaml sets a 50,000-byte threshold, threshold_behavior=WARN, gate_blocking=false, and archive_or_move=false.'
-      e2e:
-        applicable: true
-        evidence: 'PASS: document_size_audit.py emitted the current 232-file report without a write target; oversized items remain evidence-only warnings.'
-      security:
-        applicable: true
-        evidence: 'PASS: no security/conformance/history documents are removed or moved; content-safety and mandatory exact-candidate secret scan run before publication.'
-      migration_recovery:
-        applicable: false
-        na_reason: No document migration, archive, or deletion occurs.
-      cli_harness:
-        applicable: true
-        evidence: 'PASS: the existing document_size_audit.py CLI was exercised in report-only mode; no CLI or harness code changes are proposed.'
-      docs_schema:
-        applicable: true
-        evidence: 'PASS: docs-impact and content-safety checks will run against the exact candidate; only the Plan29 proposal status changes.'
+- boundary: 'Plan29 #13 real-task benchmark protocol and truthful evidence readiness'
+  reason: A comparable benchmark must reuse existing result contracts, preserve every
+    selected outcome, and distinguish absent real observations from deterministic
+    fixture success.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: git diff --check; documentation_sync.py --files proposal protocol
+        Technology Guide reports valid=true with no errors.'
+    unit:
+      applicable: true
+      evidence: 'PASS: tests/evidence/agent_eval_framework.py and tests/evidence/trajectory_quality_gate_lifecycle.py;
+        both existing lifecycle suites pass with the configured AIPS validation interpreter.'
+    integration:
+      applicable: true
+      evidence: 'PASS: tests/evidence/telemetry_export_lifecycle.py verifies allowlisted
+        observed telemetry and failure handling; Agent Eval report audit finds 54
+        historical unbound fixtures and zero observed-host outcomes.'
+    contract:
+      applicable: true
+      evidence: 'PASS: existing Agent Eval report keeps observed task outcomes UNKNOWN
+        (sample_count=0); task_observation, Trajectory Eval BLOCK/shadow, and telemetry
+        fields are documented as separate measures.'
+    e2e:
+      applicable: false
+      na_reason: No real fixed cohort or comparable baseline/candidate runs exist.
+        Running fixture cases would fabricate the real-task benchmark requested by
+        Plan29; the protocol leaves empirical readiness NOT_READY until Human-selected
+        real runs are supplied.
+    security:
+      applicable: true
+      evidence: 'PASS: existing Agent Eval and Trajectory Eval lifecycle checks pass;
+        protocol excludes prompts, responses, private reasoning, credentials, and
+        raw traces from aggregate evidence; telemetry remains allowlisted.'
+    migration_recovery:
+      applicable: false
+      na_reason: Documentation-only candidate; no schema, persistence, migration,
+        or recovery behavior changes.
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: Agent Eval and Trajectory Eval existing lifecycle suites exercise
+        their public CLI routes; no dispatch or runtime code changes.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: documentation_sync.py reports valid=true and no errors for
+        all five content files; aips docs impact closes exactly the six candidate
+        files with no required additions.'
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

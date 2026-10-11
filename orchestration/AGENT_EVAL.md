@@ -168,3 +168,44 @@ Exact wording does not need to be identical when every response still satisfies 
 Consistency evidence is measurement, not runtime authority. It does not choose a provider, expose chain-of-thought, authorize tool calls, or replace Human review.
 
 `tests/validation/registry.py` registers `validation.eval_interop_contracts` in repository validation and preserves its existing error-aggregation position. Eval lifecycle evidence remains separately listed and runs once under `tests/validate_repository.py`.
+
+## Real-Task Outcome Evaluation
+
+This protocol compares actual Agent-assisted task runs across a fixed cohort while reusing Agent Eval, Trajectory Eval, and telemetry. It keeps deterministic rubric results, observed task outcomes, trajectory security findings, and telemetry measurements separate.
+
+The protocol is implemented, but the empirical benchmark is **NOT_READY** until a Human selects a fixed real-task cohort and both baseline and candidate runs have comparable, valid observations. Existing regression cases and recorded fixtures are not real-task runs. An absent observation is `UNKNOWN`, never zero or a pass.
+
+### Fixed cohort and comparability
+
+Before collecting a comparison, record a Human-reviewed suite manifest with a stable benchmark ID and ordered task IDs; each task's case ID, Scenario ID, and exact case fingerprint; baseline and candidate repository revisions; the same measurement definitions and execution procedure; and required evidence for each task (a case-bound Agent Eval result and, for security measurement, a run-bound Trajectory Eval result).
+
+Use the same task IDs, case fingerprints, rubric, execution procedure, and eligible task classes on both sides. Provider, model, runtime, run time, and system fingerprint are evidence metadata. A changed case fingerprint, missing result, stale or unbound system evidence, invalid result, or incompatible execution metadata is an explicit comparability failure. Do not silently drop a task to improve a rate.
+
+The suite manifest identifies the cohort; it does not assert that any task has run or passed. Select real tasks from approved, privacy-safe work. Do not copy live prompts or task content into benchmark summaries.
+
+### Measures
+
+Report each measure independently, for baseline and candidate, with numerator, denominator, rate, and evidence status:
+
+- **Task completion:** count `execution.task_observation.task_completed` only when its source is `observed_host`, the result matches the exact case fingerprint, and it is current for its declared system dependencies. A deterministic rubric PASS remains separate.
+- **Rework:** report observed `human_corrections` and `false_positives` as separate counts and per-task rates. Missing fields make that measure `UNKNOWN`; they do not mean zero.
+- **Security:** report Trajectory Eval `BLOCK` outcomes and hard security/governance findings by task. Missing, invalid, or unbound trajectory evidence is `UNKNOWN`, not a clean result. The evaluator remains in shadow mode and grants no publish authority.
+- **Observed cost and duration:** report only token counts and elapsed spans directly observed by an existing adapter or telemetry record. Unknown usage or price stays unknown; do not infer provider cost from model names or missing telemetry.
+
+Keep rubric status, task completion, rework, security, and cost in separate columns. Do not combine them into one quality score.
+
+### Failure retention and readiness
+
+Include every selected task in the report. Retain failed, blocked, invalid, stale, unbound, missing, and incomplete runs with their status and a safe failure category. Do not overwrite a failed run or replace it with a later pass; record a later attempt as another run linked to the same task. Aggregate rates must state the denominator and silently exclude no task.
+
+The comparison is `READY` only when both baseline and candidate have valid observations for every task in the fixed cohort and satisfy the comparability rules. Otherwise report `NOT_READY`, enumerate missing or invalid evidence by task ID, and leave affected rates `UNKNOWN`. Readiness is an evidence state only; it does not authorize execution, policy changes, or publication.
+
+### Privacy and existing tools
+
+Use `aips conformance agent-eval report --format yaml` for current case/result and observed-outcome status, and `aips trajectory evaluate --trace <trace.yaml> --mode shadow --format json` for per-run trajectory evidence. These outputs are not a cross-revision benchmark by themselves; retain a reviewed suite manifest and compare the same cohort under this protocol.
+
+Aggregate reports may contain benchmark/task IDs, case fingerprints, revisions, bounded counts/rates, evaluator status, and safe failure categories. Do not persist prompts, model responses, tool arguments, private reasoning, credentials, or raw traces in an aggregate. Telemetry projection remains allowlisted and is not an Agent Eval score or task-completion signal.
+
+### Current Plan29 #13 evidence
+
+The repository has the measurement components and explicit outcome fields, but its current recorded Agent Eval results contain no `observed_host` task observations. There is no selected real-task cohort or comparable baseline/candidate sample. Therefore no success, rework, or security benchmark rate is claimed, and empirical acceptance remains `NOT_READY` pending real runs.

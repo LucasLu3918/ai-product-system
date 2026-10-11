@@ -1703,6 +1703,8 @@ Validation Shadow graduation evidence is separate from Agent Eval: report valida
 
 實際任務 observation 與 deterministic rubric 分開呈現。只有與 Case 相符且 CURRENT 的 result 才納入已記錄的 task_completed、human_corrections、false_positives；缺觀察為 UNKNOWN，runtime attestation 維持 UNVERIFIED。
 
+Plan29 #13 requires comparable real-task runs against a Human-selected fixed cohort before reporting benchmark rates. Baseline/candidate comparisons retain each failed or missing task; absent real observations and trajectory security evidence stay `NOT_READY`/`UNKNOWN`. Existing Agent Eval fixture passes do not count as real-task outcomes.
+
 The extracted context helper is added to core-change freshness coverage.
 
 
