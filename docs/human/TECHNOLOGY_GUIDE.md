@@ -104,6 +104,8 @@ System changes keep the exact-candidate repository Gate enabled while any select
 
 ### Local character artwork
 
+After an explicit local trial, the read-only benchmark can summarize profile-case coverage and separately record raster validity, model outcome, Human visual review and user acceptance. It does not launch a provider or validate host hook behavior.
+
 Prompt admission counts requested outputs before generation; a short style selection may receive a fresh grant only through bounded root-bound Session state. Engine discovery distinguishes command presence, version-probe health and unverified inference, and recovery guidance never implies a fallback or download.
 
 The optional local character-art executor accepts an already-installed MFLUX CLI or a loopback ComfyUI API workflow restricted to built-in nodes. A closed model/operation registry maps FLUX.1, FLUX.2 Klein, Qwen Image Edit 2511 and Z-Image Turbo to fixed executable arguments or the registered split-loader topology. FLUX.1 edit accepts one reference, while FLUX.2/Qwen edit commands with `--image-paths` accept up to eight bounded references. ComfyUI edit accepts one staged hash-checked reference; the Z-Image Turbo profile is generate-only and checks its UNET, CLIP and VAE against the local API inventory. It disables HTTP proxying and redirects, uses offline model-hub flags, scopes create-only PNG/JPEG/WEBP output to a non-Git EPHEMERAL bundle, strips ComfyUI text metadata that can contain prompts, and records profile/workflow/input/output hashes, model revision, runtime version and license source. Preparation creates versioned fixed Profile/Bundle files without overwrite and leaves engine provenance unconfigured. Preflight does not generate; missing local engines return `BLOCKED_NO_ENGINE`. No runtime or weights are installed, and no image is sent to a cloud provider. Existing Comfy MCP guidance remains available when that user-managed route better fits the project.
@@ -265,6 +267,8 @@ The Core Creative verification path covers native prompt admission and revocatio
 `aips project diagnose <path>` 聚合既有只讀檢查，Lifecycle evidence 驗證 text/YAML/JSON、隱私遮蔽、失敗情境與不寫入行為。這份診斷不取代各 subsystem 的權威檢查或精確候選 Gate。
 
 創作驗證分別記錄命令盤點、合成 tool/provider 測試、native host 驗證及真實模型推論。未提供權重時，品質／設備效能維持未驗證，不以流程通過推定改善成效。
+
+Creative quality benchmark v2 使用 prompt-free、三種角色 archetype × 六種案例資料集，逐 profile-case 顯示 coverage，並分開彙總 model、check、compiler 失敗。輸出 raster 必須是專案內有效檔案且 SHA-256 相符。Human 視覺評分、user acceptance、runtime attestation 各自獨立；版本 1 證據保留讀取相容性，但不提供 dataset coverage。Fixture 只驗證資料契約，不證明生成品質或真實模型成功率。
 
 Creative lifecycle checks use synthetic engines and loopback fixtures; they verify command contracts and confinement, not model quality, hardware performance or visual fidelity.
 

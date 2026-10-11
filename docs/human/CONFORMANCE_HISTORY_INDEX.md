@@ -106,6 +106,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 234 — Local Character Artwork Provenance and Composition](CONFORMANCE.md#scenario-234-local-character-artwork-provenance-and-composition) | Current Human guidance |
 | [## Scenario 235 — OpenCode Native Context and Action Guard](CONFORMANCE.md#scenario-235-opencode-native-context-and-action-guard) | Current Human guidance |
 | [## Scenario 238 — Creative Task Authorization and Multi-item Execution](CONFORMANCE.md#scenario-238-creative-task-authorization-and-multi-item-execution) | Current Human guidance |
+| [## Scenario 258 — Creative Quality Cross-profile Evidence](CONFORMANCE.md#scenario-258-creative-quality-cross-profile-evidence) | Current Human guidance |
 | [## Scenario 236 — Local Creative Bundle Execution](CONFORMANCE.md#scenario-236-local-creative-bundle-execution) | Current Human guidance |
 | [## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance](CONFORMANCE.md#scenario-237-read-only-project-diagnostics-and-recovery-guidance) | Current Human guidance |
 | [## Scenario 240 — Personal Publication Default and High-Assurance Opt-In](CONFORMANCE.md#scenario-240-personal-publication-default-and-high-assurance-opt-in) | Current Human guidance |

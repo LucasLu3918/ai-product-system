@@ -1,48 +1,114 @@
 version: 1
 
 candidate:
-  base_sha: 8280471ef8f8d3a4a332414189cb847fbdb4bffd
-  changed_files_hash: 7574efebdf86dfc659d0a226b840ba2dd2cc205bddce4c261a48ab65e829d0ef
+  base_sha: a157302a3c1e7880708a038a24829b2e814e3395
+  changed_files_hash: 9be7a84a611fde25dee5f7ca34d32e3780a580e29b8bd8506e0f083992da682a
 
 change:
-  id: plan29-phase1-opencode-20261011
-  summary: Make version-bound OpenCode native acceptance explicitly report unsupported effect classes while preserving legacy report handling.
+  id: plan29-phase2-creative-quality-20261011
+  summary: Add prompt-free cross-profile creative quality coverage and preserve separate failure, Human review, user acceptance, and runtime evidence.
   boundary:
-    - Native acceptance reports remain bound to exact host version, platform and AIPS/plugin source digests.
-    - Arbitrary Shell process effects, MCP/custom-tool effects and out-of-process writes are explicitly UNSUPPORTED; missing legacy fields remain UNVERIFIED.
-    - OpenCode remains ADVISORY and the parsed Shell subset is not described as a process sandbox.
+    - Register three character archetypes and six cases as an 18-cell coverage matrix without prompts or model quality labels.
+    - Accept bounded version-2 local trial evidence with confined, valid, SHA-256-bound raster outputs and per-profile coverage.
+    - Report model, check, and compiler failures separately using bounded reason codes; reject raw prompt, traceback, and unknown fields.
+    - Preserve version-1 evidence readability with dataset coverage UNVERIFIED and keep Human review, user acceptance, and runtime attestation independent.
+    - Preserve the existing versioned, source-hash-bound, create-only repair contract; no generation, repair, provider, authority, or architecture topology is added.
+    - Update the existing conformance-isolation baseline assertion for the newly registered Scenario 258, without weakening the no-uncovered rule.
+    - Keep generated current conformance and history projections synchronized with the registered Scenario and Human/Agent documentation changes.
 
 matrix:
-  - boundary: Version-bound unsupported-effect evidence and compatibility
-    reason: Host acceptance must record unsupported effects without overstating the native guard or breaking existing local reports.
+  - boundary: Dataset integrity and cross-profile coverage
+    reason: Coverage claims must derive from a registered bounded dataset, retain missing cells explicitly, and avoid representing the matrix as generated samples or quality labels.
     checks:
       static_lint:
         applicable: true
-        evidence: "PASS: full repository validator and exact-candidate Integration Gate."
+        evidence: "PASS: Ruff check on creative_quality_benchmark.py and affected lifecycle/contract tests."
       unit:
         applicable: true
-        evidence: "PASS: Plan27 lifecycle covers exact-host acceptance, explicit unsupported effects, malformed data, and legacy reports without unsupported-effect claims."
+        evidence: "PASS: tests/evidence/creative_quality_benchmark_lifecycle.py checks 3 profiles, 6 cases, 18 expected cells, observed/missing cells, and v1 UNKNOWN coverage; conformance-isolation baseline is updated to 258 scenarios / 239 automated."
       integration:
         applicable: true
-        evidence: "PASS: OpenCode integration contract and native acceptance procedure preserve exact version/platform/source binding and advisory limits."
+        evidence: "PASS: tests/validation/creative_quality_contracts.py loads the registered dataset and exercises the benchmark lifecycle."
       contract:
         applicable: true
-        evidence: "PASS: Scenario 235 and scenario_coverage.yaml bind exact-host acceptance and unsupported-effect status."
+        evidence: "PASS: Scenario 258 and tests/scenario_coverage.yaml bind the dataset, template, benchmark, repair lifecycle, and validator."
       e2e:
-        applicable: true
-        evidence: "PASS: OpenCode v2.0.24 native loopback acceptance delivered Context and exercised native permission ALLOW/DENY plus creative admission/revocation; no production inference claimed."
+        applicable: false
+        na_reason: "No product workflow or provider dispatch changes; the registered matrix is exercised through a deterministic local fixture."
       security:
         applicable: true
-        evidence: "PASS: exact-host report explicitly marks arbitrary Shell, MCP/custom-tool and out-of-process effects UNSUPPORTED; no enforcement expansion."
+        evidence: "PASS: bounded dataset IDs/archetypes/dimensions and profile/case references are validated; report output contains no prompt or traceback fields. Exact-candidate secret scan remains part of the publication Gate."
       migration_recovery:
-        applicable: true
-        evidence: "PASS: older schema-v1 reports remain readable and missing unsupported_effects resolves to UNVERIFIED."
+        applicable: false
+        na_reason: "The dataset is a source-controlled read-only contract; no persisted project state is migrated or rewritten."
       cli_harness:
         applicable: true
-        evidence: "PASS: native acceptance writes a version/platform/source-bound report; projection validates allowed effect keys and status vocabulary."
+        evidence: "PASS: benchmark lifecycle invokes scripts/creative_quality_benchmark.py with a v2 fixture and checks JSON coverage output."
       docs_schema:
         applicable: true
-        evidence: "PASS: Scenario 235, compatibility docs and Plan29 status describe tested and unsupported effects."
+        evidence: "PASS: publication preview reports documentation placement PASS; Human and Agent docs, dataset/template, Scenario 258, and generated conformance projections are synchronized."
+
+  - boundary: Failure stage and acceptance evidence separation
+    reason: Model, output-check, and prompt-compiler failures must remain independently countable; Human visual ratings, user acceptance, and runtime attestation must not be inferred from output validity.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: "PASS: Ruff check on the affected benchmark and lifecycle modules."
+      unit:
+        applicable: true
+        evidence: "PASS: lifecycle fixture records one model, one check, and one compiler failure; malformed stage and traceback fields are rejected."
+      integration:
+        applicable: true
+        evidence: "PASS: creative quality contracts retain advisory report authority and independent Human review/user acceptance fields."
+      contract:
+        applicable: true
+        evidence: "PASS: v2 template restricts failure stages and reason codes; Scenario 258 records independent evidence states."
+      e2e:
+        applicable: false
+        na_reason: "Real model inference and visual review need installed local weights and Human observation; this change adds an evidence format, not a generation workflow."
+      security:
+        applicable: true
+        evidence: "PASS: reason codes are bounded tokens, unknown/raw-text keys invalidate trials, and no authority is granted."
+      migration_recovery:
+        applicable: true
+        evidence: "PASS: version-1 empty evidence remains readable with UNVERIFIED dataset coverage and UNKNOWN observations."
+      cli_harness:
+        applicable: true
+        evidence: "PASS: CLI output retains authority NONE, runtime attestation UNVERIFIED, and independent user-acceptance status."
+      docs_schema:
+        applicable: true
+        evidence: "PASS: USER_GUIDE, TECHNOLOGY_GUIDE, CREATIVE_DIRECTION, architecture and conformance documents state the evidence boundary."
+
+  - boundary: Existing scoped repair and exact artifact binding
+    reason: Quality reporting must not weaken the pre-existing bounded repair, source lineage, confined output, or Human acceptance contracts.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: "PASS: Ruff check covers the changed benchmark and lifecycle modules; creative_repair.py is unchanged."
+      unit:
+        applicable: true
+        evidence: "PASS: creative repair lifecycle verifies copied versioned inputs, source/hash lineage, bounded attempts, uncertainty/time stops, and no false Human acceptance."
+      integration:
+        applicable: true
+        evidence: "PASS: creative_quality_contracts.py runs quality and repair lifecycle evidence together."
+      contract:
+        applicable: true
+        evidence: "PASS: version-2 completed trials require valid project-confined raster output and matching SHA-256; repair remains create-only and parent-bound."
+      e2e:
+        applicable: false
+        na_reason: "No generator or repair tool is invoked by benchmark inspection; existing lifecycle fixtures cover deterministic repair behavior."
+      security:
+        applicable: true
+        evidence: "PASS: benchmark reads bounded files, rejects symlink outputs and path escapes, validates raster bytes and digest, and reports no authority."
+      migration_recovery:
+        applicable: false
+        na_reason: "No persistent repair schema or project files are changed by the reporting contract."
+      cli_harness:
+        applicable: true
+        evidence: "PASS: direct benchmark CLI lifecycle invocation and existing creative repair command contract both run in the focused validation."
+      docs_schema:
+        applicable: true
+        evidence: "PASS: Scenario 258 and creative repair guidance preserve separate execution, visual review, and acceptance states."
 
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true

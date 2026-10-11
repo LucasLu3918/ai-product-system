@@ -975,6 +975,8 @@ Scenario 239 binds bounded read-only Impact Graph relationship candidates to imp
 
 ## Scenario 236 — Local Creative Bundle Execution
 
+Scenario 258 adds the read-only cross-profile quality benchmark contract. It covers dataset cells and evidence separation; it does not claim native host acceptance or real model quality.
+
 Creative repair evidence separates original-prompt admission, criterion observations, finite attempts, repeated-defect stops, real local inference and native host-version acceptance. Fixture success does not establish vision accuracy or Human acceptance; unknown real-world measurements remain explicit.
 
 Creative lifecycle success does not issue a Git publication grant. The shared CLI dispatch preserves separate creative/publication authorization and is covered by the complete repository validator.

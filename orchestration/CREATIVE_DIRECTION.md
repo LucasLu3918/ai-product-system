@@ -67,7 +67,7 @@ Creative task grants authorize only their creative boundary; they cannot issue o
 
 After ComfyUI accepts a job, timeout or transient polling failure requests deletion of only that queued job and blocks automatic resubmission. Never interrupt all running jobs to recover one request; provider completion remains unverified until inspected.
 
-Use the existing Character/Style profiles and versioned local execution. Optional quality trials bind local raster digests and record Human character identity, outfit, composition, reference-edit and recovery assessments independently; never infer acceptance from a PNG or fixture.
+Use the existing Character/Style profiles and versioned local execution. Optional quality trials use the prompt-free dataset `aips-creative-quality-v1` (three profile archetypes by six cases) and bind local raster digests. Benchmark v2 reports profile-case coverage and model, check and compiler failures separately. Record Human character identity, outfit, composition, reference-edit and recovery assessments independently; record user acceptance separately and never infer acceptance from a PNG or fixture. Version-1 evidence remains readable with dataset coverage UNVERIFIED.
 
 Project Intelligence relationship candidates are advisory discovery evidence only; they do not grant permission to create or modify visual assets.
 

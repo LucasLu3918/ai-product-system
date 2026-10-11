@@ -20,6 +20,13 @@ def main() -> int:
     assert report_schema["properties"]["user_acceptance"]["const"] == "NOT_RECORDED"
     template = yaml.safe_load((ROOT / "templates/creative/CREATIVE_COLLECTION_PROFILE.yaml").read_text())
     assert set(template["style_lock"]) == {"id", "must_match", "must_avoid", "palette"}
+    benchmark_template = json.loads((ROOT / "templates/creative/QUALITY_BENCHMARK.json").read_text())
+    assert benchmark_template["version"] == 2 and benchmark_template["dataset_id"] == "aips-creative-quality-v1"
+    dataset = yaml.safe_load((ROOT / "templates/creative/CREATIVE_QUALITY_DATASET.yaml").read_text())
+    assert len(dataset["profiles"]) == 3 and len(dataset["cases"]) == 6
+    result = subprocess.run([sys.executable, str(ROOT / "tests/evidence/creative_quality_benchmark_lifecycle.py")], cwd=ROOT,
+                            check=False, capture_output=True, text=True, timeout=30)
+    assert result.returncode == 0, result.stdout + result.stderr
     result = subprocess.run([sys.executable, str(ROOT / "tests/evidence/creative_quality_lifecycle.py")], cwd=ROOT,
                             check=False, capture_output=True, text=True, timeout=30)
     assert result.returncode == 0, result.stdout + result.stderr

@@ -1,7 +1,8 @@
 {
-  "version": 1,
+  "version": 2,
+  "dataset_id": "aips-creative-quality-v1",
   "trials": [],
   "required_dimensions": ["character_identity", "outfit_consistency", "composition", "reference_edit", "recovery"],
   "canonical_scenarios": ["236", "238", "239"],
-  "instruction": "Record observed_host trials with provider, exact model_revision, device, confined output, sha256 and elapsed_ms. visual_review requires reviewer_type=human, reviewer and separately assessed dimensions. Missing trials and reviews remain UNKNOWN or UNVERIFIED. Do not retain prompts or infer visual quality from a valid image."
+  "instruction": "Use the registered cross-profile dataset. Record observed_host trials with profile_id, case_id, status, provider, exact model_revision, device and elapsed_ms. COMPLETE requires a confined output and sha256. FAILED requires failure_stage=model|check|compiler and a short reason_code; do not store prompts, tracebacks or error text. visual_review requires reviewer_type=human and separately assessed dimensions. Keep model outcome, image checks, compiler checks, Human visual review and user acceptance distinct. Missing trials and reviews remain UNKNOWN or UNVERIFIED. A valid image is not a quality rating."
 }

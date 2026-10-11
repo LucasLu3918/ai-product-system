@@ -84,7 +84,7 @@ Creative grant 僅涵蓋已核准創作範圍；成品若要 commit／push／PR�
 
 ComfyUI 已接受工作後若逾時或輪詢失敗，AIPS 只請求移除該 queued job，阻擋自動重送，不中斷其他正在執行的工作。先檢查 Provider 狀態，再明確重試。
 
-使用 `templates/creative/QUALITY_BENCHMARK.json` 記錄真正的本地 trial，再以 `python scripts/creative_quality_benchmark.py --project <workspace> --evidence <report.json>` 核對輸出及雜湊。角色、服裝、構圖、參考圖編輯與恢復由人工分別評分；空紀錄保持 UNKNOWN。
+使用 `templates/creative/QUALITY_BENCHMARK.json` 與 `templates/creative/CREATIVE_QUALITY_DATASET.yaml` 記錄本地 trial。資料集提供三種角色 archetype、六類案例，共 18 個 profile-case 覆蓋格；每筆 v2 evidence 指定 `profile_id`、`case_id` 與 `COMPLETE`／`FAILED`。失敗另分 model、check、compiler 階段與受限 reason code。以 `python scripts/creative_quality_benchmark.py --project <workspace> --evidence <report.json>` 核對輸出及雜湊。角色、服裝、構圖、參考圖編輯與恢復由人工分別評分；user acceptance 獨立記錄。缺漏維持 UNKNOWN，v1 舊 evidence 可讀但 coverage 為 UNVERIFIED。資料集是覆蓋矩陣，不是生成結果或品質標籤。
 
 Impact candidates are advisory software discovery evidence and do not authorize creative asset changes.
 
@@ -316,6 +316,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+Creative benchmark v2 is read-only evidence after an explicitly run local trial. Its coverage matrix does not rate images or replace Human visual review or user acceptance.
 
 OpenCode native acceptance is not evidence of production model quality, generated-image quality or user acceptance.
 

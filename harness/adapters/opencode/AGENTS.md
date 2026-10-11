@@ -1,5 +1,7 @@
 # AIPS Global Turn Harness
 
+Creative benchmark evidence is a read-only post-trial report and cannot establish OpenCode Context delivery or permission-hook acceptance.
+
 Native acceptance records exact version/platform/source evidence. Arbitrary Shell process effects, MCP/custom-tool effects and out-of-process writes are UNSUPPORTED; older reports without explicit effect coverage remain UNVERIFIED. Overall governance remains ADVISORY.
 
 Git publication requires separately issued signed v2 authority; OpenCode advisory integration must not claim universal interception or create its own APPROVED record. The personal PR merge confirmation route is implemented only for Claude Code and the active Gemini AIPS extension. See Human Security Assurance for the external issuer setup.

@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+After a local creative trial, the read-only quality benchmark validates registered profile-case coverage and raster hashes. It records model, check and compiler failures separately from Human review, user acceptance and runtime attestation; it adds no runtime provider or authorization path.
+
 The OpenCode adapter reports exact-host acceptance separately from installation and static capability discovery. Its version/platform/source-bound report records arbitrary Shell process effects, MCP/custom-tool effects, and out-of-process writes as unsupported; this does not change the adapter's advisory governance boundary.
 
 ```mermaid
@@ -594,6 +596,8 @@ flowchart TD
 For Large/Core changes, architecture-diagram impact is mandatory. Update each affected diagram or record N/A with a concrete reason. Human and Agent docs remain separate entry surfaces but share one behavior source.
 
 ## End-to-end product delivery
+
+Creative quality benchmark evidence is collected read-only after local trials. A registered prompt-free profile-case dataset identifies coverage, while raster hash checks and model/check/compiler outcomes remain separate from Human visual review, user acceptance and runtime attestation. The dataset adds no provider or execution component to the runtime flow.
 
 Branch Hygiene consumes exact remote branch SHAs, current-main and read-only PR metadata to produce advisory lifecycle dispositions. It can identify work to keep, superseded branches, PRs that require rebase, and cleanup candidates; report generation never merges, rebases, closes PRs or deletes branches. See `orchestration/BRANCH_HYGIENE.md` for the authority boundary.
 

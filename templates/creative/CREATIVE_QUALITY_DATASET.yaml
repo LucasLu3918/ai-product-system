@@ -1,0 +1,32 @@
+version: 1
+id: aips-creative-quality-v1
+description: >
+  Bounded prompt-free matrix for comparing local creative quality evidence across
+  three profile archetypes. It defines coverage cells, not generated image samples
+  or quality labels.
+profiles:
+  - id: human-adventurer
+    archetype: human_character
+  - id: fox-companion
+    archetype: animal_character
+  - id: brass-automaton
+    archetype: nonhuman_character
+cases:
+  - id: identity-retention
+    dimensions: [character_identity]
+  - id: outfit-consistency
+    dimensions: [outfit_consistency]
+  - id: composition-variation
+    dimensions: [composition]
+  - id: reference-edit
+    dimensions: [reference_edit]
+  - id: recovery-after-rejection
+    dimensions: [recovery]
+  - id: prompt-compilation
+    dimensions: []
+required_dimensions:
+  - character_identity
+  - outfit_consistency
+  - composition
+  - reference_edit
+  - recovery

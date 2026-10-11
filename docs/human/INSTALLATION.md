@@ -82,6 +82,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
+The creative quality benchmark is part of the local AIPS source tooling. It reads evidence for already observed local trials and does not install a generator, reviewer, model or host integration.
+
 Native acceptance reports separately record exact-host checks and unsupported effects. The report identifies arbitrary Shell process effects, MCP/custom-tool effects and out-of-process writes as UNSUPPORTED; legacy reports lacking the field show UNVERIFIED. Neither report state grants permission or proves production model quality.
 
 更新後既有 OpenCode `creative_execution` catalog 增加 `quality-check`、`feedback`、`repair`、`compare`、`quality-loop`。逐項檢查使用已安裝本地 Ollama vision model 與固定 Pillow 依賴；缺少 reviewer 時在生成前阻擋，不自動下載模型。

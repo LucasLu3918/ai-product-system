@@ -8,6 +8,8 @@ Runtime Context 統一解析驗證 Python 與 cache/config 路徑；它將 Playw
 
 ## Integration model
 
+Creative quality benchmark evidence is a post-trial read-only report. It does not invoke a native adapter, grant creative execution, or establish host acceptance.
+
 OpenCode current native prompt admission 支援「重出／重畫」的新有限 grant；重複 message 不重置額度，過期、取消或 grant 被替換時拒絕執行。`quality-loop` 預先保留 delivery 與 repair attempts；否定自動修正不授予 loop 權限。
 
 Publication Hook 使用外部 Ed25519 issuer、worktree-bound scope 與 atomic consume；未簽章 legacy record 需重新簽發。Shell AST 誤判修正不代表 OS sandbox；Codex/OpenCode 的 ADVISORY 能力不變，接入見 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement)。
