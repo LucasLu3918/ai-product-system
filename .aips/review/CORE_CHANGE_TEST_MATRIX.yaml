@@ -13,10 +13,10 @@ matrix:
   checks:
     static_lint: {applicable: true, evidence: "PASS: Ruff security-critical rules and git diff --check"}
     unit: {applicable: true, evidence: "PASS: publication authority/planning unittest suites, 52 tests"}
-    integration: {applicable: true, evidence: PENDING}
+    integration: {applicable: true, evidence: "PASS: exact-candidate Integration Gate on 18ef7ca; full repository validation 96 modules and 258 scenarios"}
     contract: {applicable: true, evidence: "PASS: full repository validator, 96 modules and 258 scenarios"}
-    e2e: {applicable: true, evidence: PENDING}
-    security: {applicable: true, evidence: PENDING}
+    e2e: {applicable: false, evidence: "N/A: no deployed application or browser flow changes; publication hook/planning behavior is covered by focused and lifecycle tests"}
+    security: {applicable: true, evidence: "PASS: exact-candidate secret scan and Gate security lifecycle; zero findings"}
     migration_recovery: {applicable: true, evidence: "PASS: no persisted-schema migration; publication lifecycle/recovery coverage passes"}
     cli_harness: {applicable: true, evidence: "PASS: full repository validator and native governance hook coverage"}
     docs_schema: {applicable: true, evidence: "PASS: publication preview closure and documentation placement; full repository validation"}
