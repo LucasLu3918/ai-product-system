@@ -225,6 +225,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Large/Core candidate validation binds its test evidence and documentation closure to the exact diff in the Core Change Matrix. The read-only branch lifecycle report is a maintenance signal; it does not replace exact-candidate publication checks or authorize a Git mutation.
+
 創作修正重用 `creative_execution` 與 `creative_repair`：`feedback` 記錄缺陷、`repair` 複製版本化 Profiles／Bundle、`compare` 提供 hash-bound 前後對照、`quality-check` 以本地 vision 檢查整體及四個細節裁切。Pillow 12.3.0 是固定影像解碼依賴。
 
 Canonical Skill frontmatter defines routing metadata and the generated version 1 skills/INDEX.yaml remains the consumer view. Skills load only when relevant. Scenarios 241–256 are manual semantic expectations; the Skill Index lifecycle separately checks deterministic metadata generation and compatibility. The additions use existing Capabilities, and the browser-game reference keeps DOM/SVG implementation detail out of global Skill metadata.
@@ -390,6 +392,8 @@ Planning Package 可用 EARS 結構表達適合的功能需求，並以 optional
 Implementation Resolution 先釐清 REST/OpenAPI authority，再依既有專案證據或新專案的 Human-confirmed 選型建立 Implementation Profile。Go、PHP、Python、.NET 語言 Profile 提供穩定基線，專案規則與工具鏈仍優先。結構驗證器只檢查欄位、來源和 ownership 衝突，不判斷架構或技術建議是否正確；未取得驗證證據時回報 `UNVERIFIED`。
 
 ## Evolution & Maintenance
+
+Branch Hygiene reconciles the current main SHA, exact remote branch heads, local checkout activity, and read-only PR merge state. It emits `KEEP`, `SUPERSEDED`, `REBASE_REQUIRED`, and `CLEANUP_CANDIDATE` as review guidance. The scheduled workflow only reports; any cleanup still requires its existing one-time exact-manifest authorization.
 
 Evolution Radar deterministic pre-analysis 會輸出 shortlist 與排除原因計數；採納與 trial 仍須遵循既有人工決策政策。
 

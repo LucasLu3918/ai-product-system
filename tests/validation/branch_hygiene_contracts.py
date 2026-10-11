@@ -65,6 +65,12 @@ if script.exists():
         "consumed, replayed, or partially applied",
         "cleanup stopped at a deletion failure",
         '"branch_deletion_authorized": False',
+        'def branch_disposition(',
+        'REBASE_REQUIRED',
+        'SUPERSEDED',
+        'CLEANUP_CANDIDATE',
+        'disposition_evidence',
+        'disposition_summary',
     ):
         if token not in text:
             errors.append(f"branch hygiene remote/report-only contract missing: {token}")
@@ -93,6 +99,12 @@ if workflow.exists():
         "github.token",
         "authorization_scope",
         "exact_manifest_only",
+        "mergeStateStatus",
+        "mergeable",
+        "CLEANUP_CANDIDATE",
+        "REBASE_REQUIRED",
+        "SUPERSEDED",
+        "disposition_reason",
     ):
         if token not in text:
             errors.append(f"branch hygiene workflow contract missing: {token}")

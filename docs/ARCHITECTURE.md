@@ -593,6 +593,8 @@ For Large/Core changes, architecture-diagram impact is mandatory. Update each af
 
 ## End-to-end product delivery
 
+Branch Hygiene consumes exact remote branch SHAs, current-main and read-only PR metadata to produce advisory lifecycle dispositions. It can identify work to keep, superseded branches, PRs that require rebase, and cleanup candidates; report generation never merges, rebases, closes PRs or deletes branches. See `orchestration/BRANCH_HYGIENE.md` for the authority boundary.
+
 Creative provenance separates workflow execution, raster validity, model inference, Human visual review and user acceptance.
 
 

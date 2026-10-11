@@ -213,6 +213,8 @@ Review actual:
 
 ## Release Security Gate
 
+Branch lifecycle reports consume read-only GitHub PR metadata and exact remote SHAs. They expose evidence and conservative dispositions but cannot merge, rebase, close PRs, delete refs, or authorize a cleanup manifest.
+
 自動創作修正只能使用目前使用者明確授予的有限範圍：原角色、指定缺陷、本地已安裝引擎、新版本輸出。vision findings 沒有生成授權；機器 MATCH 不能寫成 Human PASS 或 user acceptance。來源漂移、否定、重播與並行額度列為負向測試。
 
 The Gate proves candidate fitness but grants no publication or merge authority. Personal mode uses the configured `origin` as its target and accepts that a same-account Agent can rewrite `.git/config`; select high assurance or an externally protected identity anchor when that threat must be resisted.

@@ -196,6 +196,8 @@ Getting Started / Installation / User Guide 以 task-oriented方式導覽；Arch
 
 ## Deterministic protection
 
+Branch lifecycle reporting follows one current behavior across the Human maintenance guide, Agent-facing Branch Hygiene protocol, and Scenario 257 evidence. The workflow classifies with current exact-SHA evidence and remains read-only; never describe a cleanup candidate as authorization to delete.
+
 創作修正同步範圍包含 native admission、quality-check／feedback／repair／compare／quality-loop、機器與人工狀態、版本化來源及有限預算。CLI、OpenCode catalog、Scenario 238 與 Human 指南依同一契約更新。
 
 Publication documentation closure checks the behavior source map and the allowed canonical section for each added line; a successful placement audit does not replace exact-candidate validation.

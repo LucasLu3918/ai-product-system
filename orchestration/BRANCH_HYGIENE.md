@@ -2,9 +2,16 @@
 
 ## Read-only reconciliation
 
-Run `python scripts/branch_hygiene.py --config config/branch-lifecycle.yaml --remote origin --pull-requests <read-only-gh-pr-list.json>` to classify the remote branch refs against the current default-branch SHA and exact merged-PR evidence. The report binds every observed branch to its current full SHA, distinguishes integrated ephemeral branches from branches that must be preserved, and emits a fingerprinted cleanup proposal for eligible entries.
+Run `python scripts/branch_hygiene.py --config config/branch-lifecycle.yaml --remote origin --pull-requests <read-only-gh-pr-list.json>` to classify the remote branch refs against the current default-branch SHA and exact PR evidence. The report binds every observed branch to its current full SHA and emits a reasoned disposition:
 
-`.aips/review/PLAN19_BRANCH_RECONCILIATION_DRAFT.yaml` is one such evidence snapshot. It records remote refs as observed at the embedded timestamp; the candidate list is proposal-only and must be refreshed if `main`, any listed ref, or GitHub PR evidence moves.
+- `KEEP` for persistent, unclassified, actively checked-out, open/unmerged, or otherwise unresolved work;
+- `REBASE_REQUIRED` only when GitHub reports an open PR has merge conflicts;
+- `SUPERSEDED` when the branch tree is already represented by the target but exact merged-PR evidence does not qualify it for cleanup;
+- `CLEANUP_CANDIDATE` only for an ephemeral, inactive branch with exact merged-PR head evidence and target integration.
+
+The disposition is advisory. It does not close a PR, rebase or merge a branch, generate an authorized cleanup manifest, or delete a ref. `disposition_evidence` records the branch and target SHAs, observed PR identity/state, integration result, and lifecycle classification. The workflow reads PR title/state/mergeability fields and publishes the same reason in its summary. Missing or malformed GitHub metadata blocks report generation.
+
+`.aips/review/PLAN19_BRANCH_RECONCILIATION_DRAFT.yaml` is one such evidence snapshot. It records remote refs as observed at the embedded timestamp; the candidate list is proposal-only and must be refreshed if `main`, any listed ref, or GitHub PR evidence moves. `KEEP`, `SUPERSEDED`, `REBASE_REQUIRED`, and `CLEANUP_CANDIDATE` describe current evidence only; they are not branch ownership or authorization records.
 
 ## Human authority
 

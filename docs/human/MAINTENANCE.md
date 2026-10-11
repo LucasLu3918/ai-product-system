@@ -466,6 +466,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+Branch Hygiene is a read-only maintenance capability: it reconciles current main, exact remote heads, active local checkouts and current PR state, then reports conservative dispositions. Any later cleanup still needs the exact current-main-bound manifest and its separate Human authorization.
+
 Publication preflight resolves the live remote default branch and scans the exact candidate/history. Personal mode trusts the current `origin`, and a worktree does not isolate same-account credentials or `.git/config`. The exact-candidate Gate proves fitness only; merge requires task intent, exact PR head/default-base binding, and passing required checks.
 
 
@@ -677,7 +679,7 @@ Plan21 Phase 0 recorded a clean `origin/main` full-validation baseline at 165,75
 
 ## Controlled branch cleanup
 
-一般 Branch Hygiene 仍是 `report_only`。只有在 repository maintainer 明確批准的 one-time manifest 中，AIPS 才可刪除 remote branch。
+一般 Branch Hygiene 仍是 `report_only`。唯讀報告以目前 `main` SHA、remote branch SHA 與 PR 狀態產生 `KEEP`、`SUPERSEDED`、`REBASE_REQUIRED` 或 `CLEANUP_CANDIDATE` 建議。這些狀態只描述觀察到的證據，不會關閉 PR、執行 rebase/merge 或授予刪除權限。只有在 repository maintainer 明確批准的 one-time manifest 中，AIPS 才可刪除 remote branch。
 
 Runtime manifest 由人工核准的 immutable proposal artifact（run ID + fingerprint）產生，逐筆綁定 branch name、exact expected SHA 與 merged PR evidence；`config/branch-cleanup-manifest.yaml` 僅保留歷史相容紀錄，不再需要為 cleanup 提交新的 main commit。Protected-main 人工 dispatch cleanup job 在刪除前會重新驗證：
 

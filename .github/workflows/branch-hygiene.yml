@@ -56,7 +56,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: >-
           gh pr list --repo "$GITHUB_REPOSITORY" --state all --limit 1000
-          --json number,headRefName,headRefOid,baseRefName,state,mergedAt,closedAt
+          --json number,headRefName,headRefOid,baseRefName,state,isDraft,mergeable,mergeStateStatus,updatedAt,mergedAt,closedAt
           > branch-pull-requests.json
 
       - name: Build deterministic report
@@ -78,8 +78,9 @@ jobs:
 
           report = yaml.safe_load(Path("branch-hygiene.yaml").read_text(encoding="utf-8"))
           rows = report.get("branches") or []
-          candidates = [row for row in rows if row.get("recommended_action") == "REVIEW_FOR_CLEANUP"]
+          candidates = [row for row in rows if row.get("disposition") == "CLEANUP_CANDIDATE"]
           persistent = [row["branch"] for row in rows if row.get("lifecycle") == "PERSISTENT"]
+          dispositions = report.get("disposition_summary") or {}
           with Path(__import__("os").environ["GITHUB_STEP_SUMMARY"]).open("a", encoding="utf-8") as out:
               out.write("# Branch Hygiene Report\n\n")
               out.write(f"- target: `{report['target']}`\n")
@@ -90,18 +91,19 @@ jobs:
               out.write(f"- branches inspected: **{len(rows)}**\n")
               out.write(f"- cleanup proposals: **{len(candidates)}**\n")
               out.write(f"- persistent branches: **{len(persistent)}**\n")
+              for status in ("KEEP", "SUPERSEDED", "REBASE_REQUIRED", "CLEANUP_CANDIDATE"):
+                  out.write(f"- {status}: **{dispositions.get(status, 0)}**\n")
               out.write("- branch_deletion_authorized: **false**\n")
               out.write("- human_authority_preserved: **true**\n\n")
               if rows:
-                  out.write("## Branch cleanup proposal\n\n")
-                  out.write("| Branch | Current SHA | Merged PR | Age (days) | Main integration | Recommended action |\n")
-                  out.write("|---|---|---|---:|---|---|\n")
+                  out.write("## Branch disposition and cleanup proposal\n\n")
+                  out.write("| Branch | Disposition | Reason | Current SHA | PR | Merge state | Main integration |\n")
+                  out.write("|---|---|---|---|---:|---|---|\n")
                   for row in rows:
                       out.write(
-                          f"| `{row['branch']}` | `{row['current_sha']}` | "
-                          f"{row.get('merged_pr') or '—'} ({row['merged_status']}) | "
-                          f"{row['age_days']} | {row['integrated_into_target']} | "
-                          f"{row['recommended_action']} |\n"
+                          f"| `{row['branch']}` | `{row['disposition']}` | `{row['disposition_reason']}` | "
+                          f"`{row['current_sha']}` | {row.get('merged_pr') or '—'} ({row['merged_status']}) | "
+                          f"{row['pr_merge_state']} | {row['integrated_into_target']} |\n"
                       )
           PY
 
