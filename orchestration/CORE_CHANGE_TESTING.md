@@ -89,6 +89,10 @@ A Large/Core Change is not complete when:
 
 ## Evidence
 
+Validation Shadow graduation evidence names the confusion-count and null-rate cases, exact-SHA unique-PR fallback, and unchanged full-run Gate. A completed `NOT_READY` cohort remains distinct from collector failure.
+
+Validation Observation collection must distinguish a completed `NOT_READY` cohort from collection failures, preserve strict `--require-ready` behavior, report precision/recall with explicit zero-denominator semantics, and leave the full repository Gate enabled. Its lifecycle verifies exact-head unique-PR attribution when the run omits its PR link. Dependency Review shadow evidence must use the same candidate and immutable action policy as the standalone check, remain non-blocking during the 2–4 week parity window, and not change the required `repository` result; promotion requires a separate reviewed change after parity is demonstrated.
+
 For OpenCode runtime changes, exact-host acceptance is separate from fixtures and static registration. Record the host/platform/source boundary and preserve explicit unsupported-effect states; do not infer production model quality or universal interception.
 
 Accepted ComfyUI job recovery must test exact-ID queue deletion, no global interrupt and no automatic resubmission after timeout or polling failure. Inconclusive cleanup does not grant another submission.
@@ -166,7 +170,6 @@ CI workflow or publication-preflight changes must test the relevant event pairs 
 
 The workflow concurrency contract must include event action in the per-PR group key. Verify that distinct actions (including `opened` and classification `labeled`) cannot cancel one another, while repeated candidate runs for the same action still supersede stale work.
 
-Validation Observation collection must distinguish a completed `NOT_READY` cohort from collection failures, preserve strict `--require-ready` behavior, and leave the full repository Gate enabled. Dependency Review shadow evidence must use the same candidate and immutable action policy as the standalone check, remain non-blocking during the 2–4 week parity window, and not change the required `repository` result; promotion requires a separate reviewed change after parity is demonstrated.
 
 The independent-review mechanism is implemented but its PR enforcement is currently **disabled by default**: the active Core Change Matrix sets `review_evidence.required: false` because no trusted runtime-attestation verifier is connected. Core Changes may opt in by setting the matrix field to `true` after configuring that verifier. When enabled, `VERIFIED` requires matching base/head and changed-file fingerprints, an exact review-packet fingerprint, distinct execution identities, no inherited implementer context, read-only authority, and runtime attestation. `SELF_CHECK`, missing attestation (`UNVERIFIED`), stale evidence, or failed evidence cannot satisfy the requirement. The Integration Gate checks these deterministic bindings; it does not score semantic review quality or authorize merge.
 

@@ -1596,7 +1596,7 @@ The repository validator also runs `tests/evidence/aips_cli_module_extraction_li
 
 Scenario 204 的 module-extraction lifecycle 核對 temporal query 與 Evolution pre-analysis 的 facade identity 和 current-mode 輸出，避免內部拆分改變既有 CLI 契約。
 
-Scenarios 211–213 cover GitHub supply-chain checks, evidence-gated validator graduation, and gradual quality ratchets with deterministic property and coverage reports. All remain advisory or fail-closed controls; selective execution is not enabled by their presence.
+Scenarios 211–213 cover GitHub supply-chain checks, evidence-gated validator graduation, and gradual quality ratchets with deterministic property and coverage reports. Graduation reports include confusion counts and precision/recall rates with explicit null denominators; the current cohort must still meet the 30-day and 30-PR thresholds with zero false-negative skips. All remain advisory or fail-closed controls; selective execution is not enabled by their presence.
 
 ### Scenarios 214–219 — Plan15 operational closure
 
@@ -1698,6 +1698,8 @@ Per-module findings and direct coverage are measured without increasing a reposi
 ## Scenario 229 — Agent Eval Freshness Selection
 
 OpenCode host acceptance does not measure Agent outcome or quality; retain its separate exact-host integration evidence.
+
+Validation Shadow graduation evidence is separate from Agent Eval: report validator-level precision, recall, false-negative rate and confusion counts, keep zero-denominator rates null, and do not treat the report as a task outcome or activation authority.
 
 實際任務 observation 與 deterministic rubric 分開呈現。只有與 Case 相符且 CURRENT 的 result 才納入已記錄的 task_completed、human_corrections、false_positives；缺觀察為 UNKNOWN，runtime attestation 維持 UNVERIFIED。
 

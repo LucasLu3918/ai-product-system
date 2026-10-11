@@ -276,7 +276,7 @@ Publication environment probes fail closed only for capabilities selected by the
 
 Omitting OpenAPI validator packages from an exact-path toolchain plan changes only OpenAPI-specific test smoke. The publication-preflight lifecycle remains required and verifies that validation stops with a clear missing-dependency diagnostic before writing output; the candidate secret scan and repository Gate remain mandatory.
 
-The separate Validation Observation Collector also uses read-only Actions/content permissions and installs PyYAML from the tested constraints before collecting bounded evidence. Its artifact is advisory and cannot replace secret scanning, the required repository Gate, or Human review.
+The separate Validation Observation Collector also uses read-only Actions/content permissions and installs PyYAML from the tested constraints before collecting bounded evidence. Missing PR attribution is resolved only through an exact head commit and unique same-repository PR; ambiguous results remain incomplete. Its artifact is advisory and cannot replace secret scanning, the required repository Gate, or Human review.
 
 The publication CLI facade loads its implementation modules from the same resolved AIPS checkout before dispatch. Candidate secret scanning and the Integration Gate continue to inspect the complete candidate; module loading does not add publication authority or alter credential handling.
 

@@ -227,6 +227,39 @@ def download_artifact(repo: str, artifact_id: int, token: str) -> bytes:
     return payload
 
 
+def pull_request_number(repo: str, run: dict[str, Any], token: str, cache: dict[str, int | None]) -> int | None:
+    """Resolve an omitted workflow-run PR association only through its exact head commit."""
+    pull_requests = run.get("pull_requests") or []
+    numbers = {item.get("number") for item in pull_requests if isinstance(item, dict) and isinstance(item.get("number"), int)}
+    if len(numbers) == 1:
+        return next(iter(numbers))
+    if numbers:
+        return None
+    head_sha = str(run.get("head_sha") or "")
+    if not re.fullmatch(r"[0-9a-f]{40,64}", head_sha):
+        return None
+    if head_sha in cache:
+        return cache[head_sha]
+    try:
+        payload, _ = api_get(f"{API}/repos/{repo}/commits/{head_sha}/pulls?per_page=100", token)
+    except (urllib.error.URLError, OSError, ValueError, ObservationError):
+        cache[head_sha] = None
+        return None
+    if not isinstance(payload, list):
+        cache[head_sha] = None
+        return None
+    candidates = {
+        item.get("number")
+        for item in payload
+        if isinstance(item, dict)
+        and isinstance(item.get("number"), int)
+        and ((item.get("head") or {}).get("repo") or {}).get("full_name") == repo
+    }
+    resolved = next(iter(candidates)) if len(candidates) == 1 else None
+    cache[head_sha] = resolved
+    return resolved
+
+
 def collect_dataset(repo: str, token: str, start: date, end: date) -> dict[str, Any]:
     if not re.fullmatch(r"[^/\s]+/[^/\s]+", repo):
         raise ObservationError("repository must be owner/name")
@@ -261,15 +294,15 @@ def collect_dataset(repo: str, token: str, start: date, end: date) -> dict[str, 
         complete = False
     records: list[dict[str, Any]] = []
     artifacts_checked = 0
+    pull_request_cache: dict[str, int | None] = {}
     for run in runs:
-        prs = run.get("pull_requests") or []
-        if run.get("event") != "pull_request" or not prs:
+        if run.get("event") != "pull_request":
             complete = False
             continue
         if run.get("status") != "completed":
             complete = False
             continue
-        pr = prs[0].get("number")
+        pr = pull_request_number(repo, run, token, pull_request_cache)
         run_id = run.get("id")
         attempt = run.get("run_attempt", 1)
         if not isinstance(pr, int) or not isinstance(run_id, int):

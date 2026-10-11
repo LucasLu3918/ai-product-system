@@ -907,6 +907,8 @@ Scenario 218 uses deterministic monthly fingerprint sampling and complete Human 
 
 Validation Observation 新增相同候選的完整耗時量測與依 Change Class 分組的 P50／P95。重跑不當作新的 PR；歷史紀錄不完整時不授予 selective execution，完整驗證與 required repository check 維持。
 
+Validation Shadow graduation reports validator-level precision/recall and confusion counts; zero-denominator rates remain null. The collector resolves an omitted PR link only through the exact head SHA and a unique same-repository PR. These observations remain advisory and full validation continues.
+
 Scenario 239 adds bounded source relationship discovery with explicit provenance, truncation and unresolved dynamic behavior; it does not promote graph edges.
 
 Unknown paths continue to select the complete validation profile.

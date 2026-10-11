@@ -38,6 +38,10 @@ def deterministic_full_audit(head_sha: str, modulo: int) -> bool:
     return int(digest[:8], 16) % modulo == 0
 
 
+def _rate(numerator: int, denominator: int) -> float | None:
+    return round(numerator / denominator, 6) if denominator else None
+
+
 def evaluate(
     config: dict[str, Any], scope_config: dict[str, Any], dataset: dict[str, Any]
 ) -> dict[str, Any]:
@@ -73,6 +77,8 @@ def evaluate(
     false_negatives: list[dict[str, Any]] = []
     malformed_records: list[int] = []
     audit_count = 0
+    valid_record_count = 0
+    confusion = {"true_positive": 0, "false_positive": 0, "true_negative": 0, "false_negative": 0}
     for index, record in enumerate(records):
         if not isinstance(record, dict):
             malformed_records.append(index)
@@ -98,6 +104,9 @@ def evaluate(
             malformed_records.append(index)
             continue
         if not isinstance(failed, list) or not all(isinstance(item, str) for item in failed):
+            malformed_records.append(index)
+            continue
+        if not set(failed).issubset(set(expected_modules)):
             malformed_records.append(index)
             continue
         if not isinstance(actual, list) or sorted(actual) != sorted(expected_modules):
@@ -133,6 +142,14 @@ def evaluate(
             continue
         missed = sorted(set(failed) & set(plan["would_skip"]))
         false_negatives.extend({"pull_request": pr, "head_sha": head, "module": module} for module in missed)
+        selected = set(plan["would_run"])
+        skipped = set(plan["would_skip"])
+        failed_set = set(failed)
+        confusion["true_positive"] += len(selected & failed_set)
+        confusion["false_positive"] += len(selected - failed_set)
+        confusion["false_negative"] += len(skipped & failed_set)
+        confusion["true_negative"] += len(skipped - failed_set)
+        valid_record_count += 1
         if plan["full_validation_fallback"] and plan["would_skip"]:
             errors.append(f"records[{index}] did not select full validation for a fail-closed candidate")
 
@@ -146,6 +163,30 @@ def evaluate(
     if not records:
         errors.append("no exact-candidate shadow records were supplied")
     status = "READY_FOR_HUMAN_REVIEW" if not errors else "NOT_READY"
+    predicted_failures = confusion["true_positive"] + confusion["false_positive"]
+    observed_failures = confusion["true_positive"] + confusion["false_negative"]
+    predicted_skips = confusion["true_negative"] + confusion["false_negative"]
+    metrics_status = "OBSERVED" if valid_record_count else "UNKNOWN"
+    metrics = {
+        "status": metrics_status,
+        "valid_record_count": valid_record_count,
+        "validator_decision_count": sum(confusion.values()),
+        "confusion": confusion,
+        "run_precision": _rate(confusion["true_positive"], predicted_failures),
+        "run_recall": _rate(confusion["true_positive"], observed_failures),
+        "false_negative_rate": _rate(confusion["false_negative"], observed_failures),
+        "skip_precision": _rate(confusion["true_negative"], predicted_skips),
+        "precision_basis": "validator-level full-run failure labels; null means the denominator is zero",
+        "false_negative_basis": "failed validators predicted to skip divided by all failed validators observed in complete full runs",
+    }
+    thresholds = {
+        "minimum_observation_days": minimum_days,
+        "minimum_unique_pull_requests": minimum_prs,
+        "maximum_false_negatives": int(graduation.get("maximum_false_negatives") or 0),
+        "deterministic_full_audit_modulo": int(graduation.get("deterministic_full_audit_modulo") or 10),
+        "require_complete_artifact_history": graduation.get("require_complete_artifact_history") is True,
+        "require_full_run_for_every_shadow_record": graduation.get("require_full_run_for_every_shadow_record") is True,
+    }
     return {
         "version": 1,
         "status": status,
@@ -155,6 +196,8 @@ def evaluate(
         "deterministic_full_audit_count": audit_count,
         "false_negative_count": len(false_negatives),
         "false_negatives": false_negatives,
+        "selection_metrics": metrics,
+        "graduation_thresholds": thresholds,
         "errors": errors,
         "selective_execution_enabled": False,
         "automatic_activation_authorized": False,
