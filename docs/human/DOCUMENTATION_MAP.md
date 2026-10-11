@@ -22,7 +22,7 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
-Skill 的使用者搜尋入口是 [Skill Explorer](/skill-catalog.html)；其卡片由 `skills/INDEX.yaml` 和固定版本的上游處置清單產生。Skill routing 的 canonical 定義仍在各 `SKILL.md` 與 Registry，Scenario 259 記錄整合及選用邊界。
+Skill 的使用者搜尋入口是 <a href="./skill-catalog.html">Skill Explorer</a>；其卡片由 `skills/INDEX.yaml` 和固定版本的上游處置清單產生。Skill routing 的 canonical 定義仍在各 `SKILL.md` 與 Registry，Scenario 259 記錄整合及選用邊界。
 
 Git 發布模式與操作步驟以 [User Guide](./USER_GUIDE.md#git-publication-與-release) 為入口；安全保證、信任根部署與隔離限制以 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement) 為準。個人模式 PR merge 的逐次確認依賴 Claude Code 原生 `ask` 或啟用中的 Gemini AIPS extension `ask_user` policy；Codex 仍為 advisory。
 
@@ -88,7 +88,7 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
-`skills/INDEX.yaml` 與各 `SKILL.md` 是 Agent routing 的來源；[Skill Explorer](/skill-catalog.html) 是由 Registry 產生的 Human 檢索視圖，完整上游處置以固定版本清單為準。
+`skills/INDEX.yaml` 與各 `SKILL.md` 是 Agent routing 的來源；<a href="./skill-catalog.html">Skill Explorer</a> 是由 Registry 產生的 Human 檢索視圖，完整上游處置以固定版本清單為準。
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
