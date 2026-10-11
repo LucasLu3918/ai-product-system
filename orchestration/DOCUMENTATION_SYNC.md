@@ -218,6 +218,9 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+Skill Explorer follows the same canonical Human/Agent split as existing AIPS documents: the authoritative execution contract remains `skills/*/*/SKILL.md` frontmatter and the generated `skills/INDEX.yaml`. The localization mapping `docs/human/skill-examples.yaml` is explanatory only; `scripts/skill_catalog.py` deterministically renders the self-contained `docs/human/public/skill-explorer.html` and rejects drift. Matt Pocock's 38-skill pinned intake has explicit reuse/merge/new/optional/excluded dispositions, with Writing user-opt-in and all other Beta trials disabled. Neither the page nor external method grants publication, workspace mutation or stronger native guard support.
+
+
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
 The import commands belong to the existing creative workflow documentation and are linked from the canonical documentation map.

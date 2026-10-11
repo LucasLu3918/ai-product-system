@@ -223,6 +223,9 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 
 ## Roles、Skills 與重用
 
+[Skill Explorer](SKILL_EXPLORER.md) 可搜尋所有已註冊 Skill 的功能、適用條件及可複製的繁體中文例句。Matt Pocock Skills 按 Reuse-first 分類：原有 Skill 強化、窄範圍新 Skill、工作流程重用和停用候選。新增的 `creative-writing-workflow` 僅在使用者明確指定時選用，其餘上游 Beta 不啟用。瀏覽圖鑑不會自動安裝或執行 Skill，也不會授予專案寫入或 Git 發布權限。
+
+
 
 新增能力前依序檢查：
 

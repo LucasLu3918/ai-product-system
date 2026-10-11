@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="aips-audience" content="human">
+<title>AIPS Skill Explorer｜技能圖鑑與使用範例</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC",sans-serif;color-scheme:light dark;--bg:#f7f8fb;--panel:#fff;--ink:#17243a;--muted:#66758c;--line:#dfe5ee;--accent:#315ad6;--soft:#e9edfc;--chip:#edf1f7;--focus:#315ad6}
+@media(prefers-color-scheme:dark){:root{--bg:#0c1423;--panel:#152137;--ink:#ebf1fc;--muted:#a6b5ce;--line:#32425b;--accent:#94afff;--soft:#27395c;--chip:#22314a;--focus:#a6b8ff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);line-height:1.6}button,input,select{font:inherit}button{cursor:pointer}a{color:var(--accent)}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.shell{max-width:1240px;margin:auto;padding:0 22px 80px}.top{display:flex;justify-content:space-between;align-items:center;padding:22px 0;gap:12px;border-bottom:1px solid var(--line)}.brand{font-weight:800;letter-spacing:.05em}.topnav{font-size:.85rem}.topnav a{margin-left:18px}
+.hero{padding:54px 0 30px;max-width:800px}.eyebrow{font-size:.82rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:800}.hero h1{font-size:clamp(2rem,4.4vw,3.9rem);line-height:1.15;letter-spacing:-.045em;margin:12px 0}.hero p{font-size:1.05rem;color:var(--muted)}.stats{display:flex;flex-wrap:wrap;gap:10px;margin-top:25px}.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 18px;font-size:.91rem}.stat strong{font-size:1.38rem;margin-right:6px;font-variant-numeric:tabular-nums}
+.controls{display:flex;align-items:stretch;gap:12px;flex-wrap:wrap;position:sticky;top:0;background:var(--bg);padding:16px 0;z-index:4}.search{flex:2;min-width:260px}.controls input,.controls select{width:100%;background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:13px 15px;border-radius:12px}.select{flex:1;min-width:160px}
+.resultbar{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:8px 0 18px;color:var(--muted);font-size:.9rem}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:21px;display:flex;flex-direction:column;gap:13px;min-height:286px;box-shadow:0 4px 17px #142a4808}.card:hover{border-color:var(--accent)}.tags{display:flex;gap:6px;flex-wrap:wrap}.tag{border-radius:100px;background:var(--chip);padding:3px 9px;font-size:.72rem;color:var(--muted)}.tag.new{background:var(--soft);color:var(--accent);font-weight:700}.card h2{font-size:1.14rem;margin:0;letter-spacing:-.02em}.technical{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:var(--muted);font-size:.74rem;overflow-wrap:anywhere}.summary{color:var(--muted);font-size:.89rem;margin:0;flex:1}.actions{display:flex;justify-content:space-between;gap:8px}.action{border:1px solid var(--line);border-radius:9px;background:var(--panel);color:var(--ink);padding:8px 11px;font-size:.81rem}.action.primary{background:var(--soft);color:var(--accent);border-color:transparent}.detail{margin-top:11px;border-top:1px solid var(--line);padding-top:15px}.detail h3{margin:12px 0 5px;font-size:.9rem}.sample{white-space:pre-wrap;background:var(--bg);border-radius:10px;padding:12px;font-size:.86rem;overflow-wrap:anywhere}.detail p,.detail li{font-size:.84rem;color:var(--muted)}.detail ul{padding-left:18px}.empty{padding:45px;text-align:center;border:1px dashed var(--line);border-radius:12px;color:var(--muted)}.hint{padding:15px 18px;border-left:3px solid var(--accent);margin:0 0 15px;background:var(--soft);font-size:.85rem}.footer{margin-top:40px;border-top:1px solid var(--line);padding-top:25px;color:var(--muted);font-size:.81rem}
+@media(max-width:980px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:640px){.shell{padding:0 14px 50px}.grid{grid-template-columns:1fr}.top{align-items:flex-start}.topnav a{margin-left:8px}.hero{padding:30px 0 18px}.controls{position:static}.controls input,.controls select{font-size:16px}.select{min-width:140px}.card{min-height:unset}}
+@media(prefers-reduced-motion:no-preference){.card{transition:border-color .18s ease,transform .18s ease}.card:hover{transform:translateY(-2px)}}@media print{.controls,.actions,.topnav{display:none}.grid{display:block}.card{break-inside:avoid;margin-bottom:12px}.shell{max-width:100%}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header class="top"><div class="brand">AIPS <span style="color:var(--accent)">/</span> HUMAN DOCS</div><nav class="topnav" aria-label="外部連結"><a href="./">文件首頁</a><a href="https://github.com/LucasLu3918/ai-product-system">GitHub</a></nav></header>
+<section class="hero"><div class="eyebrow">Skills · Learn · Apply</div><h1>Skill Explorer<br>技能圖鑑</h1><p>找到任務所需的方法：從需求、架構、開發、測試到創意寫作。每張卡片都有用途、觸發情境和可直接複製的繁體中文 Prompt。</p><div class="stats"><div class="stat"><strong>__AIPS_SKILL_COUNT__</strong>目前可用 Skills</div><div class="stat"><strong>38</strong>上游已盤點項目</div><div class="stat"><strong>0</strong>其他 Beta 自動啟用</div></div></section>
+<p class="hint">本頁由 AIPS canonical Skill Registry 生成。第三方能力採 Reuse-first 整合；卡片顯示可用方法，不代表已取得專案寫入、部署或 Git 發布授權。創作寫作流程只在明確要求時選用。</p>
+<section class="controls" aria-label="Skill 篩選"><div class="search"><label for="search" style="position:absolute;clip:rect(0,0,0,0)">搜尋 Skill</label><input id="search" type="search" placeholder="搜尋 Skill、用途、觸發條件、範例..." autocomplete="off"></div><div class="select"><label for="category" style="position:absolute;clip:rect(0,0,0,0)">領域</label><select id="category"><option value="">全部領域</option></select></div><div class="select"><label for="origin" style="position:absolute;clip:rect(0,0,0,0)">來源</label><select id="origin"><option value="">全部來源</option><option value="existing">AIPS 原有</option><option value="integrated">本次新增</option></select></div></section>
+<div class="resultbar"><div id="result" aria-live="polite"></div><div>點開「使用範例」即可複製指令</div></div>
+<main id="cards" class="grid" aria-label="技能清單"></main><p id="empty" class="empty" hidden>找不到符合條件的 Skill；可以減少關鍵字或清除篩選。</p>
+<footer class="footer">AIPS v0.82.0 integration candidate · Upstream: <a href="https://github.com/mattpocock/skills">Matt Pocock Skills</a> (MIT) · Source pinned at 49dd158d · 功能以正式 SKILL.md 為準。</footer>
+</div>
+<script id="skill-data" type="application/json">__AIPS_SKILL_DATA__</script>
+<script>
+(function(){
+"use strict";
+const skills=JSON.parse(document.getElementById("skill-data").textContent);
+const search=document.getElementById("search"),category=document.getElementById("category"),origin=document.getElementById("origin"),cards=document.getElementById("cards"),counter=document.getElementById("result"),empty=document.getElementById("empty");
+const categories=Array.from(new Set(skills.map(function(x){return x.capability;}))).sort();
+categories.forEach(function(c){const o=document.createElement("option");o.value=c;o.textContent=c;category.appendChild(o);});
+function node(tag,cls,body){const e=document.createElement(tag);if(cls)e.className=cls;if(body!==undefined)e.textContent=body;return e;}
+function copyText(txt,button){const done=function(){button.textContent="已複製 ✓";setTimeout(function(){button.textContent="複製範例";},1600);};if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(done,function(){fallback();});}else{fallback();}function fallback(){const a=node("textarea");a.value=txt;a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);a.select();try{if(document.execCommand("copy"))done();else button.textContent="請手動選取範例";}catch(e){button.textContent="請手動選取範例";}a.remove();}}
+function card(item){
+ const article=node("article","card");
+ const tags=node("div","tags");tags.appendChild(node("span","tag",item.capability));tags.appendChild(node("span","tag",item.cost+" context"));tags.appendChild(node("span","tag"+(item.origin==="integrated"?" new":""),item.origin==="integrated"?"本次整合":"AIPS 原有"));if(item.optional)tags.appendChild(node("span","tag","需明確選用"));article.appendChild(tags);
+ article.appendChild(node("h2","",item.name_zh));article.appendChild(node("div","technical",item.id));article.appendChild(node("p","summary",item.description));
+ const actions=node("div","actions"),toggle=node("button","action primary","使用範例與細節"),link=node("a","action","查看 SKILL.md");link.href="https://github.com/LucasLu3918/ai-product-system/blob/main/skills/"+encodeURI(item.path);link.target="_blank";link.rel="noopener noreferrer";actions.appendChild(toggle);actions.appendChild(link);article.appendChild(actions);
+ const detail=node("section","detail");detail.hidden=true;detail.appendChild(node("h3","","如何使用"));detail.appendChild(node("div","sample",item.example));const copy=node("button","action","複製範例");copy.type="button";copy.addEventListener("click",function(){copyText(item.example,copy);});detail.appendChild(copy);detail.appendChild(node("h3","","適用觸發條件"));const list=node("ul");item.triggers.forEach(function(t){list.appendChild(node("li","",t.replaceAll("_"," ")));});detail.appendChild(list);detail.appendChild(node("p","","Canonical path: skills/"+item.path));
+ toggle.type="button";toggle.setAttribute("aria-expanded","false");toggle.addEventListener("click",function(){detail.hidden=!detail.hidden;toggle.setAttribute("aria-expanded",String(!detail.hidden));});
+ article.appendChild(detail);return article;
+}
+function render(){
+ const q=search.value.trim().toLocaleLowerCase();const filtered=skills.filter(function(x){return (!category.value||x.capability===category.value)&&(!origin.value||x.origin===origin.value)&&(!q||[x.id,x.name_zh,x.description,x.capability,x.example,x.triggers.join(" ")].join(" ").toLocaleLowerCase().includes(q));});
+ cards.replaceChildren();const fragment=document.createDocumentFragment();filtered.forEach(function(x){fragment.appendChild(card(x));});cards.appendChild(fragment);counter.textContent="顯示 "+filtered.length+" / "+skills.length+" 個 Skills";empty.hidden=filtered.length!==0;
+}
+[search,category,origin].forEach(function(x){x.addEventListener("input",render);});render();
+})();
+</script></body></html>

@@ -28,3 +28,7 @@ For substantial products:
 - include TCO/operations implications when they affect the plan.
 
 Do not redo product discovery unless a blocking gap prevents planning.
+
+## Spec-to-ticket dependency map
+
+When an approved specification needs execution, split it into independently verifiable vertical tracer-bullet slices, not layer-only tickets. Give each item stable ID, requirement/acceptance links, deliverable, tests, dependencies, risks and blocked-by edges. Use the existing Planning Package manifest and deterministic scheduler/task graph rather than a competing workflow engine. Large multi-session plans retain unresolved decisions and verified handoff references. Ticket creation or issue modification remains a separate scoped external write; planning alone never authorizes it.

@@ -22,3 +22,7 @@ Turn accepted product intent into atomic, uniquely identified requirements with 
 For Planning Package v2, map every requirement to its acceptance IDs and declare each downstream artifact mapping as applicable with stable IDs or not applicable with a reason. Typical targets are UX screens, visual components, domain concepts, API operations, security controls and verification. Do not require irrelevant links for every requirement. Reuse `scripts/requirements_traceability.py` for the existing registry contract and `scripts/planning_package_validate.py` for manifest and cross-artifact structure. Passing structural checks does not prove the requirement is correct or that a planned test passed.
 
 Mark source, priority, release and unresolved decisions. Do not invent product, user or market facts.
+
+## Conversation-to-spec and targeted clarification
+
+When asked to synthesize an already-settled conversation, use its accepted facts and decisions without forcing another interview. List unknowns rather than guessing. When a missing decision materially affects scope, use a bounded, high-information clarification or a concise stakeholder questionnaire; store answers as evidence before updating acceptance criteria. Link glossary terms and material ADR decisions where relevant. Human review of the resulting specification stays separate from external publishing.

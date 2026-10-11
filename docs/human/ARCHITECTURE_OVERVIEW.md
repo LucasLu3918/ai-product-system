@@ -203,6 +203,9 @@ Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行
 
 ## Deterministic Execution
 
+Matt Pocock 方法以現有 AIPS Skill Registry 與 Capability Incubation 為單一權威，重複的 Code Review / TDD / Debugging / Domain Modeling / Planning 直接強化原 Skill，窄範圍新增者才有獨立 ID。Human Skill Explorer 是唯讀輸出，透過決定性產生器從 Registry 映射，不建立第二套 Runtime Router、Scheduler 或授權通道。
+
+
 Creative benchmark evidence is a read-only consumer of local trial artifacts. It has no provider dispatch, generation authority, or path into the Human acceptance decision.
 
 Stable release readiness binds the proposed version to the exact main commit and keeps tag/release publication separate. The install/update lifecycle verifies fast-forward success and confirms a rejected divergent update preserves the installed commit and version.

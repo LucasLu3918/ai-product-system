@@ -32,3 +32,7 @@ Use this skill for code-level defects. For an active service incident, load inci
 ## Output
 
 Report reproduction steps, the verified root cause and evidence, the correction, regression coverage, and remaining uncertainty. Never delete, skip, or weaken a test merely to obtain a passing result.
+
+## Fast failing feedback loop
+
+Prioritize a small repeatable red signal for the exact reported mutation, rather than broad test suites or intuition-based edits. When practical, minimize the input, establish a before/after comparison, and instrument a discriminating observation for each competing hypothesis. For flaky failures capture seeds, environment, timing and retry statistics without claiming deterministic reproduction. Confirm the red signal fails before the correction and becomes green after it, while checking neighboring regressions. Never execute unsafe production mutation merely to reproduce a failure.

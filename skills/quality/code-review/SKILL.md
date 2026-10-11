@@ -25,3 +25,11 @@ Material findings must include evidence, impact and recommendation. Do not inven
 After the Author fixes findings, prefer targeted re-review of the finding + diff + affected tests unless the boundary materially expanded.
 
 Outcomes: PASS, PASS WITH COMMENTS, REQUEST CHANGES, BLOCK.
+
+## Matt Pocock two-axis enhancement (standards and spec)
+
+Pin a fixed comparison point (commit, branch, merge-base or approved change boundary) before reviewing. Independently evaluate:
+1. **Standards:** project rules, maintainability, meaningful code smells, correctness, tests, safety and relevant performance.
+2. **Spec:** requirement/issue acceptance criteria, missing behavior, scope drift and evidence of completion.
+
+For nontrivial diffs, assign independent reviewer perspectives under `orchestration/MULTI_REVIEW.md`; never infer an independent review occurred without evidence. Aggregate findings with source path/line, severity, axis, reproducible evidence and recommended correction. After author fixes, re-review targeted changes plus impacted regression coverage. Standards/Spec PASS does not authorize publication or a merge.
