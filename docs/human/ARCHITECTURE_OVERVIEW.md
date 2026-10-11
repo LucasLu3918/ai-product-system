@@ -192,6 +192,8 @@ Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行
 
 ## Deterministic Execution
 
+Stable release readiness binds the proposed version to the exact main commit and keeps tag/release publication separate. The install/update lifecycle verifies fast-forward success and confirms a rejected divergent update preserves the installed commit and version.
+
 Branch Hygiene connects exact remote branch and PR evidence to a read-only maintenance report; the lifecycle classification never grants Git mutation authority.
 
 Publication exact-candidate diff 與 Hook consumption 是獨立邊界：Integration Gate PASS 不簽發 Human grant，Git common/worktree ID 不等同共享授權。這些 scope consumer 保留 bounded Intelligence evidence。

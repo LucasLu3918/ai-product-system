@@ -1,136 +1,109 @@
 version: 1
+
 candidate:
-  base_sha: 8eaf16983d816a1fc8ad08d31eb8cd2b908e4bdc
-  changed_files_hash: 9d090149bc254f58dec2f2a9c8084d797da2275b45d3c28e9e12cbf8d7260937
+  base_sha: 8f2e1757eb06aac619b86e7997351ff18d968c9e
+  changed_files_hash: b942d907ec4352893be8fb43b78eb40ac773088808ac40129fbd9bca904c4512
+
 change:
-  id: plan29-phase0-branch-lifecycle
-  summary: Evidence-bound branch and PR disposition reporting with report-only cleanup authority.
+  id: plan29-phase1-release-readiness
+  summary: Complete stable release readiness evidence for exact-candidate decisions and preserve installed state when a divergent update is refused.
   boundary:
-  - Branch disposition classifier using exact remote/main/PR evidence
-  - Workflow metadata and advisory branch report summary
-  - Scenario 257 conformance registration and lifecycle evidence
-  - Canonical documentation closure and generated conformance projections
+    - Stable release readiness remains exact-version/exact-main and read-only.
+    - Main-channel update fast-forward and divergent-update refusal preserve the documented install contract.
+    - Scenario 214, its evidence mapping, and Plan29 workstream status document the verified boundary.
+
 matrix:
-- boundary: Branch disposition classifier
-  reason: Classifies each branch from exact SHA, active checkout, lifecycle, integration and read-only PR state; unknown work remains protected.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'PASS: focused Ruff on scripts/branch_hygiene.py, tests/evidence/branch_hygiene_lifecycle.py and tests/validation/branch_hygiene_contracts.py.'
-    unit:
-      applicable: true
-      evidence: 'PASS: branch_hygiene_lifecycle.py fixture coverage for KEEP, SUPERSEDED, REBASE_REQUIRED, CLEANUP_CANDIDATE, stale SHAs and unknown/persistent work.'
-    integration:
-      applicable: true
-      evidence: 'PASS: full tests/validate_repository.py on the exact working tree; 257 registered scenarios, 0 uncovered.'
-    contract:
-      applicable: true
-      evidence: 'PASS: branch hygiene workflow/static contracts and lifecycle fixtures.'
-    e2e:
-      applicable: false
-      na_reason: Branch reporting is read-only and has no browser UI; no live remote Git mutation is allowed for this workstream.
-    security:
-      applicable: true
-      evidence: 'PASS: branch lifecycle fixtures preserve report-only authority and full preview content_safety is PASS; exact committed candidate scan remains required in Gate.'
-    migration_recovery:
-      applicable: false
-      na_reason: Additive report fields only; no persistent data/schema migration or recovery path changes.
-    cli_harness:
-      applicable: true
-      evidence: 'PASS: CLI report contract and fixture lifecycle; no branch mutation command is introduced.'
-    docs_schema:
-      applicable: true
-      evidence: 'PASS: documentation preview closure complete and generated conformance summaries match; exact Gate runs docs build.'
-- boundary: Workflow metadata and advisory report summary
-  reason: Workflow requests read-only PR merge state and surfaces evidence without granting mutation authority.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'PASS: full repository validator and exact candidate Gate include workflow validation.'
-    unit:
-      applicable: true
-      evidence: 'PASS: branch hygiene lifecycle and workflow/static contract coverage.'
-    integration:
-      applicable: true
-      evidence: 'PASS: full tests/validate_repository.py; exact GitHub PR mutation is excluded.'
-    contract:
-      applicable: true
-      evidence: 'PASS: workflow contract verifies requested PR metadata and summary authority.'
-    e2e:
-      applicable: false
-      na_reason: Scheduled report has no user-facing browser interface and makes no remote mutation.
-    security:
-      applicable: true
-      evidence: 'PASS: workflow permissions and report-only contract; exact candidate secret scan remains required in Gate.'
-    migration_recovery:
-      applicable: false
-      na_reason: Workflow reads metadata and publishes a summary; no durable data migration.
-    cli_harness:
-      applicable: true
-      evidence: 'PASS: workflow contracts preserve existing read-only schedule/dispatch permissions.'
-    docs_schema:
-      applicable: true
-      evidence: 'PASS: workflow summary rendered by validated workflow contract; full candidate docs build runs in Gate.'
-- boundary: Scenario 257 conformance registration and lifecycle evidence
-  reason: Adds deterministic scenario evidence and updates canonical conformance counts and projections.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'PASS: focused Ruff on new and changed branch hygiene implementation/evidence modules.'
-    unit:
-      applicable: true
-      evidence: 'PASS: branch_hygiene_lifecycle.py and scenario_conformance.py (257 registered, 0 uncovered).'
-    integration:
-      applicable: true
-      evidence: 'PASS: full tests/validate_repository.py; 12 Roles, 40 Skills, 257 Scenarios.'
-    contract:
-      applicable: true
-      evidence: 'PASS: branch hygiene contract and conformance isolation validator.'
-    e2e:
-      applicable: false
-      na_reason: Scenario is fixture-backed and explicitly excludes live GitHub mutations.
-    security:
-      applicable: true
-      evidence: 'PASS: fixture assertions fail closed on unknown/persistent/active work; final candidate scan remains required in Gate.'
-    migration_recovery:
-      applicable: false
-      na_reason: Conformance registry and documentation projections have no runtime persistence migration.
-    cli_harness:
-      applicable: true
-      evidence: 'PASS: CLI/Harness contracts and full repository validation.'
-    docs_schema:
-      applicable: true
-      evidence: 'PASS: generated current/history summaries match their sources; placement preview complete.'
-- boundary: Canonical documentation closure and generated conformance projections
-  reason: Updates Human and Agent maintenance guidance while preserving source-of-truth and generated-projection rules.
-  checks:
-    static_lint:
-      applicable: true
-      evidence: 'PASS: focused Ruff and full repository validator.'
-    unit:
-      applicable: true
-      evidence: 'PASS: conformance summary lifecycle and scenario conformance checks.'
-    integration:
-      applicable: true
-      evidence: 'PASS: full documentation placement closure preview and repository validator.'
-    contract:
-      applicable: true
-      evidence: 'PASS: summary generator --check and Human/Agent crosswalk anchors.'
-    e2e:
-      applicable: false
-      na_reason: Documentation projections are validated by deterministic source comparison, not a product UI.
-    security:
-      applicable: true
-      evidence: 'PASS: no secrets or private data added; exact-candidate content scan remains required in Gate.'
-    migration_recovery:
-      applicable: false
-      na_reason: Documentation-only additions and generated projections introduce no migration or data repair requirement.
-    cli_harness:
-      applicable: true
-      evidence: 'PASS: local Harness/CLI validation is included in the full repository validator.'
-    docs_schema:
-      applicable: true
-      evidence: 'PASS: documentation closure complete; full exact-candidate documentation Gate remains required before publication.'
+  - boundary: Stable release readiness and stable install contract
+    reason: Existing version-tag policy and manual workflow must remain exact-candidate, read-only, and unable to authorize release writes.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: "PASS: full repository validator and exact-candidate Integration Gate."
+      unit:
+        applicable: true
+        evidence: "PASS: version_policy_lifecycle.py covers exact SHA/version, changelog, mismatched tag, and no-tag-write cases."
+      integration:
+        applicable: true
+        evidence: "PASS: release_channel_lifecycle.py covers fail-closed stable install, explicit main install, and verified stable install."
+      contract:
+        applicable: true
+        evidence: "PASS: release readiness workflow retains workflow_dispatch and contents: read, with no tag/release write."
+      e2e:
+        applicable: false
+        na_reason: The readiness workflow is manual and read-only; live release publication is explicitly outside scope.
+      security:
+        applicable: true
+        evidence: "PASS: workflow write permissions remain absent; exact-candidate secret scanning runs in the Integration Gate."
+      migration_recovery:
+        applicable: false
+        na_reason: No persistent schema or migration changes; installed-update recovery is covered by the next boundary.
+      cli_harness:
+        applicable: true
+        evidence: "PASS: stable install/update behavior is exercised by existing installer and preflight lifecycles."
+      docs_schema:
+        applicable: true
+        evidence: "PASS: Scenario 214 and scenario_coverage.yaml bind readiness and installer/update evidence."
+  - boundary: Main-channel update and rejected-divergence recovery
+    reason: Preflight must fast-forward a clean install and leave the exact installed commit/version unchanged when remote history diverges.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: "PASS: focused lifecycle is executed by the full repository validator."
+      unit:
+        applicable: true
+        evidence: "PASS: install_preflight_lifecycle.py asserts the installed SHA and VERSION stay unchanged after stable no-tag and divergent-update refusal."
+      integration:
+        applicable: true
+        evidence: "PASS: install_preflight_lifecycle.py exercises local source/updater Git repositories, exact fast-forward behavior, and stable update refusal without a verified tag."
+      contract:
+        applicable: true
+        evidence: "PASS: Scenario 214 and evidence mapping cover clean update and divergence refusal."
+      e2e:
+        applicable: false
+        na_reason: CLI lifecycle uses isolated local Git fixtures; no browser or external provider is involved.
+      security:
+        applicable: true
+        evidence: "PASS: rejected divergent history performs no merge, rebase, rollback, or install-state mutation."
+      migration_recovery:
+        applicable: true
+        evidence: "PASS: stable no-tag and divergent-update lifecycles check the installed revision and version are preserved after failure."
+      cli_harness:
+        applicable: true
+        evidence: "PASS: install_preflight_lifecycle.py executes the real AIPS CLI updater and preflight entrypoints."
+      docs_schema:
+        applicable: true
+        evidence: "PASS: scenario 214 and scenario_coverage.yaml are reconciled; full Gate checks documentation closure."
+  - boundary: Scenario and optimization-series tracking
+    reason: The canonical Scenario and approved Plan29 table must reflect the tested release-readiness status and evidence sources.
+    checks:
+      static_lint:
+        applicable: true
+        evidence: "PASS: full repository validator."
+      unit:
+        applicable: true
+        evidence: "PASS: scenario coverage validator requires the registered evidence paths."
+      integration:
+        applicable: true
+        evidence: "PASS: complete scenario conformance and repository validation."
+      contract:
+        applicable: true
+        evidence: "PASS: exact scenario-to-evidence mapping and proposal status are validated in the candidate Gate."
+      e2e:
+        applicable: false
+        na_reason: This boundary is documentation and registry data validated deterministically.
+      security:
+        applicable: true
+        evidence: "PASS: no credentials or personal data are added; candidate secret/content scan remains required."
+      migration_recovery:
+        applicable: false
+        na_reason: Scenario registry and planning table do not introduce persistent runtime state.
+      cli_harness:
+        applicable: false
+        na_reason: CLI behavior is independently exercised by the update lifecycle boundary.
+      docs_schema:
+        applicable: true
+        evidence: "PASS: proposal table and canonical scenario text are validated by full repository validation and docs placement checks."
+
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []

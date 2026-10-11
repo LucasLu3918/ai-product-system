@@ -180,7 +180,7 @@ Agent 由 AGENTS.md / SYSTEM.md 進入，按需讀取 orchestration/、roles/、
 
 CLI entry-point and publication-preflight modularization map to this document, Architecture Overview, Maintenance, Technology Guide, User Guide, Conformance, Security Assurance, and the relevant orchestration contracts.
 
-- Release-tag provenance policy is canonical in `config/version-tag-policy.yaml` and `orchestration/RELEASE_READINESS.md`; Scenario 208 defines its evidence contract.
+- Release-tag provenance policy is canonical in `config/version-tag-policy.yaml` and `orchestration/RELEASE_READINESS.md`; Scenario 208 defines its exact-candidate readiness contract and Scenario 214 covers stable install/update recovery evidence. Readiness never publishes a tag or release.
 
 Retrieval SQLite storage helpers are implemented in `scripts/retrieval_storage.py` and remain re-exported through the `scripts/retrieval_intelligence.py` facade. The existing Project Intelligence documentation closure covers both source modules.
 
