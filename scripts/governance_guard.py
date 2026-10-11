@@ -12,7 +12,7 @@ import shlex
 import subprocess
 import sys
 from datetime import UTC
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 import yaml
@@ -391,8 +391,18 @@ def commit_safety(cwd: Path, command: str) -> dict:
         if blob.returncode:
             raise PublicationError("staged blob unavailable", "STAGED_CONTENT_UNAVAILABLE")
         if len(blob.stdout) > 8 * 1024 * 1024:
-            raise PublicationError("staged blob exceeds inspection limit", "STAGED_CONTENT_TOO_LARGE")
-        result = safe_emit(sink='git_commit', payload={'staged_blob': blob.stdout.decode('utf-8', errors='replace')})
+            reason = "M4A_TOO_LARGE" if PurePosixPath(os.fsdecode(name)).suffix.lower() == '.m4a' else "STAGED_CONTENT_TOO_LARGE"
+            raise PublicationError("staged blob exceeds inspection limit", reason)
+        if PurePosixPath(os.fsdecode(name)).suffix.lower() == '.m4a':
+            from m4a_inspection import M4AInspectionError, inspect_m4a, metadata_text
+            try:
+                inspected = inspect_m4a(blob.stdout)
+            except M4AInspectionError as exc:
+                raise PublicationError("staged M4A is malformed or its extension is spoofed", "M4A_INVALID") from exc
+            staged_text = metadata_text(inspected.metadata)
+        else:
+            staged_text = blob.stdout.decode('utf-8', errors='replace')
+        result = safe_emit(sink='git_commit', payload={'staged_blob': staged_text})
         if result['decision'] == 'BLOCK':
             return result
     return safety
@@ -416,6 +426,8 @@ def deny_hook_input(runtime: str, reason: str) -> int:
         "CONTENT_CANDIDATE_UNAVAILABLE": "AIPS could not inspect the publication content; retry after resolving the local inspection error.",
         "STAGED_CONTENT_UNAVAILABLE": "AIPS could not read a staged file for content inspection; check the index and restage the candidate.",
         "STAGED_CONTENT_TOO_LARGE": "AIPS cannot inspect a staged file above the configured size limit; split or remove that file.",
+        "M4A_TOO_LARGE": "AIPS cannot publish M4A files above 8 MiB; use Git LFS or external asset storage and keep the repository pointer/documentation here.",
+        "M4A_INVALID": "AIPS could not verify this .m4a as a valid M4A audio file; use a correctly encoded file with matching extension.",
         "CONTENT_INSPECTION_UNAVAILABLE": "AIPS content inspection could not complete; check the local scanner and Git state.",
     }
     detail = reason_messages.get(reason, "AIPS blocked this command during a required safety check.")
@@ -571,7 +583,10 @@ def hook(runtime: str) -> int:
                         raise PublicationError('merge confirmation binding unavailable')
                     names = ', '.join(merge_confirmation['required_checks']) or 'none reported'
                     reason = (
+                        f"GitHub will enable auto-merge for PR #{merge_confirmation['pr_number']} in {publication['github_repo']} "
+                        if merge_confirmation.get('auto_merge') else
                         f"Confirm PR merge #{merge_confirmation['pr_number']} in {publication['github_repo']} "
+                    ) + (
                         f"into {merge_confirmation['base_branch']} (base SHA {merge_confirmation['base_sha']})? "
                         f"Head SHA: {merge_confirmation['head_sha']}. Required checks: {names}. "
                         "GitHub pins the head SHA at merge; the base SHA is a pre-execution observation."
@@ -595,9 +610,10 @@ def hook(runtime: str) -> int:
                 reason = "publication authorization failed (" + type(exc).__name__ + ")"
 
     if runtime == "claude-code":
+        claude_auto_merge = bool(merge_confirmation and merge_confirmation.get('auto_merge'))
         print(json.dumps({"hookSpecificOutput": {
             "hookEventName": "PreToolUse",
-            "permissionDecision": "ask" if ok and merge_confirmation else "allow" if ok else "deny",
+            "permissionDecision": "ask" if ok and merge_confirmation and not claude_auto_merge else "allow" if ok else "deny",
             "permissionDecisionReason": "AIPS " + reason if ok else "AIPS blocked protected publication: " + reason,
         }}))
     else:

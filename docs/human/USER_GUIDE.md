@@ -549,11 +549,13 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 若開發 workspace 有未交付素材，保留原檔並建立獨立乾淨的工程分支 worktree，再將該 root 明確傳給 `prepare` 與原生 tool。素材清單至少記錄路徑、用途、SHA-256、大小、授權與部署來源；母帶需獨立備份，正式音訊經壓縮與音質驗收。Git LFS／物件儲存由專案決定，且部署必須驗證實體檔案可取得。Scanner 的文字、binary 與來源政策限制要各別診斷，不因檔案大小推論授權失敗。
 
+`.m4a` 可作為 Git 內的音訊素材，限 8 MiB 且須通過容器品牌與 atom 結構檢查；AIPS 掃描其中 metadata，不將 `mdat` 音訊內容當文字解碼。格式偽裝、metadata secret、內容安全命中或超過 8 MiB 都會阻擋發布；較大的音訊請使用 Git LFS 或外部物件儲存，並在 repository 保留可追溯的 asset pointer／部署說明。既有文字掃描上限與其他二進位格式政策維持適用。
+
 發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕，`--auto-merge` 只規劃 GitHub `--auto`，要求非空且全部通過的 required checks，並保留原生 Human 授權。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。
 
 `branch-hygiene.yml` 的報告會依 branch SHA、目前 main、local checkout 與 PR 狀態列出 `KEEP`、`SUPERSEDED`、`REBASE_REQUIRED` 或 `CLEANUP_CANDIDATE`。這些分類供維護者檢視，不會自動 merge、rebase、關閉 PR 或刪除 branch；清理仍須逐筆核准 exact manifest。
 
-預設個人模式會在程式修改與驗證完成後，自行推送工程分支並建立／更新指向遠端預設分支的 PR；不需設定簽發服務。只有使用者明確要求 local-only／不發布時才停在本機。使用者明確要求合併 PR 時，Claude Code 每次會顯示原生確認並列出 PR、base/head SHA 與 required checks；Gemini CLI 透過互動式 extension policy 每次要求確認。合併前會驗證 PR 開啟且可合併、目標為遠端預設分支、head 是目前 allowlist 工程分支與精確候選 SHA，且 required checks 已通過。Codex Hook 仍是 advisory，無法保證攔截直接 merge 命令。直接推送保護分支、刪除分支與發行不屬於個人模式。
+預設個人模式會在程式修改與驗證完成後，自行推送工程分支並建立／更新指向遠端預設分支的 PR；不需設定簽發服務。只有使用者明確要求 local-only／不發布時才停在本機。一般 PR merge 時，Claude Code 會顯示原生確認並列出 PR、base/head SHA 與 required checks；Gemini CLI 透過互動式 extension policy 每次要求確認。若目前任務明確授權合併，且 `gh pr merge --auto` 通過相同候選驗證，Claude Code 可啟用 GitHub auto-merge 而不再要求第二次 Claude 確認；GitHub 仍會等待 checks 與 repository policy，Gemini 仍逐次詢問。Codex Hook 仍是 advisory，無法保證攔截直接 merge 命令。直接推送保護分支、刪除分支與發行不屬於個人模式。
 Claude/Gemini Hook 會遞迴分類命令參數及 unquoted heredoc 內的 `$(...)`／反引號替換，因此安全的查詢命令可留在同一次 Shell 呼叫。替換只供 AST 分析、不會由 Hook 執行；發布仍須使用明確 SHA、ref、repository 和既有核准流程。
 
 

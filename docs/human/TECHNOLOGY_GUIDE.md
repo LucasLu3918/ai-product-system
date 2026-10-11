@@ -203,7 +203,7 @@ The Retrieval Intelligence SQLite persistence boundary is `scripts/retrieval_sto
 
 ## Security & Governance
 
-Git publication 使用 bashlex shell AST 與 cryptography Ed25519。預設 personal mode 以共用 Hook 驗證內容、乾淨候選、工程分支與明確操作；PR merge 另外要求 Claude 原生 `ask` 或 Gemini interactive `ask_user`、精確 head SHA、預設 base 與 passing required checks。Gemini policy 涵蓋 default/autoEdit/yolo；Codex hook 維持 ADVISORY 且不能保證攔截直接 merge。安裝固定的 root-owned trust config 會啟用 high-assurance mode，並要求外部 HTTPS issuer 與 transactional single-use ledger。fixture 簽章只驗證高保證協定。Git push 的 server lease 與 GH head pin/base preexecution observation 分別記錄於 scope。
+Git publication 使用 bashlex shell AST 與 cryptography Ed25519。預設 personal mode 以共用 Hook 驗證內容、乾淨候選、工程分支與明確操作；一般 PR merge 要求 Claude 原生 `ask` 或 Gemini interactive `ask_user`、精確 head SHA、預設 base 與 passing required checks。明確 task-authorized 的 `gh pr merge --auto` 經相同候選驗證後可由 Claude 啟用 GitHub auto-merge，不再要求第二次 Claude 確認；Gemini 仍要求 `ask_user`，GitHub 仍套用 checks 與 repository policy。Gemini policy 涵蓋 default/autoEdit/yolo；Codex hook 維持 ADVISORY 且不能保證攔截直接 merge。安裝固定的 root-owned trust config 會啟用 high-assurance mode，並要求外部 HTTPS issuer 與 transactional single-use ledger。fixture 簽章只驗證高保證協定。Git push 的 server lease 與 GH head pin/base preexecution observation 分別記錄於 scope。
 
 `feat/` is an accepted engineering branch prefix. `--auto-merge` requests GitHub auto-merge only after AIPS confirms a non-empty passing required-check set; exact head binding and native Human authorization remain required.
 
@@ -257,7 +257,7 @@ Large/Core candidate validation binds its test evidence and documentation closur
 
 Canonical Skill frontmatter defines routing metadata and the generated version 1 skills/INDEX.yaml remains the consumer view. Skills load only when relevant. Scenarios 241–256 are manual semantic expectations; the Skill Index lifecycle separately checks deterministic metadata generation and compatibility. The additions use existing Capabilities, and the browser-game reference keeps DOM/SVG implementation detail out of global Skill metadata.
 
-Repository validation and the exact-candidate Integration Gate establish candidate fitness. Personal publication permits guarded engineering-branch push and PR creation, plus per-call confirmed PR merge through Claude Code and Gemini CLI native controls after exact head/default-base and required-check validation; Codex remains advisory.
+Repository validation and the exact-candidate Integration Gate establish candidate fitness. Personal publication permits guarded engineering-branch push and PR creation, plus ordinary per-call confirmed PR merge through Claude Code and Gemini CLI native controls after exact head/default-base and required-check validation. A task-authorized Claude `--auto` merge uses the same guard and lets GitHub complete after policy/checks pass; Gemini still asks. Codex remains advisory.
 
 
 Publication Core candidate 執行完整 repository／secret／docs Gate 與 signed-grant regression。Synthetic issuer、review 或 creative lifecycle evidence 不建立 production signing trust root。

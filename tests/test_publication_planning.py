@@ -15,6 +15,7 @@ sys.path.insert(0, str(ROOT / 'scripts'))
 import governance_guard as guard
 import publication_authority as auth
 import publication_planning as planning
+import publish_preflight as preflight
 
 
 class PlanningTest(unittest.TestCase):
@@ -272,6 +273,33 @@ class PlanningTest(unittest.TestCase):
         self.assertIn('STAGED_CONTENT_UNAVAILABLE', response)
         self.assertIn('restage', response)
         self.assertNotIn('private/path/value', response)
+
+    def test_preview_content_safety_handles_m4a_metadata_and_diagnostics(self):
+        fixture = ROOT / 'tests/fixtures/publication/valid-audio.m4a'
+        audio = fixture.read_bytes()
+        candidate = self.repo / 'candidate.m4a'
+        base = self.git(self.repo, 'rev-parse', 'main')
+        with patch.object(preflight, 'ROOT', self.repo):
+            candidate.write_bytes(audio)
+            valid = preflight.preview_content_safety(base, ['candidate.m4a'])
+            self.assertEqual(valid['status'], 'PASS', valid)
+
+            secret_value = 'AbC123xYz789' + 'LmNopQ456'
+            secret = b'\napi_key=' + secret_value.encode()
+            moov_size = int.from_bytes(audio[28:32], 'big')
+            metadata_secret = bytearray(audio[:28] + audio[28:28 + moov_size] + secret + audio[28 + moov_size:])
+            metadata_secret[28:32] = (moov_size + len(secret)).to_bytes(4, 'big')
+            candidate.write_bytes(metadata_secret)
+            leaked = preflight.preview_content_safety(base, ['candidate.m4a'])
+            self.assertEqual(leaked['status'], 'BLOCKED', leaked)
+
+            candidate.write_text('not an M4A container')
+            spoofed = preflight.preview_content_safety(base, ['candidate.m4a'])
+            self.assertTrue(any('invalid or spoofed M4A' in item for item in spoofed['blockers']), spoofed)
+
+            candidate.write_bytes(b'x' * (8 * 1024 * 1024 + 1))
+            oversized = preflight.preview_content_safety(base, ['candidate.m4a'])
+            self.assertTrue(any('Git LFS or external asset storage' in item for item in oversized['blockers']), oversized)
 
     def test_merge_plan_requires_intent_and_enabled_method(self):
         self.git(self.repo, 'push', 'origin', self.head + ':refs/heads/codex/plan30')

@@ -31,3 +31,14 @@ Targets are the existing publication authority, hook, preflight CLI, their unit 
 ## Publication
 
 Target `origin` / `LucasLu3918/ai-product-system`, PR to `main`; merge only after the exact candidate Gate and required remote checks pass. User request explicitly authorizes a PR and merge for this change. No direct push to `main`, release, admin bypass, or Lucas Lab change.
+
+## Approved scope extension — 2026-10-12
+
+The user approved the following extension in this Codex task:
+
+- Personal-mode Claude Code may execute `gh pr merge --auto` without a second, per-call native prompt only when the user explicitly authorized merging in the current task and existing exact PR/head/base, mergeability, non-empty passing required-check, candidate-scan and GitHub policy checks pass. Ordinary Claude merge commands still require native `ask`; Gemini behavior remains unchanged. This is not an agent-authored general grant and does not change high-assurance mode.
+- Add `.m4a` handling to the existing publication preview content-safety path, secret scanner and staged-blob commit guard. Require a structurally valid ISO BMFF audio container before treating the extension as binary; scan text disguised with `.m4a`, retain the 8 MiB inspection ceiling, and return actionable Git LFS/external asset guidance for oversized audio.
+- Add regression and lifecycle evidence for valid and malformed M4A, secret-bearing disguised text, the size limit, existing binary formats, and task-authorized automatic merge.
+- Update the canonical publication, security and Chinese Human guidance plus Scenario 240 and its documentation projections.
+
+The approval reference is the user's explicit reply “核准上述範圍” on 2026-10-12. Constitution semantics remain unchanged. Repository-wide Impact Graph coverage remains partial; exact callers/consumers are reviewed manually and the limitation is retained.

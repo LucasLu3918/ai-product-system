@@ -281,6 +281,8 @@ OpenCode adapter changes must preserve version/platform/source binding in native
 
 Personal-mode PR merge validation binds the per-call confirmation to the exact candidate head and required-check result; completed review evidence does not substitute for that confirmation.
 
+The approved Core extension keeps ordinary merge confirmation and Gemini `ask_user`, while task-authorized Claude `--auto` still uses the exact-candidate guard and GitHub checks. Its M4A boundary validates the container, scans `moov` metadata and rejects malformed or >8 MiB files. Top-level product and Harness diagrams are N/A because the existing publication/scanner boundary is extended without changing component topology; the publication flow text and local Integration Gate cover the changed behavior.
+
 For creative authorization changes, derive regression cases from the adapter, policy, executor, callers and consumers. Review changed and affected-but-unchanged nodes; do not infer repository-wide completeness from scoped graph evidence.
 
 創作 runtime 變更驗證 user-only 授權、Context envelope、設定欄位與版本競爭、取消／換任務、媒材拒絕、損壞圖片及 provenance。真實推論與人工品質驗收需分開回報，不能由 fake engine PASS 代替。

@@ -26,7 +26,7 @@ SKIP_DIRS = {
 BINARY_EXT = {
     ".png", ".jpg", ".jpeg", ".gif", ".webp", ".avif", ".ico", ".pdf",
     ".zip", ".gz", ".tar", ".7z", ".woff", ".woff2", ".ttf", ".otf",
-    ".mp3", ".mp4", ".mov", ".sqlite", ".db",
+    ".mp3", ".mp4", ".m4a", ".mov", ".sqlite", ".db",
 }
 PLACEHOLDER_HINTS = {
     "placeholder", "example", "dummy", "fake", "changeme", "replace_me",
@@ -167,6 +167,27 @@ def add_finding(
     findings.append(result)
 
 
+def scan_m4a(payload: bytes, location: str, policy: dict[str, Any], findings: list[dict[str, Any]], *, revision: str | None = None) -> str | None:
+    """Inspect an M4A container and scan its metadata, never its audio payload."""
+    from m4a_inspection import M4AInspectionError, inspect_m4a, metadata_text
+
+    try:
+        inspected = inspect_m4a(payload)
+    except M4AInspectionError as exc:
+        # Text disguised as audio is still scanned for secrets before it is rejected.
+        try:
+            text = payload.decode("utf-8")
+        except UnicodeError:
+            text = ""
+        if text:
+            scan_text(text, location, policy, strict=True, findings=findings, revision=revision)
+        if len(payload) > 8 * 1024 * 1024:
+            return f"M4A exceeds 8 MiB publication limit: {normalize_path(location)}; use Git LFS or external asset storage."
+        return f"invalid or spoofed M4A file: {normalize_path(location)} ({exc})"
+    scan_text(metadata_text(inspected.metadata), location, policy, strict=True, findings=findings, revision=revision)
+    return None
+
+
 def scan_text(
     text: str, location: str = "<payload>", policy: dict[str, Any] | None = None, *,
     strict: bool = False, findings: list[dict[str, Any]] | None = None,
@@ -213,7 +234,7 @@ def iter_files(root: Path, explicit: list[str], policy: dict[str, Any]) -> Itera
         for name in files:
             path = Path(base) / name
             relative = path.relative_to(root).as_posix()
-            if not generated_path(relative, policy) and path.suffix.lower() not in BINARY_EXT:
+            if not generated_path(relative, policy) and (path.suffix.lower() not in BINARY_EXT or path.suffix.lower() == ".m4a"):
                 yield path
 
 
@@ -222,9 +243,19 @@ def scan_worktree(root: Path, policy: dict[str, Any], *, strict: bool, paths: li
     blockers: list[str] = []
     for path in iter_files(root, paths, policy):
         relative = path.relative_to(root).as_posix()
-        if generated_path(relative, policy) or path.suffix.lower() in BINARY_EXT:
+        if generated_path(relative, policy):
             continue
         try:
+            if path.suffix.lower() == ".m4a":
+                if path.stat().st_size > 8 * 1024 * 1024:
+                    blockers.append(f"M4A exceeds 8 MiB publication limit: {relative}; use Git LFS or external asset storage.")
+                    continue
+                blocker = scan_m4a(path.read_bytes(), relative, policy, findings)
+                if blocker and strict:
+                    blockers.append(blocker)
+                continue
+            if path.suffix.lower() in BINARY_EXT:
+                continue
             if path.stat().st_size > policy["limits"]["max_file_bytes"]:
                 if strict:
                     blockers.append(f"candidate file exceeds scan limit: {relative}")
@@ -280,11 +311,21 @@ def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any]) -> 
 
     # Scan the committed final tree, not a possibly dirty filesystem view.
     for mode, blob_sha, path in decode_tree_paths(git(root, "ls-tree", "-rz", "--full-tree", head_sha)):
-        if mode == "160000" or generated_path(path, policy) or PurePosixPath(path).suffix.lower() in BINARY_EXT:
+        suffix = PurePosixPath(path).suffix.lower()
+        if mode == "160000" or generated_path(path, policy) or (suffix in BINARY_EXT and suffix != ".m4a"):
             continue
         if mode == "120000":
             continue
         try:
+            if suffix == ".m4a":
+                if int(git_text(root, "cat-file", "-s", blob_sha)) > 8 * 1024 * 1024:
+                    blockers.append(f"M4A exceeds 8 MiB publication limit: {normalize_path(path)}; use Git LFS or external asset storage.")
+                    continue
+                payload = git(root, "cat-file", "blob", blob_sha)
+                blocker = scan_m4a(payload, path, policy, findings)
+                if blocker:
+                    blockers.append(blocker)
+                continue
             if int(git_text(root, "cat-file", "-s", blob_sha)) > max_bytes:
                 blockers.append(f"candidate file exceeds scan limit: {normalize_path(path)}")
                 continue
@@ -316,10 +357,20 @@ def scan_candidate(root: Path, base: str, head: str, policy: dict[str, Any]) -> 
             except UnicodeError:
                 blockers.append("candidate history contains a path that is not UTF-8")
                 continue
-            if generated_path(path, policy) or PurePosixPath(path).suffix.lower() in BINARY_EXT:
+            suffix = PurePosixPath(path).suffix.lower()
+            if generated_path(path, policy) or (suffix in BINARY_EXT and suffix != ".m4a"):
                 continue
             try:
                 object_spec = f"{commit}:{path}"
+                if suffix == ".m4a":
+                    if int(git_text(root, "cat-file", "-s", object_spec)) > 8 * 1024 * 1024:
+                        blockers.append(f"M4A exceeds 8 MiB publication limit: {normalize_path(path)}; use Git LFS or external asset storage.")
+                        continue
+                    payload = git(root, "cat-file", "blob", object_spec)
+                    blocker = scan_m4a(payload, path, policy, findings, revision=commit)
+                    if blocker:
+                        blockers.append(blocker)
+                    continue
                 if int(git_text(root, "cat-file", "-s", object_spec)) > max_bytes:
                     blockers.append(f"candidate history file exceeds scan limit: {normalize_path(path)}")
                     continue

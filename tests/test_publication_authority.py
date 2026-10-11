@@ -14,6 +14,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
+import check_secret_leakage as secret_scanner
 import governance_guard as guard
 import publication_authority as auth
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
@@ -421,6 +422,78 @@ class PublicationTest(unittest.TestCase):
             with self.subTest(command=dynamic), self.assertRaises(auth.PublicationError):
                 guard.commit_safety(self.repo, dynamic)
 
+    def test_m4a_publication_scans_metadata_rejects_spoofs_and_enforces_size_limit(self):
+        from m4a_inspection import inspect_m4a
+
+        fixture = ROOT / 'tests/fixtures/publication/valid-audio.m4a'
+        audio = fixture.read_bytes()
+        self.assertEqual(inspect_m4a(audio).major_brand, b'M4A ')
+        video_spoof = bytearray(audio)
+        video_spoof[8:12] = b'isom'
+        video_spoof[16:20] = b'mp42'
+        video_spoof[20:24] = b'mp42'
+        with self.assertRaises(ValueError):
+            inspect_m4a(bytes(video_spoof))
+        policy, _ = secret_scanner.load_policy(ROOT / 'config/secret-scan.yaml')
+
+        # A real M4A is accepted by the staged commit guard and exact-candidate scanner.
+        valid_path = self.repo / 'valid-audio.m4a'
+        valid_path.write_bytes(audio)
+        (self.repo / 'legacy-audio.mp3').write_bytes(b'legacy mp3 binary fixture\x00\xff')
+        (self.repo / 'legacy-video.mp4').write_bytes(b'legacy mp4 binary fixture\x00\xfe')
+        self.run_git(self.repo, 'add', 'valid-audio.m4a', 'legacy-audio.mp3', 'legacy-video.mp4')
+        command = 'git commit -m ' + __import__('shlex').quote('add audio fixture')
+        self.assertNotEqual(guard.commit_safety(self.repo, command)['decision'], 'BLOCK')
+        self.run_git(self.repo, 'commit', '-m', 'add audio fixture')
+        valid_head = self.run_git(self.repo, 'rev-parse', 'HEAD')
+        findings, blockers, _, _ = secret_scanner.scan_candidate(self.repo, self.base, valid_head, policy)
+        self.assertEqual(findings, [])
+        self.assertEqual(blockers, [])
+
+        # Metadata remains text-scanned while the mdat audio bytes are never decoded.
+        secret_value = 'AbC123xYz789' + 'LmNopQ456'
+        secret = b'\napi_key=' + secret_value.encode()
+        moov_size = int.from_bytes(audio[28:32], 'big')
+        metadata_secret = bytearray(audio[:28] + audio[28:28 + moov_size] + secret + audio[28 + moov_size:])
+        metadata_secret[28:32] = (moov_size + len(secret)).to_bytes(4, 'big')
+        secret_path = self.repo / 'metadata-secret.m4a'
+        secret_path.write_bytes(metadata_secret)
+        self.run_git(self.repo, 'add', 'metadata-secret.m4a')
+        self.assertEqual(guard.commit_safety(self.repo, command)['decision'], 'BLOCK')
+        self.run_git(self.repo, 'commit', '-m', 'metadata security fixture')
+        secret_head = self.run_git(self.repo, 'rev-parse', 'HEAD')
+        findings, _, _, _ = secret_scanner.scan_candidate(self.repo, valid_head, secret_head, policy)
+        self.assertTrue(any(item['path'] == 'metadata-secret.m4a' for item in findings), findings)
+
+        # Text disguised as M4A is scanned and fails structural validation.
+        spoof_path = self.repo / 'spoofed.m4a'
+        spoof_path.write_text('api_key=' + secret_value + '\n')
+        self.run_git(self.repo, 'add', 'spoofed.m4a')
+        with self.assertRaises(auth.PublicationError) as spoofed:
+            guard.commit_safety(self.repo, command)
+        self.assertEqual(spoofed.exception.reason_code, 'M4A_INVALID')
+        self.run_git(self.repo, 'commit', '-m', 'spoofed audio fixture')
+        spoof_head = self.run_git(self.repo, 'rev-parse', 'HEAD')
+        findings, blockers, _, _ = secret_scanner.scan_candidate(self.repo, secret_head, spoof_head, policy)
+        self.assertTrue(any(item['path'] == 'spoofed.m4a' for item in findings), findings)
+        self.assertTrue(any('invalid or spoofed M4A' in item for item in blockers), blockers)
+
+        # Oversized M4A gets a fixed, actionable reason in both checks.
+        oversized_path = self.repo / 'oversized.m4a'
+        oversized_path.write_bytes(b'x' * (8 * 1024 * 1024 + 1))
+        self.run_git(self.repo, 'add', 'oversized.m4a')
+        with self.assertRaises(auth.PublicationError) as oversized:
+            guard.commit_safety(self.repo, command)
+        self.assertEqual(oversized.exception.reason_code, 'M4A_TOO_LARGE')
+        output = __import__('io').StringIO()
+        with patch('sys.stdout', output):
+            guard.deny_hook_input('claude-code', 'M4A_TOO_LARGE')
+        self.assertIn('Git LFS or external asset storage', output.getvalue())
+        self.run_git(self.repo, 'commit', '-m', 'oversized audio fixture')
+        oversized_head = self.run_git(self.repo, 'rev-parse', 'HEAD')
+        _, blockers, _, _ = secret_scanner.scan_candidate(self.repo, spoof_head, oversized_head, policy)
+        self.assertTrue(any('exceeds 8 MiB' in item and 'Git LFS' in item for item in blockers), blockers)
+
     def test_authority_configuration_is_not_agent_supplied(self):
         path = self.path / 'trust.yaml'
         path.write_text('version: 1\n')
@@ -519,7 +592,7 @@ class PublicationTest(unittest.TestCase):
             self.assertEqual(proc.returncode, 0)
             self.assertEqual(json.loads(proc.stdout), {})
 
-    def test_personal_merge_hook_requires_native_confirmation_for_supported_runtimes(self):
+    def test_personal_merge_hook_respects_confirmed_merge_and_task_authorized_auto_merge(self):
         import io
         import json
         import tomllib
@@ -548,6 +621,33 @@ class PublicationTest(unittest.TestCase):
             else:
                 self.assertEqual(response['decision'], 'allow')
                 self.assertIn(self.head, response['systemMessage'])
+
+        # Explicit task intent plus the fully validated --auto path lets GitHub
+        # finish after checks pass without a second Claude per-call prompt.
+        auto_command = command + ' --auto'
+        auto_payload = {'cwd': str(self.repo), 'tool_input': {'command': auto_command}}
+        auto_publication = {**publication, 'merge_confirmation': {**publication['merge_confirmation'], 'auto_merge': True}}
+        with patch('sys.stdin', io.StringIO(json.dumps(auto_payload))), patch('sys.stdout', io.StringIO()) as output, \
+                patch('runtime_policy.action_from_hook', return_value=None), \
+                patch.object(guard, 'safe_emit', return_value={'decision': 'ALLOW'}), \
+                patch('publication_authority.publication_mode', return_value='personal'), \
+                patch('publication_authority.validate_personal_action', return_value=auto_publication):
+            guard.hook('claude-code')
+        auto_response = json.loads(output.getvalue())['hookSpecificOutput']
+        self.assertEqual(auto_response['permissionDecision'], 'allow')
+        self.assertIn('enable auto-merge', auto_response['permissionDecisionReason'])
+        self.assertIn(self.head, auto_response['permissionDecisionReason'])
+
+        # Gemini retains its native ask_user extension rule, including for --auto.
+        with patch('sys.stdin', io.StringIO(json.dumps(auto_payload))), patch('sys.stdout', io.StringIO()) as output, \
+                patch('runtime_policy.action_from_hook', return_value=None), \
+                patch.object(guard, 'safe_emit', return_value={'decision': 'ALLOW'}), \
+                patch('publication_authority.publication_mode', return_value='personal'), \
+                patch('publication_authority.validate_personal_action', return_value=auto_publication):
+            guard.hook('gemini-cli')
+        gemini_auto = json.loads(output.getvalue())
+        self.assertEqual(gemini_auto['decision'], 'allow')
+        self.assertIn(self.head, gemini_auto['systemMessage'])
 
         policy_path = ROOT / 'harness/adapters/gemini-cli/policies/personal-pr-merge.toml'
         rule = tomllib.loads(policy_path.read_text())['rule'][0]
