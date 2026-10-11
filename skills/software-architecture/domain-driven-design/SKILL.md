@@ -38,3 +38,8 @@ Rules:
 - separate domain language between bounded contexts when meanings differ;
 - introducing or changing a bounded context is a material architecture decision and requires preflight recommendation/approval when it affects scope or contracts;
 - never perform unrelated repository-wide rewrites solely to “adopt DDD”.
+## Shared domain language
+
+When domain terms are disputed or overloaded, record a concise glossary of terms and meanings with their owning context. Check whether the same word means different things across contexts, then validate the model with concrete examples and edge cases. Capture consequential boundary choices in the existing ADR format. Keep simple CRUD and utility work proportionate; a glossary or ADR is useful only when it resolves real ambiguity or preserves a meaningful decision.
+
+Source note: adapted from mattpocock/skills engineering/domain-modeling at 49dd158d1076134a641b33efb035946536778336 (MIT); see licenses/MIT-Matt-Pocock-Skills.txt.

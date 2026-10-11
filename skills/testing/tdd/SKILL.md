@@ -28,3 +28,8 @@ Default cycle for testable behavior:
 For legacy code with insufficient coverage, create characterization tests around behavior that must remain stable before risky modification.
 
 Do not force unit-test-shaped TDD onto purely visual work, generated code or configuration where another validation strategy is more appropriate.
+## Test design quality
+
+At each red-green-refactor cycle, test through the smallest public behavior seam that can observe the requirement. Prefer assertions whose expected values come from an independent example or accepted specification. Avoid tests coupled to private implementation, tautological expectations, and batches of tests written before the first vertical slice. Agree on a test seam with the user only when the seam itself is a material product or contract decision; routine test boundaries are an implementation choice.
+
+Source note: adapted from mattpocock/skills engineering/tdd at 49dd158d1076134a641b33efb035946536778336 (MIT); see licenses/MIT-Matt-Pocock-Skills.txt.

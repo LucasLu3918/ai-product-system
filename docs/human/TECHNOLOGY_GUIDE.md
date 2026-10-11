@@ -72,6 +72,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+Skill Explorer 是離線生成的靜態 HTML，使用原生瀏覽器搜尋、分類與複製功能；Agent routing 仍由 canonical Registry 提供，不會因瀏覽頁面而啟用上游 Skills。
+
 `publication_planning.py` 重用 authority、candidate/history scan 與 GitHub PR evidence，提供 read-only `prepare` / `diagnose`。指紋包含 worktree、HEAD/base、remote/PR、policy 與 PR body digest；任何漂移需重新規劃，不能用診斷代碼放行。
 
 The local creative CLI supports `import-candidate` followed by explicit `import --accept-hash`; it rechecks source bytes and refuses existing destinations.
@@ -237,6 +239,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+The Skill Explorer is a static generated artifact from the canonical Skill registry and pinned source dispositions. Its deterministic validator checks inventory and routing metadata; it does not claim semantic model quality.
 
 `publication_planning.py` 重用 authority、candidate/history scan 與 GitHub PR evidence，提供 read-only `prepare` / `diagnose`。指紋包含 worktree、HEAD/base、remote/PR、policy 與 PR body digest；任何漂移需重新規劃，不能用診斷代碼放行。
 

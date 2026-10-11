@@ -2045,3 +2045,12 @@ scenarios:
       - tests/evidence/project_intelligence_relation_candidates_lifecycle.py
       - tests/validation/project_intelligence_candidates_contracts.py
       - tests/validation/opencode_integration_contracts.py
+  - id: "259"
+    path: tests/scenarios/259-matt-pocock-skill-integration.md
+    coverage: manual
+    evidence:
+      - tests/scenarios/259-matt-pocock-skill-integration.md
+      - skills/INDEX.yaml
+      - skills/integrations/matt-pocock-skills.json
+      - scripts/skill_catalog.py
+      - tests/validation/skill_catalog_contracts.py

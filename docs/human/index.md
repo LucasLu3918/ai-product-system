@@ -38,7 +38,7 @@ OpenCode setup 與版本綁定驗收請閱讀 [Global Harness](./HARNESS.md)、[
 創作流程新增逐項驗證、版本化回饋與有限修正。明確重製指令可在同一 Session 執行；自動修正需 opt-in，機器結果仍需人工確認與使用者驗收。
 
 
-可重用的任務方法見 `skills/INDEX.yaml` 與各 Skill；場景規格和覆蓋狀態見 Conformance 文件；遊戲引擎與平台資料見 `references/`。
+可重用的任務方法見 `skills/INDEX.yaml` 與各 Skill；可用 <a href="./skill-catalog.html">Skill Explorer</a> 搜尋用途、處置和使用範例。場景規格和覆蓋狀態見 Conformance 文件；遊戲引擎與平台資料見 `references/`。
 
 Git publish／merge 的 Human 操作見 User Guide，安全與 Agent adapter 邊界見 Security Assurance 和 Harness；創意授權與 Git 授權各自維持其文件入口。
 

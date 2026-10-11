@@ -359,6 +359,22 @@ skills:
       reliability: high
       minimum_tier: 2
       preferred_tier: 3
+  human-guided-wizard:
+    description: Prepare a clear step-by-step guide for operational actions that only
+      a human can complete in an external service or dashboard.
+    capability: operations
+    path: operations/human-guided-wizard/SKILL.md
+    triggers:
+    - human_only_dashboard_step
+    - user_requested_manual_setup_guide
+    - human_approval_sequence
+    cost: low
+    model_requirements:
+      reasoning: high
+      coding: none
+      reliability: critical
+      minimum_tier: 3
+      preferred_tier: 3
   incident-response:
     description: Triage incidents, contain impact, recover service and document evidence
       and follow-up actions.
@@ -374,6 +390,22 @@ skills:
       reliability: critical
       minimum_tier: 3
       preferred_tier: 3
+  issue-triage:
+    description: Classify an issue from supplied evidence and produce a reproducible,
+      decision-ready handoff without changing the tracker.
+    capability: delivery-planning
+    path: planning/issue-triage/SKILL.md
+    triggers:
+    - explicit_issue_triage_request
+    - issue_reproducibility_review
+    - issue_priority_assessment
+    cost: low
+    model_requirements:
+      reasoning: high
+      coding: normal
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 2
   level-design:
     description: Shape level pacing, spatial readability and mechanic teaching through
       safe introduction, practice and mastery checks.
@@ -470,6 +502,22 @@ skills:
     model_requirements:
       reasoning: high
       coding: none
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 2
+  prototype:
+    description: Explore a UI, workflow or behavior question with a throwaway prototype
+      that stays separate from production implementation.
+    capability: engineering
+    path: engineering/prototype/SKILL.md
+    triggers:
+    - explicit_prototype_request
+    - ui_state_model_exploration
+    - workflow_behavior_exploration
+    cost: medium
+    model_requirements:
+      reasoning: medium
+      coding: strong
       reliability: high
       minimum_tier: 2
       preferred_tier: 2
@@ -584,6 +632,39 @@ skills:
       reliability: high
       minimum_tier: 2
       preferred_tier: 2
+  technical-research:
+    description: Investigate technical APIs, standards, frameworks and architecture
+      choices with current primary-source evidence.
+    capability: engineering
+    path: engineering/technical-research/SKILL.md
+    triggers:
+    - technical_research_request
+    - framework_api_question
+    - standards_comparison
+    - technology_choice_evidence
+    cost: medium
+    model_requirements:
+      reasoning: high
+      coding: none
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 3
+  technical-teaching:
+    description: Teach a technical concept through a goal, short explanation, practice,
+      feedback and a learner-chosen next step.
+    capability: product
+    path: product/technical-teaching/SKILL.md
+    triggers:
+    - explicit_technical_teaching_request
+    - guided_learning_session
+    - concept_practice_request
+    cost: medium
+    model_requirements:
+      reasoning: high
+      coding: normal
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 2
   threat-modeling:
     description: Identify protected assets, trust boundaries, threats and mitigations
       for the affected system design.
@@ -650,3 +731,48 @@ skills:
       reliability: high
       minimum_tier: 2
       preferred_tier: 3
+  writing-beats:
+    description: Arrange selected writing fragments into a sequence of reader-facing
+      moves, with each beat grounded before later beats depend on it.
+    capability: design
+    path: design/writing-beats/SKILL.md
+    triggers:
+    - explicit_writing_beats_request
+    - explicit_writing_workflow_request
+    cost: medium
+    model_requirements:
+      reasoning: high
+      coding: none
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 2
+  writing-fragments:
+    description: Collect and preserve raw writing material without forcing it into
+      a structure.
+    capability: design
+    path: design/writing-fragments/SKILL.md
+    triggers:
+    - explicit_writing_fragments_request
+    - explicit_writing_workflow_request
+    cost: low
+    model_requirements:
+      reasoning: medium
+      coding: none
+      reliability: high
+      minimum_tier: 1
+      preferred_tier: 2
+  writing-shape:
+    description: Turn a fixed set of writing material into a coherent article by agreeing
+      on its reader journey and shaping one section at a time.
+    capability: design
+    path: design/writing-shape/SKILL.md
+    triggers:
+    - explicit_writing_shape_request
+    - explicit_writing_workflow_request
+    cost: medium
+    model_requirements:
+      reasoning: high
+      coding: none
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 2

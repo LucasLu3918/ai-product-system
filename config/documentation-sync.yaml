@@ -373,3 +373,24 @@ rules:
     triggers: [scripts/agent_eval.py, scripts/performance_evidence.py, scripts/validation_observation.py, tests/evidence/plan27_lifecycle.py, tests/validation/plan27_contracts.py, templates/conformance/AGENT_TASK_BENCHMARK.yaml, templates/conformance/AGENT_EVAL_RESULT.yaml]
     human_docs: [docs/human/TECHNOLOGY_GUIDE.md, docs/human/CONFORMANCE.md, docs/human/MAINTENANCE.md]
     agent_docs: [orchestration/AGENT_EVAL.md, orchestration/CORE_CHANGE_TESTING.md]
+
+  - id: matt-pocock-skill-explorer
+    triggers:
+      - skills/INDEX.yaml
+      - skills/integrations/matt-pocock-skills.json
+      - scripts/skill_catalog.py
+      - docs/human/public/skill-catalog.html
+      - tests/scenario_coverage.yaml
+      - tests/scenarios/259-matt-pocock-skill-integration.md
+      - tests/validation/skill_catalog_contracts.py
+    human_docs:
+      - docs/human/index.md
+      - docs/human/USER_GUIDE.md
+      - docs/human/DOCUMENTATION_MAP.md
+      - docs/human/DOCUMENTATION_SYNC.md
+      - docs/human/CONFORMANCE.md
+    agent_docs:
+      - orchestration/CONFORMANCE.md
+      - orchestration/DOCUMENTATION_SYNC.md
+    evidence:
+      - tests/validation/skill_catalog_contracts.py

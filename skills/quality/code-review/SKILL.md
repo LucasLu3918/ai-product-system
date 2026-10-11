@@ -25,3 +25,8 @@ Material findings must include evidence, impact and recommendation. Do not inven
 After the Author fixes findings, prefer targeted re-review of the finding + diff + affected tests unless the boundary materially expanded.
 
 Outcomes: PASS, PASS WITH COMMENTS, REQUEST CHANGES, BLOCK.
+## Standards and specification lenses
+
+For a material review, pin one exact base and review the same candidate through two independent questions: does the change follow documented project standards, and does it satisfy the originating request or specification? Cite the applicable file, line or test for each finding. When no specification is available, mark that lens unavailable rather than inventing requirements. Keep the axes distinct so a standards pass cannot hide a behavior mismatch. Use the repository's multi-review workflow when its risk policy requires specialist review; never imply that separate agents ran unless they actually did.
+
+Source note: adapted from mattpocock/skills engineering/code-review at 49dd158d1076134a641b33efb035946536778336 (MIT); see licenses/MIT-Matt-Pocock-Skills.txt.

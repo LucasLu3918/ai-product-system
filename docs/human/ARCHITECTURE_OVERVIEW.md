@@ -120,6 +120,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Skill 整合新增明確選用的 Writing Fragments → Beats → Shape 方法；它提供內容組織建議，不會啟動素材生成，也不改變人工審查邊界。
+
 Publication planning 按需擴充既有 preflight：觀察 worktree identity、精確候選、live base 與 PR，再交回原生工具。Claude/Gemini 保留 native per-call merge confirmation；Codex 仍為 ADVISORY，OpenCode 不宣稱支援通用 Shell 發布攔截。
 
 Creative workspaces can receive existing user-owned assets through a hash-bound candidate and explicit create-only import; generation remains a separate action.
@@ -202,6 +204,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+Skill routing remains canonical in `skills/INDEX.yaml`; `scripts/skill_catalog.py` produces the read-only Human Explorer from that registry plus the upstream disposition manifest. The page adds no runtime authority or network dependency.
 
 Creative benchmark evidence is a read-only consumer of local trial artifacts. It has no provider dispatch, generation authority, or path into the Human acceptance decision.
 

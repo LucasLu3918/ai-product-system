@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+Human 可透過生成式 Skill Explorer 瀏覽 Registry；此唯讀文件視圖不介入 Agent 的 Skill routing、執行授權或 Git 發布權限。
+
 Read-only publication planning binds the explicit worktree, exact candidate, live default base, remote/PR state and body/policy digests. It returns native-tool cwd/argv and safe diagnostics; neither a plan nor its fingerprint grants permission or executes a protected operation.
 
 Creative workspace import is a local flow: review a private source-hash candidate, then explicitly create the exact absent target in a non-Git workspace.
@@ -617,6 +619,8 @@ flowchart TD
 For Large/Core changes, architecture-diagram impact is mandatory. Update each affected diagram or record N/A with a concrete reason. Human and Agent docs remain separate entry surfaces but share one behavior source.
 
 ## End-to-end product delivery
+
+The canonical Skill registry feeds the generated Human Skill Explorer, while Agent routing continues to use the registry and each Skill source. The Explorer is static documentation output and does not participate in execution authority.
 
 Creative quality benchmark evidence is collected read-only after local trials. A registered prompt-free profile-case dataset identifies coverage, while raster hash checks and model/check/compiler outcomes remain separate from Human visual review, user acceptance and runtime attestation. The dataset adds no provider or execution component to the runtime flow.
 
