@@ -1,73 +1,73 @@
 version: 1
 candidate:
-  base_sha: 5a41c0ef33e58eb4e4e12af7e114f341438e51f7
+  base_sha: 2569cce870068aad57e9bb34b64e32cc68d6f99c
   changed_files_hash: b7c4d72049d8b007fd54528a1bdf0be0b7e3a97439efe20dbbf878f6cd3d98a8
 change:
-  id: plan29-evolution-effectiveness-20261011
-  summary: Record Plan29 #10 as satisfied by existing Human-labeled Evolution relevance and effectiveness evidence while preserving negative findings, incomplete-cohort uncertainty, and Human policy authority.
+  id: plan29-security-dependency-governance-20261011
+  summary: Record Plan29 #11 as satisfied by existing verified/unknown governance snapshots, narrow secret fingerprints, exact-candidate dependency findings, and categorized dependency impact evidence.
   boundary:
-    - Preserve Human-labeled shortlist precision and recall, actionable yield, source yield, and the true-positive/false-positive/false-negative/true-negative confusion counts.
-    - Preserve NOT_READY for empty, uncertain, duplicated, or incomplete label cohorts; do not turn missing evidence into zero errors or zero yield.
-    - Preserve Human authority over relevance labels and source-policy changes; do not modify production labels, weights, enablement, or selection policy.
-    - This candidate changes only Plan29 tracking and its Core Change Matrix; runtime source, public interfaces, and global Impact Graph coverage remain unchanged.
+    - Preserve VERIFIED only for complete governance snapshots; unreadable rulesets or branch protection remain UNKNOWN, and the stable digest identifies normalized evidence without changing policy.
+    - Preserve narrow secret handling: never emit secret values, expose only SHA-256 prefix fingerprints, fail closed on unreadable or oversized candidate files, and scan exact candidate history.
+    - Preserve seven explicit dependency risk classes, high-risk UNCLASSIFIED fallback, categorized validation plans, exact base/head evidence, and no automatic merge or policy mutation.
+    - This candidate changes only Plan29 tracking and its Core Change Matrix; scanners, dependency policy, workflows, GitHub settings, and global Impact Graph coverage remain unchanged.
 matrix:
-  - boundary: Human-labeled Evolution relevance metrics and negative findings
-    reason: Precision, recall, and actionable yield require explicit Human labels; false positives, false negatives, uncertain labels, and empty cohorts must remain visible and truthful.
+  - boundary: Repository governance snapshot truth and narrow secret digest handling
+    reason: Governance evidence is VERIFIED only when both read-only policy surfaces are complete; secret findings must never disclose matched values.
     checks:
       static_lint:
         applicable: true
-        evidence: 'PASS: exact-candidate Core Gate runs repository validation and Ruff; tests/validation/evolution_relevance_contracts.py checks metric, authority, and NOT_READY contracts.'
+        evidence: 'PASS: exact-candidate Core Gate runs repository validation and Ruff; tests/validation/repository_governance_snapshot_contracts.py and secret safety contracts check read-only APIs, UNKNOWN handling, and redacted findings.'
       unit:
         applicable: true
-        evidence: 'PASS: tests/evidence/evolution_relevance_lifecycle.py verifies deterministic sampling, 0.5 precision/recall/actionable yield fixtures, source yield, empty labels, uncertain labels, duplicate rejection, and no policy mutation.'
+        evidence: 'PASS: tests/evidence/repository_governance_snapshot_lifecycle.py verifies complete versus denied reads, pagination, stable digest, bypass actors, and no API writes; tests/evidence/secret_scan_publication_lifecycle.py verifies publication scan behavior.'
       integration:
         applicable: true
-        evidence: 'PASS: relevance contract invokes its lifecycle; exact-candidate Core Gate covers full repository validation.'
+        evidence: 'PASS: tests/validation/security_workflow_contracts.py checks pinned read-only security workflows; exact-candidate Core Gate requires the mandatory candidate secret scan.'
       contract:
         applicable: true
-        evidence: 'PASS: relevance contracts require explicit Human label provenance, report precision/recall/actionable/source yield, and keep incomplete cohorts NOT_READY with null metrics.'
+        evidence: 'PASS: snapshot completeness requires ruleset and branch-protection reads; incomplete sources report UNKNOWN; scanner reports only secret fingerprint prefixes and never raw values.'
       e2e:
         applicable: true
-        evidence: 'PASS: CLI lifecycle produces a reproducible monthly sample from candidate YAML; insufficient or malformed evidence does not claim ready metrics.'
+        evidence: 'PASS: snapshot lifecycle exercises both endpoint payloads and permission-denied behavior; publication scanner lifecycle covers exact candidate/history handling.'
       security:
         applicable: true
-        evidence: 'PASS: production label file is empty, sample artifacts contain fingerprints/source IDs/selection only, automatic policy changes are disabled, and exact-candidate mandatory secret scan is required.'
+        evidence: 'PASS: no GitHub API writes occur, unreadable policy stays UNKNOWN, scanner emits no secret values, and exact-candidate mandatory secret scan is required.'
       migration_recovery:
         applicable: false
-        na_reason: No runtime schema, persisted labels, or migration changes in this evidence-based closure.
+        na_reason: No stored governance schema, scanner state, or migration changes in this evidence-based closure.
       cli_harness:
         applicable: true
-        evidence: 'PASS: the existing evolution_relevance.py CLI lifecycle is covered; this candidate does not change dispatch or harness behavior.'
+        evidence: 'PASS: existing read-only governance snapshot CLI and publication scanner CLI are exercised; this candidate does not change dispatch or harness behavior.'
       docs_schema:
         applicable: true
-        evidence: 'PASS: config/evolution-evaluation.yaml defines metrics and Human authority; docs/human/EVOLUTION_RADAR.md describes explicit labels and incomplete-cohort behavior; proposal records the existing evidence boundary.'
-  - boundary: Monthly effectiveness roll-up and evidence-only scope
-    reason: Funnel and actionable effectiveness reports must preserve valid zero-yield and incomplete-coverage findings without changing source policy.
+        evidence: 'PASS: docs/human/SECURITY_ASSURANCE.md and orchestration/GITHUB_RULESET_POLICY.md document VERIFIED/UNKNOWN, read-only policy snapshots, and secret handling; proposal records existing evidence limits.'
+  - boundary: Categorized dependency impact and exact-candidate dependency review evidence
+    reason: Dependency classes must drive appropriate validation and unclassified packages must remain high risk; review evidence must bind findings to exact base/head.
     checks:
       static_lint:
         applicable: true
-        evidence: 'PASS: tests/validation/evolution_effectiveness_contracts.py checks report, authority, review-flag, and workflow contracts; exact base/head diff contains only the Plan29 proposal and this Core Change Matrix.'
+        evidence: 'PASS: tests/validation/dependency_impact_contracts.py and dependency_review_contracts.py verify policy classes, workflow evidence, exact candidate identity, and no automatic authority.'
       unit:
         applicable: true
-        evidence: 'PASS: tests/evidence/evolution_effectiveness_lifecycle.py verifies source funnel and actionable counts, incomplete preanalysis coverage, zero-yield reporting, and rejects automatic source tuning.'
+        evidence: 'PASS: tests/evidence/dependency_impact_lifecycle.py verifies DEV_TOOL, SEMANTIC_RUNTIME, UNCLASSIFIED high-risk fallback, categorized plans, inventory report, and policy-mutation rejection.'
       integration:
         applicable: true
-        evidence: 'PASS: tests/evidence/evolution_pipeline_closure_lifecycle.py is run by the effectiveness contract; exact-candidate Core Gate validates the integrated repository.'
+        evidence: 'PASS: dependency review workflow captures standalone and shadow findings for the same exact base/head and retains bounded parity artifacts; exact candidate Core Gate runs repository validation.'
       contract:
         applicable: true
-        evidence: 'PASS: effectiveness report validates Human-review-only authority, complete versus incomplete coverage, and truthful actionable counts.'
+        evidence: 'PASS: seven risk classes define required evidence and validation plans; dependency finding comparison returns UNKNOWN when exact candidate or findings are unavailable.'
       e2e:
         applicable: true
-        evidence: 'PASS: existing monthly/quarterly roll-up command and issue lifecycle retain reviewed report evidence; zero actionable recommendations remain a valid outcome.'
+        evidence: 'PASS: dependency impact CLI emits a READY_FOR_HUMAN_REVIEW inventory; dependency review workflow retains exact-candidate standalone/shadow evidence for review.'
       security:
         applicable: true
-        evidence: 'PASS: no production labels or personal data are added; automatic source changes remain false; mandatory exact-candidate secret scan is required.'
+        evidence: 'PASS: dependency policy forbids automatic merge/policy mutation, unknown dependency classes remain high risk, and the exact candidate passes mandatory secret scan.'
       migration_recovery:
         applicable: false
-        na_reason: No persistent schema, runtime state, or configuration policy changes.
+        na_reason: No dependency lock, inventory schema, or runtime migration changes.
       cli_harness:
         applicable: true
-        evidence: 'PASS: existing evolution_effectiveness.py CLI is exercised by lifecycle evidence; no CLI or harness code changes are proposed.'
+        evidence: 'PASS: the existing dependency impact classify/plan/report CLI is lifecycle-tested; no CLI or harness code changes are proposed.'
       docs_schema:
         applicable: true
         evidence: 'PASS: docs-impact and content-safety checks will run against the exact candidate; only the Plan29 proposal status changes.'
