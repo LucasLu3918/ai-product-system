@@ -1699,6 +1699,8 @@ Per-module findings and direct coverage are measured without increasing a reposi
 
 OpenCode host acceptance does not measure Agent outcome or quality; retain its separate exact-host integration evidence.
 
+Validation Shadow graduation evidence is separate from Agent Eval: report validator-level precision, recall, false-negative rate and confusion counts, keep zero-denominator rates null, and do not treat the report as a task outcome or activation authority.
+
 實際任務 observation 與 deterministic rubric 分開呈現。只有與 Case 相符且 CURRENT 的 result 才納入已記錄的 task_completed、human_corrections、false_positives；缺觀察為 UNKNOWN，runtime attestation 維持 UNVERIFIED。
 
 The extracted context helper is added to core-change freshness coverage.

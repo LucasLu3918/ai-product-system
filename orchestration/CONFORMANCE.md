@@ -907,6 +907,8 @@ Scenario 218 uses deterministic monthly fingerprint sampling and complete Human 
 
 Validation Observation 新增相同候選的完整耗時量測與依 Change Class 分組的 P50／P95。重跑不當作新的 PR；歷史紀錄不完整時不授予 selective execution，完整驗證與 required repository check 維持。
 
+Validation Shadow graduation reports validator-level precision/recall and confusion counts; zero-denominator rates remain null. The collector resolves an omitted PR link only through the exact head SHA and a unique same-repository PR. These observations remain advisory and full validation continues.
+
 Scenario 239 adds bounded source relationship discovery with explicit provenance, truncation and unresolved dynamic behavior; it does not promote graph edges.
 
 Unknown paths continue to select the complete validation profile.
@@ -1023,7 +1025,7 @@ The Human current summary and Human/Agent history crosswalk are generated from t
 
 ### Scenarios 214–219 — Plan15 operational closure
 
-These lifecycle scenarios bind release-channel readiness, runtime constraints, quality debt, full-run validation observations, human Evolution relevance labels, and validation taxonomy alignment to focused evidence. The read-only observation collector installs its declared profile under `constraints/tested.txt` before importing the collector; missing dependency or incomplete evidence remains `NOT_READY`. Its 15-minute timeout is provisional from only two runs at about 31 seconds, so it is not a reliable P95. It has no concurrency group that could replace pending scheduled or manual evidence. Scenario 212 reports validator-level precision, recall, false-negative rate and confusion counts; rates with an empty denominator remain null. Missing PR links resolve only through an exact head SHA and unique same-repository PR. These scenarios retain full validation, human decision authority, and fail-closed behavior when evidence is incomplete.
+These lifecycle scenarios bind release-channel readiness, runtime constraints, quality debt, full-run validation observations, human Evolution relevance labels, and validation taxonomy alignment to focused evidence. The read-only observation collector installs its declared profile under `constraints/tested.txt` before importing the collector; missing dependency or incomplete evidence remains `NOT_READY`. Its 15-minute timeout is provisional from only two runs at about 31 seconds, so it is not a reliable P95. It has no concurrency group that could replace pending scheduled or manual evidence. These scenarios retain full validation, human decision authority, and fail-closed behavior when evidence is incomplete.
 
 - Scenario 208 requires exactly one empty canonical `## Unreleased` section before release readiness; malformed or pending entries block.
 - Scenario 214 covers verified stable install, exact-candidate read-only readiness, successful main-channel fast-forward, and unchanged installed SHA / `VERSION` after a divergent update is rejected; it never creates a tag or release.

@@ -9,7 +9,6 @@ Scenario 198 is deterministic lifecycle evidence for runtime resolution and inva
 External producers and Human-confirmed finding promotion are defined by [Eval / Red-Team Interoperability](EVAL_INTEROPERABILITY.md). Imported runs stay advisory; only current canonical Case/Result evidence is eligible for deterministic regression scoring.
 
 Scenario 181 covers trace projection/export independently from Agent Eval. Telemetry spans and token counts are not evaluation scores or regression decisions.
-Validation Shadow graduation metrics are separate operational evidence: validator-level precision and recall use observed full-run failures, and rates with empty denominators remain null. These metrics do not become Agent Eval outcomes or authorize selective execution.
 
 ## Purpose
 
@@ -61,6 +60,8 @@ Supported rubric operations:
 Do not encode hidden reasoning expectations in the rubric.
 
 ## Result
+
+Validation Shadow graduation metrics remain separate operational evidence: validator-level precision and recall use observed full-run failures, and rates with empty denominators remain null. These metrics do not become Agent Eval outcomes or authorize selective execution.
 
 OpenCode native acceptance is runtime integration evidence, not an Agent task-outcome or production-model quality measure. Preserve its exact-host binding and report arbitrary Shell, MCP/custom-tool and out-of-process effects as unsupported.
 

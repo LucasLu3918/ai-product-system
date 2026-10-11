@@ -89,6 +89,8 @@ A Large/Core Change is not complete when:
 
 ## Evidence
 
+Validation Shadow graduation evidence names the confusion-count and null-rate cases, exact-SHA unique-PR fallback, and unchanged full-run Gate. A completed `NOT_READY` cohort remains distinct from collector failure.
+
 For OpenCode runtime changes, exact-host acceptance is separate from fixtures and static registration. Record the host/platform/source boundary and preserve explicit unsupported-effect states; do not infer production model quality or universal interception.
 
 Accepted ComfyUI job recovery must test exact-ID queue deletion, no global interrupt and no automatic resubmission after timeout or polling failure. Inconclusive cleanup does not grant another submission.
