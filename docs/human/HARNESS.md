@@ -231,3 +231,7 @@ aips commands status
 Codex、Claude Code 與 Gemini CLI 也可用 `aips commands install aips.grill-me --host <codex|claude|gemini>` 安裝為 Host 原生 Skill；分別以 `$grill-me` 或 `/grill-me` 觸發。`aips commands status --host <host>` 檢視，`aips commands uninstall aips.grill-me --host <host>` 精確移除。共用路徑會保留其他 Host 的引用；使用者修改的檔案會保留並回報。
 
 Publication Doctor guidance is shared across native adapters: expose stable reason codes and safe next steps, retain unknown policy evidence as blocking, and keep diagnosis separate from native permissions and merge authority. See Scenario 260.
+
+## Publication Root-Cause Recovery (Plan35)
+
+Claude Host Auto Mode Merge Without Review and AIPS PreToolUse denial are different sources. A Host denial cannot be neutralized by rewriting commands, a successful AIPS plan, or green CI.
