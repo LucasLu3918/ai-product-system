@@ -565,7 +565,7 @@ New installations request the stable channel by default and pin an exact `vX.Y.Z
 
 OpenAPI evidence lifecycle checks run when the exact-candidate plan selects OpenAPI; the pinned dependency set is installed for those runs. Missing or invalid plans select the full profile, which retains OpenAPI evidence.
 
-Portable Command contract 位於 `tests/validation/portable_commands_contracts.py`，涵蓋 registry、projection install、status 與修改檔案 conflict；它不授予 merge 或 release authority。
+Portable Command contract 位於 `tests/validation/portable_commands_contracts.py`，涵蓋 registry、projection install、status、明確 grill-me guidance 與修改檔案 conflict；它不授予 merge 或 release authority。
 `tests/validate_repository.py` is the stable CI/user entrypoint. Internal validation is modular:
 
 Pull requests also run a bounded repository-preflight job in parallel with the existing validation path. Its exact-candidate findings are advisory; the required `repository` aggregate continues to depend on the complete Janitor Integration Gate and always runs the full repository validation. Label-only events skip this fast job.

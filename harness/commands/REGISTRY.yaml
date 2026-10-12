@@ -62,6 +62,32 @@ commands:
     invocation:
       slash: [/aips.impact, /aips-impact]
       skill: [$aips-impact]
+  - id: aips.grill-me
+    version: 1
+    purpose: explicit-requirement-clarification
+    canonical_sources:
+      - orchestration/REQUIREMENT_CLARIFICATION.md
+      - skills/product/requirements-definition/SKILL.md
+    inputs: [objective, workspace, known_constraints]
+    outputs: [decisions, assumptions, open_questions, requirement_brief]
+    gates: [requirement-readiness]
+    authority:
+      human_approval: false
+      git_publish: false
+      merge: false
+      release: false
+      production: false
+    side_effects: [workspace_read]
+    guidance:
+      - Invoke this interview only when the user explicitly calls /grill-me or directly asks to be grilled about a plan or design.
+      - Inspect available conversation and workspace evidence before asking the user; do not ask for facts the agent can verify.
+      - Ask one concise, decision-focused question at a time, with a recommended answer and alternatives when useful.
+      - Prioritize decisions that change the goal, scope, architecture, risk, compatibility, cost or acceptance criteria.
+      - Stop when the material decisions are resolved; summarize confirmed decisions, assumptions and remaining questions.
+      - Do not edit files or treat unanswered blocking decisions as approved requirements.
+    invocation:
+      slash: [/grill-me, /aips-grill-me]
+      skill: [$grill-me]
 hosts:
   opencode:
     renderer: markdown-command

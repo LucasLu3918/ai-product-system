@@ -14,10 +14,14 @@
 4. Explicitly request that workflow and confirm its three Skills are available as opt-in methods.
 5. Inspect untested upstream Beta entries and confirm they remain excluded from AIPS routing.
 6. Review source attribution, pinned commit and MIT license.
+7. Run `aips skills list` and confirm it shows the 48 AIPS Skills in Traditional Chinese; add `--include-upstream` and confirm all 38 source records include disposition and AIPS mapping.
+8. Invoke `/grill-me` explicitly and confirm it asks one decision-focused question at a time; confirm ordinary requests do not start the interview.
 
 ## Expected result
 
-- All 48 registered AIPS Skills and all 38 upstream dispositions are discoverable in the Explorer.
+- All 48 registered AIPS Skills and all 38 upstream dispositions are discoverable in the Explorer and CLI.
+- CLI JSON output preserves source, status and AIPS target fields; the default list remains limited to active AIPS Skills.
+- `/grill-me` reuses the requirement clarification workflow and requires explicit invocation.
 - New distinct Skills reuse existing AIPS authority and do not add Roles or Capabilities.
 - Optional Writing Skills require explicit user direction.
 - Human-guided steps do not collect or expose secrets; no upstream installation hooks are introduced.

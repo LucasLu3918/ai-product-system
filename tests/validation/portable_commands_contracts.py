@@ -28,7 +28,15 @@ if script.is_file():
         listed = subprocess.run([sys.executable, str(script), "list", "--format", "json"], cwd=ROOT, env=env, capture_output=True, text=True)
         if listed.returncode or "aips.plan" not in listed.stdout:
             errors.append(f"portable command list failed: {listed.stdout} {listed.stderr}")
-        installed = subprocess.run([sys.executable, str(script), "install", "aips.plan", "--host", "generic", "--format", "json"], cwd=ROOT, env=env, capture_output=True, text=True)
+        if "aips.grill-me" not in listed.stdout:
+            errors.append("portable command registry must expose the explicit grill-me command")
+        grilled = subprocess.run([sys.executable, str(script), "render", "aips.grill-me", "--host", "codex", "--format", "json"], cwd=ROOT, env=env, capture_output=True, text=True)
+        if grilled.returncode or "/grill-me" not in grilled.stdout or "one concise, decision-focused question at a time" not in grilled.stdout:
+            errors.append(f"grill-me projection is missing its explicit invocation guidance: {grilled.stdout} {grilled.stderr}")
+        opencode_grilled = subprocess.run([sys.executable, str(script), "render", "aips.grill-me", "--host", "opencode", "--format", "json"], cwd=ROOT, env=env, capture_output=True, text=True)
+        if opencode_grilled.returncode or "/grill-me" not in opencode_grilled.stdout or "/aips-grill-me" not in opencode_grilled.stdout:
+            errors.append(f"OpenCode grill-me aliases were not rendered: {opencode_grilled.stdout} {opencode_grilled.stderr}")
+        installed = subprocess.run([sys.executable, str(script), "install", "aips.plan", "--host", "generic", "--format", "json"], cwd=ROOT, env=env, capture_output=True, text=True, check=False)
         if installed.returncode:
             errors.append(f"portable command install failed: {installed.stdout} {installed.stderr}")
         path = Path(tmp) / "aips" / "commands" / "projections" / "generic" / "aips-plan.md"
@@ -36,6 +44,6 @@ if script.is_file():
             errors.append("portable command install did not create an owned projection")
         else:
             path.write_text(path.read_text(encoding="utf-8") + "\nuser edit\n", encoding="utf-8")
-            status = subprocess.run([sys.executable, str(script), "status", "--format", "json"], cwd=ROOT, env=env, capture_output=True, text=True)
+            status = subprocess.run([sys.executable, str(script), "status", "--format", "json"], cwd=ROOT, env=env, capture_output=True, text=True, check=False)
             if status.returncode or "CONFLICT" not in status.stdout:
                 errors.append("modified portable projection was not detected as CONFLICT")

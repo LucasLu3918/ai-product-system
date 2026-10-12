@@ -72,3 +72,29 @@ else:
 scenario = ROOT / "tests/scenarios/259-matt-pocock-skill-integration.md"
 if not scenario.is_file():
     errors.append("Scenario 259 is missing")
+
+skills_cli = ROOT / "scripts/skills_cli.py"
+if skills_cli.is_file():
+    for include_upstream, expected in ((False, 48), (True, 86)):
+        args = [sys.executable, str(skills_cli), "list", "--format", "json"]
+        if include_upstream:
+            args.append("--include-upstream")
+        result = subprocess.run(args, cwd=ROOT, capture_output=True, check=False, text=True)
+        try:
+            listing = json.loads(result.stdout)
+        except json.JSONDecodeError:
+            errors.append(f"AIPS Skill list did not emit valid JSON: {result.stderr}")
+            continue
+        if result.returncode or len(listing) != expected:
+            errors.append(f"AIPS Skill list returned an unexpected inventory count: {len(listing)}")
+        if not all(item.get("locale") == "zh-TW" and item.get("description") for item in listing):
+            errors.append("AIPS Skill list must provide nonempty Traditional Chinese descriptions by default")
+        if include_upstream and not any(item.get("id") == "grill-me" and item.get("source") == "upstream" and item.get("status") == "workflow" for item in listing):
+            errors.append("upstream grill-me must be listed with its workflow disposition")
+else:
+    errors.append("AIPS Skill list CLI is missing")
+
+localization = json.loads((ROOT / "skills/locale/zh-TW.json").read_text(encoding="utf-8"))
+missing_locales = (set(active) | {record.get("id") for record in records}) - set(localization)
+if missing_locales:
+    errors.append("Traditional Chinese Skill descriptions missing: " + ", ".join(sorted(missing_locales)))

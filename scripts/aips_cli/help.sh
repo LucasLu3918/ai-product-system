@@ -49,7 +49,7 @@ Usage:
   aips commands upgrade [<command-id>] --host <host>
   aips commands uninstall [--host <host>|--all]
 
-  aips skills list [--capability <id>] [--trigger <trigger>] [--format text|json]
+  aips skills list [--capability <id>] [--trigger <trigger>] [--include-upstream] [--locale zh-TW|en] [--format table|json] [--group-by category|status|source]
 
   aips intelligence bootstrap [--project <path>]
   aips intelligence status [--project <path>]

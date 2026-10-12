@@ -159,6 +159,8 @@ The optional `aips run dashboard` command uses the existing Python runtime and l
 Validation installs the pinned `cryptography` dependency used to verify Ed25519 review receipts against trust anchors supplied outside the project checkout. No issuer is trusted by default.
 
 安裝後可使用 `aips commands list` 檢視 Portable Command Registry；`aips commands render` 只預覽，`aips commands install --host <id>` 才建立 AIPS-owned projection。這些 projection 不會自動修改 Client-owned MCP 設定，也不提供 Runtime-native enforcement。
+
+跨 Agent 的 Skill 載入請依 [Global Harness](HARNESS.md#在-opencode-以外載入-aips-skills)：支援 MCP 的 Host 透過 `aips mcp serve` 讀取 `aips://catalog/skills` 與 `aips://skills/<skill-id>`，再按任務載入；Host 原生投影只由明確支援的 AIPS adapter 管理。移除時使用 `aips harness uninstall` 或該 Host 的 AIPS 卸載流程，不要手動清空 Skill 目錄；AIPS 只刪除有 ownership 記錄且內容摘要相符的檔案，既有、無主控記錄及已修改的 Skill 都會保留。
 Native Runtime Adapter 與 MCP 是兩個互補平面：
 
 - Codex / Claude Code / Gemini CLI：依可驗證能力安裝 AIPS-owned integration。

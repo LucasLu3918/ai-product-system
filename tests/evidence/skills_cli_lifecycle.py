@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 from skill_index import generate
+from skills_cli import collect
 
 
 def require(condition: bool, message: str) -> None:
@@ -34,16 +35,8 @@ def run(cwd: Path, *args: str) -> subprocess.CompletedProcess[str]:
 
 def main() -> int:
     expected_catalog = generate(ROOT)["skills"]
-    expected = [
-        {
-            "id": identifier,
-            "description": metadata["description"],
-            "capability": metadata["capability"],
-            "path": metadata["path"],
-            "triggers": metadata["triggers"],
-        }
-        for identifier, metadata in sorted(expected_catalog.items())
-    ]
+    expected_ids = sorted(expected_catalog)
+    expected = collect(locale="zh-TW", include_upstream=False, capability=None, trigger=None)
 
     with tempfile.TemporaryDirectory() as temporary:
         cwd = Path(temporary)
@@ -57,7 +50,12 @@ def main() -> int:
         result = run(cwd, "list", "--format", "json")
         require(result.returncode == 0, f"JSON list failed: {result.stderr}")
         listed = json.loads(result.stdout)
-        require(listed == expected, "JSON list differs from canonical Skill metadata")
+        require(listed == expected, "JSON list differs from canonical Skill metadata and locale")
+        require(len(listed) == 48 and {item["id"] for item in listed} == set(expected_ids),
+                "default list must include all active AIPS Skills")
+        require(listed == sorted(listed, key=lambda item: (item["category"], item["source"], item["id"])),
+                "default list order must be stable by category and Skill id")
+        require(listed[0]["locale"] == "zh-TW", "default locale must be Traditional Chinese")
 
         env = dict(os.environ)
         env["AIPS_VALIDATION_PYTHON"] = sys.executable
@@ -93,8 +91,8 @@ def main() -> int:
 
         result = run(cwd, "list")
         require(result.returncode == 0, f"text list failed: {result.stderr}")
-        require("ID\tCAPABILITY\tDESCRIPTION" in result.stdout,
-                "text output is missing its column header")
+        require("| 技能 | 來源 / 狀態 | 用途 | AIPS 對應 |" in result.stdout,
+                "text output is missing the Traditional Chinese table header")
         require(expected[0]["id"] in result.stdout and expected[0]["description"] in result.stdout,
                 "text output is missing Skill name or description")
 
@@ -122,6 +120,16 @@ def main() -> int:
         result = run(cwd, "list", "--unknown-option")
         require(result.returncode != 0 and "unrecognized arguments" in result.stderr,
                 "unknown list arguments must fail")
+
+        result = run(cwd, "list", "--include-upstream", "--format", "json")
+        require(result.returncode == 0, f"upstream list failed: {result.stderr}")
+        expanded = json.loads(result.stdout)
+        require(len(expanded) == 86, "upstream view must add exactly 38 reviewed records")
+        upstream_grill = next((item for item in expanded if item["id"] == "grill-me" and item["source"] == "upstream"), None)
+        require(upstream_grill and upstream_grill["status"] == "workflow",
+                "upstream grill-me must be shown with its workflow disposition")
+        require("## 工程" in run(cwd, "list").stdout,
+                "default human-readable list must group skills under Traditional Chinese categories")
 
         require((ROOT / "skills/INDEX.yaml").read_bytes() == before,
                 "listing Skills must not modify the generated index")

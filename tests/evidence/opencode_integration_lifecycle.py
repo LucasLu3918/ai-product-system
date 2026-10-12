@@ -140,7 +140,10 @@ def cli_cases(base):
     for path in native:
         meta = yaml.safe_load(path.read_text().split("---", 2)[1])
         assert meta["name"] == path.parent.name and meta["description"]
-    assert len(list(root.glob("commands/aips-*.md"))) == 3
+    native_commands = list(root.glob("commands/aips-*.md"))
+    assert len(native_commands) == 4
+    grill_me = root / "commands/aips-grill-me.md"
+    assert grill_me.is_file() and "explicit" in grill_me.read_text(encoding="utf-8").lower()
     plugin = root / "plugins/aips-opencode.ts"
     assert plugin.is_file() and str(ROOT.resolve()) in plugin.read_text()
     assert "$ARGUMENTS" in (root / "commands/aips-plan.md").read_text()

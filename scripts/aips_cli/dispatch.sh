@@ -104,7 +104,7 @@ case "${1:-help}" in
         skills_cli_cmd "$@"
         ;;
       help|-h|--help)
-        say "Usage: aips skills list [--capability <id>] [--trigger <trigger>] [--format text|json]"
+        say "Usage: aips skills list [--capability <id>] [--trigger <trigger>] [--include-upstream] [--locale zh-TW|en] [--format table|json] [--group-by category|status|source]"
         ;;
       *) die "Unknown skills command: $sub. Run 'aips skills --help'." ;;
     esac

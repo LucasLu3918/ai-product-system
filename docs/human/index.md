@@ -40,6 +40,8 @@ OpenCode setup 與版本綁定驗收請閱讀 [Global Harness](./HARNESS.md)、[
 
 可重用的任務方法見 `skills/INDEX.yaml` 與各 Skill；可用 <a href="./skill-catalog.html">Skill Explorer</a> 搜尋用途、處置和使用範例。場景規格和覆蓋狀態見 Conformance 文件；遊戲引擎與平台資料見 `references/`。
 
+其他 Agent 的 Skill 載入方式、MCP Resource 路徑與安全解除安裝流程見 [Global Harness](HARNESS.md#在-opencode-以外載入-aips-skills)；安裝入口見 [Installation](INSTALLATION.md)。
+
 Git publish／merge 的 Human 操作見 User Guide，安全與 Agent adapter 邊界見 Security Assurance 和 Harness；創意授權與 Git 授權各自維持其文件入口。
 
 Git 發布操作請從 [User Guide](./USER_GUIDE.md#git-publication-與-release) 開始；若需理解個人快速模式與高保證模式的信任邊界，閱讀 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement)。
