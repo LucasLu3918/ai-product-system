@@ -71,12 +71,10 @@ matrix:
       applicable: true
       evidence: Human docs, Scenario 259, placement/sync contracts, and VitePress build in exact-candidate Gate.
 
-scope_recomputed_after_expansion: false
-actual_diff_reconciled: false
-blockers:
-- Candidate evidence is pending implementation and final exact-candidate validation.
-- candidate binding refreshed; review scope and evidence before marking READY
-status: DRAFT
+scope_recomputed_after_expansion: true
+actual_diff_reconciled: true
+blockers: []
+status: READY
 review_evidence:
   required: false
   status: SELF_REVIEWED
@@ -86,3 +84,14 @@ review_evidence:
 candidate:
   base_sha: d31bf293bb9ef043841187d9f4d1e158e7cb9dd6
   changed_files_hash: 6184351938a20d25143105102af187759187887bbe05bd6625f9fc40a7d305d8
+verification:
+  focused_lifecycle: PASS
+  cli_contract: PASS
+  native_projection_contract: PASS
+  documentation_placement: PASS
+  documentation_sync: PASS
+  ruff: PASS
+  vitepress_build: PASS
+  repository_validation: PASS
+  exact_candidate_secret_scan: PASS
+  exact_candidate_integration_gate: PENDING
