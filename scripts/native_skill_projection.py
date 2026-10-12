@@ -627,14 +627,24 @@ def install_external(
 
 
 def _remove_empty_directories(directory: Path, stop: Path) -> None:
-    current = directory
     stop = stop.resolve(strict=False)
-    while current != stop and current.resolve(strict=False).is_relative_to(stop):
+    try:
+        descendants = sorted(directory.rglob("*"), key=lambda path: len(path.parts), reverse=True)
+    except OSError:
+        descendants = []
+    for current in descendants:
+        if current.is_symlink() or not current.is_dir():
+            continue
         try:
-            current.rmdir()
+            if current.resolve(strict=False).is_relative_to(stop):
+                current.rmdir()
         except OSError:
-            return
-        current = current.parent
+            continue
+    try:
+        if directory != stop and directory.resolve(strict=False).is_relative_to(stop):
+            directory.rmdir()
+    except OSError:
+        pass
 
 
 def uninstall(
