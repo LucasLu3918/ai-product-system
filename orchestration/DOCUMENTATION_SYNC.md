@@ -74,6 +74,7 @@ The scoped EPHEMERAL Creative Bundle tool also updates the OpenCode compatibilit
 The shared `creative_execution.prepare` and `aips creative prepare` routes create versioned Profile/Bundle sets only; keep their explicit intent, scope and no-overwrite guarantees aligned with Scenario 236 and the Human Harness/Installation topics.
 
 Portable Command Registry、CLI 與 MCP renderer 屬 Harness current behavior；同步 Human 文件時沿用既有 Harness、Architecture、Installation、Maintenance 與 Technology topic，不建立第二套文件樹。
+
 Phase 5 的共用 OpenAPI client 案例沿用 Implementation Resolution、Quality 與 Conformance topic。同步 Scenario 197 的 lifecycle、Human 操作說明及多產品證據邊界，不為每個產品建立 AIPS 共用文件。
 When a configured behavior-bearing source path changes, the same change MUST update the mapped documentation surfaces:
 
@@ -226,7 +227,7 @@ Skill inventory changes also update the generated Human Skill Explorer, User Gui
 
 Skill catalog and CLI behavior must keep Human Harness/Installation guidance, the Architecture overview, Documentation Map, and Scenarios 233/259 aligned. MCP Resources provide on-demand access to canonical Skills; uninstall may remove only digest-matching projections listed in AIPS ownership records and must preserve pre-existing, unowned or modified Host Skills.
 
-For the upstream native install CLI, keep the `--upstream` / `--all` eligibility rules and source-specific uninstall behavior synchronized in User Guide, Installation, Harness, Technology Guide, Maintenance, Documentation Map, and Scenario 259. Do not claim live Host discovery from isolated lifecycle evidence.
+For the upstream native install CLI, keep the `--upstream` / `--all` eligibility rules, explicit invocation metadata and source-specific uninstall behavior synchronized in User Guide, Installation, Harness, Technology Guide, Maintenance, Documentation Map, and Scenario 259. All non-canonical IDs are user-installable regardless of disposition; exact canonical matches use AIPS Skills. Codex and Claude projections require explicit invocation, while Gemini keeps its activation consent flow. Do not claim live Host discovery from isolated lifecycle evidence.
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 

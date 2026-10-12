@@ -51,6 +51,7 @@ def build_cards(registry: dict[str, Any], source: dict[str, Any]) -> tuple[str, 
     active = registry.get("skills")
     if not isinstance(active, dict):
         raise TypeError("skills/INDEX.yaml must contain a skills mapping")
+    canonical_ids = set(active)
 
     for identifier, skill in sorted(active.items()):
         category = str(skill.get("capability", "other"))
@@ -86,6 +87,8 @@ def build_cards(registry: dict[str, Any], source: dict[str, Any]) -> tuple[str, 
         if disposition not in DISPOSITION:
             raise ValueError(f"unsupported disposition for {record.get('id')}: {disposition}")
         label, status = DISPOSITION[disposition]
+        installable = record.get("id") not in canonical_ids
+        installability_label = "可安裝" if installable else "使用 AIPS canonical"
         category = str(record.get("category", "other"))
         categories.add(category)
         targets = record.get("aips_targets") or []
@@ -106,15 +109,17 @@ def build_cards(registry: dict[str, Any], source: dict[str, Any]) -> tuple[str, 
                 "完成後說明採用範圍與任何限制。"
             )
         else:
-            prompt = f"請檢視上游 {record['id']} 的用途與 AIPS 處置，說明差異；不要把未採用項目當成可用的 AIPS Skill。"
+            prompt = f"請檢視上游 {record['id']} 的用途與 AIPS 處置，說明差異。"
+        if installable:
+            prompt += f" 若我明確要求，使用 `aips skills install --upstream {record['id']} --host <host>` 安裝；只在我明確呼叫時使用此技能。"
         target_text = "、".join(targets) if targets else "無；目前沒有啟用對應 AIPS Skill"
         local_path = record.get("local_path") or record.get("path", "")
         search = " ".join(
             [record.get("id", ""), record.get("description", ""), category, label, target_text, record.get("reason", ""), prompt]
         )
         cards.append(
-            '<article class="card upstream" data-category="{category}" data-status="{status}" data-search="{search}">'
-            '<div class="badges"><span class="badge">{category}</span><span class="badge status-{status}">{label}</span></div>'
+            '<article class="card upstream" data-category="{category}" data-status="{status}" data-installable="{installable}" data-search="{search}">'
+            '<div class="badges"><span class="badge">{category}</span><span class="badge status-{status}">{label}</span><span class="badge status-installable">{installability_label}</span></div>'
             '<h2>{name}</h2><code>{identifier}</code><p>{description}</p>'
             '<p class="detail"><strong>AIPS 處置</strong> {reason}</p>'
             '<p class="detail"><strong>對應</strong> {targets}</p>'
@@ -125,6 +130,8 @@ def build_cards(registry: dict[str, Any], source: dict[str, Any]) -> tuple[str, 
             "</article>".format(
                 category=esc(category),
                 status=esc(status),
+                installable="yes" if installable else "no",
+                installability_label=esc(installability_label),
                 search=esc(search),
                 label=esc(label),
                 name=esc(title(record.get("id", ""))),
@@ -155,6 +162,9 @@ def render() -> str:
         counts[category] = counts.get(category, 0) + 1
     if counts != expected_categories:
         raise ValueError(f"upstream category counts mismatch: {counts}")
+    canonical_ids = set(registry.get("skills", {}))
+    installable_count = sum(record.get("id") not in canonical_ids for record in records)
+    canonical_count = len(records) - installable_count
 
     cards, categories = build_cards(registry, source)
     active_count = len(registry["skills"])
@@ -180,12 +190,13 @@ header,main,footer{{max-width:1180px;margin:auto;padding:24px}}header{{padding-t
 <header>
 <p class="muted">AI Product System · 技能圖鑑</p>
 <h1>找到適合這項工作的 Skill</h1>
-<p class="lede">搜尋 AIPS Skills 與 Matt Pocock 上游 38 項來源。每筆上游 Skill 均保留本地原文、上游路徑與 SHA-256，並標示自動路由、實驗／選用或既有整合狀態。</p>
-<div class="stats"><div class="stat"><strong>{active_count}</strong>AIPS 可用 Skills</div><div class="stat"><strong>38</strong>上游 Skills 全數有處置</div><div class="stat"><strong>{active_count + 38}</strong>可搜尋卡片</div></div>
+<p class="lede">搜尋 AIPS Skills 與 Matt Pocock 上游 38 項來源。上游處置說明 AIPS 的整合關係；是否安裝由使用者決定。同名 AIPS canonical Skill 會直接使用 AIPS 版本。</p>
+<div class="stats"><div class="stat"><strong>{active_count}</strong>AIPS 可用 Skills</div><div class="stat"><strong>{installable_count}</strong>可安裝上游 Skills</div><div class="stat"><strong>{canonical_count}</strong>使用 AIPS canonical</div><div class="stat"><strong>{active_count + 38}</strong>可搜尋卡片</div></div>
 <div class="controls">
 <label><span class="muted">搜尋名稱、用途、情境</span><input id="search" type="search" placeholder="例如：debug、測試、writing" autocomplete="off"></label>
 <label><span class="muted">分類</span><select id="category"><option value="">全部分類</option>{category_options}</select></label>
 <label><span class="muted">狀態</span><select id="status"><option value="">全部狀態</option><option value="enabled">AIPS 可用</option><option value="auto-routed">自動路由</option><option value="experimental">實驗／選用</option><option value="integrated">已合併</option><option value="adopted">已採納</option><option value="optional">選用</option><option value="workflow">流程整合</option><option value="deferred">延後</option><option value="reference">來源參考</option><option value="excluded">Beta 排除</option><option value="not-adopted">不導入</option></select></label>
+<label><span class="muted">安裝</span><select id="installability"><option value="">全部</option><option value="yes">可安裝上游</option><option value="no">使用 AIPS canonical</option></select></label>
 </div><p id="results" aria-live="polite"></p>
 </header>
 <main><div class="grid" id="cards">
@@ -196,7 +207,7 @@ header,main,footer{{max-width:1180px;margin:auto;padding:24px}}header{{padding-t
 <p>上游來源：mattpocock/skills · commit {source_sha} · MIT License。Writing Fragments → Beats → Shape 僅依明確要求使用。</p>
 </footer>
 <script>
-const search=document.getElementById("search"), category=document.getElementById("category"), status=document.getElementById("status");
+const search=document.getElementById("search"), category=document.getElementById("category"), status=document.getElementById("status"), installability=document.getElementById("installability");
 const cards=[...document.querySelectorAll(".card")], results=document.getElementById("results");
 function filterCards(){{
  const q=search.value.trim().toLocaleLowerCase();
@@ -205,13 +216,14 @@ function filterCards(){{
   const matchText=!q||card.dataset.search.toLocaleLowerCase().includes(q);
   const matchCategory=!category.value||card.dataset.category===category.value;
   const matchStatus=!status.value||card.dataset.status===status.value;
-  card.hidden=!(matchText&&matchCategory&&matchStatus);
+  const matchInstallability=!installability.value||card.dataset.installable===installability.value;
+  card.hidden=!(matchText&&matchCategory&&matchStatus&&matchInstallability);
   if(!card.hidden)shown++;
  }}
  results.textContent="顯示 "+shown+" / "+cards.length+" 個 Skills";
 }}
-for(const control of [search,category,status])control.addEventListener("input",filterCards);
-for(const control of [category,status])control.addEventListener("change",filterCards);
+for(const control of [search,category,status,installability])control.addEventListener("input",filterCards);
+for(const control of [category,status,installability])control.addEventListener("change",filterCards);
 document.addEventListener("click",async event=>{{
  const button=event.target.closest(".copy");
  if(!button)return;

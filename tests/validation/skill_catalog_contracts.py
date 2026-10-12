@@ -39,6 +39,10 @@ if len(active) != 49:
     errors.append(f"expected 49 current AIPS Skill cards, found {len(active)}")
 
 by_id = {record.get("id"): record for record in records}
+canonical_duplicates = [record for record in records if record.get("id") in active]
+installable_upstream = [record for record in records if record.get("id") not in active]
+if len(canonical_duplicates) != 7 or len(installable_upstream) != 31:
+    errors.append("all 31 distinct upstream Skills must be installable and seven canonical IDs protected")
 allowed_dispositions = {"merged", "adopted", "adopted_optional", "workflow", "auto_routed", "experimental_optional"}
 if any(record.get("disposition") not in allowed_dispositions for record in records):
     errors.append("every upstream Skill must be AIPS-integrated, auto-routed, or experimental/optional")

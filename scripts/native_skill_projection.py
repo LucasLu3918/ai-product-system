@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 HOSTS = {"codex", "claude", "gemini"}
 SKILL_ID = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
-UPSTREAM_INSTALL_DISPOSITIONS = {"experimental_optional", "adopted_optional"}
+UPSTREAM_CANONICAL_SKIP_DETAIL = "Use the canonical AIPS Skill with this ID; no upstream duplicate was written."
 
 
 def digest(data: bytes) -> str:
@@ -195,6 +195,58 @@ def _upstream_source_package(
     return files, source_digest
 
 
+def _explicit_upstream_projection(
+    files: dict[str, bytes], hosts: list[str], *, skill_id: str, description: str
+) -> tuple[dict[str, bytes], str]:
+    """Apply native explicit-invocation controls without changing vendored source."""
+    projected = dict(files)
+    if "claude" in hosts:
+        raw = projected.get("SKILL.md")
+        if raw is None:
+            raise ValueError("upstream Skill package has no SKILL.md entrypoint")
+        text = raw.decode("utf-8")
+        match = re.match(r"\A---\r?\n(.*?)\r?\n---((?:\r?\n|$).*)\Z", text, re.DOTALL)
+        if not match:
+            raise ValueError("upstream Skill frontmatter is invalid")
+        frontmatter = yaml.load(match.group(1), Loader=UniqueLoader)
+        if not isinstance(frontmatter, dict):
+            raise ValueError("upstream Skill frontmatter must be a mapping")
+        frontmatter["disable-model-invocation"] = True
+        projected["SKILL.md"] = (
+            "---\n" + yaml.safe_dump(frontmatter, sort_keys=False, allow_unicode=True)
+            + "---" + match.group(2)
+        ).encode("utf-8")
+    if "codex" in hosts:
+        policy_path = "agents/openai.yaml"
+        raw = projected.get(policy_path)
+        try:
+            metadata = yaml.load(raw.decode("utf-8"), Loader=UniqueLoader) if raw is not None else {}
+        except (UnicodeError, yaml.YAMLError) as exc:
+            raise ValueError(f"upstream Codex Skill metadata is invalid: {exc}") from exc
+        if not isinstance(metadata, dict):
+            raise ValueError("upstream Codex Skill metadata must be a mapping")
+        interface = metadata.get("interface")
+        if interface is None:
+            interface = {}
+        if not isinstance(interface, dict):
+            raise ValueError("upstream Codex Skill interface must be a mapping")
+        interface.setdefault("display_name", skill_id.replace("-", " ").title())
+        interface.setdefault("short_description", description)
+        metadata["interface"] = interface
+        policy = metadata.get("policy")
+        if policy is None:
+            policy = {}
+        if not isinstance(policy, dict):
+            raise ValueError("upstream Codex Skill policy must be a mapping")
+        policy["allow_implicit_invocation"] = False
+        metadata["policy"] = policy
+        projected[policy_path] = yaml.safe_dump(metadata, sort_keys=False, allow_unicode=True).encode("utf-8")
+    projected_digest = hashlib.sha256(
+        json.dumps({name: digest(raw) for name, raw in sorted(projected.items())}, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    return projected, projected_digest
+
+
 def install_upstream(
     root: Path,
     skill_ids: list[str] | None,
@@ -205,6 +257,9 @@ def install_upstream(
     all_upstream: bool = False,
 ) -> dict[str, Any]:
     records = _upstream_records(root)
+    selected_hosts = sorted(set(hosts))
+    if not selected_hosts or any(host not in HOSTS for host in selected_hosts):
+        raise ValueError("select one or more supported hosts: codex, claude, gemini")
     by_id = {str(record["id"]): record for record in records}
     selected_ids = sorted(by_id) if all_upstream else sorted(set(skill_ids or []))
     if not selected_ids:
@@ -214,40 +269,37 @@ def install_upstream(
         raise ValueError("unknown upstream Skill ID(s): " + ", ".join(unknown))
 
     catalog_ids = set(generate(root)["skills"])
-    packages: dict[str, tuple[dict[str, bytes], str]] = {}
-    source_ids: dict[str, str] = {}
+    packages_by_host_group: dict[tuple[str, ...], dict[str, tuple[dict[str, bytes], str]]] = {}
     results: list[dict[str, str]] = []
     for identifier in selected_ids:
         record = by_id[identifier]
-        disposition = str(record.get("disposition") or "")
-        if disposition not in UPSTREAM_INSTALL_DISPOSITIONS:
-            results.append({
-                "skill_id": identifier, "source": "upstream", "host": ",".join(sorted(set(hosts))),
-                "scope": scope, "status": "SKIPPED_DISPOSITION", "path": "",
-                "detail": disposition or "missing disposition",
-            })
-            continue
         if identifier in catalog_ids:
             results.append({
-                "skill_id": identifier, "source": "upstream", "host": ",".join(sorted(set(hosts))),
+                "skill_id": identifier, "source": "upstream", "host": ",".join(selected_hosts),
                 "scope": scope, "status": "SKIPPED_CANONICAL", "path": "",
-                "detail": "Use the canonical AIPS Skill with this ID; no upstream duplicate was written.",
+                "detail": UPSTREAM_CANONICAL_SKIP_DETAIL,
             })
             continue
-        packages[identifier] = _upstream_source_package(root, record)
-        source_ids[identifier] = f"matt-pocock-skills:{identifier}"
+        source_files, _ = _upstream_source_package(root, record)
+        for host_group in sorted({("claude",) if host == "claude" else ("codex", "gemini") for host in selected_hosts}):
+            files, source_digest = _explicit_upstream_projection(
+                source_files, list(host_group), skill_id=identifier,
+                description=str(record.get("description") or identifier),
+            )
+            packages_by_host_group.setdefault(host_group, {})[identifier] = (files, source_digest)
 
-    if packages:
+    source_ids = {identifier: f"matt-pocock-skills:{identifier}" for identifier in selected_ids if identifier not in catalog_ids}
+    statuses: list[str] = []
+    for host_group, packages in sorted(packages_by_host_group.items()):
         installed = _install_packages(
-            packages, hosts, scope=scope, project=project or Path.cwd(),
+            packages, list(host_group), scope=scope, project=project or Path.cwd(),
             source_kind="upstream", source_ids=source_ids,
         )
         for row in installed["results"]:
             row["source"] = "upstream"
         results.extend(installed["results"])
-        status = installed["status"]
-    else:
-        status = "READY"
+        statuses.append(installed["status"])
+    status = "CONFLICT" if "CONFLICT" in statuses else "READY"
     return {"status": status, "results": sorted(results, key=lambda row: (row["skill_id"], row.get("host", "")))}
 
 
