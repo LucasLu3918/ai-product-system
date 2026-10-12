@@ -5,6 +5,7 @@
 - Add `aips skills list` with capability and trigger filters and text/JSON output from canonical Skill metadata.
 - Integrate selected Matt Pocock Skill methods into five existing Skills, add five distinct Skills and three opt-in Writing Skills, classify all 38 upstream Skills, and add a generated searchable Human Skill Explorer.
 - Add explicit-only `$grill-with-docs`, vendor all 38 pinned upstream Skill sources with hashes, and classify overlapping sources as experimental/optional while routing distinct repository/tool workflows automatically.
+- Add ownership-safe `aips skills --upstream` install/status/uninstall for optional vendored Skills; skip canonical duplicates and non-installable dispositions, preserve existing agent Skills and modified files.
 
 - Add same-session creative recreation admission, per-criterion local quality checks, versioned feedback/repair/comparison and explicit bounded repair loops with replay, provenance and time-budget guards.
 

@@ -244,6 +244,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
+Upstream Skill projections are validated by the isolated `skills_cli_lifecycle.py` evidence: only reviewed optional, non-canonical records are installed, ownership is source-scoped across Hosts, and modified or unowned files survive uninstall. This fixture validates local lifecycle behavior; it does not claim live Agent discovery.
+
 CLI lifecycle coverage includes Publication Doctor's stable diagnostics and confirms that documentation or Skill discovery never grants merge authority.
 
 `aips skills list` reads canonical Skill frontmatter through the read-only Skill index, supports exact capability and trigger filters, and emits text or JSON. Its lifecycle evidence covers listing, filters, output, invalid arguments and empty results without changing the generated index.

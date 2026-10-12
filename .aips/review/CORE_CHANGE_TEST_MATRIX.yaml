@@ -1,62 +1,76 @@
 version: 1
+
 change:
-  id: matt-pocock-grill-with-docs
-  summary: Add explicit-only grill-with-docs, vendor all 38 pinned upstream Skills,
-    and apply overlap-aware routing with canonical triggers.
+  id: upstream-optional-skill-install
+  summary: Add ownership-safe native install/status/uninstall for eligible vendored upstream Skills.
   boundary:
-  - 49 canonical AIPS Skills with one explicit-only grill-with-docs entrypoint
-  - 38 MIT-licensed upstream Skill source directories pinned to commit 49dd158d1076134a641b33efb035946536778336
-  - Seven pending in-progress/repo-tool entries classified into four experimental/optional
-    overlaps and three automatically routed distinct methods
-  - Generated Explorer, Skill CLI, native projection, tests, scenarios, documentation
-    closure and changelog
+  - Existing AIPS catalog lifecycle remains the default and unchanged.
+  - Upstream optional selection, pinned-source validation, projection, ownership, and selective removal.
+  - Codex/Claude Code/Gemini, user/workspace scopes, duplicate canonical IDs, and conflict preservation.
+  - CLI lifecycle, Scenario 259, human documentation, and exact candidate publication checks.
+
 matrix:
-- boundary: Canonical Skill metadata, trigger routing and native invocation policy
-  reason: Add one explicitly invoked Skill and route three distinct upstream methods
-    through existing canonical trigger metadata.
-  checks: &id001
+- boundary: Upstream source selection and native Skill projection
+  reason: Copy reviewed vendored source only, preserve host-native files, and scope ownership/removal by source.
+  checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: full AIPS preflight passed on the exact working candidate;
-        Ruff checks on changed Python files passed.'
+      evidence: Ruff check on changed Python lifecycle/projection files.
     unit:
       applicable: true
-      evidence: 'PASS: Skill registry/catalog contracts and `tests/evidence/skills_cli_lifecycle.py`
-        passed.'
+      evidence: Source containment, SHA-256, frontmatter identity and package traversal assertions in skills_cli_lifecycle.py.
     integration:
       applicable: true
-      evidence: 'PASS: Skill CLI and OpenCode native projection lifecycle evidence
-        passed; all 38 vendored source entrypoints and digests verified.'
+      evidence: Full isolated Codex/Claude/Gemini install/status/uninstall lifecycle in skills_cli_lifecycle.py.
     contract:
       applicable: true
-      evidence: 'PASS: 49-entry compatible registry, explicit-only grill-with-docs
-        projection, three canonical auto-route triggers, source inventory, license
-        and SHA contracts passed.'
+      evidence: skills_cli_contracts.py, skill_native_projection_contracts.py, and updated Plan 21 CLI help golden vectors.
     e2e:
       applicable: false
-      na_reason: No deployed application or user-facing interactive service is changed;
-        native projection lifecycle checks cover generated file behavior.
+      na_reason: No deployed service or interactive UI changes; isolated native projection lifecycle is the user-visible contract.
     security:
       applicable: true
-      evidence: 'PASS: strict working-tree secret scan found zero findings; upstream
-        instructions remain vendored/untrusted, AIPS authority is preserved, and no
-        global Skill install or project writes were performed.'
+      evidence: Optional-disposition allowlist, canonical duplicate skip, no script execution, ownership/digest preservation; exact-candidate secret scan in Integration Gate.
     migration_recovery:
-      applicable: false
-      na_reason: No user configuration, persistent product data or schema is migrated.
+      applicable: true
+      evidence: Repeat install, shared host refs, modified files and unowned conflicts remain recoverable in lifecycle evidence.
     cli_harness:
       applicable: true
-      evidence: 'PASS: Skill list trigger filters resolve all three automatic source
-        routes; native projection lifecycle verifies the explicit-only Skill metadata
-        is retained.'
+      evidence: Public --upstream help and host/scope/status/uninstall lifecycle.
     docs_schema:
       applicable: true
-      evidence: 'PASS: documentation placement and sync checks passed; Scenario 259,
-        Human and Agent docs, generated Explorer and CHANGELOG are synchronized.'
-- boundary: Pinned external source inventory, catalog, CLI, tests and documentation
-  reason: Retain the complete upstream source with provenance and distinguish overlap-based
-    optional routing from automatic matching.
-  checks: *id001
+      evidence: Documentation placement/sync contracts, Plan 21 help snapshots, and VitePress build.
+- boundary: Existing AIPS catalog and Portable Command ownership compatibility
+  reason: The new source-kind filter must leave unrelated records and existing command semantics unchanged.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: Ruff check on changed Python lifecycle/projection files.
+    unit:
+      applicable: true
+      evidence: Existing catalog and Portable Command remain unchanged through upstream lifecycle fixture.
+    integration:
+      applicable: true
+      evidence: CLI contract and native projection lifecycle evidence.
+    contract:
+      applicable: true
+      evidence: skills_cli_contracts.py, skill_native_projection_contracts.py, Plan 21 CLI help golden vectors, documentation placement/sync contracts.
+    e2e:
+      applicable: false
+      na_reason: No deployed service or interactive UI changes.
+    security:
+      applicable: true
+      evidence: Source-kind isolation and no deletion of other ownership records; exact-candidate secret scan in Integration Gate.
+    migration_recovery:
+      applicable: true
+      evidence: Existing catalog manifest schema remains readable; conflicts retain files and ownership state.
+    cli_harness:
+      applicable: true
+      evidence: Default catalog operations and Portable Command install/uninstall behavior remain isolated.
+    docs_schema:
+      applicable: true
+      evidence: Human docs, Scenario 259, placement/sync contracts, and VitePress build in exact-candidate Gate.
+
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
@@ -65,9 +79,19 @@ review_evidence:
   required: false
   status: SELF_REVIEWED
   evidence:
-  - Human-approved boundary recorded in .aips/review/MATT_POC_SKILLS_INTEGRATION_CORE_CHANGE_PROPOSAL.md.
-  - Reviewed canonical route triggers, external source provenance and authority boundaries;
-    repository-wide Impact Graph coverage remains partial.
+  - Human-approved system improvement and scope recorded in UPSTREAM_OPTIONAL_SKILL_INSTALL_CORE_CHANGE_PROPOSAL.md.
+  - AIPS Impact Graph remains globally partial; final review is scoped to installer callers, tests, Host paths and docs.
 candidate:
-  base_sha: 7f9d93b133bc830f52ce4baf23a1fcc032bafc56
-  changed_files_hash: d6b139028477501f825045df50a81969d2d4a60029eaa0a26454fc8c00de57ab
+  base_sha: d31bf293bb9ef043841187d9f4d1e158e7cb9dd6
+  changed_files_hash: 6184351938a20d25143105102af187759187887bbe05bd6625f9fc40a7d305d8
+verification:
+  focused_lifecycle: PASS
+  cli_contract: PASS
+  native_projection_contract: PASS
+  documentation_placement: PASS
+  documentation_sync: PASS
+  ruff: PASS
+  vitepress_build: PASS
+  repository_validation: PASS
+  exact_candidate_secret_scan: PASS
+  exact_candidate_integration_gate: PENDING

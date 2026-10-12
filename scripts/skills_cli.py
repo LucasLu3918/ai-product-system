@@ -159,9 +159,10 @@ def main(argv: list[str] | None = None) -> int:
         parser.add_argument("--format", choices=("table", "text", "json"), default="table")
         parser.add_argument("--group-by", choices=("category", "status", "source"), default="category")
     elif command == "install":
-        parser.description = "Install AIPS catalog Skills into native Agent Skill discovery directories."
-        parser.add_argument("skill_ids", nargs="*", help="AIPS Skill IDs; use --all to install the active catalog.")
-        parser.add_argument("--all", action="store_true", help="Select every active AIPS catalog Skill.")
+        parser.description = "Install AIPS catalog or reviewed upstream Skills into native Agent Skill discovery directories."
+        parser.add_argument("skill_ids", nargs="*", help="Skill IDs from the selected source; use --all to select that source.")
+        parser.add_argument("--all", action="store_true", help="Select every eligible Skill in the selected source.")
+        parser.add_argument("--upstream", action="store_true", help="Select reviewed upstream records; only optional dispositions are installable.")
         parser.add_argument("--host", action="append", choices=sorted(native_skills.HOSTS), required=True, help="Target host; repeat to select multiple hosts.")
         parser.add_argument("--scope", choices=("user", "workspace"), default="user")
         parser.add_argument("--project", type=Path, default=Path.cwd())
@@ -169,13 +170,15 @@ def main(argv: list[str] | None = None) -> int:
     elif command == "status":
         parser.description = "Show AIPS-owned native Skill installations and drift."
         parser.add_argument("--host", action="append", choices=sorted(native_skills.HOSTS), help="Filter by host; repeat to select multiple.")
+        parser.add_argument("--upstream", action="store_true", help="Show only upstream-owned Skill installations.")
         parser.add_argument("--scope", choices=("user", "workspace"))
         parser.add_argument("--project", type=Path, default=Path.cwd())
         parser.add_argument("--format", choices=("table", "json"), default="table")
     else:
         parser.description = "Remove only unchanged native Skills recorded as AIPS-owned."
-        parser.add_argument("skill_ids", nargs="*", help="AIPS Skill IDs; use --all to remove all selected owned Skills.")
-        parser.add_argument("--all", action="store_true", help="Select every matching AIPS-owned Skill.")
+        parser.add_argument("skill_ids", nargs="*", help="Skill IDs from the selected source; use --all to remove all selected owned Skills.")
+        parser.add_argument("--all", action="store_true", help="Select every matching owned Skill in the selected source.")
+        parser.add_argument("--upstream", action="store_true", help="Restrict selection and removal to upstream-owned Skills.")
         parser.add_argument("--host", action="append", choices=sorted(native_skills.HOSTS), required=True, help="Target host; repeat to select multiple hosts.")
         parser.add_argument("--scope", choices=("user", "workspace"))
         parser.add_argument("--project", type=Path, default=Path.cwd())
@@ -193,14 +196,31 @@ def main(argv: list[str] | None = None) -> int:
         if command == "install":
             if args.all == bool(args.skill_ids):
                 parser.error("provide Skill IDs or --all")
-            ids = sorted(generate(ROOT)["skills"]) if args.all else args.skill_ids
-            result = native_skills.install(ROOT, ids, args.host, scope=args.scope, project=args.project)
+            if args.upstream:
+                result = native_skills.install_upstream(
+                    ROOT,
+                    args.skill_ids or None,
+                    args.host,
+                    scope=args.scope,
+                    project=args.project,
+                    all_upstream=args.all,
+                )
+            else:
+                ids = sorted(generate(ROOT)["skills"]) if args.all else args.skill_ids
+                result = native_skills.install(ROOT, ids, args.host, scope=args.scope, project=args.project)
         elif command == "status":
-            result = native_skills.status(args.host, scope=args.scope, project=args.project, root=ROOT)
+            result = native_skills.status(
+                args.host, scope=args.scope, project=args.project, root=ROOT,
+                source_kind="upstream" if args.upstream else None,
+            )
         else:
             if args.all == bool(args.skill_ids):
                 parser.error("provide Skill IDs or --all")
-            result = native_skills.uninstall(args.host, args.skill_ids, scope=args.scope, project=args.project, all_owned=args.all, source_kind="catalog")
+            result = native_skills.uninstall(
+                args.host, args.skill_ids, scope=args.scope, project=args.project,
+                all_owned=args.all,
+                source_kind="upstream" if args.upstream else "catalog",
+            )
         if args.format == "json":
             print(json.dumps(result, ensure_ascii=False, indent=2))
         else:
@@ -208,7 +228,8 @@ def main(argv: list[str] | None = None) -> int:
             for row in result["results"]:
                 hosts = row.get("hosts", row.get("host", ""))
                 detail = f"；{row['detail']}" if row.get("detail") else ""
-                print(f"- {row['skill_id']} · {hosts} · {row.get('scope', '')} · {row['status']} · {row.get('path', '')}{detail}")
+                source = f" · {row['source']}" if row.get("source") else ""
+                print(f"- {row['skill_id']}{source} · {hosts} · {row.get('scope', '')} · {row['status']} · {row.get('path', '')}{detail}")
         return 1 if result["status"] == "CONFLICT" else 0
     except (OSError, ValueError, KeyError, TypeError, yaml.YAMLError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)

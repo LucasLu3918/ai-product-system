@@ -18,6 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 HOSTS = {"codex", "claude", "gemini"}
 SKILL_ID = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*\Z")
 SHA256 = re.compile(r"[0-9a-f]{64}\Z")
+UPSTREAM_INSTALL_DISPOSITIONS = {"experimental_optional", "adopted_optional"}
 
 
 def digest(data: bytes) -> str:
@@ -116,6 +117,140 @@ def _source_package(root: Path, skill_id: str) -> tuple[dict[str, bytes], str]:
     return files, source_digest
 
 
+def _upstream_records(root: Path) -> list[dict[str, Any]]:
+    path = root / "skills" / "integrations" / "matt-pocock-skills.json"
+    _safe_path(path)
+    if path.is_symlink() or not path.is_file():
+        raise ValueError("reviewed upstream Skill inventory is missing or unsafe")
+    try:
+        payload = json.loads(path.read_text(encoding="utf-8"))
+    except (OSError, UnicodeError, json.JSONDecodeError) as exc:
+        raise ValueError(f"reviewed upstream Skill inventory is invalid: {exc}") from exc
+    records = payload.get("skills") if isinstance(payload, dict) else None
+    if not isinstance(records, list):
+        raise TypeError("reviewed upstream Skill inventory has no skills list")
+    seen: set[str] = set()
+    for record in records:
+        if not isinstance(record, dict):
+            raise TypeError("reviewed upstream Skill record must be an object")
+        identifier = str(record.get("id") or "")
+        if not SKILL_ID.fullmatch(identifier) or identifier in seen:
+            raise ValueError("reviewed upstream Skill IDs must be valid and unique")
+        seen.add(identifier)
+    return records
+
+
+def _upstream_source_package(
+    root: Path, record: dict[str, Any]
+) -> tuple[dict[str, bytes], str]:
+    identifier = str(record.get("id") or "")
+    relative_source = str(record.get("local_path") or "")
+    _validate_relative(relative_source)
+    source_root = (root / "external-skills" / "matt-pocock").resolve()
+    source = root / relative_source
+    _safe_path(source)
+    if (
+        source.is_symlink()
+        or source.name != "SKILL.md"
+        or not source.is_file()
+        or not source.resolve().is_relative_to(source_root)
+    ):
+        raise ValueError(f"upstream Skill source is missing or outside its vendored root: {identifier}")
+    source_bytes = source.read_bytes()
+    expected_sha = str(record.get("sha256") or "")
+    if not SHA256.fullmatch(expected_sha) or digest(source_bytes) != expected_sha:
+        raise ValueError(f"upstream Skill source digest does not match the reviewed inventory: {identifier}")
+    try:
+        text = source_bytes.decode("utf-8")
+        match = re.match(r"\A---\r?\n(.*?)\r?\n---(?:\r?\n|$)", text, re.DOTALL)
+        if not match:
+            raise ValueError("missing YAML frontmatter")
+        frontmatter = yaml.load(match.group(1), Loader=UniqueLoader)
+    except (UnicodeError, yaml.YAMLError) as exc:
+        raise ValueError(f"upstream Skill frontmatter is invalid: {identifier}: {exc}") from exc
+    if not isinstance(frontmatter, dict) or frontmatter.get("name") != identifier:
+        raise ValueError(f"upstream Skill identity does not match the reviewed inventory: {identifier}")
+
+    directory = source.parent.resolve()
+    files: dict[str, bytes] = {}
+    source_hashes: dict[str, str] = {}
+    for item in sorted(directory.rglob("*")):
+        _safe_path(item)
+        if item.is_symlink():
+            raise ValueError(f"symlinked upstream Skill resource is not installable: {item}")
+        if item.is_dir():
+            continue
+        if not item.is_file():
+            raise ValueError(f"unsupported upstream Skill resource: {item}")
+        relative = item.relative_to(directory).as_posix()
+        _validate_relative(relative)
+        raw = item.read_bytes()
+        files[relative] = raw
+        source_hashes[relative] = digest(raw)
+    if files.get("SKILL.md") != source_bytes:
+        raise ValueError(f"upstream Skill package does not contain its reviewed entrypoint: {identifier}")
+    source_digest = hashlib.sha256(
+        json.dumps(source_hashes, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    ).hexdigest()
+    return files, source_digest
+
+
+def install_upstream(
+    root: Path,
+    skill_ids: list[str] | None,
+    hosts: list[str],
+    *,
+    scope: str = "user",
+    project: Path | None = None,
+    all_upstream: bool = False,
+) -> dict[str, Any]:
+    records = _upstream_records(root)
+    by_id = {str(record["id"]): record for record in records}
+    selected_ids = sorted(by_id) if all_upstream else sorted(set(skill_ids or []))
+    if not selected_ids:
+        raise ValueError("select at least one upstream Skill or --all")
+    unknown = sorted(set(selected_ids) - set(by_id))
+    if unknown:
+        raise ValueError("unknown upstream Skill ID(s): " + ", ".join(unknown))
+
+    catalog_ids = set(generate(root)["skills"])
+    packages: dict[str, tuple[dict[str, bytes], str]] = {}
+    source_ids: dict[str, str] = {}
+    results: list[dict[str, str]] = []
+    for identifier in selected_ids:
+        record = by_id[identifier]
+        disposition = str(record.get("disposition") or "")
+        if disposition not in UPSTREAM_INSTALL_DISPOSITIONS:
+            results.append({
+                "skill_id": identifier, "source": "upstream", "host": ",".join(sorted(set(hosts))),
+                "scope": scope, "status": "SKIPPED_DISPOSITION", "path": "",
+                "detail": disposition or "missing disposition",
+            })
+            continue
+        if identifier in catalog_ids:
+            results.append({
+                "skill_id": identifier, "source": "upstream", "host": ",".join(sorted(set(hosts))),
+                "scope": scope, "status": "SKIPPED_CANONICAL", "path": "",
+                "detail": "Use the canonical AIPS Skill with this ID; no upstream duplicate was written.",
+            })
+            continue
+        packages[identifier] = _upstream_source_package(root, record)
+        source_ids[identifier] = f"matt-pocock-skills:{identifier}"
+
+    if packages:
+        installed = _install_packages(
+            packages, hosts, scope=scope, project=project or Path.cwd(),
+            source_kind="upstream", source_ids=source_ids,
+        )
+        for row in installed["results"]:
+            row["source"] = "upstream"
+        results.extend(installed["results"])
+        status = installed["status"]
+    else:
+        status = "READY"
+    return {"status": status, "results": sorted(results, key=lambda row: (row["skill_id"], row.get("host", "")))}
+
+
 def _rewrite_references(text: str, root: Path, source: Path, skill_dir: Path) -> str:
     def repo_reference(match: re.Match[str]) -> str:
         relative = match.group(1)
@@ -190,7 +325,7 @@ def _load_manifest() -> dict[str, Any]:
             or any(host not in HOSTS for host in artifact["hosts"])
             or not isinstance(artifact.get("files"), dict)
             or not artifact["files"]
-            or artifact.get("source_kind") not in {"catalog", "portable-command"}
+            or artifact.get("source_kind") not in {"catalog", "portable-command", "upstream"}
             or not isinstance(artifact.get("source_id"), str)
             or not artifact["source_id"]
             or not isinstance(artifact.get("source_digest"), str)
@@ -472,6 +607,14 @@ def uninstall(
     project_root = (project or Path.cwd()).resolve()
     results: list[dict[str, str]] = []
     with _locked_manifest() as manifest:
+        owned_before = {
+            item["skill_id"] for item in manifest["artifacts"]
+            if (source_kind is None or item.get("source_kind") == source_kind)
+            and (source_ids is None or item.get("source_id") in set(source_ids))
+            and (scope is None or item.get("scope") == scope)
+            and (item.get("scope") != "workspace" or item.get("project_root") == str(project_root))
+            and (set(item.get("hosts", [])) & set(selected))
+        }
         retained: list[dict[str, Any]] = []
         for artifact in manifest["artifacts"]:
             skill_id = artifact["skill_id"]
@@ -512,19 +655,14 @@ def uninstall(
                 results.append({"skill_id": skill_id, "host": ",".join(sorted(matching_hosts)), "scope": artifact_scope, "status": "CONFLICT_PRESERVED", "path": str(directory), "detail": ",".join(sorted(leftovers))})
             else:
                 results.append({"skill_id": skill_id, "host": ",".join(sorted(matching_hosts)), "scope": artifact_scope, "status": "REMOVED", "path": str(directory)})
-        owned_ids = {
-            item["skill_id"] for item in manifest["artifacts"]
-            if (source_kind is None or item.get("source_kind") == source_kind)
-            and (source_ids is None or item.get("source_id") in set(source_ids))
-            and (scope is None or item.get("scope") == scope)
-            and (item.get("scope") != "workspace" or item.get("project_root") == str(project_root))
-            and (set(item.get("hosts", [])) & set(selected))
-        }
-        missing = wanted - owned_ids
+        missing = wanted - owned_before
         for skill_id in sorted(missing):
             results.append({"skill_id": skill_id, "host": ",".join(selected), "scope": scope or "all", "status": "NOT_OWNED", "path": ""})
         manifest["artifacts"] = retained
         _save_manifest(manifest)
+    if source_kind is not None:
+        for row in results:
+            row["source"] = source_kind
     return {"status": "CONFLICT" if any(item["status"] in {"CONFLICT", "CONFLICT_PRESERVED"} for item in results) else "READY", "results": results}
 
 
@@ -579,8 +717,21 @@ def status(
                         current_source_digest = ""
                     if current_source_digest != artifact.get("source_digest"):
                         state = "STALE"
+                elif state == "CURRENT" and artifact.get("source_kind") == "upstream":
+                    try:
+                        upstream = next(
+                            item for item in _upstream_records(root or ROOT)
+                            if item.get("id") == artifact["skill_id"]
+                        )
+                        _files, current_source_digest = _upstream_source_package(root or ROOT, upstream)
+                    except (OSError, StopIteration, ValueError, yaml.YAMLError):
+                        current_source_digest = ""
+                    if current_source_digest != artifact.get("source_digest"):
+                        state = "STALE"
             results.append({
                 "skill_id": artifact["skill_id"],
+                "source": artifact.get("source_kind", ""),
+                "source_id": artifact.get("source_id", ""),
                 "hosts": ",".join(active_hosts),
                 "scope": artifact["scope"],
                 "status": state,

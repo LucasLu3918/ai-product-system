@@ -10,6 +10,8 @@ Evolution deterministic pre-analysis follows the same facade rule: `evolution_an
 
 ## 文件角色
 
+Upstream native Skill lifecycle behavior is documented in User Guide and Harness; ownership-safe removal and source validation evidence belong in Technology Guide, Maintenance, and Scenario 259. Keep command behavior aligned across these canonical sections.
+
 ~~~text
 docs/human/*.md
 → Human current behavior / how-to / explanation

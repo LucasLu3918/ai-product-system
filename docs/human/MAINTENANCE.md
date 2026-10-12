@@ -494,6 +494,8 @@ Publication maintenance uses `aips publish doctor` for read-only repository, pro
 
 Skill registry changes run the catalog contract and regenerate `docs/human/public/skill-catalog.html`; Scenario 259 keeps pinned external source copies/digests, overlap-based experimental/optional versus automatic routing, explicit `grill-with-docs` invocation, optional Writing triggers and manual routing acceptance visible.
 
+Upstream native Skill install/uninstall changes also run `tests/evidence/skills_cli_lifecycle.py`; verify source-kind isolation, shared-host references, idempotency, and preservation of modified or pre-existing files before publication.
+
 The creative quality benchmark lifecycle validates dataset coverage, bounded failure stages, legacy evidence compatibility, and Human review/acceptance separation. Its synthetic artifacts do not count as real local model inference or visual-quality evidence.
 
 OpenCode native acceptance is integration evidence only. Do not treat it as an Agent task outcome, production model measure or generated-image quality result.
