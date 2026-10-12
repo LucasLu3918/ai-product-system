@@ -100,3 +100,7 @@ The optional generate-set action accepts a bounded project-relative job manifest
 The additive `impact-candidates` CLI is report-only. OpenCode must treat its source-backed relationships as unreviewed evidence and preserve unknown coverage.
 
 Publication Doctor and literal merge diagnosis are read-only observations. They do not establish OpenCode Shell interception, grant authority, or host acceptance; preserve the shared sanitized reason codes and defer publication/merge to existing Human and native host gates.
+
+## Publication Root-Cause Recovery (Plan35)
+
+Plan35 diagnostic response extensions do not upgrade OpenCode Shell interception or permission controls. Host-specific denial observations require evidence from the actual runtime.
