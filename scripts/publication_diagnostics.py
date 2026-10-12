@@ -24,12 +24,22 @@ def remote_failure(stderr: str = "", returncode: int | None = None) -> str:
 
 
 def classify_required_checks(payload: Any = None, *, returncode: int = 0,
-                              stderr: str = "") -> dict[str, Any]:
-    """Classify gh pr checks --required output. Empty evidence is explicitly blocking."""
+                              stderr: str = "",
+                              required_policy: list[str] | None = None) -> dict[str, Any]:
+    """Classify required checks without treating an empty CLI result as pending.
+
+    Only independently observed branch protection/ruleset evidence can establish
+    UNCONFIGURED. Missing policy visibility is never proof of no required checks.
+    """
     if returncode == 1 and "no required checks reported" in stderr.casefold():
-        # GitHub CLI reports this while a required aggregate has not started yet.
-        # Keep it distinct from API errors; callers still fail closed until PASS.
-        return {"status": "PENDING", "reason_code": "REQUIRED_CHECKS_PENDING", "checks": []}
+        if required_policy is None:
+            return {"status": "UNAVAILABLE", "reason_code": "REQUIRED_CHECKS_POLICY_UNVERIFIED",
+                    "checks": []}
+        if not required_policy:
+            return {"status": "UNCONFIGURED", "reason_code": "REQUIRED_CHECKS_UNCONFIGURED",
+                    "checks": []}
+        return {"status": "MISSING", "reason_code": "REQUIRED_CHECKS_MISSING",
+                "checks": sorted(required_policy)}
     if returncode not in {0, 8}:
         reason = remote_failure(stderr, returncode)
         return {"status": "UNAVAILABLE", "reason_code": "REQUIRED_CHECKS_" + reason,
@@ -37,7 +47,14 @@ def classify_required_checks(payload: Any = None, *, returncode: int = 0,
     if not isinstance(payload, list):
         return {"status": "UNAVAILABLE", "reason_code": "REQUIRED_CHECKS_INVALID", "checks": []}
     if not payload:
-        return {"status": "UNCONFIGURED", "reason_code": "REQUIRED_CHECKS_UNCONFIGURED", "checks": []}
+        if required_policy is None:
+            return {"status": "UNAVAILABLE", "reason_code": "REQUIRED_CHECKS_POLICY_UNVERIFIED",
+                    "checks": []}
+        if required_policy:
+            return {"status": "MISSING", "reason_code": "REQUIRED_CHECKS_MISSING",
+                    "checks": sorted(required_policy)}
+        return {"status": "UNCONFIGURED", "reason_code": "REQUIRED_CHECKS_UNCONFIGURED",
+                "checks": []}
     buckets = [item.get("bucket") if isinstance(item, dict) else None for item in payload]
     names = [item.get("name") for item in payload if isinstance(item, dict)]
     if any(not isinstance(item, dict) or item.get("bucket") not in
@@ -213,7 +230,7 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
                 except json.JSONDecodeError:
                     check_payload = None
                 checks = classify_required_checks(check_payload, returncode=checks_proc.returncode,
-                                                  stderr=checks_proc.stderr)
+                                                  stderr=checks_proc.stderr, required_policy=required)
                 if any(code in {"PR_HEAD_STALE", "PR_BASE_STALE"} for code, _ in pr_blockers):
                     checks = {**checks, "status": "STALE", "reason_code": "CANDIDATE_CHANGED"}
                 result["required_checks"] = checks
