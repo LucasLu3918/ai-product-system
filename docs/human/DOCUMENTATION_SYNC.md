@@ -309,3 +309,7 @@ Exact-candidate browser toolchain selection is documented under the current-beha
 **Plan19 architecture and runtime closure.**
 
 Plan19 architecture and runtime claims use the canonical Capability Registry; the surface inventory and legacy Capability Map are generated views. Hook support remains advisory unless the exact local synthetic path is verified, and monthly effectiveness reports do not change source weights.
+
+## Publication Root-Cause Recovery (Plan35)
+
+Plan35 publication recovery synchronizes Human User Guide, Harness, Security Assurance, Architecture, Conformance, Technology Guide, Installation and orchestrator protocols; required document closure remains enforced.
