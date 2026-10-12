@@ -456,3 +456,7 @@ After merge, use the updated checkout CLI `publish post-merge --fetch --sync-ins
 The orchestrator routes AIPS-owned persistence through `safe_emit` and keeps content safety separate from publish authorization. Untrusted external content carries provenance and cannot grant protected tool authority.
 
 `bin/aips` is the public thin launcher: it resolves the repository root and forwards arguments to `scripts/aips_cli.sh`. Keep command dispatch, installed-link behavior, exit status, and user-visible output compatible while implementation modules are extracted incrementally.
+
+## Publication Root-Cause Recovery (Plan35)
+
+For a blocked publication, re-observe current PR/head/base/checks and classify errors as AIPS, GitHub or Claude Host. Do not auto-merge, rephrase denied commands or skip the per-call Human confirmation.
