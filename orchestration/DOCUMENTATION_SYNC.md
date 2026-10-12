@@ -31,8 +31,6 @@ Human technology inventory: `docs/human/TECHNOLOGY_GUIDE.md`.
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
-Native Skill projections share one canonical AIPS source and ownership manifest. Human Installation/User Guide/Harness explain host paths and safe removal; Technology Guide and Scenario 233/235 describe deterministic file/lifecycle evidence without claiming live Codex, Claude Code or Gemini CLI discovery. Keep these distinct from Runtime hook enforcement claims.
-
 Creative asset import usage is documented in the Human User Guide and its Agent-facing workflow protocol.
 
 
@@ -219,6 +217,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 
 ## Human documentation placement
+
+Native Skill projections share one canonical AIPS source and ownership manifest. Human Installation/User Guide/Harness explain host paths and safe removal; Technology Guide and Scenario 233/235 describe deterministic file/lifecycle evidence without claiming live Codex, Claude Code or Gemini CLI discovery. Keep these distinct from Runtime hook enforcement claims.
 
 Map public CLI behavior to the owning Human workflow and Scenario section. Generic dispatcher or shared registry edits require no unrelated domain documentation unless the changed behavior belongs to that domain.
 
