@@ -1852,3 +1852,7 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 ## Scenario 260 — Publication diagnostics and Doctor
 
 Scenario 260 verifies stable, redacted diagnostics for publication blockers, read-only `gh pr merge` diagnosis, first-time repository Doctor observations, Required Checks states, unavailable policy evidence, and consistent Claude Code/OpenCode/Codex guidance. The doctor never changes repository settings, executes merge, or consumes a grant.
+
+## Publication Root-Cause Recovery (Plan35)
+
+Scenario 260 now includes precise merge error codes, Required Checks evidence classification, sanitized Host-denial observations and advisory non-authorizing recovery.
