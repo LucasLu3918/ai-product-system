@@ -40,11 +40,20 @@ class PublicationError(ValueError):
         phase = values[2] if len(values) > 2 else 'validation'
         category = values[3] if len(values) > 3 else 'POLICY'
         return {'reason_code': code, 'detail': detail, 'next_step': next_step,
-                'phase': phase, 'category': category}
+                'phase': phase, 'category': category,
+                'source': 'CLAUDE_HOST' if code.startswith('HOST_') else 'AIPS_PUBLICATION'}
 
 
 PUBLICATION_DIAGNOSTICS = {
     'PUBLICATION_REJECTED': ('Publication binding was rejected.', 'Inspect the candidate with aips publish prepare; retain the current authority boundary.', 'validation', 'POLICY'),
+    'MERGE_METHOD_REQUIRED': ('Exactly one merge method is required.', 'Use one enabled method: --merge, --squash or --rebase; check repository settings first.', 'command', 'INVALID_ARGUMENT'),
+    'MERGE_PR_NUMBER_REQUIRED': ('The merge command must name one PR number.', 'Use a literal gh pr merge <number> command from the validated worktree.', 'command', 'INVALID_ARGUMENT'),
+    'MERGE_HEAD_PIN_REQUIRED': ('The merge command lacks --match-head-commit.', 'Re-observe the live PR head and use its full SHA with --match-head-commit.', 'command', 'INVALID_ARGUMENT'),
+    'MERGE_HEAD_MISMATCH': ('The supplied --match-head-commit does not equal the candidate HEAD.', 'Re-observe the candidate and PR head; regenerate a bound command without reusing a stale SHA.', 'candidate', 'STALE'),
+    'MERGE_OPTION_FORBIDDEN': ('A merge option is prohibited or not supported by the exact-candidate policy.', 'Use the standalone merge invocation emitted by prepare; perform branch cleanup as a separate authorized action.', 'command', 'INVALID_ARGUMENT'),
+    'REQUIRED_CHECKS_POLICY_UNVERIFIED': ('Required-check configuration cannot be confirmed from the available evidence.', 'Run publish doctor; ask an administrator to verify branch protection visibility before retrying.', 'checks', 'UNAVAILABLE'),
+    'HOST_MERGE_WITHOUT_REVIEW': ('Claude Code Auto Mode classified the request as Merge Without Review.', 'Use the normal interactive Host approval/review flow; do not rewrite commands to bypass the denial.', 'host', 'PERMISSION'),
+    'HOST_READ_ONLY_DENIED': ('Claude Code denied a read-only publication diagnostic.', 'Run the same diagnostic in a trusted interactive environment or review exact permission rules; never infer merge approval.', 'host', 'PERMISSION'),
     'PUSH_SOURCE_NOT_EXACT_SHA': ('Push source must equal the full candidate SHA.', 'Resolve HEAD and use its literal full SHA as the refspec source.'),
     'INVALID_TARGET_REF': ('An explicit full target ref is required.', 'Use refs/heads/<current-engineering-branch>.'),
     'WORKTREE_DIRTY': ('The selected worktree has uncommitted content.', 'Preserve development files; review delivery scope or use a separate clean candidate worktree.'),
@@ -295,8 +304,14 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
             valued |= {'--match-head-commit', '--subject'}
             switches = {'--merge', '--squash', '--rebase'}
             position = 4
+            if len(argv) < 4 or not argv[3].isdigit():
+                raise PublicationError('merge PR number missing', 'MERGE_PR_NUMBER_REQUIRED')
+            if any(flag in argv for flag in ('--admin', '--delete-branch')):
+                raise PublicationError('prohibited merge option', 'MERGE_OPTION_FORBIDDEN')
+            if '--match-head-commit' not in argv:
+                raise PublicationError('exact candidate SHA required', 'MERGE_HEAD_PIN_REQUIRED')
             if sum(flag in argv for flag in switches) != 1:
-                raise PublicationError('exactly one explicit merge method required')
+                raise PublicationError('exactly one explicit merge method required', 'MERGE_METHOD_REQUIRED')
             if argv.count('--auto') > 1:
                 raise PublicationError('duplicate automatic merge option is unsupported')
         else:
@@ -314,7 +329,8 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
             elif flag in switches or operation == 'gh_pr_merge' and flag == '--auto':
                 position += 1
             else:
-                raise PublicationError('unsupported or ambiguous GitHub publication option')
+                raise PublicationError('unsupported or ambiguous GitHub publication option',
+                                       'MERGE_OPTION_FORBIDDEN' if operation == 'gh_pr_merge' else 'COMMAND_FORM_UNSUPPORTED')
         repo = _option(argv, '--repo')
         if not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+', repo):
             raise PublicationError('explicit GitHub owner/repository required')
@@ -332,9 +348,9 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
                 raise PublicationError('remote PR head differs from candidate')
         elif operation == 'gh_pr_merge':
             if len(argv) < 4 or not argv[3].isdigit() or any(flag in argv for flag in ['--admin', '--delete-branch']):
-                raise PublicationError('explicit PR number and checked merge required')
+                raise PublicationError('explicit PR number and checked merge required', 'MERGE_OPTION_FORBIDDEN')
             if _option(argv, '--match-head-commit') != head:
-                raise PublicationError('merge must pin the exact candidate SHA')
+                raise PublicationError('merge must pin the exact candidate SHA', 'MERGE_HEAD_MISMATCH')
             pr = json.loads(run(root, 'gh', 'pr', 'view', argv[3], '--repo', repo, '--json',
                                 'url,state,isDraft,mergeable,headRefOid,headRefName,baseRefOid,baseRefName'))
             if pr.get('state') != 'OPEN' or pr.get('isDraft') is True:
