@@ -492,7 +492,7 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 Publication maintenance uses `aips publish doctor` for read-only repository, protection, PR and Required Checks evidence. Permission-limited policy visibility is UNKNOWN and blocks; any policy change remains a separate administrator action. Scenario 260 covers the diagnostic contract.
 
-Skill registry changes run the catalog contract and regenerate `docs/human/public/skill-catalog.html`; Scenario 259 keeps source dispositions, optional Writing triggers and manual routing acceptance visible.
+Skill registry changes run the catalog contract and regenerate `docs/human/public/skill-catalog.html`; Scenario 259 keeps pinned external source copies/digests, overlap-based experimental/optional versus automatic routing, explicit `grill-with-docs` invocation, optional Writing triggers and manual routing acceptance visible.
 
 The creative quality benchmark lifecycle validates dataset coverage, bounded failure stages, legacy evidence compatibility, and Human review/acceptance separation. Its synthetic artifacts do not count as real local model inference or visual-quality evidence.
 

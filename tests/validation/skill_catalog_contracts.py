@@ -1,5 +1,6 @@
 """One owning validation for the registry-backed Skill Explorer and source intake."""
 
+import hashlib
 import json
 import subprocess
 import sys
@@ -30,14 +31,17 @@ active = registry.get("skills", {})
 required = {
     "prototype", "technical-research", "human-guided-wizard",
     "technical-teaching", "issue-triage", "writing-fragments",
-    "writing-beats", "writing-shape",
+    "writing-beats", "writing-shape", "grill-with-docs",
 }
 if not required.issubset(active):
     errors.append("all admitted optional and selected Writing Skills must be registered")
-if len(active) != 48:
-    errors.append(f"expected 48 current AIPS Skill cards, found {len(active)}")
+if len(active) != 49:
+    errors.append(f"expected 49 current AIPS Skill cards, found {len(active)}")
 
 by_id = {record.get("id"): record for record in records}
+allowed_dispositions = {"merged", "adopted", "adopted_optional", "workflow", "auto_routed", "experimental_optional"}
+if any(record.get("disposition") not in allowed_dispositions for record in records):
+    errors.append("every upstream Skill must be AIPS-integrated, auto-routed, or experimental/optional")
 for identifier in ("writing-fragments", "writing-beats", "writing-shape"):
     record = by_id.get(identifier)
     if not record or record.get("disposition") != "adopted_optional":
@@ -47,8 +51,44 @@ for identifier in ("writing-fragments", "writing-beats", "writing-shape"):
         errors.append(f"{identifier} must only use explicit request triggers")
 for identifier in ("chief-of-staff", "claude-handoff", "loop-me", "setup-ts-deep-modules"):
     record = by_id.get(identifier) or {}
-    if record.get("disposition") in {"adopted", "adopted_optional"}:
-        errors.append(f"excluded or untested Beta Skill was activated: {identifier}")
+    if record.get("disposition") != "experimental_optional":
+        errors.append(f"overlapping in-progress Skill must remain experimental/optional: {identifier}")
+for identifier in ("migrate-to-shoehorn", "scaffold-exercises", "setup-pre-commit"):
+    record = by_id.get(identifier) or {}
+    if record.get("disposition") != "auto_routed" or not record.get("aips_targets"):
+        errors.append(f"distinct repo/tool Skill must have an automatic AIPS route: {identifier}")
+route_triggers = {
+    "migrate-to-shoehorn": ("tdd", "typescript_test_fixture_migration"),
+    "scaffold-exercises": ("technical-teaching", "exercise_scaffold_setup"),
+    "setup-pre-commit": ("tdd", "pre_commit_validation_setup"),
+}
+for identifier, (target, trigger) in route_triggers.items():
+    if target not in active or trigger not in (active.get(target) or {}).get("triggers", []):
+        errors.append(f"automatic route for {identifier} is missing canonical target trigger {target}:{trigger}")
+for identifier in ("setup-matt-pocock-skills", "git-guardrails-claude-code", "grill-with-docs"):
+    record = by_id.get(identifier) or {}
+    if record.get("disposition") != "experimental_optional":
+        errors.append(f"overlapping upstream Skill must be experimental/optional: {identifier}")
+for record in records:
+    local_path = record.get("local_path")
+    if not local_path:
+        errors.append(f"upstream source is not vendored: {record.get('id')}")
+        continue
+    path = ROOT / local_path
+    if not path.is_file():
+        errors.append(f"vendored source is missing: {local_path}")
+        continue
+    if hashlib.sha256(path.read_bytes()).hexdigest() != record.get("sha256"):
+        errors.append(f"vendored source digest mismatch: {local_path}")
+
+grill = active.get("grill-with-docs") or {}
+grill_source = ROOT / "skills" / grill.get("path", "")
+if not grill_source.is_file() or "explicit_grill_with_docs" not in grill.get("triggers", []):
+    errors.append("grill-with-docs must be a canonical explicit-invocation Skill")
+else:
+    openai_policy = grill_source.parent / "agents" / "openai.yaml"
+    if not openai_policy.is_file() or "allow_implicit_invocation: false" not in openai_policy.read_text(encoding="utf-8"):
+        errors.append("grill-with-docs must disable implicit invocation in its native Codex metadata")
 
 for identifier in required:
     skill_path = ROOT / "skills" / active[identifier]["path"]
@@ -75,7 +115,7 @@ if not scenario.is_file():
 
 skills_cli = ROOT / "scripts/skills_cli.py"
 if skills_cli.is_file():
-    for include_upstream, expected in ((False, 48), (True, 86)):
+    for include_upstream, expected in ((False, 49), (True, 87)):
         args = [sys.executable, str(skills_cli), "list", "--format", "json"]
         if include_upstream:
             args.append("--include-upstream")
@@ -89,8 +129,8 @@ if skills_cli.is_file():
             errors.append(f"AIPS Skill list returned an unexpected inventory count: {len(listing)}")
         if not all(item.get("locale") == "zh-TW" and item.get("description") for item in listing):
             errors.append("AIPS Skill list must provide nonempty Traditional Chinese descriptions by default")
-        if include_upstream and not any(item.get("id") == "grill-me" and item.get("source") == "upstream" and item.get("status") == "workflow" for item in listing):
-            errors.append("upstream grill-me must be listed with its workflow disposition")
+        if include_upstream and not any(item.get("id") == "migrate-to-shoehorn" and item.get("source") == "upstream" and item.get("status") == "auto_routed" and item.get("local_path") for item in listing):
+            errors.append("upstream repo/tool Skills must expose their route and vendored source path")
 else:
     errors.append("AIPS Skill list CLI is missing")
 

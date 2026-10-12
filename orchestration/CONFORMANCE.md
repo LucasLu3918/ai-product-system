@@ -53,7 +53,7 @@ Scenario 236 adds fixed creative CLI routes; preflight and Gate inspection do no
 
 Public command groups expose help with status 0 and return nonzero for unknown subcommands. Keep routing in the shell facade and preserve internal library modules as libraries.
 
-Scenario 233 covers localized/grouped `aips skills list` output, JSON and exact filters against canonical Skill metadata; listing does not write the generated index. Lifecycle checks ensure uninstall preserves pre-existing, unowned and digest-mismatched Host Skills.
+Scenario 233 covers localized/grouped `aips skills list` output, JSON and exact filters against canonical Skill metadata; listing does not write the generated index. Lifecycle checks ensure uninstall preserves pre-existing, unowned and digest-mismatched Host Skills. `--include-upstream` lists all 38 vendored sources with dispositions and local paths while keeping the default output canonical-only.
 
 The native Skill projection lifecycle checks Codex, Claude Code and Gemini CLI paths, idempotent installation, shared Codex/Gemini ownership, conflicts, exact digest-based uninstall, workspace scoping and Portable Command migration. `tests/validation/skill_native_projection_contracts.py` validates the CLI/documentation contracts. These deterministic checks do not claim live Host discovery or invocation acceptance.
 
@@ -1065,7 +1065,7 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
-The canonical Skill registry and pinned upstream manifest classify the complete 38-item source inventory; the generated Human Explorer presents active Skills and source dispositions separately. MCP-compatible Agents load canonical Skill Resources on demand; native projections are owned and removed by AIPS lifecycle rules that preserve pre-existing or modified Skills. Writing Fragments → Beats → Shape remains explicit-request-only, and untested Beta entries remain unrouted. `tests/validation/skill_catalog_contracts.py` checks deterministic registry, output and source invariants; Scenario 259 remains manual for semantic routing acceptance.
+The canonical Skill registry contains 49 AIPS Skills; the pinned 38-item upstream manifest links vendored source paths and SHA-256 entrypoint digests. Distinct repo/tool methods auto-route on matching tasks while overlaps remain experimental/optional. `$grill-with-docs` is a separate explicit-only Skill. MCP-compatible Agents load canonical Skill Resources on demand; native projections are owned and removed by AIPS lifecycle rules that preserve pre-existing or modified Skills. Writing Fragments → Beats → Shape remains explicit-request-only. `tests/validation/skill_catalog_contracts.py` checks deterministic registry, routing, output, license and source invariants; Scenario 259 remains manual for semantic routing acceptance.
 
 ## Scenario 260 — Publication diagnostics and Doctor
 

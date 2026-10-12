@@ -21,7 +21,9 @@
       "aips_targets": [
         "AIPS Skill routing"
       ],
-      "reason": "The existing Harness and Skill routing already choose applicable AIPS Skills; a second router would duplicate selection."
+      "reason": "The existing Harness and Skill routing already choose applicable AIPS Skills; a second router would duplicate selection.",
+      "local_path": "external-skills/matt-pocock/engineering/ask-matt/SKILL.md",
+      "sha256": "1371f5ce005de0992a44b137748bfb960a56948aa9871b405fe9d90b24332e3c"
     },
     {
       "id": "code-review",
@@ -32,7 +34,9 @@
       "aips_targets": [
         "code-review"
       ],
-      "reason": "Adds separate Standards and Spec lenses, a fixed comparison point and evidence-backed findings."
+      "reason": "Adds separate Standards and Spec lenses, a fixed comparison point and evidence-backed findings.",
+      "local_path": "external-skills/matt-pocock/engineering/code-review/SKILL.md",
+      "sha256": "09eb147f793e4647949edd32dbad278f0554dfb56e0d46b699cd4c2c55bf0357"
     },
     {
       "id": "codebase-design",
@@ -43,7 +47,9 @@
       "aips_targets": [
         "clean-architecture"
       ],
-      "reason": "Adds deep-module, seam and interface vocabulary to the existing architecture Skill."
+      "reason": "Adds deep-module, seam and interface vocabulary to the existing architecture Skill.",
+      "local_path": "external-skills/matt-pocock/engineering/codebase-design/SKILL.md",
+      "sha256": "2c20617f87ec8af6a434859f381b2f061a69b530444e74eb39e78bb016a6d1e2"
     },
     {
       "id": "diagnosing-bugs",
@@ -54,7 +60,9 @@
       "aips_targets": [
         "systematic-debugging"
       ],
-      "reason": "Adds a tight failing loop, minimization and falsifiable hypotheses to the existing debugging method."
+      "reason": "Adds a tight failing loop, minimization and falsifiable hypotheses to the existing debugging method.",
+      "local_path": "external-skills/matt-pocock/engineering/diagnosing-bugs/SKILL.md",
+      "sha256": "849198df88cdb65fd0d97236604c1fca7ff2f22d2f705f9724a800d0266b118d"
     },
     {
       "id": "domain-modeling",
@@ -66,19 +74,25 @@
         "domain-driven-design",
         "architecture-decision-record"
       ],
-      "reason": "Adds glossary terminology checks and example-based model validation without duplicating DDD or ADR Skills."
+      "reason": "Adds glossary terminology checks and example-based model validation without duplicating DDD or ADR Skills.",
+      "local_path": "external-skills/matt-pocock/engineering/domain-modeling/SKILL.md",
+      "sha256": "7b925d7b1e341a2eeae33ad68a8a8c0ab889a38ddd22a7598e4c240e5a7556a3"
     },
     {
       "id": "grill-with-docs",
       "path": "skills/engineering/grill-with-docs/SKILL.md",
       "category": "engineering",
       "description": "A relentless interview to sharpen a plan or design, which also creates docs (ADR's and glossary) as we go.",
-      "disposition": "workflow",
+      "disposition": "experimental_optional",
       "aips_targets": [
+        "grill-me",
         "requirements-definition",
-        "Project Intelligence"
+        "domain-driven-design",
+        "architecture-decision-record"
       ],
-      "reason": "AIPS already has requirement clarification and project knowledge mechanisms; preserve the outputs without a second interview skill."
+      "reason": "Retain a separate explicit-only entrypoint; its interview and domain-document outputs overlap existing AIPS capabilities, so the combined workflow is opt-in.",
+      "local_path": "external-skills/matt-pocock/engineering/grill-with-docs/SKILL.md",
+      "sha256": "7de372c13488f1ee96cc11cd8907b56b6809cc93eef776eeddd37de6b6cbe3fe"
     },
     {
       "id": "implement",
@@ -90,7 +104,9 @@
         "tdd",
         "code-review"
       ],
-      "reason": "The existing implementation, TDD and review flow already covers the responsibility."
+      "reason": "The existing implementation, TDD and review flow already covers the responsibility.",
+      "local_path": "external-skills/matt-pocock/engineering/implement/SKILL.md",
+      "sha256": "483bdc4ccf4ac31d86ac7beeaa0d0db80313e71e120bb8c59b3196ae5decd53d"
     },
     {
       "id": "implement-spec",
@@ -102,7 +118,9 @@
         "delivery-planning",
         "deterministic scheduler"
       ],
-      "reason": "Integrate task dependency mapping into the existing planning and scheduling flow."
+      "reason": "Integrate task dependency mapping into the existing planning and scheduling flow.",
+      "local_path": "external-skills/matt-pocock/engineering/implement-spec/SKILL.md",
+      "sha256": "7a22dd2e60b8fcece478ced9d2533582adf3520d695acd3ab715341535c9e56d"
     },
     {
       "id": "improve-codebase-architecture",
@@ -113,7 +131,9 @@
       "aips_targets": [
         "clean-architecture"
       ],
-      "reason": "Adds architecture improvement candidates and deep-module checks to the existing architecture Skill."
+      "reason": "Adds architecture improvement candidates and deep-module checks to the existing architecture Skill.",
+      "local_path": "external-skills/matt-pocock/engineering/improve-codebase-architecture/SKILL.md",
+      "sha256": "552240a5ab5cec6b67c15dd1ad6e9f6962b1bca6ce870059a8c2713760c20392"
     },
     {
       "id": "pr",
@@ -124,7 +144,9 @@
       "aips_targets": [
         "Git Publication"
       ],
-      "reason": "AIPS has a governed Git publication proposal and Human merge authority."
+      "reason": "AIPS has a governed Git publication proposal and Human merge authority.",
+      "local_path": "external-skills/matt-pocock/engineering/pr/SKILL.md",
+      "sha256": "ab63f1cf78647389edcd386c9427c5dfca27ed2836930c24773ffee834c19bcd"
     },
     {
       "id": "prototype",
@@ -135,7 +157,9 @@
       "aips_targets": [
         "prototype"
       ],
-      "reason": "Distinct throwaway prototype discipline; isolated from production code and runtime credentials."
+      "reason": "Distinct throwaway prototype discipline; isolated from production code and runtime credentials.",
+      "local_path": "external-skills/matt-pocock/engineering/prototype/SKILL.md",
+      "sha256": "714de632d116bb73f65cdb5a882db15b9369a6713b9a47c0fad827848f0bfbe3"
     },
     {
       "id": "research",
@@ -146,7 +170,9 @@
       "aips_targets": [
         "technical-research"
       ],
-      "reason": "Distinct technical primary-source research; product and market evidence stays in product-research."
+      "reason": "Distinct technical primary-source research; product and market evidence stays in product-research.",
+      "local_path": "external-skills/matt-pocock/engineering/research/SKILL.md",
+      "sha256": "985569f15739c713d6784887c3d186d4ef9ac85bec5ad9c068d25bf0739928e4"
     },
     {
       "id": "retro",
@@ -157,16 +183,22 @@
       "aips_targets": [
         "System Self-Improvement Review"
       ],
-      "reason": "Existing self-improvement review proposes evidence-based system changes and does not silently modify core policy."
+      "reason": "Existing self-improvement review proposes evidence-based system changes and does not silently modify core policy.",
+      "local_path": "external-skills/matt-pocock/engineering/retro/SKILL.md",
+      "sha256": "33fbc28568e3146f20fd908b12998bc0ab30aa4f4c87288199a40793efa94696"
     },
     {
       "id": "setup-matt-pocock-skills",
       "path": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
       "category": "engineering",
       "description": "Configure this repo for the engineering skills: set up its issue tracker, triage label vocabulary, and domain doc layout. Run once before first use of the other engineering skills.",
-      "disposition": "not_adopted",
-      "aips_targets": [],
-      "reason": "Upstream-specific installation and tracker setup would create a second Skill system and could bypass AIPS ownership."
+      "disposition": "experimental_optional",
+      "aips_targets": [
+        "AIPS native Skill installation"
+      ],
+      "reason": "Duplicates AIPS native Skill installation and ownership tracking; preserve the upstream setup as an explicit-only optional reference.",
+      "local_path": "external-skills/matt-pocock/engineering/setup-matt-pocock-skills/SKILL.md",
+      "sha256": "f148858ffb7f63c03c06fca06e6fdb1d91a35c6b293244b8fdfacd5f4cc028c4"
     },
     {
       "id": "tdd",
@@ -177,7 +209,9 @@
       "aips_targets": [
         "tdd"
       ],
-      "reason": "Adds public-seam, independent-expectation and vertical-slice test quality rules."
+      "reason": "Adds public-seam, independent-expectation and vertical-slice test quality rules.",
+      "local_path": "external-skills/matt-pocock/engineering/tdd/SKILL.md",
+      "sha256": "5505d25bbaa8fc14a79e4d20163936958992a2995b7f1dd1d6197edc9ed722e0"
     },
     {
       "id": "to-spec",
@@ -188,7 +222,9 @@
       "aips_targets": [
         "requirements-definition"
       ],
-      "reason": "The existing requirement workflow turns accepted user intent into a traceable specification."
+      "reason": "The existing requirement workflow turns accepted user intent into a traceable specification.",
+      "local_path": "external-skills/matt-pocock/engineering/to-spec/SKILL.md",
+      "sha256": "43ad9cf318e5e7d3d1fa360253a37021796dc87a0c2e595ad262661a10f85088"
     },
     {
       "id": "to-tickets",
@@ -199,7 +235,9 @@
       "aips_targets": [
         "delivery-planning"
       ],
-      "reason": "Adds vertical slices, dependency edges, verification and traceability."
+      "reason": "Adds vertical slices, dependency edges, verification and traceability.",
+      "local_path": "external-skills/matt-pocock/engineering/to-tickets/SKILL.md",
+      "sha256": "56ec23c5b2782785d4e65bff9e315b6d3aeb4ef977c174a219e99489fada1995"
     },
     {
       "id": "triage",
@@ -210,7 +248,9 @@
       "aips_targets": [
         "issue-triage"
       ],
-      "reason": "Distinct evidence-led issue classification; tracker writes remain explicitly authorized."
+      "reason": "Distinct evidence-led issue classification; tracker writes remain explicitly authorized.",
+      "local_path": "external-skills/matt-pocock/engineering/triage/SKILL.md",
+      "sha256": "917b0baf74be583e74f110857ed45df2766617f75c00baf61fd136d7af515edf"
     },
     {
       "id": "wayfinder",
@@ -222,7 +262,9 @@
         "delivery-planning",
         "deterministic scheduler"
       ],
-      "reason": "The existing planning package and scheduler cover long-running dependency maps."
+      "reason": "The existing planning package and scheduler cover long-running dependency maps.",
+      "local_path": "external-skills/matt-pocock/engineering/wayfinder/SKILL.md",
+      "sha256": "9be7b478c389605a24517d27752f278933588da97a1b5921b165f455edf4c5b7"
     },
     {
       "id": "wizard",
@@ -233,45 +275,63 @@
       "aips_targets": [
         "human-guided-wizard"
       ],
-      "reason": "Distinct human-only external steps; no secret collection or privileged execution."
+      "reason": "Distinct human-only external steps; no secret collection or privileged execution.",
+      "local_path": "external-skills/matt-pocock/engineering/wizard/SKILL.md",
+      "sha256": "bdf31d48211ea559878f95a4f344aeabf8d85897488ba564382bab0b000daac1"
     },
     {
       "id": "chief-of-staff",
       "path": "skills/in-progress/chief-of-staff/SKILL.md",
       "category": "in-progress",
       "description": "Pursue a long-running goal in a single session by co-ordinating subagents.",
-      "disposition": "deferred",
-      "aips_targets": [],
-      "reason": "Do not test the Beta orchestration model or grant autonomous long-running authority."
+      "disposition": "experimental_optional",
+      "aips_targets": [
+        "Goal Management",
+        "AIPS orchestration"
+      ],
+      "reason": "Overlaps AIPS goal tracking and governed orchestration; expose only as an experimental opt-in, preserving AIPS limits on background work and schedules.",
+      "local_path": "external-skills/matt-pocock/in-progress/chief-of-staff/SKILL.md",
+      "sha256": "6cc6e47ab5022f3e45e5be0fedbb0f6e645f4f0190d6b0c51c7cd60c2d7c1d98"
     },
     {
       "id": "claude-handoff",
       "path": "skills/in-progress/claude-handoff/SKILL.md",
       "category": "in-progress",
       "description": "Hand the current conversation off to a fresh background agent that picks up the work immediately.",
-      "disposition": "deferred",
-      "aips_targets": [],
-      "reason": "Keep AIPS checkpoint and Host-specific handoff boundaries."
+      "disposition": "experimental_optional",
+      "aips_targets": [
+        "Checkpoint / Resume"
+      ],
+      "reason": "Overlaps AIPS checkpoint and handoff behavior; keep explicit-only and preserve user authorization for external handoff.",
+      "local_path": "external-skills/matt-pocock/in-progress/claude-handoff/SKILL.md",
+      "sha256": "79357a18425d66d4c24048bedf83dceb79d3bba356f38014950f764a7fab4026"
     },
     {
       "id": "loop-me",
       "path": "skills/in-progress/loop-me/SKILL.md",
       "category": "in-progress",
       "description": "Grill me about specs for the workflows I want to build, within this workspace.",
-      "disposition": "excluded_beta",
-      "aips_targets": [],
-      "reason": "The user explicitly excluded other Beta Skill trials."
+      "disposition": "experimental_optional",
+      "aips_targets": [
+        "grill-me",
+        "requirements-definition"
+      ],
+      "reason": "Overlaps AIPS grill-me and requirements clarification; keep as an optional specialized workflow.",
+      "local_path": "external-skills/matt-pocock/in-progress/loop-me/SKILL.md",
+      "sha256": "e44d1cc3e760fb86ac42964c2a5f1fcac511715db50fb375f3f7be814de1eaa7"
     },
     {
       "id": "setup-ts-deep-modules",
       "path": "skills/in-progress/setup-ts-deep-modules/SKILL.md",
       "category": "in-progress",
       "description": "Wire dependency-cruiser into a TypeScript repo so each package is a deep module, with implementation hidden in subfolders and reachable only through its entry-point files. User-invoked.",
-      "disposition": "reference_only",
+      "disposition": "experimental_optional",
       "aips_targets": [
         "clean-architecture"
       ],
-      "reason": "Preserve as upstream technical reference; no TypeScript Beta trial or project mutation."
+      "reason": "Partially overlaps clean-architecture and introduces repo-specific dependency-cruiser setup; keep opt-in because it changes project tooling.",
+      "local_path": "external-skills/matt-pocock/in-progress/setup-ts-deep-modules/SKILL.md",
+      "sha256": "29acca66ac99d4532e2a6f0370d8125d7cba1e87c9ac66573203c75189d3e6c7"
     },
     {
       "id": "writing-beats",
@@ -282,7 +342,9 @@
       "aips_targets": [
         "writing-beats"
       ],
-      "reason": "User explicitly selected the optional Writing workflow; invoke only on explicit request."
+      "reason": "User explicitly selected the optional Writing workflow; invoke only on explicit request.",
+      "local_path": "external-skills/matt-pocock/in-progress/writing-beats/SKILL.md",
+      "sha256": "a96abafa2372eede8267d770138b322d6125da8adaa7ccf0a5e08e4ee13ee71e"
     },
     {
       "id": "writing-fragments",
@@ -293,7 +355,9 @@
       "aips_targets": [
         "writing-fragments"
       ],
-      "reason": "User explicitly selected the optional Writing workflow; invoke only on explicit request."
+      "reason": "User explicitly selected the optional Writing workflow; invoke only on explicit request.",
+      "local_path": "external-skills/matt-pocock/in-progress/writing-fragments/SKILL.md",
+      "sha256": "298b0edd23df229183630de592ed8aa4289233560f2040691f6eb77caeaad4ea"
     },
     {
       "id": "writing-shape",
@@ -304,45 +368,62 @@
       "aips_targets": [
         "writing-shape"
       ],
-      "reason": "User explicitly selected the optional Writing workflow; invoke only on explicit request."
+      "reason": "User explicitly selected the optional Writing workflow; invoke only on explicit request.",
+      "local_path": "external-skills/matt-pocock/in-progress/writing-shape/SKILL.md",
+      "sha256": "f5e6c57bdd85178ace4a260c92f46da6b64ddee18215b461d875739c68976f72"
     },
     {
       "id": "git-guardrails-claude-code",
       "path": "skills/misc/git-guardrails-claude-code/SKILL.md",
       "category": "misc",
       "description": "Set up Claude Code hooks to block dangerous git commands (push, reset --hard, clean, branch -D, etc.) before they execute. Use when user wants to prevent destructive git operations, add git safety hooks, or block git push/reset in Claude Code.",
-      "disposition": "not_adopted",
-      "aips_targets": [],
-      "reason": "AIPS already owns cross-runtime Git publication guardrails and Human authority."
+      "disposition": "experimental_optional",
+      "aips_targets": [
+        "Git Publication"
+      ],
+      "reason": "Overlaps AIPS cross-runtime Git publication guardrails; retain the Claude-specific hook setup as an opt-in only when a project explicitly requests that host-specific protection.",
+      "local_path": "external-skills/matt-pocock/misc/git-guardrails-claude-code/SKILL.md",
+      "sha256": "69b291d655626a01602b998a1836fcb93c058ede68dfafddfd71e87f17074764"
     },
     {
       "id": "migrate-to-shoehorn",
       "path": "skills/misc/migrate-to-shoehorn/SKILL.md",
       "category": "misc",
       "description": "Migrate test files from `as` type assertions to @total-typescript/shoehorn. Use when user mentions shoehorn, wants to replace `as` in tests, or needs partial test data.",
-      "disposition": "reference_only",
-      "aips_targets": [],
-      "reason": "Framework-specific migration belongs in a TypeScript project when requested."
+      "disposition": "auto_routed",
+      "aips_targets": [
+        "tdd"
+      ],
+      "reason": "No existing AIPS Skill duplicates this TypeScript testing migration; route matching requests to the pinned source method while applying project-native dependency and test constraints.",
+      "local_path": "external-skills/matt-pocock/misc/migrate-to-shoehorn/SKILL.md",
+      "sha256": "de4da4c11d924fac79c924b2ee3d2db4a5cb98386eb490a599119463d036ae72"
     },
     {
       "id": "scaffold-exercises",
       "path": "skills/misc/scaffold-exercises/SKILL.md",
       "category": "misc",
       "description": "Create exercise directory structures with sections, problems, solutions, and explainers that pass linting. Use when user wants to scaffold exercises, create exercise stubs, or set up a new course section.",
-      "disposition": "not_adopted",
+      "disposition": "auto_routed",
       "aips_targets": [
         "technical-teaching"
       ],
-      "reason": "Course scaffolding is project-specific; the reusable teaching method is captured separately."
+      "reason": "No existing AIPS Skill duplicates this exercise scaffold; route matching course-scaffolding requests to the source method.",
+      "local_path": "external-skills/matt-pocock/misc/scaffold-exercises/SKILL.md",
+      "sha256": "75f5c9d771606fb9762f16522efc954df11c324f87148d8ff069bce166257de9"
     },
     {
       "id": "setup-pre-commit",
       "path": "skills/misc/setup-pre-commit/SKILL.md",
       "category": "misc",
       "description": "Set up Husky pre-commit hooks with lint-staged (Prettier), type checking, and tests in the current repo. Use when user wants to add pre-commit hooks, set up Husky, configure lint-staged, or add commit-time formatting/typechecking/testing.",
-      "disposition": "not_adopted",
-      "aips_targets": [],
-      "reason": "Hook choice is project-specific and may conflict with existing tooling."
+      "disposition": "auto_routed",
+      "aips_targets": [
+        "tdd",
+        "project-native tooling conventions"
+      ],
+      "reason": "No equivalent AIPS Skill duplicates this hook setup; route only matching requests and preserve existing project tooling.",
+      "local_path": "external-skills/matt-pocock/misc/setup-pre-commit/SKILL.md",
+      "sha256": "c9819d7f1e3b198064edc1faa3154224ed67395e9f07f5d3cea4b67cf0a11a98"
     },
     {
       "id": "grill-me",
@@ -353,7 +434,9 @@
       "aips_targets": [
         "requirements-definition"
       ],
-      "reason": "User-invoked clarification already has a governed AIPS path."
+      "reason": "User-invoked clarification already has a governed AIPS path.",
+      "local_path": "external-skills/matt-pocock/productivity/grill-me/SKILL.md",
+      "sha256": "caaf8b8de1684f96e26b28f3c29189db5c89cce4b73e1c93d86164f66ef88637"
     },
     {
       "id": "grilling",
@@ -364,7 +447,9 @@
       "aips_targets": [
         "requirements-definition"
       ],
-      "reason": "Shared clarification method belongs in one AIPS requirements workflow."
+      "reason": "Shared clarification method belongs in one AIPS requirements workflow.",
+      "local_path": "external-skills/matt-pocock/productivity/grilling/SKILL.md",
+      "sha256": "befdff1e27a1dfe2a294d5871169ac1afe16d983911daa4f32627514a48c1e15"
     },
     {
       "id": "handoff",
@@ -375,7 +460,9 @@
       "aips_targets": [
         "Checkpoint / Resume"
       ],
-      "reason": "AIPS already has checkpoint and task handoff conventions."
+      "reason": "AIPS already has checkpoint and task handoff conventions.",
+      "local_path": "external-skills/matt-pocock/productivity/handoff/SKILL.md",
+      "sha256": "4cbb043950dad2ffd3662ff1a5a0b51ae676004b5cae10e3787e8ee7a4ee69d3"
     },
     {
       "id": "teach",
@@ -386,7 +473,9 @@
       "aips_targets": [
         "technical-teaching"
       ],
-      "reason": "Adds a distinct goal-practice-feedback teaching loop."
+      "reason": "Adds a distinct goal-practice-feedback teaching loop.",
+      "local_path": "external-skills/matt-pocock/productivity/teach/SKILL.md",
+      "sha256": "550482c2d674b085c9043b87bfdc14a8f2ec453c736119e7fcbb1e9332bffeba"
     },
     {
       "id": "to-questionnaire",
@@ -397,7 +486,9 @@
       "aips_targets": [
         "requirements-definition"
       ],
-      "reason": "Questionnaire output is a format extension to requirement clarification."
+      "reason": "Questionnaire output is a format extension to requirement clarification.",
+      "local_path": "external-skills/matt-pocock/productivity/to-questionnaire/SKILL.md",
+      "sha256": "b5eb929842ee0e93d867c5e906d183d350f2f2d149eaeaa86967d94d8eda1d3b"
     },
     {
       "id": "wait-what",
@@ -408,7 +499,9 @@
       "aips_targets": [
         "Human-facing explanation"
       ],
-      "reason": "Plain-language explanations are already part of the Human communication contract."
+      "reason": "Plain-language explanations are already part of the Human communication contract.",
+      "local_path": "external-skills/matt-pocock/productivity/wait-what/SKILL.md",
+      "sha256": "d961bb37defd975c539427edb8f450cdbccdcdd552e213c1ece46676a7970905"
     },
     {
       "id": "writing-for-agents",
@@ -420,7 +513,9 @@
         "CAPABILITY_INCUBATION.md",
         "documentation governance"
       ],
-      "reason": "Existing admission and documentation rules own reusable agent writing guidance."
+      "reason": "Existing admission and documentation rules own reusable agent writing guidance.",
+      "local_path": "external-skills/matt-pocock/productivity/writing-for-agents/SKILL.md",
+      "sha256": "551adca942227b44192edba88acd4e8db911f0121ce58ad16944ccf6a896a74a"
     }
   ]
 }

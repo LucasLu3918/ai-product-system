@@ -222,7 +222,7 @@ Native Skill projections share one canonical AIPS source and ownership manifest.
 
 Map public CLI behavior to the owning Human workflow and Scenario section. Generic dispatcher or shared registry edits require no unrelated domain documentation unless the changed behavior belongs to that domain.
 
-Skill inventory changes also update the generated Human Skill Explorer, its User Guide and Documentation Map links, Scenario 259, and the documentation placement and sync registries. Keep the registry and pinned upstream disposition manifest as its sources.
+Skill inventory changes also update the generated Human Skill Explorer, User Guide, Harness, Technology Guide, Architecture Overview, Documentation Map, Scenario 259, and placement/sync registries. Keep the canonical registry separate from the pinned vendored upstream source directory; every source record carries its local entrypoint path, SHA-256 and routing disposition. Distinct methods auto-route on matching tasks, overlaps remain experimental/optional, and explicit-only Skills retain their native invocation policy.
 
 Skill catalog and CLI behavior must keep Human Harness/Installation guidance, the Architecture overview, Documentation Map, and Scenarios 233/259 aligned. MCP Resources provide on-demand access to canonical Skills; uninstall may remove only digest-matching projections listed in AIPS ownership records and must preserve pre-existing, unowned or modified Host Skills.
 

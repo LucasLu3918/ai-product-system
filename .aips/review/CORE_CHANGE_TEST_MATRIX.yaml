@@ -1,67 +1,73 @@
 version: 1
-candidate:
-  base_sha: 87e5bfa79fd4215adeb10d751f872fe26a53c4b3
-  changed_files_hash: 1fee13480c3cac636fb4227740b4b2d8ad136a6ea764c4176d5f468409b4e84b
-
 change:
-  id: plan34-publication-diagnostics-20261012
-  summary: Add structured, safe publication diagnostics, read-only merge diagnosis, and Publish Doctor.
+  id: matt-pocock-grill-with-docs
+  summary: Add explicit-only grill-with-docs, vendor all 38 pinned upstream Skills,
+    and apply overlap-aware routing with canonical triggers.
   boundary:
-    - Extend the existing publication authority diagnostic codes and remediation contract; preserve redaction, exact candidate binding, all existing gates, and fail-closed behavior.
-    - Classify Required Checks configuration and live outcomes separately, including empty/unconfigured, pending, failed, missing, cancelled, stale, API unavailable, and insufficient permission.
-    - Add literal gh pr merge support to read-only diagnose and a publish doctor/onboarding command; neither executes mutations, changes GitHub policy, nor grants/consumes authority.
-    - Give Claude Code, OpenCode, and Codex consistent safe diagnostic/remediation guidance; self-service is limited to already authorized read-only or safe actions.
-    - Update Scenario 260, lifecycle/unit/contract/security evidence and canonical Traditional Chinese Human/Agent docs.
-
+  - 49 canonical AIPS Skills with one explicit-only grill-with-docs entrypoint
+  - 38 MIT-licensed upstream Skill source directories pinned to commit 49dd158d1076134a641b33efb035946536778336
+  - Seven pending in-progress/repo-tool entries classified into four experimental/optional
+    overlaps and three automatically routed distinct methods
+  - Generated Explorer, Skill CLI, native projection, tests, scenarios, documentation
+    closure and changelog
 matrix:
-  - boundary: Structured publication errors and Required Checks observation
-    reason: Existing merge validation collapses a CLI/API error into one generic rejection and cannot distinguish absent policy from check state or access failure.
-    checks:
-      static_lint: {applicable: true, evidence: "Ruff targeted publication Python files: PASS"}
-      unit: {applicable: true, evidence: "tests.test_publication_planning + tests.test_publication_authority + tests.test_publication_diagnostics: 59 tests PASS"}
-      integration: {applicable: true, evidence: "tests/validate_repository.py: PASS; 260 scenarios; 258179 ms"}
-      contract: {applicable: true, evidence: "tests/validation/publish_preflight_contracts.py and Scenario 260 contracts: PASS"}
-      e2e: {applicable: false, na_reason: No deployed application surface; CLI/native adapter lifecycle fixtures exercise the affected path.}
-      security: {applicable: true, evidence: "Publication denied/pending/missing/cancelled, redaction, stale SHA and no-mutation lifecycle assertions: PASS; exact-candidate Gate pending"}
-      migration_recovery: {applicable: false, na_reason: No persisted schema or migration.}
-      cli_harness: {applicable: true, evidence: "Doctor real-repository JSON probe READY; generic Git repository lifecycle PASS"}
-      docs_schema: {applicable: true, evidence: "Documentation impact complete: 42 direct/closure paths; repository documentation contracts PASS"}
-  - boundary: Read-only merge diagnosis, Publish Doctor, and onboarding
-    reason: New CLI observations cover GitHub configuration, checks, PR identity, candidate SHA, auth visibility, and blockers without performing repository mutations.
-    checks:
-      static_lint: {applicable: true, evidence: "Ruff targeted publication Python files: PASS"}
-      unit: {applicable: true, evidence: "tests.test_publication_diagnostics: PASS; publish doctor/diagnose lifecycle assertions PASS"}
-      integration: {applicable: true, evidence: "tests/validate_repository.py: PASS; CLI and lifecycle suites included"}
-      contract: {applicable: true, evidence: "Doctor output contract and publish-preflight contracts: PASS"}
-      e2e: {applicable: false, na_reason: Doctor is a local CLI diagnostic; there is no browser or deployed service.}
-      security: {applicable: true, evidence: "Read-only doctor/diagnose, denied API, redaction, no grant consumption and no mutation lifecycle assertions: PASS"}
-      migration_recovery: {applicable: false, na_reason: No persisted schema or migration.}
-      cli_harness: {applicable: true, evidence: "aips publish doctor --project-root <Git repo> --format json: READY; generic Git routing lifecycle PASS"}
-      docs_schema: {applicable: true, evidence: "42/42 documentation impact closure; Human onboarding docs and docs contracts PASS"}
-  - boundary: Cross-agent guidance and conformance documentation
-    reason: Claude Code, OpenCode, and Codex must interpret the shared contract consistently without expanding authority.
-    checks:
-      static_lint: {applicable: true, evidence: "Ruff targeted publication code: PASS; adapters are documentation"}
-      unit: {applicable: false, na_reason: Runtime guidance behavior is checked by conformance and CLI lifecycle contracts.}
-      integration: {applicable: true, evidence: "Full conformance isolation and repository validator: PASS"}
-      contract: {applicable: true, evidence: "Scenario 260 cross-runtime guidance and CLI contracts: PASS"}
-      e2e: {applicable: false, na_reason: No deployed application surface or real Host acceptance claim is in scope.}
-      security: {applicable: true, evidence: "Adapter instructions preserve user authority and read-only/self-service limits; repo security contracts PASS"}
-      migration_recovery: {applicable: false, na_reason: Documentation-only boundary.}
-      cli_harness: {applicable: true, evidence: "Claude Code, OpenCode, Codex guidance and source CLI route verified by repository contracts"}
-      docs_schema: {applicable: true, evidence: "Canonical Traditional Chinese Human/Agent docs closure: 42/42; placement/sync contracts PASS"}
-
-review_evidence:
-  required: false
+- boundary: Canonical Skill metadata, trigger routing and native invocation policy
+  reason: Add one explicitly invoked Skill and route three distinct upstream methods
+    through existing canonical trigger metadata.
+  checks: &id001
+    static_lint:
+      applicable: true
+      evidence: 'PASS: full AIPS preflight passed on the exact working candidate;
+        Ruff checks on changed Python files passed.'
+    unit:
+      applicable: true
+      evidence: 'PASS: Skill registry/catalog contracts and `tests/evidence/skills_cli_lifecycle.py`
+        passed.'
+    integration:
+      applicable: true
+      evidence: 'PASS: Skill CLI and OpenCode native projection lifecycle evidence
+        passed; all 38 vendored source entrypoints and digests verified.'
+    contract:
+      applicable: true
+      evidence: 'PASS: 49-entry compatible registry, explicit-only grill-with-docs
+        projection, three canonical auto-route triggers, source inventory, license
+        and SHA contracts passed.'
+    e2e:
+      applicable: false
+      na_reason: No deployed application or user-facing interactive service is changed;
+        native projection lifecycle checks cover generated file behavior.
+    security:
+      applicable: true
+      evidence: 'PASS: strict working-tree secret scan found zero findings; upstream
+        instructions remain vendored/untrusted, AIPS authority is preserved, and no
+        global Skill install or project writes were performed.'
+    migration_recovery:
+      applicable: false
+      na_reason: No user configuration, persistent product data or schema is migrated.
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: Skill list trigger filters resolve all three automatic source
+        routes; native projection lifecycle verifies the explicit-only Skill metadata
+        is retained.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: documentation placement and sync checks passed; Scenario 259,
+        Human and Agent docs, generated Explorer and CHANGELOG are synchronized.'
+- boundary: Pinned external source inventory, catalog, CLI, tests and documentation
+  reason: Retain the complete upstream source with provenance and distinguish overlap-based
+    optional routing from automatic matching.
+  checks: *id001
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 status: READY
-verification:
-  focused_publication_suites: "PASS: 59 tests"
-  generic_git_doctor_route: PASS
-  full_repository_validation: PASS
-  documentation_impact: "PASS: 42 direct/closure paths, 0 missing"
-  exact_candidate_integration_gate: PASS
-  remote_pr_checks: PENDING
-  post_merge_main_checks: PENDING
+review_evidence:
+  required: false
+  status: SELF_REVIEWED
+  evidence:
+  - Human-approved boundary recorded in .aips/review/MATT_POC_SKILLS_INTEGRATION_CORE_CHANGE_PROPOSAL.md.
+  - Reviewed canonical route triggers, external source provenance and authority boundaries;
+    repository-wide Impact Graph coverage remains partial.
+candidate:
+  base_sha: 7f9d93b133bc830f52ce4baf23a1fcc032bafc56
+  changed_files_hash: d6b139028477501f825045df50a81969d2d4a60029eaa0a26454fc8c00de57ab

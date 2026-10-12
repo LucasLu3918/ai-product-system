@@ -49,7 +49,7 @@ User Prompt
 
 MCP 提供 portability；native adapters 提供 runtime hook / guard。兩者共用 canonical Roles、Skills、Orchestration 與 Project Intelligence。完整 MCP Host 使用 Resources／Prompts／Tools；tool-only Host 透過唯讀 capability/workflow Tools 取得同一 canonical context。各 runtime 的 enforcement 依實際覆蓋證據分開標示。
 
-Skill 跨 Host 載入可透過 MCP Resource `aips://catalog/skills` 查目錄並按需讀取 `aips://skills/<skill-id>`，也可用 `aips skills install` 投影為 Codex、Claude Code、Gemini CLI 的原生 Skill。Portable Commands 也可安裝為原生 Skill，例如 Codex 的 `$grill-me`。Codex 與 Gemini 共用 `.agents/skills`；Claude Code 使用 `.claude/skills`。AIPS ownership manifest 記錄 Host、scope、來源與逐檔摘要；卸載只刪除仍吻合摘要且由 AIPS 管理的檔案，保留既有、無主控記錄、遭修改或仍由其他 Host 共用的 Skill。檔案格式符合 Host 慣例不代表已驗證實際 Host 載入行為。
+Skill 跨 Host 載入可透過 MCP Resource `aips://catalog/skills` 查目錄並按需讀取 `aips://skills/<skill-id>`，也可用 `aips skills install` 投影為 Codex、Claude Code、Gemini CLI 的原生 Skill。Portable Commands 也可安裝為原生 Skill，例如 Codex 的 `$grill-me`；`$grill-with-docs` 是明確呼叫的 canonical Skill。Codex 與 Gemini 共用 `.agents/skills`；Claude Code 使用 `.claude/skills`。AIPS ownership manifest 記錄 Host、scope、來源與逐檔摘要；卸載只刪除仍吻合摘要且由 AIPS 管理的檔案，保留既有、無主控記錄、遭修改或仍由其他 Host 共用的 Skill。檔案格式符合 Host 慣例不代表已驗證實際 Host 載入行為。
 
 OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn Context，並在 permission evaluation 階段檢查支援的直接檔案操作。L1 僅允許非 Git workspace 中受限路徑的新創意資產；L2 需要 Project Intelligence READY、freshness CURRENT 與無待解權威衝突；L3 外部效果沿用既有 Human approval gate。Shell 僅保留有限唯讀命令，並額外提供固定參數的 AIPS 診斷。`creative_execution` 是唯一有界自訂工具：它綁定當前 EPHEMERAL Session，可建立不覆寫的角色／風格 Profile 與未設定引擎的 Creative Bundle，也可對既有 Bundle 執行唯讀預檢及明確要求的本機生成。其他 MCP/custom tools 和繞過 OpenCode 的寫入仍不在 guard 範圍。Plugin 安裝與 hook discovery 不足以證明執行防護；完成 runtime permission acceptance 前，治理保持 ADVISORY。
 
@@ -124,7 +124,7 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 Creative assets and Git publication retain separate authority boundaries: repository readiness can be observed with Publication Doctor, while asset generation/import authorization remains unchanged.
 
-Skill 整合新增明確選用的 Writing Fragments → Beats → Shape 方法；它提供內容組織建議，不會啟動素材生成，也不改變人工審查邊界。
+Skill 整合新增明確選用的 Writing Fragments → Beats → Shape 方法，以及 `$grill-with-docs` 的 Glossary／ADR 釐清入口；它們提供內容組織與文件釐清建議，不會啟動素材生成、程式實作或發布，也不改變人工審查邊界.
 
 Publication planning 按需擴充既有 preflight：觀察 worktree identity、精確候選、live base 與 PR，再交回原生工具。Claude/Gemini 保留 native per-call merge confirmation；Codex 仍為 ADVISORY，OpenCode 不宣稱支援通用 Shell 發布攔截。
 
@@ -209,7 +209,7 @@ Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行
 
 ## Deterministic Execution
 
-Skill routing remains canonical in `skills/INDEX.yaml`; `scripts/skill_catalog.py` produces the read-only Human Explorer from that registry plus the upstream disposition manifest. The page adds no runtime authority or network dependency.
+49 canonical Skills route through `skills/INDEX.yaml`; all 38 pinned upstream source Skills are retained under `external-skills/matt-pocock/` and linked from the manifest with SHA-256. `scripts/skill_catalog.py` produces the read-only Human Explorer from that registry plus the upstream disposition manifest. Distinct source methods are routed on matching tasks; overlaps are experimental/optional. The page adds no runtime authority or network dependency. `$grill-with-docs` is a separate explicit-only route and never follows from general planning or documentation work.
 
 Creative benchmark evidence is a read-only consumer of local trial artifacts. It has no provider dispatch, generation authority, or path into the Human acceptance decision.
 

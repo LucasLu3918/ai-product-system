@@ -19,6 +19,8 @@ DISPOSITION = {
     "merged": ("已合併至 AIPS", "integrated"),
     "adopted": ("已新增為 AIPS Skill", "adopted"),
     "adopted_optional": ("選用 Skill", "optional"),
+    "experimental_optional": ("實驗／選用", "experimental"),
+    "auto_routed": ("自動路由", "auto-routed"),
     "workflow": ("整合至既有流程", "workflow"),
     "deferred": ("延後評估", "deferred"),
     "excluded_beta": ("依決策排除 Beta", "excluded"),
@@ -87,14 +89,26 @@ def build_cards(registry: dict[str, Any], source: dict[str, Any]) -> tuple[str, 
         category = str(record.get("category", "other"))
         categories.add(category)
         targets = record.get("aips_targets") or []
-        prompt = (
-            f"請參考上游 {record['id']} 的方法，使用 AIPS 已整合的 "
-            f"{'、'.join(targets)} 來處理「{record['description']}」；"
-            "完成後說明採用範圍與任何限制。"
-            if disposition in {"merged", "adopted", "adopted_optional", "workflow"} and targets
-            else f"請檢視上游 {record['id']} 的用途與 AIPS 處置，說明差異；不要把未採用項目當成可用的 AIPS Skill。"
-        )
+        if disposition == "auto_routed" and targets:
+            prompt = (
+                f"此來源已設為自動路由。遇到「{record['description']}」時，"
+                f"依 AIPS 對應 { '、'.join(targets) } 的規範套用 {record['id']} 的方法。"
+            )
+        elif disposition == "experimental_optional" and targets:
+            prompt = (
+                f"只有我明確要求時，才試用上游 {record['id']} 的獨特方法；"
+                f"保留 AIPS 對應 { '、'.join(targets) } 的規範與授權邊界。"
+            )
+        elif disposition in {"merged", "adopted", "adopted_optional", "workflow"} and targets:
+            prompt = (
+                f"請參考上游 {record['id']} 的方法，使用 AIPS 已整合的 "
+                f"{'、'.join(targets)} 來處理「{record['description']}」；"
+                "完成後說明採用範圍與任何限制。"
+            )
+        else:
+            prompt = f"請檢視上游 {record['id']} 的用途與 AIPS 處置，說明差異；不要把未採用項目當成可用的 AIPS Skill。"
         target_text = "、".join(targets) if targets else "無；目前沒有啟用對應 AIPS Skill"
+        local_path = record.get("local_path") or record.get("path", "")
         search = " ".join(
             [record.get("id", ""), record.get("description", ""), category, label, target_text, record.get("reason", ""), prompt]
         )
@@ -104,6 +118,7 @@ def build_cards(registry: dict[str, Any], source: dict[str, Any]) -> tuple[str, 
             '<h2>{name}</h2><code>{identifier}</code><p>{description}</p>'
             '<p class="detail"><strong>AIPS 處置</strong> {reason}</p>'
             '<p class="detail"><strong>對應</strong> {targets}</p>'
+            '<p class="detail"><strong>本地來源</strong> {local_path}</p>'
             '<p class="detail"><strong>上游路徑</strong> {path}</p>'
             '<details><summary>使用範例 / 查看方式</summary><p>{prompt}</p>'
             '<button class="copy" type="button" data-prompt="{prompt}" aria-label="複製 {identifier} 範例">複製範例</button></details>'
@@ -117,6 +132,7 @@ def build_cards(registry: dict[str, Any], source: dict[str, Any]) -> tuple[str, 
                 description=esc(record.get("description", "")),
                 reason=esc(record.get("reason", "")),
                 targets=esc(target_text),
+                local_path=esc(local_path),
                 path=esc(record.get("path", "")),
                 prompt=esc(prompt),
             )
@@ -157,19 +173,19 @@ def render() -> str:
 :root{{color-scheme:light dark;--bg:#f5f7fb;--panel:#fff;--ink:#172033;--muted:#526078;--line:#d8deea;--accent:#245fe8;--chip:#eaf0ff}}
 @media(prefers-color-scheme:dark){{:root{{--bg:#111722;--panel:#1b2534;--ink:#edf2fb;--muted:#afbdd0;--line:#34445a;--accent:#8db0ff;--chip:#26385a}}}}
 *{{box-sizing:border-box}}body{{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}}
-header,main,footer{{max-width:1180px;margin:auto;padding:24px}}header{{padding-top:44px}}h1{{font-size:clamp(2rem,5vw,3.2rem);line-height:1.1;margin:.2em 0}}h2{{font-size:1.15rem;margin:.65em 0 .2em}}p{{margin:.65em 0}}.lede,.muted{{color:var(--muted)}}.stats{{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0}}.stat,.control,.card{{background:var(--panel);border:1px solid var(--line);border-radius:14px}}.stat{{padding:10px 15px}}.stat strong{{font-size:1.2rem;margin-right:6px}}.controls{{display:grid;grid-template-columns:minmax(220px,2fr) 1fr 1fr;gap:12px;margin:20px 0}}input,select{{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);font:inherit}}#results{{color:var(--muted);margin:10px 0}}.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:14px}}.card{{padding:17px;min-width:0}}.card[hidden]{{display:none}}.card code{{font-size:.84rem;color:var(--muted);overflow-wrap:anywhere}}.badges{{display:flex;gap:7px;flex-wrap:wrap}}.badge{{font-size:.76rem;padding:3px 9px;border-radius:999px;background:var(--chip);color:var(--accent)}}.badge[class*="status-"]{{background:#e8f5ed;color:#176a37}}@media(prefers-color-scheme:dark){{.badge[class*="status-"]{{background:#193b2a;color:#9ce0b1}}}}.badge.status-deferred,.badge.status-reference,.badge.status-excluded,.badge.status-not-adopted{{background:#fff2d8;color:#815200}}@media(prefers-color-scheme:dark){{.badge.status-deferred,.badge.status-reference,.badge.status-excluded,.badge.status-not-adopted{{background:#493719;color:#f2c774}}}}.detail{{font-size:.92rem;color:var(--muted)}}strong{{color:var(--ink)}}details{{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}}summary{{cursor:pointer;color:var(--accent);font-weight:650}}button{{border:0;border-radius:8px;padding:8px 12px;background:var(--accent);color:white;font:inherit;cursor:pointer}}button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{{outline:3px solid var(--accent);outline-offset:2px}}footer{{color:var(--muted);font-size:.86rem}}@media(max-width:700px){{.controls{{grid-template-columns:1fr}}header,main,footer{{padding-left:16px;padding-right:16px}}}}
+header,main,footer{{max-width:1180px;margin:auto;padding:24px}}header{{padding-top:44px}}h1{{font-size:clamp(2rem,5vw,3.2rem);line-height:1.1;margin:.2em 0}}h2{{font-size:1.15rem;margin:.65em 0 .2em}}p{{margin:.65em 0}}.lede,.muted{{color:var(--muted)}}.stats{{display:flex;gap:12px;flex-wrap:wrap;margin:22px 0}}.stat,.control,.card{{background:var(--panel);border:1px solid var(--line);border-radius:14px}}.stat{{padding:10px 15px}}.stat strong{{font-size:1.2rem;margin-right:6px}}.controls{{display:grid;grid-template-columns:minmax(220px,2fr) 1fr 1fr;gap:12px;margin:20px 0}}input,select{{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--ink);font:inherit}}#results{{color:var(--muted);margin:10px 0}}.grid{{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:14px}}.card{{padding:17px;min-width:0}}.card[hidden]{{display:none}}.card code{{font-size:.84rem;color:var(--muted);overflow-wrap:anywhere}}.badges{{display:flex;gap:7px;flex-wrap:wrap}}.badge{{font-size:.76rem;padding:3px 9px;border-radius:999px;background:var(--chip);color:var(--accent)}}.badge[class*="status-"]{{background:#e8f5ed;color:#176a37}}@media(prefers-color-scheme:dark){{.badge[class*="status-"]{{background:#193b2a;color:#9ce0b1}}}}.badge.status-experimental,.badge.status-experimental,.badge.status-deferred,.badge.status-reference,.badge.status-excluded,.badge.status-not-adopted{{background:#fff2d8;color:#815200}}@media(prefers-color-scheme:dark){{.badge.status-experimental,.badge.status-experimental,.badge.status-deferred,.badge.status-reference,.badge.status-excluded,.badge.status-not-adopted{{background:#493719;color:#f2c774}}}}.detail{{font-size:.92rem;color:var(--muted)}}strong{{color:var(--ink)}}details{{border-top:1px solid var(--line);margin-top:12px;padding-top:10px}}summary{{cursor:pointer;color:var(--accent);font-weight:650}}button{{border:0;border-radius:8px;padding:8px 12px;background:var(--accent);color:white;font:inherit;cursor:pointer}}button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{{outline:3px solid var(--accent);outline-offset:2px}}footer{{color:var(--muted);font-size:.86rem}}@media(max-width:700px){{.controls{{grid-template-columns:1fr}}header,main,footer{{padding-left:16px;padding-right:16px}}}}
 </style>
 </head>
 <body>
 <header>
 <p class="muted">AI Product System · 技能圖鑑</p>
 <h1>找到適合這項工作的 Skill</h1>
-<p class="lede">搜尋 AIPS 現有 Skills 與 Matt Pocock 上游 38 項處置紀錄。卡片會標示哪些已整合、選用、流程化、延後或不導入；上游項目不會因此自動成為 AIPS 可用 Skill。</p>
+<p class="lede">搜尋 AIPS Skills 與 Matt Pocock 上游 38 項來源。每筆上游 Skill 均保留本地原文、上游路徑與 SHA-256，並標示自動路由、實驗／選用或既有整合狀態。</p>
 <div class="stats"><div class="stat"><strong>{active_count}</strong>AIPS 可用 Skills</div><div class="stat"><strong>38</strong>上游 Skills 全數有處置</div><div class="stat"><strong>{active_count + 38}</strong>可搜尋卡片</div></div>
 <div class="controls">
 <label><span class="muted">搜尋名稱、用途、情境</span><input id="search" type="search" placeholder="例如：debug、測試、writing" autocomplete="off"></label>
 <label><span class="muted">分類</span><select id="category"><option value="">全部分類</option>{category_options}</select></label>
-<label><span class="muted">狀態</span><select id="status"><option value="">全部狀態</option><option value="enabled">AIPS 可用</option><option value="integrated">已合併</option><option value="adopted">已採納</option><option value="optional">選用</option><option value="workflow">流程整合</option><option value="deferred">延後</option><option value="reference">來源參考</option><option value="excluded">Beta 排除</option><option value="not-adopted">不導入</option></select></label>
+<label><span class="muted">狀態</span><select id="status"><option value="">全部狀態</option><option value="enabled">AIPS 可用</option><option value="auto-routed">自動路由</option><option value="experimental">實驗／選用</option><option value="integrated">已合併</option><option value="adopted">已採納</option><option value="optional">選用</option><option value="workflow">流程整合</option><option value="deferred">延後</option><option value="reference">來源參考</option><option value="excluded">Beta 排除</option><option value="not-adopted">不導入</option></select></label>
 </div><p id="results" aria-live="polite"></p>
 </header>
 <main><div class="grid" id="cards">
