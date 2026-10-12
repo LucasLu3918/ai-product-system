@@ -189,6 +189,7 @@ class PlanningTest(unittest.TestCase):
             ([{'name': 'repo', 'bucket': 'fail'}], 0, '', 'FAIL', 'REQUIRED_CHECKS_FAILING'),
             ([{'name': 'repo', 'bucket': 'pending'}], 0, '', 'PENDING', 'REQUIRED_CHECKS_PENDING'),
             ([{'name': 'repo', 'bucket': 'pending'}], 8, '', 'PENDING', 'REQUIRED_CHECKS_PENDING'),
+            (None, 1, "no required checks reported on the 'feature' branch", 'PENDING', 'REQUIRED_CHECKS_PENDING'),
             ([{'name': 'repo', 'bucket': 'cancel'}], 0, '', 'CANCELLED', 'REQUIRED_CHECKS_CANCELLED'),
             ([{'name': 'repo', 'bucket': 'skipping'}], 0, '', 'MISSING', 'REQUIRED_CHECKS_MISSING'),
             (None, 4, 'HTTP 403', 'UNAVAILABLE', 'REQUIRED_CHECKS_PERMISSION'),

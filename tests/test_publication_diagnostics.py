@@ -81,6 +81,7 @@ class PublicationDiagnosticsTest(unittest.TestCase):
         self.assertEqual(result["policy"]["status"], "UNAVAILABLE")
         self.assertTrue(any(item["reason_code"] == "PROTECTION_EVIDENCE_UNAVAILABLE"
                             for item in result["diagnostics"]))
+        self.assertEqual(result["next_steps"], [item["next_step"] for item in result["diagnostics"]])
         self.assertNotIn("private detail", str(result))
 
     def test_aips_cli_routes_doctor_to_non_aips_git_project(self):

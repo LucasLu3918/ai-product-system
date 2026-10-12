@@ -26,6 +26,10 @@ def remote_failure(stderr: str = "", returncode: int | None = None) -> str:
 def classify_required_checks(payload: Any = None, *, returncode: int = 0,
                               stderr: str = "") -> dict[str, Any]:
     """Classify gh pr checks --required output. Empty evidence is explicitly blocking."""
+    if returncode == 1 and "no required checks reported" in stderr.casefold():
+        # GitHub CLI reports this while a required aggregate has not started yet.
+        # Keep it distinct from API errors; callers still fail closed until PASS.
+        return {"status": "PENDING", "reason_code": "REQUIRED_CHECKS_PENDING", "checks": []}
     if returncode not in {0, 8}:
         reason = remote_failure(stderr, returncode)
         return {"status": "UNAVAILABLE", "reason_code": "REQUIRED_CHECKS_" + reason,
@@ -65,6 +69,10 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
                               "read_only": True, "repository": None, "authentication": "UNKNOWN",
                               "merge_methods": [], "required_checks": {"status": "UNKNOWN", "checks": []},
                               "pr": None, "blockers": [], "diagnostics": [], "next_steps": []}
+    def finish() -> dict[str, Any]:
+        result["next_steps"] = [item["next_step"] for item in result["diagnostics"]
+                                if isinstance(item, dict) and isinstance(item.get("next_step"), str)]
+        return result
     try:
         root = root.expanduser().resolve(strict=True)
         if Path(authority.git(root, "rev-parse", "--show-toplevel")).resolve() != root:
@@ -80,7 +88,7 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
             result["diagnostics"].append({"reason_code": "GH_UNAVAILABLE", "phase": "authentication",
                 "category": "LOCAL_TOOL", "detail": "GitHub CLI is unavailable.",
                 "next_step": "Install or expose GitHub CLI, then rerun `aips publish doctor`."})
-            return result
+            return finish()
         auth_check = subprocess.run([gh, "auth", "status", "--hostname", "github.com"], cwd=root,
                                     capture_output=True, text=True, timeout=15, check=False)
         result["authentication"] = "AVAILABLE" if auth_check.returncode == 0 else "UNAVAILABLE"
@@ -90,7 +98,7 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
                 "category": remote_failure(auth_check.stderr, auth_check.returncode),
                 "detail": "GitHub authentication could not be confirmed.",
                 "next_step": "Run `gh auth status` locally and resolve access without sharing credentials."})
-            return result
+            return finish()
         api = subprocess.run([gh, "api", "repos/" + repo], cwd=root, capture_output=True,
                              text=True, timeout=20, check=False)
         try:
@@ -104,7 +112,7 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
                 "phase": "repository", "category": reason,
                 "detail": "Repository settings could not be read.",
                 "next_step": "Check repository access and GitHub API availability, then rerun the doctor."})
-            return result
+            return finish()
         result["merge_methods"] = sorted(name for name, key in
             (("merge", "allow_merge_commit"), ("squash", "allow_squash_merge"),
              ("rebase", "allow_rebase_merge")) if metadata.get(key) is True)
@@ -227,10 +235,10 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
                         "detail": "Required Checks are not confirmed passing.",
                         "next_step": "Resolve the reported check state and rerun `aips publish doctor`."})
         result["status"] = "READY" if not result["blockers"] else "BLOCKED"
-        return result
+        return finish()
     except (OSError, ValueError, TypeError, KeyError, subprocess.TimeoutExpired):
         result["blockers"].append("repository_observation_unavailable")
         result["diagnostics"].append({"reason_code": "REMOTE_OBSERVATION_FAILED", "phase": "repository",
             "category": "API_UNAVAILABLE", "detail": "Required repository evidence is unavailable.",
             "next_step": "Check local repository configuration and GitHub access, then rerun the doctor."})
-        return result
+        return finish()
