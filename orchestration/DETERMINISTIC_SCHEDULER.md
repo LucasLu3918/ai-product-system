@@ -305,3 +305,7 @@ Runtime action authorization is evaluated at the native tool boundary by Runtime
 Publication preflight policy calculations are isolated in `scripts/publish_preflight_policy.py` and remain deterministic; repository filesystem inputs are rooted at an explicit `Path`. `scripts/publish_preflight.py` remains responsible for Git, runtime probes, candidate orchestration, and publication evidence.
 
 A task graph may schedule read-only publication diagnosis, but a Doctor result or merge plan never grants a protected operation. Required Checks and policy visibility must be re-observed by the publication authority before execution.
+
+## Publication Root-Cause Recovery (Plan35)
+
+Only read-only, clearly retryable publication observations may be scheduled; Host denials, Human approvals, branch policy changes, and merges require explicit native authority and are not retries.
