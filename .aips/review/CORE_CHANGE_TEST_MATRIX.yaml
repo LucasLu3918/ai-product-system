@@ -1,46 +1,67 @@
 version: 1
+candidate:
+  base_sha: 87e5bfa79fd4215adeb10d751f872fe26a53c4b3
+  changed_files_hash: 1fee13480c3cac636fb4227740b4b2d8ad136a6ea764c4176d5f468409b4e84b
+
 change:
-  id: autonomous-m4a-publication-20261012
-  summary: Enable validated Claude task-authorized auto-merge and safe M4A publication.
+  id: plan34-publication-diagnostics-20261012
+  summary: Add structured, safe publication diagnostics, read-only merge diagnosis, and Publish Doctor.
   boundary:
-    - Permit only exact, explicitly task-authorized Claude `gh pr merge --auto` after all existing live PR/base/head/required-check and content checks pass; retain ordinary Claude and Gemini per-call confirmation.
-    - Validate `.m4a` ISO BMFF structure before binary treatment; scan disguised text and selected metadata; preserve staged scanning and the 8 MiB hard limit with useful audio diagnostics.
-    - Update the existing scenario, tests and canonical publication/security documentation; no new authority service, role, skill, or Constitution change.
+    - Extend the existing publication authority diagnostic codes and remediation contract; preserve redaction, exact candidate binding, all existing gates, and fail-closed behavior.
+    - Classify Required Checks configuration and live outcomes separately, including empty/unconfigured, pending, failed, missing, cancelled, stale, API unavailable, and insufficient permission.
+    - Add literal gh pr merge support to read-only diagnose and a publish doctor/onboarding command; neither executes mutations, changes GitHub policy, nor grants/consumes authority.
+    - Give Claude Code, OpenCode, and Codex consistent safe diagnostic/remediation guidance; self-service is limited to already authorized read-only or safe actions.
+    - Update Scenario 260, lifecycle/unit/contract/security evidence and canonical Traditional Chinese Human/Agent docs.
+
 matrix:
-  - boundary: Personal publication merge hook and task intent
-    reason: Remove only the duplicate confirmation for the explicitly requested checked `--auto` path while preserving exact candidate and GitHub policy checks.
+  - boundary: Structured publication errors and Required Checks observation
+    reason: Existing merge validation collapses a CLI/API error into one generic rejection and cannot distinguish absent policy from check state or access failure.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: exact-candidate Core Gate on 8bbfbe2; ruff-critical and ruff-debt-ratchet passed."}
-      unit: {applicable: true, evidence: "PASS: test_personal_merge_hook_respects_confirmed_merge_and_task_authorized_auto_merge; ordinary Claude asks, validated --auto allows, and Gemini retains ask_user."}
-      integration: {applicable: true, evidence: "PASS: focused publication suites (54 tests) and exact-candidate Core Gate on 8bbfbe2; remote PR checks remain required."}
-      contract: {applicable: true, evidence: "Scenario 240 and Human/System Core/Orchestrator text preserve explicit task intent, exact candidate checks, ordinary confirmation, and Gemini ask_user."}
-      e2e: {applicable: false, na_reason: No deployed application; the native hook decision and checked GitHub interaction are covered by unit/lifecycle fixtures.}
-      security: {applicable: true, evidence: "PASS: existing publication_authority exact PR/head/base and required-check validation retained; exact-candidate mandatory secret scan and runtime-policy lifecycles passed with zero findings; no admin, bypass, or high-assurance change."}
+      static_lint: {applicable: true, evidence: "Ruff targeted publication Python files: PASS"}
+      unit: {applicable: true, evidence: "tests.test_publication_planning + tests.test_publication_authority + tests.test_publication_diagnostics: 59 tests PASS"}
+      integration: {applicable: true, evidence: "tests/validate_repository.py: PASS; 260 scenarios; 258179 ms"}
+      contract: {applicable: true, evidence: "tests/validation/publish_preflight_contracts.py and Scenario 260 contracts: PASS"}
+      e2e: {applicable: false, na_reason: No deployed application surface; CLI/native adapter lifecycle fixtures exercise the affected path.}
+      security: {applicable: true, evidence: "Publication denied/pending/missing/cancelled, redaction, stale SHA and no-mutation lifecycle assertions: PASS; exact-candidate Gate pending"}
       migration_recovery: {applicable: false, na_reason: No persisted schema or migration.}
-      cli_harness: {applicable: true, evidence: "PASS: Claude and Gemini native hook envelopes covered by focused tests; exact-candidate Core Gate passed on 8bbfbe2."}
-      docs_schema: {applicable: true, evidence: "PASS: exact-candidate Core Gate repository validation and docs impact closure; core/Human/Agent guidance and Scenario 240 synchronized."}
-  - boundary: M4A preview, staged and remote candidate scanning
-    reason: Support actual audio bytes across preview, staged commit and exact-candidate scans without decoding them as UTF-8; reject malformed or disguised files, retain metadata secret checks and the fixed size limit.
+      cli_harness: {applicable: true, evidence: "Doctor real-repository JSON probe READY; generic Git repository lifecycle PASS"}
+      docs_schema: {applicable: true, evidence: "Documentation impact complete: 42 direct/closure paths; repository documentation contracts PASS"}
+  - boundary: Read-only merge diagnosis, Publish Doctor, and onboarding
+    reason: New CLI observations cover GitHub configuration, checks, PR identity, candidate SHA, auth visibility, and blockers without performing repository mutations.
     checks:
-      static_lint: {applicable: true, evidence: "PASS: exact-candidate Core Gate on 8bbfbe2; Ruff critical and touched-code debt ratchet passed."}
-      unit: {applicable: true, evidence: "PASS: M4A tests cover preview, valid M4A, legacy MP3/MP4 behavior, metadata secret, spoofed text/video brand, malformed staged file and >8 MiB rejection."}
-      integration: {applicable: true, evidence: "PASS: preview, staged guard and exact-candidate scanner cover valid M4A, metadata secret, spoofed file and oversize diagnostics; lifecycle and full Core Gate passed on 8bbfbe2."}
-      contract: {applicable: true, evidence: "Scenario 240, User Guide and Security Assurance document container validation, metadata-only scan, 8 MiB ceiling and Git LFS/external-storage guidance."}
-      e2e: {applicable: false, na_reason: No browser or deployed application surface.}
-      security: {applicable: true, evidence: "PASS: bounded atom validation requires M4A-compatible ftyp, moov and mdat; mdat is never decoded; malformed/oversized cases fail closed; mandatory exact-candidate scan passed with zero findings."}
+      static_lint: {applicable: true, evidence: "Ruff targeted publication Python files: PASS"}
+      unit: {applicable: true, evidence: "tests.test_publication_diagnostics: PASS; publish doctor/diagnose lifecycle assertions PASS"}
+      integration: {applicable: true, evidence: "tests/validate_repository.py: PASS; CLI and lifecycle suites included"}
+      contract: {applicable: true, evidence: "Doctor output contract and publish-preflight contracts: PASS"}
+      e2e: {applicable: false, na_reason: Doctor is a local CLI diagnostic; there is no browser or deployed service.}
+      security: {applicable: true, evidence: "Read-only doctor/diagnose, denied API, redaction, no grant consumption and no mutation lifecycle assertions: PASS"}
       migration_recovery: {applicable: false, na_reason: No persisted schema or migration.}
-      cli_harness: {applicable: true, evidence: "PASS: early preview, staged commit guard and publication-candidate scanner exercised by tests/test_publication_planning.py and tests/test_publication_authority.py; secret scan lifecycle passes."}
-      docs_schema: {applicable: true, evidence: "PASS: Documentation Placement contract and exact-candidate repository validation; User Guide, Security, Architecture, Conformance, Maintenance and Orchestrator/Scheduler topics updated."}
+      cli_harness: {applicable: true, evidence: "aips publish doctor --project-root <Git repo> --format json: READY; generic Git routing lifecycle PASS"}
+      docs_schema: {applicable: true, evidence: "42/42 documentation impact closure; Human onboarding docs and docs contracts PASS"}
+  - boundary: Cross-agent guidance and conformance documentation
+    reason: Claude Code, OpenCode, and Codex must interpret the shared contract consistently without expanding authority.
+    checks:
+      static_lint: {applicable: true, evidence: "Ruff targeted publication code: PASS; adapters are documentation"}
+      unit: {applicable: false, na_reason: Runtime guidance behavior is checked by conformance and CLI lifecycle contracts.}
+      integration: {applicable: true, evidence: "Full conformance isolation and repository validator: PASS"}
+      contract: {applicable: true, evidence: "Scenario 260 cross-runtime guidance and CLI contracts: PASS"}
+      e2e: {applicable: false, na_reason: No deployed application surface or real Host acceptance claim is in scope.}
+      security: {applicable: true, evidence: "Adapter instructions preserve user authority and read-only/self-service limits; repo security contracts PASS"}
+      migration_recovery: {applicable: false, na_reason: Documentation-only boundary.}
+      cli_harness: {applicable: true, evidence: "Claude Code, OpenCode, Codex guidance and source CLI route verified by repository contracts"}
+      docs_schema: {applicable: true, evidence: "Canonical Traditional Chinese Human/Agent docs closure: 42/42; placement/sync contracts PASS"}
+
+review_evidence:
+  required: false
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 status: READY
-review_evidence:
-  required: false
-  status: SELF_REVIEWED
-  evidence:
-    - Reviewed all exact changed paths against both boundaries; no unrelated changes. The task-level user approval explicitly covers task-authorized Claude --auto and M4A scanner extension, including early preview handling.
-    - Impact graph coverage is partial; direct callers/consumers and docs closure were manually reviewed. Product/Harness diagrams are N/A because component topology is unchanged.
-candidate:
-  base_sha: 3537af49a98490e2763ecd012f789c6faf236501
-  changed_files_hash: d5ea2f91491e1bf19602a09b7528e1d50b469d2a078e3b94d753f3211a329f94
+verification:
+  focused_publication_suites: "PASS: 59 tests"
+  generic_git_doctor_route: PASS
+  full_repository_validation: PASS
+  documentation_impact: "PASS: 42 direct/closure paths, 0 missing"
+  exact_candidate_integration_gate: PASS
+  remote_pr_checks: PENDING
+  post_merge_main_checks: PENDING

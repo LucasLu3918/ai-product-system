@@ -112,6 +112,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance](CONFORMANCE.md#scenario-237-read-only-project-diagnostics-and-recovery-guidance) | Current Human guidance |
 | [## Scenario 240 — Personal Publication Default and High-Assurance Opt-In](CONFORMANCE.md#scenario-240-personal-publication-default-and-high-assurance-opt-in) | Current Human guidance |
 | [## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow](CONFORMANCE.md#scenario-231-advisory-security-inventory-and-secret-scanner-shadow) | Current Human guidance |
+| [## Scenario 260 — Publication diagnostics and Doctor](CONFORMANCE.md#scenario-260-publication-diagnostics-and-doctor) | Current Human guidance |
 | [# Scenario Conformance](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-conformance) | Normative rule |
 | [## Purpose](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#purpose) | Normative rule |
 | [## Registry](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#registry) | Normative rule |
@@ -191,5 +192,6 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-237-read-only-project-diagnostics-and-recovery-guidance) | Normative rule |
 | [## Scenario 257 — Branch and PR lifecycle dispositions](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-257-branch-and-pr-lifecycle-dispositions) | Normative rule |
 | [## Scenario 259 — Matt Pocock Skill Integration and Explorer](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-259-matt-pocock-skill-integration-and-explorer) | Normative rule |
+| [## Scenario 260 — Publication diagnostics and Doctor](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-260-publication-diagnostics-and-doctor) | Normative rule |
 
 The crosswalk preserves source anchors. Edit the source documents for content changes, then regenerate this index.

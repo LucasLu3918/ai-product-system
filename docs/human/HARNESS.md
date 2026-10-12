@@ -227,3 +227,5 @@ aips commands status
 這些 projections 是薄包裝，不取代 Constitution、System 或 orchestration canonical sources，也不提供 Runtime-native enforcement、Git publish、merge、release、production 或 Human approval authority。使用者修改過的 projection 會保留並回報 `CONFLICT`。
 
 Codex、Claude Code 與 Gemini CLI 也可用 `aips commands install aips.grill-me --host <codex|claude|gemini>` 安裝為 Host 原生 Skill；分別以 `$grill-me` 或 `/grill-me` 觸發。`aips commands status --host <host>` 檢視，`aips commands uninstall aips.grill-me --host <host>` 精確移除。共用路徑會保留其他 Host 的引用；使用者修改的檔案會保留並回報。
+
+Publication Doctor guidance is shared across native adapters: expose stable reason codes and safe next steps, retain unknown policy evidence as blocking, and keep diagnosis separate from native permissions and merge authority. See Scenario 260.

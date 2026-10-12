@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Creative generation and asset import retain their existing grants; a later Git publication uses the separate read-only repository diagnosis and approval flow described under Git Publication 與 Release.
+
 上游 Writing Fragments → Beats → Shape 是獨立的明確選用流程，不會因一般寫作或創意工作自動套用；完整 Skill 狀態可在 <a href="./skill-catalog.html">Skill Explorer</a> 查看。
 
 發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。
@@ -176,6 +178,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+Native adapters may report Publication Doctor findings and safe next steps, but those observations do not grant Git publication, merge or policy-change authority.
+
 其他 Agent 透過 MCP Resource `aips://catalog/skills` 取得目錄，再按需載入 `aips://skills/<skill-id>`；Host 的 MCP 設定須由使用者依官方方式註冊。解除安裝依 Harness ownership manifest 與內容摘要，只清除 AIPS 管理且未被修改的投影，保留原有或有衝突的 Skill。
 
 Codex、Claude Code 與 Gemini CLI 也可使用 `aips skills install <skill-id> --host <host>` 安裝原生 Skill，或使用 `aips commands install aips.grill-me --host <host>` 建立原生命令入口。安裝紀錄與 Host-specific 移除方式詳見 [Harness 指南](HARNESS.md)。
@@ -228,6 +232,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+Skills and portable commands can direct users to the core `aips publish doctor` CLI for repository setup; installing a Skill does not grant publication or merge authority.
 
 使用 <a href="./skill-catalog.html">Skill Explorer</a> 依名稱、用途或分類搜尋 48 個目前可用的 AIPS Skills，並複製提示範例。Explorer 也列出 Matt Pocock 上游 38 項 Skill 的 AIPS 處置；這些紀錄不代表未採納項目已啟用。Writing Fragments、Beats、Shape 只在你明確要求該流程時使用。
 
@@ -556,6 +562,8 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 ## Git Publication 與 Release
 
 `aips publish diagnose --worktree <candidate-root> --command '<literal-command>'` 可辨識 `PUSH_SOURCE_NOT_EXACT_SHA`、`INVALID_TARGET_REF`、`WORKTREE_DIRTY`、`BASE_NOT_ANCESTOR`、`CONTENT_SCAN_BLOCKED` 與 metadata 問題。`prepare` 的高保證流程輸出精確 lease 命令與 `AUTHORITY_REQUIRED`，仍須由外部 issuer 核准；模式設定存在但無效時不降級。`--merge-intent` 僅記錄當次任務意圖，不能取代使用者或 Host 授權。
+
+首次設定或 PR 卡住時，可執行 `aips publish doctor --project-root <repo> [--pr <number>] --format yaml`。Doctor 只讀檢查 GitHub CLI 登入、repository merge methods、branch protection/ruleset 可見性、Required Checks 與指定 PR/head/checks，並列出安全的下一步。Required Checks 會明確回報未設定、失敗、執行中、缺少／跳過、取消、PR head/base 過期或 GitHub 權限／API 不可用；任何空白或不可見證據都會阻擋，不會自動調整保護規則。`aips publish diagnose` 也接受 literal `gh pr merge`，但只驗證 PR、完整 head SHA、base、merge method 與即時 checks；輸出 `authorized: false`、`executed: false`，不執行 merge、不消耗 grant。Codex/OpenCode 的診斷仍不取代原生工具權限或 GitHub 保護。
 
 若開發 workspace 有未交付素材，保留原檔並建立獨立乾淨的工程分支 worktree，再將該 root 明確傳給 `prepare` 與原生 tool。素材清單至少記錄路徑、用途、SHA-256、大小、授權與部署來源；母帶需獨立備份，正式音訊經壓縮與音質驗收。Git LFS／物件儲存由專案決定，且部署必須驗證實體檔案可取得。Scanner 的文字、binary 與來源政策限制要各別診斷，不因檔案大小推論授權失敗。
 

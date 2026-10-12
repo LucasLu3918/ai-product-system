@@ -303,3 +303,5 @@ Publication scanning treats `.m4a` as bounded structured audio: require valid M4
 Runtime action authorization is evaluated at the native tool boundary by Runtime Policy Enforcement; task dispatch metadata does not grant action approval or network-egress isolation.
 
 Publication preflight policy calculations are isolated in `scripts/publish_preflight_policy.py` and remain deterministic; repository filesystem inputs are rooted at an explicit `Path`. `scripts/publish_preflight.py` remains responsible for Git, runtime probes, candidate orchestration, and publication evidence.
+
+A task graph may schedule read-only publication diagnosis, but a Doctor result or merge plan never grants a protected operation. Required Checks and policy visibility must be re-observed by the publication authority before execution.

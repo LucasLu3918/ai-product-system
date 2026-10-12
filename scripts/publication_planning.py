@@ -203,7 +203,9 @@ def diagnose(worktree: Path, command: str) -> dict[str, Any]:
         if len(parsed) != 1:
             raise authority.PublicationError('standalone command required', 'COMMAND_FORM_UNSUPPORTED')
         argv = parsed[0]
-        operation = 'git_push' if argv[:2] == ['git', 'push'] else 'gh_pr_create' if argv[:3] == ['gh', 'pr', 'create'] else None
+        operation = ('git_push' if argv[:2] == ['git', 'push'] else
+                     'gh_pr_create' if argv[:3] == ['gh', 'pr', 'create'] else
+                     'gh_pr_merge' if argv[:3] == ['gh', 'pr', 'merge'] else None)
         if not operation:
             raise authority.PublicationError('unsupported planning operation', 'COMMAND_FORM_UNSUPPORTED')
         mode = authority.publication_mode()
@@ -216,8 +218,9 @@ def diagnose(worktree: Path, command: str) -> dict[str, Any]:
         if mode == 'high_assurance':
             # Diagnostics must honor the selected mode's stricter exact lease syntax.
             authority.action(root, operation, argv, observed['base_commit'], personal=False)
-        return {'status': 'VALIDATED' if mode == 'personal' else 'AWAITING_AUTHORITY',
-                'authorized': False, 'mode': mode,
+        return {'version': 1, 'status': 'VALIDATED' if mode == 'personal' else 'AWAITING_AUTHORITY',
+                'authorized': False, 'read_only': True, 'executed': False,
+                'grant_consumed': False, 'operation': operation, 'mode': mode,
                 'diagnostics': [] if mode == 'personal' else [diagnostic('AUTHORITY_REQUIRED')]}
     except authority.PublicationError as exc:
         return {'status': 'BLOCKED', 'authorized': False, 'diagnostics': [exc.diagnostic()]}

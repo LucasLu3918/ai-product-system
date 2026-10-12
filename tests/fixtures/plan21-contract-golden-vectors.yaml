@@ -24,11 +24,11 @@ canonical_hashes:
 cli:
 - argv: [--help]
   exit_code: 0
-  stdout_sha256: 10b9aa8f7cc0f72e90aee8461486ae6b1ab3ca56f2339ab673616f3eb021346a
+  stdout_sha256: 0c53b56ead66235f4e55eff640f32b6b92269588e6b0f9d769eae270011bb993
   stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 - argv: [help]
   exit_code: 0
-  stdout_sha256: 10b9aa8f7cc0f72e90aee8461486ae6b1ab3ca56f2339ab673616f3eb021346a
+  stdout_sha256: 0c53b56ead66235f4e55eff640f32b6b92269588e6b0f9d769eae270011bb993
   stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 - argv: [not-a-command]
   exit_code: 1
@@ -48,7 +48,7 @@ cli:
   stderr_sha256: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 - argv: [publish, --help]
   exit_code: 0
-  stdout_sha256: 1f98626f25d639e69e48a0de40d89ed9d8875cfd70d276a8f94c02d675a1970c
+  stdout_sha256: 2598bbfc775590e7a53011dd973c756ff75a48ff6edfdf2d8607b8e43bf03ee3
   stderr_sha256: ignored-dynamic-startup-diagnostics
 - argv: [version]
   exit_code: 0

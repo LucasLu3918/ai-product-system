@@ -782,6 +782,11 @@ def main() -> int:
     diagnose.add_argument("--worktree", required=True, type=Path)
     diagnose.add_argument("--command", dest="native_command", required=True)
     diagnose.add_argument("--format", choices=("yaml", "json"), default="yaml")
+    doctor = subs.add_parser("doctor", help="Read-only GitHub publication readiness diagnosis")
+    doctor.add_argument("--project-root", type=Path, default=ROOT)
+    doctor.add_argument("--pr", type=int)
+    doctor.add_argument("--branch")
+    doctor.add_argument("--format", choices=("yaml", "json"), default="yaml")
     plan = subs.add_parser("plan")
     common(plan)
     preview = subs.add_parser("preview")
@@ -820,6 +825,11 @@ def main() -> int:
     checks.add_argument("--format", choices=("yaml", "json"), default="yaml")
     args = parser.parse_args()
     try:
+        if args.command == "doctor":
+            from publication_diagnostics import doctor as publication_doctor
+            result = publication_doctor(args.project_root, pr_number=args.pr, branch=args.branch)
+            emit(result, args.format)
+            return 0 if result["status"] == "READY" else 1
         if args.command in {"prepare", "diagnose"}:
             import publication_planning
             if args.command == "prepare":

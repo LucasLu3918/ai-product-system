@@ -15,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import governance_guard as guard
 import publication_authority as auth
+import publication_diagnostics
 import publication_planning as planning
 import publish_preflight as preflight
 
@@ -22,7 +23,7 @@ import publish_preflight as preflight
 def scanner_fixture_assignment() -> str:
     """Generate per-run scanner input without storing credential-like data in source."""
     label = ''.join(map(chr, (97, 112, 105, 95, 107, 101, 121, 61)))
-    return label + uuid.uuid4().hex
+    return label + ''.join(uuid.uuid4().hex for _ in range(4))
 
 
 class PlanningTest(unittest.TestCase):
@@ -169,6 +170,40 @@ class PlanningTest(unittest.TestCase):
             result = self.prepare(host_denied=True)
         self.assertEqual(result['diagnostics'][0]['reason_code'], 'HOST_PERMISSION_DENIED')
         self.assertEqual(result['invocations'], [])
+
+    def test_merge_diagnose_is_read_only_and_does_not_consume_authority(self):
+        command = ('gh pr merge 17 --repo fixture/repo --squash --match-head-commit ' + self.head)
+        with patch.object(auth, 'validate_personal_action', return_value={'base_commit': '0' * 40}) as validate, \
+                patch.object(auth, 'action', side_effect=AssertionError('personal diagnosis must not consume a grant')):
+            result = planning.diagnose(self.repo, command)
+        self.assertEqual(result['status'], 'VALIDATED', result)
+        self.assertFalse(result['authorized'])
+        self.assertFalse(result['executed'])
+        self.assertFalse(result['grant_consumed'])
+        validate.assert_called_once()
+        self.assertEqual(validate.call_args.args[1], 'gh_pr_merge')
+
+    def test_required_checks_have_distinct_fail_closed_states(self):
+        cases = [
+            ([], 0, '', 'UNCONFIGURED', 'REQUIRED_CHECKS_UNCONFIGURED'),
+            ([{'name': 'repo', 'bucket': 'fail'}], 0, '', 'FAIL', 'REQUIRED_CHECKS_FAILING'),
+            ([{'name': 'repo', 'bucket': 'pending'}], 0, '', 'PENDING', 'REQUIRED_CHECKS_PENDING'),
+            ([{'name': 'repo', 'bucket': 'pending'}], 8, '', 'PENDING', 'REQUIRED_CHECKS_PENDING'),
+            (None, 1, "no required checks reported on the 'feature' branch", 'PENDING', 'REQUIRED_CHECKS_PENDING'),
+            ([{'name': 'repo', 'bucket': 'cancel'}], 0, '', 'CANCELLED', 'REQUIRED_CHECKS_CANCELLED'),
+            ([{'name': 'repo', 'bucket': 'skipping'}], 0, '', 'MISSING', 'REQUIRED_CHECKS_MISSING'),
+            (None, 4, 'HTTP 403', 'UNAVAILABLE', 'REQUIRED_CHECKS_PERMISSION'),
+            (None, 1, 'not logged into any GitHub hosts', 'UNAVAILABLE', 'REQUIRED_CHECKS_AUTHENTICATION'),
+            ([{'name': 'repo', 'bucket': 'pass'}], 0, '', 'PASS', None),
+        ]
+        for payload, rc, stderr, status, code in cases:
+            with self.subTest(status=status, code=code):
+                result = publication_diagnostics.classify_required_checks(
+                    payload, returncode=rc, stderr=stderr)
+                self.assertEqual(result['status'], status)
+                self.assertEqual(result['reason_code'], code)
+        self.assertNotIn('403', str(publication_diagnostics.classify_required_checks(
+            None, returncode=4, stderr='private URL HTTP 403')))
 
     def test_assurance_never_falls_back_or_consumes(self):
         with patch.object(auth, 'publication_mode', return_value='high_assurance'), \

@@ -1066,3 +1066,7 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
 The canonical Skill registry and pinned upstream manifest classify the complete 38-item source inventory; the generated Human Explorer presents active Skills and source dispositions separately. MCP-compatible Agents load canonical Skill Resources on demand; native projections are owned and removed by AIPS lifecycle rules that preserve pre-existing or modified Skills. Writing Fragments → Beats → Shape remains explicit-request-only, and untested Beta entries remain unrouted. `tests/validation/skill_catalog_contracts.py` checks deterministic registry, output and source invariants; Scenario 259 remains manual for semantic routing acceptance.
+
+## Scenario 260 — Publication diagnostics and Doctor
+
+Scenario 260 verifies the read-only `aips publish doctor`, Required Checks classification, literal merge diagnosis without execution or grant consumption, sanitized error output, and consistent runtime guidance. Missing/permission-limited policy evidence remains blocking; no repository policy mutation or merge bypass is introduced.
