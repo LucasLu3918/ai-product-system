@@ -1203,3 +1203,7 @@ flowchart LR
 ~~~
 
 The MCP plane is portable and ADVISORY; full MCP hosts use Resources / Prompts / Tools, while tool-only hosts use read-only catalog/read/workflow Tools over the same canonical sources. Native adapters remain a separate enhancement plane for verified TURN_NATIVE / TOOL_GUARDED behavior. The gateway is local stdio only and performs no provider/model call inside the server.
+
+## Publication Root-Cause Recovery (Plan35)
+
+The existing Publication Authority/Planning/Diagnostics path remains the sole AIPS publication validator. Claude Host permissions and GitHub policy are separate boundaries; a recovery report never executes or authorizes a merge.
