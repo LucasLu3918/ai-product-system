@@ -1074,3 +1074,7 @@ The canonical Skill registry contains 49 AIPS Skills; the pinned 38-item upstrea
 ## Scenario 260 — Publication diagnostics and Doctor
 
 Scenario 260 verifies the read-only `aips publish doctor`, Required Checks classification, literal merge diagnosis without execution or grant consumption, sanitized error output, and consistent runtime guidance. Missing/permission-limited policy evidence remains blocking; no repository policy mutation or merge bypass is introduced.
+
+## Publication Root-Cause Recovery (Plan35)
+
+Publication Scenario 260 tests policy-evidence distinctions, exact merge command errors, sanitized Host-denial classification, and non-authorizing recovery states.
