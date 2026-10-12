@@ -15,8 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 import governance_guard as guard
 import publication_authority as auth
+import publication_diagnostics
 import publication_planning as planning
-import publication_diagnostics as publication_diagnostics
 import publish_preflight as preflight
 
 

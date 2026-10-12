@@ -62,6 +62,6 @@ verification:
   generic_git_doctor_route: PASS
   full_repository_validation: PASS
   documentation_impact: "PASS: 42 direct/closure paths, 0 missing"
-  exact_candidate_integration_gate: PENDING
+  exact_candidate_integration_gate: PASS
   remote_pr_checks: PENDING
   post_merge_main_checks: PENDING
