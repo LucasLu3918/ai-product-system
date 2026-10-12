@@ -12,9 +12,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
+from native_skill_projection import _source_package
 from skill_index import generate
 from skills_cli import collect
-from native_skill_projection import _source_package
 
 
 def require(condition: bool, message: str) -> None:

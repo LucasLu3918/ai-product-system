@@ -7,8 +7,9 @@ import json
 import os
 import re
 import tempfile
+from collections.abc import Iterator
 from pathlib import Path, PurePosixPath
-from typing import Any, Iterator
+from typing import Any
 
 import yaml
 from skill_index import UniqueLoader, generate

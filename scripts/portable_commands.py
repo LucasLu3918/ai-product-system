@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Canonical AIPS portable command registry, renderer and managed projections."""
 
 from __future__ import annotations
@@ -34,7 +33,7 @@ def load_registry() -> dict[str, Any]:
     commands = data.get("commands")
     hosts = data.get("hosts")
     if not isinstance(commands, list) or not isinstance(hosts, dict):
-        raise ValueError("portable command registry requires commands and hosts")
+        raise ValueError("portable command registry requires commands and hosts")  # noqa: TRY004
     ids = [item.get("id") for item in commands]
     if len(ids) != len(set(ids)) or any(not item for item in ids):
         raise ValueError("portable command ids must be unique and non-empty")

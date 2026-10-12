@@ -9,9 +9,9 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
+import native_skill_projection as native_skills
 import yaml
 from skill_index import generate
-import native_skill_projection as native_skills
 
 ROOT = Path(__file__).resolve().parents[1]
 UPSTREAM = ROOT / "skills" / "integrations" / "matt-pocock-skills.json"
