@@ -1738,6 +1738,8 @@ The lifecycle uses synthetic SVG/PNG fixtures to verify confined paths, active-c
 
 Native acceptance is bound to the observed Host version, platform and source digests. Doctor distinguishes missing, stale, invalid, failed and recorded evidence; the current loopback scope does not imply L3, session cancellation, arbitrary MCP or production-model verification.
 
+Harness Skill removal is ownership-bound: lifecycle handling removes only recorded AIPS projections whose content still matches the generated digest, while pre-existing, unowned and modified Host Skills remain intact and report conflicts.
+
 創作提示 hook 每次只根據目前使用者回覆建立 grant；Context 注入或 transcript 截斷不得授權創作工具，native acceptance 只證明實際 hook 行為，不代表模型推論或視覺品質驗收。
 
 Plan24 acceptance was exercised against OpenCode v2.0.24 with a loopback mock: Context delivery and native file Allow/Deny hooks passed. Creative generation was not run; model inference and visual quality remain separate evidence.
