@@ -285,3 +285,7 @@ Execution Isolation provider changes map to Architecture Overview and Security A
 **Plan19 architecture and runtime closure.**
 
 Plan19 machine-readable authorities are `config/capability-registry.yaml` and `config/eval-freshness.yaml`; generated compatibility views are `config/architecture-surfaces.yaml` and `references/evolution/CAPABILITY_MAP.yaml`. Branch and monthly effectiveness evidence lives under `.aips/review/` and remains report-only.
+
+## Publication Root-Cause Recovery (Plan35)
+
+Canonical publication root-cause modules: scripts/publication_authority.py, scripts/publication_diagnostics.py and scripts/publication_planning.py. User-facing guidance is in USER_GUIDE.md; Scenario 260 governs behavior.
