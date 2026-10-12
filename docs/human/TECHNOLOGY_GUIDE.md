@@ -244,6 +244,8 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 `aips skills list` reads canonical Skill frontmatter through the read-only Skill index, supports exact capability and trigger filters, and emits text or JSON. Its lifecycle evidence covers listing, filters, output, invalid arguments and empty results without changing the generated index.
 
+Scenario 233 also verifies native Skill and Portable Command projection contracts for Codex, Claude Code and Gemini CLI, including ownership-safe uninstall. These deterministic checks cover generated paths and files, not live Host discovery or invocation.
+
 The Skill Explorer is a static generated artifact from the canonical Skill registry and pinned source dispositions. Its deterministic validator checks inventory and routing metadata; it does not claim semantic model quality.
 
 `publication_planning.py` 重用 authority、candidate/history scan 與 GitHub PR evidence，提供 read-only `prepare` / `diagnose`。指紋包含 worktree、HEAD/base、remote/PR、policy 與 PR body digest；任何漂移需重新規劃，不能用診斷代碼放行。

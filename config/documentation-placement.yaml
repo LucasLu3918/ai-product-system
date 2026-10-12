@@ -451,8 +451,11 @@ placement_rules:
       - scripts/aips_cli/dispatch.sh
       - scripts/aips_cli/help.sh
       - scripts/skills_cli.py
+      - scripts/native_skill_projection.py
+      - scripts/portable_commands.py
       - tests/evidence/skills_cli_lifecycle.py
       - tests/validation/skills_cli_contracts.py
+      - tests/validation/skill_native_projection_contracts.py
       - tests/scenarios/233-public-cli-help-error-contracts.md
       - tests/scenario_coverage.yaml
       - config/documentation-placement.yaml

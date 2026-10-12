@@ -178,6 +178,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 其他 Agent 透過 MCP Resource `aips://catalog/skills` 取得目錄，再按需載入 `aips://skills/<skill-id>`；Host 的 MCP 設定須由使用者依官方方式註冊。解除安裝依 Harness ownership manifest 與內容摘要，只清除 AIPS 管理且未被修改的投影，保留原有或有衝突的 Skill。
 
+Codex、Claude Code 與 Gemini CLI 也可使用 `aips skills install <skill-id> --host <host>` 安裝原生 Skill，或使用 `aips commands install aips.grill-me --host <host>` 建立原生命令入口。安裝紀錄與 Host-specific 移除方式詳見 [Harness 指南](HARNESS.md)。
+
 發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。
 
 OpenCode adapter setup and version-bound evidence are separate. Consult the report's unsupported-effect states before relying on a native permission hook.
