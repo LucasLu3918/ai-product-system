@@ -18,6 +18,9 @@
 7. Run `aips skills list` and confirm it shows the 49 AIPS Skills in Traditional Chinese; add `--include-upstream` and confirm all 38 source records include routing status, AIPS mapping and local source path.
 8. Invoke `/grill-me` explicitly and confirm it asks one decision-focused question at a time; confirm ordinary requests do not start that interview.
 9. Invoke `$grill-with-docs` and confirm it remains an independent explicit-only Skill, prepares glossary/ADR drafts from settled decisions, and respects project write approval.
+10. Run `aips skills install --upstream --all` in an isolated home and confirm only the six unique optional source Skills are installed; four same-ID source entries resolve to canonical AIPS Skills, other dispositions are reported as skipped, repeat installation is idempotent, and status can filter upstream ownership.
+11. Remove one upstream Skill and then all upstream Skills for selected Hosts; confirm AIPS catalog and Portable Command Skills remain, shared Codex/Gemini projections remain until their final Host reference is removed, and modified source files plus user resources are preserved.
+12. Install one upstream Skill into Claude workspace scope and confirm status and uninstall are restricted to that project; confirm scripts and hooks are not executed or configured by installation.
 
 ## Expected result
 
@@ -29,8 +32,10 @@
 - Distinct repo/tool source skills are automatically routed only for their matching task.
 - `grill-with-docs` is available as `$grill-with-docs` but is not implicitly invoked.
 - Human-guided steps do not collect or expose secrets; no upstream installation hooks are introduced.
+- Upstream native install selects only optional dispositions, rejects unsafe source paths/digests, skips canonical duplicate IDs and uses the existing per-file ownership manifest for safe status/uninstall.
+- `--upstream` install/uninstall never modifies AIPS catalog or Portable Command ownership; modified Skills and user-added resources remain available after removal.
 - The Explorer distinguishes active Skills from deferred, excluded, reference-only and unadopted source items.
 
 ## Coverage
 
-Manual semantic acceptance. `tests/validation/skill_catalog_contracts.py` deterministically checks inventory completeness, explicit Writing triggers, Beta exclusion, generated output and registry wiring; it does not prove model routing quality for every natural-language request.
+`tests/evidence/skills_cli_lifecycle.py` deterministically verifies the native install/status/uninstall lifecycle in isolated Host directories. Manual semantic acceptance remains required for natural-language routing; `tests/validation/skill_catalog_contracts.py` checks inventory completeness, explicit Writing triggers, Beta exclusion, generated output and registry wiring.

@@ -37,6 +37,8 @@ Creative quality benchmark 操作方式在 USER_GUIDE，證據欄位與驗證邊
 
 OpenCode setup 與版本綁定驗收請閱讀 [Global Harness](./HARNESS.md)、[Installation](./INSTALLATION.md) 與 [Technology Guide](./TECHNOLOGY_GUIDE.md)；Scenario 235 定義原生驗收證據邊界。
 
+上游 Skill 的安全安裝、來源篩選與選擇性解除安裝請見 [User Guide](./USER_GUIDE.md#roles-skills-與重用)；來源固定摘要、檔案所有權與 Scenario 259 驗收見 [Harness](./HARNESS.md) 與 [Conformance](./CONFORMANCE.md#scenario-259--matt-pocock-skill-integration-and-explorer)。
+
 創作流程新增逐項驗證、版本化回饋與有限修正。明確重製指令可在同一 Session 執行；自動修正需 opt-in，機器結果仍需人工確認與使用者驗收。
 
 

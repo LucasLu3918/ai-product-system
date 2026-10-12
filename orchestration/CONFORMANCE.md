@@ -55,6 +55,8 @@ Public command groups expose help with status 0 and return nonzero for unknown s
 
 Scenario 233 covers localized/grouped `aips skills list` output, JSON and exact filters against canonical Skill metadata; listing does not write the generated index. Lifecycle checks ensure uninstall preserves pre-existing, unowned and digest-mismatched Host Skills. `--include-upstream` lists all 38 vendored sources with dispositions and local paths while keeping the default output canonical-only.
 
+The upstream install lifecycle additionally asserts optional-only batch selection, canonical duplicate skips, source-filtered status/uninstall, and unchanged AIPS catalog and Portable Command ownership.
+
 The native Skill projection lifecycle checks Codex, Claude Code and Gemini CLI paths, idempotent installation, shared Codex/Gemini ownership, conflicts, exact digest-based uninstall, workspace scoping and Portable Command migration. `tests/validation/skill_native_projection_contracts.py` validates the CLI/documentation contracts. These deterministic checks do not claim live Host discovery or invocation acceptance.
 
 ## Scenario 234 — Local Character Artwork Provenance and Composition
@@ -1066,6 +1068,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
 The canonical Skill registry contains 49 AIPS Skills; the pinned 38-item upstream manifest links vendored source paths and SHA-256 entrypoint digests. Distinct repo/tool methods auto-route on matching tasks while overlaps remain experimental/optional. `$grill-with-docs` is a separate explicit-only Skill. MCP-compatible Agents load canonical Skill Resources on demand; native projections are owned and removed by AIPS lifecycle rules that preserve pre-existing or modified Skills. Writing Fragments → Beats → Shape remains explicit-request-only. `tests/validation/skill_catalog_contracts.py` checks deterministic registry, routing, output, license and source invariants; Scenario 259 remains manual for semantic routing acceptance.
+
+`tests/evidence/skills_cli_lifecycle.py` also verifies upstream batch/selected install, optional-only eligibility, canonical duplicate skips, source-scoped ownership and uninstall across Codex, Claude, and Gemini; modified, unowned, and Portable Command files remain intact. Live Agent discovery is outside this fixture's evidence.
 
 ## Scenario 260 — Publication diagnostics and Doctor
 

@@ -22,6 +22,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+上游 Skill 安裝／解除安裝的操作流程以 `docs/human/USER_GUIDE.md` 為準；Host discovery 與來源邊界見 `docs/human/HARNESS.md`，維護驗證見本文件的 `Validation architecture consistency` 對應章節與 `docs/human/CONFORMANCE.md` Scenario 259。
+
 Public CLI commands are documented under the owning user workflow and matching Scenario evidence. A shared dispatcher or Scenario registry does not make unrelated command domains part of that change.
 
 Skill 的使用者搜尋入口是 <a href="./skill-catalog.html">Skill Explorer</a>；49 個 canonical AIPS Skills 與 38 個 vendored 上游來源分開呈現，來源清單固定 commit 並記錄本地路徑與 SHA-256。Skill routing 的 canonical 定義仍在各 `SKILL.md` 與 Registry；Scenario 259 記錄自動路由、實驗／選用與 `$grill-with-docs` 明確呼叫邊界。

@@ -258,6 +258,126 @@ def main() -> int:
         require(workspace_remove.returncode == 0 and not workspace_path.exists(),
                 "workspace uninstall must remove only the matching AIPS-owned projection")
 
+        upstream_home = cwd / "upstream-home"
+        upstream_config = cwd / "upstream-config"
+        upstream_home.mkdir()
+        upstream_env = {"HOME": str(upstream_home), "XDG_CONFIG_HOME": str(upstream_config)}
+        upstream_inventory = json.loads((ROOT / "skills/integrations/matt-pocock-skills.json").read_text(encoding="utf-8"))["skills"]
+        optional_upstream = [item for item in upstream_inventory if item["disposition"] in {"experimental_optional", "adopted_optional"}]
+        canonical_duplicates = [item for item in optional_upstream if item["id"] in expected_catalog]
+        installable_upstream = [item for item in optional_upstream if item["id"] not in expected_catalog]
+        require(len(upstream_inventory) == 38 and len(optional_upstream) == 10
+                and len(canonical_duplicates) == 4 and len(installable_upstream) == 6,
+                "upstream install eligibility and canonical duplicate counts must remain explicit")
+
+        upstream_install = run(cwd, "install", "--upstream", "--all", "--host", "codex", "--host", "gemini", "--format", "json", env_overrides=upstream_env)
+        require(upstream_install.returncode == 0, f"upstream batch install failed: {upstream_install.stderr}")
+        upstream_rows = json.loads(upstream_install.stdout)["results"]
+        statuses = [row["status"] for row in upstream_rows]
+        require(statuses.count("SKIPPED_DISPOSITION") == 28 and statuses.count("SKIPPED_CANONICAL") == 4
+                and statuses.count("INSTALLED") == 6 and statuses.count("SHARED") == 6,
+                f"upstream --all must install six unique optional Skills and explain every other source row: {statuses}")
+        require(all(row.get("source") == "upstream" for row in upstream_rows),
+                "upstream batch results must identify their source")
+        upstream_skill_root = upstream_home / ".agents/skills"
+        require((upstream_skill_root / "setup-matt-pocock-skills/SKILL.md").is_file()
+                and (upstream_skill_root / "setup-matt-pocock-skills/domain.md").is_file()
+                and (upstream_skill_root / "setup-ts-deep-modules/dependency-cruiser.config.cjs").is_file(),
+                "upstream native projection must include the entrypoint and nested supporting resources")
+
+        upstream_manifest_path = upstream_config / "aips/skills/ownership.json"
+        upstream_manifest = json.loads(upstream_manifest_path.read_text(encoding="utf-8"))
+        upstream_artifacts = [item for item in upstream_manifest["artifacts"] if item.get("source_kind") == "upstream"]
+        require(len(upstream_artifacts) == 6 and all(item["hosts"] == ["codex", "gemini"] and item["source_id"].startswith("matt-pocock-skills:") for item in upstream_artifacts),
+                "upstream installs must be source-owned, namespaced, and share Codex/Gemini ownership references")
+
+        upstream_repeat = run(cwd, "install", "--upstream", "setup-matt-pocock-skills", "--host", "codex", "--format", "json", env_overrides=upstream_env)
+        require(upstream_repeat.returncode == 0 and json.loads(upstream_repeat.stdout)["results"][0]["status"] == "CURRENT",
+                "repeated upstream install must remain idempotent")
+        upstream_status = run(cwd, "status", "--upstream", "--host", "codex", "--format", "json", env_overrides=upstream_env)
+        upstream_status_rows = json.loads(upstream_status.stdout)["results"]
+        require(upstream_status.returncode == 0 and len(upstream_status_rows) == 6
+                and all(row["source"] == "upstream" and row["status"] == "CURRENT" for row in upstream_status_rows),
+                "upstream-only status must verify source digests and not include catalog Skills")
+
+        skipped_workflow = run(cwd, "install", "--upstream", "grill-me", "--host", "codex", "--format", "json", env_overrides=upstream_env)
+        require(skipped_workflow.returncode == 0 and json.loads(skipped_workflow.stdout)["results"][0]["status"] == "SKIPPED_DISPOSITION"
+                and not (upstream_skill_root / "grill-me").exists(),
+                "workflow-integrated upstream Skills must be explicitly skipped, not installed")
+        canonical_install = run(cwd, "install", "grill-with-docs", "--host", "codex", "--format", "json", env_overrides=upstream_env)
+        require(canonical_install.returncode == 0, f"canonical duplicate fixture install failed: {canonical_install.stderr}")
+        skipped_duplicate = run(cwd, "install", "--upstream", "grill-with-docs", "--host", "codex", "--format", "json", env_overrides=upstream_env)
+        require(skipped_duplicate.returncode == 0 and json.loads(skipped_duplicate.stdout)["results"][0]["status"] == "SKIPPED_CANONICAL"
+                and (upstream_skill_root / "grill-with-docs/SKILL.md").is_file(),
+                "upstream duplicate IDs must use the existing canonical AIPS Skill without rewriting it")
+
+        portable_command = subprocess.run(
+            [str(ROOT / "bin/aips"), "commands", "install", "aips.grill-me", "--host", "codex", "--format", "json"],
+            cwd=cwd, env={**os.environ, "AIPS_VALIDATION_PYTHON": sys.executable, **upstream_env},
+            capture_output=True, text=True, check=False,
+        )
+        portable_path = upstream_skill_root / "grill-me/SKILL.md"
+        require(portable_command.returncode == 0 and portable_path.is_file(),
+                f"portable command fixture install failed: {portable_command.stdout} {portable_command.stderr}")
+
+        modified_upstream = upstream_skill_root / "loop-me/SKILL.md"
+        original_upstream = modified_upstream.read_text(encoding="utf-8")
+        modified_upstream.write_text(original_upstream + "\nuser edit\n", encoding="utf-8")
+        (modified_upstream.parent / "notes.txt").write_text("keep user data", encoding="utf-8")
+        remove_upstream_codex = run(cwd, "uninstall", "--upstream", "--all", "--host", "codex", "--format", "json", env_overrides=upstream_env)
+        require(remove_upstream_codex.returncode == 0 and all(row["status"] == "RETAINED_SHARED" for row in json.loads(remove_upstream_codex.stdout)["results"]),
+                "upstream removal must release only the Codex reference while Gemini still owns shared projections")
+        setup_source = next(item for item in optional_upstream if item["id"] == "setup-matt-pocock-skills")
+        setup_source_dir = (ROOT / setup_source["local_path"]).parent
+        setup_owned_paths = [item.relative_to(setup_source_dir).as_posix() for item in setup_source_dir.rglob("*") if item.is_file()]
+        remove_one_upstream = run(cwd, "uninstall", "--upstream", "setup-matt-pocock-skills", "--host", "gemini", "--format", "json", env_overrides=upstream_env)
+        require(remove_one_upstream.returncode == 0 and json.loads(remove_one_upstream.stdout)["results"][0]["status"] == "REMOVED"
+                and all(not (upstream_skill_root / "setup-matt-pocock-skills" / relative).exists() for relative in setup_owned_paths),
+                "targeted upstream uninstall must remove only the selected owned Skill")
+        remove_upstream_gemini = run(cwd, "uninstall", "--upstream", "--all", "--host", "gemini", "--format", "json", env_overrides=upstream_env)
+        remove_upstream_rows = json.loads(remove_upstream_gemini.stdout)["results"]
+        require(remove_upstream_gemini.returncode != 0 and remove_upstream_gemini.returncode == 1
+                and any(row["status"] == "CONFLICT_PRESERVED" and row["skill_id"] == "loop-me" for row in remove_upstream_rows)
+                and modified_upstream.read_text(encoding="utf-8").endswith("\nuser edit\n")
+                and (modified_upstream.parent / "notes.txt").read_text(encoding="utf-8") == "keep user data",
+                "final upstream uninstall must preserve modified files and extra user resources")
+        require((upstream_skill_root / "grill-with-docs/SKILL.md").is_file() and portable_path.is_file(),
+                "upstream-only uninstall must leave canonical AIPS and Portable Command Skills untouched")
+        remaining_status = run(cwd, "status", "--upstream", "--format", "json", env_overrides=upstream_env)
+        require(remaining_status.returncode == 0 and json.loads(remaining_status.stdout)["results"] == [],
+                "upstream uninstall must remove its ownership records without claiming preserved user files")
+
+        conflict_home = cwd / "upstream-conflict-home"
+        conflict_config = cwd / "upstream-conflict-config"
+        conflict_home.mkdir()
+        conflicting_upstream = conflict_home / ".agents/skills/chief-of-staff/SKILL.md"
+        conflicting_upstream.parent.mkdir(parents=True)
+        conflicting_upstream.write_text("user-owned skill", encoding="utf-8")
+        conflict_upstream = run(cwd, "install", "--upstream", "chief-of-staff", "--host", "codex", "--format", "json",
+                                env_overrides={"HOME": str(conflict_home), "XDG_CONFIG_HOME": str(conflict_config)})
+        require(conflict_upstream.returncode == 1 and json.loads(conflict_upstream.stdout)["results"][0]["status"] == "CONFLICT"
+                and conflicting_upstream.read_text(encoding="utf-8") == "user-owned skill",
+                "upstream install must preserve and report conflicting user-owned native Skills")
+
+        upstream_workspace = cwd / "upstream-workspace"
+        upstream_workspace.mkdir()
+        upstream_workspace_install = run(cwd, "install", "--upstream", "git-guardrails-claude-code", "--host", "claude",
+                                         "--scope", "workspace", "--project", str(upstream_workspace), "--format", "json", env_overrides=upstream_env)
+        upstream_workspace_path = upstream_workspace / ".claude/skills/git-guardrails-claude-code/SKILL.md"
+        require(upstream_workspace_install.returncode == 0 and upstream_workspace_path.is_file(),
+                "upstream workspace Skills must use Claude Code's native project discovery path")
+        upstream_foreign_status = run(cwd, "status", "--upstream", "--host", "claude", "--format", "json", env_overrides=upstream_env)
+        require(upstream_foreign_status.returncode == 0 and json.loads(upstream_foreign_status.stdout)["results"] == [],
+                "upstream status from another project must not expose a different workspace's installation")
+        upstream_workspace_status = run(cwd, "status", "--upstream", "--host", "claude", "--scope", "workspace",
+                                        "--project", str(upstream_workspace), "--format", "json", env_overrides=upstream_env)
+        require(upstream_workspace_status.returncode == 0 and json.loads(upstream_workspace_status.stdout)["results"][0]["status"] == "CURRENT",
+                "upstream workspace ownership must be verifiable for its project")
+        upstream_workspace_remove = run(cwd, "uninstall", "--upstream", "git-guardrails-claude-code", "--host", "claude",
+                                        "--scope", "workspace", "--project", str(upstream_workspace), "--format", "json", env_overrides=upstream_env)
+        require(upstream_workspace_remove.returncode == 0 and not upstream_workspace_path.exists(),
+                "upstream workspace uninstall must remove only the matching AIPS-owned projection")
+
         require((ROOT / "skills/INDEX.yaml").read_bytes() == before,
                 "listing Skills must not modify the generated index")
 

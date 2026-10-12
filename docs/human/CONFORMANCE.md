@@ -1728,6 +1728,8 @@ The public command groups return concise help with status 0 and reject unknown s
 
 Scenario 233 also covers `aips skills list`: localized/grouped text and JSON output, exact capability and trigger filters, invalid arguments, empty results, and read-only behavior over canonical Skill metadata. Skill install/removal lifecycle preserves pre-existing, unowned and digest-mismatched Host files. `--include-upstream` lists the 38 vendored Matt Pocock sources with disposition and local path, while the default list stays canonical-only.
 
+`tests/evidence/skills_cli_lifecycle.py` extends the install contract with `--upstream --all`, optional-only eligibility, canonical duplicate skips, source-filtered status/uninstall, and preservation of other source kinds and modified files.
+
 `tests/evidence/skills_cli_lifecycle.py` and `tests/validation/skill_native_projection_contracts.py` cover native Skill install, repeat install, cross-Host ownership, conflicts, workspace isolation, digest-protected removal, Portable Command projection and legacy migration for Codex, Claude Code and Gemini CLI. These checks validate generated files and ownership behavior; real Host discovery and invocation remain unverified until exercised in each installed Host.
 
 ## Scenario 234 — Local Character Artwork Provenance and Composition
@@ -1782,6 +1784,8 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
 The generated Skill Explorer presents all 49 canonical AIPS Skills and the 38 vendored upstream Skills pinned to the reviewed commit, with local source paths and SHA-256 digests. Overlapping pending skills are experimental/optional; distinct repo/tool workflows auto-route on matching requests. `$grill-with-docs` is a separate explicit-only Skill whose native projection preserves `allow_implicit_invocation: false`. Writing workflow Skills remain explicit-request-only. Other MCP Hosts load Skills from canonical Resources on demand; native projections are AIPS-owned and removal preserves pre-existing, unowned or modified files. Deterministic inventory and output contracts are checked by `tests/validation/skill_catalog_contracts.py`; semantic routing acceptance remains manual.
+
+The native lifecycle fixture additionally checks `--upstream --all`, selected upstream IDs, skip dispositions for integrated and canonical duplicates, Codex/Claude/Gemini paths, repeated install, per-Host references, source-scoped status/uninstall, Portable Command independence, digest drift and preservation of modified or pre-existing files. It confirms local file behavior, not discovery by a live Agent process.
 
 創作修正回歸以原始「重出一張哈利」對話、否定／分析指令、重播／並行額度、必要特徵錯置、來源漂移、版本比較與時間／次數停損為準。`creative_repair_lifecycle.py` 與 native tool fixture 是 synthetic evidence；真實生成及 host acceptance 分列。
 

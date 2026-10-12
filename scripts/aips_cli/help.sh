@@ -50,11 +50,11 @@ Usage:
   aips commands uninstall [<command-id>] [--host <host>|--all]
 
   aips skills list [--capability <id>] [--trigger <trigger>] [--include-upstream] [--locale zh-TW|en] [--format table|json] [--group-by category|status|source]
-  aips skills install <skill-id>... --host codex|claude|gemini [--scope user|workspace] [--project <path>]
-  aips skills install --all --host <host> [--scope user|workspace]
-  aips skills status [--host <host>] [--scope user|workspace] [--project <path>]
-  aips skills uninstall <skill-id>... --host <host> [--scope user|workspace] [--project <path>]
-  aips skills uninstall --all --host <host> [--scope user|workspace]
+  aips skills install <skill-id>... [--upstream] --host <host> [--scope user|workspace] [--project <path>]
+  aips skills install --all [--upstream] --host <host> [--scope user|workspace]
+  aips skills status [--upstream] [--host <host>] [--scope user|workspace] [--project <path>]
+  aips skills uninstall <skill-id>... [--upstream] --host <host> [--scope user|workspace] [--project <path>]
+  aips skills uninstall --all [--upstream] --host <host> [--scope user|workspace]
 
   aips intelligence bootstrap [--project <path>]
   aips intelligence status [--project <path>]

@@ -226,6 +226,8 @@ Skill inventory changes also update the generated Human Skill Explorer, User Gui
 
 Skill catalog and CLI behavior must keep Human Harness/Installation guidance, the Architecture overview, Documentation Map, and Scenarios 233/259 aligned. MCP Resources provide on-demand access to canonical Skills; uninstall may remove only digest-matching projections listed in AIPS ownership records and must preserve pre-existing, unowned or modified Host Skills.
 
+For the upstream native install CLI, keep the `--upstream` / `--all` eligibility rules and source-specific uninstall behavior synchronized in User Guide, Installation, Harness, Technology Guide, Maintenance, Documentation Map, and Scenario 259. Do not claim live Host discovery from isolated lifecycle evidence.
+
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
 The import commands belong to the existing creative workflow documentation and are linked from the canonical documentation map.
