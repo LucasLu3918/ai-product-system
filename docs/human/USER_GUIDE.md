@@ -563,6 +563,20 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
+### Claude Code 合併失敗的真實原因與安全恢復
+
+建議先在信任的互動式終端機執行 `aips publish doctor --project-root <repo> --pr <number> --format json`；要檢查格式，使用 `aips publish diagnose --worktree <repo> --command '<literal-gh-pr-merge>' --format json`。這兩個指令均為唯讀，不能當作已完成合併或取得 Host 授權。新版 `prepare`／`diagnose` 會提供 `recovery` 建議，其中 `authorized: false`、`executed: false`；只允許針對明確暫時性狀態重試唯讀觀察。
+
+- `MERGE_HEAD_PIN_REQUIRED`：必須讀取當前 PR HEAD 並加上 `--match-head-commit` 的完整 SHA；`MERGE_HEAD_MISMATCH` 代表提供過期或錯誤的 SHA。
+- `MERGE_OPTION_FORBIDDEN`：不能附上 `--admin` 或 `--delete-branch`，合併和分支清理需分開授權。
+- `REQUIRED_CHECKS_UNCONFIGURED` 只能由完整的政策證據確認；`REQUIRED_CHECKS_POLICY_UNVERIFIED` 表示政策查證不足，不能說成 CI 還在跑。
+- `REQUIRED_CHECKS_MISSING` 表示應觀察的必要檢查不存在，`REQUIRED_CHECKS_PENDING` 表示實際觀察到進行中的檢查；兩者都阻擋合併。
+- `HOST_MERGE_WITHOUT_REVIEW` 來自 Claude Code Host Auto Mode，不是 GitHub 或 AIPS 核心出錯。由使用者透過原生確認流程處理。若 Host 允許唯讀指令，可用 `aips publish prepare ... --host-denied --host-denial-class merge-without-review` 回報**已觀察到**的分類；不得為了繞過分類器而改寫命令。
+- `HOST_READ_ONLY_DENIED` 代表 Host 阻擋唯讀診斷，可改由受信任的使用者終端機查詢，不能自行推定 Host 權限已恢復。
+
+Personal Mode 的逐次合併確認和 High-Assurance Mode 的外部 signed grant 不同。所有原始 stderr、敏感 URL 和機密欄位應限制曝光；維持穩定錯誤碼、來源、可行的排除方式及完成後驗證。每次真正執行合併前仍須重新確認 head/base/checks 與人類授權。
+
+
 `aips publish diagnose --worktree <candidate-root> --command '<literal-command>'` 可辨識 `PUSH_SOURCE_NOT_EXACT_SHA`、`INVALID_TARGET_REF`、`WORKTREE_DIRTY`、`BASE_NOT_ANCESTOR`、`CONTENT_SCAN_BLOCKED` 與 metadata 問題。`prepare` 的高保證流程輸出精確 lease 命令與 `AUTHORITY_REQUIRED`，仍須由外部 issuer 核准；模式設定存在但無效時不降級。`--merge-intent` 僅記錄當次任務意圖，不能取代使用者或 Host 授權。
 
 首次設定或 PR 卡住時，可執行 `aips publish doctor --project-root <repo> [--pr <number>] --format yaml`。Doctor 只讀檢查 GitHub CLI 登入、repository merge methods、branch protection/ruleset 可見性、Required Checks 與指定 PR/head/checks，並列出安全的下一步。Required Checks 會明確回報未設定、失敗、執行中、缺少／跳過、取消、PR head/base 過期或 GitHub 權限／API 不可用；任何空白或不可見證據都會阻擋，不會自動調整保護規則。`aips publish diagnose` 也接受 literal `gh pr merge`，但只驗證 PR、完整 head SHA、base、merge method 與即時 checks；輸出 `authorized: false`、`executed: false`，不執行 merge、不消耗 grant。Codex/OpenCode 的診斷仍不取代原生工具權限或 GitHub 保護。
