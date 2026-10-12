@@ -197,7 +197,7 @@ def _upstream_source_package(
 
 def _explicit_upstream_projection(
     files: dict[str, bytes], hosts: list[str], *, skill_id: str, description: str
-) -> tuple[dict[str, bytes], str]:
+) -> dict[str, bytes]:
     """Apply native explicit-invocation controls without changing vendored source."""
     projected = dict(files)
     if "claude" in hosts:
@@ -241,10 +241,7 @@ def _explicit_upstream_projection(
         policy["allow_implicit_invocation"] = False
         metadata["policy"] = policy
         projected[policy_path] = yaml.safe_dump(metadata, sort_keys=False, allow_unicode=True).encode("utf-8")
-    projected_digest = hashlib.sha256(
-        json.dumps({name: digest(raw) for name, raw in sorted(projected.items())}, sort_keys=True, separators=(",", ":")).encode("utf-8")
-    ).hexdigest()
-    return projected, projected_digest
+    return projected
 
 
 def install_upstream(
@@ -282,7 +279,7 @@ def install_upstream(
             continue
         source_files, _ = _upstream_source_package(root, record)
         for host_group in sorted({("claude",) if host == "claude" else ("codex", "gemini") for host in selected_hosts}):
-            files, source_digest = _explicit_upstream_projection(
+            files = _explicit_upstream_projection(
                 source_files, list(host_group), skill_id=identifier,
                 description=str(record.get("description") or identifier),
             )
