@@ -1783,6 +1783,8 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Skill integration acceptance stays independent from publication recovery; the extra diagnostic guidance does not activate optional skills.
+
 The generated Skill Explorer presents all 49 canonical AIPS Skills and the 38 vendored upstream Skills pinned to the reviewed commit, with local source paths and SHA-256 digests. Overlapping pending skills are experimental/optional; distinct repo/tool workflows auto-route on matching requests. `$grill-with-docs` is a separate explicit-only Skill whose native projection preserves `allow_implicit_invocation: false`. Writing workflow Skills remain explicit-request-only. Other MCP Hosts load Skills from canonical Resources on demand; native projections are AIPS-owned and removal preserves pre-existing, unowned or modified files. Deterministic inventory and output contracts are checked by `tests/validation/skill_catalog_contracts.py`; semantic routing acceptance remains manual.
 
 The native lifecycle fixture additionally checks `--upstream --all`, selected upstream IDs, installability regardless of AIPS disposition, canonical duplicate skips, explicit Codex/Claude invocation metadata, Gemini consent behavior, native paths, repeated install, per-Host references, source-scoped status/uninstall, Portable Command independence, digest drift and preservation of modified or pre-existing files. It confirms local file behavior, not discovery by a live Agent process.
@@ -1851,8 +1853,6 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+The publication diagnostic contract distinguishes missing/stale pinned merge SHA, forbidden flags, verified Required Checks configuration, unavailable policy evidence, and non-authorizing Host recovery guidance.
+
 Scenario 260 verifies stable, redacted diagnostics for publication blockers, read-only `gh pr merge` diagnosis, first-time repository Doctor observations, Required Checks states, unavailable policy evidence, and consistent Claude Code/OpenCode/Codex guidance. The doctor never changes repository settings, executes merge, or consumes a grant.
-
-## Publication Root-Cause Recovery (Plan35)
-
-Scenario 260 now includes precise merge error codes, Required Checks evidence classification, sanitized Host-denial observations and advisory non-authorizing recovery.

@@ -371,6 +371,8 @@ For Evolution Radar semantic work, prefer the generated provider-neutral handoff
 
 ## Change-class handoff to Integration Gate
 
+A blocked publication must re-observe PR/head/base/checks and distinguish Host, AIPS and GitHub errors; successful Gate evidence alone does not authorize native merge.
+
 For publication, reuse `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`; execute the returned standalone command through the native tool with that exact cwd. `--auto-merge` requires explicit task merge intent and non-empty passing required checks; Claude may omit a second native prompt only for this validated task-authorized path, while Gemini retains `ask_user`. Re-observe after every step or fingerprint change. PLANNED never supplies quality evidence, Human approval or host permission.
 
 Personal publication is the default when the fixed administrator trust-root file is absent. After candidate/content checks, an implementation task pushes its own engineering branch and creates/updates a PR targeting the live remote default branch without a per-operation confirmation, unless the user says local-only/no-publication. For an explicitly requested PR merge, validate that the PR is open, non-draft, mergeable, targets the live remote default branch, uses the current allowlisted engineering branch and exact candidate SHA, and has passing required checks. Ordinary Claude Code merges use native `PreToolUse` `ask` with PR/base/head/check details; explicitly task-authorized `--auto` may proceed through the same guard without a second Claude prompt, allowing GitHub to complete after policy/checks pass. Gemini CLI retains the extension Policy Engine's interactive `ask_user` rule in `default`, `autoEdit`, and `yolo`, including for `--auto`. GitHub pins the head SHA; the base SHA is a pre-execution observation. Codex remains `ADVISORY` and cannot guarantee interception of direct merge commands, a limitation accepted by Human for personal mode. A present trust-root selects high assurance; malformed configuration fails closed, and protected operations require externally signed v2 single-use grants. Agent-generated APPROVED/fingerprint is never authority in high-assurance mode. Tag/release and direct protected-branch pushes remain outside personal mode. Deployment and GH base/tag observation limits are documented in Human Security Assurance.
@@ -456,7 +458,3 @@ After merge, use the updated checkout CLI `publish post-merge --fetch --sync-ins
 The orchestrator routes AIPS-owned persistence through `safe_emit` and keeps content safety separate from publish authorization. Untrusted external content carries provenance and cannot grant protected tool authority.
 
 `bin/aips` is the public thin launcher: it resolves the repository root and forwards arguments to `scripts/aips_cli.sh`. Keep command dispatch, installed-link behavior, exit status, and user-visible output compatible while implementation modules are extracted incrementally.
-
-## Publication Root-Cause Recovery (Plan35)
-
-For a blocked publication, re-observe current PR/head/base/checks and classify errors as AIPS, GitHub or Claude Host. Do not auto-merge, rephrase denied commands or skip the per-call Human confirmation.

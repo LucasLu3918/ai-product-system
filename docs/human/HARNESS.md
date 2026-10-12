@@ -51,6 +51,8 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+Claude Code may reject a Bash merge as Merge Without Review independently of AIPS PreToolUse; preserve exact Host-versus-AIPS provenance and route confirmation through native permissions rather than rewrites.
+
 Upstream Skills use the same native discovery directories as canonical AIPS Skills. `aips skills install --upstream --all --host <host>` installs all 31 non-canonical entries and reports seven canonical ID matches. Disposition remains visible as integration context, not an install gate. Codex and Claude Code projections require explicit invocation; Gemini CLI retains its activation consent flow. Source digests and AIPS ownership records scope later updates and removal. It never executes vendored scripts or edits Agent hooks. See the [User Guide](USER_GUIDE.md#roles-skills-與重用) for commands and [Scenario 259](CONFORMANCE.md#scenario-259--matt-pocock-skill-integration-and-explorer) for lifecycle evidence.
 
 Git publication hooks share the personal/high-assurance policy where the adapter supports enforcement. Claude and Gemini use native hooks; Codex remains advisory, so this is not an OS-level boundary. See Security Assurance for the accepted same-account `origin` limitation.
@@ -231,7 +233,3 @@ aips commands status
 Codex、Claude Code 與 Gemini CLI 也可用 `aips commands install aips.grill-me --host <codex|claude|gemini>` 安裝為 Host 原生 Skill；分別以 `$grill-me` 或 `/grill-me` 觸發。`aips commands status --host <host>` 檢視，`aips commands uninstall aips.grill-me --host <host>` 精確移除。共用路徑會保留其他 Host 的引用；使用者修改的檔案會保留並回報。
 
 Publication Doctor guidance is shared across native adapters: expose stable reason codes and safe next steps, retain unknown policy evidence as blocking, and keep diagnosis separate from native permissions and merge authority. See Scenario 260.
-
-## Publication Root-Cause Recovery (Plan35)
-
-Claude Host Auto Mode Merge Without Review and AIPS PreToolUse denial are different sources. A Host denial cannot be neutralized by rewriting commands, a successful AIPS plan, or green CI.

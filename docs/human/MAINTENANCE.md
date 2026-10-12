@@ -490,6 +490,8 @@ Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功
 
 ## Validation architecture consistency
 
+Publication Scenario 260 requires tests for exact merge flags, SHA pinning, Required Checks missing/unconfigured/unknown, privacy redaction and advisory-only Host recovery.
+
 Publication maintenance uses `aips publish doctor` for read-only repository, protection, PR and Required Checks evidence. Permission-limited policy visibility is UNKNOWN and blocks; any policy change remains a separate administrator action. Scenario 260 covers the diagnostic contract.
 
 Skill registry changes run the catalog contract and regenerate `docs/human/public/skill-catalog.html`; Scenario 259 keeps pinned external source copies/digests, overlap-based experimental/optional versus automatic routing, explicit `grill-with-docs` invocation, optional Writing triggers and manual routing acceptance visible. Upstream native installation changes run the Skill lifecycle and native projection contracts: all non-canonical IDs remain user-selectable regardless of disposition, canonical duplicates are skipped, and Codex/Claude projections require explicit invocation.

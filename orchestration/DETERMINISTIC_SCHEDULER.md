@@ -141,6 +141,8 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 ## Failure behavior
 
+Only explicitly retryable read-only GitHub observations may be scheduled. Host denials, policy mutations and confirmed merges are not scheduler retries.
+
 Creative quality loops reserve bounded attempts before execution and serialize each exact source with a deadline-aware lock. They preserve separate delivery, inference and repair counts; uncertainty, repeated defects or exhaustion stops further generation. Current native Human intent remains the only execution authority.
 
 Creative discovery/preflight are read-only, while configure creates versioned files and execute launches a provider. Keep those effects distinct in scheduler declarations; a blocked engine cannot become a completed artwork task through an alternate medium.
@@ -305,7 +307,3 @@ Runtime action authorization is evaluated at the native tool boundary by Runtime
 Publication preflight policy calculations are isolated in `scripts/publish_preflight_policy.py` and remain deterministic; repository filesystem inputs are rooted at an explicit `Path`. `scripts/publish_preflight.py` remains responsible for Git, runtime probes, candidate orchestration, and publication evidence.
 
 A task graph may schedule read-only publication diagnosis, but a Doctor result or merge plan never grants a protected operation. Required Checks and policy visibility must be re-observed by the publication authority before execution.
-
-## Publication Root-Cause Recovery (Plan35)
-
-Only read-only, clearly retryable publication observations may be scheduled; Host denials, Human approvals, branch policy changes, and merges require explicit native authority and are not retries.

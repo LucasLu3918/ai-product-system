@@ -55,6 +55,8 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+Creative output approval is distinct from Git publication authorization. Recovery observations never imply permission to publish image assets or merge their PR.
+
 Writing Fragments → Beats → Shape is a separate opt-in workflow. It is used only when a user explicitly requests the staged writing method and does not change creative asset generation or review authority.
 
 Keep unfinished concepts and masters in the development workspace; use a separate clean candidate for publication planning. Delivery manifests record path, use, SHA-256, size, license and deployment source; validate compressed playback assets and LFS retrieval in the actual deployment before choosing storage.
@@ -108,7 +110,3 @@ A collection profile records shared direction and stable character references. A
 For OpenCode V2, mutation authority comes from the native prompt-admission hook and is held only in memory for the active Session. Every new user prompt revokes the prior action grant and derives a fresh grant. A bounded creative clarification may derive that grant from structured in-memory state bound to the same Session root, with a short expiry, finite turns and remaining output count; never retain or replay the raw prior prompt as authority. Dispatch Context and transcript history are never an authority source. Synthetic, shell, compaction, and tool-driven continuation events do not create a new grant.
 
 Creative generation and Git publication remain separate authority boundaries. Publication Doctor is a read-only repository readiness observation; it does not authorize publishing generated assets or alter any Creative Bundle.
-
-## Publication Root-Cause Recovery (Plan35)
-
-Creative and Git publication approvals remain independent. A read-only publication recovery report does not authorize asset publication, bypass creative review or trigger merge.

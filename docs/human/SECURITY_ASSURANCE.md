@@ -213,6 +213,8 @@ Review actual:
 
 ## Release Security Gate
 
+Specific protected-publication reason codes expose only sanitized underlying categories. Missing Required Checks policy evidence blocks; Host denial, recovery suggestions and green CI do not replace signed grants or per-call Human confirmation.
+
 Publication diagnostics 只輸出固定 reason code 與安全修復指引。`prepare` 不簽發、消耗 Grant 或執行發布；high-assurance 保留外部單次 Grant，Host 拒絕不得以其他命令重試。
 
 Creative asset transfer requires an exact source SHA-256, a non-Git destination, and a create-only target; candidate metadata is private and excludes asset bytes.
@@ -586,7 +588,3 @@ Publication Preflight 的環境診斷 lifecycle 會隔離 Python module probe，
 Repository validation 的時間 artifact 只記錄檢查名稱、結果和耗時，不儲存測試輸出或秘密。早期候選秘密掃描、Gate 內的強制掃描及 PR/main 的完整驗證均維持必要條件。
 
 Publication diagnosis follows the same fail-closed authority model: `aips publish doctor` and literal merge diagnosis return sanitized observations only. They never execute publication, consume signed grants, bypass Required Checks, or write GitHub policy; unavailable evidence remains blocking. See Scenario 260.
-
-## Publication Root-Cause Recovery (Plan35)
-
-Precise publication errors preserve a sanitized underlying reason without exposing raw GitHub stderr. A Host-denial class and advisory recovery state are neither a signed grant nor a native per-call confirmation.

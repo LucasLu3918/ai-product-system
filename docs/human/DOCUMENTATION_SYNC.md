@@ -28,6 +28,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Publication recovery documentation must be updated within existing canonical H2 topics and retain the required Human/Harness/Orchestrator synchronization; ad-hoc topic append is not a substitute for the placement policy.
+
 Publication diagnostics and Doctor are one shared behavior across Human guidance and Claude Code, Codex and OpenCode adapters. Keep Required Checks state names, redaction, read-only behavior, and the no-policy-mutation/no-merge-authority boundary aligned with Scenario 260.
 
 Documentation rules match concrete behavior-bearing paths and map them to their owning topics. Shared registries such as `tests/scenario_coverage.yaml` do not by themselves imply that unrelated product domains changed; use scenario-specific rules when one scenario owns the behavior. CLI facade files follow the command group they route, not every feature that happens to use the same facade.
@@ -311,7 +313,3 @@ Exact-candidate browser toolchain selection is documented under the current-beha
 **Plan19 architecture and runtime closure.**
 
 Plan19 architecture and runtime claims use the canonical Capability Registry; the surface inventory and legacy Capability Map are generated views. Hook support remains advisory unless the exact local synthetic path is verified, and monthly effectiveness reports do not change source weights.
-
-## Publication Root-Cause Recovery (Plan35)
-
-Plan35 publication recovery synchronizes Human User Guide, Harness, Security Assurance, Architecture, Conformance, Technology Guide, Installation and orchestrator protocols; required document closure remains enforced.

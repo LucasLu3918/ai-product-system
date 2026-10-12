@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Creative grants never confer Git merge authority; publication recovery diagnostics must remain separate from creative quality and asset acceptance.
+
 Creative generation and asset import retain their existing grants; a later Git publication uses the separate read-only repository diagnosis and approval flow described under Git Publication 與 Release.
 
 上游 Writing Fragments → Beats → Shape 是獨立的明確選用流程，不會因一般寫作或創意工作自動套用；完整 Skill 狀態可在 <a href="./skill-catalog.html">Skill Explorer</a> 查看。
@@ -178,6 +180,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+Claude Host Auto Mode classifier denial and AIPS PreToolUse rejection are different failure sources; the read-only publication recovery report cannot resolve native permissions.
+
 Native adapters may report Publication Doctor findings and safe next steps, but those observations do not grant Git publication, merge or policy-change authority.
 
 其他 Agent 透過 MCP Resource `aips://catalog/skills` 取得目錄，再按需載入 `aips://skills/<skill-id>`；Host 的 MCP 設定須由使用者依官方方式註冊。解除安裝依 Harness ownership manifest 與內容摘要，只清除 AIPS 管理且未被修改的投影，保留原有或有衝突的 Skill。
@@ -232,6 +236,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+Optional Skills and Human Skill Explorer are independent of PR publication diagnostics; no Skill installation may silently change merge authority.
 
 Skills and portable commands can direct users to the core `aips publish doctor` CLI for repository setup; installing a Skill does not grant publication or merge authority.
 

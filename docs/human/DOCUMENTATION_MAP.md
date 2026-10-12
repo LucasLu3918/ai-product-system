@@ -22,6 +22,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+The Human User Guide describes publication recovery and retains the canonical Skill and Harness documentation links.
+
 上游 Skill 安裝／解除安裝的操作流程以 `docs/human/USER_GUIDE.md` 為準；Host discovery 與來源邊界見 `docs/human/HARNESS.md`，維護驗證見本文件的 `Validation architecture consistency` 對應章節與 `docs/human/CONFORMANCE.md` Scenario 259。
 
 上游 Skill 是否可安裝依 canonical ID 是否重複判定；disposition 描述整合背景，不限制使用者安裝。Codex 與 Claude Code 原生投影要求明確呼叫，Gemini 保留啟用前確認。
@@ -97,6 +99,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 - SYSTEM_REFERENCE.md：由已驗證 system facts registry 衍生的 command、capability、platform 與 runtime 表格。
 
 ## Agent / machine canonical 文件
+
+Publication root-cause contract is implemented in scripts/publication_authority.py, scripts/publication_diagnostics.py and scripts/publication_planning.py; Claude Code agents consume this contract without creating a second permission gate.
 
 Publication diagnosis is documented in the User Guide and Technology Guide, with runtime-specific instructions in Claude Code, Codex and OpenCode adapters. Scenario 260 records the privacy and authority boundary.
 
@@ -287,7 +291,3 @@ Execution Isolation provider changes map to Architecture Overview and Security A
 **Plan19 architecture and runtime closure.**
 
 Plan19 machine-readable authorities are `config/capability-registry.yaml` and `config/eval-freshness.yaml`; generated compatibility views are `config/architecture-surfaces.yaml` and `references/evolution/CAPABILITY_MAP.yaml`. Branch and monthly effectiveness evidence lives under `.aips/review/` and remains report-only.
-
-## Publication Root-Cause Recovery (Plan35)
-
-Canonical publication root-cause modules: scripts/publication_authority.py, scripts/publication_diagnostics.py and scripts/publication_planning.py. User-facing guidance is in USER_GUIDE.md; Scenario 260 governs behavior.
