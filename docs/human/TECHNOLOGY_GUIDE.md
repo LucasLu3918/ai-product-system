@@ -74,7 +74,7 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
-Skill Explorer 是離線生成的靜態 HTML，使用原生瀏覽器搜尋、分類與複製功能；Agent routing 仍由 canonical Registry 提供，不會因瀏覽頁面而啟用上游 Skills。
+Skill Explorer 是離線生成的靜態 HTML，使用原生瀏覽器搜尋、分類與複製功能。49 個 canonical AIPS Skills 經 registry 路由；38 個 Matt Pocock 原始 Skills 保留在 `external-skills/matt-pocock/` 並列出來源摘要與 disposition。獨特 repo/tool 方法在任務吻合時自動路由，和 AIPS 重疊的來源標為實驗／選用。`$grill-with-docs` 保持獨立且明確呼叫；瀏覽頁面本身不執行任何 Skill。
 
 `publication_planning.py` 重用 authority、candidate/history scan 與 GitHub PR evidence，提供 read-only `prepare` / `diagnose`。指紋包含 worktree、HEAD/base、remote/PR、policy 與 PR body digest；任何漂移需重新規劃，不能用診斷代碼放行。
 
@@ -251,6 +251,8 @@ CLI lifecycle coverage includes Publication Doctor's stable diagnostics and conf
 Scenario 233 also verifies native Skill and Portable Command projection contracts for Codex, Claude Code and Gemini CLI, including ownership-safe uninstall. These deterministic checks cover generated paths and files, not live Host discovery or invocation.
 
 The Skill Explorer is a static generated artifact from the canonical Skill registry and pinned source dispositions. Its deterministic validator checks inventory and routing metadata; it does not claim semantic model quality.
+
+The catalog contract verifies all 49 canonical Skills, all 38 vendored source paths and SHA-256 entrypoint digests, overlap-based experimental/optional dispositions, and trigger-backed automatic routes. `$grill-with-docs` remains explicit-only in its native projection.
 
 `publication_planning.py` 重用 authority、candidate/history scan 與 GitHub PR evidence，提供 read-only `prepare` / `diagnose`。指紋包含 worktree、HEAD/base、remote/PR、policy 與 PR body digest；任何漂移需重新規劃，不能用診斷代碼放行。
 

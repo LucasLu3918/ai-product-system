@@ -1,0 +1,6 @@
+interface:
+  display_name: "Grill with Docs"
+  short_description: "Interview me and prepare glossary and ADR drafts."
+  default_prompt: "Use $grill-with-docs to stress-test this plan and prepare the glossary or ADR changes it needs."
+policy:
+  allow_implicit_invocation: false

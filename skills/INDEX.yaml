@@ -359,6 +359,20 @@ skills:
       reliability: high
       minimum_tier: 2
       preferred_tier: 3
+  grill-with-docs:
+    description: Explicitly interview me about a plan or domain model, then prepare
+      a project glossary and ADR draft when the decisions are clear.
+    capability: product
+    path: product/grill-with-docs/SKILL.md
+    triggers:
+    - explicit_grill_with_docs
+    cost: medium
+    model_requirements:
+      reasoning: high
+      coding: normal
+      reliability: high
+      minimum_tier: 2
+      preferred_tier: 3
   human-guided-wizard:
     description: Prepare a clear step-by-step guide for operational actions that only
       a human can complete in an external service or dashboard.
@@ -617,7 +631,8 @@ skills:
       preferred_tier: 3
   tdd:
     description: Implement testable behavior through failing tests, minimal passing
-      changes and refactoring; use characterization tests for legacy behavior.
+      changes and refactoring; use characterization tests for legacy behavior and
+      configure requested test tooling.
     capability: testing
     path: testing/tdd/SKILL.md
     triggers:
@@ -625,6 +640,9 @@ skills:
     - modifying_testable_behavior
     - implementing_business_rules
     - implementing_api_or_service_behavior
+    - typescript_test_fixture_migration
+    - pre_commit_validation_setup
+    - commit_hook_configuration
     cost: low
     model_requirements:
       reasoning: medium
@@ -658,6 +676,7 @@ skills:
     - explicit_technical_teaching_request
     - guided_learning_session
     - concept_practice_request
+    - exercise_scaffold_setup
     cost: medium
     model_requirements:
       reasoning: high

@@ -46,7 +46,7 @@ Keep Scenario 235, OpenCode compatibility, Harness, Installation, and Technology
 
 Skill routing changes update the canonical Skill sources and `skills/INDEX.yaml`, then synchronize task guidance, scenario coverage, the Human conformance view, and applicable architecture and maintenance sections. Manual scenarios remain explicitly distinct from executable evidence.
 
-Skill inventory and routing changes also regenerate `docs/human/public/skill-catalog.html` with `python scripts/skill_catalog.py`; update the Explorer links in the Human guide and documentation map, Scenario 259, and both placement and sync registries. The catalog is generated output and must not be edited directly. Upstream disposition records must pin the reviewed commit and classify every source Skill.
+Skill inventory and routing changes also regenerate `docs/human/public/skill-catalog.html` with `python scripts/skill_catalog.py`; update Explorer links, CLI/Harness/Technology/Architecture guidance, Scenario 259, and both placement and sync registries. The catalog is generated output and must not be edited directly. Upstream disposition records pin the reviewed commit, retain vendored source paths and entrypoint hashes, and classify every source as integrated, auto-routed, or experimental/optional when it overlaps an existing AIPS capability.
 
 Skill catalog CLI and Portable Command changes keep cross-Agent install, MCP Resource loading, and uninstall instructions aligned in Harness, Installation, Architecture, Documentation Map, and Scenarios 233/259. Removal may delete only recorded, digest-matching AIPS-owned projections; native Skills that predate AIPS, lack ownership records, or differ from the recorded digest must remain and surface as conflicts.
 

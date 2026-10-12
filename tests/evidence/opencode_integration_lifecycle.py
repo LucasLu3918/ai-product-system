@@ -136,7 +136,7 @@ def cli_cases(base):
     assert initial["status"] == "AUTOMATIC"
     assert initial["governance_enforcement"] == "ADVISORY"
     native = list(root.glob("skills/*/SKILL.md"))
-    assert len(native) == 48
+    assert len(native) == 49
     for path in native:
         meta = yaml.safe_load(path.read_text().split("---", 2)[1])
         assert meta["name"] == path.parent.name and meta["description"]
@@ -358,7 +358,7 @@ def main():
     assert 'identity_features' in plugin_source and '"--identity-feature"' in plugin_source
     assert 'toolContext.signal' in plugin_source and 'shell: false' in plugin_source
     desired = projection.skill_files()
-    assert len(desired) == 48 and desired == projection.skill_files()
+    assert len(desired) == 49 and desired == projection.skill_files()
     for text in desired.values():
         assert "aips-source-sha256" in text
     with tempfile.TemporaryDirectory() as tmp:

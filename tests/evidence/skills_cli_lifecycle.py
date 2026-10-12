@@ -10,6 +10,8 @@ import sys
 import tempfile
 from pathlib import Path
 
+import yaml
+
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 from native_skill_projection import _source_package
@@ -41,6 +43,18 @@ def main() -> int:
     expected_catalog = generate(ROOT)["skills"]
     expected_ids = sorted(expected_catalog)
     expected = collect(locale="zh-TW", include_upstream=False, capability=None, trigger=None)
+    grill_package, _grill_digest = _source_package(ROOT, "grill-with-docs")
+    grill_policy = yaml.safe_load(grill_package["agents/openai.yaml"].decode("utf-8"))
+    require(grill_policy.get("policy", {}).get("allow_implicit_invocation") is False,
+            "$grill-with-docs must remain explicitly invocable in its native projection")
+    for trigger, expected_id in (
+        ("typescript_test_fixture_migration", "tdd"),
+        ("exercise_scaffold_setup", "technical-teaching"),
+        ("pre_commit_validation_setup", "tdd"),
+    ):
+        routed = collect(locale="zh-TW", include_upstream=False, capability=None, trigger=trigger)
+        require([item["id"] for item in routed] == [expected_id],
+                f"automatic source route {trigger} must resolve through the canonical Skill list")
 
     with tempfile.TemporaryDirectory() as temporary:
         cwd = Path(temporary)
@@ -55,7 +69,7 @@ def main() -> int:
         require(result.returncode == 0, f"JSON list failed: {result.stderr}")
         listed = json.loads(result.stdout)
         require(listed == expected, "JSON list differs from canonical Skill metadata and locale")
-        require(len(listed) == 48 and {item["id"] for item in listed} == set(expected_ids),
+        require(len(listed) == 49 and {item["id"] for item in listed} == set(expected_ids),
                 "default list must include all active AIPS Skills")
         require(listed == sorted(listed, key=lambda item: (item["category"], item["source"], item["id"])),
                 "default list order must be stable by category and Skill id")
@@ -128,10 +142,13 @@ def main() -> int:
         result = run(cwd, "list", "--include-upstream", "--format", "json")
         require(result.returncode == 0, f"upstream list failed: {result.stderr}")
         expanded = json.loads(result.stdout)
-        require(len(expanded) == 86, "upstream view must add exactly 38 reviewed records")
+        require(len(expanded) == 87, "upstream view must add exactly 38 reviewed records")
         upstream_grill = next((item for item in expanded if item["id"] == "grill-me" and item["source"] == "upstream"), None)
         require(upstream_grill and upstream_grill["status"] == "workflow",
                 "upstream grill-me must be shown with its workflow disposition")
+        auto_routed = next((item for item in expanded if item["id"] == "setup-pre-commit" and item["source"] == "upstream"), None)
+        require(auto_routed and auto_routed["status"] == "auto_routed" and auto_routed["local_path"],
+                "distinct repo/tool Skills must expose automatic routing and vendored source")
         require("## 工程" in run(cwd, "list").stdout,
                 "default human-readable list must group skills under Traditional Chinese categories")
 

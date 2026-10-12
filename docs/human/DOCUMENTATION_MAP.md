@@ -24,7 +24,7 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 Public CLI commands are documented under the owning user workflow and matching Scenario evidence. A shared dispatcher or Scenario registry does not make unrelated command domains part of that change.
 
-Skill 的使用者搜尋入口是 <a href="./skill-catalog.html">Skill Explorer</a>；其卡片由 `skills/INDEX.yaml` 和固定版本的上游處置清單產生。Skill routing 的 canonical 定義仍在各 `SKILL.md` 與 Registry，Scenario 259 記錄整合及選用邊界。
+Skill 的使用者搜尋入口是 <a href="./skill-catalog.html">Skill Explorer</a>；49 個 canonical AIPS Skills 與 38 個 vendored 上游來源分開呈現，來源清單固定 commit 並記錄本地路徑與 SHA-256。Skill routing 的 canonical 定義仍在各 `SKILL.md` 與 Registry；Scenario 259 記錄自動路由、實驗／選用與 `$grill-with-docs` 明確呼叫邊界。
 
 Git 發布模式與操作步驟以 [User Guide](./USER_GUIDE.md#git-publication-與-release) 為入口；安全保證、信任根部署與隔離限制以 [Security Assurance](./SECURITY_ASSURANCE.md#runtime-policy-enforcement) 為準。一般個人模式 PR merge 依賴 Claude Code 原生 `ask` 或啟用中的 Gemini AIPS extension `ask_user` policy；明確 task-authorized 的 Claude `--auto` 可由同一候選檢查啟用 GitHub auto-merge，Gemini 仍逐次詢問。Codex 仍為 advisory。
 
@@ -96,7 +96,7 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 Publication diagnosis is documented in the User Guide and Technology Guide, with runtime-specific instructions in Claude Code, Codex and OpenCode adapters. Scenario 260 records the privacy and authority boundary.
 
-`skills/INDEX.yaml` 與各 `SKILL.md` 是 Agent routing 的來源；<a href="./skill-catalog.html">Skill Explorer</a> 是由 Registry 產生的 Human 檢索視圖，完整上游處置以固定版本清單為準。
+`skills/INDEX.yaml` 與各 `SKILL.md` 是 canonical Agent routing 的來源；`external-skills/matt-pocock/` 保存上游原始內容，並由固定版本清單的 `local_path`、SHA-256 與 disposition 對照。<a href="./skill-catalog.html">Skill Explorer</a> 是由 Registry 和 manifest 產生的 Human 檢索視圖。
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 

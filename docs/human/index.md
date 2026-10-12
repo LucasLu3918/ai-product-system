@@ -40,7 +40,7 @@ OpenCode setup 與版本綁定驗收請閱讀 [Global Harness](./HARNESS.md)、[
 創作流程新增逐項驗證、版本化回饋與有限修正。明確重製指令可在同一 Session 執行；自動修正需 opt-in，機器結果仍需人工確認與使用者驗收。
 
 
-可重用的任務方法見 `skills/INDEX.yaml` 與各 Skill；可用 <a href="./skill-catalog.html">Skill Explorer</a> 搜尋用途、處置和使用範例。場景規格和覆蓋狀態見 Conformance 文件；遊戲引擎與平台資料見 `references/`。
+可重用的任務方法見 `skills/INDEX.yaml` 與各 Skill；49 個 canonical AIPS Skills 可用 <a href="./skill-catalog.html">Skill Explorer</a> 搜尋。Explorer 也檢索 38 個固定版本、保留原文與 SHA-256 的 Matt Pocock 外部來源及其路由狀態。場景規格和覆蓋狀態見 Conformance 文件；遊戲引擎與平台資料見 `references/`。
 
 其他 Agent 的 Skill 載入方式、MCP Resource 路徑與安全解除安裝流程見 [Global Harness](HARNESS.md#在-opencode-以外載入-aips-skills)；安裝入口見 [Installation](INSTALLATION.md)。
 

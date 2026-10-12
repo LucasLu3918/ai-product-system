@@ -372,15 +372,25 @@ rules:
 
   - id: matt-pocock-skill-explorer
     triggers:
+      - CHANGELOG.md
       - skills/INDEX.yaml
       - skills/integrations/matt-pocock-skills.json
+      - skills/product/grill-with-docs/SKILL.md
+      - skills/product/grill-with-docs/agents/openai.yaml
+      - external-skills/matt-pocock/**
       - scripts/skill_catalog.py
+      - scripts/skills_cli.py
       - docs/human/public/skill-catalog.html
+      - docs/human/HARNESS.md
       - tests/scenarios/259-matt-pocock-skill-integration.md
       - tests/validation/skill_catalog_contracts.py
+      - tests/evidence/skills_cli_lifecycle.py
+      - tests/evidence/opencode_integration_lifecycle.py
     human_docs:
       - docs/human/index.md
       - docs/human/USER_GUIDE.md
+      - docs/human/HARNESS.md
+      - docs/human/MAINTENANCE.md
       - docs/human/DOCUMENTATION_MAP.md
       - docs/human/DOCUMENTATION_SYNC.md
       - docs/human/CONFORMANCE.md
