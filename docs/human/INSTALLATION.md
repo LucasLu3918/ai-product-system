@@ -322,3 +322,7 @@ Windows + WSL 可從 WSL terminal 執行相同 aips uninstall；repository 亦�
 ~~~
 
 這些只保留給既有 checkout / recovery。新文件與新使用者一律使用 Install / Uninstall terminology。
+
+## Publication Root-Cause Recovery (Plan35)
+
+After installing AIPS with Claude Code, run aips publish doctor in a trusted environment for blocked PRs. Do not disable managed PreToolUse hooks or grant blanket Bash permissions to avoid a Host denial.
