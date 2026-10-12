@@ -109,17 +109,23 @@ Managed AIPS installation channel selection controls system updates only. It doe
 
 以 persistent managed instruction 提供 CONTEXT_ALWAYS；安裝器會先檢查 `codex` 命令，再檢查 `CODEX_CLI_PATH`、`AIPS_CODEX_CLI_PATH` 與 macOS ChatGPT app 內建路徑。治理強度依實際可驗證能力回報，不因 MCP 存在而升級。
 
+使用 `aips skills install <skill-id> --host codex` 將 canonical Skill 安裝至原生發現目錄；Portable Command 可用 `aips commands install <command-id> --host codex` 安裝，例如 `aips.grill-me`，再於 Codex 輸入 `$grill-me`。安裝以 AIPS ownership manifest 管理，不覆寫既有無主控 Skill；卸載只移除來源、Host、scope 與摘要仍吻合的 AIPS-owned 檔案。
+
 Codex PreToolUse 的 Plan19 probe 僅拒絕無害的本機合成命令；unsupported、malformed、timeout 與 error 路徑不構成完整 enforcement 證據，aggregate governance 維持 advisory。
 
 ### Claude Code
 
 可安全安裝時使用 UserPromptSubmit + PreToolUse；成功驗證後可提供 TURN_NATIVE / TOOL_GUARDED。
 
+原生 Skills 安裝在 `~/.claude/skills`，使用 `aips skills install <skill-id> --host claude`；Portable Command 使用 `aips commands install <command-id> --host claude`，並以 `/grill-me` 形式觸發。以 `aips skills status` 或 `aips commands status` 檢視 AIPS 所有權。
+
 Runtime Policy 可由 PreToolUse 對 hook 收到且可正規化的動作執行 deny-by-default 檢查；命令列分類不代表可攔截 child process 或網路 socket。
 
 ### Gemini CLI
 
 使用 AIPS extension 的 BeforeAgent / BeforeTool。Runtime-specific observable-event capture 仍是獨立、受限、可驗證的 capability。
+
+原生 Skills 使用 `~/.agents/skills`，可執行 `aips skills install <skill-id> --host gemini` 或 `aips commands install aips.grill-me --host gemini`；Gemini CLI 可用 `/skills list` 檢視並以 `/grill-me` 呼叫。已開啟的工作階段可執行 `/skills reload` 重新載入。
 
 BeforeTool 可執行相同的受支援 Runtime Policy 檢查；Codex 與不支援的 generic runtime 不宣稱強制執行。
 
@@ -219,3 +225,5 @@ aips commands status
 ~~~
 
 這些 projections 是薄包裝，不取代 Constitution、System 或 orchestration canonical sources，也不提供 Runtime-native enforcement、Git publish、merge、release、production 或 Human approval authority。使用者修改過的 projection 會保留並回報 `CONFLICT`。
+
+Codex、Claude Code 與 Gemini CLI 也可用 `aips commands install aips.grill-me --host <codex|claude|gemini>` 安裝為 Host 原生 Skill；分別以 `$grill-me` 或 `/grill-me` 觸發。`aips commands status --host <host>` 檢視，`aips commands uninstall aips.grill-me --host <host>` 精確移除。共用路徑會保留其他 Host 的引用；使用者修改的檔案會保留並回報。

@@ -1726,6 +1726,8 @@ The public command groups return concise help with status 0 and reject unknown s
 
 Scenario 233 also covers `aips skills list`: localized/grouped text and JSON output, exact capability and trigger filters, invalid arguments, empty results, and read-only behavior over canonical Skill metadata. Skill install/removal lifecycle preserves pre-existing, unowned and digest-mismatched Host files.
 
+`tests/evidence/skills_cli_lifecycle.py` and `tests/validation/skill_native_projection_contracts.py` cover native Skill install, repeat install, cross-Host ownership, conflicts, workspace isolation, digest-protected removal, Portable Command projection and legacy migration for Codex, Claude Code and Gemini CLI. These checks validate generated files and ownership behavior; real Host discovery and invocation remain unverified until exercised in each installed Host.
+
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
 OpenCode host acceptance verifies adapter integration only. It does not verify local image generation, visual quality or user acceptance.

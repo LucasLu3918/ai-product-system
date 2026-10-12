@@ -33,6 +33,8 @@ Cursor、Windsurf、GitHub Copilot CLI、Amp、Codex 與 generic 設定只產生
 
 Role、Skill、Protocol 與 Project evidence 只在 task relevant 時載入，避免把整個 system context 常駐每個 Turn。
 
+Canonical AIPS Skills 可從 MCP Resource 按需載入，也可由 `aips skills install` 投影成 Codex、Claude Code、Gemini CLI 原生 Skills；Portable Commands 可用同一 ownership manifest 提供 Host 原生命令入口。安裝記錄 Host、scope、來源與逐檔 SHA-256；重複安裝不建立副本，移除只刪除仍吻合摘要的 AIPS-owned 檔案。投影契約與 lifecycle 測試驗證目錄、格式及所有權，不宣稱已驗證各 Host 實際載入。
+
 ## Project Understanding
 
 `aips project diagnose` 的 `recovery_plan` 列出原因、步驟相依、操作種類與所需授權，保持唯讀。`aips intelligence impact-candidates --max-depth 3` 提供最多三層候選關係；同目錄 import 可解析，但動態呼叫及全域 coverage 限制仍需人工覆核。

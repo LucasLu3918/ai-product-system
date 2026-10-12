@@ -49,7 +49,7 @@ User Prompt
 
 MCP 提供 portability；native adapters 提供 runtime hook / guard。兩者共用 canonical Roles、Skills、Orchestration 與 Project Intelligence。完整 MCP Host 使用 Resources／Prompts／Tools；tool-only Host 透過唯讀 capability/workflow Tools 取得同一 canonical context。各 runtime 的 enforcement 依實際覆蓋證據分開標示。
 
-Skill 跨 Host 載入以 MCP Resource `aips://catalog/skills` 查目錄，再按需讀取 `aips://skills/<skill-id>`；只有明確支援的 Runtime 會建立 AIPS 管理的原生投影。解除安裝依 ownership manifest 與產生摘要確認歸屬，保留 Host 原有、未登記或遭修改的 Skill。
+Skill 跨 Host 載入可透過 MCP Resource `aips://catalog/skills` 查目錄並按需讀取 `aips://skills/<skill-id>`，也可用 `aips skills install` 投影為 Codex、Claude Code、Gemini CLI 的原生 Skill。Portable Commands 也可安裝為原生 Skill，例如 Codex 的 `$grill-me`。Codex 與 Gemini 共用 `.agents/skills`；Claude Code 使用 `.claude/skills`。AIPS ownership manifest 記錄 Host、scope、來源與逐檔摘要；卸載只刪除仍吻合摘要且由 AIPS 管理的檔案，保留既有、無主控記錄、遭修改或仍由其他 Host 共用的 Skill。檔案格式符合 Host 慣例不代表已驗證實際 Host 載入行為。
 
 OpenCode V2 的 managed plugin 在 primary model dispatch 前注入精簡 Turn Context，並在 permission evaluation 階段檢查支援的直接檔案操作。L1 僅允許非 Git workspace 中受限路徑的新創意資產；L2 需要 Project Intelligence READY、freshness CURRENT 與無待解權威衝突；L3 外部效果沿用既有 Human approval gate。Shell 僅保留有限唯讀命令，並額外提供固定參數的 AIPS 診斷。`creative_execution` 是唯一有界自訂工具：它綁定當前 EPHEMERAL Session，可建立不覆寫的角色／風格 Profile 與未設定引擎的 Creative Bundle，也可對既有 Bundle 執行唯讀預檢及明確要求的本機生成。其他 MCP/custom tools 和繞過 OpenCode 的寫入仍不在 guard 範圍。Plugin 安裝與 hook discovery 不足以證明執行防護；完成 runtime permission acceptance 前，治理保持 ADVISORY。
 
