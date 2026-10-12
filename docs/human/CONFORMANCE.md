@@ -1724,6 +1724,8 @@ The public Project Intelligence facade retains its existing command and symbol c
 
 The public command groups return concise help with status 0 and reject unknown subcommands with a useful nonzero result. The compatibility shell facade remains thin; internal library modules keep their current role.
 
+Scenario 233 also covers `aips skills list`: exact capability and trigger filters, text/JSON output, invalid arguments, empty results, and read-only behavior over canonical Skill metadata.
+
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
 OpenCode host acceptance verifies adapter integration only. It does not verify local image generation, visual quality or user acceptance.

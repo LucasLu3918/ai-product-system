@@ -476,6 +476,8 @@ Evolution data completeness、validator shadow/replay、branch cleanup proposal�
 - Before release readiness, finalized notes are recorded under the matching `VERSION` heading, leaving exactly one empty canonical `## Unreleased` section. This read-only check does not authorize tag or release writes; those remain separate Human-approved actions.
 ## Documentation Architecture
 
+Documentation placement resolves changed behavior to its owning Human and Agent topics. Shared registries use focused rules so a change to one scenario does not expand into unrelated capability documentation.
+
 大型文件報告提供既有章節導覽，機器可讀 Registry 保留 Canonical 單一來源。新 helper 透過 Placement／Sync 對應既有主題，避免另外建立一份政策。
 
 Recursive documentation impact reports closure size and repeated requirements; the report does not itself remove canonical placements.

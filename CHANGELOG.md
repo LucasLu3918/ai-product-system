@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Add `aips skills list` with capability and trigger filters and text/JSON output from canonical Skill metadata.
 - Integrate selected Matt Pocock Skill methods into five existing Skills, add five distinct Skills and three opt-in Writing Skills, classify all 38 upstream Skills, and add a generated searchable Human Skill Explorer.
 
 - Add same-session creative recreation admission, per-criterion local quality checks, versioned feedback/repair/comparison and explicit bounded repair loops with replay, provenance and time-budget guards.

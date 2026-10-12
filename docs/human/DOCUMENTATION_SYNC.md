@@ -26,6 +26,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Documentation rules match concrete behavior-bearing paths and map them to their owning topics. Shared registries such as `tests/scenario_coverage.yaml` do not by themselves imply that unrelated product domains changed; use scenario-specific rules when one scenario owns the behavior. CLI facade files follow the command group they route, not every feature that happens to use the same facade.
+
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
 The creative workspace import CLI workflow is maintained in USER_GUIDE.md and orchestration/CREATIVE_DIRECTION.md.

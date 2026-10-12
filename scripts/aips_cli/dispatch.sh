@@ -96,6 +96,19 @@ case "${1:-help}" in
     shift
     portable_commands_cmd "$@"
     ;;
+  skills)
+    sub="${2:-help}"
+    case "$sub" in
+      list)
+        shift 2 || true
+        skills_cli_cmd "$@"
+        ;;
+      help|-h|--help)
+        say "Usage: aips skills list [--capability <id>] [--trigger <trigger>] [--format text|json]"
+        ;;
+      *) die "Unknown skills command: $sub. Run 'aips skills --help'." ;;
+    esac
+    ;;
   intelligence)
     sub="${2:-status}"
     shift 2 || true
