@@ -10,7 +10,7 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
-Cross-document publication diagnostics changes must keep the Human, Agent adapter and CLI guidance aligned, then close the required documentation impact set before publication.
+Cross-document publication diagnostics changes must keep the Human, Agent adapter and CLI guidance aligned, then close the required documentation impact set before publication. Do not interpret an absent gh required-check result as PENDING without independent policy evidence; unavailable policy is fail-closed. Extend stable reason codes without leaking exception text, and keep Host-denial observations separate from native permission proof.
 
 新增 Skill 或改動 routing 時，同步更新 generated Skill Explorer、文件 placement/sync 規則、Scenario 259 與相關 Human/Agent 章節；使用 `scripts/skill_catalog.py` 重建頁面。
 
