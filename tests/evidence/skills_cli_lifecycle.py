@@ -263,20 +263,18 @@ def main() -> int:
         upstream_home.mkdir()
         upstream_env = {"HOME": str(upstream_home), "XDG_CONFIG_HOME": str(upstream_config)}
         upstream_inventory = json.loads((ROOT / "skills/integrations/matt-pocock-skills.json").read_text(encoding="utf-8"))["skills"]
-        optional_upstream = [item for item in upstream_inventory if item["disposition"] in {"experimental_optional", "adopted_optional"}]
-        canonical_duplicates = [item for item in optional_upstream if item["id"] in expected_catalog]
-        installable_upstream = [item for item in optional_upstream if item["id"] not in expected_catalog]
-        require(len(upstream_inventory) == 38 and len(optional_upstream) == 10
-                and len(canonical_duplicates) == 4 and len(installable_upstream) == 6,
-                "upstream install eligibility and canonical duplicate counts must remain explicit")
+        canonical_duplicates = [item for item in upstream_inventory if item["id"] in expected_catalog]
+        installable_upstream = [item for item in upstream_inventory if item["id"] not in expected_catalog]
+        require(len(upstream_inventory) == 38 and len(canonical_duplicates) == 7 and len(installable_upstream) == 31,
+                "all distinct upstream Skills must be installable while canonical duplicates remain protected")
 
         upstream_install = run(cwd, "install", "--upstream", "--all", "--host", "codex", "--host", "gemini", "--format", "json", env_overrides=upstream_env)
         require(upstream_install.returncode == 0, f"upstream batch install failed: {upstream_install.stderr}")
         upstream_rows = json.loads(upstream_install.stdout)["results"]
         statuses = [row["status"] for row in upstream_rows]
-        require(statuses.count("SKIPPED_DISPOSITION") == 28 and statuses.count("SKIPPED_CANONICAL") == 4
-                and statuses.count("INSTALLED") == 6 and statuses.count("SHARED") == 6,
-                f"upstream --all must install six unique optional Skills and explain every other source row: {statuses}")
+        require(statuses.count("SKIPPED_CANONICAL") == 7
+                and statuses.count("INSTALLED") == 31 and statuses.count("SHARED") == 31,
+                f"upstream --all must install all 31 unique Skills and use the seven canonical AIPS entries: {statuses}")
         require(all(row.get("source") == "upstream" for row in upstream_rows),
                 "upstream batch results must identify their source")
         upstream_skill_root = upstream_home / ".agents/skills"
@@ -284,11 +282,14 @@ def main() -> int:
                 and (upstream_skill_root / "setup-matt-pocock-skills/domain.md").is_file()
                 and (upstream_skill_root / "setup-ts-deep-modules/dependency-cruiser.config.cjs").is_file(),
                 "upstream native projection must include the entrypoint and nested supporting resources")
+        codex_metadata = yaml.safe_load((upstream_skill_root / "to-spec/agents/openai.yaml").read_text(encoding="utf-8"))
+        require(codex_metadata.get("policy", {}).get("allow_implicit_invocation") is False,
+                "Codex upstream Skills must require explicit invocation")
 
         upstream_manifest_path = upstream_config / "aips/skills/ownership.json"
         upstream_manifest = json.loads(upstream_manifest_path.read_text(encoding="utf-8"))
         upstream_artifacts = [item for item in upstream_manifest["artifacts"] if item.get("source_kind") == "upstream"]
-        require(len(upstream_artifacts) == 6 and all(item["hosts"] == ["codex", "gemini"] and item["source_id"].startswith("matt-pocock-skills:") for item in upstream_artifacts),
+        require(len(upstream_artifacts) == 31 and all(item["hosts"] == ["codex", "gemini"] and item["source_id"].startswith("matt-pocock-skills:") for item in upstream_artifacts),
                 "upstream installs must be source-owned, namespaced, and share Codex/Gemini ownership references")
 
         upstream_repeat = run(cwd, "install", "--upstream", "setup-matt-pocock-skills", "--host", "codex", "--format", "json", env_overrides=upstream_env)
@@ -296,14 +297,17 @@ def main() -> int:
                 "repeated upstream install must remain idempotent")
         upstream_status = run(cwd, "status", "--upstream", "--host", "codex", "--format", "json", env_overrides=upstream_env)
         upstream_status_rows = json.loads(upstream_status.stdout)["results"]
-        require(upstream_status.returncode == 0 and len(upstream_status_rows) == 6
+        require(upstream_status.returncode == 0 and len(upstream_status_rows) == 31
                 and all(row["source"] == "upstream" and row["status"] == "CURRENT" for row in upstream_status_rows),
                 "upstream-only status must verify source digests and not include catalog Skills")
 
-        skipped_workflow = run(cwd, "install", "--upstream", "grill-me", "--host", "codex", "--format", "json", env_overrides=upstream_env)
-        require(skipped_workflow.returncode == 0 and json.loads(skipped_workflow.stdout)["results"][0]["status"] == "SKIPPED_DISPOSITION"
-                and not (upstream_skill_root / "grill-me").exists(),
-                "workflow-integrated upstream Skills must be explicitly skipped, not installed")
+        selected_workflow = run(cwd, "install", "--upstream", "grill-me", "--host", "codex", "--format", "json", env_overrides=upstream_env)
+        require(selected_workflow.returncode == 0 and json.loads(selected_workflow.stdout)["results"][0]["status"] == "CURRENT"
+                and (upstream_skill_root / "grill-me").is_dir(),
+                "workflow disposition must not prevent explicit installation of a distinct upstream Skill")
+        remove_workflow = run(cwd, "uninstall", "--upstream", "grill-me", "--host", "codex", "--host", "gemini", "--format", "json", env_overrides=upstream_env)
+        require(remove_workflow.returncode == 0 and not (upstream_skill_root / "grill-me").exists(),
+                "an upstream Skill can be removed before another source uses its native name")
         canonical_install = run(cwd, "install", "grill-with-docs", "--host", "codex", "--format", "json", env_overrides=upstream_env)
         require(canonical_install.returncode == 0, f"canonical duplicate fixture install failed: {canonical_install.stderr}")
         skipped_duplicate = run(cwd, "install", "--upstream", "grill-with-docs", "--host", "codex", "--format", "json", env_overrides=upstream_env)
@@ -327,7 +331,7 @@ def main() -> int:
         remove_upstream_codex = run(cwd, "uninstall", "--upstream", "--all", "--host", "codex", "--format", "json", env_overrides=upstream_env)
         require(remove_upstream_codex.returncode == 0 and all(row["status"] == "RETAINED_SHARED" for row in json.loads(remove_upstream_codex.stdout)["results"]),
                 "upstream removal must release only the Codex reference while Gemini still owns shared projections")
-        setup_source = next(item for item in optional_upstream if item["id"] == "setup-matt-pocock-skills")
+        setup_source = next(item for item in installable_upstream if item["id"] == "setup-matt-pocock-skills")
         setup_source_dir = (ROOT / setup_source["local_path"]).parent
         setup_owned_paths = [item.relative_to(setup_source_dir).as_posix() for item in setup_source_dir.rglob("*") if item.is_file()]
         remove_one_upstream = run(cwd, "uninstall", "--upstream", "setup-matt-pocock-skills", "--host", "gemini", "--format", "json", env_overrides=upstream_env)
@@ -366,6 +370,9 @@ def main() -> int:
         upstream_workspace_path = upstream_workspace / ".claude/skills/git-guardrails-claude-code/SKILL.md"
         require(upstream_workspace_install.returncode == 0 and upstream_workspace_path.is_file(),
                 "upstream workspace Skills must use Claude Code's native project discovery path")
+        claude_frontmatter = yaml.safe_load(upstream_workspace_path.read_text(encoding="utf-8").split("---", 2)[1])
+        require(claude_frontmatter.get("disable-model-invocation") is True,
+                "Claude upstream Skills must require explicit invocation")
         upstream_foreign_status = run(cwd, "status", "--upstream", "--host", "claude", "--format", "json", env_overrides=upstream_env)
         require(upstream_foreign_status.returncode == 0 and json.loads(upstream_foreign_status.stdout)["results"] == [],
                 "upstream status from another project must not expose a different workspace's installation")

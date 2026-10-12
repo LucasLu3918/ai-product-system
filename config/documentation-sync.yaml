@@ -380,10 +380,12 @@ rules:
       - external-skills/matt-pocock/**
       - scripts/skill_catalog.py
       - scripts/skills_cli.py
+      - scripts/native_skill_projection.py
       - docs/human/public/skill-catalog.html
       - docs/human/HARNESS.md
       - tests/scenarios/259-matt-pocock-skill-integration.md
       - tests/validation/skill_catalog_contracts.py
+      - tests/validation/skill_native_projection_contracts.py
       - tests/evidence/skills_cli_lifecycle.py
       - tests/evidence/opencode_integration_lifecycle.py
     human_docs:

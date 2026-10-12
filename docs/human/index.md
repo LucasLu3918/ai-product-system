@@ -39,6 +39,8 @@ OpenCode setup 與版本綁定驗收請閱讀 [Global Harness](./HARNESS.md)、[
 
 上游 Skill 的安全安裝、來源篩選與選擇性解除安裝請見 [User Guide](./USER_GUIDE.md#roles-skills-與重用)；來源固定摘要、檔案所有權與 Scenario 259 驗收見 [Harness](./HARNESS.md) 與 [Conformance](./CONFORMANCE.md#scenario-259--matt-pocock-skill-integration-and-explorer)。
 
+Skill Explorer 標示每個上游來源是否可安裝；31 個非 canonical ID 可選擇安裝，7 個同名 ID 使用 AIPS canonical。詳細路徑與明確呼叫設定見 [User Guide](./USER_GUIDE.md#roles-skills-與重用)。
+
 創作流程新增逐項驗證、版本化回饋與有限修正。明確重製指令可在同一 Session 執行；自動修正需 opt-in，機器結果仍需人工確認與使用者驗收。
 
 

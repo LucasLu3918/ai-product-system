@@ -74,7 +74,7 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
-Skill Explorer 是離線生成的靜態 HTML，使用原生瀏覽器搜尋、分類與複製功能。49 個 canonical AIPS Skills 經 registry 路由；38 個 Matt Pocock 原始 Skills 保留在 `external-skills/matt-pocock/` 並列出來源摘要與 disposition。獨特 repo/tool 方法在任務吻合時自動路由，和 AIPS 重疊的來源標為實驗／選用。`$grill-with-docs` 保持獨立且明確呼叫；瀏覽頁面本身不執行任何 Skill。
+Skill Explorer 是離線生成的靜態 HTML，使用原生瀏覽器搜尋、分類與複製功能。49 個 canonical AIPS Skills 經 registry 路由；38 個 Matt Pocock 原始 Skills 保留在 `external-skills/matt-pocock/` 並列出來源摘要與 disposition。31 個非 canonical ID 可由使用者選擇安裝；7 個同名項目沿用 AIPS canonical 版本。Disposition 保留為整合背景，不限制安裝。Codex 與 Claude Code 原生投影要求明確呼叫；Gemini 保留啟用前確認。`$grill-with-docs` 保持獨立且明確呼叫；瀏覽頁面本身不執行任何 Skill。
 
 `publication_planning.py` 重用 authority、candidate/history scan 與 GitHub PR evidence，提供 read-only `prepare` / `diagnose`。指紋包含 worktree、HEAD/base、remote/PR、policy 與 PR body digest；任何漂移需重新規劃，不能用診斷代碼放行。
 
@@ -244,7 +244,7 @@ Hash chain、portable audit bundle、external anchor、key fingerprint 與 reten
 
 ## Quality & Verification
 
-Upstream Skill projections are validated by the isolated `skills_cli_lifecycle.py` evidence: only reviewed optional, non-canonical records are installed, ownership is source-scoped across Hosts, and modified or unowned files survive uninstall. This fixture validates local lifecycle behavior; it does not claim live Agent discovery.
+Upstream Skill projections are validated by the isolated `skills_cli_lifecycle.py` evidence: all non-canonical records are installable, canonical IDs are skipped, ownership is source-scoped across Hosts, and modified or unowned files survive uninstall. Codex and Claude invocation controls are projected from native metadata. This fixture validates local lifecycle behavior; it does not claim live Agent discovery.
 
 CLI lifecycle coverage includes Publication Doctor's stable diagnostics and confirms that documentation or Skill discovery never grants merge authority.
 
@@ -254,7 +254,7 @@ Scenario 233 also verifies native Skill and Portable Command projection contract
 
 The Skill Explorer is a static generated artifact from the canonical Skill registry and pinned source dispositions. Its deterministic validator checks inventory and routing metadata; it does not claim semantic model quality.
 
-The catalog contract verifies all 49 canonical Skills, all 38 vendored source paths and SHA-256 entrypoint digests, overlap-based experimental/optional dispositions, and trigger-backed automatic routes. `$grill-with-docs` remains explicit-only in its native projection.
+The catalog contract verifies all 49 canonical Skills, all 38 vendored source paths and SHA-256 entrypoint digests, the 31/7 upstream installability split, overlap-based dispositions, and trigger-backed automatic routes. `$grill-with-docs` remains explicit-only in its native projection.
 
 `publication_planning.py` 重用 authority、candidate/history scan 與 GitHub PR evidence，提供 read-only `prepare` / `diagnose`。指紋包含 worktree、HEAD/base、remote/PR、policy 與 PR body digest；任何漂移需重新規劃，不能用診斷代碼放行。
 

@@ -101,6 +101,8 @@ def collect(
                     "triggers": [],
                     "source": "upstream",
                     "status": record["disposition"],
+                    "installable": record["id"] not in active,
+                    "installability": "canonical AIPS Skill" if record["id"] in active else "installable upstream Skill",
                     "category": record["category"],
                     "aips_targets": record.get("aips_targets", []),
                     "reason": record.get("reason", ""),
@@ -113,7 +115,11 @@ def collect(
 def _label(item: dict[str, Any], locale: str) -> str:
     if item["source"] == "aips":
         return "啟用" if locale == "zh-TW" else "enabled"
-    return DISPOSITION_ZH.get(item["status"], item["status"]) if locale == "zh-TW" else item["status"]
+    disposition = DISPOSITION_ZH.get(item["status"], item["status"]) if locale == "zh-TW" else item["status"]
+    installability = item.get("installability", "")
+    if locale == "zh-TW":
+        return f"{disposition} · {'可安裝' if item.get('installable') else '使用 AIPS canonical'}"
+    return f"{disposition} · {installability}"
 
 
 def render_table(items: list[dict[str, Any]], locale: str, group_by: str) -> str:
@@ -162,7 +168,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.description = "Install AIPS catalog or reviewed upstream Skills into native Agent Skill discovery directories."
         parser.add_argument("skill_ids", nargs="*", help="Skill IDs from the selected source; use --all to select that source.")
         parser.add_argument("--all", action="store_true", help="Select every eligible Skill in the selected source.")
-        parser.add_argument("--upstream", action="store_true", help="Select reviewed upstream records; only optional dispositions are installable.")
+        parser.add_argument("--upstream", action="store_true", help="Select any reviewed upstream Skill except IDs already provided canonically by AIPS.")
         parser.add_argument("--host", action="append", choices=sorted(native_skills.HOSTS), required=True, help="Target host; repeat to select multiple hosts.")
         parser.add_argument("--scope", choices=("user", "workspace"), default="user")
         parser.add_argument("--project", type=Path, default=Path.cwd())
