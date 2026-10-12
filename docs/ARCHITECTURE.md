@@ -6,6 +6,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 Human 可透過生成式 Skill Explorer 瀏覽 Registry；此唯讀文件視圖不介入 Agent 的 Skill routing、執行授權或 Git 發布權限。
 
+Agent 可透過 MCP Resources 按需載入 canonical Skills，或由 OpenCode 使用 AIPS 管理的原生 Skill 投影；其他 Host 不會因 MCP 設定預覽而自動安裝 Skill。解除安裝只移除 ownership manifest 記錄且摘要未變的 AIPS 投影，預先存在、無主控記錄或遭修改的 Skill 保留。
+
 Read-only publication planning binds the explicit worktree, exact candidate, live default base, remote/PR state and body/policy digests. It returns native-tool cwd/argv and safe diagnostics; neither a plan nor its fingerprint grants permission or executes a protected operation.
 
 Creative workspace import is a local flow: review a private source-hash candidate, then explicitly create the exact absent target in a non-Git workspace.

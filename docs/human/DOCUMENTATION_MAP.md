@@ -61,6 +61,7 @@ GitHub branch cleanup、version-tag provenance 與 ruleset review 的 Human 指�
 ### Agent 整合與核心概念
 
 - HARNESS.md：native adapters + MCP。
+- Harness 的 Skills 跨 Agent 載入方式、MCP Resource 路徑與保留既有 Skill 的解除安裝規則集中於 [Global Harness](HARNESS.md#在-opencode-以外載入-aips-skills)；安裝入口見 [Installation](INSTALLATION.md)。
 - PROJECT_INTELLIGENCE.md：Project understanding / retrieval。
 - SECURITY_ASSURANCE.md：SAL / security evidence。
 

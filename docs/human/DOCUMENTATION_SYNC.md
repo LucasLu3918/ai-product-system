@@ -44,6 +44,8 @@ Skill routing changes update the canonical Skill sources and `skills/INDEX.yaml`
 
 Skill inventory and routing changes also regenerate `docs/human/public/skill-catalog.html` with `python scripts/skill_catalog.py`; update the Explorer links in the Human guide and documentation map, Scenario 259, and both placement and sync registries. The catalog is generated output and must not be edited directly. Upstream disposition records must pin the reviewed commit and classify every source Skill.
 
+Skill catalog CLI and Portable Command changes keep cross-Agent install, MCP Resource loading, and uninstall instructions aligned in Harness, Installation, Architecture, Documentation Map, and Scenarios 233/259. Removal may delete only recorded, digest-matching AIPS-owned projections; native Skills that predate AIPS, lack ownership records, or differ from the recorded digest must remain and surface as conflicts.
+
 Creative authorization remains independent from Git publication grants and native merge confirmation; preserve that boundary in the Human and Agent topic mappings.
 
 Git publication mode behavior is documented in the User Guide and Security Assurance; proposal and self-improvement sources map there through `config/documentation-placement.yaml`. Keep the personal-mode origin trust limitation explicit in both behavior and security guidance. Per-merge confirmation is provided by Claude Code's native `ask` and the active Gemini extension's interactive `ask_user` policy; Codex remains advisory and higher-priority Gemini policies can override the extension rule.

@@ -53,7 +53,7 @@ Scenario 236 adds fixed creative CLI routes; preflight and Gate inspection do no
 
 Public command groups expose help with status 0 and return nonzero for unknown subcommands. Keep routing in the shell facade and preserve internal library modules as libraries.
 
-Scenario 233 covers `aips skills list` output and exact filters against canonical Skill metadata; the listing path does not write the generated index.
+Scenario 233 covers localized/grouped `aips skills list` output, JSON and exact filters against canonical Skill metadata; listing does not write the generated index. Lifecycle checks ensure uninstall preserves pre-existing, unowned and digest-mismatched Host Skills.
 
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
@@ -1063,4 +1063,4 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
-The canonical Skill registry and pinned upstream manifest classify the complete 38-item source inventory; the generated Human Explorer presents active Skills and source dispositions separately. Writing Fragments → Beats → Shape remains explicit-request-only, and untested Beta entries remain unrouted. `tests/validation/skill_catalog_contracts.py` checks deterministic registry, output and source invariants; Scenario 259 remains manual for semantic routing acceptance.
+The canonical Skill registry and pinned upstream manifest classify the complete 38-item source inventory; the generated Human Explorer presents active Skills and source dispositions separately. MCP-compatible Agents load canonical Skill Resources on demand; native projections are owned and removed by AIPS lifecycle rules that preserve pre-existing or modified Skills. Writing Fragments → Beats → Shape remains explicit-request-only, and untested Beta entries remain unrouted. `tests/validation/skill_catalog_contracts.py` checks deterministic registry, output and source invariants; Scenario 259 remains manual for semantic routing acceptance.

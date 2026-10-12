@@ -222,6 +222,8 @@ Map public CLI behavior to the owning Human workflow and Scenario section. Gener
 
 Skill inventory changes also update the generated Human Skill Explorer, its User Guide and Documentation Map links, Scenario 259, and the documentation placement and sync registries. Keep the registry and pinned upstream disposition manifest as its sources.
 
+Skill catalog and CLI behavior must keep Human Harness/Installation guidance, the Architecture overview, Documentation Map, and Scenarios 233/259 aligned. MCP Resources provide on-demand access to canonical Skills; uninstall may remove only digest-matching projections listed in AIPS ownership records and must preserve pre-existing, unowned or modified Host Skills.
+
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
 The import commands belong to the existing creative workflow documentation and are linked from the canonical documentation map.
