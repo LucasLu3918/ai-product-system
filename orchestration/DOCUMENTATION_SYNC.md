@@ -218,6 +218,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+Native Skill projections share one canonical AIPS source and ownership manifest. Human Installation/User Guide/Harness explain host paths and safe removal; Technology Guide and Scenario 233/235 describe deterministic file/lifecycle evidence without claiming live Codex, Claude Code or Gemini CLI discovery. Keep these distinct from Runtime hook enforcement claims.
+
 Map public CLI behavior to the owning Human workflow and Scenario section. Generic dispatcher or shared registry edits require no unrelated domain documentation unless the changed behavior belongs to that domain.
 
 Skill inventory changes also update the generated Human Skill Explorer, its User Guide and Documentation Map links, Scenario 259, and the documentation placement and sync registries. Keep the registry and pinned upstream disposition manifest as its sources.

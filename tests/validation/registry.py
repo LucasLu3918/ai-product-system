@@ -24,6 +24,7 @@ VALIDATORS = (
     ValidatorSpec("validation.skill_index_contracts", False),
     ValidatorSpec("validation.skill_catalog_contracts", False),
     ValidatorSpec("validation.skills_cli_contracts", False),
+    ValidatorSpec("validation.skill_native_projection_contracts", False, ("scripts/native_skill_projection.py", "scripts/skills_cli.py", "scripts/portable_commands.py", "harness/commands/REGISTRY.yaml", "tests/evidence/skills_cli_lifecycle.py", "tests/validation/skill_native_projection_contracts.py", "docs/ARCHITECTURE.md", "docs/human/INSTALLATION.md", "docs/human/USER_GUIDE.md"), False),
     ValidatorSpec("validation.portable_commands_contracts", False, ("scripts/portable_commands.py", "harness/commands/REGISTRY.yaml", "tests/validation/portable_commands_contracts.py"), False),
     ValidatorSpec("validation.opencode_integration_contracts", False, ("scripts/opencode_skill_projection.py", "scripts/opencode_native_guard.py", "scripts/turn_intent.py", "scripts/project_intelligence.py", "harness/adapters/opencode/*", "tests/evidence/opencode_integration_lifecycle.py", "tests/evidence/opencode_native_acceptance.py", "tests/evidence/intelligence_context_lifecycle.py"), False),
     ValidatorSpec("validation.versioning_contracts", True),

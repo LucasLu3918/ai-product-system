@@ -62,6 +62,7 @@ GitHub branch cleanup、version-tag provenance 與 ruleset review 的 Human 指�
 
 - HARNESS.md：native adapters + MCP。
 - Harness 的 Skills 跨 Agent 載入方式、MCP Resource 路徑與保留既有 Skill 的解除安裝規則集中於 [Global Harness](HARNESS.md#在-opencode-以外載入-aips-skills)；安裝入口見 [Installation](INSTALLATION.md)。
+- Codex、Claude Code、Gemini CLI 原生 Skill 安裝、Host/scope 所有權與安全卸載流程見 [Installation](INSTALLATION.md) 與 [User Guide](USER_GUIDE.md#global-harness-與-mcp)；技術邊界見 [Technology Guide](TECHNOLOGY_GUIDE.md#quality--verification) 與 [Conformance](CONFORMANCE.md#scenario-233--public-cli-help-and-error-contracts)。canonical 實作位於 `scripts/native_skill_projection.py`，Portable Command 投影由 `scripts/portable_commands.py` 接入。
 - PROJECT_INTELLIGENCE.md：Project understanding / retrieval。
 - SECURITY_ASSURANCE.md：SAL / security evidence。
 

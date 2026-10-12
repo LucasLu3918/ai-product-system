@@ -103,8 +103,17 @@ case "${1:-help}" in
         shift 2 || true
         skills_cli_cmd "$@"
         ;;
+      install|status|uninstall)
+        shift 2 || true
+        skills_cli_cmd "$sub" "$@"
+        ;;
       help|-h|--help)
         say "Usage: aips skills list [--capability <id>] [--trigger <trigger>] [--include-upstream] [--locale zh-TW|en] [--format table|json] [--group-by category|status|source]"
+        say "       aips skills install <skill-id>... --host codex|claude|gemini [--scope user|workspace] [--project <path>]"
+        say "       aips skills install --all --host <host> [--scope user|workspace]"
+        say "       aips skills status [--host <host>] [--scope user|workspace] [--project <path>]"
+        say "       aips skills uninstall <skill-id>... --host <host> [--scope user|workspace] [--project <path>]"
+        say "       aips skills uninstall --all --host <host> [--scope user|workspace]"
         ;;
       *) die "Unknown skills command: $sub. Run 'aips skills --help'." ;;
     esac
