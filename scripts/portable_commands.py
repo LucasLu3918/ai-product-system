@@ -69,7 +69,14 @@ def render_command(command_id: str, host: str = "generic", objective: str = "") 
     authority_lines = "\n".join(f"- `{key}`: `{str(value).lower()}`" for key, value in authority.items())
     invocation = command["invocation"]["slash"] if renderer == "markdown-command" else command["invocation"]["skill"]
     invocation_text = ", ".join(f"`{item}`" for item in invocation)
-    content = f"""# {command_id}\n\n<!-- AIPS-MANAGED-BEGIN -->\nCanonical ID: `{command_id}`\nRegistry version: `{registry['version']}`\nHost: `{host}`\nRenderer: `{renderer}`\nInvocation: {invocation_text}\n\n## Objective\n\n{objective}\n\n## Canonical sources\n\n{_source_lines(command)}\n\nRead the canonical sources from the installed AIPS system. This projection is a thin wrapper and is not a governance source of truth.\n\n## Required behavior\n\n- Preserve current project and runtime instructions.\n- Report evidence, assumptions, risks, unresolved questions and next actions.\n- Apply all listed gates before proposing a protected operation.\n- Do not claim private chain-of-thought.\n\n## Authority boundaries\n\n{authority_lines}\n\n## Inputs\n\n{', '.join(f'`{item}`' for item in command['inputs'])}\n\n## Outputs\n\n{', '.join(f'`{item}`' for item in command['outputs'])}\n\n<!-- AIPS-MANAGED-END -->\n"""
+    required_behavior = command.get("guidance") or [
+        "Preserve current project and runtime instructions.",
+        "Report evidence, assumptions, risks, unresolved questions and next actions.",
+        "Apply all listed gates before proposing a protected operation.",
+        "Do not claim private chain-of-thought.",
+    ]
+    behavior_lines = "\n".join(f"- {item}" for item in required_behavior)
+    content = f"""# {command_id}\n\n<!-- AIPS-MANAGED-BEGIN -->\nCanonical ID: `{command_id}`\nRegistry version: `{registry['version']}`\nHost: `{host}`\nRenderer: `{renderer}`\nInvocation: {invocation_text}\n\n## Objective\n\n{objective}\n\n## Canonical sources\n\n{_source_lines(command)}\n\nRead the canonical sources from the installed AIPS system. This projection is a thin wrapper and is not a governance source of truth.\n\n## Required behavior\n\n{behavior_lines}\n\n## Authority boundaries\n\n{authority_lines}\n\n## Inputs\n\n{', '.join(f'`{item}`' for item in command['inputs'])}\n\n## Outputs\n\n{', '.join(f'`{item}`' for item in command['outputs'])}\n\n<!-- AIPS-MANAGED-END -->\n"""
 
     if host == "opencode":
         for source in command["canonical_sources"]:

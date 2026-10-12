@@ -76,9 +76,19 @@ OpenCode's explicit `creative_execution.prepare` action creates versioned Profil
 
 OpenCode acceptance reports are bound to a host version, platform and AIPS/plugin source digest. Arbitrary Shell process effects, MCP/custom-tool effects and out-of-process writes are reported UNSUPPORTED; older reports without this field remain UNVERIFIED. Installation and static capability discovery do not upgrade runtime evidence.
 
-安裝時自動偵測 `opencode`，在設定根目錄建立受管理 `AGENTS.md`、27 個 canonical Skills 投影、三個原生 Commands；只在確認 OpenCode V2 後才安裝 `plugins/aips-opencode.ts`。description 由 Skill frontmatter 維護；相對 canonical 參照轉為已安裝 AIPS 路徑，其他資源依 canonical source directory 解析。
+安裝時自動偵測 `opencode`，在設定根目錄建立受管理 `AGENTS.md`、48 個 canonical Skills 投影、三個原生 Commands；只在確認 OpenCode V2 後才安裝 `plugins/aips-opencode.ts`。description 由 Skill frontmatter 維護；相對 canonical 參照轉為已安裝 AIPS 路徑，其他資源依 canonical source directory 解析。
 
 `aips harness install` 更新未遭使用者修改的投影；`aips harness doctor` 與 `python scripts/opencode_skill_projection.py check` 檢查 drift。重名、修改過的檔案、symlink、錯誤 manifest 均保留並回報衝突；解除安裝只移除已記錄且未改動的資源，失敗保留 ownership 供重試。使用者 JSON/JSONC、模型設定及專案內容保留。
+
+#### 在 OpenCode 以外載入 AIPS Skills
+
+Codex、Claude Code、Gemini CLI、Cursor、Windsurf、Copilot CLI、Amp 或其他 MCP Host 不會由 `aips harness install` 複製 AIPS Skill 到 Host 的原生 Skill 目錄。支援設定範本的 Host（Codex、Cursor、Windsurf、Copilot CLI、Amp、OpenCode、generic）可用 `aips mcp config --client <host>` 產生 review-only 設定，依 Host 官方方式自行註冊，再重啟或重新載入 MCP。Claude Code、Gemini CLI 等沒有此設定範本的 Host，若其版本支援 MCP，可依該 Host 官方方式註冊 AIPS stdio server；也可讓 Agent 按需讀取 AIPS checkout 中的來源檔。可用 `aips mcp inspect` 確認 AIPS 端的資源與 Host 支援狀態；設定輸出不會自行修改第三方設定。
+
+在已連接 AIPS MCP 的 Agent 中，先讀 `aips://catalog/skills` 列出 Skill，再讀 `aips://skills/<skill-id>` 載入所需內容；也可使用 `aips_capability_catalog`、`aips_capability_read`，或本機執行 `aips skills list` 查 ID。Agent 應依當前任務選讀相關 Skill，不需常駐載入整份目錄。若 Host 沒有 MCP，可請 Agent 透過安裝中的 AIPS checkout 閱讀對應 `skills/<category>/<name>/SKILL.md`；這是按需讀取來源檔，不是 Host 原生 Skill 安裝。
+
+Codex、Claude Code、Gemini CLI 的 AIPS Harness 指示／hook 可用 `aips harness install` 安裝，`aips harness status` 檢查，`aips harness uninstall` 解除。OpenCode 的原生 Skill 投影也由 Harness 一併管理；卸載後需依 Host 慣例重新載入。MCP 連線則由使用者依該 Host 的設定介面移除 AIPS server 註冊，再重新載入 Host。不要用通配符或整個 `skills/` 目錄刪除方式清理：只移除明確確認屬於 AIPS 的註冊或投影。
+
+解除安裝時，AIPS 只移除 ownership manifest 已記錄、且內容仍與 AIPS 產生摘要相符的檔案。原本已存在的同名 Skill、無 AIPS ownership 記錄的檔案，以及使用者修改過的受管理投影都會保留；衝突會回報 `CONFLICT`，修復或檢查後再重試。不要手動刪除 ownership manifest 來繞過衝突，否則 AIPS 會失去安全辨認可移除檔案的依據。
 
 MCP 使用 `aips mcp config --client opencode` 產生 v2 `mcp.servers.aips` 預覽；v1 使用 `--opencode-version 1`。預覽的 `AIPS_MCP_WORKSPACE` 固定為產生時的工作目錄，須依專案審閱後自行註冊。基本安裝不寫入 MCP 設定。
 

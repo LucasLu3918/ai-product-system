@@ -227,7 +227,9 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 
 使用 <a href="./skill-catalog.html">Skill Explorer</a> 依名稱、用途或分類搜尋 48 個目前可用的 AIPS Skills，並複製提示範例。Explorer 也列出 Matt Pocock 上游 38 項 Skill 的 AIPS 處置；這些紀錄不代表未採納項目已啟用。Writing Fragments、Beats、Shape 只在你明確要求該流程時使用。
 
-在終端機可用 `aips skills list` 列出 Skill ID、Capability 和簡介。以 `--capability <id>` 或 `--trigger <trigger>` 篩選；加上 `--format json` 可輸出機器可讀資料。例如：`aips skills list --capability security --format json`。此命令只讀取 canonical `SKILL.md` 中繼資料，不會修改 Skill 或索引。
+終端機可執行 `aips skills list` 查看繁中分組清單；以 `--capability <id>`、`--trigger <trigger>` 篩選，`--include-upstream` 加入上游 38 項及其處置與 AIPS 對應，`--locale en` 切換英文，`--group-by category|status|source` 切換分組，`--format json` 輸出機器可讀資料。此命令只讀取 canonical Skill 中繼資料，不會修改 Skill 或索引。
+
+若要在 OpenCode 使用訪談命令，執行 `aips commands install aips.grill-me --host opencode`，再輸入 `/grill-me`；其他 Host 可查看 `aips commands render aips.grill-me --host <id>` 顯示的呼叫名稱。一般請求不會自動啟動訪談。OpenCode 以外的 Agent 可依 [Harness 指南](HARNESS.md#在-opencode-以外載入-aips-skills)連接 AIPS MCP，按需讀取 Skill Resource；解除安裝只移除 AIPS ownership 記錄可驗證的項目，既有或已修改的 Skill 會保留並回報衝突。
 
 
 新增能力前依序檢查：
