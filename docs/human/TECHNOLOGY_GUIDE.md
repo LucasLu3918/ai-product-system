@@ -482,3 +482,7 @@ Documentation Placement 將每個 behavior-bearing source 綁到 canonical Human
 ## Runtime Content Safety Boundary
 
 The provider-neutral `scripts/content_safety.py` kernel supplies deterministic secret and baseline PII detection, provenance-aware injection signals, and sink-aware `ALLOW`, `REDACT`, `BLOCK` and `REVIEW` decisions without requiring an external model or API credential.
+
+## Publication Root-Cause Recovery (Plan35)
+
+Publication recovery reuses existing Python, GitHub CLI and runtime adapters. It introduces no paid API, auto-merge daemon, new permission gateway or GitHub policy mutation.
