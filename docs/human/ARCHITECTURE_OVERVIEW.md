@@ -536,3 +536,7 @@ Telemetry additions use bounded allowlisted fields and exclude prompts, images, 
 
 
 Before AIPS persists or publishes content, the sink-aware Runtime Content Safety Boundary applies deterministic secret/PII detection and records untrusted-content provenance. Diagnostic sinks redact; durable or public sinks block. This boundary complements, and does not replace, Human Authority and Git Publish Approval.
+
+## Publication Root-Cause Recovery (Plan35)
+
+Publication recovery reuses read-only doctor/diagnose and existing authority; no new approval service is introduced. Unknown GitHub policy is blocking, and native Claude Host confirmation remains separate.
