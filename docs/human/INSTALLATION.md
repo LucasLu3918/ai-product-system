@@ -179,7 +179,7 @@ aips skills uninstall --upstream git-guardrails-claude-code --host claude
 
 同一個 Skill 可重複安裝至多個 Host；Codex 與 Gemini 共用目錄時只會建立一份投影，所有權紀錄保存每個 Host 的引用。`aips skills uninstall --all --host <host>` 只處理該 Host 已記錄的 AIPS Skills。安裝遇到同名原生 Skill 時會回報 `ALREADY_PRESENT_UNOWNED` 或 `CONFLICT`，不覆寫既有內容。卸載只刪除逐檔摘要與安裝紀錄吻合的檔案；使用者修改過的檔案及自行新增的資源會保留。
 
-`--upstream` 會選擇 `aips skills list --include-upstream` 顯示的 Matt Pocock 來源項目；批次 `--all` 會逐項回報結果，但只安裝 `experimental_optional` 與 `adopted_optional`。已由 AIPS 流程整合、自動路由或直接採納的來源會回報 `SKIPPED_DISPOSITION`。與正式目錄同名的 `grill-with-docs`、`writing-beats`、`writing-fragments`、`writing-shape` 會回報 `SKIPPED_CANONICAL`，請使用對應的 AIPS Skill。其餘六項選用來源為 `setup-matt-pocock-skills`、`chief-of-staff`、`claude-handoff`、`loop-me`、`setup-ts-deep-modules` 與 `git-guardrails-claude-code`；既有同名檔案仍受一般 ownership／衝突保護。安裝會複製 vendored Skill 與其支援檔案，不會執行其中的腳本，也不會註冊或修改 Claude Code hooks。
+`--upstream` 可選擇 `aips skills list --include-upstream` 顯示的任何 Matt Pocock 來源 Skill；`--all` 會逐項處理全部 38 項，其中 31 個不同於 AIPS canonical ID 的技能可安裝，7 個同名項目（`code-review`、`grill-with-docs`、`prototype`、`tdd`、`writing-beats`、`writing-fragments`、`writing-shape`）回報 `SKIPPED_CANONICAL` 並沿用 AIPS 版本。來源 manifest 的 `disposition` 仍說明 AIPS 整合關係，但不再限制使用者安裝。Codex 投影會設定 `allow_implicit_invocation: false`，Claude Code 投影會設定 `disable-model-invocation: true`；Gemini CLI 會沿用啟用技能前的使用者確認。既有同名檔案仍受一般 ownership／衝突保護。安裝會複製 vendored Skill 與支援檔案，不會執行其中的腳本，也不會註冊或修改 Agent hooks。
 
 `aips skills status --upstream` 只檢查上游來源安裝；`aips skills uninstall --upstream --all --host <host>` 只解除該 Host 的 AIPS-owned 上游項目。使用者修改過的檔案會保留並回報 `CONFLICT_PRESERVED`；不帶 `--upstream` 的原有安裝／解除語意維持不變。
 

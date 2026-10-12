@@ -209,7 +209,7 @@ Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行
 
 ## Deterministic Execution
 
-49 canonical Skills route through `skills/INDEX.yaml`; all 38 pinned upstream source Skills are retained under `external-skills/matt-pocock/` and linked from the manifest with SHA-256. `scripts/skill_catalog.py` produces the read-only Human Explorer from that registry plus the upstream disposition manifest. Distinct source methods are routed on matching tasks; overlaps are experimental/optional. The page adds no runtime authority or network dependency. `$grill-with-docs` is a separate explicit-only route and never follows from general planning or documentation work.
+49 canonical Skills route through `skills/INDEX.yaml`; all 38 pinned upstream source Skills are retained under `external-skills/matt-pocock/` and linked from the manifest with SHA-256. `scripts/skill_catalog.py` produces the read-only Human Explorer from that registry plus the upstream disposition manifest. All 31 non-canonical upstream IDs are installable at user choice; seven exact canonical IDs use their AIPS version. Disposition remains integration context rather than an install gate. Native Codex and Claude projections require explicit invocation, while Gemini keeps its activation consent step. The page adds no runtime authority or network dependency. `$grill-with-docs` is a separate explicit-only route and never follows from general planning or documentation work.
 
 Creative benchmark evidence is a read-only consumer of local trial artifacts. It has no provider dispatch, generation authority, or path into the Human acceptance decision.
 

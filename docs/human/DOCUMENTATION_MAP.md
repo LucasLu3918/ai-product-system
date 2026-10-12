@@ -24,6 +24,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 上游 Skill 安裝／解除安裝的操作流程以 `docs/human/USER_GUIDE.md` 為準；Host discovery 與來源邊界見 `docs/human/HARNESS.md`，維護驗證見本文件的 `Validation architecture consistency` 對應章節與 `docs/human/CONFORMANCE.md` Scenario 259。
 
+上游 Skill 是否可安裝依 canonical ID 是否重複判定；disposition 描述整合背景，不限制使用者安裝。Codex 與 Claude Code 原生投影要求明確呼叫，Gemini 保留啟用前確認。
+
 Public CLI commands are documented under the owning user workflow and matching Scenario evidence. A shared dispatcher or Scenario registry does not make unrelated command domains part of that change.
 
 Skill 的使用者搜尋入口是 <a href="./skill-catalog.html">Skill Explorer</a>；49 個 canonical AIPS Skills 與 38 個 vendored 上游來源分開呈現，來源清單固定 commit 並記錄本地路徑與 SHA-256。Skill routing 的 canonical 定義仍在各 `SKILL.md` 與 Registry；Scenario 259 記錄自動路由、實驗／選用與 `$grill-with-docs` 明確呼叫邊界。
@@ -98,7 +100,7 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 Publication diagnosis is documented in the User Guide and Technology Guide, with runtime-specific instructions in Claude Code, Codex and OpenCode adapters. Scenario 260 records the privacy and authority boundary.
 
-`skills/INDEX.yaml` 與各 `SKILL.md` 是 canonical Agent routing 的來源；`external-skills/matt-pocock/` 保存上游原始內容，並由固定版本清單的 `local_path`、SHA-256 與 disposition 對照。<a href="./skill-catalog.html">Skill Explorer</a> 是由 Registry 和 manifest 產生的 Human 檢索視圖。
+`skills/INDEX.yaml` 與各 `SKILL.md` 是 canonical Agent routing 的來源；`external-skills/matt-pocock/` 保存上游原始內容，並由固定版本清單的 `local_path`、SHA-256 與 disposition 對照。31 個非 canonical 上游 ID 可選擇安裝；七個同名 ID 使用 AIPS canonical。<a href="./skill-catalog.html">Skill Explorer</a> 是由 Registry 和 manifest 產生的 Human 檢索視圖。
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 

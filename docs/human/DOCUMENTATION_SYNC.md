@@ -34,6 +34,8 @@ Documentation rules match concrete behavior-bearing paths and map them to their 
 
 Native Agent Skill projection changes map `scripts/native_skill_projection.py`, its CLI consumers and ownership tests to Installation / User Guide setup, Harness host behavior, Technology Guide implementation boundaries, and Scenario 233/235 evidence. Documentation must separate generated-file lifecycle guarantees from live Host discovery and invocation acceptance.
 
+Upstream Skill eligibility follows canonical ID collision: every non-canonical upstream ID is installable by user choice regardless of disposition, while exact canonical matches use AIPS. Keep this behavior, Codex/Claude explicit-invocation metadata and Gemini activation consent aligned across the Explorer, CLI, lifecycle evidence and Human instructions.
+
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
 The creative workspace import CLI workflow is maintained in USER_GUIDE.md and orchestration/CREATIVE_DIRECTION.md.
