@@ -96,19 +96,19 @@ hosts:
     placement: ~/.config/opencode/commands
   codex:
     renderer: markdown-skill
-    mode: global-native-or-mcp
+    mode: global-native-skill
     capability: CONTEXT_ALWAYS
-    placement: ~/.config/aips/commands/projections/codex
+    placement: ~/.agents/skills
   claude:
     renderer: markdown-skill
-    mode: global-native-or-mcp
+    mode: global-native-skill
     capability: CONTEXT_ALWAYS
-    placement: ~/.config/aips/commands/projections/claude
+    placement: ~/.claude/skills
   gemini:
-    renderer: markdown-command
-    mode: project-projection-or-mcp
-    capability: SESSION_ONLY
-    placement: ~/.config/aips/commands/projections/gemini
+    renderer: markdown-skill
+    mode: global-native-skill
+    capability: CONTEXT_ALWAYS
+    placement: ~/.agents/skills
   cursor:
     renderer: markdown-command
     mode: project-projection-or-mcp

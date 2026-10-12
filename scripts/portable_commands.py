@@ -87,6 +87,19 @@ def render_command(command_id: str, host: str = "generic", objective: str = "") 
     return content
 
 
+def render_native_skill(command_id: str) -> str:
+    """Render a host-neutral body for a Skill shared by Codex and Gemini."""
+    command = _command(load_registry(), command_id)
+    content = render_command(command_id, "codex")
+    for source in command["canonical_sources"]:
+        content = content.replace(f"`{source}`", f"`{ROOT / source}`")
+    content = "\n".join(
+        line for line in content.split("\n")
+        if not line.startswith(("Host: `", "Renderer: `", "Invocation: "))
+    )
+    return content.rstrip() + "\n"
+
+
 def config_home() -> Path:
     return Path(os.environ.get("XDG_CONFIG_HOME", Path.home() / ".config")) / "aips"
 
@@ -150,9 +163,59 @@ def _git_commit() -> str:
         return "unknown"
 
 
+def _remove_legacy_projection(host: str, command_ids: list[str]) -> list[dict[str, str]]:
+    """Remove only verified legacy AIPS reference projections for selected commands."""
+    ownership = load_ownership()
+    remaining = []
+    results: list[dict[str, str]] = []
+    selected = set(command_ids)
+    for item in ownership.get("artifacts", []):
+        command_id = item.get("command_id")
+        if item.get("host") != host or command_id not in selected:
+            remaining.append(item)
+            continue
+        path = Path(str(item.get("path", "")))
+        expected = projection_path(host, command_id)
+        if path.resolve(strict=False) != expected.resolve(strict=False):
+            results.append({"command_id": command_id, "host": host, "status": "LEGACY_CONFLICT_PRESERVED", "path": str(path)})
+            remaining.append(item)
+            continue
+        if path.is_symlink() or (path.exists() and not path.is_file()):
+            results.append({"command_id": command_id, "host": host, "status": "LEGACY_CONFLICT_PRESERVED", "path": str(path)})
+            remaining.append(item)
+            continue
+        if path.is_file() and _digest(path.read_text(encoding="utf-8")) != item.get("generated_digest"):
+            results.append({"command_id": command_id, "host": host, "status": "LEGACY_CONFLICT_PRESERVED", "path": str(path)})
+            remaining.append(item)
+            continue
+        if path.is_file():
+            path.unlink()
+        results.append({"command_id": command_id, "host": host, "status": "LEGACY_REMOVED", "path": str(path)})
+    if len(remaining) != len(ownership.get("artifacts", [])):
+        save_ownership({"version": 1, "artifacts": remaining})
+    return results
+
+
 def install(host: str, command_ids: list[str]) -> dict[str, Any]:
     registry = load_registry()
     _host(registry, host)
+    if host in {"codex", "claude", "gemini"}:
+        import native_skill_projection as native_skills
+        results = []
+        for command_id in command_ids:
+            command = _command(registry, command_id)
+            invocation = command.get("invocation", {}).get("skill", [])
+            if len(invocation) != 1 or not invocation[0].startswith("$"):
+                raise ValueError(f"{command_id} has no native Skill invocation")
+            skill_id = invocation[0][1:]
+            description = f"Run AIPS command {command_id}: {command['purpose']}"
+            frontmatter = yaml.safe_dump({"name": skill_id, "description": description}, sort_keys=False, allow_unicode=True)
+            body = "---\n" + frontmatter + "---\n\n" + render_native_skill(command_id)
+            value = native_skills.install_external(skill_id, body, [host], source_id=command_id)
+            results.extend(value["results"])
+            if value["results"] and value["results"][0]["status"] in {"INSTALLED", "CURRENT", "SHARED", "UPDATED"}:
+                results.extend(_remove_legacy_projection(host, [command_id]))
+        return {"status": "CONFLICT" if any(item["status"] in {"CONFLICT", "LEGACY_CONFLICT_PRESERVED"} for item in results) else "READY", "results": results}
     if host == "opencode":
         from opencode_skill_projection import OwnedFiles
         desired = {"commands/" + command_id.replace(".", "-") + ".md": render_command(command_id, host) for command_id in command_ids}
@@ -180,6 +243,11 @@ def install(host: str, command_ids: list[str]) -> dict[str, Any]:
 
 def status(host: str = "generic") -> dict[str, Any]:
     registry = load_registry()
+    if host in {"codex", "claude", "gemini"}:
+        import native_skill_projection as native_skills
+        command_ids = [item["id"] for item in registry["commands"]]
+        value = native_skills.status([host], source_kind="portable-command", source_ids=command_ids)
+        return {"status": value["status"], "registry_version": registry["version"], "artifacts": value["results"]}
     if host == "opencode":
         from opencode_skill_projection import OwnedFiles
         desired = {"commands/" + item["id"].replace(".", "-") + ".md": render_command(item["id"], host) for item in registry["commands"]}
@@ -205,7 +273,23 @@ def status(host: str = "generic") -> dict[str, Any]:
     return {"status": "READY", "registry_version": registry["version"], "artifacts": results}
 
 
-def uninstall(host: str | None = None) -> dict[str, Any]:
+def uninstall(host: str | None = None, command_ids: list[str] | None = None) -> dict[str, Any]:
+    if host in {"codex", "claude", "gemini"}:
+        import native_skill_projection as native_skills
+        registry = load_registry()
+        selected_ids = command_ids or [item["id"] for item in registry["commands"]]
+        skill_ids = [
+            _command(registry, command_id)["invocation"]["skill"][0][1:]
+            for command_id in selected_ids
+        ]
+        result = native_skills.uninstall(
+            [host], skill_ids if command_ids else None, all_owned=True,
+            source_kind="portable-command", source_ids=selected_ids,
+        )
+        result["results"].extend(_remove_legacy_projection(host, selected_ids))
+        if any(item["status"] == "LEGACY_CONFLICT_PRESERVED" for item in result["results"]):
+            result["status"] = "CONFLICT"
+        return result
     from opencode_skill_projection import OwnedFiles
     native = OwnedFiles("commands").sync({}) if host in {None, "opencode"} else {"status": "READY", "results": []}
     if host == "opencode":
@@ -265,7 +349,12 @@ def main(argv: list[str] | None = None) -> int:
         elif args.action == "status":
             value = status(args.host)
         elif args.action == "uninstall":
-            value = uninstall(None if args.all else args.host)
+            if args.command_id and args.all:
+                raise ValueError("uninstall accepts either one command id or --all, not both")
+            if args.command_id and args.host == "generic":
+                raise ValueError("uninstalling one command requires --host")
+            selected_ids = [args.command_id] if args.command_id else None
+            value = uninstall(None if args.all else args.host, selected_ids)
         else:
             raise AssertionError(args.action)
         _output(value, args.format)

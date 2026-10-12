@@ -11,6 +11,7 @@ from typing import Any
 
 import yaml
 from skill_index import generate
+import native_skill_projection as native_skills
 
 ROOT = Path(__file__).resolve().parents[1]
 UPSTREAM = ROOT / "skills" / "integrations" / "matt-pocock-skills.json"
@@ -141,31 +142,70 @@ def render_table(items: list[dict[str, Any]], locale: str, group_by: str) -> str
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(
-        prog="aips skills list",
-        description="List canonical AIPS Skills and their short descriptions.",
-    )
-    parser.add_argument("command", nargs="?", choices=("list",), help=argparse.SUPPRESS)
-    parser.add_argument("--capability", help="Filter by exact AIPS capability/category.")
-    parser.add_argument("--trigger", help="Filter by exact Skill trigger.")
-    parser.add_argument("--include-upstream", action="store_true", help="Include the reviewed 38-item upstream inventory.")
-    parser.add_argument("--locale", choices=("zh-TW", "en"), default="zh-TW")
-    parser.add_argument("--format", choices=("table", "text", "json"), default="table")
-    parser.add_argument("--group-by", choices=("category", "status", "source"), default="category")
-    args = parser.parse_args(argv)
+    args_list = list(sys.argv[1:] if argv is None else argv)
+    command = args_list[0] if args_list and args_list[0] in {"list", "install", "status", "uninstall"} else "list"
+    command_args = args_list[1:] if command != "list" or (args_list and args_list[0] == "list") else args_list
+    parser = argparse.ArgumentParser(prog=f"aips skills {command}")
+    if command == "list":
+        parser.description = "List canonical AIPS Skills and their short descriptions."
+        parser.add_argument("--capability", help="Filter by exact AIPS capability/category.")
+        parser.add_argument("--trigger", help="Filter by exact Skill trigger.")
+        parser.add_argument("--include-upstream", action="store_true", help="Include the reviewed 38-item upstream inventory.")
+        parser.add_argument("--locale", choices=("zh-TW", "en"), default="zh-TW")
+        parser.add_argument("--format", choices=("table", "text", "json"), default="table")
+        parser.add_argument("--group-by", choices=("category", "status", "source"), default="category")
+    elif command == "install":
+        parser.description = "Install AIPS catalog Skills into native Agent Skill discovery directories."
+        parser.add_argument("skill_ids", nargs="*", help="AIPS Skill IDs; use --all to install the active catalog.")
+        parser.add_argument("--all", action="store_true", help="Select every active AIPS catalog Skill.")
+        parser.add_argument("--host", action="append", choices=sorted(native_skills.HOSTS), required=True, help="Target host; repeat to select multiple hosts.")
+        parser.add_argument("--scope", choices=("user", "workspace"), default="user")
+        parser.add_argument("--project", type=Path, default=Path.cwd())
+        parser.add_argument("--format", choices=("table", "json"), default="table")
+    elif command == "status":
+        parser.description = "Show AIPS-owned native Skill installations and drift."
+        parser.add_argument("--host", action="append", choices=sorted(native_skills.HOSTS), help="Filter by host; repeat to select multiple.")
+        parser.add_argument("--scope", choices=("user", "workspace"))
+        parser.add_argument("--project", type=Path, default=Path.cwd())
+        parser.add_argument("--format", choices=("table", "json"), default="table")
+    else:
+        parser.description = "Remove only unchanged native Skills recorded as AIPS-owned."
+        parser.add_argument("skill_ids", nargs="*", help="AIPS Skill IDs; use --all to remove all selected owned Skills.")
+        parser.add_argument("--all", action="store_true", help="Select every matching AIPS-owned Skill.")
+        parser.add_argument("--host", action="append", choices=sorted(native_skills.HOSTS), required=True, help="Target host; repeat to select multiple hosts.")
+        parser.add_argument("--scope", choices=("user", "workspace"))
+        parser.add_argument("--project", type=Path, default=Path.cwd())
+        parser.add_argument("--format", choices=("table", "json"), default="table")
+    args = parser.parse_args(command_args)
 
     try:
-        items = collect(
-            locale=args.locale,
-            include_upstream=args.include_upstream,
-            capability=args.capability,
-            trigger=args.trigger,
-        )
-        if args.format == "json":
-            print(json.dumps(items, ensure_ascii=False, indent=2))
+        if command == "list":
+            items = collect(locale=args.locale, include_upstream=args.include_upstream, capability=args.capability, trigger=args.trigger)
+            if args.format == "json":
+                print(json.dumps(items, ensure_ascii=False, indent=2))
+            else:
+                print(render_table(items, args.locale, args.group_by), end="")
+            return 0
+        if command == "install":
+            if args.all == bool(args.skill_ids):
+                parser.error("provide Skill IDs or --all")
+            ids = sorted(generate(ROOT)["skills"]) if args.all else args.skill_ids
+            result = native_skills.install(ROOT, ids, args.host, scope=args.scope, project=args.project)
+        elif command == "status":
+            result = native_skills.status(args.host, scope=args.scope, project=args.project, root=ROOT)
         else:
-            print(render_table(items, args.locale, args.group_by), end="")
-        return 0
+            if args.all == bool(args.skill_ids):
+                parser.error("provide Skill IDs or --all")
+            result = native_skills.uninstall(args.host, args.skill_ids, scope=args.scope, project=args.project, all_owned=args.all, source_kind="catalog")
+        if args.format == "json":
+            print(json.dumps(result, ensure_ascii=False, indent=2))
+        else:
+            print(f"狀態：{result['status']}")
+            for row in result["results"]:
+                hosts = row.get("hosts", row.get("host", ""))
+                detail = f"；{row['detail']}" if row.get("detail") else ""
+                print(f"- {row['skill_id']} · {hosts} · {row.get('scope', '')} · {row['status']} · {row.get('path', '')}{detail}")
+        return 1 if result["status"] == "CONFLICT" else 0
     except (OSError, ValueError, KeyError, TypeError, yaml.YAMLError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1

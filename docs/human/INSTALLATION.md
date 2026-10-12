@@ -160,7 +160,20 @@ Validation installs the pinned `cryptography` dependency used to verify Ed25519 
 
 安裝後可使用 `aips commands list` 檢視 Portable Command Registry；`aips commands render` 只預覽，`aips commands install --host <id>` 才建立 AIPS-owned projection。這些 projection 不會自動修改 Client-owned MCP 設定，也不提供 Runtime-native enforcement。
 
-跨 Agent 的 Skill 載入請依 [Global Harness](HARNESS.md#在-opencode-以外載入-aips-skills)：支援 MCP 的 Host 透過 `aips mcp serve` 讀取 `aips://catalog/skills` 與 `aips://skills/<skill-id>`，再按任務載入；Host 原生投影只由明確支援的 AIPS adapter 管理。移除時使用 `aips harness uninstall` 或該 Host 的 AIPS 卸載流程，不要手動清空 Skill 目錄；AIPS 只刪除有 ownership 記錄且內容摘要相符的檔案，既有、無主控記錄及已修改的 Skill 都會保留。
+跨 Agent 的 Skill 載入可依 [Global Harness](HARNESS.md#在-opencode-以外載入-aips-skills) 使用 MCP，也可安裝原生 Skill。Codex 與 Gemini CLI 使用 `~/.agents/skills/<name>/SKILL.md`，Claude Code 使用 `~/.claude/skills/<name>/SKILL.md`；workspace scope 分別使用專案內 `.agents/skills` 與 `.claude/skills`。Gemini CLI 也會辨識 `.agents/skills`。
+
+~~~bash
+aips skills install requirements-definition --host codex
+aips skills install requirements-definition --host claude --scope workspace --project /path/to/project
+aips skills status --host codex
+aips skills uninstall requirements-definition --host codex
+~~~
+
+同一個 Skill 可重複安裝至多個 Host；Codex 與 Gemini 共用目錄時只會建立一份投影，所有權紀錄保存每個 Host 的引用。`aips skills uninstall --all --host <host>` 只處理該 Host 已記錄的 AIPS Skills。安裝遇到同名原生 Skill 時會回報 `ALREADY_PRESENT_UNOWNED` 或 `CONFLICT`，不覆寫既有內容。卸載只刪除逐檔摘要與安裝紀錄吻合的檔案；使用者修改過的檔案及自行新增的資源會保留。
+
+Portable Command 也能安裝為 Host 原生 Skill，例如 `aips commands install aips.grill-me --host codex`；可用 `aips commands status --host codex` 檢視，並以 `aips commands uninstall aips.grill-me --host codex` 精確移除該命令，或用 `aips commands uninstall --host codex` 移除該 Host 的全部 Portable Commands。這些命令產生相同格式的 Host 相容 `SKILL.md`，並使用同一份 AIPS ownership manifest。
+
+支援 MCP 的 Host 仍可透過 `aips mcp serve` 讀取 `aips://catalog/skills` 與 `aips://skills/<skill-id>`；MCP 連線與原生 Skill 安裝互相獨立。
 Native Runtime Adapter 與 MCP 是兩個互補平面：
 
 - Codex / Claude Code / Gemini CLI：依可驗證能力安裝 AIPS-owned integration。

@@ -6,7 +6,7 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 Human 可透過生成式 Skill Explorer 瀏覽 Registry；此唯讀文件視圖不介入 Agent 的 Skill routing、執行授權或 Git 發布權限。
 
-Agent 可透過 MCP Resources 按需載入 canonical Skills，或由 OpenCode 使用 AIPS 管理的原生 Skill 投影；其他 Host 不會因 MCP 設定預覽而自動安裝 Skill。解除安裝只移除 ownership manifest 記錄且摘要未變的 AIPS 投影，預先存在、無主控記錄或遭修改的 Skill 保留。
+Agent 可透過 MCP Resources 按需載入 canonical Skills，或由 AIPS 將 Skills 與 Portable Commands 投影至 Codex、Claude Code、Gemini CLI 及 OpenCode 的原生發現目錄。Codex 與 Gemini 可共用 `~/.agents/skills`；Claude Code 使用 `~/.claude/skills`。外部 ownership manifest 記錄來源、Host、scope 與逐檔摘要；重複安裝不建立副本，卸載只刪除仍吻合摘要的 AIPS-owned 檔案。既有、無主控記錄、遭修改或仍由其他 Host 共用的 Skill 會保留。
 
 Read-only publication planning binds the explicit worktree, exact candidate, live default base, remote/PR state and body/policy digests. It returns native-tool cwd/argv and safe diagnostics; neither a plan nor its fingerprint grants permission or executes a protected operation.
 

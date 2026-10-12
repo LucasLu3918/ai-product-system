@@ -231,7 +231,9 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 
 終端機可執行 `aips skills list` 查看繁中分組清單；以 `--capability <id>`、`--trigger <trigger>` 篩選，`--include-upstream` 加入上游 38 項及其處置與 AIPS 對應，`--locale en` 切換英文，`--group-by category|status|source` 切換分組，`--format json` 輸出機器可讀資料。此命令只讀取 canonical Skill 中繼資料，不會修改 Skill 或索引。
 
-若要在 OpenCode 使用訪談命令，執行 `aips commands install aips.grill-me --host opencode`，再輸入 `/grill-me`；其他 Host 可查看 `aips commands render aips.grill-me --host <id>` 顯示的呼叫名稱。一般請求不會自動啟動訪談。OpenCode 以外的 Agent 可依 [Harness 指南](HARNESS.md#在-opencode-以外載入-aips-skills)連接 AIPS MCP，按需讀取 Skill Resource；解除安裝只移除 AIPS ownership 記錄可驗證的項目，既有或已修改的 Skill 會保留並回報衝突。
+將 AIPS Skills 安裝為 Host 原生 Skills，可使用 `aips skills install <skill-id> --host codex|claude|gemini`。Codex 與 Gemini 共用 `~/.agents/skills`；Claude Code 使用 `~/.claude/skills`。加入 `--scope workspace --project <path>` 可改裝在指定專案；以 `aips skills status` 檢查紀錄，以 `aips skills uninstall <skill-id> --host <host>` 移除。安裝紀錄位於 AIPS XDG config 下的 `skills/ownership.json`，記錄 Host、路徑及逐檔摘要。重複安裝會更新同一份 AIPS-owned 投影，不會覆寫無主控記錄的原生 Skill。卸載只刪除摘要仍吻合的檔案；修改檔案與額外資源會保留。
+
+Portable Command 也能提供原生 Skill 入口。例如在 Codex 執行 `aips commands install aips.grill-me --host codex`，再呼叫 `$grill-me`；Claude Code 使用 `/grill-me`，Gemini CLI 可用 `/skills list` 確認；若是已開啟的 Gemini session，執行 `/skills reload` 後再呼叫 `/grill-me`。以 `aips commands status --host <host>` 檢查，使用 `aips commands uninstall aips.grill-me --host <host>` 精確移除該命令；`aips commands uninstall --host <host>` 則移除該 Host 的全部 Portable Commands。一般請求不會自動啟動訪談。MCP 仍可作為另一種載入方式，詳見 [Harness 指南](HARNESS.md#在-opencode-以外載入-aips-skills)。
 
 
 新增能力前依序檢查：
