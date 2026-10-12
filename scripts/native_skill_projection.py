@@ -277,7 +277,7 @@ def install_upstream(
                 "detail": UPSTREAM_CANONICAL_SKIP_DETAIL,
             })
             continue
-        source_files, _ = _upstream_source_package(root, record)
+        source_files, source_digest = _upstream_source_package(root, record)
         for host_group in sorted({("claude",) if host == "claude" else ("codex", "gemini") for host in selected_hosts}):
             files = _explicit_upstream_projection(
                 source_files, list(host_group), skill_id=identifier,
