@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+Cross-document publication diagnostics changes must keep the Human, Agent adapter and CLI guidance aligned, then close the required documentation impact set before publication.
+
 新增 Skill 或改動 routing 時，同步更新 generated Skill Explorer、文件 placement/sync 規則、Scenario 259 與相關 Human/Agent 章節；使用 `scripts/skill_catalog.py` 重建頁面。
 
 發布恢復使用 `aips publish prepare` 重新觀察目前候選與 live GitHub 狀態；既有 OPEN PR 不再建立，CLOSED/歧義 PR 停止，MERGED 必須驗證 exact PR head 與 merge commit 已納入 live base。觀察只由呼叫者選擇保存，不儲存 prompt、body 內容或憑證。
@@ -275,6 +277,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+The publication matrix binds the exact changed-path set and records denied, unavailable, stale and no-mutation evidence before the Integration Gate.
+
 `aips publish prepare --auto-merge` 僅規劃 exact-head GitHub auto-merge，並要求 non-empty passing required checks；既有 native Human confirmation 與 GitHub 後續要求仍適用。
 
 OpenCode adapter changes must preserve version/platform/source binding in native acceptance. Review unsupported Shell, MCP/custom-tool and out-of-process effects as explicit limitations; keep missing legacy evidence UNVERIFIED and overall governance ADVISORY.
@@ -485,6 +489,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+Publication maintenance uses `aips publish doctor` for read-only repository, protection, PR and Required Checks evidence. Permission-limited policy visibility is UNKNOWN and blocks; any policy change remains a separate administrator action. Scenario 260 covers the diagnostic contract.
 
 Skill registry changes run the catalog contract and regenerate `docs/human/public/skill-catalog.html`; Scenario 259 keeps source dispositions, optional Writing triggers and manual routing acceptance visible.
 

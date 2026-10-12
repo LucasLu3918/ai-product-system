@@ -17,3 +17,5 @@ For an existing-project mutation:
 General conversation does not require heavy project initialization.
 
 The runtime/user-selected primary implementation model remains the default unless policy or capability requires another route. Skill tiers must not silently downshift it. Prefer bounded primary execution; delegate only for material evidence, specialty, isolation or independent-review value.
+
+For publication blocks, use the read-only `aips publish doctor` and `aips publish diagnose --worktree <root> --command '<literal command>'`. Report stable reason code, phase, safe next step and Required Checks state; never expose raw GitHub output or infer success from missing evidence. These observations never execute merge or consume grants. Keep policy/admin changes and merges behind the existing Human Authority and native host confirmation.

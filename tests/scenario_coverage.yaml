@@ -2058,3 +2058,15 @@ scenarios:
       - skills/integrations/matt-pocock-skills.json
       - scripts/skill_catalog.py
       - tests/validation/skill_catalog_contracts.py
+  - id: "260"
+    path: tests/scenarios/260-publication-diagnostics-and-doctor.md
+    coverage: lifecycle
+    evidence:
+      - tests/scenarios/260-publication-diagnostics-and-doctor.md
+      - scripts/publication_diagnostics.py
+      - scripts/publication_authority.py
+      - scripts/publication_planning.py
+      - scripts/publish_preflight.py
+      - tests/test_publication_diagnostics.py
+      - tests/test_publication_planning.py
+      - tests/validation/publish_preflight_contracts.py

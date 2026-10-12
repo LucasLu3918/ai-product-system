@@ -1719,6 +1719,8 @@ Diagnostic recommendations remain read-only and conditional.
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+The Doctor command adds repository readiness output without changing existing CLI error or permission semantics; Scenario 260 covers its full diagnostics and redaction contract.
+
 The public Project Intelligence facade retains its existing command and symbol contract.
 
 
@@ -1842,3 +1844,7 @@ The scheduled/manual workflow runs a pinned OSV dependency inventory and compare
 Declared behavior dependencies select potentially stale Eval cases for review. The report does not execute cases or alter results; scenarios 192, 193 and 224 remain manual.
 
 Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md).
+
+## Scenario 260 — Publication diagnostics and Doctor
+
+Scenario 260 verifies stable, redacted diagnostics for publication blockers, read-only `gh pr merge` diagnosis, first-time repository Doctor observations, Required Checks states, unavailable policy evidence, and consistent Claude Code/OpenCode/Codex guidance. The doctor never changes repository settings, executes merge, or consumes a grant.

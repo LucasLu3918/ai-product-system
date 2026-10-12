@@ -584,3 +584,5 @@ Independent review evidence is accepted only for the exact candidate and bounded
 Publication Preflight 的環境診斷 lifecycle 會隔離 Python module probe，並獨立驗證 loopback/browser capability blockers；主機限制不會被記成 policy enforcement 或產品安全行為變更。
 
 Repository validation 的時間 artifact 只記錄檢查名稱、結果和耗時，不儲存測試輸出或秘密。早期候選秘密掃描、Gate 內的強制掃描及 PR/main 的完整驗證均維持必要條件。
+
+Publication diagnosis follows the same fail-closed authority model: `aips publish doctor` and literal merge diagnosis return sanitized observations only. They never execute publication, consume signed grants, bypass Required Checks, or write GitHub policy; unavailable evidence remains blocking. See Scenario 260.

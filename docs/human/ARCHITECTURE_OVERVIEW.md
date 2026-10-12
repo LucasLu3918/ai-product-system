@@ -122,6 +122,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Creative assets and Git publication retain separate authority boundaries: repository readiness can be observed with Publication Doctor, while asset generation/import authorization remains unchanged.
+
 Skill 整合新增明確選用的 Writing Fragments → Beats → Shape 方法；它提供內容組織建議，不會啟動素材生成，也不改變人工審查邊界。
 
 Publication planning 按需擴充既有 preflight：觀察 worktree identity、精確候選、live base 與 PR，再交回原生工具。Claude/Gemini 保留 native per-call merge confirmation；Codex 仍為 ADVISORY，OpenCode 不宣稱支援通用 Shell 發布攔截。
@@ -335,6 +337,8 @@ Optional creative vision review is confined to an installed local model over loo
 Creative prompt admission 是獨立授權邊界：每次回覆必須以目前 Session、root、動作與剩餘輸出數重新核准；原始歷史提示和 transcript 不得作為授權依據。
 
 Required repository checks and publication authority remain unchanged.
+
+The read-only Publication Doctor classifies repository configuration, auth visibility, protection-policy evidence and optional PR Required Checks before a user reviews the next step. Literal merge diagnosis reuses publication authority validation; neither operation executes merge, consumes a grant or changes GitHub settings. Incomplete protection visibility remains unknown and blocking.
 
 
 Creative grants retain only action decisions, a bounded output count and a prompt digest in memory; batch results and traces omit raw prompts.

@@ -8,7 +8,10 @@ Human 可透過生成式 Skill Explorer 瀏覽 Registry；此唯讀文件視圖�
 
 Agent 可透過 MCP Resources 按需載入 canonical Skills，或由 AIPS 將 Skills 與 Portable Commands 投影至 Codex、Claude Code、Gemini CLI 及 OpenCode 的原生發現目錄。Codex 與 Gemini 可共用 `~/.agents/skills`；Claude Code 使用 `~/.claude/skills`。外部 ownership manifest 記錄來源、Host、scope 與逐檔摘要；重複安裝不建立副本，卸載只刪除仍吻合摘要的 AIPS-owned 檔案。既有、無主控記錄、遭修改或仍由其他 Host 共用的 Skill 會保留。
 
+The read-only Publication Doctor follows the same native-tool handoff: it reports repository setup and PR blockers, then leaves publication and creative asset actions to their existing authority paths.
+
 Read-only publication planning binds the explicit worktree, exact candidate, live default base, remote/PR state and body/policy digests. It returns native-tool cwd/argv and safe diagnostics; neither a plan nor its fingerprint grants permission or executes a protected operation.
+
 
 Creative workspace import is a local flow: review a private source-hash candidate, then explicitly create the exact absent target in a non-Git workspace.
 
@@ -278,6 +281,8 @@ flowchart LR
 The alias candidate is deterministic and transparent. It is not an embedding provider and does not change `semantic.status=NOT_CONFIGURED`. The committed Trial follows the FAIL → KEEP branch: required regressions and no synonym-recall improvement produce recommendation `HOLD`. Normal Turn Context retrieval therefore does not enable the alias lane.
 
 ## Maintenance and publication evidence
+
+Publication diagnostics reuse the existing authority and preflight boundary. `aips publish doctor` reads repository/auth/protection and optional PR/check evidence; `aips publish diagnose` can validate a literal merge command. Both return stable safe diagnostics only. The publication execution path remains the sole authority consumer; no topology, grant or policy mutation path is added.
 
 ```mermaid
 flowchart LR

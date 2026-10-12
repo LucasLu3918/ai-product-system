@@ -76,6 +76,8 @@ For a candidate built in a shared workspace, first snapshot the intended head an
 
 ## System Update Preflight
 
+The exact-candidate Integration Gate remains required after read-only Doctor or merge diagnosis; neither report replaces candidate-bound validation or merge approval.
+
 The AIPS CLI adds fixed read-only diagnostics and creative Bundle preflight; generation itself remains an explicit action outside preflight.
 
 
@@ -242,6 +244,8 @@ When extracting an internal retrieval module, preserve the existing facade and l
 Large/core changes are proposal-first. Use `templates/core-change-proposal.md`. Semantic impact matters more than the number of changed files. No implementation begins until the user approves the proposed boundary. Material scope drift requires re-approval.
 
 ## Git Publish Approval
+
+For a blocked or first-time GitHub publication, run `aips publish doctor` and optionally `aips publish diagnose` on the literal merge command. Treat unavailable policy/check evidence as blocking, then follow safe next steps; never infer authorization or perform an unapproved policy change from the report.
 
 
 For remote publication, use `templates/git-publish-proposal.md` to preserve the exact candidate, changed files, validation evidence, commit plan and target. Personal mode proceeds for a task-authorized engineering branch/PR after required checks; merge into `main` still requires explicit task intent and required checks. Ordinary Claude/Gemini merges require native confirmation; explicitly task-authorized Claude `--auto` may enable GitHub auto-merge only through the same exact-candidate and passing-check guard, while Gemini retains `ask_user`. High-assurance mode requires the external grant. Re-evaluate if target or task scope changes.

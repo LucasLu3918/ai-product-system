@@ -285,3 +285,5 @@ Runtime Policy changes require deterministic evaluator and native-hook lifecycle
 Publication preview scans the exact tracked diff and bounded untracked candidate files before expensive lifecycle validation. Unscannable inputs block preview; findings expose only detector type and source location. The same preview checks that configured commit email matches the repository's allowed identity policy.
 
 `tests/validate_repository.py` loads repository contract modules from `tests/validation/registry.py`, whose order and timing labels are explicit. Lifecycle evidence remains a separate ordered list. The Gate fails if a registered import fails, and accumulated contract errors retain their established aggregation order.
+
+Publication Doctor is diagnostic evidence only. It cannot replace exact-candidate Integration Gate checks, Required Checks enforcement, Human Authority, or native merge confirmation.

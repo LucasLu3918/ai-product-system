@@ -176,7 +176,7 @@ publish_preflight_cmd() {
   local command_root="$SYSTEM_DIR"
   if [ -z "$selected_root" ]; then
     selected_root="$(git -C "$PWD" rev-parse --show-toplevel 2>/dev/null || true)"
-    if [ -z "$selected_root" ] || [ ! -f "$selected_root/scripts/publish_preflight.py" ]; then
+    if [ -z "$selected_root" ] || { [ "$action" != "doctor" ] && [ ! -f "$selected_root/scripts/publish_preflight.py" ]; }; then
       selected_root=""
       if [ "$action" = "matrix-sync" ] || [ "$action" = "post-merge" ] || [ "$action" = "docs-impact" ]; then
         die "Run publish $action from an AIPS checkout or pass --project-root <repo>."
@@ -185,7 +185,11 @@ publish_preflight_cmd() {
   fi
   if [ -n "$selected_root" ]; then
     command_root="$(cd "$selected_root" 2>/dev/null && pwd -P)" || die "Cannot resolve --project-root: $selected_root"
-    [ -f "$command_root/scripts/publish_preflight.py" ] || die "--project-root is not an AIPS repository: $command_root"
+    if [ "$action" = "doctor" ]; then
+      [ "$(git -C "$command_root" rev-parse --show-toplevel 2>/dev/null || true)" = "$command_root" ] || die "--project-root is not a Git repository: $command_root"
+    else
+      [ -f "$command_root/scripts/publish_preflight.py" ] || die "--project-root is not an AIPS repository: $command_root"
+    fi
     say "Publish preflight project root: $command_root" >&2
     case "$action" in
       plan|run|environment)
@@ -201,7 +205,8 @@ publish_preflight_cmd() {
   [ -n "$py" ] || py="$(python_bin)"
   [ -n "$py" ] || die "python3 is required."
   local script_root="$command_root"
-  [ "$action" != "post-merge" ] || script_root="$SYSTEM_DIR"
+  if [ "$action" = "post-merge" ] || [ "$action" = "doctor" ]; then script_root="$SYSTEM_DIR"; fi
+  if [ "$action" = "doctor" ] && [ -n "$selected_root" ]; then publish_args+=(--project-root "$command_root"); fi
   say "Publish runtime: launcher=$SYSTEM_DIR source=$script_root target=$command_root python=$py" >&2
   "$py" -c 'import yaml' >/dev/null 2>&1 || die "The Python selected for $command_root ($py) lacks PyYAML. Run `python3.12 bin/prepare-local-validation` in that checkout, then retry."
   if [ "$action" = "post-merge" ]; then
@@ -213,9 +218,9 @@ publish_preflight_cmd() {
     return
   fi
   if [ "${#publish_args[@]}" -gt 0 ]; then
-    PATH="$(dirname "$py"):$PATH" "$py" "$command_root/scripts/publish_preflight.py" "$action" "${publish_args[@]}"
+    PATH="$(dirname "$py"):$PATH" "$py" "$script_root/scripts/publish_preflight.py" "$action" "${publish_args[@]}"
   else
-    PATH="$(dirname "$py"):$PATH" "$py" "$command_root/scripts/publish_preflight.py" "$action"
+    PATH="$(dirname "$py"):$PATH" "$py" "$script_root/scripts/publish_preflight.py" "$action"
   fi
 }
 

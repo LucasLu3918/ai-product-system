@@ -78,6 +78,8 @@ Skill Explorer 是離線生成的靜態 HTML，使用原生瀏覽器搜尋、分
 
 `publication_planning.py` 重用 authority、candidate/history scan 與 GitHub PR evidence，提供 read-only `prepare` / `diagnose`。指紋包含 worktree、HEAD/base、remote/PR、policy 與 PR body digest；任何漂移需重新規劃，不能用診斷代碼放行。
 
+`publication_diagnostics.py` 提供共享的穩定錯誤分類與只讀 GitHub Doctor。`aips publish diagnose` 接受 `gh pr merge` 並重用唯一的 publication authority 驗證精確 PR 與 SHA；`aips publish doctor` 觀察 auth、repository merge methods、branch protection/ruleset visibility、PR 與 required checks。所有命令回傳診斷而不執行發布／合併，也不寫入 GitHub policy 或消耗授權；缺少 Required Checks、API 權限不足及未知狀態均 fail closed。
+
 The local creative CLI supports `import-candidate` followed by explicit `import --accept-hash`; it rechecks source bytes and refuses existing destinations.
 
 
@@ -241,6 +243,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+CLI lifecycle coverage includes Publication Doctor's stable diagnostics and confirms that documentation or Skill discovery never grants merge authority.
 
 `aips skills list` reads canonical Skill frontmatter through the read-only Skill index, supports exact capability and trigger filters, and emits text or JSON. Its lifecycle evidence covers listing, filters, output, invalid arguments and empty results without changing the generated index.
 

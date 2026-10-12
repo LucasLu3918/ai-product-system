@@ -94,6 +94,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 
 ## Agent / machine canonical 文件
 
+Publication diagnosis is documented in the User Guide and Technology Guide, with runtime-specific instructions in Claude Code, Codex and OpenCode adapters. Scenario 260 records the privacy and authority boundary.
+
 `skills/INDEX.yaml` 與各 `SKILL.md` 是 Agent routing 的來源；<a href="./skill-catalog.html">Skill Explorer</a> 是由 Registry 產生的 Human 檢索視圖，完整上游處置以固定版本清單為準。
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.

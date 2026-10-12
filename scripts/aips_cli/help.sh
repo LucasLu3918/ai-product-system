@@ -111,6 +111,7 @@ Usage:
   aips integration-gate --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--review-trust-store <path>] [--observe-run-id <id>] [--output <path>] [--project-root <repo>]
   aips janitor --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>]
   aips publish preview|plan|preflight|matrix-sync|post-merge|checks [publish-preflight options] [--project-root <repo>]
+  aips publish doctor [--project-root <repo>] [--branch <branch>] [--pr <number>] [--format yaml|json]
   aips publish prepare --worktree <candidate-root> --title <title> --body-file <file> [--runtime codex|claude-code|gemini-cli|opencode] [--expected-fingerprint <digest>] [--host-denied] [--merge-intent]
   aips publish diagnose --worktree <candidate-root> --command <literal-native-command>
   aips approval propose --operation <operation> --base <sha> --command <literal-command> [--cwd <repo>]

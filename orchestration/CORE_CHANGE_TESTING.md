@@ -214,3 +214,5 @@ Runtime Content Safety Boundary changes require detector, sink, publication, pro
 Runtime Policy Enforcement Core Changes also reconcile action and policy digest binding, approval expiry/scope drift, runtime capability truthfulness, high-risk sandbox fail-closed behavior, semantic deny/escalate monotonicity, audit redaction and the exact candidate file-set binding.
 
 For CLI and validation modularization, the boundary matrix must cover direct source-checkout invocation, installed symlink invocation, argument and exit-status compatibility, validator import order and timing labels, error aggregation order, single-owner lifecycle execution, and publication-policy output equivalence.
+
+Publication diagnostics changes derive tests for every Required Checks state, API/auth failure, stale PR/head evidence, raw-output redaction, no mutation, and no grant consumption. Doctor and merge diagnosis remain read-only; validate their exact candidate through repository validation and the Core Matrix before publication.

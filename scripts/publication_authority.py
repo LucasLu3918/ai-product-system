@@ -35,12 +35,16 @@ class PublicationError(ValueError):
     def diagnostic(self) -> dict[str, str]:
         # Never expose exception text: Git/host errors may contain private data.
         code = self.reason_code if self.reason_code in PUBLICATION_DIAGNOSTICS else 'PUBLICATION_REJECTED'
-        detail, next_step = PUBLICATION_DIAGNOSTICS[code]
-        return {'reason_code': code, 'detail': detail, 'next_step': next_step}
+        values = PUBLICATION_DIAGNOSTICS[code]
+        detail, next_step = values[:2]
+        phase = values[2] if len(values) > 2 else 'validation'
+        category = values[3] if len(values) > 3 else 'POLICY'
+        return {'reason_code': code, 'detail': detail, 'next_step': next_step,
+                'phase': phase, 'category': category}
 
 
 PUBLICATION_DIAGNOSTICS = {
-    'PUBLICATION_REJECTED': ('Publication binding was rejected.', 'Inspect the candidate with aips publish prepare; retain the current authority boundary.'),
+    'PUBLICATION_REJECTED': ('Publication binding was rejected.', 'Inspect the candidate with aips publish prepare; retain the current authority boundary.', 'validation', 'POLICY'),
     'PUSH_SOURCE_NOT_EXACT_SHA': ('Push source must equal the full candidate SHA.', 'Resolve HEAD and use its literal full SHA as the refspec source.'),
     'INVALID_TARGET_REF': ('An explicit full target ref is required.', 'Use refs/heads/<current-engineering-branch>.'),
     'WORKTREE_DIRTY': ('The selected worktree has uncommitted content.', 'Preserve development files; review delivery scope or use a separate clean candidate worktree.'),
@@ -59,7 +63,17 @@ PUBLICATION_DIAGNOSTICS = {
     'STAGED_CONTENT_UNAVAILABLE': ('A staged file could not be read for content inspection.', 'Check the staged index and file availability, then restage and retry.'),
     'STAGED_CONTENT_TOO_LARGE': ('A staged file exceeds the content inspection limit.', 'Split or remove the oversized staged file, then retry.'),
     'CONTENT_INSPECTION_UNAVAILABLE': ('The content inspection step could not complete.', 'Check the local scanner and Git state, then retry without bypassing the guard.'),
-    'AUTO_MERGE_REQUIRES_INTENT': ('Automatic merge planning requires explicit merge intent.', 'Re-run prepare with --merge-intent or --auto-merge only after reviewing the exact candidate.'),
+    'AUTO_MERGE_REQUIRES_INTENT': ('Automatic merge planning requires explicit merge intent.', 'Re-run prepare with --merge-intent or --auto-merge only after reviewing the exact candidate.', 'authority', 'POLICY'),
+    'REQUIRED_CHECKS_UNCONFIGURED': ('No required checks were returned for this PR.', 'Ask a repository administrator to review Required Checks; empty evidence never permits merge.', 'checks', 'POLICY'),
+    'REQUIRED_CHECKS_FAILING': ('One or more required checks failed.', 'Resolve the failed checks and rerun the read-only diagnosis.', 'checks', 'FAILING'),
+    'REQUIRED_CHECKS_PENDING': ('One or more required checks are still running.', 'Wait for required checks to finish, then rerun the read-only diagnosis.', 'checks', 'PENDING'),
+    'REQUIRED_CHECKS_MISSING': ('A required check is missing or skipped.', 'Restore the required check result for this exact SHA, then rerun diagnosis.', 'checks', 'MISSING'),
+    'REQUIRED_CHECKS_CANCELLED': ('A required check was cancelled.', 'Rerun the cancelled required check and revalidate the exact SHA.', 'checks', 'CANCELLED'),
+    'REQUIRED_CHECKS_PERMISSION': ('GitHub did not allow required-check evidence to be read.', 'Resolve repository access with an administrator; do not treat unavailable checks as passing.', 'checks', 'PERMISSION'),
+    'REQUIRED_CHECKS_AUTHENTICATION': ('GitHub authentication is unavailable for required-check inspection.', 'Resolve the existing GitHub CLI login locally, then rerun diagnosis.', 'checks', 'AUTHENTICATION'),
+    'REQUIRED_CHECKS_NETWORK': ('GitHub required-check evidence could not be reached.', 'Check connectivity and retry the read-only diagnosis.', 'checks', 'NETWORK'),
+    'REQUIRED_CHECKS_API_UNAVAILABLE': ('GitHub required-check evidence is unavailable.', 'Check GitHub API availability and repository access, then retry.', 'checks', 'API_UNAVAILABLE'),
+    'REQUIRED_CHECKS_INVALID': ('GitHub returned an invalid required-check response.', 'Inspect GitHub CLI compatibility and retry without bypassing the merge guard.', 'checks', 'INVALID_RESPONSE'),
 }
 
 
@@ -340,24 +354,23 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
                 ['gh', 'pr', 'checks', argv[3], '--repo', repo, '--required', '--json', 'bucket,name'],
                 cwd=root, capture_output=True, text=True, timeout=30, check=False,
             )
-            if checks.returncode:
-                raise PublicationError('required PR checks are not all complete and passing')
             try:
-                required_checks = json.loads(checks.stdout)
-            except json.JSONDecodeError as exc:
-                raise PublicationError('required PR check status unavailable') from exc
-            if not isinstance(required_checks, list) or not required_checks or any(
-                    not isinstance(item, dict) or item.get('bucket') not in {'pass', 'skipping'}
-                    or not isinstance(item.get('name'), str) or not item.get('name')
-                    for item in required_checks):
-                raise PublicationError('required PR checks are missing or not all passing')
+                required_checks = json.loads(checks.stdout) if checks.returncode in {0, 8} else None
+            except json.JSONDecodeError:
+                required_checks = None
+            from publication_diagnostics import classify_required_checks
+            check_observation = classify_required_checks(required_checks, returncode=checks.returncode,
+                                                          stderr=checks.stderr)
+            if check_observation['status'] != 'PASS':
+                raise PublicationError('required PR checks are missing or not all passing',
+                                        check_observation['reason_code'] or 'REQUIRED_CHECKS_INVALID')
             result['merge_confirmation'] = {
                 'pr_number': int(argv[3]),
                 'pr_url': pr['url'],
                 'head_sha': pr['headRefOid'],
                 'base_branch': pr['baseRefName'],
                 'base_sha': pr['baseRefOid'],
-                'required_checks': sorted(item.get('name', 'unnamed') for item in required_checks),
+                'required_checks': check_observation['checks'],
                 'auto_merge': '--auto' in argv,
             }
         else:

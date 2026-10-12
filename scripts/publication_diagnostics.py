@@ -1,0 +1,236 @@
+"""Shared safe publication diagnostic categories and read-only GitHub observations."""
+from __future__ import annotations
+
+import json
+import re
+import shutil
+import subprocess
+from pathlib import Path
+from typing import Any
+
+
+def remote_failure(stderr: str = "", returncode: int | None = None) -> str:
+    """Map host failures to stable categories without returning provider text."""
+    text = stderr.lower()
+    if "http 403" in text or "forbidden" in text or "resource not accessible" in text:
+        return "PERMISSION"
+    if returncode == 4 or "http 401" in text or "authentication" in text or "not logged" in text:
+        return "AUTHENTICATION"
+    if "timed out" in text or "timeout" in text or "could not resolve" in text:
+        return "NETWORK"
+    if "http 404" in text or "not found" in text:
+        return "MISSING"
+    return "API_UNAVAILABLE"
+
+
+def classify_required_checks(payload: Any = None, *, returncode: int = 0,
+                              stderr: str = "") -> dict[str, Any]:
+    """Classify gh pr checks --required output. Empty evidence is explicitly blocking."""
+    if returncode not in {0, 8}:
+        reason = remote_failure(stderr, returncode)
+        return {"status": "UNAVAILABLE", "reason_code": "REQUIRED_CHECKS_" + reason,
+                "checks": []}
+    if not isinstance(payload, list):
+        return {"status": "UNAVAILABLE", "reason_code": "REQUIRED_CHECKS_INVALID", "checks": []}
+    if not payload:
+        return {"status": "UNCONFIGURED", "reason_code": "REQUIRED_CHECKS_UNCONFIGURED", "checks": []}
+    buckets = [item.get("bucket") if isinstance(item, dict) else None for item in payload]
+    names = [item.get("name") for item in payload if isinstance(item, dict)]
+    if any(not isinstance(item, dict) or item.get("bucket") not in
+           {"pass", "skipping", "fail", "pending", "cancel"} or
+           not isinstance(item.get("name"), str) or not item["name"] for item in payload):
+        return {"status": "UNAVAILABLE", "reason_code": "REQUIRED_CHECKS_INVALID", "checks": []}
+    if "fail" in buckets:
+        status, code = "FAIL", "REQUIRED_CHECKS_FAILING"
+    elif "pending" in buckets:
+        status, code = "PENDING", "REQUIRED_CHECKS_PENDING"
+    elif "cancel" in buckets:
+        status, code = "CANCELLED", "REQUIRED_CHECKS_CANCELLED"
+    elif "skipping" in buckets:
+        # Skipping is not a successful Required Check for publication authority.
+        status, code = "MISSING", "REQUIRED_CHECKS_MISSING"
+    else:
+        status, code = "PASS", None
+    if returncode == 8 and status == "PASS":
+        return {"status": "UNAVAILABLE", "reason_code": "REQUIRED_CHECKS_INVALID", "checks": []}
+    return {"status": status, "reason_code": code, "checks": sorted(names)}
+
+
+def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = None) -> dict[str, Any]:
+    """Read-only repository, auth, policy, PR and required-check diagnosis."""
+    import publication_authority as authority
+    from repository_governance_snapshot import build_snapshot, repository_slug
+
+    result: dict[str, Any] = {"version": 1, "status": "BLOCKED", "authorized": False,
+                              "read_only": True, "repository": None, "authentication": "UNKNOWN",
+                              "merge_methods": [], "required_checks": {"status": "UNKNOWN", "checks": []},
+                              "pr": None, "blockers": [], "diagnostics": [], "next_steps": []}
+    try:
+        root = root.expanduser().resolve(strict=True)
+        if Path(authority.git(root, "rev-parse", "--show-toplevel")).resolve() != root:
+            raise authority.PublicationError("repository root required", "CWD_MISMATCH")
+        remote = authority.git(root, "remote", "get-url", "origin")
+        repo = repository_slug(remote)
+        if not repo or not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
+            raise authority.PublicationError("GitHub origin required", "REMOTE_OBSERVATION_FAILED")
+        result["repository"] = repo
+        gh = shutil.which("gh")
+        if not gh:
+            result["blockers"].append("gh_unavailable")
+            result["diagnostics"].append({"reason_code": "GH_UNAVAILABLE", "phase": "authentication",
+                "category": "LOCAL_TOOL", "detail": "GitHub CLI is unavailable.",
+                "next_step": "Install or expose GitHub CLI, then rerun `aips publish doctor`."})
+            return result
+        auth_check = subprocess.run([gh, "auth", "status", "--hostname", "github.com"], cwd=root,
+                                    capture_output=True, text=True, timeout=15, check=False)
+        result["authentication"] = "AVAILABLE" if auth_check.returncode == 0 else "UNAVAILABLE"
+        if auth_check.returncode:
+            result["blockers"].append("github_auth_unavailable")
+            result["diagnostics"].append({"reason_code": "GITHUB_AUTH_UNAVAILABLE", "phase": "authentication",
+                "category": remote_failure(auth_check.stderr, auth_check.returncode),
+                "detail": "GitHub authentication could not be confirmed.",
+                "next_step": "Run `gh auth status` locally and resolve access without sharing credentials."})
+            return result
+        api = subprocess.run([gh, "api", "repos/" + repo], cwd=root, capture_output=True,
+                             text=True, timeout=20, check=False)
+        try:
+            metadata = json.loads(api.stdout) if api.returncode == 0 else None
+        except json.JSONDecodeError:
+            metadata = None
+        if not isinstance(metadata, dict):
+            reason = remote_failure(api.stderr, api.returncode)
+            result["blockers"].append("repository_metadata_unavailable")
+            result["diagnostics"].append({"reason_code": "REPOSITORY_METADATA_" + reason,
+                "phase": "repository", "category": reason,
+                "detail": "Repository settings could not be read.",
+                "next_step": "Check repository access and GitHub API availability, then rerun the doctor."})
+            return result
+        result["merge_methods"] = sorted(name for name, key in
+            (("merge", "allow_merge_commit"), ("squash", "allow_squash_merge"),
+             ("rebase", "allow_rebase_merge")) if metadata.get(key) is True)
+        branch = branch or authority.git(root, "branch", "--show-current") or "main"
+        def read_api(endpoint: str) -> tuple[int, str]:
+            argv = [gh, "api", endpoint]
+            if "/rulesets?" in endpoint:
+                argv[2:2] = ["--paginate", "--slurp"]
+            response = subprocess.run(argv, cwd=root, capture_output=True,
+                                      text=True, timeout=20, check=False)
+            return response.returncode, response.stdout
+        snapshot = build_snapshot(repo, branch, read_api)
+        policy = snapshot.get("branch_protection") or {}
+        required = policy.get("required_checks") if snapshot.get("source_complete") else None
+        ruleset_required = sorted({str(check.get("context"))
+            for ruleset in (snapshot.get("rulesets") or []) if isinstance(ruleset, dict)
+            for rule in (ruleset.get("rules") or []) if isinstance(rule, dict)
+            and rule.get("type") == "required_status_checks"
+            for check in ((rule.get("parameters") or {}).get("required_status_checks") or [])
+            if isinstance(check, dict) and check.get("context")})
+        required = sorted(set(required or []) | set(ruleset_required)) if snapshot.get("source_complete") else None
+        result["policy"] = {"status": "AVAILABLE" if snapshot.get("source_complete") else "UNAVAILABLE",
+                             "branch": branch, "required_checks": required or [],
+                             "ruleset_required_checks": ruleset_required,
+                             "source_complete": snapshot.get("source_complete") is True,
+                             "api_write_performed": False}
+        if not snapshot.get("source_complete"):
+            result["blockers"].append("protection_evidence_unavailable")
+            result["diagnostics"].append({"reason_code": "PROTECTION_EVIDENCE_UNAVAILABLE",
+                "phase": "policy", "category": "PERMISSION_OR_API", "detail":
+                "Branch protection or ruleset visibility is incomplete.", "next_step":
+                "Ask a repository administrator to verify policy visibility; do not infer that protection is absent."})
+        elif not required:
+            result["blockers"].append("required_checks_unconfigured")
+            result["diagnostics"].append({"reason_code": "REQUIRED_CHECKS_UNCONFIGURED", "phase": "policy",
+                "category": "POLICY", "detail": "No branch-protection Required Checks were observed.",
+                "next_step": "Ask a repository administrator to review Required Checks configuration."})
+        if not result["merge_methods"]:
+            result["blockers"].append("merge_methods_unavailable")
+        if pr_number is None:
+            current_branch = authority.git(root, "branch", "--show-current")
+            base_branch = authority._remote_default_branch(root, remote)
+            from publication_planning import _prs
+            candidates = _prs(root, repo, current_branch, base_branch) if current_branch else []
+            open_prs = [item for item in candidates if item.get("state") == "OPEN"]
+            if len(open_prs) == 1:
+                pr_number = open_prs[0]["number"]
+            elif len(open_prs) > 1:
+                result["blockers"].append("pr_state_ambiguous")
+                result["diagnostics"].append({"reason_code": "PR_STATE_AMBIGUOUS", "phase": "pr",
+                    "category": "AMBIGUOUS", "detail": "Multiple open PRs match this branch and base.",
+                    "next_step": "Inspect the matching PRs and rerun the doctor with an explicit `--pr`."})
+        if pr_number is not None:
+            view = subprocess.run([gh, "pr", "view", str(pr_number), "--repo", repo, "--json",
+                "number,state,isDraft,headRefOid,headRefName,baseRefName,baseRefOid,mergeable"], cwd=root,
+                capture_output=True, text=True, timeout=20, check=False)
+            try:
+                pr = json.loads(view.stdout) if view.returncode == 0 else None
+            except json.JSONDecodeError:
+                pr = None
+            if (not isinstance(pr, dict) or type(pr.get("number")) is not int or
+                    pr.get("state") not in {"OPEN", "CLOSED", "MERGED"} or
+                    type(pr.get("isDraft")) is not bool or
+                    not isinstance(pr.get("headRefName"), str) or not isinstance(pr.get("baseRefName"), str) or
+                    not re.fullmatch(r"[0-9a-f]{40,64}", str(pr.get("headRefOid"))) or
+                    not re.fullmatch(r"[0-9a-f]{40,64}", str(pr.get("baseRefOid")))):
+                result["blockers"].append("pr_observation_unavailable")
+                result["pr"] = {"status": "UNAVAILABLE"}
+            else:
+                pr_blockers = []
+                head_branch = pr.get("headRefName")
+                base_branch = pr.get("baseRefName")
+                try:
+                    authority._ref(root, "refs/heads/" + str(head_branch))
+                    authority._ref(root, "refs/heads/" + str(base_branch))
+                    live_head = authority._tip(root, remote, "refs/heads/" + str(head_branch))
+                    live_base = authority._tip(root, remote, "refs/heads/" + str(base_branch))
+                except authority.PublicationError:
+                    live_head = live_base = None
+                if live_head is None or live_base is None:
+                    pr_blockers.append(("PR_STATE_AMBIGUOUS", "PR branch tips could not be confirmed."))
+                else:
+                    if live_head != pr["headRefOid"]:
+                        pr_blockers.append(("PR_HEAD_STALE", "The PR head differs from its current remote branch."))
+                    if live_base != pr.get("baseRefOid"):
+                        pr_blockers.append(("PR_BASE_STALE", "The PR base differs from the current remote target."))
+                if pr.get("state") != "OPEN":
+                    pr_blockers.append(("PR_STATE_AMBIGUOUS", "The selected PR is not open."))
+                if pr.get("isDraft") is True:
+                    pr_blockers.append(("PR_STATE_AMBIGUOUS", "The selected PR is still a draft."))
+                if pr.get("mergeable") != "MERGEABLE":
+                    pr_blockers.append(("PR_STATE_AMBIGUOUS", "GitHub has not confirmed that the selected PR is mergeable."))
+                checks_proc = subprocess.run([gh, "pr", "checks", str(pr_number), "--repo", repo,
+                    "--required", "--json", "bucket,name"], cwd=root, capture_output=True,
+                    text=True, timeout=30, check=False)
+                try:
+                    check_payload = json.loads(checks_proc.stdout) if checks_proc.returncode in {0, 8} else None
+                except json.JSONDecodeError:
+                    check_payload = None
+                checks = classify_required_checks(check_payload, returncode=checks_proc.returncode,
+                                                  stderr=checks_proc.stderr)
+                if any(code in {"PR_HEAD_STALE", "PR_BASE_STALE"} for code, _ in pr_blockers):
+                    checks = {**checks, "status": "STALE", "reason_code": "CANDIDATE_CHANGED"}
+                result["required_checks"] = checks
+                result["pr"] = {"status": pr.get("state"), "freshness": "STALE" if any(
+                    code in {"PR_HEAD_STALE", "PR_BASE_STALE"} for code, _ in pr_blockers) else "CURRENT",
+                    "number": pr["number"],
+                    "draft": pr.get("isDraft"), "head_sha": pr["headRefOid"],
+                    "head_branch": pr.get("headRefName"), "base_branch": pr.get("baseRefName"),
+                    "base_sha": pr.get("baseRefOid"), "mergeable": pr.get("mergeable")}
+                for code, detail in pr_blockers:
+                    result["blockers"].append(code.lower())
+                    result["diagnostics"].append({"reason_code": code, "phase": "pr",
+                        "category": "STALE" if "STALE" in code else "BLOCKED", "detail": detail,
+                        "next_step": "Refresh PR and branch observations, resolve the reported state, then rerun the doctor."})
+                if checks["status"] != "PASS":
+                    result["blockers"].append("required_checks_" + checks["status"].lower())
+                    result["diagnostics"].append({"reason_code": checks["reason_code"] or "REQUIRED_CHECKS_BLOCKED",
+                        "phase": "checks", "category": checks["status"],
+                        "detail": "Required Checks are not confirmed passing.",
+                        "next_step": "Resolve the reported check state and rerun `aips publish doctor`."})
+        result["status"] = "READY" if not result["blockers"] else "BLOCKED"
+        return result
+    except (OSError, ValueError, TypeError, KeyError, subprocess.TimeoutExpired):
+        result["blockers"].append("repository_observation_unavailable")
+        result["diagnostics"].append({"reason_code": "REMOTE_OBSERVATION_FAILED", "phase": "repository",
+            "category": "API_UNAVAILABLE", "detail": "Required repository evidence is unavailable.",
+            "next_step": "Check local repository configuration and GitHub access, then rerun the doctor."})
+        return result
