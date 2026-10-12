@@ -287,3 +287,7 @@ Publication preview scans the exact tracked diff and bounded untracked candidate
 `tests/validate_repository.py` loads repository contract modules from `tests/validation/registry.py`, whose order and timing labels are explicit. Lifecycle evidence remains a separate ordered list. The Gate fails if a registered import fails, and accumulated contract errors retain their established aggregation order.
 
 Publication Doctor is diagnostic evidence only. It cannot replace exact-candidate Integration Gate checks, Required Checks enforcement, Human Authority, or native merge confirmation.
+
+## Publication Root-Cause Recovery (Plan35)
+
+An Integration Gate PASS is not Git merge authority. Revalidate exact PR HEAD/base and required checks at native execution; advisory recovery cannot set host permission to granted.
