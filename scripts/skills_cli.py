@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """List canonical AIPS Skills and optionally the reviewed upstream inventory."""
 
 from __future__ import annotations
