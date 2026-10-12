@@ -49,6 +49,8 @@ Usage:
   aips commands upgrade [<command-id>] --host <host>
   aips commands uninstall [--host <host>|--all]
 
+  aips skills list [--capability <id>] [--trigger <trigger>] [--format text|json]
+
   aips intelligence bootstrap [--project <path>]
   aips intelligence status [--project <path>]
   aips intelligence refresh [--project <path>]

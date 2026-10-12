@@ -299,6 +299,13 @@ portable_commands_cmd() {
   "$py" "$SYSTEM_DIR/scripts/portable_commands.py" "$@"
 }
 
+skills_cli_cmd() {
+  local py
+  py="$(python_bin)"
+  [ -n "$py" ] || die "python3 is required."
+  "$py" "$SYSTEM_DIR/scripts/skills_cli.py" "$@"
+}
+
 identity_cmd() {
   local py
   py="$(python_bin)"

@@ -218,6 +218,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+Map public CLI behavior to the owning Human workflow and Scenario section. Generic dispatcher or shared registry edits require no unrelated domain documentation unless the changed behavior belongs to that domain.
+
 Skill inventory changes also update the generated Human Skill Explorer, its User Guide and Documentation Map links, Scenario 259, and the documentation placement and sync registries. Keep the registry and pinned upstream disposition manifest as its sources.
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.

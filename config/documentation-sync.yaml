@@ -15,8 +15,6 @@ rules:
   - id: character-artwork-workflow
     triggers:
       - orchestration/CREATIVE_DIRECTION.md
-      - scripts/aips_cli/dispatch.sh
-      - scripts/aips_cli/help.sh
       - scripts/character_artifacts.py
       - scripts/character_asset_validation.py
       - scripts/creative_evidence.py
@@ -54,14 +52,12 @@ rules:
       - orchestration/CONFORMANCE.md
       - orchestration/DOCUMENTATION_SYNC.md
     evidence:
-      - tests/scenario_coverage.yaml
       - tests/evidence/character_artifacts_lifecycle.py
       - tests/evidence/creative_execution_lifecycle.py
       - tests/evidence/creative_quality_lifecycle.py
       - tests/validation/creative_quality_contracts.py
       - tests/scenarios/234-character-art-workflow.md
       - tests/validation/creative_execution_contracts.py
-      - tests/validation/registry.py
 
   - id: maintenance-planning
     triggers:
@@ -79,7 +75,6 @@ rules:
     agent_docs:
       - orchestration/CONFORMANCE.md
     evidence:
-      - tests/scenario_coverage.yaml
   - id: maintenance-reliability
     triggers:
       - scripts/maintenance_reliability.py
@@ -88,9 +83,7 @@ rules:
       - tests/evidence/maintenance_reliability_lifecycle.py
       - tests/validation/maintenance_reliability_contracts.py
       - tests/scenarios/201-monthly-maintenance-reliability.md
-      - tests/scenario_coverage.yaml
       - tests/validate_repository.py
-      - tests/validation/conformance_isolation.py
     human_docs:
       - docs/human/MAINTENANCE.md
       - docs/human/CONFORMANCE.md
@@ -102,7 +95,6 @@ rules:
       - orchestration/CONFORMANCE.md
       - orchestration/DOCUMENTATION_SYNC.md
     evidence:
-      - tests/scenario_coverage.yaml
   - id: runtime-context
     triggers:
       - scripts/runtime_context.py
@@ -113,7 +105,6 @@ rules:
       - tests/scenarios/198-runtime-context-invariant-matrix.md
       - config/integration-gate.yaml
       - scripts/aips_cli.sh
-      - scripts/aips_cli/**
     human_docs:
       - docs/human/ARCHITECTURE_OVERVIEW.md
       - docs/human/TECHNOLOGY_GUIDE.md
@@ -195,7 +186,7 @@ rules:
     agent_docs:
       - orchestration/DOCUMENTATION_SYNC.md
   - id: harness
-    triggers: [scripts/manage_runtime_adapter.py, scripts/harness_resolve.py, scripts/opencode_skill_projection.py, scripts/opencode_native_guard.py, scripts/opencode_trace.py, scripts/creative_workspace_profile.py, scripts/creative_execution.py, scripts/creative_trace.py, scripts/creative_quality_benchmark.py, templates/creative/QUALITY_BENCHMARK.json, scripts/turn_intent.py, scripts/project_intelligence.py, scripts/project_intelligence_discovery.py, scripts/aips_cli/dispatch.sh, scripts/aips_cli/help.sh, harness/adapters/**, templates/harness/**, tests/scenarios/235-opencode-native-context-guard.md, tests/scenarios/236-local-creative-execution.md]
+    triggers: [scripts/manage_runtime_adapter.py, scripts/harness_resolve.py, scripts/opencode_skill_projection.py, scripts/opencode_native_guard.py, scripts/opencode_trace.py, scripts/creative_workspace_profile.py, scripts/creative_execution.py, scripts/creative_trace.py, scripts/creative_quality_benchmark.py, templates/creative/QUALITY_BENCHMARK.json, scripts/turn_intent.py, scripts/project_intelligence.py, scripts/project_intelligence_discovery.py, harness/adapters/**, templates/harness/**, tests/scenarios/235-opencode-native-context-guard.md, tests/scenarios/236-local-creative-execution.md]
     human_docs: [docs/human/HARNESS.md, docs/human/INSTALLATION.md, docs/human/USER_GUIDE.md, docs/human/ARCHITECTURE_OVERVIEW.md, docs/human/TECHNOLOGY_GUIDE.md, docs/human/CONFORMANCE.md]
     agent_docs: [harness/HARNESS_PROTOCOL.md, harness/adapters/opencode/AGENTS.md, harness/adapters/opencode/COMPATIBILITY.md, orchestration/CONFORMANCE.md]
   - id: project-intelligence
@@ -353,9 +344,7 @@ rules:
       - orchestration/DOCUMENTATION_SYNC.md
   - id: changelog-history-archive
     triggers:
-      - CHANGELOG.md
       - docs/history/changelog/**
-      - config/documentation-placement.yaml
     human_docs:
       - docs/human/ARCHITECTURE_OVERVIEW.md
       - docs/human/DOCUMENTATION_MAP.md
@@ -366,6 +355,13 @@ rules:
       - docs/human/index.md
     agent_docs:
       - orchestration/DOCUMENTATION_SYNC.md
+    evidence:
+      - tests/validation/versioning_contracts.py
+
+  - id: release-history
+    triggers: [CHANGELOG.md]
+    human_docs: [docs/human/TECHNOLOGY_GUIDE.md]
+    agent_docs: [orchestration/DOCUMENTATION_SYNC.md]
     evidence:
       - tests/validation/versioning_contracts.py
 
@@ -380,7 +376,6 @@ rules:
       - skills/integrations/matt-pocock-skills.json
       - scripts/skill_catalog.py
       - docs/human/public/skill-catalog.html
-      - tests/scenario_coverage.yaml
       - tests/scenarios/259-matt-pocock-skill-integration.md
       - tests/validation/skill_catalog_contracts.py
     human_docs:
@@ -394,3 +389,23 @@ rules:
       - orchestration/DOCUMENTATION_SYNC.md
     evidence:
       - tests/validation/skill_catalog_contracts.py
+
+  - id: skills-list-cli
+    triggers:
+      - scripts/aips_cli/commands.sh
+      - scripts/aips_cli/dispatch.sh
+      - scripts/aips_cli/help.sh
+      - scripts/skills_cli.py
+      - tests/evidence/skills_cli_lifecycle.py
+      - tests/validation/skills_cli_contracts.py
+      - tests/scenarios/233-public-cli-help-error-contracts.md
+      - config/documentation-placement.yaml
+    human_docs:
+      - docs/human/USER_GUIDE.md
+      - docs/human/TECHNOLOGY_GUIDE.md
+      - docs/human/CONFORMANCE.md
+    agent_docs:
+      - orchestration/CONFORMANCE.md
+    evidence:
+      - tests/evidence/skills_cli_lifecycle.py
+      - tests/validation/skills_cli_contracts.py

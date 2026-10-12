@@ -7,8 +7,8 @@ This is a deterministic view of `tests/scenario_coverage.yaml` and the Scenario 
 - Scenarios: **259** (registered 259; missing 0)
 - Automated evidence: **239/259 (92.3%)**
 - Automated denominator: `deterministic + lifecycle + agent_eval`; specifications alone do not count.
-- Deterministic: 40
-- Lifecycle: 145
+- Deterministic: 39
+- Lifecycle: 146
 - Agent Eval: 54
 - Manual: 20 (241, 242, 243, 244, 245, 246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 224, 192, 193, 259)
 - Uncovered: 0 (none)

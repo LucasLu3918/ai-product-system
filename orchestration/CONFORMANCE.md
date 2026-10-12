@@ -53,6 +53,8 @@ Scenario 236 adds fixed creative CLI routes; preflight and Gate inspection do no
 
 Public command groups expose help with status 0 and return nonzero for unknown subcommands. Keep routing in the shell facade and preserve internal library modules as libraries.
 
+Scenario 233 covers `aips skills list` output and exact filters against canonical Skill metadata; the listing path does not write the generated index.
+
 ## Scenario 234 — Local Character Artwork Provenance and Composition
 
 Scenario 240 adds worktree-bound publication prepare/diagnose regression; safe failure codes and live PR reuse are exercised by tests/test_publication_planning.py. Synthetic GitHub metadata does not establish real-host permission or REST acceptance.

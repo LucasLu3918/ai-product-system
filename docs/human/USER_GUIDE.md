@@ -227,6 +227,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 
 使用 <a href="./skill-catalog.html">Skill Explorer</a> 依名稱、用途或分類搜尋 48 個目前可用的 AIPS Skills，並複製提示範例。Explorer 也列出 Matt Pocock 上游 38 項 Skill 的 AIPS 處置；這些紀錄不代表未採納項目已啟用。Writing Fragments、Beats、Shape 只在你明確要求該流程時使用。
 
+在終端機可用 `aips skills list` 列出 Skill ID、Capability 和簡介。以 `--capability <id>` 或 `--trigger <trigger>` 篩選；加上 `--format json` 可輸出機器可讀資料。例如：`aips skills list --capability security --format json`。此命令只讀取 canonical `SKILL.md` 中繼資料，不會修改 Skill 或索引。
+
 
 新增能力前依序檢查：
 

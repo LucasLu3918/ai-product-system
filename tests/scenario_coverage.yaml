@@ -1971,11 +1971,15 @@ scenarios:
       - tests/validation/static_contracts.py
   - id: "233"
     path: tests/scenarios/233-public-cli-help-error-contracts.md
-    coverage: deterministic
+    coverage: lifecycle
     evidence:
       - scripts/aips_cli/dispatch.sh
       - scripts/aips_cli/commands.sh
-      - tests/validation/static_contracts.py
+      - scripts/skills_cli.py
+      - scripts/skill_index.py
+      - tests/evidence/skills_cli_lifecycle.py
+      - tests/validation/skills_cli_contracts.py
+      - tests/validation/registry.py
   - id: "234"
     path: tests/scenarios/234-character-art-workflow.md
     coverage: lifecycle
