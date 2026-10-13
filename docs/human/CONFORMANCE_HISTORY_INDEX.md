@@ -110,6 +110,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 236 — Local Creative Bundle Execution](CONFORMANCE.md#scenario-236-local-creative-bundle-execution) | Current Human guidance |
 | [## Scenario 259 — Matt Pocock Skill Integration and Explorer](CONFORMANCE.md#scenario-259-matt-pocock-skill-integration-and-explorer) | Current Human guidance |
 | [## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance](CONFORMANCE.md#scenario-237-read-only-project-diagnostics-and-recovery-guidance) | Current Human guidance |
+| [### Scenario 260 — Publication Diagnostics and Safe Recovery](CONFORMANCE.md#scenario-260-publication-diagnostics-and-safe-recovery) | Current Human guidance |
 | [## Scenario 240 — Personal Publication Default and High-Assurance Opt-In](CONFORMANCE.md#scenario-240-personal-publication-default-and-high-assurance-opt-in) | Current Human guidance |
 | [## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow](CONFORMANCE.md#scenario-231-advisory-security-inventory-and-secret-scanner-shadow) | Current Human guidance |
 | [## Scenario 260 — Publication diagnostics and Doctor](CONFORMANCE.md#scenario-260-publication-diagnostics-and-doctor) | Current Human guidance |
@@ -190,6 +191,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [### Scenario 223 — Evolution Radar exclusion attribution](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-223-evolution-radar-exclusion-attribution) | Normative rule |
 | [## Scenario 210 — Python runtime support policy](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-210-python-runtime-support-policy) | Normative rule |
 | [## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-237-read-only-project-diagnostics-and-recovery-guidance) | Normative rule |
+| [### Scenario 260 — Publication Diagnostics and Safe Recovery](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-260-publication-diagnostics-and-safe-recovery) | Normative rule |
 | [## Scenario 257 — Branch and PR lifecycle dispositions](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-257-branch-and-pr-lifecycle-dispositions) | Normative rule |
 | [## Scenario 259 — Matt Pocock Skill Integration and Explorer](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-259-matt-pocock-skill-integration-and-explorer) | Normative rule |
 | [## Scenario 260 — Publication diagnostics and Doctor](https://github.com/LucasLu3918/ai-product-system/blob/main/orchestration/CONFORMANCE.md#scenario-260-publication-diagnostics-and-doctor) | Normative rule |

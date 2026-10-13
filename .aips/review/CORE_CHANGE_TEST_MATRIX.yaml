@@ -42,7 +42,8 @@ matrix:
         preflight contracts.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: docs impact closure has zero required additions; VitePress build passed.'
+      evidence: 'PASS: recursive documentation impact is complete; canonical H2 placement passes; VitePress builds;
+        current and history Conformance projections regenerate and lifecycle-check successfully.'
 - boundary: Publication authority diagnostics and worktree state
   reason: Error provenance, safe paths, and redaction affect protected publication decisions.
   checks:
@@ -75,7 +76,8 @@ matrix:
         260.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: recursive documentation impact complete; VitePress build passed.'
+      evidence: 'PASS: recursive documentation impact is complete; canonical H2 placement passes; VitePress builds;
+        current and history Conformance projections regenerate and lifecycle-check successfully.'
 - boundary: Publication phase planning and merged-PR recovery
   reason: Prevent cross-phase attribution, duplicate publication, and stale-candidate recovery.
   checks:
@@ -106,7 +108,8 @@ matrix:
       evidence: 'PASS: doctor and post-merge planner contracts are covered by focused tests.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: documentation impact complete and VitePress build passed.'
+      evidence: 'PASS: recursive documentation impact is complete; canonical H2 placement passes; VitePress builds;
+        current and history Conformance projections regenerate and lifecycle-check successfully.'
 - boundary: Human and Agent recovery guidance
   reason: Agents must separate safe observation from actions requiring Human or host approval.
   checks:
@@ -138,7 +141,8 @@ matrix:
       evidence: 'PASS: Claude Code adapter guidance preserves native confirmation paths.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: documentation impact closure complete, zero required additions; VitePress build passed.'
+      evidence: 'PASS: recursive documentation impact is complete; canonical H2 placement passes; VitePress builds;
+        current and history Conformance projections regenerate and lifecycle-check successfully.'
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
@@ -147,4 +151,4 @@ review_evidence:
   required: false
 candidate:
   base_sha: 4a21feef1ab67c031edb38db02255cef6ce750c8
-  changed_files_hash: 9e5a632c3638c12e9b53ba341d1114aca72ff7d7bedf57e994d6c0d51645ad0d
+  changed_files_hash: 084bb1db8f99e0c5c438c160aeb428c3624365766c088b111dcdbad29b2bbb2a
