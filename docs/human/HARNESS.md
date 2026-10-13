@@ -49,11 +49,14 @@ AIPS Core
    └─ runtime-specific pre-tool guard
 ~~~
 
+
+`aips publish doctor --worktree <root> --worktree-details` provides read-only phase and evidence diagnostics. Runtime adapters may use its recovery guidance, while native permission and Human approval remain separate.
+
 ## Native Runtime Adapters
 
 Claude Code may reject a Bash merge as Merge Without Review independently of AIPS PreToolUse; preserve exact Host-versus-AIPS provenance and route confirmation through native permissions rather than rewrites.
 
-Upstream Skills use the same native discovery directories as canonical AIPS Skills. `aips skills install --upstream --all --host <host>` installs all 31 non-canonical entries and reports seven canonical ID matches. Disposition remains visible as integration context, not an install gate. Codex and Claude Code projections require explicit invocation; Gemini CLI retains its activation consent flow. Source digests and AIPS ownership records scope later updates and removal. It never executes vendored scripts or edits Agent hooks. See the [User Guide](USER_GUIDE.md#roles-skills-與重用) for commands and [Scenario 259](CONFORMANCE.md#scenario-259--matt-pocock-skill-integration-and-explorer) for lifecycle evidence.
+Upstream Skills use the same native discovery directories as canonical AIPS Skills. `aips skills install --upstream --all --host <host>` installs all 31 non-canonical entries and reports seven canonical ID matches. Disposition remains visible as integration context, not an install gate. Codex and Claude Code projections require explicit invocation; Gemini CLI retains its activation consent flow. Source digests and AIPS ownership records scope later updates and removal. It never executes vendored scripts or edits Agent hooks. `aips skills list --include-upstream` exposes the pinned source inventory, disposition, and local path; ordinary listing remains canonical-only. See the [User Guide](USER_GUIDE.md#roles-skills-與重用) for commands and [Scenario 259](CONFORMANCE.md#scenario-259--matt-pocock-skill-integration-and-explorer) for lifecycle evidence.
 
 Git publication hooks share the personal/high-assurance policy where the adapter supports enforcement. Claude and Gemini use native hooks; Codex remains advisory, so this is not an OS-level boundary. See Security Assurance for the accepted same-account `origin` limitation.
 

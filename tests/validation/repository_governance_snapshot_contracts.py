@@ -12,7 +12,7 @@ for path in (script, evidence):
     if result.returncode:
         raise SystemExit(result.stderr)
 source = script.read_text(encoding="utf-8")
-for required in ('["gh", "api", endpoint]', '"--paginate"', '"--slurp"', '"api_write_performed": False'):
+for required in ('["gh", "api", "--include", endpoint]', 'def query_github_api', '"effective_rules"', '"protection_state"', '"api_write_performed": False'):
     if required not in source:
         raise SystemExit(f"governance snapshot contract missing: {required}")
 result = subprocess.run([sys.executable, str(evidence)], capture_output=True, text=True, check=False)

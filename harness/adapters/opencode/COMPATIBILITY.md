@@ -104,3 +104,5 @@ Publication Doctor and literal merge diagnosis are read-only observations. They 
 ## Publication Root-Cause Recovery (Plan35)
 
 Plan35 diagnostic response extensions do not upgrade OpenCode Shell interception or permission controls. Host-specific denial observations require evidence from the actual runtime.
+
+Publication diagnostics do not change OpenCode enforcement status. They remain read-only and advisory; direct Shell, MCP/custom-tool, and out-of-process effects keep their existing unsupported/host-controlled status.

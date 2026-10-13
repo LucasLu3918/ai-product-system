@@ -220,3 +220,5 @@ Publication diagnostics changes derive tests for every Required Checks state, AP
 ## Publication Root-Cause Recovery (Plan35)
 
 Publication diagnosis changes require focused unit/evidence suites, Scenario 260, full Documentation Impact closure, security and redaction regression, exact-candidate Gate, and separate native Claude Host verification.
+
+Publication diagnostic Core changes cover API 401/403/404 and malformed evidence, branch existence plus effective-rules semantics, optional ruleset/classic-protection failures, dirty staged/modified/deleted/untracked paths, reason-code/phase/source contracts, redaction, PR lifecycle and exact-head merged idempotency. Negative cases must prove no diagnostic grants authority or mutates the worktree.

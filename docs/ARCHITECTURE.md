@@ -14,6 +14,8 @@ The read-only Publication Doctor follows the same native-tool handoff: it report
 
 Read-only publication planning binds the explicit worktree, exact candidate, live default base, remote/PR state and body/policy digests. It returns native-tool cwd/argv and safe diagnostics; neither a plan nor its fingerprint grants permission or executes a protected operation.
 
+Read-only publication planning binds the explicit worktree, exact candidate, live default base, remote/PR state and body/policy digests. It returns native-tool cwd/argv and versioned phase-specific diagnostics with sanitized evidence provenance; neither a plan nor its fingerprint grants permission or executes a protected operation. The publication doctor separately observes branch existence, effective rules, classic protection and rulesets, retaining UNKNOWN when evidence is incomplete.
+
 
 Creative workspace import is a local flow: review a private source-hash candidate, then explicitly create the exact absent target in a non-Git workspace.
 
@@ -372,6 +374,9 @@ flowchart LR
 
 Scenario 134 makes local inference the default Trial path, so `OPENAI_API_KEY` is no longer a prerequisite for real embedding quality evidence. The local model/runtime and exact model revision are pinned; model artifact download is allowed only as Trial infrastructure and does not transmit query/source content. The existing remote adapter remains an explicit optional comparison path. Normal PR/main validation and normal Turn Context still do not execute embedding inference.
 
+
+Plan36 publication diagnostics preserve this topic's existing authority boundaries.
+
 ## Primary planning package
 
 ```mermaid
@@ -697,6 +702,9 @@ flowchart TD
 ~~~
 
 LOCAL_COMPLETE is a valid complete delivery state when Production is not requested. Production completion requires applicable post-deploy verification and recovery evidence.
+
+
+Plan36 publication diagnostics preserve this topic's existing authority boundaries.
 
 ## Product workspace and deployment units
 

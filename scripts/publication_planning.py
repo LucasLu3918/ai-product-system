@@ -66,7 +66,8 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
     """Re-observe Git/PR state each time; no cached step, grant or permission is trusted."""
     result: dict[str, Any] = {'version': 1, 'status': 'BLOCKED', 'authorized': False,
                               'diagnostics': [], 'invocations': [], 'host_permission': 'UNKNOWN',
-                              'runtime': runtime, 'next_step': 'REOBSERVE'}
+                              'runtime': runtime, 'next_step': 'REOBSERVE', 'phase': 'candidate_validation'}
+    phase = 'candidate_validation'
     if host_denied:
         result['host_permission'] = 'DENIED'
         codes = {
@@ -85,6 +86,7 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
         actual = Path(authority.git(root, 'rev-parse', '--show-toplevel')).resolve()
         if root != actual:
             raise authority.PublicationError('explicit worktree root required', 'CWD_MISMATCH')
+        phase = 'authority_validation'
         mode = authority.publication_mode()
         result['mode'] = mode
         result['assurance'] = 'ADVISORY' if runtime in {'codex', 'opencode'} else 'NATIVE_PER_CALL_REQUIRED'
@@ -103,6 +105,7 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
             raise authority.PublicationError('explicit PR title and body file required', 'PR_METADATA_INCOMPLETE')
         body_file = body_file.resolve(strict=True)
         body_bytes = body_file.read_bytes()
+        phase = 'remote_observation'
         repo = _repo(root)
         push = ['git', 'push', 'origin', head + ':refs/heads/' + branch]
         base = authority._personal_base(root, 'git_push', push)
@@ -111,13 +114,15 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
         remote_head = authority._tip(root, 'origin', 'refs/heads/' + branch)
         if mode == 'high_assurance':
             push.insert(2, '--force-with-lease=refs/heads/' + branch + ':' + (remote_head or ''))
+        phase = 'pr_observation'
         prs = _prs(root, repo, branch, base_branch)
         merged = [row for row in prs if row['state'] == 'MERGED' and row['headRefOid'] == head]
         if merged:
             # A squash merge need not make the feature HEAD an ancestor of main.
             # Bind the exact PR head and verify its GitHub merge commit in the live base.
             if authority.git(root, 'status', '--porcelain', '--untracked-files=all'):
-                raise authority.PublicationError('dirty candidate', 'WORKTREE_DIRTY')
+                raise authority.PublicationError('dirty candidate', 'WORKTREE_DIRTY',
+                    context={'worktree': root, 'candidate_sha': head}, phase='post_merge_reconciliation')
             commit = (merged[-1].get('mergeCommit') or {}).get('oid', '')
             if not re.fullmatch(r'[0-9a-f]{40,64}', commit):
                 raise authority.PublicationError('merge commit unavailable', 'PR_STATE_AMBIGUOUS')
@@ -127,11 +132,15 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
             fingerprint = authority.digest(observation)
             if expected_fingerprint and expected_fingerprint != fingerprint:
                 raise authority.PublicationError('stale observation', 'CANDIDATE_CHANGED')
-            result.update(status='COMPLETE', next_step='POST_MERGE_RECONCILIATION',
+            result.update(status='COMPLETE', phase='post_merge_reconciliation',
+                          next_step='POST_MERGE_RECONCILIATION', recovery_state='ALREADY_MERGED',
+                          operation='POST_MERGE_RECONCILIATION', idempotent=True,
                           observation=observation, fingerprint=fingerprint, scan='NOT_REQUIRED_ALREADY_MERGED')
             return result
         # Reuse the exact existing syntax, identity, clean-tree and ancestry checks.
+        phase = 'push_validation'
         scope = authority.action(root, 'git_push', push, base, personal=mode == 'personal')
+        phase = 'content_scan'
         from check_secret_leakage import DEFAULT_POLICY, load_policy, scan_candidate
         policy, policy_hash = load_policy(DEFAULT_POLICY)
         findings, blockers, _, _ = scan_candidate(root, base, head, policy)
@@ -156,15 +165,16 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
         if len(open_prs) > 1:
             raise authority.PublicationError('multiple open PRs', 'PR_STATE_AMBIGUOUS')
         if remote_head != head:
-            result.update(status='PLANNED', next_step='PUSH')
+            result.update(status='PLANNED', phase='push', next_step='PUSH')
             result['invocations'] = [_invocation(root, 'git_push', push)]
         elif open_prs:
             row = open_prs[0]
             if row['headRefOid'] != head:
                 raise authority.PublicationError('stale PR head', 'PR_STATE_AMBIGUOUS')
-            result.update(status='PLANNED', next_step='CHECKS_AND_MERGE_INTENT', pr_number=row['number'])
+            result.update(status='PLANNED', phase='checks', next_step='CHECKS_AND_MERGE_INTENT', pr_number=row['number'])
             if merge_intent and not row['isDraft']:
                 # Respect the enabled repository merge methods; no admin/auto merge.
+                phase = 'merge_validation'
                 metadata = json.loads(authority.run(root, 'gh', 'api', 'repos/' + repo))
                 method = next((name for name, key in (('squash', 'allow_squash_merge'),
                                ('merge', 'allow_merge_commit'), ('rebase', 'allow_rebase_merge'))
@@ -177,6 +187,7 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
                     argv.append('--auto')
                 authority.action(root, 'gh_pr_merge', argv, base, personal=mode == 'personal')
                 result['invocations'] = [_invocation(root, 'gh_pr_merge', argv)]
+                result['phase'] = 'merge'
                 result['next_step'] = 'NATIVE_MERGE_CONFIRMATION' if runtime in {'claude-code', 'gemini-cli'} else 'TASK_AUTHORIZED_MERGE'
         else:
             if any(row['headRefOid'] == head and row['state'] == 'CLOSED' for row in prs):
@@ -184,7 +195,7 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
             argv = ['gh', 'pr', 'create', '--repo', repo, '--head', branch, '--base', base_branch,
                     '--title', title, '--body-file', str(body_file)]
             authority.action(root, 'gh_pr_create', argv, base, personal=mode == 'personal')
-            result.update(status='PLANNED', next_step='CREATE_PR')
+            result.update(status='PLANNED', phase='pr_create', next_step='CREATE_PR')
             result['invocations'] = [_invocation(root, 'gh_pr_create', argv)]
         if mode == 'high_assurance' and result['status'] != 'COMPLETE':
             result['diagnostics'].append(diagnostic('AUTHORITY_REQUIRED'))
@@ -192,9 +203,15 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
             result['status'] = 'AWAITING_AUTHORITY'
         return result
     except authority.PublicationError as exc:
-        result['diagnostics'].append(exc.diagnostic())
+        item = exc.diagnostic()
+        item['phase'] = exc.phase or phase
+        result['phase'] = item['phase']
+        result['diagnostics'].append(item)
     except (OSError, ValueError, TypeError, KeyError, yaml.YAMLError, subprocess.TimeoutExpired):
-        result['diagnostics'].append(diagnostic('REMOTE_OBSERVATION_FAILED'))
+        item = diagnostic('REMOTE_OBSERVATION_FAILED')
+        item['phase'] = phase
+        result['phase'] = phase
+        result['diagnostics'].append(item)
     result.update(status='BLOCKED', invocations=[])
     return result
 
@@ -225,7 +242,7 @@ def diagnose(worktree: Path, command: str) -> dict[str, Any]:
         if mode == 'high_assurance':
             # Diagnostics must honor the selected mode's stricter exact lease syntax.
             authority.action(root, operation, argv, observed['base_commit'], personal=False)
-        return {'version': 1, 'status': 'VALIDATED' if mode == 'personal' else 'AWAITING_AUTHORITY',
+        return {'version': 2, 'status': 'VALIDATED' if mode == 'personal' else 'AWAITING_AUTHORITY',
                 'authorized': False, 'read_only': True, 'executed': False,
                 'grant_consumed': False, 'operation': operation, 'mode': mode,
                 'diagnostics': [] if mode == 'personal' else [diagnostic('AUTHORITY_REQUIRED')]}
@@ -265,3 +282,87 @@ def recovery_guidance(result: dict[str, Any]) -> dict[str, Any]:
         'instruction': 'Reobserve the exact PR, branch and checks before any native mutation; '
                        'this recovery report never authorizes publication.',
     }
+
+def doctor(worktree: Path, *, branch: str | None = None, pr_number: int | None = None,
+           worktree_details: bool = False) -> dict[str, Any]:
+    """Read-only, phase-separated publication evidence. This never grants or executes authority."""
+    result: dict[str, Any] = {'version': 2, 'status': 'UNKNOWN', 'authorized': False,
+                              'api_write_performed': False, 'phases': [], 'diagnostics': [],
+                              'next_step': 'REVIEW_EVIDENCE_BEFORE_ANY_PUBLICATION'}
+    try:
+        root = worktree.expanduser().resolve(strict=True)
+        actual = Path(authority.git(root, 'rev-parse', '--show-toplevel')).resolve()
+        if root != actual:
+            raise authority.PublicationError('worktree root mismatch', 'CWD_MISMATCH', phase='worktree_identity')
+        head = authority.git(root, 'rev-parse', 'HEAD^{commit}')
+        if not re.fullmatch(r'[0-9a-f]{40,64}', head):
+            raise authority.PublicationError('candidate SHA unavailable', 'CANDIDATE_DIFF_UNAVAILABLE', phase='candidate_identity')
+        dirty = authority.worktree_dirty_details(root)
+        branch_name = authority.git(root, 'branch', '--show-current') or None
+        if worktree_details:
+            result['worktree_details'] = dirty
+        result['candidate_sha'] = head
+        result['worktree'] = {'branch': branch_name, 'status': dirty['status']}
+        result['phases'].append({'phase': 'worktree_validation', 'status': dirty['status'],
+                                 'blocking': dirty['status'] == 'DIRTY'})
+        if dirty['status'] == 'DIRTY':
+            item = authority.PublicationError('publication requires a clean worktree', 'WORKTREE_DIRTY',
+                context={'worktree': root, 'candidate_sha': head}, phase='worktree_validation').diagnostic()
+            if not worktree_details:
+                item.pop('worktree_details', None)
+            result['diagnostics'].append(item)
+
+        repo = _repo(root)
+        remote_url = authority.git(root, 'remote', 'get-url', 'origin')
+        base_branch = branch or authority._remote_default_branch(root, remote_url)
+        result['repository'] = repo
+        result['policy_branch'] = base_branch
+        result['phases'].append({'phase': 'repository_identity', 'status': 'PASS', 'repository': repo})
+
+        from repository_governance_snapshot import build_snapshot, query_github_api
+        snapshot = build_snapshot(repo, base_branch, lambda endpoint: query_github_api(root, endpoint))
+        result['governance'] = snapshot
+        policy_status = snapshot['protection_state']
+        result['phases'].append({'phase': 'protection_policy_evidence', 'status': policy_status,
+                                 'evidence_level': snapshot['evidence_level'],
+                                 'blocking': policy_status == 'UNKNOWN'})
+        if policy_status == 'UNKNOWN':
+            item = authority.PublicationError('branch protection evidence unavailable',
+                'PROTECTION_EVIDENCE_UNAVAILABLE', phase='protection_policy_evidence').diagnostic()
+            item['api_sources'] = snapshot['sources']
+            result['diagnostics'].append(item)
+
+        if pr_number is not None:
+            pr_call = subprocess.run(['gh', 'pr', 'view', str(pr_number), '--repo', repo,
+                '--json', 'number,state,headRefOid,headRefName,baseRefName,isDraft,mergeable,mergeStateStatus'],
+                cwd=root, capture_output=True, text=True, timeout=15, check=False)
+            try:
+                pr_data = json.loads(pr_call.stdout) if pr_call.returncode == 0 else None
+            except json.JSONDecodeError:
+                pr_data = None
+            if isinstance(pr_data, dict) and pr_data.get('number') == pr_number:
+                result['pr'] = {key: pr_data.get(key) for key in ('number', 'state', 'headRefOid',
+                    'headRefName', 'baseRefName', 'isDraft', 'mergeable', 'mergeStateStatus')}
+                result['phases'].append({'phase': 'pr_state_observation', 'status': 'OBSERVED'})
+            else:
+                result['phases'].append({'phase': 'pr_state_observation', 'status': 'UNKNOWN',
+                                         'error_class': 'GITHUB_CLI_OR_PR_STATE_UNAVAILABLE'})
+                item = authority.PublicationError('PR observation unavailable', 'PR_STATE_AMBIGUOUS',
+                                                  phase='pr_state_observation').diagnostic()
+                result['diagnostics'].append(item)
+
+        blockers = [phase for phase in result['phases'] if phase.get('blocking') or phase['status'] == 'UNKNOWN']
+        result['status'] = 'OBSERVED' if not blockers else 'INCOMPLETE'
+        return result
+    except authority.PublicationError as exc:
+        item = exc.diagnostic()
+        item['phase'] = exc.phase or 'worktree_identity'
+        result['diagnostics'].append(item)
+        result['phases'].append({'phase': item['phase'], 'status': 'UNKNOWN', 'blocking': True})
+    except (OSError, ValueError, TypeError, KeyError, subprocess.TimeoutExpired):
+        item = diagnostic('REMOTE_OBSERVATION_FAILED')
+        item['phase'] = 'remote_observation'
+        result['diagnostics'].append(item)
+        result['phases'].append({'phase': 'remote_observation', 'status': 'UNKNOWN', 'blocking': True})
+    result['status'] = 'INCOMPLETE'
+    return result

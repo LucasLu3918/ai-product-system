@@ -107,3 +107,5 @@ Prospective `aips docs impact --base HEAD --planned-path <path>` resolves sync a
 目前主要實作遵循 Runtime 模型偏好，Skill registry 由 frontmatter 決定性產生。詳見 [技術指南](TECHNOLOGY_GUIDE.md) 與 [Conformance](CONFORMANCE.md)。
 
 Reusable local character artwork reuses the Creative Direction Skills, provenance validation and deterministic typeset sheets; see [User Guide](USER_GUIDE.md#creative-directionstyle-與-brand) and [Scenario Conformance](CONFORMANCE.md#scenario-234--local-character-artwork-provenance-and-composition).
+
+For publication failure diagnosis, start with [Git Publication 與 Release](./USER_GUIDE.md#git-publication-與-release); security and authority details are in [Security Assurance](./SECURITY_ASSURANCE.md).

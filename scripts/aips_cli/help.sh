@@ -110,6 +110,7 @@ Usage:
   aips scheduler --graph <yaml> [--state <yaml>] [--format yaml|json]
   aips integration-gate --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--review-trust-store <path>] [--observe-run-id <id>] [--output <path>] [--project-root <repo>]
   aips janitor --profile <yaml> --base <ref> --head <ref> [--matrix <yaml>] [--output <path>]
+  aips publish doctor [--worktree <candidate-root>] [--branch <name>] [--pr <number>] [--worktree-details]
   aips publish preview|plan|preflight|matrix-sync|post-merge|checks [publish-preflight options] [--project-root <repo>]
   aips publish doctor [--project-root <repo>] [--branch <branch>] [--pr <number>] [--format yaml|json]
   aips publish prepare --worktree <candidate-root> --title <title> --body-file <file> [--runtime codex|claude-code|gemini-cli|opencode] [--expected-fingerprint <digest>] [--host-denied] [--merge-intent]

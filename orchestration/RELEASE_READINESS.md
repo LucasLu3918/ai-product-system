@@ -104,6 +104,9 @@ Scheduled Python 3.12–3.14 compatibility evidence is a supplementary maintenan
 
 Version-tag provenance is a separate read-only check implemented by `scripts/version_tag_policy.py` and `config/version-tag-policy.yaml`. It is ready only when the full candidate SHA exactly equals the current main SHA, any existing `vVERSION` tag points to that same commit, and `CHANGELOG.md` contains exactly one empty `## Unreleased` section. Missing, duplicate, malformed, or non-empty sections block the check. A mismatched existing tag blocks the check; historical tags are not backfilled. `READY_FOR_EXPLICIT_RELEASE_APPROVAL` is evidence for a separate explicit release decision and never writes, moves, or authorizes a tag.
 
+
+A publication diagnostic can report missing or failing required checks and exact candidate drift; only live exact-candidate evidence and the existing Human merge intent satisfy merge readiness. Diagnostic retryability permits re-observation only.
+
 ## Post-deploy
 
 After production promotion:

@@ -166,6 +166,9 @@ The `creative_execution` path can prepare versioned Character/Style Profiles and
 
 OpenCode V2 prompt admission issues a fresh transient grant for each user response. A short creative selection can use root-bound, expiring structured Session state with finite turns and remaining outputs; Context and retrieved Project Intelligence remain advisory, and raw prior prompts are not retained. Cancellation, unrelated work, scope expansion and output-cap exhaustion revoke continuation. The local `generate-set` workflow records each Bundle outcome and resumes only after verifying saved provenance hashes.
 
+
+Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
+
 ## Planning 與 Product Delivery
 
 
@@ -323,6 +326,9 @@ Local 與 GitHub 透過 Publication Preflight 解析同一 base/head、PR-label 
 
 Browser evidence 也屬於 deterministic environment contract：candidate preflight 會探測 Playwright managed Chromium 或明確選用的 system browser，執行最小 headless smoke probe；啟動層錯誤會以 `ENVIRONMENT_BLOCKED` 回報，避免與產品頁面回歸混淆。
 Publication Preflight 將 Python module availability 與 loopback/browser capability 分開回報；未被 exact candidate 選用的 browser probe 回報 `NOT_REQUIRED` 且不阻擋，選用時才驗證 capability blockers。
+
+
+Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
 ## Security 與 Governance
 
@@ -484,6 +490,9 @@ Evolution weekly evidence uses a bounded, digest-checked archive only when an Is
 Evolution data completeness、validator shadow/replay、branch cleanup proposal、version-tag readiness 與 GitHub protection comparison 都先產生可追溯 evidence。Branch cleanup apply 會綁定目前 `main` baseline，整批確認後才開始；已缺失分支會阻擋重播或部分狀態續跑。Selective execution、branch deletion、tag writing 和 ruleset activation 仍需分別依既有核准流程處理。
 
 - Before release readiness, finalized notes are recorded under the matching `VERSION` heading, leaving exactly one empty canonical `## Unreleased` section. This read-only check does not authorize tag or release writes; those remain separate Human-approved actions.
+
+Publication diagnostics extend the existing read-only Git publication flow with phase, evidence provenance, and safe recovery details. They add no execution or authorization path.
+
 ## Documentation Architecture
 
 Documentation placement resolves changed behavior to its owning Human and Agent topics. Shared registries use focused rules so a change to one scenario does not expand into unrelated capability documentation.

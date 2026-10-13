@@ -1726,7 +1726,7 @@ The public Project Intelligence facade retains its existing command and symbol c
 
 The public command groups return concise help with status 0 and reject unknown subcommands with a useful nonzero result. The compatibility shell facade remains thin; internal library modules keep their current role.
 
-Scenario 233 also covers `aips skills list`: localized/grouped text and JSON output, exact capability and trigger filters, invalid arguments, empty results, and read-only behavior over canonical Skill metadata. Skill install/removal lifecycle preserves pre-existing, unowned and digest-mismatched Host files. `--include-upstream` lists the 38 vendored Matt Pocock sources with disposition and local path, while the default list stays canonical-only.
+Scenario 233 also covers `aips skills list`: localized/grouped text and JSON output, exact capability and trigger filters, invalid arguments, empty results, and read-only behavior over canonical Skill metadata. Skill install/removal lifecycle preserves pre-existing, unowned and digest-mismatched Host files. `--include-upstream` lists the 38 vendored Matt Pocock sources with disposition and local path, while the default list stays canonical-only. Scenario 259 additionally verifies pinned upstream inventory and filtering without installing or changing the canonical-only default.
 
 `tests/evidence/skills_cli_lifecycle.py` extends the install contract with `--upstream --all`, all non-canonical upstream eligibility, canonical duplicate skips, source-filtered status/uninstall, and preservation of other source kinds and modified files.
 
@@ -1772,6 +1772,9 @@ Benchmark v2 records the registered three-archetype by six-case coverage matrix,
 
 The Skill integration adds a separate manual Scenario 259; it does not change creative quality evidence or imply writing model quality.
 
+
+Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
+
 ## Scenario 236 — Local Creative Bundle Execution
 
 Scenario 240 的 `tests/test_publication_planning.py` 覆蓋 worktree 綁定、精確 SHA/ref、舊指紋拒絕、Host denial、PR 重用與 squash merge 恢復；fixture 不等於真實 Host 或 REST 驗收。
@@ -1783,7 +1786,7 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
-Skill integration acceptance stays independent from publication recovery; the extra diagnostic guidance does not activate optional skills.
+Scenario 259 also checks `aips skills list --include-upstream` inventory and filtering without changing the canonical-only default; installation and removal remain separate explicit operations.
 
 The generated Skill Explorer presents all 49 canonical AIPS Skills and the 38 vendored upstream Skills pinned to the reviewed commit, with local source paths and SHA-256 digests. Overlapping pending skills are experimental/optional; distinct repo/tool workflows auto-route on matching requests. `$grill-with-docs` is a separate explicit-only Skill whose native projection preserves `allow_implicit_invocation: false`. Writing workflow Skills remain explicit-request-only. Other MCP Hosts load Skills from canonical Resources on demand; native projections are AIPS-owned and removal preserves pre-existing, unowned or modified files. Deterministic inventory and output contracts are checked by `tests/validation/skill_catalog_contracts.py`; semantic routing acceptance remains manual.
 
@@ -1815,7 +1818,13 @@ Scenario 236 covers versioned no-overwrite Profile/Bundle preparation, fixed MFL
 
 The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies concurrent preparation allocates distinct versions, unconfigured engines remain blocked, preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, MFLUX commands match the fixed capability registry, batch references remain bounded, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, the Z-Image Turbo split-loader graph and local model inventory are exact, prompt-bearing PNG text metadata is removed, edits use exactly one hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
 
+
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
+
+
+### Scenario 261 — Publication Diagnostics and Safe Recovery
+
+The read-only publication doctor preserves branch/effective-rule evidence and sanitized HTTP failures, groups dirty paths without reading contents, attributes push/PR/check/merge blockers to their phase, and recognizes exact-head `ALREADY_MERGED` recovery. Diagnostics never grant authority. Evidence: `tests/scenarios/261-publication-diagnostics-and-safe-recovery.md` and the linked lifecycle/validation tests.
 
 ## Scenario 240 — Personal Publication Default and High-Assurance Opt-In
 
@@ -1840,6 +1849,9 @@ The diagnostics lifecycle covers missing, stale, partial and blocked Intelligenc
 
 `aips project diagnose` aggregates existing `aips doctor`, Project Intelligence status, Harness resolution and MCP static inspection. It reports stable reason codes with safe next actions and verification commands while keeping bootstrap, refresh, indexing and attach as explicit user actions. Doctor and child-process output is not copied into the report. Lifecycle evidence verifies text/YAML/JSON output, missing/partial/stale/blocked guidance, bounded failures, privacy and no-write behavior. Harness and MCP Host execution remain `UNVERIFIED` unless separately evidenced.
 
+
+Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
+
 ## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
 
 The mandatory candidate secret scan remains independent of optional toolchain provisioning.
@@ -1855,4 +1867,4 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 The publication diagnostic contract distinguishes missing/stale pinned merge SHA, forbidden flags, verified Required Checks configuration, unavailable policy evidence, and non-authorizing Host recovery guidance.
 
-Scenario 260 verifies stable, redacted diagnostics for publication blockers, read-only `gh pr merge` diagnosis, first-time repository Doctor observations, Required Checks states, unavailable policy evidence, and consistent Claude Code/OpenCode/Codex guidance. The doctor never changes repository settings, executes merge, or consumes a grant.
+Scenario 260 verifies stable, redacted diagnostics for publication blockers, read-only `gh pr merge` diagnosis, first-time repository Doctor observations, Required Checks states, unavailable policy evidence, and consistent Claude Code/OpenCode/Codex guidance. The doctor never changes repository settings, executes merge, or consumes a grant. Scenario 261 adds grouped dirty-path evidence and phase attribution through push, PR, checks, and merge recovery; diagnostics remain non-authorizing.

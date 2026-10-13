@@ -38,6 +38,10 @@ class PublicationDiagnosticsTest(unittest.TestCase):
             if endpoint == "repos/fixture/repo":
                 data = {"allow_squash_merge": True, "allow_merge_commit": False,
                         "allow_rebase_merge": True}
+            elif endpoint.endswith("/rules/branches/main"):
+                data = []
+            elif endpoint.endswith("/branches/main"):
+                data = {"name": "main"}
             elif endpoint.endswith("/rulesets?includes_parents=true&per_page=100"):
                 data = []
             elif endpoint.endswith("/branches/main/protection"):
@@ -53,6 +57,10 @@ class PublicationDiagnosticsTest(unittest.TestCase):
         self.assertEqual(result["status"], "READY", result)
         self.assertFalse(result["authorized"])
         self.assertTrue(result["read_only"])
+        self.assertFalse(result["api_write_performed"])
+        self.assertEqual(result["version"], 2)
+        self.assertEqual(result["worktree"]["status"], "CLEAN")
+        self.assertTrue(any(item["phase"] == "worktree_validation" for item in result["phases"]))
         self.assertEqual(result["merge_methods"], ["rebase", "squash"])
         self.assertEqual(result["policy"]["required_checks"], ["repository"])
         self.assertFalse(result["policy"]["api_write_performed"])
@@ -69,6 +77,10 @@ class PublicationDiagnosticsTest(unittest.TestCase):
             if argv[-1] == "repos/fixture/repo":
                 data = {"allow_squash_merge": True}
                 return subprocess.CompletedProcess(argv, 0, json.dumps(data), "")
+            if "branches/main" in argv[-1] and "protection" not in argv[-1]:
+                if "/rules/branches/" in argv[-1]:
+                    return subprocess.CompletedProcess(argv, 1, "", "HTTP 403 private detail")
+                return subprocess.CompletedProcess(argv, 0, json.dumps({"name": "main"}), "")
             if "rulesets?" in argv[-1]:
                 return subprocess.CompletedProcess(argv, 0, "[]", "")
             return subprocess.CompletedProcess(argv, 1, "", "HTTP 403 private detail")

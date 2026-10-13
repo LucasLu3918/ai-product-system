@@ -449,6 +449,9 @@ When Core Change Testing requires independent review, schedule a separate read-o
 Validation observations never authorize selective execution: `NOT_READY` is an evidence state, operational errors fail, and the full repository Gate remains required. Dependency Review parity is collected in shadow mode while the standalone security check remains authoritative; a later required-path switch needs a separately reviewed same-candidate parity result.
 
 - When release-policy sources trigger documentation placement rules, expand and review the complete required documentation closure before the Core candidate Gate.
+
+When publication is blocked, use `aips publish doctor --worktree <candidate-root> --worktree-details` to classify policy evidence, worktree state, and PR state by phase. Preserve unknown files; use the named safe recovery step and retain Human/host authority.
+
 ## Runtime Content Safety Boundary
 
 Project Diagnostics may recommend inspection or a specific recovery action but never runs it. Exact-candidate publication still binds the reconciled diff, documentation closure, active Core Matrix, secret scan and required repository result before a Git Publish Proposal.

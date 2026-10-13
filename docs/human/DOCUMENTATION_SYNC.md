@@ -188,6 +188,9 @@ Temporal 查詢的有效歷史以可驗證 Git revision 與 assertion provenance
 
 Behavior-bearing source changes must first map every new source path in `config/documentation-placement.yaml` to its canonical Human topic and allowed H2 section. Update all required Human and Agent documents in the same change; diff-aware preflight checks both closure and changed-line placement. Quality ratchet baselines and report-only coverage claims stay aligned across Maintenance, Technology Guide, Scenario 228 and architecture records.
 
+
+Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
+
 ## Official Docs Site
 
 文件工具鏈安全修補需同步 `package.json` 的限定 Vite 覆寫與 npm lockfile。保留 VitePress 穩定版時，跨 Vite 主要版本的覆寫必須驗證乾淨安裝、audit、build、開發／預覽及熱更新；本機存取設定與操作限制維護在 Technology Guide 的 Documentation Platform。
@@ -313,3 +316,5 @@ Exact-candidate browser toolchain selection is documented under the current-beha
 **Plan19 architecture and runtime closure.**
 
 Plan19 architecture and runtime claims use the canonical Capability Registry; the surface inventory and legacy Capability Map are generated views. Hook support remains advisory unless the exact local synthetic path is verified, and monthly effectiveness reports do not change source weights.
+
+For publication diagnostics, synchronize endpoint evidence semantics and phase/recovery behavior across the User Guide, Security Assurance, Architecture Overview, Claude Code adapter, and Scenario 260. Preserve UNKNOWN and the Human Authority boundary in every projection.

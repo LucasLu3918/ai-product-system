@@ -198,6 +198,9 @@ Native Runtime Adapter 與 MCP 是兩個互補平面：
 
 細節放在 [Global Harness 與 MCP](HARNESS.md)，不在 Installation 頁重複 implementation 細節。
 
+
+The publication doctor is part of the existing AIPS CLI; it does not require a new service, credential, or installation component. See Git Publication for `aips publish doctor` usage.
+
 ## 常見問題與排查
 
 `--source-checkout` 接受 Git 根目錄的 clone 或 linked worktree，安裝使用其已提交 HEAD；子目錄及非 AIPS 根目錄會拒絕。macOS Bash 3.2 的無選項安裝有獨立覆蓋。套件安裝回報 HTTP、proxy、DNS、TLS 或套件解析分類，不輸出可能含憑證的原始套件索引訊息；HTTP 403 應先查套件來源權限，不應直接重新登入 GitHub。

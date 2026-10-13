@@ -396,3 +396,5 @@ Task ownership binds the dispatched task lease to its active AIPS-managed worktr
 - The release-readiness changelog check is local and read-only; it adds no execution resource, credential, or tag-writing capability.
 
 Sparse delegation does not relax isolation requirements: each justified auxiliary task retains its declared read/write scope and required execution isolation; primary preference does not select an isolation provider.
+
+Dirty-worktree diagnostics list repository-relative paths only and never stash, delete, ignore, or move files. Candidate isolation remains a separate execution decision.

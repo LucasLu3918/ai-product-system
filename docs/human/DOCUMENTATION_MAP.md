@@ -98,6 +98,9 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 - DOCUMENTATION_SYNC.md：文件 consistency / placement contract。
 - SYSTEM_REFERENCE.md：由已驗證 system facts registry 衍生的 command、capability、platform 與 runtime 表格。
 
+
+Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
+
 ## Agent / machine canonical 文件
 
 Publication root-cause contract is implemented in scripts/publication_authority.py, scripts/publication_diagnostics.py and scripts/publication_planning.py; Claude Code agents consume this contract without creating a second permission gate.
@@ -214,6 +217,9 @@ CLI entry-point and publication-preflight modularization map to this document, A
 - Release-tag provenance policy is canonical in `config/version-tag-policy.yaml` and `orchestration/RELEASE_READINESS.md`; Scenario 208 defines its exact-candidate readiness contract and Scenario 214 covers stable install/update recovery evidence. Readiness never publishes a tag or release.
 
 Retrieval SQLite storage helpers are implemented in `scripts/retrieval_storage.py` and remain re-exported through the `scripts/retrieval_intelligence.py` facade. The existing Project Intelligence documentation closure covers both source modules.
+
+
+Publication diagnostics use `scripts/publication_authority.py`, `scripts/publication_planning.py`, and `scripts/repository_governance_snapshot.py` as machine sources; current behavior is explained in Git Publication, Security Assurance, Architecture Overview, and the Claude Code adapter.
 
 ## Shared canonical 文件
 

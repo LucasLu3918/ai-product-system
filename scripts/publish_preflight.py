@@ -768,6 +768,12 @@ def common(parser: argparse.ArgumentParser) -> None:
 def main() -> int:
     parser = argparse.ArgumentParser()
     subs = parser.add_subparsers(dest="command", required=True)
+    doctor = subs.add_parser("doctor", help="Read-only phase-separated GitHub policy and worktree diagnostics")
+    doctor.add_argument("--project-root", "--worktree", dest="worktree", type=Path, default=Path.cwd())
+    doctor.add_argument("--branch", help="Branch to inspect; defaults to the remote default branch")
+    doctor.add_argument("--pr", type=int, help="Optional PR number for read-only state inspection")
+    doctor.add_argument("--worktree-details", action="store_true", help="Include staged/modified/deleted/untracked repository-relative paths")
+    doctor.add_argument("--format", choices=("yaml", "json"), default="yaml")
     prepare = subs.add_parser("prepare", help="Read-only native publication command and resume plan")
     prepare.add_argument("--worktree", required=True, type=Path)
     prepare.add_argument("--title", required=True)
@@ -784,11 +790,6 @@ def main() -> int:
     diagnose.add_argument("--worktree", required=True, type=Path)
     diagnose.add_argument("--command", dest="native_command", required=True)
     diagnose.add_argument("--format", choices=("yaml", "json"), default="yaml")
-    doctor = subs.add_parser("doctor", help="Read-only GitHub publication readiness diagnosis")
-    doctor.add_argument("--project-root", type=Path, default=ROOT)
-    doctor.add_argument("--pr", type=int)
-    doctor.add_argument("--branch")
-    doctor.add_argument("--format", choices=("yaml", "json"), default="yaml")
     plan = subs.add_parser("plan")
     common(plan)
     preview = subs.add_parser("preview")
@@ -829,7 +830,8 @@ def main() -> int:
     try:
         if args.command == "doctor":
             from publication_diagnostics import doctor as publication_doctor
-            result = publication_doctor(args.project_root, pr_number=args.pr, branch=args.branch)
+            result = publication_doctor(args.worktree, pr_number=args.pr, branch=args.branch,
+                                        worktree_details=args.worktree_details)
             emit(result, args.format)
             return 0 if result["status"] == "READY" else 1
         if args.command in {"prepare", "diagnose"}:
