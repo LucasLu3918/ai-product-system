@@ -27,7 +27,7 @@ for phrase in ("scripts/publish_preflight.py run", "--labels \"$PR_LABELS\"", "A
     if phrase not in workflow:
         errors.append(f"validate workflow missing shared publication resolver: {phrase}")
 preflight_source = (ROOT / "scripts/publish_preflight.py").read_text(encoding="utf-8")
-for phrase in ("Read-only phase-separated GitHub policy", "worktree-details", "publication_planning.doctor"):
+for phrase in ("Read-only phase-separated GitHub policy", "worktree-details", "from publication_diagnostics import doctor as publication_doctor"):
     if phrase not in preflight_source:
         errors.append(f"publication doctor missing diagnostic contract: {phrase}")
 planning_source = (ROOT / "scripts/publication_planning.py").read_text(encoding="utf-8")
