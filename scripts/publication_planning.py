@@ -61,14 +61,21 @@ def _invocation(root: Path, operation: str, argv: list[str]) -> dict[str, Any]:
 
 def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'codex',
             expected_fingerprint: str | None = None, host_denied: bool = False,
-            merge_intent: bool = False, auto_merge: bool = False) -> dict[str, Any]:
+            merge_intent: bool = False, auto_merge: bool = False,
+            host_denial_class: str = "unknown") -> dict[str, Any]:
     """Re-observe Git/PR state each time; no cached step, grant or permission is trusted."""
     result: dict[str, Any] = {'version': 1, 'status': 'BLOCKED', 'authorized': False,
                               'diagnostics': [], 'invocations': [], 'host_permission': 'UNKNOWN',
                               'runtime': runtime, 'next_step': 'REOBSERVE'}
     if host_denied:
         result['host_permission'] = 'DENIED'
-        result['diagnostics'] = [diagnostic('HOST_PERMISSION_DENIED')]
+        codes = {
+            'merge-without-review': 'HOST_MERGE_WITHOUT_REVIEW',
+            'read-only-diagnostic': 'HOST_READ_ONLY_DENIED',
+            'unknown': 'HOST_PERMISSION_DENIED',
+        }
+        result['diagnostics'] = [diagnostic(codes.get(host_denial_class,
+                                                      'HOST_PERMISSION_DENIED'))]
         return result
     if auto_merge and not merge_intent:
         result['diagnostics'] = [diagnostic('AUTO_MERGE_REQUIRES_INTENT')]
@@ -228,3 +235,33 @@ def diagnose(worktree: Path, command: str) -> dict[str, Any]:
         return {'status': 'BLOCKED', 'authorized': False, 'diagnostics': [diagnostic('COMMAND_FORM_UNSUPPORTED')]}
     except (OSError, ValueError, TypeError, yaml.YAMLError, subprocess.TimeoutExpired):
         return {'status': 'BLOCKED', 'authorized': False, 'diagnostics': [diagnostic('REMOTE_OBSERVATION_FAILED')]}
+
+def recovery_guidance(result: dict[str, Any]) -> dict[str, Any]:
+    """Non-authorizing status guidance; never executes a publication action."""
+    status = str(result.get('status') or 'BLOCKED')
+    next_step = str(result.get('next_step') or 'REOBSERVE')
+    diagnostics = result.get('diagnostics') or []
+    codes = [item.get('reason_code') for item in diagnostics if isinstance(item, dict)]
+    if status == 'COMPLETE':
+        state, human, retry = 'ALREADY_MERGED', False, False
+    elif any(str(code).startswith('HOST_') for code in codes):
+        state, human, retry = 'HOST_PERMISSION_REQUIRED', True, False
+    elif status == 'AWAITING_AUTHORITY':
+        state, human, retry = 'HUMAN_AUTHORITY_REQUIRED', True, False
+    elif next_step == 'NATIVE_MERGE_CONFIRMATION':
+        state, human, retry = 'HUMAN_CONFIRMATION_REQUIRED', True, False
+    elif 'REQUIRED_CHECKS_PENDING' in codes:
+        state, human, retry = 'CHECKS_PENDING', False, True
+    elif status == 'BLOCKED':
+        state, human, retry = 'REPAIR_REQUIRED', False, False
+    elif next_step == 'CHECKS_AND_MERGE_INTENT':
+        state, human, retry = 'RECHECK_REQUIRED_CHECKS', False, True
+    else:
+        state, human, retry = 'REVALIDATE_BEFORE_NATIVE_ACTION', False, False
+    return {
+        'state': state, 'next_step': next_step,
+        'requires_human': human, 'retry_read_only': retry,
+        'executed': False, 'authorized': False,
+        'instruction': 'Reobserve the exact PR, branch and checks before any native mutation; '
+                       'this recovery report never authorizes publication.',
+    }

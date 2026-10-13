@@ -82,6 +82,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
+An installed Claude Code harness can diagnose PR failures through the read-only AIPS publish doctor command. Keep managed PreToolUse hooks active; do not grant blanket Bash access as an error-recovery shortcut.
+
 For first-time GitHub repository setup, `aips publish doctor --project-root <repo>` checks local GitHub CLI access and read-only repository policy visibility. Missing access or Required Checks remains a blocker; the doctor does not change settings. See the Git Publication section of the User Guide.
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.

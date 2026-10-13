@@ -213,6 +213,8 @@ Review actual:
 
 ## Release Security Gate
 
+Specific protected-publication reason codes expose only sanitized underlying categories. Missing Required Checks policy evidence blocks; Host denial, recovery suggestions and green CI do not replace signed grants or per-call Human confirmation.
+
 Publication diagnostics 只輸出固定 reason code 與安全修復指引。`prepare` 不簽發、消耗 Grant 或執行發布；high-assurance 保留外部單次 Grant，Host 拒絕不得以其他命令重試。
 
 Creative asset transfer requires an exact source SHA-256, a non-Git destination, and a create-only target; candidate metadata is private and excludes asset bytes.

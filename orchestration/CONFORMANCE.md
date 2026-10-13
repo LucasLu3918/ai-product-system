@@ -1067,6 +1067,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Optional upstream Skills retain their independently reviewed installation lifecycle; publication recovery does not grant new Skill or Git authority.
+
 All non-canonical upstream Skill IDs are user-installable regardless of AIPS disposition; seven exact canonical ID matches use the AIPS Skill. Native Codex and Claude Code projections require explicit invocation; Gemini retains activation consent.
 
 The canonical Skill registry contains 49 AIPS Skills; the pinned 38-item upstream manifest links vendored source paths and SHA-256 entrypoint digests. Distinct repo/tool methods auto-route on matching tasks while overlaps remain experimental/optional. `$grill-with-docs` is a separate explicit-only Skill. MCP-compatible Agents load canonical Skill Resources on demand; native projections are owned and removed by AIPS lifecycle rules that preserve pre-existing or modified Skills. Writing Fragments → Beats → Shape remains explicit-request-only. `tests/validation/skill_catalog_contracts.py` checks deterministic registry, routing, output, license and source invariants; Scenario 259 remains manual for semantic routing acceptance.

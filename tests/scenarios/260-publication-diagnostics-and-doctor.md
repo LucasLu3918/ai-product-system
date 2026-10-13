@@ -10,7 +10,11 @@ An agent cannot explain why a checked PR merge was blocked, or a maintainer is c
 - Required Checks are distinguished as unconfigured, passing, failing, pending, missing/skipped, cancelled, or unavailable due to authentication, permissions, network or API response problems.
 - Missing, malformed or permission-limited policy evidence remains blocking and never implies that protection is absent.
 - `aips publish diagnose` validates a literal `gh pr merge` against the exact PR, head SHA, base, method and live checks without executing it or consuming a grant.
-- Diagnostics have stable reason code, phase, safe category and actionable next step; raw GitHub output and credentials do not appear.
+- Diagnostics have stable reason code, phase, safe category, source and actionable next step; raw GitHub output and credentials do not appear.
+- Invalid merge method, forbidden flags and missing or stale pinned head report distinct errors; cleanup stays separate.
+- A missing gh required-check report becomes UNCONFIGURED only with verified empty policy, MISSING if policy names requirements, and UNAVAILABLE if policy is not known. It is never assumed to mean pending.
+- Host Auto Mode rejection is recorded separately from AIPS/GitHub errors, cannot be bypassed by command disguise.
+- The recovery report is read-only and non-authorizing, distinguishing Host confirmation, external grant and already merged status.
 - Claude Code, OpenCode and Codex receive consistent guidance while retaining native permissions and Human Authority; no policy changes, bypasses or automatic merge are introduced.
 
 ## Evidence

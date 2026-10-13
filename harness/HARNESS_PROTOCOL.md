@@ -153,3 +153,7 @@ Codex PreToolUse support remains `EXPERIMENTAL` and `ADVISORY`: the local probe 
 Creative adapters share the closed executor registry, including Z-Image Turbo generate only through fixed MFLUX argv or the built-in ComfyUI split-loader workflow; local model inventory checks do not grant broader generation authority or arbitrary command arguments.
 
 Publication diagnosis is a read-only capability. Runtime adapters may report the shared reason code, phase, safe next step and Required Checks state, but must not treat diagnosis as permission, expose raw host output, modify policy, or execute a merge.
+
+## Publication Root-Cause Recovery (Plan35)
+
+AIPS PreToolUse permits ask/deny decisions, while Claude Host Auto Mode may independently refuse a command before AIPS executes. Report Host, AIPS and GitHub errors separately; recovery remains advisory.

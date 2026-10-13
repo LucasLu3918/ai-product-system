@@ -26,6 +26,8 @@ features:
 
 ## 文件如何組織
 
+For publication failures, follow USER_GUIDE.md Git Publication guidance and Scenario 260; runtime adapter permission truth is documented separately in HARNESS.md.
+
 GitHub publication troubleshooting and first-time readiness checks are covered by `aips publish doctor` in the [User Guide](USER_GUIDE.md#git-publication-與-release); authority and response contracts are in the [Technology Guide](TECHNOLOGY_GUIDE.md).
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.

@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Creative grants never confer Git merge authority; publication recovery diagnostics must remain separate from creative quality and asset acceptance.
+
 Creative generation and asset import retain their existing grants; a later Git publication uses the separate read-only repository diagnosis and approval flow described under Git Publication 與 Release.
 
 上游 Writing Fragments → Beats → Shape 是獨立的明確選用流程，不會因一般寫作或創意工作自動套用；完整 Skill 狀態可在 <a href="./skill-catalog.html">Skill Explorer</a> 查看。
@@ -178,6 +180,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+Claude Host Auto Mode classifier denial and AIPS PreToolUse rejection are different failure sources; the read-only publication recovery report cannot resolve native permissions.
+
 Native adapters may report Publication Doctor findings and safe next steps, but those observations do not grant Git publication, merge or policy-change authority.
 
 其他 Agent 透過 MCP Resource `aips://catalog/skills` 取得目錄，再按需載入 `aips://skills/<skill-id>`；Host 的 MCP 設定須由使用者依官方方式註冊。解除安裝依 Harness ownership manifest 與內容摘要，只清除 AIPS 管理且未被修改的投影，保留原有或有衝突的 Skill。
@@ -232,6 +236,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+Optional Skills and Human Skill Explorer are independent of PR publication diagnostics; no Skill installation may silently change merge authority.
 
 Skills and portable commands can direct users to the core `aips publish doctor` CLI for repository setup; installing a Skill does not grant publication or merge authority.
 
@@ -562,6 +568,21 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 Retrieval index persistence is an internal, rebuildable cache boundary in `scripts/retrieval_storage.py`; existing commands and imports continue through the `retrieval_intelligence.py` compatibility facade.
 
 ## Git Publication 與 Release
+
+### Claude Code 合併失敗的真實原因與安全恢復
+
+建議先在信任的互動式終端機執行 `aips publish doctor --project-root <repo> --pr <number> --format json`；要檢查格式，使用 `aips publish diagnose --worktree <repo> --command '<literal-gh-pr-merge>' --format json`。這兩個指令均為唯讀，不能當作已完成合併或取得 Host 授權。新版 `prepare`／`diagnose` 會提供 `recovery` 建議，其中 `authorized: false`、`executed: false`；只允許針對明確暫時性狀態重試唯讀觀察。
+
+- `MERGE_HEAD_PIN_REQUIRED`：必須讀取當前 PR HEAD 並加上 `--match-head-commit` 的完整 SHA；`MERGE_HEAD_MISMATCH` 代表提供過期或錯誤的 SHA。
+- `MERGE_OPTION_FORBIDDEN`：不能附上 `--admin` 或 `--delete-branch`，合併和分支清理需分開授權。
+- `REQUIRED_CHECKS_UNCONFIGURED` 只能由完整的政策證據確認；`REQUIRED_CHECKS_POLICY_UNVERIFIED` 表示政策查證不足，不能說成 CI 還在跑。
+- `REQUIRED_CHECKS_MISSING` 表示應觀察的必要檢查不存在，`REQUIRED_CHECKS_PENDING` 表示實際觀察到進行中的檢查；兩者都阻擋合併。
+- `HOST_MERGE_WITHOUT_REVIEW` 來自 Claude Code Host Auto Mode，不是 GitHub 或 AIPS 核心出錯。由使用者透過原生確認流程處理。若 Host 允許唯讀指令，可用 `aips publish prepare ... --host-denied --host-denial-class merge-without-review` 回報**已觀察到**的分類；不得為了繞過分類器而改寫命令。
+- `HOST_READ_ONLY_DENIED` 代表 Host 阻擋唯讀診斷，可改由受信任的使用者終端機查詢，不能自行推定 Host 權限已恢復。
+
+Personal Mode 的逐次合併確認和 High-Assurance Mode 的外部 signed grant 不同。所有原始 stderr、敏感 URL 和機密欄位應限制曝光；維持穩定錯誤碼、來源、可行的排除方式及完成後驗證。每次真正執行合併前仍須重新確認 head/base/checks 與人類授權。
+
+
 
 `aips publish diagnose --worktree <candidate-root> --command '<literal-command>'` 可辨識 `PUSH_SOURCE_NOT_EXACT_SHA`、`INVALID_TARGET_REF`、`WORKTREE_DIRTY`、`BASE_NOT_ANCESTOR`、`CONTENT_SCAN_BLOCKED` 與 metadata 問題。`prepare` 的高保證流程輸出精確 lease 命令與 `AUTHORITY_REQUIRED`，仍須由外部 issuer 核准；模式設定存在但無效時不降級。`--merge-intent` 僅記錄當次任務意圖，不能取代使用者或 Host 授權。
 

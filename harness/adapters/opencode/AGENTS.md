@@ -48,3 +48,7 @@ The hash-bound creative workspace import is an explicit CLI file operation; it d
 Explicit recreation such as `請按疤痕在額頭皮膚、不在頭髮上，重出一張哈利` derives a new single-output grant in the same Session. Inspect classification/hook delivery when admission fails; never prescribe repeated failed wording or a new Session without evidence. Use feedback for bounded defects, repair for copied Profiles/Bundle, quality-check for per-criterion local advisory evidence, and compare for exact-parent lineage. quality-loop requires explicit automatic-repair intent, reserves separate finite attempts, respects native time limits, and never grants Human review or user acceptance. Cancellation/negation/replayed messages do not recharge authority.
 
 Ordinary generation grants permit bounded `quality-check` of manifests produced by that grant; historical/unrelated images require explicit review intent. This does not authorize regeneration, and `review-assist` retains its separate explicit-review contract. Inspect required criteria before delivery; without an installed local reviewer, report UNVERIFIED and request Human inspection.
+
+## Publication Root-Cause Recovery (Plan35)
+
+Agents should preserve the exact AIPS/GitHub reason code without claiming Claude Code Auto Mode behavior applies to OpenCode. Read-only recovery guidance never confers publication authority.

@@ -219,6 +219,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+Cross-file publication diagnostics are reconciled against required canonical Human topics; the deterministic placement check remains fail-closed instead of being disabled.
+
 Native Skill projections share one canonical AIPS source and ownership manifest. Human Installation/User Guide/Harness explain host paths and safe removal; Technology Guide and Scenario 233/235 describe deterministic file/lifecycle evidence without claiming live Codex, Claude Code or Gemini CLI discovery. Keep these distinct from Runtime hook enforcement claims.
 
 Map public CLI behavior to the owning Human workflow and Scenario section. Generic dispatcher or shared registry edits require no unrelated domain documentation unless the changed behavior belongs to that domain.

@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+Publication root-cause reports originate from the existing AIPS authority and read-only diagnostic modules; Claude Host denial and GitHub required-check policy are independent observations, never a new approval service.
+
 Human 可透過生成式 Skill Explorer 瀏覽 Registry；此唯讀文件視圖不介入 Agent 的 Skill routing、執行授權或 Git 發布權限。
 
 Agent 可透過 MCP Resources 按需載入 canonical Skills，或由 AIPS 將 Skills 與 Portable Commands 投影至 Codex、Claude Code、Gemini CLI 及 OpenCode 的原生發現目錄。Codex 與 Gemini 可共用 `~/.agents/skills`；Claude Code 使用 `~/.claude/skills`。外部 ownership manifest 記錄來源、Host、scope 與逐檔摘要；重複安裝不建立副本，卸載只刪除仍吻合摘要的 AIPS-owned 檔案。既有、無主控記錄、遭修改或仍由其他 Host 共用的 Skill 會保留。
@@ -281,6 +283,8 @@ flowchart LR
 The alias candidate is deterministic and transparent. It is not an embedding provider and does not change `semantic.status=NOT_CONFIGURED`. The committed Trial follows the FAIL → KEEP branch: required regressions and no synonym-recall improvement produce recommendation `HOLD`. Normal Turn Context retrieval therefore does not enable the alias lane.
 
 ## Maintenance and publication evidence
+
+Exact PR merges remain SHA-bound and Human-controlled; an advisory recovery state never performs a GitHub mutation or consumes a publication grant.
 
 Publication diagnostics reuse the existing authority and preflight boundary. `aips publish doctor` reads repository/auth/protection and optional PR/check evidence; `aips publish diagnose` can validate a literal merge command. Both return stable safe diagnostics only. The publication execution path remains the sole authority consumer; no topology, grant or policy mutation path is added.
 

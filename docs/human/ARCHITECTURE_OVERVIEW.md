@@ -122,6 +122,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Creative asset approval remains independent from the Git publish approval and its error-recovery observations.
+
 Creative assets and Git publication retain separate authority boundaries: repository readiness can be observed with Publication Doctor, while asset generation/import authorization remains unchanged.
 
 Skill 整合新增明確選用的 Writing Fragments → Beats → Shape 方法，以及 `$grill-with-docs` 的 Glossary／ADR 釐清入口；它們提供內容組織與文件釐清建議，不會啟動素材生成、程式實作或發布，也不改變人工審查邊界.
@@ -323,6 +325,8 @@ Browser evidence 也屬於 deterministic environment contract：candidate prefli
 Publication Preflight 將 Python module availability 與 loopback/browser capability 分開回報；未被 exact candidate 選用的 browser probe 回報 `NOT_REQUIRED` 且不阻擋，選用時才驗證 capability blockers。
 
 ## Security 與 Governance
+
+Publication diagnostics now preserve distinct merge-command and CI-policy failure codes while redacting sensitive provider output. Claude Host confirmations are not implied by AIPS planning.
 
 
 

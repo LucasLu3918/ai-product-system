@@ -775,6 +775,8 @@ def main() -> int:
     prepare.add_argument("--runtime", choices=("codex", "claude-code", "gemini-cli", "opencode"), default="codex")
     prepare.add_argument("--expected-fingerprint")
     prepare.add_argument("--host-denied", action="store_true")
+    prepare.add_argument("--host-denial-class", choices=("unknown", "merge-without-review",
+                         "read-only-diagnostic"), default="unknown")
     prepare.add_argument("--merge-intent", action="store_true", help="Task intent only; never a grant or host permission")
     prepare.add_argument("--auto-merge", action="store_true", help="Request GitHub auto-merge after verified required checks; native authorization still applies")
     prepare.add_argument("--format", choices=("yaml", "json"), default="yaml")
@@ -836,9 +838,10 @@ def main() -> int:
                 result = publication_planning.prepare(args.worktree, title=args.title, body_file=args.body_file,
                     runtime=args.runtime, expected_fingerprint=args.expected_fingerprint,
                     host_denied=args.host_denied, merge_intent=args.merge_intent or args.auto_merge,
-                    auto_merge=args.auto_merge)
+                    auto_merge=args.auto_merge, host_denial_class=args.host_denial_class)
             else:
                 result = publication_planning.diagnose(args.worktree, args.native_command)
+            result["recovery"] = publication_planning.recovery_guidance(result)
             emit(result, args.format)
             return 1 if result["status"] == "BLOCKED" else 0
         if args.command == "docs-impact":

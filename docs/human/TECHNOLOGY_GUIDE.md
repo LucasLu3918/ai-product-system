@@ -74,6 +74,8 @@ Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEM
 
 ## Execution
 
+Publication recovery re-observes the exact PR HEAD and base before mutations, and never upgrades a read-only plan into authority.
+
 Skill Explorer 是離線生成的靜態 HTML，使用原生瀏覽器搜尋、分類與複製功能。49 個 canonical AIPS Skills 經 registry 路由；38 個 Matt Pocock 原始 Skills 保留在 `external-skills/matt-pocock/` 並列出來源摘要與 disposition。31 個非 canonical ID 可由使用者選擇安裝；7 個同名項目沿用 AIPS canonical 版本。Disposition 保留為整合背景，不限制安裝。Codex 與 Claude Code 原生投影要求明確呼叫；Gemini 保留啟用前確認。`$grill-with-docs` 保持獨立且明確呼叫；瀏覽頁面本身不執行任何 Skill。
 
 `publication_planning.py` 重用 authority、candidate/history scan 與 GitHub PR evidence，提供 read-only `prepare` / `diagnose`。指紋包含 worktree、HEAD/base、remote/PR、policy 與 PR body digest；任何漂移需重新規劃，不能用診斷代碼放行。
@@ -243,6 +245,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Required Checks classify an empty result as UNCONFIGURED only when protection is independently confirmed empty; an unknown policy stays blocked and cannot be inferred from passing optional CI.
 
 Upstream Skill projections are validated by the isolated `skills_cli_lifecycle.py` evidence: all non-canonical records are installable, canonical IDs are skipped, ownership is source-scoped across Hosts, and modified or unowned files survive uninstall. Codex and Claude invocation controls are projected from native metadata. This fixture validates local lifecycle behavior; it does not claim live Agent discovery.
 
