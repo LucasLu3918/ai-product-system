@@ -26,7 +26,8 @@ matrix:
         and classic-protection evidence.'
     contract:
       applicable: true
-      evidence: 'PASS: repository governance snapshot contracts and Scenario 260 documentation coverage.'
+      evidence: 'PASS: repository governance snapshot contracts and Scenario 260 documentation coverage. Conformance
+        isolation is 260/240/146; publication preflight contract owner checks pass.'
     e2e:
       applicable: false
       na_reason: No deployed application flow; deterministic API lifecycle fixtures exercise the resolver.
@@ -59,7 +60,8 @@ matrix:
       evidence: 'PASS: repository governance snapshot lifecycle and publication authority lifecycle cases passed.'
     contract:
       applicable: true
-      evidence: 'PASS: repository governance snapshot contracts and publication preflight contracts passed.'
+      evidence: 'PASS: repository governance snapshot contracts and publication preflight contracts passed. Conformance
+        isolation is 260/240/146; publication preflight contract owner checks pass.'
     e2e:
       applicable: false
       na_reason: Native hook/CLI lifecycle fixtures cover behavior; no deployed UI.
@@ -92,7 +94,8 @@ matrix:
       evidence: 'PASS: publication planning and governance snapshot lifecycle fixtures passed.'
     contract:
       applicable: true
-      evidence: 'PASS: publish preflight and governance snapshot contracts passed.'
+      evidence: 'PASS: publish preflight and governance snapshot contracts passed. Conformance isolation is 260/240/146;
+        publication preflight contract owner checks pass.'
     e2e:
       applicable: false
       na_reason: No remote mutation is part of local tests; GitHub state is represented by deterministic read-only
@@ -153,4 +156,4 @@ review_evidence:
   required: false
 candidate:
   base_sha: 4a21feef1ab67c031edb38db02255cef6ce750c8
-  changed_files_hash: 4d1ddaddbae067aac69f349ce1f08392951a8c29ed83448135daf79868aa9b4b
+  changed_files_hash: fac3892baf0ac22a1048bea9c5b1fc21627c434b593adceb6bbdc19cda4688a2

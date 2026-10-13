@@ -27,13 +27,12 @@ for phrase in ("scripts/publish_preflight.py run", "--labels \"$PR_LABELS\"", "A
     if phrase not in workflow:
         errors.append(f"validate workflow missing shared publication resolver: {phrase}")
 preflight_source = (ROOT / "scripts/publish_preflight.py").read_text(encoding="utf-8")
-for phrase in ("worktree-details", "publication_planning.doctor"):
+for phrase in ("Read-only phase-separated GitHub policy", "worktree-details", "publication_planning.doctor"):
     if phrase not in preflight_source:
         errors.append(f"publication doctor missing diagnostic contract: {phrase}")
 planning_source = (ROOT / "scripts/publication_planning.py").read_text(encoding="utf-8")
-for phrase in ("Read-only, phase-separated publication evidence", "protection_policy_evidence"):
-    if phrase not in planning_source:
-        errors.append(f"publication doctor missing diagnostic contract: {phrase}")
+if "protection_policy_evidence" not in planning_source:
+    errors.append("publication doctor missing diagnostic contract: protection_policy_evidence")
 python_handoff = 'echo "AIPS_VALIDATION_PYTHON=$(python -c \'import sys; print(sys.executable)\')" >> "$GITHUB_ENV"'
 if python_handoff not in workflow:
     errors.append("validate workflow must pass its installed Python interpreter to isolated CLI fixtures")
