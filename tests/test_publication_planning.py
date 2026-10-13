@@ -185,7 +185,7 @@ class PlanningTest(unittest.TestCase):
 
     def test_required_checks_have_distinct_fail_closed_states(self):
         cases = [
-            ([], 0, '', 'UNCONFIGURED', 'REQUIRED_CHECKS_UNCONFIGURED'),
+            ([], 0, '', 'UNAVAILABLE', 'REQUIRED_CHECKS_POLICY_UNVERIFIED'),
             ([{'name': 'repo', 'bucket': 'fail'}], 0, '', 'FAIL', 'REQUIRED_CHECKS_FAILING'),
             ([{'name': 'repo', 'bucket': 'pending'}], 0, '', 'PENDING', 'REQUIRED_CHECKS_PENDING'),
             ([{'name': 'repo', 'bucket': 'pending'}], 8, '', 'PENDING', 'REQUIRED_CHECKS_PENDING'),
@@ -202,6 +202,18 @@ class PlanningTest(unittest.TestCase):
                     payload, returncode=rc, stderr=stderr)
                 self.assertEqual(result['status'], status)
                 self.assertEqual(result['reason_code'], code)
+        explicitly_unconfigured = publication_diagnostics.classify_required_checks(
+            [], returncode=0, stderr='', required_policy=[])
+        self.assertEqual(explicitly_unconfigured, {
+            'status': 'UNCONFIGURED',
+            'reason_code': 'REQUIRED_CHECKS_UNCONFIGURED',
+            'checks': [],
+        })
+        no_checks_with_verified_empty_policy = publication_diagnostics.classify_required_checks(
+            None, returncode=1,
+            stderr="no required checks reported on the 'feature' branch",
+            required_policy=[])
+        self.assertEqual(no_checks_with_verified_empty_policy['status'], 'UNCONFIGURED')
         self.assertNotIn('403', str(publication_diagnostics.classify_required_checks(
             None, returncode=4, stderr='private URL HTTP 403')))
 
