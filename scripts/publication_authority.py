@@ -106,7 +106,6 @@ PUBLICATION_DIAGNOSTICS = {
     'REQUIRED_CHECKS_API_UNAVAILABLE': ('GitHub required-check evidence is unavailable.', 'Check GitHub API availability and repository access, then retry.', 'checks', 'API_UNAVAILABLE'),
     'REQUIRED_CHECKS_INVALID': ('GitHub returned an invalid required-check response.', 'Inspect GitHub CLI compatibility and retry without bypassing the merge guard.', 'checks', 'INVALID_RESPONSE'),
 
-    'AUTO_MERGE_REQUIRES_INTENT': ('Automatic merge planning requires explicit merge intent.', 'Re-run prepare with --merge-intent or --auto-merge only after reviewing the exact candidate.'),
     'REMOTE_CONFIGURATION_INVALID': ('The configured Git remote is ambiguous or does not match the verified origin.', 'Review origin fetch and push URLs locally. Resolve ambiguity only after verifying the destination.'),
     'REMOTE_BRANCH_UNAVAILABLE': ('The remote default branch could not be observed.', 'Check connectivity and repository access, then repeat the read-only observation.'),
     'ALTERNATE_GIT_ENVIRONMENT': ('An alternate Git environment changes the inspected repository context.', 'Remove the injected Git environment and re-run from the selected worktree.'),

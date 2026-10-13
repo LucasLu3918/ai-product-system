@@ -769,7 +769,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     subs = parser.add_subparsers(dest="command", required=True)
     doctor = subs.add_parser("doctor", help="Read-only phase-separated GitHub policy and worktree diagnostics")
-    doctor.add_argument("--worktree", type=Path, default=Path.cwd())
+    doctor.add_argument("--project-root", "--worktree", dest="worktree", type=Path, default=Path.cwd())
     doctor.add_argument("--branch", help="Branch to inspect; defaults to the remote default branch")
     doctor.add_argument("--pr", type=int, help="Optional PR number for read-only state inspection")
     doctor.add_argument("--worktree-details", action="store_true", help="Include staged/modified/deleted/untracked repository-relative paths")
@@ -828,14 +828,15 @@ def main() -> int:
     checks.add_argument("--format", choices=("yaml", "json"), default="yaml")
     args = parser.parse_args()
     try:
-        if args.command in {"doctor", "prepare", "diagnose"}:
+        if args.command == "doctor":
+            from publication_diagnostics import doctor as publication_doctor
+            result = publication_doctor(args.worktree, pr_number=args.pr, branch=args.branch,
+                                        worktree_details=args.worktree_details)
+            emit(result, args.format)
+            return 0 if result["status"] == "READY" else 1
+        if args.command in {"prepare", "diagnose"}:
             import publication_planning
-            if args.command == "doctor":
-                result = publication_planning.doctor(args.worktree, branch=args.branch, pr_number=args.pr,
-                                                     worktree_details=args.worktree_details)
-                emit(result, args.format)
-                return 0 if result["status"] == "OBSERVED" else 1
-            elif args.command == "prepare":
+            if args.command == "prepare":
                 result = publication_planning.prepare(args.worktree, title=args.title, body_file=args.body_file,
                     runtime=args.runtime, expected_fingerprint=args.expected_fingerprint,
                     host_denied=args.host_denied, merge_intent=args.merge_intent or args.auto_merge,

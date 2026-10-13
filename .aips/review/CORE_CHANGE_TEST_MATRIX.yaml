@@ -18,7 +18,7 @@ matrix:
       evidence: 'PASS: Ruff output has no additional findings versus origin/main (15 inherited findings remain unchanged).'
     unit:
       applicable: true
-      evidence: 'PASS: 58 publication authority/planning unit tests, including HTTP status, redaction, 401/403/404
+      evidence: 'PASS: 60 publication authority/planning unit tests, including HTTP status, redaction, 401/403/404
         and malformed-evidence cases.'
     integration:
       applicable: true
@@ -26,7 +26,7 @@ matrix:
         and classic-protection evidence.'
     contract:
       applicable: true
-      evidence: 'PASS: repository governance snapshot contracts and Scenario 260 documentation coverage. Conformance
+      evidence: 'PASS: repository governance snapshot contracts and Scenario 261 documentation coverage. Conformance
         isolation is 260/240/146; publication preflight contract owner checks pass.'
     e2e:
       applicable: false
@@ -94,7 +94,7 @@ matrix:
       evidence: 'PASS: publication planning and governance snapshot lifecycle fixtures passed.'
     contract:
       applicable: true
-      evidence: 'PASS: publish preflight and governance snapshot contracts passed. Conformance isolation is 260/240/146;
+      evidence: 'PASS: publish preflight and governance snapshot contracts passed. Conformance isolation is 261/241/148;
         publication preflight contract owner checks pass.'
     e2e:
       applicable: false
@@ -130,7 +130,7 @@ matrix:
         the preceding boundaries.
     contract:
       applicable: true
-      evidence: 'PASS: Scenario 260 and Claude Code safe-recovery guidance contracts are present.'
+      evidence: 'PASS: Scenario 261 and Claude Code safe-recovery guidance contracts are present.'
     e2e:
       applicable: false
       na_reason: Documentation-only consumer.
@@ -155,5 +155,5 @@ status: READY
 review_evidence:
   required: false
 candidate:
-  base_sha: 4a21feef1ab67c031edb38db02255cef6ce750c8
-  changed_files_hash: fac3892baf0ac22a1048bea9c5b1fc21627c434b593adceb6bbdc19cda4688a2
+  base_sha: 035976f5079432ca5fb3a557da81a99e7d092279
+  changed_files_hash: 837a7b007b6231528dfc70b93f0ba2a375282eadd700fc791918d1665a762428

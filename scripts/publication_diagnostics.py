@@ -77,15 +77,17 @@ def classify_required_checks(payload: Any = None, *, returncode: int = 0,
     return {"status": status, "reason_code": code, "checks": sorted(names)}
 
 
-def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = None) -> dict[str, Any]:
+def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = None,
+           worktree_details: bool = False) -> dict[str, Any]:
     """Read-only repository, auth, policy, PR and required-check diagnosis."""
     import publication_authority as authority
     from repository_governance_snapshot import build_snapshot, repository_slug
 
-    result: dict[str, Any] = {"version": 1, "status": "BLOCKED", "authorized": False,
-                              "read_only": True, "repository": None, "authentication": "UNKNOWN",
-                              "merge_methods": [], "required_checks": {"status": "UNKNOWN", "checks": []},
-                              "pr": None, "blockers": [], "diagnostics": [], "next_steps": []}
+    result: dict[str, Any] = {"version": 2, "status": "BLOCKED", "authorized": False,
+                              "read_only": True, "api_write_performed": False, "repository": None,
+                              "authentication": "UNKNOWN", "merge_methods": [],
+                              "required_checks": {"status": "UNKNOWN", "checks": []},
+                              "pr": None, "blockers": [], "diagnostics": [], "next_steps": [], "phases": []}
     def finish() -> dict[str, Any]:
         result["next_steps"] = [item["next_step"] for item in result["diagnostics"]
                                 if isinstance(item, dict) and isinstance(item.get("next_step"), str)]
@@ -94,11 +96,31 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
         root = root.expanduser().resolve(strict=True)
         if Path(authority.git(root, "rev-parse", "--show-toplevel")).resolve() != root:
             raise authority.PublicationError("repository root required", "CWD_MISMATCH")
+        try:
+            result["candidate_sha"] = authority.git(root, "rev-parse", "HEAD^{commit}")
+        except authority.PublicationError:
+            result["candidate_sha"] = None
+        dirty = authority.worktree_dirty_details(root)
+        result["worktree"] = {"branch": authority.git(root, "branch", "--show-current") or None,
+                              "status": dirty["status"]}
+        if worktree_details:
+            result["worktree_details"] = dirty
+        result["phases"].append({"phase": "worktree_validation", "status": dirty["status"],
+                                 "blocking": dirty["status"] == "DIRTY"})
+        if dirty["status"] == "DIRTY":
+            result["blockers"].append("worktree_dirty")
+            item = authority.PublicationError("publication requires a clean worktree", "WORKTREE_DIRTY",
+                context={"worktree": root, "candidate_sha": result.get("candidate_sha")},
+                phase="worktree_validation").diagnostic()
+            if not worktree_details:
+                item.pop("worktree_details", None)
+            result["diagnostics"].append(item)
         remote = authority.git(root, "remote", "get-url", "origin")
         repo = repository_slug(remote)
         if not repo or not re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", repo):
             raise authority.PublicationError("GitHub origin required", "REMOTE_OBSERVATION_FAILED")
         result["repository"] = repo
+        result["phases"].append({"phase": "repository_identity", "status": "PASS", "repository": repo})
         gh = shutil.which("gh")
         if not gh:
             result["blockers"].append("gh_unavailable")
@@ -109,6 +131,7 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
         auth_check = subprocess.run([gh, "auth", "status", "--hostname", "github.com"], cwd=root,
                                     capture_output=True, text=True, timeout=15, check=False)
         result["authentication"] = "AVAILABLE" if auth_check.returncode == 0 else "UNAVAILABLE"
+        result["phases"].append({"phase": "authentication", "status": result["authentication"]})
         if auth_check.returncode:
             result["blockers"].append("github_auth_unavailable")
             result["diagnostics"].append({"reason_code": "GITHUB_AUTH_UNAVAILABLE", "phase": "authentication",
@@ -151,6 +174,11 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
             for check in ((rule.get("parameters") or {}).get("required_status_checks") or [])
             if isinstance(check, dict) and check.get("context")})
         required = sorted(set(required or []) | set(ruleset_required)) if snapshot.get("source_complete") else None
+        result["governance"] = snapshot
+        result["phases"].append({"phase": "protection_policy_evidence",
+                                 "status": snapshot.get("protection_state", "UNKNOWN"),
+                                 "evidence_level": snapshot.get("evidence_level"),
+                                 "blocking": not snapshot.get("source_complete")})
         result["policy"] = {"status": "AVAILABLE" if snapshot.get("source_complete") else "UNAVAILABLE",
                              "branch": branch, "required_checks": required or [],
                              "ruleset_required_checks": ruleset_required,
@@ -234,6 +262,11 @@ def doctor(root: Path, *, pr_number: int | None = None, branch: str | None = Non
                 if any(code in {"PR_HEAD_STALE", "PR_BASE_STALE"} for code, _ in pr_blockers):
                     checks = {**checks, "status": "STALE", "reason_code": "CANDIDATE_CHANGED"}
                 result["required_checks"] = checks
+                result["phases"].append({"phase": "required_checks", "status": checks["status"],
+                                         "blocking": checks["status"] != "PASS"})
+                result["phases"].append({"phase": "pr_state_observation",
+                                         "status": "OBSERVED" if not pr_blockers else "BLOCKED",
+                                         "blocking": bool(pr_blockers)})
                 result["pr"] = {"status": pr.get("state"), "freshness": "STALE" if any(
                     code in {"PR_HEAD_STALE", "PR_BASE_STALE"} for code, _ in pr_blockers) else "CURRENT",
                     "number": pr["number"],
