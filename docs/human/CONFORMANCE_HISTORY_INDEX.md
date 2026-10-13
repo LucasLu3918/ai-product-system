@@ -110,7 +110,7 @@ Each retained section maps to its existing anchor. Human versioned baselines rem
 | [## Scenario 236 — Local Creative Bundle Execution](CONFORMANCE.md#scenario-236-local-creative-bundle-execution) | Current Human guidance |
 | [## Scenario 259 — Matt Pocock Skill Integration and Explorer](CONFORMANCE.md#scenario-259-matt-pocock-skill-integration-and-explorer) | Current Human guidance |
 | [## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance](CONFORMANCE.md#scenario-237-read-only-project-diagnostics-and-recovery-guidance) | Current Human guidance |
-| [### Scenario 260 — Publication Diagnostics and Safe Recovery](CONFORMANCE.md#scenario-260-publication-diagnostics-and-safe-recovery) | Current Human guidance |
+| [### Scenario 261 — Publication Diagnostics and Safe Recovery](CONFORMANCE.md#scenario-261-publication-diagnostics-and-safe-recovery) | Current Human guidance |
 | [## Scenario 240 — Personal Publication Default and High-Assurance Opt-In](CONFORMANCE.md#scenario-240-personal-publication-default-and-high-assurance-opt-in) | Current Human guidance |
 | [## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow](CONFORMANCE.md#scenario-231-advisory-security-inventory-and-secret-scanner-shadow) | Current Human guidance |
 | [## Scenario 260 — Publication diagnostics and Doctor](CONFORMANCE.md#scenario-260-publication-diagnostics-and-doctor) | Current Human guidance |
