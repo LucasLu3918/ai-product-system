@@ -310,6 +310,9 @@ Allowed decisions:
 At SAL 4, unresolved High/Critical findings are **BLOCK**. They may not be downgraded to comments without an explicit accepted risk decision and applicable governance.
 
 - The read-only readiness check blocks missing, duplicated, malformed, or non-empty `## Unreleased` sections and never creates or moves tags.
+
+Publication diagnostic evidence is read-only and redacted. HTTP 403 remains an access/evidence failure; a classic-protection 404 is interpreted only after branch existence is confirmed, and effective active rules determine the reported state. UNKNOWN never grants publication authority.
+
 ## Model routing
 
 SAL informs, but does not equal, Model Tier.

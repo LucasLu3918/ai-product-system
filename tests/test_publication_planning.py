@@ -91,7 +91,12 @@ class PlanningTest(unittest.TestCase):
 
     def test_dirty_and_wrong_root_have_safe_codes(self):
         (self.repo / 'private.txt').write_text('untracked')
-        self.assertEqual(self.prepare()['diagnostics'][0]['reason_code'], 'WORKTREE_DIRTY')
+        diagnostic = self.prepare()['diagnostics'][0]
+        self.assertEqual(diagnostic['reason_code'], 'WORKTREE_DIRTY')
+        self.assertEqual(diagnostic['phase'], 'candidate_validation')
+        self.assertEqual(diagnostic['candidate_sha'], self.head)
+        self.assertEqual(diagnostic['worktree_details']['paths']['untracked'], ['private.txt'])
+        self.assertTrue(diagnostic['redacted'])
         result = planning.prepare(self.repo / '.git', title='Candidate', body_file=self.body)
         self.assertEqual(result['status'], 'BLOCKED')
 
@@ -292,9 +297,49 @@ class PlanningTest(unittest.TestCase):
         self.rows = [{**self.row('MERGED'), 'mergeCommit': {'oid': merged}}]
         result = self.prepare()
         self.assertEqual(result['status'], 'COMPLETE', result)
+        self.assertEqual(result['recovery_state'], 'ALREADY_MERGED')
+        self.assertTrue(result['idempotent'])
+        self.assertEqual(result['phase'], 'post_merge_reconciliation')
         self.assertEqual(result['invocations'], [])
         self.rows[0]['mergeCommit'] = None
         self.assertEqual(self.prepare()['status'], 'BLOCKED')
+
+    def test_doctor_is_read_only_and_separates_evidence_phases(self):
+        snapshot = {
+            'source_complete': True, 'source_status': 'COMPLETE', 'sources': {},
+            'protection_state': 'UNPROTECTED', 'evidence_level': 'EFFECTIVE_RULES_CONFIRMED',
+            'branch_exists': True, 'effective_rules': [], 'rulesets': [], 'branch_protection': {},
+            'bypass_actors': [], 'activation_authorized': False, 'api_write_performed': False,
+        }
+        before = self.git(self.remote, 'show-ref')
+        with patch('repository_governance_snapshot.build_snapshot', return_value=snapshot):
+            result = planning.doctor(self.repo, branch='main', worktree_details=True)
+        self.assertEqual(result['status'], 'OBSERVED', result)
+        self.assertFalse(result['authorized'])
+        self.assertFalse(result['api_write_performed'])
+        self.assertIn({'phase': 'protection_policy_evidence', 'status': 'UNPROTECTED',
+                       'evidence_level': 'EFFECTIVE_RULES_CONFIRMED', 'blocking': False}, result['phases'])
+        self.assertEqual(self.git(self.remote, 'show-ref'), before)
+
+    def test_doctor_reports_incomplete_policy_as_evidence_not_permission(self):
+        snapshot = {
+            'source_complete': False, 'source_status': 'UNKNOWN', 'sources': {
+                'effective_rules': {'status': 'UNKNOWN', 'http_status': 403,
+                    'endpoint': 'repos/fixture/repo/rules/branches/main',
+                    'error_class': 'PERMISSION_OR_AUTHENTICATION',
+                    'error_message': 'Resource not accessible by integration'}},
+            'protection_state': 'UNKNOWN', 'evidence_level': 'INCOMPLETE', 'branch_exists': True,
+            'effective_rules': [], 'rulesets': [], 'branch_protection': {}, 'bypass_actors': [],
+            'activation_authorized': False, 'api_write_performed': False,
+        }
+        with patch('repository_governance_snapshot.build_snapshot', return_value=snapshot):
+            result = planning.doctor(self.repo, branch='main')
+        self.assertEqual(result['status'], 'INCOMPLETE')
+        item = result['diagnostics'][0]
+        self.assertEqual(item['reason_code'], 'PROTECTION_EVIDENCE_UNAVAILABLE')
+        self.assertEqual(item['phase'], 'protection_policy_evidence')
+        self.assertEqual(item['api_sources']['effective_rules']['http_status'], 403)
+        self.assertFalse(result['authorized'])
 
     def test_pr_discovery_rejects_wrong_identity_and_truncation(self):
         for rows in ([{**self.row(), 'baseRefName': 'other'}], [self.row()] * 100):

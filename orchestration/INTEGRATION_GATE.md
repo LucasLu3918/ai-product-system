@@ -118,6 +118,9 @@ The AIPS repository Validation Profile requires `mandatory-candidate-secret-scan
 The candidate fingerprint includes the scanner and policy SHA-256 hashes, along with base/head and changed-file evidence. Strict mode does not honor inline ignore markers. The built-in scan is credential-free; external scanners remain optional. A PASS proves only that the declared deterministic scan completed without findings for this candidate. It does not prove absence of all secrets or authorize publication, merge or release.
 
 - Release-readiness evidence is bound to the exact candidate and must also verify one empty canonical `## Unreleased` section.
+
+`ALREADY_MERGED` is an idempotent read-only recovery state bound to the exact PR head, merge commit, and live default base. It routes to post-merge reconciliation and does not replace the exact-candidate Gate or required checks.
+
 ## Validation Profile
 
 The Integration Gate inventory includes `scripts/publish_post_merge.py` and its facade lifecycle evidence so exact-candidate validation compiles and exercises the extracted implementation.

@@ -28,20 +28,42 @@ PERSONAL_BRANCH_PREFIXES = ('agent/', 'bugfix/', 'chore/', 'claude/', 'codex/', 
 
 
 class PublicationError(ValueError):
-    def __init__(self, message: str, reason_code: str = 'PUBLICATION_REJECTED'):
+    def __init__(self, message: str, reason_code: str = 'PUBLICATION_REJECTED', *,
+                 context: dict[str, Any] | None = None, phase: str | None = None):
         super().__init__(message)
-        self.reason_code = reason_code
+        self.reason_code = reason_code if reason_code != 'PUBLICATION_REJECTED' else _reason_for_message(message)
+        self.context = context or {}
+        self.phase = phase
 
-    def diagnostic(self) -> dict[str, str]:
+    def diagnostic(self) -> dict[str, Any]:
         # Never expose exception text: Git/host errors may contain private data.
         code = self.reason_code if self.reason_code in PUBLICATION_DIAGNOSTICS else 'PUBLICATION_REJECTED'
         values = PUBLICATION_DIAGNOSTICS[code]
         detail, next_step = values[:2]
-        phase = values[2] if len(values) > 2 else 'validation'
-        category = values[3] if len(values) > 3 else 'POLICY'
-        return {'reason_code': code, 'detail': detail, 'next_step': next_step,
-                'phase': phase, 'category': category,
-                'source': 'CLAUDE_HOST' if code.startswith('HOST_') else 'AIPS_PUBLICATION'}
+        phase = self.phase or _phase_for_code(code)
+        source = _source_for_code(code)
+        result: dict[str, Any] = {
+            'version': 2,
+            'diagnostic_id': str(uuid.uuid4()),
+            'timestamp': datetime.now(UTC).replace(microsecond=0).isoformat().replace('+00:00', 'Z'),
+            'reason_code': code,
+            'detail': detail,
+            'next_step': next_step,
+            'phase': phase,
+            'category': values[3] if len(values) > 3 else 'POLICY',
+            'source': 'CLAUDE_HOST' if code.startswith('HOST_') else 'AIPS_PUBLICATION',
+            'blocking_rule': source,
+            'retryable': code in RETRYABLE_REASONS,
+            'redacted': True,
+            'recovery_mode': 'HUMAN_OR_HOST_REQUIRED' if source in {'HUMAN_AUTHORITY', 'HOST_PERMISSION'} else 'SAFE_OBSERVATION',
+        }
+        candidate = self.context.get('candidate_sha')
+        if isinstance(candidate, str) and re.fullmatch(r'[0-9a-f]{40,64}', candidate):
+            result['candidate_sha'] = candidate
+        worktree = self.context.get('worktree')
+        if code == 'WORKTREE_DIRTY' and isinstance(worktree, Path):
+            result['worktree_details'] = worktree_dirty_details(worktree)
+        return result
 
 
 PUBLICATION_DIAGNOSTICS = {
@@ -83,7 +105,197 @@ PUBLICATION_DIAGNOSTICS = {
     'REQUIRED_CHECKS_NETWORK': ('GitHub required-check evidence could not be reached.', 'Check connectivity and retry the read-only diagnosis.', 'checks', 'NETWORK'),
     'REQUIRED_CHECKS_API_UNAVAILABLE': ('GitHub required-check evidence is unavailable.', 'Check GitHub API availability and repository access, then retry.', 'checks', 'API_UNAVAILABLE'),
     'REQUIRED_CHECKS_INVALID': ('GitHub returned an invalid required-check response.', 'Inspect GitHub CLI compatibility and retry without bypassing the merge guard.', 'checks', 'INVALID_RESPONSE'),
+
+    'AUTO_MERGE_REQUIRES_INTENT': ('Automatic merge planning requires explicit merge intent.', 'Re-run prepare with --merge-intent or --auto-merge only after reviewing the exact candidate.'),
+    'REMOTE_CONFIGURATION_INVALID': ('The configured Git remote is ambiguous or does not match the verified origin.', 'Review origin fetch and push URLs locally. Resolve ambiguity only after verifying the destination.'),
+    'REMOTE_BRANCH_UNAVAILABLE': ('The remote default branch could not be observed.', 'Check connectivity and repository access, then repeat the read-only observation.'),
+    'ALTERNATE_GIT_ENVIRONMENT': ('An alternate Git environment changes the inspected repository context.', 'Remove the injected Git environment and re-run from the selected worktree.'),
+    'REMOTE_REF_AMBIGUOUS': ('The requested remote reference is ambiguous.', 'Use one explicit full reference and re-observe its exact target.'),
+    'BASE_SHA_INVALID': ('The publication base is missing or is not a full commit SHA.', 'Resolve the live default-branch commit and use its full SHA.'),
+    'CANDIDATE_DIFF_UNAVAILABLE': ('The candidate diff could not be verified.', 'Preserve the candidate and inspect local Git object and worktree availability.'),
+    'BRANCH_NOT_ALLOWLISTED': ('The current branch is not an allowed engineering branch.', 'Continue on a reviewed feature branch; do not push to a protected branch.'),
+    'PUSH_METADATA_INVALID': ('The push target or refspec is missing, ambiguous, or multi-ref.', 'Use a single origin and an explicit exact-SHA to full-ref refspec.'),
+    'REMOTE_NOT_ALLOWED': ('The selected remote is not the verified origin.', 'Use the configured origin after verifying its fetch and push URLs.'),
+    'TAG_OPERATION_REQUIRES_REVIEW': ('Tag or release publication requires a separate review path.', 'Use the release proposal and tag verification workflow.'),
+    'GITHUB_HOST_UNSUPPORTED': ('The GitHub host is not supported by this publication policy.', 'Use a supported host or request a separately reviewed policy change.'),
+    'MERGE_METHOD_INVALID': ('The merge method is missing or ambiguous.', 'Select exactly one repository-enabled merge method.'),
+    'AUTO_MERGE_INVALID': ('Automatic merge options are duplicated or inconsistent.', 'Use one explicit auto-merge option with exact merge intent.'),
+    'RELEASE_TAG_INVALID': ('The release tag is missing, unverified, or does not point to the exact candidate.', 'Verify the remote tag and exact candidate SHA before retrying.'),
+    'PUBLICATION_OPTION_INVALID': ('A required publication option value is missing or unsupported.', 'Use a supported standalone command with explicit option values.'),
+    'REPOSITORY_MISMATCH': ('The GitHub repository does not match the selected Git remote.', 'Verify --repo against the selected origin before continuing.'),
+    'PR_HEAD_MISMATCH': ('The PR head is not bound to the selected candidate branch and SHA.', 'Re-observe the PR and candidate; do not update or merge a mismatched head.'),
+    'CANDIDATE_NOT_PINNED': ('The merge command does not pin the exact candidate SHA.', 'Re-plan against the current PR head and pass its full SHA.'),
+    'PR_NOT_MERGEABLE': ('The PR is closed, draft, or not ready to merge.', 'Resolve the PR state through review; do not retry the merge command.'),
+    'PR_MERGEABILITY_UNKNOWN': ('GitHub has not confirmed PR mergeability.', 'Re-observe after resolving conflicts or pending repository checks.'),
+    'PR_BASE_MISMATCH': ('The PR does not target the live default branch.', 'Re-plan for the verified default branch; do not retarget a stale merge.'),
+    'REQUIRED_CHECKS_INCOMPLETE': ('Required PR checks are missing, pending, or failing.', 'Wait for the exact candidate’s required aggregate to pass, then re-observe.'),
+    'REQUIRED_CHECKS_UNAVAILABLE': ('Required PR check state could not be observed.', 'Check GitHub access and connectivity, then re-read checks; do not merge on unknown state.'),
+    'PUBLICATION_INPUT_UNBOUND': ('Publication text or metadata cannot be bound to the inspected candidate.', 'Provide explicit literal input through a supported body file or option.'),
+    'CREDENTIAL_BEARING_REMOTE': ('The configured remote URL contains credentials.', 'Remove credentials from the URL and use the host credential manager.'),
+    'FORCE_WITH_LEASE_REQUIRED': ('The force update does not pin the observed target tip.', 'Use an exact target-and-tip lease only after a fresh candidate plan.'),
+    'BASE_CHANGED': ('The live default base changed after the publication observation.', 'Discard the stale plan and revalidate the exact candidate against the new base.'),
+    'ASSURANCE_MODE_BLOCKED': ('The selected assurance mode does not permit this operation.', 'Follow the configured approval and external-grant workflow.'),
+    'AUTHORITY_TIME_INVALID': ('The authority timestamp is missing or invalid.', 'Request a new Human-issued approval with a valid UTC timestamp.'),
+    'AUTHORITY_REDIRECT_BLOCKED': ('The authority endpoint attempted a redirect.', 'Use the configured credential-free HTTPS issuer endpoint.'),
+    'AUTHORITY_ENDPOINT_INVALID': ('The configured authority endpoint is invalid.', 'Repair the administrator-owned trust configuration; do not remove the gate.'),
+    'AUTHORITY_KEY_MISSING': ('The trusted issuer key is missing.', 'Configure the administrator-owned issuer key before requesting a grant.'),
+    'AUTHORITY_SIGNATURE_INVALID': ('The publication grant signature is invalid or untrusted.', 'Obtain a new grant from the configured Human issuer.'),
+    'AUTHORITY_RESPONSE_TOO_LARGE': ('The authority response exceeds the safe size limit.', 'Ask the issuer administrator to correct the response; do not retry through another endpoint.'),
+    'AUTHORITY_GRANT_DENIED': ('The issuer denied, expired, or already consumed the grant.', 'Request a fresh operation-scoped grant from the Human issuer.'),
+    'AUTHORITY_GRANT_EXPIRED': ('The signed authority grant is expired or outside its time window.', 'Request a new time-bounded grant.'),
+    'AUTHORITY_CONFIG_WRITABLE': ('The authority trust root is writable by the Agent.', 'Move ownership and permissions to the administrator-controlled trust domain.'),
+    'AUTHORITY_LEGACY_GRANT': ('A legacy grant does not satisfy the current signed format.', 'Reissue approval using the current signed grant format.'),
+    'AUTHORITY_GRANT_INCOMPLETE': ('The Human-issued grant is incomplete.', 'Request a complete approval for the exact operation and candidate.'),
+    'AUTHORITY_SCOPE_MISMATCH': ('The approval does not bind the current publication proposal.', 'Review the exact proposal and request a matching approval.'),
+    'PUBLICATION_EVIDENCE_UNRESOLVED': ('Required publication evidence is unresolved.', 'Resolve every blocking evidence item before planning the operation.'),
+    'AUTHORITY_VALIDATION_MISSING': ('Candidate-bound validation evidence is missing.', 'Run the exact candidate Gate and attach its verified evidence.'),
+    'PUBLICATION_COMMAND_UNBOUND': ('The executed command is not bound to the approved operation.', 'Re-plan and request approval for the literal command that will run.'),
+    'AUTHORITY_ACTION_MISMATCH': ('The requested action differs from the approved scope.', 'Stop and request Human approval for the changed action.'),
+    'WORKTREE_STATE_UNAVAILABLE': ('The selected worktree status could not be read.', 'Inspect Git availability and repository state locally; do not infer that the worktree is clean.'),
+    'PROTECTION_EVIDENCE_UNAVAILABLE': ('The effective branch policy could not be established from complete GitHub evidence.', 'Review HTTP status and endpoint evidence; ask an administrator for missing read permission or verify with the effective-rules API. Never infer that the branch is unprotected.'),
 }
+
+
+_MESSAGE_REASON_PREFIXES = (
+    ('personal publication requires one matching origin', 'REMOTE_CONFIGURATION_INVALID'),
+    ('remote default branch tip unavailable', 'REMOTE_BRANCH_UNAVAILABLE'),
+    ('remote default branch unavailable', 'REMOTE_BRANCH_UNAVAILABLE'),
+    ('alternate Git environment unsupported', 'ALTERNATE_GIT_ENVIRONMENT'),
+    ('ambiguous remote ref', 'REMOTE_REF_AMBIGUOUS'),
+    ('explicit base commit SHA required', 'BASE_SHA_INVALID'),
+    ('candidate diff unavailable', 'CANDIDATE_DIFF_UNAVAILABLE'),
+    ('publication requires an explicit feature branch', 'BRANCH_NOT_ALLOWLISTED'),
+    ('one named remote and one explicit refspec required', 'PUSH_METADATA_INVALID'),
+    ('personal mode permits only the verified single origin remote', 'REMOTE_NOT_ALLOWED'),
+    ('implicit multi-ref publication configuration forbidden', 'PUSH_METADATA_INVALID'),
+    ('supported tag mutation is', 'TAG_OPERATION_REQUIRES_REVIEW'),
+    ('unsupported GitHub host', 'GITHUB_HOST_UNSUPPORTED'),
+    ('use standalone gh command', 'COMMAND_FORM_UNSUPPORTED'),
+    ('exactly one explicit merge method required', 'MERGE_METHOD_INVALID'),
+    ('duplicate automatic merge option', 'AUTO_MERGE_INVALID'),
+    ('release creation requires an existing verified remote tag', 'RELEASE_TAG_INVALID'),
+    ('missing explicit option value', 'PUBLICATION_OPTION_INVALID'),
+    ('unsupported or ambiguous GitHub publication option', 'PUBLICATION_OPTION_INVALID'),
+    ('explicit GitHub owner/repository required', 'PR_METADATA_INCOMPLETE'),
+    ('gh repository does not match Git remote', 'REPOSITORY_MISMATCH'),
+    ('PR head must be the bound candidate branch', 'PR_HEAD_MISMATCH'),
+    ('remote PR head differs from candidate', 'PR_HEAD_MISMATCH'),
+    ('explicit PR number and checked merge required', 'PR_METADATA_INCOMPLETE'),
+    ('merge must pin the exact candidate SHA', 'CANDIDATE_NOT_PINNED'),
+    ('PR must be open and ready for review', 'PR_NOT_MERGEABLE'),
+    ('PR head differs from candidate', 'PR_HEAD_MISMATCH'),
+    ('personal PR merge must use the current allowlisted engineering branch', 'BRANCH_NOT_ALLOWLISTED'),
+    ('PR mergeability is not confirmed', 'PR_MERGEABILITY_UNKNOWN'),
+    ('personal PR merge must target the remote default branch', 'PR_BASE_MISMATCH'),
+    ('required PR checks are not all complete and passing', 'REQUIRED_CHECKS_INCOMPLETE'),
+    ('required PR check status unavailable', 'REQUIRED_CHECKS_UNAVAILABLE'),
+    ('required PR checks are missing or not all passing', 'REQUIRED_CHECKS_INCOMPLETE'),
+    ('explicit release tag required', 'RELEASE_TAG_INVALID'),
+    ('release tag must point to the exact candidate commit', 'RELEASE_TAG_INVALID'),
+    ('stdin publication text cannot be bound', 'PUBLICATION_INPUT_UNBOUND'),
+    ('exactly one push URL required', 'REMOTE_CONFIGURATION_INVALID'),
+    ('credential-bearing remote URL forbidden', 'CREDENTIAL_BEARING_REMOTE'),
+    ('one explicit target/tip force-with-lease required', 'FORCE_WITH_LEASE_REQUIRED'),
+    ('PR base differs from current remote tip', 'BASE_CHANGED'),
+    ('local and remote release tag differ', 'RELEASE_TAG_INVALID'),
+    ('operation is unavailable in personal publication mode', 'ASSURANCE_MODE_BLOCKED'),
+    ('UTC timestamp required', 'AUTHORITY_TIME_INVALID'),
+    ('invalid UTC timestamp', 'AUTHORITY_TIME_INVALID'),
+    ('authority redirects are forbidden', 'AUTHORITY_REDIRECT_BLOCKED'),
+    ('invalid authority configuration', 'AUTHORITY_ENDPOINT_INVALID'),
+    ('authority requires a credential-free HTTPS endpoint', 'AUTHORITY_ENDPOINT_INVALID'),
+    ('trusted issuer keys required', 'AUTHORITY_KEY_MISSING'),
+    ('unsupported signature algorithm', 'AUTHORITY_SIGNATURE_INVALID'),
+    ('untrusted or invalid publication signature', 'AUTHORITY_SIGNATURE_INVALID'),
+    ('oversized authority response', 'AUTHORITY_RESPONSE_TOO_LARGE'),
+    ('authority denied, stale or replayed grant', 'AUTHORITY_GRANT_DENIED'),
+    ('authority assertion expired or exceeds', 'AUTHORITY_GRANT_EXPIRED'),
+    ('authority configuration must be administrator-owned', 'AUTHORITY_CONFIG_WRITABLE'),
+    ('authority config/path is writable', 'AUTHORITY_CONFIG_WRITABLE'),
+    ('signed v2 publication grant required', 'AUTHORITY_LEGACY_GRANT'),
+    ('complete Human-issued approval required', 'AUTHORITY_GRANT_INCOMPLETE'),
+    ('approval expired, future-dated', 'AUTHORITY_GRANT_EXPIRED'),
+    ('proposal scope fingerprint mismatch', 'AUTHORITY_SCOPE_MISMATCH'),
+    ('unresolved publication evidence', 'PUBLICATION_EVIDENCE_UNRESOLVED'),
+    ('publication validation evidence required', 'AUTHORITY_VALIDATION_MISSING'),
+    ('actual command required', 'PUBLICATION_COMMAND_UNBOUND'),
+    ('actual publication action differs', 'AUTHORITY_ACTION_MISMATCH'),
+    ('supported credential-free GitHub origin required', 'REMOTE_CONFIGURATION_INVALID'),
+)
+
+
+def _reason_for_message(message: str) -> str:
+    for prefix, code in _MESSAGE_REASON_PREFIXES:
+        if message.startswith(prefix):
+            return code
+    return 'PUBLICATION_REJECTED'
+
+
+RETRYABLE_REASONS = {'REMOTE_OBSERVATION_FAILED', 'REMOTE_BRANCH_UNAVAILABLE',
+                     'REQUIRED_CHECKS_UNAVAILABLE', 'BASE_OBJECT_MISSING'}
+
+
+def _phase_for_code(code: str) -> str:
+    if code.startswith(('AUTHORITY_', 'PUBLICATION_EVIDENCE', 'CONTENT_SCAN')):
+        return 'authorization_and_content_validation'
+    if code.startswith(('PR_', 'REQUIRED_CHECKS_', 'MERGE_', 'AUTO_MERGE')):
+        return 'pr_or_merge'
+    if code.startswith(('REMOTE_', 'GITHUB_', 'BRANCH_PROTECTION')):
+        return 'remote_observation'
+    if code.startswith(('PUSH_', 'BASE_', 'BRANCH_', 'FORCE_')):
+        return 'push_validation'
+    if code.startswith('WORKTREE_'):
+        return 'worktree_validation'
+    return 'command_validation'
+
+
+def _source_for_code(code: str) -> str:
+    if code in {'HOST_PERMISSION_DENIED'}:
+        return 'HOST_PERMISSION'
+    if code.startswith('AUTHORITY_'):
+        return 'HUMAN_AUTHORITY'
+    if code.startswith(('REMOTE_', 'GITHUB_', 'REQUIRED_CHECKS_', 'PR_')):
+        return 'GITHUB_OR_REMOTE_OBSERVATION'
+    if code == 'PROTECTION_EVIDENCE_UNAVAILABLE':
+        return 'GITHUB_API_EVIDENCE'
+    return 'AIPS_POLICY'
+
+
+def worktree_dirty_details(root: Path) -> dict[str, Any]:
+    """Return safe repository-relative status paths; never read file contents."""
+    proc = subprocess.run(['git', 'status', '--porcelain=v1', '-z', '--untracked-files=all'],
+                          cwd=root, capture_output=True, timeout=15, check=False)
+    if proc.returncode:
+        raise PublicationError('worktree state unavailable', 'WORKTREE_STATE_UNAVAILABLE', phase='worktree_validation')
+    groups: dict[str, list[str]] = {'staged': [], 'modified': [], 'deleted': [], 'untracked': []}
+    entries = proc.stdout.split(b'\0')
+    index = 0
+    while index < len(entries):
+        record = entries[index]
+        index += 1
+        if not record:
+            continue
+        xy = record[:2].decode('ascii', errors='replace')
+        path = record[3:]
+        if 'R' in xy or 'C' in xy:
+            index += 1  # The following NUL-delimited field is the old path.
+        value = os.fsdecode(path).replace('\r', ' ').replace('\n', ' ')
+        value = re.sub(r'(?i)\b(?:gh[pousr]_[A-Za-z0-9_]{20,}|github_pat_[A-Za-z0-9_]{20,})\b', '[REDACTED]', value)
+        value = value[:300]
+        if xy == '??':
+            groups['untracked'].append(value)
+        else:
+            if xy[0] != ' ':
+                groups['staged'].append(value)
+            if 'D' in xy:
+                groups['deleted'].append(value)
+            elif xy[1] != ' ':
+                groups['modified'].append(value)
+    for values in groups.values():
+        values.sort()
+    return {'status': 'DIRTY' if any(groups.values()) else 'CLEAN', 'paths': groups,
+            'path_count': sum(map(len, groups.values())),
+            'next_step': 'Review the listed paths and decide what belongs to the candidate; preserve unknown files. No files were changed.'}
 
 
 def publication_mode(config_path: Path | None = None) -> str:
@@ -219,7 +431,8 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
     except PublicationError as exc:
         raise PublicationError('base is not a candidate ancestor', 'BASE_NOT_ANCESTOR') from exc
     if git(root, 'status', '--porcelain', '--untracked-files=all'):
-        raise PublicationError('publication requires a clean worktree', 'WORKTREE_DIRTY')
+        raise PublicationError('publication requires a clean worktree', 'WORKTREE_DIRTY',
+                               context={'worktree': root, 'candidate_sha': head}, phase='candidate_validation')
     diff = subprocess.run(['git', 'diff', '--binary', base, head, '--'], cwd=root, capture_output=True, timeout=15, check=False)
     files = subprocess.run(['git', 'diff', '--name-only', '-z', base, head, '--'], cwd=root, capture_output=True, timeout=15, check=False)
     if diff.returncode or files.returncode:

@@ -1,94 +1,150 @@
 version: 1
-
 change:
-  id: plan35-publication-root-cause-recovery
-  summary: Preserve root-cause publication diagnostics and non-authorizing recovery guidance.
+  id: plan36-publication-diagnostics
+  summary: Preserve GitHub publication evidence and provide precise, safe recovery guidance.
   boundary:
-    - Exact candidate and GitHub merge-command validation retain the sole publication authority.
-    - Required Checks classification must distinguish independently observed policy from pending jobs.
-    - Claude Host denial observation never grants native permission or a signed external publication grant.
-    - CLI, Human and Harness documentation retain existing governance and canonical placement.
-
+  - GitHub branch policy snapshot, effective rules, and sanitized HTTP/API error evidence.
+  - Publication authority reason codes, phase attribution, and backward-compatible diagnostic contracts.
+  - Read-only staged/modified/deleted/untracked worktree detail reporting.
+  - Push, PR, checks, merge, and already-merged recovery planning.
+  - Claude Code adapter guidance, human docs, scenarios, validators, and architecture narrative.
+  - Preserve Human Authority, Proposal-first, exact candidate/base/PR binding, secret scan, and native confirmations.
 matrix:
-  - boundary: Publication command, required-check policy and reason fidelity
-    reason: Protect merge SHA binding and remove misleading generic error classifications without weakening the publication gate.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: Ruff and repository preflight on changed Python modules.
-      unit:
-        applicable: true
-        evidence: tests/test_publication_error_recovery.py, tests/test_publication_planning.py, tests/test_publication_diagnostics.py.
-      integration:
-        applicable: true
-        evidence: Exact-candidate GitHub Integration Gate and publication preflight contract suite.
-      contract:
-        applicable: true
-        evidence: CLI output remains additive; read-only diagnostics and exact merge-command binding in Scenario 260.
-      e2e:
-        applicable: false
-        na_reason: No deployed application or automatic merge action; the genuine Claude Host classifier needs separate interactive acceptance.
-      security:
-        applicable: true
-        evidence: Secret scanner, redacted failure categories, fail-closed absent Required Checks, prohibition of admin merge/branch deletion.
-      migration_recovery:
-        applicable: true
-        evidence: Existing personal/high-assurance publication modes and exact candidate fingerprints are retained.
-      cli_harness:
-        applicable: true
-        evidence: Prepare/diagnose output and Claude Code PreToolUse guidance; Host runtime capability not inferred from synthetic tests.
-      docs_schema:
-        applicable: true
-        evidence: Canonical Documentation Impact closure, Scenario 260 and Traditional Chinese Human guide.
-  - boundary: Non-authorizing recovery and Host denial provenance
-    reason: Classify retryable read-only checks separately from Human confirmation and Host permission denial.
-    checks:
-      static_lint:
-        applicable: true
-        evidence: Ruff and Python syntax contract checks.
-      unit:
-        applicable: true
-        evidence: New recovery state tests and existing publication planning lifecycle.
-      integration:
-        applicable: true
-        evidence: No merge/grant-consuming action from prepare, diagnose, doctor or recovery guidance.
-      contract:
-        applicable: true
-        evidence: Stable source/reason_code/phase/next_step and read-only recovery output remain compatible.
-      e2e:
-        applicable: false
-        na_reason: Actual Host Auto Mode permission classification cannot be proven in an isolated CI fixture.
-      security:
-        applicable: true
-        evidence: Host denial cannot be retried with disguised commands; no credentials, broad permissions or policy downgrades.
-      migration_recovery:
-        applicable: true
-        evidence: ALREADY_MERGED, HOST_PERMISSION_REQUIRED and CHECKS_PENDING guidance requires re-observation.
-      cli_harness:
-        applicable: true
-        evidence: Claude Code adapter uses existing native PreToolUse approval flow; no new Host permission grants.
-      docs_schema:
-        applicable: true
-        evidence: Canonical Handbook, Architecture/Harness, security, orchestration and Scenario 260 updates.
-
+- boundary: GitHub policy evidence resolver
+  reason: Distinguish explicit effective policy evidence from permission, network, not-found, and malformed responses.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: Ruff output has no additional findings versus origin/main (15 inherited findings remain unchanged).'
+    unit:
+      applicable: true
+      evidence: 'PASS: 58 publication authority/planning unit tests, including HTTP status, redaction, 401/403/404
+        and malformed-evidence cases.'
+    integration:
+      applicable: true
+      evidence: 'PASS: repository governance snapshot lifecycle covers branch existence, effective rules, rulesets
+        and classic-protection evidence.'
+    contract:
+      applicable: true
+      evidence: 'PASS: repository governance snapshot contracts and Scenario 260 documentation coverage.'
+    e2e:
+      applicable: false
+      na_reason: No deployed application flow; deterministic API lifecycle fixtures exercise the resolver.
+    security:
+      applicable: true
+      evidence: 'PASS: sanitized bounded GitHub message and secret/header redaction contracts; UNKNOWN remains fail-closed.'
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted schema or migration is introduced.
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: publication doctor contract and endpoint/evidence reporting covered by lifecycle and publication
+        preflight contracts.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: docs impact closure has zero required additions; VitePress build passed.'
+- boundary: Publication authority diagnostics and worktree state
+  reason: Error provenance, safe paths, and redaction affect protected publication decisions.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: no new Ruff findings versus origin/main.'
+    unit:
+      applicable: true
+      evidence: 'PASS: 58 publication authority/planning tests, including stable codes, phases, dirty path groups
+        and redaction.'
+    integration:
+      applicable: true
+      evidence: 'PASS: repository governance snapshot lifecycle and publication authority lifecycle cases passed.'
+    contract:
+      applicable: true
+      evidence: 'PASS: repository governance snapshot contracts and publication preflight contracts passed.'
+    e2e:
+      applicable: false
+      na_reason: Native hook/CLI lifecycle fixtures cover behavior; no deployed UI.
+    security:
+      applicable: true
+      evidence: 'PASS: diagnostics exclude raw stderr, headers and secrets; path reporting is repository-relative
+        and read-only.'
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted schema or migration is introduced.
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: Claude Code recovery guidance and publication preflight CLI contracts are covered by Scenario
+        260.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: recursive documentation impact complete; VitePress build passed.'
+- boundary: Publication phase planning and merged-PR recovery
+  reason: Prevent cross-phase attribution, duplicate publication, and stale-candidate recovery.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: no new Ruff findings versus origin/main.'
+    unit:
+      applicable: true
+      evidence: 'PASS: 58 publication authority/planning tests, including exact-head ALREADY_MERGED and phase attribution.'
+    integration:
+      applicable: true
+      evidence: 'PASS: publication planning and governance snapshot lifecycle fixtures passed.'
+    contract:
+      applicable: true
+      evidence: 'PASS: publish preflight and governance snapshot contracts passed.'
+    e2e:
+      applicable: false
+      na_reason: No remote mutation is part of local tests; GitHub state is represented by deterministic read-only
+        fixtures.
+    security:
+      applicable: true
+      evidence: 'PASS: already-merged recovery is read-only and does not invoke push, PR creation, or merge.'
+    migration_recovery:
+      applicable: true
+      evidence: 'PASS: repeated exact-head merge observation routes to post-merge reconciliation without mutation.'
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: doctor and post-merge planner contracts are covered by focused tests.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: documentation impact complete and VitePress build passed.'
+- boundary: Human and Agent recovery guidance
+  reason: Agents must separate safe observation from actions requiring Human or host approval.
+  checks:
+    static_lint:
+      applicable: true
+      evidence: 'PASS: docs lint/build path passed; no new Ruff findings.'
+    unit:
+      applicable: false
+      na_reason: This documentation-only boundary has no runtime test surface; executable behavior is covered in
+        the preceding boundaries.
+    integration:
+      applicable: false
+      na_reason: This documentation-only boundary has no runtime test surface; executable behavior is covered in
+        the preceding boundaries.
+    contract:
+      applicable: true
+      evidence: 'PASS: Scenario 260 and Claude Code safe-recovery guidance contracts are present.'
+    e2e:
+      applicable: false
+      na_reason: Documentation-only consumer.
+    security:
+      applicable: true
+      evidence: 'PASS: guidance preserves Human Authority, native host approval and fail-closed recovery.'
+    migration_recovery:
+      applicable: false
+      na_reason: No persisted schema or migration is introduced.
+    cli_harness:
+      applicable: true
+      evidence: 'PASS: Claude Code adapter guidance preserves native confirmation paths.'
+    docs_schema:
+      applicable: true
+      evidence: 'PASS: documentation impact closure complete, zero required additions; VitePress build passed.'
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
 status: READY
 review_evidence:
   required: false
-  status: SELF_REVIEWED
-  evidence:
-    - Human request explicitly authorized implementation of Plan35 scope.
-    - Exact 32-path candidate set re-observed against main e617874585281862c24a4b97e2ff04edb069488b.
-    - This matrix is review evidence, not a signed external grant or native Host permission.
 candidate:
-  base_sha: e617874585281862c24a4b97e2ff04edb069488b
-  changed_files_hash: ed4a63c6d5229d18766d94c1c9417979bc91dff45f5bf1022830207471675a30
-verification:
-  mandatory_secret_scan: PASS
-  repository_preflight: PASS
-  documentation_impact: PASS
-  exact_candidate_integration_gate: PENDING
-  focused_unit_tests: PENDING
-  native_claude_host_acceptance: NOT_RUN
+  base_sha: 4a21feef1ab67c031edb38db02255cef6ce750c8
+  changed_files_hash: 9e5a632c3638c12e9b53ba341d1114aca72ff7d7bedf57e994d6c0d51645ad0d

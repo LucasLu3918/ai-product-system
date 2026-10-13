@@ -188,6 +188,9 @@ If actual material impact falls outside the declared Change Boundary:
 4. obtain scope reapproval when the approved boundary materially expanded.
 
 - For release-readiness policy changes, include the changelog parser, exact candidate consumers, negative lifecycle cases, Scenario 208, and all canonical documentation placements in the final reconciled boundary.
+
+Publication diagnostics reconcile the lazy CLI facade, GitHub API evidence resolver, authority error codes, native Guard consumers, worktree details, Git/PR observations, and canonical docs. Preserve partial repository-wide graph coverage and use direct consumer evidence.
+
 ## Impact Graph maintenance
 
 Update reusable `IMPACT_GRAPH.yaml` only when the change reveals/stably changes cross-component relationships.

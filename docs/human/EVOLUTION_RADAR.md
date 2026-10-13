@@ -116,6 +116,9 @@ Monthly / quarterly roll-up 量測 collected → shortlist → semantic → acti
 `scripts/evolution_relevance.py` creates a reproducible monthly sample of 20 signal fingerprints and measures shortlist precision, shortlist recall, actionable yield, and per-source relevance yield against explicit Human labels. The sample does not copy article text, and the production label file starts empty; missing, uncertain, or incomplete labels keep the report `NOT_READY`. Evaluation never changes the shortlist, source policy, provider handoff, or `ANALYSIS_PENDING` state. A recommendation to review source policy still requires a separate Human decision.
 
 - Release readiness is a separate deterministic evidence gate; Evolution metrics do not imply an empty Unreleased section or authorize a tag.
+
+Plan36 extends existing publication diagnostics after a concrete failure report; it does not create a new capability or promote a new enforcement surface.
+
 ## Current Boundaries
 
 

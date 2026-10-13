@@ -1061,6 +1061,11 @@ Recovery suggestions remain read-only and conditional across missing, stale, par
 
 Scenario 237 binds reason-code recovery output, format parity, privacy redaction and no-write behavior to lifecycle evidence. It does not assert live Host or MCP execution.
 
+
+### Scenario 261 — Publication Diagnostics and Safe Recovery
+
+AIPS retains HTTP status, endpoint, sanitized API error, branch/effective-rules evidence, dirty path groups, and stage-specific blocker attribution. Inaccessible evidence stays UNKNOWN. Exact-head merged recovery routes to post-merge reconciliation without another publication invocation; Human/host authority remains required. Evidence: `tests/scenarios/261-publication-diagnostics-and-safe-recovery.md`.
+
 ## Scenario 257 — Branch and PR lifecycle dispositions
 
 The branch lifecycle report classifies remote branches using current exact-SHA PR metadata and local checkout evidence. It distinguishes branches to keep, superseded work, PR branches requiring rebase, and cleanup candidates. These are advisory dispositions only: report generation and the scheduled workflow never delete branches or grant cleanup authorization. Unknown or incomplete evidence fails closed to KEEP. Scenario 257 is covered by `tests/evidence/branch_hygiene_lifecycle.py` and `tests/validation/branch_hygiene_contracts.py`.
@@ -1078,3 +1083,7 @@ The canonical Skill registry contains 49 AIPS Skills; the pinned 38-item upstrea
 ## Scenario 260 — Publication diagnostics and Doctor
 
 Scenario 260 verifies the read-only `aips publish doctor`, Required Checks classification, literal merge diagnosis without execution or grant consumption, sanitized error output, and consistent runtime guidance. Missing/permission-limited policy evidence remains blocking; no repository policy mutation or merge bypass is introduced.
+
+The canonical Skill registry and pinned upstream manifest classify the complete 38-item source inventory; the generated Human Explorer presents active Skills and source dispositions separately. Writing Fragments → Beats → Shape remains explicit-request-only, and untested Beta entries remain unrouted. `tests/validation/skill_catalog_contracts.py` checks deterministic registry, output and source invariants; Scenario 259 remains manual for semantic routing acceptance.
+
+Scenario 260 covers publication diagnostics separately; Skill Explorer routing and authority remain unchanged.

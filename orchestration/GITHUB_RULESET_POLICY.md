@@ -37,6 +37,9 @@ The weekly Python compatibility smoke is supplementary evidence, not a required 
 
 The input must include branch protection, rulesets, bypass actors, and `source_complete: true`. Missing or permission-denied evidence yields `UNKNOWN`. The report exposes required checks added by the candidate. Preserve existing protection, the current required `repository` check, force-push/deletion restrictions, and known bypass actors; do not claim the policy is complete when bypass evidence is unavailable.
 
+
+For an effective branch-policy observation, verify branch existence and query `GET /repos/{owner}/{repo}/rules/branches/{branch}`. This endpoint returns active applicable rules across repository and organization sources; a verified empty list is explicit no-active-rules evidence. Preserve classic-protection 404, ruleset-list 403, and effective-rules access failure as distinct source observations.
+
 ## Transition procedure
 
 Core creative changes use the existing exact-candidate required checks and human publication gates; they do not create or alter a repository ruleset.

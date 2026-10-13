@@ -92,6 +92,9 @@ Every system change must assess downstream documentation and behavior before com
 
 If an item is not affected, mark it N/A during change review rather than editing it unnecessarily.
 
+
+Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
+
 ## Architecture Diagram Impact Check
 
 本次更新 Project Intelligence 局部圖；頂層 runtime、Harness、Product Delivery 與安裝生命週期圖評估為 N/A，因沒有改變其流程或邊界。
@@ -602,6 +605,9 @@ The public `bin/aips` launcher must remain a small argument-preserving handoff t
 Validation Observation treats a completed `NOT_READY` report as collected evidence, while operational errors remain blocking and `--require-ready` provides strict readiness behavior. The full repository Gate remains enabled. Dependency Review shadow results are recorded against the same candidate; the standalone high-severity check stays authoritative through the 2–4 week parity window.
 
 Internal Retrieval Intelligence module extraction must preserve the `retrieval_intelligence.py` facade and its existing lifecycle behavior. `tests/evidence/module_extraction_lifecycle.py` verifies the storage helper exports; retrieval lifecycle and repository validation cover the existing index contract.
+
+
+Publication recovery reports exact phase and sanitized evidence. `ALREADY_MERGED` proceeds to post-merge reconciliation for the exact head; diagnostics do not repeat publication or replace required checks.
 
 ## Deterministic Scheduler / Integration Gate consistency
 

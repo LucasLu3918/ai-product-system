@@ -150,6 +150,9 @@ Brand System 可涵蓋 Brand Intent、Audience / Positioning、Purpose / Mission
 
 若要直接執行本機生成，可先用 OpenCode `creative_execution` 工具的 `prepare` 動作，或 `aips creative prepare` 建立版本化工作目錄，內含 README、Character Profile、Style Profile 與草稿 Bundle。準備流程只在明確素材 scope 建立固定的新檔，不覆寫；先補上已安裝引擎、模型版本與授權來源，再執行 `aips creative preflight --project PROJECT --bundle BUNDLE.yaml`。MFLUX Adapter 依固定能力表呼叫 FLUX.1、FLUX.2 Klein、Qwen Image Edit 2511 或 Z-Image Turbo 專用命令；FLUX.1 一次一張參考圖，只有支援 `--image-paths` 的 FLUX.2/Qwen edit 才接受最多八張專案內參考圖。ComfyUI 僅連線 loopback；一般 checkpoint 工作流維持既有限制，Z-Image Turbo 使用固定分離載入器工作流，兩者都拒絕自訂節點。預檢會核對本機工作流與模型清單，不會生成素材；缺少引擎會回報 `BLOCKED_NO_ENGINE`。確認後，以 `aips creative execute` 明確執行。輸出限於 EPHEMERAL 非 Git workspace 中指定 scope 的新 PNG/JPEG/WEBP 與 provenance manifest，不覆寫現有檔案、不下載模型。ComfyUI 編輯時須先將單張參考圖放入本機 input，且預檢會核對位元組雜湊。生成結果的視覺審查初始為 `PENDING`，請由獨立人工對照角色與風格規範檢查後，才用 `aips creative review` 記錄 PASS 或 REVISE；`aips creative trace` 只顯示原因碼、耗時、重試次數與雜湊。
 
+
+Plan36 publication diagnostics preserve this topic's existing authority boundaries.
+
 ## 需求釐清與 Planning
 
 
@@ -263,6 +266,9 @@ Reuse existing Skill / Template
 ~~~
 
 只有責任、決策邊界與 review obligation 真正不同時才新增 Role。專案自己的 conventions / rules 優先保存成 project-native knowledge，而不是無限制提升成 global Skill。
+
+
+Plan36 publication diagnostics preserve this topic's existing authority boundaries.
 
 ## Deterministic Automation
 
@@ -484,6 +490,9 @@ The supported command remains `aips` (or `bin/aips` from a source checkout). The
 
 Observation reports help people judge evidence quality; `NOT_READY` means the cohort is incomplete, not that collection failed or that selective validation is approved. Dependency Review remains blocking through its standalone check while a separate shadow records parity before any reviewed required-path change.
 
+
+Plan36 publication diagnostics preserve this topic's existing authority boundaries.
+
 ## Logging、Observability 與 Operations
 
 創作可靠性 Core candidate 保留完整 Gate、媒材拒絕及取消授權回歸。損壞 PNG fixture 必須失敗；合成測試不能替代真實模型與人工品質驗收。
@@ -587,6 +596,8 @@ Personal Mode 的逐次合併確認和 High-Assurance Mode 的外部 signed gran
 `aips publish diagnose --worktree <candidate-root> --command '<literal-command>'` 可辨識 `PUSH_SOURCE_NOT_EXACT_SHA`、`INVALID_TARGET_REF`、`WORKTREE_DIRTY`、`BASE_NOT_ANCESTOR`、`CONTENT_SCAN_BLOCKED` 與 metadata 問題。`prepare` 的高保證流程輸出精確 lease 命令與 `AUTHORITY_REQUIRED`，仍須由外部 issuer 核准；模式設定存在但無效時不降級。`--merge-intent` 僅記錄當次任務意圖，不能取代使用者或 Host 授權。
 
 首次設定或 PR 卡住時，可執行 `aips publish doctor --project-root <repo> [--pr <number>] --format yaml`。Doctor 只讀檢查 GitHub CLI 登入、repository merge methods、branch protection/ruleset 可見性、Required Checks 與指定 PR/head/checks，並列出安全的下一步。Required Checks 會明確回報未設定、失敗、執行中、缺少／跳過、取消、PR head/base 過期或 GitHub 權限／API 不可用；任何空白或不可見證據都會阻擋，不會自動調整保護規則。`aips publish diagnose` 也接受 literal `gh pr merge`，但只驗證 PR、完整 head SHA、base、merge method 與即時 checks；輸出 `authorized: false`、`executed: false`，不執行 merge、不消耗 grant。Codex/OpenCode 的診斷仍不取代原生工具權限或 GitHub 保護。
+
+`aips publish doctor --worktree <candidate-root> --worktree-details` 是唯讀診斷，可選擇 `--branch <name>` 與 `--pr <number>`，輸出分階段證據、穩定原因碼、HTTP status、端點及已遮蔽的錯誤摘要。dirty 明細只列 repo-relative staged／modified／deleted／untracked 路徑與處理建議，不讀檔案內容、不會 stash、刪除或忽略檔案。HTTP 404 只有在分支存在且 effective-rules 證據完整時，才可判定沒有作用中的分支規則；未知或無權限證據維持 UNKNOWN。`ALREADY_MERGED` 會導向 exact-head post-merge reconciliation，不會再次規劃 push、建 PR 或 merge。診斷與 `retryable` 欄位都不授予發布權限；主機拒絕、Human approval 或 required checks 仍依原流程處理。
 
 若開發 workspace 有未交付素材，保留原檔並建立獨立乾淨的工程分支 worktree，再將該 root 明確傳給 `prepare` 與原生 tool。素材清單至少記錄路徑、用途、SHA-256、大小、授權與部署來源；母帶需獨立備份，正式音訊經壓縮與音質驗收。Git LFS／物件儲存由專案決定，且部署必須驗證實體檔案可取得。Scanner 的文字、binary 與來源政策限制要各別診斷，不因檔案大小推論授權失敗。
 

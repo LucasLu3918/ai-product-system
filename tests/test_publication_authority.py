@@ -103,6 +103,42 @@ class PublicationTest(unittest.TestCase):
         with self.assertRaises(auth.PublicationError):
             self.verify()
 
+    def test_dirty_worktree_details_are_grouped_and_diagnostics_are_versioned(self):
+        (self.repo / 'file.txt').write_text('staged content\n')
+        self.run_git(self.repo, 'add', 'file.txt')
+        (self.repo / 'file.txt').write_text('staged and modified\n')
+        (self.repo / 'deleted.txt').write_text('remove\n')
+        self.run_git(self.repo, 'add', 'deleted.txt')
+        (self.repo / 'deleted.txt').unlink()
+        (self.repo / 'untracked.txt').write_text('untracked\n')
+        details = auth.worktree_dirty_details(self.repo)
+        self.assertEqual(details['status'], 'DIRTY')
+        self.assertIn('file.txt', details['paths']['staged'])
+        self.assertIn('file.txt', details['paths']['modified'])
+        self.assertIn('deleted.txt', details['paths']['deleted'])
+        self.assertIn('untracked.txt', details['paths']['untracked'])
+        diagnostic = auth.PublicationError('publication requires a clean worktree', 'WORKTREE_DIRTY',
+            context={'worktree': self.repo, 'candidate_sha': self.head}).diagnostic()
+        self.assertEqual(diagnostic['version'], 2)
+        self.assertEqual(diagnostic['reason_code'], 'WORKTREE_DIRTY')
+        self.assertEqual(diagnostic['candidate_sha'], self.head)
+        self.assertTrue(diagnostic['diagnostic_id'])
+        self.assertTrue(diagnostic['redacted'])
+        self.assertNotIn('staged content', str(diagnostic))
+
+    def test_default_publication_errors_map_to_specific_codes_without_raw_text(self):
+        cases = {
+            'personal publication requires one matching origin fetch and push URL': 'REMOTE_CONFIGURATION_INVALID',
+            'required PR checks are not all complete and passing': 'REQUIRED_CHECKS_INCOMPLETE',
+            'authority config/path is writable by this Agent, including ACL or privileged access': 'AUTHORITY_CONFIG_WRITABLE',
+        }
+        for message, expected in cases.items():
+            with self.subTest(message=message):
+                diagnostic = auth.PublicationError(message).diagnostic()
+                self.assertEqual(diagnostic['reason_code'], expected)
+                self.assertNotIn(message, str(diagnostic))
+                self.assertEqual(diagnostic['blocking_rule'], 'GITHUB_OR_REMOTE_OBSERVATION' if expected.startswith(('REMOTE_', 'REQUIRED_CHECKS_')) else 'HUMAN_AUTHORITY')
+
     def test_publication_mode_is_personal_only_when_admin_root_is_absent(self):
         config = self.path / 'authority.yaml'
         self.assertEqual(auth.publication_mode(config), 'personal')

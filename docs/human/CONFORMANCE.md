@@ -1772,6 +1772,9 @@ Benchmark v2 records the registered three-archetype by six-case coverage matrix,
 
 The Skill integration adds a separate manual Scenario 259; it does not change creative quality evidence or imply writing model quality.
 
+
+Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
+
 ## Scenario 236 — Local Creative Bundle Execution
 
 Scenario 240 的 `tests/test_publication_planning.py` 覆蓋 worktree 綁定、精確 SHA/ref、舊指紋拒絕、Host denial、PR 重用與 squash merge 恢復；fixture 不等於真實 Host 或 REST 驗收。
@@ -1815,7 +1818,15 @@ Scenario 236 covers versioned no-overwrite Profile/Bundle preparation, fixed MFL
 
 The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies concurrent preparation allocates distinct versions, unconfigured engines remain blocked, preflight does not run a generator, explicit execution stays inside non-Git EPHEMERAL scope, MFLUX commands match the fixed capability registry, batch references remain bounded, model/runtime/license and profile hashes are bound to output provenance, ComfyUI is loopback-only with built-in nodes, the Z-Image Turbo split-loader graph and local model inventory are exact, prompt-bearing PNG text metadata is removed, edits use exactly one hash-matched staged input, retries are finite, no output is overwritten, review starts PENDING, and traces reject prompts, image data, secrets and paths. Real model execution, device performance and visual quality require a user-configured local engine and independent human inspection; no model is installed or downloaded by validation.
 
+
+Scenario 260 covers publication diagnostics separately; Skill Explorer routing and authority remain unchanged.
+
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
+
+
+### Scenario 260 — Publication Diagnostics and Safe Recovery
+
+The read-only publication doctor preserves branch/effective-rule evidence and sanitized HTTP failures, groups dirty paths without reading contents, attributes push/PR/check/merge blockers to their phase, and recognizes exact-head `ALREADY_MERGED` recovery. Diagnostics never grant authority. Evidence: `tests/scenarios/260-publication-diagnostics-and-safe-recovery.md` and the linked lifecycle/validation tests.
 
 ## Scenario 240 — Personal Publication Default and High-Assurance Opt-In
 
@@ -1839,6 +1850,9 @@ Scenario 239 adds a separate read-only relationship-candidate lifecycle; diagnos
 The diagnostics lifecycle covers missing, stale, partial and blocked Intelligence states. Suggested recovery remains observational; bootstrap, refresh and finalization require their existing explicit actions.
 
 `aips project diagnose` aggregates existing `aips doctor`, Project Intelligence status, Harness resolution and MCP static inspection. It reports stable reason codes with safe next actions and verification commands while keeping bootstrap, refresh, indexing and attach as explicit user actions. Doctor and child-process output is not copied into the report. Lifecycle evidence verifies text/YAML/JSON output, missing/partial/stale/blocked guidance, bounded failures, privacy and no-write behavior. Harness and MCP Host execution remain `UNVERIFIED` unless separately evidenced.
+
+
+Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
 ## Scenario 231 — Advisory Security Inventory and Secret-Scanner Shadow
 

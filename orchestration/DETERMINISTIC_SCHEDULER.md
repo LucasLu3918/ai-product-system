@@ -187,6 +187,9 @@ When the Execution Profile requires sandbox isolation, Scheduler dispatch must p
 
 The Scheduler never falls back to LLM coordination to make a blocked graph look executable.
 
+
+Publication doctor output is a read-only observation and never changes task readiness, scheduling order, isolation, or Human approval state.
+
 ## Read-only declaration and fail-closed boundary
 
 Project Intelligence relation candidates are read-only observations and cannot add approved tasks, alter canonical graph state or authorize execution.

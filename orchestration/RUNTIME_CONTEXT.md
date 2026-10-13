@@ -65,3 +65,5 @@ Operator-only repository governance evidence is outside runtime context and does
 Use `aips intelligence context --runtime <id> --project <path> --prompt <task>` to inspect the resolved view and `aips publish environment` / the repository validator to inspect local Gate prerequisites. Runtime lifecycle evidence binds results to exact project/runtime inputs; diagnostics do not substitute for the final candidate Integration Gate.
 
 - The release-readiness evaluator fails closed when the changelog is unavailable or its canonical Unreleased section is missing, duplicated, malformed, or non-empty.
+
+The source-checkout publication doctor uses the selected validation interpreter through the existing CLI runtime resolver. Its diagnostics do not change Runtime Context readiness or authorize protected operations.

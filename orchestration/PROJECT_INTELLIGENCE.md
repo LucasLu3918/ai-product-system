@@ -696,6 +696,9 @@ aips intelligence impact-init --project /path/to/project --prompt "<task>"
 
 The generated DRAFT must be semantically completed and scope-authorized before material mutation. `IMPLEMENTATION_APPROVED` represents that user-approved boundary only; `READY` is reserved for post-implementation base/head, diff digest, Impact Graph review and evidence. Validate with `aips intelligence impact-validate --path <artifact>`; incomplete states fail closed.
 
+
+Publication-tool impact includes the selected checkout, installed/source CLI routing, GitHub API observations, exact candidate and PR fingerprints, native hooks, and retrieval/validation consumers. A publication diagnostic remains run evidence and does not promote the reusable graph.
+
 ## Attach / detach migration
 
 A project can switch storage modes without losing Intelligence.

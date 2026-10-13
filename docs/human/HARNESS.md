@@ -49,6 +49,9 @@ AIPS Core
    └─ runtime-specific pre-tool guard
 ~~~
 
+
+`aips publish doctor --worktree <root> --worktree-details` provides read-only phase and evidence diagnostics. Runtime adapters may use its recovery guidance, while native permission and Human approval remain separate.
+
 ## Native Runtime Adapters
 
 Claude Code may reject a Bash merge as Merge Without Review independently of AIPS PreToolUse; preserve exact Host-versus-AIPS provenance and route confirmation through native permissions rather than rewrites.

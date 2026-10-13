@@ -298,6 +298,9 @@ The same canonical H2 placement contract applies to pre-commit working-tree prev
 
 The new `scripts/retrieval_storage.py` helper belongs to the existing Project Intelligence topic. Register behavior-bearing helpers in both `config/documentation-placement.yaml` and `config/documentation-sync.yaml`; changes to those governance maps require the Documentation Map, Documentation Sync, Technology Guide and this Agent protocol closure.
 
+
+Scenario 260 publication diagnostics synchronize with the Human Git Publication/Security Assurance sections, Architecture Overview, Claude Code adapter, CLI help, and the source-controlled diagnostic contracts.
+
 ## Scenario 220 — Parallel advisory fast feedback
 
 Plan21 Phase 2 shared canonical JSON/hash, relative-path and glob behavior is pinned by `tests/evidence/shared_primitives_lifecycle.py`; synchronize Human guidance while retaining partial graph coverage.
