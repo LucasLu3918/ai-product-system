@@ -63,4 +63,4 @@ The initial implementation approval was supplemented by two explicit user approv
 1. Approval to add the initial 15 required architecture, Harness, installation, Human-index and orchestration documents and update Change Impact.
 2. Approval to add the further 8 required Security Assurance and orchestration documents and complete recursive closure.
 
-The final resolved documentation impact preview covers 43 changed/declared paths, reports `complete: true`, and has no remaining required additions. All 23 recursively required documents are included in the candidate and Change Impact target set. This approval does not claim complete repository-wide Impact Graph coverage.
+The final resolved documentation impact preview covers all 44 exact candidate paths, reports `complete: true`, and has no remaining required additions. All 23 recursively required documents are included in the candidate and Change Impact target set. This approval does not claim complete repository-wide Impact Graph coverage.
