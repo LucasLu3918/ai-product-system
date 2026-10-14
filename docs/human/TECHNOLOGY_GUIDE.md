@@ -228,6 +228,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Security & Governance
 
+Commit denial diagnostics stay within the existing content-safety scanner and do not alter creative-provider execution or Resource Authorization.
+
 Unclassified publication failures map to `INTERNAL_DIAGNOSTIC_GAP` with a safe error class. Diagnostic lookup excludes raw commands and provider output, never creates a default ledger, and cannot authorize or execute publication.
 
 `branch.protected` is cross-checked with classic protection and effective rules; unknown permission evidence blocks and carries sanitized source/status metadata.
@@ -270,6 +272,9 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+The commit-safety lifecycle is registered with repository validation; its read-only CLI cannot substitute for publication or independent-review checks.
+
 
 Scenario 261 verifies publication diagnostic CLI and Hook fields separately from Skill Explorer generation and upstream Skill routing; no Skill inventory or default routing behavior changes.
 
@@ -528,5 +533,7 @@ Official Docs Site 使用 VitePress 1.6.x stable line，提供 sidebar、local s
 
 Documentation Placement 將每個 behavior-bearing source 綁到 canonical Human topic；Technology Guide 的廣域 trigger surface若出現尚未映射的新 source，CI 會 fail closed，要求先更新 placement contract。每條已知 subsystem rule 也明確限制 Technology Guide 可修改的 domain，因此版本新增功能不能再任意 append 到文件尾端。
 ## Runtime Content Safety Boundary
+
+The shared commit candidate scanner backs both the native Hook and `aips safety diagnose commit`. Format-aware metadata extraction is bounded for PNG, JPEG, WebP, M4A and MP3; unknown binary and scanner failures return stable safe diagnostics and fail closed.
 
 The provider-neutral `scripts/content_safety.py` kernel supplies deterministic secret and baseline PII detection, provenance-aware injection signals, and sink-aware `ALLOW`, `REDACT`, `BLOCK` and `REVIEW` decisions without requiring an external model or API credential.

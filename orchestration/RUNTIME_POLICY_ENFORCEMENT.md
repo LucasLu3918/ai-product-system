@@ -35,6 +35,8 @@ Runtime decisions expose `status`, `phase`, `reason_code`, `source`, `retryable`
 
 ## Policy and decisions
 
+Plan41 commit findings are produced by the existing Content Safety policy, not the Runtime Policy decision envelope. Its read-only CLI shares the Hook scanner and cannot create an allow decision, mutate Git or grant publication authority.
+
 Publication diagnostics share safe failure classifications with native policy reporting but remain read-only. A diagnostic lookup or trace write cannot change a policy decision, create a grant, or claim the Host executed an action.
 
 `config/runtime-policy.yaml` defaults to `DENY`. External destinations must be explicitly allowlisted. Built-in SAL3/4 and confidential/restricted external actions require exact approval, `TOOL_GUARDED`, and a current verified sandbox egress receipt. The checked-in sandbox registry currently has no verified allowlist egress provider, so those actions resolve to `BLOCKED` even when a hook can intercept them. This is the truthful current capability.

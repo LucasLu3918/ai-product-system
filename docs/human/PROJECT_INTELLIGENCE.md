@@ -423,6 +423,8 @@ Scenario 134 不改 production Retrieval / Turn Context。Local Trial PASS 也�
 Project Intelligence follows `orchestration/PROJECT_IDENTITY.md`. EPHEMERAL storage is workspace-scoped by canonical `workspace_id`; repository-wide writer coordination belongs to the isolation layer and uses `repository_id`.
 ## Runtime Content Safety Boundary
 
+Commit safety reports only a stable reason, phase, category/detector, Diagnostic ID and a sanitized relative file when safe. The Hook and read-only diagnostic CLI share the scanner; findings do not persist matched content or change publication authority.
+
 Publication scanning excludes only validated numeric Git index/mode metadata; paths, added/removed/context lines and unknown headers remain scanned. Branch deletion verifies GitHub RS256 issuer, repository, protected main, workflow SHA, dispatch event and a proposal-bound audience. Runner flags alone grant no authority; tokens remain in memory.
 
 明確的 `XDG_CACHE_HOME` 會原樣保留。預設快取不可寫時，AIPS 可使用目前使用者擁有、權限為 0700 的可重建暫存快取；symlink 與其他使用者擁有的快取會拒絕。外部 Intelligence metadata 不可寫時，可重建 metadata 保存在快取旁並回報 `CACHE_ONLY`；索引 freshness 仍由實際候選比對，canonical 來源與 graph 不會被替代。資料庫被清理後，保留的 metadata 只回報 `MISSING/ORPHANED`；執行 `aips intelligence index --project <path>` 即可重建，不需 `--force`。

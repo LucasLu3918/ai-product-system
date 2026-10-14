@@ -218,6 +218,19 @@ case "${1:-help}" in
     shift
     publish_preflight_cmd "$@"
     ;;
+  safety)
+    sub="${2:-help}"
+    case "$sub" in
+      diagnose)
+        shift 2
+        "$(python_bin)" "$SYSTEM_DIR/scripts/safety_diagnostics.py" "$@"
+        ;;
+      help|-h|--help)
+        say "Usage: aips safety diagnose commit --message-file <path> [--worktree <repo>] [--format json|text]"
+        ;;
+      *) die "Unknown safety command: $sub. Run 'aips safety --help'." ;;
+    esac
+    ;;
   evolution)
     shift
     evolution_cmd "$@"

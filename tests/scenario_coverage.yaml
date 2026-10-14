@@ -2111,3 +2111,15 @@ scenarios:
       - tests/evidence/runtime_policy_lifecycle.py
       - tests/evidence/creative_execution_lifecycle.py
       - tests/validation/creative_execution_contracts.py
+  - id: "263"
+    path: tests/scenarios/263-runtime-content-safety-commit-diagnostics.md
+    coverage: lifecycle
+    evidence:
+      - tests/scenarios/263-runtime-content-safety-commit-diagnostics.md
+      - scripts/content_safety.py
+      - scripts/governance_guard.py
+      - scripts/media_metadata.py
+      - scripts/safety_diagnostics.py
+      - tests/test_safety_diagnostics.py
+      - tests/validate_repository.py
+      - tests/fixtures/plan21-contract-golden-vectors.yaml

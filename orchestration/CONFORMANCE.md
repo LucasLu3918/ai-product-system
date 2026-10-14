@@ -46,6 +46,8 @@ OpenCode integration retains system preflight and existing-host lifecycle checks
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+Scenario 263 adds a read-only `aips safety diagnose commit` contract; Skill listing and publication authority remain separate.
+
 The additive publication Diagnostic ID lookup retains the existing CLI group and reports a verified allowlisted record without changing the command help or dispatcher contract.
 
 Scenario 233 remains scoped to stable CLI help and argument failures; Scenario 262 adds structured authorization/provider diagnostics without changing public command parsing.
@@ -899,6 +901,8 @@ Repository validators are imported only through the explicit ordered `tests/vali
 
 ## Scenario 201 — Monthly maintenance reliability evidence
 
+Scenario 263 lifecycle registration does not alter the monthly maintenance evidence or schedule.
+
 `tests/evidence/maintenance_reliability_lifecycle.py` checks bounded collection, deterministic validation/runtime distributions, explicit hotfix labels, repeated changed paths, heuristic failure categories, exact merge-SHA regression linkage and UNKNOWN behavior for incomplete histories, timestamps or changed-file counts. `tests/validation/maintenance_reliability_contracts.py` checks config bounds and workflow permissions. The monthly workflow may publish an observational report and deduplicated review Issue with Actions/contents/pull-request read and Issue write permissions only; it cannot remediate, change code, create PRs, merge or release. Category names are hints rather than root-cause findings.
 
 The workflow uses the shared Python bootstrap and queues up to 100 same-cohort Issue reports without cancelling a running or pending report. Its timeout remains unset until a successful run establishes a defensible timing baseline.
@@ -1082,6 +1086,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Commit-safety diagnostics do not change the pinned upstream Skill inventory, installation rules, or routing.
+
 Plan40 publication diagnostics leave the pinned Skill source inventory, installation eligibility, and canonical-only listing unchanged.
 
 Scenario 259 continues to validate the pinned Skill source inventory and ownership-safe projection; plan39 presets do not modify Skill routing or installation.
@@ -1100,6 +1106,8 @@ The canonical Skill registry contains 49 AIPS Skills; the pinned 38-item upstrea
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Scenario 263 is separate from publication Doctor and cannot satisfy PR merge checks or approval.
+
 Plan40 verifies explicit publication reason codes, safe common Prepare/Hook bindings, independent lifecycle states, and optional verified Diagnostic ID lookup; all remain non-authorizing observations.
 
 Scenario 260 additionally verifies `UNKNOWN_PERMISSION`, skipped provider-success metadata and one Claude Hook Doctor call for retryable remote failures.
@@ -1108,8 +1116,14 @@ Scenario 260 verifies the read-only `aips publish doctor`, Required Checks class
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
 
+Commit Content Safety diagnostics do not create or alter Resource Authorization profiles, grants, or ComfyUI access.
+
 Git publication diagnostics do not alter ComfyUI discovery, Resource Authorization profile matching, or creative action grants.
 
 Scenario 262 locks stage-specific default-deny Profile diagnostics, kind/selector/operation/destination/constraint matching, observed Hook URL binding, and structured redacted Runtime/Creative recovery. It verifies fixed loopback ComfyUI read-only model discovery, HTTP/method/path/redirect denials, shared static asset presets and evidence-only MPS reporting; no inference or external download is performed.
+
+## Scenario 263 — Commit Safety Diagnostics
+
+The native commit Hook and read-only `aips safety diagnose commit` share the staged-content scanner. Strict ignore-marker handling, bounded PNG/JPEG/WebP/M4A/MP3 metadata extraction, fail-closed unknown binary and scanner-error classifications, and content-redacted structured diagnostics are covered by `tests/test_safety_diagnostics.py`. This does not change Human Authority, Required Checks, or Git Publish Approval.
 
 The canonical Skill registry and pinned upstream manifest classify the complete 38-item source inventory; the generated Human Explorer presents active Skills and source dispositions separately. Writing Fragments → Beats → Shape remains explicit-request-only, and untested Beta entries remain unrouted. `tests/validation/skill_catalog_contracts.py` checks deterministic registry, output and source invariants; Scenario 259 remains manual for semantic routing acceptance.

@@ -1559,6 +1559,8 @@ Lifecycle evidence checks exact-path Node, browser and OpenAPI selection, full p
 
 ## Scenario 201 — Monthly maintenance reliability evidence
 
+The repository runner registers Scenario 263 separately; monthly maintenance evidence and its existing gate remain unchanged.
+
 New outcome fields are bounded observations and do not establish an SLO or change a gate.
 
 
@@ -1798,6 +1800,8 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Commit-safety CLI coverage is separate from the pinned upstream Skill inventory and cannot change Skill discovery or routing.
+
 Scenario 261 publication diagnostics do not change the pinned upstream Skill inventory, installation eligibility, or the canonical-only default listing.
 
 Scenario 259 retains the pinned upstream inventory, disposition and projection ownership checks; this Creative Runtime change does not alter Skill inventory or installation behavior.
@@ -1840,6 +1844,8 @@ The synthetic lifecycle uses fake MFLUX and loopback ComfyUI only. It verifies c
 
 
 ## Scenario 237 — Read-only Project Diagnostics and Recovery Guidance
+
+Scenario 263 applies the same read-only principle to commit content: Hook and CLI use one scanner, redact findings, and do not mutate Git.
 
 Publication diagnostics observe policy on the remote default branch independently from the candidate; structured HTTP evidence is sanitized, and transient recovery is read-only.
 
@@ -1891,6 +1897,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Scenario 263 adds content-safety diagnostics as a separate surface; publication Doctor, exact PR binding, and Required Checks remain authoritative for merge.
+
 Plan40 adds explicit error-cause coverage, safe Prepare/Hook bindings, independent lifecycle states, and optional verified Diagnostic ID lookup while preserving personal-mode confirmation and Harness/CLI authority boundaries.
 
 Runtime Hook recovery remains non-authorizing; Scenario 262 diagnostics do not alter candidate validation, native Host confirmation or publication authority.
@@ -1905,6 +1913,12 @@ Scenario 260 verifies stable, redacted diagnostics for publication blockers, rea
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
 
+Commit Content Safety remains separate from ComfyUI Resource Authorization profiles and grants.
+
 Publication Diagnostic IDs remain separate from ComfyUI discovery, Resource Authorization profiles, and Creative execution grants.
 
 Scenario 262 covers fail-closed Resource Authorization Profile/grant matching, Hook binding to observed URLs, fixed loopback ComfyUI model discovery and safe HTTP recovery, shared creative presets, and static-only MPS compatibility evidence.
+
+## Scenario 263 — Commit Safety Diagnostics
+
+The native commit Hook and read-only `aips safety diagnose commit` use the same staged-content scanner. Strict ignore-marker handling, bounded PNG/JPEG/WebP/M4A/MP3 metadata scans, fail-closed unknown binary and scanner errors, and redacted structured recovery are verified by `tests/test_safety_diagnostics.py`. This diagnostic surface does not grant commit or publication authority.

@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+Plan41 keeps commit inspection inside Runtime Content Safety: the native Hook and `aips safety diagnose commit` share one scanner, findings grant no authority, and unsupported binary or incomplete scans remain fail-closed.
+
 Publication diagnostics use shared reason codes and safe candidate bindings from the existing authority and preflight modules. Prepare, Hook, and Doctor observations remain distinct from Host permission, Human authorization, and execution.
 
 Claude Code publication denials may trigger one bounded read-only Doctor observation for retryable network, rate-limit or GitHub server errors; the existing publication authority remains the only merge decision path.
@@ -295,6 +297,8 @@ flowchart LR
 The alias candidate is deterministic and transparent. It is not an embedding provider and does not change `semantic.status=NOT_CONFIGURED`. The committed Trial follows the FAIL → KEEP branch: required regressions and no synonym-recall improvement produce recommendation `HOLD`. Normal Turn Context retrieval therefore does not enable the alias lane.
 
 ## Maintenance and publication evidence
+
+Commit diagnostics preserve the Git Publish Approval Gate; they cannot authorize a branch update, PR merge, or release.
 
 Runtime denial recovery is descriptive only: publication and protected operations continue to require exact candidate validation and native Human authorization.
 

@@ -54,6 +54,8 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+Claude Code commit Hook diagnostics include only safe reason/category/detector data, an optional sanitized repository-relative file, and a Diagnostic ID. `aips safety diagnose commit` invokes the same scanner in read-only mode; this does not add a Host capability or publication permission.
+
 Publication Hook responses share the authority layer's stable reason code and safe candidate/runtime binding with Prepare. `AUTHORIZED` records only AIPS Hook approval; native Host permission remains unevaluated and execution remains unobserved until the host action completes.
 
 Claude Code's publication Hook runs one bounded read-only Doctor after explicitly retryable network, rate-limit or GitHub server failures; OpenCode and Codex do not claim this automatic behavior.

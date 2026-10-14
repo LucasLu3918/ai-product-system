@@ -440,6 +440,8 @@ SAL 2+ default registration requires an independently retained anchor. SAL 4 req
 The retention helper never deletes evidence or grants compaction authority. Expiry only creates a Human-review action and a minimal digest record.
 ## Runtime Content Safety Boundary
 
+Plan41 preserves Secret, PII and Injection Signal blocking for commits while making denial causes observable without matched content. Protected commit scans use strict marker handling; supported media metadata is inspected with bounded parsers, and unknown/malformed formats or incomplete scans fail closed. The read-only diagnostic CLI shares the Hook path and grants no authority.
+
 
 Creative traces and tool responses exclude raw prompts, image bytes, credentials, arbitrary workflow bodies, and absolute local paths; remote image egress is not supported.
 
@@ -450,6 +452,8 @@ The Parallel Run Dashboard is loopback-only and read-only. Its projection cannot
 AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned content is persisted or before candidate publication content is approved. Secrets are redacted from diagnostic sinks and blocked from durable/public sinks; deterministic PII is context- and sink-aware; external content is marked with provenance and prompt injection is reported as a signal. This boundary does not replace Human Authority, Publish Approval, native runtime hooks or repository-side secret protection.
 
 ## Runtime Policy Enforcement
+
+Commit-safety diagnostics are not Runtime Action approvals; they cannot satisfy independent review, Resource Authorization, merge confirmation, or Required Checks.
 
 Publication diagnostic fields and optional ledger tracing are observability only. Unknown causes remain a diagnostic gap; they do not downgrade the existing fail-closed requirement or create Human, Host, push, PR, or merge authority.
 

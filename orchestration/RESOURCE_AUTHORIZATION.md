@@ -61,6 +61,8 @@ Protected operations such as publication, administration and destructive deletio
 
 ## Enforcement truth
 
+Commit Content Safety is a separate content boundary, not a Resource Authorization profile or grant. Plan41 adds only read-only diagnostics and preserves all existing Human Authority, Required Checks and Git Publish Approval decisions.
+
 Resource Authorization emits `status`, `phase`, `reason_code`, `source`, `retryable`, `trace_id` and `recovery.action` alongside its decision evidence. Profile absence, missing/unreadable files, malformed YAML/schema, and grant-scope mismatches retain separate stable reason codes. Local filesystem paths and raw parser errors are not emitted.
 
 `scripts/resource_authorization.py` produces **PRE_EXECUTION_EVIDENCE**. It does not claim that every runtime can mechanically intercept every tool call.

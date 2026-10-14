@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Commit Content Safety remains separate from Creative Runtime grants and does not create provider or asset-import authority.
+
 Git publication Diagnostic IDs are governance evidence only; they do not inspect creative assets or authorize generation, asset publication, or merge.
 
 Publication Doctor recovery is separate from Creative Direction, asset generation and visual-review decisions.
@@ -256,6 +258,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 
 ## Roles、Skills 與重用
 
+`aips safety diagnose commit` is an independent read-only CLI; it adds no Skill inventory, Skill Explorer route, or installation behavior.
+
 Publication diagnostic lookup is an explicit CLI capability in the existing Git workflow; it does not add or change Skill discovery, routing, installation, or ownership.
 
 Upstream Skill discovery and installation remain governed by the pinned canonical inventory and ownership-safe projection lifecycle; Creative asset presets are not Skills and do not alter that registry.
@@ -382,6 +386,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+Commit diagnostics expose redacted evidence only; any independent review remains governed by the candidate Core Change Matrix.
 
 Publication lifecycle observations are not independent-review evidence and do not satisfy a Human review or a native Host decision.
 
@@ -610,6 +616,8 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
+Commit-safety findings provide recovery guidance only; exact-candidate approval, Required Checks, and Human authority still govern publication and merge.
+
 Runtime Hook diagnostics are advisory recovery context. They do not approve publication or bypass the candidate Gate and native Host confirmation.
 
 When diagnosing a feature branch, `aips publish doctor` checks policy on the remote default branch by default; `--branch` explicitly selects a policy target. The report separately shows the candidate branch and never authorizes publication. Transient recovery re-runs read-only evidence collection only.
@@ -782,5 +790,7 @@ Scenario / validation history
 
 Documentation Placement Contract 會檢查 heading hierarchy、version/scenario-style heading 與 changed-line placement。新增功能不得只在 current-behavior 文件尾端追加 `vX.Y` / Scenario 說明；若確實需要新 topic，必須同時把 canonical section 加入 placement contract。
 ## Runtime Content Safety Boundary
+
+本機可用 `aips safety diagnose commit --worktree <repo> --message-file <path> [--format json|text]` 查詢 commit 安全結果。它與 Hook 共用掃描器且只讀暫存候選；拒絕摘要不含命中值，Secret／PII／Injection 仍阻擋，未知格式或掃描不完整仍拒絕。
 
 Commit, pull request and release content is scanned before durable/public publication. A blocked result requires regenerating safe content; it is not silently rewritten. Runtime capability remains truthful: AIPS-owned sinks are enforced, native hooks may be tool-guarded, and unsupported host tools are advisory.
