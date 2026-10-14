@@ -17,7 +17,7 @@ matrix:
   checks:
     static_lint: {applicable: true, evidence: "scripts/validation syntax contracts and exact-candidate repository Integration Gate"}
     unit: {applicable: true, evidence: "tests/test_runtime_policy.py plus Resource Authorization lifecycle assertions"}
-    integration: {applicable: true, evidence: "tests/evidence/resource_authorization_lifecycle.py and tests/evidence/runtime_policy_lifecycle.py"}
+    integration: {applicable: true, evidence: "tests/evidence/resource_authorization_lifecycle.py, tests/evidence/runtime_policy_lifecycle.py, Gemini observed-event and anomaly lifecycle regression"}
     contract: {applicable: true, evidence: "tests/validation/resource_authorization_contracts.py and runtime_policy_contracts.py"}
     e2e: {applicable: false, na_reason: No deployed UI; deterministic CLI and runtime fixtures cover the boundary.}
     security: {applicable: true, evidence: "missing/invalid Profile, default-deny and grant kind/selector/operation/destination/constraint negative cases; exact-candidate secret scan"}
@@ -68,4 +68,4 @@ review_evidence:
   required: false
 candidate:
   base_sha: f93c43149175ed5a6394d68a6e72742e83256a44
-  changed_files_hash: f2ecbc70553274928a87b4ebe2c544bccb64d4292c72563700cdc94161d16b37
+  changed_files_hash: ddca678165b15d600c9156b49e3e6cb48f47b294d06b6c2c47e1532905353ae0
