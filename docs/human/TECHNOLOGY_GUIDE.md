@@ -8,6 +8,8 @@ Retrieval relation candidates are built by a small standard-library module behin
 
 ## Runtime & Integration
 
+The publication diagnostic contract distinguishes stable blocker reason, source phase, safe recovery, candidate/runtime binding, and independent plan, authorization, Host and execution states. Optional trace storage writes only allowlisted fields to an explicitly configured hash-chained ledger; lookup verifies the chain before returning a record.
+
 The Claude Code publication Hook can invoke the existing read-only Doctor once after explicitly retryable network, rate-limit or GitHub server errors.
 
 The publication Doctor shares the structured API observer and labels the candidate branch independently from target policy, retaining bounded, sanitized endpoint and status evidence.
@@ -79,6 +81,8 @@ Local hybrid retrieval 組合 lexical、symbols、structural relation、tests、
 Existing Project mutation 前先宣告並授權 Change Boundary，使用 `IMPLEMENTATION_APPROVED` 進入核准範圍；實作後對帳 actual diff 與 declared impact，只有完整記錄 reconciliation evidence 才能標記 `READY`。
 
 ## Execution
+
+The Git diagnostic ledger records only allowlisted publication metadata; it does not inspect creative assets, call a generator, or grant creative execution.
 
 The Doctor observation does not retry workflow execution or execute publication commands; merge Authority re-reads the target policy before accepting required checks.
 
@@ -224,6 +228,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Security & Governance
 
+Unclassified publication failures map to `INTERNAL_DIAGNOSTIC_GAP` with a safe error class. Diagnostic lookup excludes raw commands and provider output, never creates a default ledger, and cannot authorize or execute publication.
+
 `branch.protected` is cross-checked with classic protection and effective rules; unknown permission evidence blocks and carries sanitized source/status metadata.
 
 The read-only `aips publish doctor` uses the shared structured GitHub API observer, distinguishes candidate/source and target policy branches, and reports bounded sanitized response metadata. `governance_guard` returns safe diagnostic identifiers and fields in Claude Code PreToolUse denials.
@@ -264,6 +270,8 @@ Runtime Policy Enforcement uses a versioned action envelope and deny-by-default 
 Hash chain、portable audit bundle、external anchor、key fingerprint 與 retention catalog提供可驗證 provenance；不創造 approval authority。
 
 ## Quality & Verification
+
+Scenario 261 verifies publication diagnostic CLI and Hook fields separately from Skill Explorer generation and upstream Skill routing; no Skill inventory or default routing behavior changes.
 
 Creative error envelopes use bounded diagnostics and stable recovery codes. ComfyUI tests use loopback fixtures; static MPS and dtype metadata never count as inference evidence. The User Guide's upstream Skill commands and Scenario 259 remain backed by the canonical registry and ownership-safe projection lifecycle.
 
@@ -433,6 +441,8 @@ Branch hygiene emits deterministic SHA, PR, age and integration proposals; clean
 Eval-as-CI / Trajectory Quality Gate 以 provider-neutral trace 產生 observable evidence。Deterministic violations 可形成 `BLOCK`，效率偏差形成 `WARN` 或 `DEGRADED`；shadow mode 不授予 Git Publish 權限，Human Authority 仍是最後決策者。
 
 ### Scenario Conformance
+
+Scenario 261 now also covers explicit publication error classification, safe Prepare/Hook binding, lifecycle-state separation, and optional verified Diagnostic ID lookup. These deterministic checks do not claim live Host confirmation or publication execution.
 
 Scenario registry 將 evidence 分成 deterministic、lifecycle、agent_eval、manual，不用「檔案存在」冒充 automated coverage。
 

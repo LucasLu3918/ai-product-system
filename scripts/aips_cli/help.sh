@@ -115,6 +115,7 @@ Usage:
   aips publish doctor [--project-root <repo>] [--branch <branch>] [--pr <number>] [--format yaml|json]
   aips publish prepare --worktree <candidate-root> --title <title> --body-file <file> [--runtime codex|claude-code|gemini-cli|opencode] [--expected-fingerprint <digest>] [--host-denied] [--merge-intent]
   aips publish diagnose --worktree <candidate-root> --command <literal-native-command>
+  aips publish diagnose --diagnostic-id <UUID> [--format yaml|json]  # reads the configured existing audit ledger
   aips approval propose --operation <operation> --base <sha> --command <literal-command> [--cwd <repo>]
   aips approval status|verify --approval <signed-record> --operation <operation> --command <literal-command> [--cwd <repo>]
   aips evolution package|analyze|apply [evolution analysis options]

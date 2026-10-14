@@ -72,6 +72,8 @@ Detach 會先同步可重用 Intelligence，再封存 project-local workspace；
 
 ## Creative Direction、Style 與 Brand
 
+Git publication Diagnostic IDs are governance evidence only; they do not inspect creative assets or authorize generation, asset publication, or merge.
+
 Publication Doctor recovery is separate from Creative Direction, asset generation and visual-review decisions.
 
 The OpenCode publication adapter reports the same bounded, safe recovery guidance as the shared diagnostic contract.
@@ -189,6 +191,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+Publication Hook and Prepare share safe reason codes and candidate observations; their lifecycle fields remain separate from native Host permission and Human authorization.
+
 Resource and creative Runtime Hook errors include a stable reason code and bounded recovery step; this diagnostic context does not grant a write or generation action.
 
 The Claude Code Hook performs one read-only Publication Doctor check for explicitly retryable remote errors; Codex and OpenCode retain their existing observation behavior.
@@ -251,6 +255,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+Publication diagnostic lookup is an explicit CLI capability in the existing Git workflow; it does not add or change Skill discovery, routing, installation, or ownership.
 
 Upstream Skill discovery and installation remain governed by the pinned canonical inventory and ownership-safe projection lifecycle; Creative asset presets are not Skills and do not alter that registry.
 
@@ -376,6 +382,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+Publication lifecycle observations are not independent-review evidence and do not satisfy a Human review or a native Host decision.
 
 Creative presets add bounded prompt guidance only. They do not select a model, authorize generation or replace the existing workflow preflight and Human review.
 
@@ -632,6 +640,10 @@ Personal Mode 的逐次合併確認和 High-Assurance Mode 的外部 signed gran
 `.m4a` 可作為 Git 內的音訊素材，限 8 MiB 且須通過容器品牌與 atom 結構檢查；AIPS 掃描其中 metadata，不將 `mdat` 音訊內容當文字解碼。格式偽裝、metadata secret、內容安全命中或超過 8 MiB 都會阻擋發布；較大的音訊請使用 Git LFS 或外部物件儲存，並在 repository 保留可追溯的 asset pointer／部署說明。既有文字掃描上限與其他二進位格式政策維持適用。
 
 發布前使用 `aips publish prepare --worktree <candidate-root> --title <title> --body-file <file>`；原生工具必須使用輸出的 `cwd` 與精確 `argv`。`--expected-fingerprint` 可拒絕舊觀察，`--host-denied` 只回報 Host 拒絕，`--auto-merge` 只規劃 GitHub `--auto`，要求非空且全部通過的 required checks，並保留原生 Human 授權。每次續行重新查詢遠端分支與 PR；PLANNED 不是授權，也不是完整 Integration Gate PASS。
+
+Prepare 與 `aips publish diagnose` 會並列候選驗證、授權與執行狀態。`PLANNED` 代表只完成規劃；`AWAITING_AUTHORITY` 代表需要 Human grant；Hook 的 `AUTHORIZED` 只代表 AIPS Hook 放行，Host 仍可能拒絕且指令尚未執行；`EXECUTED` 只能由實際執行結果確認。`next_step: PUSH`、掃描通過或觀測指紋都不會授予權限。診斷包含安全的 worktree ID、候選 SHA、完整 target ref、publication mode 與 AIPS 版本／revision，僅供核對環境，不作為授權憑證。未知錯誤會回報 `INTERNAL_DIAGNOSTIC_GAP`；已知分支目標不一致會回報 `PUSH_TARGET_BRANCH_MISMATCH`，並提供繁中排除步驟。
+
+Diagnostic ID 只有在使用者已設定既有 `AIPS_GOVERNANCE_AUDIT_LEDGER` 時，才會寫入 allowlist 欄位並可用 `aips publish diagnose --diagnostic-id <UUID> --format json` 查詢。查詢會驗證 hash chain；未設定時顯示 `NOT_CONFIGURED`，不會自動建立新 ledger。Trace 寫入失敗不會改變 Hook 的允許／拒絕決定，也不輸出原始指令或例外內容。
 
 `branch-hygiene.yml` 的報告會依 branch SHA、目前 main、local checkout 與 PR 狀態列出 `KEEP`、`SUPERSEDED`、`REBASE_REQUIRED` 或 `CLEANUP_CANDIDATE`。這些分類供維護者檢視，不會自動 merge、rebase、關閉 PR 或刪除 branch；清理仍須逐筆核准 exact manifest。
 

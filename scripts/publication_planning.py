@@ -20,7 +20,7 @@ def _repo(root: Path) -> str:
     url = authority.git(root, 'remote', 'get-url', '--push', 'origin')
     match = re.fullmatch(r'(?:https://github\.com/|git@github\.com:)([A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+?)(?:\.git)?', url)
     if not match:
-        raise authority.PublicationError('supported credential-free GitHub origin required')
+        raise authority.PublicationError('supported credential-free GitHub origin required', reason_code='REMOTE_CONFIGURATION_INVALID')
     return match.group(1)
 
 
@@ -59,6 +59,48 @@ def _invocation(root: Path, operation: str, argv: list[str]) -> dict[str, Any]:
             'execution': 'standalone_native_tool', 'revalidate_before_execution': True}
 
 
+def _with_lifecycle(result: dict[str, Any], root: Path | None = None) -> dict[str, Any]:
+    """Add explicit, non-authorizing Prepare state without changing legacy status."""
+    status = result.get('status')
+    observation = result.get('observation') or {}
+    if root is None and observation.get('worktree'):
+        root = Path(observation['worktree'])
+    candidate: dict[str, Any] = dict(result.get('candidate') or {})
+    candidate.setdefault('status', 'PASS' if result.get('scan') == 'PASS' else 'NOT_VALIDATED')
+    if root is not None and observation.get('branch') and observation.get('head'):
+        try:
+            candidate.update(authority.runtime_binding(
+                root, candidate_sha=observation['head'],
+                target_ref='refs/heads/' + observation['branch'],
+                mode=observation.get('mode') or result.get('mode') or 'UNKNOWN'))
+        except (OSError, authority.PublicationError, ValueError, TypeError):
+            candidate.update(worktree_id=observation.get('worktree_id', 'UNKNOWN'),
+                             candidate_sha=observation.get('head', 'UNKNOWN'),
+                             target_ref='refs/heads/' + observation['branch'],
+                             mode=observation.get('mode') or result.get('mode') or 'UNKNOWN',
+                             runtime_version='UNKNOWN', runtime_revision='UNKNOWN',
+                             binding_fingerprint='UNKNOWN')
+    result['candidate'] = candidate
+    authorization_status = {
+        'PLANNED': 'NOT_GRANTED',
+        'VALIDATED': 'NOT_GRANTED',
+        'AWAITING_AUTHORITY': 'AWAITING_HUMAN_AUTHORITY',
+        'BLOCKED': 'DENIED',
+        'COMPLETE': 'NOT_GRANTED_FOR_THIS_INVOCATION',
+    }.get(status, 'NOT_EVALUATED')
+    result['authorization'] = {
+        'status': authorization_status,
+        'authorized': False,
+        'host_decision': 'NOT_EVALUATED',
+    }
+    result['execution'] = {
+        'status': 'ALREADY_COMPLETE' if status == 'COMPLETE' else 'NOT_EXECUTED',
+        'attempted': False,
+        'completed': status == 'COMPLETE',
+    }
+    return result
+
+
 def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'codex',
             expected_fingerprint: str | None = None, host_denied: bool = False,
             merge_intent: bool = False, auto_merge: bool = False,
@@ -77,10 +119,10 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
         }
         result['diagnostics'] = [diagnostic(codes.get(host_denial_class,
                                                       'HOST_PERMISSION_DENIED'))]
-        return result
+        return _with_lifecycle(result)
     if auto_merge and not merge_intent:
         result['diagnostics'] = [diagnostic('AUTO_MERGE_REQUIRES_INTENT')]
-        return result
+        return _with_lifecycle(result)
     try:
         root = worktree.expanduser().resolve(strict=True)
         actual = Path(authority.git(root, 'rev-parse', '--show-toplevel')).resolve()
@@ -100,7 +142,7 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
         branch = authority.git(root, 'branch', '--show-current')
         head = authority.git(root, 'rev-parse', 'HEAD^{commit}')
         if not branch or not branch.startswith(authority.PERSONAL_BRANCH_PREFIXES):
-            raise authority.PublicationError('current engineering branch required')
+            raise authority.PublicationError('current engineering branch required', reason_code='BRANCH_NOT_ALLOWLISTED')
         if not title.strip() or not body_file.is_file() or body_file.is_symlink():
             raise authority.PublicationError('explicit PR title and body file required', 'PR_METADATA_INCOMPLETE')
         body_file = body_file.resolve(strict=True)
@@ -136,7 +178,7 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
                           next_step='POST_MERGE_RECONCILIATION', recovery_state='ALREADY_MERGED',
                           operation='POST_MERGE_RECONCILIATION', idempotent=True,
                           observation=observation, fingerprint=fingerprint, scan='NOT_REQUIRED_ALREADY_MERGED')
-            return result
+            return _with_lifecycle(result, root)
         # Reuse the exact existing syntax, identity, clean-tree and ancestry checks.
         phase = 'push_validation'
         scope = authority.action(root, 'git_push', push, base, personal=mode == 'personal')
@@ -201,19 +243,23 @@ def prepare(worktree: Path, *, title: str, body_file: Path, runtime: str = 'code
             result['diagnostics'].append(diagnostic('AUTHORITY_REQUIRED'))
             result['next_step'] = 'EXTERNAL_GRANT_THEN_' + result['next_step']
             result['status'] = 'AWAITING_AUTHORITY'
-        return result
+        return _with_lifecycle(result, root)
     except authority.PublicationError as exc:
         item = exc.diagnostic()
         item['phase'] = exc.phase or phase
         result['phase'] = item['phase']
         result['diagnostics'].append(item)
-    except (OSError, ValueError, TypeError, KeyError, yaml.YAMLError, subprocess.TimeoutExpired):
-        item = diagnostic('REMOTE_OBSERVATION_FAILED')
+    except (OSError, ValueError, TypeError, KeyError, yaml.YAMLError, subprocess.TimeoutExpired) as exc:
+        error_code = ('REMOTE_OBSERVATION_FAILED' if isinstance(exc, (OSError, subprocess.TimeoutExpired)) and phase in {'remote_observation', 'pr_observation'}
+                      else 'CONTENT_SCAN_BLOCKED' if phase == 'content_scan'
+                      else 'INTERNAL_DIAGNOSTIC_GAP')
+        item = diagnostic(error_code)
+        item['error_class'] = type(exc).__name__
         item['phase'] = phase
         result['phase'] = phase
         result['diagnostics'].append(item)
     result.update(status='BLOCKED', invocations=[])
-    return result
+    return _with_lifecycle(result, locals().get('root'))
 
 
 def diagnose(worktree: Path, command: str) -> dict[str, Any]:
@@ -242,16 +288,42 @@ def diagnose(worktree: Path, command: str) -> dict[str, Any]:
         if mode == 'high_assurance':
             # Diagnostics must honor the selected mode's stricter exact lease syntax.
             authority.action(root, operation, argv, observed['base_commit'], personal=False)
-        return {'version': 2, 'status': 'VALIDATED' if mode == 'personal' else 'AWAITING_AUTHORITY',
-                'authorized': False, 'read_only': True, 'executed': False,
-                'grant_consumed': False, 'operation': operation, 'mode': mode,
-                'diagnostics': [] if mode == 'personal' else [diagnostic('AUTHORITY_REQUIRED')]}
+        result = {'version': 2, 'status': 'VALIDATED' if mode == 'personal' else 'AWAITING_AUTHORITY',
+                  'authorized': False, 'read_only': True, 'executed': False,
+                  'grant_consumed': False, 'operation': operation, 'mode': mode,
+                  'diagnostics': [] if mode == 'personal' else [diagnostic('AUTHORITY_REQUIRED')]}
+        candidate_sha = observed.get('candidate_commit') or observed.get('candidate_sha')
+        if not candidate_sha or not re.fullmatch(r'[0-9a-f]{40,64}', candidate_sha):
+            candidate_sha = authority.git(root, 'rev-parse', 'HEAD^{commit}')
+        target_ref = observed.get('target_ref')
+        if not target_ref:
+            if operation == 'git_push':
+                refspec = next((token for token in reversed(argv) if ':' in token), '')
+                target_ref = refspec.split(':', 1)[1] if ':' in refspec else 'UNKNOWN'
+            elif operation == 'gh_pr_create' and '--base' in argv:
+                target_ref = 'refs/heads/' + argv[argv.index('--base') + 1]
+            else:
+                merge = observed.get('merge_confirmation') or {}
+                target_ref = ('refs/heads/' + merge['base_branch']) if merge.get('base_branch') else 'UNKNOWN'
+        result['candidate'] = {'status': 'PASS', **authority.runtime_binding(
+            root, candidate_sha=candidate_sha, target_ref=target_ref, mode=mode)}
+        return _with_lifecycle(result, root)
     except authority.PublicationError as exc:
         return {'status': 'BLOCKED', 'authorized': False, 'diagnostics': [exc.diagnostic()]}
-    except CommandError:
-        return {'status': 'BLOCKED', 'authorized': False, 'diagnostics': [diagnostic('COMMAND_FORM_UNSUPPORTED')]}
-    except (OSError, ValueError, TypeError, yaml.YAMLError, subprocess.TimeoutExpired):
-        return {'status': 'BLOCKED', 'authorized': False, 'diagnostics': [diagnostic('REMOTE_OBSERVATION_FAILED')]}
+    except CommandError as exc:
+        item = diagnostic(exc.reason_code)
+        item['phase'] = 'command_validation'
+        return _with_lifecycle({'status': 'BLOCKED', 'authorized': False, 'diagnostics': [item]})
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        item = diagnostic('REMOTE_OBSERVATION_FAILED')
+        item['error_class'] = type(exc).__name__
+        item['phase'] = 'remote_observation'
+        return _with_lifecycle({'status': 'BLOCKED', 'authorized': False, 'diagnostics': [item]})
+    except (ValueError, TypeError, yaml.YAMLError) as exc:
+        item = diagnostic('INTERNAL_DIAGNOSTIC_GAP')
+        item['error_class'] = type(exc).__name__
+        item['phase'] = 'diagnostic_processing'
+        return _with_lifecycle({'status': 'BLOCKED', 'authorized': False, 'diagnostics': [item]})
 
 def recovery_guidance(result: dict[str, Any]) -> dict[str, Any]:
     """Non-authorizing status guidance; never executes a publication action."""

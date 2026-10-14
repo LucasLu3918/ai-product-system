@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+Publication `prepare`、Hook 與 `diagnose` 共用安全候選綁定與穩定原因碼；觀察結果分開呈現規劃、AIPS 授權、Host 決策與實際執行，不合併成單一成功狀態。
+
 Claude Code Hook only performs one read-only Publication Doctor observation for explicitly retryable network, rate-limit or GitHub server failures; native confirmation and publication authority remain separate.
 
 Publication Doctor uses the shared runtime API observer to identify the candidate branch separately from target policy and retain only safe endpoint/status evidence.
@@ -127,6 +129,8 @@ repository_id
 EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才使用 project-local .ai/。
 
 ## Creative Workflow
+
+Git publication diagnostic tracing remains outside the creative asset flow and cannot grant generation, creative review, or asset publication permission.
 
 Publication diagnostics do not change creative asset execution or Human visual review authority.
 
@@ -346,6 +350,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Security 與 Governance
 
+未知或不受支援的 publication reason code 會回報 `INTERNAL_DIAGNOSTIC_GAP`，並提供階段與安全恢復指引；diagnostic ID 僅能讀取已設定且通過 hash-chain 驗證的 allowlisted ledger event。
+
 Resource Authorization resolves only a trusted profile and enforces grant kind, selector, operation and destination constraints. Its structured denial diagnostics remain default-deny and redact local paths and provider bodies.
 
 `branch.protected` is cross-checked with readable classic protection and effective rules; permission-hidden policy remains unknown and blocks.
@@ -430,6 +436,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Plan40 將錯誤來源、候選/runtime 綁定、診斷追查與 publication lifecycle 欄位納入同一 exact-candidate 驗證；ledger 未設定時不建立預設儲存，也不改變授權結果。
 
 Scenario 262 binds local ComfyUI discovery and Resource Authorization diagnostics to loopback-only lifecycle evidence; device compatibility remains unverified without real inference.
 

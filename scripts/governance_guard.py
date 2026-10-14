@@ -336,24 +336,24 @@ def commit_safety(cwd: Path, command: str) -> dict:
     from publication_commands import shell_commands
     commands = shell_commands(command)
     if len(commands) != 1 or commands[0][:2] != ["git", "commit"]:
-        raise PublicationError("commit must be standalone without context-changing wrappers")
+        raise PublicationError("commit must be standalone without context-changing wrappers", reason_code='COMMAND_FORM_UNSUPPORTED')
     args = commands[0][2:]
     if any('$' in word or '`' in word or '\0' in word for word in args):
-        raise PublicationError("commit message/file must be literal without shell expansion")
+        raise PublicationError("commit message/file must be literal without shell expansion", reason_code='PUBLICATION_INPUT_UNBOUND')
     # Alternate index/worktree environment can change what Git commits.
     if any(os.environ.get(key) for key in ['GIT_INDEX_FILE', 'GIT_DIR', 'GIT_WORK_TREE']):
-        raise PublicationError("alternate Git commit environment unsupported")
+        raise PublicationError("alternate Git commit environment unsupported", reason_code='ALTERNATE_GIT_ENVIRONMENT')
     messages = []
     i = 0
     while i < len(args):
         word = args[i]
         if word in {'-m', '--message', '-F', '--file'}:
             if i + 1 >= len(args):
-                raise PublicationError("commit message value missing")
+                raise PublicationError("commit message value missing", reason_code='PUBLICATION_OPTION_INVALID')
             value = args[i + 1]
             if word in {'-F', '--file'}:
                 if value == '-':
-                    raise PublicationError("stdin commit message cannot be inspected")
+                    raise PublicationError("stdin commit message cannot be inspected", reason_code='CONTENT_INSPECTION_UNAVAILABLE')
                 value = (cwd / value).read_text()
             messages.append(value)
             i += 2
@@ -364,9 +364,9 @@ def commit_safety(cwd: Path, command: str) -> dict:
             i += 1
         else:
             # -a, --only, --amend, re-use/editor messages and path selection change the candidate.
-            raise PublicationError("unsupported commit option requires an explicit inspected staged commit")
+            raise PublicationError("unsupported commit option requires an explicit inspected staged commit", reason_code='COMMAND_FORM_UNSUPPORTED')
     if not messages:
-        raise PublicationError("explicit commit message required")
+        raise PublicationError("explicit commit message required", reason_code='PUBLICATION_INPUT_UNBOUND')
     message = '\n\n'.join(messages)
     original = scan_payload(message, sink='git_commit')
     if any(item.type == 'SECRET' and item.action == 'BLOCK' for item in original):
@@ -408,6 +408,45 @@ def commit_safety(cwd: Path, command: str) -> dict:
     return safety
 
 
+def _record_publication_diagnostic(diagnostic: dict[str, Any], runtime: str) -> str:
+    """Append only allowlisted publication diagnostics to the opt-in existing ledger."""
+    try:
+        from publication_diagnostics import record_diagnostic
+        status = record_diagnostic(diagnostic, runtime)
+        if status == 'FAILED':
+            logger.warning('Optional publication diagnostic trace failed')
+        return status
+    except Exception:
+        logger.warning('Optional publication diagnostic trace failed')
+        return 'FAILED'
+
+
+def _hook_binding(cwd: Path, command: str, mode: str) -> dict[str, str] | None:
+    try:
+        from publication_commands import shell_commands
+        parsed = shell_commands(command)
+        if len(parsed) != 1:
+            return None
+        argv = parsed[0]
+        target_ref = ''
+        if argv[:2] == ['git', 'push']:
+            args = argv[2:]
+            while args and args[0].startswith('-'):
+                args = args[1:]
+            if len(args) == 2 and ':' in args[1]:
+                target_ref = args[1].split(':', 1)[1]
+        elif argv[:3] == ['gh', 'pr', 'create'] and '--base' in argv:
+            target_ref = 'refs/heads/' + argv[argv.index('--base') + 1]
+        if not target_ref.startswith('refs/heads/'):
+            return None
+        head = subprocess.run(['git', 'rev-parse', 'HEAD^{commit}'], cwd=cwd,
+                              capture_output=True, text=True, timeout=5, check=True).stdout.strip()
+        from publication_authority import runtime_binding
+        return runtime_binding(cwd, candidate_sha=head, target_ref=target_ref, mode=mode)
+    except Exception:
+        return None
+
+
 def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None = None) -> int:
     """Return the runtime's normal deny envelope without echoing input data."""
     reason_messages = {
@@ -434,10 +473,14 @@ def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None
     detail += " [" + reason + "]"
     if diagnostic is None:
         diagnostic = PublicationError("", reason).diagnostic()
+    trace_status = _record_publication_diagnostic(diagnostic, runtime)
     safe_fields = {key: diagnostic.get(key) for key in
-                   ("diagnostic_id", "reason_code", "phase", "category", "detail",
-                    "retryable", "recovery_mode", "next_step")}
-    safe_fields.update({"authorized": False, "executed": False})
+                   ("diagnostic_id", "reason_code", "phase", "category", "detail", "detail_zh",
+                    "blocking_rule", "blocking_rule_id", "source", "retryable", "recovery_mode", "next_step", "next_step_zh")}
+    if diagnostic.get('binding'):
+        safe_fields['binding'] = diagnostic['binding']
+    safe_fields.update({"authorization_status": "DENIED", "execution_status": "NOT_EXECUTED",
+                        "authorized": False, "executed": False, "trace_status": trace_status})
     detail += " [phase=" + str(safe_fields.get("phase") or "unknown") + \
               "; diagnostic_id=" + str(safe_fields.get("diagnostic_id") or "unavailable") + "]"
     context = "AIPS diagnostic: " + json.dumps(safe_fields, ensure_ascii=False, separators=(",", ":"))
@@ -483,6 +526,7 @@ def retryable_doctor_observation(cwd: Path) -> dict[str, Any]:
 
 
 def hook(runtime: str) -> int:
+    mode = 'unknown'
     try:
         payload = json.load(sys.stdin)
     except (json.JSONDecodeError, UnicodeDecodeError):
@@ -617,12 +661,12 @@ def hook(runtime: str) -> int:
                 from publication_commands import shell_commands
                 parsed = shell_commands(command)
                 if len(parsed) != 1 or len(approval_operations) != 1:
-                    raise PublicationError('one standalone publication operation required')
+                    raise PublicationError('one standalone publication operation required', reason_code='COMMAND_FORM_UNSUPPORTED')
                 publication = validate_personal_action(cwd, approval_operations[0], parsed[0])
                 if approval_operations[0] == 'gh_pr_merge':
                     merge_confirmation = publication.get('merge_confirmation')
                     if not merge_confirmation:
-                        raise PublicationError('merge confirmation binding unavailable')
+                        raise PublicationError('merge confirmation binding unavailable', reason_code='AUTHORITY_VALIDATION_MISSING')
                     names = ', '.join(merge_confirmation['required_checks']) or 'none reported'
                     reason = (
                         f"GitHub will enable auto-merge for PR #{merge_confirmation['pr_number']} in {publication['github_repo']} "
@@ -647,14 +691,22 @@ def hook(runtime: str) -> int:
             logger.warning("Approval verification failed closed: %s", type(exc).__name__)
             if isinstance(exc, ValueError) and hasattr(exc, 'diagnostic'):
                 diagnostic = exc.diagnostic()
-                hook_diagnostic = diagnostic
-                if (runtime == "claude-code" and diagnostic.get("retryable") is True and
-                        diagnostic.get("category") in {"NETWORK", "RATE_LIMITED", "GITHUB_SERVER_ERROR"}):
-                    hook_diagnostic["doctor_observation"] = retryable_doctor_observation(cwd)
-                reason = diagnostic['reason_code'] + ': ' + diagnostic['detail'] + ' ' + diagnostic['next_step']
             else:
-                reason = "publication authorization failed (" + type(exc).__name__ + ")"
+                diagnostic = PublicationError(
+                    'unclassified publication authorization failure', 'INTERNAL_DIAGNOSTIC_GAP',
+                    context={'error_class': type(exc).__name__}, phase='hook_authorization').diagnostic()
+            binding = _hook_binding(cwd, command, mode)
+            if binding:
+                diagnostic['binding'] = binding
+            hook_diagnostic = diagnostic
+            if (runtime == "claude-code" and diagnostic.get("retryable") is True and
+                    diagnostic.get("category") in {"NETWORK", "RATE_LIMITED", "GITHUB_SERVER_ERROR"}):
+                hook_diagnostic["doctor_observation"] = retryable_doctor_observation(cwd)
+            reason = diagnostic['reason_code'] + ': ' + diagnostic['detail'] + ' ' + diagnostic['next_step']
 
+    if hook_diagnostic:
+        hook_diagnostic['trace_status'] = _record_publication_diagnostic(hook_diagnostic, runtime)
+    success_binding = _hook_binding(cwd, command, mode) if ok and approval_operations else None
     if runtime == "claude-code":
         claude_auto_merge = bool(merge_confirmation and merge_confirmation.get('auto_merge'))
         print(json.dumps({"hookSpecificOutput": {
@@ -664,12 +716,25 @@ def hook(runtime: str) -> int:
                 (" [phase=" + str(hook_diagnostic.get("phase")) + "; diagnostic_id=" +
                  str(hook_diagnostic.get("diagnostic_id")) + "]" if hook_diagnostic else ""),
             **({"additionalContext": "AIPS diagnostic: " + json.dumps({key: hook_diagnostic.get(key) for key in
-                ("diagnostic_id", "reason_code", "phase", "category", "detail", "retryable",
-                 "recovery_mode", "next_step", "doctor_observation")}, ensure_ascii=False, separators=(",", ":")) +
-                "; authorized=false; executed=false"} if hook_diagnostic else {}),
+                ("diagnostic_id", "reason_code", "phase", "category", "detail", "detail_zh",
+                 "blocking_rule", "blocking_rule_id", "source", "retryable",
+                 "recovery_mode", "next_step", "next_step_zh", "doctor_observation",
+                 "binding", "trace_status")}, ensure_ascii=False, separators=(",", ":")) +
+                "; authorization_status=DENIED; execution_status=NOT_EXECUTED"} if hook_diagnostic else
+               {"additionalContext": "AIPS publication: " + json.dumps({
+                   'status': 'AUTHORIZED', 'authorized': True,
+                   'host_decision': 'NOT_EVALUATED', 'execution_status': 'NOT_EXECUTED',
+                   'executed': False, 'binding': success_binding,
+               }, ensure_ascii=False, separators=(",", ":"))} if ok and approval_operations else {}),
         }}))
     else:
         result = {"decision": "allow" if ok else "deny"}
+        if ok and approval_operations:
+            result['publication'] = {
+                'status': 'AUTHORIZED', 'authorized': True,
+                'host_decision': 'NOT_EVALUATED', 'execution_status': 'NOT_EXECUTED',
+                'executed': False, 'binding': success_binding,
+            }
         if ok and merge_confirmation:
             result['systemMessage'] = 'AIPS per-merge confirmation: ' + reason
         if not ok:

@@ -18,6 +18,8 @@ Publication diagnostics are documented at the canonical Human and Agent topics, 
 
 Cross-document publication diagnostics changes must keep the Human, Agent adapter and CLI guidance aligned, then close the required documentation impact set before publication. Do not interpret an absent gh required-check result as PENDING without independent policy evidence; unavailable policy is fail-closed. Extend stable reason codes without leaking exception text, and keep Host-denial observations separate from native permission proof.
 
+Plan40 keeps known `PublicationError` causes on explicit stable codes and classifies unknown implementation failures as `INTERNAL_DIAGNOSTIC_GAP` with a safe error class. Prepare and Hook compare only allowlisted worktree/candidate/ref/mode/runtime observations. Optional Diagnostic ID traces use the existing configured `AIPS_GOVERNANCE_AUDIT_LEDGER`; lookup verifies chain integrity, and append failure never changes authorization. Do not create a default ledger or treat `PLANNED`, `next_step: PUSH`, or an observation fingerprint as authority.
+
 新增 Skill 或改動 routing 時，同步更新 generated Skill Explorer、文件 placement/sync 規則、Scenario 259 與相關 Human/Agent 章節；使用 `scripts/skill_catalog.py` 重建頁面。
 
 發布恢復使用 `aips publish prepare` 重新觀察目前候選與 live GitHub 狀態；既有 OPEN PR 不再建立，CLOSED/歧義 PR 停止，MERGED 必須驗證 exact PR head 與 merge commit 已納入 live base。觀察只由呼叫者選擇保存，不儲存 prompt、body 內容或憑證。
@@ -506,6 +508,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+Plan40 adds publication-diagnostic evidence without changing independent-review attestation or Skill Explorer routing; the exact-candidate repository Gate remains required for both existing boundaries.
 
 Scenario 259 remains the independent contract for upstream Skill inventory and projection ownership; creative presets do not change its registry or install path.
 

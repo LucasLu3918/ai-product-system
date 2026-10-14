@@ -1,71 +1,84 @@
 version: 1
 change:
-  id: plan39-comfyui-resource-auth
-  summary: 'Fail-closed Resource Authorization profile/grant matching, fixed local ComfyUI read-only discovery, normalized redacted diagnostics, shared creative presets, and evidence-ranked Apple Silicon/MPS compatibility guidance.'
+  id: plan40-publication-diagnostics
+  summary: 'Preserve explicit publication rejection causes, compare safe Prepare/Hook observations and lifecycle state, and optionally trace Diagnostic IDs through the existing configured audit ledger.'
   boundary:
-  - Resource Authorization profile resolution and selector/kind/operation/destination/constraint enforcement
-  - Runtime Policy Action profile binding and structured safe denial diagnostics
-  - Fixed loopback ComfyUI read-only capability/model inventory and HTTP boundary enforcement
-  - Existing independent authorization and workflow validation for generation; no external download or custom nodes
-  - Creative character/background/texture/UI ornament presets and manifest/review/quality flow
-  - Static MPS/model precision evidence only; inference remains unverified until observed
-  - CLI/schema/scenario/coverage/documentation placement/sync and Human architecture/usage guidance
-  - User Mac authorization state and actual local Hook root cause remain outside evidence
+  - Explicit stable reason codes and redacted internal diagnostic gaps across PublicationError call sites
+  - Candidate/worktree/ref/mode/runtime observation binding shared by Prepare and PreToolUse; observational only
+  - Distinct planning, authority, Host decision, and execution states
+  - Optional allowlisted Diagnostic ID event append/lookup through the existing governance audit ledger
+  - Focused tests, Scenario 261, CLI and Human/Claude documentation updates
 matrix:
-- boundary: Resource Authorization profile lifecycle and exact grant scope
-  reason: Missing or mismatched profiles/grants must remain default-deny with stage-specific safe explanations.
+- boundary: Stable publication error classification and Traditional Chinese recovery
+  reason: Known denials need a stable machine-readable cause and safe actionable recovery; unknown implementation errors must not collapse into PUBLICATION_REJECTED or expose raw details.
   checks:
-    static_lint: {applicable: true, evidence: "scripts/validation syntax contracts and exact-candidate repository Integration Gate"}
-    unit: {applicable: true, evidence: "tests/test_runtime_policy.py plus Resource Authorization lifecycle assertions"}
-    integration: {applicable: true, evidence: "tests/evidence/resource_authorization_lifecycle.py, tests/evidence/runtime_policy_lifecycle.py, Gemini observed-event and anomaly lifecycle regression"}
-    contract: {applicable: true, evidence: "tests/validation/resource_authorization_contracts.py and runtime_policy_contracts.py"}
-    e2e: {applicable: false, na_reason: No deployed UI; deterministic CLI and runtime fixtures cover the boundary.}
-    security: {applicable: true, evidence: "missing/invalid Profile, default-deny and grant kind/selector/operation/destination/constraint negative cases; exact-candidate secret scan"}
-    migration_recovery: {applicable: false, na_reason: No persistent user profile migration; the user's machine configuration is not modified.}
-    cli_harness: {applicable: true, evidence: "resource authorization CLI lifecycle and observed Hook URL binding fixtures"}
-    docs_schema: {applicable: true, evidence: "resource authorization schemas, Scenario 262, Issue #79 Trial evidence and Human Evolution Radar placement/sync preview"}
-- boundary: Runtime Policy error classification and redaction
-  reason: Profile-source distinctions and HTTP/provider diagnostics must be stable and useful without leaking paths, credentials, headers, or raw bodies.
+    static_lint: {applicable: true, evidence: "Python syntax checks and exact-candidate Integration Gate"}
+    unit: {applicable: true, evidence: "tests/test_publication_authority.py reason-code, phase, blocker, redaction and unknown-gap assertions"}
+    integration: {applicable: true, evidence: "tests/test_publication_planning.py and tests/test_publication_error_recovery.py"}
+    contract: {applicable: true, evidence: "Stable diagnostic JSON fields asserted by publication unit/integration tests; no external diagnostic schema is introduced"}
+    e2e: {applicable: true, evidence: "tests/test_publication_diagnostics.py simulated PreToolUse denial preserves exact reason and safe recovery context"}
+    security: {applicable: true, evidence: "Credential, raw exception, command and path redaction; exact-candidate secret scan"}
+    migration_recovery: {applicable: false, na_reason: "Reason fields are additive; no persisted schema migration."}
+    cli_harness: {applicable: true, evidence: "Claude Code Hook output and publication diagnose CLI tests"}
+    docs_schema: {applicable: true, evidence: "Scenario 261 and scenario_coverage.yaml; complete recursive documentation closure in Architecture, Security Assurance, User Guide, Maintenance, Technology Guide, Installation, Harness, Claude/OpenCode adapters, Conformance, Creative Direction and linked orchestration contracts"}
+- boundary: Prepare and Hook observation binding and lifecycle clarity
+  reason: Prepare and native Hook reobserve independently; safe comparison must show drift without turning an observation into authority.
   checks:
-    static_lint: {applicable: true, evidence: "scripts/validation syntax contracts and exact-candidate repository Integration Gate"}
-    unit: {applicable: true, evidence: "tests/test_runtime_policy.py structured fields and denial/redaction assertions"}
-    integration: {applicable: true, evidence: "tests/evidence/runtime_policy_lifecycle.py Hook request lifecycle"}
-    contract: {applicable: true, evidence: "tests/validation/runtime_policy_contracts.py schema/adapter/docs contract"}
-    e2e: {applicable: false, na_reason: No deployed UI; deterministic local actions exercise the output contract.}
-    security: {applicable: true, evidence: "authorization/profile source distinction and diagnostic credential/path/body redaction cases; exact-candidate secret scan"}
-    migration_recovery: {applicable: false, na_reason: No persisted diagnostic history or migration is introduced.}
-    cli_harness: {applicable: true, evidence: "Runtime Policy native Hook lifecycle and CLI output checks"}
-    docs_schema: {applicable: true, evidence: "runtime-action.yaml, Runtime Policy human docs, Scenario 262 and generated Conformance summary and history index validation"}
-- boundary: Local ComfyUI read-only discovery and network boundary
-  reason: Only the fixed loopback service on port 8188 and fixed GET paths may be probed; redirects and arbitrary destinations remain blocked.
+    static_lint: {applicable: true, evidence: "Python syntax checks and exact-candidate Integration Gate"}
+    unit: {applicable: true, evidence: "tests/test_publication_authority.py runtime binding and tests/test_publication_planning.py lifecycle/binding assertions"}
+    integration: {applicable: true, evidence: "tests/test_publication_planning.py Prepare/diagnose fixtures and tests/test_publication_diagnostics.py Hook simulation"}
+    contract: {applicable: true, evidence: "Additive candidate, authorization and execution JSON contracts asserted in tests"}
+    e2e: {applicable: true, evidence: "Simulated Prepare/diagnose and Claude PreToolUse contracts compare candidate identity without executing Git push"}
+    security: {applicable: true, evidence: "Allowlisted hashes, SHA, full target ref, mode and runtime version; no path/command in binding; Human/Host negatives retained"}
+    migration_recovery: {applicable: false, na_reason: "Output fields are additive and carry no persisted state."}
+    cli_harness: {applicable: true, evidence: "aips publish prepare, diagnose and native Hook fixture"}
+    docs_schema: {applicable: true, evidence: "Scenario 261 and synchronized Human/Claude/OpenCode lifecycle guidance; Architecture, Harness, Installation, Security Assurance and authorization/execution boundary documents"}
+- boundary: Optional Diagnostic ID trace and verified read-only lookup
+  reason: A Diagnostic ID should resolve to a safely masked event when the existing ledger is explicitly configured, without creating a second default store or affecting allow/deny.
   checks:
-    static_lint: {applicable: true, evidence: "scripts/validation syntax contracts and exact-candidate repository Integration Gate"}
-    unit: {applicable: true, evidence: "Creative prompt preset, model catalog, error-envelope and MPS metadata assertions"}
-    integration: {applicable: true, evidence: "tests/evidence/creative_execution_lifecycle.py fake MFLUX and loopback ComfyUI fixtures"}
-    contract: {applicable: true, evidence: "tests/validation/creative_execution_contracts.py plus generate-set lifecycle"}
-    e2e: {applicable: false, na_reason: The user's ComfyUI instance is not contacted; fixtures prove the HTTP contract.}
-    security: {applicable: true, evidence: "loopback/port/method/path, redirect, external destination, HTTP 4xx/5xx and redaction fixtures; no generation/download"}
-    migration_recovery: {applicable: false, na_reason: Read-only discovery adds no stored state.}
-    cli_harness: {applicable: true, evidence: "native creative tool callback fixture plus read-only discovery/preflight CLI paths"}
-    docs_schema: {applicable: true, evidence: "CREATIVE_ASSET_PRESETS.yaml, Bundle/Manifest, Scenario 262 and generated Conformance summary and history index validation"}
-- boundary: Creative presets and Apple Silicon/model compatibility evidence
-  reason: Presets must retain existing explicit generation controls; static dtype observations must not imply verified MPS inference.
-  checks:
-    static_lint: {applicable: true, evidence: "scripts/validation syntax contracts and exact-candidate repository Integration Gate"}
-    unit: {applicable: true, evidence: "Creative prompt preset, model catalog, error-envelope and MPS metadata assertions"}
-    integration: {applicable: true, evidence: "tests/evidence/creative_execution_lifecycle.py fake MFLUX and loopback ComfyUI fixtures"}
-    contract: {applicable: true, evidence: "tests/validation/creative_execution_contracts.py plus generate-set lifecycle"}
-    e2e: {applicable: false, na_reason: No image generation is performed; deterministic preset and preflight contracts are used.}
-    security: {applicable: true, evidence: "loopback/port/method/path, redirect, external destination, HTTP 4xx/5xx and redaction fixtures; no generation/download"}
-    migration_recovery: {applicable: false, na_reason: Existing Bundle/Manifest additions remain additive with backward-compatible defaults.}
-    cli_harness: {applicable: true, evidence: "native creative tool callback fixture plus read-only discovery/preflight CLI paths"}
-    docs_schema: {applicable: true, evidence: "CREATIVE_ASSET_PRESETS.yaml, Bundle/Manifest, Scenario 262 and generated Conformance summary and history index validation"}
+    static_lint: {applicable: true, evidence: "Python syntax checks and exact-candidate Integration Gate"}
+    unit: {applicable: true, evidence: "tests/test_governance_audit.py allowlist, chain verification and not-found cases"}
+    integration: {applicable: true, evidence: "tests/test_publication_diagnostics.py configured/unconfigured/failed trace cases"}
+    contract: {applicable: true, evidence: "Lookup JSON status, integrity and allowlisted event shape asserted in tests"}
+    e2e: {applicable: true, evidence: "Subprocess invocation of publish diagnose --diagnostic-id reads the verified existing ledger event"}
+    security: {applicable: true, evidence: "No default ledger; nested binding/event allowlists; chain verification; write failure cannot change Hook decision"}
+    migration_recovery: {applicable: false, na_reason: "Existing governance audit ledger format is reused without schema migration or default creation."}
+    cli_harness: {applicable: true, evidence: "scripts/publish_preflight.py diagnose --diagnostic-id CLI lifecycle test"}
+    docs_schema: {applicable: true, evidence: "CLI help, Scenario 261, Human/Claude/OpenCode opt-in ledger guidance, Documentation Map/Sync and complete recursive publication-preflight closure"}
 scope_recomputed_after_expansion: true
+documentation_impact_complete: true
+documentation_closure_approved:
+  - docs/ARCHITECTURE.md
+  - docs/human/ARCHITECTURE_OVERVIEW.md
+  - docs/human/CONFORMANCE.md
+  - docs/human/DOCUMENTATION_MAP.md
+  - docs/human/DOCUMENTATION_SYNC.md
+  - docs/human/HARNESS.md
+  - docs/human/INSTALLATION.md
+  - docs/human/MAINTENANCE.md
+  - docs/human/SECURITY_ASSURANCE.md
+  - docs/human/TECHNOLOGY_GUIDE.md
+  - docs/human/USER_GUIDE.md
+  - docs/human/index.md
+  - harness/HARNESS_PROTOCOL.md
+  - harness/adapters/claude-code/CLAUDE.md
+  - harness/adapters/opencode/AGENTS.md
+  - harness/adapters/opencode/COMPATIBILITY.md
+  - orchestration/CONFORMANCE.md
+  - orchestration/CORE_CHANGE_TESTING.md
+  - orchestration/CREATIVE_DIRECTION.md
+  - orchestration/DETERMINISTIC_SCHEDULER.md
+  - orchestration/DOCUMENTATION_SYNC.md
+  - orchestration/EXECUTION_ISOLATION.md
+  - orchestration/INTEGRATION_GATE.md
+  - orchestration/ORCHESTRATOR.md
+  - orchestration/RESOURCE_AUTHORIZATION.md
+  - orchestration/RUNTIME_POLICY_ENFORCEMENT.md
 actual_diff_reconciled: true
 blockers: []
 status: READY
 review_evidence:
   required: false
 candidate:
-  base_sha: f93c43149175ed5a6394d68a6e72742e83256a44
-  changed_files_hash: abeb66b89f5a9dbfa13b8c000349de4e94bb46700634fd2337f5f558a1d7ac47
+  base_sha: c2cc2136a48237177e30ceb71984cce5d75a34f4
+  changed_files_hash: c934fee5d91385ac538b3c2a774be2a32a851dd7cd56190ee61b8f6f7794574e

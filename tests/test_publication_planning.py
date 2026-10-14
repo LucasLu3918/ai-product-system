@@ -253,6 +253,41 @@ class PlanningTest(unittest.TestCase):
             with self.subTest(command=command):
                 self.assertEqual(planning.diagnose(self.repo, command)['diagnostics'][0]['reason_code'], code)
 
+    def test_push_target_must_match_current_engineering_branch(self):
+        command = 'git push origin ' + self.head + ':refs/heads/codex/another-branch'
+        result = planning.diagnose(self.repo, command)
+        self.assertEqual(result['status'], 'BLOCKED', result)
+        self.assertEqual(result['diagnostics'][0]['reason_code'], 'PUSH_TARGET_BRANCH_MISMATCH')
+        self.assertEqual(result['diagnostics'][0]['phase'], 'push_validation')
+
+    def test_prepare_exposes_lifecycle_and_safe_candidate_binding(self):
+        result = self.prepare()
+        self.assertEqual(result['status'], 'PLANNED', result)
+        self.assertEqual(result['authorization']['status'], 'NOT_GRANTED')
+        self.assertFalse(result['authorization']['authorized'])
+        self.assertEqual(result['execution'], {
+            'status': 'NOT_EXECUTED', 'attempted': False, 'completed': False})
+        candidate = result['candidate']
+        self.assertEqual(candidate['candidate_sha'], self.head)
+        self.assertEqual(candidate['worktree_id'], result['observation']['worktree_id'])
+        self.assertEqual(candidate['target_ref'], 'refs/heads/codex/plan30')
+        self.assertIn('runtime_version', candidate)
+        self.assertIn('runtime_revision', candidate)
+        self.assertTrue(candidate['binding_fingerprint'])
+
+    def test_read_only_diagnose_exposes_same_candidate_binding_and_not_authorized(self):
+        command = 'git push origin ' + self.head + ':refs/heads/codex/plan30'
+        result = planning.diagnose(self.repo, command)
+        self.assertEqual(result['status'], 'VALIDATED', result)
+        self.assertEqual(result['authorization']['status'], 'NOT_GRANTED')
+        self.assertFalse(result['authorization']['authorized'])
+        self.assertEqual(result['execution']['status'], 'NOT_EXECUTED')
+        candidate = result['candidate']
+        self.assertEqual(candidate['candidate_sha'], self.head)
+        self.assertEqual(candidate['target_ref'], 'refs/heads/codex/plan30')
+        self.assertEqual(candidate['runtime_revision'], planning.authority.git(
+            ROOT, 'rev-parse', 'HEAD^{commit}'))
+
     def test_high_assurance_diagnose_requires_lease_before_grant(self):
         command = 'git push origin ' + self.head + ':refs/heads/codex/plan30'
         with patch.object(auth, 'publication_mode', return_value='high_assurance'), \

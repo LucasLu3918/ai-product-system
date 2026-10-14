@@ -56,6 +56,46 @@ def read_ledger(path: Path) -> list[dict[str, Any]]:
         events.append(item)
     return events
 
+
+DIAGNOSTIC_EVENT_FIELDS = (
+    'diagnostic_id', 'reason_code', 'phase', 'source', 'blocking_rule_id',
+    'authorized', 'executed', 'actor', 'binding', 'occurred_at', 'sequence', 'event_id',
+)
+
+
+def find_diagnostic(path: Path, diagnostic_id: str) -> dict[str, Any]:
+    """Read one allowlisted publication diagnostic and verify its ledger chain."""
+    if not re.fullmatch(r'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}', diagnostic_id):
+        raise ValueError('diagnostic_id must be a UUID')
+    events = read_ledger(path)
+    verification = verify_events(events)
+    integrity = {
+        'status': verification['status'],
+        'events': verification['events'],
+        'chain_head': verification['chain_head'],
+    }
+    if verification['status'] != 'PASS':
+        return {'status': 'INTEGRITY_FAILED', 'diagnostic_id': diagnostic_id,
+                'event': None, 'integrity': integrity}
+    for event in reversed(events):
+        if event.get('event_type') == 'PUBLICATION_DIAGNOSTIC' and event.get('diagnostic_id') == diagnostic_id:
+            safe = {key: event[key] for key in DIAGNOSTIC_EVENT_FIELDS
+                    if key in event and key not in {'binding', 'actor'}}
+            raw_binding = event.get('binding')
+            if isinstance(raw_binding, dict):
+                allowed_binding = ('worktree_id', 'candidate_sha', 'target_ref', 'mode',
+                                   'runtime_version', 'runtime_revision', 'binding_fingerprint')
+                safe['binding'] = {key: raw_binding[key] for key in allowed_binding
+                                   if isinstance(raw_binding.get(key), str) and len(raw_binding[key]) <= 200}
+            raw_actor = event.get('actor')
+            if isinstance(raw_actor, dict) and raw_actor.get('type') == 'runtime' and raw_actor.get('id') in {
+                    'claude-code', 'codex', 'gemini-cli', 'opencode'}:
+                safe['actor'] = {'type': 'runtime', 'id': raw_actor['id']}
+            return {'status': 'FOUND', 'diagnostic_id': diagnostic_id,
+                    'event': safe, 'integrity': integrity}
+    return {'status': 'NOT_FOUND', 'diagnostic_id': diagnostic_id,
+            'event': None, 'integrity': integrity}
+
 def event_payload(event: dict[str, Any]) -> dict[str, Any]:
     return {k: v for k, v in event.items() if k != "integrity"}
 

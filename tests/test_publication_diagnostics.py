@@ -13,7 +13,9 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 import governance_guard
 import publication_diagnostics as diagnostics
+import publication_authority as authority
 import repository_governance_snapshot as governance_snapshot
+import governance_audit
 
 
 class PublicationDiagnosticsTest(unittest.TestCase):
@@ -213,7 +215,90 @@ class PublicationDiagnosticsTest(unittest.TestCase):
         self.assertIn('"reason_code":"REMOTE_OBSERVATION_FAILED"', context)
         self.assertIn('"authorized":false', context)
         self.assertIn('"executed":false', context)
+        self.assertIn('"authorization_status":"DENIED"', context)
+        self.assertIn('"source":"AIPS_PUBLICATION"', context)
         self.assertNotIn("command", context)
+
+    def test_hook_optional_trace_failure_never_changes_block_decision(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+
+        output = StringIO()
+        with patch.dict(os.environ, {'AIPS_GOVERNANCE_AUDIT_LEDGER': '/unwritable/ledger.jsonl'}), \
+                patch('governance_audit.append_event', side_effect=OSError('private path')):
+            with redirect_stdout(output):
+                governance_guard.deny_hook_input('claude-code', 'REMOTE_OBSERVATION_FAILED')
+        payload = json.loads(output.getvalue())['hookSpecificOutput']
+        self.assertEqual(payload['permissionDecision'], 'deny')
+        self.assertIn('"trace_status":"FAILED"', payload['additionalContext'])
+
+    def test_pretool_hook_denial_preserves_specific_reason_and_binding(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+
+        (self.root / 'candidate.txt').write_text('candidate\n')
+        subprocess.run(['git', 'add', '.'], cwd=self.root, check=True, capture_output=True)
+        fixture_email = subprocess.run(['git', 'config', '--get', 'user.email'], cwd=ROOT,
+                                       check=True, capture_output=True, text=True).stdout.strip()
+        subprocess.run(['git', '-c', 'user.name=Fixture', '-c', f'user.email={fixture_email}',
+                        'commit', '-m', 'fixture'], cwd=self.root, check=True, capture_output=True)
+        head = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=self.root, check=True,
+                              capture_output=True, text=True).stdout.strip()
+        command = 'git push origin ' + head + ':refs/heads/codex/wrong-target'
+        payload = {'cwd': str(self.root), 'tool_input': {'command': command}}
+        output = StringIO()
+        hook_env = dict(os.environ)
+        for key in list(hook_env):
+            if key.startswith('GIT_CONFIG_') or key in {'GIT_DIR', 'GIT_WORK_TREE', 'GIT_INDEX_FILE'}:
+                hook_env.pop(key, None)
+        with patch('sys.stdin', StringIO(json.dumps(payload))), \
+                patch.dict(os.environ, hook_env, clear=True), \
+                patch.dict(os.environ, {'AIPS_GOVERNANCE_AUDIT_LEDGER': ''}), \
+                patch('publication_authority.publication_mode', return_value='personal'), \
+                patch('publication_authority.validate_personal_action', side_effect=
+                      authority.PublicationError(
+                          'personal mode permits only the current engineering branch',
+                          'PUSH_TARGET_BRANCH_MISMATCH', phase='push_validation')):
+            with redirect_stdout(output):
+                governance_guard.hook('claude-code')
+        hook = json.loads(output.getvalue())['hookSpecificOutput']
+        self.assertEqual(hook['permissionDecision'], 'deny')
+        self.assertIn('PUSH_TARGET_BRANCH_MISMATCH', hook['permissionDecisionReason'])
+        context = hook['additionalContext']
+        self.assertIn('"candidate_sha":"' + head + '"', context)
+        self.assertIn('"target_ref":"refs/heads/codex/wrong-target"', context)
+        self.assertIn('"runtime_version":"0.83.0"', context)
+        self.assertIn('authorization_status=DENIED', context)
+
+    def test_diagnostic_lookup_is_explicitly_unconfigured_by_default(self):
+        with patch.dict(os.environ, {'AIPS_GOVERNANCE_AUDIT_LEDGER': ''}):
+            result = diagnostics.lookup_diagnostic('d2fd1f72-9781-4a52-b220-d474b7e94b2f')
+        self.assertEqual(result['status'], 'NOT_CONFIGURED')
+        self.assertIn('不會自動建立 ledger', result['next_step_zh'])
+
+    def test_diagnostic_id_cli_reads_allowlisted_existing_ledger_event(self):
+        ledger = self.root / 'diagnostics.jsonl'
+        diagnostic_id = 'd2fd1f72-9781-4a52-b220-d474b7e94b2f'
+        governance_audit.append_event(ledger, {
+            'event_type': 'PUBLICATION_DIAGNOSTIC',
+            'occurred_at': '2026-10-14T00:00:00Z',
+            'diagnostic_id': diagnostic_id,
+            'reason_code': 'PUSH_TARGET_BRANCH_MISMATCH',
+            'phase': 'push_validation',
+            'source': 'AIPS_PUBLICATION',
+            'blocking_rule_id': 'PUSH_TARGET_BRANCH_MISMATCH',
+            'raw_command': 'must not be returned',
+        })
+        env = dict(os.environ, AIPS_GOVERNANCE_AUDIT_LEDGER=str(ledger))
+        result = subprocess.run([
+            sys.executable, str(ROOT / 'scripts/publish_preflight.py'), 'diagnose',
+            '--diagnostic-id', diagnostic_id, '--format', 'json'],
+            cwd=ROOT, env=env, capture_output=True, text=True, check=True)
+        payload = json.loads(result.stdout)
+        self.assertEqual(payload['status'], 'FOUND')
+        self.assertEqual(payload['integrity']['status'], 'PASS')
+        self.assertEqual(payload['event']['reason_code'], 'PUSH_TARGET_BRANCH_MISMATCH')
+        self.assertNotIn('raw_command', payload['event'])
 
     def test_claude_hook_runs_one_read_only_doctor_only_for_retryable_remote_failure(self):
         from contextlib import redirect_stdout
@@ -241,6 +326,7 @@ class PublicationDiagnosticsTest(unittest.TestCase):
                 patch("publication_authority.validate_personal_action", side_effect=PublicationError(
                     "private details", "REQUIRED_CHECKS_POLICY_NETWORK", phase="protection_policy_evidence")), \
                 patch.object(governance_guard.subprocess, "run", side_effect=run), \
+                patch.dict(os.environ, {'AIPS_GOVERNANCE_AUDIT_LEDGER': ''}), \
                 patch.object(governance_guard.sys, "stdin", StringIO(json.dumps({"cwd": str(self.root),
                     "tool_input": {"command": command}}))), \
                 redirect_stdout(output):

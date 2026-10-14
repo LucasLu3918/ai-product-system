@@ -221,6 +221,8 @@ Publication diagnostics changes derive tests for every Required Checks state, AP
 
 ## Publication Root-Cause Recovery (Plan35)
 
+Plan40's matrix binds explicit publication reason codes, redacted error gaps, Prepare/Hook candidate observations, lifecycle-state separation and optional verified Diagnostic ID lookup to the exact candidate. Optional ledger failure is covered as a non-authorizing side effect.
+
 Publication diagnosis changes require focused unit/evidence suites, Scenario 260, full Documentation Impact closure, security and redaction regression, exact-candidate Gate, and separate native Claude Host verification.
 
 Publication diagnostic Core changes cover API 401/403/404 and malformed evidence, branch existence plus effective-rules semantics, optional ruleset/classic-protection failures, dirty staged/modified/deleted/untracked paths, reason-code/phase/source contracts, redaction, PR lifecycle and exact-head merged idempotency. Negative cases must prove no diagnostic grants authority or mutates the worktree.

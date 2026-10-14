@@ -1721,6 +1721,8 @@ Diagnostic recommendations remain read-only and conditional.
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+The additive `aips publish diagnose --diagnostic-id` route preserves the existing CLI help contract and returns only the verified, allowlisted ledger event when a ledger is configured.
+
 Scenario 233 retains public CLI argument and error compatibility; the structured Creative and Runtime errors added in Scenario 262 do not change its command surface.
 
 The publication Doctor command keeps its structured JSON status and safe reason-code contract while policy visibility now distinguishes permission-hidden state.
@@ -1796,6 +1798,8 @@ The cross-profile quality evidence extension is covered by Scenario 258; this cr
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Scenario 261 publication diagnostics do not change the pinned upstream Skill inventory, installation eligibility, or the canonical-only default listing.
+
 Scenario 259 retains the pinned upstream inventory, disposition and projection ownership checks; this Creative Runtime change does not alter Skill inventory or installation behavior.
 
 The read-only Skill Explorer and upstream Skill routing are unchanged by the publication diagnostics release.
@@ -1842,6 +1846,8 @@ Publication diagnostics observe policy on the remote default branch independentl
 
 ### Scenario 261 — Publication Diagnostics and Safe Recovery
 
+Plan40 also verifies explicit reason-code coverage, `INTERNAL_DIAGNOSTIC_GAP` for unknown classifications, safe common bindings across Prepare and Hook, separate planning/authorization/Host/execution lifecycle states, and optional hash-chain-verified Diagnostic ID lookup. Evidence includes the publication authority, planning, diagnostics, Hook and governance-audit tests; lookup and trace failures do not change authorization.
+
 The read-only publication doctor cross-checks `branch.protected` with classic protection/effective rules, distinguishes permission-hidden policy, and preserves sanitized transient HTTP causes. Claude Code Hook runs one bounded Doctor for retryable network, rate-limit and server failures; skipped checks retain GitHub's successful provider outcome while AIPS remains fail-closed. Diagnostics never grant authority. Evidence: `tests/scenarios/261-publication-diagnostics-and-safe-recovery.md` and the linked lifecycle/validation tests.
 
 ## Scenario 240 — Personal Publication Default and High-Assurance Opt-In
@@ -1885,6 +1891,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Plan40 adds explicit error-cause coverage, safe Prepare/Hook bindings, independent lifecycle states, and optional verified Diagnostic ID lookup while preserving personal-mode confirmation and Harness/CLI authority boundaries.
+
 Runtime Hook recovery remains non-authorizing; Scenario 262 diagnostics do not alter candidate validation, native Host confirmation or publication authority.
 
 Scenario 260 verifies that native Hook denials expose only safe diagnostic metadata and that the candidate branch is separate from target policy.
@@ -1896,5 +1904,7 @@ The publication diagnostic contract distinguishes missing/stale pinned merge SHA
 Scenario 260 verifies stable, redacted diagnostics for publication blockers, read-only `gh pr merge` diagnosis, first-time repository Doctor observations, Required Checks states, unavailable policy evidence, and consistent Claude Code/OpenCode/Codex guidance. The doctor never changes repository settings, executes merge, or consumes a grant. Scenario 261 adds grouped dirty-path evidence and phase attribution through push, PR, checks, and merge recovery; diagnostics remain non-authorizing.
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
+
+Publication Diagnostic IDs remain separate from ComfyUI discovery, Resource Authorization profiles, and Creative execution grants.
 
 Scenario 262 covers fail-closed Resource Authorization Profile/grant matching, Hook binding to observed URLs, fixed loopback ComfyUI model discovery and safe HTTP recovery, shared creative presets, and static-only MPS compatibility evidence.

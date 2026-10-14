@@ -82,6 +82,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
+Publication Diagnostic ID lookup uses `aips publish diagnose --diagnostic-id <UUID>` and reads only the existing ledger selected by `AIPS_GOVERNANCE_AUDIT_LEDGER`. Without that setting it reports `NOT_CONFIGURED`; installation does not create a ledger or change audit configuration.
+
 Runtime Resource Authorization profiles are supplied by trusted Runtime configuration. Missing or invalid profiles remain default-deny; installation does not create or modify a user's authorization profile.
 
 The Claude Code publication recovery observation uses the existing Doctor command and requires no added runtime component or credential.

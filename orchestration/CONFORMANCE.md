@@ -46,6 +46,8 @@ OpenCode integration retains system preflight and existing-host lifecycle checks
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+The additive publication Diagnostic ID lookup retains the existing CLI group and reports a verified allowlisted record without changing the command help or dispatcher contract.
+
 Scenario 233 remains scoped to stable CLI help and argument failures; Scenario 262 adds structured authorization/provider diagnostics without changing public command parsing.
 
 Scenario 233's shared CLI coverage includes the safe Doctor contract; publication tests retain the permission-unknown and transient recovery states.
@@ -1080,6 +1082,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Plan40 publication diagnostics leave the pinned Skill source inventory, installation eligibility, and canonical-only listing unchanged.
+
 Scenario 259 continues to validate the pinned Skill source inventory and ownership-safe projection; plan39 presets do not modify Skill routing or installation.
 
 The Skill Explorer lifecycle remains independent of publication diagnostics and authorization behavior.
@@ -1096,11 +1100,15 @@ The canonical Skill registry contains 49 AIPS Skills; the pinned 38-item upstrea
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Plan40 verifies explicit publication reason codes, safe common Prepare/Hook bindings, independent lifecycle states, and optional verified Diagnostic ID lookup; all remain non-authorizing observations.
+
 Scenario 260 additionally verifies `UNKNOWN_PERMISSION`, skipped provider-success metadata and one Claude Hook Doctor call for retryable remote failures.
 
 Scenario 260 verifies the read-only `aips publish doctor`, Required Checks classification, literal merge diagnosis without execution or grant consumption, sanitized error output, and consistent runtime guidance. Missing/permission-limited policy evidence remains blocking; no repository policy mutation or merge bypass is introduced. Scenario 261 adds grouped dirty-path evidence and phase attribution through push, PR, checks, and exact-head merged recovery; diagnostics remain non-authorizing. Scenario 233 covers upstream Skill inventory and filtering without changing the canonical-only listing default.
 
 ## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
+
+Git publication diagnostics do not alter ComfyUI discovery, Resource Authorization profile matching, or creative action grants.
 
 Scenario 262 locks stage-specific default-deny Profile diagnostics, kind/selector/operation/destination/constraint matching, observed Hook URL binding, and structured redacted Runtime/Creative recovery. It verifies fixed loopback ComfyUI read-only model discovery, HTTP/method/path/redirect denials, shared static asset presets and evidence-only MPS reporting; no inference or external download is performed.
 

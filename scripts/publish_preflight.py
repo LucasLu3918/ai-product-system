@@ -787,8 +787,10 @@ def main() -> int:
     prepare.add_argument("--auto-merge", action="store_true", help="Request GitHub auto-merge after verified required checks; native authorization still applies")
     prepare.add_argument("--format", choices=("yaml", "json"), default="yaml")
     diagnose = subs.add_parser("diagnose", help="Diagnose a literal native command without executing it")
-    diagnose.add_argument("--worktree", required=True, type=Path)
-    diagnose.add_argument("--command", dest="native_command", required=True)
+    diagnose.add_argument("--worktree", type=Path, default=Path.cwd())
+    diagnose_target = diagnose.add_mutually_exclusive_group(required=True)
+    diagnose_target.add_argument("--command", dest="native_command")
+    diagnose_target.add_argument("--diagnostic-id", help="Read one safe event from the configured governance audit ledger")
     diagnose.add_argument("--format", choices=("yaml", "json"), default="yaml")
     plan = subs.add_parser("plan")
     common(plan)
@@ -832,6 +834,10 @@ def main() -> int:
             from publication_diagnostics import doctor as publication_doctor
             result = publication_doctor(args.worktree, pr_number=args.pr, branch=args.branch,
                                         worktree_details=args.worktree_details)
+            from publication_diagnostics import record_diagnostic
+            for item in result.get('diagnostics', []):
+                if isinstance(item, dict) and item.get('diagnostic_id'):
+                    item['trace_status'] = record_diagnostic(item, 'codex')
             emit(result, args.format)
             return 0 if result["status"] == "READY" else 1
         if args.command in {"prepare", "diagnose"}:
@@ -841,8 +847,17 @@ def main() -> int:
                     runtime=args.runtime, expected_fingerprint=args.expected_fingerprint,
                     host_denied=args.host_denied, merge_intent=args.merge_intent or args.auto_merge,
                     auto_merge=args.auto_merge, host_denial_class=args.host_denial_class)
+            elif args.diagnostic_id:
+                from publication_diagnostics import lookup_diagnostic
+                result = lookup_diagnostic(args.diagnostic_id)
             else:
                 result = publication_planning.diagnose(args.worktree, args.native_command)
+            if not getattr(args, 'diagnostic_id', None):
+                from publication_diagnostics import record_diagnostic
+                binding = result.get('candidate') if isinstance(result.get('candidate'), dict) else None
+                for item in result.get('diagnostics', []):
+                    if isinstance(item, dict) and item.get('diagnostic_id'):
+                        item['trace_status'] = record_diagnostic(item, getattr(args, 'runtime', 'codex'), binding)
             result["recovery"] = publication_planning.recovery_guidance(result)
             emit(result, args.format)
             return 1 if result["status"] == "BLOCKED" else 0

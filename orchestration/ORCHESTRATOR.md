@@ -10,6 +10,8 @@ The orchestrator coordinates work. It is not a super-role and cannot override go
 
 ## Minimal algorithm
 
+The publication workflow may use safe Prepare and Diagnostic ID observations during planning; they do not satisfy Human Authority, native Host confirmation, a required check, or the observed-execution condition.
+
 For an explicit creative asset transfer, review the hash-bound import candidate and invoke the exact-hash CLI import only after the destination check passes.
 
 
@@ -244,6 +246,8 @@ When extracting an internal retrieval module, preserve the existing facade and l
 Large/core changes are proposal-first. Use `templates/core-change-proposal.md`. Semantic impact matters more than the number of changed files. No implementation begins until the user approves the proposed boundary. Material scope drift requires re-approval.
 
 ## Git Publish Approval
+
+Publication Prepare and Diagnostic ID lookup provide safe evidence for this approval review. `PLANNED`, `AUTHORIZED` at the AIPS Hook layer, or a verified diagnostic record never substitutes for Human intent, native Host confirmation, required checks or an observed merge.
 
 Runtime denial diagnostics and recovery instructions do not supply publication authority; the exact-candidate Gate, task authorization and native Host confirmation remain separate.
 
