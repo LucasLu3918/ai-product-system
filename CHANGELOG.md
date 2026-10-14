@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Separate publication candidate and target-policy branch observations; preserve sanitized GitHub HTTP/error provenance, align retryability with transient read-only evidence, and surface structured safe Claude Code Hook diagnostics without changing publication authority.
 - Add `aips skills list` with capability and trigger filters and text/JSON output from canonical Skill metadata.
 - Integrate selected Matt Pocock Skill methods into five existing Skills, add five distinct Skills and three opt-in Writing Skills, classify all 38 upstream Skills, and add a generated searchable Human Skill Explorer.
 - Add explicit-only `$grill-with-docs`, vendor all 38 pinned upstream Skill sources with hashes, and classify overlapping sources as experimental/optional while routing distinct repository/tool workflows automatically.

@@ -223,6 +223,8 @@ Publication diagnostics use `scripts/publication_authority.py`, `scripts/publica
 
 ## Shared canonical 文件
 
+Publication troubleshooting lives in the User Guide, with security contracts in Security Assurance and runtime adapter behavior in Harness; Scenarios 260/261 define the shared evidence contract.
+
 Human-facing runtime, diagnostics and governance guidance follows canonical topic placement.
 
 

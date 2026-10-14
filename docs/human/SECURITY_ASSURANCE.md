@@ -443,6 +443,8 @@ AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned cont
 
 ## Runtime Policy Enforcement
 
+Publication Doctor reports only observed HTTP status and safe endpoint identity. Authentication, permission, missing resource, rate limit, service and network failures remain distinct; unknown policy evidence blocks, and diagnostic retries never run push, PR or merge actions.
+
 Personal PR merge accepts `gh pr merge --auto` only with an exact candidate/head binding and a non-empty set of passing required checks. For an explicitly task-authorized merge, Claude Code may enable GitHub auto-merge without a second Claude prompt; Gemini retains native `ask_user`. GitHub still enforces required checks and repository rules. This option does not issue a Human grant or bypass repository policy.
 
 Commit and publication scanning treats `.m4a` as structured audio: the scanner validates bounded top-level atoms and an M4A-compatible `ftyp` brand, scans readable `moov` metadata for secrets, and does not decode audio `mdat` bytes as text. Invalid/spoofed files fail closed; files above 8 MiB are rejected with Git LFS or external object storage guidance. The existing text-file scan limit, staged content-safety checks and other binary-format handling remain in force.

@@ -332,6 +332,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Security 與 Governance
 
+Read-only publication diagnosis distinguishes the local candidate branch from the remote default policy branch and retains bounded, sanitized endpoint/status evidence; Human Authority and Host confirmation remain separate.
+
 Publication diagnostics now preserve distinct merge-command and CI-policy failure codes while redacting sensitive provider output. Claude Host confirmations are not implied by AIPS planning.
 
 

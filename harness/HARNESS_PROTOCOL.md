@@ -1,7 +1,7 @@
 # Global Agent Harness Protocol
 
 
-Publication prepare/diagnose planning is read-only and binds an explicit candidate worktree; native tools retain their own permission and authority checks. Re-observe live Git/PR state before continuation; a planning fingerprint never grants publication or merge authority.
+Publication prepare/diagnose planning is read-only and binds an explicit candidate worktree; native tools retain their own permission and authority checks. Doctor separates candidate/source branch from target policy branch and reports allowlisted HTTP/API error classes. Re-observe live Git/PR state before continuation; a planning fingerprint never grants publication or merge authority.
 OpenCode composes a managed global instruction block and digest-owned native Skill/Command projections. Adapter Registry drives Host status and ownership; runtime verification remains separate from file integrity. Basic installation keeps MCP client configuration review-only and governance ADVISORY.
 
 OpenCode is currently the only runtime that receives AIPS canonical Skills as native projections through `aips harness install`. Other Hosts load Skills through AIPS MCP Resources (`aips://catalog/skills`, then `aips://skills/{skill_id}`) or read the canonical source on demand; do not claim native Skill installation where no Host projection is implemented. Uninstall may remove only paths recorded in AIPS ownership state whose current digest matches the generated digest. Preserve pre-existing/unowned same-name files and modified owned files, report `CONFLICT`, and retain ownership state for safe retry. Never recommend broad deletion of a Host's native `skills/` directory.

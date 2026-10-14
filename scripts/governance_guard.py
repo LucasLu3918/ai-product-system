@@ -408,7 +408,7 @@ def commit_safety(cwd: Path, command: str) -> dict:
     return safety
 
 
-def deny_hook_input(runtime: str, reason: str) -> int:
+def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None = None) -> int:
     """Return the runtime's normal deny envelope without echoing input data."""
     reason_messages = {
         "UNSUPPORTED_SHELL_SYNTAX": "AIPS cannot safely parse this shell syntax; simplify the command and retry.",
@@ -432,14 +432,24 @@ def deny_hook_input(runtime: str, reason: str) -> int:
     }
     detail = reason_messages.get(reason, "AIPS blocked this command during a required safety check.")
     detail += " [" + reason + "]"
+    if diagnostic is None:
+        diagnostic = PublicationError("", reason).diagnostic()
+    safe_fields = {key: diagnostic.get(key) for key in
+                   ("diagnostic_id", "reason_code", "phase", "category", "detail",
+                    "retryable", "recovery_mode", "next_step")}
+    safe_fields.update({"authorized": False, "executed": False})
+    detail += " [phase=" + str(safe_fields.get("phase") or "unknown") + \
+              "; diagnostic_id=" + str(safe_fields.get("diagnostic_id") or "unavailable") + "]"
+    context = "AIPS diagnostic: " + json.dumps(safe_fields, ensure_ascii=False, separators=(",", ":"))
     if runtime == "claude-code":
         result = {"hookSpecificOutput": {
             "hookEventName": "PreToolUse",
             "permissionDecision": "deny",
             "permissionDecisionReason": detail,
+            "additionalContext": context,
         }}
     else:
-        result = {"decision": "deny", "reason": detail}
+        result = {"decision": "deny", "reason": detail, "diagnostic": safe_fields}
     print(json.dumps(result))
     return 0
 
@@ -520,7 +530,8 @@ def hook(runtime: str) -> int:
     except Exception as exc:
         from publication_commands import CommandError
         if isinstance(exc, CommandError):
-            return deny_hook_input(runtime, exc.reason_code)
+            return deny_hook_input(runtime, exc.reason_code,
+                                   PublicationError("", exc.reason_code).diagnostic())
         if isinstance(exc, (OSError, ValueError, TypeError, KeyError, IndexError, AttributeError, ImportError, subprocess.TimeoutExpired)):
             return deny_hook_input(runtime, "UNSUPPORTED_SHELL_SYNTAX")
         raise
@@ -542,7 +553,7 @@ def hook(runtime: str) -> int:
             try:
                 safety = commit_safety(cwd, command) if operation == 'git_commit' else safe_emit(sink=sink, payload={"command": command})
             except PublicationError as exc:
-                return deny_hook_input(runtime, exc.reason_code)
+                return deny_hook_input(runtime, exc.reason_code, exc.diagnostic())
             except OSError as exc:
                 reason = "STAGED_CONTENT_UNAVAILABLE" if exc.errno in {errno.ENOENT, errno.EACCES, errno.EPERM} else "CONTENT_INSPECTION_UNAVAILABLE"
                 return deny_hook_input(runtime, reason)
@@ -556,6 +567,7 @@ def hook(runtime: str) -> int:
                     print(json.dumps({"decision": "deny", "reason": "AIPS blocked: " + reason}))
                 return 0
     ok = False
+    hook_diagnostic = None
     reason = "no active AIPS Approval Record"
     merge_confirmation = None
     approval_operations = [operation for operation in operations if operation in PROTECTED]
@@ -605,6 +617,7 @@ def hook(runtime: str) -> int:
             logger.warning("Approval verification failed closed: %s", type(exc).__name__)
             if isinstance(exc, ValueError) and hasattr(exc, 'diagnostic'):
                 diagnostic = exc.diagnostic()
+                hook_diagnostic = diagnostic
                 reason = diagnostic['reason_code'] + ': ' + diagnostic['detail'] + ' ' + diagnostic['next_step']
             else:
                 reason = "publication authorization failed (" + type(exc).__name__ + ")"
@@ -614,7 +627,13 @@ def hook(runtime: str) -> int:
         print(json.dumps({"hookSpecificOutput": {
             "hookEventName": "PreToolUse",
             "permissionDecision": "ask" if ok and merge_confirmation and not claude_auto_merge else "allow" if ok else "deny",
-            "permissionDecisionReason": "AIPS " + reason if ok else "AIPS blocked protected publication: " + reason,
+            "permissionDecisionReason": ("AIPS " + reason if ok else "AIPS blocked protected publication: " + reason) +
+                (" [phase=" + str(hook_diagnostic.get("phase")) + "; diagnostic_id=" +
+                 str(hook_diagnostic.get("diagnostic_id")) + "]" if hook_diagnostic else ""),
+            **({"additionalContext": "AIPS diagnostic: " + json.dumps({key: hook_diagnostic.get(key) for key in
+                ("diagnostic_id", "reason_code", "phase", "category", "detail", "retryable",
+                 "recovery_mode", "next_step")}, ensure_ascii=False, separators=(",", ":")) +
+                "; authorized=false; executed=false"} if hook_diagnostic else {}),
         }}))
     else:
         result = {"decision": "allow" if ok else "deny"}
@@ -622,6 +641,11 @@ def hook(runtime: str) -> int:
             result['systemMessage'] = 'AIPS per-merge confirmation: ' + reason
         if not ok:
             result["reason"] = "AIPS blocked protected publication: " + reason
+            if hook_diagnostic:
+                result["diagnostic"] = {key: hook_diagnostic.get(key) for key in
+                    ("diagnostic_id", "reason_code", "phase", "category", "detail", "retryable",
+                     "recovery_mode", "next_step")}
+                result["diagnostic"].update(authorized=False, executed=False)
         print(json.dumps(result))
     return 0
 

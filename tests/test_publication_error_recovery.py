@@ -55,8 +55,25 @@ class PublicationRecoveryContractTest(unittest.TestCase):
             PublicationError("", "REQUIRED_CHECKS_PENDING").diagnostic()]}
         result = recovery_guidance(report)
         self.assertTrue(result["retry_read_only"])
+        self.assertTrue(report["diagnostics"][0]["retryable"])
         self.assertFalse(result["authorized"])
         self.assertFalse(result["executed"])
+
+    def test_transient_remote_observation_retries_but_permission_does_not(self):
+        unknown_remote = PublicationError("", "REMOTE_OBSERVATION_FAILED").diagnostic()
+        transient = recovery_guidance({"status": "BLOCKED", "diagnostics": [{
+            **unknown_remote, "category": "NETWORK", "retryable": True}]})
+        permission = recovery_guidance({"status": "BLOCKED", "diagnostics": [
+            PublicationError("", "REQUIRED_CHECKS_PERMISSION").diagnostic()]})
+        self.assertEqual(transient["state"], "READ_OBSERVATION_RETRYABLE")
+        self.assertTrue(transient["retry_read_only"])
+        self.assertFalse(transient["authorized"])
+        self.assertFalse(transient["executed"])
+        self.assertEqual(permission["state"], "REPAIR_REQUIRED")
+        self.assertFalse(permission["retry_read_only"])
+        unknown = recovery_guidance({"status": "BLOCKED", "diagnostics": [unknown_remote]})
+        self.assertFalse(unknown["retry_read_only"])
+        self.assertFalse(unknown_remote["retryable"])
 
     def test_merge_confirmation_and_merged_are_separate(self):
         awaiting = recovery_guidance({"status": "PLANNED",

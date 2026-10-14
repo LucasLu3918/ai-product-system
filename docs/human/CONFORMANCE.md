@@ -1865,6 +1865,8 @@ Current totals are published in [CONFORMANCE_CURRENT.md](CONFORMANCE_CURRENT.md)
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Scenario 260 also checks that Doctor observes target-branch policy independently of the candidate branch, classifies 401/403 and contextual 404 evidence, and includes safe structured Claude Hook denial metadata without command input. Scenario 261 keeps transient recovery read-only and non-authorizing.
+
 The publication diagnostic contract distinguishes missing/stale pinned merge SHA, forbidden flags, verified Required Checks configuration, unavailable policy evidence, and non-authorizing Host recovery guidance.
 
 Scenario 260 verifies stable, redacted diagnostics for publication blockers, read-only `gh pr merge` diagnosis, first-time repository Doctor observations, Required Checks states, unavailable policy evidence, and consistent Claude Code/OpenCode/Codex guidance. The doctor never changes repository settings, executes merge, or consumes a grant. Scenario 261 adds grouped dirty-path evidence and phase attribution through push, PR, checks, and merge recovery; diagnostics remain non-authorizing.

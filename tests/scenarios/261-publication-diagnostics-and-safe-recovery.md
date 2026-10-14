@@ -10,4 +10,8 @@ Given a PR already merged with the exact candidate head and a merge commit reach
 
 Given Claude Code consumes a diagnostic, when it selects a recovery step, then it may re-observe retryable evidence and perform local validation; Host denial, missing Human approval, stale scope, or missing/failing required checks still require the named review or approval. Diagnostics never grant publication authority.
 
+Given the local candidate branch differs from the repository default, when `aips publish doctor` observes policy, then it reports both identities and queries the explicit/default target branch, never the candidate by implication. API status and endpoint categories distinguish authentication, permission, contextual missing resources, rate limits, server errors and network failures; unconfirmed evidence remains `UNKNOWN`.
+
+Given an API response or local command contains credentials or raw provider details, when a diagnostic or Claude Code PreToolUse denial is rendered, then the output contains only bounded safe evidence and an allowlisted diagnostic record. Given a retryable observation failure, when recovery is requested, then it re-collects evidence only and reports `authorized: false` and `executed: false`; no push, PR, merge or policy mutation occurs.
+
 Evidence: `tests/test_publication_authority.py`, `tests/test_publication_planning.py`, `tests/evidence/repository_governance_snapshot_lifecycle.py`, `tests/validation/repository_governance_snapshot_contracts.py`, and `tests/validation/publish_preflight_contracts.py`.

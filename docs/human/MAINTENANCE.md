@@ -280,6 +280,8 @@ Focused Intelligence context evidence must distinguish storage deduplication fro
 
 ## Impact-derived regression testing
 
+The publication matrix covers candidate-versus-policy branch selection, HTTP error classes, safe Hook diagnostics and read-only retry classification on the exact candidate.
+
 The publication matrix binds the exact changed-path set and records denied, unavailable, stale and no-mutation evidence before the Integration Gate.
 
 `aips publish prepare --auto-merge` 僅規劃 exact-head GitHub auto-merge，並要求 non-empty passing required checks；既有 native Human confirmation 與 GitHub 後續要求仍適用。

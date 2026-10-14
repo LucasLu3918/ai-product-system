@@ -245,6 +245,8 @@ Large/core changes are proposal-first. Use `templates/core-change-proposal.md`. 
 
 ## Git Publish Approval
 
+The Doctor reports the target policy branch separately from the candidate and preserves safe GitHub endpoint/status evidence. Its transient recovery guidance permits read-only re-observation only; it does not grant publication authority.
+
 For a blocked or first-time GitHub publication, run `aips publish doctor` and optionally `aips publish diagnose` on the literal merge command. Treat unavailable policy/check evidence as blocking, then follow safe next steps; never infer authorization or perform an unapproved policy change from the report.
 
 

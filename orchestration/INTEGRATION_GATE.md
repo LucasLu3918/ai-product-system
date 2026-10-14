@@ -24,6 +24,8 @@ The Gate is deterministic code. It has no Human approval, merge or release autho
 
 ## Exact-candidate binding
 
+The policy branch observed by publication Doctor is the remote default target branch; the local candidate branch/SHA remain distinct and both must be re-observed before any separately authorized native action.
+
 Read-only publication prepare/diagnose results do not replace this exact-candidate Gate. Native execution revalidates authority; required PR/main checks and task merge intent remain separate from planning fingerprints.
 
 `aips publish prepare --auto-merge` emits `gh pr merge --auto` only for the exact open candidate PR after a non-empty set of required checks passes. Native Human authorization remains separate from Gate evidence.

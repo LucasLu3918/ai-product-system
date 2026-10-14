@@ -1,153 +1,144 @@
 version: 1
 change:
-  id: plan36-publication-diagnostics
-  summary: Preserve GitHub publication evidence and provide precise, safe recovery guidance.
+  id: publication-diagnostics-recovery-20261014
+  summary: Separate publication candidate and target-policy evidence; retain safe GitHub error provenance; align
+    recovery retryability; show structured Claude Code Hook diagnostics while preserving authority gates.
   boundary:
-  - GitHub branch policy snapshot, effective rules, and sanitized HTTP/API error evidence.
-  - Publication authority reason codes, phase attribution, and backward-compatible diagnostic contracts.
-  - Read-only staged/modified/deleted/untracked worktree detail reporting.
-  - Push, PR, checks, merge, and already-merged recovery planning.
-  - Claude Code adapter guidance, human docs, scenarios, validators, and architecture narrative.
-  - Preserve Human Authority, Proposal-first, exact candidate/base/PR binding, secret scan, and native confirmations.
+  - Candidate and target policy branch evidence
+  - GitHub response provenance and redaction
+  - Recovery classification and publication phase boundaries
+  - Claude Code denial and canonical documentation closure
 matrix:
-- boundary: GitHub policy evidence resolver
-  reason: Distinguish explicit effective policy evidence from permission, network, not-found, and malformed responses.
+- boundary: Candidate and target policy branch evidence
+  reason: Policy decisions must observe the selected/default remote target independently of the local candidate,
+    and missing evidence must remain blocking.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: Ruff output has no additional findings versus origin/main (15 inherited findings remain unchanged).'
+      evidence: 'PENDING: Ruff and repository validation on the exact candidate.'
     unit:
       applicable: true
-      evidence: 'PASS: 60 publication authority/planning unit tests, including HTTP status, redaction, 401/403/404
-        and malformed-evidence cases.'
+      evidence: 'PASS: focused doctor tests cover source/default-target branch separation, explicit target, and
+        incomplete policy remains UNKNOWN.'
     integration:
       applicable: true
-      evidence: 'PASS: repository governance snapshot lifecycle covers branch existence, effective rules, rulesets
-        and classic-protection evidence.'
+      evidence: 'PENDING: snapshot lifecycle covers confirmed branch existence and contextual 404 behavior.'
     contract:
       applicable: true
-      evidence: 'PASS: repository governance snapshot contracts and Scenario 261 documentation coverage. Conformance
-        isolation is 260/240/146; publication preflight contract owner checks pass.'
+      evidence: 'PASS: doctor response contract asserts separate candidate_branch and policy_branch fields.'
     e2e:
       applicable: false
-      na_reason: No deployed application flow; deterministic API lifecycle fixtures exercise the resolver.
+      na_reason: No deployed user interface; the read-only CLI and deterministic remote API fixtures exercise the
+        behavior.
     security:
       applicable: true
-      evidence: 'PASS: sanitized bounded GitHub message and secret/header redaction contracts; UNKNOWN remains fail-closed.'
+      evidence: 'PASS: missing or permission-limited evidence remains blocking; no authorization or writes are produced.'
     migration_recovery:
       applicable: false
-      na_reason: No persisted schema or migration is introduced.
+      na_reason: Read-only evidence only; no persisted state or migration.
     cli_harness:
       applicable: true
-      evidence: 'PASS: publication doctor contract and endpoint/evidence reporting covered by lifecycle and publication
-        preflight contracts. Plan21 CLI help golden vectors updated and pass.'
+      evidence: 'PASS: public doctor invocation and branch-selection behavior are covered by focused publication
+        tests.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: recursive documentation impact is complete; canonical H2 placement passes; VitePress builds;
-        current and history Conformance projections regenerate and lifecycle-check successfully.'
-- boundary: Publication authority diagnostics and worktree state
-  reason: Error provenance, safe paths, and redaction affect protected publication decisions.
+      evidence: 'PENDING: close documentation impact and run placement/sync/build validators.'
+- boundary: GitHub response provenance and redaction
+  reason: HTTP and CLI response categories affect policy observability; raw credentials, headers and unrestricted
+    errors must never escape.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: no new Ruff findings versus origin/main.'
+      evidence: 'PENDING: Ruff and repository validation on the exact candidate.'
     unit:
       applicable: true
-      evidence: 'PASS: 58 publication authority/planning tests, including stable codes, phases, dirty path groups
-        and redaction.'
+      evidence: 'PASS: parser tests distinguish 401 authentication, 403 permission, rate limiting and safe token
+        redaction.'
     integration:
       applicable: true
-      evidence: 'PASS: repository governance snapshot lifecycle and publication authority lifecycle cases passed.'
+      evidence: 'PENDING: governance snapshot lifecycle and contract validations.'
     contract:
       applicable: true
-      evidence: 'PASS: repository governance snapshot contracts and publication preflight contracts passed. Conformance
-        isolation is 260/240/146; publication preflight contract owner checks pass.'
+      evidence: 'PASS: stable source endpoint/status/error-class fields remain additive and bounded.'
     e2e:
       applicable: false
-      na_reason: Native hook/CLI lifecycle fixtures cover behavior; no deployed UI.
+      na_reason: No deployed user interface; deterministic API fixtures cover the response surface.
     security:
       applicable: true
-      evidence: 'PASS: diagnostics exclude raw stderr, headers and secrets; path reporting is repository-relative
-        and read-only.'
+      evidence: 'PASS: credential-like tokens are redacted and HTTP headers/raw stderr are not returned.'
     migration_recovery:
       applicable: false
-      na_reason: No persisted schema or migration is introduced.
+      na_reason: No durable diagnostic store or data migration is introduced.
     cli_harness:
       applicable: true
-      evidence: 'PASS: Claude Code recovery guidance and publication preflight CLI contracts are covered by Scenario
-        260. Plan21 CLI help golden vectors updated and pass.'
+      evidence: 'PASS: doctor exposes structured safe API source evidence without writes.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: recursive documentation impact is complete; canonical H2 placement passes; VitePress builds;
-        current and history Conformance projections regenerate and lifecycle-check successfully.'
-- boundary: Publication phase planning and merged-PR recovery
-  reason: Prevent cross-phase attribution, duplicate publication, and stale-candidate recovery.
+      evidence: 'PENDING: validate synchronized troubleshooting and security guidance.'
+- boundary: Recovery classification and publication phase boundaries
+  reason: Retry metadata must agree with actual retry guidance; retries can only re-observe transient evidence and
+    cannot publish.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: no new Ruff findings versus origin/main.'
+      evidence: 'PENDING: Ruff and repository validation on the exact candidate.'
     unit:
       applicable: true
-      evidence: 'PASS: 58 publication authority/planning tests, including exact-head ALREADY_MERGED and phase attribution.'
+      evidence: 'PASS: recovery tests distinguish transient network evidence, pending checks, generic unavailable,
+        permission and Human/Host denials.'
     integration:
       applicable: true
-      evidence: 'PASS: publication planning and governance snapshot lifecycle fixtures passed.'
+      evidence: 'PENDING: publication planning and already-merged lifecycle fixtures.'
     contract:
       applicable: true
-      evidence: 'PASS: publish preflight and governance snapshot contracts passed. Conformance isolation is 261/241/148;
-        publication preflight contract owner checks pass.'
+      evidence: 'PASS: recovery output is non-authorizing and preserves reason/phase contracts.'
     e2e:
       applicable: false
-      na_reason: No remote mutation is part of local tests; GitHub state is represented by deterministic read-only
-        fixtures.
+      na_reason: No remote mutation is exercised in local fixtures; no deployed application flow exists.
     security:
       applicable: true
-      evidence: 'PASS: already-merged recovery is read-only and does not invoke push, PR creation, or merge.'
+      evidence: 'PASS: no retry path invokes push, PR creation, merge or policy mutation.'
     migration_recovery:
       applicable: true
-      evidence: 'PASS: repeated exact-head merge observation routes to post-merge reconciliation without mutation.'
+      evidence: 'PASS: existing exact-head merged recovery remains read-only and idempotent.'
     cli_harness:
       applicable: true
-      evidence: 'PASS: doctor and post-merge planner contracts are covered by focused tests. Plan21 CLI help golden
-        vectors updated and pass.'
+      evidence: 'PASS: standalone/compound command and publication phase tests remain in the focused suites.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: recursive documentation impact is complete; canonical H2 placement passes; VitePress builds;
-        current and history Conformance projections regenerate and lifecycle-check successfully.'
-- boundary: Human and Agent recovery guidance
-  reason: Agents must separate safe observation from actions requiring Human or host approval.
+      evidence: 'PENDING: validate Scenario 260/261 and adapter guidance.'
+- boundary: Claude Code denial and canonical documentation closure
+  reason: Native Hook denials need visible structured safe identifiers while preserving the documented native envelope
+    and all publication authorization boundaries.
   checks:
     static_lint:
       applicable: true
-      evidence: 'PASS: docs lint/build path passed; no new Ruff findings.'
+      evidence: 'PENDING: Markdown, Python and repository validators on the exact candidate.'
     unit:
-      applicable: false
-      na_reason: This documentation-only boundary has no runtime test surface; executable behavior is covered in
-        the preceding boundaries.
+      applicable: true
+      evidence: 'PASS: hook test asserts denial, diagnostic identifier/phase, allowlisted context and no command
+        input.'
     integration:
-      applicable: false
-      na_reason: This documentation-only boundary has no runtime test surface; executable behavior is covered in
-        the preceding boundaries.
+      applicable: true
+      evidence: 'PENDING: Hook envelope lifecycle and runtime adapter conformance.'
     contract:
       applicable: true
-      evidence: 'PASS: Scenario 261 and Claude Code safe-recovery guidance contracts are present.'
+      evidence: 'PASS: Claude Code PreToolUse envelope remains native and denied actions stay denied.'
     e2e:
       applicable: false
-      na_reason: Documentation-only consumer.
+      na_reason: No deployed UI acceptance claim; host-level acceptance availability is recorded separately.
     security:
       applicable: true
-      evidence: 'PASS: guidance preserves Human Authority, native host approval and fail-closed recovery.'
+      evidence: 'PASS: Hook output is allowlisted, excludes raw commands/args/credentials and declares authorized=false/executed=false.'
     migration_recovery:
       applicable: false
-      na_reason: No persisted schema or migration is introduced.
+      na_reason: No persisted schema, diagnostic history or migration is added.
     cli_harness:
       applicable: true
-      evidence: 'PASS: Claude Code adapter guidance preserves native confirmation paths. Plan21 CLI help golden
-        vectors updated and pass.'
+      evidence: 'PASS: native Hook denial contract and user-facing reason are covered by focused tests.'
     docs_schema:
       applicable: true
-      evidence: 'PASS: recursive documentation impact is complete; canonical H2 placement passes; VitePress builds;
-        current and history Conformance projections regenerate and lifecycle-check successfully.'
+      evidence: 'PENDING: close exact docs impact, placement, sync, VitePress, and Scenario 260/261.'
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
@@ -155,5 +146,5 @@ status: READY
 review_evidence:
   required: false
 candidate:
-  base_sha: 035976f5079432ca5fb3a557da81a99e7d092279
-  changed_files_hash: 837a7b007b6231528dfc70b93f0ba2a375282eadd700fc791918d1665a762428
+  base_sha: c12e5b41932679ef6be132776fb5bf8e850210f2
+  changed_files_hash: d0f1998ddde60c5f55ad6a069b00be0a5b54503b7d0734bc8e6b5b2211f816c4

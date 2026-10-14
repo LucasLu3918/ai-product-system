@@ -226,6 +226,8 @@ Getting Started / Installation / User Guide 以 task-oriented方式導覽；Arch
 
 ## Deterministic protection
 
+Publication diagnostics document candidate identity, target policy identity, observed API status, safe recovery classification and native Hook output together across the mapped Human and Agent topics.
+
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.
 
 Plan29 #6 binds its Change Impact and Core Change Test Matrix to the exact implementation candidate before publication.

@@ -141,6 +141,8 @@ Publication Preflight lifecycle evidence stubs the Python module probe before as
 
 ## Failure behavior
 
+Publication recovery may re-collect remote evidence for transient network, rate-limit or server failures only. Authentication, permission, policy, missing-resource, stale-candidate and Human/Host authority failures are not automatic retries.
+
 Only explicitly retryable read-only GitHub observations may be scheduled. Host denials, policy mutations and confirmed merges are not scheduler retries.
 
 Creative quality loops reserve bounded attempts before execution and serialize each exact source with a deadline-aware lock. They preserve separate delivery, inference and repair counts; uncertainty, repeated defects or exhaustion stops further generation. Current native Human intent remains the only execution authority.

@@ -219,6 +219,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+Publication diagnostics keep the Human CLI flow, safe failure categories and Agent-native Hook envelope synchronized with Scenarios 260/261 and the registered canonical sections.
+
 Cross-file publication diagnostics are reconciled against required canonical Human topics; the deterministic placement check remains fail-closed instead of being disabled.
 
 Native Skill projections share one canonical AIPS source and ownership manifest. Human Installation/User Guide/Harness explain host paths and safe removal; Technology Guide and Scenario 233/235 describe deterministic file/lifecycle evidence without claiming live Codex, Claude Code or Gemini CLI discovery. Keep these distinct from Runtime hook enforcement claims.

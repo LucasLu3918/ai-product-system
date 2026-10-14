@@ -286,6 +286,8 @@ The alias candidate is deterministic and transparent. It is not an embedding pro
 
 ## Maintenance and publication evidence
 
+The read-only Doctor now labels the candidate/source branch separately from the remote default policy branch and preserves safe GitHub endpoint and HTTP evidence; these observations never authorize publication.
+
 Exact PR merges remain SHA-bound and Human-controlled; an advisory recovery state never performs a GitHub mutation or consumes a publication grant.
 
 Publication diagnostics reuse the existing authority and preflight boundary. `aips publish doctor` reads repository/auth/protection and optional PR/check evidence; `aips publish diagnose` can validate a literal merge command. Both return stable safe diagnostics only. The publication execution path remains the sole authority consumer; no topology, grant or policy mutation path is added.

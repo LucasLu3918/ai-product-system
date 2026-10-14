@@ -85,6 +85,18 @@ def main() -> int:
     require(explicit_none["sources"]["branch_protection"]["status"] == "NOT_CONFIGURED", "classic protection 404 is distinguished")
     require(explicit_none["sources"]["rulesets"]["http_status"] == 403, "real HTTP denial is retained")
 
+    classic_protected = dict(no_classic)
+    classic_protected["repos/owner/repo/rulesets?includes_parents=true&per_page=100"] = {
+        "returncode": 0, "http_status": 200, "payload": []}
+    classic_protected["repos/owner/repo/branches/main/protection"] = {
+        "returncode": 0, "http_status": 200,
+        "payload": {"required_status_checks": {"contexts": ["repository"]}}}
+    classic = build_snapshot("owner/repo", "main", classic_protected.__getitem__)
+    require(classic["protection_state"] == "PROTECTED",
+            "affirmative classic branch protection cannot be mislabeled unprotected when effective rules are empty")
+    require(classic["classic_protection_configured"] is True,
+            "classic protection evidence has an explicit additive field")
+
     inaccessible = dict(no_classic)
     inaccessible["repos/owner/repo/rules/branches/main"] = {"returncode": 1, "http_status": 403, "payload": None, "error_class": "PERMISSION_OR_AUTHENTICATION", "error_message": "Resource not accessible by integration"}
     unknown = build_snapshot("owner/repo", "main", inaccessible.__getitem__)

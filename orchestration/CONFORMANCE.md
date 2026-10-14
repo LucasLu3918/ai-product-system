@@ -1082,6 +1082,8 @@ The canonical Skill registry contains 49 AIPS Skills; the pinned 38-item upstrea
 
 ## Scenario 260 — Publication diagnostics and Doctor
 
+Scenario 260 binds policy observation to the remote default target branch independently of the candidate branch and verifies sanitized HTTP evidence plus structured safe Hook denials. Scenario 261 checks recovery retryability against actual reason categories and proves no publication action occurs during re-observation.
+
 Scenario 260 verifies the read-only `aips publish doctor`, Required Checks classification, literal merge diagnosis without execution or grant consumption, sanitized error output, and consistent runtime guidance. Missing/permission-limited policy evidence remains blocking; no repository policy mutation or merge bypass is introduced. Scenario 261 adds grouped dirty-path evidence and phase attribution through push, PR, checks, and exact-head merged recovery; diagnostics remain non-authorizing. Scenario 233 covers upstream Skill inventory and filtering without changing the canonical-only listing default.
 
 The canonical Skill registry and pinned upstream manifest classify the complete 38-item source inventory; the generated Human Explorer presents active Skills and source dispositions separately. Writing Fragments → Beats → Shape remains explicit-request-only, and untested Beta entries remain unrouted. `tests/validation/skill_catalog_contracts.py` checks deterministic registry, output and source invariants; Scenario 259 remains manual for semantic routing acceptance.

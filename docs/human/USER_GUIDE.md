@@ -578,6 +578,8 @@ Retrieval index persistence is an internal, rebuildable cache boundary in `scrip
 
 ## Git Publication 與 Release
 
+When diagnosing a feature branch, `aips publish doctor` checks policy on the remote default branch by default; `--branch` explicitly selects a policy target. The report separately shows the candidate branch and never authorizes publication. Transient recovery re-runs read-only evidence collection only.
+
 ### Claude Code 合併失敗的真實原因與安全恢復
 
 建議先在信任的互動式終端機執行 `aips publish doctor --project-root <repo> --pr <number> --format json`；要檢查格式，使用 `aips publish diagnose --worktree <repo> --command '<literal-gh-pr-merge>' --format json`。這兩個指令均為唯讀，不能當作已完成合併或取得 Host 授權。新版 `prepare`／`diagnose` 會提供 `recovery` 建議，其中 `authorized: false`、`executed: false`；只允許針對明確暫時性狀態重試唯讀觀察。

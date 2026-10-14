@@ -54,6 +54,8 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+Claude Code PreToolUse denials may include a bounded diagnostic ID, reason code, phase, category, retry state and next step in additional context; raw command text, arguments and credentials are excluded.
+
 Claude Code may reject a Bash merge as Merge Without Review independently of AIPS PreToolUse; preserve exact Host-versus-AIPS provenance and route confirmation through native permissions rather than rewrites.
 
 Upstream Skills use the same native discovery directories as canonical AIPS Skills. `aips skills install --upstream --all --host <host>` installs all 31 non-canonical entries and reports seven canonical ID matches. Disposition remains visible as integration context, not an install gate. Codex and Claude Code projections require explicit invocation; Gemini CLI retains its activation consent flow. Source digests and AIPS ownership records scope later updates and removal. It never executes vendored scripts or edits Agent hooks. `aips skills list --include-upstream` exposes the pinned source inventory, disposition, and local path; ordinary listing remains canonical-only. See the [User Guide](USER_GUIDE.md#roles-skills-與重用) for commands and [Scenario 259](CONFORMANCE.md#scenario-259--matt-pocock-skill-integration-and-explorer) for lifecycle evidence.
