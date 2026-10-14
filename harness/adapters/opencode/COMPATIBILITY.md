@@ -20,6 +20,8 @@ The owned `plugins/aips-opencode.ts` projection is installed only for a positive
 
 ## Readiness and enforcement boundary
 
+Publication Required Checks diagnostics share sanitized policy states across runtimes; only Claude Code performs the bounded automatic Doctor call for retryable remote failures.
+
 The creative workspace import is exposed through the AIPS CLI; OpenCode native creative tools retain their separately verified action contract.
 
 

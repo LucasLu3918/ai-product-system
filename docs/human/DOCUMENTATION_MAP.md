@@ -22,6 +22,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+Publication Doctor recovery is documented in the User Guide, security authority boundary, Runtime adapter guidance and Scenario 260/261 evidence.
+
 The User Guide remains the Human entry point for publication troubleshooting, while this map preserves canonical Skill Explorer and adapter-document ownership.
 
 The Human User Guide describes publication recovery and retains the canonical Skill and Harness documentation links.
@@ -104,6 +106,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
 ## Agent / machine canonical 文件
+
+The Claude Code adapter documents one-shot retryable Doctor recovery; the OpenCode adapter retains explicit read-only recovery guidance.
 
 Publication diagnosis is defined by the shared read-only contract, with native adapter behavior and recovery scenarios linked from canonical Human guidance.
 

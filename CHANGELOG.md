@@ -14,6 +14,9 @@
 - Bind Git publication to external Ed25519 Human grants, exact worktree/candidate/remote/ref scope, bounded expiry and transactional single-use consumption; add proposal/status/verify and separate-host issuer integration.
 - Replace shell text heuristics with bounded AST classification, preserve read-only tag access, and scan actual staged commit content while exempting only valid final author-trailer email metadata.
 
+## 0.83.0
+
+- Cross-check target-branch `protected` state with classic protection/effective rules, share fresh Required Checks policy evidence with merge Authority, preserve permission/transient causes and skipped-check provider outcomes, and run one read-only Doctor from Claude Code Hook only for retryable network, rate-limit or GitHub server errors.
 
 ## 0.82.0
 

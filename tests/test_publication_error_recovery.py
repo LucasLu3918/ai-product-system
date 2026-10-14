@@ -40,6 +40,17 @@ class PublicationRecoveryContractTest(unittest.TestCase):
         self.assertEqual(classify_required_checks([], required_policy=None)["status"],
                          "UNAVAILABLE")
 
+    def test_configured_required_policy_requires_evidence_and_skip_remains_aips_blocked(self):
+        missing = classify_required_checks([], required_policy=["verify", "visual-audit"])
+        skipped = classify_required_checks([{"name": "verify", "bucket": "skipping"}],
+                                           required_policy=["verify"])
+        self.assertEqual((missing["status"], missing["checks"]),
+                         ("MISSING", ["verify", "visual-audit"]))
+        self.assertEqual((skipped["status"], skipped["reason_code"]),
+                         ("MISSING", "REQUIRED_CHECKS_MISSING"))
+        self.assertEqual((skipped["provider_status"], skipped["github_required_check_outcome"]),
+                         ("SKIPPING", "SUCCESSFUL"))
+
     def test_host_denial_requires_human_and_does_not_execute(self):
         report = {"status": "BLOCKED", "next_step": "REOBSERVE",
                   "diagnostics": [PublicationError("", "HOST_MERGE_WITHOUT_REVIEW").diagnostic()]}

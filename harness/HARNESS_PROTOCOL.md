@@ -156,6 +156,8 @@ Publication diagnosis is a read-only capability. Runtime adapters may report the
 
 ## Publication Root-Cause Recovery (Plan35)
 
+Claude Code Hook may invoke the existing read-only Publication Doctor once for explicitly retryable network, rate-limit or GitHub server errors; the observation never retries or authorizes publication.
+
 AIPS PreToolUse permits ask/deny decisions, while Claude Host Auto Mode may independently refuse a command before AIPS executes. Report Host, AIPS and GitHub errors separately; recovery remains advisory.
 
 Publication diagnostics are read-only, candidate-bound observations. Runtime adapters can use phase and reason-code guidance to select the next safe observation; they cannot treat diagnostic success as host permission or Human approval.

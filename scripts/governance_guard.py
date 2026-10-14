@@ -454,6 +454,34 @@ def deny_hook_input(runtime: str, reason: str, diagnostic: dict[str, Any] | None
     return 0
 
 
+def retryable_doctor_observation(cwd: Path) -> dict[str, Any]:
+    """Run one bounded, read-only Doctor and keep only its safe diagnostic fields."""
+    try:
+        proc = subprocess.run(
+            [sys.executable, str(ROOT / "scripts/publish_preflight.py"), "doctor",
+             "--project-root", str(cwd), "--format", "json"],
+            cwd=cwd, capture_output=True, text=True, timeout=60, check=False,
+        )
+        payload = json.loads(proc.stdout) if proc.stdout else None
+        if not isinstance(payload, dict):
+            raise TypeError("invalid doctor output")
+        diagnostics = []
+        for item in payload.get("diagnostics", []):
+            if not isinstance(item, dict):
+                continue
+            diagnostics.append({key: item.get(key) for key in
+                ("reason_code", "phase", "category", "retryable", "next_step")
+                if isinstance(item.get(key), (str, bool))})
+        return {"status": payload.get("status") if payload.get("status") in {"READY", "BLOCKED"} else "UNKNOWN",
+                "required_check_state": ((payload.get("policy") or {}).get("required_check_state")
+                    if isinstance(payload.get("policy"), dict) else None),
+                "diagnostics": diagnostics[:8], "read_only": payload.get("read_only") is True,
+                "authorized": False, "executed": False, "api_write_performed": False}
+    except (OSError, ValueError, TypeError, subprocess.TimeoutExpired):
+        return {"status": "UNAVAILABLE", "diagnostics": [], "read_only": True,
+                "authorized": False, "executed": False, "api_write_performed": False}
+
+
 def hook(runtime: str) -> int:
     try:
         payload = json.load(sys.stdin)
@@ -618,6 +646,9 @@ def hook(runtime: str) -> int:
             if isinstance(exc, ValueError) and hasattr(exc, 'diagnostic'):
                 diagnostic = exc.diagnostic()
                 hook_diagnostic = diagnostic
+                if (runtime == "claude-code" and diagnostic.get("retryable") is True and
+                        diagnostic.get("category") in {"NETWORK", "RATE_LIMITED", "GITHUB_SERVER_ERROR"}):
+                    hook_diagnostic["doctor_observation"] = retryable_doctor_observation(cwd)
                 reason = diagnostic['reason_code'] + ': ' + diagnostic['detail'] + ' ' + diagnostic['next_step']
             else:
                 reason = "publication authorization failed (" + type(exc).__name__ + ")"
@@ -632,7 +663,7 @@ def hook(runtime: str) -> int:
                  str(hook_diagnostic.get("diagnostic_id")) + "]" if hook_diagnostic else ""),
             **({"additionalContext": "AIPS diagnostic: " + json.dumps({key: hook_diagnostic.get(key) for key in
                 ("diagnostic_id", "reason_code", "phase", "category", "detail", "retryable",
-                 "recovery_mode", "next_step")}, ensure_ascii=False, separators=(",", ":")) +
+                 "recovery_mode", "next_step", "doctor_observation")}, ensure_ascii=False, separators=(",", ":")) +
                 "; authorized=false; executed=false"} if hook_diagnostic else {}),
         }}))
     else:

@@ -4,6 +4,8 @@
 
 ## Inputs
 
+For merge readiness, `branch.protected` is cross-checked with classic protection and effective rules; a permission-hidden policy remains UNKNOWN and blocks Required Checks decisions.
+
 Read-only publication policy evidence uses the remote default branch unless an explicit target branch is supplied; it reports authentication, permission, contextual not-found, rate-limit, server and network failures separately.
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.

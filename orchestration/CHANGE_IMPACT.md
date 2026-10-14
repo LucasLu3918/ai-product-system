@@ -108,6 +108,8 @@ When traversal validation reports `affected node lacks a final disposition`, ins
 
 ## Diff reconciliation
 
+For publication authority changes, manually inspect the bounded Doctor, snapshot, merge-authority and Hook call graph when Impact Graph coverage is partial; record its exact candidate and consumer paths.
+
 For publication diagnostics, reconcile the exact touched CLI, snapshot, planning and Hook consumers, but keep repository-wide Impact Graph coverage partial unless dynamic callers and consumers are independently established.
 
 Publication planning impact includes the lazy CLI facade, authority diagnostics, native Guard consumers, Git/PR observation fingerprints and canonical documentation. Candidate plans are read-only evidence; reconcile the exact final diff without promoting global graph coverage.

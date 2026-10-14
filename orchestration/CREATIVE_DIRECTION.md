@@ -55,6 +55,8 @@ Material visual artifacts use `visual-quality-review`. Review against the approv
 
 ## Local character artwork
 
+Publication Doctor recovery is outside the Creative Direction workflow and cannot grant creative execution or publication authority.
+
 Publication diagnostics for an image-asset change remain evidence only; they do not imply permission to publish the asset or merge its PR.
 
 Creative output approval is distinct from Git publication authorization. Recovery observations never imply permission to publish image assets or merge their PR.

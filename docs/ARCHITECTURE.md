@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+Claude Code publication denials may trigger one bounded read-only Doctor observation for retryable network, rate-limit or GitHub server errors; the existing publication authority remains the only merge decision path.
+
 The publication Doctor uses the shared safe API observation path and keeps the candidate branch distinct from remote target-branch policy evidence.
 
 Publication root-cause reports originate from the existing AIPS authority and read-only diagnostic modules; Claude Host denial and GitHub required-check policy are independent observations, never a new approval service.
@@ -287,6 +289,8 @@ flowchart LR
 The alias candidate is deterministic and transparent. It is not an embedding provider and does not change `semantic.status=NOT_CONFIGURED`. The committed Trial follows the FAIL → KEEP branch: required regressions and no synonym-recall improvement produce recommendation `HOLD`. Normal Turn Context retrieval therefore does not enable the alias lane.
 
 ## Maintenance and publication evidence
+
+Core publication changes bind their exact changed-file set and validation evidence in the active Core Change Test Matrix.
 
 The read-only Doctor now labels the candidate/source branch separately from the remote default policy branch and preserves safe GitHub endpoint and HTTP evidence; these observations never authorize publication.
 
@@ -640,6 +644,8 @@ For Large/Core changes, architecture-diagram impact is mandatory. Update each af
 
 ## End-to-end product delivery
 
+Merge readiness uses one fresh target-branch Required Checks policy observation shared by Doctor and the publication authority.
+
 The canonical Skill registry feeds the generated Human Skill Explorer, while Agent routing continues to use the registry and each Skill source. The Explorer is static documentation output and does not participate in execution authority.
 
 Creative quality benchmark evidence is collected read-only after local trials. A registered prompt-free profile-case dataset identifies coverage, while raster hash checks and model/check/compiler outcomes remain separate from Human visual review, user acceptance and runtime attestation. The dataset adds no provider or execution component to the runtime flow.
@@ -837,6 +843,8 @@ flowchart TD
 Multi-review is selected by semantic impact/risk, not LOC alone. Reviewers do not silently expand scope or modify permanent Agent capability.
 
 ## Installation and project lifecycle
+
+Publication Doctor recovery adds no installation service, credential or persistent state.
 
 Project Diagnostics reports read-only next actions and recovery pointers; it does not bootstrap or refresh Intelligence automatically.
 

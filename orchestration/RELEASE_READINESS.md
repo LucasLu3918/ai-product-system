@@ -52,6 +52,8 @@ READY never bypasses human/security/governance approval.
 
 ## Candidate integrity
 
+Version and release notes for core publication changes are finalized only after exact-candidate validation and required remote checks pass.
+
 Read-only publication evidence identifies the candidate branch and policy target independently. It cannot replace fresh exact PR/head/base/check observations or explicit Human merge intent.
 
 Publication prepare/diagnose observations remain read-only and worktree-bound; follow the canonical Git publication procedure in USER_GUIDE.md and preserve native authority, candidate validation and host permissions.

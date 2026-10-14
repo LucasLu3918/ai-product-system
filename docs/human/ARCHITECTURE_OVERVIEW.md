@@ -6,6 +6,8 @@ AIPS 是跨 Agent Software Engineering Harness。這份文件只描述**目前�
 
 ## Runtime 與接入層
 
+Claude Code Hook only performs one read-only Publication Doctor observation for explicitly retryable network, rate-limit or GitHub server failures; native confirmation and publication authority remain separate.
+
 Publication Doctor uses the shared runtime API observer to identify the candidate branch separately from target policy and retain only safe endpoint/status evidence.
 
 OpenCode 安裝、Host 能力發現與版本綁定的原生驗收是不同證據。驗收報告明確列出任意 Shell 子程序、MCP／自訂工具及程式外寫入不受 guard 支援；整體治理仍為 ADVISORY。
@@ -126,6 +128,8 @@ EPHEMERAL 把 durable reusable state 放在 AIPS external cache；ATTACHED 才�
 
 ## Creative Workflow
 
+Publication diagnostics do not change creative asset execution or Human visual review authority.
+
 The OpenCode publication denial adapter emits only allowlisted diagnostic identifiers and safe recovery metadata through the native Hook response.
 
 Creative asset approval remains independent from the Git publish approval and its error-recovery observations.
@@ -177,6 +181,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Planning 與 Product Delivery
 
+Merge readiness shares fresh policy evidence for the PR target branch between Doctor and the publication authority.
+
 
 `skills/` 提供可按任務載入的工程、遊戲設計、研究與 UX 方法；遊戲平台政策及原生 Web 遊戲技術細節放在 `references/`。規劃文件保留產品專屬決策，技能和參考資料不取代真實專案的驗收。
 
@@ -219,6 +225,8 @@ Phase 4 在這條實作流程加入可選的 OpenAPI client generator adapter：
 Phase 5 的可選 `enforcement.generator_reports` 將未追蹤的 Phase 4 執行報告與目前 Profile、契約、工具、輸入、產物、Git 歷史及 Phase 3 provenance 交叉核對；舊 Profile 不受影響。共用 Widgets 參考專案執行本機 HTTP 服務與產生的 client，驗證工作流程及該案例行為。各真實產品的契約、測試和證據仍留在產品專案。
 
 ## Deterministic Execution
+
+Transient publication recovery collects bounded evidence once and performs no workflow rerun or remote mutation.
 
 49 canonical Skills route through `skills/INDEX.yaml`; all 38 pinned upstream source Skills are retained under `external-skills/matt-pocock/` and linked from the manifest with SHA-256. `scripts/skill_catalog.py` produces the read-only Human Explorer from that registry plus the upstream disposition manifest. All 31 non-canonical upstream IDs are installable at user choice; seven exact canonical IDs use their AIPS version. Disposition remains integration context rather than an install gate. Native Codex and Claude projections require explicit invocation, while Gemini keeps its activation consent step. The page adds no runtime authority or network dependency. `$grill-with-docs` is a separate explicit-only route and never follows from general planning or documentation work.
 
@@ -338,6 +346,8 @@ Plan36 publication diagnostics preserve this topic's existing behavior and autho
 
 ## Security 與 Governance
 
+`branch.protected` is cross-checked with readable classic protection and effective rules; permission-hidden policy remains unknown and blocks.
+
 Read-only publication diagnosis distinguishes the local candidate branch from the remote default policy branch and retains bounded, sanitized endpoint/status evidence; Human Authority and Host confirmation remain separate.
 
 Publication diagnostics now preserve distinct merge-command and CI-policy failure codes while redacting sensitive provider output. Claude Host confirmations are not implied by AIPS planning.
@@ -376,6 +386,8 @@ Runtime Policy Enforcement 使用四種結果：`ALLOW`、`DENY`、`REQUIRE_APPR
 Validation Observation keeps evidence readiness separate from operational failure: a completed `NOT_READY` cohort does not fail collection, while API, artifact, missing-report and unknown-status errors remain failures. Its graduation report exposes validator-level run precision, skip precision, recall, false-negative rate and confusion counts; zero-denominator rates stay null. Dependency Review records exact-candidate shadow parity; the standalone high-severity check remains authoritative until a separate reviewed switch after the observation window.
 
 ## Scenario Conformance 與 Agent Eval
+
+Scenario 260/261 cover unknown policy permissions, skipped provider outcomes, fresh merge policy evidence and one-shot Claude Doctor recovery.
 
 Scenario 235 的 OpenCode 原生驗收綁定確切版本、平台與來源摘要；成功的 Hook 證據不代表 production model quality 或 Agent task outcome。
 
@@ -416,6 +428,8 @@ Evolution Radar 位於 maintenance plane：收集 public technical evidence、de
 
 
 ## Maintenance governance
+
+Core publication changes close their documentation impact and candidate-bound validation matrix before release.
 
 The publication test matrix binds branch-policy observation, HTTP failure classification, safe Hook denials and transient read-only recovery to the exact candidate.
 

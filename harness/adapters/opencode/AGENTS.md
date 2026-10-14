@@ -51,6 +51,8 @@ Ordinary generation grants permit bounded `quality-check` of manifests produced 
 
 ## Publication Root-Cause Recovery (Plan35)
 
+Automatic one-shot Doctor recovery is Claude Code Hook behavior only; OpenCode recovery remains an explicit read-only observation and does not grant publication authority.
+
 When diagnosing a feature candidate, policy is read from the remote default target branch unless explicitly overridden; the candidate branch remains separate. Preserve safe status/reason evidence and the existing advisory-only OpenCode boundary.
 
 Agents should preserve the exact AIPS/GitHub reason code without claiming Claude Code Auto Mode behavior applies to OpenCode. Read-only recovery guidance never confers publication authority.
