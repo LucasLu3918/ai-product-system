@@ -28,16 +28,17 @@ PERSONAL_BRANCH_PREFIXES = ('agent/', 'bugfix/', 'chore/', 'claude/', 'codex/', 
 
 
 class PublicationError(ValueError):
-    def __init__(self, message: str, reason_code: str = 'PUBLICATION_REJECTED', *,
+    def __init__(self, message: str, reason_code: str | None = None, *,
                  context: dict[str, Any] | None = None, phase: str | None = None):
         super().__init__(message)
-        self.reason_code = reason_code if reason_code != 'PUBLICATION_REJECTED' else _reason_for_message(message)
         self.context = context or {}
+        self.reason_code = (reason_code if reason_code not in {None, 'PUBLICATION_REJECTED'}
+                            else _reason_for_message(message))
         self.phase = phase
 
     def diagnostic(self) -> dict[str, Any]:
         # Never expose exception text: Git/host errors may contain private data.
-        code = self.reason_code if self.reason_code in PUBLICATION_DIAGNOSTICS else 'PUBLICATION_REJECTED'
+        code = self.reason_code if self.reason_code in PUBLICATION_DIAGNOSTICS else 'INTERNAL_DIAGNOSTIC_GAP'
         values = PUBLICATION_DIAGNOSTICS[code]
         detail, next_step = values[:2]
         phase = self.phase or _phase_for_code(code)
@@ -53,13 +54,30 @@ class PublicationError(ValueError):
             'category': values[3] if len(values) > 3 else 'POLICY',
             'source': 'CLAUDE_HOST' if code.startswith('HOST_') else 'AIPS_PUBLICATION',
             'blocking_rule': source,
+            'blocking_rule_id': _blocking_rule_id(code),
             'retryable': code in RETRYABLE_REASONS,
             'redacted': True,
             'recovery_mode': 'HUMAN_OR_HOST_REQUIRED' if source in {'HUMAN_AUTHORITY', 'HOST_PERMISSION'} else 'SAFE_OBSERVATION',
         }
+        detail_zh, next_step_zh = PUBLICATION_DIAGNOSTICS_ZH.get(
+            code, ('發布驗證未通過。', '檢查此階段的安全診斷，修正後重新執行唯讀驗證。'))
+        result['detail_zh'] = detail_zh
+        result['next_step_zh'] = next_step_zh
+        error_class = self.context.get('error_class') or type(self).__name__
+        if code == 'INTERNAL_DIAGNOSTIC_GAP' and isinstance(error_class, str) and re.fullmatch(r'[A-Za-z][A-Za-z0-9_.]{0,79}', error_class):
+            result['error_class'] = error_class
         candidate = self.context.get('candidate_sha')
         if isinstance(candidate, str) and re.fullmatch(r'[0-9a-f]{40,64}', candidate):
             result['candidate_sha'] = candidate
+        worktree_id = self.context.get('worktree_id')
+        if isinstance(worktree_id, str) and re.fullmatch(r'sha256:[0-9a-f]{64}', worktree_id):
+            result['worktree_id'] = worktree_id
+        target_ref = self.context.get('target_ref')
+        if isinstance(target_ref, str) and re.fullmatch(r'refs/heads/[A-Za-z0-9._/-]{1,200}', target_ref):
+            result['target_ref'] = target_ref
+        mode = self.context.get('mode')
+        if mode in {'personal', 'high_assurance'}:
+            result['mode'] = mode
         worktree = self.context.get('worktree')
         if code == 'WORKTREE_DIRTY' and isinstance(worktree, Path):
             result['worktree_details'] = worktree_dirty_details(worktree)
@@ -73,6 +91,22 @@ class PublicationError(ValueError):
 
 PUBLICATION_DIAGNOSTICS = {
     'PUBLICATION_REJECTED': ('Publication binding was rejected.', 'Inspect the candidate with aips publish prepare; retain the current authority boundary.', 'validation', 'POLICY'),
+    'INTERNAL_DIAGNOSTIC_GAP': ('AIPS could not safely classify an internal publication failure.', 'Record the Diagnostic ID and error class; repair the local AIPS diagnostic mapping before retrying.', 'internal_diagnostics', 'INTERNAL'),
+    'PUSH_TARGET_BRANCH_MISMATCH': ('Push target does not match the current engineering branch.', 'Verify the selected worktree and full target ref, then rerun read-only publication diagnosis.', 'push_validation', 'POLICY'),
+    'COMMAND_FORM_UNSUPPORTED': ('The publication command form is unsupported.', 'Use the standalone literal native command emitted by the validated plan; do not change it to bypass the guard.', 'command_validation', 'INVALID_ARGUMENT'),
+    'PUBLICATION_INPUT_UNBOUND': ('The publication input cannot be bound to the inspected operation.', 'Supply explicit literal input through a supported option or file, then revalidate.', 'command_validation', 'INVALID_ARGUMENT'),
+    'PUBLICATION_OPTION_INVALID': ('A required publication option is missing or unsupported.', 'Provide one explicit supported option value and revalidate.', 'command_validation', 'INVALID_ARGUMENT'),
+    'ISSUER_REQUEST_INVALID': ('The Human issuer rejected an invalid grant request.', 'Review the proposal-bound request fields and submit a new valid request.', 'authority_validation', 'INVALID_ARGUMENT'),
+    'ISSUER_PROPOSAL_STATE_INVALID': ('Only a pending publication proposal can be issued.', 'Return the proposal to its valid pending state and obtain Human review.', 'authority_validation', 'POLICY'),
+    'ISSUER_PROPOSAL_MISMATCH': ('The grant request does not match the reviewed proposal.', 'Rebuild the request from the exact reviewed proposal and candidate.', 'authority_validation', 'STALE'),
+    'ISSUER_EVIDENCE_INCOMPLETE': ('The proposal is missing required validation evidence.', 'Complete the exact-candidate validation and attach its evidence before requesting a grant.', 'authority_validation', 'MISSING'),
+    'ISSUER_NONCE_INVALID': ('The grant request nonce is invalid or replayed.', 'Generate a fresh nonce and request a new grant.', 'authority_validation', 'POLICY'),
+    'ISSUER_KEY_PERMISSION_INVALID': ('The issuer private key permissions are too broad.', 'Restrict the key to the administrator-owned 0600 permission mode.', 'authority_validation', 'PERMISSION'),
+    'ISSUER_KEY_UNAVAILABLE': ('A required issuer signing key is unavailable or invalid.', 'Check the administrator-owned issuer key configuration and retry the grant request.', 'authority_validation', 'UNAVAILABLE'),
+    'ISSUER_INVALID_REQUEST': ('The Human issuer request is invalid.', 'Review the proposal-bound request fields and submit a valid request.', 'authority_validation', 'INVALID_ARGUMENT'),
+    'ISSUER_PROPOSAL_NOT_PENDING': ('Only a pending publication proposal can be issued.', 'Return the proposal to its valid pending state and obtain Human review.', 'authority_validation', 'POLICY'),
+    'ISSUER_KEY_MODE_INVALID': ('The issuer private key permissions are too broad.', 'Restrict the key to administrator-owned 0600 permissions.', 'authority_validation', 'PERMISSION'),
+    'ISSUER_KEY_INVALID': ('A required issuer signing key is unavailable or invalid.', 'Check administrator-owned issuer key configuration and retry the grant request.', 'authority_validation', 'UNAVAILABLE'),
     'MERGE_METHOD_REQUIRED': ('Exactly one merge method is required.', 'Use one enabled method: --merge, --squash or --rebase; check repository settings first.', 'command', 'INVALID_ARGUMENT'),
     'MERGE_PR_NUMBER_REQUIRED': ('The merge command must name one PR number.', 'Use a literal gh pr merge <number> command from the validated worktree.', 'command', 'INVALID_ARGUMENT'),
     'MERGE_HEAD_PIN_REQUIRED': ('The merge command lacks --match-head-commit.', 'Re-observe the live PR head and use its full SHA with --match-head-commit.', 'command', 'INVALID_ARGUMENT'),
@@ -92,7 +126,6 @@ PUBLICATION_DIAGNOSTICS = {
     'HOST_PERMISSION_DENIED': ('The host denied the operation.', 'Resolve permissions through the host approval flow; do not retry using another command form.'),
     'CONTENT_SCAN_BLOCKED': ('Mandatory candidate/history content scanning failed.', 'Review the scanner policy and safe finding categories; resolve them and revalidate.'),
     'PR_METADATA_INCOMPLETE': ('Explicit PR metadata is incomplete or ambiguous.', 'Provide unique --repo, --head, --base, --title and exactly one --body or --body-file.'),
-    'COMMAND_FORM_UNSUPPORTED': ('The publication command form is unsupported.', 'Use a standalone literal native command from the worktree-bound plan.'),
     'REMOTE_OBSERVATION_FAILED': ('Required repository or remote evidence is unavailable.', 'Diagnose network, authentication and repository configuration without printing raw errors.'),
     'CANDIDATE_CHANGED': ('Candidate or publication inputs changed after planning.', 'Discard the previous observation and create a fresh plan; reissue grants when required.'),
     'PR_STATE_AMBIGUOUS': ('PR state is ambiguous or stale.', 'Review matching PRs and remote head before continuing; do not create duplicate PRs.'),
@@ -129,7 +162,6 @@ PUBLICATION_DIAGNOSTICS = {
     'MERGE_METHOD_INVALID': ('The merge method is missing or ambiguous.', 'Select exactly one repository-enabled merge method.'),
     'AUTO_MERGE_INVALID': ('Automatic merge options are duplicated or inconsistent.', 'Use one explicit auto-merge option with exact merge intent.'),
     'RELEASE_TAG_INVALID': ('The release tag is missing, unverified, or does not point to the exact candidate.', 'Verify the remote tag and exact candidate SHA before retrying.'),
-    'PUBLICATION_OPTION_INVALID': ('A required publication option value is missing or unsupported.', 'Use a supported standalone command with explicit option values.'),
     'REPOSITORY_MISMATCH': ('The GitHub repository does not match the selected Git remote.', 'Verify --repo against the selected origin before continuing.'),
     'PR_HEAD_MISMATCH': ('The PR head is not bound to the selected candidate branch and SHA.', 'Re-observe the PR and candidate; do not update or merge a mismatched head.'),
     'CANDIDATE_NOT_PINNED': ('The merge command does not pin the exact candidate SHA.', 'Re-plan against the current PR head and pass its full SHA.'),
@@ -138,7 +170,6 @@ PUBLICATION_DIAGNOSTICS = {
     'PR_BASE_MISMATCH': ('The PR does not target the live default branch.', 'Re-plan for the verified default branch; do not retarget a stale merge.'),
     'REQUIRED_CHECKS_INCOMPLETE': ('Required PR checks are missing, pending, or failing.', 'Wait for the exact candidate’s required aggregate to pass, then re-observe.'),
     'REQUIRED_CHECKS_UNAVAILABLE': ('Required PR check state could not be observed.', 'Check GitHub access and connectivity, then re-read checks; do not merge on unknown state.'),
-    'PUBLICATION_INPUT_UNBOUND': ('Publication text or metadata cannot be bound to the inspected candidate.', 'Provide explicit literal input through a supported body file or option.'),
     'CREDENTIAL_BEARING_REMOTE': ('The configured remote URL contains credentials.', 'Remove credentials from the URL and use the host credential manager.'),
     'FORCE_WITH_LEASE_REQUIRED': ('The force update does not pin the observed target tip.', 'Use an exact target-and-tip lease only after a fresh candidate plan.'),
     'BASE_CHANGED': ('The live default base changed after the publication observation.', 'Discard the stale plan and revalidate the exact candidate against the new base.'),
@@ -163,6 +194,27 @@ PUBLICATION_DIAGNOSTICS = {
     'PROTECTION_EVIDENCE_UNAVAILABLE': ('The effective branch policy could not be established from complete GitHub evidence.', 'Review HTTP status and endpoint evidence; ask an administrator for missing read permission or verify with the effective-rules API. Never infer that the branch is unprotected.'),
 }
 
+PUBLICATION_DIAGNOSTICS_ZH = {
+    'INTERNAL_DIAGNOSTIC_GAP': ('AIPS 無法安全分類這項內部發布錯誤。', '保留診斷 ID 與錯誤類型，修正本機 AIPS 診斷映射後再重試。'),
+    'PUSH_TARGET_BRANCH_MISMATCH': ('推送目標分支與目前工程分支不一致。', '確認選用的工作樹與完整目標 ref，再重新執行唯讀發布診斷。'),
+    'BRANCH_NOT_ALLOWLISTED': ('目前分支不符合允許的工程分支規則。', '在核准的工程分支上重新規劃；不要推送至受保護分支。'),
+    'PUSH_SOURCE_NOT_EXACT_SHA': ('推送來源不是目前候選的完整 SHA。', '重新確認候選 HEAD，使用該完整 SHA 與完整 refs/heads 目標重新診斷。'),
+    'INVALID_TARGET_REF': ('推送目標 ref 格式不完整或無效。', '使用 refs/heads/<工程分支名稱>，並重新執行唯讀診斷。'),
+    'WORKTREE_DIRTY': ('選用的工作樹仍有未提交內容。', '先檢閱並保留工作檔案，確認交付範圍後再建立乾淨候選。'),
+    'CWD_MISMATCH': ('目前工作樹與規劃時選用的候選不同。', '切回原候選工作樹並重新確認 HEAD、分支與工作目錄。'),
+    'CANDIDATE_CHANGED': ('候選或發布觀測在規劃後已變更。', '捨棄舊觀測，對目前候選重新執行完整規劃與驗證。'),
+    'CONTENT_SCAN_BLOCKED': ('必要的候選內容或歷史掃描未通過。', '依安全掃描提供的原因修正內容，重新掃描候選；不可略過掃描。'),
+    'AUTHORITY_REQUIRED': ('高保證發布需要外部 Human 授權。', '透過已設定的 Human issuer 為精確操作與候選取得授權。'),
+    'HOST_PERMISSION_DENIED': ('Claude Code Host 拒絕了這項操作。', '使用 Host 正常互動授權流程；不要改寫指令以避開拒絕。'),
+    'REMOTE_OBSERVATION_FAILED': ('必要的遠端或儲存庫資訊目前無法取得。', '檢查網路、登入與儲存庫設定後重新執行唯讀診斷。'),
+    'REQUIRED_CHECKS_PENDING': ('必要檢查仍在執行。', '等待此候選 SHA 的必要檢查完成，再重新讀取狀態。'),
+    'REQUIRED_CHECKS_FAILING': ('此候選有必要檢查失敗。', '修正失敗的檢查並確認同一候選 SHA 的必要檢查通過。'),
+    'PR_HEAD_MISMATCH': ('PR 頭端與目前候選分支或 SHA 不符。', '重新讀取 PR 與候選資訊；不可更新或合併不相符的頭端。'),
+    'PR_BASE_MISMATCH': ('PR 目標分支不是目前遠端預設分支。', '確認預設分支並重新規劃，不要沿用過期目標。'),
+    'COMMAND_FORM_UNSUPPORTED': ('發布指令格式不受支援。', '使用規劃輸出的獨立原生指令，不要改寫成繞過保護的形式。'),
+    'PUBLICATION_REJECTED': ('發布綁定驗證未通過。', '重新執行 aips publish prepare 與唯讀診斷，檢查候選與授權界線。'),
+}
+
 
 _MESSAGE_REASON_PREFIXES = (
     ('personal publication requires one matching origin', 'REMOTE_CONFIGURATION_INVALID'),
@@ -175,6 +227,8 @@ _MESSAGE_REASON_PREFIXES = (
     ('publication requires an explicit feature branch', 'BRANCH_NOT_ALLOWLISTED'),
     ('one named remote and one explicit refspec required', 'PUSH_METADATA_INVALID'),
     ('personal mode permits only the verified single origin remote', 'REMOTE_NOT_ALLOWED'),
+    ('personal mode permits only the current engineering branch', 'PUSH_TARGET_BRANCH_MISMATCH'),
+    ('personal PRs must target the remote default branch', 'PR_BASE_MISMATCH'),
     ('implicit multi-ref publication configuration forbidden', 'PUSH_METADATA_INVALID'),
     ('supported tag mutation is', 'TAG_OPERATION_REQUIRES_REVIEW'),
     ('unsupported GitHub host', 'GITHUB_HOST_UNSUPPORTED'),
@@ -229,6 +283,7 @@ _MESSAGE_REASON_PREFIXES = (
     ('actual command required', 'PUBLICATION_COMMAND_UNBOUND'),
     ('actual publication action differs', 'AUTHORITY_ACTION_MISMATCH'),
     ('supported credential-free GitHub origin required', 'REMOTE_CONFIGURATION_INVALID'),
+    ('literal publication command required', 'COMMAND_FORM_UNSUPPORTED'),
 )
 
 
@@ -236,7 +291,7 @@ def _reason_for_message(message: str) -> str:
     for prefix, code in _MESSAGE_REASON_PREFIXES:
         if message.startswith(prefix):
             return code
-    return 'PUBLICATION_REJECTED'
+    return 'INTERNAL_DIAGNOSTIC_GAP'
 
 
 RETRYABLE_REASONS = {'REQUIRED_CHECKS_PENDING', 'REQUIRED_CHECKS_POLICY_NETWORK',
@@ -245,7 +300,7 @@ RETRYABLE_REASONS = {'REQUIRED_CHECKS_PENDING', 'REQUIRED_CHECKS_POLICY_NETWORK'
 
 
 def _phase_for_code(code: str) -> str:
-    if code.startswith(('AUTHORITY_', 'PUBLICATION_EVIDENCE', 'CONTENT_SCAN')):
+    if code.startswith(('AUTHORITY_', 'ISSUER_', 'PUBLICATION_EVIDENCE', 'CONTENT_SCAN')):
         return 'authorization_and_content_validation'
     if code.startswith(('PR_', 'REQUIRED_CHECKS_', 'MERGE_', 'AUTO_MERGE')):
         return 'pr_or_merge'
@@ -267,7 +322,35 @@ def _source_for_code(code: str) -> str:
         return 'GITHUB_OR_REMOTE_OBSERVATION'
     if code == 'PROTECTION_EVIDENCE_UNAVAILABLE':
         return 'GITHUB_API_EVIDENCE'
+    if code.startswith('ISSUER_'):
+        return 'HUMAN_AUTHORITY'
     return 'AIPS_POLICY'
+
+
+def _blocking_rule_id(code: str) -> str:
+    return code
+
+
+def runtime_binding(cwd: Path, *, candidate_sha: str, target_ref: str, mode: str) -> dict[str, str]:
+    """Safe candidate/runtime observations shared by Prepare and native Hooks."""
+    identity_value = identity(cwd)
+    module_root = Path(__file__).resolve().parents[1]
+    try:
+        version = (module_root / 'VERSION').read_text(encoding='utf-8').strip()
+        revision = git(module_root, 'rev-parse', 'HEAD^{commit}')
+    except (OSError, PublicationError):
+        version, revision = 'UNKNOWN', 'UNKNOWN'
+    safe = {
+        'worktree_id': identity_value['worktree_id'],
+        'repository_id': identity_value['repository_id'],
+        'candidate_sha': candidate_sha if re.fullmatch(r'[0-9a-f]{40,64}', candidate_sha) else 'UNKNOWN',
+        'target_ref': target_ref if re.fullmatch(r'refs/heads/[A-Za-z0-9._/-]{1,200}', target_ref) else 'UNKNOWN',
+        'mode': mode if mode in {'personal', 'high_assurance'} else 'UNKNOWN',
+        'runtime_version': version if re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+', version) else 'UNKNOWN',
+        'runtime_revision': revision if re.fullmatch(r'[0-9a-f]{40,64}', revision) else 'UNKNOWN',
+    }
+    safe['binding_fingerprint'] = digest(safe)
+    return safe
 
 
 def worktree_dirty_details(root: Path) -> dict[str, Any]:
@@ -327,13 +410,13 @@ def _personal_base(root: Path, operation: str, argv: list[str]) -> str:
     urls = git(root, 'remote', 'get-url', '--all', remote).splitlines()
     push_urls = git(root, 'remote', 'get-url', '--push', '--all', remote).splitlines()
     if len(urls) != 1 or len(push_urls) != 1 or urls[0] != push_urls[0]:
-        raise PublicationError('personal publication requires one matching origin fetch and push URL')
+        raise PublicationError('personal publication requires one matching origin fetch and push URL', reason_code='REMOTE_CONFIGURATION_INVALID')
     default_branch = _remote_default_branch(root, urls[0])
     default_tip = _tip(root, urls[0], 'refs/heads/' + default_branch)
     if not default_tip or not re.fullmatch(r'[0-9a-f]{40,64}', default_tip):
-        raise PublicationError('remote default branch tip unavailable')
+        raise PublicationError('remote default branch tip unavailable', reason_code='REMOTE_BRANCH_UNAVAILABLE')
     if operation == 'gh_pr_create' and _option(argv, '--base') != default_branch:
-        raise PublicationError('personal PRs must target the remote default branch')
+        raise PublicationError('personal PRs must target the remote default branch', reason_code='PR_BASE_MISMATCH')
     try:
         git(root, 'cat-file', '-e', default_tip + '^{commit}')
     except PublicationError as exc:
@@ -346,7 +429,7 @@ def _remote_default_branch(root: Path, url: str) -> str:
                               cwd=root, capture_output=True, text=True, timeout=15, check=False)
     match = re.search(r'^ref: refs/heads/([A-Za-z0-9_./-]+)\tHEAD$', response.stdout, re.MULTILINE)
     if response.returncode or not match:
-        raise PublicationError('remote default branch unavailable')
+        raise PublicationError('remote default branch unavailable', reason_code='REMOTE_BRANCH_UNAVAILABLE')
     return match.group(1)
 
 
@@ -372,7 +455,7 @@ def git(cwd: Path, *argv: str) -> str:
 def identity(cwd: Path) -> dict[str, str]:
     root = Path(git(cwd, 'rev-parse', '--show-toplevel')).resolve()
     if any(os.environ.get(key) for key in ['GIT_INDEX_FILE', 'GIT_DIR', 'GIT_WORK_TREE', 'GIT_CONFIG_COUNT', 'GIT_CONFIG_PARAMETERS']):
-        raise PublicationError('alternate Git environment unsupported')
+        raise PublicationError('alternate Git environment unsupported', reason_code='ALTERNATE_GIT_ENVIRONMENT')
     common = Path(git(root, 'rev-parse', '--path-format=absolute', '--git-common-dir')).resolve()
     directory = Path(git(root, 'rev-parse', '--absolute-git-dir')).resolve()
     return {'repository_id': digest(str(common)), 'worktree_id': digest(str(directory))}
@@ -414,7 +497,7 @@ def _tip(cwd: Path, remote: str, ref: str) -> str | None:
     lines = git(cwd, 'ls-remote', '--refs', '--', remote, ref).splitlines()
     matches = [line.split('\t')[0] for line in lines if line.endswith('\t' + ref)]
     if len(matches) > 1:
-        raise PublicationError('ambiguous remote ref')
+        raise PublicationError('ambiguous remote ref', reason_code='REMOTE_REF_AMBIGUOUS')
     return matches[0] if matches else None
 
 
@@ -430,11 +513,11 @@ def _option(argv: list[str], option: str) -> str:
 def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: bool = False) -> dict[str, Any]:
     """Observe a supported standalone literal command; implicit/multi-target pushes deny."""
     if operation not in PUBLICATION_OPERATIONS or not argv or any('$' in word or '`' in word or '\0' in word for word in argv):
-        raise PublicationError('literal publication command required')
+        raise PublicationError('literal publication command required', reason_code='COMMAND_FORM_UNSUPPORTED')
     root = Path(git(cwd, 'rev-parse', '--show-toplevel')).resolve()
     head = git(root, 'rev-parse', 'HEAD^{commit}')
     if not re.fullmatch(r'[0-9a-f]{40,64}', base):
-        raise PublicationError('explicit base commit SHA required')
+        raise PublicationError('explicit base commit SHA required', reason_code='BASE_SHA_INVALID')
     try:
         git(root, 'merge-base', '--is-ancestor', base, head)
     except PublicationError as exc:
@@ -445,7 +528,7 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
     diff = subprocess.run(['git', 'diff', '--binary', base, head, '--'], cwd=root, capture_output=True, timeout=15, check=False)
     files = subprocess.run(['git', 'diff', '--name-only', '-z', base, head, '--'], cwd=root, capture_output=True, timeout=15, check=False)
     if diff.returncode or files.returncode:
-        raise PublicationError('candidate diff unavailable')
+        raise PublicationError('candidate diff unavailable', reason_code='CANDIDATE_DIFF_UNAVAILABLE')
     result: dict[str, Any] = {
         **identity(root), 'branch': git(root, 'branch', '--show-current'),
         'candidate_commit': head, 'base_commit': base,
@@ -454,7 +537,7 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
         'operations': [operation], 'argv': argv,
     }
     if not result['branch']:
-        raise PublicationError('publication requires an explicit feature branch')
+        raise PublicationError('publication requires an explicit feature branch', reason_code='BRANCH_NOT_ALLOWLISTED')
     remote = 'origin'
     force = False
     delete = False
@@ -469,13 +552,13 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
                 raise PublicationError('unsupported push option', 'COMMAND_FORM_UNSUPPORTED')
             flags.append(flag)
         if len(args) != 2 or not re.fullmatch(r'[A-Za-z0-9_.-]+', args[0]):
-            raise PublicationError('one named remote and one explicit refspec required')
+            raise PublicationError('one named remote and one explicit refspec required', reason_code='PUSH_METADATA_INVALID')
         remote, spec = args
         if personal:
             fetch_urls = git(root, 'remote', 'get-url', '--all', 'origin').splitlines()
             push_urls = git(root, 'remote', 'get-url', '--push', '--all', 'origin').splitlines()
             if remote != 'origin' or len(fetch_urls) != 1 or len(push_urls) != 1 or fetch_urls[0] != push_urls[0]:
-                raise PublicationError('personal mode permits only the verified single origin remote')
+                raise PublicationError('personal mode permits only the verified single origin remote', reason_code='REMOTE_NOT_ALLOWED')
         delete = '--delete' in flags or spec.startswith(':')
         if '--delete' in flags:
             source, target = None, _ref(root, spec)
@@ -494,24 +577,26 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
             if (delete or target != 'refs/heads/' + branch or
                     branch in {'main', 'master', 'trunk', 'develop', 'production', 'release'} or
                     not branch.startswith(PERSONAL_BRANCH_PREFIXES)):
-                raise PublicationError('personal mode permits only the current engineering branch')
+                raise PublicationError('personal mode permits only the current engineering branch', reason_code='PUSH_TARGET_BRANCH_MISMATCH',
+                    context={'candidate_sha': head, 'worktree_id': result['worktree_id'],
+                             'target_ref': target, 'mode': 'personal'}, phase='push_validation')
         for key in ['push.followTags', 'remote.' + remote + '.mirror']:
             proc = subprocess.run(['git', 'config', '--bool', '--get', key], cwd=root, capture_output=True, text=True, timeout=5, check=False)
             if proc.returncode not in {0, 1} or proc.stdout.strip() == 'true':
-                raise PublicationError('implicit multi-ref publication configuration forbidden')
+                raise PublicationError('implicit multi-ref publication configuration forbidden', reason_code='PUSH_METADATA_INVALID')
     elif operation == 'git_tag':
         # Local mutations still require exact authorization; read-only forms are classified elsewhere.
         if argv[:2] != ['git', 'tag'] or len(argv) != 3 or argv[2].startswith('-'):
-            raise PublicationError('supported tag mutation is git tag <name>; other forms require separate review')
+            raise PublicationError('supported tag mutation is git tag <name>; other forms require separate review', reason_code='TAG_OPERATION_REQUIRES_REVIEW')
         target = _ref(root, 'refs/tags/' + argv[2])
         result['local_tag_oid'] = git(root, 'tag', '--list', argv[2]) or None
     else:
         if os.environ.get('GH_HOST', 'github.com') != 'github.com':
-            raise PublicationError('unsupported GitHub host')
+            raise PublicationError('unsupported GitHub host', reason_code='GITHUB_HOST_UNSUPPORTED')
         expected = {'gh_pr_create': ['gh', 'pr', 'create'], 'gh_pr_merge': ['gh', 'pr', 'merge'],
                     'gh_release_create': ['gh', 'release', 'create']}[operation]
         if argv[:3] != expected:
-            raise PublicationError('use standalone gh command with explicit --repo')
+            raise PublicationError('use standalone gh command with explicit --repo', reason_code='COMMAND_FORM_UNSUPPORTED')
         # A second spelling such as -R/--repo= or -B may override inspected fields.
         valued = {'--repo', '--body', '--body-file'}
         switches = set()
@@ -535,18 +620,18 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
             if sum(flag in argv for flag in switches) != 1:
                 raise PublicationError('exactly one explicit merge method required', 'MERGE_METHOD_REQUIRED')
             if argv.count('--auto') > 1:
-                raise PublicationError('duplicate automatic merge option is unsupported')
+                raise PublicationError('duplicate automatic merge option is unsupported', reason_code='AUTO_MERGE_INVALID')
         else:
             valued = {'--repo', '--title', '--notes', '--notes-file'}
             switches = {'--verify-tag', '--draft', '--prerelease'}
             position = 4
             if '--verify-tag' not in argv:
-                raise PublicationError('release creation requires an existing verified remote tag')
+                raise PublicationError('release creation requires an existing verified remote tag', reason_code='RELEASE_TAG_INVALID')
         while position < len(argv):
             flag = argv[position]
             if flag in valued:
                 if position + 1 >= len(argv) or argv[position + 1].startswith('-'):
-                    raise PublicationError('missing explicit option value')
+                    raise PublicationError('missing explicit option value', reason_code='PUBLICATION_OPTION_INVALID')
                 position += 2
             elif flag in switches or operation == 'gh_pr_merge' and flag == '--auto':
                 position += 1
@@ -555,19 +640,19 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
                                        'MERGE_OPTION_FORBIDDEN' if operation == 'gh_pr_merge' else 'COMMAND_FORM_UNSUPPORTED')
         repo = _option(argv, '--repo')
         if not re.fullmatch(r'[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+', repo):
-            raise PublicationError('explicit GitHub owner/repository required')
+            raise PublicationError('explicit GitHub owner/repository required', reason_code='PR_METADATA_INCOMPLETE')
         url = git(root, 'remote', 'get-url', '--push', remote)
         ssh_prefix = 'git' + '@' + 'github.com:'
         if url.removesuffix('.git') not in {'https://github.com/' + repo, ssh_prefix + repo}:
-            raise PublicationError('gh repository does not match Git remote')
+            raise PublicationError('gh repository does not match Git remote', reason_code='REPOSITORY_MISMATCH')
         result['github_repo'] = repo
         if operation == 'gh_pr_create':
             if (_option(argv, '--head') != result['branch'] or
                     personal and not result['branch'].startswith(PERSONAL_BRANCH_PREFIXES)):
-                raise PublicationError('PR head must be the bound candidate branch')
+                raise PublicationError('PR head must be the bound candidate branch', reason_code='PR_HEAD_MISMATCH')
             target = _ref(root, 'refs/heads/' + _option(argv, '--base'))
             if _tip(root, remote, 'refs/heads/' + result['branch']) != head:
-                raise PublicationError('remote PR head differs from candidate')
+                raise PublicationError('remote PR head differs from candidate', reason_code='PR_HEAD_MISMATCH')
         elif operation == 'gh_pr_merge':
             if len(argv) < 4 or not argv[3].isdigit() or any(flag in argv for flag in ['--admin', '--delete-branch']):
                 raise PublicationError('explicit PR number and checked merge required', 'MERGE_OPTION_FORBIDDEN')
@@ -576,18 +661,18 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
             pr = json.loads(run(root, 'gh', 'pr', 'view', argv[3], '--repo', repo, '--json',
                                 'url,state,isDraft,mergeable,headRefOid,headRefName,baseRefOid,baseRefName'))
             if pr.get('state') != 'OPEN' or pr.get('isDraft') is True:
-                raise PublicationError('PR must be open and ready for review')
+                raise PublicationError('PR must be open and ready for review', reason_code='PR_NOT_MERGEABLE')
             if pr['headRefOid'] != head:
-                raise PublicationError('PR head differs from candidate')
+                raise PublicationError('PR head differs from candidate', reason_code='PR_HEAD_MISMATCH')
             if personal and (pr.get('headRefName') != result['branch'] or
                              not result['branch'].startswith(PERSONAL_BRANCH_PREFIXES)):
-                raise PublicationError('personal PR merge must use the current allowlisted engineering branch')
+                raise PublicationError('personal PR merge must use the current allowlisted engineering branch', reason_code='BRANCH_NOT_ALLOWLISTED')
             if pr.get('mergeable') != 'MERGEABLE':
-                raise PublicationError('PR mergeability is not confirmed')
+                raise PublicationError('PR mergeability is not confirmed', reason_code='PR_MERGEABILITY_UNKNOWN')
             result['pr_base_commit'] = pr['baseRefOid']
             target = _ref(root, 'refs/heads/' + pr['baseRefName'])
             if pr['baseRefName'] != _remote_default_branch(root, url):
-                raise PublicationError('personal PR merge must target the remote default branch')
+                raise PublicationError('personal PR merge must target the remote default branch', reason_code='PR_BASE_MISMATCH')
             from publication_diagnostics import (
                 classify_required_checks,
                 required_checks_policy,
@@ -633,27 +718,27 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
             }
         else:
             if len(argv) < 4 or argv[3].startswith('-'):
-                raise PublicationError('explicit release tag required')
+                raise PublicationError('explicit release tag required', reason_code='RELEASE_TAG_INVALID')
             target = _ref(root, 'refs/tags/' + argv[3])
             if git(root, 'rev-parse', target + '^{commit}') != head:
-                raise PublicationError('release tag must point to the exact candidate commit')
+                raise PublicationError('release tag must point to the exact candidate commit', reason_code='RELEASE_TAG_INVALID')
             result['tag_oid'] = git(root, 'rev-parse', target)
         inputs = {}
         for opt in ['--body-file', '--notes-file']:
             if opt in argv:
                 path = Path(_option(argv, opt))
                 if str(path) == '-':
-                    raise PublicationError('stdin publication text cannot be bound')
+                    raise PublicationError('stdin publication text cannot be bound', reason_code='PUBLICATION_INPUT_UNBOUND')
                 path = (path if path.is_absolute() else cwd / path).resolve(strict=True)
                 inputs[opt] = {'path': str(path), 'digest': 'sha256:' + hashlib.sha256(path.read_bytes()).hexdigest()}
         result['file_inputs'] = inputs
     url = git(root, 'remote', 'get-url', '--push', remote)
     # Several push URLs cause several publications, which this single-target contract rejects.
     if len(git(root, 'remote', 'get-url', '--push', '--all', remote).splitlines()) != 1:
-        raise PublicationError('exactly one push URL required')
+        raise PublicationError('exactly one push URL required', reason_code='REMOTE_CONFIGURATION_INVALID')
     parsed = urlparse(url)
     if parsed.password or (parsed.scheme in {'http', 'https'} and parsed.username):
-        raise PublicationError('credential-bearing remote URL forbidden')
+        raise PublicationError('credential-bearing remote URL forbidden', reason_code='CREDENTIAL_BEARING_REMOTE')
     result.update(remote=remote, remote_url=url, target_ref=target,
                   expected_remote_oid=_tip(root, url, target), force=force, delete=delete)
     result['remote_state_enforcement'] = 'server_lease' if operation == 'git_push' else 'preexecution_observation'
@@ -661,18 +746,18 @@ def action(cwd: Path, operation: str, argv: list[str], base: str, *, personal: b
         expected_lease = '--force-with-lease=' + target + ':' + (result['expected_remote_oid'] or '')
         allowed_flags = ([], [expected_lease]) if personal else ([expected_lease], [expected_lease, '--delete'])
         if flags not in allowed_flags:
-            raise PublicationError('one explicit target/tip force-with-lease required; unconditional force forbidden')
+            raise PublicationError('one explicit target/tip force-with-lease required; unconditional force forbidden', reason_code='FORCE_WITH_LEASE_REQUIRED')
     if operation == 'gh_pr_merge' and result['pr_base_commit'] != result['expected_remote_oid']:
-        raise PublicationError('PR base differs from current remote tip')
+        raise PublicationError('PR base differs from current remote tip', reason_code='BASE_CHANGED')
     if operation == 'gh_release_create' and result['tag_oid'] != result['expected_remote_oid']:
-        raise PublicationError('local and remote release tag differ')
+        raise PublicationError('local and remote release tag differ', reason_code='RELEASE_TAG_INVALID')
     return result
 
 
 def validate_personal_action(cwd: Path, operation: str, argv: list[str]) -> dict[str, Any]:
     """Validate personal publication; PR merge returns an exact per-call confirmation binding."""
     if operation not in PERSONAL_PUBLICATION_OPERATIONS:
-        raise PublicationError('operation is unavailable in personal publication mode')
+        raise PublicationError('operation is unavailable in personal publication mode', reason_code='ASSURANCE_MODE_BLOCKED')
     root = Path(git(cwd, 'rev-parse', '--show-toplevel')).resolve()
     base = _personal_base(root, operation, argv)
     from check_secret_leakage import DEFAULT_POLICY, load_policy, scan_candidate
@@ -692,32 +777,32 @@ def proposal(cwd: Path, operation: str, argv: list[str], base: str) -> dict[str,
 
 def _timestamp(value: Any) -> datetime:
     if not isinstance(value, str):
-        raise PublicationError('UTC timestamp required')
+        raise PublicationError('UTC timestamp required', reason_code='AUTHORITY_TIME_INVALID')
     try:
         date = datetime.fromisoformat(value)
     except ValueError as exc:
-        raise PublicationError('invalid UTC timestamp') from exc
+        raise PublicationError('invalid UTC timestamp', reason_code='AUTHORITY_TIME_INVALID') from exc
     if date.tzinfo is None or date.utcoffset().total_seconds() != 0:
-        raise PublicationError('UTC timestamp required')
+        raise PublicationError('UTC timestamp required', reason_code='AUTHORITY_TIME_INVALID')
     return date
 
 
 class _NoRedirect(HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
-        raise PublicationError('authority redirects are forbidden')
+        raise PublicationError('authority redirects are forbidden', reason_code='AUTHORITY_REDIRECT_BLOCKED')
 
 
 class Authority:
     def __init__(self, config: dict[str, Any]):
         if config.get('version') != 1:
-            raise PublicationError('invalid authority configuration')
+            raise PublicationError('invalid authority configuration', reason_code='AUTHORITY_ENDPOINT_INVALID')
         self.config = config
         parsed = urlparse(config.get('endpoint', ''))
         if parsed.scheme != 'https' or not parsed.hostname or parsed.username or parsed.password or parsed.query or parsed.fragment:
-            raise PublicationError('authority requires a credential-free HTTPS endpoint')
+            raise PublicationError('authority requires a credential-free HTTPS endpoint', reason_code='AUTHORITY_ENDPOINT_INVALID')
         self.issuers = config.get('issuers') or {}
         if not isinstance(self.issuers, dict) or not self.issuers:
-            raise PublicationError('trusted issuer keys required')
+            raise PublicationError('trusted issuer keys required', reason_code='AUTHORITY_KEY_MISSING')
 
     def verify_signature(self, doc: dict[str, Any]) -> None:
         from cryptography.exceptions import InvalidSignature
@@ -725,13 +810,13 @@ class Authority:
         try:
             signature = doc['signature']
             if signature['algorithm'] != 'ed25519':
-                raise PublicationError('unsupported signature algorithm')
+                raise PublicationError('unsupported signature algorithm', reason_code='AUTHORITY_SIGNATURE_INVALID')
             public = base64.b64decode(self.issuers[signature['issuer_key_id']], validate=True)
             raw = base64.b64decode(signature['value_b64'], validate=True)
             message = {key: value for key, value in doc.items() if key != 'signature'}
             Ed25519PublicKey.from_public_bytes(public).verify(raw, canonical(message))
         except (KeyError, ValueError, TypeError, InvalidSignature) as exc:
-            raise PublicationError('untrusted or invalid publication signature') from exc
+            raise PublicationError('untrusted or invalid publication signature', reason_code='AUTHORITY_SIGNATURE_INVALID') from exc
 
     def check(self, record: dict[str, Any], consume: bool) -> None:
         nonce = uuid.uuid4().hex
@@ -744,18 +829,18 @@ class Authority:
         with build_opener(_NoRedirect()).open(req, timeout=10) as response:
             raw = response.read(65537)
         if len(raw) > 65536:
-            raise PublicationError('oversized authority response')
+            raise PublicationError('oversized authority response', reason_code='AUTHORITY_RESPONSE_TOO_LARGE')
         assertion = json.loads(raw)
         self.verify_signature(assertion)
         expected = {'version': 1, 'nonce': nonce, 'grant_id': record['approval']['id'],
                     'record_digest': request['record_digest'], 'action_digest': request['action_digest'],
                     'result': 'CONSUMED' if consume else 'AVAILABLE'}
         if any(assertion.get(key) != value for key, value in expected.items()):
-            raise PublicationError('authority denied, stale or replayed grant')
+            raise PublicationError('authority denied, stale or replayed grant', reason_code='AUTHORITY_GRANT_DENIED')
         expires = _timestamp(assertion.get('expires_at'))
         now = datetime.now(UTC)
         if not 0 < (expires - now).total_seconds() <= 60:
-            raise PublicationError('authority assertion expired or exceeds 60 seconds')
+            raise PublicationError('authority assertion expired or exceeds 60 seconds', reason_code='AUTHORITY_GRANT_EXPIRED')
 
 
 def protected_file(value: Path) -> Path:
@@ -763,7 +848,7 @@ def protected_file(value: Path) -> Path:
     for item in [path, *path.parents]:
         info = item.stat()
         if info.st_uid != 0 or stat.S_IMODE(info.st_mode) & 0o022:
-            raise PublicationError('authority configuration must be administrator-owned and not Agent-writable')
+            raise PublicationError('authority configuration must be administrator-owned and not Agent-writable', reason_code='AUTHORITY_CONFIG_WRITABLE')
     return path
 
 
@@ -771,33 +856,33 @@ def configured_authority() -> Authority:
     # Fixed administrator-owned path; an Agent-owned external YAML is not a trust root.
     path = protected_file(CONFIG)
     if any(os.access(item, os.W_OK) for item in [path, *path.parents]):
-        raise PublicationError('authority config/path is writable by this Agent, including ACL or privileged access')
+        raise PublicationError('authority config/path is writable by this Agent, including ACL or privileged access', reason_code='AUTHORITY_CONFIG_WRITABLE')
     return Authority(yaml.safe_load(path.read_text()))
 
 
 def verify(record: dict[str, Any], operation: str, cwd: Path, argv: list[str] | None,
            *, consume: bool = False, authority: Authority | None = None) -> None:
     if record.get('version') != 2 or operation not in PUBLICATION_OPERATIONS:
-        raise PublicationError('signed v2 publication grant required; reissue legacy approvals')
+        raise PublicationError('signed v2 publication grant required; reissue legacy approvals', reason_code='AUTHORITY_LEGACY_GRANT')
     authority = authority or configured_authority()
     authority.verify_signature(record)
     approval = record.get('approval') or {}
     scope = record.get('scope') or {}
     if approval.get('status') != 'APPROVED' or not all(approval.get(key) for key in ['id', 'approved_by', 'approved_at', 'expires_at']):
-        raise PublicationError('complete Human-issued approval required')
+        raise PublicationError('complete Human-issued approval required', reason_code='AUTHORITY_GRANT_INCOMPLETE')
     now = datetime.now(UTC)
     issued, expires = _timestamp(approval['approved_at']), _timestamp(approval['expires_at'])
     if issued > now or expires <= now or not 0 < (expires - issued).total_seconds() <= 3600:
-        raise PublicationError('approval expired, future-dated or exceeds one hour')
+        raise PublicationError('approval expired, future-dated or exceeds one hour', reason_code='AUTHORITY_GRANT_EXPIRED')
     if record.get('proposal', {}).get('fingerprint') != digest(scope):
-        raise PublicationError('proposal scope fingerprint mismatch')
+        raise PublicationError('proposal scope fingerprint mismatch', reason_code='AUTHORITY_SCOPE_MISMATCH')
     if (record.get('evidence') or {}).get('unresolved'):
-        raise PublicationError('unresolved publication evidence')
+        raise PublicationError('unresolved publication evidence', reason_code='PUBLICATION_EVIDENCE_UNRESOLVED')
     if not (record.get('evidence') or {}).get('validation'):
-        raise PublicationError('publication validation evidence required')
+        raise PublicationError('publication validation evidence required', reason_code='AUTHORITY_VALIDATION_MISSING')
     if not argv:
-        raise PublicationError('actual command required; stored command cannot supply execution scope')
+        raise PublicationError('actual command required; stored command cannot supply execution scope', reason_code='PUBLICATION_COMMAND_UNBOUND')
     actual = action(cwd, operation, argv, scope.get('base_commit', ''))
     if actual != scope:
-        raise PublicationError('actual publication action differs from approved scope')
+        raise PublicationError('actual publication action differs from approved scope', reason_code='AUTHORITY_ACTION_MISMATCH')
     authority.check(record, consume)

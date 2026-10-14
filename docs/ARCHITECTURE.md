@@ -4,6 +4,8 @@ These diagrams are source-controlled architecture artifacts. Update them when th
 
 ## Runtime flow
 
+Publication diagnostics use shared reason codes and safe candidate bindings from the existing authority and preflight modules. Prepare, Hook, and Doctor observations remain distinct from Host permission, Human authorization, and execution.
+
 Claude Code publication denials may trigger one bounded read-only Doctor observation for retryable network, rate-limit or GitHub server errors; the existing publication authority remains the only merge decision path.
 
 The publication Doctor uses the shared safe API observation path and keeps the candidate branch distinct from remote target-branch policy evidence.
@@ -295,6 +297,8 @@ The alias candidate is deterministic and transparent. It is not an embedding pro
 ## Maintenance and publication evidence
 
 Runtime denial recovery is descriptive only: publication and protected operations continue to require exact candidate validation and native Human authorization.
+
+Publication diagnostics also preserve personal-mode policy evidence at this boundary; a reason code or diagnostic fingerprint remains observational and cannot replace native confirmation.
 
 Core publication changes bind their exact changed-file set and validation evidence in the active Core Change Test Matrix.
 
@@ -851,6 +855,8 @@ Multi-review is selected by semantic impact/risk, not LOC alone. Reviewers do no
 ## Installation and project lifecycle
 
 Publication Doctor recovery adds no installation service, credential or persistent state.
+
+Publication diagnostic tracing is opt-in through the existing audit-ledger configuration; AIPS creates no default ledger or additional runtime service.
 
 Project Diagnostics reports read-only next actions and recovery pointers; it does not bootstrap or refresh Intelligence automatically.
 

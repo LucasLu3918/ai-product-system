@@ -2,11 +2,90 @@
 from __future__ import annotations
 
 import json
+import os
 import re
 import shutil
 import subprocess
 from pathlib import Path
 from typing import Any
+
+
+def lookup_diagnostic(diagnostic_id: str, ledger: str | None = None) -> dict[str, Any]:
+    """Read an optional safe Diagnostic ID event from the existing audit ledger."""
+    ledger = ledger or os.environ.get('AIPS_GOVERNANCE_AUDIT_LEDGER')
+    if not ledger:
+        return {'status': 'NOT_CONFIGURED', 'diagnostic_id': diagnostic_id, 'event': None,
+                'integrity': None,
+                'next_step': 'Configure AIPS_GOVERNANCE_AUDIT_LEDGER to an existing protected ledger before recording diagnostics.',
+                'next_step_zh': '如需查詢診斷事件，請先設定既有的 AIPS_GOVERNANCE_AUDIT_LEDGER；系統不會自動建立 ledger。'}
+    try:
+        from governance_audit import find_diagnostic
+        result = find_diagnostic(Path(ledger).expanduser().resolve(), diagnostic_id)
+        result['next_step_zh'] = {
+            'FOUND': '找到診斷事件；請先確認 integrity.status 為 PASS，再依 reason_code 與 phase 處理。',
+            'NOT_FOUND': '此 ledger 中沒有這個診斷 ID；確認使用記錄當時設定的 ledger。',
+            'INTEGRITY_FAILED': 'Ledger 完整性驗證失敗；停止依賴其中的事件並請管理員檢查稽核鏈。',
+        }.get(result['status'], '檢查診斷 ID 與稽核 ledger 設定。')
+        return result
+    except ValueError:
+        return {'status': 'BLOCKED', 'reason_code': 'DIAGNOSTIC_ID_INVALID',
+                'diagnostic_id': None, 'event': None, 'integrity': None,
+                'next_step_zh': '請提供完整 UUID 格式的 Diagnostic ID。'}
+    except Exception as exc:  # noqa: BLE001 - return a bounded unavailable diagnostic for all ledger failures.
+        return {'status': 'UNAVAILABLE', 'reason_code': 'DIAGNOSTIC_LOOKUP_FAILED',
+                'error_class': type(exc).__name__, 'diagnostic_id': diagnostic_id,
+                'event': None, 'integrity': None,
+                'next_step_zh': '檢查既有稽核 ledger 的讀取權限與完整性；不要建立新的預設儲存位置。'}
+
+
+def record_diagnostic(diagnostic: dict[str, Any], runtime: str,
+                      binding: dict[str, Any] | None = None) -> str:
+    """Best-effort append of a redacted diagnostic to the configured existing ledger."""
+    ledger = os.environ.get('AIPS_GOVERNANCE_AUDIT_LEDGER')
+    if not ledger:
+        return 'NOT_CONFIGURED'
+    try:
+        from datetime import UTC, datetime
+
+        from governance_audit import append_event
+
+        raw_binding = binding or diagnostic.get('binding') or {}
+        allowed = ('worktree_id', 'candidate_sha', 'target_ref', 'mode',
+                   'runtime_version', 'runtime_revision', 'binding_fingerprint')
+        safe_binding = {}
+        for key in allowed:
+            value = raw_binding.get(key) if isinstance(raw_binding, dict) else None
+            if not isinstance(value, str) or len(value) > 200:
+                continue
+            if key in {'candidate_sha', 'runtime_revision'} and value != 'UNKNOWN' and not re.fullmatch(r'[0-9a-f]{40,64}', value):
+                continue
+            if key in {'worktree_id', 'repository_id', 'binding_fingerprint'} and value != 'UNKNOWN' and not re.fullmatch(r'(?:[0-9a-f]{64}|sha256:[0-9a-f]{64})', value):
+                continue
+            if key == 'target_ref' and not re.fullmatch(r'refs/heads/[A-Za-z0-9._/-]{1,200}', value):
+                continue
+            if key == 'mode' and value not in {'personal', 'high_assurance', 'UNKNOWN'}:
+                continue
+            if key == 'runtime_version' and value != 'UNKNOWN' and not re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+', value):
+                continue
+            safe_binding[key] = value
+        event = {
+            'event_type': 'PUBLICATION_DIAGNOSTIC',
+            'occurred_at': datetime.now(UTC).isoformat(),
+            'diagnostic_id': diagnostic.get('diagnostic_id'),
+            'reason_code': diagnostic.get('reason_code'),
+            'phase': diagnostic.get('phase'),
+            'source': diagnostic.get('source'),
+            'blocking_rule_id': diagnostic.get('blocking_rule_id'),
+            'authorized': False,
+            'executed': False,
+            'actor': {'type': 'runtime', 'id': runtime if runtime in {'claude-code', 'codex', 'gemini-cli', 'opencode'} else 'codex'},
+            'binding': safe_binding,
+        }
+        append_event(Path(ledger).expanduser().resolve(), event)
+        return 'RECORDED'
+    except Exception:  # noqa: BLE001 - audit is best effort and must not alter publication decisions.
+        # Do not surface a ledger path or change the original allow/deny outcome.
+        return 'FAILED'
 
 
 def remote_failure(stderr: str = "", returncode: int | None = None) -> str:

@@ -51,6 +51,8 @@ Ordinary generation grants permit bounded `quality-check` of manifests produced 
 
 ## Publication Root-Cause Recovery (Plan35)
 
+OpenCode may relay the shared safe reason code, phase, recovery guidance and candidate/runtime binding. Preserve the explicit lifecycle distinction between plan, AIPS authorization, Host decision and observed execution; these diagnostics stay read-only and advisory.
+
 Automatic one-shot Doctor recovery is Claude Code Hook behavior only; OpenCode recovery remains an explicit read-only observation and does not grant publication authority.
 
 When diagnosing a feature candidate, policy is read from the remote default target branch unless explicitly overridden; the candidate branch remains separate. Preserve safe status/reason evidence and the existing advisory-only OpenCode boundary.

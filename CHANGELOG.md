@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Preserve specific publication rejection codes; add safe Prepare/Hook binding and lifecycle fields, Traditional Chinese recovery guidance, and optional verified Diagnostic ID lookup through the existing configured governance audit ledger.
+
 - Match Resource Authorization grants against kind, selector, operation, destination and network/HTTP constraints; distinguish Profile resolution failures, bind Hook actions to observed URLs, and expose structured redacted diagnostics with Traditional Chinese recovery guidance.
 - Bound ComfyUI requests to literal loopback addresses, explicit ports and allowlisted methods/paths; add capped read-only model inventory, redirect refusal, shared character/background/texture/UI ornament presets, and static-only Apple Silicon MPS precision diagnostics.
 - Separate publication candidate and target-policy branch observations; preserve sanitized GitHub HTTP/error provenance, align retryability with transient read-only evidence, and surface structured safe Claude Code Hook diagnostics without changing publication authority.

@@ -22,6 +22,8 @@ Site build 永遠可由 CI 驗證；GitHub Pages 尚未在 repository 啟用時�
 
 ## 文件角色
 
+Publication root-cause diagnostics and the optional Diagnostic ID lookup contract are implemented in the publication authority/planning/diagnostics and governance-audit modules; Human recovery steps live in User Guide, while native adapter and exact scenario boundaries live in Harness and Conformance.
+
 Publication Doctor recovery is documented in the User Guide, security authority boundary, Runtime adapter guidance and Scenario 260/261 evidence.
 
 The User Guide remains the Human entry point for publication troubleshooting, while this map preserves canonical Skill Explorer and adapter-document ownership.
@@ -108,6 +110,8 @@ GitHub API transfer integrity is documented in User Guide 的 Git Publication、
 Plan36 publication diagnostics preserve this topic's existing behavior and authority boundaries.
 
 ## Agent / machine canonical 文件
+
+Creative asset authorization remains canonical in Creative Direction and adapter protocols; Git publication Diagnostic ID tracing stays in the publication authority/ledger path and is not a creative permission source.
 
 The plan39 source-to-topic mapping is maintained by the `plan39-comfyui-resource-authorization-diagnostics` placement rule and the `plan39-comfyui` documentation-sync entry; Scenario 262 is the verification-history anchor.
 

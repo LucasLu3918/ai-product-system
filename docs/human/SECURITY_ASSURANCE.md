@@ -451,6 +451,8 @@ AIPS applies a sink-aware Runtime Content Safety Boundary before AIPS-owned cont
 
 ## Runtime Policy Enforcement
 
+Publication diagnostic fields and optional ledger tracing are observability only. Unknown causes remain a diagnostic gap; they do not downgrade the existing fail-closed requirement or create Human, Host, push, PR, or merge authority.
+
 Claude Code runs one bounded Doctor only for retryable network, rate-limit or GitHub server errors; native Host confirmation and merge authority remain required.
 
 Publication Doctor reports only observed HTTP status and safe endpoint identity. Authentication, permission, missing resource, rate limit, service and network failures remain distinct; unknown policy evidence blocks, and diagnostic retries never run push, PR or merge actions.

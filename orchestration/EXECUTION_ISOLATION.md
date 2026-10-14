@@ -133,6 +133,8 @@ An explicit read-only task may omit a writer boundary only when it has no `write
 
 ## Resource-scoped authorization
 
+Publication diagnostic bindings and ledger records are evidence only and are not execution-isolation grants. A matching candidate fingerprint cannot authorize a protected action or satisfy the native Host decision.
+
 Execution Isolation answers **where** a task runs and enforces the existing single-writer boundary. It does not by itself answer which resources/operations an Agent may use inside that workspace.
 
 When a task has material tool/resource access, pair the Execution Profile with `orchestration/RESOURCE_AUTHORIZATION.md`:

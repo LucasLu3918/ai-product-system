@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import argparse, base64, hashlib, hmac, json, os, re, shutil, subprocess, tempfile
+import argparse, base64, binascii, hashlib, hmac, json, os, re, shutil, subprocess, tempfile
 from pathlib import Path
 from typing import Any
 import yaml
@@ -56,6 +56,46 @@ def read_ledger(path: Path) -> list[dict[str, Any]]:
         events.append(item)
     return events
 
+
+DIAGNOSTIC_EVENT_FIELDS = (
+    'diagnostic_id', 'reason_code', 'phase', 'source', 'blocking_rule_id',
+    'authorized', 'executed', 'actor', 'binding', 'occurred_at', 'sequence', 'event_id',
+)
+
+
+def find_diagnostic(path: Path, diagnostic_id: str) -> dict[str, Any]:
+    """Read one allowlisted publication diagnostic and verify its ledger chain."""
+    if not re.fullmatch(r'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}', diagnostic_id):
+        raise ValueError('diagnostic_id must be a UUID')
+    events = read_ledger(path)
+    verification = verify_events(events)
+    integrity = {
+        'status': verification['status'],
+        'events': verification['events'],
+        'chain_head': verification['chain_head'],
+    }
+    if verification['status'] != 'PASS':
+        return {'status': 'INTEGRITY_FAILED', 'diagnostic_id': diagnostic_id,
+                'event': None, 'integrity': integrity}
+    for event in reversed(events):
+        if event.get('event_type') == 'PUBLICATION_DIAGNOSTIC' and event.get('diagnostic_id') == diagnostic_id:
+            safe = {key: event[key] for key in DIAGNOSTIC_EVENT_FIELDS
+                    if key in event and key not in {'binding', 'actor'}}
+            raw_binding = event.get('binding')
+            if isinstance(raw_binding, dict):
+                allowed_binding = ('worktree_id', 'candidate_sha', 'target_ref', 'mode',
+                                   'runtime_version', 'runtime_revision', 'binding_fingerprint')
+                safe['binding'] = {key: raw_binding[key] for key in allowed_binding
+                                   if isinstance(raw_binding.get(key), str) and len(raw_binding[key]) <= 200}
+            raw_actor = event.get('actor')
+            if isinstance(raw_actor, dict) and raw_actor.get('type') == 'runtime' and raw_actor.get('id') in {
+                    'claude-code', 'codex', 'gemini-cli', 'opencode'}:
+                safe['actor'] = {'type': 'runtime', 'id': raw_actor['id']}
+            return {'status': 'FOUND', 'diagnostic_id': diagnostic_id,
+                    'event': safe, 'integrity': integrity}
+    return {'status': 'NOT_FOUND', 'diagnostic_id': diagnostic_id,
+            'event': None, 'integrity': integrity}
+
 def event_payload(event: dict[str, Any]) -> dict[str, Any]:
     return {k: v for k, v in event.items() if k != "integrity"}
 
@@ -83,7 +123,7 @@ def sign_checkpoint(private_key: Path, chain: str) -> str:
         message.write(chain.encode("utf-8")); message.flush()
         result = subprocess.run([_openssl(), "pkeyutl", "-sign", "-rawin", "-inkey", str(private_key),
                                  "-in", message.name, "-out", signature.name],
-                                capture_output=True, text=True, timeout=15)
+                                capture_output=True, text=True, timeout=15, check=False)
         if result.returncode != 0:
             raise RuntimeError("Ed25519 checkpoint signing failed: " + (result.stderr.strip() or result.stdout.strip()))
         return base64.b64encode(Path(signature.name).read_bytes()).decode("ascii")
@@ -91,14 +131,14 @@ def sign_checkpoint(private_key: Path, chain: str) -> str:
 def verify_checkpoint(public_key: Path, chain: str, signature_b64: str) -> bool:
     try:
         signature = base64.b64decode(signature_b64, validate=True)
-    except Exception:
+    except (binascii.Error, ValueError):
         return False
     with tempfile.NamedTemporaryFile() as message, tempfile.NamedTemporaryFile() as sig:
         message.write(chain.encode("utf-8")); message.flush()
         sig.write(signature); sig.flush()
         result = subprocess.run([_openssl(), "pkeyutl", "-verify", "-rawin", "-pubin", "-inkey", str(public_key),
                                  "-in", message.name, "-sigfile", sig.name],
-                                capture_output=True, text=True, timeout=15)
+                                capture_output=True, text=True, timeout=15, check=False)
         return result.returncode == 0
 
 def normalize_event_input(raw: dict[str, Any], sequence: int) -> dict[str, Any]:
@@ -314,7 +354,7 @@ def load_json_mapping(path: Path, label: str) -> dict[str, Any]:
     except json.JSONDecodeError as exc:
         raise ValueError(f"{label} is not valid JSON: {exc}") from exc
     if not isinstance(value, dict):
-        raise ValueError(f"{label} must be a JSON object")
+        raise TypeError(f"{label} must be a JSON object")
     return value
 
 def write_canonical_json(path: Path, value: dict[str, Any]) -> None:

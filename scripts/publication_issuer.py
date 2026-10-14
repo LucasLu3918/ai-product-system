@@ -40,13 +40,13 @@ class Issuer:
     def issue(self, proposal: dict[str, Any], human_id: str, ttl: int = 900) -> dict[str, Any]:
         """Call only after independent Human approval of this exact proposal and evidence."""
         if not human_id or not 0 < ttl <= 3600 or proposal.get('version') != 2:
-            raise PublicationError('invalid grant request')
+            raise PublicationError('invalid grant request', reason_code='ISSUER_INVALID_REQUEST')
         if proposal.get('approval', {}).get('status') != 'PENDING' or proposal.get('signature'):
-            raise PublicationError('only pending proposals can be issued')
+            raise PublicationError('only pending proposals can be issued', reason_code='ISSUER_PROPOSAL_NOT_PENDING')
         if proposal.get('proposal', {}).get('fingerprint') != digest(proposal.get('scope')):
-            raise PublicationError('proposal scope mismatch')
+            raise PublicationError('proposal scope mismatch', reason_code='ISSUER_PROPOSAL_MISMATCH')
         if not proposal.get('evidence', {}).get('validation') or proposal['evidence'].get('unresolved'):
-            raise PublicationError('complete validation evidence required')
+            raise PublicationError('complete validation evidence required', reason_code='ISSUER_EVIDENCE_INCOMPLETE')
         now = datetime.now(UTC)
         grant = copy.deepcopy(proposal)
         grant['approval'] = {'id': uuid.uuid4().hex, 'status': 'APPROVED', 'approved_by': human_id,
@@ -64,7 +64,7 @@ class Issuer:
                     'record_digest': request['record_digest'], 'action_digest': request['action_digest'],
                     'expires_at': (now + timedelta(seconds=30)).isoformat(), 'result': 'DENIED'}
         if not isinstance(request['nonce'], str) or not request['nonce'] or len(request['nonce']) > 128:
-            raise PublicationError('invalid nonce')
+            raise PublicationError('invalid nonce', reason_code='ISSUER_NONCE_INVALID')
         if request.get('version') != 1 or digest(record) != request['record_digest'] or digest(record['scope']) != request['action_digest']:
             return self.sign(response)
         if _timestamp(record['approval']['expires_at']) <= now:
@@ -88,7 +88,7 @@ def handler(issuer: Issuer):
             try:
                 size = int(self.headers.get('Content-Length', '0'))
                 if self.path not in {'/status', '/consume'} or not 0 < size <= 1024 * 1024:
-                    raise PublicationError('invalid request')
+                    raise PublicationError('invalid request', reason_code='ISSUER_INVALID_REQUEST')
                 payload = json.loads(self.rfile.read(size))
                 response = canonical(issuer.check(payload, self.path == '/consume'))
                 self.send_response(200)
@@ -117,14 +117,14 @@ def main() -> int:
     config = yaml.safe_load(protected_file(args.config).read_text())
     key_path = protected_file(Path(config['private_key']))
     if stat.S_IMODE(key_path.stat().st_mode) & 0o077:
-        raise PublicationError('issuer private key must have mode 0600')
+        raise PublicationError('issuer private key must have mode 0600', reason_code='ISSUER_KEY_MODE_INVALID')
     database = Path(config['database']).resolve()
     protected_file(database.parent)
     if database.exists():
         protected_file(database)
     key = load_pem_private_key(key_path.read_bytes(), password=None)
     if not isinstance(key, Ed25519PrivateKey):
-        raise PublicationError('Ed25519 issuer key required')
+        raise PublicationError('Ed25519 issuer key required', reason_code='ISSUER_KEY_INVALID')
     issuer = Issuer(database, key, config['key_id'])
     if args.command == 'grant':
         proposal = yaml.safe_load(args.proposal.read_text())

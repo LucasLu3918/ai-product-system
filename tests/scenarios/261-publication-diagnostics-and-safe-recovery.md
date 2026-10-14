@@ -6,6 +6,14 @@ Given a dirty candidate, when publication validation or `aips publish doctor --w
 
 Given any protected publication refusal, when AIPS returns its diagnostic, then it includes a stable reason code, phase, blocker source, retryability, safe recovery mode, candidate SHA when verified, timestamp, and diagnostic ID; raw stderr, headers, credentials, and exception text are not emitted. Push, PR creation, checks, and merge failures remain attributed to their own phases.
 
+Given a known publication rejection, when `PublicationError` is created, then its call site supplies an explicit stable reason code. An unclassified failure returns `INTERNAL_DIAGNOSTIC_GAP` and a safe error class; a push target that differs from the current engineering branch returns `PUSH_TARGET_BRANCH_MISMATCH`. Both retain phase, blocking rule, safe recovery guidance, and Traditional Chinese detail without exposing exception text.
+
+Given Prepare and PreToolUse inspect the same candidate, when their observations are compared, then they expose the same allowlisted worktree ID, candidate SHA, full target ref, publication mode, AIPS version/revision, and binding fingerprint. A changed worktree, SHA, target or runtime version is visible as drift; the fingerprint is observational only and grants no authority.
+
+Given `aips publish prepare` returns `PLANNED` with `next_step: PUSH`, then authorization remains `NOT_GRANTED` and execution remains `NOT_EXECUTED`. `AWAITING_AUTHORITY` identifies missing Human grant; a Hook `AUTHORIZED` status means AIPS allowed the tool while Host decision remains unevaluated and execution has not started. `EXECUTED` is reserved for an observed completed native action.
+
+Given `AIPS_GOVERNANCE_AUDIT_LEDGER` is configured, when a Prepare, Hook, or Doctor diagnostic has a Diagnostic ID, then the system may append only allowlisted redacted fields to that existing hash-chained ledger, and `aips publish diagnose --diagnostic-id <UUID>` returns the matching event only after chain verification. Unset configuration returns `NOT_CONFIGURED`; append failure returns `FAILED` without changing authorization. No default ledger is created, raw commands are never stored, and Host denial / Human Authority remain independent blockers.
+
 Given a PR already merged with the exact candidate head and a merge commit reachable from the live default base, when preparation is repeated, then the result is `ALREADY_MERGED` and plans post-merge reconciliation without a push, PR creation, or merge invocation. A different head, unavailable merge commit, or stale base remains blocked.
 
 Given Claude Code Hook receives a retryable network, rate-limit or GitHub server error, when it handles the denial, then it runs the read-only Doctor once and returns only bounded safe fields; Host denial, missing Human approval, stale scope, or missing/failing required checks still require the named review or approval. Diagnostics never grant publication authority.
@@ -14,4 +22,4 @@ Given the local candidate branch differs from the repository default, when `aips
 
 Given an API response or local command contains credentials or raw provider details, when a diagnostic or Claude Code PreToolUse denial is rendered, then the output contains only bounded safe evidence and an allowlisted diagnostic record. Given a retryable observation failure, when recovery is requested, then it re-collects evidence only and reports `authorized: false` and `executed: false`; no push, PR, merge or policy mutation occurs.
 
-Evidence: `tests/test_publication_authority.py`, `tests/test_publication_planning.py`, `tests/evidence/repository_governance_snapshot_lifecycle.py`, `tests/validation/repository_governance_snapshot_contracts.py`, and `tests/validation/publish_preflight_contracts.py`.
+Evidence: `tests/test_publication_authority.py`, `tests/test_publication_planning.py`, `tests/test_publication_diagnostics.py`, `tests/test_publication_error_recovery.py`, `tests/test_governance_audit.py`, `tests/evidence/repository_governance_snapshot_lifecycle.py`, `tests/validation/repository_governance_snapshot_contracts.py`, and `tests/validation/publish_preflight_contracts.py`.

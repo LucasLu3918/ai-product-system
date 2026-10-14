@@ -12,6 +12,8 @@ It does not infer intent, discover permissions from prose, or grant protected pu
 
 ## Contract
 
+Publication diagnostic bindings and audit records are observational data, not resource grants. They do not infer a selector or operation permission and cannot authorize push, PR creation, merge, or any Creative action.
+
 Each execution may reference a Resource Authorization Profile:
 
 ~~~yaml

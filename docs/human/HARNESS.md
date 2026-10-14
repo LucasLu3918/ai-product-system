@@ -54,6 +54,8 @@ AIPS Core
 
 ## Native Runtime Adapters
 
+Publication Hook responses share the authority layer's stable reason code and safe candidate/runtime binding with Prepare. `AUTHORIZED` records only AIPS Hook approval; native Host permission remains unevaluated and execution remains unobserved until the host action completes.
+
 Claude Code's publication Hook runs one bounded read-only Doctor after explicitly retryable network, rate-limit or GitHub server failures; OpenCode and Codex do not claim this automatic behavior.
 
 Claude Code PreToolUse denials may include a bounded diagnostic ID, reason code, phase, category, retry state and next step in additional context; raw command text, arguments and credentials are excluded.

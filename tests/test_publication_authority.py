@@ -139,6 +139,29 @@ class PublicationTest(unittest.TestCase):
                 self.assertNotIn(message, str(diagnostic))
                 self.assertEqual(diagnostic['blocking_rule'], 'GITHUB_OR_REMOTE_OBSERVATION' if expected.startswith(('REMOTE_', 'REQUIRED_CHECKS_')) else 'HUMAN_AUTHORITY')
 
+    def test_unclassified_publication_error_is_an_explicit_diagnostic_gap(self):
+        raw = 'private host detail: https://token.invalid/secret'
+        diagnostic = auth.PublicationError(raw, phase='push_validation').diagnostic()
+        self.assertEqual(diagnostic['reason_code'], 'INTERNAL_DIAGNOSTIC_GAP')
+        self.assertEqual(diagnostic['phase'], 'push_validation')
+        self.assertEqual(diagnostic['error_class'], 'PublicationError')
+        self.assertNotIn(raw, str(diagnostic))
+        self.assertNotIn('token.invalid', str(diagnostic))
+
+    def test_unknown_explicit_reason_code_does_not_fall_back_to_generic_rejection(self):
+        diagnostic = auth.PublicationError('private', 'TYPO_REASON_CODE', phase='push_validation').diagnostic()
+        self.assertEqual(diagnostic['reason_code'], 'INTERNAL_DIAGNOSTIC_GAP')
+        self.assertEqual(diagnostic['phase'], 'push_validation')
+        self.assertEqual(diagnostic['error_class'], 'PublicationError')
+
+    def test_known_branch_target_rejection_has_stable_specific_reason(self):
+        diagnostic = auth.PublicationError(
+            'personal mode permits only the current engineering branch').diagnostic()
+        self.assertEqual(diagnostic['reason_code'], 'PUSH_TARGET_BRANCH_MISMATCH')
+        self.assertEqual(diagnostic['phase'], 'push_validation')
+        self.assertIn('detail_zh', diagnostic)
+        self.assertIn('next_step_zh', diagnostic)
+
     def test_publication_mode_is_personal_only_when_admin_root_is_absent(self):
         config = self.path / 'authority.yaml'
         self.assertEqual(auth.publication_mode(config), 'personal')

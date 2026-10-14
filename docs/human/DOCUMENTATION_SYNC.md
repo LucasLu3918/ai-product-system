@@ -28,6 +28,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Plan40 keeps reason-code mapping, candidate/runtime binding, diagnostic trace privacy, and separate planning/authorization/Host/execution states aligned across the User Guide, Maintenance, Claude and OpenCode adapter guidance, and Scenario 261. Diagnostic lookup reads only an explicitly configured, hash-chain-verified allowlisted event; it creates no ledger and grants no authority.
+
 Resource Authorization/Profile and local ComfyUI diagnostics use the existing Runtime Resource and Creative topics. Their canonical source mapping, four bounded asset presets, Scenario 262 and static-only MPS evidence are synchronized through the plan39 placement rule.
 
 Required Checks policy, skipped provider outcomes and Claude's one-shot Doctor behavior are synchronized with Scenario 260/261.

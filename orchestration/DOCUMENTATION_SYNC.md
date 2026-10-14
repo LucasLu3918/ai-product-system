@@ -219,6 +219,8 @@ The `evolution-radar` mapping includes the deterministic effectiveness script, p
 
 ## Human documentation placement
 
+Plan40 publication diagnostic changes synchronize stable reason-code behavior, safe Prepare/Hook candidate bindings, separate lifecycle states, and optional hash-chain-verified Diagnostic ID lookup across User Guide, Maintenance, Human/Agent Harness guidance and Scenario 261. Preserve the no-default-ledger, no-raw-command and no-added-authority boundaries.
+
 The plan39 Resource Authorization/ComfyUI boundary maps to User Guide Runtime Resource and Creative topics, Security Assurance, Architecture Overview, Technology Guide, and Scenario 262. Presets remain prompt guidance; MPS evidence stays static until real inference is separately authorized and observed.
 
 Publication policy states and Claude's bounded recovery behavior are synchronized across the User Guide, Security Assurance, Harness adapter and Scenario 260/261. Skill Explorer and Skills CLI guidance remains canonical and independent.
