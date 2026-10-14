@@ -114,7 +114,9 @@ Project Diagnostics 只報告既有狀態，不會建立 Creative Bundle、啟�
 
 ComfyUI 也可用 `model_profile: z-image-turbo` 執行同一模型：設定需明列 UNET、Qwen CLIP、VAE 權重檔名，並使用 AIPS 隨附的固定 API 工作流。Preflight 會向 loopback ComfyUI 核對三項本機模型清單；此配對僅支援 generate。
 
-先用 `aips creative discover --project PROJECT` 盤點，再由工具 prepare 建立角色規範。Discovery 只檢查已安裝的 MFLUX 命令／版本，並對固定 `127.0.0.1:8188` 的 ComfyUI 做唯讀 API 探測；不連 LAN 或外網，也不送出生成工作。狀態分開呈現命令、runtime、模型目錄、preflight 與 inference；服務回應或模型檔名存在都不代表推論已驗證。Apple Silicon 若靜態設定明確顯示 FP8，preflight 會提出 advisory 警告並建議檢查本機 FP16/BF16 權重；仍須另外執行並驗證實際推論才能確認相容性。
+先用 `aips creative discover --project PROJECT` 盤點，再由工具 prepare 建立角色規範。Discovery 只檢查已安裝的 MFLUX 命令／版本，並對固定 `127.0.0.1:8188` 的 ComfyUI 做唯讀 API 探測；不連 LAN 或外網，也不送出生成工作。只查固定 GET 路徑，核對 loopback IP、Port、Path、Method，停用 Proxy 並拒絕 Redirect；回傳核准內建載入器的有限模型名稱清單，不列出任意節點。狀態分開呈現命令、runtime、模型目錄、preflight 與 inference；服務回應或模型檔名存在都不代表推論已驗證。錯誤以 `status`、`phase`、`reason_code`、`source`、`retryable`、`trace_id` 和 `recovery.action` 提供繁中排除指引；HTTP 只顯示狀態碼，不輸出回應本文、認證資訊或本機 Profile 路徑。Apple Silicon 會標示 MPS 為靜態候選，FP8 權重可提出 advisory；FP16/BF16 名稱也不代表已支援，仍須另外執行並驗證實際推論才能確認相容性。
+
+Creative Bundle 可選 `asset_preset: character | background | texture | ui_ornament`，使用共用角色、背景、材質紋理或 UI 裝飾提示指引。Preset 只影響提示組合，會將版本雜湊記入輸出 manifest；不選 Provider、不授權生成，也不改變既有 Workflow、人工視覺審查與使用者接受流程。
 
 `aips creative configure --project PROJECT --bundle RELATIVE.yaml` 從 stdin 接收 allowlisted JSON，回傳新的 Bundle 路徑；以該路徑 preflight，通過後才 execute。OpenCode 可直接使用相同 action。缺少模型或生成失敗時回報受阻，不改交 SVG；精緻插畫先校準代表性樣圖，完成後逐張檢查身份、人物結構、材質、光影與風格。
 
@@ -187,6 +189,8 @@ Planning 核准後，再整理 Initial Implementation Items + Recommended Flow�
 
 ## Global Harness 與 MCP
 
+Resource and creative Runtime Hook errors include a stable reason code and bounded recovery step; this diagnostic context does not grant a write or generation action.
+
 The Claude Code Hook performs one read-only Publication Doctor check for explicitly retryable remote errors; Codex and OpenCode retain their existing observation behavior.
 
 Native runtime publication denials return allowlisted diagnostic metadata only; they do not execute a publication command or grant authority.
@@ -247,6 +251,8 @@ MCP-only enforcement 誠實維持 `ADVISORY`；可驗證的 native pre-tool hook
 詳細請看 [Global Harness 與 MCP](HARNESS.md)。
 
 ## Roles、Skills 與重用
+
+Upstream Skill discovery and installation remain governed by the pinned canonical inventory and ownership-safe projection lifecycle; Creative asset presets are not Skills and do not alter that registry.
 
 The Skill Explorer remains a read-only catalog; publication Doctor changes do not alter Skill discovery, selection or installation.
 
@@ -319,6 +325,8 @@ Installation entrypoint workflow 保留既有 pull request 路徑與平台檢查
 
 ## Execution Isolation 與 Runtime Resource
 
+Resource Authorization requires an explicit matching kind, selector and operation; network actions additionally need a true network grant and matching destination constraints.
+
 主要實作預設保留符合條件的已選模型；輔助工作可依風險使用較低 tier，但必要 reviewer 獨立性仍須滿足。一般 Data Modeling 先處理概念、ownership、關係與生命週期，只有選用 DDD 時才要求 Aggregate／Bounded Context。
 
 執行 `aips integration-gate` 前，準備完整 Python 3.12 環境並以 `AIPS_VALIDATION_PYTHON` 或 `AIPS_VALIDATION_VENV` 指定；缺少依賴時命令會先停止並列出診斷。文件候選另需 Node 24+（可用 `AIPS_NODE_BINARY` 指定）和 checkout 內已安裝的 VitePress；預檢不會自動安裝套件或連接 registry.
@@ -368,6 +376,8 @@ Secret / Key 不寫入 source、Prompt、log、Project Intelligence 或 ordinary
 詳見 [Security Assurance](SECURITY_ASSURANCE.md)。
 
 ## Quality 與 Review
+
+Creative presets add bounded prompt guidance only. They do not select a model, authorize generation or replace the existing workflow preflight and Human review.
 
 Publication authority tests cover the shared target-policy observation and the Claude-only bounded recovery path; they do not imply a change to Skill evaluation.
 
@@ -591,6 +601,8 @@ Just-in-Time Retrieval 只帶入本次任務相關的 code、symbols、tests、h
 Retrieval index persistence is an internal, rebuildable cache boundary in `scripts/retrieval_storage.py`; existing commands and imports continue through the `retrieval_intelligence.py` compatibility facade.
 
 ## Git Publication 與 Release
+
+Runtime Hook diagnostics are advisory recovery context. They do not approve publication or bypass the candidate Gate and native Host confirmation.
 
 When diagnosing a feature branch, `aips publish doctor` checks policy on the remote default branch by default; `--branch` explicitly selects a policy target. The report separately shows the candidate branch and never authorizes publication. Transient recovery re-runs read-only evidence collection only.
 

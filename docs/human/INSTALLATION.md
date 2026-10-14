@@ -82,6 +82,8 @@ Project Intelligence 的 temporal query 使用既有本機 CLI 與 Git，不需�
 - Stable release readiness additionally requires exactly one empty `## Unreleased` section; installers continue to require a verified stable tag.
 ## Runtime integration
 
+Runtime Resource Authorization profiles are supplied by trusted Runtime configuration. Missing or invalid profiles remain default-deny; installation does not create or modify a user's authorization profile.
+
 The Claude Code publication recovery observation uses the existing Doctor command and requires no added runtime component or credential.
 
 The installed Claude Code publication hook uses the native PreToolUse denial envelope and can present a safe diagnostic summary; its output does not grant or execute a denied action.

@@ -2,21 +2,21 @@
 from __future__ import annotations
 
 import json
-from pathlib import Path
 import statistics
 import subprocess
 import sys
 import tempfile
 import time
+from pathlib import Path
 
 import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-import agent_anomaly_evaluation as anomaly  # noqa: E402
-import gemini_observable_event_capture as capture  # noqa: E402
-import resource_authorization as authorization  # noqa: E402
+import agent_anomaly_evaluation as anomaly
+import gemini_observable_event_capture as capture
+import resource_authorization as authorization
 
 CONFIG = ROOT / "config/gemini-observable-event-capture.yaml"
 FIXTURE = ROOT / "tests/fixtures/gemini_observable_event_capture/after-tool-events.yaml"
@@ -89,11 +89,14 @@ with tempfile.TemporaryDirectory(prefix="aips-gemini-capture-") as tmp:
             "observed_outcome",
             "network_used",
         }
+        grant = next(item for item in profile["grants"] if item["id"] == event["resource_id"])
         auth = authorization.decision(
             profile,
             event["resource_id"],
             event["operation"],
             None,
+            resource_kind=grant["kind"],
+            selector=grant["selector"],
         )
         assert auth["status"] == "ALLOW"
         assert anomaly.detect(event, profile) == []
@@ -128,6 +131,7 @@ with tempfile.TemporaryDirectory(prefix="aips-gemini-capture-") as tmp:
             "AIPS_OBSERVABLE_EVENT_CAPTURE_SINK": str(disabled_hook_sink),
         },
         timeout=2,
+        check=False,
     )
     assert disabled_hook.returncode == 0
     assert json.loads(disabled_hook.stdout) == {"decision": "allow", "suppressOutput": True}
@@ -149,6 +153,7 @@ with tempfile.TemporaryDirectory(prefix="aips-gemini-capture-") as tmp:
             capture_output=True,
             env={**__import__("os").environ, **env},
             timeout=2,
+            check=False,
         )
         durations.append((time.perf_counter() - started) * 1000)
         assert proc.returncode == 0

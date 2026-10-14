@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+import subprocess
 import sys
 from pathlib import Path
 
@@ -40,6 +41,10 @@ def main() -> int:
     manifest = (ROOT / "requirements.txt").read_text().lower()
     if any(name in manifest for name in forbidden):
         errors.append("Runtime Policy must not add an LLM/NeMo mandatory dependency")
+    unit = subprocess.run([sys.executable, str(ROOT / "tests/test_runtime_policy.py")], cwd=ROOT,
+                          capture_output=True, text=True, timeout=30, check=False)
+    if unit.returncode:
+        errors.append("Runtime Policy unit evidence failed: " + unit.stdout + unit.stderr)
     docs = (ROOT / "orchestration/RUNTIME_POLICY_ENFORCEMENT.md").read_text()
     for required in ("DENY", "REQUIRE_APPROVAL", "BLOCKED", "sandbox", "action digest", "ADVISORY"):
         if required.lower() not in docs.lower():

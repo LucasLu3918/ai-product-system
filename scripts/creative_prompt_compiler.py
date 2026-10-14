@@ -1,9 +1,38 @@
 """Pure compilation and evidence ranking for creative prompt inputs."""
 from __future__ import annotations
 
+import hashlib
+from pathlib import Path
 from typing import Any
 
+import yaml
 from creative_errors import Blocked
+
+ASSET_PRESETS_PATH = Path(__file__).resolve().parents[1] / "templates/creative/CREATIVE_ASSET_PRESETS.yaml"
+
+
+def load_asset_preset(preset_id: Any) -> dict[str, Any] | None:
+    if preset_id is None:
+        return None
+    if not isinstance(preset_id, str) or preset_id not in {"character", "background", "texture", "ui_ornament"}:
+        raise Blocked("creative_asset_preset_invalid", "asset_preset must be one of the four registered preset IDs.",
+                      phase="creative.bundle_validation")
+    try:
+        raw = ASSET_PRESETS_PATH.read_bytes()
+        if len(raw) > 16 * 1024:
+            raise ValueError("preset registry exceeds its limit")
+        registry = yaml.safe_load(raw.decode("utf-8"))
+    except (OSError, UnicodeError, yaml.YAMLError, ValueError) as exc:
+        raise Blocked("creative_asset_preset_unavailable", "The shared creative preset registry could not be verified.",
+                      phase="creative.prompt_compilation") from exc
+    presets = registry.get("presets") if isinstance(registry, dict) and registry.get("version") == 1 else None
+    preset = presets.get(preset_id) if isinstance(presets, dict) else None
+    if (not isinstance(preset, dict) or not isinstance(preset.get("label"), str)
+            or not isinstance(preset.get("include"), list) or not isinstance(preset.get("avoid"), list)
+            or any(not isinstance(item, str) or not item.strip() for item in [*preset["include"], *preset["avoid"]])):
+        raise Blocked("creative_asset_preset_invalid", "The selected preset entry is malformed.",
+                      phase="creative.prompt_compilation")
+    return {"id": preset_id, **preset, "registry_sha256": hashlib.sha256(raw).hexdigest()}
 
 
 def _profile_lines(value: Any) -> list[str]:
@@ -27,6 +56,11 @@ def compile_creative_prompt(bundle: dict[str, Any], profiles: dict[str, dict[str
             sections.append(f"{label}: " + "; ".join(lines))
 
     add("Requested image brief", bundle.get("prompt"))
+    preset = load_asset_preset(bundle.get("asset_preset"))
+    if preset:
+        add("Creative asset preset", preset["label"])
+        add("Preset guidance", preset["include"])
+        add("Preset exclusions", preset["avoid"])
     character = _profile_mapping(profiles.get("character"))
     acceptance = _profile_mapping(character.get("acceptance_criteria"))
     add("Character identity", character.get("summary"))

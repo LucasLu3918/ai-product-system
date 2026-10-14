@@ -28,6 +28,11 @@ grants:
     constraints:
       change_boundary_required: true
       network_allowed: false
+      allowed_destinations: ["git.example.com"] # Optional exact destination hosts.
+      allowed_ports: [443]
+      allowed_methods: [GET, POST]
+      allowed_paths: ["/v1/**"]
+      redirects_allowed: false
 authority:
   human_approval_granted: false
   merge_authorized: false
@@ -41,8 +46,11 @@ The evaluator is fail-closed:
 
 - default effect MUST be `DENY`;
 - missing resource grant → DENY;
+- mismatched resource kind or selector → DENY;
 - missing operation grant → DENY;
 - mutating operation with a required but absent Change Boundary → DENY;
+- network use requires `network_allowed: true`; missing is treated as false;
+- supplied destination, port, method, path or redirect evidence must meet every declared constraint;
 - duplicate/unknown grants or operations → profile BLOCKED;
 - secret values are forbidden; only a credential reference may appear;
 - merge/release/Human/protected-operation authority MUST remain false.
@@ -51,7 +59,7 @@ Protected operations such as publication, administration and destructive deletio
 
 ## Enforcement truth
 
-Resource Authorization retains its raw canonical hash facade and existing decision contract; the shared helper does not grant resource access or change enforcement status.
+Resource Authorization emits `status`, `phase`, `reason_code`, `source`, `retryable`, `trace_id` and `recovery.action` alongside its decision evidence. Profile absence, missing/unreadable files, malformed YAML/schema, and grant-scope mismatches retain separate stable reason codes. Local filesystem paths and raw parser errors are not emitted.
 
 `scripts/resource_authorization.py` produces **PRE_EXECUTION_EVIDENCE**. It does not claim that every runtime can mechanically intercept every tool call.
 
@@ -71,8 +79,12 @@ aips authorization validate --profile RESOURCE_AUTHORIZATION_PROFILE.yaml
 aips authorization check \
   --profile RESOURCE_AUTHORIZATION_PROFILE.yaml \
   --resource-id application-source \
+  --kind repository_path \
+  --selector src/app.py \
   --operation update \
   --change-boundary orders
 ~~~
 
 An ALLOW means only that the declared ordinary resource operation is within the deterministic profile. All other applicable governance/testing/publication gates still apply.
+
+For external services, the runtime binds the grant selector to the observed destination host and passes explicit port/method/path and redirect evidence when available. A model-provided Runtime Action cannot replace the host-observed tool, URL or trusted `AIPS_RESOURCE_AUTHORIZATION_PROFILE` environment setting.

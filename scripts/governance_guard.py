@@ -539,7 +539,9 @@ def hook(runtime: str) -> int:
                         decision["decision"] = "BLOCKED"
                         decision["reason"] = "required governance audit append failed"
             if decision.get("decision") != "ALLOW":
-                reason = "AIPS runtime policy " + str(decision.get("decision")) + ": " + str(decision.get("reason"))
+                reason = ("AIPS runtime policy " + str(decision.get("decision")) + " ["
+                          + str(decision.get("reason_code")) + "; trace=" + str(decision.get("trace_id")) + "]: "
+                          + str((decision.get("recovery") or {}).get("action") or "請檢查授權與安全限制。"))
                 if runtime == "claude-code":
                     print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny", "permissionDecisionReason": reason}}))
                 else:

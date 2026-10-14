@@ -28,6 +28,8 @@ SYSTEM.md / orchestration / roles / skills
 
 ## Current-behavior placement contract
 
+Resource Authorization/Profile and local ComfyUI diagnostics use the existing Runtime Resource and Creative topics. Their canonical source mapping, four bounded asset presets, Scenario 262 and static-only MPS evidence are synchronized through the plan39 placement rule.
+
 Required Checks policy, skipped provider outcomes and Claude's one-shot Doctor behavior are synchronized with Scenario 260/261.
 
 Publication troubleshooting belongs in the canonical User Guide and Security Assurance topics, with adapter contracts in Harness and scenario evidence in Conformance.

@@ -286,6 +286,8 @@ Closing/reconciling a stale Radar Issue is evidence lifecycle maintenance only. 
 
 ## Parallel runtime resource isolation
 
+An isolation lease does not satisfy Resource Authorization: fixed local ComfyUI reads still validate loopback IP, explicit port, method, path and redirect behavior at the HTTP boundary.
+
 The read-only publication Doctor does not create an execution sandbox or perform remote writes; transient recovery remains observation only.
 
 Hook diagnostic output uses an allowlist of identifiers, stable codes, phases and safe next steps; it excludes raw commands, prompt text, tool arguments, credentials and unrestricted provider output.

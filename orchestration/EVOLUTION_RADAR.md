@@ -232,6 +232,8 @@ The Decision intentionally overrides advisory ASSESS only for a replay-only obse
 
 Scenario 140 maps representative adapter exports into a minimal canonical event contract and reuses Scenario 139 anomaly evaluation. The committed replay result is PASS, but it remains `HUMAN_REVIEW_TRIAL_RESULT` with `live_capture_verified=false`.
 
+The authorization-context update keeps this replay deterministic and offline. Historical events without kind/selector use the matched Profile Grant metadata; explicit event context is checked against the grant. Network use is still classified as `network_policy_violation` unless the matched grant explicitly allows it; this remains post-execution evidence and grants no runtime enforcement authority.
+
 A separate Human Adoption Decision is still required before System Improvement Review can consider any production/live-capture design. Semantic intent governance remains independently ASSESS-only.
 
 ## Current-baseline committed Trial → Human ADOPT

@@ -1,176 +1,65 @@
 version: 1
 change:
-  id: plan38-required-checks-policy
-  summary: Share fresh target-branch Required Checks evidence across Doctor and Merge Authority; distinguish
-    policy permissions and provider outcomes; perform one read-only Claude Hook Doctor on retryable remote errors.
+  id: plan39-comfyui-resource-auth
+  summary: 'Fail-closed Resource Authorization profile/grant matching, fixed local ComfyUI read-only discovery, normalized redacted diagnostics, shared creative presets, and evidence-ranked Apple Silicon/MPS compatibility guidance.'
   boundary:
-  - Shared fresh policy evidence for Doctor and Merge Authority
-  - Classic protection, aggregate branch state and effective-rule consistency
-  - Required Checks status, sanitized API error provenance and provider outcomes
-  - Claude Code one-shot read-only recovery and preserved Human/Host authority
-  - lucas-lab/main PR, required-check and branch safety settings
-  - Canonical documentation closure and exact-candidate validation
+  - Resource Authorization profile resolution and selector/kind/operation/destination/constraint enforcement
+  - Runtime Policy Action profile binding and structured safe denial diagnostics
+  - Fixed loopback ComfyUI read-only capability/model inventory and HTTP boundary enforcement
+  - Existing independent authorization and workflow validation for generation; no external download or custom nodes
+  - Creative character/background/texture/UI ornament presets and manifest/review/quality flow
+  - Static MPS/model precision evidence only; inference remains unverified until observed
+  - CLI/schema/scenario/coverage/documentation placement/sync and Human architecture/usage guidance
+  - User Mac authorization state and actual local Hook root cause remain outside evidence
 matrix:
-- boundary: Candidate and target policy branch evidence
-  reason: Policy decisions must observe the selected/default remote target independently of the local candidate,
-    and missing evidence must remain blocking.
+- boundary: Resource Authorization profile lifecycle and exact grant scope
+  reason: Missing or mismatched profiles/grants must remain default-deny with stage-specific safe explanations.
   checks:
-    static_lint:
-      applicable: true
-      evidence: 'PASS: Ruff found no new candidate lint findings; governance_guard has the same three baseline findings as origin/main.'
-    unit:
-      applicable: true
-      evidence: 'PASS: focused doctor tests cover source/default-target branch separation, explicit target, and
-        incomplete policy remains UNKNOWN.'
-    integration:
-      applicable: true
-      evidence: 'PASS: repository governance snapshot lifecycle verifies branch.protected cross-check, permission-hidden classic policy, inconsistent protection evidence and contextual 404 behavior.'
-    contract:
-      applicable: true
-      evidence: 'PASS: focused authority/doctor tests verify one shared fresh target-branch policy observation and separate candidate/policy branch fields.'
-    e2e:
-      applicable: false
-      na_reason: No deployed user interface; the read-only CLI and deterministic remote API fixtures exercise the
-        behavior.
-    security:
-      applicable: true
-      evidence: 'PASS: missing or permission-limited evidence remains blocking; no authorization or writes are produced.'
-    migration_recovery:
-      applicable: false
-      na_reason: Read-only evidence only; no persisted state or migration.
-    cli_harness:
-      applicable: true
-      evidence: 'PASS: public doctor invocation and branch-selection behavior are covered by focused publication
-        tests.'
-    docs_schema:
-      applicable: true
-      evidence: 'PASS: recursive documentation impact has zero pending additions and documentation placement has zero errors; full exact-candidate Gate remains required.'
-- boundary: GitHub response provenance and redaction
-  reason: HTTP and CLI response categories affect policy observability; raw credentials, headers and unrestricted
-    errors must never escape.
+    static_lint: {applicable: true, evidence: "scripts/validation syntax contracts and exact-candidate repository Integration Gate"}
+    unit: {applicable: true, evidence: "tests/test_runtime_policy.py plus Resource Authorization lifecycle assertions"}
+    integration: {applicable: true, evidence: "tests/evidence/resource_authorization_lifecycle.py, tests/evidence/runtime_policy_lifecycle.py, Gemini observed-event and anomaly lifecycle regression"}
+    contract: {applicable: true, evidence: "tests/validation/resource_authorization_contracts.py and runtime_policy_contracts.py"}
+    e2e: {applicable: false, na_reason: No deployed UI; deterministic CLI and runtime fixtures cover the boundary.}
+    security: {applicable: true, evidence: "missing/invalid Profile, default-deny and grant kind/selector/operation/destination/constraint negative cases; exact-candidate secret scan"}
+    migration_recovery: {applicable: false, na_reason: No persistent user profile migration; the user's machine configuration is not modified.}
+    cli_harness: {applicable: true, evidence: "resource authorization CLI lifecycle and observed Hook URL binding fixtures"}
+    docs_schema: {applicable: true, evidence: "resource authorization schemas, Scenario 262, Issue #79 Trial evidence and Human Evolution Radar placement/sync preview"}
+- boundary: Runtime Policy error classification and redaction
+  reason: Profile-source distinctions and HTTP/provider diagnostics must be stable and useful without leaking paths, credentials, headers, or raw bodies.
   checks:
-    static_lint:
-      applicable: true
-      evidence: 'PASS: Ruff found no new candidate lint findings; governance_guard has the same three baseline findings as origin/main.'
-    unit:
-      applicable: true
-      evidence: 'PASS: parser tests distinguish 401 authentication, 403 permission, rate limiting and safe token
-        redaction.'
-    integration:
-      applicable: true
-      evidence: 'PASS: repository governance snapshot lifecycle and contract validation cover the new policy states.'
-    contract:
-      applicable: true
-      evidence: 'PASS: stable source endpoint/status/error-class fields remain additive and bounded.'
-    e2e:
-      applicable: false
-      na_reason: No deployed user interface; deterministic API fixtures cover the response surface.
-    security:
-      applicable: true
-      evidence: 'PASS: credential-like tokens are redacted and HTTP headers/raw stderr are not returned.'
-    migration_recovery:
-      applicable: false
-      na_reason: No durable diagnostic store or data migration is introduced.
-    cli_harness:
-      applicable: true
-      evidence: 'PASS: doctor exposes structured safe API source evidence without writes.'
-    docs_schema:
-      applicable: true
-      evidence: 'PASS: User Guide, Security Assurance, Technology Guide, Harness, Conformance, and orchestration policy guidance are synchronized.'
-- boundary: Recovery classification and publication phase boundaries
-  reason: Retry metadata must agree with actual retry guidance; retries can only re-observe transient evidence and
-    cannot publish.
+    static_lint: {applicable: true, evidence: "scripts/validation syntax contracts and exact-candidate repository Integration Gate"}
+    unit: {applicable: true, evidence: "tests/test_runtime_policy.py structured fields and denial/redaction assertions"}
+    integration: {applicable: true, evidence: "tests/evidence/runtime_policy_lifecycle.py Hook request lifecycle"}
+    contract: {applicable: true, evidence: "tests/validation/runtime_policy_contracts.py schema/adapter/docs contract"}
+    e2e: {applicable: false, na_reason: No deployed UI; deterministic local actions exercise the output contract.}
+    security: {applicable: true, evidence: "authorization/profile source distinction and diagnostic credential/path/body redaction cases; exact-candidate secret scan"}
+    migration_recovery: {applicable: false, na_reason: No persisted diagnostic history or migration is introduced.}
+    cli_harness: {applicable: true, evidence: "Runtime Policy native Hook lifecycle and CLI output checks"}
+    docs_schema: {applicable: true, evidence: "runtime-action.yaml, Runtime Policy human docs, Scenario 262 and generated Conformance summary and history index validation"}
+- boundary: Local ComfyUI read-only discovery and network boundary
+  reason: Only the fixed loopback service on port 8188 and fixed GET paths may be probed; redirects and arbitrary destinations remain blocked.
   checks:
-    static_lint:
-      applicable: true
-      evidence: 'PASS: Ruff found no new candidate lint findings; governance_guard has the same three baseline findings as origin/main.'
-    unit:
-      applicable: true
-      evidence: 'PASS: recovery tests distinguish transient network evidence, pending checks, generic unavailable,
-        permission and Human/Host denials.'
-    integration:
-      applicable: true
-      evidence: 'PASS: 76 focused publication authority, Doctor, recovery and planning tests; exact-head merged recovery remains covered.'
-    contract:
-      applicable: true
-      evidence: 'PASS: recovery output is non-authorizing and preserves reason/phase contracts.'
-    e2e:
-      applicable: false
-      na_reason: No remote mutation is exercised in local fixtures; no deployed application flow exists.
-    security:
-      applicable: true
-      evidence: 'PASS: no retry path invokes push, PR creation, merge or policy mutation.'
-    migration_recovery:
-      applicable: true
-      evidence: 'PASS: existing exact-head merged recovery remains read-only and idempotent.'
-    cli_harness:
-      applicable: true
-      evidence: 'PASS: standalone/compound command and publication phase tests remain in the focused suites.'
-    docs_schema:
-      applicable: true
-      evidence: 'PASS: Scenario 260/261 and Claude Code Hook guidance specify transient-only one-shot Doctor behavior.'
-- boundary: Claude Code denial and canonical documentation closure
-  reason: Native Hook denials need visible structured safe identifiers while preserving the documented native envelope
-    and all publication authorization boundaries.
+    static_lint: {applicable: true, evidence: "scripts/validation syntax contracts and exact-candidate repository Integration Gate"}
+    unit: {applicable: true, evidence: "Creative prompt preset, model catalog, error-envelope and MPS metadata assertions"}
+    integration: {applicable: true, evidence: "tests/evidence/creative_execution_lifecycle.py fake MFLUX and loopback ComfyUI fixtures"}
+    contract: {applicable: true, evidence: "tests/validation/creative_execution_contracts.py plus generate-set lifecycle"}
+    e2e: {applicable: false, na_reason: The user's ComfyUI instance is not contacted; fixtures prove the HTTP contract.}
+    security: {applicable: true, evidence: "loopback/port/method/path, redirect, external destination, HTTP 4xx/5xx and redaction fixtures; no generation/download"}
+    migration_recovery: {applicable: false, na_reason: Read-only discovery adds no stored state.}
+    cli_harness: {applicable: true, evidence: "native creative tool callback fixture plus read-only discovery/preflight CLI paths"}
+    docs_schema: {applicable: true, evidence: "CREATIVE_ASSET_PRESETS.yaml, Bundle/Manifest, Scenario 262 and generated Conformance summary and history index validation"}
+- boundary: Creative presets and Apple Silicon/model compatibility evidence
+  reason: Presets must retain existing explicit generation controls; static dtype observations must not imply verified MPS inference.
   checks:
-    static_lint:
-      applicable: true
-      evidence: 'PASS: documentation placement and recursive impact checks pass; focused Python tests cover the native Hook envelope.'
-    unit:
-      applicable: true
-      evidence: 'PASS: hook test asserts denial, diagnostic identifier/phase, allowlisted context and no command
-        input.'
-    integration:
-      applicable: true
-      evidence: 'PASS: Claude Hook lifecycle asserts exactly one Doctor call for a retryable network error and no raw-output leakage.'
-    contract:
-      applicable: true
-      evidence: 'PASS: Claude Code PreToolUse envelope remains native and denied actions stay denied.'
-    e2e:
-      applicable: false
-      na_reason: No deployed UI acceptance claim; host-level acceptance availability is recorded separately.
-    security:
-      applicable: true
-      evidence: 'PASS: Hook output is allowlisted, excludes raw commands/args/credentials and declares authorized=false/executed=false.'
-    migration_recovery:
-      applicable: false
-      na_reason: No persisted schema, diagnostic history or migration is added.
-    cli_harness:
-      applicable: true
-      evidence: 'PASS: native Hook denial contract and user-facing reason are covered by focused tests.'
-    docs_schema:
-      applicable: true
-      evidence: 'PASS: recursive documentation impact has zero pending additions, placement has zero errors, and Scenario 260/261 plus adapter guidance are updated.'
-- boundary: lucas-lab main protection configuration
-  reason: The user approved a protected pull-request path with named Required Checks while keeping force pushes, deletion and reviewer count explicit.
-  checks:
-    static_lint:
-      applicable: false
-      na_reason: GitHub repository settings are configured externally and are not source code.
-    unit:
-      applicable: false
-      na_reason: The settings are verified by live read-back rather than an application unit test.
-    integration:
-      applicable: true
-      evidence: 'PASS: GitHub read-back confirmed main requires PRs, verify and visual-audit, admin enforcement, no force pushes/deletion, and zero required approvals.'
-    contract:
-      applicable: true
-      evidence: 'PASS: GitHub branch protection API read-back matched every approved setting.'
-    e2e:
-      applicable: false
-      na_reason: No application UI or deployed runtime is changed by repository branch protection.
-    security:
-      applicable: true
-      evidence: 'PASS: bypass is not enabled; force push/deletion are disabled; required reviewer count remains zero as approved.'
-    migration_recovery:
-      applicable: false
-      na_reason: The GitHub settings update does not migrate repository data.
-    cli_harness:
-      applicable: false
-      na_reason: No CLI or runtime adapter change is needed to apply repository settings.
-    docs_schema:
-      applicable: true
-      evidence: 'PASS: the protected-branch requirements are documented in the maintenance, technology and publication guidance.'
+    static_lint: {applicable: true, evidence: "scripts/validation syntax contracts and exact-candidate repository Integration Gate"}
+    unit: {applicable: true, evidence: "Creative prompt preset, model catalog, error-envelope and MPS metadata assertions"}
+    integration: {applicable: true, evidence: "tests/evidence/creative_execution_lifecycle.py fake MFLUX and loopback ComfyUI fixtures"}
+    contract: {applicable: true, evidence: "tests/validation/creative_execution_contracts.py plus generate-set lifecycle"}
+    e2e: {applicable: false, na_reason: No image generation is performed; deterministic preset and preflight contracts are used.}
+    security: {applicable: true, evidence: "loopback/port/method/path, redirect, external destination, HTTP 4xx/5xx and redaction fixtures; no generation/download"}
+    migration_recovery: {applicable: false, na_reason: Existing Bundle/Manifest additions remain additive with backward-compatible defaults.}
+    cli_harness: {applicable: true, evidence: "native creative tool callback fixture plus read-only discovery/preflight CLI paths"}
+    docs_schema: {applicable: true, evidence: "CREATIVE_ASSET_PRESETS.yaml, Bundle/Manifest, Scenario 262 and generated Conformance summary and history index validation"}
 scope_recomputed_after_expansion: true
 actual_diff_reconciled: true
 blockers: []
@@ -178,5 +67,5 @@ status: READY
 review_evidence:
   required: false
 candidate:
-  base_sha: 436ede5c44c0cfd51b49fa7e2c61db8c2bc4b498
-  changed_files_hash: 8617cb58bbb2c860d70b6f3380a02eabed70d28bb7475d0551af30ab0d369f57
+  base_sha: f93c43149175ed5a6394d68a6e72742e83256a44
+  changed_files_hash: abeb66b89f5a9dbfa13b8c000349de4e94bb46700634fd2337f5f558a1d7ac47

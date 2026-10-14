@@ -6,16 +6,15 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-from pathlib import Path
 import re
 import sys
+from pathlib import Path
 from typing import Any
 
 import yaml
-
-from resource_authorization import MUTATING, OPERATIONS, canonical_hash as authorization_hash
+from resource_authorization import MUTATING, OPERATIONS, validate_profile
+from resource_authorization import canonical_hash as authorization_hash
 from resource_authorization import decision as authorization_decision
-from resource_authorization import validate_profile
 
 OUTCOMES = {"SUCCESS", "DENIED", "FAILED"}
 PROTECTED_OPERATIONS = {
@@ -209,8 +208,20 @@ def detect(event: dict[str, Any], profile: dict[str, Any]) -> list[dict[str, str
         anomalies.append({"type": "unsupported_operation_observed", "severity": "HIGH"})
         return anomalies
 
-    auth = authorization_decision(profile, resource_id, operation, change_boundary)
     grant = _grant(profile, resource_id)
+    auth = authorization_decision(
+        profile,
+        resource_id,
+        operation,
+        change_boundary,
+        resource_kind=event.get("resource_kind") or (grant or {}).get("kind"),
+        selector=event.get("selector") or (grant or {}).get("selector"),
+        destination=event.get("destination"),
+        port=event.get("port"),
+        method=event.get("method"),
+        path=event.get("path"),
+        redirected=event.get("redirected", False),
+    )
     constraints = (grant or {}).get("constraints") or {}
 
     if auth["status"] == "DENY" and outcome == "SUCCESS":
@@ -225,7 +236,7 @@ def detect(event: dict[str, Any], profile: dict[str, Any]) -> list[dict[str, str
     ):
         anomalies.append({"type": "missing_required_change_boundary", "severity": "HIGH"})
 
-    if grant is not None and event.get("network_used", False) and constraints.get("network_allowed") is False:
+    if grant is not None and event.get("network_used", False) and constraints.get("network_allowed") is not True:
         anomalies.append({"type": "network_policy_violation", "severity": "HIGH"})
 
     return anomalies

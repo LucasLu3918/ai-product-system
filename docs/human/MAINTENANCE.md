@@ -10,6 +10,8 @@ Evolution pre-analysis extraction likewise retains `evolution_analysis.py` as it
 
 ## Documentation Impact Gate
 
+The plan39 ComfyUI Resource Authorization lifecycle is tracked by Scenario 262 and its Core Change Matrix; its deterministic fixture uses loopback only and does not perform model inference.
+
 Core publication changes close recursive Human and Agent documentation placement before the exact-candidate Gate.
 
 Publication diagnostics are documented at the canonical Human and Agent topics, including safe native-hook output and read-only recovery behavior.
@@ -504,6 +506,8 @@ When public repository hardening changes, review together:
 Publication Preflight 的 lifecycle fixture 會固定 Python module probe 成功，再分別模擬 loopback 與 browser 失敗，確保環境阻擋診斷不受 optional module availability 干擾；這不變更 runtime 行為。
 
 ## Validation architecture consistency
+
+Scenario 259 remains the independent contract for upstream Skill inventory and projection ownership; creative presets do not change its registry or install path.
 
 Scenario 260/261 lifecycle, focused publication tests and the exact-candidate Integration Gate cover the new policy observation boundary.
 

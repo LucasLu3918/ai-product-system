@@ -10,6 +10,10 @@ grants:
     constraints:
       change_boundary_required: true
       network_allowed: true
+      allowed_destinations: [analytics.example.com]
+      allowed_ports: [443]
+      allowed_methods: [GET]
+      allowed_paths: ["/v1/**"]
 authority:
   human_approval_granted: false
   merge_authorized: false

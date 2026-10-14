@@ -46,6 +46,8 @@ OpenCode integration retains system preflight and existing-host lifecycle checks
 
 ## Scenario 233 — Public CLI Help and Error Contracts
 
+Scenario 233 remains scoped to stable CLI help and argument failures; Scenario 262 adds structured authorization/provider diagnostics without changing public command parsing.
+
 Scenario 233's shared CLI coverage includes the safe Doctor contract; publication tests retain the permission-unknown and transient recovery states.
 
 The existing command facade and stable output contract remain in place.
@@ -1078,6 +1080,8 @@ The branch lifecycle report classifies remote branches using current exact-SHA P
 
 ## Scenario 259 — Matt Pocock Skill Integration and Explorer
 
+Scenario 259 continues to validate the pinned Skill source inventory and ownership-safe projection; plan39 presets do not modify Skill routing or installation.
+
 The Skill Explorer lifecycle remains independent of publication diagnostics and authorization behavior.
 
 Publication denial metadata is limited to the native diagnostic contract and does not affect Skill catalog behavior.
@@ -1095,5 +1099,9 @@ The canonical Skill registry contains 49 AIPS Skills; the pinned 38-item upstrea
 Scenario 260 additionally verifies `UNKNOWN_PERMISSION`, skipped provider-success metadata and one Claude Hook Doctor call for retryable remote failures.
 
 Scenario 260 verifies the read-only `aips publish doctor`, Required Checks classification, literal merge diagnosis without execution or grant consumption, sanitized error output, and consistent runtime guidance. Missing/permission-limited policy evidence remains blocking; no repository policy mutation or merge bypass is introduced. Scenario 261 adds grouped dirty-path evidence and phase attribution through push, PR, checks, and exact-head merged recovery; diagnostics remain non-authorizing. Scenario 233 covers upstream Skill inventory and filtering without changing the canonical-only listing default.
+
+## Scenario 262 — ComfyUI Resource Authorization and Diagnostics
+
+Scenario 262 locks stage-specific default-deny Profile diagnostics, kind/selector/operation/destination/constraint matching, observed Hook URL binding, and structured redacted Runtime/Creative recovery. It verifies fixed loopback ComfyUI read-only model discovery, HTTP/method/path/redirect denials, shared static asset presets and evidence-only MPS reporting; no inference or external download is performed.
 
 The canonical Skill registry and pinned upstream manifest classify the complete 38-item source inventory; the generated Human Explorer presents active Skills and source dispositions separately. Writing Fragments → Beats → Shape remains explicit-request-only, and untested Beta entries remain unrouted. `tests/validation/skill_catalog_contracts.py` checks deterministic registry, output and source invariants; Scenario 259 remains manual for semantic routing acceptance.

@@ -58,3 +58,5 @@ When diagnosing a feature candidate, policy is read from the remote default targ
 Agents should preserve the exact AIPS/GitHub reason code without claiming Claude Code Auto Mode behavior applies to OpenCode. Read-only recovery guidance never confers publication authority.
 
 Publication doctor output is advisory evidence. Use it to identify the blocked phase and safe next observation; it does not authorize Shell, MCP, push, PR, or merge effects.
+
+Runtime Resource Authorization remains default-deny and read-only ComfyUI discovery uses only fixed loopback GET requests. Structured recovery is descriptive; it does not grant Creative execution or alter the current prompt-admission requirement.

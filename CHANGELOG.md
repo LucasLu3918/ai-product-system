@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Match Resource Authorization grants against kind, selector, operation, destination and network/HTTP constraints; distinguish Profile resolution failures, bind Hook actions to observed URLs, and expose structured redacted diagnostics with Traditional Chinese recovery guidance.
+- Bound ComfyUI requests to literal loopback addresses, explicit ports and allowlisted methods/paths; add capped read-only model inventory, redirect refusal, shared character/background/texture/UI ornament presets, and static-only Apple Silicon MPS precision diagnostics.
 - Separate publication candidate and target-policy branch observations; preserve sanitized GitHub HTTP/error provenance, align retryability with transient read-only evidence, and surface structured safe Claude Code Hook diagnostics without changing publication authority.
 - Add `aips skills list` with capability and trigger filters and text/JSON output from canonical Skill metadata.
 - Integrate selected Matt Pocock Skill methods into five existing Skills, add five distinct Skills and three opt-in Writing Skills, classify all 38 upstream Skills, and add a generated searchable Human Skill Explorer.

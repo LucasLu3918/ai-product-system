@@ -41,13 +41,26 @@ with tempfile.TemporaryDirectory(prefix="aips-resource-auth-") as tmp:
     path.write_text(yaml.safe_dump(profile, sort_keys=False), encoding="utf-8")
 
     assert run("validate", "--profile", str(path)).returncode == 0
-    read = run("check", "--profile", str(path), "--resource-id", "source", "--operation", "read")
+    read = run("check", "--profile", str(path), "--resource-id", "source", "--kind", "repository_path",
+               "--selector", "src/main.py", "--operation", "read")
     assert read.returncode == 0 and "status: ALLOW" in read.stdout
-    missing_boundary = run("check", "--profile", str(path), "--resource-id", "source", "--operation", "update")
+    missing_boundary = run("check", "--profile", str(path), "--resource-id", "source", "--kind", "repository_path",
+                           "--selector", "src/main.py", "--operation", "update")
     assert missing_boundary.returncode == 1 and "change_boundary_required" in missing_boundary.stdout
-    update = run("check", "--profile", str(path), "--resource-id", "source", "--operation", "update", "--change-boundary", "orders")
+    update = run("check", "--profile", str(path), "--resource-id", "source", "--kind", "repository_path",
+                 "--selector", "src/main.py", "--operation", "update", "--change-boundary", "orders")
     assert update.returncode == 0 and "status: ALLOW" in update.stdout
-    undeclared = run("check", "--profile", str(path), "--resource-id", "prod", "--operation", "execute")
+    mismatch = run("check", "--profile", str(path), "--resource-id", "source", "--kind", "workspace",
+                   "--selector", "src/main.py", "--operation", "read")
+    assert mismatch.returncode == 1 and "grant_kind_mismatch" in mismatch.stdout
+    outside_selector = run("check", "--profile", str(path), "--resource-id", "source", "--kind", "repository_path",
+                           "--selector", "secrets/prod.env", "--operation", "read")
+    assert outside_selector.returncode == 1 and "selector_mismatch" in outside_selector.stdout
+    network = run("check", "--profile", str(path), "--resource-id", "source", "--kind", "repository_path",
+                  "--selector", "src/main.py", "--operation", "read", "--network-used")
+    assert network.returncode == 1 and "network_not_allowed" in network.stdout
+    undeclared = run("check", "--profile", str(path), "--resource-id", "prod", "--kind", "repository_path",
+                     "--selector", "prod", "--operation", "execute")
     assert undeclared.returncode == 1 and "resource_not_granted" in undeclared.stdout
 
     forbidden = dict(profile)
@@ -55,7 +68,9 @@ with tempfile.TemporaryDirectory(prefix="aips-resource-auth-") as tmp:
     bad_path = root / "bad.yaml"
     bad_path.write_text(yaml.safe_dump(forbidden, sort_keys=False), encoding="utf-8")
     bad = run("validate", "--profile", str(bad_path))
-    assert bad.returncode == 2 and "BLOCKED" in bad.stdout
+    assert bad.returncode == 2 and "resource_profile_schema_invalid" in bad.stdout
+    missing = run("validate", "--profile", str(root / "absent.yaml"))
+    assert missing.returncode == 2 and "resource_profile_missing" in missing.stdout
 
     authority = dict(profile)
     authority["authority"] = dict(profile["authority"], merge_authorized=True)

@@ -32,11 +32,10 @@ if template.exists():
 
 script = ROOT / "scripts/resource_authorization.py"
 if script.exists():
-    compiled = subprocess.run([sys.executable, "-m", "py_compile", str(script)], cwd=ROOT, text=True, capture_output=True)
-    if compiled.returncode != 0:
-        errors.append(f"resource authorization syntax failed: {compiled.stderr.strip()}")
     text = script.read_text(encoding="utf-8")
-    for token in ('default_effect") != "DENY"', '"runtime_enforced": False', '"protected_operation_authorized": False'):
+    for token in ('default_effect") != "DENY"', '"runtime_enforced": False', '"protected_operation_authorized": False',
+                  '"selector_mismatch"', '"network_not_allowed"', '"destination_constraint_mismatch"',
+                  '"reason_code": reason', '"recovery":'):
         if token not in text:
             errors.append(f"resource authorization fail-closed contract missing: {token}")
 

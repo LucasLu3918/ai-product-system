@@ -25,9 +25,14 @@ from typing import Any
 
 import creative_trace as _creative_trace
 import yaml
-from creative_errors import Blocked
+from creative_errors import Blocked, error_payload
 from creative_image_validation import valid_raster
-from creative_prompt_compiler import compile_creative_prompt, model_recommendation
+from creative_prompt_compiler import (
+    ASSET_PRESETS_PATH,
+    compile_creative_prompt,
+    load_asset_preset,
+    model_recommendation,
+)
 from creative_repair import (
     checklist,
     compare,
@@ -110,7 +115,12 @@ OFFLINE_ENV = {
 
 
 class TransientProviderError(RuntimeError):
-    pass
+    def __init__(self, message: str, *, reason_code: str = "provider_unavailable", source: str = "provider",
+                 http_status: int | None = None):
+        super().__init__(message)
+        self.reason_code = reason_code
+        self.source = source
+        self.http_status = http_status
 
 
 def lock_prepare_scope(fd: int) -> None:
@@ -235,6 +245,8 @@ def read_bundle(project: Path, bundle_path: str, *, allow_existing_output: bool 
     operation = value.get("operation")
     if operation not in {"generate", "edit"}:
         raise Blocked("operation_unsupported", "Operation must be generate or edit.")
+    if value.get("asset_preset") is not None:
+        load_asset_preset(value.get("asset_preset"))
     prompt = value.get("prompt")
     if not isinstance(prompt, str) or not prompt.strip() or len(prompt) > MAX_PROMPT_CHARS:
         raise Blocked("prompt_invalid", "Bundle prompt is empty or exceeds the 4000 character limit.")
@@ -283,18 +295,25 @@ def read_bundle(project: Path, bundle_path: str, *, allow_existing_output: bool 
     return root, value
 
 
-def loopback_base(raw: Any) -> str:
+def loopback_base(raw: Any, *, expected_port: int | None = None) -> str:
     if not isinstance(raw, str):
         raise Blocked("comfy_endpoint_invalid", "ComfyUI endpoint must be an explicit loopback URL.")
-    parsed = urllib.parse.urlsplit(raw)
+    try:
+        parsed = urllib.parse.urlsplit(raw)
+        port = parsed.port
+    except ValueError as exc:
+        raise Blocked("comfy_endpoint_invalid", "Local provider endpoint is malformed.",
+                      phase="creative.provider_endpoint", source="comfyui") from exc
     host = (parsed.hostname or "").lower()
-    allowed = host in {"localhost", "127.0.0.1", "::1"}
+    allowed = False
     try:
         allowed = allowed or ipaddress.ip_address(host).is_loopback
     except ValueError:
         pass
-    if parsed.scheme != "http" or not allowed or parsed.username or parsed.password or parsed.query or parsed.fragment or parsed.path not in {"", "/"}:
-        raise Blocked("comfy_endpoint_invalid", "ComfyUI must use plain HTTP on a loopback address with no credentials or custom path.")
+    if (parsed.scheme != "http" or not allowed or not isinstance(port, int) or (expected_port is not None and port != expected_port) or parsed.username or parsed.password
+            or parsed.query or parsed.fragment or parsed.path not in {"", "/"}):
+        raise Blocked("comfy_endpoint_invalid", "Local provider must use an explicit loopback IP, approved port, and no credentials or custom path.",
+                      phase="creative.provider_endpoint", source="comfyui")
     return raw.rstrip("/")
 
 
@@ -303,10 +322,66 @@ class NoRedirect(urllib.request.HTTPRedirectHandler):
         raise urllib.error.HTTPError(req.full_url, code, "redirect refused", headers, fp)
 
 
-def local_request(url: str, *, data: bytes | None = None, headers: dict[str, str] | None = None, timeout: float = 2.0, max_bytes: int = MAX_IMAGE_BYTES) -> bytes:
+def validate_local_request(url: str, method: str, service: str) -> None:
+    parsed = urllib.parse.urlsplit(url)
+    expected_port = 11434 if service == "ollama" else None
+    try:
+        is_loopback = bool(parsed.hostname and ipaddress.ip_address(parsed.hostname).is_loopback)
+    except ValueError:
+        is_loopback = False
+    try:
+        port = parsed.port
+    except ValueError:
+        port = None
+    if (service not in {"comfyui", "ollama"} or parsed.scheme != "http" or not is_loopback or not isinstance(port, int)
+            or (expected_port is not None and port != expected_port)
+            or parsed.username or parsed.password or parsed.fragment):
+        raise Blocked("comfy_endpoint_invalid", "Local provider request did not match the approved loopback IP and port.",
+                      phase="creative.provider_endpoint", source=service)
+    path = parsed.path
+    method = method.upper()
+    if service == "comfyui":
+        read_paths = {"/system_stats", *(f"/object_info/{node}" for node in COMFY_CORE_NODES)}
+        allowed = ((method == "GET" and path in read_paths and not parsed.query)
+                   or (method == "GET" and re.fullmatch(r"/history/[A-Za-z0-9_-]{1,128}", path) and not parsed.query)
+                   or (method == "GET" and path == "/view" and _valid_comfy_view_query(parsed.query))
+                   or (method == "POST" and path in {"/prompt", "/queue"} and not parsed.query))
+    else:
+        allowed = ((method == "GET" and path == "/api/tags" and not parsed.query)
+                   or (method == "POST" and path == "/api/chat" and not parsed.query))
+    if not allowed:
+        raise Blocked("comfy_request_scope_denied", "Local provider method or path is outside the allowlist.",
+                      phase="creative.provider_request", source=service)
+
+
+def _valid_comfy_view_query(query: str) -> bool:
+    try:
+        values = urllib.parse.parse_qs(query, keep_blank_values=True, strict_parsing=True)
+    except ValueError:
+        return False
+    if set(values) != {"filename", "subfolder", "type"} or any(len(value) != 1 for value in values.values()):
+        return False
+    filename, subfolder, kind = (values[name][0] for name in ("filename", "subfolder", "type"))
+    return (kind in {"input", "output"} and bool(filename) and len(filename) <= 255 and "/" not in filename
+            and "\\" not in filename and ".." not in filename and len(subfolder) <= 512
+            and not subfolder.startswith("/") and "\\" not in subfolder
+            and all(part not in {"", ".", ".."} for part in subfolder.split("/") if subfolder))
+
+
+def local_request(url: str, *, data: bytes | None = None, headers: dict[str, str] | None = None, timeout: float = 2.0,
+                  max_bytes: int = MAX_IMAGE_BYTES, service: str | None = None) -> bytes:
     timeout = remaining_timeout(timeout)
     opener = urllib.request.build_opener(urllib.request.ProxyHandler({}), NoRedirect)
-    request = urllib.request.Request(url, data=data, headers=headers or {}, method="POST" if data is not None else "GET")
+    method = "POST" if data is not None else "GET"
+    if service is None:
+        parsed = urllib.parse.urlsplit(url)
+        try:
+            port = parsed.port
+        except ValueError:
+            port = None
+        service = "ollama" if port == 11434 or parsed.path in {"/api/tags", "/api/chat"} else "comfyui"
+    validate_local_request(url, method, service)
+    request = urllib.request.Request(url, data=data, headers=headers or {}, method=method)
     try:
         with opener.open(request, timeout=timeout) as response:
             if response.geturl().split("/", 3)[:3] != urllib.parse.urlsplit(url).geturl().split("/", 3)[:3]:
@@ -316,11 +391,18 @@ def local_request(url: str, *, data: bytes | None = None, headers: dict[str, str
                 raise Blocked("provider_output_too_large", "Local provider response exceeds the configured byte limit.")
             return body
     except urllib.error.HTTPError as exc:
+        status = exc.code if isinstance(exc.code, int) and 100 <= exc.code <= 599 else None
+        if 300 <= exc.code < 400:
+            raise Blocked("comfy_redirect_refused", "Local provider redirect refused.",
+                          {"http_status": status}, phase="creative.provider_request", source=service) from exc
         if exc.code >= 500:
-            raise TransientProviderError("local ComfyUI returned a server error") from exc
-        raise Blocked("comfy_request_failed", f"Local ComfyUI request failed with HTTP {exc.code}.") from exc
+            raise TransientProviderError("Local provider returned a server error.", reason_code="provider_http_error",
+                                         source=service, http_status=status) from exc
+        raise Blocked("provider_http_error", "Local provider rejected the request.", {"http_status": status},
+                      phase="creative.provider_request", source=service) from exc
     except (urllib.error.URLError, TimeoutError) as exc:
-        raise TransientProviderError("local ComfyUI could not be reached") from exc
+        raise TransientProviderError("Local provider could not be reached.", reason_code="comfy_unavailable",
+                                     source=service) from exc
 
 
 def load_comfy_workflow(root: Path, config: Any) -> tuple[str, dict[str, Any]]:
@@ -482,7 +564,7 @@ def verify_comfy(root: Path, bundle: dict[str, Any]) -> tuple[str, dict[str, Any
         source = input_images[0]
         if source.stat().st_size > MAX_REFERENCE_BYTES:
             raise Blocked("input_image_too_large", "Input image exceeds the 12 MiB limit.")
-        query = urllib.parse.urlencode({"filename": image_name, "type": "input"})
+        query = urllib.parse.urlencode({"filename": image_name, "subfolder": "", "type": "input"})
         staged = local_request(base + "/view?" + query, timeout=5, max_bytes=MAX_REFERENCE_BYTES)
         if hashlib.sha256(staged).digest() != hashlib.sha256(source.read_bytes()).digest():
             raise Blocked("comfy_input_hash_mismatch", "Staged ComfyUI input does not match the selected project reference image.")
@@ -610,6 +692,11 @@ def preflight(project: Path, bundle_path: str) -> dict[str, Any]:
     compatibility = {
         "status": "WARNING" if compatibility_warnings else "UNVERIFIED",
         "backend": provider,
+        "accelerator_backend": "mps" if apple_silicon else "NOT_APPLICABLE",
+        "backend_capability": "STATIC_CANDIDATE" if apple_silicon else "NOT_APPLICABLE",
+        "mps_runtime_probe": "NOT_PERFORMED",
+        "model_precision_class": "FP8" if fp8_evidence else "FP16_BF16" if precision_evidence else "UNKNOWN",
+        "evidence_status": "STATIC_METADATA_ONLY",
         "host": host,
         "runtime": str(bundle.get("runtime") or "UNVERIFIED")[:128],
         "weight_dtypes": dtype,
@@ -643,44 +730,66 @@ def discover_comfyui(base_url: str | None = None) -> dict[str, Any]:
     """Probe only the explicitly allowlisted default loopback ComfyUI service."""
     base_url = base_url or DEFAULT_COMFYUI_BASE_URL
     if base_url != DEFAULT_COMFYUI_BASE_URL:
-        return {"status": "NOT_PROBED", "reason_code": "default_loopback_only", "readiness": {
+        return {**error_payload(status="NOT_PROBED", phase="creative.discovery", reason_code="default_loopback_only",
+                                 source="comfyui", recovery_action="USE_FIXED_LOOPBACK_ENDPOINT"), "readiness": {
             "command": "NOT_APPLICABLE", "runtime": "RUNTIME_UNVERIFIED", "model": "MODEL_NOT_PROBED",
             "preflight": "NOT_RUN", "inference": "INFERENCE_UNVERIFIED"}}
     try:
         stats = json.loads(local_request(base_url + "/system_stats", timeout=2, max_bytes=256 * 1024))
         if not isinstance(stats, dict):
-            raise TypeError("invalid system stats")
+            raise Blocked("comfy_response_invalid", "Local ComfyUI returned invalid system metadata.",
+                          phase="creative.discovery", source="comfyui")
         capabilities: dict[str, str] = {}
+        model_catalog: dict[str, list[str]] = {}
         for node_type in ("CheckpointLoaderSimple", "UNETLoader", "CLIPLoader", "VAELoader"):
             payload = json.loads(local_request(base_url + "/object_info/" + node_type, timeout=2, max_bytes=512 * 1024))
             node = payload.get(node_type) if isinstance(payload, dict) else None
             if not isinstance(node, dict):
-                raise TypeError("invalid node inventory")
+                raise Blocked("comfy_response_invalid", "Local ComfyUI returned invalid model metadata.",
+                              phase="creative.discovery", source="comfyui")
             required = ((node.get("input") or {}).get("required") or {})
             model_field = {"CheckpointLoaderSimple": "ckpt_name", "UNETLoader": "unet_name",
                            "CLIPLoader": "clip_name", "VAELoader": "vae_name"}[node_type]
             field = required.get(model_field)
             choices = field[0] if isinstance(field, list) and field else None
+            model_catalog[node_type] = ([str(name)[:256] for name in choices[:100]
+                                         if isinstance(name, str) and name.strip()]
+                                        if isinstance(choices, list) else [])
             capabilities[node_type] = (
-                "MODEL_CATALOG_AVAILABLE" if isinstance(choices, list) and choices
+                "MODEL_CATALOG_AVAILABLE" if model_catalog[node_type]
                 else "MODEL_CATALOG_EMPTY" if isinstance(choices, list)
                 else "UNKNOWN"
             )
         catalog_available = all(value == "MODEL_CATALOG_AVAILABLE" for value in capabilities.values())
         return {"status": "REACHABLE", "reason_code": "local_comfyui_reachable",
                 "endpoint": "127.0.0.1:8188", "node_capabilities": capabilities,
+                "model_catalog": model_catalog,
                 "readiness": {"command": "NOT_APPLICABLE", "runtime": "RUNTIME_VERIFIED",
                               "model": "MODEL_CATALOG_AVAILABLE" if catalog_available else "MODEL_CATALOG_INCOMPLETE", "preflight": "NOT_RUN",
                               "inference": "INFERENCE_UNVERIFIED"},
+                "phase": "creative.discovery", "source": "comfyui", "retryable": False,
+                "trace_id": str(uuid.uuid4()), "recovery": {"action": "NONE_REQUIRED"},
                 "recommended_action": "CONFIGURE_COMFYUI_BUNDLE", "generation_executed": False}
     except (TransientProviderError, Blocked, ValueError, TypeError, json.JSONDecodeError) as exc:
-        reason = "comfy_unavailable" if isinstance(exc, TransientProviderError) else "comfy_discovery_invalid"
-        return {"status": "UNAVAILABLE" if reason == "comfy_unavailable" else "UNVERIFIED",
-                "reason_code": reason,
+        if isinstance(exc, TransientProviderError):
+            reason = exc.reason_code
+            details = {"http_status": exc.http_status} if exc.http_status is not None else {}
+            result = error_payload(status="UNAVAILABLE", phase="creative.discovery", reason_code=reason,
+                                   source=exc.source, retryable=True, recovery_action="CHECK_LOCAL_COMFYUI_AND_RETRY",
+                                   message=str(exc), diagnostics=details)
+        elif isinstance(exc, Blocked):
+            result = exc.to_payload()
+            result["status"] = "UNVERIFIED"
+            result["phase"] = "creative.discovery"
+        else:
+            result = error_payload(status="UNVERIFIED", phase="creative.discovery",
+                                   reason_code="comfy_response_invalid", source="comfyui",
+                                   recovery_action="CHECK_LOCAL_COMFYUI_API")
+        return {**result,
                 "readiness": {"command": "NOT_APPLICABLE", "runtime": "RUNTIME_UNVERIFIED",
                               "model": "MODEL_UNVERIFIED", "preflight": "NOT_RUN",
                               "inference": "INFERENCE_UNVERIFIED"},
-                "recommended_action": "START_OR_REPAIR_LOOPBACK_COMFYUI" if reason == "comfy_unavailable" else "CHECK_LOCAL_COMFYUI_API",
+                "recommended_action": result["recovery"]["action"],
                 "generation_executed": False}
 
 
@@ -736,7 +845,7 @@ def discover(project: Path) -> dict[str, Any]:
 
 def configure(project: Path, bundle_path: str, settings: dict[str, Any]) -> dict[str, Any]:
     """Create a validated configured Bundle version; never edit the source."""
-    allowed = {"provider", "model", "runtime", "runtime_version", "mflux_executable", "comfyui",
+    allowed = {"provider", "model", "runtime", "runtime_version", "mflux_executable", "comfyui", "asset_preset",
                "width", "height", "steps", "seed", "max_retries", "timeout_seconds", "prompt",
                "operation", "input_image", "input_images", "collection_profile", "model_capability_profile"}
     if not isinstance(settings, dict) or not settings or set(settings) - allowed:
@@ -1350,6 +1459,8 @@ def execute(project: Path, bundle_path: str) -> dict[str, Any]:
         manifest = {
             "version": 1, "status": "COMPLETE", "operation": bundle["operation"], "provider": provider_name,
             "model": {"id": bundle["model"]["id"], "revision": bundle["model"]["revision"], "runtime": bundle["runtime"], "runtime_version": bundle["runtime_version"], "license": bundle["model"]["license"], "license_source": bundle["model"]["license_source"], "location": "local"},
+            "creative_asset_preset": ({"id": bundle["asset_preset"], "registry_sha256": digest(ASSET_PRESETS_PATH)}
+                                       if bundle.get("asset_preset") else None),
             "bundle_sha256": bundle_hash,
             "profiles": profiles,
             "prompt_compiler": "profile-driven-v1",
@@ -1707,13 +1818,11 @@ def main() -> int:
         print(json.dumps(result, ensure_ascii=False))
         return 0
     except Blocked as exc:
-        payload: dict[str, Any] = {"status": "BLOCKED", "reason_code": exc.reason_code, "message": str(exc)}
-        if exc.diagnostics:
-            payload["diagnostics"] = exc.diagnostics
-        print(json.dumps(payload, ensure_ascii=False))
+        print(json.dumps(exc.to_payload(), ensure_ascii=False))
         return 2
-    except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as exc:
-        print(json.dumps({"status": "BLOCKED", "reason_code": "creative_execution_error", "message": type(exc).__name__}, ensure_ascii=False))
+    except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError):
+        print(json.dumps(error_payload(status="BLOCKED", phase="creative.cli", reason_code="creative_execution_error",
+                                       source="creative", recovery_action="CHECK_BUNDLE_AND_PROVIDER_CONFIGURATION"), ensure_ascii=False))
         return 2
 
 

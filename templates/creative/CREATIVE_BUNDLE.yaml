@@ -9,6 +9,7 @@ model_capability_profile: null
 # The provider only reads this prompt when `aips creative execute` is explicitly called.
 # Preflight never starts an image generation job and does not store prompt text in traces.
 operation: generate # generate | edit
+asset_preset: null # character | background | texture | ui_ornament; static shared prompt guidance only.
 provider: auto # auto prefers configured MFLUX, then a local ComfyUI server
 prompt: "Describe the requested image here."
 output_scope: creative-output

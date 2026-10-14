@@ -245,6 +245,8 @@ Large/core changes are proposal-first. Use `templates/core-change-proposal.md`. 
 
 ## Git Publish Approval
 
+Runtime denial diagnostics and recovery instructions do not supply publication authority; the exact-candidate Gate, task authorization and native Host confirmation remain separate.
+
 Before merging a publication PR, Doctor and Authority must use current target-branch Required Checks policy, exact head SHA and passing check evidence; read-only retries grant no permission.
 
 The Doctor reports the target policy branch separately from the candidate and preserves safe GitHub endpoint/status evidence. Its transient recovery guidance permits read-only re-observation only; it does not grant publication authority.
@@ -461,6 +463,8 @@ Validation observations never authorize selective execution: `NOT_READY` is an e
 When publication is blocked, use `aips publish doctor --worktree <candidate-root> --worktree-details` to classify policy evidence, worktree state, and PR state by phase. Preserve unknown files; use the named safe recovery step and retain Human/host authority.
 
 ## Runtime Content Safety Boundary
+
+Runtime Resource Authorization remains default-deny and binds each Hook action to its observed Resource selector and constrained destination; diagnostics are sanitized and cannot grant the denied operation.
 
 Project Diagnostics may recommend inspection or a specific recovery action but never runs it. Exact-candidate publication still binds the reconciled diff, documentation closure, active Core Matrix, secret scan and required repository result before a Git Publish Proposal.
 

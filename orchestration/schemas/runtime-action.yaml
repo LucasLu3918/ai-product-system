@@ -10,9 +10,14 @@ action:
 resource:
   kind: repository_path | workspace | runtime_tool | connector | external_service
   id: required-string
+  selector: optional-resource-selector-bound-to-the-requested-resource
 destination:
   host: hostname-or-null
   trust: internal | approved_external | external | unknown
+  port: tcp-port-or-null
+  method: HTTP-method-or-null
+  path: bounded-path-or-null
+  redirected: boolean-default-false
 context:
   effective_sal: integer-0-to-4-or-null
   change_boundary: required-string-or-null
