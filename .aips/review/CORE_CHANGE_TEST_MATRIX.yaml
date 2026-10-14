@@ -23,7 +23,7 @@ matrix:
     security: {applicable: true, evidence: "missing/invalid Profile, default-deny and grant kind/selector/operation/destination/constraint negative cases; exact-candidate secret scan"}
     migration_recovery: {applicable: false, na_reason: No persistent user profile migration; the user's machine configuration is not modified.}
     cli_harness: {applicable: true, evidence: "resource authorization CLI lifecycle and observed Hook URL binding fixtures"}
-    docs_schema: {applicable: true, evidence: "resource-authorization-profile.yaml, runtime-action.yaml, Scenario 262 and documentation placement/sync preview"}
+    docs_schema: {applicable: true, evidence: "resource authorization schemas, Scenario 262, Issue #79 Trial evidence and Human Evolution Radar placement/sync preview"}
 - boundary: Runtime Policy error classification and redaction
   reason: Profile-source distinctions and HTTP/provider diagnostics must be stable and useful without leaking paths, credentials, headers, or raw bodies.
   checks:
@@ -68,4 +68,4 @@ review_evidence:
   required: false
 candidate:
   base_sha: f93c43149175ed5a6394d68a6e72742e83256a44
-  changed_files_hash: ee2e4cfac61a9d65a556a3199bc333455f401b4173fa408dd72fdedd91930f35
+  changed_files_hash: 8f4886a5c22e4c7786de3ba4f543a1d24164d23e1ffd0d0a3f54f36e19417f96
