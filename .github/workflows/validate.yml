@@ -213,7 +213,7 @@ jobs:
           python scripts/validation_observation.py capture "${args[@]}"
       - name: Upload combined validation observation
         if: ${{ always() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: validation-observation-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/validation-observation/observation.json
@@ -248,7 +248,7 @@ jobs:
           fi
       - name: Upload Integration Gate evidence
         if: ${{ always() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: integration-gate-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/integration-gate-report.yaml
@@ -277,7 +277,7 @@ jobs:
           PYTHON
       - name: Upload repository validation timing
         if: ${{ always() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: repository-validation-timing-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/repository-validation-timing.json
@@ -285,7 +285,7 @@ jobs:
           retention-days: 14
       - name: Upload validator selection shadow plan
         if: ${{ always() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: validation-shadow-plan-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/validation-shadow-plan.json
@@ -302,7 +302,7 @@ jobs:
             --format json > "$AIPS_HEALTH_REPORT"
       - name: Upload Repository Health evidence
         if: ${{ always() }}
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: repository-health-${{ github.run_id }}-${{ github.run_attempt }}
           path: ${{ runner.temp }}/repository-health-report.json
